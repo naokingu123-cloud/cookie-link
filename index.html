@@ -1976,7 +1976,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <div class="field"><div id="panels"></div><aside class="odds" id="odds-panel"><svg class="menu-trim" viewBox="0 0 110 312" preserveAspectRatio="none" aria-hidden="true"><use href="#menu-frame"/></svg><section class="hammer-prize"><h2>連鎖 → ハンマー</h2><table aria-label="補充後に出現するハンマー個数"><tbody id="hammer-pay"></tbody></table><p id="hammer-next">5連鎖から・補充後に出現</p></section><h2 class="link-pay-title">最大LINK配当</h2><div class="link-pay-window" id="pay-window" role="table" aria-label="最大LINK配当・降順"><div class="link-pay-track" id="pay" role="rowgroup"></div></div><p class="sugar-help" aria-label="シュガーマス消去でシュガーGET！"><span class="sugar-help-line"><svg class="sugar-help-icon" viewBox="0 0 48 48" aria-hidden="true"><use href="#wonder-crystal0"/></svg><span>マス消去で</span></span><span class="sugar-help-line"><svg class="sugar-help-icon" viewBox="0 0 48 48" aria-hidden="true"><use href="#wonder-crystal0"/></svg><b>GET!</b></span></p></aside></div>
 <div class="statusline"><span id="status" role="status" aria-live="polite"></span><span id="best"></span></div>
 </section>
-<div class="buttons play-controls"><button id="start">ゲーム開始</button><button id="pause" disabled>一時停止</button><button id="reset">リセット</button><label><input id="sound" type="checkbox" checked>効果音</label></div>
+<div class="buttons play-controls"><button id="start">ゲーム開始</button><button id="pause" disabled>一時停止</button><button id="reset">リセット</button><label><input id="sound" type="checkbox" checked>音声</label></div>
 <section class="console" id="console" aria-label="全体の番号履歴・BET・WIN・CREDIT">
 <div class="ledger"><div class="drawline"><div id="balls" class="balls" aria-label="8球の抽選履歴"></div><div id="ballinfo"></div></div>
 <div class="meters"><div class="meter"><label class="ledger-label"><span class="gold-number gold-word">BET</span></label><strong id="total-bet">300</strong></div><div class="meter"><label id="game-label" class="ledger-label win-word">WIN</label><strong id="win">0</strong></div><div class="meter"><label class="ledger-label"><span class="gold-number gold-word">CREDIT</span></label><strong id="credit">1,000</strong><span class="payout-track" aria-hidden="true"><i id="payout-fill"></i></span></div></div></div>
@@ -4261,7 +4261,7 @@ function startAnima8(){
  const coverEdge=new THREE.MeshBasicMaterial({color:'#dceef5',transparent:true,opacity:.16,depthWrite:false});materials.push(coverEdge);
  ring(3.50,bowlHeight(3.50),.004,coverEdge,rotor);
  ring(DIM.outer,bowlHeight(DIM.outer),.004,coverEdge);
- cylinder(3.49,.08,-.55,dark,rotor);
+ // Upper opaque black rotor disc removed (visual only; no physics).
  const deckMat=material('#263445',.30,.46);
  const holeBlack=new THREE.MeshBasicMaterial({color:0x000000,side:THREE.DoubleSide,toneMapped:false});materials.push(holeBlack);
  const deckGeo=geometry(physics.geometry.deck),litDeck=[],blackWalls=[],sectorVertices=physics.geometry.sector.v.length/3,ringSamples=physics.geometry.sector.samples;
@@ -4655,7 +4655,7 @@ const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
 const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';bgmPlayer.volume=.65;
 let bgmFadeFrame=0,bgmFadeToken=0;
 function stopBgm(){bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=.65;}
-function beginBgm(){stopBgm();bgmPlayer.src=bgmTracks[Math.floor(Math.random()*bgmTracks.length)];if($('sound').checked)bgmPlayer.play().catch(e=>console.warn('BGM playback failed',e));}
+function beginBgm(){stopBgm();bgmPlayer.src=bgmTracks[Math.floor(Math.random()*bgmTracks.length)];if($('sound').checked)bgmPlayer.play().catch(e=>{console.warn('BGM playback failed',e);const el=document.getElementById('bgm-note');if(el)el.textContent='BGMファイルを読み込めません（bgm-1.mp3 / bgm-2.mp3 をGitHubに配置してください）';});}
 function fadeBgm(){if(bgmPlayer.paused||bgmFadeFrame)return;const token=++bgmFadeToken,initial=bgmPlayer.volume,started=performance.now();function step(now){if(token!==bgmFadeToken)return;const t=Math.min(1,(now-started)/2900);bgmPlayer.volume=Math.max(0,initial*(1-t)*(1-t));if(t<1)bgmFadeFrame=requestAnimationFrame(step);else{bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=.65;}}bgmFadeFrame=requestAnimationFrame(step);}
 app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;select(0);
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
