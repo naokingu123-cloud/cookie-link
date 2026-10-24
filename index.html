@@ -2657,7 +2657,7 @@ function buildSoundData(kind,sampleRate=24000){
 const sfxBuffers=new Map(),sfxVoices=new Set();let sfxBus=null;
 function unlock(){
  try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
-  if(!audio){audio=new A();sfxBus=audio.createGain();sfxBus.gain.value=.9;
+  if(!audio){audio=new A();sfxBus=audio.createGain();sfxBus.gain.value=1.35;
    const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=4;limiter.attack.value=.003;limiter.release.value=.13;sfxBus.connect(limiter);limiter.connect(audio.destination);
    for(const kind of ['crack','confirm','magic','sugar','hammer','sugar-spawn']){const data=buildSoundData(kind),buffer=audio.createBuffer(2,data.channels[0].length,data.sampleRate);data.channels.forEach((samples,ch)=>buffer.copyToChannel(samples,ch));sfxBuffers.set(kind,buffer);}
   }audio.resume().catch(()=>{});
@@ -4655,15 +4655,23 @@ function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
 const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
 const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';
-const normalBgmVolume=.20,duckedBgmVolume=.075;bgmPlayer.volume=normalBgmVolume;
+const normalBgmVolume=.15,duckedBgmVolume=.035;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
+const arrivalSfx=new Audio('ジゴスパークちゅぴーん強化.wav');arrivalSfx.preload='auto';arrivalSfx.volume=1;
+function playArrivalSound(){if(!$('sound').checked)return;try{const voice=arrivalSfx.cloneNode();voice.volume=1;voice.play().catch(e=>console.warn('入賞効果音の再生失敗',e));}catch(e){console.warn('入賞効果音',e);}}
+let activeSpeech=null;
 function announceDraw(n){
- if(!$('sound').checked||!('speechSynthesis' in window))return;
- const utterance=new SpeechSynthesisUtterance(n+'番です');utterance.lang='ja-JP';utterance.rate=1.03;utterance.volume=1;
+ if(!$('sound').checked)return;
+ playArrivalSound();
+ if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window))return;
+ try{speechSynthesis.resume();}catch{}
+ if(speechSynthesis.pending||speechSynthesis.speaking)speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(n+'番です');activeSpeech=utterance;utterance.lang='ja-JP';utterance.rate=.92;utterance.pitch=1.02;utterance.volume=1;
  const japanese=speechSynthesis.getVoices().find(v=>v.lang==='ja-JP')||speechSynthesis.getVoices().find(v=>v.lang.startsWith('ja'));if(japanese)utterance.voice=japanese;
  utterance.onstart=()=>{if(app?.phase==='playing')bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);};
- const done=()=>{if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};utterance.onend=done;utterance.onerror=done;
- speechSynthesis.speak(utterance);
+ const done=()=>{if(activeSpeech===utterance)activeSpeech=null;if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};utterance.onend=done;utterance.onerror=done;
+ bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);
+ try{speechSynthesis.speak(utterance);}catch(e){console.warn('番号音声の再生失敗',e);done();}
 }
 let bgmFadeFrame=0,bgmFadeToken=0;
 function stopBgm(){if('speechSynthesis' in window)speechSynthesis.cancel();announcedDrawCount=0;bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=normalBgmVolume;}
@@ -4674,7 +4682,7 @@ $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.pr
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
 
-$('start').onclick=()=>{unlock();if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+$('start').onclick=()=>{unlock();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
 $('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
 function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
  if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(()=>{});}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
