@@ -2671,11 +2671,28 @@ function sound(kind,{delay=0,volume=1,rate=1}={}){
  const source=audio.createBufferSource(),gain=audio.createGain(),voice={source,gain};source.buffer=buffer;source.playbackRate.value=rate;gain.gain.value=volume;source.connect(gain);gain.connect(sfxBus);sfxVoices.add(voice);
  source.onended=()=>{sfxVoices.delete(voice);source.disconnect();gain.disconnect();};source.start(audio.currentTime+Math.max(0,delay)/1000/(app?.fastForward&&app.phase==='playing'?3:1));
 }
+// Use the supplied Grand Cross impact recording when available; preserve the previous effect as a fallback.
+let hammerImpactBuffer=null,hammerImpactLoad=null;
+function prepareHammerImpact(){
+ if(hammerImpactBuffer||hammerImpactLoad||!audio)return hammerImpactLoad;
+ hammerImpactLoad=fetch(encodeURI('グランドクロス着弾.wav')).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.arrayBuffer();})
+ .then(data=>audio.decodeAudioData(data)).then(buf=>{hammerImpactBuffer=buf;return buf;})
+ .catch(()=>{hammerImpactLoad=null;return null;});
+ return hammerImpactLoad;
+}
+function playHammerImpact(delay=0){
+ if(!hammerImpactBuffer){prepareHammerImpact();sound('hammer',{delay,volume:1,rate:1});return;}
+ if(!audio||audio.state!=='running'||!$('sound').checked||app?.paused||document.hidden||!inView)return;
+ const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=hammerImpactBuffer;gain.gain.value=1;
+ source.connect(gain);gain.connect(sfxBus);
+ source.onended=()=>{source.disconnect();gain.disconnect();};
+ source.start(audio.currentTime+Math.max(0,delay)/1000/(app?.fastForward&&app.phase==='playing'?3:1));
+}
 function clearSounds(ev){
  const plan=ev.plan;if(!plan)return;
  const start=Math.min(...Object.values(plan.targets).map(t=>t.breakAt));if(!Number.isFinite(start))return;
  sound('crack',{delay:start,volume:.84,rate:1+Math.min(ev.depth||0,8)*.012});
- if(plan.sources.length){const impact=Math.min(...plan.sources.map(p=>p.strike)),launch=Math.min(...plan.sources.map(p=>p.launch));sound('hammer',{delay:impact,volume:1,rate:1});sound('magic',{delay:launch,volume:.9});}
+ if(plan.sources.length){const impact=Math.min(...plan.sources.map(p=>p.strike)),launch=Math.min(...plan.sources.map(p=>p.launch));playHammerImpact(impact);sound('magic',{delay:launch,volume:.9});}
  // A few grouped impacts follow the visual wave, without a voice for every tile.
  const breaks=[...new Set(plan.rays.map(ray=>Math.round(ray.breakAt/100)*100))].sort((a,b)=>a-b);
  const chosen=new Set([breaks[0],breaks[Math.floor(breaks.length/2)],breaks.at(-1)]);
