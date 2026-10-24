@@ -3244,6 +3244,7 @@ const recordDate=at=>new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year
 const recordMonth=at=>recordDate(at).slice(0,7);
 const recordIcon=(name,box=36)=>'<svg class="record-icon" viewBox="0 0 '+box+' '+box+'" aria-hidden="true"><use href="#'+name+'"/></svg>';
 function recordChanged(a){
+ if(a.phase==='result')fadeBgm();
  const result=recordBook.capture(a);titlePending.push(...result.unlocked);
  if(result.changed){updateEquippedTitle();if(menuOpen)renderRecordMenu();}
  if(result.round&&titlePending.length){showTitleToast(titlePending);titlePending=[];}
@@ -4649,17 +4650,25 @@ async function loadCookieRoulette(){
 }
 function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
+
+const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
+const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';bgmPlayer.volume=.65;
+let bgmFadeFrame=0,bgmFadeToken=0;
+function stopBgm(){bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=.65;}
+function beginBgm(){stopBgm();bgmPlayer.src=bgmTracks[Math.floor(Math.random()*bgmTracks.length)];if($('sound').checked)bgmPlayer.play().catch(e=>console.warn('BGM playback failed',e));}
+function fadeBgm(){if(bgmPlayer.paused||bgmFadeFrame)return;const token=++bgmFadeToken,initial=bgmPlayer.volume,started=performance.now();function step(now){if(token!==bgmFadeToken)return;const t=Math.min(1,(now-started)/2900);bgmPlayer.volume=Math.max(0,initial*(1-t)*(1-t));if(t<1)bgmFadeFrame=requestAnimationFrame(step);else{bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=.65;}}bgmFadeFrame=requestAnimationFrame(step);}
 app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;select(0);
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
 
-$('start').onclick=()=>{unlock();if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;app.start();}};
-$('reset').onclick=()=>{stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
-function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
+$('start').onclick=()=>{unlock();if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+$('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
+function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
+ if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(()=>{});}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=()=>{userPaused=!userPaused;syncPause();};
-$('sound').onchange=()=>{if($('sound').checked)unlock();else stopSounds();};
+$('sound').onchange=()=>{if($('sound').checked){unlock();if(app?.phase==='playing'&&bgmPlayer.src)bgmPlayer.play().catch(()=>{});}else{stopSounds();bgmPlayer.pause();}};
 document.addEventListener('visibilitychange',syncPause);
 if(typeof IntersectionObserver!=='undefined')new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;syncPause();},{threshold:0}).observe($('viewport'));
 const desktopView=matchMedia('(any-hover: hover) and (any-pointer: fine)').matches;
