@@ -2675,7 +2675,7 @@ function sound(kind,{delay=0,volume=1,rate=1}={}){
 let hammerImpactBuffer=null,hammerImpactLoad=null;
 function prepareHammerImpact(){
  if(hammerImpactBuffer||hammerImpactLoad||!audio)return hammerImpactLoad;
- hammerImpactLoad=fetch(encodeURI('グランドクロス着弾.wav')).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.arrayBuffer();})
+ hammerImpactLoad=fetch(encodeURI('グランドクロス被弾.wav')).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.arrayBuffer();})
  .then(data=>audio.decodeAudioData(data)).then(buf=>{hammerImpactBuffer=buf;return buf;})
  .catch(()=>{hammerImpactLoad=null;return null;});
  return hammerImpactLoad;
@@ -4731,7 +4731,7 @@ $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.pr
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
 
-$('start').onclick=()=>{unlock();prepareArrival();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+$('start').onclick=()=>{unlock();prepareArrival();prepareHammerImpact();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
 function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
