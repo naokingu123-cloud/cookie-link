@@ -4686,9 +4686,9 @@ function announceDraw(n){
   speechSynthesis.resume();
   if(speechSynthesis.pending||speechSynthesis.speaking)speechSynthesis.cancel();
   const utterance=new SpeechSynthesisUtterance(n+'番です');
-  activeSpeech=utterance;utterance.lang='ja-JP';utterance.rate=1.02;utterance.pitch=1.32;utterance.volume=1;
-  const voices=speechSynthesis.getVoices(),japanese=voices.filter(v=>v.lang?.toLowerCase().startsWith('ja'));const jp=japanese.find(v=>/nanami|kyoko|haruka|hikari|mizuki|sayaka|female|女性|女声/i.test(v.name))||japanese.find(v=>v.lang==='ja-JP')||japanese[0];
-  if(jp)utterance.voice=jp;
+  activeSpeech=utterance;utterance.lang='ja-JP';utterance.rate=.98;utterance.pitch=1.2;utterance.volume=1;
+  // Use the browser's proven default Japanese voice; explicitly selecting a listed voice can fail silently on some devices.
+  // Higher pitch preserves a brighter tone without forcing an unavailable voice.
   const done=()=>{if(activeSpeech===utterance)activeSpeech=null;};
   utterance.onend=done;utterance.onerror=e=>{console.warn('音声合成エラー',e.error);done();};
   speechSynthesis.speak(utterance);
