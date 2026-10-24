@@ -749,9 +749,9 @@ header{height:38px}
 
 .hammer-icons{gap:0}.hammer-count-icon{width:11px}.hammer-count-icon svg{width:13px;height:15px;margin-left:-1px}.hammer-color-total{width:11px}.sugar-caption em[hidden]{display:none}
 /* Midpoint contrast: irregular icing fissures stay visible without black cuts. */
-.crack-art .crack-light{stroke:#fff0d2;stroke-width:1.05;opacity:.5;transform:translate(.2px,.24px)}
-.crack-art .crack-dark{stroke:#8b5035;stroke-width:.8;opacity:.8}
-.crack-art .crack-side.crack-dark{stroke-width:.5;opacity:.65}
+.crack-art .crack-light{stroke:#f7c18e;stroke-width:1.2;opacity:.76;transform:translate(.2px,.24px)}
+.crack-art .crack-dark{stroke:#37140e;stroke-width:1.65;opacity:1;filter:drop-shadow(0 0 .3px #170806)}
+.crack-art .crack-side.crack-dark{stroke-width:1.2;opacity:.96}
 .crack-art .crack-side.crack-light{stroke-width:.75;opacity:.43}
 /* Continuous small squash and rocking make every settled cookie visibly lively. */
 .board.idle .tile:not(.hit):not(.linked):not(.charged):not(.vanish) .sweet{animation:cookie-lively-rest 3.1s ease-in-out var(--idle-delay) infinite;transform-origin:50% 90%}
@@ -1624,7 +1624,7 @@ body{--sweet-console-frame:url("data:image/webp;base64,UklGRhhFAABXRUJQVlA4WAoAA
 .cookie-roulette .a8-loading[hidden],.roulette-internal[hidden],#roulette-retry[hidden]{display:none!important}
 .roulette-caption{position:absolute;bottom:0;left:4px;right:8px;height:18px;display:flex;align-items:center;justify-content:space-between;gap:4px;color:#c4ffe6;font:800 9px/16px CookieLabels,system-ui,sans-serif}
 .roulette-caption [data-count]{white-space:nowrap;color:#ffe8a5;font-family:ArcadePayout,serif;font-size:10px}
-#roulette-retry{height:18px;min-height:0;padding:0 6px;border:1px solid #e4ba71;border-radius:5px;background:#5a4233;color:#fff2c8;font-size:9px}
+#roulette-speed{height:18px;min-width:31px;padding:0 3px;border:1px solid #dab57d;border-radius:5px;background:#493224;color:#fff5be;font:800 10px/16px system-ui,sans-serif}#roulette-speed[aria-pressed="true"]{background:#79502b;color:#ffffff}#roulette-retry{height:18px;min-height:0;padding:0 6px;border:1px solid #e4ba71;border-radius:5px;background:#5a4233;color:#fff2c8;font-size:9px}
 .sugar-gem>svg,.sugar-award-icon>svg{overflow:visible}
 .sugar-gem .sugar-facet-glint,.sugar-award-icon .sugar-facet-glint{animation:sugar-facet-shine 2.9s ease-in-out infinite;transform-origin:24px 24px}
 @keyframes sugar-facet-shine{0%,100%{opacity:.35}36%,58%{opacity:1}78%{opacity:.55}}
@@ -1654,12 +1654,13 @@ body{--sweet-console-frame:url("data:image/webp;base64,UklGRhhFAABXRUJQVlA4WAoAA
 .record-menu .debug-colors small{font:700 10px/1.3 CookieLabels,system-ui,sans-serif;color:#694027}
 .record-menu .debug-colors button{min-width:40px;min-height:28px}
 .record-menu .record-page{min-height:0;flex:1}
+.mini-wrap{position:relative}.mini-result-label{position:absolute;left:3px;right:3px;bottom:4px;z-index:8;padding:2px 1px;background:#29130fe0;border:1px solid #fbd98d;border-radius:4px;color:#fff1af;text-align:center;font:900 9px/11px system-ui,sans-serif;pointer-events:none}.mini-result-label[hidden]{display:none!important}
 /* Number outlines are the existing Elixir glyphs, with no font-loading dependency. */
 .elixir-digits{display:inline-block;vertical-align:middle;overflow:visible;flex:none;pointer-events:none;max-width:100%}
 .elixir-digits path{fill:currentColor;stroke:var(--digit-stroke,none);stroke-width:var(--digit-stroke-width,0);stroke-linejoin:round;paint-order:stroke fill;vector-effect:non-scaling-stroke}
 .sweet b .elixir-digits{position:static;width:auto;height:.84em;max-width:100%;transform:none;animation:none!important;filter:drop-shadow(0 1px 0 #51251f)!important;--digit-stroke:#51251f;--digit-stroke-width:1.3px}
 .reach-num .elixir-digits{height:.88em;--digit-stroke:#fff7d7;--digit-stroke-width:.65px}
-.reach-num[data-reach-tier="3"] .elixir-digits path{fill:url(#cl-digit-rainbow)}
+.reach-num[data-reach-tier="3"] .elixir-digits path{fill:#ffba19;fill:url(#cl-rainbow-0)}
 .console .balls .elixir-digits{height:.85em;--digit-stroke:none;filter:none}
 @media(max-width:600px),(pointer:coarse){
  .view-tools{display:none!important}
@@ -1964,7 +1965,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <div class="view-tools"><label for="view-zoom">縦長画面</label><select id="view-zoom" aria-label="表示サイズ"><option value="fit">全体を表示</option><option value="1">100%</option><option value="1.25">PC拡大 · 125%</option><option value="1.5">大きく · 150%</option></select><small>拡大時は上下にスクロール</small></div><div id="viewport"><main id="screen">
 <section class="arena" aria-label="同期する3Dルーレット"><div id="cookie-roulette" class="cookie-roulette" aria-label="ゲームと同期する25ポケットの抽選機">
  <div class="a8-stage" role="group" aria-label="3D抽選機。ドラッグで視点を変更できます。"><div class="a8-loading" role="status">抽選機を読み込み中…</div></div>
- <div class="roulette-caption"><span data-status aria-live="polite">準備中</span><span data-count>0 / 8</span><button type="button" id="roulette-retry" hidden>再読込</button></div>
+ <div class="roulette-caption"><span data-status aria-live="polite">準備中</span><span data-count>0 / 8</span><button type="button" id="roulette-speed" aria-label="ルーレットの再生速度を切り替える" aria-pressed="false">1×</button><button type="button" id="roulette-retry" hidden>再読込</button></div>
  <div class="roulette-internal" hidden aria-hidden="true"><div class="a8-results"></div><div class="a8-pocket-grid"></div><div class="a8-jpc-meter"><i data-jpc-fill></i><span data-jpc-progress></span></div><span data-aim-status></span><span data-mode-detail></span><div class="a8-jpc-legend"></div><div class="a8-jpc-aim"></div><input id="a8-jpc-aim" type="checkbox"><input id="a8-trails" type="checkbox"><select id="a8-mode"><option value="eight">8球</option></select><button data-action="start"></button><button data-action="pause"></button><button data-action="reset"></button></div>
 </div>
 <div class="sugar-collection" id="sugar-collection" role="status" aria-live="polite" aria-label="ワンダーシュガー 0個獲得"><div class="sugar-caption"><small>ワンダーシュガー</small><em id="sugar-ready" hidden>CHANCE!</em></div><div class="sugar-slots" id="sugar-slots"><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span></div></div><div class="arena-title">ROULETTE STAGE</div><p>ルーレット用スペース</p><div class="avatar-box"><canvas id="avatar" width="300" height="320" aria-label="向きを変えられるゼリーペット"></canvas><span id="equipped-title" hidden></span><span class="avatar-name">JELLY PET</span><button id="dress">着せ替え</button></div></section>
@@ -2286,7 +2287,7 @@ function elixirNumber(value){
  if(elixirMarkupCache.has(text))return elixirMarkupCache.get(text);
  let width=0;const paths=[];
  for(const digit of text){const [advance,d]=elixirGlyphs[digit];paths.push('<path transform="translate('+width+' 800) scale(1 -1)" d="'+d+'"/>');width+=advance;}
- const svg='<svg class="elixir-digits" viewBox="0 -20 '+width+' 840" style="width:'+(width/1000)+'em" aria-hidden="true" focusable="false"><title>'+text+'</title>'+paths.join('')+'</svg>';
+ const svg='<svg class="elixir-digits" viewBox="0 -20 '+width+' 840" style="width:'+(width/1000)+'em" aria-hidden="true" focusable="false"><defs><linearGradient id="cl-rainbow-'+text+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff3e60"/><stop offset=".2" stop-color="#ffba19"/><stop offset=".4" stop-color="#63c546"/><stop offset=".6" stop-color="#2ab9e4"/><stop offset=".8" stop-color="#8e41e9"/><stop offset="1" stop-color="#ed44c9"/></linearGradient></defs><title>'+text+'</title>'+paths.join('')+'</svg>';
  elixirMarkupCache.set(text,svg);return svg;
 }
 function setElixirNumber(el,value){const text=String(value);if(el.dataset.elixir===text)return;el.dataset.elixir=text;el.innerHTML=text?elixirNumber(text):'';}
@@ -2542,7 +2543,7 @@ function traySeams(){
  return '<svg class="tray-seams" viewBox="0 0 298 298" aria-hidden="true"><path class="seam-rim" d="'+d+'"/><path class="seam-shadow" d="'+d+'"/></svg>';
 }
 
-const slots=Array.from({length:3},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪'}));
+const slots=Array.from({length:3},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
 for(const s of slots){
  const i=s.i,b=document.createElement('button');b.className='tab';b.id='tab'+i;b.setAttribute('role','tab');b.setAttribute('aria-label','クッキーリンク・ゲーム'+(i+1));b.setAttribute('aria-controls','panel'+i);
  b.innerHTML=`<span class="tab-game-name" role="img" aria-label="クッキーリンク"><span class="art-alt">クッキーリンク</span></span><span class="mini-wrap"><canvas width="160" height="160" aria-label="ゲーム${i+1}のミニ盤面"></canvas><span class="mini-logo" hidden><span class="selected-label">選択中</span></span></span><span class="tab-win-bubble" hidden><strong class="tabwin"><span class="gold-number">0</span></strong><em class="win-word">WIN</em></span><span class="tab-sugar" aria-label="ワンダーシュガー未獲得" hidden><i class="sugar-gem" aria-hidden="true"></i><b class="sugar-get" hidden>GET!</b></span>`;
@@ -2555,6 +2556,7 @@ for(const s of slots){
  holder.append(b,controls,reach,lockedBet);$('tabs').append(holder);s.holder=holder;s.lockedBet=lockedBet;
  s.controls=controls;s.cycle=controls.querySelector('#cycle'+i);s.addBet=controls.querySelector('#addbet'+i);s.oneBet=controls.querySelector('#onebet'+i);
  s.cycle.onclick=()=>{if(app.phase!=='ready')return;unit[i]=(unit[i]+1)%units.length;scheduleUI(app);};s.addBet.onclick=()=>app.setBet(i,app.bets[i]+units[unit[i]]);s.oneBet.onclick=()=>app.setBet(i,app.bets[i]+1);
+ const miniStatus=document.createElement('span');miniStatus.className='mini-result-label';miniStatus.hidden=true;b.querySelector('.mini-wrap').append(miniStatus);s.miniResult=miniStatus;
  s.tab=b;s.miniCanvas=b.querySelector('canvas');s.mini=s.miniCanvas.getContext('2d');s.tabBet=lockedBet.querySelector('.tabbet');s.tabWin=b.querySelector('.tabwin');s.tabSugar=b.querySelector('.tab-sugar');s.miniLogo=b.querySelector('.mini-logo');s.sugarGet=b.querySelector('.sugar-get');s.pours=[];
  const p=document.createElement('div');p.className='panel';p.id='panel'+i;p.setAttribute('role','tabpanel');p.setAttribute('aria-labelledby',b.id);p.hidden=i!==0;
  p.innerHTML=`<div class="baskets" aria-label="各列のワンダーシュガー出現までの補充数">${Array.from({length:SIZE},(_,c)=>`<div class="basket" data-column="${c}"><svg viewBox="0 0 40 36"><use href="#basket"/></svg><span class="basket-sugar sugar-gem" aria-hidden="true" hidden></span><span class="basket-count"></span></div>`).join('')}</div><div class="biscuit-frame"><svg class="frame-art" viewBox="0 0 320 320" aria-hidden="true"><g fill="#fff3bd" stroke="#b47a55" stroke-width="2"><circle cx="13" cy="13" r="10"/><circle cx="307" cy="307" r="10"/></g><g fill="#b97a5b"><circle cx="10" cy="10" r="2"/><circle cx="17" cy="15" r="2"/><circle cx="303" cy="304" r="2"/><circle cx="310" cy="309" r="2"/></g><g fill="#f3a8c9" stroke="#fff" stroke-width="2"><path d="M295 7l7 3 9-7-2 10 6 7-10-2-9 5 1-9z"/><path d="M6 294l9 5 9-2-4 9 2 8-10-4-8 3 3-9z"/></g></svg><div class="board" role="img" aria-label="ゲーム${i+1}の${SIZE}×${SIZE}盤面">${traySeams()}<svg class="outlines" viewBox="0 0 ${SIZE*100} ${SIZE*100}" preserveAspectRatio="none"></svg><div class="particles"></div><div class="labels"></div><canvas class="shatter-canvas" width="600" height="600" aria-hidden="true"></canvas><div class="chain-hud" hidden><strong></strong><small></small></div></div></div>`;
@@ -2688,12 +2690,21 @@ function drawHammer(ctx,x,y,size,color=0){
 }
 function miniature(s){
  if(s.i===active)return;
+ const now=performance.now(),positions=new Map();
+ for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){const t=s.engine.board[r][c];if(t)positions.set(t.id,{r,c});}
+ const old=s.miniPositions||new Map();
+ const moved=[...positions].some(([id,pos])=>old.has(id)&&(old.get(id).r!==pos.r||old.get(id).c!==pos.c));
+ if(moved&&!s.miniTween){s.miniTween={from:old,start:now};}
+ if(!s.miniTween||now-s.miniTween.start>240){s.miniTween=null;s.miniPositions=positions;}
+ else {s.miniPositions=positions;const version=s.engine.version;requestAnimationFrame(()=>{if(s.engine.version===version){s.dirtyMini=true;scheduleUI(app);}});}
+ const fraction=s.miniTween?Math.min(1,(now-s.miniTween.start)/240):1;
  const ctx=s.mini,e=s.engine;ctx.clearRect(0,0,160,160);ctx.fillStyle='#382017';ctx.fillRect(0,0,160,160);
  const marked=new Set((e.phase==='hit'?[{cells:s.event.primaryCells||s.event.cells||[]}]:e.phase==='link'?recordGroups(s.event,e):[]).flatMap(g=>g.cells.map(([r,c])=>r*SIZE+c)));
  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
-  const t=e.board[r][c];if(!t)continue;ctx.globalAlpha=e.phase==='vanish'&&(s.event.cells||[]).some(([y,x])=>y===r&&x===c)?.35:1;if(!t.special){ctx.fillStyle='#dca261';ctx.fillRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);ctx.fillStyle=inks[t.color];ctx.fillRect(c*MINI+3,r*MINI+3,MINI-6,MINI-6);ctx.fillStyle='#ffffff70';ctx.fillRect(c*MINI+4,r*MINI+4,MINI-8,2);}
+  const t=e.board[r][c];if(!t)continue;const from=s.miniTween?.from.get(t.id);const x=(from?from.c+(c-from.c)*fraction:c)*MINI,y=(from?from.r+(r-from.r)*fraction:r)*MINI;ctx.save();ctx.translate(x-c*MINI,y-r*MINI);ctx.globalAlpha=e.phase==='vanish'&&(s.event.cells||[]).some(([y,x])=>y===r&&x===c)?.35:1;if(!t.special){ctx.fillStyle='#dca261';ctx.fillRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);ctx.fillStyle=inks[t.color];ctx.fillRect(c*MINI+3,r*MINI+3,MINI-6,MINI-6);ctx.fillStyle='#ffffff70';ctx.fillRect(c*MINI+4,r*MINI+4,MINI-8,2);}
   if(!t.special&&t.number!=null){drawElixirNumber(ctx,t.number,(c+.5)*MINI,(r+.55)*MINI,MINI*.575,'white','#795372',1.2);}
   ctx.globalAlpha=1;if(t.special)drawHammer(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.94,t.color);if(t.step)drawSugar(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.7,wonderTier(t.step.value));if(marked.has(r*SIZE+c)){ctx.strokeStyle='#ffe68e';ctx.lineWidth=2;ctx.strokeRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);}
+  ctx.restore();
  }
 }
 function tabs(a){
@@ -2703,7 +2714,7 @@ function tabs(a){
   const key=[b,win,state,e.phase,s.event.newRecord,e.wonderCollected,e.wonderToken?.value].join('/');if(s.tabKey===key)continue;s.tabKey=key;
   fitGoldenNumber(s.tabBet,num(b),14,76);s.lockedBet.setAttribute('aria-label','BET '+num(b));s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);s.tab.setAttribute('aria-label','クッキーリンク・ゲーム'+(s.i+1)+' '+state);
   const sugar=sugarStatus(e,b);s.tabSugar.classList.toggle('collected',e.wonderCollected);s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.hidden=!e.wonderCollected;applySugarTier(s.tabSugar.querySelector('.sugar-gem'),sugar.tier);s.tabSugar.setAttribute('aria-label','ワンダーシュガー '+sugar.label+'。'+sugar.detail);
-  s.tab.classList.toggle('recording',e.phase==='link'&&s.event.newRecord);s.tab.classList.toggle('off',b===0);
+  s.tab.classList.remove('recording');s.tab.classList.toggle('off',b===0);
  }
 }
 // One finite timer animates only the currently visible game's payout frame.
@@ -3151,7 +3162,7 @@ function finishReachSlide(s){
 function paintReachPage(s,{slide=false}={}){
  finishReachSlide(s);
  const results=s.reachPageResults||[],start=(s.reachPage||0)*REACH_PAGE_SIZE,page=results.slice(start,start+REACH_PAGE_SIZE);
- const markup=page.map(p=>'<span class="reach-num" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+REACH_WORDS[p.tier]+'、HIT後 '+p.total/100+'倍">'+elixirNumber(p.number)+'</span>').join('');
+ const markup=page.map(p=>'<span class="reach-num" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+REACH_WORDS[p.tier]+'、HIT後 '+p.total/100+'倍">'+(p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number))+'</span>').join('');
  if(slide&&!motionReduced&&s.reachNumbers.children.length&&page.length){
   const incoming=document.createElement('div');incoming.className='reach-numbers reach-page-enter';incoming.innerHTML=markup;
   s.reachNumbers.classList.add('reach-page-leave');s.reachNumbers.setAttribute('aria-hidden','true');s.reachIncoming=incoming;s.reachClip.append(incoming);
@@ -3202,6 +3213,10 @@ function event(i,ev,e,a){
  if(['ready','hit','error'].includes(ev.phase)){stopPayClimb(s);syncPayClimb();}
  if(ev.phase==='link'&&ev.newRecord)startPayClimb(s,ev.previousMax||0,e.maxLink,ev.recordDuration||recordDuration(e.maxLink,e.speed));
  if(['ready','hit','refill','complete','error'].includes(ev.phase))s.chainDepth=0;else if(ev.phase==='link'||ev.phase==='remove')s.chainDepth=ev.depth||0;
+ if(ev.phase==='ready'){s.miniLastResult='';s.miniResult.hidden=true;}
+ if(ev.phase==='allclear'){s.miniLastResult='全消し！';}
+ if(ev.phase==='settled'||ev.phase==='complete'){if(!s.miniLastResult||s.miniLastResult!=='全消し！')s.miniLastResult=(e.lastChain>1?e.lastChain+'連鎖 · ':'')+e.maxLink+' LINK';}
+ if(['settled','complete','allclear'].includes(ev.phase)){s.miniResult.textContent=s.miniLastResult;s.miniResult.hidden=!s.miniLastResult;}
  if(ev.phase!=='queued'){s.event=ev;s.dirtyMain=true;s.dirtyMini=true;}
  if(ev.phase==='ready'){
   stopSugarAward(s);stopPour(s);stopHammerTransfer(s);s.particles.replaceChildren();s.notice={tone:'ready',title:'SWEET PATISSERIE'};
@@ -4404,7 +4419,8 @@ function startAnima8(){
  const centerFace=panels[0].material.clone(),centerScatter=panels[0].scatter.clone();
  centerFace.uniforms.cellTexture.value=centerTexture;centerFace.uniforms.gridSize.value=COUNTER_SIZE;
  centerScatter.uniforms.cellTexture.value=centerTexture;materials.push(centerFace,centerScatter);
- const centerBack=mesh(new THREE.CylinderGeometry(1.10,1.10,.08,96),dark,centerDisplay,[0,0,-.045]);centerBack.rotation.x=Math.PI/2;
+ // Remove the opaque black center disc without touching physics or the counter LED.
+ // The LCD face remains, but its opaque backing no longer blocks the transparent hub.
  mesh(new THREE.TorusGeometry(1.075,.025,8,96),bezelMat,centerDisplay).name='Circular LCD bezel';
  mesh(new THREE.CircleGeometry(1.05,96),centerFace,centerDisplay).name='Central counter LED face';
  const centerCover=mesh(new THREE.CircleGeometry(1.05,96),coverMat,centerDisplay,[0,0,.025]);centerCover.renderOrder=2;
@@ -4549,12 +4565,15 @@ function startAnima8(){
  }));
  el('#a8-mode').addEventListener('change',event=>{draw.select(event.target.value);setPaused(false);});
  el('#a8-jpc-aim').addEventListener('change',()=>{launchPlanner.enabled=el('#a8-jpc-aim').checked;launchPlanner.reset();updateDrawControls();});
+ const speedToggle=document.getElementById('roulette-speed');
+ let rouletteTimeScale=1;
+ speedToggle?.addEventListener('click',()=>{rouletteTimeScale=rouletteTimeScale===1?2:1;speedToggle.textContent=rouletteTimeScale+'×';speedToggle.setAttribute('aria-pressed',String(rouletteTimeScale===2));wake();});
  function render(now){
   frame=0;if(disposed)return;
   const drawing=draw.state==='running'||physics.active>0||(draw.state==='complete'&&physics.hits.length<8);
   if(drawing&&!paused&&now-paintStamp<1000/30){wake();return;}paintStamp=now;
   const elapsed=Math.min((now-last)/1000,.1);last=now;
-  if(drawing&&!paused&&!document.hidden){accumulator+=elapsed*rate;let steps=0;while(accumulator>=1/120&&steps<24){draw.update();physics.step();accumulator-=1/120;steps++;}}
+  if(drawing&&!paused&&!document.hidden){accumulator+=elapsed*rate*rouletteTimeScale;let steps=0;while(accumulator>=1/120&&steps<48){draw.update();physics.step();accumulator-=1/120;steps++;}}
   rotor.quaternion.copy(physics.rotor.quaternion);pocketFill.rotation.value=physics.angle;pocketFill.strength.value=brightness;
   for(const ball of physics.balls){const view=ballViews.get(ball.id);if(!view)continue;if(ball.dead){scene.remove(view.mesh,view.trail);view.mesh.geometry.dispose();view.trail.geometry.dispose();view.trail.material.dispose();ballViews.delete(ball.id);continue;}view.mesh.scale.setScalar(ball.radius/DIM.ball);view.mesh.position.copy(ball.body.position);view.mesh.quaternion.copy(ball.body.quaternion);
    if(!paused&&!ball.resolved&&physics.time-view.lastTrailTime>.025){view.points.push([ball.body.position.x,ball.body.position.y,ball.body.position.z]);if(view.points.length>20)view.points.shift();view.lastTrailTime=physics.time;const arr=view.trail.geometry.attributes.position.array;view.points.forEach((p,i)=>arr.set(p,i*3));view.trail.geometry.attributes.position.needsUpdate=true;view.trail.geometry.setDrawRange(0,view.points.length);}
