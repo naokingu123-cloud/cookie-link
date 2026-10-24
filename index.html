@@ -3352,7 +3352,7 @@ function renderRoundResult(a){
  put('result-status',a.phase==='result'?a.enabled.filter(Boolean).length+'ゲームの結果':a.phase==='paying'?'CREDITへ払い出し中…':'払い出し完了');
  $('result-next').disabled=a.phase!=='complete';
 }
-function nextFromResult(){if(app.phase!=='complete')return;userPaused=false;payoutStamp=null;app.prepare();syncPause();$('start').focus();}
+function nextFromResult(){if(app.phase!=='complete')return;stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();$('start').focus();}
 function updateLinkSelection(track,shown,snap){
  let mark=track.querySelector('.link-selection');if(!mark){mark=document.createElement('span');mark.className='link-selection';mark.setAttribute('aria-hidden','true');mark.hidden=true;track.append(mark);}
  const hidden=shown<MIN_PAID_LINK;
@@ -4696,14 +4696,25 @@ function announceDraw(n){
 }
 let bgmFadeFrame=0,bgmFadeToken=0;
 function stopBgm(){if('speechSynthesis' in window)speechSynthesis.cancel();announcedDrawCount=0;bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=normalBgmVolume;}
-function beginBgm(){stopBgm();bgmPlayer.src=bgmTracks[Math.floor(Math.random()*bgmTracks.length)];if($('sound').checked)bgmPlayer.play().catch(e=>{console.warn('BGM playback failed',e);const el=document.getElementById('bgm-note');if(el)el.textContent='BGMファイルを読み込めません（bgm-1.mp3 / bgm-2.mp3 をGitHubに配置してください）';});}
+function beginBgm(){
+ stopBgm();
+ const chosen=bgmTracks[Math.floor(Math.random()*bgmTracks.length)];
+ bgmPlayer.volume=normalBgmVolume;
+ bgmPlayer.loop=true;
+ bgmPlayer.src=chosen;
+ bgmPlayer.load();
+ if($('sound').checked){
+  const attempt=bgmPlayer.play();
+  if(attempt?.catch)attempt.catch(e=>console.warn('CookieLink BGM playback failed:',chosen,e));
+ }
+}
 function fadeBgm(){if(bgmPlayer.paused||bgmFadeFrame)return;const token=++bgmFadeToken,initial=bgmPlayer.volume,started=performance.now();function step(now){if(token!==bgmFadeToken)return;const t=Math.min(1,(now-started)/2900);bgmPlayer.volume=Math.max(0,initial*(1-t)*(1-t));if(t<1)bgmFadeFrame=requestAnimationFrame(step);else{bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=normalBgmVolume;}}bgmFadeFrame=requestAnimationFrame(step);}
 app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;select(0);
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
 
-$('start').onclick=()=>{unlock();prepareArrival();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+$('start').onclick=()=>{unlock();prepareArrival();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
 function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
