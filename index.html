@@ -2657,7 +2657,7 @@ function buildSoundData(kind,sampleRate=24000){
 const sfxBuffers=new Map(),sfxVoices=new Set();let sfxBus=null;
 function unlock(){
  try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
-  if(!audio){audio=new A();sfxBus=audio.createGain();sfxBus.gain.value=.65;
+  if(!audio){audio=new A();sfxBus=audio.createGain();sfxBus.gain.value=.9;
    const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=4;limiter.attack.value=.003;limiter.release.value=.13;sfxBus.connect(limiter);limiter.connect(audio.destination);
    for(const kind of ['crack','confirm','magic','sugar','hammer','sugar-spawn']){const data=buildSoundData(kind),buffer=audio.createBuffer(2,data.channels[0].length,data.sampleRate);data.channels.forEach((samples,ch)=>buffer.copyToChannel(samples,ch));sfxBuffers.set(kind,buffer);}
   }audio.resume().catch(()=>{});
@@ -3244,6 +3244,8 @@ const recordDate=at=>new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year
 const recordMonth=at=>recordDate(at).slice(0,7);
 const recordIcon=(name,box=36)=>'<svg class="record-icon" viewBox="0 0 '+box+' '+box+'" aria-hidden="true"><use href="#'+name+'"/></svg>';
 function recordChanged(a){
+ if(a.phase==='playing'&&a.draws.length>announcedDrawCount){for(const n of a.draws.slice(announcedDrawCount))announceDraw(n);announcedDrawCount=a.draws.length;}
+ if(a.phase==='ready')announcedDrawCount=0;
  if(a.phase==='result')fadeBgm();
  const result=recordBook.capture(a);titlePending.push(...result.unlocked);
  if(result.changed){updateEquippedTitle();if(menuOpen)renderRecordMenu();}
@@ -4411,7 +4413,7 @@ function startAnima8(){
  }
  // A thin round LCD sits above the existing clear column; it adds no collision body.
  // Clone the actual pocket shaders so the LED lenses, brightness and cover glow match.
- const centerDisplay=new THREE.Group();centerDisplay.name='Round central JPC LCD';
+ const centerDisplay=new THREE.Group();centerDisplay.name='Round central JPC LCD';centerDisplay.visible=false;
  centerDisplay.position.set(0,columnProfile[columnProfile.length-1][1]+.30,0);
  centerDisplay.rotation.order='YXZ';centerDisplay.rotation.x=-Math.PI/2+.44;scene.add(centerDisplay);
  const centerCanvas=document.createElement('canvas');centerCanvas.width=COUNTER_SIZE;centerCanvas.height=COUNTER_SIZE;
@@ -4652,11 +4654,21 @@ function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
 
 const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
-const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';bgmPlayer.volume=.65;
+const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';
+const normalBgmVolume=.20,duckedBgmVolume=.075;bgmPlayer.volume=normalBgmVolume;
+let announcedDrawCount=0;
+function announceDraw(n){
+ if(!$('sound').checked||!('speechSynthesis' in window))return;
+ const utterance=new SpeechSynthesisUtterance(n+'番です');utterance.lang='ja-JP';utterance.rate=1.03;utterance.volume=1;
+ const japanese=speechSynthesis.getVoices().find(v=>v.lang==='ja-JP')||speechSynthesis.getVoices().find(v=>v.lang.startsWith('ja'));if(japanese)utterance.voice=japanese;
+ utterance.onstart=()=>{if(app?.phase==='playing')bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);};
+ const done=()=>{if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};utterance.onend=done;utterance.onerror=done;
+ speechSynthesis.speak(utterance);
+}
 let bgmFadeFrame=0,bgmFadeToken=0;
-function stopBgm(){bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=.65;}
+function stopBgm(){if('speechSynthesis' in window)speechSynthesis.cancel();announcedDrawCount=0;bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=normalBgmVolume;}
 function beginBgm(){stopBgm();bgmPlayer.src=bgmTracks[Math.floor(Math.random()*bgmTracks.length)];if($('sound').checked)bgmPlayer.play().catch(e=>{console.warn('BGM playback failed',e);const el=document.getElementById('bgm-note');if(el)el.textContent='BGMファイルを読み込めません（bgm-1.mp3 / bgm-2.mp3 をGitHubに配置してください）';});}
-function fadeBgm(){if(bgmPlayer.paused||bgmFadeFrame)return;const token=++bgmFadeToken,initial=bgmPlayer.volume,started=performance.now();function step(now){if(token!==bgmFadeToken)return;const t=Math.min(1,(now-started)/2900);bgmPlayer.volume=Math.max(0,initial*(1-t)*(1-t));if(t<1)bgmFadeFrame=requestAnimationFrame(step);else{bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=.65;}}bgmFadeFrame=requestAnimationFrame(step);}
+function fadeBgm(){if(bgmPlayer.paused||bgmFadeFrame)return;const token=++bgmFadeToken,initial=bgmPlayer.volume,started=performance.now();function step(now){if(token!==bgmFadeToken)return;const t=Math.min(1,(now-started)/2900);bgmPlayer.volume=Math.max(0,initial*(1-t)*(1-t));if(t<1)bgmFadeFrame=requestAnimationFrame(step);else{bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=normalBgmVolume;}}bgmFadeFrame=requestAnimationFrame(step);}
 app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;select(0);
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;
@@ -4668,7 +4680,7 @@ function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSound
  if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(()=>{});}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=()=>{userPaused=!userPaused;syncPause();};
-$('sound').onchange=()=>{if($('sound').checked){unlock();if(app?.phase==='playing'&&bgmPlayer.src)bgmPlayer.play().catch(()=>{});}else{stopSounds();bgmPlayer.pause();}};
+$('sound').onchange=()=>{if(!$('sound').checked&&'speechSynthesis' in window)speechSynthesis.cancel();if($('sound').checked){unlock();if(app?.phase==='playing'&&bgmPlayer.src)bgmPlayer.play().catch(()=>{});}else{stopSounds();bgmPlayer.pause();}};
 document.addEventListener('visibilitychange',syncPause);
 if(typeof IntersectionObserver!=='undefined')new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;syncPause();},{threshold:0}).observe($('viewport'));
 const desktopView=matchMedia('(any-hover: hover) and (any-pointer: fine)').matches;
