@@ -1976,7 +1976,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <div class="field"><div id="panels"></div><aside class="odds" id="odds-panel"><svg class="menu-trim" viewBox="0 0 110 312" preserveAspectRatio="none" aria-hidden="true"><use href="#menu-frame"/></svg><section class="hammer-prize"><h2>連鎖 → ハンマー</h2><table aria-label="補充後に出現するハンマー個数"><tbody id="hammer-pay"></tbody></table><p id="hammer-next">5連鎖から・補充後に出現</p></section><h2 class="link-pay-title">最大LINK配当</h2><div class="link-pay-window" id="pay-window" role="table" aria-label="最大LINK配当・降順"><div class="link-pay-track" id="pay" role="rowgroup"></div></div><p class="sugar-help" aria-label="シュガーマス消去でシュガーGET！"><span class="sugar-help-line"><svg class="sugar-help-icon" viewBox="0 0 48 48" aria-hidden="true"><use href="#wonder-crystal0"/></svg><span>マス消去で</span></span><span class="sugar-help-line"><svg class="sugar-help-icon" viewBox="0 0 48 48" aria-hidden="true"><use href="#wonder-crystal0"/></svg><b>GET!</b></span></p></aside></div>
 <div class="statusline"><span id="status" role="status" aria-live="polite"></span><span id="best"></span></div>
 </section>
-<div class="buttons play-controls"><button id="start">ゲーム開始</button><button id="pause" disabled>一時停止</button><button id="reset">リセット</button><label><input id="sound" type="checkbox" checked>音声</label></div>
+<div class="buttons play-controls"><button id="start">ゲーム開始</button><button id="pause" disabled>一時停止</button><button id="reset">リセット</button><label><input id="sound" type="checkbox" checked>音声</label><button id="sound-test" type="button" title="入賞効果音と番号読み上げの確認">音声テスト</button></div>
 <section class="console" id="console" aria-label="全体の番号履歴・BET・WIN・CREDIT">
 <div class="ledger"><div class="drawline"><div id="balls" class="balls" aria-label="8球の抽選履歴"></div><div id="ballinfo"></div></div>
 <div class="meters"><div class="meter"><label class="ledger-label"><span class="gold-number gold-word">BET</span></label><strong id="total-bet">300</strong></div><div class="meter"><label id="game-label" class="ledger-label win-word">WIN</label><strong id="win">0</strong></div><div class="meter"><label class="ledger-label"><span class="gold-number gold-word">CREDIT</span></label><strong id="credit">1,000</strong><span class="payout-track" aria-hidden="true"><i id="payout-fill"></i></span></div></div></div>
@@ -4657,21 +4657,43 @@ const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
 const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';
 const normalBgmVolume=.15,duckedBgmVolume=.035;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
-const arrivalSfx=new Audio('ジゴスパークちゅぴーん強化.wav');arrivalSfx.preload='auto';arrivalSfx.volume=1;
-function playArrivalSound(){if(!$('sound').checked)return;try{const voice=arrivalSfx.cloneNode();voice.volume=1;voice.play().catch(e=>console.warn('入賞効果音の再生失敗',e));}catch(e){console.warn('入賞効果音',e);}}
-let activeSpeech=null;
+let arrivalBuffer=null,arrivalLoading=null,activeSpeech=null;
+const arrivalFile='ジゴスパークちゅぴーん強化.wav';
+function prepareArrival(){
+ if(arrivalBuffer||arrivalLoading||!audio)return arrivalLoading;
+ arrivalLoading=fetch(encodeURI(arrivalFile)).then(r=>{if(!r.ok)throw Error('WAV HTTP '+r.status);return r.arrayBuffer()})
+ .then(data=>audio.decodeAudioData(data)).then(buffer=>{arrivalBuffer=buffer;return buffer;})
+ .catch(err=>{console.warn('入賞WAV読み込み失敗:',err);arrivalLoading=null;return null;});
+ return arrivalLoading;
+}
+function playArrivalSound(){
+ if(!$('sound').checked)return;
+ if(!audio||audio.state!=='running'){unlock();}
+ if(!arrivalBuffer){prepareArrival();return;}
+ const src=audio.createBufferSource(),gain=audio.createGain();src.buffer=arrivalBuffer;
+ gain.gain.value=1.25;src.connect(gain);gain.connect(sfxBus);
+ src.onended=()=>{src.disconnect();gain.disconnect();};src.start();
+}
+function prepareAnnouncer(){
+ if(!('speechSynthesis' in window))return;
+ try{speechSynthesis.getVoices();speechSynthesis.resume();}catch(err){console.warn('読み上げ準備',err);}
+}
 function announceDraw(n){
  if(!$('sound').checked)return;
  playArrivalSound();
  if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window))return;
- try{speechSynthesis.resume();}catch{}
- if(speechSynthesis.pending||speechSynthesis.speaking)speechSynthesis.cancel();
- const utterance=new SpeechSynthesisUtterance(n+'番です');activeSpeech=utterance;utterance.lang='ja-JP';utterance.rate=.92;utterance.pitch=1.02;utterance.volume=1;
- const japanese=speechSynthesis.getVoices().find(v=>v.lang==='ja-JP')||speechSynthesis.getVoices().find(v=>v.lang.startsWith('ja'));if(japanese)utterance.voice=japanese;
- utterance.onstart=()=>{if(app?.phase==='playing')bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);};
- const done=()=>{if(activeSpeech===utterance)activeSpeech=null;if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};utterance.onend=done;utterance.onerror=done;
- bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);
- try{speechSynthesis.speak(utterance);}catch(e){console.warn('番号音声の再生失敗',e);done();}
+ try{
+  speechSynthesis.resume();
+  if(speechSynthesis.pending||speechSynthesis.speaking)speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(n+'番です');
+  activeSpeech=utterance;utterance.lang='ja-JP';utterance.rate=.94;utterance.pitch=1.05;utterance.volume=1;
+  const voices=speechSynthesis.getVoices(),jp=voices.find(v=>v.lang==='ja-JP')||voices.find(v=>v.lang?.startsWith('ja'));
+  if(jp)utterance.voice=jp;
+  const done=()=>{if(activeSpeech===utterance)activeSpeech=null;if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};
+  utterance.onend=done;utterance.onerror=e=>{console.warn('音声合成エラー',e.error);done();};
+  bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);
+  speechSynthesis.speak(utterance);
+ }catch(err){console.warn('番号アナウンス失敗',err);}
 }
 let bgmFadeFrame=0,bgmFadeToken=0;
 function stopBgm(){if('speechSynthesis' in window)speechSynthesis.cancel();announcedDrawCount=0;bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;bgmPlayer.pause();bgmPlayer.currentTime=0;bgmPlayer.volume=normalBgmVolume;}
@@ -4682,7 +4704,8 @@ $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.pr
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
 
-$('start').onclick=()=>{unlock();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+$('start').onclick=()=>{unlock();prepareArrival();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+$('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
 function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
  if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(()=>{});}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
