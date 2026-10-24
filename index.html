@@ -4655,7 +4655,7 @@ function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
 const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
 const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';
-const normalBgmVolume=.15,duckedBgmVolume=.035;bgmPlayer.volume=normalBgmVolume;
+const normalBgmVolume=.15,duckedBgmVolume=.008;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
 let arrivalBuffer=null,arrivalLoading=null,activeSpeech=null;
 const arrivalFile='ジゴスパークちゅぴーん強化.wav';
@@ -4689,8 +4689,8 @@ function announceDraw(n){
   activeSpeech=utterance;utterance.lang='ja-JP';utterance.rate=.94;utterance.pitch=1.05;utterance.volume=1;
   const voices=speechSynthesis.getVoices(),jp=voices.find(v=>v.lang==='ja-JP')||voices.find(v=>v.lang?.startsWith('ja'));
   if(jp)utterance.voice=jp;
-  const done=()=>{if(activeSpeech===utterance)activeSpeech=null;if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};
-  utterance.onend=done;utterance.onerror=e=>{console.warn('音声合成エラー',e.error);done();};
+  const done=()=>{if(activeSpeech!==utterance)return;activeSpeech=null;if(sfxBus)sfxBus.gain.setTargetAtTime(1.35,audio.currentTime,.12);if(app?.phase==='playing'&&!bgmFadeFrame)bgmPlayer.volume=normalBgmVolume;};
+  utterance.onstart=()=>{if(sfxBus&&audio)sfxBus.gain.setTargetAtTime(.48,audio.currentTime,.08);};utterance.onend=done;utterance.onerror=e=>{console.warn('音声合成エラー',e.error);done();};
   bgmPlayer.volume=Math.min(bgmPlayer.volume,duckedBgmVolume);
   speechSynthesis.speak(utterance);
  }catch(err){console.warn('番号アナウンス失敗',err);}
