@@ -5,6 +5,9 @@ on:
     paths: ['.github/workflows/cookie-link-fx-audio-20261025.yml']
 permissions:
   contents: write
+concurrency:
+  group: cookie-link-fx-audio-once
+  cancel-in-progress: true
 jobs:
   verify-and-apply:
     runs-on: ubuntu-latest
@@ -13,6 +16,37 @@ jobs:
       - uses: actions/checkout@v4
       - name: Apply source-guarded patch and syntax checks
         run: python3 .github/maintenance/fx_audio_20261025.py
+      - name: Verify both audio permission paths in the test harness
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('.github/tests/cookie-link-fx-audio.cjs');s=p.read_text()
+          def replace(a,b):
+              global s
+              assert s.count(a)==1,'Missing test anchor: '+a[:100]
+              s=s.replace(a,b,1)
+          replace(" const hook='window.__qa={'+fields+'};userPaused=true;app.paused=true;';", """ const observer=advanced?\"const clObservedStart=app.start.bind(app);window.__qa.starts=[];app.start=function(){window.__qa.starts.push({enabled:$('sound').checked,state:audio?.state,arrival:!!arrivalBuffer,hammer:!!hammerImpactBuffer,bgm:!bgmPlayer.paused});return clObservedStart();};\":'';
+           const hook='window.__qa={'+fields+'};'+observer+'userPaused=true;app.paused=true;';""")
+          replace(" if(extra.failBgm)await page.route('**/bgm-*.mp3',route=>route.fulfill({status:503,body:'test media unavailable'}));", """ if(extra.failBgm)await page.route('**/bgm-*.mp3',route=>route.fulfill({status:503,body:'test media unavailable'}));
+           // Simulate a blocked media-permission policy only until an actual trusted pointer event.
+           // After the tap this delegates to the real browser player and real repository audio.
+           if(extra.forceTap)await page.addInitScript(()=>{
+            let touched=false;document.addEventListener('pointerdown',ev=>{if(ev.isTrusted)touched=true;},true);
+            const nativePlay=HTMLMediaElement.prototype.play;
+            HTMLMediaElement.prototype.play=function(){return touched?nativePlay.call(this):Promise.reject(new DOMException('Test permission requires a trusted tap','NotAllowedError'));};
+           });""")
+          replace("const {page,errors}=await open(browser,after,viewport);", "const {page,errors}=await open(browser,after,viewport,{forceTap:viewport.width===430});")
+          replace("""   await page.waitForFunction(()=>!document.querySelector('#audio-gate').hidden,{},{timeout:6000});
+             assert.equal(await page.evaluate(()=>window.__qa.app.phase),'ready','First round must not run silently before audio permission');
+             await page.locator('#audio-enable').click();""", """   await page.waitForFunction(()=>window.__qa.app.phase==='playing'||(!document.querySelector('#audio-gate').hidden&&!document.querySelector('#audio-enable').disabled),{},{timeout:15000});
+             const needsTap=await page.evaluate(()=>window.__qa.app.phase==='ready');
+             if(viewport.width===430)assert(needsTap,'The simulated blocked-policy path must request a tap');
+             if(needsTap)await page.locator('#audio-enable').click();""")
+          replace("token:q.app.token,gate:document.querySelector('#audio-gate').hidden", "token:q.app.token,gate:document.querySelector('#audio-gate').hidden,starts:q.starts")
+          replace("console.log('FIRST_ROUND_AUDIO_OK'", "assert(audio.starts.length>0&&audio.starts.every(s=>!s.enabled||(s.state==='running'&&s.arrival&&s.hammer&&s.bgm)),'Every sound-enabled round must have samples and active BGM before Engine.start');console.log('FIRST_ROUND_AUDIO_OK'")
+          p.write_text(s)
+          PY
+          node --check .github/tests/cookie-link-fx-audio.cjs
       - name: Install isolated browser tests
         run: |
           npm install --prefix /tmp/cookielink-browser --no-save --no-audit --no-fund playwright@1.56.1
@@ -35,12 +69,12 @@ jobs:
           s+='- 右上に開始までの残り秒数。DEBUG_FAST_START=trueで準備後1秒開始。通常に戻すと30秒。?demo=1は説明確認用の長いBET表示。次ゲーム準備後も自動開始。手動の一時停止UIは非表示、非表示タブやメニューの内部停止は維持。\n'
           s+='- 音声の初回は自動再生できない場合のみタップを要求。効果音の読込・デコード、AudioContextの再開、BGMの再生許可を確認してから開始。BGMは初期2曲を先読み・交互選択し、同じmedia element＋Web Audio gain(.075)を使用。新規曲追加ではない。WAVの先頭無音を検査し必要時のみ除去。読込失敗時に黙ってゲームを始めず再試行／明示した無音開始を表示。\n'
           s+='- 背景はassets/candy-roulette-world.svgのお菓子の世界。3Dルーレット自体は変更しない。黒帯は下端に固定してステージ・説明行と非重複。\n'
-          s+='- 検証: 全インラインJS構文、変更前後45ケースの8球結果と乱数使用数の一致、遠隔通常クッキーだけの破片強化、デモ全フレームの本番状態非変更、430x932/1280x900で配置と背景読込、ユーザー操作必須のChromiumで初回音声・BGM再生状態／効果音の冒頭波形・次ゲームで追加タップ不要の再生・BGM通信失敗時の明示無音開始を確認。\n'
+          s+='- 検証: 全インラインJS構文、変更前後45ケースの8球結果と乱数使用数の一致、遠隔通常クッキーだけの破片強化、デモ全フレームの本番状態非変更、430x932/1280x900で配置と背景読込、Chromiumの実音源再生状態と先頭波形・Engine.start前の全音声準備・次ゲームBGMを確認。430pxでは初回だけNotAllowedErrorを模擬して実タップ後にネイティブ再生へ戻すテスト、1280pxではブラウザーの実際の許可状態に従うテスト。BGM通信失敗時の明示無音開始も確認。\n'
           s+='- 未検証: iPhone実機、実スピーカーの聴感。ブラウザーの自動再生制限を回避できるとは説明しない。\n'
           p.write_text(s);print('VERIFIED_GAME_BLOB',sha)
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html HANDOFF.md
+          git add index.html HANDOFF.md .github/tests/cookie-link-fx-audio.cjs
           git commit -m 'Fix remote-cookie shatter, illustrated BET payout, debug countdown and first-round audio'
           git push origin HEAD:main
