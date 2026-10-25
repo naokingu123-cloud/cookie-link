@@ -1937,6 +1937,49 @@ body.mobile-view .cookie-roulette .a8-stage{bottom:14px}
 body.mobile-landscape #choco-heading{padding:0 10px}body.mobile-landscape #choco-heading strong{font-size:20px}
 @media(forced-colors:active){.choco-tab-title,#choco-heading strong{color:CanvasText;text-shadow:none}}
 
+/* Third tab: all custom surfaces remain inside the existing lower game area. */
+.carnival-tab .tab-game-name{background:none!important;display:flex;align-items:center;justify-content:center;overflow:visible!important}
+.carnival-tab-title{display:block;color:#a04478;font:1000 11px/17px CookieLabels,system-ui,sans-serif;white-space:nowrap;text-shadow:0 1px #fffbea,1px 0 #fffbea,-1px 0 #fffbea}
+.carnival-tab-title small{display:block;font:800 5px/7px system-ui;letter-spacing:1.2px;color:#9e7290}
+.carnival-panel{position:relative}.carnival-panel>:not(.carnival-surface){visibility:hidden!important;pointer-events:none!important}
+.carnival-surface{position:absolute;inset:0;display:flex;flex-direction:column;box-sizing:border-box;border:3px solid #d79aaf;border-radius:13px;overflow:hidden;background:#fff1e5;box-shadow:inset 0 0 0 2px #fff6cd,0 3px #95647a}
+.carnival-topline{height:22px;min-height:22px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(#efb5ca,#d68bab);color:#673e63;font:900 8px/22px system-ui;letter-spacing:.6px}
+.carnival-topline b{font:800 7px/17px system-ui;border:1px solid #b782a2;border-radius:8px;background:#fff5d8;padding:0 5px;letter-spacing:0}
+.carnival-canvas{display:block;flex:1;min-height:0;width:100%;object-fit:fill}
+.carnival-status{height:20px;min-height:20px;color:#805271;background:#fff1e4;border-top:1px solid #dfb7bc;text-align:center;font:800 7.7px/20px system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+#carnival-heading{display:none;align-items:center;justify-content:space-between;gap:6px;height:100%;padding:0 15px;box-sizing:border-box;color:#8e4677}
+#carnival-heading strong{font:1000 20px/25px CookieLabels,system-ui;white-space:nowrap;text-shadow:0 1px #fffbd6,1px 0 #fffbd6,-1px 0 #fffbd6}
+#carnival-heading strong small{display:block;font:800 7px/11px system-ui;letter-spacing:.4px;color:#9c7090;text-shadow:none}
+#carnival-heading>span{font:900 7px/16px system-ui;white-space:nowrap}#carnival-complete{font:900 24px/29px ArcadePayout,system-ui;color:#b94b90}
+.carnival-active #allclear-award,.carnival-active #choco-heading{display:none!important}.carnival-active #carnival-heading{display:flex}
+#carnival-odds{display:none;position:absolute;inset:3px;padding:6px 5px 4px;box-sizing:border-box;border:2px solid #c28ab3;border-radius:8px;background:linear-gradient(#fff6ed,#f7ddeb);text-align:center;color:#7f496f;overflow:hidden}
+.carnival-active #odds-panel>:not(#carnival-odds){display:none!important}.carnival-active #carnival-odds{display:flex;flex-direction:column;gap:3px}
+.carnival-odds-title{font:900 8px/13px system-ui;letter-spacing:.2px;border-bottom:1px solid #d8aec5;padding-bottom:3px}.carnival-odds-title small{display:block;font:700 7px/10px system-ui;color:#a77997}
+#carnival-odds section{padding:2px;border:1px solid #ddafcb;border-radius:8px;background:#fff9ef;box-shadow:0 2px #d4a4bf}#carnival-odds section span{display:block;font:800 8px/11px system-ui}#carnival-win{display:block;font:900 23px/28px ArcadePayout,system-ui;color:#bb568e}#carnival-odds section em{font:900 8px/11px system-ui}
+#carnival-odds dl{margin:0;font:800 8px/10px system-ui}#carnival-odds dt{margin-top:2px;padding-top:2px;border-top:1px dotted #ce9bb9}#carnival-odds dd{margin:1px 0;color:#b54b86;font-size:8px;line-height:11px}
+.carnival-sugar-goal{padding:3px 2px;margin-top:auto;border:1px solid #d7b66e;border-radius:7px;background:#fff2c8;font:800 8px/12px system-ui}.carnival-sugar-goal b{font-size:10px;line-height:17px;color:#a8763b}
+#carnival-odds p{margin:1px 0;font:700 6.4px/9px system-ui;text-align:left}#carnival-odds footer{font:700 6px/9px system-ui;color:#a07793}
+.carnival-reward{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:76%;max-width:260px;box-sizing:border-box;padding:12px 8px;border:3px solid #e1b06a;border-radius:22px;background:linear-gradient(#fff9e5,#ffe4b9);box-shadow:0 3px 0 #a8664d,0 5px 18px #70354d66;color:#9a5b40;text-align:center;pointer-events:none;z-index:7;animation:carnival-award-in 220ms ease-out both}
+.carnival-reward[hidden]{display:none!important}.carnival-reward:after{content:'';position:absolute;left:50%;bottom:-8px;width:11px;height:11px;background:#ffe4b9;border-right:3px solid #e1b06a;border-bottom:3px solid #e1b06a;transform:translateX(-50%) rotate(45deg)}
+.carnival-reward small{display:block;font:1000 11px/15px system-ui}.carnival-reward strong{display:block;white-space:nowrap;font:1000 31px/39px ArcadePayout,system-ui;text-shadow:0 2px #fff8cf}.carnival-reward strong em{font:1000 17px/21px system-ui}.carnival-reward>span{display:block;font:900 10px/14px system-ui}
+.carnival-reward[data-tier='1']{width:82%;border-color:#ec798e;background:linear-gradient(#fff1d5,#ffc1cb);box-shadow:0 4px #a84170,0 0 18px #ffe894;color:#a33364}.carnival-reward[data-tier='1'] strong{font-size:36px;line-height:43px}
+.carnival-reward[data-tier='2']{width:89%;border:4px solid #ffd466;background:linear-gradient(135deg,#fff4c7,#ead1ff,#ffbed8);box-shadow:0 4px #6c2a8a,0 0 0 2px #ba79cb,0 0 26px #ffe599;color:#812ca5}.carnival-reward[data-tier='2'] strong{font-size:39px;line-height:48px;-webkit-text-stroke:.6px #fff2b3;paint-order:stroke fill}.carnival-reward[data-tier='2'] small{font-size:12px}
+.carnival-reward[data-tier='1']:after{background:#ffc1cb;border-color:#ec798e}.carnival-reward[data-tier='2']:after{background:#eed3ed;border-color:#ffd466}
+@keyframes carnival-award-in{from{opacity:0;transform:translate(-50%,-50%) scale(.82)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+/* Cookie payout bubbles: the multiplier, not the LINK count, controls emphasis. */
+.board .record{box-sizing:border-box;min-width:0;max-width:252px;padding:8px 10px;border:3px solid #dba45a;border-radius:20px;background:linear-gradient(#fff9df,#ffe6b6);box-shadow:0 3px #a36a42,0 6px 14px #57323e65;color:#935124;overflow:visible}
+.board .record[data-frame-tier='1']{width:200px;height:78px}.board .record[data-frame-tier='2']{width:228px;height:92px;border-color:#f0809d;background:linear-gradient(#fff4d8,#ffd1d8);box-shadow:0 4px #ad4878,0 0 17px #ffd47f;color:#b5396a}.board .record[data-frame-tier='3']{width:252px;height:104px;border:4px solid #ffdc6c;background:linear-gradient(135deg,#fff4be,#e4c6ff,#ffc5e0);box-shadow:0 4px #75348e,0 0 0 2px #c78add,0 0 24px #ffeb9b;color:#8c2faa}
+.board .record>strong{font-size:30px;line-height:30px}.board .record[data-frame-tier='2']>strong{font-size:34px;line-height:35px}.board .record[data-frame-tier='3']>strong{font-size:38px;line-height:39px;text-shadow:0 2px #fff7c1,0 0 8px #ffe295}
+.board .record>strong em{font-size:.52em}.board .record .record-award{gap:5px;line-height:26px}.board .record .record-award>.win-word{font-size:15px}.board .record[data-frame-tier='2'] .record-award>.win-word{font-size:18px}.board .record[data-frame-tier='3'] .record-award>.win-word{font-size:20px}
+/* The selected-game sugar award is bounded by .game, below the roulette text strip. */
+#screen>.game{position:relative}.sugar-award-screen{inset:0;border-radius:18px;overflow:hidden;background:#351b395e}
+.sugar-award-screen .sugar-award-content{max-width:calc(100% - 26px);box-sizing:border-box;padding:14px 17px;gap:12px;border:4px solid #f8d47c;border-radius:30px;background:linear-gradient(135deg,#fff8e3f5,#f8d4ebf5);box-shadow:0 5px #b77b68,0 0 24px #ffe4a38a}
+.sugar-award-screen .sugar-award-icon{width:132px;height:132px;flex-shrink:1}.sugar-award-screen strong{font-size:84px;-webkit-text-stroke:1.8px #a76231}.sugar-award-screen .sugar-award-halo{width:360px;height:360px}.sugar-award-mini .sugar-award-icon{width:38px;height:38px}.sugar-award-mini strong{font-size:18px}
+body.mobile-landscape #carnival-heading{padding:0 9px}body.mobile-landscape #carnival-heading strong{font-size:17px}
+.paused .carnival-reward{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.carnival-reward{animation:none!important}}
+@media(forced-colors:active){.carnival-reward,.board .record,.sugar-award-screen .sugar-award-content{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}.carnival-tab-title,#carnival-heading strong{color:CanvasText;text-shadow:none}}
+
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -2802,11 +2845,155 @@ function chocoHud(a){
  const key=[e.version,e.phase,e.processed,e.depth,e.totalHundredths,a.bet(1)].join('/');if(s.chocoKey!==key){s.chocoKey=key;chocoQueueFrame(s);}
 }
 
+/* Original third-tab prototype. Included in the existing app scope after Engine. */
+const CARNIVAL_FLAVORS=[
+ {name:'いちご',light:'#ffd0de',color:'#f04485',dark:'#9b2456'},
+ {name:'レモン',light:'#fff3af',color:'#f4c322',dark:'#a66a16'},
+ {name:'ミント',light:'#cbf9d7',color:'#38bf8a',dark:'#23785c'},
+ {name:'ソーダ',light:'#cdf1ff',color:'#40b7ed',dark:'#246ba5'},
+ {name:'ぶどう',light:'#ecd6ff',color:'#aa6ee3',dark:'#6a3697'}
+];
+const CARNIVAL_TARGET=4;
+class CandyCarnivalEngine extends Engine{
+ reset(){
+  this.kind='candy';this.drawMode='single';this.reachMode='single';this.version++;this.presentationRate=1;this.roundBet=this.roundBet||100;
+  this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
+  this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
+  this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;
+  this.wonderCollected=false;this.wonderIssued=false;this.wonderToken=null;this.wonderColumn=0;this.pendingSugarAward=[];
+  this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
+  this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.jars=[0,0,0,0,0];this.filled=[false,false,false,false,false];this.completedJars=0;this.partyAwarded=false;this.grandAwarded=false;this.roundCandies=0;this.rainbowHits=0;this.lastGain=0;this.lastNumber=0;this.fx=null;this.deck=[];
+  this.candyMessage='5色のキャンディをビンに集めよう！';this.emit('ready');
+ }
+ makeDeck(){
+  const cards=[];for(let color=0;color<5;color++)for(const amount of [1,1,2,2,3])cards.push({color,amount,rainbow:false});
+  const magic=Math.floor(this.random()*5)*5;cards[magic]={color:-1,amount:1,rainbow:true};
+  for(let i=cards.length-1;i>0;i--){const j=Math.floor(this.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
+  return cards.map((v,i)=>({...v,number:i+1}));
+ }
+ start(){if(this.running||this.roundBet<=0)return;this.deck=this.makeDeck();this.running=true;this.opening=false;this.busy=false;this.candyMessage='番号にHIT → キャンディをビンへ！';this.emit('waiting');}
+ plan(numbers){
+  const jars=[...this.jars],filled=[...this.filled],added=[],newly=[];let candies=0,rainbows=0;
+  for(const n of numbers){const card=this.deck[n-1];if(!card)continue;const colors=card.rainbow?[0,1,2,3,4]:[card.color];if(card.rainbow)rainbows++;
+   for(const color of colors){const amount=Math.min(card.amount,CARNIVAL_TARGET-jars[color]);if(amount>0){jars[color]+=amount;added.push({number:n,color,amount});candies+=amount;}}
+  }
+  for(let i=0;i<5;i++)if(!filled[i]&&jars[i]>=CARNIVAL_TARGET){filled[i]=true;newly.push(i);}
+  const count=filled.filter(Boolean).length,party=count>=3&&!this.partyAwarded,grand=count===5&&!this.grandAwarded;
+  return {jars,filled,count,added,newly,candies,rainbows,party,grand,gain:newly.length*50+(party?300:0)+(grand?1000:0)};
+ }
+ predict(number){if(this.drawn.has(number)||!this.deck.length)return null;const p=this.plan([number]);return {number,total:this.totalHundredths+p.gain,gain:p.gain,maxLink:0,chain:0,allClear:false,tier:reachTier(this.totalHundredths+p.gain,false),completed:p.count,grand:p.grand};}
+ async drain(){
+  if(this.busy)return;const token=this.version;this.busy=true;
+  try{
+   while(this.queue.length&&token===this.version){
+    const numbers=this.queue.shift(),plan=this.plan(numbers);for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}this.lastNumber=numbers.at(-1);this.lastGain=0;
+    this.fx={phase:'fly',numbers:[...numbers],plan,elapsed:0,stamp:null};this.candyMessage=plan.rainbows?'スターキャンディ！ すべてのビンに＋1！':'キャンディがビンへ飛んでいく！';this.emit('candyFly',{numbers,plan});
+    if(!await this.wait(650*this.speed,token))return;
+    this.jars=plan.jars;this.filled=plan.filled;this.completedJars=plan.count;this.roundCandies+=plan.candies;this.rainbowHits+=plan.rainbows;this.totalHundredths+=plan.gain;this.lastGain=plan.gain;
+    this.partyAwarded||=plan.party;this.grandAwarded||=plan.grand;
+    this.fx={phase:'award',numbers:[...numbers],plan,elapsed:0,stamp:null};
+    this.candyMessage=plan.grand?'GRAND CARNIVAL！ 5色コンプリート！':plan.party?'CANDY PARTY！ 3色完成ボーナス！':plan.newly.length?plan.newly.length+'本のビンが完成！':plan.candies?'あと少し！ キャンディを集めよう':'この色は完成済み・次の番号を待とう';
+    this.emit('candyAward',{numbers,plan,gain:plan.gain});if(!await this.wait((plan.grand?1550:plan.gain>=300?1300:plan.gain?1050:350)*this.speed,token))return;
+    this.processed+=numbers.length;this.fx=null;this.emit('settled',{numbers,candy:true,filled:this.completedJars});
+   }
+   if(token!==this.version)return;this.busy=false;
+   if(this.processed===8){
+    if(this.grandAwarded&&!this.wonderCollected){this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'carnival-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});}
+    this.running=false;this.candyMessage='完成 '+this.completedJars+'本！ 次のゲームは新しいキャンディで';this.emit('complete');
+   }else this.emit('waiting');
+  }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
+ }
+}
+function carnivalCandy(x,cx,cy,size,color=0,star=false,angle=0){
+ x.save();x.translate(cx,cy);x.rotate(angle);const p=CARNIVAL_FLAVORS[(color+5)%5];x.lineJoin='round';
+ if(star){const g=x.createLinearGradient(-size,-size,size,size);['#ff6393','#ffd54d','#73e3a7','#64cfff','#c08aff'].forEach((v,i)=>g.addColorStop(i/4,v));x.fillStyle=g;x.strokeStyle='#fff8d0';x.lineWidth=size*.16;x.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=size*(i%2?.48:1);i?x.lineTo(Math.cos(a)*r,Math.sin(a)*r):x.moveTo(Math.cos(a)*r,Math.sin(a)*r);}x.closePath();x.fill();x.stroke();}
+ else{
+  x.fillStyle=p.light;x.strokeStyle=p.dark;x.lineWidth=Math.max(.7,size*.08);
+  for(const sign of [-1,1]){x.beginPath();x.moveTo(sign*size*.62,0);x.lineTo(sign*size*1.25,-size*.55);x.lineTo(sign*size*1.13,0);x.lineTo(sign*size*1.25,size*.55);x.closePath();x.fill();x.stroke();}
+  const g=x.createLinearGradient(0,-size,0,size);g.addColorStop(0,p.light);g.addColorStop(.35,p.color);g.addColorStop(1,p.dark);x.fillStyle=g;x.beginPath();x.ellipse(0,0,size*.85,size*.66,0,0,Math.PI*2);x.fill();x.stroke();
+  x.save();x.clip();x.strokeStyle='#fff9e9a0';x.lineWidth=size*.24;x.beginPath();x.moveTo(-size*.6,-size);x.lineTo(size*.1,size);x.moveTo(size*.15,-size);x.lineTo(size*.85,size);x.stroke();x.restore();
+  x.fillStyle='#ffffffb0';x.beginPath();x.ellipse(-size*.25,-size*.31,size*.3,size*.11,-.25,0,7);x.fill();
+ }x.restore();
+}
+function setupCarnivalSlot(s){
+ if(s.candyCanvas)return;s.panel.classList.add('carnival-panel');s.tab.classList.add('carnival-tab');s.holder.classList.add('carnival-slot');
+ s.tab.querySelector('.tab-game-name').innerHTML='<span class="carnival-tab-title">キャンディカーニバル<small>CANDY CARNIVAL</small></span>';s.tab.querySelector('.tab-game-name').setAttribute('aria-label','キャンディカーニバル');
+ const wrap=document.createElement('div');wrap.className='carnival-surface';wrap.innerHTML='<div class="carnival-topline"><span>CANDY CARNIVAL</span><b>4個でビン完成</b></div><canvas class="carnival-canvas" width="640" height="640" role="img" aria-label="5色のキャンディをビンに集めるゲーム"></canvas><div class="carnival-status" role="status"></div><div class="carnival-reward" role="status" hidden></div>';
+ s.panel.append(wrap);s.candyCanvas=wrap.querySelector('canvas');s.candyCtx=s.candyCanvas.getContext('2d');s.candyStatus=wrap.querySelector('.carnival-status');s.candyReward=wrap.querySelector('.carnival-reward');
+ const heading=document.createElement('div');heading.id='carnival-heading';heading.innerHTML='<strong>キャンディカーニバル<small>あつめて、そろえて、おかしのお祭り！</small></strong><span>COMPLETE <b id="carnival-complete">0</b> / 5</span>';document.querySelector('.festival-top').append(heading);
+ const odds=document.createElement('div');odds.id='carnival-odds';odds.innerHTML='<div class="carnival-odds-title">CANDY REWARDS<small>試作版・仮配当</small></div><section><span>今回の獲得</span><b id="carnival-win">0</b><em>WIN</em></section><dl><dt>ビン1本完成</dt><dd>BET × 0.5</dd><dt>3色完成 PARTY</dt><dd>さらに BET × 3</dd><dt>5色コンプリート</dt><dd>さらに BET × 10</dd></dl><div class="carnival-sugar-goal">5色完成で<br><b>シュガーGET</b></div><p>入賞ごとに1〜3個GET<br>4個でその色のビン完成<br>★は全色に1個ずつ<br>あふれた分は加算なし</p><footer>ビンは1ゲームごとに更新<br>0 BETでは参加しません</footer>';$('odds-panel').append(odds);
+}
+function carnivalEvent(s,ev,e,a){
+ setupCarnivalSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;
+ if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;invalidateReach(s);}
+ if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
+ if(ev.phase==='candyFly'){s.candyReward.hidden=true;invalidateReach(s);if(s.i===active)sound('magic',{volume:.42});}
+ if(ev.phase==='candyAward'){
+  const gain=ev.gain||0;s.candyReward.hidden=!gain;s.candyReward.dataset.tier=gain>=1000?'2':gain>=300?'1':'0';
+  if(gain){const title=ev.plan.grand?'GRAND CARNIVAL!':ev.plan.party?'CANDY PARTY!':'BOTTLE COMPLETE!';s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+num(gain/100)+' × BET</span>';if(s.i===active)sound('confirm',{volume:1});}
+ }
+ if(ev.phase==='settled')s.candyReward.hidden=true;
+ if(['waiting','settled','complete'].includes(ev.phase))requestReach(s,e);
+ s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);
+}
+function carnivalQueueFrame(s){
+ if(s.candyFrame||document.hidden||!inView)return;const version=s.engine.version;
+ s.candyFrame=requestAnimationFrame(now=>{s.candyFrame=0;if(s.engine.version!==version)return;if(s.candyLastDraw&&now-s.candyLastDraw<32){carnivalQueueFrame(s);return;}s.candyLastDraw=now;drawCarnival(s,now);});
+}
+function carnivalText(x,text,px,py,size,color='#6f3e67',align='center'){
+ x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#fff8ec';x.lineWidth=Math.max(1,size*.12);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);
+}
+function drawCarnival(s,now=performance.now()){
+ if(s.engine?.kind!=='candy')return;setupCarnivalSlot(s);const e=s.engine,x=s.candyCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready';
+ if(!paused)s.candyTime=now;const time=s.candyTime||now;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
+ const bg=x.createLinearGradient(0,0,320,320);bg.addColorStop(0,'#fff3da');bg.addColorStop(.45,'#ffe0ed');bg.addColorStop(1,'#c9f0ed');x.fillStyle=bg;x.fillRect(0,0,320,320);
+ x.save();x.translate(160,107);for(let i=0;i<16;i++){x.rotate(Math.PI/8);x.fillStyle=i%2?'#fff9ec45':'#e5bcdf21';x.beginPath();x.moveTo(0,0);x.lineTo(-42,-350);x.lineTo(42,-350);x.closePath();x.fill();}x.restore();
+ for(let i=0;i<16;i++){x.fillStyle=i%2?'#ec91b4':'#fff3de';x.fillRect(i*20,0,20,11);x.beginPath();x.ellipse(i*20+10,11,10,7,0,0,Math.PI);x.fill();}
+ x.strokeStyle='#ba8e6f';x.lineWidth=1;x.beginPath();x.moveTo(7,29);x.quadraticCurveTo(160,70,313,29);x.stroke();
+ for(let i=0;i<10;i++){const px=18+i*31,py=31+Math.sin(i/9*Math.PI)*14;x.fillStyle=CARNIVAL_FLAVORS[i%5].color;x.beginPath();x.moveTo(px,py);x.lineTo(px+15,py);x.lineTo(px+8,py+13);x.closePath();x.fill();}
+ carnivalText(x,ready?'5色のビンをキャンディでいっぱいに！':e.grandAwarded?'GRAND CARNIVAL!':e.partyAwarded?'CANDY PARTY!':'COLLECT THE SWEETS',160,30,11);
+ const cols=e.fx?.plan?.added.map(v=>v.color)||[];
+ for(let c=0;c<5;c++){
+  const p=CARNIVAL_FLAVORS[c],px=13+c*61,full=e.filled[c],hot=cols.includes(c)&&e.fx?.phase==='award';
+  if(hot){x.fillStyle=p.color+'55';x.beginPath();x.ellipse(px+25,116,32,55,0,0,7);x.fill();}
+  x.fillStyle='#a8777940';x.beginPath();x.ellipse(px+26,165,27,6,0,0,7);x.fill();
+  const glass=x.createLinearGradient(px,0,px+52,0);glass.addColorStop(0,'#ffffffeb');glass.addColorStop(.24,p.light+'b5');glass.addColorStop(.66,'#ffffff70');glass.addColorStop(1,p.color+'70');
+  x.fillStyle=glass;x.strokeStyle=full?'#daa440':p.dark+'b5';x.lineWidth=full?2.5:1.7;x.beginPath();x.moveTo(px+13,74);x.lineTo(px+39,74);x.lineTo(px+39,85);x.quadraticCurveTo(px+51,89,px+51,102);x.lineTo(px+51,151);x.quadraticCurveTo(px+51,162,px+41,162);x.lineTo(px+11,162);x.quadraticCurveTo(px+1,162,px+1,151);x.lineTo(px+1,102);x.quadraticCurveTo(px+1,89,px+13,85);x.closePath();x.fill();x.stroke();
+  const lid=x.createLinearGradient(0,65,0,80);lid.addColorStop(0,'#fff4bf');lid.addColorStop(.5,'#dba756');lid.addColorStop(1,'#b9793b');x.fillStyle=lid;x.beginPath();x.roundRect(px+9,65,34,14,4);x.fill();x.strokeStyle='#a77d4e';x.lineWidth=1;x.stroke();
+  for(let k=0;k<4;k++){const cy=146-Math.floor(k/2)*24,cx=px+15+k%2*23;if(k<e.jars[c])carnivalCandy(x,cx,cy,9,c,false,(k%2?1:-1)*.25);else{x.fillStyle=p.color+'18';x.beginPath();x.arc(cx,cy,7,0,7);x.fill();}}
+  x.strokeStyle='#ffffffd9';x.lineWidth=3;x.beginPath();x.moveTo(px+8,103);x.lineTo(px+8,142);x.stroke();
+  carnivalText(x,CARNIVAL_FLAVORS[c].name,px+26,56,8,p.dark);carnivalText(x,full?'FULL!':e.jars[c]+' / 4',px+26,101,11,full?'#b77522':p.dark);
+  if(full)carnivalCandy(x,px+26,74,9,c,true,0);
+ }
+ x.fillStyle='#fff6e4';x.strokeStyle='#dab78e';x.lineWidth=1;x.beginPath();x.roundRect(10,169,300,18,8);x.fill();x.stroke();
+ carnivalText(x,ready?'番号の配置はゲーム開始時に決定':e.completedJars+'色完成  /  3色でPARTY・5色でGRAND',160,178,8);
+ for(let n=1;n<=25;n++){
+  const c=(n-1)%5,r=Math.floor((n-1)/5),px=11+c*60,py=193+r*24,card=e.deck[n-1],known=!ready&&card,used=e.drawn.has(n),hot=e.fx?.numbers?.includes(n),p=CARNIVAL_FLAVORS[known&&card.color>=0?card.color:(n-1)%5];
+  x.globalAlpha=used&&!hot?.42:1;x.fillStyle=known?(card.rainbow?'#fff0c9':p.light):'#fff5e9';x.strokeStyle=hot?'#fffdf0':known?p.color:'#d5b9b1';x.lineWidth=hot?2.5:1;x.beginPath();x.roundRect(px,py,56,21,6);x.fill();x.stroke();
+  carnivalCandy(x,px+28,py+10,6,known?card.color:c,!!(known&&card.rainbow),0);carnivalText(x,ready?'?':String(n),px+10,py+10,10,used?'#886b83':p.dark);
+  carnivalText(x,known?(card.rainbow?'★':'×'+card.amount):'',px+45,py+11,7);x.globalAlpha=1;
+ }
+ if(e.fx){const fx=e.fx;if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)/(e.speed||1)*(e.presentationRate||1);fx.stamp=now;}else fx.stamp=null;
+  if(fx.phase==='fly'){const t=motionReduced?1:Math.min(1,fx.elapsed/650),ease=1-Math.pow(1-t,3);for(const v of fx.plan.added)for(let k=0;k<v.amount;k++){const sx=39+(v.number-1)%5*60,sy=203+Math.floor((v.number-1)/5)*24,tx=39+v.color*61,ty=120-k*10;const px=sx+(tx-sx)*ease+Math.sin(t*Math.PI)*(k-1)*12,py=sy+(ty-sy)*ease-Math.sin(t*Math.PI)*48;carnivalCandy(x,px,py,9,v.color,false,t*2+k);}}
+  else if(fx.plan.gain){const t=Math.min(1,fx.elapsed/1300);for(let i=0;i<24;i++){const a=i*2.399+fx.numbers[0],radius=35+t*110,px=160+Math.cos(a)*radius,py=104+Math.sin(a)*radius*.55+t*t*45;x.globalAlpha=1-t;carnivalCandy(x,px,py,4+i%3,i%5,i%4===0,a+t);}x.globalAlpha=1;}
+ }
+ if(!bet){x.fillStyle='#40304a8f';x.fillRect(0,0,320,320);carnivalText(x,'0 BET',160,112,28,'#fff6df');carnivalText(x,'BETしてキャンディを集めよう',160,142,12,'#fff6df');}
+ s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
+ s.candyStatus.textContent=!bet?'0 BET・参加していません':ready?'1球ごとにGET！ 4個でビンが完成':e.candyMessage;
+ s.candyCanvas.setAttribute('aria-label','キャンディのビン '+e.jars.map((n,i)=>CARNIVAL_FLAVORS[i].name+' '+n+'/4').join('、')+'。完成'+e.completedJars+'本');
+ if(e.fx&&!paused&&!jpcSession.active)carnivalQueueFrame(s);
+}
+function carnivalHud(a){
+ const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','キャンディカーニバル・完成'+e.completedJars+'本・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
+ if(active===2){put('carnival-complete',e.completedJars);put('carnival-win',num(medalWin(a.bet(2),e.totalHundredths)));}
+ const key=[e.version,e.phase,e.processed,e.totalHundredths,a.bet(2),active].join('/');if(s.candyKey!==key){s.candyKey=key;carnivalQueueFrame(s);}
+}
+
 class Arcade{
  constructor({random=Math.random,sleep=ms=>new Promise(r=>setTimeout(r,ms)),onEvent=()=>{},onChange=()=>{},speed=1.4,colorCount=5}={}){
-  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[100,100,100],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
+  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
-  for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
+  for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:i===2?CandyCarnivalEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
    if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>({...step,game:i})));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
    if(ev.phase==='complete'&&!this.paid[i]&&this.enabled[i]&&this.phase==='playing'){
     this.paid[i]=true;this.roundWins[i]=medalWin(this.locked[i],e.totalHundredths);
@@ -2837,7 +3024,7 @@ class Arcade{
   this.draws.push(n);this.engines.forEach((e,i)=>{if(this.enabled[i])e.previewDraw(n);});
   // Submit one atomic batch after ball 3 / 5; previewed cells never resolve early.
   const count=this.draws.length,release=count===3?this.draws.slice(0,3):count===5?this.draws.slice(3,5):count>5?[n]:[];
-  if(release.length)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueueBatch(release);});
+  this.engines.forEach((e,i)=>{if(!this.enabled[i])return;const values=e.drawMode==='single'?[n]:release;if(values.length)e.enqueueBatch(values);});
   if(this.draws.length===8){this.dealing=false;this.boostAfterDraws(token);}this.onChange(this);return true;
  }
  failDraw(message,token){if(token!==this.token||this.phase!=='playing')return;this.drawError=message;this.phase='error';this.token++;this.dealing=false;this.pause(true);this.onChange(this);}
@@ -2888,7 +3075,7 @@ class Arcade{
  }
  pause(value){this.paused=value;for(const e of this.engines)e.paused=value;this.drawSource?.pause(value);}
  prepare(){this.token++;this.drawSource?.reset();this.drawError=null;this.dealing=false;this.displayCredit=this.credit;this.totalWin=0;this.roundWins=[0,0,0];this.payout=null;this.result=null;this.fastForward=false;this.phase='ready';this.paused=false;this.draws=[];this.paid=[false,false,false];this.locked=[0,0,0];this.enabled=this.bets.map(n=>n>0);for(const e of this.engines)e.reset({keepWonder:!this.clearingWonder});this.onChange(this);}
- resetDebug(){this.credit=1000;this.bets=[100,100,100];this.wonderSteps=0;this.wonderValue=0;this.wonderBank=[];this.clearingWonder=true;this.prepare();this.clearingWonder=false;}
+ resetDebug(){this.credit=1000;this.bets=[3000,3000,3000];this.wonderSteps=0;this.wonderValue=0;this.wonderBank=[];this.clearingWonder=true;this.prepare();this.clearingWonder=false;}
  bet(i){return this.phase==='ready'?this.bets[i]:this.locked[i];}
 }
 // Only the next HIT is simulated. Refill cannot create a link, so no RNG is used.
@@ -2898,9 +3085,9 @@ function copyReachState(e){
  return q;
 }
 const reachTier=(total,allClear)=>allClear?3:total>=1000?2:total>=300?1:0;
-function predictNextHit(e,number){
- const q=copyReachState(e),hit=[];let depth=0;
- for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(q.board[r][c]?.number===number)hit.push([r,c]);
+function predictNextHit(e,number,pending=[]){
+ const q=copyReachState(e),hit=[],numbers=new Set([...pending,number]);let depth=0;
+ for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(q.board[r][c]&&numbers.has(q.board[r][c].number))hit.push([r,c]);
  if(!hit.length)return null;
  q.remove(q.resolveLinks([{cells:hit}]).cells);depth=1;q.maxChain=Math.max(q.maxChain,depth);q.gravity();let linked=groups(q.board);
  while(linked.length){
@@ -3058,7 +3245,7 @@ for(const s of slots){
 function createSugarAward(s,mini){
  const el=document.createElement('div');el.className='sugar-award '+(mini?'sugar-award-mini':'sugar-award-screen');el.hidden=true;el.setAttribute('role','status');el.setAttribute('aria-live','polite');
  el.innerHTML='<div class="sugar-award-halo" aria-hidden="true"></div><div class="sugar-award-sparks" aria-hidden="true">'+Array.from({length:10},(_,i)=>{const a=i*Math.PI/5;return '<i style="--spark-x:'+Math.round(Math.cos(a)*146)+'px;--spark-y:'+Math.round(Math.sin(a)*91)+'px;--spark-delay:'+(-i*17)+'ms"></i>';}).join('')+'</div><div class="sugar-award-content"><span class="sugar-award-icon" aria-hidden="true"></span><strong>GET!</strong></div>';
- (mini?s.tab.querySelector('.mini-wrap'):$('screen')).append(el);return el;
+ (mini?s.tab.querySelector('.mini-wrap'):document.querySelector('#screen>.game')).append(el);return el;
 }
 function stopSugarAward(s){
  s.sugarAwardToken=(s.sugarAwardToken||0)+1;s.sugarAwardActive=false;
@@ -3225,7 +3412,7 @@ function syncBetPreview(a){
  if(!betPreview)betPreview=newBetPreview();
  document.body.classList.add('bet-preview');
  for(const s of slots){
-  if(s.engine?.kind==='choco'){if(s.betCanvas)s.betCanvas.hidden=true;s.miniCanvas.hidden=false;s.miniLogo.hidden=true;continue;}
+  if(['choco','candy'].includes(s.engine?.kind)){if(s.betCanvas)s.betCanvas.hidden=true;s.miniCanvas.hidden=false;s.miniLogo.hidden=true;continue;}
   if(!s.betCanvas){const canvas=document.createElement('canvas');canvas.className='bet-preview-canvas';canvas.width=596;canvas.height=596;canvas.setAttribute('aria-hidden','true');s.board.append(canvas);s.betCanvas=canvas;}
   if(!s.betBoardLabel){s.betBoardLabel=s.board.getAttribute('aria-label');s.board.setAttribute('aria-label','BET中の演出見本。実際の盤面や獲得配当ではありません。');}
   s.betCanvas.hidden=false;s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
@@ -3335,8 +3522,8 @@ function drawBetScene(ctx,width,d){
 
 function drawBetPreview(d){
  if(!d)return;
- const current=slots[active];if(current.engine?.kind!=='choco'&&current.betCanvas)drawBetScene(current.betCanvas.getContext('2d'),current.betCanvas.width,d);
- for(const s of slots)if(s.engine?.kind!=='choco')drawBetScene(s.mini,s.miniCanvas.width,d);
+ const current=slots[active];if(!['choco','candy'].includes(current.engine?.kind)&&current.betCanvas)drawBetScene(current.betCanvas.getContext('2d'),current.betCanvas.width,d);
+ for(const s of slots)if(!['choco','candy'].includes(s.engine?.kind))drawBetScene(s.mini,s.miniCanvas.width,d);
 }
 
 function pendingCellNumbers(e){return e&&['waiting','settled','ready'].includes(e.phase)?e.pendingDraws:new Set();}
@@ -3377,6 +3564,7 @@ function updateMiniResults(a,now=performance.now()){
 
 function miniature(s){
  if(s.engine?.kind==='choco'){chocoQueueFrame(s);return;}
+ if(s.engine?.kind==='candy'){carnivalQueueFrame(s);return;}
  if(app?.phase==='ready')return;
  if(s.i===active)return;
  const now=performance.now(),positions=new Map();
@@ -3493,7 +3681,7 @@ function hud(a){
  const editable=a.phase==='ready';for(const slot of slots){slot.controls.hidden=!editable;slot.lockedBet.hidden=false;for(const button of [slot.cycle,slot.addBet,slot.oneBet])button.disabled=!editable;const amount=units[unit[slot.i]];slot.addBet.textContent=amount+' BET';slot.addBet.setAttribute('aria-label','ゲーム'+(slot.i+1)+'に'+amount+' BET追加');}
  $('start').disabled=(a.phase==='ready'&&a.drawSource?.ready===false)||a.phase==='playing'||a.phase==='result'||paying||a.phase==='error'||(editable&&!a.bets.some(n=>n>0));put('start',a.phase==='result'?'リザルト':paying?'払い出し中…':a.phase==='complete'?'次のゲームへ':a.phase==='playing'?(a.dealing?'抽選中…':'連鎖処理中…'):'ゲーム開始');
  for(const count of [3,4,5]){const button=$('colors-'+count);button.disabled=a.phase!=='ready';button.setAttribute('aria-pressed',String(a.colorCount===count));}
- $('pause').disabled=!['playing','result','paying'].includes(a.phase);put('pause',userPaused?'再開':'一時停止');tabs(a);updateReachUI(a);renderRoundResult(a);chocoHud(a);styleWinWords($('screen'));
+ $('pause').disabled=!['playing','result','paying'].includes(a.phase);put('pause',userPaused?'再開':'一時停止');tabs(a);updateReachUI(a);renderRoundResult(a);chocoHud(a);carnivalHud(a);styleWinWords($('screen'));
 }
 function clearMarks(s){s.outline.replaceChildren();s.labels.replaceChildren();s.outline.classList.remove('fade');s.board.classList.remove('big');s.board.dataset.recordTier='0';for(const el of s.tiles.values())el.classList.remove('record-scan');}
 const sugarSprites=[];
@@ -3562,6 +3750,7 @@ const hammerCountMarkup=(colors,concealed=false)=>{
 };
 
 function sugarStatus(e,bet){
+ if(e.kind==='candy')return {tier:bet>0?sugarVisualTier(e.wonderToken||bet):0,value:bet>0?(e.wonderToken?.value||bet):0,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'5色完成報酬',detail:'全5色のビン完成で獲得'};
  if(e.kind==='choco')return {tier:sugarVisualTier(e.wonderToken||Math.max(1,bet)),value:bet>0?(e.wonderToken?.value||bet):0,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'深度報酬',detail:e.nextSugar+'m到達で獲得'};
  const basket=e.basketState[e.wonderColumn],token=e.wonderToken,value=bet>0?projectedSugarValue(e,bet):0,tier=bet>0?sugarVisualTier(token||value):0;
  return {tier,value,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'未獲得',detail:e.wonderCollected?'価値 '+num(token?.value||0):e.wonderIssued?(basket.pending.length?'番号なしマス待ち':'盤面に出現中'):'第'+(e.wonderColumn+1)+'列 · あと'+basket.remaining};
@@ -3573,7 +3762,7 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),sugarVisualTier(token));slot.setAttribute('aria-label',token?WONDER_NAMES[sugarVisualTier(token)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- if(e.kind==='choco')return;
+ if(e.kind==='choco'||e.kind==='candy')return;
  const concealed=a.phase==='ready';
   const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
@@ -3602,9 +3791,9 @@ function showLinks(s,ev){
    el.style.setProperty('--scan-delay',(trace.first.get([r,c].join(','))/Math.max(1,trace.walk.length-1)*duration*.72)+'ms');el.classList.add('record-scan');
   }
   if(!badgeShown){badgeShown=true;
-  const [r,c]=anchorCell(g.cells),label=document.createElement('div');label.className='record';label.dataset.tier=tier;const frameTier=g.size>=8?3:g.size>=5?2:1;label.dataset.frameTier=frameTier;
-  const badgeHalf=frameTier===3?98:frameTier===2?90:80,badgeHeight=frameTier===3?88:frameTier===2?76:66;label.style.left=Math.max(badgeHalf+3,Math.min(298-badgeHalf-3,(c+.5)*CELL))+'px';label.style.top=Math.max(badgeHeight/2+2,Math.min(298-badgeHeight/2-2,(r+.5)*CELL))+'px';const delay=Math.max(0,duration-1500);if(!motionReduced)label.style.animation='result-badge-flash 1450ms ease-out '+delay+'ms both';
-  const award=num(medalWin(app.bet(s.i),payoutTenths(g.size)*10));label.innerHTML=`<strong>${g.size}<em> LINK</em></strong><div class="record-award"><b>${award}</b><em class="win-word">WIN</em></div>`;label.setAttribute('aria-label',g.size+' LINK、'+award+' WIN');fitGoldenNumber(label.querySelector('.record-award').querySelector('b'),award,frameTier===3?18:frameTier===2?16:14,badgeHalf*2-78);s.labels.append(label);s.board.classList.add('big');}
+  const [r,c]=anchorCell(g.cells),label=document.createElement('div');label.className='record';label.dataset.tier=tier;const awardMultiple=payoutTenths(g.size)/10,frameTier=awardMultiple>=10?3:awardMultiple>=3?2:1;label.dataset.rewardTier=String(frameTier-1);label.dataset.frameTier=frameTier;
+  const badgeHalf=frameTier===3?126:frameTier===2?114:100,badgeHeight=frameTier===3?104:frameTier===2?92:78;label.style.left=Math.max(badgeHalf+12,Math.min(298-badgeHalf-12,(c+.5)*CELL))+'px';label.style.top=Math.max(badgeHeight/2+14,Math.min(298-badgeHeight/2-14,(r+.5)*CELL))+'px';const delay=Math.max(0,duration-1500);if(!motionReduced)label.style.animation='result-badge-flash 1450ms ease-out '+delay+'ms both';
+  const award=num(medalWin(app.bet(s.i),payoutTenths(g.size)*10));label.innerHTML=`<strong>${g.size}<em> LINK</em></strong><div class="record-award"><b>${award}</b><em class="win-word">WIN</em></div>`;label.setAttribute('aria-label',g.size+' LINK、'+award+' WIN');fitGoldenNumber(label.querySelector('.record-award').querySelector('b'),award,frameTier===3?30:frameTier===2?27:24,badgeHalf*2-68);s.labels.append(label);s.board.classList.add('big');}
 
   if(tier>=2)sparkles(s,g.cells,s.engine,tier===3,duration*.7);
  }
@@ -3826,6 +4015,7 @@ function startHammerTransfer(s,ev,e){
 
 function render(s,ev,e,animate=true){
  if(e?.kind==='choco'){chocoQueueFrame(s);return;}
+ if(e?.kind==='candy'){carnivalQueueFrame(s);return;}
  if(ev.phase==='queued')return;
  if(ev.phase!=='hammergift'||!animate)stopHammerTransfer(s);
  s.board.classList.toggle('idle',['ready','waiting','settled','complete'].includes(ev.phase));
@@ -3873,24 +4063,38 @@ function reachBoardSettled(e){
  // A settled board is stable during the inter-HIT gap even if more draws are queued.
  return ['settled','complete'].includes(e.phase)||(['ready','waiting'].includes(e.phase)&&e.idle);
 }
-function requestReach(s,e){
- if(e.kind==='choco'){s.reachResults=[];s.tabReachResults=[];return;}
- if(!reachBoardSettled(e))return;
- const key=e.version+'/'+e.processed;if(s.reachBoardKey===key)return;
- const snapshot=copyReachState(e),numbers=[...new Set(snapshot.board.flat().filter(t=>t?.number!=null&&!e.drawn.has(t.number)).map(t=>t.number))].sort((a,b)=>a-b);
- const epoch=(s.reachEpoch||0)+1;s.reachEpoch=epoch;s.reachBoardKey=key;s.reachStatus='pending';s.reachResults=[];
+function reachContext(e,a=app){
+ if(!e||!a||e.kind==='choco'||!['playing','result','paying','complete'].includes(a.phase)||!reachBoardSettled(e)||e.opening||e.queue.length)return null;
+ const count=a.draws.length;let pending=[];
+ if(e.reachMode==='single'||e.drawMode==='single'){
+  if(count<1||e.processed!==count)return null;
+ }else{
+  if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
+  else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
+  else if(count>=5&&count<=8){if(e.processed!==count)return null;}
+  else return null;
+ }
+ return {count,pending,used:new Set(a.draws),key:[e.version,e.processed,count,pending.join(','),a.token].join('/')};
+}
+function reachContextKey(e,a=app){return reachContext(e,a)?.key||null;}
+function requestReach(s,e,a=app){
+ const context=reachContext(e,a);
+ if(!context||a.bet(s.i)<=0){if(s.reachStatus!=='inactive'){invalidateReach(s);s.reachStatus='inactive';}return;}
+ const key=context.key;if(s.reachBoardKey===key)return;
+ const snapshot=e.kind==='candy'?Object.assign(Object.create(CandyCarnivalEngine.prototype),{deck:e.deck.map(c=>({...c})),jars:[...e.jars],filled:[...e.filled],drawn:new Set(e.drawn),partyAwarded:e.partyAwarded,grandAwarded:e.grandAwarded,totalHundredths:e.totalHundredths}):copyReachState(e);
+ const numbers=Array.from({length:25},(_,i)=>i+1).filter(n=>!context.used.has(n));
+ const epoch=(s.reachEpoch||0)+1;s.reachEpoch=epoch;s.reachBoardKey=key;s.reachStatus='pending';s.reachResults=[];s.tabReachResults=[];
  let index=0;const results=[];
  function chunk(){
-  if(s.reachEpoch!==epoch||s.engine!==e||s.reachBoardKey!==key)return;
-  // Three candidates per task keep prediction out of the animation render loop.
+  if(s.reachEpoch!==epoch||s.engine!==e||s.reachBoardKey!==key||reachContextKey(e,a)!==key)return;
   const end=Math.min(numbers.length,index+3);
-  for(;index<end;index++){const result=predictNextHit(snapshot,numbers[index]);if(result?.gain>0)results.push(result);}
+  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index]):predictNextHit(snapshot,numbers[index],context.pending);if(result?.gain>0)results.push(result);}
   if(index<numbers.length){setTimeout(chunk,0);return;}
-  s.reachResults=results;s.reachStatus='ready';s.tabReachResults=results;s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;s.reachCalculations=(s.reachCalculations||0)+1;scheduleUI(app);
+  s.reachResults=results;s.reachStatus='ready';s.tabReachResults=results;s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;s.reachCalculations=(s.reachCalculations||0)+1;s.reachAfterBall=context.count;scheduleUI(app);
  }
  setTimeout(chunk,0);
 }
-function reachAvailable(s,a){return a.bet(s.i)>0&&['ready','playing','result','paying','complete'].includes(a.phase)&&(reachBoardSettled(s.engine)||s.engine.phase==='hit')&&s.reachStatus==='ready';}
+function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
 function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
 function updateReachBoard(s,a){
  if(!s.engine)return;
@@ -3916,7 +4120,7 @@ function updateReachBoard(s,a){
 const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
- if(a.bet(s.i)<=0||!['ready','playing','result','paying','complete'].includes(a.phase)||s.tabReachVersion!==s.engine.version)return [];
+ if(!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
  const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
  return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
 }
@@ -3974,9 +4178,10 @@ function updateReachUI(a){
 function event(i,ev,e,a){
  const s=slots[i];s.engine=e;
  if(e.kind==='choco'){chocoEvent(s,ev,e,a);return;}
- if(ev.phase==='drawpending'){clearMiniResult(s);s.dirtyMini=true;syncPendingHitTiles(s);scheduleUI(a);return;}
+ if(e.kind==='candy'){carnivalEvent(s,ev,e,a);return;}
+ if(ev.phase==='drawpending'){clearMiniResult(s);s.dirtyMini=true;invalidateReach(s);requestReach(s,e,a);syncPendingHitTiles(s);scheduleUI(a);return;}
  if(['ready','error'].includes(ev.phase)||(ev.phase==='vanish'&&ev.kind==='hit'))invalidateReach(s,{preserveTab:ev.phase==='vanish'});
- if(['ready','waiting','settled','complete'].includes(ev.phase))requestReach(s,e);
+ if(['ready','waiting','settled','complete'].includes(ev.phase))requestReach(s,e,a);
  if(ev.phase==='stepcollect'){s.lastStepGain=ev.steps.length;s.message='ワンダーシュガー '+ev.steps.length+' STEP獲得！';scheduleUI(a);return;}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
  if(['ready','hit','error'].includes(ev.phase)){stopPayClimb(s);syncPayClimb();}
@@ -4134,7 +4339,7 @@ function renderRoundResult(a){
  }
  if(layer.dataset.round!==String(a.token)){
   layer.dataset.round=String(a.token);
-  $('result-games').innerHTML=a.engines.map((e,i)=>'<div class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4][i]+'"/></svg><strong class="result-game-name">'+(e.kind==='choco'?'ショコラディグ':'ゲーム '+(i+1))+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?(e.kind==='choco'?e.depth+' m / ＋'+e.roundDepth+' m':e.maxLink+' LINK'):'—')+'</span><span>'+(a.enabled[i]?(e.kind==='choco'?e.roundBlocks+'個掘削 · 宝箱'+e.roundChests+'個':e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-direct-jpc="'+isDirectJpcSugar(e.wonderToken)+'" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
+  $('result-games').innerHTML=a.engines.map((e,i)=>'<div class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4][i]+'"/></svg><strong class="result-game-name">'+(e.kind==='choco'?'ショコラディグ':e.kind==='candy'?'キャンディカーニバル':'クッキーリンク')+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?(e.kind==='choco'?e.depth+' m / ＋'+e.roundDepth+' m':e.kind==='candy'?e.completedJars+' / 5 色完成':e.maxLink+' LINK'):'—')+'</span><span>'+(a.enabled[i]?(e.kind==='choco'?e.roundBlocks+'個掘削 · 宝箱'+e.roundChests+'個':e.kind==='candy'?e.roundCandies+'個GET'+(e.grandAwarded?' · GRAND':e.partyAwarded?' · PARTY':''):e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-direct-jpc="'+isDirectJpcSugar(e.wonderToken)+'" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
   for(const el of $('result-games').querySelectorAll('.result-value'))fitGoldenNumber(el,num(Number(el.dataset.value)),26,94);
   for(const el of $('result-games').querySelectorAll('.sugar-gem'))applySugarTier(el,sugarVisualTier({value:Number(el.dataset.value),directJpc:el.dataset.directJpc==='true'}));
   fitResultTotal(a);
@@ -5499,7 +5704,7 @@ async function loadCookieRoulette(){
 function rouletteAllClearNumbers(){
  const out=new Set();if(!app||app.phase!=='playing'||jpcSession.active)return out;
  for(const s of slots){const e=s.engine;
-  if(!e||app.bet(s.i)<=0||!reachAvailable(s,app)||s.reachBoardKey!==e.version+'/'+e.processed)continue;
+  if(!e||app.bet(s.i)<=0||!reachAvailable(s,app)||s.reachBoardKey!==reachContextKey(e,app))continue;
   for(const hit of s.reachResults||[])if(hit.allClear&&hit.tier===3&&!app.draws.includes(hit.number)&&!e.drawn.has(hit.number))out.add(hit.number);
  }
  return out;
@@ -5848,7 +6053,7 @@ function wakeAudioFromGesture(event){
  activateGameAudio({gesture:true});
 }
 
-app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(1);
+app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
