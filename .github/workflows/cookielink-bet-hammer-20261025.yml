@@ -1,0 +1,35 @@
+name: CookieLink BET hammer checked update
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cookielink-bet-hammer-20261025.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect exact source without changing game
+        run: |
+          python3 - <<'PY'
+          import pathlib, hashlib, re
+          raw = pathlib.Path('index.html').read_bytes()
+          sha = hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          print('SOURCE_BLOB', sha)
+          assert sha == '395c1e540f8d55ebd7f1348184cd7b6e2fa71e32'
+          lines = raw.decode('utf-8').splitlines()
+          needles = ['function renderPayout', 'hammer-palette', 'function hammerSVG', 'started=true', 'started = true', 'function start', 'function begin', 'function renderBet', 'function drawMini', 'function render(', 'function selectClub', 'function makeUI', 'function getBetPreview', 'function betPreview', 'CookieLinkBetPreview=']
+          keep = set()
+          for i, line in enumerate(lines):
+              if len(line)<12000 and any(n in line for n in needles):
+                  keep.update(range(max(0,i-3), min(len(lines),i+18)))
+          for i in sorted(keep):
+              line = lines[i]
+              if len(line)>12000:
+                  print(str(i+1)+': [asset line omitted]')
+              else:
+                  print(str(i+1)+': '+line)
+          print('INSPECTION_COMPLETE')
+          PY
