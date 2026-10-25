@@ -65,7 +65,7 @@ async function visual(page){
   q.hud(a);const s=q.slots[0],expected=s.engine.board.flat().filter(t=>t&&[1,2].includes(t.number)).map(t=>t.id),actual=[...s.tiles].filter(([,el])=>el.classList.contains('pending-hit')).map(([id])=>id);
   a.paused=false;q.miniature(q.slots[1]);
   return{expected:expected.sort((a,b)=>a-b),actual:actual.sort((a,b)=>a-b),names:[...s.tiles.values()].filter(el=>el.classList.contains('pending-hit')).map(el=>getComputedStyle(el.querySelector('.sweet')).animationName),history:[...document.querySelectorAll('#balls>span')].map(el=>getComputedStyle(el).animationName)};
- });assert.deepEqual(preview.actual,preview.expected);assert(preview.expected.length>0&&preview.names.every(x=>x==='pending-cell-pulse'));assert(preview.history.every(x=>x==='none'));
+ });console.log("PREVIEW_DIAGNOSTIC",JSON.stringify(preview));assert.deepEqual(preview.actual,preview.expected);assert(preview.expected.length>0&&preview.names.every(x=>x==='pending-cell-pulse'));assert(preview.history.every(x=>x==='none'));
  const hashes=[];for(let i=0;i<3;i++){await page.waitForTimeout(130);hashes.push(await page.evaluate(()=>{const s=window.__batchQA.slots[1],d=s.mini.getImageData(0,0,160,160).data;let h=2166136261;for(const b of d)h=Math.imul(h^b,16777619)>>>0;return h;}));}assert(new Set(hashes).size>1,'Mini pending cells did not blink');console.log('MAIN_AND_MINI_CELLS_PULSE_HISTORY_STATIC_OK',JSON.stringify({preview,hashes}));
  const bubble=await page.evaluate(()=>{
   const q=window.__batchQA,a=q.app,s=q.slots[1],e=s.engine,check=(x,m)=>{if(!x)throw Error(m);};a.paused=true;q.slots.forEach(s=>s.engine.pendingDraws.clear());e.maxLink=60;e.lastChain=12;s.sugarAwardActive=false;

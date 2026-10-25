@@ -1859,11 +1859,18 @@ body.mobile-landscape .jpc-grid{gap:5px}.mobile-landscape .jpc-pocket{font-size:
 @media(prefers-reduced-motion:reduce){.tab-slot .tab-sugar.sugar-powerup,.tab-slot .tab-sugar .sugar-gem:after{animation:none!important}}
 @media(forced-colors:active){.tab-slot .tab-sugar{background:Canvas;border:1px solid CanvasText;box-shadow:none}.tab-slot .tab-sugar.is-zero-bet{background:Canvas;border-style:dashed}.tab-slot .tab-sugar .sugar-gem:before,.tab-slot .tab-sugar .sugar-gem:after{display:none!important}}
 
-/* Grouped lottery: previously landed balls blink until draw 3 / draw 5 confirms the group. */
-@keyframes cookie-group-awaiting{0%,100%{filter:brightness(1);box-shadow:0 0 2px #fff2c8}50%{filter:brightness(1.55);box-shadow:0 0 11px #fff2a9,0 0 4px #ffca64;}}
-.balls span.group-wait-flash{animation:cookie-group-awaiting .7s ease-in-out infinite!important;border-color:#fff0ac;color:#744820}
-.paused .balls span.group-wait-flash{animation-play-state:paused!important}
-@media(prefers-reduced-motion:reduce){.balls span.group-wait-flash{animation:none!important;border:2px solid #e6a43f;box-shadow:0 0 4px #e6a43f}}
+/* Grouped HIT preview is on board cells, never on the draw-history indicators. */
+#screen .board .tile.pending-hit .sweet{animation:pending-cell-pulse .8s ease-in-out infinite!important;outline:2px solid #fff2a9;outline-offset:-2px}
+@keyframes pending-cell-pulse{0%,100%{opacity:1;filter:brightness(1.45) drop-shadow(0 0 4px #fff2a9)}50%{opacity:.48;filter:brightness(1)}}
+.paused .tile.pending-hit .sweet,.panel[hidden] .tile.pending-hit .sweet{animation-play-state:paused!important}
+.mini-result-label{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:calc(100% - 8px);box-sizing:border-box;padding:5px 2px 6px;border:2px solid #d89950;border-radius:10px;background:#fff4ddea;color:#733c28;box-shadow:0 2px 5px #32180a60;z-index:10;white-space:normal;line-height:1.2;text-shadow:0 1px #fff;animation:mini-result-pop 180ms ease-out both}
+.mini-result-label:after{content:"";position:absolute;left:50%;bottom:-6px;width:8px;height:8px;background:#fff4dd;border-right:2px solid #d89950;border-bottom:2px solid #d89950;transform:translateX(-50%) rotate(45deg)}
+.mini-result-label strong{display:block;font:900 12px/15px CookieLabels,system-ui,sans-serif;white-space:nowrap}
+.mini-result-label small{display:block;font:900 10px/13px CookieLabels,system-ui,sans-serif;white-space:nowrap}
+@keyframes mini-result-pop{from{opacity:0;transform:translate(-50%,-50%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.paused .mini-result-label{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#screen .board .tile.pending-hit .sweet,.mini-result-label{animation:none!important}.tile.pending-hit .sweet{opacity:1;filter:none;outline:2px solid #fff2a9}}
+@media(forced-colors:active){.tile.pending-hit .sweet{outline-color:Highlight}.mini-result-label,.mini-result-label:after{background:Canvas;border-color:CanvasText;color:CanvasText;box-shadow:none;text-shadow:none}}
 /* Keep the machine dominant on small screens without changing board proportions. */
 body.mobile-view #screen{gap:2px;padding-top:2px}
 body.mobile-view .arena{border-radius:12px}
@@ -2269,6 +2276,7 @@ const NORMAL_SUGAR_NAMES=Object.freeze(['白砂糖','ピンクシュガー','銅
 const DIRECT_JPC_SUGAR_TIER=6;
 const WONDER_NAMES=[...NORMAL_SUGAR_NAMES,'金シュガー','ダイレクトJPCシュガー'];
 const NORMAL_DRAW_GROUPS=Object.freeze([3,2,1,1,1]);
+const MINI_RESULT_MS=1800;
 const isDirectJpcSugar=token=>!!token&&typeof token==='object'&&(token.kind==='direct-jpc'||token.directJpc===true);
 function sugarVisualTier(tokenOrValue){
  if(isDirectJpcSugar(tokenOrValue))return DIRECT_JPC_SUGAR_TIER;
@@ -2356,7 +2364,7 @@ class Engine{
  constructor({random=Math.random,onEvent=()=>{},sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)),speed=1,colorCount=5}={}){
   this.random=random;this.onEvent=onEvent;this.sleep=sleep;this.speed=speed;this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.version=0;this.uid=0;this.reset();
  }
- emit(phase,detail={}){if(!['queued','stepcollect'].includes(phase))this.phase=phase;this.onEvent({phase,...detail},this);}
+ emit(phase,detail={}){if(!['queued','stepcollect','drawpending'].includes(phase))this.phase=phase;this.onEvent({phase,...detail},this);}
  reset({keepWonder=true,keepHammers=keepWonder}={}){
   const newSugar=!keepWonder||!this.basketState||this.wonderCollected;
   if(!keepHammers||!this.hammerQueue)this.hammerQueue=[];
@@ -2367,7 +2375,7 @@ class Engine{
    if(keepHammers&&tile?.special)this.hammerQueue.push(tile.color);
   }
   this.presentationRate=1;this.roundBet=this.roundBet||100;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;this.lastChain=0;this.pendingSugarAward=[];
-  this.version++;this.queue=[];this.seen=new Set();this.drawn=new Set();this.history=[];this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.allClears=0;this.processed=0;this.accepted=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
+  this.version++;this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.allClears=0;this.processed=0;this.accepted=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
   this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.fill(true);if(keepHammers)this.grantHammers(0);this.prepareHammerPreview();this.emit('ready');
  }
  start(){
@@ -2388,9 +2396,15 @@ class Engine{
    if(token===this.version){this.opening=false;this.busy=false;this.running=false;this.queue=[];this.emit('error',{message:error.message});}
   }
  }
- enqueue(number){
-  if(!this.running||!Number.isInteger(number)||number<1||number>25||this.seen.has(number)||this.accepted>=8)return false;
-  this.seen.add(number);this.accepted++;this.queue.push(number);this.emit('queued',{number});if(!this.busy)this.drain();return true;
+ previewDraw(number){
+  if(!this.running||!Number.isInteger(number)||number<1||number>25||this.seen.has(number)||this.pendingDraws.has(number))return false;
+  this.pendingDraws.add(number);this.emit('drawpending',{number,numbers:[...this.pendingDraws]});return true;
+ }
+ enqueue(number){return this.enqueueBatch([number]);}
+ enqueueBatch(numbers){
+  if(!this.running||!Array.isArray(numbers)||!numbers.length||this.accepted+numbers.length>8||new Set(numbers).size!==numbers.length||numbers.some(n=>!Number.isInteger(n)||n<1||n>25||this.seen.has(n)))return false;
+  const batch=[...numbers];for(const n of batch)this.seen.add(n);
+  this.accepted+=batch.length;this.queue.push(batch);this.emit('queued',{number:batch[batch.length-1],numbers:[...batch],batchSize:batch.length});if(!this.busy)this.drain();return true;
  }
  get idle(){return !this.busy&&!this.queue.length;}
  async wait(ms,token){
@@ -2506,37 +2520,40 @@ class Engine{
   const token=this.version;this.busy=true;
   try{
    while(this.queue.length&&token===this.version){
-    const number=this.queue.shift(),ball=this.processed+1;let depth=0;this.lastChain=0;this.drawn.add(number);
-    const hit=[];for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(this.board[r][c]?.number===number)hit.push([r,c]);
+    const queued=this.queue.shift(),numbers=Array.isArray(queued)?queued:[queued],number=numbers[numbers.length-1],ballStart=this.processed+1,ball=this.processed+numbers.length,batch={numbers:[...numbers],ballStart,batchSize:numbers.length};
+    let depth=0,batchMaxLink=0;const beforeClears=this.allClears;this.lastChain=0;for(const n of numbers){this.drawn.add(n);this.pendingDraws.delete(n);}const numberSet=new Set(numbers);
+    const hit=[];for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(numberSet.has(this.board[r][c]?.number))hit.push([r,c]);
     const hitResolved=this.resolveLinks([{cells:hit}]);
-    this.emit('hit',{number,ball,...hitResolved,clearColors:hitResolved.colors});if(!await this.wait(hit.length?1000*this.speed:120,token))return;
-    const hitPlan=makeClearPlan(hitResolved,this.board,this.speed);this.emit('vanish',{number,ball,...hitResolved,plan:hitPlan,duration:hitPlan.duration,kind:'hit'});if(!await this.wait(hitPlan.duration*this.speed,token))return;
-    const hitClear=this.remove(hitResolved.cells);depth=hitResolved.cells.length?1:0;this.lastChain=depth;this.maxChain=Math.max(this.maxChain,depth);this.emit('remove',{number,ball,depth,kind:'hit'});if(!await this.wait(clearToFallWait(hitResolved,this.speed),token))return;
-    if(hitClear){this.emit('allclear',{number,ball});if(!await this.wait(ALL_CLEAR_WAIT,token))return;}
-    this.gravity();this.emit('fall',{number,ball});if(!await this.wait(300,token))return;
+    this.emit('hit',{...batch,number,ball,...hitResolved,clearColors:hitResolved.colors});if(!await this.wait(hit.length?1000*this.speed:120,token))return;
+    const hitPlan=makeClearPlan(hitResolved,this.board,this.speed);this.emit('vanish',{...batch,number,ball,...hitResolved,plan:hitPlan,duration:hitPlan.duration,kind:'hit'});if(!await this.wait(hitPlan.duration*this.speed,token))return;
+    const hitClear=this.remove(hitResolved.cells);depth=hitResolved.cells.length?1:0;this.lastChain=depth;this.maxChain=Math.max(this.maxChain,depth);this.emit('remove',{...batch,number,ball,depth,kind:'hit'});if(!await this.wait(clearToFallWait(hitResolved,this.speed),token))return;
+    if(hitClear){this.emit('allclear',{...batch,number,ball});if(!await this.wait(ALL_CLEAR_WAIT,token))return;}
+    this.gravity();this.emit('fall',{...batch,number,ball});if(!await this.wait(300,token))return;
     let linked=groups(this.board);
     while(linked.length){
+     batchMaxLink=Math.max(batchMaxLink,...linked.map(g=>g.size));
      depth++;const previousMax=this.maxLink,gain=this.recordLinks(linked,{ball,number,depth}),newRecord=this.maxLink>=MIN_PAID_LINK&&this.maxLink>previousMax;this.lastChain=depth;
      const traceMs=newRecord?recordDuration(this.maxLink,this.speed):0;
      const resolved=this.resolveLinks(linked);
-     this.emit('link',{number,ball,depth,groups:linked,gain,...resolved,clearColors:resolved.colors,newRecord,previousMax,recordDuration:traceMs});
+     this.emit('link',{...batch,number,ball,depth,groups:linked,gain,...resolved,clearColors:resolved.colors,newRecord,previousMax,recordDuration:traceMs});
      if(!await this.wait(newRecord?traceMs*this.speed:220+Math.min(80,Math.max(...linked.map(g=>g.size))*6),token))return;
-     const linkPlan=makeClearPlan(resolved,this.board,this.speed);this.emit('vanish',{number,ball,depth,...resolved,plan:linkPlan,duration:linkPlan.duration,kind:'link'});if(!await this.wait(linkPlan.duration*this.speed,token))return;
-     const linkClear=this.remove(resolved.cells,{chain:true});this.emit('remove',{number,ball,depth,kind:'link'});if(!await this.wait(clearToFallWait(resolved,this.speed),token))return;
-     if(linkClear){this.emit('allclear',{number,ball});if(!await this.wait(ALL_CLEAR_WAIT,token))return;}
-     this.gravity();this.emit('fall',{number,ball});if(!await this.wait(300,token))return;
+     const linkPlan=makeClearPlan(resolved,this.board,this.speed);this.emit('vanish',{...batch,number,ball,depth,...resolved,plan:linkPlan,duration:linkPlan.duration,kind:'link'});if(!await this.wait(linkPlan.duration*this.speed,token))return;
+     const linkClear=this.remove(resolved.cells,{chain:true});this.emit('remove',{...batch,number,ball,depth,kind:'link'});if(!await this.wait(clearToFallWait(resolved,this.speed),token))return;
+     if(linkClear){this.emit('allclear',{...batch,number,ball});if(!await this.wait(ALL_CLEAR_WAIT,token))return;}
+     this.gravity();this.emit('fall',{...batch,number,ball});if(!await this.wait(300,token))return;
      linked=groups(this.board);
     }
     // Celebrate only after every cascade and its final gravity animation finish.
-    if(this.pendingSugarAward.length){const steps=this.pendingSugarAward.splice(0);this.emit('sugaraward',{number,ball,steps});if(!await this.wait(SUGAR_GET_WAIT*this.speed,token))return;}
+    if(this.pendingSugarAward.length){const steps=this.pendingSugarAward.splice(0);this.emit('sugaraward',{...batch,number,ball,steps});if(!await this.wait(SUGAR_GET_WAIT*this.speed,token))return;}
     const refillCells=[];for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(!this.board[r][c])refillCells.push([r,c]);
     this.fill();const refillDuration=refillWait(refillCells,this.speed);
-    this.emit('refill',{number,ball,depth,stepCells:this.spawnedSteps,adjustedCells:this.refillAdjusted,freshCells:refillCells,duration:refillDuration/this.speed});
+    this.emit('refill',{...batch,number,ball,depth,stepCells:this.spawnedSteps,adjustedCells:this.refillAdjusted,freshCells:refillCells,duration:refillDuration/this.speed});
     if(!await this.wait(refillDuration,token))return;
-    const gift=this.grantHammers(depth);if(gift.count||gift.pending){const duration=gift.count?hammerGiftTiming(gift.count,this.speed).total:720/this.speed;this.emit('hammergift',{number,ball,depth,...gift,duration});if(!await this.wait(duration*this.speed,token))return;}
-    this.processed++;this.emit('settled',{number,ball,depth});
+    const gift=this.grantHammers(depth);if(gift.count||gift.pending){const duration=gift.count?hammerGiftTiming(gift.count,this.speed).total:720/this.speed;this.emit('hammergift',{...batch,number,ball,depth,...gift,duration});if(!await this.wait(duration*this.speed,token))return;}
+    this.processed+=numbers.length;this.emit('settled',{...batch,number,ball,depth,batchMaxLink,batchAllClears:this.allClears-beforeClears});
     // A full unpaused second after the settled board, even with queued draws.
-    if(this.processed<8&&!await this.wait(HIT_GAP_MS*this.speed,token))return;
+    const gap=this.processed<8?HIT_GAP_MS:MINI_RESULT_MS*(this.presentationRate||1);
+    if(!await this.wait(gap*this.speed,token))return;
    }
   }catch(error){if(token===this.version){this.running=false;this.queue=[];this.emit('error',{message:error.message});}}
   finally{if(token===this.version){this.busy=false;if(this.processed===8){this.running=false;this.emit('complete');}else if(this.running)this.emit('waiting');}}
@@ -2612,24 +2629,22 @@ class Arcade{
  async wait(ms,token){let remaining=ms;while(remaining>0&&token===this.token){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.token;}
  acceptNumber(n,token){
   if(token!==this.token||this.phase!=='playing'||this.paused||this.draws.length>=8||!Number.isInteger(n)||n<1||n>25||this.draws.includes(n))return false;
-  this.draws.push(n);
-  // Wait for ball 3 / 5 before submitting each complete group to the game boards.
+  this.draws.push(n);this.engines.forEach((e,i)=>{if(this.enabled[i])e.previewDraw(n);});
+  // Submit one atomic batch after ball 3 / 5; previewed cells never resolve early.
   const count=this.draws.length,release=count===3?this.draws.slice(0,3):count===5?this.draws.slice(3,5):count>5?[n]:[];
-  for(const value of release)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(value);});
+  if(release.length)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueueBatch(release);});
   if(this.draws.length===8){this.dealing=false;this.boostAfterDraws(token);}this.onChange(this);return true;
  }
  failDraw(message,token){if(token!==this.token||this.phase!=='playing')return;this.drawError=message;this.phase='error';this.token++;this.dealing=false;this.pause(true);this.onChange(this);}
  async deal(token){
   for(let k=0;k<8;k++){
    if(k&&!await this.wait(5000,token))return;
+   if([3,5,6,7].includes(k))while(token===this.token&&this.phase==='playing'&&!this.engines.every((e,i)=>!this.enabled[i]||(!e.opening&&e.idle&&e.processed>=e.accepted)))await this.sleep(40);
    while(this.paused&&token===this.token)await this.sleep(40);
-   if(token!==this.token)return;
+   if(token!==this.token||this.phase!=='playing')return;
    const pool=Array.from({length:25},(_,i)=>i+1).filter(n=>!this.draws.includes(n));
-   const n=pool[Math.floor(this.random()*pool.length)];this.draws.push(n);
-   const count=this.draws.length,release=count===3?this.draws.slice(0,3):count===5?this.draws.slice(3,5):count>5?[n]:[];
-   for(const value of release)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(value);});this.onChange(this);
+   if(!this.acceptNumber(pool[Math.floor(this.random()*pool.length)],token))return;
   }
-  if(token===this.token){this.dealing=false;this.onChange(this);this.boostAfterDraws(token);}
  }
  async boostAfterDraws(token){
   let remaining=5000;
@@ -2783,6 +2798,8 @@ function flushUI(timestamp){
  const current=slots[active];
  if(current.dirtyMain){current.dirtyMain=false;render(current,current.event,current.engine,!current.catchUp);current.catchUp=false;}
  for(const slot of slots)if(slot.dirtyMini){slot.dirtyMini=false;miniature(slot);}
+ for(const slot of slots)syncPendingHitTiles(slot);
+ updateMiniResults(uiApp,timestamp);
  hud(uiApp);
  syncPresentationRate();
  syncBetPreview(uiApp);
@@ -3112,6 +3129,42 @@ function drawBetPreview(d){
  for(const s of slots)drawBetScene(s.mini,s.miniCanvas.width,d);
 }
 
+function pendingCellNumbers(e){return e&&['waiting','settled','ready'].includes(e.phase)?e.pendingDraws:new Set();}
+function syncPendingHitTiles(s){
+ const pending=app?.phase==='playing'&&app.enabled[s.i]?pendingCellNumbers(s.engine):new Set();
+ const ids=new Set();if(pending?.size)for(const row of s.engine.board)for(const t of row)if(t&&pending.has(t.number))ids.add(t.id);
+ for(const [id,el] of s.tiles)el.classList.toggle('pending-hit',ids.has(id));
+}
+function requestMiniFrame(s){
+ if(s.miniFrame||app?.paused||document.hidden||!inView||s.i===active)return;
+ const version=s.engine.version;
+ s.miniFrame=requestAnimationFrame(()=>{s.miniFrame=0;if(s.engine.version!==version||app?.paused||document.hidden||!inView)return;s.dirtyMini=true;scheduleUI(app);});
+}
+function clearMiniResult(s){
+ s.miniLastResult='';s.miniResultState=null;s.miniResult.hidden=true;s.miniResult.textContent='';
+}
+function showMiniResult(s,ev){
+ clearMiniResult(s);
+ const link=Math.max(0,ev.batchMaxLink||0),chain=Math.max(0,ev.depth||0),clears=ev.batchAllClears||0;
+ if(link<2&&chain<2&&!clears)return;
+ const rows=[];if(link>=2)rows.push(link+' LINK');if(chain>=2)rows.push(chain+'連鎖');if(clears)rows.push('全消し！');
+ s.miniLastResult=rows.join(' · ');s.miniResult.replaceChildren(...rows.map((text,i)=>{const el=document.createElement(i?'small':'strong');el.textContent=text;return el;}));
+ s.miniResult.setAttribute('aria-label',s.miniLastResult);s.miniResultState={remaining:MINI_RESULT_MS,stamp:null,version:s.engine.version};
+}
+function updateMiniResults(a,now=performance.now()){
+ let ticking=false;const paused=a.paused||document.hidden||!inView;
+ for(const s of slots){
+  const state=s.miniResultState;if(!state){s.miniResult.hidden=true;continue;}
+  if(state.version!==s.engine.version||a.phase!=='playing'||a.bet(s.i)<=0){clearMiniResult(s);continue;}
+  if(paused)state.stamp=null;else{if(state.stamp!==null)state.remaining-=Math.max(0,now-state.stamp);state.stamp=now;}
+  if(state.remaining<=0){clearMiniResult(s);continue;}
+  const stable=['settled','waiting','complete'].includes(s.engine.phase);
+  s.miniResult.hidden=s.i===active||!stable||s.sugarAwardActive;
+  if(!paused)ticking=true;
+ }
+ if(ticking)scheduleUI(a);
+}
+
 function miniature(s){
  if(app?.phase==='ready')return;
  if(s.i===active)return;
@@ -3121,17 +3174,21 @@ function miniature(s){
  const moved=[...positions].some(([id,pos])=>old.has(id)&&(old.get(id).r!==pos.r||old.get(id).c!==pos.c));
  if(moved&&!s.miniTween){s.miniTween={from:old,start:now};}
  if(!s.miniTween||now-s.miniTween.start>240){s.miniTween=null;s.miniPositions=positions;}
- else {s.miniPositions=positions;const version=s.engine.version;requestAnimationFrame(()=>{if(s.engine.version===version){s.dirtyMini=true;scheduleUI(app);}});}
+ else {s.miniPositions=positions;requestMiniFrame(s);}
  const fraction=s.miniTween?Math.min(1,(now-s.miniTween.start)/240):1;
  const ctx=s.mini,e=s.engine;ctx.clearRect(0,0,160,160);ctx.fillStyle='#382017';ctx.fillRect(0,0,160,160);
  const marked=new Set((e.phase==='hit'?[{cells:s.event.primaryCells||s.event.cells||[]}]:e.phase==='link'?recordGroups(s.event,e):[]).flatMap(g=>g.cells.map(([r,c])=>r*SIZE+c)));
+ const pending=pendingCellNumbers(e)||new Set(),flash=new Set(e.phase==='hit'?marked:[]);
+ for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(pending.has(e.board[r][c]?.number))flash.add(r*SIZE+c);
+ if(!app.paused)s.miniFlashStamp=now;const pulse=motionReduced?1:.48+.52*(.5+.5*Math.cos((s.miniFlashStamp||now)*Math.PI/400));
  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
-  const t=e.board[r][c];if(!t)continue;const from=s.miniTween?.from.get(t.id);const x=(from?from.c+(c-from.c)*fraction:c)*MINI,y=(from?from.r+(r-from.r)*fraction:r)*MINI;ctx.save();ctx.translate(x-c*MINI,y-r*MINI);ctx.globalAlpha=e.phase==='vanish'&&(s.event.cells||[]).some(([y,x])=>y===r&&x===c)?.35:1;if(!t.special){ctx.fillStyle='#dca261';ctx.fillRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);ctx.fillStyle=inks[t.color];ctx.fillRect(c*MINI+3,r*MINI+3,MINI-6,MINI-6);ctx.fillStyle='#ffffff70';ctx.fillRect(c*MINI+4,r*MINI+4,MINI-8,2);}
+  const t=e.board[r][c];if(!t)continue;const from=s.miniTween?.from.get(t.id);const x=(from?from.c+(c-from.c)*fraction:c)*MINI,y=(from?from.r+(r-from.r)*fraction:r)*MINI;ctx.save();ctx.translate(x-c*MINI,y-r*MINI);ctx.globalAlpha=flash.has(r*SIZE+c)?pulse:e.phase==='vanish'&&(s.event.cells||[]).some(([y,x])=>y===r&&x===c)?.35:1;if(!t.special){ctx.fillStyle='#dca261';ctx.fillRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);ctx.fillStyle=inks[t.color];ctx.fillRect(c*MINI+3,r*MINI+3,MINI-6,MINI-6);ctx.fillStyle='#ffffff70';ctx.fillRect(c*MINI+4,r*MINI+4,MINI-8,2);}
   if(!t.special&&t.number!=null){drawElixirNumber(ctx,t.number,(c+.5)*MINI,(r+.55)*MINI,MINI*.575,'white','#795372',1.2);}
-  ctx.globalAlpha=1;if(t.special)drawHammer(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.94,t.color);if(t.step&&app.bet(s.i)>0)drawSugar(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.7,sugarVisualTier(t.step));if(marked.has(r*SIZE+c)){ctx.strokeStyle='#ffe68e';ctx.lineWidth=2;ctx.strokeRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);}
+  ctx.globalAlpha=1;if(t.special)drawHammer(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.94,t.color);if(t.step&&app.bet(s.i)>0)drawSugar(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.7,sugarVisualTier(t.step));if(marked.has(r*SIZE+c)||flash.has(r*SIZE+c)){ctx.globalAlpha=flash.has(r*SIZE+c)?pulse:1;ctx.strokeStyle='#ffe68e';ctx.lineWidth=2;ctx.strokeRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);}
   ctx.restore();
  }
- if(e.phase==='refill'||e.phase==='vanish'||e.phase==='link'){ctx.save();ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff0b8';ctx.strokeStyle='#351910';ctx.lineWidth=3;const msg=e.phase==='link'?(e.maxLink+' LINK'):e.phase==='vanish'?'CRACK!':'SWEETS!';ctx.strokeText(msg,80,150);ctx.fillText(msg,80,150);ctx.restore();}
+ if(e.phase==='refill'||e.phase==='vanish'){ctx.save();ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff0b8';ctx.strokeStyle='#351910';ctx.lineWidth=3;const msg=e.phase==='vanish'?'CRACK!':'SWEETS!';ctx.strokeText(msg,80,150);ctx.fillText(msg,80,150);ctx.restore();}
+ if(flash.size&&!motionReduced)requestMiniFrame(s);
  // Sugar status is drawn outside the mini-board by the shared DOM badge.
 }
 function tabs(a){
@@ -3215,11 +3272,11 @@ function hud(a){
  updatePayTable(e,bet);
  $('status').parentNode.hidden=a.phase!=='error';put('status',a.phase==='error'&&a.drawError?a.drawError:userPaused?'一時停止中':bet===0?'BETを設定すると、このゲームも参加します':s.message);
  const waitingForGroup=a.phase==='playing'?(a.draws.length===1||a.draws.length===2?3:a.draws.length===4?5:0):0;
- put('ballinfo',waitingForGroup?waitingForGroup+'球目の入賞待ち · 点滅中':'あと'+Math.max(0,8-a.draws.length)+'球');
+ put('ballinfo',waitingForGroup?waitingForGroup+'球目待ち · 盤面点滅':'あと'+Math.max(0,8-a.draws.length)+'球');
  const nextBalls=[a.phase,a.draws.join(','),e.processed,waitingForGroup].join('/');
  if(ballsKey!==nextBalls){ballsKey=nextBalls;$('balls').innerHTML=Array.from({length:8},(_,i)=>{
- const completed=i<e.processed,registered=i<a.draws.length,flash=waitingForGroup&&(waitingForGroup===3?i<2:i===3)&&registered;
- return `<span class="${completed?'done':registered?'pending':''}${flash?' group-wait-flash':''}"${flash?' aria-label="入賞済み・次のグループ確定待ち"':''}>${a.draws[i]?elixirNumber(a.draws[i]):'·'}</span>`;
+ const completed=i<e.processed,registered=i<a.draws.length;
+ return `<span class="${completed?'done':registered?'pending':''}">${a.draws[i]?elixirNumber(a.draws[i]):'·'}</span>`;
  }).join('');}
  for(const slot of slots)slot.board?.classList.toggle('group-awaiting',Boolean(waitingForGroup)&&a.enabled[slot.i]);
  const editable=a.phase==='ready';for(const slot of slots){slot.controls.hidden=!editable;slot.lockedBet.hidden=false;for(const button of [slot.cycle,slot.addBet,slot.oneBet])button.disabled=!editable;const amount=units[unit[slot.i]];slot.addBet.textContent=amount+' BET';slot.addBet.setAttribute('aria-label','ゲーム'+(slot.i+1)+'に'+amount+' BET追加');}
@@ -3701,6 +3758,7 @@ function updateReachUI(a){
 
 function event(i,ev,e,a){
  const s=slots[i];s.engine=e;
+ if(ev.phase==='drawpending'){clearMiniResult(s);s.dirtyMini=true;syncPendingHitTiles(s);scheduleUI(a);return;}
  if(['ready','error'].includes(ev.phase)||(ev.phase==='vanish'&&ev.kind==='hit'))invalidateReach(s,{preserveTab:ev.phase==='vanish'});
  if(['ready','waiting','settled','complete'].includes(ev.phase))requestReach(s,e);
  if(ev.phase==='stepcollect'){s.lastStepGain=ev.steps.length;s.message='ワンダーシュガー '+ev.steps.length+' STEP獲得！';scheduleUI(a);return;}
@@ -3708,16 +3766,15 @@ function event(i,ev,e,a){
  if(['ready','hit','error'].includes(ev.phase)){stopPayClimb(s);syncPayClimb();}
  if(ev.phase==='link'&&ev.newRecord)startPayClimb(s,ev.previousMax||0,e.maxLink,ev.recordDuration||recordDuration(e.maxLink,e.speed));
  if(['ready','hit','refill','complete','error'].includes(ev.phase))s.chainDepth=0;else if(ev.phase==='link'||ev.phase==='remove')s.chainDepth=ev.depth||0;
- if(ev.phase==='ready'){s.miniLastResult='';s.miniResult.hidden=true;}
- if(ev.phase==='allclear'){s.miniLastResult='全消し！';}
- if(ev.phase==='settled'||ev.phase==='complete'){if(!s.miniLastResult||s.miniLastResult!=='全消し！')s.miniLastResult=(e.lastChain>1?e.lastChain+'連鎖 · ':'')+e.maxLink+' LINK';}
- if(['settled','complete','allclear'].includes(ev.phase)){s.miniResult.textContent=s.miniLastResult;s.miniResult.hidden=!s.miniLastResult;}
+ if(['ready','hit','error'].includes(ev.phase))clearMiniResult(s);
+ if(ev.phase==='settled')showMiniResult(s,ev);
+ if(ev.phase==='ready'){if(s.miniFrame)cancelAnimationFrame(s.miniFrame);s.miniFrame=0;s.miniFlashStamp=null;}
  if(ev.phase!=='queued'){s.event=ev;s.dirtyMain=true;s.dirtyMini=true;}
  if(ev.phase==='ready'){
   stopSugarAward(s);stopPour(s);stopHammerTransfer(s);s.particles.replaceChildren();s.notice={tone:'ready',title:'SWEET PATISSERIE'};
   if(i!==active){for(const el of s.tiles.values())el.remove();s.tiles.clear();clearMarks(s);}
  }
- if(ev.phase==='hit')s.notice={tone:'hit',title:ev.ball+'球目 · '+ev.number+' HIT!'+(ev.clearColors?.length?' · COLOR CLEAR!':'')};
+ if(ev.phase==='hit')s.notice={tone:'hit',title:(ev.batchSize>1?ev.ballStart+'〜'+ev.ball:ev.ball)+'球目 · '+(ev.numbers||[ev.number]).join('・')+' HIT!'+(ev.clearColors?.length?' · COLOR CLEAR!':'')};
  if(ev.phase==='link')s.notice={tone:ev.newRecord?'boost':'chain',title:ev.depth+' CHAIN'+(ev.newRecord?' · NEW BEST!':ev.depth>=5?' · HAMMER +'+hammerReward(ev.depth):' · SWEET COMBO!')};
  if(ev.phase==='hammergift')s.notice={tone:'boost',title:'SWEET HAMMER +'+ev.count};
  if(ev.phase==='allclear')s.notice={tone:'clear',title:'ALL CLEAR! 全消しボーナス'};
@@ -3725,7 +3782,7 @@ function event(i,ev,e,a){
  if(ev.phase==='complete')s.notice={tone:'complete',title:'ゲーム終了'};
  const labels={ready:'同色が上下左右に2つ以上で消去 · 2・3LINKは0 WIN',waiting:'次の抽選を待っています',fall:'お菓子が落下中…',refill:'バスケットからお菓子をお届け♪',vanish:'ひび割れて、パッと弾ける！',settled:'次のHITへ',complete:'払い出し '+num(medalWin(a.bet(i),e.totalHundredths))+' WIN！'};
  if(labels[ev.phase])s.message=labels[ev.phase];if(ev.phase==='vanish'&&ev.plan?.rays.length)s.message='COLOR BURST! 光が同じ色へ走ります！';
- if(ev.phase==='hit'){s.message=ev.ball+'球目：'+ev.number+'番 HIT！'+(ev.clearColors?.length?' '+ev.clearColors.map(c=>COLORS[c]).join('・')+'の色消し！':'');}
+ if(ev.phase==='hit'){s.message=(ev.batchSize>1?ev.ballStart+'〜'+ev.ball:ev.ball)+'球目：'+(ev.numbers||[ev.number]).join('・')+'番 同時HIT！'+(ev.clearColors?.length?' '+ev.clearColors.map(c=>COLORS[c]).join('・')+'の色消し！':'');}
  if(ev.phase==='link'){s.message=(ev.newRecord?'最大LINK更新！ ':'')+ev.depth+'連鎖'+(ev.clearColors.length?' · '+ev.clearColors.map(c=>COLORS[c]).join('・')+'の色消し！':'');if(i===active&&ev.newRecord)sound('confirm',{volume:1,delay:Math.max(0,(ev.recordDuration||0)-540)});}
  if(ev.phase==='allclear'){s.message='全消し！ '+50+'倍ボーナス';if(i===active){sound('confirm',{volume:1});sound('magic',{delay:100,volume:.55});}}
  if(ev.phase==='hammergift'){s.message='補充完了！ ハンマー '+ev.count+'個出現'+(ev.pending?'・残り'+ev.pending+'個は次の空きマスへ':'');if(i===active&&ev.count)sound('magic',{volume:.7});}
@@ -5421,7 +5478,7 @@ $('jpc-mode').onclick=toggleJpcMode;
 
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=debugResetRound;
-function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
+function syncPause(){for(const s of slots){if(s.miniResultState)s.miniResultState.stamp=null;s.dirtyMini=true;}if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
  if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(error=>{audioNeedsGesture=error?.name==='NotAllowedError';setAudioStatus(audioNeedsGesture?'blocked':'error');});if(audio&&audio.state!=='running')unlock();}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;resultAutoStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);if(jpcSession.active)rouletteDriver?.setPaused(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=null;$('pause').hidden=true;$('pause').tabIndex=-1;

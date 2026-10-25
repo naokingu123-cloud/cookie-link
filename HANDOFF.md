@@ -106,3 +106,12 @@
 - 通常抽選は3球→2球→1球→1球→1球。グループ内の球が入賞し、有効盤面すべての連鎖/補充/キュー処理が完了してから次へ。0 BET盤面は待機条件から除外。JPC70球と3D物理は維持。
 - 検証: 構文、5種+専用虹のSVG/Canvas、0 BET非実行/非発生/成長保持、実ドライバの待機条件と3/2/1/1/1球数、専用虹の一度のみJPC、5画面サイズの外側バッジ/ボタン非重複、45ケースの通常ゲーム結果/乱数一致、既存リザルト8秒/BET15秒/JPC切替検証に合格。
 - 未検証: iPhone実機、スピーカー聴感、物理抽選の全70球実時間通し。BGM素材追加は今回なし。
+
+
+## 2026-10-25 — Atomic grouped HITs and settled mini-board bubbles
+- Balls 1–3 resolve as one union of matching board cells; balls 4–5 are a second union. Balls 6, 7 and 8 remain individual. Each batch has one primary clear, cascade and refill; accepted/processed continue counting balls (8 total).
+- Drawn-number preview pulses only the matching main/mini board cells while waiting for the group. The draw-history indicators no longer blink. No board mutation or refill occurs after only ball 1, 2 or 4.
+- Mini LINK/chain/all-clear text appears only after `settled` (including refill and hammer delivery), in a centered speech bubble for 1800 ms. Its values belong to that batch, not a stale round maximum. New HIT, reset and errors clear it. Pause/background suspend its clock; completion does not re-show it. The final batch leaves 1800 ms before the round-result overlay.
+- Existing physics, payouts, color rules, allocation, media and 0-BET behavior are preserved. Direct `Engine.enqueue(n)` remains supported; grouped callers must use `enqueueBatch(numbers)`.
+- Source index.html blob: `b6d56b05979c4c900dd4bd84fc9f03461270ecb8`. Guarded maintenance script: `.github/maintenance/mini_batch_20261025.py`. Regression: `.github/tests/cookie-link-mini-batch.cjs`.
+- Verification: Chromium loaded the real embedded 3D app without page errors. Nine seeded grouped rounds across 3/4/5 colors verified union clears, no early mutations, counts 3/5/6/7/8, single refills, validation and 0-BET isolation. Six legacy single-draw rounds exactly matched the pre-change board, scoring, history and RNG. Mobile 390×844 / 430×932 and desktop 1280×900 verified board-cell pulsing, static history indicators, centered settled-only bubble, 1800 ms real-time expiry, pause/resume, selection and reset. Physical driver group gate remained 3/2/1/1/1.

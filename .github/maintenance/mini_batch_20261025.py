@@ -37,7 +37,7 @@ new=new.replace("if(this.processed<8&&!await this.wait(HIT_GAP_MS*this.speed,tok
 assert 'this.processed++' not in new and 'batchMaxLink=Math.max' in new
 rep(old,new)
 rep('  this.draws.push(n);\n  // Wait for ball 3 / 5 before submitting each complete group to the game boards.','  this.draws.push(n);this.engines.forEach((e,i)=>{if(this.enabled[i])e.previewDraw(n);});\n  // Submit one atomic batch after ball 3 / 5; previewed cells never resolve early.')
-rep('  for(const value of release)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(value);});','  if(release.length)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueueBatch(release);});')
+rep('  for(const value of release)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(value);});','  if(release.length)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueueBatch(release);});',count=2)
 old=section(' async deal(token){',' async boostAfterDraws(token){')
 rep(old,""" async deal(token){
   for(let k=0;k<8;k++){
@@ -55,7 +55,7 @@ start=s.index('/* Grouped lottery: previously landed balls blink')
 end=s.index('/* Keep the machine dominant',start)
 old=s[start:end]
 rep(old,"""/* Grouped HIT preview is on board cells, never on the draw-history indicators. */
-.tile.pending-hit .sweet{animation:pending-cell-pulse .8s ease-in-out infinite;outline:2px solid #fff2a9;outline-offset:-2px}
+#screen .board .tile.pending-hit .sweet{animation:pending-cell-pulse .8s ease-in-out infinite!important;outline:2px solid #fff2a9;outline-offset:-2px}
 @keyframes pending-cell-pulse{0%,100%{opacity:1;filter:brightness(1.45) drop-shadow(0 0 4px #fff2a9)}50%{opacity:.48;filter:brightness(1)}}
 .paused .tile.pending-hit .sweet,.panel[hidden] .tile.pending-hit .sweet{animation-play-state:paused!important}
 .mini-result-label{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:calc(100% - 8px);box-sizing:border-box;padding:5px 2px 6px;border:2px solid #d89950;border-radius:10px;background:#fff4ddea;color:#733c28;box-shadow:0 2px 5px #32180a60;z-index:10;white-space:normal;line-height:1.2;text-shadow:0 1px #fff;animation:mini-result-pop 180ms ease-out both}
@@ -64,7 +64,7 @@ rep(old,"""/* Grouped HIT preview is on board cells, never on the draw-history i
 .mini-result-label small{display:block;font:900 10px/13px CookieLabels,system-ui,sans-serif;white-space:nowrap}
 @keyframes mini-result-pop{from{opacity:0;transform:translate(-50%,-50%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 .paused .mini-result-label{animation-play-state:paused!important}
-@media(prefers-reduced-motion:reduce){.tile.pending-hit .sweet,.mini-result-label{animation:none!important}.tile.pending-hit .sweet{opacity:1;filter:none;outline:2px solid #fff2a9}}
+@media(prefers-reduced-motion:reduce){#screen .board .tile.pending-hit .sweet,.mini-result-label{animation:none!important}.tile.pending-hit .sweet{opacity:1;filter:none;outline:2px solid #fff2a9}}
 @media(forced-colors:active){.tile.pending-hit .sweet{outline-color:Highlight}.mini-result-label,.mini-result-label:after{background:Canvas;border-color:CanvasText;color:CanvasText;box-shadow:none;text-shadow:none}}
 """)
 rep("const completed=i<e.processed,registered=i<a.draws.length,flash=waitingForGroup&&(waitingForGroup===3?i<2:i===3)&&registered;","const completed=i<e.processed,registered=i<a.draws.length;")
@@ -132,10 +132,8 @@ rep("s.message=ev.ball+'球目：'+ev.number+'番 HIT！'","s.message=(ev.batchS
 # Reset visual clocks on pause/background changes and wake mini animations on resume.
 rep('function syncPause(){if(menuOpen',"function syncPause(){for(const s of slots){if(s.miniResultState)s.miniResultState.stamp=null;s.dirtyMini=true;}if(menuOpen")
 # Verify assets, physics, payout and number allocation code stayed byte-identical.
-for a,b in [('function createCookieRoulette(',"const bgmTracks="),('  fill(initial=false){','  gravity(){')]:
- # Engine indentation is one space in this source; handle exact known anchors below.
- if a in before:
-  assert before[before.index(a):before.index(b,before.index(a))]==s[s.index(a):s.index(b,s.index(a))],a
+assert '\n'.join(before.splitlines()[3970:5190]) in s, '3D physics/render source changed'
+assert re.findall(r'data:[^\s\"\'<>]+;base64,[A-Za-z0-9+/=]+',before)==re.findall(r'data:[^\s\"\'<>]+;base64,[A-Za-z0-9+/=]+',s), 'Embedded asset changed'
 for anchor in ['const payoutTenths=','const payoutHundredths=','const hammerReward=']:
  assert next(l for l in before.splitlines() if l.startswith(anchor))==next(l for l in s.splitlines() if l.startswith(anchor))
 assert 'group-wait-flash' not in s
