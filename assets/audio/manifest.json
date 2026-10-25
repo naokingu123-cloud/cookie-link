@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "note": "User-supplied audio. Medley split into seven playback sections at acoustic change points; official track boundaries/titles not verified. No external audio downloaded. Short edge fades prevent clicks.",
+  "source_sha256": {
+    "Y2Mate.st -   Lotta.mp3": "84aeb6888c65d84d1e34cb64b07397c25611de7857f55dbdcdee81f0a666c7e0",
+    "Y2Mate.st - 8 BGM BET TIME.mp3": "bcf9bbcc570ba64b051cf0fd50aa5995520a0a353156e83895f6c9033e6cfd73"
+  },
+  "tracks": [
+    {
+      "file": "assets/audio/wonder-01.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 0,
+      "source_end": 489.25,
+      "duration": 489.25,
+      "sha256": "0956b41df4c5b432d2d09027c683f05368b1aad1bc1166011b7e7be1fd517015",
+      "bytes": 7829254
+    },
+    {
+      "file": "assets/audio/wonder-02.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 489.25,
+      "source_end": 939.5,
+      "duration": 450.25,
+      "sha256": "365ecef2ca3658253f8786aab7b4cb6e8682df7f468ba7a46b75bda75e1c5b02",
+      "bytes": 7205241
+    },
+    {
+      "file": "assets/audio/wonder-03.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 939.5,
+      "source_end": 1335.5,
+      "duration": 396.0,
+      "sha256": "6a92e3f7d64e580bc68270d187c828dd1e88c60d68c93a4869ff05222d0256c9",
+      "bytes": 6337140
+    },
+    {
+      "file": "assets/audio/wonder-04.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 1335.5,
+      "source_end": 1722.5,
+      "duration": 387.0,
+      "sha256": "e6c6043e160ba011b511a5ff5147b6cbff485810c10ff0cf3dba801930122da4",
+      "bytes": 6192944
+    },
+    {
+      "file": "assets/audio/wonder-05.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 1722.5,
+      "source_end": 2179.2,
+      "duration": 456.6999999999998,
+      "sha256": "3fb1944edf610951b566ab8ffb0ff9f1cfd71cbab897e1a3a7012cd76ea81cad",
+      "bytes": 7308477
+    },
+    {
+      "file": "assets/audio/wonder-06.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 2179.2,
+      "source_end": 2499.8,
+      "duration": 320.60000000000036,
+      "sha256": "eea38d5b22f29ef8f76f01426d2970caebdd8dfd7b96063b47fdc0f907effdbe",
+      "bytes": 5130492
+    },
+    {
+      "file": "assets/audio/wonder-07.mp3",
+      "source": "Y2Mate.st -   Lotta.mp3",
+      "source_start": 2499.8,
+      "source_end": 2612.03,
+      "duration": 112.23000000000002,
+      "sha256": "7cef796cf47e377062ac8572c9fc1b840538c6955b2f6ec48415928ed4b3d2dc",
+      "bytes": 1796431
+    },
+    {
+      "file": "assets/audio/bet-time.mp3",
+      "source": "Y2Mate.st - 8 BGM BET TIME.mp3",
+      "source_start": 0,
+      "source_end": 184.45,
+      "duration": 184.45,
+      "sha256": "6dbacd8556c6bedf882081a30fb1bde2c80d63c5245157afd4b23b5835950346",
+      "bytes": 2952088
+    }
+  ]
+}
