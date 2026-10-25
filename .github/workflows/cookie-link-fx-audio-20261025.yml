@@ -1,0 +1,30 @@
+name: CookieLink FX and audio checked update
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cookie-link-fx-audio-20261025.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read exact source sections
+        run: |
+          python3 - <<'PY'
+          import pathlib,hashlib,re
+          raw=pathlib.Path('index.html').read_bytes()
+          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          assert sha=='9c3b11093dfc10e4e1c14c89495c5c67b4b9cd70',sha
+          s=raw.decode(); lines=s.splitlines(); print('SOURCE',sha,'LINES',len(lines))
+          needles=[('function makeClearPlan',28),('function unlock',35),('function sound(',60),('function prepareHammerImpact',40),('function drawShatter',34),('function startShatter',20),('function render(s,',46),('function renderChain',17),('const recordDuration',6),('function clearSounds',24),('let autoRoundTimer',12),('function syncPause',12),('function nextFromResult',24),('function updateLayout',30),('function fitScreen',30),('function ui(',52),('function scheduleUI',30),('function sugarStatus',10),('shatter-layer',2),('shatter-canvas',2),('.arena{',6),('.cookie-roulette{',7),('.a8-stage{',4),('const bgmTracks',55),('addEventListener(\'pointerdown\'',5),('sugar-award-flight',3)]
+          keep=set()
+          for i,line in enumerate(lines):
+              if len(line)>3000:continue
+              for needle,n in needles:
+                  if needle in line:keep.update(range(max(0,i-1),min(len(lines),i+n)))
+          for i in sorted(keep):
+              if len(lines[i])<=3000: print(str(i+1)+': '+lines[i])
+          print('FILES',[(str(p),p.stat().st_size) for p in pathlib.Path('.').glob('*') if p.is_file() and p.suffix in ['.mp3','.wav','.js']])
+          PY
