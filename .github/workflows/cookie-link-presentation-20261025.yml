@@ -10,13 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Apply exact-source patch and validate JavaScript
+        with:
+          fetch-depth: 0
+      - name: Apply checked presentation patch
         shell: bash
         run: |
           python3 - <<'PY'
           import base64, hashlib, json, pathlib, re, subprocess, tempfile, zlib
-          payload = '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'
-          data = json.loads(zlib.decompress(base64.b64decode(payload)))
+          source = subprocess.check_output(['git','show','09d2428777376550577ab19e31706a434e3d18da:.github/workflows/cookie-link-presentation-20261025.yml'], text=True)
+          payload = re.search(r"payload = '([^']+)'", source).group(1)
+          payload = payload.replace('KI6/jsa','KI6E/jsa').replace('OhJJrx','OhJrx')
+          data = json.loads(zlib.decompress(base64.b64decode(payload, validate=True)))
           path = pathlib.Path('index.html')
           def blob(raw):
               return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
@@ -29,6 +33,7 @@ jobs:
               text = text[:start]+change['new']+text[end:]
           result = text.encode('utf-8')
           assert blob(result) == data['result_blob'], 'Result checksum mismatch'
+          assert blob(result) == '59c0fb95b95a69c6c09c5038875c5523b2ddb607'
           with tempfile.TemporaryDirectory() as folder:
               for i, match in enumerate(re.finditer(r'<script\b[^>]*>([\s\S]*?)</script>', text)):
                   script = pathlib.Path(folder)/('script'+str(i)+'.js')
@@ -37,7 +42,7 @@ jobs:
           path.write_bytes(result)
           print('Verified result blob:', blob(result))
           PY
-      - name: Commit the presentation-only change
+      - name: Commit the verified change
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
