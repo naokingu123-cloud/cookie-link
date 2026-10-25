@@ -1667,6 +1667,12 @@ body{--sweet-console-frame:url("data:image/webp;base64,UklGRhhFAABXRUJQVlA4WAoAA
  #viewport{margin:0 auto!important}
  #screen{box-shadow:none}
 }
+
+/* BET-only preview; real boards, physics and payouts are untouched. */
+.bet-preview-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:50;pointer-events:none;border-radius:inherit}
+.bet-preview-canvas[hidden]{display:none}
+body.bet-preview .board>:not(.bet-preview-canvas){visibility:hidden!important}
+body.bet-preview .basket-count,body.bet-preview .basket-sugar,body.bet-preview .mini-result-label{visibility:hidden!important}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -2011,6 +2017,8 @@ function refillItemTiming(r,c,index){
  const distance=(r+.5)*CELL+24,release=280+c*6+index*46,fall=Math.ceil(Math.sqrt(2*distance/.0036));
  return {distance,release,fall,end:release+fall+110};
 }
+const HAMMER_FALL_PAUSE_MS=200; // Extra unpaused time after hammer removal only.
+const clearToFallWait=(resolved,speed)=>25+(resolved.sources?.length?HAMMER_FALL_PAUSE_MS*speed:0);
 const clearDuration=speed=>Math.max(150,Math.round(580/speed));
 // One shared timeline drives cookie removal, travelling color rays, and fragments.
 // Gameplay still removes the resolved set atomically before applying gravity.
@@ -2251,7 +2259,7 @@ class Engine{
     const hitResolved=this.resolveLinks([{cells:hit}]);
     this.emit('hit',{number,ball,...hitResolved,clearColors:hitResolved.colors});if(!await this.wait(hit.length?1000*this.speed:120,token))return;
     const hitPlan=makeClearPlan(hitResolved,this.board,this.speed);this.emit('vanish',{number,ball,...hitResolved,plan:hitPlan,duration:hitPlan.duration,kind:'hit'});if(!await this.wait(hitPlan.duration*this.speed,token))return;
-    const hitClear=this.remove(hitResolved.cells);depth=hitResolved.cells.length?1:0;this.lastChain=depth;this.maxChain=Math.max(this.maxChain,depth);this.emit('remove',{number,ball,depth,kind:'hit'});if(!await this.wait(25,token))return;
+    const hitClear=this.remove(hitResolved.cells);depth=hitResolved.cells.length?1:0;this.lastChain=depth;this.maxChain=Math.max(this.maxChain,depth);this.emit('remove',{number,ball,depth,kind:'hit'});if(!await this.wait(clearToFallWait(hitResolved,this.speed),token))return;
     if(hitClear){this.emit('allclear',{number,ball});if(!await this.wait(ALL_CLEAR_WAIT,token))return;}
     this.gravity();this.emit('fall',{number,ball});if(!await this.wait(300,token))return;
     let linked=groups(this.board);
@@ -2262,7 +2270,7 @@ class Engine{
      this.emit('link',{number,ball,depth,groups:linked,gain,...resolved,clearColors:resolved.colors,newRecord,previousMax,recordDuration:traceMs});
      if(!await this.wait(newRecord?traceMs*this.speed:220+Math.min(80,Math.max(...linked.map(g=>g.size))*6),token))return;
      const linkPlan=makeClearPlan(resolved,this.board,this.speed);this.emit('vanish',{number,ball,depth,...resolved,plan:linkPlan,duration:linkPlan.duration,kind:'link'});if(!await this.wait(linkPlan.duration*this.speed,token))return;
-     const linkClear=this.remove(resolved.cells,{chain:true});this.emit('remove',{number,ball,depth,kind:'link'});if(!await this.wait(25,token))return;
+     const linkClear=this.remove(resolved.cells,{chain:true});this.emit('remove',{number,ball,depth,kind:'link'});if(!await this.wait(clearToFallWait(resolved,this.speed),token))return;
      if(linkClear){this.emit('allclear',{number,ball});if(!await this.wait(ALL_CLEAR_WAIT,token))return;}
      this.gravity();this.emit('fall',{number,ball});if(!await this.wait(300,token))return;
      linked=groups(this.board);
@@ -2518,6 +2526,7 @@ function flushUI(timestamp){
  for(const slot of slots)if(slot.dirtyMini){slot.dirtyMini=false;miniature(slot);}
  hud(uiApp);
  syncPresentationRate();
+ syncBetPreview(uiApp);
  if(['result','paying'].includes(uiApp.phase)&&!uiApp.paused)scheduleUI(uiApp);
 }
 // Predefined irregular fractures avoid identical, thick geometric lines.
@@ -2705,7 +2714,116 @@ function drawHammer(ctx,x,y,size,color=0){
  ctx.beginPath();ctx.roundRect(-9,-4,18,29,4);ctx.fill();ctx.stroke();ctx.beginPath();ctx.roundRect(-24,-25,48,27,5);ctx.fill();ctx.stroke();
  ctx.fillStyle=inks[color];ctx.fillRect(-5,-4,10,24);ctx.beginPath();ctx.roundRect(-20,-21,40,19,3);ctx.fill();ctx.fillStyle='#fff8cc';ctx.fillRect(-17,-19,31,2);ctx.restore();
 }
+// BET presentation uses a private engine and deterministic RNG. It never calls
+// Arcade, recordEvent, audio, the draw controller, or the live game's RNG.
+const BET_COOKIE_PALETTES=[['#f2cb75','#b47a2d'],['#c38a52','#754422'],['#79503b','#3c241b'],['#f3a1b7','#a84b67']];
+let betPreview=null,betPreviewFrame=0;
+function newBetPreview(){
+ let seed=347;
+ const state={elapsed:0,lastFrame:null,phaseAt:0,event:{phase:'ready'},from:new Map(),engine:null};
+ const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+ state.engine=new Engine({random,speed:1.4,colorCount:4,onEvent:(ev,e)=>{
+  if(ev.phase==='queued'||ev.phase==='stepcollect')return;
+  state.from=state.positions||new Map();state.positions=new Map();
+  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){const t=e.board[r][c];if(t)state.positions.set(t.id,{r,c});}
+  state.event=ev;state.phaseAt=state.elapsed;
+ }});
+ state.engine.start();return state;
+}
+function stopBetPreview(){
+ if(betPreviewFrame)cancelAnimationFrame(betPreviewFrame);betPreviewFrame=0;
+ if(betPreview){betPreview.engine.version++;betPreview.engine.running=false;betPreview.engine.queue=[];betPreview=null;}
+ document.body.classList.remove('bet-preview');
+ for(const s of slots){
+  if(s.betCanvas)s.betCanvas.hidden=true;
+  s.miniLogo.hidden=s.i!==active;s.miniCanvas.hidden=s.i===active;s.dirtyMini=true;
+  if(s.betBoardLabel){s.board.setAttribute('aria-label',s.betBoardLabel);s.betBoardLabel=null;}
+ }
+}
+function syncBetPreview(a){
+ if(!a)return;
+ if(a.phase!=='ready'){if(betPreview)stopBetPreview();return;}
+ if(!betPreview)betPreview=newBetPreview();
+ document.body.classList.add('bet-preview');
+ for(const s of slots){
+  if(!s.betCanvas){const canvas=document.createElement('canvas');canvas.className='bet-preview-canvas';canvas.width=596;canvas.height=596;canvas.setAttribute('aria-hidden','true');s.board.append(canvas);s.betCanvas=canvas;}
+  if(!s.betBoardLabel){s.betBoardLabel=s.board.getAttribute('aria-label');s.board.setAttribute('aria-label','BET中の演出見本。実際の盤面や獲得配当ではありません。');}
+  s.betCanvas.hidden=false;s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
+ }
+ const paused=a.paused||document.hidden||!inView;
+ betPreview.engine.paused=paused;
+ if(paused){if(betPreviewFrame)cancelAnimationFrame(betPreviewFrame);betPreviewFrame=0;betPreview.lastFrame=null;drawBetPreview(betPreview);}
+ else if(!betPreviewFrame)betPreviewFrame=requestAnimationFrame(animateBetPreview);
+}
+function animateBetPreview(now){
+ betPreviewFrame=0;
+ if(!betPreview||app.phase!=='ready')return;
+ const d=betPreview;if(d.engine.paused||document.hidden||!inView){d.lastFrame=null;return;}
+ if(d.lastFrame!==null)d.elapsed+=Math.min(100,Math.max(0,now-d.lastFrame));d.lastFrame=now;
+ if(d.engine.idle&&d.event.phase==='waiting'&&d.elapsed-d.phaseAt>1300){
+  if(d.engine.processed>=2){d.engine.version++;d.engine.running=false;betPreview=newBetPreview();}
+  else d.engine.enqueue(d.engine.processed+1);
+ }
+ drawBetPreview(betPreview);betPreviewFrame=requestAnimationFrame(animateBetPreview);
+}
+function betCookie(ctx,color,x,y,size,hammer=false){
+ const p=BET_COOKIE_PALETTES[color%4];ctx.save();ctx.translate(x,y);ctx.scale(size/36,size/36);
+ const g=ctx.createLinearGradient(0,-17,0,17);g.addColorStop(0,p[0]);g.addColorStop(1,p[1]);ctx.fillStyle=g;ctx.strokeStyle=p[1];ctx.lineWidth=1.4;
+ if(hammer){ctx.rotate(-.35);ctx.beginPath();ctx.roundRect(-3,-3,7,20,2);ctx.fill();ctx.stroke();ctx.beginPath();ctx.roundRect(-15,-14,30,16,4);ctx.fill();ctx.stroke();ctx.strokeStyle='#fff1c4';ctx.lineWidth=1;ctx.strokeRect(-11,-11,22,10);}
+ else{
+  ctx.beginPath();ctx.roundRect(-17,-17,34,34,6);ctx.fill();ctx.stroke();
+  ctx.strokeStyle='#ffebbf80';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(-13.5,-13.5,27,27,4);ctx.stroke();
+  ctx.fillStyle=color===3?'#87364b':color===2?'#27170e':'#633d21';
+  for(const [xx,yy,rr] of [[-8,-7,1.8],[7,-9,2.2],[-5,6,2.1],[9,7,1.5],[1,-1,1.7]]){ctx.beginPath();ctx.ellipse(xx,yy,rr,rr*.7,.4,0,Math.PI*2);ctx.fill();}
+ }
+ ctx.restore();
+}
+function drawBetScene(ctx,width,d){
+ const e=d.engine,ev=d.event,age=d.elapsed-d.phaseAt,cell=298/SIZE,fall=Math.min(1,age/(180/e.speed)),refill=Math.min(1,age/400);
+ ctx.save();ctx.scale(width/298,width/298);ctx.clearRect(0,0,298,298);ctx.fillStyle='#382017';ctx.fillRect(0,0,298,298);
+ ctx.strokeStyle='#704531';ctx.lineWidth=1;
+ for(let k=1;k<SIZE;k++){ctx.beginPath();ctx.moveTo(k*cell,0);ctx.lineTo(k*cell,298);ctx.moveTo(0,k*cell);ctx.lineTo(298,k*cell);ctx.stroke();}
+ const linked=new Set((ev.groups||[]).flatMap(g=>g.cells.map(([r,c])=>r*SIZE+c)));
+ for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+  const t=e.board[r][c];if(!t)continue;
+  const target=ev.phase==='vanish'?ev.plan?.targets[r*SIZE+c]:null;
+  if(target&&age>=target.breakAt+100)continue;
+  const from=d.from.get(t.id);let y=(r+.5)*cell,x=(c+.5)*cell;
+  if(ev.phase==='fall'&&from)y=(from.r+(r-from.r)*fall*fall+.5)*cell;
+  if(ev.phase==='refill'&&!from)y=(-1+(r+1)*refill*refill+.5)*cell;
+  ctx.save();
+  if(target&&age>=target.breakAt)ctx.globalAlpha=Math.max(0,1-(age-target.breakAt)/100);
+  if(t.special&&ev.phase==='vanish'&&target&&age<target.breakAt)x+=Math.sin(age/24)*2;
+  const size=cell*.91*(t.special&&ev.phase==='hammergift'?Math.min(1,age/260):1);
+  betCookie(ctx,t.color,x,y,size,t.special);
+  if(linked.has(r*SIZE+c)&&ev.phase==='link'){ctx.strokeStyle='#fff0a1';ctx.lineWidth=2;ctx.strokeRect(x-cell*.44,y-cell*.44,cell*.88,cell*.88);}
+  if(target&&age>=target.impact){
+   ctx.strokeStyle='#fff1c8';ctx.lineWidth=3;ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(x-14,y-5);ctx.lineTo(x-6,y-2);ctx.lineTo(x-2,y+3);ctx.lineTo(x+4,y-2);ctx.lineTo(x+13,y+2);ctx.moveTo(x-2,y+3);ctx.lineTo(x-4,y+10);ctx.lineTo(x,y+15);ctx.stroke();ctx.strokeStyle='#29140d';ctx.lineWidth=1.8;ctx.stroke();
+  }
+  ctx.restore();
+ }
+ const label=(text,y,font,color)=>{ctx.font='900 '+font+'px "Hiragino Maru Gothic ProN",system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.strokeStyle='#321c15';ctx.lineWidth=4;ctx.strokeText(text,149,y);ctx.fillStyle=color;ctx.fillText(text,149,y);};
+ ctx.fillStyle='#281510df';ctx.fillRect(0,0,298,28);label('BET中 ・ 演出見本',14,14,'#ffe5b0');
+ let message='同じ色をつなげよう！';
+ if(ev.phase==='link')message=(ev.depth||e.lastChain)+'連鎖'+(ev.newRecord?' ・ 配当UP！':'');
+ else if(ev.phase==='hammergift')message='ハンマー出現！';
+ else if(ev.phase==='vanish'&&ev.plan?.sources.length)message='同じ色のクッキーを消去！';
+ else if(ev.phase==='allclear')message='全消し！';
+ else if(e.lastChain)message=e.lastChain+'連鎖 ・ '+e.maxLink+' LINK';
+ if(ev.phase==='link'&&ev.newRecord){ctx.fillStyle='#ffcf6830';ctx.fillRect(0,0,298,298);}
+ ctx.fillStyle='#281510e8';ctx.fillRect(0,249,298,49);
+ label(message,262,16,'#fff5cd');
+ label('最大 '+e.maxLink+' LINK ・ 配当 '+formatPayout(payoutHundredths(e.maxLink,e.maxChain,e.allClears))+'倍',284,12,'#ffe290');
+ ctx.restore();
+}
+function drawBetPreview(d){
+ if(!d)return;
+ const current=slots[active];if(current.betCanvas)drawBetScene(current.betCanvas.getContext('2d'),current.betCanvas.width,d);
+ for(const s of slots)drawBetScene(s.mini,s.miniCanvas.width,d);
+}
+
 function miniature(s){
+ if(app?.phase==='ready')return;
  if(s.i===active)return;
  const now=performance.now(),positions=new Map();
  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){const t=s.engine.board[r][c];if(t)positions.set(t.id,{r,c});}
@@ -4735,7 +4853,7 @@ $('start').onclick=()=>{unlock();prepareArrival();prepareHammerImpact();prepareA
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
 function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
- if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(()=>{});}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
+ if(app?.phase==='playing'){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();else if($('sound').checked&&bgmPlayer.src&&bgmPlayer.paused)bgmPlayer.play().catch(()=>{});}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused)requestShatter(slots[active]);}}
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=()=>{userPaused=!userPaused;syncPause();};
 $('sound').onchange=()=>{if(!$('sound').checked&&'speechSynthesis' in window)speechSynthesis.cancel();if($('sound').checked){unlock();if(app?.phase==='playing'&&bgmPlayer.src)bgmPlayer.play().catch(()=>{});}else{stopSounds();bgmPlayer.pause();}};
