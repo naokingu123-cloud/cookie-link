@@ -1,0 +1,31 @@
+name: CookieLink sweets result and JPC
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cookie-link-result-jpc-20261025.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect existing application contracts
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,hashlib
+          raw=Path('index.html').read_bytes();s=raw.decode();ls=s.splitlines()
+          print('BLOB',hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest(),'LINES',len(ls))
+          keys=['class Arcade','function renderRoundResult','function syncAutoRound','function scheduleAutoRound','function stopAutoRound','function rouletteDrawSource','function setupRoulette','function resetGame','function recordChanged']
+          keep=set()
+          for i,l in enumerate(ls):
+              if len(l)>6000:
+                  print('LARGE_LINE',i+1,l[:220]);continue
+              if any(k in l for k in keys):keep.update(range(max(0,i-2),min(len(ls),i+85)))
+              if any(k in l for k in ['DEBUG_FAST_START','BET_TIME','AUTO_','jpc','JPC','round-result','result-title','result-total','autoRound','postMessage','srcdoc','roulette-frame','id="screen"','id="stage"','id="toolbar"','id="start"','id="bet-countdown"']):keep.add(i)
+          for i in sorted(keep):
+              if len(ls[i])<6000:print(str(i+1)+': '+ls[i])
+          print('END_INSPECT')
+          PY
