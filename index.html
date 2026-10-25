@@ -1858,6 +1858,12 @@ body.mobile-landscape .jpc-grid{gap:5px}.mobile-landscape .jpc-pocket{font-size:
 .sugar-crafted-detail{pointer-events:none}
 @media(prefers-reduced-motion:reduce){.tab-slot .tab-sugar.sugar-powerup,.tab-slot .tab-sugar .sugar-gem:after{animation:none!important}}
 @media(forced-colors:active){.tab-slot .tab-sugar{background:Canvas;border:1px solid CanvasText;box-shadow:none}.tab-slot .tab-sugar.is-zero-bet{background:Canvas;border-style:dashed}.tab-slot .tab-sugar .sugar-gem:before,.tab-slot .tab-sugar .sugar-gem:after{display:none!important}}
+
+/* Grouped lottery: previously landed balls blink until draw 3 / draw 5 confirms the group. */
+@keyframes cookie-group-awaiting{0%,100%{filter:brightness(1);box-shadow:0 0 2px #fff2c8}50%{filter:brightness(1.55);box-shadow:0 0 11px #fff2a9,0 0 4px #ffca64;}}
+.balls span.group-wait-flash{animation:cookie-group-awaiting .7s ease-in-out infinite!important;border-color:#fff0ac;color:#744820}
+.paused .balls span.group-wait-flash{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.balls span.group-wait-flash{animation:none!important;border:2px solid #e6a43f;box-shadow:0 0 4px #e6a43f}}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -3199,8 +3205,14 @@ function hud(a){
  put('best','最大 '+e.maxLink+' LINK ／ 全消し '+e.allClears+'回');
  updatePayTable(e,bet);
  $('status').parentNode.hidden=a.phase!=='error';put('status',a.phase==='error'&&a.drawError?a.drawError:userPaused?'一時停止中':bet===0?'BETを設定すると、このゲームも参加します':s.message);
- put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');
- const nextBalls=[a.draws.join(','),e.processed].join('/');if(ballsKey!==nextBalls){ballsKey=nextBalls;$('balls').innerHTML=Array.from({length:8},(_,i)=>`<span class="${i<e.processed?'done':i<a.draws.length?'pending':''}">${a.draws[i]?elixirNumber(a.draws[i]):'·'}</span>`).join('');}
+ const waitingForGroup=a.phase==='playing'?(a.draws.length===1||a.draws.length===2?3:a.draws.length===4?5:0):0;
+ put('ballinfo',waitingForGroup?waitingForGroup+'球目の入賞待ち · 点滅中':'あと'+Math.max(0,8-a.draws.length)+'球');
+ const nextBalls=[a.phase,a.draws.join(','),e.processed,waitingForGroup].join('/');
+ if(ballsKey!==nextBalls){ballsKey=nextBalls;$('balls').innerHTML=Array.from({length:8},(_,i)=>{
+ const completed=i<e.processed,registered=i<a.draws.length,flash=waitingForGroup&&(waitingForGroup===3?i<2:i===3)&&registered;
+ return `<span class="${completed?'done':registered?'pending':''}${flash?' group-wait-flash':''}"${flash?' aria-label="入賞済み・次のグループ確定待ち"':''}>${a.draws[i]?elixirNumber(a.draws[i]):'·'}</span>`;
+ }).join('');}
+ for(const slot of slots)slot.board?.classList.toggle('group-awaiting',Boolean(waitingForGroup)&&a.enabled[slot.i]);
  const editable=a.phase==='ready';for(const slot of slots){slot.controls.hidden=!editable;slot.lockedBet.hidden=false;for(const button of [slot.cycle,slot.addBet,slot.oneBet])button.disabled=!editable;const amount=units[unit[slot.i]];slot.addBet.textContent=amount+' BET';slot.addBet.setAttribute('aria-label','ゲーム'+(slot.i+1)+'に'+amount+' BET追加');}
  $('start').disabled=(a.phase==='ready'&&a.drawSource?.ready===false)||a.phase==='playing'||a.phase==='result'||paying||a.phase==='error'||(editable&&!a.bets.some(n=>n>0));put('start',a.phase==='result'?'リザルト':paying?'払い出し中…':a.phase==='complete'?'次のゲームへ':a.phase==='playing'?(a.dealing?'抽選中…':'連鎖処理中…'):'ゲーム開始');
  for(const count of [3,4,5]){const button=$('colors-'+count);button.disabled=a.phase!=='ready';button.setAttribute('aria-pressed',String(a.colorCount===count));}
