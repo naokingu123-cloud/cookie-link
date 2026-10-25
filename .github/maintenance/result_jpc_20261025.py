@@ -154,7 +154,7 @@ function tickResultAuto(){
 replace("function renderRoundResult(a){\n", "function renderRoundResult(a){\n syncResultAuto(a);syncDebugButtons();\n")
 old="   $('result-games').innerHTML=a.engines.map((e,i)=>a.enabled[i]?'<div class=\"result-game\"><strong class=\"result-game-name\">ゲーム '+(i+1)+' <small>'+num(a.locked[i])+' BET</small></strong><div class=\"result-game-award\"><b class=\"result-value\" data-value=\"'+a.roundWins[i]+'\"></b><em class=\"win-word\">WIN</em></div><div class=\"result-game-details\"><span>'+e.maxLink+' LINK · '+e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')+'</span>'+(e.wonderCollected?'<span><i class=\"sugar-gem\" data-value=\"'+(e.wonderToken?.value||a.locked[i])+'\"></i> GET!</span>':'')+'</div></div>':'').join('');"
 new="   $('result-games').innerHTML=a.engines.map((e,i)=>'<div class=\"result-game'+(a.enabled[i]?'':' no-bet')+'\"><svg class=\"result-game-emblem\" viewBox=\"0 0 64 64\" aria-hidden=\"true\"><use href=\"#candy'+[0,2,4][i]+'\"/></svg><strong class=\"result-game-name\">ゲーム '+(i+1)+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class=\"result-game-award\"><b class=\"result-value\" data-value=\"'+(a.enabled[i]?a.roundWins[i]:0)+'\"></b><em class=\"win-word\">WIN</em></div><div class=\"result-game-details\"><span>'+(a.enabled[i]?e.maxLink+' LINK':'—')+'</span><span>'+(a.enabled[i]?e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':''):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class=\"sugar-gem\" data-value=\"'+(e.wonderToken?.value||a.locked[i])+'\"></i> GET!</span>':'')+'</div></div>').join('');"
-replace(old,new)
+replace(old.lstrip(),new.lstrip())
 replace("fitGoldenNumber(el,num(Number(el.dataset.value)),22,100);","fitGoldenNumber(el,num(Number(el.dataset.value)),26,94);")
 replace("fitGoldenNumber($('result-total-win'),num(a.totalWin),32,186);","fitGoldenNumber($('result-total-win'),num(a.totalWin),52,250);")
 replace("function nextFromResult(){if(app.phase!=='complete')return;", "function nextFromResult(){if(app.phase!=='complete'||jpcSession.active)return;stopResultAuto();resultAutoToken=-1;")
@@ -203,7 +203,7 @@ function paintJpcDashboard(){
  const ended=state==='complete',remaining=25-filled;
  put('jpc-message',filled===25?'JACKPOT! 全25ポケット達成':reach>=0?(ended?'JPC終了・':'')+(reach+1)+'番 リーチ！':ended?'JPC終了・'+filled+' / 25 ポケット入賞':'あと '+remaining+' ポケットで JACKPOT!');
  $('jpc-history').replaceChildren(...hits.slice(-10).map(hit=>{const b=document.createElement('b');b.textContent=String(hit.pocket);return b;}));
- if(hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!app.paused)playArrivalSound();
+ if(hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!userPaused&&inView)playArrivalSound();
  jpcSession.previousCounts=[...counts];jpcSession.previousHits=hits.length;syncDebugButtons();
 }
 function runJpcTicker(){
