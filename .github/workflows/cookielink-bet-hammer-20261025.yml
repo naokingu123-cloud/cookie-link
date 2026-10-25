@@ -4,149 +4,27 @@ on:
     branches: [main]
     paths: ['.github/workflows/cookielink-bet-hammer-20261025.yml']
 permissions:
-  contents: write
+  contents: read
 jobs:
-  apply:
+  inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Patch exact source and check JavaScript
-        run: |
-          python3 - <<'PY'
-          import pathlib, hashlib, re, subprocess, tempfile
-          path=pathlib.Path('index.html');raw=path.read_bytes()
-          def blob(raw): return hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-          assert blob(raw)=='395c1e540f8d55ebd7f1348184cd7b6e2fa71e32','Source changed; no overwrite'
-          text=raw.decode('utf-8');original=text
-          pathlib.Path('/tmp/cookielink-before.html').write_text(original,encoding='utf-8')
-          changes=[]
-          def replace(old,new):
-              global text
-              assert text.count(old)==1, 'Expected exactly one patch anchor: '+old[:110]
-              changes.append((old,new));text=text.replace(old,new,1)
-          start=text.index('const hammerCountMarkup=colors=>{')
-          end=text.index('\n};',start)+3
-          old=text[start:end]
-          new='''const hammerCountMarkup=(colors,concealed=false)=>{
-           const count=colors.length,size=11,width=Math.min(55,count*size),step=count>1?(width-size)/(count-1):0;
-           // Never embed future colors in BET icons, data attributes, or accessible labels.
-           const mystery='<svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g transform="rotate(-32 32 32)" fill="#403b43" stroke="#d9d2c5" stroke-width="3" stroke-linejoin="round"><path d="M26 27h12v30H26z"/><path d="M12 8h40v24H12z"/></g><text x="32" y="39" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="900" fill="#fff8df" stroke="#25212a" stroke-width="1.5" paint-order="stroke">?</text></svg>';
-           const icons=Array.from({length:count},(_,i)=>{
-            const colorAttr=concealed?'':' data-color="'+colors[i]+'"';
-            const art=concealed?mystery:'<svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet"><use href="#hammer'+colors[i]+'"/></svg>';
-            return '<span class="hammer-count-icon'+(concealed?' hammer-unknown':'')+'"'+colorAttr+' style="--hammer-x:'+(i*step)+'px;--hammer-layer:'+(count-i)+'" aria-hidden="true">'+art+'</span>';
-           }).join('');
-           const label=concealed?'色はゲーム開始時に公開、計'+count+'個':colors.map(c=>COLORS[c]).join('・')+'のハンマー、計'+count+'個';
-           return '<span class="hammer-icons" role="img" aria-label="'+label+'"><span class="hammer-sequence" style="--hammer-width:'+width+'px">'+icons+'</span></span>';
-          };'''
-          replace(old,new)
-          replace("  const showingChain=!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion;".lstrip(),"const concealed=a.phase==='ready';\n  const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');")
-          replace('hammerCountMarkup(e.hammerPreview[n]||[])','hammerCountMarkup(e.hammerPreview[n]||[],concealed)')
-          reversed_text=text
-          for before,after in reversed(changes):
-              assert reversed_text.count(after)==1
-              reversed_text=reversed_text.replace(after,before,1)
-          assert reversed_text==original,'Unexpected changes outside the three UI patches'
-          with tempfile.TemporaryDirectory() as folder:
-              for i,m in enumerate(re.finditer(r'<script\b([^>]*)>([\s\S]*?)</script>',text)):
-                  attrs,code=m.groups()
-                  if not code.strip() or re.search(r'type=[\"\x27](?:application/json|importmap)',attrs): continue
-                  script=pathlib.Path(folder)/('script'+str(i)+('.mjs' if 'module' in attrs else '.js'))
-                  script.write_text(code,encoding='utf-8');subprocess.run(['node','--check',str(script)],check=True)
-          path.write_bytes(text.encode('utf-8'))
-          print('UI_ONLY_PATCH_VERIFIED',blob(path.read_bytes()))
-          PY
-      - name: Check concealed markup and unchanged revealed markup
-        run: |
-          node <<'JS'
-          const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
-          const before=fs.readFileSync('/tmp/cookielink-before.html','utf8'),after=fs.readFileSync('index.html','utf8');
-          function load(html){const start=html.indexOf('const hammerCountMarkup=');const end=html.indexOf('\n};',start)+3;assert(start>0&&end>start);const scope={COLORS:['orange','pink','green','purple','blue','red']};vm.runInNewContext(html.slice(start,end)+'\nglobalThis.markup=hammerCountMarkup;',scope);return scope.markup;}
-          const old=load(before),now=load(after);
-          let checks=0;
-          for(let count=0;count<=20;count++)for(let offset=0;offset<6;offset++){
-            const colors=Array.from({length:count},(_,i)=>(i+offset)%6),copy=JSON.stringify(colors);
-            assert.equal(now(colors,false),old(colors),'Revealed markup must be byte-identical');
-            assert.equal(now(colors,true),now(Array(count).fill(0),true),'Hidden markup must not depend on colors');
-            assert(!/data-color=|href="#hammer/.test(now(colors,true)),'Hidden markup leaks color');
-            assert.equal((now(colors,true).match(/class="hammer-count-icon hammer-unknown"/g)||[]).length,count);
-            assert.equal(JSON.stringify(colors),copy,'Display must not mutate reward array');checks++;
-          }
-          console.log('HAMMER_MARKUP_TESTS_PASSED',checks);
-          JS
-      - name: Install isolated browser test dependency
-        run: |
-          npm install --prefix /tmp/cookielink-browser --no-save --no-audit --no-fund playwright@1.56.1
-          /tmp/cookielink-browser/node_modules/.bin/playwright install chromium
-      - name: Test real UI at phone and desktop sizes
-        run: |
-          python3 -m http.server 8123 --bind 127.0.0.1 > /tmp/cookielink-server.log 2>&1 &
-          node <<'JS'
-          const fs=require('fs'),assert=require('assert/strict');
-          const {chromium}=require('/tmp/cookielink-browser/node_modules/playwright');
-          (async()=>{
-            let html=fs.readFileSync('index.html','utf8');
-            const anchor='app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;select(0);';
-            assert.equal(html.split(anchor).length,2,'Exact test-hook anchor required');
-            html=html.replace(anchor,anchor+'window.__clTest={get app(){return app},slots,select,updateWonderHud,hammerCountMarkup,syncBetPreview};userPaused=true;app.paused=true;');
-            const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
-            try{
-              for(const viewport of [{width:430,height:932},{width:1280,height:900}]){
-                const page=await browser.newPage({viewport});const errors=[];
-                page.on('pageerror',e=>errors.push(e.message));
-                await page.route('**/index.html',route=>route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:html}));
-                await page.goto('http://127.0.0.1:8123/index.html',{waitUntil:'domcontentloaded'});
-                await page.waitForFunction(()=>window.__clTest&&document.querySelectorAll('#hammer-pay tr').length===5,{},{timeout:20000});
-                const results=await page.evaluate(()=>{
-                  const t=window.__clTest,a=t.app,table=document.getElementById('hammer-pay'),checks=[];
-                  const ensure=(ok,label)=>{if(!ok)throw Error(label);checks.push(label);};
-                  const state=()=>JSON.stringify(a.engines.map(e=>({board:e.board,preview:e.hammerPreview,version:e.hammerPreviewVersion,total:e.totalHundredths,history:e.history,queue:e.queue})));
-                  const render=i=>{t.select(i);t.updateWonderHud(a,t.slots[i],a.engines[i],a.bet(i));};
-                  const hidden=i=>{render(i);ensure(table.querySelectorAll('tr').length===5,'five reward rows '+i);ensure(table.querySelectorAll('.hammer-unknown').length>0,'question-mark silhouettes '+i);ensure(!table.querySelector('[data-color]'),'no future color attribute '+i);ensure(!table.querySelector('use'),'no future colored symbol '+i);ensure([...table.querySelectorAll('[role=img]')].every(el=>el.getAttribute('aria-label').includes('色はゲーム開始時に公開')),'neutral accessibility labels '+i);};
-                  a.paused=true;
-                  ensure(a.phase==='ready','initial BET state');
-                  const before=state();for(let i=0;i<3;i++)hidden(i);ensure(state()===before,'display leaves engines unchanged');
-                  const originalBet=a.bets[0];ensure(a.setBet(0,originalBet+100),'BET change accepted');hidden(0);a.setBet(0,originalBet);
-                  a.drawSource={ready:true,start(){},pause(){},reset(){}};
-                  ensure(a.start(),'real Arcade.start succeeds');ensure(a.draws.length===0,'colors reveal before first ball');
-                  for(let i=0;i<3;i++){
-                    render(i);ensure(!table.querySelector('.hammer-unknown'),'revealed at game start '+i);
-                    const actual=[...table.querySelectorAll('tr')].map(row=>[...row.querySelectorAll('[data-color]')].map(icon=>Number(icon.dataset.color)));
-                    const expected=[9,8,7,6,5].map(n=>a.engines[i].hammerPreview[n]||[]);
-                    ensure(JSON.stringify(actual)===JSON.stringify(expected),'correct original colors '+i);
-                  }
-                  a.pause(true);render(0);ensure(!table.querySelector('.hammer-unknown'),'playing pause does not conceal colors');
-                  a.prepare();a.paused=true;for(let i=0;i<3;i++)hidden(i);
-                  return checks;
-                });
-                assert.deepEqual(errors,[],'No uncaught browser errors');
-                console.log('BROWSER_TESTS_PASSED',JSON.stringify(viewport),results.length,JSON.stringify(results));
-                await page.close();
-              }
-            }finally{await browser.close();}
-          })().catch(e=>{console.error(e);process.exit(1);});
-          JS
-      - name: Record verified scope and commit only game and handoff
+      - name: Inspect shared refill timings and initial dealing
         run: |
           python3 - <<'PY'
           import pathlib,hashlib
-          raw=pathlib.Path('index.html').read_bytes()
-          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-          p=pathlib.Path('HANDOFF.md');text=p.read_text(encoding='utf-8')
-          text+='\n## 追加更新: BET中のハンマー色を非公開（2026-10-25）\n'
-          text+='- 最新 `index.html` blob: `'+sha+'`。上記の旧版SHAよりこちらを優先。\n'
-          text+='- 「連鎖 → ハンマー」欄はBET中に無彩色の「？」付きシルエットを表示。個数と行配置は維持。\n'
-          text+='- 実際の色をBET中のSVG参照、data-color、アクセシビリティラベルにも埋め込まない。\n'
-          text+='- `Arcade.start()` でゲーム開始時に色を公開（第1球を待たない）。BET変更・3盤面切替・次ゲームのBET復帰でも状態に追従。\n'
-          text+='- ゲーム開始後のアイコンHTMLは変更前と同一。抽選・乱数・ハンマー配列・配当・物理・音声は変更なし。\n'
-          text+='- 検証: 全インラインJS構文、126組のマークアップ比較、Chromium 430x932/1280x900で3盤面、BET変更、実start()、pause()、prepare()、表示によるEngine非変更を確認。iPhone実機・音声の聴感・8球通しプレイは未検証。\n'
-          text+='- この更新はハンマー色非公開のみ。他の未反映依頼（0.1秒列別補充、デモの同色消去/LINK強化、小盤面BETシュガー、下部UI整理、背景/黒帯、シュガー密集/回転、ポップアップ延長、BGM素材追加）は完了とみなさない。\n'
-          p.write_text(text,encoding='utf-8');print('VERIFIED_GAME_BLOB',sha)
+          raw=pathlib.Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          assert sha=='a744d9b8677e0e262f4931b30ebde59589c7ab79'
+          lines=raw.decode('utf-8').splitlines()
+          rules=[('refillItemTiming',7),('refillDuration',10),('class Engine',70),('start(){',15),("phase:'refill'",10),("emit('refill'",12),('function pour(',34),('function paintMini',65),('function event(',35),('refillDuration',6),('initialFill',12),('function mini',60),('function sugarState',12)]
+          keep=set()
+          for i,line in enumerate(lines):
+              if len(line)>12000:continue
+              for needle,after in rules:
+                  if needle in line:keep.update(range(max(0,i-2),min(len(lines),i+after)))
+          print('SOURCE_BLOB',sha)
+          for i in sorted(keep):
+              if len(lines[i])<12000:print(str(i+1)+': '+lines[i])
           PY
-          git diff --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html HANDOFF.md
-          git commit -m 'Hide upcoming hammer colors during BET and reveal on game start'
-          git push origin HEAD:main
