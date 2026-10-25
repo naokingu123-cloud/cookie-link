@@ -1,0 +1,79 @@
+name: Verify flat display and supplied BGM
+on:
+  push:
+    paths: ['.github/workflows/surface-bgm-update.yml']
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Stage exact-source update and user-supplied audio
+        env:
+          PACKAGE_URL: 'https://sdmntprjapaneast.oaiusercontent.com/files/00000000-9dc8-8209-91ad-fb61c219eb28/raw?se=2026-10-25T11%3A42%3A15Z&sp=r&sv=2026-02-06&sr=b&scid=6378a9a1-6f85-5203-a010-ed876fc64b7b&skoid=03727f49-62d3-42ac-8350-1c0e6559d238&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-25T02%3A14%3A22Z&ske=2026-10-26T02%3A14%3A22Z&sks=b&skv=2026-02-06&sig=hO603Lpk3FnwB2hcyqRearZtMKiR2UH8Ro7h7ecO3KE%3D'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os,urllib.request,hashlib,zipfile,io,json,re,subprocess
+          raw=Path('index.html').read_bytes()
+          assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()=='5653e5790ea179361e3e43be593167c854b64a0b','Source changed'
+          data=urllib.request.urlopen(os.environ['PACKAGE_URL'],timeout=90).read()
+          assert hashlib.sha256(data).hexdigest()=='a0b512737ca4ebf12baf2c0d9daf24677d0bd428e37e3a415c8766610650cd86','Package mismatch'
+          Path('/tmp/surface-bgm-candidate.zip').write_bytes(data)
+          Path('/tmp/surface-bgm-before.html').write_bytes(raw)
+          with zipfile.ZipFile(io.BytesIO(data)) as z:
+              manifest=json.loads(z.read('UPDATE_MANIFEST.json'))
+              for name,checksum in manifest['files'].items():
+                  assert name=='index.html' or name=='qa_surface_music.py' or name.startswith('assets/audio/'),name
+                  assert '..' not in Path(name).parts,name
+                  value=z.read(name);assert hashlib.sha256(value).hexdigest()==checksum,name
+                  target=Path(name);target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(value)
+          source=Path('index.html').read_text()
+          for i,m in enumerate(re.finditer(r'<script\b([^>]*)>([\s\S]*?)</script>',source)):
+              attrs,code=m.groups()
+              if not code.strip() or re.search(r'type=[\"\x27](?:application/json|importmap)',attrs):continue
+              p=Path('/tmp')/f'surface-script-{i}.mjs';p.write_text(code);subprocess.run(['node','--check',str(p)],check=True)
+          print('EXACT_SOURCE_PACKAGE_AND_SYNTAX_OK')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: surface-bgm-candidate
+          path: /tmp/surface-bgm-candidate.zip
+          retention-days: 2
+      - name: Install browser
+        run: |
+          pip install playwright >/tmp/browser-install.log 2>&1
+          python -m playwright install --with-deps chromium >>/tmp/browser-install.log 2>&1
+      - name: Test rendering and audio transitions
+        run: python qa_surface_music.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: surface-bgm-previews
+          path: qa-previews/
+          if-no-files-found: ignore
+          retention-days: 3
+      - name: Record verified behavior and save
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+'''\n\n## 追加更新: 上面中央LED・段階遷移・六角ステップ・添付BGM（2026-10-25）\n- 中央の透明タワー/脚/縦LED装飾を除去し、LCDをX=0,Z=0のルーレット上面へ水平配置。既存の物理衝突面は不変。中央文字と外周LEDは約0.9秒の滑らかな遷移。\n- 抽選状態/n-m/倍率の下部行を非表示にして、描画領域を24論理px拡大。倍率と障害時再読込は右上デバッグ欄。黒い情報帯は維持。\n- 全消しリーチ番号: 赤→橙→黄→緑→青→紫→ピンク→赤の濃く明るい7色を5秒で補間。対象番号がリーチになった時から赤で開始。\n- ワンダーシュガーの貯蔵枠を正六角形(28x32.3316)に統一し左寄せ。横圧縮は撤去。5枠を小さな間隔で連続配置し、獲得済みアイコンは従来の5種を保持。\n- メインの連鎖ポップアップは約1.55秒、LINKは表示開始を早め約1.45秒へ。抽選・配当・消去の待機時間は変更なし。\n- ユーザー添付の43分メドレーを音響変化点を目安に7再生区間へ分割。正式な曲名/曲境界は未同定。切出し秒数・原音/出力のハッシュはassets/audio/manifest.json。元メドレーの全区間を保持し短い端部フェードのみ付加。\n- 2つ目の添付をBET専用BGMとして再生。ゲーム開始時にBET曲を0.9秒でフェードアウト後、7区間から選んだ通常曲へ切替。同じ区間の連続選択は避ける。通常曲は各ゲーム冒頭から再生。リセットは古いフェード/再生準備を無効化してBETへ戻す。音声ON/OFF設定と確認画面なしを維持。\n- 検証: Chromiumで平面位置/塔撤去/描画拡大/正六角形と左寄せ、段階クロスフェード、虹色の実マテリアル変化、ポップアップ時間、添付MP3のBET再生→フェード→通常曲、フェード途中リセット/連続ゲーム/直前と異なる選曲、ページ例外なし。iPhone実機の聴感は未検証。\n- 最新index.html blob: `'''+sha+'''`。\n''')
+          dest=Path('.github/tests/surface_music_20261025.py');dest.parent.mkdir(parents=True,exist_ok=True);Path('qa_surface_music.py').replace(dest)
+          print('VERIFIED_INDEX_BLOB',sha)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/surface-bgm-update.yml
+          git add index.html HANDOFF.md assets/audio .github/tests/surface_music_20261025.py
+          git commit -m 'Flatten center LCD and add phased supplied BET/game music with reset-safe fades'
+          git push origin HEAD:main
