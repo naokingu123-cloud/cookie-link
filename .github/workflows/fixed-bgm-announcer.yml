@@ -1,0 +1,28 @@
+name: Verify fixed BGM and number announcements
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fixed-bgm-announcer.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect relevant audio code
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          b=Path('index.html').read_bytes();s=b.decode();ls=s.splitlines()
+          print('CURRENT_BLOB',hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest())
+          keys=['announceNumber','announcedDrawCount','prepareAnnouncer','function stopSounds','function unlock(','function syncPause','const bgmTracks','normalBgmVolume','function beginBgm','function fadeBgm','function queueRoundBgm','function activateGameAudio','function stopBgm','function wakeAudio','function playArrival','function onNumber','speechSynthesis','bgmGain.gain','setBgmLevel(','function sound(','sfxBus','function trackEffectVoice']
+          wanted=set()
+          for i,l in enumerate(ls):
+              if len(l)<7000 and any(k in l for k in keys):
+                  wanted.update(range(max(0,i-4),min(len(ls),i+25)))
+          for i in sorted(wanted):
+              if len(ls[i])<7000:print(str(i+1)+': '+ls[i])
+          PY
