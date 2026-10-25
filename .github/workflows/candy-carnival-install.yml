@@ -11,17 +11,14 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect shared contracts
+      - name: Inspect pending-batch reach contracts
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import hashlib
-          raw=Path('index.html').read_bytes();s=raw.decode();ls=s.splitlines();print('BLOB',hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest())
-          spans=[('class Engine{',45),('class Arcade{',135),('function tabs(a){',55),('function hud(a){',40),('function select(',30),('capture(a){',50),('function renderRoundResult(a){',40),('function sugarStatus(',25)]
-          wanted=set()
-          for term,n in spans:
-           at=next((i for i,l in enumerate(ls) if term in l and len(l)<10000),None)
-           if at is not None:wanted.update(range(at,min(len(ls),at+n)))
+          ls=Path('index.html').read_text().splitlines();wanted=set()
+          for term,n in [('function requestReach(',100),('function updateReachUI(',70),('function event(',60),('function normalReach',45),('normalRainbow',4),('function syncReachPager',25),('const reach',8),('function clearReach',25),('function predictNextHit(',20)]:
+           for i,l in enumerate(ls):
+            if len(l)<10000 and term in l:wanted.update(range(max(0,i-2),min(len(ls),i+n)))
           for i in sorted(wanted):
            if len(ls[i])<10000:print(str(i+1)+': '+ls[i])
           PY
