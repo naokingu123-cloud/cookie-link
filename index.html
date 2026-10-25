@@ -1617,7 +1617,7 @@ body{--sweet-console-frame:url("data:image/webp;base64,UklGRhhFAABXRUJQVlA4WAoAA
 .arena #avatar{width:68px;height:73px}
 .arena #dress{left:10px;bottom:-2px;padding:2px 6px;font-size:7px}
 .arena #equipped-title{max-width:68px;font-size:6px;left:0;bottom:17px}
-.cookie-roulette{position:absolute;inset:0 0 0 64px;overflow:hidden}
+.cookie-roulette{position:absolute;inset:0 0 0 32px;overflow:hidden}
 .cookie-roulette .a8-stage{position:absolute;inset:0 0 16px;touch-action:none;overflow:hidden}
 .cookie-roulette canvas{display:block;width:100%;height:100%;touch-action:none}
 .cookie-roulette .a8-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;text-align:center;color:#fff0cf;font:800 11px/1.5 CookieLabels,system-ui,sans-serif;z-index:4;background:#111d30}
@@ -1864,6 +1864,11 @@ body.mobile-landscape .jpc-grid{gap:5px}.mobile-landscape .jpc-pocket{font-size:
 .balls span.group-wait-flash{animation:cookie-group-awaiting .7s ease-in-out infinite!important;border-color:#fff0ac;color:#744820}
 .paused .balls span.group-wait-flash{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){.balls span.group-wait-flash{animation:none!important;border:2px solid #e6a43f;box-shadow:0 0 4px #e6a43f}}
+/* Keep the machine dominant on small screens without changing board proportions. */
+body.mobile-view #screen{gap:2px;padding-top:2px}
+body.mobile-view .arena{border-radius:12px}
+body.mobile-view .cookie-roulette{left:20px}
+body.mobile-view .cookie-roulette .a8-stage{bottom:14px}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -2607,7 +2612,10 @@ class Arcade{
  async wait(ms,token){let remaining=ms;while(remaining>0&&token===this.token){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.token;}
  acceptNumber(n,token){
   if(token!==this.token||this.phase!=='playing'||this.paused||this.draws.length>=8||!Number.isInteger(n)||n<1||n>25||this.draws.includes(n))return false;
-  this.draws.push(n);this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(n);});
+  this.draws.push(n);
+  // Wait for ball 3 / 5 before submitting each complete group to the game boards.
+  const count=this.draws.length,release=count===3?this.draws.slice(0,3):count===5?this.draws.slice(3,5):count>5?[n]:[];
+  for(const value of release)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(value);});
   if(this.draws.length===8){this.dealing=false;this.boostAfterDraws(token);}this.onChange(this);return true;
  }
  failDraw(message,token){if(token!==this.token||this.phase!=='playing')return;this.drawError=message;this.phase='error';this.token++;this.dealing=false;this.pause(true);this.onChange(this);}
@@ -2618,7 +2626,8 @@ class Arcade{
    if(token!==this.token)return;
    const pool=Array.from({length:25},(_,i)=>i+1).filter(n=>!this.draws.includes(n));
    const n=pool[Math.floor(this.random()*pool.length)];this.draws.push(n);
-   this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(n);});this.onChange(this);
+   const count=this.draws.length,release=count===3?this.draws.slice(0,3):count===5?this.draws.slice(3,5):count>5?[n]:[];
+   for(const value of release)this.engines.forEach((e,i)=>{if(this.enabled[i])e.enqueue(value);});this.onChange(this);
   }
   if(token===this.token){this.dealing=false;this.onChange(this);this.boostAfterDraws(token);}
  }
@@ -4615,7 +4624,7 @@ function startAnima8(){
  renderer.shadowMap.enabled=false;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  stage.prepend(renderer.domElement);
  const camera=new THREE.PerspectiveCamera(38,1,.08,100);
- let yaw=Math.PI,elevation=24,distance=17.1,aspect=1,paused=false,rate=1,brightness=1.2,disposed=false;
+ let yaw=Math.PI,elevation=24,distance=14.8,aspect=1,paused=false,rate=1,brightness=1.2,disposed=false;
  let last=performance.now(),accumulator=0,frame=0,retryAt=0,paintStamp=-Infinity;
  function wake(){if(!disposed&&!frame&&!document.hidden)frame=requestAnimationFrame(render);}
  const target=new THREE.Vector3(0,.10,0),rotor=new THREE.Group();scene.add(rotor);
@@ -4990,7 +4999,7 @@ function startAnima8(){
  const rim=new THREE.PointLight(0x915aff,24,9,2);rim.position.set(0,2.4,1.5);scene.add(rim);
  const ground=mesh(new THREE.CircleGeometry(8,80),new THREE.ShadowMaterial({opacity:.2}),scene,[0,-2.05,0]);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;
 
- function applyCamera(){centerDisplay.rotation.y=Math.PI-yaw;const a=yaw,e=elevation*Math.PI/180,d=distance*Math.max(1,1.28/aspect);camera.position.set(target.x+Math.sin(a)*Math.cos(e)*d,target.y+Math.sin(e)*d,target.z-Math.cos(a)*Math.cos(e)*d);camera.lookAt(target);wake();}
+ function applyCamera(){centerDisplay.rotation.y=Math.PI-yaw;const a=yaw,e=elevation*Math.PI/180,d=distance*Math.max(1,1.10/aspect);camera.position.set(target.x+Math.sin(a)*Math.cos(e)*d,target.y+Math.sin(e)*d,target.z-Math.cos(a)*Math.cos(e)*d);camera.lookAt(target);wake();}
  function resize(){const width=Math.max(1,stage.clientWidth),height=Math.max(1,stage.clientHeight);aspect=width/height;camera.aspect=aspect;camera.updateProjectionMatrix();renderer.setSize(width,height,false);applyCamera();}
  const observer=new ResizeObserver(resize);observer.observe(stage);resize();
  const pointers=new Map();let lastPinch=0;
