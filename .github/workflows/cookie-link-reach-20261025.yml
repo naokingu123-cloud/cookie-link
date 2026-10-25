@@ -4,23 +4,121 @@ on:
     branches: [main]
     paths: ['.github/workflows/cookie-link-reach-20261025.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  inspect:
+  verify-and-apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect in-board lettering colors
+      - name: Apply exact-source lettering-only change
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,re
+          p=Path('index.html');raw=p.read_bytes()
+          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          assert sha=='60eb120ea40ccc4e86003ff9244fab756f69d875','Source changed; no overwrite'
+          text=raw.decode();Path('/tmp/cookielink-before.html').write_text(text)
+          css='''
+          /* Reach lettering contrast, 2026-10-25: preserve dimensions, outlines and cue timing. */
+          @media (forced-colors: none){
+           .tile-reach[data-tier="0"]{color:#27bfc0;-webkit-text-fill-color:#27bfc0}
+           .tile-reach[data-tier="1"]{color:#ff5b79;-webkit-text-fill-color:#ff5b79}
+           .tile-reach[data-tier="2"]{color:#bd60ef;-webkit-text-fill-color:#bd60ef}
+           .tile-reach[data-tier="3"]>span{background-image:linear-gradient(100deg,#ff6484,#ffc23c,#4bce98,#65b8ff,#d782f5,#ff6484)}
+           .reach-caption.reach-badge .reach-badge-label{color:#ffffff;-webkit-text-fill-color:#ffffff}
+          }
+          '''
+          anchor='</style></head><body>'
+          assert text.count(anchor)==1
+          result=text.replace(anchor,css+anchor,1)
+          assert result.replace(css,'',1)==text
+          assert re.findall(r'<script\b[^>]*>[\s\S]*?</script>',result)==re.findall(r'<script\b[^>]*>[\s\S]*?</script>',text)
+          p.write_text(result)
+          print('LETTERING_ONLY_PATCH_OK; all scripts and all non-style markup are unchanged')
+          PY
+      - name: Install isolated browser checks
+        run: |
+          npm install --prefix /tmp/cookielink-browser --no-save --no-audit --no-fund playwright@1.56.1
+          /tmp/cookielink-browser/node_modules/.bin/playwright install chromium
+      - name: Check reach colors, geometry, cue animations and accessibility
+        run: |
+          python3 -m http.server 8123 --bind 127.0.0.1 > /tmp/cookielink-reach-server.log 2>&1 &
+          node <<'JS'
+          const fs=require('fs'),assert=require('assert/strict');
+          const {chromium}=require('/tmp/cookielink-browser/node_modules/playwright');
+          const before=fs.readFileSync('/tmp/cookielink-before.html','utf8'),after=fs.readFileSync('index.html','utf8');
+          const anchor='app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;select(0);';
+          const hook='window.__reachQA={app,slots,stopAutoRound};userPaused=true;app.paused=true;';
+          const luminance=color=>{const rgb=color.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];};
+          async function sample(browser,source,viewport,forced=false){
+            const page=await browser.newPage({viewport,isMobile:viewport.width<500,hasTouch:viewport.width<500});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+            if(forced)await page.emulateMedia({forcedColors:'active'});
+            assert.equal(source.split(anchor).length,2);
+            await page.route('**/index.html*',r=>r.fulfill({contentType:'text/html; charset=utf-8',body:source.replace(anchor,anchor+hook)}));
+            await page.goto('http://127.0.0.1:8123/index.html?demo=1',{waitUntil:'domcontentloaded'});
+            await page.waitForFunction(()=>window.__reachQA&&document.querySelectorAll('#hammer-pay tr').length===5);
+            await page.evaluate(async()=>{window.__reachQA.stopAutoRound();await document.fonts.ready;});
+            const result=await page.evaluate(()=>{
+              const fixture=document.createElement('div');fixture.id='reach-style-fixture';fixture.style.cssText='position:absolute;left:20px;top:180px;width:180px;height:160px;z-index:999;display:flex;gap:4px;pointer-events:none';
+              for(let tier=0;tier<4;tier++){
+                const tile=document.createElement('div');tile.className='tile c'+tier;tile.style.cssText='position:relative;width:37px;height:37px;flex:none';
+                tile.innerHTML='<span class="tile-reach'+(tier?' alternating':'')+'" data-tier="'+tier+'"><span class="reach-first">リーチ</span>'+(tier?'<span class="reach-second">'+['','高額','超高額','全消し'][tier]+'</span>':'')+'</span>';
+                fixture.append(tile);
+              }
+              const badge=document.createElement('span');badge.className='reach-caption reach-badge';badge.dataset.tier='0';badge.innerHTML='<span class="reach-badge-label">リーチ</span>';fixture.append(badge);document.querySelector('#screen').append(fixture);
+              const rect=el=>{const r=el.getBoundingClientRect();return {w:r.width,h:r.height,x:r.x,y:r.y};};
+              const props=el=>{const s=getComputedStyle(el);return {color:s.color,fill:s.webkitTextFillColor,background:s.backgroundImage,rect:rect(el),font:s.font,fontSize:s.fontSize,strokeWidth:s.webkitTextStrokeWidth,animation:s.animationName,duration:s.animationDuration,shadow:s.textShadow};};
+              return {labels:[...fixture.querySelectorAll('.tile-reach')].map(el=>({parent:props(el),children:[...el.children].map(props)})),badge:props(badge.querySelector('span')),board:rect(document.querySelector('.board')),screen:rect(document.querySelector('#screen')),apple:document.querySelector('meta[name="apple-mobile-web-app-capable"]')?.content};
+            });
+            assert.deepEqual(errors,[]);await page.close();return result;
+          }
+          (async()=>{
+            const browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+            try{
+              for(const viewport of [{width:390,height:844},{width:430,height:932},{width:1280,height:900}]){
+                const old=await sample(browser,before,viewport),now=await sample(browser,after,viewport);
+                assert.deepEqual(now.board,old.board);assert.deepEqual(now.screen,old.screen);assert.equal(now.apple,'yes');
+                for(let tier=0;tier<4;tier++){
+                  const a=old.labels[tier],b=now.labels[tier];
+                  for(const pair of [[a.parent,b.parent],...a.children.map((v,i)=>[v,b.children[i]])]){
+                    for(const key of ['rect','font','fontSize','strokeWidth','animation','duration','shadow'])assert.deepEqual(pair[1][key],pair[0][key],'Unintended change: '+tier+'/'+key);
+                  }
+                  if(tier<3){assert(luminance(b.children[0].fill)>luminance(a.children[0].fill),'Reach fill must brighten');}
+                  else{
+                    const colors=x=>x.match(/rgb\([^)]+\)/g);
+                    const x=colors(a.children[0].background),y=colors(b.children[0].background);assert.equal(x.length,y.length);
+                    for(let i=0;i<x.length;i++)assert(luminance(y[i])>luminance(x[i]),'Each rainbow color must brighten');
+                    assert.equal(b.children[0].fill,'rgba(0, 0, 0, 0)');
+                  }
+                }
+                assert(luminance(now.badge.fill)>=luminance(old.badge.fill));
+                console.log('REACH_CONTRAST_LAYOUT_ANIMATION_OK',JSON.stringify(viewport),JSON.stringify(now.labels.map(l=>l.children[0].fill)));
+              }
+              const forcedOld=await sample(browser,before,{width:430,height:932},true),forcedNew=await sample(browser,after,{width:430,height:932},true);
+              assert.deepEqual(forcedNew,forcedOld);console.log('FORCED_COLORS_UNCHANGED');
+              console.log('ALL_REACH_TESTS_PASSED');
+            }finally{await browser.close();}
+          })().catch(error=>{console.error(error);process.exit(1);});
+          JS
+      - name: Record checked scope and commit
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
-          raw=Path('index.html').read_bytes()
-          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-          assert sha=='60eb120ea40ccc4e86003ff9244fab756f69d875'
-          for i,line in enumerate(raw.decode().splitlines()):
-              if i>1900:break
-              if any(k in line for k in ['.tile-reach','.reach-first','.reach-second','reach-text','reach-label','reach-ink']):
-                  print(str(i+1)+': '+line[:5000])
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          p=Path('HANDOFF.md');s=p.read_text()
+          s+='\n## 追加更新: リーチ文字の明るさ（2026-10-25）\n'
+          s+='- 最新 index.html blob: `'+sha+'`。旧SHAより優先。\n'
+          s+='- 盤面内のリーチ・高額・超高額・全消しの文字色だけを明るく調整。通常は明るい青緑、高額は明るい赤、超高額は明るい紫、全消しは明るい虹色。小盤面下のリーチバッジ文字は純白。既存の白い縁取り、文字サイズ、配置、点滅・交互表示の周期は維持。\n'
+          s+='- CSSのみ追加。全JavaScriptと既存HTMLが同一で、抽選・判定・配当・音声・リセット・画面固定処理の変更なし。\n'
+          s+='- 検証: Chromium 390x844/430x932/1280x900で4種類のリーチ文字の塗り色・各虹色の相対輝度上昇、盤面と文字寸法/フォント/縁幅/アニメーション名と周期の不変、強制カラーモードの不変、ページ例外なしを確認。iPhone実機の見え方は未検証。\n'
+          s+='- ホーム画面からの起動用apple-mobile-web-app-capable=yes設定が既存コードに存在することを確認。Chrome通常タブのURL/タブバーをページ側から常時消す変更は行っていない。\n'
+          p.write_text(s);print('VERIFIED_GAME_BLOB',sha)
           PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html HANDOFF.md
+          git commit -m 'Brighten reach lettering while preserving outlines layout and animation timing'
+          git push origin HEAD:main
