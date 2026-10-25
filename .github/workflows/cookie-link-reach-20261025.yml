@@ -1,0 +1,39 @@
+name: CookieLink reach contrast update
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cookie-link-reach-20261025.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect reach lettering and app display metadata
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,re
+          raw=Path('index.html').read_bytes()
+          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          assert sha=='60eb120ea40ccc4e86003ff9244fab756f69d875','Unexpected source: '+sha
+          text=raw.decode();lines=text.splitlines()
+          print('SOURCE_BLOB',sha)
+          keys=['.reach-badge','.reach-word','.reach-label','.reach-text','function reachBadge','function renderReach','const REACH_WORDS','function updateReach']
+          keep=set()
+          for i,line in enumerate(lines):
+              if len(line)>6000:continue
+              if any(k in line for k in keys):
+                  keep.add(i)
+                  if 'function ' in line:keep.update(range(i,min(i+24,len(lines))))
+              if 'reach' in line and ('textContent' in line or 'innerHTML' in line):keep.add(i)
+          for i in sorted(keep):
+              if len(lines[i])<6000:print(str(i+1)+': '+lines[i])
+          print('APP_METADATA')
+          for m in re.finditer(r'<(?:meta|link)\b[^>]*>',text):
+              if any(k in m.group(0).lower() for k in ['manifest','mobile-web','viewport','theme-color']):print(m.group(0))
+          for p in Path('.').glob('**/*manifest*'):
+              if p.is_file() and '.git/' not in str(p) and p.stat().st_size<20000:print('MANIFEST',str(p),p.read_text())
+          PY
