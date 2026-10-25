@@ -1673,6 +1673,22 @@ body{--sweet-console-frame:url("data:image/webp;base64,UklGRhhFAABXRUJQVlA4WAoAA
 .bet-preview-canvas[hidden]{display:none}
 body.bet-preview .board>:not(.bet-preview-canvas){visibility:hidden!important}
 body.bet-preview .basket-count,body.bet-preview .basket-sugar,body.bet-preview .mini-result-label{visibility:hidden!important}
+
+/* 2026-10-25: compact wonder sugar, elegant extended cues, roulette candy scenery */
+.sugar-slots{gap:0!important;transform:scaleX(.78);transform-origin:right center}
+.sugar-slot{margin-left:-2px;transform:rotate(var(--sugar-tilt,0deg))}
+.sugar-slot:nth-child(5n+1){--sugar-tilt:-5deg}.sugar-slot:nth-child(5n+2){--sugar-tilt:3deg}.sugar-slot:nth-child(5n+3){--sugar-tilt:-2deg}.sugar-slot:nth-child(5n+4){--sugar-tilt:5deg}
+@keyframes sugarPowerup{0%{transform:scale(.7);filter:brightness(1)}40%{transform:scale(1.35);filter:brightness(2) drop-shadow(0 0 9px #fff4aa)}100%{transform:scale(1);filter:none}}
+.tab-sugar.sugar-powerup,.sugar-powerup{animation:sugarPowerup 850ms ease-out}
+.record{animation-duration:680ms!important}
+.chain-hud{transition:opacity .45s ease}
+.play-controls #start,.play-controls #reset,.play-controls #sound-test{display:none!important}
+.play-controls{height:21px!important;min-height:21px!important;justify-content:flex-end!important}
+.play-controls #pause{height:20px!important}
+.sugar-collection .sugar-slot.filled{box-shadow:0 0 4px #ffdb83,inset 0 1px 1px #fff8cf}
+.bet-preview-canvas{image-rendering:auto}
+#roulette-stage,.a8-stage{background-image:radial-gradient(circle at 22% 18%,#fce2b265,transparent 35%),radial-gradient(circle at 80% 78%,#e995bf65,transparent 30%),repeating-radial-gradient(circle at 50% 50%,#64392713 0px,#64392713 18px,#f7d0aa19 22px,#f7d0aa19 30px)!important}
+#bet-value,.bet-value,.bet-amount{font-weight:1000!important;text-shadow:0 1px 1px #30120e,0 0 5px #ffe7a8}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -2820,10 +2836,10 @@ function drawBetScene(ctx,width,d){
   else if(second){crackAt=4600;breakAt=4850;}
   else if(hammer){crackAt=7900;breakAt=8150;}
   else if(remote){crackAt=8350;breakAt=8600;}
-  if(breakAt>=0&&t>=breakAt+200)continue;
+  if(breakAt>=0&&t>=breakAt+340)continue;
   const x=left+(c+.5)*cell,y=top+(row+.5)*cell;
   ctx.save();
-  if(breakAt>=0&&t>=breakAt)ctx.globalAlpha=1-(t-breakAt)/200;
+  if(breakAt>=0&&t>=breakAt)ctx.globalAlpha=Math.max(0,1-(t-breakAt)/260);
   const born=hammer?Math.min(1,Math.max(0,(t-5500)/350)):1;
   betCookie(ctx,color,x,y,cell*.88*born,hammer);
   if((first&&t<2200)||(second&&t>=3100&&t<4600)||(hammer&&t<7900)||(remote&&t>=8350&&t<8600)){
@@ -2835,8 +2851,16 @@ function drawBetScene(ctx,width,d){
    ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(x-20,y-8);ctx.lineTo(x-6,y-2);ctx.lineTo(x-2,y+4);ctx.lineTo(x+5,y-2);ctx.lineTo(x+20,y+3);ctx.moveTo(x-2,y+4);ctx.lineTo(x-5,y+13);ctx.lineTo(x,y+20);
    ctx.strokeStyle='#fff1c8';ctx.lineWidth=3.5;ctx.stroke();ctx.strokeStyle='#29140d';ctx.lineWidth=1.8;ctx.stroke();
   }
+  if(breakAt>=0&&t>=breakAt&&t<breakAt+340){
+   const q=(t-breakAt)/340;
+   ctx.globalAlpha=1-q;ctx.lineWidth=1.5;
+   for(let k=0;k<4;k++){const a=k*Math.PI/2+.5,dx=Math.cos(a)*q*cell*.42,dy=Math.sin(a)*q*cell*.42+q*q*8;
+    ctx.fillStyle=BET_COOKIE_PALETTES[color][k%2];ctx.save();ctx.translate(x+dx,y+dy);ctx.rotate(q*(k%2?-1:1));ctx.beginPath();ctx.moveTo(-8,-7);ctx.lineTo(4,-6);ctx.lineTo(7,1);ctx.lineTo(-3,8);ctx.closePath();ctx.fill();ctx.strokeStyle='#fff2c9';ctx.stroke();ctx.restore();
+   }
+  }
   ctx.restore();
  }
+ if(t>=8000&&t<9450){const q=Math.min(1,(t-8000)/500);ctx.save();ctx.strokeStyle='#ffe4a9';ctx.globalAlpha=(1-q)*.8;ctx.lineWidth=3;ctx.beginPath();ctx.arc(left+cell*2.5,top+cell*1.5,15+q*75,0,Math.PI*2);ctx.stroke();ctx.restore();}
  let message='同じ色がつながると…',detail='クッキーが割れて、落下！';
  if(t>=2650&&t<5500){message='落下して、さらに連鎖！';detail='同じ色をつなげよう';}
  if(t>=5500&&t<7900){message='連鎖でハンマー出現！';detail='5連鎖以上で獲得（途中省略）';}
@@ -2845,7 +2869,7 @@ function drawBetScene(ctx,width,d){
  if(t>=9450){
   ctx.fillStyle='#281510c9';ctx.fillRect(left,top,cell*4,cell*3);
   label('最大LINKが多いほど',123,19,'#fff1c4');
-  label('配当UP!!',165,34,'#ffd25b');
+  label('4 LINK → 5 LINK',161,22,'#fff6d4');label('配当UP!!',190,32,'#ffd25b');
   message='連鎖をつないで配当アップ！';detail='※実際の盤面・配当とは別の見本';
  }
  ctx.fillStyle='#281510e8';ctx.fillRect(0,249,298,49);label(message,262,16,'#fff5cd');label(detail,284,12,'#ffe290');
@@ -2854,7 +2878,7 @@ function drawBetScene(ctx,width,d){
 function drawBetPreview(d){
  if(!d)return;
  const current=slots[active];if(current.betCanvas)drawBetScene(current.betCanvas.getContext('2d'),current.betCanvas.width,d);
- for(const s of slots)drawBetScene(s.mini,s.miniCanvas.width,d);
+ for(const s of slots){drawBetScene(s.mini,s.miniCanvas.width,d);if(app&&app.phase==='ready'&&app.bet(s.i)>0){const ctx=s.mini;ctx.save();ctx.scale(s.miniCanvas.width/298,s.miniCanvas.width/298);ctx.fillStyle='#3d1733d9';ctx.beginPath();ctx.roundRect(237,236,57,56,10);ctx.fill();const tier=wonderTier(Math.max(1,app.bet(s.i)));drawSugar(ctx,264,260,35,tier);ctx.restore();}}
 }
 
 function miniature(s){
@@ -2876,6 +2900,8 @@ function miniature(s){
   ctx.globalAlpha=1;if(t.special)drawHammer(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.94,t.color);if(t.step)drawSugar(ctx,(c+.5)*MINI,(r+.5)*MINI,MINI*.7,wonderTier(t.step.value));if(marked.has(r*SIZE+c)){ctx.strokeStyle='#ffe68e';ctx.lineWidth=2;ctx.strokeRect(c*MINI+1,r*MINI+1,MINI-2,MINI-2);}
   ctx.restore();
  }
+ if(e.phase==='refill'||e.phase==='vanish'||e.phase==='link'){ctx.save();ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff0b8';ctx.strokeStyle='#351910';ctx.lineWidth=3;const msg=e.phase==='link'?(e.maxLink+' LINK'):e.phase==='vanish'?'CRACK!':'SWEETS!';ctx.strokeText(msg,80,150);ctx.fillText(msg,80,150);ctx.restore();}
+ const sugar=sugarStatus(e,app.bet(s.i));if(!e.wonderCollected&&app.bet(s.i)>0){ctx.save();ctx.fillStyle='#3a1a2abc';ctx.fillRect(123,124,37,36);drawSugar(ctx,142,142,31,sugar.tier);ctx.restore();}
 }
 function tabs(a){
  for(const s of slots){
@@ -2883,7 +2909,7 @@ function tabs(a){
   const state=b===0?'参加なし':e.phase==='complete'?(a.phase==='playing'?'終了・集計待ち':a.phase==='paying'?'払い出し中':'払い出し済'):e.phase==='allclear'?'全消し！':a.phase==='ready'?'準備OK':e.phase==='link'?(s.event.newRecord?'最大LINK更新！':s.event.depth+'連鎖'):e.busy?'進行中 · 待ち'+e.queue.length:'次の球を待機';
   const key=[b,win,state,e.phase,s.event.newRecord,e.wonderCollected,e.wonderToken?.value].join('/');if(s.tabKey===key)continue;s.tabKey=key;
   fitGoldenNumber(s.tabBet,num(b),14,76);s.lockedBet.setAttribute('aria-label','BET '+num(b));s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);s.tab.setAttribute('aria-label','クッキーリンク・ゲーム'+(s.i+1)+' '+state);
-  const sugar=sugarStatus(e,b);s.tabSugar.classList.toggle('collected',e.wonderCollected);s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.hidden=!e.wonderCollected;applySugarTier(s.tabSugar.querySelector('.sugar-gem'),sugar.tier);s.tabSugar.setAttribute('aria-label','ワンダーシュガー '+sugar.label+'。'+sugar.detail);
+  const sugar=sugarStatus(e,b);if(s.lastBetTier!==undefined&&s.lastBetTier<sugar.tier&&a.phase==='ready'){s.tabSugar.classList.remove('sugar-powerup');void s.tabSugar.offsetWidth;s.tabSugar.classList.add('sugar-powerup');}s.lastBetTier=sugar.tier;s.tabSugar.classList.toggle('collected',e.wonderCollected);s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.hidden=a.phase==='ready'?b===0:!e.wonderCollected;applySugarTier(s.tabSugar.querySelector('.sugar-gem'),sugar.tier);s.tabSugar.setAttribute('aria-label','ワンダーシュガー '+sugar.label+'。'+sugar.detail);
   s.tab.classList.remove('recording');s.tab.classList.toggle('off',b===0);
  }
 }
@@ -3120,7 +3146,7 @@ function startShatter(s,ev,e){
  if(motionReduced||document.body.classList.contains('minimal')||s.i!==active||!ev.cells?.length)return;
  const plan=ev.plan||makeClearPlan({cells:ev.cells},e.board,e.speed),bits=[];
  for(const [r,c] of ev.cells){const tile=e.board[r][c];if(!tile)continue;
-  const delay=plan.targets[r*SIZE+c].breakAt;
+  const delay=plan.targets[r*SIZE+c]?.breakAt??70;
   for(let j=0;j<3;j++)bits.push({x:(c+.5)*CELL,y:(r+.5)*CELL,color:tile.color,special:tile.special,step:tile.step,number:tile.number,part:j,delay,vx:(j===0?0:j===1?-1:1)*(42+Math.random()*30)+(Math.random()-.5)*15,vy:-(j===0?54:32)-Math.random()*25,spin:(j-1||.45)*(2.2+Math.random()*1.5)});
  }
  const rays=plan.rays.map(ray=>{
@@ -3179,12 +3205,12 @@ function drawShatter(s,time){
  ctx.save();ctx.scale(600/298,600/298);
  drawColorBurst(ctx,fx);
  for(const b of fx.bits){
-  const t=(fx.elapsed-b.delay)/fx.life;if(t<0||t>=1)continue;
-  ctx.save();ctx.globalAlpha=Math.min(1,(1-t)*2.6);ctx.translate(b.x+b.vx*t,b.y+b.vy*t+83*t*t);ctx.rotate(b.spin*t);
+  const t=(fx.elapsed-b.delay)/Math.max(130,fx.life);if(t<0||t>=1)continue;
+  ctx.save();ctx.globalAlpha=Math.min(1,(1-t)*3.4);ctx.translate(b.x+b.vx*t,b.y+b.vy*t+83*t*t);ctx.rotate(b.spin*t);
   const z=CELL/36*(1-.28*t);ctx.scale(z,z);ctx.beginPath();const points=shardPolygons[b.part];points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.clip();
   const sprite=cookieSprites[b.color*2+Number(b.special)];
   if(sprite?.complete&&sprite.naturalWidth)ctx.drawImage(sprite,-18,-18,36,36);
-  else if(b.special)drawHammer(ctx,0,0,36,b.color);else{ctx.fillStyle='#dc9c51';ctx.fillRect(-17,-17,34,34);ctx.fillStyle=inks[b.color];ctx.fillRect(-14,-14,28,28);}
+  else if(b.special)drawHammer(ctx,0,0,36,b.color);else{ctx.fillStyle='#dc9c51';ctx.fillRect(-17,-17,34,34);ctx.fillStyle=inks[b.color];ctx.fillRect(-14,-14,28,28);ctx.fillStyle='#fff2bf';ctx.fillRect(-12,-13,9,2);}
   if(b.step)drawSugar(ctx,0,0,23,wonderTier(b.step.value));
   if(!b.special&&b.number!=null){drawElixirNumber(ctx,b.number,0,0,b.number>9?18:20,'#fff1cf','#7b4129',1.5);}
   ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.lineWidth=1.4;ctx.strokeStyle='#fff0c6';ctx.stroke();ctx.restore();
