@@ -11,14 +11,15 @@ jobs:
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect pending-batch reach contracts
+      - name: Inspect reward and reach geometry
         run: |
           python3 - <<'PY'
           from pathlib import Path
           ls=Path('index.html').read_text().splitlines();wanted=set()
-          for term,n in [('function requestReach(',100),('function updateReachUI(',70),('function event(',60),('function normalReach',45),('normalRainbow',4),('function syncReachPager',25),('const reach',8),('function clearReach',25),('function predictNextHit(',20)]:
+          keys=[('function showSugarAward',65),('function stopSugarAward',15),('function syncSugarAward',35),('function showLinks(',60),('function invalidateReach',20),('function reachBoardSettled',8),('function normalAllClear',30),('reachBoardKey',3),('sugar-award',2),('link-label',2),('function renderNotice',25),('function renderChain',30),(' get idle()',18),('const REACH_WORDS',3)]
+          for term,n in keys:
            for i,l in enumerate(ls):
-            if len(l)<10000 and term in l:wanted.update(range(max(0,i-2),min(len(ls),i+n)))
+            if len(l)<6000 and term in l:wanted.update(range(max(0,i-1),min(len(ls),i+n)))
           for i in sorted(wanted):
-           if len(ls[i])<10000:print(str(i+1)+': '+ls[i])
+           if len(ls[i])<6000:print(str(i+1)+': '+ls[i])
           PY
