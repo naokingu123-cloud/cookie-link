@@ -1,0 +1,211 @@
+{
+  "voice": "HTS Voice Mei (Normal), MMDAgent Project Team",
+  "copyright": "Copyright (c) 2009-2013 Nagoya Institute of Technology, Department of Computer Science",
+  "license": "CC BY 3.0",
+  "source": "https://raw.githubusercontent.com/mmdagent-ex/example/95e3a0b389be60d5c8fd0215684f82512cb81d36/voice/mei/",
+  "voice_git_blob": "edcb095075784ff19f072b8af8a491eeedaabd47",
+  "engine": "Open JTalk",
+  "changes": "Synthetic numbered phrases; speed 1.12; pitch +1 semitone; trimmed external silence; constant per-clip gain; mono 24 kHz PCM",
+  "clips": [
+    {
+      "number": 1,
+      "text": "1番です。",
+      "file": "01.wav",
+      "duration": 0.7166,
+      "sha256": "e23fce69cadfdd5dd98345b19564a5e41d809efd2bd6e44ce1668e72b29cb36a",
+      "peak": 0.83997
+    },
+    {
+      "number": 2,
+      "text": "2番です。",
+      "file": "02.wav",
+      "duration": 0.5951,
+      "sha256": "74e06c3028a04ae3063e79254b2b5a9e9296861b0b93eba0fd1dd41f20e18219",
+      "peak": 0.78207
+    },
+    {
+      "number": 3,
+      "text": "3番です。",
+      "file": "03.wav",
+      "duration": 0.7461,
+      "sha256": "9753e704e10ef07bd865f22bc0d858f6de1a5cc0dec4b9533e243620ae463bc2",
+      "peak": 0.74408
+    },
+    {
+      "number": 4,
+      "text": "4番です。",
+      "file": "04.wav",
+      "duration": 0.6923,
+      "sha256": "0e562879755c5a2ecac68df6af826e9a2021b501a2b226c99c1e78966ac804c0",
+      "peak": 0.83997
+    },
+    {
+      "number": 5,
+      "text": "5番です。",
+      "file": "05.wav",
+      "duration": 0.596,
+      "sha256": "c4e96e5e9c827d136235e024bbc720b9fa5c6bf26a0433b96ae7e7d071898745",
+      "peak": 0.75839
+    },
+    {
+      "number": 6,
+      "text": "6番です。",
+      "file": "06.wav",
+      "duration": 0.7295,
+      "sha256": "938b6a3d2cfee0cf67727074fbb135dbe7a903822e41eb6e4cc0ea3d2bdf38ac",
+      "peak": 0.83997
+    },
+    {
+      "number": 7,
+      "text": "7番です。",
+      "file": "07.wav",
+      "duration": 0.7078,
+      "sha256": "adf5eb6814a20c6bd850d12a30744fef608ac57e5d878ec7bdded07203f7d128",
+      "peak": 0.80615
+    },
+    {
+      "number": 8,
+      "text": "8番です。",
+      "file": "08.wav",
+      "duration": 0.7689,
+      "sha256": "02c407490663691f7e99771c1023914b28acfffad277d60ac21074bba38c12b8",
+      "peak": 0.8273
+    },
+    {
+      "number": 9,
+      "text": "9番です。",
+      "file": "09.wav",
+      "duration": 0.654,
+      "sha256": "fb49f0a775622342ee29adab722f265b09b2b90f7d99c906ede8f8b7db212fdc",
+      "peak": 0.67892
+    },
+    {
+      "number": 10,
+      "text": "10番です。",
+      "file": "10.wav",
+      "duration": 0.6866,
+      "sha256": "2c534ef0fa3928d5b51c24cbc55b3997158eebda01987d481c0a8afe845ffc9e",
+      "peak": 0.83206
+    },
+    {
+      "number": 11,
+      "text": "11番です。",
+      "file": "11.wav",
+      "duration": 0.9273,
+      "sha256": "4670fc698d4f209e2fce4d25c3f766c1eec6ea5e4cdc2958d2b9b94f13a2b3ab",
+      "peak": 0.83997
+    },
+    {
+      "number": 12,
+      "text": "12番です。",
+      "file": "12.wav",
+      "duration": 0.8102,
+      "sha256": "2e60940eefd3c054ce36a4a9cf9259f9e9a159bb1c7a6fdd1db826ccdf941345",
+      "peak": 0.83957
+    },
+    {
+      "number": 13,
+      "text": "13番です。",
+      "file": "13.wav",
+      "duration": 0.9332,
+      "sha256": "7c0281ee43ffb6dbfb63676cc4186d32a599ad35933d312a2c97f889d96f0f4e",
+      "peak": 0.83997
+    },
+    {
+      "number": 14,
+      "text": "14番です。",
+      "file": "14.wav",
+      "duration": 0.8968,
+      "sha256": "10521c3db7cffaab43b00721684a819e4f268826d449f3193b9a5225adfe1347",
+      "peak": 0.83997
+    },
+    {
+      "number": 15,
+      "text": "15番です。",
+      "file": "15.wav",
+      "duration": 0.8443,
+      "sha256": "6591f7a07e2dd8bc2afdb0e6d546c1816f187ada431683a63e4d1a8048938096",
+      "peak": 0.83997
+    },
+    {
+      "number": 16,
+      "text": "16番です。",
+      "file": "16.wav",
+      "duration": 0.9473,
+      "sha256": "e7aa24dcb0d199bc6d68b3163af904719adae941c491783ca5ce00b8ecd9f2e7",
+      "peak": 0.83997
+    },
+    {
+      "number": 17,
+      "text": "17番です。",
+      "file": "17.wav",
+      "duration": 0.9174,
+      "sha256": "91334661cb72f84e32ce9f486885bef762253a173e882a4dec0b36461efb7188",
+      "peak": 0.83997
+    },
+    {
+      "number": 18,
+      "text": "18番です。",
+      "file": "18.wav",
+      "duration": 0.9762,
+      "sha256": "eae41573747bb6c5ee22450c7e7b5ba014162dd61f7c810058f402c953725516",
+      "peak": 0.83997
+    },
+    {
+      "number": 19,
+      "text": "19番です。",
+      "file": "19.wav",
+      "duration": 0.903,
+      "sha256": "30ba82bcc62b3c54745e682dbc13c604144a9596f112f064ab05b5f8937a4ad7",
+      "peak": 0.83997
+    },
+    {
+      "number": 20,
+      "text": "20番です。",
+      "file": "20.wav",
+      "duration": 0.7824,
+      "sha256": "65eb8f7d94a124bb8df24ba323b823167e0e786b2a1f589dca7a0e55752bdd1a",
+      "peak": 0.83997
+    },
+    {
+      "number": 21,
+      "text": "21番です。",
+      "file": "21.wav",
+      "duration": 1.018,
+      "sha256": "f2bd00ef8e9c71883257ce175f9bd2fbe9791a6e9e1d73457db9d13898f566be",
+      "peak": 0.83997
+    },
+    {
+      "number": 22,
+      "text": "22番です。",
+      "file": "22.wav",
+      "duration": 0.9085,
+      "sha256": "4b620299003d34e1b4b34fea8e155c6febe11321db1e7a08ef7c5cfdd0c29f29",
+      "peak": 0.83997
+    },
+    {
+      "number": 23,
+      "text": "23番です。",
+      "file": "23.wav",
+      "duration": 1.0379,
+      "sha256": "e21df73afca5855673814ac9c3c067aeca86947c7fdd430887d7e98b9f9240e4",
+      "peak": 0.83997
+    },
+    {
+      "number": 24,
+      "text": "24番です。",
+      "file": "24.wav",
+      "duration": 0.9951,
+      "sha256": "04f86a4acce4a95fcdf45bca0fc643ae861d607f3cd5721f60adc2a8bdc7229b",
+      "peak": 0.83997
+    },
+    {
+      "number": 25,
+      "text": "25番です。",
+      "file": "25.wav",
+      "duration": 0.9331,
+      "sha256": "b5e5da98f0de8a589648b9c36bd9935527bf9e0d27b9dc6b3fe56f1810834481",
+      "peak": 0.83997
+    }
+  ]
+}
