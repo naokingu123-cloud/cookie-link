@@ -4,27 +4,43 @@ on:
     branches: [main]
     paths: ['.github/workflows/cookie-link-fx-audio-20261025.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  inspect:
+  verify-and-apply:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-      - name: Read exact source sections
+      - name: Apply source-guarded patch and syntax checks
+        run: python3 .github/maintenance/fx_audio_20261025.py
+      - name: Install isolated browser tests
+        run: |
+          npm install --prefix /tmp/cookielink-browser --no-save --no-audit --no-fund playwright@1.56.1
+          /tmp/cookielink-browser/node_modules/.bin/playwright install chromium
+      - name: Run gameplay, fragments, demo, layout and actual media-state tests
+        run: |
+          python3 -m http.server 8123 --bind 127.0.0.1 > /tmp/cookielink-server.log 2>&1 &
+          node .github/tests/cookie-link-fx-audio.cjs
+      - name: Record verified scope and commit
         run: |
           python3 - <<'PY'
-          import pathlib,hashlib,re
-          raw=pathlib.Path('index.html').read_bytes()
-          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-          assert sha=='9c3b11093dfc10e4e1c14c89495c5c67b4b9cd70',sha
-          s=raw.decode(); lines=s.splitlines(); print('SOURCE',sha,'LINES',len(lines))
-          needles=[('function makeClearPlan',28),('function unlock',35),('function sound(',60),('function prepareHammerImpact',40),('function drawShatter',34),('function startShatter',20),('function render(s,',46),('function renderChain',17),('const recordDuration',6),('function clearSounds',24),('let autoRoundTimer',12),('function syncPause',12),('function nextFromResult',24),('function updateLayout',30),('function fitScreen',30),('function ui(',52),('function scheduleUI',30),('function sugarStatus',10),('shatter-layer',2),('shatter-canvas',2),('.arena{',6),('.cookie-roulette{',7),('.a8-stage{',4),('const bgmTracks',55),('addEventListener(\'pointerdown\'',5),('sugar-award-flight',3)]
-          keep=set()
-          for i,line in enumerate(lines):
-              if len(line)>3000:continue
-              for needle,n in needles:
-                  if needle in line:keep.update(range(max(0,i-1),min(len(lines),i+n)))
-          for i in sorted(keep):
-              if len(lines[i])<=3000: print(str(i+1)+': '+lines[i])
-          print('FILES',[(str(p),p.stat().st_size) for p in pathlib.Path('.').glob('*') if p.is_file() and p.suffix in ['.mp3','.wav','.js']])
+          from pathlib import Path
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          p=Path('HANDOFF.md');s=p.read_text()
+          s+='\n## 追加更新: 同色通常クッキーの破片・実配当デモ・音声準備（2026-10-25）\n'
+          s+='- 最新 index.html blob: `'+sha+'`。旧SHAよりこちらを優先。\n'
+          s+='- ハンマーの遠隔同色消去で、通常クッキーだけ6分割＋細かい破片。ハンマー本体・通常連鎖は3分割を維持。光の到着・ひび割れ後に破片を表示し、遠隔破片の表示時間を確保。消去後200msの追加待機と0.1秒列別補充は維持。\n'
+          s+='- BET説明は12マス。見本のHIT→重力落下→4LINK／6LINK→配当表の枠更新。100 BETの例は本番payoutTenths/medalWinで20 WIN／100 WINを算出。見本盤面は実際に重力後その数がつながることを検証済み。全小盤面に共通表示。本番盤面・乱数・配当は変更しない。\n'
+          s+='- 右上に開始までの残り秒数。DEBUG_FAST_START=trueで準備後1秒開始。通常に戻すと30秒。?demo=1は説明確認用の長いBET表示。次ゲーム準備後も自動開始。手動の一時停止UIは非表示、非表示タブやメニューの内部停止は維持。\n'
+          s+='- 音声の初回は自動再生できない場合のみタップを要求。効果音の読込・デコード、AudioContextの再開、BGMの再生許可を確認してから開始。BGMは初期2曲を先読み・交互選択し、同じmedia element＋Web Audio gain(.075)を使用。新規曲追加ではない。WAVの先頭無音を検査し必要時のみ除去。読込失敗時に黙ってゲームを始めず再試行／明示した無音開始を表示。\n'
+          s+='- 背景はassets/candy-roulette-world.svgのお菓子の世界。3Dルーレット自体は変更しない。黒帯は下端に固定してステージ・説明行と非重複。\n'
+          s+='- 検証: 全インラインJS構文、変更前後45ケースの8球結果と乱数使用数の一致、遠隔通常クッキーだけの破片強化、デモ全フレームの本番状態非変更、430x932/1280x900で配置と背景読込、ユーザー操作必須のChromiumで初回音声・BGM再生状態／効果音の冒頭波形・次ゲームで追加タップ不要の再生・BGM通信失敗時の明示無音開始を確認。\n'
+          s+='- 未検証: iPhone実機、実スピーカーの聴感。ブラウザーの自動再生制限を回避できるとは説明しない。\n'
+          p.write_text(s);print('VERIFIED_GAME_BLOB',sha)
           PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html HANDOFF.md
+          git commit -m 'Fix remote-cookie shatter, illustrated BET payout, debug countdown and first-round audio'
+          git push origin HEAD:main
