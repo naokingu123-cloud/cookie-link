@@ -1,0 +1,58 @@
+name: Verify second-tab chocolate digging game
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/choco-dig-install.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Integrate second tab against the exact current source
+        run: python .github/maintenance/install_choco_dig_20261025.py
+      - name: Install browser testing dependency
+        run: |
+          pip install playwright >/tmp/choco-install.log 2>&1
+          python -m playwright install --with-deps chromium >>/tmp/choco-install.log 2>&1
+      - name: Verify mixed games, progress, payout and layout
+        run: python .github/tests/choco_dig_20261025.py
+      - name: Retain only visual test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: choco-dig-previews
+          path: qa-previews/
+          if-no-files-found: ignore
+          retention-days: 3
+      - name: Record and activate verified game
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          note='\n\n## 追加更新: 第2タブ ショコラディグ試作（2026-10-25）\n'
+          note+='- 第2タブだけChocoDigEngineへ変更。第1・第3は従来のCookieLink。起動時は試作確認のため第2タブを選択。抽選機・音声・BET20秒・発射タイミング・元Engineのソースを維持。\n'
+          note+='- 5列の縦穴: 1/6/11/16/21は第1列、2/7/12/17/22は第2列…という割当。HITで各列の先頭を掘削。3/2/1/1/1の共通番号を受け取り、待機中に該当列が点滅。ビターと宝箱は2HIT。基本チョコとウエハースは同種3個以上で連結崩し。フォンダンは周囲8マスへ連鎖。\n'
+          note+='- 最上段の5列を掘り切ると深度+1m。12段の保持範囲を掘り切った列は他列の進行まで待機。深度は次ゲームへ継続し、同じブラウザのlocalStorageへ完了時保存。未完了の即リセットは開始時地形へ戻す。0 BETでは進行しない。\n'
+          note+='- 仮配当: 深度1mごとBET×0.2、宝箱1個BET×1、同色崩しは3個から1個ごとBET×0.05（同バッチの合計個数で算定）。獲得WINは既存リザルト/一度のみのCREDIT払い出しへ統合。深度10mごとに1ゲーム最大1シュガー、価値は獲得ゲームのBET。\n'
+          note+='- ミルク/いちご/ホワイト/抹茶/ビター/ウエハース/フォンダン/宝箱の描画、ドリル・ひび・破片、ミニ盤面同期、専用のルール配当欄とリザルト内容を追加。既存クッキーLINK/連鎖の記録は掘削で増やさない。\n'
+          note+='- 検証: 実3Dページの読込、4種シードの地形/バッチ/0BET/未完了リセット、保存再開、同色崩し/硬度/フォンダン/宝箱、3ゲーム混在8球集計、シュガー一度のみ、リザルト、スマホ3サイズ/横画面/PCをChromiumで確認。入賞はテスト用通知で検証。iPhone実機および自然物理の全8球通し、配当バランスの調整は未実施。\n'
+          note+='- 最新index.html blob: `'+sha+'`。編集元 assets/choco-dig.js と assets/choco-dig.css はインストーラが本体へ埋め込み。\n'
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+note)
+          print('VERIFIED_CHOCO_GAME_BLOB',sha)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/choco-dig-install.yml
+          git add index.html HANDOFF.md
+          git commit -m 'Enable chocolate digging in second tab with persistent depth and shared draws'
+          git push origin HEAD:main
