@@ -1,0 +1,31 @@
+name: CookieLink sugar basket and grouped draw
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cookie-link-sugar-basket-20261025.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect only sugar, basket and grouped draw source
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,hashlib
+          raw=Path('index.html').read_bytes();s=raw.decode();ls=s.splitlines()
+          print('SOURCE',hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest())
+          keys={'function wonderTier':15,'function drawSugar':45,'function applySugarTier':15,'function sugarStatus':17,'function pour(':65,'function stopPour':8,'class DrawController':34,'function startAnima8':12,'function createCookieRoulette':4,'function syncSugarCollection':30,'function showSugarAward':35,'function drawBetPreview':12,'function animatePour':45}
+          keep=set()
+          for i,l in enumerate(ls):
+              if len(l)>5500:continue
+              for key,n in keys.items():
+                  if key in l:keep.update(range(i,min(len(ls),i+n)))
+              if any(k in l for k in ['WONDER_',"wonderTier(",'wonderToken','canAdvance','basket-spout','.basket{','.basket ','.basket svg','basket.style','basketPath','sugar-crystal','wonder-crystal','function crystal','wonderBank','class Engine','function sweetSVG','function syncTileDecor']):keep.add(i)
+          for i in sorted(keep):
+              l=ls[i]
+              if len(l)<5500:print(str(i+1)+': '+l)
+          PY
