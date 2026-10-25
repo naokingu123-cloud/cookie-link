@@ -8,21 +8,20 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect exact sugar artwork and basket geometry
+      - name: Inspect external sugar badge contracts
         run: |
           python3 -u - <<'PY'
           from pathlib import Path
           s=Path('index.html').read_text();ls=s.splitlines()
-          for a,b in [(2230,2247),(2308,2410),(2710,2798),(3103,3179),(3246,3278),(2220,2236)]:
-              for i in range(a-1,min(b,len(ls))):
-                  if len(ls[i])<15000:print(str(i+1)+': '+ls[i])
-          print('BASKET_AND_SUGAR_CSS')
-          for i,l in enumerate(ls[:2100]):
-              if len(l)<6000 and any(k in l for k in ['basket','sugar-gem','sugar-slot','sugar-evolution','sugar-flight','sugar-award','basket-sugar']):print(str(i+1)+': '+l)
-          print('TIER_DECLARATIONS')
+          keep=set()
           for i,l in enumerate(ls):
-              if 'const wonderTier' in l or 'sugar-evolution-art' in l:print(str(i+1)+': '+l[:15000])
+              if len(l)>6000:continue
+              if any(k in l for k in ['function tabs(a)','function miniature(s)','class Arcade{','function nextFromResult','function toggleJpcMode','function drawBetPreview']):keep.update(range(i,min(len(ls),i+(85 if 'class Arcade' in l else 28))))
+              if i<2130 and any(k in l for k in ['.tab-sugar','.tab-slot','.tab{','.mini-wrap','.tab-bets','.tab-locked-bet','.games-deck','.tabs{','.mini-logo']):keep.add(i)
+              if 'onNumber:n=>rouletteDrawSource.number(n)' in l or 'get idle' in l:keep.add(i)
+          for i in sorted(keep):
+              if len(ls[i])<6000:print(str(i+1)+': '+ls[i])
           PY
