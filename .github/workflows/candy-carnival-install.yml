@@ -4,22 +4,58 @@ on:
     branches: [main]
     paths: ['.github/workflows/candy-carnival-install.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  inspect:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect reward and reach geometry
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Integrate against exact current game
+        run: python .github/maintenance/install_candy_carnival_20261025.py
+      - name: Install browser test dependency
         run: |
-          python3 - <<'PY'
+          pip install playwright >/tmp/carnival-browser.log 2>&1
+          python -m playwright install --with-deps chromium >>/tmp/carnival-browser.log 2>&1 || { tail -70 /tmp/carnival-browser.log; exit 1; }
+      - name: Verify mixed games, conditional reach and reward boundaries
+        run: python .github/tests/candy_carnival_20261025.py
+      - name: Retain visual verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candy-carnival-previews
+          path: qa-carnival/
+          retention-days: 3
+          if-no-files-found: ignore
+      - name: Record and activate verified game
+        run: |
+          python - <<'PY'
           from pathlib import Path
-          ls=Path('index.html').read_text().splitlines();wanted=set()
-          keys=[('function showSugarAward',65),('function stopSugarAward',15),('function syncSugarAward',35),('function showLinks(',60),('function invalidateReach',20),('function reachBoardSettled',8),('function normalAllClear',30),('reachBoardKey',3),('sugar-award',2),('link-label',2),('function renderNotice',25),('function renderChain',30),(' get idle()',18),('const REACH_WORDS',3)]
-          for term,n in keys:
-           for i,l in enumerate(ls):
-            if len(l)<6000 and term in l:wanted.update(range(max(0,i-1),min(len(ls),i+n)))
-          for i in sorted(wanted):
-           if len(ls[i])<6000:print(str(i+1)+': '+ls[i])
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          note='\n\n## 追加更新: 第3タブ・条件付きリーチ・大型吹き出し（2026-10-25）\n'
+          note+='- 第3タブは新作キャンディカーニバル。第1クッキーリンク/第2ショコラディグは維持。起動時は確認用に第3タブを選択。\n'
+          note+='- 5色のビンにキャンディを4個集める。番号と色/1〜3個の対応はゲーム開始時にシャッフル。1つのスター番号は全色に1個。ビンは4個で満杯、超過分は加算なし。各8球終了後は新しいビンへ。\n'
+          note+='- 仮配当: ビン1本0.5倍、3色完成で追加3倍、5色完成で追加10倍。各ボーナスは1ゲーム1回。5色完成は終了時にシュガー1個（そのゲームのBET値）。既存CREDIT/リザルトへ合算。配当バランスは未調整。\n'
+          note+='- CandyのdrawMode/reachModeはsingle。共通抽選を1球ごとに処理し、予測も1球ごと。Cookie/Chocoの3/2/1/1/1バッチは維持。\n'
+          note+='- クッキーのリーチ再計算は2/4/5/6/7/8球目。2球目は既入賞2番号+候補番号、4球目は既入賞1番号+候補番号を同時消去して予測。0/1/3球目には表示しない。未完了の先行処理があれば安定した盤面で再計算し、古い非同期結果を破棄。8球目後も盤面の参考予測として更新するが9球目は発射しない。ライブ盤面・乱数を変更しない。\n'
+          note+='- デバッグ初期BETは各タブ3000。通常の即リセットは現在BETを保持。\n'
+          note+='- クッキー配当吹き出しを200/228/252論理pxへ拡大、倍率3倍未満/3倍以上/10倍以上で枠と文字を段階強調。新ゲームも同じ閾値。シュガー画面演出は下側.game内へ限定し、上の黒い情報帯を覆わない。\n'
+          note+='- ブラウザ検証: 5シードの8球、スター/完成/二重配当なし/0BET/途中リセット/1個シュガー、3種混在で8球と一度のみCREDIT、条件付きリーチと実Engineの照合、2/4/5/6/7/8再計算・古い結果破棄・乱数不変、スマホ3サイズ/横画面/PCで枠と黒帯の非重複。入賞は制御した番号通知。iPhone実機聴感・自然物理全8/70球通しは未検証。\n'
+          note+='- 物理/音声/既存2ゲームのEngineソースと埋込素材を不変確認。編集元assets/candy-carnival.js/.css、適用スクリプト.github/maintenance/install_candy_carnival_20261025.py、検証.github/tests/candy_carnival_20261025.py。\n'
+          note+='- 最新index.html blob: `'+sha+'`。\n'
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+note)
+          print('VERIFIED_CARNIVAL_BLOB',sha)
           PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/candy-carnival-install.yml
+          git add index.html HANDOFF.md
+          git commit -m 'Add Candy Carnival third tab and conditional grouped reach with larger rewards'
+          git push origin HEAD:main
