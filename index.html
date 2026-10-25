@@ -1737,6 +1737,15 @@ body.mobile-landscape #screen>.games-deck{grid-column:1;grid-row:2;width:100%;he
 body.mobile-landscape #screen>.game{grid-column:2;grid-row:1 / 3;align-self:end;width:456px;height:390px}
 body.mobile-landscape #screen>#console{grid-column:1 / 3;grid-row:3;width:100%;margin:0;height:72px}
 body.mobile-landscape #debug-reset{right:491px}
+
+/* Reach lettering contrast, 2026-10-25: preserve dimensions, outlines and cue timing. */
+@media (forced-colors: none){
+ .tile-reach[data-tier="0"]{color:#27bfc0;-webkit-text-fill-color:#27bfc0}
+ .tile-reach[data-tier="1"]{color:#ff5b79;-webkit-text-fill-color:#ff5b79}
+ .tile-reach[data-tier="2"]{color:#bd60ef;-webkit-text-fill-color:#bd60ef}
+ .tile-reach[data-tier="3"]>span{background-image:linear-gradient(100deg,#ff6484,#ffc23c,#4bce98,#65b8ff,#d782f5,#ff6484)}
+ .reach-caption.reach-badge .reach-badge-label{color:#ffffff;-webkit-text-fill-color:#ffffff}
+}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
