@@ -4,24 +4,44 @@ on:
     branches: [main]
     paths: ['.github/workflows/cookie-link-sugar-basket-20261025.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
-  inspect:
+  verify-and-apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect external sugar badge contracts
+      - name: Apply exact-source patch and check syntax
+        run: python3 .github/maintenance/sugar_basket_groups_20261025.py
+      - name: Prepare isolated browser tests
         run: |
-          python3 -u - <<'PY'
+          npm install --prefix /tmp/cookielink-browser --no-save --no-audit --no-fund playwright@1.56.1
+          /tmp/cookielink-browser/node_modules/.bin/playwright install chromium
+      - name: Verify new features and previous game regression
+        run: |
+          python3 -m http.server 8123 --bind 127.0.0.1 >/tmp/cookielink-sugar-server.log 2>&1 &
+          node .github/tests/cookie-link-sugar-basket-groups.cjs
+          node .github/tests/cookie-link-result-jpc.cjs
+      - name: Save only tested changes and handoff
+        run: |
+          python3 - <<'PY'
           from pathlib import Path
-          s=Path('index.html').read_text();ls=s.splitlines()
-          keep=set()
-          for i,l in enumerate(ls):
-              if len(l)>6000:continue
-              if any(k in l for k in ['function tabs(a)','function miniature(s)','class Arcade{','function nextFromResult','function toggleJpcMode','function drawBetPreview']):keep.update(range(i,min(len(ls),i+(85 if 'class Arcade' in l else 28))))
-              if i<2130 and any(k in l for k in ['.tab-sugar','.tab-slot','.tab{','.mini-wrap','.tab-bets','.tab-locked-bet','.games-deck','.tabs{','.mini-logo']):keep.add(i)
-              if 'onNumber:n=>rouletteDrawSource.number(n)' in l or 'get idle' in l:keep.add(i)
-          for i in sorted(keep):
-              if len(ls[i])<6000:print(str(i+1)+': '+ls[i])
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          p=Path('HANDOFF.md')
+          p.write_text(p.read_text()+'\n## 追加更新: バスケット・5種シュガー・外側バッジ・3/2/1進行（2026-10-25）\n'
+          +'- 最新 index.html blob: `'+sha+'`。旧SHAより優先。\n'
+          +'- バスケットを31x28から36x32.5へ約16%拡大。中心位置/補充開始位置と0.1秒列差、ハンマー破片同期/追加待機は維持。\n'
+          +'- 通常シュガーは白/ピンク/銅/銀/金の5種。既存の異なる結晶シルエットに面取り、細かい粒、リボン、彫金、雪結晶、王冠の宝石/真珠飾りを追加。盤面・ミニ盤面・GET・貯蔵・リザルト・Canvasは共通SVG。旧プラチナ/旧高額虹の内部値は保持し、通常表示のみ金へまとめる。\n'
+          +'- 虹は明示した kind=direct-jpc または directJpc=true の専用シュガー。単なる旧tier=6や高BETではJPCにしない。通常結果/払い出し後に一度のみ既存JPCへ接続し、jpcRedeemedで重複を防止。出現率/付与条件は未指定のため新設していない。\n'
+          +'- BET中/ゲーム中とも、シュガー状態は小盤面の外側右下に30pxのアイコンで表示。盤面内の重複バッジを削除。0 BETでもバッジは残すが無彩色シルエット。0 BETエンジンは動かず抽選/補充/シュガー発生なし。過去の成長値は破棄しない。BETによる見込み内部値上昇でパワーアップ演出（同じグレード内も対象）。\n'
+          +'- 通常抽選は3球→2球→1球→1球→1球。グループ内の球が入賞し、有効盤面すべての連鎖/補充/キュー処理が完了してから次へ。0 BET盤面は待機条件から除外。JPC70球と3D物理は維持。\n'
+          +'- 検証: 構文、5種+専用虹のSVG/Canvas、0 BET非実行/非発生/成長保持、実ドライバの待機条件と3/2/1/1/1球数、専用虹の一度のみJPC、5画面サイズの外側バッジ/ボタン非重複、45ケースの通常ゲーム結果/乱数一致、既存リザルト8秒/BET15秒/JPC切替検証に合格。\n'
+          +'- 未検証: iPhone実機、スピーカー聴感、物理抽選の全70球実時間通し。BGM素材追加は今回なし。\n')
+          print('VERIFIED_SUGAR_BASKET_BLOB',sha)
           PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html HANDOFF.md
+          git commit -m 'Enlarge baskets refine five sugars place external badges and synchronize 3-2-1 draws'
+          git push origin HEAD:main
