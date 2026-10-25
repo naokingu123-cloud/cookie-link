@@ -12,7 +12,7 @@ def section(a,b,text):
  global s
  assert s.count(a)==1 and s.count(b)==1,(a,b)
  lo=s.index(a);hi=s.index(b,lo);s=s[:lo]+text+'\n'+s[hi:]
-replace('const impact=source.launch+flight,breakAt=impact+Math.round(125/waveRate);\n   targets[r*SIZE+c]={impact,breakAt,fragmentLife:board[r][c]?.special?life:Math.max(420,life)};', 'const impact=source.launch+flight,normal=!board[r][c]?.special;\n   const crackEnd=impact+Math.round((normal?220:125)/waveRate),breakAt=crackEnd+(normal?Math.round(80/waveRate):0);\n   targets[r*SIZE+c]={impact,crackEnd,breakAt,fragmentAt:breakAt,fragmentLife:normal?Math.max(420,life):life};')
+replace('const impact=source.launch+flight,breakAt=impact+Math.round(125/waveRate);\n  targets[r*SIZE+c]={impact,breakAt,fragmentLife:board[r][c]?.special?life:Math.max(420,life)};', 'const impact=source.launch+flight,normal=!board[r][c]?.special;\n   const crackEnd=impact+Math.round((normal?220:125)/waveRate),breakAt=crackEnd+(normal?Math.round(80/waveRate):0);\n  targets[r*SIZE+c]={impact,crackEnd,breakAt,fragmentAt:breakAt,fragmentLife:normal?Math.max(420,life):life};')
 replace('part:j,enhanced,life,delay:hit.breakAt,','part:j,enhanced,life,delay:hit.fragmentAt??hit.breakAt,')
 replace('color:tile.color,delay:hit.breakAt,life,vx:','color:tile.color,delay:hit.fragmentAt??hit.breakAt,life,vx:')
 replace('return {bits,dust,rays,sources:plan.sources,life:plan.life,elapsed:0,stamp:null,duration:plan.duration,version};', '''const remoteTargets=(ev.remoteCells||[]).filter(([r,c])=>board[r][c]&&!board[r][c].special).map(([r,c])=>({tileId:board[r][c].id,...plan.targets[r*SIZE+c]}));
