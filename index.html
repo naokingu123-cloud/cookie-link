@@ -2983,10 +2983,17 @@ function syncTileDecor(el,t){
  if(t.step&&!el.querySelector('.wonder-mark')){const mark=document.createElement('span');mark.className='wonder-mark sugar-gem';applySugarTier(mark,wonderTier(t.step.value));mark.setAttribute('aria-hidden','true');sweet.append(mark);}
  if(t.step)applySugarTier(el.querySelector('.wonder-mark'),wonderTier(t.step.value));else el.querySelector('.wonder-mark')?.remove();
 }
-const hammerCountMarkup=colors=>{
+const hammerCountMarkup=(colors,concealed=false)=>{
  const count=colors.length,size=11,width=Math.min(55,count*size),step=count>1?(width-size)/(count-1):0;
- const icons=colors.map((color,i)=>'<span class="hammer-count-icon" data-color="'+color+'" style="--hammer-x:'+(i*step)+'px;--hammer-layer:'+(count-i)+'" aria-hidden="true"><svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet"><use href="#hammer'+color+'"/></svg></span>').join('');
- return '<span class="hammer-icons" role="img" aria-label="'+colors.map(c=>COLORS[c]).join('・')+'のハンマー、計'+count+'個"><span class="hammer-sequence" style="--hammer-width:'+width+'px">'+icons+'</span></span>';
+ // Never embed future colors in BET icons, data attributes, or accessible labels.
+ const mystery='<svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g transform="rotate(-32 32 32)" fill="#403b43" stroke="#d9d2c5" stroke-width="3" stroke-linejoin="round"><path d="M26 27h12v30H26z"/><path d="M12 8h40v24H12z"/></g><text x="32" y="39" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="900" fill="#fff8df" stroke="#25212a" stroke-width="1.5" paint-order="stroke">?</text></svg>';
+ const icons=Array.from({length:count},(_,i)=>{
+  const colorAttr=concealed?'':' data-color="'+colors[i]+'"';
+  const art=concealed?mystery:'<svg viewBox="0 0 64 64" preserveAspectRatio="xMidYMid meet"><use href="#hammer'+colors[i]+'"/></svg>';
+  return '<span class="hammer-count-icon'+(concealed?' hammer-unknown':'')+'"'+colorAttr+' style="--hammer-x:'+(i*step)+'px;--hammer-layer:'+(count-i)+'" aria-hidden="true">'+art+'</span>';
+ }).join('');
+ const label=concealed?'色はゲーム開始時に公開、計'+count+'個':colors.map(c=>COLORS[c]).join('・')+'のハンマー、計'+count+'個';
+ return '<span class="hammer-icons" role="img" aria-label="'+label+'"><span class="hammer-sequence" style="--hammer-width:'+width+'px">'+icons+'</span></span>';
 };
 
 function sugarStatus(e,bet){
@@ -3000,10 +3007,11 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),wonderTier(token?.value??0));slot.setAttribute('aria-label',token?WONDER_NAMES[wonderTier(token.value)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- const showingChain=!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion;
+ const concealed=a.phase==='ready';
+  const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
   const top=Math.max(9,depth),rows=Array.from({length:5},(_,i)=>top-i);updateHammerSelection(depth,top);
-  $('hammer-pay').innerHTML=rows.map(n=>`<tr data-depth="${n}" class="${n===depth?'chosen':''}"><th>${n}連鎖</th><td>${hammerCountMarkup(e.hammerPreview[n]||[])}</td></tr>`).join('');
+  $('hammer-pay').innerHTML=rows.map(n=>`<tr data-depth="${n}" class="${n===depth?'chosen':''}"><th>${n}連鎖</th><td>${hammerCountMarkup(e.hammerPreview[n]||[],concealed)}</td></tr>`).join('');
  }
  for(let c=0;c<SIZE;c++){
   const selected=c===e.wonderColumn,basket=e.basketState[c],text=!selected?'':e.wonderCollected?'獲得済':e.wonderIssued?(basket.pending.length?'待機中':'出現済'):'あと'+basket.remaining;
