@@ -1687,6 +1687,7 @@ body.bet-preview .basket-count,body.bet-preview .basket-sugar,body.bet-preview .
 .play-controls #pause{height:20px!important}
 .sugar-collection .sugar-slot.filled{box-shadow:0 0 4px #ffdb83,inset 0 1px 1px #fff8cf}
 .bet-preview-canvas{image-rendering:auto}
+.roulette-info-strip{height:28px;min-height:28px;margin:6px 9px 0;background:#080808;border:2px solid #29221b;border-radius:4px;box-shadow:inset 0 1px 0 #5d534a,0 2px 4px #21151077;pointer-events:none}
 #roulette-stage,.a8-stage{background-image:radial-gradient(circle at 22% 18%,#fce2b265,transparent 35%),radial-gradient(circle at 80% 78%,#e995bf65,transparent 30%),repeating-radial-gradient(circle at 50% 50%,#64392713 0px,#64392713 18px,#f7d0aa19 22px,#f7d0aa19 30px)!important}
 #bet-value,.bet-value,.bet-amount{font-weight:1000!important;text-shadow:0 1px 1px #30120e,0 0 5px #ffe7a8}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
@@ -1988,7 +1989,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <section class="arena" aria-label="同期する3Dルーレット"><div id="cookie-roulette" class="cookie-roulette" aria-label="ゲームと同期する25ポケットの抽選機">
  <div class="a8-stage" role="group" aria-label="3D抽選機。ドラッグで視点を変更できます。"><div class="a8-loading" role="status">抽選機を読み込み中…</div></div>
  <div class="roulette-caption"><span data-status aria-live="polite">準備中</span><span data-count>0 / 8</span><button type="button" id="roulette-speed" aria-label="ルーレットの再生速度を切り替える" aria-pressed="false">1×</button><button type="button" id="roulette-retry" hidden>再読込</button></div>
- <div class="roulette-internal" hidden aria-hidden="true"><div class="a8-results"></div><div class="a8-pocket-grid"></div><div class="a8-jpc-meter"><i data-jpc-fill></i><span data-jpc-progress></span></div><span data-aim-status></span><span data-mode-detail></span><div class="a8-jpc-legend"></div><div class="a8-jpc-aim"></div><input id="a8-jpc-aim" type="checkbox"><input id="a8-trails" type="checkbox"><select id="a8-mode"><option value="eight">8球</option></select><button data-action="start"></button><button data-action="pause"></button><button data-action="reset"></button></div>
+ <div class="roulette-info-strip" aria-label="プレイヤーリーチ・達成状況 表示予定"></div><div class="roulette-internal" hidden aria-hidden="true"><div class="a8-results"></div><div class="a8-pocket-grid"></div><div class="a8-jpc-meter"><i data-jpc-fill></i><span data-jpc-progress></span></div><span data-aim-status></span><span data-mode-detail></span><div class="a8-jpc-legend"></div><div class="a8-jpc-aim"></div><input id="a8-jpc-aim" type="checkbox"><input id="a8-trails" type="checkbox"><select id="a8-mode"><option value="eight">8球</option></select><button data-action="start"></button><button data-action="pause"></button><button data-action="reset"></button></div>
 </div>
 <div class="sugar-collection" id="sugar-collection" role="status" aria-live="polite" aria-label="ワンダーシュガー 0個獲得"><div class="sugar-caption"><small>ワンダーシュガー</small><em id="sugar-ready" hidden>CHANCE!</em></div><div class="sugar-slots" id="sugar-slots"><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span><span class="sugar-slot" aria-label="未獲得"><i class="sugar-gem" aria-hidden="true"></i></span></div></div><div class="arena-title">ROULETTE STAGE</div><p>ルーレット用スペース</p><div class="avatar-box"><canvas id="avatar" width="300" height="320" aria-label="向きを変えられるゼリーペット"></canvas><span id="equipped-title" hidden></span><span class="avatar-name">JELLY PET</span><button id="dress">着せ替え</button></div></section>
 <section class="games-deck" aria-label="ワンダーシュガーとゲーム切り替え"><div class="deck-top"></div><nav id="tabs" class="tabs" role="tablist" aria-label="ゲーム切り替え"></nav></section>
@@ -4855,13 +4856,13 @@ async function loadCookieRoulette(){
   const [THREE,CANNON]=await loadRouletteModules();if(epoch!==rouletteLoadEpoch||!root.isConnected)return;
   rouletteDriver?.dispose();root.querySelectorAll('canvas').forEach(c=>c.remove());root.querySelector('.a8-pocket-grid').replaceChildren();
   rouletteDriver=createCookieRoulette(root,{onNumber:n=>rouletteDrawSource.number(n),onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
-  rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(app.paused);scheduleUI(app);
+  rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(app.paused);scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
  }catch(error){if(epoch!==rouletteLoadEpoch)return;rouletteReady=false;retry.hidden=false;loading.hidden=false;loading.textContent='抽選機を読み込めませんでした。「再読込」で再試行できます。';root.querySelector('[data-status]').textContent='抽選機の読込待ち';scheduleUI(app);console.error('Cookie Link roulette:',error);}
 }
 function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
 
-const bgmTracks=['bgm-1.mp3','bgm-2.mp3'];
+const bgmTracks=['bgm-1.mp3','bgm-2.mp3']; // Additional normal/WONDER licensed audio may be added after the source files are supplied.
 const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='none';
 const normalBgmVolume=.075;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
@@ -4922,7 +4923,8 @@ $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.pr
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
 
-$('start').onclick=()=>{unlock();prepareArrival();prepareHammerImpact();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();}else{payoutStamp=null;if(app.start())beginBgm();}};
+let autoRoundTimer=null;function scheduleAutoRound(){if(autoRoundTimer)clearTimeout(autoRoundTimer);autoRoundTimer=setTimeout(()=>{autoRoundTimer=null;if(app.phase==='ready'&&rouletteReady&&!document.hidden&&!menuOpen&&app.bets.some(b=>b>0))$('start').click();else if(app.phase==='ready')scheduleAutoRound();},30000);}
+$('start').onclick=()=>{if(autoRoundTimer){clearTimeout(autoRoundTimer);autoRoundTimer=null;}unlock();prepareArrival();prepareHammerImpact();prepareAnnouncer();try{speechSynthesis.cancel();speechSynthesis.resume();}catch{}if(app.phase==='complete'){stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();scheduleAutoRound();}else{payoutStamp=null;if(app.start())beginBgm();}};
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=()=>{stopBgm();stopSounds();userPaused=false;payoutStamp=null;document.body.classList.remove('paused');for(const s of slots)s.particles.replaceChildren();app.resetDebug();syncPause();};
 function syncPause(){if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
