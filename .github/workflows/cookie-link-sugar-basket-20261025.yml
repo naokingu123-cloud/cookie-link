@@ -13,9 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Inspect exact sugar artwork and basket geometry
         run: |
-          python3 - <<'PY'
+          python3 -u - <<'PY'
           from pathlib import Path
-          import re
           s=Path('index.html').read_text();ls=s.splitlines()
           for a,b in [(2230,2247),(2308,2410),(2710,2798),(3103,3179),(3246,3278),(2220,2236)]:
               for i in range(a-1,min(b,len(ls))):
@@ -24,5 +23,6 @@ jobs:
           for i,l in enumerate(ls[:2100]):
               if len(l)<6000 and any(k in l for k in ['basket','sugar-gem','sugar-slot','sugar-evolution','sugar-flight','sugar-award','basket-sugar']):print(str(i+1)+': '+l)
           print('TIER_DECLARATIONS')
-          for m in re.finditer(r'[^\n;]*(?:wonderTier\s*=|sugar-evolution-art)[^\n]*',s):print(m.group(0)[:15000])
+          for i,l in enumerate(ls):
+              if 'const wonderTier' in l or 'sugar-evolution-art' in l:print(str(i+1)+': '+l[:15000])
           PY
