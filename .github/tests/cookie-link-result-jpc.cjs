@@ -32,11 +32,11 @@ async function layoutTests(browser){
   const initial=await bounds(page,['#screen','#debug-tools','#bet-countdown']);inside(initial['#debug-tools'],initial['#screen'],'Toolbar outside screen');
   assert(initial['#debug-tools'].y>=initial['#bet-countdown'].bottom-3,'Toolbar covers countdown');
   assert.equal(await page.locator('#pause').isVisible(),false);assert.equal(await page.locator('#debug-start').isVisible(),true);
-  await page.evaluate(()=>{const q=window.__resultQA;q.finishFixture([12345,0,987654]);q.hold();});await page.waitForTimeout(800);
-  const rs=await bounds(page,['#screen','#round-result-layer','.round-result','#result-heading','.result-total','#result-games','.result-next-info','.result-countdown-track','#result-total-win']);
+  await page.evaluate(()=>{const q=window.__resultQA;q.finishFixture([12345,0,987654]);q.hold();});await page.waitForTimeout(100);await page.evaluate(()=>{for(const a of document.querySelector('#round-result-layer').getAnimations({subtree:true})){if(a.effect.getTiming().iterations!==Infinity)a.finish();}});
+  const rs=await bounds(page,['#screen','#round-result-layer','.round-result','#result-heading','.result-total','#result-games','.result-next-info','.result-countdown-track','#result-total-win','.result-total .win-word']);
   inside(rs['.round-result'],rs['#round-result-layer'],'Result frame clipped',6);
   for(const sel of ['#result-heading','.result-total','#result-games','.result-next-info','.result-countdown-track'])inside(rs[sel],rs['.round-result'],'Result child clipped: '+sel,3);
-  inside(rs['#result-total-win'],rs['.result-total'],'Total number too wide');assert.equal(await page.locator('.result-game').count(),3);
+  inside(rs['#result-total-win'],rs['.result-total'],'Total number too wide');inside(rs['.result-total .win-word'],rs['.result-total'],'WIN label clipped');assert.equal(await page.locator('.result-game').count(),3);
   const cards=await page.locator('.result-game').evaluateAll(els=>els.map(e=>({w:e.clientWidth,scroll:e.scrollWidth})));assert(cards.every(c=>c.scroll<=c.w+2),'Result card overflow '+JSON.stringify(cards));
   await page.evaluate(()=>{const q=window.__resultQA;q.debugResetRound();q.hold();});
   await page.locator('#jpc-mode').click();await page.waitForFunction(()=>window.__resultQA.jpc.active);

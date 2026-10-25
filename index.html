@@ -1777,7 +1777,7 @@ body.mobile-landscape #debug-tools #debug-reset{right:auto}
 .result-total:before,.result-total:after{content:"";position:absolute;top:14px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff8e8 0,#eaae64 35%,#a95538 100%);box-shadow:inset 0 0 0 3px #efc48b;pointer-events:none}
 .result-total:before{left:-11px}.result-total:after{right:-11px}
 .result-total-label{font:900 12px/17px system-ui;letter-spacing:3px;color:#9b5740}
-.result-total-amount{display:flex;align-items:baseline;justify-content:center;gap:7px;min-height:60px;line-height:1.1;white-space:nowrap}
+.result-total-amount{width:100%;display:flex;align-items:baseline;justify-content:center;gap:7px;min-height:60px;line-height:1.1;white-space:nowrap}
 .result-total-amount .win-word{font-size:22px}
 #result-total-win{display:inline-block;min-width:0;filter:drop-shadow(0 2px 0 #ffffffd9)}
 #result-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:0 0 3px}
@@ -3782,6 +3782,7 @@ function tickResultAuto(){
  resultAutoTimer=setTimeout(tickResultAuto,100);
 }
 
+function fitResultTotal(a){const el=$('result-total-win'),width=Math.max(72,Math.min(250,el.parentElement.clientWidth-64));fitGoldenNumber(el,num(a.totalWin),52,width);}
 function renderRoundResult(a){
  syncResultAuto(a);syncDebugButtons();
  const layer=$('round-result-layer'),visible=!!a.result&&['result','paying','complete'].includes(a.phase);
@@ -3798,7 +3799,7 @@ function renderRoundResult(a){
   $('result-games').innerHTML=a.engines.map((e,i)=>'<div class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4][i]+'"/></svg><strong class="result-game-name">ゲーム '+(i+1)+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?e.maxLink+' LINK':'—')+'</span><span>'+(a.enabled[i]?e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':''):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
   for(const el of $('result-games').querySelectorAll('.result-value'))fitGoldenNumber(el,num(Number(el.dataset.value)),26,94);
   for(const el of $('result-games').querySelectorAll('.sugar-gem'))applySugarTier(el,wonderTier(Number(el.dataset.value)));
-  fitGoldenNumber($('result-total-win'),num(a.totalWin),52,250);
+  fitResultTotal(a);
  }
  put('result-status',a.phase==='result'?a.enabled.filter(Boolean).length+'ゲームの結果':a.phase==='paying'?'CREDITへ払い出し中…':'払い出し完了');
  $('result-next').disabled=a.phase!=='complete';
@@ -5392,7 +5393,7 @@ function fit(){
   scale=Math.min(width/480,height/960,1.25);logicalWidth=480;logicalHeight=960;x+=(width-logicalWidth*scale)/2;y+=(height-logicalHeight*scale)/2;
  }
  screenEl.style.width=logicalWidth+'px';screenEl.style.height=logicalHeight+'px';screenEl.style.left=x+'px';screenEl.style.top=y+'px';screenEl.style.transform='scale('+scale+')';
- document.documentElement.style.setProperty('--game-viewport-height',h+'px');positionJpcDashboard();
+ document.documentElement.style.setProperty('--game-viewport-height',h+'px');positionJpcDashboard();if(app?.result&&!$('round-result-layer').hidden)fitResultTotal(app);
 }
 function requestFit(){if(!fitPending){fitPending=true;requestAnimationFrame(fit);}}
 addEventListener('resize',requestFit);addEventListener('orientationchange',requestFit);window.visualViewport?.addEventListener('resize',requestFit);
