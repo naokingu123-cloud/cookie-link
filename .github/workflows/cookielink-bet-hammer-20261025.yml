@@ -11,25 +11,21 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect exact source without changing game
+      - name: Inspect hammer HUD and exact round lifecycle
         run: |
           python3 - <<'PY'
           import pathlib, hashlib, re
           raw = pathlib.Path('index.html').read_bytes()
           sha = hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-          print('SOURCE_BLOB', sha)
           assert sha == '395c1e540f8d55ebd7f1348184cd7b6e2fa71e32'
           lines = raw.decode('utf-8').splitlines()
-          needles = ['function renderPayout', 'hammer-palette', 'function hammerSVG', 'started=true', 'started = true', 'function start', 'function begin', 'function renderBet', 'function drawMini', 'function render(', 'function selectClub', 'function makeUI', 'function getBetPreview', 'function betPreview', 'CookieLinkBetPreview=']
+          rules = [('function updateWonderHud',60),('class Arcade',140),('function hammer',18),('function syncUI',50),('function updateUI',50),('hammer-count-icon',3),('hammer-pay',4),('betPreview',4),('bet-preview',3),('window.Cookie',4),('function recordChanged',32)]
           keep = set()
-          for i, line in enumerate(lines):
-              if len(line)<12000 and any(n in line for n in needles):
-                  keep.update(range(max(0,i-3), min(len(lines),i+18)))
+          for i,line in enumerate(lines):
+              if len(line)>12000: continue
+              for needle,after in rules:
+                  if needle in line: keep.update(range(max(0,i-2), min(len(lines),i+after)))
+          print('SOURCE_BLOB',sha,'LINES',len(lines))
           for i in sorted(keep):
-              line = lines[i]
-              if len(line)>12000:
-                  print(str(i+1)+': [asset line omitted]')
-              else:
-                  print(str(i+1)+': '+line)
-          print('INSPECTION_COMPLETE')
+              if len(lines[i])<12000: print(str(i+1)+': '+lines[i])
           PY
