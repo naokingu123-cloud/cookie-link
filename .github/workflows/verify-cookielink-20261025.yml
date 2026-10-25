@@ -24,3 +24,5 @@ jobs:
           assert "ctx.fillRect(123,124,37,36)" in s
           print('Static marker tests passed')
           PY
+
+# Verify second stage including automatic starting and information strip.
