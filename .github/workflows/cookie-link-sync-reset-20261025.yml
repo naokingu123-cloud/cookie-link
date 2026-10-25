@@ -11,23 +11,22 @@ jobs:
     timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
-      - name: Inspect current source without changing game
+      - name: Inspect layout and interaction source
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
-          raw=Path('index.html').read_bytes()
-          sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
           assert sha=='012bf2f7b131d6f07ab619579cf92c1f9b709b76',sha
-          lines=raw.decode().splitlines();keep=set()
-          rules=[('function makeClearPlan',19),('function makeShatterFx',28),('function drawShatter',15),('function render(s,',33),('function syncPresentationRate',22),('function unlock()',18),('function connectBgmAudio',15),('const DEBUG_FAST_START',110),('function syncPause()',18),('function recordChanged',12),('prepare(){',3),('function stopSounds',2),('function playHammerImpact',10),('function playArrivalSound',10)]
-          css=['.color-target','.breaking','.vanish','.cracking','@keyframes crack','@keyframes cookie','@keyframes shard','@keyframes hammer','--impact-crack','--break-delay','.paused']
+          lines=raw.decode().splitlines();keep=set(range(1,17));rules=[('function fit()',25),('const pointers=',22),('function renderRoundResult',34),('function openRecordMenu',19),('function stopShatter',3)]
+          css=['#screen{','#viewport{','body{','.view-toolbar','.view-controls','.view-tools','.games-deck{','.game{','.field{','.console{','.deck-top{','.tabs,','.tabs{','.bet-row','desktop-view','mobile-view']
           for i,line in enumerate(lines):
-            if len(line)>3000:continue
+            if len(line)>3500:continue
             for needle,n in rules:
               if needle in line:keep.update(range(i,min(len(lines),i+n)))
-            if i<1900 and any(k in line for k in css):keep.add(i)
+            if i<1850 and any(k in line for k in css):keep.add(i)
+            if 'view-zoom' in line or "'wheel'" in line:keep.add(i)
           print('SOURCE',sha)
           for i in sorted(keep):
-            if len(lines[i])<=3000:print(str(i+1)+': '+lines[i])
+            if len(lines[i])<=3500:print(str(i+1)+': '+lines[i])
           PY
