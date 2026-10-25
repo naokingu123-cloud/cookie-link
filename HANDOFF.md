@@ -115,3 +115,13 @@
 - Existing physics, payouts, color rules, allocation, media and 0-BET behavior are preserved. Direct `Engine.enqueue(n)` remains supported; grouped callers must use `enqueueBatch(numbers)`.
 - Source index.html blob: `b6d56b05979c4c900dd4bd84fc9f03461270ecb8`. Guarded maintenance script: `.github/maintenance/mini_batch_20261025.py`. Regression: `.github/tests/cookie-link-mini-batch.cjs`.
 - Verification: Chromium loaded the real embedded 3D app without page errors. Nine seeded grouped rounds across 3/4/5 colors verified union clears, no early mutations, counts 3/5/6/7/8, single refills, validation and 0-BET isolation. Six legacy single-draw rounds exactly matched the pre-change board, scoring, history and RNG. Mobile 390×844 / 430×932 and desktop 1280×900 verified board-cell pulsing, static history indicators, centered settled-only bubble, 1800 ms real-time expiry, pause/resume, selection and reset. Physical driver group gate remained 3/2/1/1/1.
+
+
+## 追加更新: BET20秒・回転・段階LED・音声復帰（2026-10-25）
+- BET20秒。群内の1/2/3球、4/5球は2秒間隔。群の全入賞完了から5秒で次群を発射。盤面処理を待たず、逆順入賞/故障球にも対応。
+- BET/抽選終了後も回転。非表示/メニューの休止は維持。中央LCDを可視化しBET TIME、1st BALLS、2nd BALLS、3rd BALL、4th BALL、FINAL BALL、DRAW ENDを表示。BET中は番号ポケットに文字、開始で番号に復帰。外周LEDも段階別。
+- 参加盤面の現在の全消しリーチ番号を滑らかな虹色に。0BET/入賞済み/古い予測を除外。既存の単独HIT予測を使用する試験表示で、複数球条件付き予測を新設していない。
+- 音声はラウンド/世代で準備・停止・フェードを管理。古い準備完了で次ゲームを停止しない。音量予約の解除と復元、音声グラフ/デコード済み音源の保持、中断からの復帰を実装。確認画面なし。
+- Chromium検証: 発射2秒/入賞後5秒・逆順/故障/リセット・JPC70球、待機/終了時の回転、各LED段階。実MP3/WAV波形、初回/通常次ゲーム/強制終了3回/6連続リセット/古いplay遅延/AudioContext中断/JPC往復後の再生を確認。
+- 盤面Engine、3/2同時消去、物理衝突実装と音源/埋込素材は不変を確認。iPhone実機聴感・TTS音声・自然物理の全8/70球通しプレイは未検証。時刻検証は実ドライバにテスト用着弾を入力した。
+- 最新index.html blob: `5653e5790ea179361e3e43be593167c854b64a0b`。

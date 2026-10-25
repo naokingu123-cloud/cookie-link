@@ -194,5 +194,6 @@ with tempfile.TemporaryDirectory() as folder:
   attrs,code=m.groups()
   if not code.strip() or re.search(r'type=[\"\x27](?:application/json|importmap)',attrs):continue
   f=Path(folder)/f'part{i}.mjs';f.write_text(code);subprocess.run(['node','--check',str(f)],check=True)
+rep('centerDisplay.visible=false;','centerDisplay.visible=true;')
 p.write_text(s)
 print('PATCH_OK',hashlib.sha1(b'blob '+str(len(p.read_bytes())).encode()+b'\0'+p.read_bytes()).hexdigest())
