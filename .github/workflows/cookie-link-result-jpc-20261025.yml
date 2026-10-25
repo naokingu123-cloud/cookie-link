@@ -6,49 +6,64 @@ on:
 permissions:
   contents: write
 jobs:
-  verify-and-apply:
+  final-layout:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
-      - name: Apply guarded UI and lifecycle patch
+      - name: Fit result totals without changing the game
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('.github/maintenance/result_jpc_20261025.py');s=p.read_text()
-          s=s.replace('replace(old,new)','replace(old.lstrip(),new.lstrip())',1)
-          s=s.replace("hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!app.paused","hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!userPaused&&inView")
+          import hashlib,re,subprocess,tempfile
+          p=Path('index.html');raw=p.read_bytes()
+          assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()=='dee66da49dc4151b5551b5e3fd40cdd2045a83e1','Source changed; refusing to overwrite'
+          Path('/tmp/cookielink-before.html').write_bytes(raw);s=raw.decode()
+          def replace(a,b):
+              global s
+              assert s.count(a)==1,a[:120]
+              s=s.replace(a,b,1)
+          replace('.result-total-amount{display:flex;','.result-total-amount{width:100%;display:flex;')
+          replace("fitGoldenNumber($('result-total-win'),num(a.totalWin),52,250);","fitResultTotal(a);")
+          replace('function renderRoundResult(a){',"function fitResultTotal(a){const el=$('result-total-win'),width=Math.max(72,Math.min(250,el.parentElement.clientWidth-64));fitGoldenNumber(el,num(a.totalWin),52,width);}\nfunction renderRoundResult(a){")
+          replace("document.documentElement.style.setProperty('--game-viewport-height',h+'px');positionJpcDashboard();","document.documentElement.style.setProperty('--game-viewport-height',h+'px');positionJpcDashboard();if(app?.result&&!$('round-result-layer').hidden)fitResultTotal(app);")
           p.write_text(s)
+          with tempfile.TemporaryDirectory() as folder:
+              for i,m in enumerate(re.finditer(r'<script\b([^>]*)>([\s\S]*?)</script>',s)):
+                  attrs,code=m.groups()
+                  if not code.strip() or re.search(r'type=[\"\x27](?:application/json|importmap)',attrs):continue
+                  f=Path(folder)/('s'+str(i)+('.mjs' if 'module' in attrs else '.js'));f.write_text(code);subprocess.run(['node','--check',str(f)],check=True)
+          p=Path('.github/tests/cookie-link-result-jpc.cjs');s=p.read_text()
+          a='await page.waitForTimeout(800);'
+          b="await page.waitForTimeout(100);await page.evaluate(()=>{for(const a of document.querySelector('#round-result-layer').getAnimations({subtree:true})){if(a.effect.getTiming().iterations!==Infinity)a.finish();}});"
+          assert s.count(a)==1;s=s.replace(a,b,1)
+          a="'.result-countdown-track','#result-total-win']);"
+          b="'.result-countdown-track','#result-total-win','.result-total .win-word']);"
+          assert s.count(a)==1;s=s.replace(a,b,1)
+          a="inside(rs['#result-total-win'],rs['.result-total'],'Total number too wide');"
+          b=a+"inside(rs['.result-total .win-word'],rs['.result-total'],'WIN label clipped');"
+          assert s.count(a)==1;s=s.replace(a,b,1);p.write_text(s)
+          print('FINAL_RESULT_SIZE_PATCH_OK')
           PY
-          python3 .github/maintenance/result_jpc_20261025.py
       - name: Install isolated browser checks
         run: |
           npm install --prefix /tmp/cookielink-browser --no-save --no-audit --no-fund playwright@1.56.1
           /tmp/cookielink-browser/node_modules/.bin/playwright install chromium
-      - name: Check normal gameplay and results plus JPC isolation
+      - name: Recheck actual final layout, timing and JPC
         run: |
-          python3 -m http.server 8123 --bind 127.0.0.1 > /tmp/cookielink-result-server.log 2>&1 &
+          python3 -m http.server 8123 --bind 127.0.0.1 >/tmp/cookielink-final-server.log 2>&1 &
           node .github/tests/cookie-link-result-jpc.cjs
-      - name: Record verified update and save
+      - name: Save verified final fit
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import hashlib
           raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
-          p=Path('HANDOFF.md');s=p.read_text()
-          s+='\n## 追加更新: お菓子の国リザルト・15秒BET・暫定JPC（2026-10-25）\n'
-          s+='- 最新 index.html blob: `'+sha+'`。旧SHAより優先。\n'
-          s+='- リザルトはキャンディ・ビスケット・旗のフレーム、中央上部の大きなTOTAL WIN、下段3枚のゲーム結果カード。既存の菓子世界画像/ロゴ/クッキーを使用し、全体→カードの段階的な出現。画面参考は配置と雰囲気を反映。\n'
-          s+='- リザルトは表示開始から有効表示時間8秒（暫定）で自動的に次ゲームへ。ただし払い出し完了より前には進めず、CREDIT加算は従来の一度のみ。非表示タブ・メニュー・内部一時停止中は時間を進めない。即リセット/モード変更で古い遷移タイマーを破棄。\n'
-          s+='- BETタイムは15秒。右上に暫定「すぐ開始」ボタン、JPCモード切替、既存の即リセット。1秒自動開始は解除。?demo=1の説明確認用BET延長だけ維持。\n'
-          s+='- JPCモードは既存3D抽選機の70球機能を使用。通常ゲームのBET中/払い出し完了後に切替可能。実際のjpcCountsとphysics.hitsから25ポケットの球数、発射数、入賞数、24ポケットのリーチと25ポケットのJP、直近入賞番号を下画面へ表示。\n'
-          s+='- JPC中は通常Engineを止め、通常の抽選番号・CREDIT・BET・獲得済みシュガー・保存成績には加算しない。物理モデルは変更なし。通常8球用の救済再発射条件をeightモードのみに限定。右上の通常モードで15秒BETへ戻る。JPC終了後は状況確認用に保持し、「もう一度」または通常モードで進む。\n'
-          s+='- 検証: JS構文、45パターンの8球結果/乱数使用数の一致、320/390/430px縦画面・844x390横画面・1280x900PCで枠/文字/25ポケットの収まり、BET15秒/即開始/リザルト8秒/一度のみ払い出し/リセット取消、既存JPCドライバの入賞コールバック連動・24/25ポケット・70球制限・通常成績の不変を確認。\n'
-          s+='- 未検証: iPhone実機、スピーカー聴感、JPC実時間70球の全軌道。テストで入賞イベントを注入した確認を実球70球通しプレイと表現しない。新規BGM素材の追加はしていない。\n'
-          p.write_text(s);print('VERIFIED_RESULT_JPC_BLOB',sha)
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+'\n### リザルト表示の最終調整\n- 最新 index.html blob: `'+sha+'`。総獲得数を実際の表示枠幅に合わせ、縦横切替でも再計算。\n- 登場アニメーションの途中ではなく最終フレームでも、5画面サイズで枠・数字・WIN表記の収まりを再確認。45ケースの通常ゲーム比較とBET15秒/リザルト8秒/JPC検証も再実施。\n')
+          print('FINAL_RESULT_JPC_BLOB',sha)
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html HANDOFF.md .github/maintenance/result_jpc_20261025.py
-          git commit -m 'Add sweets result ceremony automatic BET cycle and isolated JPC dashboard'
+          git add index.html HANDOFF.md .github/tests/cookie-link-result-jpc.cjs
+          git commit -m 'Fit large result totals and verify final animation frames across screen sizes'
           git push origin HEAD:main
