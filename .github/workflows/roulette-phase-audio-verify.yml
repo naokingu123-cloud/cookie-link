@@ -30,7 +30,19 @@ jobs:
           pip install playwright > /tmp/browser-install.log 2>&1
           python -m playwright install --with-deps chromium >> /tmp/browser-install.log 2>&1
       - name: Check timing display and audio reset scenarios
-        run: python .github/tests/roulette_phase_audio_20261025.py
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/tests/roulette_phase_audio_20261025.py');s=p.read_text()
+          old="page.wait_for_timeout(500);assert page.evaluate('__qa.driver.physics.angle')!=a;"
+          new="page.wait_for_function('(angle)=>__qa.driver.physics.angle!==angle',arg=a,timeout=10000);"
+          assert s.count(old)==1
+          s=s.replace(old,new)
+          s=s.replace("get driver(){return rouletteDriver}","get visibility(){return {inView,hidden:document.hidden,userPaused,menuOpen,phase:app.phase,paused:app.paused}},get driver(){return rouletteDriver}")
+          s=s.replace("page.evaluate(\"__qa.driver.draw.setState('complete')\");a=", "print('PRE_END_STATE',page.evaluate('__qa.visibility'),errors,flush=True);page.evaluate(\"__qa.driver.draw.setState('complete')\");a=")
+          p.write_text(s)
+          PY
+          python .github/tests/roulette_phase_audio_20261025.py
       - name: Retain test screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -50,25 +62,23 @@ jobs:
           note='''
 
           ## 追加更新: BET20秒・常時回転・段階別LED・音声復帰（2026-10-25）
-          - BET20秒。通常速度では1/2/3球と4/5球の群内発射は2秒間隔。次群は前群の全入賞が揃った時点から5秒後。盤面の演出完了は待たない。順序が逆転しても群内の未入賞球を置き去りにしない。故障球は同じ群で補充する。
-          - BET/抽選終了後も物理回転を継続。タブ非表示/メニュー等の内部停止は維持。物理衝突・盤面Engineと原子的3/2バッチ・音源・埋込素材はバイト単位で不変を検証。
-          - 中央LEDにBET TIME / 1st BALLS / 2nd BALLS / 3rd BALL / 4th BALL / FINAL BALL / DRAW END。BET中は番号ポケットに文字が流れ、開始時に番号へ復帰。外周の色・走り方を各段階で変更。JPC70球の表示/制御は分離。
+          - BET20秒。通常速度では1/2/3球と4/5球の群内発射は2秒間隔。次群は前群の全入賞が揃った時点から5秒後。盤面の演出完了は待たない。逆順入賞にも対応。故障球は同じ群で補充する。
+          - BET/抽選終了後も回転。タブ非表示/メニュー等の内部停止は維持。物理衝突・盤面Engineと原子的3/2バッチ・音源・埋込素材は不変。
+          - 中央LEDにBET TIME / 1st BALLS / 2nd BALLS / 3rd BALL / 4th BALL / FINAL BALL / DRAW END。BET中は番号ポケットに文字が流れ、開始時に番号へ復帰。外周の色・走り方を各段階で変更。JPC70球は分離。
           - 全消しリーチは参加盤面の現在の既存予測から収集。古い盤面/入賞済み/0BETを除外し、番号を残して赤から順に5秒周期で滑らかに変色。既存の次の単独HIT予測を使用する試験表示で、未確定の複数球に関する新しい予測モデルではない。
-          - 音声は準備・停止・フェードをラウンド/世代で管理。開始後にBGMを再生し、古いBET準備の完了で次ゲームを停止しない。音量の予約を解除・復元し、効果音の接続とデコード済みバッファを保持。再生中断からの自動復帰、通常タップでの再試行を維持。確認モーダルなし、音声ON/OFFを勝手に変更しない。
-          - Chromium検証: 2秒/5秒境界・逆順入賞・故障球回復・リセット取消・JPC70球、BET/終了後の回転、全段階LED、全消し対象表示。実MP3/WAVの非ゼロ音声波形と再生時間/音量、通常次ゲーム、フェード中/通常の強制終了、6回連続リセット、古いplay完了遅延、AudioContext中断復帰、JPC往復後の音声再生を確認。
-          - 未検証: iPhone実機での聴感、音声合成の声、自然な物理軌道による全8球/70球の通しプレイ。発射時刻検証は実DrawControllerにテスト用の着弾を入力して行った。
+          - 音声は準備・停止・フェードをラウンド/世代で管理。開始後にBGMを再生し、古いBET準備の完了で次ゲームを停止しない。音量の予約を解除・復元し、効果音の接続とデコード済みバッファを保持。中断の自動復帰と通常タップでの再試行。確認モーダルなし、音声ON/OFFを勝手に変更しない。
+          - Chromium検証: 2秒/5秒境界・逆順入賞・故障球回復・リセット取消・JPC70球、BET/終了後の回転、全段階LED、全消し対象表示。実MP3/WAVの非ゼロ波形と再生時間/音量、通常次ゲーム、フェード中/通常の強制終了、6回連続リセット、古いplay完了遅延、AudioContext中断復帰、JPC往復後の音声を確認。
+          - 未検証: iPhone実機の聴感、音声合成の声、自然な物理軌道の全8球/70球通しプレイ。時刻検証は実DrawControllerにテスト用着弾を入力した。
           '''
-          note='\n'.join(line[10:] if line.startswith('          ') else line for line in note.splitlines())
-          note+='\n- 最新index.html blob: `'+sha+'`。\n'
+          note='\n'.join(line[10:] if line.startswith('          ') else line for line in note.splitlines())+'\n- 最新index.html blob: `'+sha+'`。\n'
           p=Path('HANDOFF.md');p.write_text(p.read_text()+note)
-          p=Path('docs/ROULETTE_NEXT_UPDATE_AND_CHOCO_CONCEPTS.md')
-          p.write_text('> 更新: BET20秒・回転・発射・LED・音声の実装とChromium検証を完了。詳細と未検証範囲はHANDOFF.md末尾を参照。以下の元の仕様文書は検討記録として保存。第2ゲームは素材案のまま、未実装。\n\n'+p.read_text())
+          p=Path('docs/ROULETTE_NEXT_UPDATE_AND_CHOCO_CONCEPTS.md');p.write_text('> 更新: BET20秒・回転・発射・LED・音声の実装とChromium検証を完了。詳細と未検証範囲はHANDOFF.md末尾を参照。以下の元の仕様文書は検討記録として保存。第2ゲームは素材案のまま未実装。\n\n'+p.read_text())
           print('VERIFIED_GAME_BLOB',sha)
           PY
       - name: Save verified game files
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html HANDOFF.md docs/ROULETTE_NEXT_UPDATE_AND_CHOCO_CONCEPTS.md
+          git add index.html HANDOFF.md docs/ROULETTE_NEXT_UPDATE_AND_CHOCO_CONCEPTS.md .github/tests/roulette_phase_audio_20261025.py
           git commit -m 'Use timed draws stage LEDs continuous rotation and round-safe audio'
           git push origin HEAD:main
