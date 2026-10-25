@@ -3318,7 +3318,7 @@ function drawShatter(s,time){
  if(document.hidden||!inView||app.paused){fx.stamp=null;return;}
  if(fx.stamp!==null)fx.elapsed+=Math.max(0,time-fx.stamp)*(s.engine.presentationRate||1);fx.stamp=time;
  const ctx=s.shatterCtx;ctx.clearRect(0,0,600,600);
- if(fx.elapsed>=fx.duration){stopShatter(s);return;}
+ if(fx.elapsed>=fx.duration){fx.elapsed=fx.duration;syncRemoteCookieVisuals(s,fx);return;} // Keep hidden until Engine removes the cookies.
  syncRemoteCookieVisuals(s,fx);ctx.save();ctx.scale(600/298,600/298);paintShatterFrame(ctx,fx);ctx.restore();requestShatter(s);
 }
 

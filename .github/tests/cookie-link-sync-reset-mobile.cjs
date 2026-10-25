@@ -7,7 +7,7 @@ async function open(browser,source,options={}){
  const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:mobile?2:1});
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  let fields='get app(){return app},slots,Engine,select,render,syncBetPreview,makeClearPlan,makeShatterFx,paintShatterFrame,stopShatter,get audio(){return audio},get bgm(){return bgmPlayer},get arrival(){return arrivalBuffer},get hammer(){return hammerImpactBuffer},get voices(){return sfxVoices.size},get ready(){return rouletteReady},get driver(){return rouletteDriver},get records(){return recordBook.data},playHammerImpact,playArrivalSound,openRecordMenu,renderRoundResult,halt(){stopAutoRound()},hold(){userPaused=true;syncPause();stopAutoRound()},resume(){userPaused=false;syncPause();scheduleAutoRound()}';
- if(source.includes('function syncRemoteCookieVisuals'))fields+=',syncRemoteCookieVisuals,debugResetRound,activateGameAudio';
+ if(source.includes('function syncRemoteCookieVisuals'))fields+=',syncRemoteCookieVisuals,drawShatter,debugResetRound,activateGameAudio';
  const hook='window.__qa={'+fields+'};'+(hold?'userPaused=true;app.paused=true;':'');
  assert.equal(source.split(anchor).length,2);
  source=source.replace(anchor,anchor+hook).replace('get status(){return status.textContent;}','get cameraForTest(){return {distance,yaw,elevation};},get status(){return status.textContent;}');
@@ -57,6 +57,9 @@ async function fragmentTest(page){return page.evaluate(()=>{
   check(pixels(bit,target.breakAt+1),'Fragments appear at cookie disappearance, not impact');
   check(fx.duration>=target.breakAt+bit.life,'All delayed pieces have enough lifetime');
  }
+ fx.elapsed=fx.duration;fx.stamp=null;a.paused=false;q.drawShatter(s,performance.now());a.paused=true;
+ check(s.shatter===fx,'Final effect frame keeps removal state until Engine advances');
+ for(const target of fx.remoteTargets)check(Number(getComputedStyle(s.tiles.get(target.tileId).querySelector('.sweet')).opacity)===0,'Cookie cannot reappear after its fragments finish');
  q.stopShatter(s);check(!s.board.querySelector('.hammer-fragment-synced'),'Reset removes synchronized visual overrides');
  return checks.length;
 });}
