@@ -1,0 +1,26 @@
+name: Check grouped ball waiting indication
+on:
+  push:
+    paths: ['.github/workflows/check-group-wait-20261025.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check scripts and waiting phase markers
+        run: |
+          python3 - <<'PY'
+          import pathlib,re,subprocess,tempfile
+          s=pathlib.Path('index.html').read_text()
+          with tempfile.TemporaryDirectory() as folder:
+              for i,m in enumerate(re.finditer(r'<script\\b[^>]*>([\\s\\S]*?)</script>',s)):
+                  src=m.group(1)
+                  if not src.strip():continue
+                  p=pathlib.Path(folder)/f'part{i}.js';p.write_text(src)
+                  subprocess.run(['node','--check',str(p)],check=True)
+          for x in ['a.draws.length===1||a.draws.length===2?3:a.draws.length===4?5:0','i<2:i===3','group-wait-flash','prefers-reduced-motion']:
+              assert x in s,x
+          print('GROUP_WAIT_SYNTAX_AND_MARKERS_OK')
+          PY
