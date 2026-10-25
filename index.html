@@ -2013,9 +2013,15 @@ const e="160",t=0,n=1,i=2,r=100,s=101,a=102,o=200,l=201,c=202,h=203,u=204,d=205,
 const SPECIAL_RATE=0; // Hammers are now earned only after chain completion and refill.
 const SIZE=8,STEP=100/SIZE,CELL=298/SIZE,MINI=160/SIZE,COLORS=['赤','黄','緑','青','紫'];
 const REFILL_WAIT=1000,ALL_CLEAR_WAIT=3000,HIT_GAP_MS=1000,SUGAR_GET_WAIT=1800;
-function refillItemTiming(r,c,index){
- const distance=(r+.5)*CELL+24,release=280+c*6+index*46,fall=Math.ceil(Math.sqrt(2*distance/.0036));
+const REFILL_COLUMN_STAGGER_MS=100;
+function refillItemTiming(r,c,index,speed=1){
+ const distance=(r+.5)*CELL+24,release=280+c*REFILL_COLUMN_STAGGER_MS*speed+index*46,fall=Math.ceil(Math.sqrt(2*distance/.0036));
  return {distance,release,fall,end:release+fall+110};
+}
+// Engine.wait divides by speed; keep the normal-play column gap at 100 ms.
+function refillWait(cells,speed){
+ const lastColumn=cells.reduce((last,cell)=>Math.max(last,cell[1]),0);
+ return REFILL_WAIT+lastColumn*REFILL_COLUMN_STAGGER_MS*speed;
 }
 const HAMMER_FALL_PAUSE_MS=200; // Extra unpaused time after hammer removal only.
 const clearToFallWait=(resolved,speed)=>25+(resolved.sources?.length?HAMMER_FALL_PAUSE_MS*speed:0);
@@ -2132,10 +2138,27 @@ class Engine{
    if(keepHammers&&tile?.special)this.hammerQueue.push(tile.color);
   }
   this.presentationRate=1;this.roundBet=this.roundBet||100;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;this.lastChain=0;this.pendingSugarAward=[];
-  this.version++;this.queue=[];this.seen=new Set();this.drawn=new Set();this.history=[];this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.allClears=0;this.processed=0;this.accepted=0;this.busy=false;this.running=false;this.paused=false;
+  this.version++;this.queue=[];this.seen=new Set();this.drawn=new Set();this.history=[];this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.allClears=0;this.processed=0;this.accepted=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
   this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.fill(true);if(keepHammers)this.grantHammers(0);this.prepareHammerPreview();this.emit('ready');
  }
- start(){this.running=true;this.emit('waiting');}
+ start(){
+  if(this.running)return;
+  this.running=true;this.busy=true;this.opening=true;
+  const cells=[];for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(this.board[r][c])cells.push([r,c]);
+  this.openBoard(this.version,cells);
+ }
+ async openBoard(token,cells){
+  try{
+   const duration=refillWait(cells,this.speed);
+   this.emit('refill',{initial:true,freshCells:cells,stepCells:[],adjustedCells:[],duration:duration/this.speed});
+   if(!await this.wait(duration,token))return;
+   this.opening=false;this.busy=false;this.emit('waiting');
+   // Draws may arrive during delivery; keep them in their original order.
+   if(this.queue.length)this.drain();
+  }catch(error){
+   if(token===this.version){this.opening=false;this.busy=false;this.running=false;this.queue=[];this.emit('error',{message:error.message});}
+  }
+ }
  enqueue(number){
   if(!this.running||!Number.isInteger(number)||number<1||number>25||this.seen.has(number)||this.accepted>=8)return false;
   this.seen.add(number);this.accepted++;this.queue.push(number);this.emit('queued',{number});if(!this.busy)this.drain();return true;
@@ -2277,7 +2300,10 @@ class Engine{
     }
     // Celebrate only after every cascade and its final gravity animation finish.
     if(this.pendingSugarAward.length){const steps=this.pendingSugarAward.splice(0);this.emit('sugaraward',{number,ball,steps});if(!await this.wait(SUGAR_GET_WAIT*this.speed,token))return;}
-    this.fill();this.emit('refill',{number,ball,depth,stepCells:this.spawnedSteps,adjustedCells:this.refillAdjusted});if(!await this.wait(REFILL_WAIT,token))return;
+    const refillCells=[];for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(!this.board[r][c])refillCells.push([r,c]);
+    this.fill();const refillDuration=refillWait(refillCells,this.speed);
+    this.emit('refill',{number,ball,depth,stepCells:this.spawnedSteps,adjustedCells:this.refillAdjusted,freshCells:refillCells,duration:refillDuration/this.speed});
+    if(!await this.wait(refillDuration,token))return;
     const gift=this.grantHammers(depth);if(gift.count||gift.pending){const duration=gift.count?hammerGiftTiming(gift.count,this.speed).total:720/this.speed;this.emit('hammergift',{number,ball,depth,...gift,duration});if(!await this.wait(duration*this.speed,token))return;}
     this.processed++;this.emit('settled',{number,ball,depth});
     // A full unpaused second after the settled board, even with queued draws.
@@ -3054,10 +3080,10 @@ function pour(s,fresh,e){
  for(let c=0;c<SIZE;c++){
   const items=fresh.filter(p=>p.c===c).sort((a,b)=>b.r-a.r);if(!items.length)continue;
   const basket=s.baskets[c],lastRelease=280+(items.length-1)*46;
-  basket.style.setProperty('--flip-time',260/e.speed+'ms');basket.style.setProperty('--pour-delay',c*6/e.speed+'ms');
-  basket.style.setProperty('--return-delay',(c*6+lastRelease+160)/e.speed+'ms');basket.style.setProperty('--return-time',160/e.speed+'ms');basket.classList.add('pouring');
+  basket.style.setProperty('--flip-time',260/e.speed+'ms');basket.style.setProperty('--pour-delay',c*REFILL_COLUMN_STAGGER_MS+'ms');
+  basket.style.setProperty('--return-delay',(c*REFILL_COLUMN_STAGGER_MS+(lastRelease+160)/e.speed)+'ms');basket.style.setProperty('--return-time',160/e.speed+'ms');basket.classList.add('pouring');
   for(let j=0;j<items.length;j++){
-   const p=items[j],tile=s.tiles.get(p.t.id),timing=refillItemTiming(p.r,c,j),angle=(j%2?5:-5)+'deg';
+   const p=items[j],tile=s.tiles.get(p.t.id),timing=refillItemTiming(p.r,c,j,e.speed),angle=(j%2?5:-5)+'deg';
    for(const [name,value] of [['--supply-start',-timing.distance+'px'],['--supply-delay',timing.release/e.speed+'ms'],['--supply-fall',timing.fall/e.speed+'ms'],['--emerge-time',150/e.speed+'ms'],['--landing-delay',(timing.release+timing.fall)/e.speed+'ms'],['--landing-time',110/e.speed+'ms'],['--spill-angle',angle]])tile.style.setProperty(name,value);
    // The actual numbered/special cookie travels from the mouth to its final cell.
    s.deliveryLayer.append(tile);tile.classList.add('refill-flight','refill-settle');
@@ -3231,6 +3257,10 @@ function render(s,ev,e,animate=true){
   syncTileDecor(el,t);el.classList.toggle('refill-retint',ev.phase==='refill'&&animate&&(ev.adjustedCells||[]).some(([y,x])=>y===r&&x===c));el.classList.toggle('hammer-born',ev.phase==='hammergift'&&marked.has(t.id)&&animate&&motionReduced);
   const numberText=t.special||t.step?'':String(t.number??'');el.numberNode.classList.toggle('two-digit',numberText.length>1);setElixirNumber(el.numberNode,numberText);const left=`calc(${c*STEP}% + 1px)`,top=`calc(${r*STEP}% + 1px)`;if(el.style.left!==left)el.style.left=left;if(el.style.top!==top)el.style.top=top;el.style.setProperty('--fall-time',180/e.speed+'ms');el.style.setProperty('--clear-time',(ev.duration||clearDuration(e.speed))+'ms');el.style.setProperty('--crack-time',Math.max(60,150/e.speed)+'ms');const timing=ev.plan?.targets[r*SIZE+c];el.style.setProperty('--break-delay',(timing?.breakAt??70)+'ms');el.style.setProperty('--impact-delay',(timing?.impact??0)+'ms');el.style.setProperty('--impact-crack',(timing?timing.breakAt-timing.impact:62)+'ms');el.setAttribute('aria-label',COLORS[t.color]+(t.number==null?'':' '+t.number+'番')+(t.special?' お菓子のハンマー・光る色消しクッキー':t.step?' ワンダーシュガー・'+WONDER_NAMES[wonderTier(t.step.value)]:''));
   if(ev.phase!=='queued'){el.classList.toggle('hit',ev.phase==='hit'&&primary.has(t.id));if(ev.phase!=='vanish'){el.classList.toggle('linked',ev.phase==='link'&&linked.has(t.id));el.classList.remove('charged');}el.classList.toggle('vanish',ev.phase==='vanish'&&marked.has(t.id));el.classList.toggle('breaking',ev.phase==='vanish'&&marked.has(t.id));el.classList.toggle('cracking',ev.phase==='vanish'?marked.has(t.id):ev.phase==='link'&&primary.has(t.id));el.classList.toggle('color-target',ev.phase==='vanish'&&remote.has(t.id));}
+ }
+ if(ev.phase==='refill'&&ev.initial){
+  fresh.length=0;
+  for(const [r,c] of ev.freshCells||[]){const t=e.board[r][c];if(t)fresh.push({r,c,t});}
  }
  for(const [id,el] of s.tiles)if(!alive.has(id)){el.remove();s.tiles.delete(id);}
  if(ev.phase!=='queued')s.board.classList.toggle('cascading',['link','vanish'].includes(ev.phase));
