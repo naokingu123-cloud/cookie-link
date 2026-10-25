@@ -1,0 +1,36 @@
+/* Second tab only: retain the original shared one-screen geometry. */
+.choco-tab .tab-game-name{background:none!important;display:flex;align-items:center;justify-content:center;overflow:visible!important}
+.choco-tab-title{display:block;color:#773b35;font:1000 13px/18px CookieLabels,system-ui,sans-serif;text-shadow:0 1px #fff8cf,1px 0 #ffe2b4,-1px 0 #ffe2b4;letter-spacing:.2px;white-space:nowrap}
+.choco-tab-title small{display:block;font:800 4.5px/6px system-ui;letter-spacing:.7px;color:#9c6851}
+.choco-panel{position:relative}
+.choco-panel>:not(.choco-surface){visibility:hidden!important;pointer-events:none!important}
+.choco-surface{position:absolute;inset:0;display:flex;flex-direction:column;box-sizing:border-box;border:3px solid #cc9b63;border-radius:13px;background:#39222e;box-shadow:inset 0 0 0 2px #ffe4a5,0 3px 0 #6c3f2f;overflow:hidden}
+.choco-topline{height:22px;min-height:22px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(#734b40,#4b2d32);color:#f7d19a;font:800 7px/22px system-ui;letter-spacing:.8px}
+.choco-topline b{font:800 8px/18px system-ui;border:1px solid #c69865;border-radius:8px;padding:0 6px;color:#ffedbd;letter-spacing:0}
+.choco-canvas{display:block;flex:1;min-height:0;width:100%;object-fit:fill}
+.choco-status{height:20px;min-height:20px;color:#fde5b3;background:#4c2e35;border-top:1px solid #9b744b;text-align:center;font:700 8px/20px system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 3px}
+#choco-heading{display:none;align-items:center;justify-content:space-between;gap:10px;height:100%;padding:0 24px;box-sizing:border-box;color:#683c38}
+#choco-heading strong{font:1000 23px/25px CookieLabels,system-ui;text-shadow:0 1px #fffbd6,1px 0 #fffbd6,-1px 0 #fffbd6}
+#choco-heading strong small{display:block;font:800 7px/11px system-ui;letter-spacing:1px;color:#946656;text-shadow:none}
+#choco-heading>span{font:900 8px/16px system-ui;color:#774539;white-space:nowrap}
+#choco-depth{font:900 25px/30px ArcadePayout,system-ui;color:#c48138;text-shadow:1px 1px #fff2c4}
+.choco-active #allclear-award{display:none!important}
+.choco-active #choco-heading{display:flex}
+#choco-odds{display:none;position:absolute;inset:3px;padding:6px 5px 4px;box-sizing:border-box;border:2px solid #ad7956;border-radius:8px;background:linear-gradient(#fff8d9,#f1d8b7);text-align:center;color:#6c3d38;overflow:hidden}
+.choco-active #odds-panel>:not(#choco-odds){display:none!important}
+.choco-active #choco-odds{display:flex;flex-direction:column;gap:3px}
+.choco-odds-title{font:900 9px/13px system-ui;letter-spacing:.3px;border-bottom:1px solid #d2a873;padding-bottom:3px}
+.choco-odds-title small{display:block;font:700 7px/10px system-ui;color:#a57455}
+#choco-odds section{padding:2px;border:1px solid #d9aa66;border-radius:8px;background:#fff9e5;box-shadow:0 2px #cda475}
+#choco-odds section span{display:block;font:800 8px/11px system-ui}
+#choco-win{display:block;font:900 23px/28px ArcadePayout,system-ui;color:#ad6d35}
+#choco-odds section em{font:900 8px/11px system-ui;color:#ac7352}
+#choco-odds dl{margin:0;font:800 8px/10px system-ui}
+#choco-odds dt{margin-top:2px;padding-top:2px;border-top:1px dotted #ca9b71}
+#choco-odds dd{margin:1px 0;color:#b25e46;font-size:8px;line-height:10px}
+.choco-sugar-goal{padding:3px 2px;margin-top:auto;border:1px solid #b4bd98;border-radius:7px;background:#edf2d4;font:800 8px/12px system-ui}
+.choco-sugar-goal b{color:#75864b;font-size:12px;line-height:17px}
+#choco-odds p{margin:1px 0;font:700 6.4px/9px system-ui;text-align:left}
+#choco-odds footer{font:700 6px/9px system-ui;color:#96765f}
+body.mobile-landscape #choco-heading{padding:0 10px}body.mobile-landscape #choco-heading strong{font-size:20px}
+@media(forced-colors:active){.choco-tab-title,#choco-heading strong{color:CanvasText;text-shadow:none}}
