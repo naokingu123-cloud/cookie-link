@@ -3,14 +3,11 @@ import hashlib
 raw=Path('index.html').read_bytes()
 assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()=='251676ec51dea9951cb1dc1e486a94a7165902df'
 lines=raw.decode().splitlines()
-spans=[(2375,2399),(2504,2555),(3137,3193),(3580,3650)]
-terms=['miniResult','mini-result-label','function recordEvent','function recordChanged','function event','function syncPause','function debugResetRound','group-pending','draw-batch','ball-pending','ball-flash','group-flash','function scheduleUI','function flushUI','.tile.hit','const slots=']
-wanted=set()
-for a,b in spans:wanted.update(range(a-1,b))
+wanted=set(range(2419,2504))
 for i,line in enumerate(lines):
- if any(t in line for t in terms) and len(line)<18000:wanted.update(range(max(0,i-3),min(len(lines),i+20)))
+ if len(line)<18000 and any(t in line for t in ['function hud(', 'ballsKey', '.balls ', '.balls.', 'draw-group', 'pending-group','batch-wait','ball.wait','ball.pending','ball-flash','group-wait','function makeClearPlan','const MIN_PAID_LINK','function copyReachState','function predictNextHit','const HIT_GAP_MS','type="module"']):
+  wanted.update(range(max(0,i-2),min(len(lines),i+8)))
 for i in sorted(wanted):
  line=lines[i]
- if len(line)>9000:line=line[:500]+' [embedded asset omitted]'
- print(f'{i+1}: {line}')
+ print(f'{i+1}: '+(line if len(line)<6000 else line[:300]+' [long asset omitted]'))
 print('Inspection only; game files have not been modified.')
