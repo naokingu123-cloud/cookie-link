@@ -6,11 +6,19 @@ async function open(browser,source,viewport={width:430,height:932},extra={}){
  const advanced=source.includes('function makeShatterFx(');
  let fields='get app(){return app},slots,Engine,select,render,sound,makeClearPlan,syncBetPreview,drawBetScene,get audio(){return audio},get bgm(){return bgmPlayer},get arrival(){return arrivalBuffer},get hammer(){return hammerImpactBuffer},get voices(){return sfxVoices.size},get rouletteReady(){return rouletteReady},halt(){if(typeof stopAutoRound===\'function\')stopAutoRound();else clearTimeout(autoRoundTimer)},hold(){userPaused=true;syncPause()},resume(){userPaused=false;syncPause();if(typeof scheduleAutoRound===\'function\')scheduleAutoRound()}';
  if(advanced)fields+=',makeShatterFx,paintShatterFrame,BET_LINK_EXAMPLES,componentsTest:null,get fast(){return BET_DURATION_MS},get gain(){return bgmGain?.gain.value},get prepared(){return audioPreparedToken},get remaining(){return autoRoundRemaining}';
- const hook='window.__qa={'+fields+'};userPaused=true;app.paused=true;';
+ const observer=advanced?"const clObservedStart=app.start.bind(app);window.__qa.starts=[];app.start=function(){window.__qa.starts.push({enabled:$('sound').checked,state:audio?.state,arrival:!!arrivalBuffer,hammer:!!hammerImpactBuffer,bgm:!bgmPlayer.paused});return clObservedStart();};":'';
+ const hook='window.__qa={'+fields+'};'+observer+'userPaused=true;app.paused=true;';
  assert.equal(source.split(anchor).length,2);
  const page=await browser.newPage({viewport});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/index.html*',route=>route.fulfill({status:200,contentType:'text/html; charset=utf-8',body:source.replace(anchor,anchor+hook)}));
  if(extra.failBgm)await page.route('**/bgm-*.mp3',route=>route.fulfill({status:503,body:'test media unavailable'}));
+ // Simulate a blocked media-permission policy only until an actual trusted pointer event.
+ // After the tap this delegates to the real browser player and real repository audio.
+ if(extra.forceTap)await page.addInitScript(()=>{
+  let touched=false;document.addEventListener('pointerdown',ev=>{if(ev.isTrusted)touched=true;},true);
+  const nativePlay=HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play=function(){return touched?nativePlay.call(this):Promise.reject(new DOMException('Test permission requires a trusted tap','NotAllowedError'));};
+ });
  await page.goto('http://127.0.0.1:8123/index.html',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__qa&&document.querySelectorAll('#hammer-pay tr').length===5,{},{timeout:20000});
  await page.evaluate(()=>window.__qa.halt());return {page,errors};
@@ -62,17 +70,18 @@ async function visualTests(page){return page.evaluate(()=>{
   const old=await open(browser,before);const expected=await simulate(old.page);assert.deepEqual(old.errors,[]);await old.page.close();
   const current=await open(browser,after);const actual=await simulate(current.page);assert.deepEqual(actual,expected,'Seeded gameplay outcomes or RNG use changed');assert.deepEqual(current.errors,[]);await current.page.close();console.log('REGRESSION_45_EIGHT_BALL_CASES_OK');
   for(const viewport of [{width:430,height:932},{width:1280,height:900}]){
-   const {page,errors}=await open(browser,after,viewport);await page.waitForFunction(()=>window.__qa.rouletteReady,{},{timeout:20000});
+   const {page,errors}=await open(browser,after,viewport,{forceTap:viewport.width===430});await page.waitForFunction(()=>window.__qa.rouletteReady,{},{timeout:20000});
    const checks=await visualTests(page);console.log('FX_DEMO_LAYOUT_OK',JSON.stringify(viewport),checks.length,JSON.stringify(checks));
    const image=await page.evaluate(()=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve({width:img.naturalWidth,height:img.naturalHeight});img.onerror=()=>resolve(null);img.src='assets/candy-roulette-world.svg';}));assert.deepEqual(image,{width:1440,height:840});
    await page.evaluate(()=>window.__qa.resume());
-   await page.waitForFunction(()=>!document.querySelector('#audio-gate').hidden,{},{timeout:6000});
-   assert.equal(await page.evaluate(()=>window.__qa.app.phase),'ready','First round must not run silently before audio permission');
-   await page.locator('#audio-enable').click();
+   await page.waitForFunction(()=>window.__qa.app.phase==='playing'||(!document.querySelector('#audio-gate').hidden&&!document.querySelector('#audio-enable').disabled),{},{timeout:15000});
+   const needsTap=await page.evaluate(()=>window.__qa.app.phase==='ready');
+   if(viewport.width===430)assert(needsTap,'The simulated blocked-policy path must request a tap');
+   if(needsTap)await page.locator('#audio-enable').click();
    await page.waitForFunction(()=>window.__qa.app.phase==='playing',{},{timeout:20000});
    await page.waitForFunction(()=>!window.__qa.bgm.paused&&window.__qa.bgm.currentTime>.15,{},{timeout:6000});
-   const audio=await page.evaluate(()=>{const q=window.__qa;const energy=b=>{let peak=0;for(let ch=0;ch<b.numberOfChannels;ch++){const d=b.getChannelData(ch);for(let i=0;i<Math.min(d.length,b.sampleRate*.05);i++)peak=Math.max(peak,Math.abs(d[i]));}return peak;};q.sound('crack');return {state:q.audio.state,arrival:!!q.arrival,hammer:!!q.hammer,arrivalPeak:energy(q.arrival),hammerPeak:energy(q.hammer),voices:q.voices,bgm:!q.bgm.paused,time:q.bgm.currentTime,gain:q.gain,src:q.bgm.src,token:q.app.token,gate:document.querySelector('#audio-gate').hidden};});
-   assert.equal(audio.state,'running');assert(audio.arrival&&audio.hammer&&audio.voices>0&&audio.bgm&&audio.gate);assert(audio.arrivalPeak>.0008&&audio.hammerPeak>.0008);assert(Math.abs(audio.gain-.075)<.000001);console.log('FIRST_ROUND_AUDIO_OK',JSON.stringify(viewport),JSON.stringify(audio));
+   const audio=await page.evaluate(()=>{const q=window.__qa;const energy=b=>{let peak=0;for(let ch=0;ch<b.numberOfChannels;ch++){const d=b.getChannelData(ch);for(let i=0;i<Math.min(d.length,b.sampleRate*.05);i++)peak=Math.max(peak,Math.abs(d[i]));}return peak;};q.sound('crack');return {state:q.audio.state,arrival:!!q.arrival,hammer:!!q.hammer,arrivalPeak:energy(q.arrival),hammerPeak:energy(q.hammer),voices:q.voices,bgm:!q.bgm.paused,time:q.bgm.currentTime,gain:q.gain,src:q.bgm.src,token:q.app.token,gate:document.querySelector('#audio-gate').hidden,starts:q.starts};});
+   assert.equal(audio.state,'running');assert(audio.arrival&&audio.hammer&&audio.voices>0&&audio.bgm&&audio.gate);assert(audio.arrivalPeak>.0008&&audio.hammerPeak>.0008);assert(Math.abs(audio.gain-.075)<.000001);assert(audio.starts.length>0&&audio.starts.every(s=>!s.enabled||(s.state==='running'&&s.arrival&&s.hammer&&s.bgm)),'Every sound-enabled round must have samples and active BGM before Engine.start');console.log('FIRST_ROUND_AUDIO_OK',JSON.stringify(viewport),JSON.stringify(audio));
    await page.evaluate(()=>window.__qa.app.prepare());
    await page.waitForFunction(old=>window.__qa.app.phase==='playing'&&window.__qa.app.token>old,audio.token,{timeout:20000});
    await page.waitForFunction(()=>!window.__qa.bgm.paused&&window.__qa.bgm.currentTime>.1,{},{timeout:6000});
