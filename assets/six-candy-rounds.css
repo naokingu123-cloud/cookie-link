@@ -1,0 +1,32 @@
+/* Six Candy round controls remain inside the existing third-game panel. */
+.six-ball-surface{background:#48334c;border-color:#f09ebf;box-shadow:inset 0 0 0 2px #fff6d6,0 3px #ad5e83}
+.six-ball-surface .carnival-canvas{object-fit:contain;background:#493955}
+.six-ball-surface .carnival-topline{height:22px;min-height:22px;background:repeating-linear-gradient(135deg,#ffe8f0 0 11px,#ffcadf 11px 22px);color:#8a3767;padding:0 6px;letter-spacing:0;font-size:9px}
+.six-round-label{font:900 10px/20px system-ui;white-space:nowrap}
+.six-rows-control{display:flex;align-items:center;gap:4px;font:800 8px/18px system-ui;white-space:nowrap}
+#six-row-select{height:20px;width:54px;box-sizing:border-box;border:1px solid #be73a1;border-radius:6px;background:#fff8e4;color:#7e2f66;font:900 10px/18px system-ui;padding:0 2px;touch-action:manipulation}
+#six-row-select:disabled{opacity:.55}
+.six-candy-wordmark{color:#ec4f96!important;-webkit-text-stroke:.5px #fff5cd;paint-order:stroke fill;text-shadow:0 2px #a03570,1px 0 #fff5cd,-1px 0 #fff5cd!important}
+.carnival-tab-title.six-candy-wordmark{font-size:13px;line-height:18px}
+#carnival-heading strong.six-candy-wordmark{font-size:21px;line-height:25px}
+#carnival-heading strong small{color:#9e5c85;letter-spacing:.8px}
+#carnival-heading>span{font-size:10px}
+#carnival-odds{gap:3px;padding:5px 4px;background:linear-gradient(#fff9ec,#ffe4f0)}
+#carnival-odds .carnival-odds-title{font-size:8px;line-height:11px;padding-bottom:2px}
+#carnival-odds .carnival-odds-title small{font-size:6px;line-height:9px}
+#carnival-odds section{padding:1px}
+.six-pay-track{display:flex;align-items:center;gap:2px;min-height:37px;border-bottom:1px dashed #dba4c0;padding:2px 0;box-sizing:border-box}
+.six-pay-track svg{width:27px;height:29px;flex:none}
+.six-pay-track>span{display:block;flex:1;font:900 7.7px/10px system-ui;text-align:left;white-space:nowrap}
+.six-pay-track small{display:block;font:700 6.6px/10px system-ui;color:#a06f90;letter-spacing:-.2px}
+.six-pay-track b{display:block;font:900 8.8px/12px system-ui;color:#ba4984}
+.six-clear-bonus{padding:3px 1px;border:1px solid #e3aa52;border-radius:8px;background:linear-gradient(120deg,#fff4b5,#ffd3d8);font:900 8px/11px system-ui;color:#a65549}
+.six-clear-bonus b{display:block;font:1000 16px/18px ArcadePayout,system-ui;color:#a34d9e;text-shadow:0 1px #fff8c5}
+#carnival-odds .carnival-sugar-goal{margin-top:0;padding:2px;font-size:7px;line-height:10px}
+#carnival-odds .carnival-sugar-goal b{font-size:9px;line-height:12px}
+#carnival-odds p{font-size:6.4px;line-height:9px;margin:0}
+#carnival-odds footer{font-size:6px;line-height:8px;margin-top:auto}
+.six-round-callout strong{font-family:system-ui;font-size:32px!important}
+.carnival-reward small{white-space:normal;overflow-wrap:anywhere}
+body.mobile-landscape #carnival-heading strong.six-candy-wordmark{font-size:19px}
+@media(forced-colors:active){.six-candy-wordmark{color:CanvasText!important;-webkit-text-stroke:0;text-shadow:none!important}.six-clear-bonus,#six-row-select{background:Canvas;color:CanvasText;border-color:CanvasText}}
