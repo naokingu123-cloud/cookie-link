@@ -117,8 +117,8 @@ const SIX_PNG_STYLES={
 };
 function sixHsl(r,g,b){r/=255;g/=255;b/=255;const hi=Math.max(r,g,b),lo=Math.min(r,g,b),d=hi-lo,l=(hi+lo)/2;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=hi===r?(g-b)/d+(g<b?6:0):hi===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return [h,s,l];}
 function sixRgb(h,s,l){h=(h%1+1)%1;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h*12)%12;return 255*(l-a*Math.max(-1,Math.min(k-3,9-k,1)));};return [f(0),f(8),f(4)];}
-function sixArtCandySprite(color,round=1,sugar=false){
- const theme=sixRoundTheme(round),name=theme.colors[color%theme.colors.length],style=SIX_PNG_STYLES[name],key='roundPNG/'+round+'/'+name;
+function sixArtCandySprite(color,round=1,sugar=false,chance=false){
+ const theme=chance?SIX_CHANCE_THEME:sixRoundTheme(round),name=theme.colors[color%theme.colors.length],style=SIX_PNG_STYLES[name],key='roundPNG/'+round+'/'+name+'/'+(chance?'chance':'base');
  if(sixArtCache.has(key))return sixArtCache.get(key);
  const original=sixOriginalCandySprite(style.src),cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d');x.drawImage(original,0,0,128,128);
  const image=x.getImageData(0,0,128,128),d=image.data;
@@ -128,7 +128,7 @@ function sixArtCandySprite(color,round=1,sugar=false){
  if(round>=3){const n=round*2;for(let i=0;i<n;i++){const ang=i*2*Math.PI/n,xp=64+Math.cos(ang)*56,yp=64+Math.sin(ang)*56;x.fillStyle=round>=6?'#ffe36d':'#fffbea';x.beginPath();x.arc(xp,yp,round>=6?1.9:1.25,0,7);x.fill();}}
  if(round>=4){x.strokeStyle='#fff3c790';x.lineWidth=1.1;x.beginPath();x.arc(64,64,51,0,7);x.stroke();}
  if(round>=6){for(const [px,py,r] of [[24,31,4],[100,84,3],[41,109,3]])sixArtStar(x,px,py,r,'#fff6bc','#f5c35e');}
- if(round===8){const g=x.createLinearGradient(22,22,106,108);g.addColorStop(0,'#ffffffdd');g.addColorStop(.3,'#ffffff10');g.addColorStop(.55,'#ffffff77');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.beginPath();x.arc(64,64,51,0,7);x.fill();
+ if(chance){const g=x.createLinearGradient(22,22,106,108);g.addColorStop(0,'#ffffffdd');g.addColorStop(.3,'#ffffff10');g.addColorStop(.55,'#ffffff77');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.beginPath();x.arc(64,64,51,0,7);x.fill();
   if(name==='diamond'){x.beginPath();x.moveTo(64,25);x.lineTo(101,50);x.lineTo(88,98);x.lineTo(40,98);x.lineTo(27,50);x.closePath();x.fillStyle='#dffcff50';x.fill();x.strokeStyle='#ffffffdc';x.lineWidth=1.7;x.stroke();x.beginPath();x.moveTo(64,25);x.lineTo(40,98);x.moveTo(64,25);x.lineTo(88,98);x.moveTo(27,50);x.lineTo(101,50);x.stroke();}
  }
  x.restore();sixArtCache.set(key,cv);return cv;
