@@ -8,7 +8,7 @@ body.carnival-active #carnival-heading{display:grid!important;grid-template-colu
 #carnival-heading .six-round-card.current{border:2px solid #ef879e;background:linear-gradient(#fff4a6,#ffcae0);box-shadow:0 2px #ac417b,inset 0 0 0 2px #fff1c0}
 #carnival-heading .six-round-card.disabled{opacity:.35}
 .six-allclear-banner{display:grid;grid-template-columns:1fr auto;align-content:center;column-gap:5px;text-align:center;border:3px solid #ffd478;border-radius:15px;background:linear-gradient(120deg,#fff6ba,#ffc9e2,#f7d0ff);box-shadow:0 2px #a65792,inset 0 0 0 1px #fffde0;color:#bd3982;padding:3px 8px;box-sizing:border-box;min-width:0}
-.six-allclear-banner strong{grid-column:1/3;font:1000 10px/11px system-ui;white-space:nowrap}
+#carnival-heading .six-allclear-banner strong{grid-column:1/3;font:1000 10px/11px system-ui;white-space:nowrap}
 .six-allclear-banner b{font:1000 28px/29px ArcadePayout,system-ui;text-align:right;color:#ffa63d;-webkit-text-stroke:.6px #b55254;paint-order:stroke fill;text-shadow:0 1px #fff8cc}
 .six-allclear-banner em{font:1000 12px/28px system-ui;font-style:normal;align-self:end;color:#c23c80}
 .six-allclear-banner.celebrate{box-shadow:0 0 16px #fff28d,inset 0 0 0 2px #fff7cc}
