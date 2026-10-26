@@ -3,17 +3,16 @@
  */
 const SIX_ROWS=10,SIX_SQRT3_2=Math.sqrt(3)/2;
 const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:10000};
-const SIX_CLEAR_BONUS=[0,20,40,100,300,1000,3000,5000,10000];
+const SIX_CLEAR_BONUS=[0,20,40,100,300,1000];
 const SIX_ROUND_THEMES=[
  {id:'cool-1',label:'Round 1',colors:['lime','green','aqua','navy'],tier:1},
- {id:'cool-2',label:'Round 2',colors:['lime','green','aqua','navy'],tier:2},
- {id:'cool-3',label:'Round 3',colors:['lime','green','aqua','navy'],tier:3},
- {id:'citrus-4',label:'Round 4',colors:['orange','yellow','lime','green'],tier:4},
- {id:'citrus-5',label:'Round 5',colors:['orange','yellow','lime','green'],tier:5},
- {id:'hot-6',label:'Round 6',colors:['violet','red','orange','yellow'],tier:6},
- {id:'hot-7',label:'Round 7',colors:['violet','red','orange','yellow'],tier:7},
- {id:'royal-8',label:'Round 8',colors:['gold','silver','diamond'],tier:8}
+ {id:'fresh-2',label:'Round 2',colors:['yellow','lime','green','aqua'],tier:2},
+ {id:'citrus-3',label:'Round 3',colors:['orange','yellow','lime','green'],tier:3},
+ {id:'hot-4',label:'Round 4',colors:['red','orange','yellow','lime'],tier:4},
+ {id:'hot-5',label:'Round 5',colors:['violet','red','orange','yellow'],tier:5}
 ];
+const SIX_CHANCE_THEME={id:'chance-3',label:'CHANCE',colors:['gold','silver','diamond'],tier:8};
+const SIX_CHANCE_RATE=.12;
 const SIX_SUGAR_ROUND_CHOICES=[2,3,3,3,4];
 const SIX_START_GAP_TEMPLATES=[
  [[0,2],[0,4],[2,1],[2,5],[6,1],[6,5]],
@@ -23,9 +22,10 @@ const SIX_START_GAP_TEMPLATES=[
  [[4,2],[4,4],[7,1],[7,6],[8,2],[8,4]],
  [[0,1],[0,5],[5,1],[5,6],[7,1],[7,6]]
 ];
-function sixRoundTheme(round){return SIX_ROUND_THEMES[Math.max(0,Math.min(SIX_ROUND_THEMES.length-1,round-1))];}
+function sixRoundTheme(round){return SIX_ROUND_THEMES[Math.max(0,Math.min(4,round-1))];}
+function sixPickChanceRound(random){return random()<SIX_CHANCE_RATE?2+Math.floor(random()*4):null;}
 function sixRoundColorCount(round){return sixRoundTheme(round).colors.length;}
-function sixRoundClearBonus(round){return SIX_CLEAR_BONUS[Math.max(0,Math.min(8,round))]||0;}
+function sixRoundClearBonus(round){return SIX_CLEAR_BONUS[Math.max(0,Math.min(5,round))]||0;}
 function sixPickSugarRound(random){return SIX_SUGAR_ROUND_CHOICES[Math.floor(random()*SIX_SUGAR_ROUND_CHOICES.length)]||3;}
 function sixPickGapTemplate(random,round){
  const list=SIX_START_GAP_TEMPLATES;return list[(Math.floor(random()*list.length)+Math.max(0,round-1))%list.length].map(([r,c])=>[r,c]);
@@ -230,22 +230,22 @@ function sixMakeBoard(rows,colorCount,random,firstId=0,{holes=[]}={}){
 }
 class SixBallCandyEngine extends Engine{
  reset(){
-  this.kind='candy';this.gameName='シックスキャンディ';this.drawMode='single';this.reachMode='single';this.rows=SIX_ROWS;
+  this.kind='candy';this.gameName='シックスキャンディ';this.drawMode='grouped';this.reachMode='single';this.rows=SIX_ROWS;
   this.version++;this.presentationRate=1;this.roundBet=this.roundBet||3000;this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
   this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;this.transitionPending=false;
   this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;
   this.wonderCollected=false;this.wonderIssued=false;this.wonderToken=null;this.wonderColumn=0;this.pendingSugarAward=[];
   this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
   this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.pyramid=sixEmpty(this.rows);this.initialPyramid=null;
-  this.roundIndex=1;this.roundsCleared=0;this.sixColorCount=4;this.boardGeneration=0;this.roundTheme=sixRoundTheme(1).id;this.clearBonusHundredths=0;this.clearedRounds=new Set();this.maxRounds=8;
+  this.roundIndex=1;this.roundsCleared=0;this.sixColorCount=4;this.boardGeneration=0;this.roundTheme=sixRoundTheme(1).id;this.clearBonusHundredths=0;this.clearedRounds=new Set();this.maxRounds=5;this.chanceRound=sixPickChanceRound(this.random);
   this.triangles=0;this.hexagons=0;this.lines=0;this.shapes=0;this.bestCascade=0;this.cascade=0;this.removedCandies=0;this.remainingCandies=sixCapacity(this.rows);this.pyramidCleared=false;this.lastGain=0;this.lastNumber=0;this.fx=null;
   this.sugarRound=sixPickSugarRound(this.random);this.sugarPlaced=false;this.currentClearBonus=0;this.currentHoles=[];
   this.candyMessage='役をそろえて次のRoundへ！';this.emit('ready');
  }
  setRows(){return false;}
- colorsForRound(n){return sixRoundColorCount(n);}
+ colorsForRound(n){return this.chanceRound===n?3:sixRoundColorCount(n);}
  newBoard(){
-  const theme=sixRoundTheme(this.roundIndex),holes=sixPickGapTemplate(this.random,this.roundIndex);this.sixColorCount=theme.colors.length;this.roundTheme=theme.id;this.currentHoles=holes;
+  const theme=this.chanceRound===this.roundIndex?SIX_CHANCE_THEME:sixRoundTheme(this.roundIndex),holes=sixPickGapTemplate(this.random,this.roundIndex);this.sixColorCount=theme.colors.length;this.roundTheme=theme.id;this.currentHoles=holes;
   const made=sixMakeBoard(this.rows,this.sixColorCount,this.random,this.uid,{holes});this.uid=made.lastId;this.pyramid=made.grid;this.boardGeneration++;this.remainingCandies=sixCount(this.pyramid);this.pyramidCleared=false;
   if(!this.wonderCollected&&this.roundIndex===this.sugarRound){const candidates=this.pyramid.flat().filter(t=>t&&t.number==null);const pick=candidates[Math.floor(this.random()*candidates.length)];if(pick){pick.sugar=true;this.sugarPlaced=true;}}
   this.initialPyramid=sixClone(this.pyramid);
@@ -271,24 +271,24 @@ class SixBallCandyEngine extends Engine{
      if(stage.phase==='pyramidShape')this.candyMessage=stage.forms.length?'役が完成！ '+stage.chain+'連鎖':'4個以上つながった！ '+stage.chain+'連鎖';
      if(stage.phase==='pyramidAward'){this.totalHundredths+=stage.gain;this.lastGain=stage.gain;this.triangles+=stage.triangles;this.hexagons+=stage.hexagons;this.lines+=stage.lines;this.shapes=this.triangles+this.hexagons+this.lines;this.bestCascade=Math.max(this.bestCascade,stage.chain);}
      if(stage.phase==='pyramidAllClear'){this.totalHundredths+=SIX_PAY.allClear;this.lastGain=SIX_PAY.allClear;this.allClears++;this.candyMessage='ALL CLEAR！ 100倍ボーナス！';}
-     this.emit(stage.phase,{numbers,...stage});if(!await this.wait(stage.ms*this.speed,token))return;
+     this.emit(stage.phase,{numbers,...stage});if(!await this.wait((plan.advance&&stage.phase!=='pyramidAllClear'?Math.min(stage.ms,360):stage.phase==='pyramidAllClear'&&plan.advance?Math.min(stage.ms,700):stage.ms)*this.speed,token))return;
     }
     this.pyramid=sixClone(plan.grid);this.remainingCandies=sixCount(this.pyramid);this.removedCandies+=plan.removedCount;this.pyramidCleared=plan.cleared;this.processed+=numbers.length;this.fx=null;
     if(plan.advance&&!this.clearedRounds.has(this.roundIndex)){this.clearedRounds.add(this.roundIndex);this.roundsCleared++;this.currentClearBonus=sixRoundClearBonus(this.roundIndex);this.clearBonusHundredths+=this.currentClearBonus;this.totalHundredths+=this.currentClearBonus;}
     this.transitionPending=plan.advance&&this.processed<8&&this.roundIndex<this.maxRounds;
     this.candyMessage=plan.advance?'Round '+this.roundIndex+' CLEAR！':plan.chain?'連結消去・次の番号で役をねらおう':'次の番号で役をねらおう';
-    if(this.currentClearBonus){this.emit('pyramidRoundBonus',{roundIndex:this.roundIndex,gain:this.currentClearBonus,nextRound:this.transitionPending?this.roundIndex+1:null});if(!await this.wait(1100*this.speed,token))return;}
+    if(this.currentClearBonus){this.emit('pyramidRoundBonus',{roundIndex:this.roundIndex,gain:this.currentClearBonus,nextRound:this.transitionPending?this.roundIndex+1:null});if(!await this.wait(420*this.speed,token))return;}
     this.emit('settled',{numbers,candy:true,batchShapes:plan.triangles+plan.hexagons+plan.lines,batchChain:plan.chain,batchGain:plan.gain,advance:plan.advance,clearBonus:this.currentClearBonus,sugarAward:plan.sugarAward});
     if(plan.sugarAward&&!this.wonderCollected){
      this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'six-candy-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});if(!await this.wait(SUGAR_GET_WAIT*this.speed*(this.presentationRate||1),token))return;
     }
-    if(!await this.wait((plan.chain||plan.advance?MINI_RESULT_MS:150)*this.speed,token))return;
+    if(!await this.wait((plan.advance?260:plan.chain?MINI_RESULT_MS:150)*this.speed,token))return;
     if(this.transitionPending){
-     const outgoing=sixClone(this.pyramid),nextRound=this.roundIndex+1,sweepMs=(motionReduced?140:760)*this.speed;
+     const outgoing=sixClone(this.pyramid),nextRound=this.roundIndex+1,sweepMs=(motionReduced?100:430)*this.speed;
      this.fx={phase:'pyramidSweep',grid:outgoing,roundIndex:this.roundIndex,nextRound,elapsed:0,stamp:null,ms:sweepMs};
      this.candyMessage='ROUND CLEAR!';this.emit('pyramidSweep',{nextRound});
      if(!await this.wait(sweepMs,token))return;
-     this.roundIndex++;this.newBoard();const refillMs=(motionReduced?140:480+(this.rows-1)*96)*this.speed;
+     this.roundIndex++;this.newBoard();const refillMs=(motionReduced?100:360+(this.rows-1)*60)*this.speed;
      this.fx={phase:'pyramidRefill',grid:sixClone(this.pyramid),roundIndex:this.roundIndex,elapsed:0,stamp:null,ms:refillMs};
      this.candyMessage='Round '+this.roundIndex+' START';this.emit('pyramidRefill',{roundIndex:this.roundIndex});
      if(!await this.wait(refillMs,token))return;
