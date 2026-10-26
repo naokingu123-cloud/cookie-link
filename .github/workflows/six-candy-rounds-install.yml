@@ -1,0 +1,62 @@
+name: Verify Six Candy rounds
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/six-candy-rounds-install.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply exact-source guarded update
+        run: python .github/maintenance/install_six_candy_rounds_20261026.py
+      - name: Install browser verification
+        run: |
+          pip install playwright >/tmp/six-rounds-browser.log 2>&1
+          python -m playwright install --with-deps chromium >>/tmp/six-rounds-browser.log 2>&1 || { tail -60 /tmp/six-rounds-browser.log; exit 1; }
+      - name: Verify gravity, roles, rounds and responsive UI
+        run: python .github/tests/six_candy_rounds_20261026.py
+      - name: Retain verification previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-candy-rounds-previews
+          path: qa-six-rounds/
+          retention-days: 3
+          if-no-files-found: ignore
+      - name: Record verified implementation and publish
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          note='\n\n## 追加更新: シックスキャンディ・Round進行と落下改修（2026-10-26）\n'
+          note+='- 第3タブの名称をシックスキャンディへ変更。盤面上部の暫定デバッグ選択で7/8/9/10段（28/36/45/55個）を選択。BET中のみ変更可能、他の2ゲームと抽選機をリセットしない。通常の次ゲームでも段数は保持、再読み込みは10段。初期BET3000/BET20秒/既存音声・物理抽選は維持。\n'
+          note+='- 各盤面の開始時に1〜25を各1個ずつ、異なる25キャンディへ割当。残りは番号なし。既に入賞した番号も新盤面には配置するが、共通8球抽選は番号重複なしのまま。初期配置は特殊役だけでなく4個以上の同色連結も禁止。\n'
+          note+='- 落下は横の隣接球/支持球と移動中の円の衝突を確認。支持球が1個ならその周囲の円弧で転がり、左右の支持がなく下2段に道がある場合は真下へ落下。ランダムな行ごとの左右反転は廃止。下の行から順に、同時に動けるキャンディのみ同じフレームで動かし、描画も同じ時系列を再生。\n'
+          note+='- Nintendoの6ボールパズルと完全一致を確認した実装ではない。公式の公開ページは概要のみ。独立した近似モデルであり、第三者の再現アルゴリズムの側方クリアランス解説を調査したがコードは転載していない。参考: https://www.nintendo.com/jp/switch/as7ta/games/index.html ; https://qiita.com/GANTZ/items/e6b5e9168b595404d582 。\n'
+          note+='- 同色のヘキサゴン6個→トライアングル6個（上下両向き）→直線4個以上の順に採用。同種は上側から。役同士で同じマスを使わない。直線は横/左下/右下の3軸、最大の連続1本を1役と数える。役以外も同色連結4個以上は消去して連鎖する（通常連結そのものに配当なし）。\n'
+          note+='- 配当は独立累計: HEX個数×0.5倍、TRI個数×0.3倍、LINE本数×0.1倍を加算。旧連鎖倍率は廃止。1盤面を全消しすると追加60倍を1回加算。通常連結だけで全消しした場合も60倍。\n'
+          note+='- 1役以上または全消しを達成したHITの連鎖を最後まで解決し、次のRoundへ。通常連結だけでは盤面変更なし。同じ8球の残りを新盤面で続ける。最終球で達成した場合は不要な次盤面を生成せずリザルト。次のBETではRound1へ戻る。色数は暫定でRound1〜2が5色、Round3〜4が4色、Round5以降が3色（共通デバッグ色数が少ない場合はそちらを上限）。\n'
+          note+='- シュガーは既存のヘキサゴン達成による通常シュガー1ゲーム1個を維持。虹/Direct JPCの発生条件は変更なし。独立配当欄、Round表示、残数、横斜めの直線強調、リザルトを更新。専用の既存キャンディ描画を使用。前チャットの生成PNG素材は今回未組込。\n'
+          note+='- 検証: 7〜10段×3〜5色の216初期盤面で25番号の一意性/空白/初期役と4連結なし、36盤面の落下フレームで数保存/静的・同時移動球とのすり抜けなし/落下後安定、上下三角形/3方向直線/優先順位/マス重複なし、独立配当/全消し60倍/予測一致、8球のRound進行と色数減少/0BET/途中リセット/シュガー一度/3種同時集計とCREDIT一度、段数選択の他ゲーム非干渉、モバイル3サイズ・横画面・PC、配当吹き出しと黒帯非重複をChromiumで確認。\n'
+          note+='- 未検証: Nintendo実機との完全一致、iPhone実機、自然な物理抽選の8球全軌道。テスト入賞は制御した番号コールバック。音声ソースは不変確認（今回聴感テストなし）。\n'
+          note+='- 編集元assets/six-candy-rounds-engine.js / six-candy-rounds-ui.js / six-candy-rounds.css。assets/six-candy.jsとindex.htmlへ組込。検証.github/tests/six_candy_rounds_20261026.py。最新index.html blob: `'+sha+'`。\n'
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+note);print('VERIFIED_SIX_CANDY_ROUNDS_BLOB',sha)
+          PY
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/six-candy-rounds-install.yml
+          git add index.html HANDOFF.md assets/six-candy.js
+          git commit -m 'Upgrade Six Candy gravity, independent roles and advancing rounds'
+          git push origin HEAD:main
