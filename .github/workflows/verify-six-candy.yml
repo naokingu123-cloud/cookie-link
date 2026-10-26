@@ -30,6 +30,12 @@ jobs:
           else
             timeout 150 python3 -m playwright install chromium
           fi
+      - name: Prepare Japanese glyphs for faithful screenshots
+        run: |
+          mkdir -p "$HOME/.local/share/fonts"
+          curl --fail --location --max-time 75 --retry 1 'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/Japanese/NotoSansCJKjp-Regular.otf' --output "$HOME/.local/share/fonts/NotoSansCJKjp-Regular.otf"
+          fc-cache -f "$HOME/.local/share/fonts"
+          fc-match 'Noto Sans CJK JP'
       - name: Verify original PNG, mobile, desktop, bonuses, sugar and audio
         run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_rounds_v4_browser.py
       - name: Verify the existing public Pages deployment
