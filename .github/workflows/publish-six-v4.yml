@@ -1,0 +1,71 @@
+name: Guarded Six Candy v4 integration
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-six-v4.yml]
+permissions:
+  contents: write
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply hash-verified update and preserve shared games
+        run: python3 .github/maintenance/six-v4-transfer/install.py
+      - name: Verify symmetric openings and rules
+        run: node .github/tests/six_rounds_v4.cjs
+      - name: Install isolated browser verification
+        run: |
+          pip install playwright >/tmp/six-v4-browser.log 2>&1
+          python3 -m playwright install --with-deps chromium >>/tmp/six-v4-browser.log 2>&1 || { tail -60 /tmp/six-v4-browser.log; exit 1; }
+      - name: Verify live HTTP game on mobile and desktop
+        run: python3 .github/tests/six_rounds_v4_browser.py
+      - name: Retain candidate and verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-v4-integration-evidence
+          path: |
+            qa-six-v4/
+            index.html
+            assets/six-candy*.js
+            assets/six-candy*.css
+            .github/tests/six_rounds_v4*
+          include-hidden-files: true
+          retention-days: 3
+      - name: Save only verified game and remove one-time updater
+        run: |
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$GITHUB_SHA"
+          cp .github/maintenance/six-v4-transfer/verify.yml .github/workflows/verify-six-candy.yml
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,shutil
+          report=json.loads(Path('qa-six-v4/verification.json').read_text())
+          assert not report['memoryOnly'] and report['nativeDesktop']['roulette'] and not report['errors']
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          p=Path('HANDOFF.md')
+          note='\n\n## 2026-10-26 — Round v4: 10段・左右対称の穴・累計ボーナス\n'
+          note+='- 盤面は最下段8個・上7個の交互配置で10段固定。6種の左右対称穴あきテンプレートから各Roundで選択。初期4連結・役・落下を禁止し、1〜25各1個を維持。キャンディの論理直径35は縮小せず装飾余白を整理。\n'
+          note+='- 元PNGのテクスチャを使った31種のRound差分。R1〜3は黄緑/緑/水色/濃青、R4〜5は橙/黄/黄緑/緑、R6〜7は紫/赤/橙/黄、R8は金/銀/ダイヤの3色。進行とともに縁・粒・宝石を追加し、R8は光る。\n'
+          note+='- 全消し追加100倍。役別0.1/0.3/0.5倍とは独立したRoundクリア0.2/0.4/1/3/10/30/50/100倍を各Round一度ずつ加算。R3までのクリアボーナスは1.6倍、全8Roundは194.6倍。予測にもクリアボーナスを含む。\n'
+          note+='- シュガー対象Roundは2/3/4（重み1:3:1）。対象Roundの番号なしキャンディに配置し、4連結以上または役の消去で一度獲得。旧ヘキサゴンだけでの自動シュガー付与は廃止。\n'
+          note+='- 3列の配当テーブルが成立数に応じ実際にスライド。前/現在/次Roundカードに各クリア倍率とシュガー予定を表示し現在を強調。役配当とNEXT ROUND、独立クリア配当をポップアップ。段数セレクター/注意書きは除去。共通Cookieのリーチ文字、段階色、周回光と全消し枠を使用。\n'
+          note+='- 検証: 36盤面・6テンプレート、272落下フレーム/8976経路時点/135役フィクスチャ。HTTP実画像/実3D初期化、スマホ3幅/横画面/PC、31画像差分/25数字/小盤面、8seedと強制8Round、100倍とクリア累計、シュガー一度、3ゲーム集計/CREDIT一度、0BET/リセット、配当スライド/リーチ4種/音声取消。入賞は制御通知。共通ホスト/他2ゲーム/物理/BGM部分のソース一致を検証。\n'
+          note+='- 未検証: iPhone実機、スピーカー聴感、自然物理8球の全軌道。公開確認は別の読み取り専用workflowと公開バイト照合で行う。\n'
+          note+='- 今後の依頼も修正/検証/main保存/既存Pages公開確認まで実施。直接Git通信が失敗してもGitHub連携で差分blobを送れる。今回の一時適用workflowと転送データは成功後削除。\n'
+          note+='- 最新index.html blob: `'+sha+'`。検証: docs/six-rounds-v4-verification.json。\n'
+          p.write_text(p.read_text()+note)
+          Path('docs').mkdir(exist_ok=True)
+          shutil.copyfile('qa-six-v4/verification.json','docs/six-rounds-v4-verification.json')
+          Path('docs/previews').mkdir(exist_ok=True)
+          for name in ['playing-430.png','round-8.png','board-playing.png']:
+              shutil.copyfile('qa-six-v4/'+name,'docs/previews/six-v4-'+name)
+          print('VERIFIED_V4_GAME_BLOB',sha)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm -r .github/maintenance/six-v4-transfer .github/workflows/publish-six-v4.yml
+          git add index.html assets/six-candy.js assets/six-candy-art.js assets/six-candy-rounds-engine.js assets/six-candy-rounds-ui.js assets/six-candy-rounds.css .github/tests/six_rounds_v4.cjs .github/tests/six_rounds_v4_browser.py .github/tests/six_rounds_v4_public.py .github/workflows/verify-six-candy.yml HANDOFF.md docs/six-rounds-v4-verification.json docs/previews/six-v4-*
+          git commit -m 'Implement verified 10-row Six Candy with symmetric gaps, PNG round variants, sugar and independent bonuses'
+          git push origin HEAD:main
