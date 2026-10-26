@@ -16,7 +16,7 @@ def rep(a,b):
  global ui
  assert ui.count(a)==1,(a[:160],ui.count(a));ui=ui.replace(a,b,1)
 rep("s.tab.querySelector('.tab-game-name').innerHTML='<span class=\"carnival-tab-title six-candy-wordmark\">シックスキャンディ<small>SIX CANDY</small></span>';", "s.tab.querySelector('.tab-game-name').innerHTML=sixArtLogoMarkup('tab');")
-rep("heading.innerHTML='<strong class=\"six-candy-wordmark\">シックスキャンディ<small>SIX CANDY · SWEET PUZZLE</small></strong><span>Round <b id=\"carnival-complete\">1</b></span>';", "heading.innerHTML='<strong>'+sixArtLogoMarkup('main')+'</strong><span>Round <b id=\"carnival-complete\">1</b></span>';")
+rep("heading.innerHTML='<strong class=\"six-candy-wordmark\">シックスキャンディ<small>SIX CANDY · SWEET PUZZLE</small></strong><span>Round <b id=\"carnival-complete\">1</b></span>';", "heading.innerHTML='<strong>シックスキャンディ'+sixArtLogoMarkup('main')+'</strong><span>Round <b id=\"carnival-complete\">1</b></span>';")
 a=ui.index(" const bg=x.createLinearGradient(0,0,320,320);");b=ui.index(' const lit=',a)
 ui=ui[:a]+" x.drawImage(sixArtBackdrop(rows),0,0,320,320);\n"+ui[b:]
 rep("if(!ready&&t.number!=null){const font=Math.max(11,layout.step*.41);x.fillStyle='#442141c8';x.beginPath();x.ellipse(pos.x,pos.y+1,font*(t.number>=10?.94:.68),font*.7,0,0,7);x.fill();sixText(x,String(t.number),pos.x,pos.y+1,font,'#fffdf4');}","if(!ready&&t.number!=null)sixPaintCandyNumber(x,t.number,pos.x,pos.y+1,radius);")
