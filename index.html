@@ -2956,6 +2956,7 @@ function setupChocoSlot(s){
 function chocoEvent(s,ev,e,a){
  setupChocoSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;s.reachResults=[];s.tabReachResults=[];s.reachStatus='ready';s.reachBoardKey=e.version+'/'+e.processed;
  if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);if(s.chocoFrame)cancelAnimationFrame(s.chocoFrame);s.chocoFrame=0;}
+ if(ev.phase==='drawpending'){clearMiniResult(s);invalidateReach(s);requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);return;}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
  if(ev.phase==='digBreak'&&s.i===active){sound('crack',{volume:.85});if(ev.treasures)sound('confirm',{delay:80,volume:.8});else if(ev.combo>=3)sound('magic',{volume:.5});}
  s.message=e.digMessage;chocoQueueFrame(s);scheduleUI(a);
