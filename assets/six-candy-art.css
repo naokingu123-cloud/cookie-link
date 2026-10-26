@@ -32,3 +32,7 @@
 .six-ball-surface .carnival-reward[data-tier='2']{border-color:#ffe76e;background:linear-gradient(135deg,#fff7a7,#ffafdb,#d9a5ff);box-shadow:0 4px #982d93,0 0 0 2px #f689cf,0 0 23px #ffe36ba0;color:#8d2595}
 .six-ball-surface .carnival-reward strong{paint-order:stroke fill;-webkit-text-stroke:.7px #fff5d5;text-shadow:0 2px #ffe5bd}
 @media(forced-colors:active){.six-art-logo{forced-color-adjust:none}.six-round-label,#carnival-heading>span,#carnival-odds,.six-pay-track,.six-clear-bonus{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none;text-shadow:none}.six-clear-bonus b{-webkit-text-stroke:0;color:CanvasText}}
+
+/* Keep the accessible title from creating an invisible line above the logo. */
+#carnival-heading>strong{display:flex;align-items:center;justify-content:center;line-height:0}
+.six-clear-bonus b{font:900 14px/18px system-ui;white-space:nowrap;letter-spacing:-.6px}

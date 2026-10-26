@@ -1,5 +1,5 @@
-/* Six Candy rules v2. Original deterministic simulation; no original-game code/assets.
- * Triangular lattice: down-left (r+1,c), down-right (r+1,c+1).
+/* Six Candy rules v3. Original deterministic simulation.
+ * Staggered tray: bottom row has 8 candies; widths alternate 8/7 upward.
  * Actual Nintendo gravity implementation is unpublished; this model checks swept circle
  * clearance, rolls around a support, and resolves fall frames bottom-up without teleporting.
  */
@@ -12,32 +12,38 @@ const SIX_COLORS=[
  {name:'ミント',light:'#cbffe4',color:'#44c695',dark:'#247e60'}
 ];
 const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:6000};
-const sixEmpty=(rows=SIX_ROWS)=>Array.from({length:rows},(_,r)=>Array(r+1).fill(null));
+// The lattice is the same close-packed geometry; only the tray boundary changes.
+function sixRowWidth(r,rows=SIX_ROWS){return 8-((rows-1-r)&1);}
+function sixCapacity(rows=SIX_ROWS){return Array.from({length:rows},(_,r)=>sixRowWidth(r,rows)).reduce((a,b)=>a+b,0);}
+const sixEmpty=(rows=SIX_ROWS)=>Array.from({length:rows},(_,r)=>Array(sixRowWidth(r,rows)).fill(null));
 const sixClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
 const sixKey=(r,c)=>r*16+c;
 const sixCount=g=>g.reduce((n,row)=>n+row.filter(Boolean).length,0);
-const sixPoint=(r,c)=>({x:c-r/2,y:r*SIX_SQRT3_2});
-function sixLayout(rows=8){const step=Math.min(40,256/(rows-1));return {step,top:270-(rows-1)*step*SIX_SQRT3_2,radius:step*.50};}
-function sixXY(r,c,rows=10){const l=sixLayout(rows);return {x:160+(c-r/2)*l.step,y:l.top+r*l.step*SIX_SQRT3_2};}
-function sixNeighbors(r,c){return [[r,c-1],[r,c+1],[r-1,c-1],[r-1,c],[r+1,c],[r+1,c+1]];}
+const sixPoint=(r,c,rows=SIX_ROWS)=>({x:c-(sixRowWidth(r,rows)-1)/2,y:r*SIX_SQRT3_2});
+function sixValid(r,c,rows=SIX_ROWS){return r>=0&&r<rows&&Number.isInteger(c)&&c>=0&&c<sixRowWidth(r,rows);}
+function sixStep(r,c,dr,dx,rows=SIX_ROWS){return [r+dr,c+(sixRowWidth(r+dr,rows)-sixRowWidth(r,rows))/2+dx];}
+function sixLayout(rows=SIX_ROWS){const step=Math.min(35,250/(1+(rows-1)*SIX_SQRT3_2));return {step,top:270-(rows-1)*step*SIX_SQRT3_2,radius:step*.50};}
+function sixXY(r,c,rows=SIX_ROWS){const l=sixLayout(rows),p=sixPoint(r,c,rows);return {x:160+p.x*l.step,y:l.top+p.y*l.step};}
+function sixNeighbors(r,c,rows=SIX_ROWS){return [[0,-1],[0,1],[-1,-.5],[-1,.5],[1,-.5],[1,.5]].map(([dr,dx])=>sixStep(r,c,dr,dx,rows));}
 const sixPatternCache=new Map();
-function sixPatterns(rows=10){
+function sixPatterns(rows=SIX_ROWS){
  if(sixPatternCache.has(rows))return sixPatternCache.get(rows);const list=[];
- const add=(type,cells)=>{if(cells.every(([r,c])=>r>=0&&r<rows&&c>=0&&c<=r))list.push({type,cells,key:cells.map(p=>sixKey(...p)).sort((a,b)=>a-b).join(',')});};
- for(let r=0;r<rows;r++)for(let c=0;c<=r;c++){
-  add('triangle',[[r,c],[r+1,c],[r+1,c+1],[r+2,c],[r+2,c+1],[r+2,c+2]]);
-  add('triangle',[[r,c],[r,c+1],[r,c+2],[r+1,c+1],[r+1,c+2],[r+2,c+2]]);
-  add('hexagon',[[r-1,c-1],[r-1,c],[r,c+1],[r+1,c+1],[r+1,c],[r,c-1]]);
+ const add=(type,cells)=>{if(cells.every(([r,c])=>sixValid(r,c,rows)))list.push({type,cells,key:cells.map(p=>sixKey(...p)).sort((a,b)=>a-b).join(',')});};
+ for(let r=0;r<rows;r++)for(let c=0;c<sixRowWidth(r,rows);c++){
+  const at=offsets=>offsets.map(([dr,dx])=>sixStep(r,c,dr,dx,rows));
+  add('triangle',at([[0,0],[1,-.5],[1,.5],[2,-1],[2,0],[2,1]]));
+  add('triangle',at([[0,-1],[0,0],[0,1],[1,-.5],[1,.5],[2,0]]));
+  add('hexagon',sixNeighbors(r,c,rows));
  }
  sixPatternCache.set(rows,list);return list;
 }
-const SIX_PATTERNS=sixPatterns(10);
+const SIX_PATTERNS=sixPatterns(SIX_ROWS);
 function sixComponents(grid){
  const seen=new Set(),out=[];
- for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++){
+ for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){
   const tile=grid[r][c],key=sixKey(r,c);if(!tile||seen.has(key))continue;
   const cells=[],stack=[[r,c]];seen.add(key);
-  while(stack.length){const [y,x]=stack.pop();cells.push([y,x]);for(const [a,b] of sixNeighbors(y,x)){const k=sixKey(a,b);if(a<0||a>=grid.length||b<0||b>a||seen.has(k)||grid[a][b]?.color!==tile.color)continue;seen.add(k);stack.push([a,b]);}}
+  while(stack.length){const [y,x]=stack.pop();cells.push([y,x]);for(const [a,b] of sixNeighbors(y,x,grid.length)){const k=sixKey(a,b);if(!sixValid(a,b,grid.length)||seen.has(k)||grid[a][b]?.color!==tile.color)continue;seen.add(k);stack.push([a,b]);}}
   out.push({cells,color:tile.color});
  }
  return out;
@@ -47,12 +53,12 @@ function sixUpperFirst(a,b){
  return ra-rb||b.cells.length-a.cells.length||Math.min(...a.cells.map(p=>p[1]))-Math.min(...b.cells.map(p=>p[1]))||a.key.localeCompare(b.key);
 }
 function sixLines(grid,used=new Set()){
- const out=[];
- for(const [dr,dc] of [[0,1],[1,0],[1,1]])for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++){
+ const out=[],rows=grid.length;
+ for(const [dr,dx] of [[0,1],[1,-.5],[1,.5]])for(let r=0;r<rows;r++)for(let c=0;c<grid[r].length;c++){
   const t=grid[r][c];if(!t||used.has(sixKey(r,c)))continue;
-  const same=(y,x)=>!!grid[y]?.[x]&&!used.has(sixKey(y,x))&&grid[y][x].color===t.color;
-  if(same(r-dr,c-dc))continue;
-  const cells=[];for(let y=r,x=c;same(y,x);y+=dr,x+=dc)cells.push([y,x]);
+  const same=([y,x])=>sixValid(y,x,rows)&&!!grid[y][x]&&!used.has(sixKey(y,x))&&grid[y][x].color===t.color;
+  if(same(sixStep(r,c,-dr,-dx,rows)))continue;
+  const cells=[];for(let p=[r,c];same(p);p=sixStep(...p,dr,dx,rows))cells.push(p);
   if(cells.length>=4)out.push({type:'line',cells,color:t.color,key:cells.map(p=>sixKey(...p)).join(',')});
  }
  return out.sort(sixUpperFirst);
@@ -74,9 +80,9 @@ function sixResolve(grid){
 }
 // Grid-directed falling. Occupancy determines the destination; rendering does not
 // choose gameplay outcomes. No per-candy lean, id parity, random drift or momentum.
-const SIX_FALL_RULES='grid-support-synchronous-v4-gap-settle';
+const SIX_FALL_RULES='grid-support-synchronous-v5-staggered-gap-settle';
 function sixMotionPoint(move,t){
- t=Math.max(0,Math.min(1,t));const a=sixPoint(...move.from),b=sixPoint(...move.to);
+ t=Math.max(0,Math.min(1,t));const rows=move.rows||SIX_ROWS,a=sixPoint(...move.from,rows),b=sixPoint(...move.to,rows);
  if(t===0)return a;if(t===1)return b;
  if(move.gap){
   // Empty lower neighbours cannot support a candy. Descend through the open
@@ -85,7 +91,7 @@ function sixMotionPoint(move,t){
   if(move.gapPivot){
    // Approach the top of the next-row support, then roll only 30 degrees.
    // This differs from the 60-degree arc around an immediate diagonal support.
-   const p=sixPoint(...move.gapPivot),vertical=p.y-1-a.y,arc=Math.PI/6,d=t*(vertical+arc);
+   const p=sixPoint(...move.gapPivot,rows),vertical=p.y-1-a.y,arc=Math.PI/6,d=t*(vertical+arc);
    if(d<=vertical)return {x:a.x,y:a.y+d};
    const angle=-Math.PI/2+sign*(d-vertical);
    return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
@@ -96,7 +102,7 @@ function sixMotionPoint(move,t){
   return d<=vertical?{x:a.x,y:a.y+d}:{x:a.x+sign*(d-vertical),y:b.y};
  }
  if(!move.pivot)return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
- const p=sixPoint(...move.pivot),angle=Math.atan2(a.y-p.y,a.x-p.x)+move.turn*t;
+ const p=sixPoint(...move.pivot,rows),angle=Math.atan2(a.y-p.y,a.x-p.x)+move.turn*t;
  return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
 }
 function sixPathClear(grid,move,vacating=new Set()){
@@ -104,41 +110,37 @@ function sixPathClear(grid,move,vacating=new Set()){
  // not against its old, frozen location. Anchored neighbours still block passage.
  for(let k=1;k<=16;k++){
   const p=sixMotionPoint(move,k/16);
-  for(let r=Math.max(0,move.from[0]-1);r<=Math.min(grid.length-1,move.to[0]+1);r++)for(let c=0;c<=r;c++){
-   const t=grid[r][c];if(!t||t.id===move.id||vacating.has(t.id))continue;const q=sixPoint(r,c);
+  for(let r=Math.max(0,move.from[0]-1);r<=Math.min(grid.length-1,move.to[0]+1);r++)for(let c=0;c<grid[r].length;c++){
+   const t=grid[r][c];if(!t||t.id===move.id||vacating.has(t.id))continue;const q=sixPoint(r,c,grid.length);
    if((p.x-q.x)**2+(p.y-q.y)**2<.999999)return false;
   }
  }
  return true;
 }
 function sixFallOptions(grid,r,c,vacating=new Set()){
- const tile=grid[r]?.[c];if(!tile||r===grid.length-1||vacating.has(tile.id))return [];
- const occupied=(y,x)=>{const t=grid[y]?.[x];return t&&!vacating.has(t.id)?t:null;};
- const left=occupied(r+1,c),right=occupied(r+1,c+1),sideL=occupied(r,c-1),sideR=occupied(r,c+1);
+ const rows=grid.length,tile=grid[r]?.[c];if(!tile||r===rows-1||vacating.has(tile.id))return [];
+ const valid=p=>sixValid(...p,rows),occupied=([y,x])=>{const t=grid[y]?.[x];return t&&!vacating.has(t.id)?t:null;};
+ const dl=sixStep(r,c,1,-.5,rows),dr=sixStep(r,c,1,.5,rows),down=sixStep(r,c,2,0,rows);
+ const left=occupied(dl),right=occupied(dr),sideL=occupied([r,c-1]),sideR=occupied([r,c+1]);
  if(left&&right)return [];
- const make=(to,pivot=null,turn=0)=>({id:tile.id,tile:{...tile},from:[r,c],to,pivot,turn});
- // When both supports are empty, lateral neighbours restrict the *path*, not
- // the ability to fall. The v3 diagonal-only path incorrectly formed air bridges.
- const gap=to=>({...make(to),gap:true,gapPivot:r+2<grid.length&&occupied(r+2,c+1)?[r+2,c+1]:null});
- const downLeft=()=>left?null:!sideL?make([r+1,c],right?[r+1,c+1]:null,right?-Math.PI/3:0):!right?gap([r+1,c]):null;
- const downRight=()=>right?null:!sideR?make([r+1,c+1],left?[r+1,c]:null,left?Math.PI/3:0):!left?gap([r+1,c+1]):null;
- const vertical=()=>!left&&!right&&r+2<grid.length&&!occupied(r+2,c+1)?make([r+2,c+1]):null;
+ const make=(to,pivot=null,turn=0)=>valid(to)?{id:tile.id,tile:{...tile},from:[r,c],to,pivot,turn,rows}:null;
+ // Missing off-tray cells are not destinations or imaginary supporting balls.
+ // Preserve the vertical-gap route which fixed unsupported lateral bridges.
+ const gap=to=>{const m=make(to);return m?{...m,gap:true,gapPivot:valid(down)&&occupied(down)?down:null}:null;};
+ const downLeft=()=>!valid(dl)||left?null:!sideL?make(dl,right?dr:null,right?-Math.PI/3:0):!right?gap(dl):null;
+ const downRight=()=>!valid(dr)||right?null:!sideR?make(dr,left?dl:null,left?Math.PI/3:0):!left?gap(dr):null;
+ const vertical=()=>!left&&!right&&valid(down)&&!occupied(down)?make(down):null;
  let options=[];
  if(left)options=[downRight()];
  else if(right)options=[downLeft()];
  else {
-  // A lateral neighbour sends the ball toward the opposite lower slot. When
-  // neither side biases it, an empty shaft is traversed vertically, not zig-zag.
-  // Keep the snapshot neighbour for direction even when that neighbour is moving.
   const biasL=!!grid[r]?.[c-1],biasR=!!grid[r]?.[c+1];
-  if(biasL&&!biasR)options=[downRight()];
-  else if(biasR&&!biasL)options=[downLeft()];
+  if(biasL&&!biasR)options=[downRight(),vertical(),downLeft()];
+  else if(biasR&&!biasL)options=[downLeft(),vertical(),downRight()];
   else if(vertical())options=[vertical()];
   else {
    const l=downLeft(),rr=downRight();
-   // Geometric tie only: prefer the less obstructed lower landing. Exact symmetry
-   // is resolved left first. Neither tile ids nor random state affect prediction.
-   const room=m=>m?[[m.to[0]+1,m.to[1]],[m.to[0]+1,m.to[1]+1]].filter(([y,x])=>y<grid.length&&!occupied(y,x)).length:-1;
+   const room=m=>m?[-.5,.5].map(dx=>sixStep(...m.to,1,dx,rows)).filter(p=>valid(p)&&!occupied(p)).length:-1;
    options=room(rr)>room(l)?[rr,l]:[l,rr];
   }
  }
@@ -160,7 +162,7 @@ function sixDrop(grid,{trace=false}={}){
    const previous=accepted.length;
    for(let r=grid.length-2;r>=0;r--){
     const proposals=[];
-    for(let c=0;c<=r;c++){
+    for(let c=0;c<grid[r].length;c++){
      const t=grid[r][c];if(!t||vacating.has(t.id)||pinned.has(t.id))continue;
      const candidates=sixFallOptions(grid,r,c,vacating);if(candidates.length)proposals.push({c,candidates});
     }
@@ -194,11 +196,11 @@ function sixPlan(input,numbers,{trace=false}={}){
  const push=(phase,detail={},ms=350)=>{if(trace)timeline.push({phase,...detail,grid:sixClone(grid),ms});};
  const remove=cells=>{const removed=[];for(const [r,c] of cells){const t=grid[r]?.[c];if(t){removed.push({r,c,tile:{...t}});grid[r][c]=null;}}removedCount+=removed.length;return removed;};
  const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length)push('pyramidFall',{...fall},motionReduced?100:fall.steps.reduce((n,f)=>n+f.ms,0)||350);};
- for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++)if(grid[r][c]?.number!=null&&used.has(grid[r][c].number))hit.push([r,c]);
+ for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]?.number!=null&&used.has(grid[r][c].number))hit.push([r,c]);
  if(!hit.length){push('pyramidMiss',{},250);return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:0,cleared:false,advance:false};}
  push('pyramidHit',{cells:hit},280);push('pyramidBreak',{removed:remove(hit)},260);drop();
  for(;;){
-  const resolved=sixResolve(grid);if(!resolved.cells.length)break;if(++chain>Math.ceil(input.length*(input.length+1)/8))throw Error('Cascade exceeded finite board');
+  const resolved=sixResolve(grid);if(!resolved.cells.length)break;if(++chain>Math.ceil(sixCount(input)/4))throw Error('Cascade exceeded finite board');
   const award=resolved.hexagons*SIX_PAY.hexagon+resolved.triangles*SIX_PAY.triangle+resolved.lines*SIX_PAY.line;
   push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.forms.length?550:260);
   const removed=remove(resolved.cells);triangles+=resolved.triangles;hexagons+=resolved.hexagons;lines+=resolved.lines;gain+=award;ordinaryGroups+=resolved.clusters.length;
@@ -213,7 +215,7 @@ function sixMakeBoard(rows,colorCount,random,firstId=0){
  let grid=null,lastId=firstId;
  for(let attempt=0;attempt<32;attempt++){
   const g=sixEmpty(rows);let ok=true,id=firstId;
-  outer:for(let r=0;r<rows;r++)for(let c=0;c<=r;c++){
+  outer:for(let r=0;r<rows;r++)for(let c=0;c<g[r].length;c++){
    const tile={id:++id,color:0,number:null,lean:random()<.5?-1:1};g[r][c]=tile;let placed=false;
    for(const color of sixShuffle(Array.from({length:colorCount},(_,i)=>i),random)){
     tile.color=color;if(sixComponents(g).every(p=>p.cells.length<4)){placed=true;break;}
@@ -222,7 +224,7 @@ function sixMakeBoard(rows,colorCount,random,firstId=0){
   }
   if(ok){grid=g;lastId=id;break;}
  }
- if(!grid){const palette=sixShuffle(Array.from({length:colorCount},(_,i)=>i),random);grid=sixEmpty(rows);for(let r=0;r<rows;r++)for(let c=0;c<=r;c++)grid[r][c]={id:++lastId,color:palette[(r+c)%colorCount],number:null,lean:c<r/2?-1:1};}
+ if(!grid){const palette=sixShuffle(Array.from({length:colorCount},(_,i)=>i),random);grid=sixEmpty(rows);for(let r=0;r<rows;r++)for(let c=0;c<grid[r].length;c++)grid[r][c]={id:++lastId,color:palette[(r+c+Math.floor((r+(rows%2))/2))%colorCount],number:null,lean:c<grid[r].length/2?-1:1};}
  const spots=sixShuffle(grid.flat(),random),numbers=sixShuffle(Array.from({length:25},(_,i)=>i+1),random);numbers.forEach((n,i)=>spots[i].number=n);
  if(sixResolve(grid).cells.length)throw Error('Initial board contains a connected group or role');
  return {grid,lastId};
@@ -237,7 +239,7 @@ class SixBallCandyEngine extends Engine{
   this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
   this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.pyramid=sixEmpty(this.rows);this.initialPyramid=null;
   this.roundIndex=1;this.roundsCleared=0;this.sixColorCount=4;this.boardGeneration=0;
-  this.triangles=0;this.hexagons=0;this.lines=0;this.shapes=0;this.bestCascade=0;this.cascade=0;this.removedCandies=0;this.remainingCandies=this.rows*(this.rows+1)/2;this.pyramidCleared=false;this.lastGain=0;this.lastNumber=0;this.fx=null;
+  this.triangles=0;this.hexagons=0;this.lines=0;this.shapes=0;this.bestCascade=0;this.cascade=0;this.removedCandies=0;this.remainingCandies=sixCapacity(this.rows);this.pyramidCleared=false;this.lastGain=0;this.lastNumber=0;this.fx=null;
   this.candyMessage='役をそろえて次のRoundへ！';this.emit('ready');
  }
  setRows(rows){if(this.running||![7,8,9,10].includes(rows))return false;this.rows=rows;this.reset();return true;}

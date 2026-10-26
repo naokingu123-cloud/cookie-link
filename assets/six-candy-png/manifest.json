@@ -1,0 +1,52 @@
+{
+  "version": "original-png-staggered-v1",
+  "source_png": "カラフルなキャンディアイコン素材シート.png",
+  "source_sha256": "6629a51390b952586800164f8e9b2191df7adca56a25773cb7e61f44b7fcb1c1",
+  "generated_png_embedded": true,
+  "atlas": "assets/six-candy-png/candies.webp",
+  "atlas_cell_px": 128,
+  "atlas_sha256": "ba24d2811b3758f9e810110a6505bb9ede2e70308983ec93f0d280e2e3461abb",
+  "flavors": [
+    {
+      "color": 0,
+      "name": "strawberry",
+      "source_crop": [
+        14,
+        39,
+        245,
+        272
+      ]
+    },
+    {
+      "color": 1,
+      "name": "lemon",
+      "source_crop": [
+        250,
+        36,
+        483,
+        272
+      ]
+    },
+    {
+      "color": 2,
+      "name": "soda",
+      "source_crop": [
+        763,
+        36,
+        996,
+        270
+      ]
+    },
+    {
+      "color": 3,
+      "name": "grape",
+      "source_crop": [
+        498,
+        50,
+        720,
+        272
+      ]
+    }
+  ],
+  "notes": "Original PNG pixels, resized and WebP-encoded; source alpha retained; grape round centre cropped for contact geometry. Numbers remain separate live glyphs. Logo and decorative backdrop remain vector/Canvas."
+}

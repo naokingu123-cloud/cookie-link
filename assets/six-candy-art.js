@@ -1,9 +1,7 @@
-/* Six Candy visual skin — reference-informed vector/canvas artwork.
- * This is not an embedding of the generated PNGs: connector egress for those
- * attachments was unavailable. This file contains presentation only, no RNG,
- * scoring, board generation, gravity or changes to the shared roulette/audio.
- */
-const SIX_ART_VERSION='candy-illustrated-v1';
+/* Four candy sprites are real pixels cut from the user-approved PNG.
+ * Numbers stay separate live glyphs. The rest of the decorative backdrop is Canvas.
+ * Presentation consumes no game random state. */
+const SIX_ART_VERSION='original-png-staggered-v1';
 const sixArtCache=new Map();
 const SIX_ART_PALETTE=[
  ['#fff0f6','#ff478c','#b81051'],['#fffbc7','#ffd71c','#d57b06'],
@@ -16,7 +14,7 @@ function sixArtStar(x,cx,cy,r,fill='#ffdf3e',stroke='#df8b17'){
 function sixArtHeart(x,cx,cy,r,fill='#ff559b'){
  x.save();x.translate(cx,cy);x.beginPath();x.moveTo(0,r*.72);x.bezierCurveTo(-r*1.6,-r*.12,-r*.73,-r*1.28,0,-r*.52);x.bezierCurveTo(r*.73,-r*1.28,r*1.6,-r*.12,0,r*.72);x.fillStyle=fill;x.fill();x.strokeStyle='#fff5df';x.lineWidth=r*.12;x.stroke();x.restore();
 }
-function sixArtCandySprite(color){
+function sixVectorCandySprite(color){
  color=([0,1,3,4,2][((color%5)+5)%5]);const key='candy/'+color;if(sixArtCache.has(key))return sixArtCache.get(key);
  const cv=document.createElement('canvas');cv.width=cv.height=144;const x=cv.getContext('2d'),p=SIX_ART_PALETTE[color];
  x.shadowColor=p[2]+'99';x.shadowBlur=4;x.shadowOffsetY=3;
@@ -54,6 +52,19 @@ function sixArtCandySprite(color){
  for(const [u,v,r] of [[22,76,2],[36,106,1.4],[105,35,1.6],[118,62,1.1],[91,119,1.8]]){x.fillStyle='#fffce6c0';x.beginPath();x.arc(u,v,r,0,7);x.fill();}
  sixArtCache.set(key,cv);return cv;
 }
+// Original PNG-derived cells: strawberry, lemon, blue swirl, grape.
+const sixCandyPng=new Image();
+const sixCandyPngState={loaded:false,error:false};
+sixCandyPng.onload=()=>{sixCandyPngState.loaded=true;sixArtCache.clear();try{const s=slots[2];if(s?.engine?.kind==='candy'){s.candyKey='';s.dirtyMain=s.dirtyMini=true;carnivalQueueFrame(s);}}catch{}};
+sixCandyPng.onerror=()=>{sixCandyPngState.error=true;console.warn('Six Candy original artwork could not load; temporary vector fallback is visible.');};
+sixCandyPng.src='assets/six-candy-png/candies.webp?v=staggered-v1';
+function sixArtCandySprite(color){
+ if(!sixCandyPngState.loaded||color<0||color>3)return sixVectorCandySprite(color);
+ const key='original/'+color;if(sixArtCache.has(key))return sixArtCache.get(key);
+ const cv=document.createElement('canvas'),size=sixCandyPng.naturalWidth/4;cv.width=cv.height=size;
+ cv.getContext('2d').drawImage(sixCandyPng,color*size,0,size,size,0,0,size,size);
+ sixArtCache.set(key,cv);return cv;
+}
 function sixArtNumberSprite(number){
  if(!Number.isInteger(number)||number<1||number>25)return null;const key='number/'+number;if(sixArtCache.has(key))return sixArtCache.get(key);
  const cv=document.createElement('canvas');cv.width=192;cv.height=144;const x=cv.getContext('2d'),label=String(number);
@@ -86,18 +97,18 @@ function sixArtTurret(x,cx,y,h,color){
 }
 function sixArtBackdrop(rows){
  const key='backdrop/'+rows;if(sixArtCache.has(key))return sixArtCache.get(key);
- const cv=document.createElement('canvas');cv.width=cv.height=640;const x=cv.getContext('2d');x.scale(2,2);const l=sixLayout(rows),r=l.radius,half=(rows-1)*l.step/2;
+ const cv=document.createElement('canvas');cv.width=cv.height=640;const x=cv.getContext('2d');x.scale(2,2);const l=sixLayout(rows),r=l.radius;
  const sky=x.createLinearGradient(0,0,0,320);sky.addColorStop(0,'#80dfff');sky.addColorStop(.5,'#d9f8ff');sky.addColorStop(.8,'#ffe3f4');sky.addColorStop(1,'#ffbedb');x.fillStyle=sky;x.fillRect(0,0,320,320);
  x.save();x.globalAlpha=.65;x.lineWidth=5;['#ff82b0','#ffc568','#fff59d','#a6e99f','#9bdcff','#c8aff3'].forEach((color,i)=>{x.strokeStyle=color;x.beginPath();x.arc(153,196,183-i*5,Math.PI*1.08,Math.PI*1.93);x.stroke();});x.restore();
  sixArtCloud(x,40,37,25);sixArtCloud(x,274,62,25);sixArtCloud(x,12,118,20);sixArtCloud(x,290,160,18);
  x.save();x.globalAlpha=.5;sixArtTurret(x,29,95,82,'#f99cc9');sixArtTurret(x,54,128,65,'#c49af0');sixArtTurret(x,289,109,95,'#f398cd');sixArtTurret(x,264,146,65,'#c69be9');x.restore();
  for(const [cx,cy,color] of [[21,207,0],[296,228,3],[48,250,4]]){x.strokeStyle='#fff4df';x.lineWidth=4;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx,cy+45);x.stroke();x.drawImage(sixArtCandySprite(color),cx-13,cy-13,26,26);}
- const apex={x:160,y:l.top-r*2-7},a={x:160-half-r*1.35-3,y:270+r+7},b={x:160+half+r*1.35+3,y:a.y};
- x.save();x.beginPath();x.moveTo(apex.x,apex.y);x.lineTo(b.x,b.y);x.lineTo(a.x,a.y);x.closePath();
- const inside=x.createLinearGradient(0,apex.y,0,a.y);inside.addColorStop(0,'#ffd9e5');inside.addColorStop(.38,'#ffebdf');inside.addColorStop(1,'#ffcfdf');x.fillStyle=inside;x.fill();
- x.save();x.clip();for(let y=0;y<320;y+=24)for(let u=0;u<320;u+=24){x.fillStyle=((u+y)/24)%2?'#ffffff26':'#f7a9c119';x.fillRect(u,y,24,24);}
- x.restore();x.lineJoin='round';x.strokeStyle='#c97536';x.lineWidth=13;x.stroke();x.strokeStyle='#ffdf83';x.lineWidth=10.5;x.stroke();x.strokeStyle=sixArtStripePattern(x);x.lineWidth=8;x.stroke();x.restore();
- sixArtStar(x,160,Math.max(12,apex.y),13,'#ffe24c','#efa42b');
+ const left=160-4*l.step-7,right=160+4*l.step+7,top=l.top-r-8,bottom=270+r+8;
+ x.save();x.beginPath();x.roundRect(left,top,right-left,bottom-top,12);
+ const inside=x.createLinearGradient(0,top,0,bottom);inside.addColorStop(0,'#65240f');inside.addColorStop(.48,'#8a401f');inside.addColorStop(1,'#4d1b16');x.fillStyle=inside;x.fill();
+ x.save();x.clip();for(let y=top;y<bottom;y+=18)for(let u=left;u<right;u+=18){x.fillStyle=(Math.round((u-left+y-top)/18)%2)?'#ffd6ad0b':'#2b0a060d';x.fillRect(u,y,18,18);}x.restore();
+ x.lineJoin='round';x.strokeStyle='#a94d31';x.lineWidth=11;x.stroke();x.strokeStyle='#ffdf83';x.lineWidth=8;x.stroke();x.strokeStyle=sixArtStripePattern(x);x.lineWidth=5.5;x.stroke();x.restore();
+ for(const cx of [left+2,right-2])sixArtStar(x,cx,top+3,6);
  // Base rail and candy jewels stay outside the collision lattice.
  x.fillStyle='#fff1d9';x.beginPath();x.roundRect(5,295,310,23,10);x.fill();x.strokeStyle='#f989b4';x.lineWidth=2;x.stroke();
  for(const cx of [17,303]){x.drawImage(sixArtCandySprite(0),cx-12,282-12,24,24);sixArtStar(x,cx===17?34:286,290,6);}

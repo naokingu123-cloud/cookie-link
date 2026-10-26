@@ -54,11 +54,24 @@ with sync_playwright() as p:
  const a=new q.Arcade({random:rng(91),sleep:()=>Promise.resolve()});a.drawSource={ready:true,start(){},pause(){},reset(){}};a.start();for(let n=1;n<=8;n++){a.acceptNumber(n,a.token);for(const engine of a.engines)await idle(engine)}check(a.phase==='result','Mixed game result');check(a.roundWins[2]===Math.floor(3000*a.engines[2].totalHundredths/100),'Mixed payout');const credit=a.credit;a.advanceResult(100000);a.advancePayout(100000);check(a.credit===credit+a.totalWin,'Credit paid once');const paid=a.credit;a.beginPayout();a.advancePayout(100000);check(a.credit===paid,'Credit double paid');a.prepare();a.setBet(2,0);a.start();for(let n=1;n<=8;n++){a.acceptNumber(n,a.token);for(const engine of a.engines)await idle(engine)}check(a.engines[2].processed===0&&a.engines[2].totalHundredths===0,'0 bet ran');return {seededRounds:rounds,forcedAllClearRounds:8,mixedGames:true,zeroBet:true,events}}''')
  # Initial board and in-progress fall are rendered using original bitmap sprites.
  report['animation']=page.evaluate('''()=>{const q=__qa,e=q.app.engines[2],s=q.slots[2],old={pyramid:e.pyramid,fx:e.fx};let stage=null;for(let n=1;n<=25;n++){stage=q.sixPlan(e.pyramid,[n],{trace:true}).timeline.find(x=>x.phase==='pyramidFall');if(stage)break}if(!stage)throw Error('No fall fixture');e.pyramid=stage.grid;e.fx={...stage,elapsed:stage.ms*.2,stamp:null};q.drawCarnival(s);const a=s.candyCanvas.toDataURL();e.fx.elapsed=stage.ms*.75;q.drawCarnival(s);const b=s.candyCanvas.toDataURL();Object.assign(e,old);q.redraw();if(a===b)throw Error('Fall did not move');return {liveFallChangesPixels:true}}''')
- page.evaluate('__qa.debugResetRound();__qa.freeze();__qa.select(0)');assert page.locator('#panel0').is_visible()
- page.evaluate('__qa.select(1)');assert page.locator('#choco-odds').is_visible()
- page.evaluate('__qa.select(2)');assert page.locator('#carnival-odds').is_visible()
+ page.evaluate('__qa.debugResetRound();__qa.freeze();__qa.select(0)');page.locator('#panel0').wait_for(state='visible',timeout=10000);assert page.locator('#panel0').is_visible()
+ page.evaluate('__qa.select(1)');page.locator('#choco-odds').wait_for(state='visible',timeout=10000);assert page.locator('#choco-odds').is_visible()
+ page.evaluate('__qa.select(2)');page.locator('#carnival-odds').wait_for(state='visible',timeout=10000);assert page.locator('#carnival-odds').is_visible()
  assert page.evaluate('__qa.app.engines[2].rows')==8
  report['sound']=page.evaluate('''async()=>{const q=__qa;q.resume();document.querySelector('#sound').checked=true;q.unlock();if(q.audio?.state!=='running')await q.audio?.resume();q.sixCandyAudio('break');q.sixCandyAudio('fall',3);let checked=0;for(const [name,b] of q.soundBuffers){if(!name.startsWith('six-'))continue;let energy=0;for(const v of b.getChannelData(0))energy+=v*v;if(energy<.01)throw Error('Silent effect');checked++}q.stopSounds();const remaining=q.voices.size;document.querySelector('#sound').checked=false;q.freeze();if(remaining)throw Error('Reset did not cancel voices');if(checked!==4)throw Error('Effects did not initialize');return {buffers:checked,voicesAfterStop:remaining}}''')
+ # Separate native desktop context, not just a mobile viewport resized to PC width.
+ pc=browser.new_context(viewport={'width':1280,'height':900},is_mobile=False,device_scale_factor=1)
+ pg=pc.new_page();pg.on('pageerror',lambda e:errors.append(str(e)))
+ if memory:pg.set_content(html,wait_until='domcontentloaded')
+ else:pg.goto(url,wait_until='domcontentloaded')
+ pg.wait_for_function('window.__qa?.sixCandyPngState.loaded',timeout=30000)
+ if not memory:pg.wait_for_function('__qa.ready',timeout=30000)
+ pg.evaluate('__qa.redraw();document.fonts.ready');pg.wait_for_timeout(150)
+ if memory:pg.evaluate('__qa.app.drawSource={ready:true,start(){},pause(){},reset(){}};__qa.resume();__qa.app.start();__qa.freeze();__qa.redraw()')
+ else:pg.evaluate('__qa.resume();__qa.startReadyRound();__qa.driver.setPaused(true);__qa.freeze();__qa.redraw()')
+ pg.wait_for_timeout(150);assert sorted(pg.evaluate('__qa.captureNumbers()'))==list(range(1,26))
+ report['nativeDesktop']=pg.evaluate("()=>{const o=document.querySelector('#carnival-odds');if(o.scrollHeight>o.clientHeight+2)throw Error('Desktop odds clipping');return {width:innerWidth,height:innerHeight,artLoaded:__qa.sixCandyPngState.loaded,rouletteLoaded:__qa.ready,candies:__qa.app.engines[2].pyramid.flat().filter(Boolean).length}}")
+ pg.screenshot(path=str(out/'desktop-native.png'));pc.close()
  assert not errors,errors
  if not memory:assert not bad,bad
  report['errors']=errors;report['failedResponses']=bad;(out/'verification.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print('STAGGERED_BROWSER_PASS',json.dumps(report,ensure_ascii=False),flush=True)
