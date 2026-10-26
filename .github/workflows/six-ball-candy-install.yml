@@ -25,6 +25,11 @@ jobs:
           old="check(grav[9].filter(Boolean).length===3,'Candies did not reach floor');"
           new="check(grav.every((row,r)=>row.every((t,c)=>!t||r===9||(grav[r+1][c]&&grav[r+1][c+1]))),'Candy stopped without floor or two supports');"
           assert old in s;s=s.replace(old,new,1);p.write_text(s)
+          p=Path('assets/six-ball-candy.js');s=p.read_text()
+          fixes=[("if(token!==this.version)return;this.busy=false;\n   if(this.processed===8){","if(token!==this.version)return;\n   if(this.processed===8){"),("this.running=false;this.candyMessage='TRIANGLE ","this.busy=false;this.running=false;this.candyMessage='TRIANGLE "),("}else this.emit('waiting');","}else {this.busy=false;this.emit('waiting');}")]
+          for a,b in fixes:
+              assert s.count(a)==1,(a,s.count(a));s=s.replace(a,b,1)
+          p.write_text(s)
           PY
           python .github/maintenance/install_six_ball_candy_20261026.py
       - name: Install isolated browser verification
@@ -54,7 +59,7 @@ jobs:
           note+='- 図形を光る輪郭で強調→配当・該当6個を破片にして消去→再落下→図形の再判定を繰り返す。重なる図形は各図形を1役として配当合算、共有キャンディの除去は1回だけ。追加の同色一括消しや直線役は未実装。\n'
           note+='- 仮配当: TRIANGLE 0.5倍、HEXAGON 2倍。1回の番号HITから続く図形消去ごとに1/1.5/2…最大5倍の連鎖倍率。図形の同時成立は合算。配当バランスは未調整。HEXAGONを1回以上完成するとゲーム終了時に通常シュガー1個（BET値）。虹/ダイレクトJPCの発生条件は変更なし。\n'
           note+='- 第3タブはsingleの抽選/リーチ更新を維持。純粋な盤面コピーで同じ落下/図形消去を最後まで予測し、乱数は消費しない。クッキーの2/4/5/6/7/8球目リーチ仕様は変更なし。\n'
-          note+='- 大型配当吹き出しは3倍/10倍の強調を維持し下画面内に限定。ミニ盤面にも落下と図形を反映。リザルトはTRIANGLE/HEXAGON個数・最大図形連鎖・残数を表示。旧ビン/スター/5色完成表示は除去。\n'
+          note+='- 大型配当吹き出しは3倍/10倍の強調を維持し下画面内に限定。ミニ盤面にも落下と図形を反映。リザルトはTRIANGLE/HEXAGON個数・最大図形連鎖・残数を表示。旧ビン/スター/5色完成表示は除去。シュガー演出終了まではEngineをbusyとし、集計へ先に進めない。\n'
           note+='- Chromium検証: 10段55個/番号分布/上下三角形/中央色不問の六角形/単なる6個連結を非配当/境界/落下での数保存と支持/多段連鎖/重複除去防止/予測と実Engine一致/10種シード8球/0BET/途中リセット/シュガー一度/3種同時進行・一度だけCREDIT/モバイル3サイズと横画面・PC/吹き出しと黒帯非重複/BGM再生とリセットを確認。\n'
           note+='- 未検証: iPhone実機、聴感、自然物理抽選の全8球通し。着弾テストは制御された入賞番号通知。\n'
           note+='- 編集元 assets/six-ball-candy.js/.css。適用スクリプト .github/maintenance/install_six_ball_candy_20261026.py。旧candy-carnival.jsは履歴資料であり本体には読み込まない。\n'
@@ -65,6 +70,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/workflows/six-ball-candy-install.yml
-          git add index.html HANDOFF.md .github/tests/six_ball_candy_20261026.py
+          git add index.html HANDOFF.md assets/six-ball-candy.js .github/tests/six_ball_candy_20261026.py
           git commit -m 'Replace third tab with Six Ball Candy pyramid cascades'
           git push origin HEAD:main
