@@ -1,0 +1,58 @@
+name: Verify Six Candy artwork integration
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/six-candy-art-20261026.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply presentation-only patch
+        run: python3 .github/maintenance/install_six_candy_art_20261026.py
+      - name: Install isolated browser verification
+        run: |
+          pip install playwright >/tmp/six-art-browser.log 2>&1
+          python3 -m playwright install --with-deps chromium >>/tmp/six-art-browser.log 2>&1 || { tail -60 /tmp/six-art-browser.log; exit 1; }
+      - name: Verify existing game rules and new live artwork
+        run: |
+          python3 .github/tests/six_candy_rounds_20261026.py
+          python3 .github/tests/six_candy_art_20261026.py
+      - name: Retain browser previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-candy-art-verification
+          path: qa-six-art/
+          retention-days: 3
+          if-no-files-found: ignore
+      - name: Save verified skin and publish
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,shutil
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          note='\n\n## 2026-10-26 — シックスキャンディの実ゲーム用キャンディ外観\n'
+          note+='- 第3タブの動作中ゲームへロゴ、キャンディ、ストライプ数字、三角形のキャンディケイン枠、パステルの背景城、Round/配当枠を組込。静止画のモック画面ではない。メインと小盤面は同じ描画を使う。\n'
+          note+='- 重要: 会話の生成PNGはconnector egress制限で転送できず、原画像は直接組込していない。ユーザー承認画像を参考にしたオリジナルのSVG/Canvas描画での実装。assets/six-candy-art-manifest.jsonにgenerated_png_embedded=falseを明記。原画像の完全な見た目の再現ではない。\n'
+          note+='- 5色の実ゲーム判定は不変。見た目をいちご、レモン、緑の果実、青の渦巻き、ぶどうに区別。1〜25は正確な数字のマスク内に白/ピンクの飴ストライプを描き、濃い縁とハイライトで可読性を確保。番号なしは模様だけ。描画はキャッシュし乱数を消費しない。\n'
+          note+='- 画像に描かれた仮配当、次のキャンディ、スタート等のボタンは導入しない。既存の自動進行、段数7〜10、初期BET3000、1〜25一意番号、Round、落下修正、役優先、独立配当、全消し60倍、他2ゲーム、3D抽選機、音声は維持。ルールEngineとホストのその他ソースは完全一致を検証。\n'
+          note+='- Chromium検証: 既存のルール/初期盤面/落下/Round/役別配当/0BET/リセット/3ゲーム同時集計/段数/スマホ・PC検証を再実行。新規で1〜25の25種描画、5種キャンディ、キャッシュ、描画乱数ゼロ、ゲーム状態不変、SVG ID一意性、スマホ3サイズと横画面・PC、黒帯と配当吹き出しの非重複を確認。\n'
+          note+='- 未確認: iPhone実機、今回の聴感、原PNGとピクセル一致。プレビューは本体の実ブラウザ描画を保存したもの。\n'
+          note+='- 編集元 assets/six-candy-art.js/.css、assets/six-candy-rounds-ui.js。組込 assets/six-candy.js と index.html。最新 index.html blob: `'+sha+'`。\n'
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+note)
+          out=Path('docs/previews');out.mkdir(parents=True,exist_ok=True)
+          for f in ['six-candy-skin-mobile.png','six-candy-board.png']:
+              shutil.copyfile(Path('qa-six-art')/f,out/f)
+          print('VERIFIED_SIX_CANDY_ART_BLOB',sha)
+          PY
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/six-candy-art-20261026.yml
+          git add index.html HANDOFF.md assets/six-candy.js assets/six-candy-rounds-ui.js assets/six-candy-art.js assets/six-candy-art-manifest.json docs/previews/six-candy-skin-mobile.png docs/previews/six-candy-board.png
+          git commit -m 'Integrate candy-themed logo, board, frames and exact candy numerals in third game'
+          git push origin HEAD:main
