@@ -1,0 +1,19 @@
+name: Stage Six Candy original PNG integration
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/six-png-staggered-20261026.yml']
+permissions:
+  contents: read
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: six-png-transfer-check
+          path: .github/maintenance/six-png-60/
+          include-hidden-files: true
+          retention-days: 1
