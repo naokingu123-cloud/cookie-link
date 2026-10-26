@@ -1980,6 +1980,40 @@ body.mobile-landscape #carnival-heading{padding:0 9px}body.mobile-landscape #car
 @media(prefers-reduced-motion:reduce){.carnival-reward{animation:none!important}}
 @media(forced-colors:active){.carnival-reward,.board .record,.sugar-award-screen .sugar-award-content{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}.carnival-tab-title,#carnival-heading strong{color:CanvasText;text-shadow:none}}
 
+/* Third tab only. Existing payout/Sugar emphasis and black-strip boundaries remain intact. */
+.carnival-tab-title{font-size:9.6px;letter-spacing:-.3px;line-height:17px;color:#7f4799}
+.carnival-tab-title small{font-size:5.4px;letter-spacing:1px;color:#967293}
+.six-ball-surface{background:#3c294b;border-color:#d8ac88;box-shadow:inset 0 0 0 2px #ffebbf,0 3px #7e4f6b}
+.six-ball-surface .carnival-topline{height:17px;min-height:17px;line-height:17px;padding:0 6px;background:linear-gradient(#f7d5c3,#dcb2bc);font-size:7.5px}
+.six-ball-surface .carnival-topline b{font-size:6.5px;line-height:13px;padding:0 3px}
+.six-ball-surface .carnival-canvas{background:linear-gradient(135deg,#342549,#3b344f);object-fit:contain}
+.six-ball-surface .carnival-status{height:17px;min-height:17px;line-height:17px;font-size:7.1px;background:#f9e8da;border-color:#cba3b7}
+#carnival-heading{padding:0 12px;gap:3px}
+#carnival-heading strong{font-size:17.5px;letter-spacing:-.4px;line-height:24px}
+#carnival-heading strong small{font-size:6.8px;letter-spacing:.2px}
+#carnival-heading>span{font-size:6.5px}#carnival-complete{font-size:22px}
+#carnival-odds{padding:4px;gap:3px;background:linear-gradient(#fff5e9,#eadcf5)}
+#carnival-odds .carnival-odds-title{font-size:7.3px;line-height:10px;padding-bottom:2px}
+#carnival-odds .carnival-odds-title small{font-size:6px;line-height:8px}
+#carnival-odds section span{font-size:7px;line-height:9px}
+#carnival-odds section em{font-size:7px;line-height:9px}
+#carnival-win{line-height:26px}
+.six-shape-guide{display:flex;align-items:center;gap:2px;min-height:38px;padding:2px 0;border-bottom:1px dotted #caabc6}
+.six-shape-guide svg{width:33px;height:30px;flex:none;overflow:visible}
+.six-shape-guide>span{font:900 7.1px/11px system-ui,sans-serif;text-align:left;letter-spacing:-.4px}
+.six-shape-guide small{display:block;font:800 6.1px/9px system-ui,sans-serif;color:#a45280;letter-spacing:-.3px}
+.six-chain-guide{font:900 8px/11px system-ui,sans-serif;color:#8e4b8f;padding:3px 0}
+.six-chain-guide small{font-size:6px;line-height:9px}
+#carnival-odds .carnival-sugar-goal{font-size:7px;line-height:10px;padding:2px}
+#carnival-odds .carnival-sugar-goal b{font-size:9px;line-height:12px}
+#carnival-odds p{font-size:6.2px;line-height:9px}
+#carnival-odds footer{font-size:5.7px;line-height:8px}
+.six-ball-surface .carnival-reward{top:58%;padding:10px 6px;max-width:260px}
+.six-ball-surface .carnival-reward small{font-size:10px;letter-spacing:.2px}
+body.mobile-landscape #carnival-heading strong{font-size:16px}
+body.mobile-landscape #carnival-heading{padding:0 9px}
+@media(forced-colors:active){.six-ball-surface{border-color:CanvasText}.six-shape-guide{border-color:CanvasText}.six-chain-guide,.six-shape-guide small{color:CanvasText}}
+
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -2845,148 +2879,242 @@ function chocoHud(a){
  const key=[e.version,e.phase,e.processed,e.depth,e.totalHundredths,a.bet(1)].join('/');if(s.chocoKey!==key){s.chocoKey=key;chocoQueueFrame(s);}
 }
 
-/* Original third-tab prototype. Included in the existing app scope after Engine. */
-const CARNIVAL_FLAVORS=[
- {name:'いちご',light:'#ffd0de',color:'#f04485',dark:'#9b2456'},
- {name:'レモン',light:'#fff3af',color:'#f4c322',dark:'#a66a16'},
- {name:'ミント',light:'#cbf9d7',color:'#38bf8a',dark:'#23785c'},
- {name:'ソーダ',light:'#cdf1ff',color:'#40b7ed',dark:'#246ba5'},
- {name:'ぶどう',light:'#ecd6ff',color:'#aa6ee3',dark:'#6a3697'}
+/* Six Ball Candy. Original roulette-driven, finite 55-candy pyramid prototype.
+ * Editing source; installer embeds it in index.html. No external art or runtime dependencies.
+ * Grid coordinates: row r has r+1 slots; down-left=(r+1,c), down-right=(r+1,c+1).
+ */
+const SIX_ROWS=10;
+const SIX_COLORS=[
+ {name:'いちご',light:'#ffcbdc',color:'#f34c86',dark:'#a22353'},
+ {name:'レモン',light:'#fff6b1',color:'#f6cc32',dark:'#aa741b'},
+ {name:'ミント',light:'#cbffe4',color:'#44c695',dark:'#247e60'},
+ {name:'ソーダ',light:'#d2f5ff',color:'#43bde8',dark:'#286ba9'},
+ {name:'ぶどう',light:'#efdcff',color:'#b77bea',dark:'#71369d'}
 ];
-const CARNIVAL_TARGET=4;
-class CandyCarnivalEngine extends Engine{
+const sixEmpty=()=>Array.from({length:SIX_ROWS},(_,r)=>Array(r+1).fill(null));
+const sixClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
+const sixXY=(r,c)=>({x:160+(c-r/2)*28,y:43+r*24.2487113});
+const sixKey=(r,c)=>r*10+c;
+const SIX_PATTERNS=(()=>{
+ const out=[],seen=new Set();
+ function add(type,cells){
+  if(cells.some(([r,c])=>r<0||r>=SIX_ROWS||c<0||c>r))return;
+  const key=cells.map(([r,c])=>sixKey(r,c)).sort((a,b)=>a-b).join(',');if(seen.has(key))return;seen.add(key);out.push({type,cells,key});
+ }
+ for(let r=0;r<SIX_ROWS;r++)for(let c=0;c<=r;c++){
+  add('triangle',[[r,c],[r+1,c],[r+1,c+1],[r+2,c],[r+2,c+1],[r+2,c+2]]);
+  add('triangle',[[r,c],[r,c+1],[r,c+2],[r+1,c+1],[r+1,c+2],[r+2,c+2]]);
+  add('hexagon',[[r-1,c-1],[r-1,c],[r,c+1],[r+1,c+1],[r+1,c],[r,c-1]]);
+ }
+ return out;
+})();
+function sixFindShapes(grid){
+ const out=[];for(const p of SIX_PATTERNS){const t=grid[p.cells[0][0]]?.[p.cells[0][1]];if(t&&p.cells.every(([r,c])=>grid[r]?.[c]?.color===t.color))out.push({...p,color:t.color});}return out;
+}
+function sixDrop(grid){
+ const paths=new Map();let moved=true,passes=0;
+ while(moved){
+  moved=false;if(++passes>100)throw Error('Pyramid gravity failed to settle');
+  for(let r=SIX_ROWS-2;r>=0;r--){
+   const cols=Array.from({length:r+1},(_,c)=>c);if(passes%2===0)cols.reverse();
+   for(const c of cols){const t=grid[r][c];if(!t)continue;const options=[c,c+1].filter(n=>!grid[r+1][n]);if(!options.length)continue;
+    const dest=options.length===1?options[0]:options[(t.id+r)%2];
+    let path=paths.get(t.id);if(!path){path={id:t.id,tile:{...t},points:[[r,c]]};paths.set(t.id,path);}path.points.push([r+1,dest]);
+    grid[r+1][dest]=t;grid[r][c]=null;moved=true;
+   }
+  }
+ }
+ return [...paths.values()];
+}
+function sixPlan(input,numbers,{trace=false}={}){
+ const grid=sixClone(input),timeline=[],hit=[],used=new Set(numbers);let triangles=0,hexagons=0,chain=0,gain=0,removedCount=0;
+ const snapshot=()=>sixClone(grid);
+ const push=(phase,detail={},ms=400)=>{if(trace)timeline.push({phase,...detail,grid:snapshot(),ms});};
+ const remove=cells=>{const removed=[];for(const [r,c] of cells){const t=grid[r]?.[c];if(t){removed.push({r,c,tile:{...t}});grid[r][c]=null;}}removedCount+=removed.length;return removed;};
+ const drop=()=>{const moves=sixDrop(grid);if(moves.length)push('pyramidFall',{moves},motionReduced?80:Math.min(720,330+Math.max(...moves.map(m=>m.points.length-1))*46));};
+ for(let r=0;r<SIX_ROWS;r++)for(let c=0;c<=r;c++)if(grid[r][c]&&used.has(grid[r][c].number))hit.push([r,c]);
+ if(!hit.length){push('pyramidMiss',{},320);return {grid,timeline,gain,triangles,hexagons,chain,removedCount,hit:0,cleared:false};}
+ push('pyramidHit',{cells:hit},340);const broken=remove(hit);push('pyramidBreak',{removed:broken},330);drop();
+ for(;;){
+  const forms=sixFindShapes(grid);if(!forms.length)break;
+  if(++chain>9)throw Error('Pyramid cascade exceeded finite candy bound');
+  const nt=forms.filter(f=>f.type==='triangle').length,nh=forms.length-nt,multiplier=Math.min(5,1+(chain-1)*.5),award=Math.round((nt*50+nh*200)*multiplier);
+  const union=[...new Map(forms.flatMap(f=>f.cells).map(cell=>[sixKey(...cell),cell])).values()];
+  push('pyramidShape',{forms,chain,multiplier},600);
+  const removed=remove(union);triangles+=nt;hexagons+=nh;gain+=award;
+  push('pyramidAward',{forms,chain,multiplier,gain:award,triangles:nt,hexagons:nh,removed},award>=1000?1750:award>=300?1450:1150);
+  drop();
+ }
+ return {grid,timeline,gain,triangles,hexagons,chain,removedCount,hit:hit.length,cleared:grid.every(row=>row.every(t=>!t))};
+}
+class SixBallCandyEngine extends Engine{
  reset(){
-  this.kind='candy';this.drawMode='single';this.reachMode='single';this.version++;this.presentationRate=1;this.roundBet=this.roundBet||100;
+  this.kind='candy';this.gameName='シックスボールキャンディ';this.drawMode='single';this.reachMode='single';
+  this.version++;this.presentationRate=1;this.roundBet=this.roundBet||3000;
   this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
   this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
   this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;
   this.wonderCollected=false;this.wonderIssued=false;this.wonderToken=null;this.wonderColumn=0;this.pendingSugarAward=[];
   this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
-  this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.jars=[0,0,0,0,0];this.filled=[false,false,false,false,false];this.completedJars=0;this.partyAwarded=false;this.grandAwarded=false;this.roundCandies=0;this.rainbowHits=0;this.lastGain=0;this.lastNumber=0;this.fx=null;this.deck=[];
-  this.candyMessage='5色のキャンディをビンに集めよう！';this.emit('ready');
+  // Shared cookie-only helpers keep an empty rectangular compatibility board.
+  this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.pyramid=sixEmpty();this.initialPyramid=null;
+  this.triangles=0;this.hexagons=0;this.shapes=0;this.bestCascade=0;this.cascade=0;this.removedCandies=0;this.remainingCandies=55;this.pyramidCleared=false;this.lastGain=0;this.lastNumber=0;this.fx=null;
+  this.candyMessage='10段55個のキャンディから 図形をつくろう！';this.emit('ready');
  }
- makeDeck(){
-  const cards=[];for(let color=0;color<5;color++)for(const amount of [1,1,2,2,3])cards.push({color,amount,rainbow:false});
-  const magic=Math.floor(this.random()*5)*5;cards[magic]={color:-1,amount:1,rainbow:true};
-  for(let i=cards.length-1;i>0;i--){const j=Math.floor(this.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
-  return cards.map((v,i)=>({...v,number:i+1}));
- }
- start(){if(this.running||this.roundBet<=0)return;this.deck=this.makeDeck();this.running=true;this.opening=false;this.busy=false;this.candyMessage='番号にHIT → キャンディをビンへ！';this.emit('waiting');}
- plan(numbers){
-  const jars=[...this.jars],filled=[...this.filled],added=[],newly=[];let candies=0,rainbows=0;
-  for(const n of numbers){const card=this.deck[n-1];if(!card)continue;const colors=card.rainbow?[0,1,2,3,4]:[card.color];if(card.rainbow)rainbows++;
-   for(const color of colors){const amount=Math.min(card.amount,CARNIVAL_TARGET-jars[color]);if(amount>0){jars[color]+=amount;added.push({number:n,color,amount});candies+=amount;}}
+ makePyramid(){
+  const g=sixEmpty(),pool=Array.from({length:55},(_,i)=>i%25+1),colorCount=Math.max(3,Math.min(5,this.colorCount||5));
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(this.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  let at=0;
+  for(let r=0;r<SIX_ROWS;r++)for(let c=0;c<=r;c++){
+   const neighbors=[[r,c-1],[r-1,c-1],[r-1,c]].map(([y,x])=>g[y]?.[x]).filter(Boolean),prefer=neighbors.length&&this.random()<.72?neighbors[Math.floor(this.random()*neighbors.length)].color:Math.floor(this.random()*colorCount);
+   const tile={id:++this.uid,color:prefer,number:pool[at++]};g[r][c]=tile;
+   // Seed near-matches without an already completed payable shape before the first HIT.
+   const choices=[prefer,...Array.from({length:colorCount},(_,i)=>i).filter(n=>n!==prefer)];let ok=false;
+   for(const color of choices){tile.color=color;if(!sixFindShapes(g).length){ok=true;break;}}
+   if(!ok){for(let y=0;y<=r;y++)for(let x=0;x<=y;x++)if(g[y][x])g[y][x].color=(x+2*y)%colorCount;}
   }
-  for(let i=0;i<5;i++)if(!filled[i]&&jars[i]>=CARNIVAL_TARGET){filled[i]=true;newly.push(i);}
-  const count=filled.filter(Boolean).length,party=count>=3&&!this.partyAwarded,grand=count===5&&!this.grandAwarded;
-  return {jars,filled,count,added,newly,candies,rainbows,party,grand,gain:newly.length*50+(party?300:0)+(grand?1000:0)};
+  if(sixFindShapes(g).length)throw Error('Initial pyramid contains completed shapes');return g;
  }
- predict(number){if(this.drawn.has(number)||!this.deck.length)return null;const p=this.plan([number]);return {number,total:this.totalHundredths+p.gain,gain:p.gain,maxLink:0,chain:0,allClear:false,tier:reachTier(this.totalHundredths+p.gain,false),completed:p.count,grand:p.grand};}
+ start(){
+  if(this.running||this.roundBet<=0)return;this.pyramid=this.makePyramid();this.initialPyramid=sixClone(this.pyramid);this.running=true;this.opening=false;this.busy=false;
+  this.remainingCandies=55;this.candyMessage='入賞番号が消える → 落下して図形を作ろう！';this.emit('waiting');
+ }
+ reachSnapshot(){
+  return Object.assign(Object.create(SixBallCandyEngine.prototype),{pyramid:sixClone(this.pyramid),drawn:new Set(this.drawn),totalHundredths:this.totalHundredths,initialPyramid:!!this.initialPyramid});
+ }
+ predict(number){
+  if(!this.initialPyramid||this.drawn.has(number))return null;const p=sixPlan(this.pyramid,[number]);
+  return {number,total:this.totalHundredths+p.gain,gain:p.gain,maxLink:0,chain:p.chain,allClear:p.cleared,tier:reachTier(this.totalHundredths+p.gain,p.cleared),triangles:p.triangles,hexagons:p.hexagons};
+ }
  async drain(){
   if(this.busy)return;const token=this.version;this.busy=true;
   try{
    while(this.queue.length&&token===this.version){
-    const numbers=this.queue.shift(),plan=this.plan(numbers);for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}this.lastNumber=numbers.at(-1);this.lastGain=0;
-    this.fx={phase:'fly',numbers:[...numbers],plan,elapsed:0,stamp:null};this.candyMessage=plan.rainbows?'スターキャンディ！ すべてのビンに＋1！':'キャンディがビンへ飛んでいく！';this.emit('candyFly',{numbers,plan});
-    if(!await this.wait(650*this.speed,token))return;
-    this.jars=plan.jars;this.filled=plan.filled;this.completedJars=plan.count;this.roundCandies+=plan.candies;this.rainbowHits+=plan.rainbows;this.totalHundredths+=plan.gain;this.lastGain=plan.gain;
-    this.partyAwarded||=plan.party;this.grandAwarded||=plan.grand;
-    this.fx={phase:'award',numbers:[...numbers],plan,elapsed:0,stamp:null};
-    this.candyMessage=plan.grand?'GRAND CARNIVAL！ 5色コンプリート！':plan.party?'CANDY PARTY！ 3色完成ボーナス！':plan.newly.length?plan.newly.length+'本のビンが完成！':plan.candies?'あと少し！ キャンディを集めよう':'この色は完成済み・次の番号を待とう';
-    this.emit('candyAward',{numbers,plan,gain:plan.gain});if(!await this.wait((plan.grand?1550:plan.gain>=300?1300:plan.gain?1050:350)*this.speed,token))return;
-    this.processed+=numbers.length;this.fx=null;this.emit('settled',{numbers,candy:true,filled:this.completedJars});
+    const numbers=this.queue.shift();for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}this.lastNumber=numbers.at(-1);this.cascade=0;this.lastGain=0;
+    const plan=sixPlan(this.pyramid,numbers,{trace:true});
+    for(const stage of plan.timeline){
+     if(token!==this.version)return;this.pyramid=sixClone(stage.grid);this.remainingCandies=this.pyramid.flat().filter(Boolean).length;
+     this.fx={...stage,elapsed:0,stamp:null};this.cascade=stage.chain||this.cascade;
+     if(stage.phase==='pyramidHit')this.candyMessage=numbers.join('・')+'番 HIT！ 同じ番号のキャンディが消える！';
+     if(stage.phase==='pyramidMiss')this.candyMessage=numbers.join('・')+'番は消去済み・次の番号を待とう';
+     if(stage.phase==='pyramidFall')this.candyMessage='空いたところへ キャンディがころころ落下！';
+     if(stage.phase==='pyramidShape')this.candyMessage=(stage.forms.some(f=>f.type==='hexagon')?'HEXAGON':'TRIANGLE')+'！ '+stage.chain+'連鎖';
+     if(stage.phase==='pyramidAward'){
+      this.totalHundredths+=stage.gain;this.lastGain=stage.gain;this.triangles+=stage.triangles;this.hexagons+=stage.hexagons;this.shapes=this.triangles+this.hexagons;this.bestCascade=Math.max(this.bestCascade,stage.chain);
+      this.candyMessage=stage.chain+'連鎖！ 図形消去 → さらに落下';
+     }
+     this.emit(stage.phase,{numbers,...stage});if(!await this.wait(stage.ms*this.speed,token))return;
+    }
+    this.pyramid=sixClone(plan.grid);this.remainingCandies=this.pyramid.flat().filter(Boolean).length;this.removedCandies+=plan.removedCount;this.pyramidCleared=plan.cleared;
+    this.processed+=numbers.length;this.fx=null;this.candyMessage=plan.cleared?'PYRAMID CLEAR！ 全てのキャンディを消した！':'残り '+this.remainingCandies+'個・次の番号で図形をねらおう';
+    this.emit('settled',{numbers,candy:true,batchShapes:plan.triangles+plan.hexagons,batchChain:plan.chain,batchGain:plan.gain});
+    if(!await this.wait(200*this.speed,token))return;
    }
-   if(token!==this.version)return;this.busy=false;
+   if(token!==this.version)return;
    if(this.processed===8){
-    if(this.grandAwarded&&!this.wonderCollected){this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'carnival-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});}
-    this.running=false;this.candyMessage='完成 '+this.completedJars+'本！ 次のゲームは新しいキャンディで';this.emit('complete');
-   }else this.emit('waiting');
+    if(this.hexagons>0&&!this.wonderCollected){
+     this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'six-ball-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};
+     this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});if(!await this.wait(SUGAR_GET_WAIT*this.speed*(this.presentationRate||1),token))return;
+    }
+    this.busy=false;this.running=false;this.candyMessage='TRIANGLE '+this.triangles+' / HEXAGON '+this.hexagons+'・最大'+this.bestCascade+'連鎖';this.emit('complete');
+   }else {this.busy=false;this.emit('waiting');}
   }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
-function carnivalCandy(x,cx,cy,size,color=0,star=false,angle=0){
- x.save();x.translate(cx,cy);x.rotate(angle);const p=CARNIVAL_FLAVORS[(color+5)%5];x.lineJoin='round';
- if(star){const g=x.createLinearGradient(-size,-size,size,size);['#ff6393','#ffd54d','#73e3a7','#64cfff','#c08aff'].forEach((v,i)=>g.addColorStop(i/4,v));x.fillStyle=g;x.strokeStyle='#fff8d0';x.lineWidth=size*.16;x.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=size*(i%2?.48:1);i?x.lineTo(Math.cos(a)*r,Math.sin(a)*r):x.moveTo(Math.cos(a)*r,Math.sin(a)*r);}x.closePath();x.fill();x.stroke();}
- else{
-  x.fillStyle=p.light;x.strokeStyle=p.dark;x.lineWidth=Math.max(.7,size*.08);
-  for(const sign of [-1,1]){x.beginPath();x.moveTo(sign*size*.62,0);x.lineTo(sign*size*1.25,-size*.55);x.lineTo(sign*size*1.13,0);x.lineTo(sign*size*1.25,size*.55);x.closePath();x.fill();x.stroke();}
-  const g=x.createLinearGradient(0,-size,0,size);g.addColorStop(0,p.light);g.addColorStop(.35,p.color);g.addColorStop(1,p.dark);x.fillStyle=g;x.beginPath();x.ellipse(0,0,size*.85,size*.66,0,0,Math.PI*2);x.fill();x.stroke();
-  x.save();x.clip();x.strokeStyle='#fff9e9a0';x.lineWidth=size*.24;x.beginPath();x.moveTo(-size*.6,-size);x.lineTo(size*.1,size);x.moveTo(size*.15,-size);x.lineTo(size*.85,size);x.stroke();x.restore();
-  x.fillStyle='#ffffffb0';x.beginPath();x.ellipse(-size*.25,-size*.31,size*.3,size*.11,-.25,0,7);x.fill();
- }x.restore();
+// Preserve host integration entry points; the old bottle game is not instantiated.
+const CandyCarnivalEngine=SixBallCandyEngine;
+const sixSprites=new Map();
+function sixCandySprite(color){
+ if(sixSprites.has(color))return sixSprites.get(color);const p=SIX_COLORS[color],cv=document.createElement('canvas');cv.width=96;cv.height=96;const x=cv.getContext('2d');
+ const g=x.createRadialGradient(30,22,2,49,50,46);g.addColorStop(0,p.light);g.addColorStop(.34,p.color);g.addColorStop(1,p.dark);x.fillStyle=g;x.beginPath();x.arc(48,47,43,0,Math.PI*2);x.fill();x.strokeStyle=p.dark;x.lineWidth=3;x.stroke();
+ x.save();x.clip();x.strokeStyle='#fff8e66e';x.lineWidth=7;
+ if(color%3===0){x.beginPath();for(let i=0;i<100;i++){const a=i*.19,r=i*.48;i?x.lineTo(48+Math.cos(a)*r,47+Math.sin(a)*r):x.moveTo(48,47);}x.stroke();}
+ else if(color%3===1){for(let k=-60;k<140;k+=22){x.beginPath();x.moveTo(k,0);x.lineTo(k+90,96);x.stroke();}}
+ else{for(const r of [17,31,41]){x.beginPath();x.arc(48,47,r,0,7);x.stroke();}}
+ x.restore();x.fillStyle='#fff9e9bf';x.beginPath();x.ellipse(31,20,16,7,-.4,0,7);x.fill();x.strokeStyle='#fff8daaa';x.lineWidth=1.5;x.beginPath();x.arc(48,47,40,-2.9,-.6);x.stroke();sixSprites.set(color,cv);return cv;
+}
+function sixText(x,text,px,py,size,color='#fff1d6',align='center'){
+ x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#46294c';x.lineWidth=Math.max(1.2,size*.2);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);
+}
+function sixHull(points){
+ const list=points.map(p=>({...p})).sort((a,b)=>a.x-b.x||a.y-b.y),cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);if(list.length<3)return list;
+ const low=[],high=[];for(const p of list){while(low.length>1&&cross(low.at(-2),low.at(-1),p)<=0)low.pop();low.push(p);}for(const p of [...list].reverse()){while(high.length>1&&cross(high.at(-2),high.at(-1),p)<=0)high.pop();high.push(p);}return low.slice(0,-1).concat(high.slice(0,-1));
+}
+function sixShapeIcon(type){
+ const cells=type==='hexagon'?[[0,0],[0,1],[1,2],[2,2],[2,1],[1,0]]:[[0,1],[1,1],[1,2],[2,1],[2,2],[2,3]];
+ return '<svg viewBox="0 0 64 52" aria-hidden="true">'+cells.map(([r,c])=>'<circle cx="'+(12+(c-r/2)*16)+'" cy="'+(9+r*15)+'" r="7" fill="'+(type==='hexagon'?'#aa73e8':'#ee749d')+'" stroke="#fff4cd" stroke-width="2"/>').join('')+'</svg>';
 }
 function setupCarnivalSlot(s){
- if(s.candyCanvas)return;s.panel.classList.add('carnival-panel');s.tab.classList.add('carnival-tab');s.holder.classList.add('carnival-slot');
- s.tab.querySelector('.tab-game-name').innerHTML='<span class="carnival-tab-title">キャンディカーニバル<small>CANDY CARNIVAL</small></span>';s.tab.querySelector('.tab-game-name').setAttribute('aria-label','キャンディカーニバル');
- const wrap=document.createElement('div');wrap.className='carnival-surface';wrap.innerHTML='<div class="carnival-topline"><span>CANDY CARNIVAL</span><b>4個でビン完成</b></div><canvas class="carnival-canvas" width="640" height="640" role="img" aria-label="5色のキャンディをビンに集めるゲーム"></canvas><div class="carnival-status" role="status"></div><div class="carnival-reward" role="status" hidden></div>';
+ if(s.candyCanvas)return;s.panel.classList.add('carnival-panel','six-ball-panel');s.tab.classList.add('carnival-tab');s.holder.classList.add('carnival-slot');
+ s.tab.querySelector('.tab-game-name').innerHTML='<span class="carnival-tab-title">シックスボールキャンディ<small>SIX BALL CANDY</small></span>';s.tab.querySelector('.tab-game-name').setAttribute('aria-label','シックスボールキャンディ');
+ const wrap=document.createElement('div');wrap.className='carnival-surface six-ball-surface';wrap.innerHTML='<div class="carnival-topline"><span>SIX BALL CANDY</span><b>10段・55 CANDIES</b></div><canvas class="carnival-canvas" width="640" height="640" role="img" aria-label="10段55個のキャンディピラミッド"></canvas><div class="carnival-status" role="status"></div><div class="carnival-reward" role="status" hidden></div>';
  s.panel.append(wrap);s.candyCanvas=wrap.querySelector('canvas');s.candyCtx=s.candyCanvas.getContext('2d');s.candyStatus=wrap.querySelector('.carnival-status');s.candyReward=wrap.querySelector('.carnival-reward');
- const heading=document.createElement('div');heading.id='carnival-heading';heading.innerHTML='<strong>キャンディカーニバル<small>あつめて、そろえて、おかしのお祭り！</small></strong><span>COMPLETE <b id="carnival-complete">0</b> / 5</span>';document.querySelector('.festival-top').append(heading);
- const odds=document.createElement('div');odds.id='carnival-odds';odds.innerHTML='<div class="carnival-odds-title">CANDY REWARDS<small>試作版・仮配当</small></div><section><span>今回の獲得</span><b id="carnival-win">0</b><em>WIN</em></section><dl><dt>ビン1本完成</dt><dd>BET × 0.5</dd><dt>3色完成 PARTY</dt><dd>さらに BET × 3</dd><dt>5色コンプリート</dt><dd>さらに BET × 10</dd></dl><div class="carnival-sugar-goal">5色完成で<br><b>シュガーGET</b></div><p>入賞ごとに1〜3個GET<br>4個でその色のビン完成<br>★は全色に1個ずつ<br>あふれた分は加算なし</p><footer>ビンは1ゲームごとに更新<br>0 BETでは参加しません</footer>';$('odds-panel').append(odds);
+ const heading=document.createElement('div');heading.id='carnival-heading';heading.innerHTML='<strong>シックスボールキャンディ<small>ころがる、そろう、図形がつながる。</small></strong><span>SHAPES <b id="carnival-complete">0</b></span>';document.querySelector('.festival-top').append(heading);
+ const odds=document.createElement('div');odds.id='carnival-odds';odds.innerHTML='<div class="carnival-odds-title">SIX BALL REWARDS<small>試作版・仮配当</small></div><section><span>今回の獲得</span><b id="carnival-win">0</b><em>WIN</em></section><div class="six-shape-guide">'+sixShapeIcon('triangle')+'<span>トライアングル<small>同色6個・BET ×0.5</small></span></div><div class="six-shape-guide">'+sixShapeIcon('hexagon')+'<span>ヘキサゴン<small>同色6個の輪・BET ×2</small></span></div><div class="six-chain-guide">図形連鎖<br>×1 → ×1.5 → ×2…<br><small>最大×5・同時図形は合算</small></div><div class="carnival-sugar-goal">ヘキサゴン完成で<br><b>シュガーGET</b></div><p>番号HIT → 消去・落下<br>図形が完成 → 配当・消去<br>さらに落下して連鎖！</p><footer>途中補充なし・毎ゲーム55個<br>0 BETは参加なし</footer>';$('odds-panel').append(odds);
 }
 function carnivalEvent(s,ev,e,a){
  setupCarnivalSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;
- if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;invalidateReach(s);}
+ if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;s.candyLastDraw=0;invalidateReach(s);}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
- if(ev.phase==='candyFly'){s.candyReward.hidden=true;invalidateReach(s);if(s.i===active)sound('magic',{volume:.42});}
- if(ev.phase==='candyAward'){
+ if(ev.phase.startsWith('pyramid')){s.candyReward.hidden=true;invalidateReach(s);}
+ if(ev.phase==='pyramidAward'){
   const gain=ev.gain||0;s.candyReward.hidden=!gain;s.candyReward.dataset.tier=gain>=1000?'2':gain>=300?'1':'0';
-  if(gain){const title=ev.plan.grand?'GRAND CARNIVAL!':ev.plan.party?'CANDY PARTY!':'BOTTLE COMPLETE!';s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+num(gain/100)+' × BET</span>';if(s.i===active)sound('confirm',{volume:1});}
+  if(gain){const title=(ev.hexagons?'HEXAGON':'TRIANGLE')+(ev.triangles&&ev.hexagons?' + TRIANGLE':'');s.candyReward.innerHTML='<small>'+title+' · '+ev.chain+' CHAIN</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+num(gain/100)+' × BET</span>';if(s.i===active)sound('confirm',{volume:1});}
  }
- if(ev.phase==='settled')s.candyReward.hidden=true;
- if(['waiting','settled','complete'].includes(ev.phase))requestReach(s,e);
+ if(['pyramidBreak','pyramidAward'].includes(ev.phase)&&s.i===active)sound('crack',{volume:.75});
+ if(ev.phase==='pyramidShape'&&s.i===active)sound('magic',{volume:.6});
+ if(ev.phase==='settled'){
+  s.candyReward.hidden=true;clearMiniResult(s);
+  if(ev.batchShapes>0){s.miniLastResult=ev.batchShapes+' SHAPES · '+ev.batchChain+'連鎖';s.miniResult.innerHTML='<strong>'+ev.batchShapes+' SHAPES</strong><small>'+ev.batchChain+'連鎖</small>';s.miniResult.setAttribute('aria-label',s.miniLastResult);s.miniResultState={remaining:MINI_RESULT_MS,stamp:null,version:e.version};}
+ }
+ if(['waiting','settled','complete'].includes(ev.phase))requestReach(s,e,a);
  s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);
 }
 function carnivalQueueFrame(s){
  if(s.candyFrame||document.hidden||!inView)return;const version=s.engine.version;
  s.candyFrame=requestAnimationFrame(now=>{s.candyFrame=0;if(s.engine.version!==version)return;if(s.candyLastDraw&&now-s.candyLastDraw<32){carnivalQueueFrame(s);return;}s.candyLastDraw=now;drawCarnival(s,now);});
 }
-function carnivalText(x,text,px,py,size,color='#6f3e67',align='center'){
- x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#fff8ec';x.lineWidth=Math.max(1,size*.12);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);
-}
+const SIX_DEMO=Array.from({length:SIX_ROWS},(_,r)=>Array.from({length:r+1},(_,c)=>({id:r*10+c+1,number:0,color:(r+Math.floor(c/2))%5})));
 function drawCarnival(s,now=performance.now()){
  if(s.engine?.kind!=='candy')return;setupCarnivalSlot(s);const e=s.engine,x=s.candyCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready';
- if(!paused)s.candyTime=now;const time=s.candyTime||now;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
- const bg=x.createLinearGradient(0,0,320,320);bg.addColorStop(0,'#fff3da');bg.addColorStop(.45,'#ffe0ed');bg.addColorStop(1,'#c9f0ed');x.fillStyle=bg;x.fillRect(0,0,320,320);
- x.save();x.translate(160,107);for(let i=0;i<16;i++){x.rotate(Math.PI/8);x.fillStyle=i%2?'#fff9ec45':'#e5bcdf21';x.beginPath();x.moveTo(0,0);x.lineTo(-42,-350);x.lineTo(42,-350);x.closePath();x.fill();}x.restore();
- for(let i=0;i<16;i++){x.fillStyle=i%2?'#ec91b4':'#fff3de';x.fillRect(i*20,0,20,11);x.beginPath();x.ellipse(i*20+10,11,10,7,0,0,Math.PI);x.fill();}
- x.strokeStyle='#ba8e6f';x.lineWidth=1;x.beginPath();x.moveTo(7,29);x.quadraticCurveTo(160,70,313,29);x.stroke();
- for(let i=0;i<10;i++){const px=18+i*31,py=31+Math.sin(i/9*Math.PI)*14;x.fillStyle=CARNIVAL_FLAVORS[i%5].color;x.beginPath();x.moveTo(px,py);x.lineTo(px+15,py);x.lineTo(px+8,py+13);x.closePath();x.fill();}
- carnivalText(x,ready?'5色のビンをキャンディでいっぱいに！':e.grandAwarded?'GRAND CARNIVAL!':e.partyAwarded?'CANDY PARTY!':'COLLECT THE SWEETS',160,30,11);
- const cols=e.fx?.plan?.added.map(v=>v.color)||[];
- for(let c=0;c<5;c++){
-  const p=CARNIVAL_FLAVORS[c],px=13+c*61,full=e.filled[c],hot=cols.includes(c)&&e.fx?.phase==='award';
-  if(hot){x.fillStyle=p.color+'55';x.beginPath();x.ellipse(px+25,116,32,55,0,0,7);x.fill();}
-  x.fillStyle='#a8777940';x.beginPath();x.ellipse(px+26,165,27,6,0,0,7);x.fill();
-  const glass=x.createLinearGradient(px,0,px+52,0);glass.addColorStop(0,'#ffffffeb');glass.addColorStop(.24,p.light+'b5');glass.addColorStop(.66,'#ffffff70');glass.addColorStop(1,p.color+'70');
-  x.fillStyle=glass;x.strokeStyle=full?'#daa440':p.dark+'b5';x.lineWidth=full?2.5:1.7;x.beginPath();x.moveTo(px+13,74);x.lineTo(px+39,74);x.lineTo(px+39,85);x.quadraticCurveTo(px+51,89,px+51,102);x.lineTo(px+51,151);x.quadraticCurveTo(px+51,162,px+41,162);x.lineTo(px+11,162);x.quadraticCurveTo(px+1,162,px+1,151);x.lineTo(px+1,102);x.quadraticCurveTo(px+1,89,px+13,85);x.closePath();x.fill();x.stroke();
-  const lid=x.createLinearGradient(0,65,0,80);lid.addColorStop(0,'#fff4bf');lid.addColorStop(.5,'#dba756');lid.addColorStop(1,'#b9793b');x.fillStyle=lid;x.beginPath();x.roundRect(px+9,65,34,14,4);x.fill();x.strokeStyle='#a77d4e';x.lineWidth=1;x.stroke();
-  for(let k=0;k<4;k++){const cy=146-Math.floor(k/2)*24,cx=px+15+k%2*23;if(k<e.jars[c])carnivalCandy(x,cx,cy,9,c,false,(k%2?1:-1)*.25);else{x.fillStyle=p.color+'18';x.beginPath();x.arc(cx,cy,7,0,7);x.fill();}}
-  x.strokeStyle='#ffffffd9';x.lineWidth=3;x.beginPath();x.moveTo(px+8,103);x.lineTo(px+8,142);x.stroke();
-  carnivalText(x,CARNIVAL_FLAVORS[c].name,px+26,56,8,p.dark);carnivalText(x,full?'FULL!':e.jars[c]+' / 4',px+26,101,11,full?'#b77522':p.dark);
-  if(full)carnivalCandy(x,px+26,74,9,c,true,0);
+ if(!paused)s.candyTime=now;const time=s.candyTime||now,grid=ready?SIX_DEMO:e.pyramid,fx=e.fx;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
+ const bg=x.createLinearGradient(0,0,320,320);bg.addColorStop(0,'#342549');bg.addColorStop(.55,'#593954');bg.addColorStop(1,'#273b55');x.fillStyle=bg;x.fillRect(0,0,320,320);
+ // Confectionery display case: quiet background so 55 small numerals remain legible.
+ x.strokeStyle='#eec7a02b';x.lineWidth=1;for(let r=0;r<10;r++){const a=sixXY(r,0),b=sixXY(r,r);x.beginPath();x.moveTo(a.x-16,a.y+13);x.lineTo(b.x+16,b.y+13);x.stroke();}
+ x.fillStyle='#f6d9af';x.beginPath();x.roundRect(15,278,290,9,4);x.fill();x.fillStyle='#ac6c53';x.fillRect(21,287,278,5);
+ for(let i=0;i<11;i++){x.fillStyle=i%2?'#d287a8':'#ffdfac';x.beginPath();x.arc(20+i*28,6,13,0,Math.PI);x.fill();}
+ const progress=fx?(()=>{if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)*(e.presentationRate||1);fx.stamp=now;}else fx.stamp=null;return Math.min(1,fx.elapsed/Math.max(1,fx.ms));})():0;
+ const moving=new Map((fx?.phase==='pyramidFall'?fx.moves:[]).map(m=>[m.id,m]));
+ const lit=new Set((fx?.phase==='pyramidHit'?fx.cells:[]).map(v=>sixKey(...v)));
+ const shaped=new Set((fx?.forms||[]).flatMap(f=>f.cells).map(v=>sixKey(...v)));
+ const reaches=ready?[]:visibleReachResults(s,app),byNumber=new Map(reaches.map(p=>[p.number,p]));
+ for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){
+  const t=grid[r][c];if(!t)continue;let pos=sixXY(r,c);const m=moving.get(t.id);
+  if(m&&!motionReduced){const z=Math.min(m.points.length-1,progress*(m.points.length-1)),at=Math.min(m.points.length-2,Math.floor(z)),v=z-at,a=sixXY(...m.points[at]),b=sixXY(...m.points[at+1]);pos={x:a.x+(b.x-a.x)*v,y:a.y+(b.y-a.y)*v-2*Math.sin(Math.PI*v)};}
+  const pending=e.pendingDraws.has(t.number)||lit.has(sixKey(r,c)),reach=byNumber.get(t.number),shape=shaped.has(sixKey(r,c));
+  x.save();if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));
+  if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
+  x.drawImage(sixCandySprite(t.color),pos.x-13.6,pos.y-13.6,27.2,27.2);x.shadowBlur=0;
+  if(!ready){x.fillStyle='#442141b8';x.beginPath();x.ellipse(pos.x,pos.y+1,t.number>=10?10:7.5,7.7,0,0,7);x.fill();sixText(x,String(t.number),pos.x,pos.y+1,11.2,'#fffdf4');}
+  if(shape||pending||reach){x.strokeStyle=shape?'#fff6b3':pending?'#fff9e7':reach.tier>=2?'#f0a2ff':'#fff3b6';x.lineWidth=shape?2.3:1.5;x.beginPath();x.arc(pos.x,pos.y,14,0,Math.PI*2);x.stroke();}x.restore();
  }
- x.fillStyle='#fff6e4';x.strokeStyle='#dab78e';x.lineWidth=1;x.beginPath();x.roundRect(10,169,300,18,8);x.fill();x.stroke();
- carnivalText(x,ready?'番号の配置はゲーム開始時に決定':e.completedJars+'色完成  /  3色でPARTY・5色でGRAND',160,178,8);
- for(let n=1;n<=25;n++){
-  const c=(n-1)%5,r=Math.floor((n-1)/5),px=11+c*60,py=193+r*24,card=e.deck[n-1],known=!ready&&card,used=e.drawn.has(n),hot=e.fx?.numbers?.includes(n),p=CARNIVAL_FLAVORS[known&&card.color>=0?card.color:(n-1)%5];
-  x.globalAlpha=used&&!hot?.42:1;x.fillStyle=known?(card.rainbow?'#fff0c9':p.light):'#fff5e9';x.strokeStyle=hot?'#fffdf0':known?p.color:'#d5b9b1';x.lineWidth=hot?2.5:1;x.beginPath();x.roundRect(px,py,56,21,6);x.fill();x.stroke();
-  carnivalCandy(x,px+28,py+10,6,known?card.color:c,!!(known&&card.rainbow),0);carnivalText(x,ready?'?':String(n),px+10,py+10,10,used?'#886b83':p.dark);
-  carnivalText(x,known?(card.rainbow?'★':'×'+card.amount):'',px+45,py+11,7);x.globalAlpha=1;
- }
- if(e.fx){const fx=e.fx;if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)/(e.speed||1)*(e.presentationRate||1);fx.stamp=now;}else fx.stamp=null;
-  if(fx.phase==='fly'){const t=motionReduced?1:Math.min(1,fx.elapsed/650),ease=1-Math.pow(1-t,3);for(const v of fx.plan.added)for(let k=0;k<v.amount;k++){const sx=39+(v.number-1)%5*60,sy=203+Math.floor((v.number-1)/5)*24,tx=39+v.color*61,ty=120-k*10;const px=sx+(tx-sx)*ease+Math.sin(t*Math.PI)*(k-1)*12,py=sy+(ty-sy)*ease-Math.sin(t*Math.PI)*48;carnivalCandy(x,px,py,9,v.color,false,t*2+k);}}
-  else if(fx.plan.gain){const t=Math.min(1,fx.elapsed/1300);for(let i=0;i<24;i++){const a=i*2.399+fx.numbers[0],radius=35+t*110,px=160+Math.cos(a)*radius,py=104+Math.sin(a)*radius*.55+t*t*45;x.globalAlpha=1-t;carnivalCandy(x,px,py,4+i%3,i%5,i%4===0,a+t);}x.globalAlpha=1;}
- }
- if(!bet){x.fillStyle='#40304a8f';x.fillRect(0,0,320,320);carnivalText(x,'0 BET',160,112,28,'#fff6df');carnivalText(x,'BETしてキャンディを集めよう',160,142,12,'#fff6df');}
- s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
- s.candyStatus.textContent=!bet?'0 BET・参加していません':ready?'1球ごとにGET！ 4個でビンが完成':e.candyMessage;
- s.candyCanvas.setAttribute('aria-label','キャンディのビン '+e.jars.map((n,i)=>CARNIVAL_FLAVORS[i].name+' '+n+'/4').join('、')+'。完成'+e.completedJars+'本');
- if(e.fx&&!paused&&!jpcSession.active)carnivalQueueFrame(s);
+ if(fx?.phase==='pyramidShape'){
+  for(const form of fx.forms){const hull=sixHull(form.cells.map(v=>sixXY(...v)));x.save();x.strokeStyle=form.type==='hexagon'?'#f3beff':'#ffec98';x.fillStyle=form.type==='hexagon'?'#be7bff28':'#ffe06c28';x.shadowColor=x.strokeStyle;x.shadowBlur=12;x.lineWidth=3;x.beginPath();hull.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();x.fill();x.stroke();x.restore();}
+  sixText(x,(fx.forms.some(f=>f.type==='hexagon')?'HEXAGON':'TRIANGLE')+'  '+fx.chain+' CHAIN',160,23,12);
+ }else sixText(x,ready?'同色6個で TRIANGLE / HEXAGON':e.bestCascade?'BEST '+e.bestCascade+' CHAIN':'SWEET SHAPE PUZZLE',160,23,9.5,'#ffe9c3');
+ if(fx?.removed&&progress<.75&&!motionReduced){const t=Math.min(1,progress/.75);x.save();x.globalAlpha=1-t;for(const v of fx.removed){const p=sixXY(v.r,v.c);for(let k=0;k<4;k++){const a=v.tile.id*.7+k*Math.PI/2;x.save();x.translate(p.x+Math.cos(a)*t*24,p.y+Math.sin(a)*t*20+t*t*19);x.rotate(a+t*2);x.fillStyle=SIX_COLORS[v.tile.color].light;x.beginPath();x.moveTo(-3,-4);x.lineTo(5,-2);x.lineTo(2,5);x.lineTo(-4,2);x.closePath();x.fill();x.restore();}}x.restore();}
+ sixText(x,'△ '+e.triangles+'   ⬡ '+e.hexagons,16,307,11,'#ffdfb1','left');sixText(x,'残り '+(ready?55:e.remainingCandies)+' / 55',304,307,10,'#e3d9ff','right');
+ if(!bet){x.fillStyle='#231b3ba8';x.fillRect(0,0,320,320);sixText(x,'0 BET',160,140,29);sixText(x,'BETして キャンディを落とそう',160,172,11);}
+ s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
+ s.candyCanvas.setAttribute('aria-label','シックスボールキャンディ・'+(ready?'10段55個のピラミッド':e.remainingCandies+'個残り、トライアングル'+e.triangles+'個、ヘキサゴン'+e.hexagons+'個、最大'+e.bestCascade+'連鎖'));
+ s.candyStatus.textContent=!bet?'0 BET・このゲームは参加しません':ready?'番号HIT → 落下 → 図形完成で配当！':e.candyMessage;
+ if((fx||e.pendingDraws.size)&&!paused&&!jpcSession.active)carnivalQueueFrame(s);
 }
 function carnivalHud(a){
- const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','キャンディカーニバル・完成'+e.completedJars+'本・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
- if(active===2){put('carnival-complete',e.completedJars);put('carnival-win',num(medalWin(a.bet(2),e.totalHundredths)));}
- const key=[e.version,e.phase,e.processed,e.totalHundredths,a.bet(2),active].join('/');if(s.candyKey!==key){s.candyKey=key;carnivalQueueFrame(s);}
+ const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;const selected=active===2;document.body.classList.toggle('carnival-active',selected);
+ s.tab.setAttribute('aria-label','シックスボールキャンディ・図形'+e.shapes+'個・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
+ if(selected){put('carnival-complete',e.shapes);fitGoldenNumber($('carnival-win'),num(medalWin(a.bet(2),e.totalHundredths)),23,80);}
+ const key=[e.version,e.phase,e.processed,e.remainingCandies,e.totalHundredths,a.bet(2),s.reachEpoch,s.reachStatus,a.paused,e.pendingDraws.size].join('/');if(s.candyKey!==key){s.candyKey=key;carnivalQueueFrame(s);}
 }
 
 class Arcade{
@@ -3750,7 +3878,7 @@ const hammerCountMarkup=(colors,concealed=false)=>{
 };
 
 function sugarStatus(e,bet){
- if(e.kind==='candy')return {tier:bet>0?sugarVisualTier(e.wonderToken||bet):0,value:bet>0?(e.wonderToken?.value||bet):0,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'5色完成報酬',detail:'全5色のビン完成で獲得'};
+ if(e.kind==='candy')return {tier:bet>0?sugarVisualTier(e.wonderToken||bet):0,value:bet>0?(e.wonderToken?.value||bet):0,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'ヘキサゴン報酬',detail:'ヘキサゴン完成で獲得・1ゲーム1個'};
  if(e.kind==='choco')return {tier:sugarVisualTier(e.wonderToken||Math.max(1,bet)),value:bet>0?(e.wonderToken?.value||bet):0,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'深度報酬',detail:e.nextSugar+'m到達で獲得'};
  const basket=e.basketState[e.wonderColumn],token=e.wonderToken,value=bet>0?projectedSugarValue(e,bet):0,tier=bet>0?sugarVisualTier(token||value):0;
  return {tier,value,label:bet<=0?'0 BET・出現なし':e.wonderCollected?'獲得済':'未獲得',detail:e.wonderCollected?'価値 '+num(token?.value||0):e.wonderIssued?(basket.pending.length?'番号なしマス待ち':'盤面に出現中'):'第'+(e.wonderColumn+1)+'列 · あと'+basket.remaining};
@@ -4081,7 +4209,7 @@ function requestReach(s,e,a=app){
  const context=reachContext(e,a);
  if(!context||a.bet(s.i)<=0){if(s.reachStatus!=='inactive'){invalidateReach(s);s.reachStatus='inactive';}return;}
  const key=context.key;if(s.reachBoardKey===key)return;
- const snapshot=e.kind==='candy'?Object.assign(Object.create(CandyCarnivalEngine.prototype),{deck:e.deck.map(c=>({...c})),jars:[...e.jars],filled:[...e.filled],drawn:new Set(e.drawn),partyAwarded:e.partyAwarded,grandAwarded:e.grandAwarded,totalHundredths:e.totalHundredths}):copyReachState(e);
+ const snapshot=e.kind==='candy'?e.reachSnapshot():copyReachState(e);
  const numbers=Array.from({length:25},(_,i)=>i+1).filter(n=>!context.used.has(n));
  const epoch=(s.reachEpoch||0)+1;s.reachEpoch=epoch;s.reachBoardKey=key;s.reachStatus='pending';s.reachResults=[];s.tabReachResults=[];
  let index=0;const results=[];
@@ -4339,7 +4467,7 @@ function renderRoundResult(a){
  }
  if(layer.dataset.round!==String(a.token)){
   layer.dataset.round=String(a.token);
-  $('result-games').innerHTML=a.engines.map((e,i)=>'<div class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4][i]+'"/></svg><strong class="result-game-name">'+(e.kind==='choco'?'ショコラディグ':e.kind==='candy'?'キャンディカーニバル':'クッキーリンク')+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?(e.kind==='choco'?e.depth+' m / ＋'+e.roundDepth+' m':e.kind==='candy'?e.completedJars+' / 5 色完成':e.maxLink+' LINK'):'—')+'</span><span>'+(a.enabled[i]?(e.kind==='choco'?e.roundBlocks+'個掘削 · 宝箱'+e.roundChests+'個':e.kind==='candy'?e.roundCandies+'個GET'+(e.grandAwarded?' · GRAND':e.partyAwarded?' · PARTY':''):e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-direct-jpc="'+isDirectJpcSugar(e.wonderToken)+'" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
+  $('result-games').innerHTML=a.engines.map((e,i)=>'<div class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4][i]+'"/></svg><strong class="result-game-name">'+(e.kind==='choco'?'ショコラディグ':e.kind==='candy'?'シックスボールキャンディ':'クッキーリンク')+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?(e.kind==='choco'?e.depth+' m / ＋'+e.roundDepth+' m':e.kind==='candy'?e.triangles+' TRIANGLE / '+e.hexagons+' HEXAGON':e.maxLink+' LINK'):'—')+'</span><span>'+(a.enabled[i]?(e.kind==='choco'?e.roundBlocks+'個掘削 · 宝箱'+e.roundChests+'個':e.kind==='candy'?'最大'+e.bestCascade+'連鎖 · 残り'+e.remainingCandies+'個':e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-direct-jpc="'+isDirectJpcSugar(e.wonderToken)+'" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
   for(const el of $('result-games').querySelectorAll('.result-value'))fitGoldenNumber(el,num(Number(el.dataset.value)),26,94);
   for(const el of $('result-games').querySelectorAll('.sugar-gem'))applySugarTier(el,sugarVisualTier({value:Number(el.dataset.value),directJpc:el.dataset.directJpc==='true'}));
   fitResultTotal(a);

@@ -129,14 +129,14 @@ class SixBallCandyEngine extends Engine{
     this.emit('settled',{numbers,candy:true,batchShapes:plan.triangles+plan.hexagons,batchChain:plan.chain,batchGain:plan.gain});
     if(!await this.wait(200*this.speed,token))return;
    }
-   if(token!==this.version)return;this.busy=false;
+   if(token!==this.version)return;
    if(this.processed===8){
     if(this.hexagons>0&&!this.wonderCollected){
      this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'six-ball-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};
      this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});if(!await this.wait(SUGAR_GET_WAIT*this.speed*(this.presentationRate||1),token))return;
     }
-    this.running=false;this.candyMessage='TRIANGLE '+this.triangles+' / HEXAGON '+this.hexagons+'・最大'+this.bestCascade+'連鎖';this.emit('complete');
-   }else this.emit('waiting');
+    this.busy=false;this.running=false;this.candyMessage='TRIANGLE '+this.triangles+' / HEXAGON '+this.hexagons+'・最大'+this.bestCascade+'連鎖';this.emit('complete');
+   }else {this.busy=false;this.emit('waiting');}
   }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }

@@ -37,7 +37,7 @@ with sync_playwright() as p:
  check(!q.sixFindShapes(stamp([[9,0],[9,1],[9,2],[9,3],[9,4],[9,5]],1)).length,'Arbitrary six-candy line awarded');
  check(q.SIX_PATTERNS.every(f=>f.cells.length===6&&f.cells.every(([r,c])=>r>=0&&r<10&&c>=0&&c<=r)),'Invalid template boundary');
  const grav=q.sixEmpty();grav[0][0]={id:100,number:1,color:0};grav[3][1]={id:101,number:2,color:1};grav[8][5]={id:102,number:3,color:2};const moves=q.sixDrop(grav);
- check(count(grav)===3&&new Set(grav.flat().filter(Boolean).map(t=>t.id)).size===3,'Gravity lost/duplicated candies');check(grav[9].filter(Boolean).length===3,'Candies did not reach floor');check(moves.every(m=>m.points.slice(1).every(([r,c],i)=>r===m.points[i][0]+1&&(c===m.points[i][1]||c===m.points[i][1]+1))),'Gravity teleported instead of adjacent roll');check(!q.sixDrop(grav).length,'Gravity not idempotent');
+ check(count(grav)===3&&new Set(grav.flat().filter(Boolean).map(t=>t.id)).size===3,'Gravity lost/duplicated candies');check(grav.every((row,r)=>row.every((t,c)=>!t||r===9||(grav[r+1][c]&&grav[r+1][c+1]))),'Candy stopped without floor or two supports');check(moves.every(m=>m.points.slice(1).every(([r,c],i)=>r===m.points[i][0]+1&&(c===m.points[i][1]||c===m.points[i][1]+1))),'Gravity teleported instead of adjacent roll');check(!q.sixDrop(grav).length,'Gravity not idempotent');
  // Find a deterministic multistep fixture; no test relies on renderer timing or live randomness.
  let fixture=null,fixturePlan=null;
  for(let seed=1;seed<=300&&!fixture;seed++){
