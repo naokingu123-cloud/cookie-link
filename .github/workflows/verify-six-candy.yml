@@ -1,0 +1,36 @@
+name: Verify Six Candy original PNG game and Pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - 'assets/six-candy*'
+      - 'assets/six-candy-png/**'
+      - '.github/tests/six_candy_staggered*'
+      - .github/tests/six_candy_public.py
+      - .github/workflows/verify-six-candy.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify motion, role priority and number allocation
+        run: SIX_SEEDS=2 node .github/tests/six_candy_staggered.cjs
+      - name: Install isolated browser verification
+        run: |
+          pip install playwright >/tmp/six-browser-install.log 2>&1
+          python3 -m playwright install --with-deps chromium >>/tmp/six-browser-install.log 2>&1 || { tail -60 /tmp/six-browser-install.log; exit 1; }
+      - name: Verify mobile, desktop, scoring and audio cancellation
+        run: python3 .github/tests/six_candy_staggered_browser.py
+      - name: Verify the existing public Pages deployment
+        run: python3 .github/tests/six_candy_public.py
+      - name: Retain previews and deployment report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-candy-verified-pages
+          path: qa-six-staggered/
+          retention-days: 3
