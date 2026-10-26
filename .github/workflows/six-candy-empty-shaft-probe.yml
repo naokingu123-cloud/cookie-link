@@ -1,0 +1,38 @@
+name: Inspect Six Candy unsupported cells
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/six-candy-empty-shaft-probe.yml']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find stable states with empty supports
+        run: |
+          node <<'JS'
+          const fs=require('fs'),vm=require('vm');
+          const src=fs.readFileSync('assets/six-candy-rounds-engine.js','utf8');
+          const q=vm.runInNewContext(src.slice(0,src.indexOf('class SixBallCandyEngine'))+';({sixEmpty,sixClone,sixPoint,sixDrop,sixFallOptions,sixMakeBoard,sixMotionPoint,sixPathClear})',{motionReduced:false});
+          const rng=seed=>{let s=seed;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296}};
+          const picture=g=>g.map((row,r)=>' '.repeat(g.length-r-1)+row.map(t=>t?'O':'.').join(' ')).join('\n');
+          const report={boards:0,unsupported:0,lastGap:0,lowerOccupied:0,clearShaft:0};let shown=0;
+          for(const rows of [7,8,9,10])for(let seed=1;seed<=150;seed++){
+            const random=rng(seed*987+rows),g=q.sixMakeBoard(rows,5,random).grid;
+            for(let r=0;r<rows;r++)for(let c=0;c<=r;c++)if(random()<.35)g[r][c]=null;
+            const before=q.sixClone(g);q.sixDrop(g);
+            for(let r=0;r<rows-1;r++)for(let c=0;c<=r;c++)if(g[r][c]&&!g[r+1][c]&&!g[r+1][c+1]){
+              report.unsupported++;const kind=r===rows-2?'lastGap':g[r+2][c+1]?'lowerOccupied':'clearShaft';report[kind]++;
+              if(shown++<8)console.log('FLOATING_FIXTURE',JSON.stringify({rows,seed,cell:[r,c],kind,options:q.sixFallOptions(g,r,c),initial:picture(before),settled:picture(g)}));
+            }
+            report.boards++;
+          }
+          console.log('INDEPENDENT_SUPPORT_AUDIT',JSON.stringify(report));
+          const g=q.sixEmpty(7);let id=0;
+          // Three candies spanning a two-cell gap: middle has no supporting candy.
+          for(const [r,c] of [[5,1],[5,2],[5,3],[6,1],[6,4]])g[r][c]={id:++id,color:id%5,number:id};
+          const original=picture(g),fall=q.sixDrop(g,{trace:true});console.log('MINIMAL_BRIDGE',JSON.stringify({initial:original,settled:picture(g),frames:fall.steps.length}));
+          JS
