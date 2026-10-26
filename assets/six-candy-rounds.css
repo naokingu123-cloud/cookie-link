@@ -11,17 +11,19 @@
 #carnival-heading strong.six-candy-wordmark{font-size:21px;line-height:25px}
 #carnival-heading strong small{color:#9e5c85;letter-spacing:.8px}
 #carnival-heading>span{font-size:10px}
-#carnival-odds{gap:3px;padding:5px 4px;background:linear-gradient(#fff9ec,#ffe4f0)}
+#carnival-odds{padding:4px;background:linear-gradient(#fff9ec,#ffe4f0)}
+.carnival-active #carnival-odds{gap:1px}
 #carnival-odds .carnival-odds-title{font-size:8px;line-height:11px;padding-bottom:2px}
 #carnival-odds .carnival-odds-title small{font-size:6px;line-height:9px}
 #carnival-odds section{padding:1px}
-.six-pay-track{display:flex;align-items:center;gap:2px;min-height:37px;border-bottom:1px dashed #dba4c0;padding:2px 0;box-sizing:border-box}
-.six-pay-track svg{width:27px;height:29px;flex:none}
-.six-pay-track>span{display:block;flex:1;font:900 7.7px/10px system-ui;text-align:left;white-space:nowrap}
-.six-pay-track small{display:block;font:700 6.6px/10px system-ui;color:#a06f90;letter-spacing:-.2px}
-.six-pay-track b{display:block;font:900 8.8px/12px system-ui;color:#ba4984}
-.six-clear-bonus{padding:3px 1px;border:1px solid #e3aa52;border-radius:8px;background:linear-gradient(120deg,#fff4b5,#ffd3d8);font:900 8px/11px system-ui;color:#a65549}
-.six-clear-bonus b{display:block;font:1000 16px/18px ArcadePayout,system-ui;color:#a34d9e;text-shadow:0 1px #fff8c5}
+#carnival-win{font-size:22px;line-height:26px}
+.six-pay-track{display:flex;align-items:center;gap:2px;min-height:32px;border-bottom:1px dashed #dba4c0;padding:1px 0;box-sizing:border-box;flex-shrink:0}
+.six-pay-track svg{width:25px;height:25px;flex:none}
+.six-pay-track>span{display:block;flex:1;font:900 7.7px/9px system-ui;text-align:left;white-space:nowrap}
+.six-pay-track small{display:block;font:700 6.6px/9px system-ui;color:#a06f90;letter-spacing:-.2px}
+.six-pay-track b{display:block;font:900 8.8px/11px system-ui;color:#ba4984}
+.six-clear-bonus{padding:2px 1px;border:1px solid #e3aa52;border-radius:8px;background:linear-gradient(120deg,#fff4b5,#ffd3d8);font:900 8px/10px system-ui;color:#a65549}
+.six-clear-bonus b{display:block;font:1000 16px/17px ArcadePayout,system-ui;color:#a34d9e;text-shadow:0 1px #fff8c5}
 #carnival-odds .carnival-sugar-goal{margin-top:0;padding:2px;font-size:7px;line-height:10px}
 #carnival-odds .carnival-sugar-goal b{font-size:9px;line-height:12px}
 #carnival-odds p{font-size:6.4px;line-height:9px;margin:0}
