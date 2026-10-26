@@ -3274,6 +3274,7 @@ class SixBallCandyEngine extends Engine{
  }
  start(){if(this.running||this.roundBet<=0)return;this.newBoard();this.running=true;this.opening=false;this.busy=false;this.candyMessage='Round '+this.roundIndex+'・番号HITでキャンディを落とそう';this.emit('waiting');}
  reachSnapshot(){return Object.assign(Object.create(SixBallCandyEngine.prototype),{pyramid:sixClone(this.pyramid),drawn:new Set(this.drawn),totalHundredths:this.totalHundredths,initialPyramid:!!this.initialPyramid,rows:this.rows,boardGeneration:this.boardGeneration,roundIndex:this.roundIndex,clearedRounds:new Set(this.clearedRounds)});}
+ async waitVisual(ms,token){let remaining=ms/this.speed;while(remaining>0&&token===this.version){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.version;}
  predict(number){
   if(!this.initialPyramid||this.drawn.has(number))return null;
   const p=sixPlan(this.pyramid,[number]),bonus=p.advance&&!this.clearedRounds.has(this.roundIndex)?sixRoundClearBonus(this.roundIndex):0,gain=p.gain+bonus;
@@ -3293,7 +3294,7 @@ class SixBallCandyEngine extends Engine{
      if(stage.phase==='pyramidShape')this.candyMessage=stage.forms.length?'役が完成！ '+stage.chain+'連鎖':'4個以上つながった！ '+stage.chain+'連鎖';
      if(stage.phase==='pyramidAward'){this.totalHundredths+=stage.gain;this.lastGain=stage.gain;this.triangles+=stage.triangles;this.hexagons+=stage.hexagons;this.lines+=stage.lines;this.shapes=this.triangles+this.hexagons+this.lines;this.bestCascade=Math.max(this.bestCascade,stage.chain);}
      if(stage.phase==='pyramidAllClear'){this.totalHundredths+=SIX_PAY.allClear;this.lastGain=SIX_PAY.allClear;this.allClears++;this.candyMessage='ALL CLEAR！ 100倍ボーナス！';}
-     this.emit(stage.phase,{numbers,...stage});const visualCritical=stage.phase==='pyramidFall'||stage.phase==='pyramidShape';const stageWait=visualCritical?stage.ms:plan.advance&&stage.phase!=='pyramidAllClear'?Math.min(stage.ms,360):stage.phase==='pyramidAllClear'&&plan.advance?Math.min(stage.ms,700):stage.ms;if(!await this.wait(stageWait*this.speed,token))return;
+     this.emit(stage.phase,{numbers,...stage});const visualCritical=stage.phase==='pyramidFall'||stage.phase==='pyramidShape'||stage.phase==='pyramidBreak';const stageWait=visualCritical?stage.ms:plan.advance&&stage.phase!=='pyramidAllClear'?Math.min(stage.ms,360):stage.phase==='pyramidAllClear'&&plan.advance?Math.min(stage.ms,700):stage.ms;if(!await (visualCritical?this.waitVisual(stageWait*this.speed,token):this.wait(stageWait*this.speed,token)))return;
     }
     this.pyramid=sixClone(plan.grid);this.remainingCandies=sixCount(this.pyramid);this.removedCandies+=plan.removedCount;this.pyramidCleared=plan.cleared;this.processed+=numbers.length;this.fx=null;
     if(plan.advance&&!this.clearedRounds.has(this.roundIndex)){this.clearedRounds.add(this.roundIndex);this.roundsCleared++;this.currentClearBonus=sixRoundClearBonus(this.roundIndex);this.clearBonusHundredths+=this.currentClearBonus;this.totalHundredths+=this.currentClearBonus;}
@@ -3759,7 +3760,7 @@ class Arcade{
    const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;
   }
   if(token!==this.token||this.phase!=='playing'||remaining>0)return;
-  this.fastForward=true;for(const e of this.engines)e.presentationRate=e.kind==='candy'?1:3;this.onChange(this);
+  this.fastForward=true;for(const e of this.engines)e.presentationRate=3;this.onChange(this);
  }
  finishRound(){
   if(this.phase!=='playing')return;
