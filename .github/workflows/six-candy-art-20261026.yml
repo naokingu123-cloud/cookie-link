@@ -1,4 +1,4 @@
-name: Verify Six Candy artwork integration
+name: Verify Six Candy artwork integration (accessible title fix)
 on:
   push:
     branches: [main]
