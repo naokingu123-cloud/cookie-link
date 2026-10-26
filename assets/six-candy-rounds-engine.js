@@ -3,13 +3,13 @@
  * Actual Nintendo gravity implementation is unpublished; this model checks swept circle
  * clearance, rolls around a support, and resolves fall frames bottom-up without teleporting.
  */
-const SIX_ROWS=10,SIX_SQRT3_2=Math.sqrt(3)/2;
+const SIX_ROWS=8,SIX_SQRT3_2=Math.sqrt(3)/2;
 const SIX_COLORS=[
  {name:'いちご',light:'#ffcbdc',color:'#f34c86',dark:'#a22353'},
  {name:'レモン',light:'#fff6b1',color:'#f6cc32',dark:'#aa741b'},
- {name:'ミント',light:'#cbffe4',color:'#44c695',dark:'#247e60'},
  {name:'ソーダ',light:'#d2f5ff',color:'#43bde8',dark:'#286ba9'},
- {name:'ぶどう',light:'#efdcff',color:'#b77bea',dark:'#71369d'}
+ {name:'ぶどう',light:'#efdcff',color:'#b77bea',dark:'#71369d'},
+ {name:'ミント',light:'#cbffe4',color:'#44c695',dark:'#247e60'}
 ];
 const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:6000};
 const sixEmpty=(rows=SIX_ROWS)=>Array.from({length:rows},(_,r)=>Array(r+1).fill(null));
@@ -17,7 +17,7 @@ const sixClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
 const sixKey=(r,c)=>r*16+c;
 const sixCount=g=>g.reduce((n,row)=>n+row.filter(Boolean).length,0);
 const sixPoint=(r,c)=>({x:c-r/2,y:r*SIX_SQRT3_2});
-function sixLayout(rows=10){const step=Math.min(40,256/(rows-1));return {step,top:270-(rows-1)*step*SIX_SQRT3_2,radius:step*.47};}
+function sixLayout(rows=8){const step=Math.min(40,256/(rows-1));return {step,top:270-(rows-1)*step*SIX_SQRT3_2,radius:step*.50};}
 function sixXY(r,c,rows=10){const l=sixLayout(rows);return {x:160+(c-r/2)*l.step,y:l.top+r*l.step*SIX_SQRT3_2};}
 function sixNeighbors(r,c){return [[r,c-1],[r,c+1],[r-1,c-1],[r-1,c],[r+1,c],[r+1,c+1]];}
 const sixPatternCache=new Map();
@@ -229,19 +229,19 @@ function sixMakeBoard(rows,colorCount,random,firstId=0){
 }
 class SixBallCandyEngine extends Engine{
  reset(){
-  this.kind='candy';this.gameName='シックスキャンディ';this.drawMode='single';this.reachMode='single';this.rows=[7,8,9,10].includes(this.rows)?this.rows:10;
+  this.kind='candy';this.gameName='シックスキャンディ';this.drawMode='single';this.reachMode='single';this.rows=[7,8,9,10].includes(this.rows)?this.rows:8;
   this.version++;this.presentationRate=1;this.roundBet=this.roundBet||3000;this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
   this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;this.transitionPending=false;
   this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;
   this.wonderCollected=false;this.wonderIssued=false;this.wonderToken=null;this.wonderColumn=0;this.pendingSugarAward=[];
   this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
   this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.pyramid=sixEmpty(this.rows);this.initialPyramid=null;
-  this.roundIndex=1;this.roundsCleared=0;this.sixColorCount=5;this.boardGeneration=0;
+  this.roundIndex=1;this.roundsCleared=0;this.sixColorCount=4;this.boardGeneration=0;
   this.triangles=0;this.hexagons=0;this.lines=0;this.shapes=0;this.bestCascade=0;this.cascade=0;this.removedCandies=0;this.remainingCandies=this.rows*(this.rows+1)/2;this.pyramidCleared=false;this.lastGain=0;this.lastNumber=0;this.fx=null;
   this.candyMessage='役をそろえて次のRoundへ！';this.emit('ready');
  }
  setRows(rows){if(this.running||![7,8,9,10].includes(rows))return false;this.rows=rows;this.reset();return true;}
- colorsForRound(n){return Math.min(this.colorCount||5,n>=5?3:n>=3?4:5);}
+ colorsForRound(n){return Math.min(this.colorCount||5,n>=3?3:4);}
  newBoard(){
   this.sixColorCount=this.colorsForRound(this.roundIndex);const made=sixMakeBoard(this.rows,this.sixColorCount,this.random,this.uid);this.uid=made.lastId;this.pyramid=made.grid;this.initialPyramid=sixClone(this.pyramid);this.boardGeneration++;this.remainingCandies=sixCount(this.pyramid);this.pyramidCleared=false;
  }
