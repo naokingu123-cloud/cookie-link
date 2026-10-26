@@ -1,4 +1,4 @@
-name: Verify Six Candy Round v4 and public Pages
+name: Verify Six Candy Stage v5 and public Pages
 on:
   push:
     branches: [main]
@@ -6,10 +6,10 @@ on:
       - index.html
       - 'assets/six-candy*'
       - 'assets/six-candy-png/**'
-      - '.github/tests/six_rounds_v4*'
+      - '.github/tests/six_stage_v5*'
       - .github/tests/run_with_system_chrome.py
       - .github/workflows/verify-six-candy.yml
-      - docs/six-v4-release.md
+      - docs/six-v5-release.md
 permissions:
   contents: read
 jobs:
@@ -18,32 +18,28 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Verify symmetric gaps, trajectories, palettes and payouts
+      - name: Verify symmetric gaps, motion and retained payouts
         run: node .github/tests/six_rounds_v4.cjs
-      - name: Prepare browser without an unbounded system package install
+      - name: Prepare browser
         run: |
           timeout 120 python3 -m pip install --disable-pip-version-check --timeout 20 playwright
-          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
           if [ -n "$CHROME_PATH" ]; then
-            "$CHROME_PATH" --version
             echo "SIX_BROWSER_EXECUTABLE=$CHROME_PATH" >> "$GITHUB_ENV"
           else
             timeout 150 python3 -m playwright install chromium
           fi
-      - name: Prepare Japanese glyphs for faithful screenshots
-        run: |
           mkdir -p "$HOME/.local/share/fonts"
-          curl --fail --location --max-time 75 --retry 1 'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/Japanese/NotoSansCJKjp-Regular.otf' --output "$HOME/.local/share/fonts/NotoSansCJKjp-Regular.otf"
+          curl --fail --location --max-time 75 'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/Japanese/NotoSansCJKjp-Regular.otf' --output "$HOME/.local/share/fonts/NotoSansCJKjp-Regular.otf"
           fc-cache -f "$HOME/.local/share/fonts"
-          fc-match 'Noto Sans CJK JP'
-      - name: Verify original PNG, mobile, desktop, bonuses, sugar and audio
-        run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_rounds_v4_browser.py
-      - name: Verify the existing public Pages deployment
-        run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_rounds_v4_public.py
-      - name: Retain browser evidence and deployment hashes
+      - name: Verify tutorial isolation, transitions and mobile/desktop layouts
+        run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_browser.py
+      - name: Verify the real public Pages site and automatic BET start
+        run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_public.py
+      - name: Retain screenshots and deployment hashes
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: six-candy-v4-verified-pages
-          path: qa-six-v4/
+          name: six-stage-v5-verified-pages
+          path: qa-six-v5/
           retention-days: 3
