@@ -238,3 +238,11 @@
 - 未検証: iPhone実機、スピーカー聴感、自然物理8球の全軌道。公開確認は別の読み取り専用workflowで行う。
 - 今後も修正/検証/main保存/既存Pages公開確認まで実施。直接Git通信が失敗してもGitHub連携で差分blobを送れる。ActionsのGITHUB_TOKENはworkflow変更をpushできないため、workflow更新/削除は接続済みGitHubツールで行い、Actionsでは検証済みゲームだけを保存する。
 - 最新index.html blob: `ac55547cf7b3db0d6e68f757b7d84e2592fe684c`。検証: docs/six-rounds-v4-verification.json。
+
+
+## 2026-10-26 — Stage v5: 待機説明・キャンディ枠・Round切替
+- BET待機中は本番盤面を作らず18秒の4場面で番号HIT/4連結と連鎖/形役とNEXT ROUND/シュガーと全消しを例示。小盤面も同じ説明。本番番号はSTART時だけ配置。説明はゲーム乱数/配当/番号を変更しない。
+- 元PNG由来キャンディを組み合わせたWebP枠。35単位のキャンディ直径を維持。前/現在/次Roundを盤面外の上部左へ集約し、上部右に全消しWIN。右の3列リールは32px行・実WIN値・キャンディ図だけ。全Round一覧/重複ロゴを除去。
+- 通常消去/役の演出を強化。静止中は中心/半径固定で微小回転と光沢。Round進展では残りの飴を弾き飛ばし、新盤面を上から1段ずつ、下段から積み上げる。これは描画のみで全消し配当を発生させない。切替中の番号は待機列で保持し、再配置完了後に処理。リセットで取消。
+- ルール/他2ゲーム/3D/音声ホストの不変比較、既存ルール・ブラウザ検証、説明の本番状態/RNG非干渉、全行入場終点、切替中の番号保持、リセット取消を検証。iPhone実機・聴感・自然物理8球通しは未検証。公開確認は別workflow。
+- 編集元 assets/six-candy-stage.js/.css、rounds-ui.js、rounds-engine.js。バンドルとindex.htmlへ組込。検証 docs/six-stage-v5-verification.json。

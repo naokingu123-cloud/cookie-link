@@ -2104,6 +2104,35 @@ body.carnival-active #carnival-odds{display:flex;flex-direction:column;box-sizin
 .six-bonus-list{display:grid;grid-template-columns:1fr 1fr;gap:1px;flex:none}.six-bonus-list span{height:11px;box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;padding:0 2px;border-radius:3px;background:#fff5e5;font:800 6px/10px system-ui;color:#945779}.six-bonus-list span.current{outline:1px solid #ef9a3e;background:#ffeeb1}.six-bonus-list span.cleared{background:#ffd8ab}.six-bonus-list b{font-size:6px}.six-next{display:block;margin-top:4px;font:1000 13px/18px system-ui;color:#cb356e}.six-ball-surface .carnival-reward{z-index:5;max-width:90%}
 @media(prefers-reduced-motion:reduce){.six-role-reel{transition:none}}
 
+/* v5: the 35-unit candies and 312-unit board keep their size. */
+body.carnival-active #carnival-heading{display:grid!important;grid-template-columns:172px 1fr;gap:7px;padding:0;width:430px;height:52px;color:#a03973}
+#carnival-heading .six-round-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;min-width:0;margin:0}
+#carnival-heading .six-round-card{height:50px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;border:1px solid #edb783;border-radius:9px;background:linear-gradient(#fff5df,#ffe4ef);box-shadow:0 2px #bb7091}
+#carnival-heading .six-round-card small{font:900 6px/8px system-ui;letter-spacing:.3px}
+#carnival-heading .six-round-card>b{font:1000 17px/19px system-ui;color:#b23877}
+#carnival-heading .six-round-card em{font:900 7.5px/11px system-ui;font-style:normal;white-space:nowrap;color:#89456a}
+#carnival-heading .six-round-card.current{border:2px solid #ef879e;background:linear-gradient(#fff4a6,#ffcae0);box-shadow:0 2px #ac417b,inset 0 0 0 2px #fff1c0}
+#carnival-heading .six-round-card.disabled{opacity:.35}
+.six-allclear-banner{display:grid;grid-template-columns:1fr auto;align-content:center;column-gap:5px;text-align:center;border:3px solid #ffd478;border-radius:15px;background:linear-gradient(120deg,#fff6ba,#ffc9e2,#f7d0ff);box-shadow:0 2px #a65792,inset 0 0 0 1px #fffde0;color:#bd3982;padding:3px 8px;box-sizing:border-box;min-width:0}
+.six-allclear-banner strong{grid-column:1/3;font:1000 10px/11px system-ui;white-space:nowrap}
+.six-allclear-banner b{font:1000 28px/29px ArcadePayout,system-ui;text-align:right;color:#ffa63d;-webkit-text-stroke:.6px #b55254;paint-order:stroke fill;text-shadow:0 1px #fff8cc}
+.six-allclear-banner em{font:1000 12px/28px system-ui;font-style:normal;align-self:end;color:#c23c80}
+.six-allclear-banner.celebrate{box-shadow:0 0 16px #fff28d,inset 0 0 0 2px #fff7cc}
+body.carnival-active #carnival-odds{gap:4px;padding:3px;overflow:hidden}
+#carnival-odds .six-role-tables{flex:1;min-height:0;gap:2px}
+#carnival-odds .six-role{display:flex;flex-direction:column;min-width:0}
+#carnival-odds .six-role-head{height:40px;min-height:40px;background:linear-gradient(#fff1df,#ffd2ea)}
+#carnival-odds .six-role-head canvas{width:100%;height:30px;object-fit:contain;display:block}
+#carnival-odds .six-role-window{height:auto;min-height:0;flex:1}
+#carnival-odds .six-role-row{height:32px;position:relative;gap:1px;line-height:9px}
+#carnival-odds .six-role-row span{font:800 7px/8px system-ui;color:#9e7391}
+#carnival-odds .six-role-row b{font:1000 10px/11px ArcadePayout,system-ui;white-space:nowrap;color:#a72f73}
+#carnival-odds .six-role-row em{font:900 6px/7px system-ui;font-style:normal;color:#9e7391}
+#carnival-odds .six-role-row.chosen{background:linear-gradient(#fffba2,#ffcf8a);box-shadow:inset 0 0 0 1px #f19a4c}
+.six-ball-surface{border-width:1px!important;border-color:#f5ba8c!important;box-shadow:none!important;border-radius:12px!important}
+.six-special-award{border-color:#ffe291!important;background:linear-gradient(125deg,#fff6ba,#ffc5e6,#e7c0ff)!important;box-shadow:0 4px #a54b84,0 0 0 2px #fff0b8,0 0 20px #fff3a9!important}
+@media(prefers-reduced-motion:reduce){.six-role-reel{transition:none!important}}
+
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -3255,8 +3284,14 @@ class SixBallCandyEngine extends Engine{
     }
     if(!await this.wait((plan.chain||plan.advance?MINI_RESULT_MS:150)*this.speed,token))return;
     if(this.transitionPending){
-     this.fx={phase:'pyramidRound',nextRound:this.roundIndex+1,elapsed:0,stamp:null,ms:900,clearBonus:this.currentClearBonus,roundIndex:this.roundIndex};this.emit('pyramidRound',{nextRound:this.roundIndex+1,clearBonus:this.currentClearBonus,roundIndex:this.roundIndex});if(!await this.wait(900*this.speed,token))return;
-     this.roundIndex++;this.newBoard();this.fx={phase:'pyramidReady',elapsed:0,stamp:null,ms:400};this.candyMessage='Round '+this.roundIndex+'・'+this.sixColorCount+'色にチャレンジ！';this.emit('pyramidReady');if(!await this.wait(400*this.speed,token))return;
+     const outgoing=sixClone(this.pyramid),nextRound=this.roundIndex+1,sweepMs=(motionReduced?140:760)*this.speed;
+     this.fx={phase:'pyramidSweep',grid:outgoing,roundIndex:this.roundIndex,nextRound,elapsed:0,stamp:null,ms:sweepMs};
+     this.candyMessage='ROUND CLEAR!';this.emit('pyramidSweep',{nextRound});
+     if(!await this.wait(sweepMs,token))return;
+     this.roundIndex++;this.newBoard();const refillMs=(motionReduced?140:480+(this.rows-1)*96)*this.speed;
+     this.fx={phase:'pyramidRefill',grid:sixClone(this.pyramid),roundIndex:this.roundIndex,elapsed:0,stamp:null,ms:refillMs};
+     this.candyMessage='Round '+this.roundIndex+' START';this.emit('pyramidRefill',{roundIndex:this.roundIndex});
+     if(!await this.wait(refillMs,token))return;
      this.fx=null;this.transitionPending=false;this.emit('settled',{numbers,candy:true,newBoard:true});
     }
    }
@@ -3459,18 +3494,19 @@ function sixCandyAudio(kind,amount=1){
 
 function carnivalEvent(s,ev,e,a){
  setupCarnivalSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;
- if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;s.candyLastDraw=0;s.candyClockStamp=null;s.sixFallSoundFx=null;invalidateReach(s);}
+ if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;s.candyLastDraw=0;s.candyClockStamp=null;s.sixFallSoundFx=null;s.sixRefillFx=null;s.candyTime=0;invalidateReach(s);}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
- if(ev.phase.startsWith('pyramid')){s.candyReward.hidden=true;s.candyReward.classList.remove('six-round-callout');invalidateReach(s);}
+ if(ev.phase.startsWith('pyramid')){s.candyReward.hidden=true;s.candyReward.classList.remove('six-round-callout','six-special-award');invalidateReach(s);}
  if(['pyramidAward','pyramidAllClear','pyramidRoundBonus'].includes(ev.phase)&&ev.gain>0){
-  const gain=ev.gain;s.candyReward.hidden=false;s.candyReward.dataset.tier=gain>=1000?'2':gain>=300?'1':'0';
+  const gain=ev.gain;s.candyReward.hidden=false;s.candyReward.classList.add('six-special-award');s.candyReward.dataset.tier=gain>=1000?'2':gain>=300?'1':'0';
   const title=ev.phase==='pyramidAllClear'?'ALL CLEAR BONUS':ev.phase==='pyramidRoundBonus'?'ROUND '+ev.roundIndex+' CLEAR BONUS':[ev.lines?'直線 ×'+ev.lines:'',ev.triangles?'トライアングル ×'+ev.triangles:'',ev.hexagons?'ヘキサゴン ×'+ev.hexagons:''].filter(Boolean).join(' / ');
   const remain=e.processed+(ev.numbers?.length||0)<8,advance=e.roundIndex<8&&remain;
-  s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+num(gain/100)+' × BET</span><b class="six-next">'+(advance?'NEXT ROUND '+(e.roundIndex+1)+' 進出':e.roundIndex===8?'ALL ROUNDS CLEAR':'ROUND CLEAR')+'</b>';if(s.i===active)sound('confirm',{volume:1});
+  s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+ (ev.chain?ev.chain+' CHAIN':'') +'</span><b class="six-next">'+(advance?'NEXT ROUND '+(e.roundIndex+1)+' 進出':e.roundIndex===8?'ALL ROUNDS CLEAR':'ROUND CLEAR')+'</b>';if(s.i===active)sound('confirm',{volume:1});
  }
  if(ev.phase==='pyramidRound'){clearMiniResult(s);s.candyReward.hidden=false;s.candyReward.classList.add('six-round-callout');s.candyReward.dataset.tier='1';s.candyReward.innerHTML='<small>NEXT ROUND</small><strong>Round '+ev.nextRound+'</strong>';}
  if(['pyramidBreak','pyramidAward'].includes(ev.phase)&&ev.removed?.length&&s.i===active)sixCandyAudio('break');
  if(ev.phase==='pyramidFall'&&motionReduced&&s.i===active)sixCandyAudio('fall',ev.moves?.length||1);
+ if(ev.phase==='pyramidSweep'&&s.i===active)sound('magic',{volume:.35});
  if(ev.phase==='pyramidShape'&&s.i===active)sound('magic',{volume:.6});
  if(ev.phase==='settled'){if(!ev.advance)s.candyReward.hidden=true;clearMiniResult(s);if(ev.batchChain>0||ev.batchShapes>0){s.miniLastResult=(ev.batchShapes||0)+'役 · '+(ev.batchChain||0)+'連鎖';s.miniResult.innerHTML='<strong>'+(ev.batchShapes||0)+' SHAPES</strong><small>'+(ev.batchChain||0)+'連鎖</small>';s.miniResultState={remaining:MINI_RESULT_MS,stamp:null,version:e.version};}}
  if(['waiting','settled','complete'].includes(ev.phase))requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);
@@ -3486,39 +3522,43 @@ function sixFallFrame(fx,progress){
 function drawCarnival(s,now=performance.now()){
  if(s.engine?.kind!=='candy')return;setupCarnivalSlot(s);const e=s.engine,x=s.candyCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready',rows=e.rows,layout=sixLayout(rows),fx=e.fx;
  if(s.candyClockStamp==null)s.candyClockStamp=now;if(!paused)s.candyTime=(s.candyTime||0)+Math.min(100,Math.max(0,now-s.candyClockStamp));s.candyClockStamp=now;const time=s.candyTime||0;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
+ if(ready){sixDrawTutorial(s,time,bet);if(!paused&&!jpcSession.active)carnivalQueueFrame(s);return;}s.candyCanvas.dataset.mode='playing';
  const progress=fx?(()=>{if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)*(e.presentationRate||1);fx.stamp=now;}else fx.stamp=null;return Math.min(1,fx.elapsed/Math.max(1,fx.ms));})():0;
- const fall=fx?.phase==='pyramidFall'?sixFallFrame(fx,motionReduced?1:progress):null,grid=ready?sixDemo(rows,1):fall?.grid||e.pyramid,moving=new Map((fall?.moves||[]).map(m=>[m.id,m]));
+ const sweep=fx?.phase==='pyramidSweep',refill=fx?.phase==='pyramidRefill',transition=sweep||refill;
+ const fall=fx?.phase==='pyramidFall'?sixFallFrame(fx,motionReduced?1:progress):null,grid=transition?fx.grid:fall?.grid||e.pyramid,moving=new Map((fall?.moves||[]).map(m=>[m.id,m]));
  if(fall&&!paused&&!motionReduced&&s.i===active){
   if(s.sixFallSoundFx!==fx){s.sixFallSoundFx=fx;s.sixFallSoundIndex=-1;}
   const landed=fall.progress>=.82?fall.index:fall.index-1;
   if(landed>s.sixFallSoundIndex){s.sixFallSoundIndex=landed;sixCandyAudio('fall',fall.moves.length);}
  }
+ if(refill&&!paused&&!motionReduced&&s.i===active){const landed=Math.min(rows-1,Math.floor((progress*(480+(rows-1)*96)-400)/96));if(s.sixRefillFx!==fx){s.sixRefillFx=fx;s.sixRefillRow=-1;}if(landed>s.sixRefillRow){s.sixRefillRow=landed;sixCandyAudio('fall',2);}}
  x.drawImage(sixArtBackdrop(rows),0,0,320,320);
  const lit=new Set((fx?.phase==='pyramidHit'?fx.cells:[]).map(p=>sixKey(...p))),shaped=new Set((fx?.forms||[]).flatMap(f=>f.cells).map(p=>sixKey(...p))),byNumber=new Map((ready?[]:visibleReachResults(s,app)).map(p=>[p.number,p]));
  for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){
   const t=grid[r][c];if(!t)continue;let pos=sixXY(r,c,rows);const m=moving.get(t.id);
   if(m&&!motionReduced){const p=sixMotionPoint(m,fall.progress);pos={x:160+p.x*layout.step,y:layout.top+p.y*layout.step};}
-  const pending=t.number!=null&&(e.pendingDraws.has(t.number)||lit.has(sixKey(r,c))),reach=t.number!=null?byNumber.get(t.number):null,shape=shaped.has(sixKey(r,c)),radius=layout.radius;
-  x.save();if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
+  const pose=sixTransitionPose(fx,r,c,t,rows,progress,motionReduced);if(!pose.visible)continue;if(transition)pos={x:pose.x,y:pose.y};
+  const pending=!transition&&t.number!=null&&(e.pendingDraws.has(t.number)||lit.has(sixKey(r,c))),reach=t.number!=null?byNumber.get(t.number):null,shape=shaped.has(sixKey(r,c)),radius=layout.radius;
+  x.save();x.globalAlpha=pose.alpha;if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
   const candyR=radius;
   // Keep centres and outer radii fixed so resting candies stay in contact.
   // Only the bitmap rocks while rolling; the number remains upright.
   x.save();x.translate(pos.x,pos.y);
+  if(transition){x.rotate(pose.rotation);x.scale(pose.scale,pose.scale);}else if(!m&&!motionReduced)x.rotate(Math.sin(time/1400+t.id*.53)*.016);
   if(m&&!motionReduced){const a=sixPoint(...m.from,rows),b=sixPoint(...m.to,rows);x.rotate(Math.sign(b.x-a.x||((t.id&1)?1:-1))*.22*Math.sin(Math.PI*fall.progress));}
   x.drawImage(sixArtCandySprite(t.color,ready?1:e.roundIndex,!!t.sugar),-candyR,-candyR,candyR*2,candyR*2);x.restore();
-  if(!motionReduced&&!m&&!paused){x.fillStyle='rgba(255,255,245,'+(.12+.11*(.5+.5*Math.sin(time/1050+t.id*2.1)))+')';x.beginPath();x.ellipse(pos.x-radius*.32,pos.y-radius*.42,radius*.16,radius*.07,-.55,0,Math.PI*2);x.fill();}
+  if(!motionReduced&&!m&&!paused&&!transition){x.fillStyle='rgba(255,255,245,'+(.12+.11*(.5+.5*Math.sin(time/1050+t.id*2.1)))+')';x.beginPath();x.ellipse(pos.x-radius*.32,pos.y-radius*.42,radius*.16,radius*.07,-.55,0,Math.PI*2);x.fill();}
   x.shadowBlur=0;
   if(t.sugar){const img=getSugarSprite(wonderTier(bet));if(img)x.drawImage(img,pos.x-radius*.75,pos.y-radius*.75,radius*1.5,radius*1.5);}
-  if(e.roundIndex===8&&!motionReduced){const spark=.5+.5*Math.sin(time/350+t.id*2.4);x.globalAlpha*=spark;sixArtStar(x,pos.x+radius*.55,pos.y-radius*.55,1.4+spark*2,'#fff','#fff');x.globalAlpha=1;}
+  if(e.roundIndex===8&&!motionReduced&&!transition){const spark=.5+.5*Math.sin(time/350+t.id*2.4);x.globalAlpha*=spark;sixArtStar(x,pos.x+radius*.55,pos.y-radius*.55,1.4+spark*2,'#fff','#fff');x.globalAlpha=1;}
   if(!ready&&t.number!=null)sixPaintCandyNumber(x,t.number,pos.x,pos.y+1,radius);
   if(shape||pending||reach){x.strokeStyle=shape?'#fff6b3':pending?'#fff9e7':reach.tier>=2?'#f0a2ff':'#fff3b6';x.lineWidth=shape?2.3:1.5;x.beginPath();x.arc(pos.x,pos.y,radius,0,Math.PI*2);x.stroke();}x.restore();
  }
- if(fx?.phase==='pyramidShape')for(const form of fx.forms){const points=form.cells.map(p=>sixXY(...p,rows));x.save();x.strokeStyle=form.type==='hexagon'?'#edb3ff':form.type==='line'?'#83f5ef':'#ffec98';x.shadowColor=x.strokeStyle;x.shadowBlur=12;x.lineWidth=3;x.beginPath();if(form.type==='line'){x.moveTo(points[0].x,points[0].y);x.lineTo(points.at(-1).x,points.at(-1).y);}else{sixHull(points).forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();}x.stroke();x.restore();}
- if(fx?.removed&&progress<.75&&!motionReduced){const t=Math.min(1,progress/.75);x.save();x.globalAlpha=1-t;for(const v of fx.removed){const p=sixXY(v.r,v.c,rows);for(let k=0;k<4;k++){const a=v.tile.id*.7+k*Math.PI/2;x.save();x.translate(p.x+Math.cos(a)*t*24,p.y+Math.sin(a)*t*20+t*t*19);x.rotate(a+t*2);x.fillStyle='#fff3cc';x.beginPath();x.moveTo(-3,-4);x.lineTo(5,-2);x.lineTo(2,5);x.lineTo(-4,2);x.closePath();x.fill();x.restore();}}x.restore();}
+ sixStageEffects(x,fx,progress,e.roundIndex,rows,motionReduced);
  if(!bet){x.fillStyle='#231b3ba8';x.fillRect(0,0,320,320);sixText(x,'0 BET',160,140,29);sixText(x,'BETして キャンディを落とそう',160,172,11);}
  s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
  s.candyCanvas.setAttribute('aria-label','シックスキャンディ・Round '+e.roundIndex+'、'+rows+'段、'+e.remainingCandies+'個、ヘキサゴン'+e.hexagons+'、トライアングル'+e.triangles+'、直線'+e.lines);
- sixReachPresentation(s,ready?[]:visibleReachResults(s,app),grid,ready);
+ sixReachPresentation(s,transition?[]:visibleReachResults(s,app),grid,transition);
  s.candyStatus.textContent=!bet?'0 BET・このゲームは参加しません':ready?'1〜25は各1個・空白も使って役を作ろう！':e.candyMessage;
  if((fx||e.pendingDraws.size||(!motionReduced&&bet))&&!paused&&!jpcSession.active)carnivalQueueFrame(s);
 }
@@ -3529,6 +3569,119 @@ function carnivalHud(a){
  for(const el of s.sixOdds.querySelectorAll('.six-round-card')){const offset=Number(el.dataset.offset),r=e.roundIndex+offset,valid=r>=1&&r<=8;el.classList.toggle('current',offset===0);el.classList.toggle('disabled',!valid);el.querySelector('b').textContent=valid?r:'—';el.querySelector('em').textContent=valid?'+'+(sixRoundClearBonus(r)/100).toFixed(1)+'×':'';const sugar=el.querySelector('.six-round-sugar');sugar.hidden=!valid||e.sugarRound!==r||e.wonderCollected;if(!sugar.hidden)applySugarTier(sugar,wonderTier(a.bet(2)));}
  s.sixOdds.querySelector('.six-bonus-total b').textContent=(e.clearBonusHundredths/100).toFixed(1)+'×';s.sixOdds.querySelectorAll('.six-bonus-list span').forEach(el=>{el.classList.toggle('current',Number(el.dataset.round)===e.roundIndex);el.classList.toggle('cleared',e.clearedRounds.has(Number(el.dataset.round)));});
  const key=[e.version,e.phase,e.processed,e.roundIndex,e.boardGeneration,e.totalHundredths,e.clearBonusHundredths,a.bet(2),s.reachEpoch,s.reachStatus,a.paused,e.pendingDraws.size].join('/');if(s.candyKey!==key){s.candyKey=key;carnivalQueueFrame(s);}
+}
+
+/* Six Candy presentation v5: no gameplay RNG, no scoring, no board mutation. */
+const SIX_STAGE_VERSION='bet-guide-stage-v5',SIX_TUTORIAL_DURATION=18000;
+const sixV4Setup=setupCarnivalSlot,sixV4Backdrop=sixArtBackdrop;
+const sixFrameImage=new Image(),sixFrameState={loaded:false,error:false};
+sixFrameImage.onload=()=>{sixFrameState.loaded=true;try{slots[2].candyKey='';carnivalQueueFrame(slots[2]);}catch{}};
+sixFrameImage.onerror=()=>{sixFrameState.error=true;};
+sixFrameImage.src='assets/six-candy-png/frame.webp?v=stage-v5';
+sixArtBackdrop=function(rows){return sixFrameState.loaded?sixFrameImage:sixV4Backdrop(rows);};
+setupCarnivalSlot=function(s){
+ sixV4Setup(s);if(s.sixStageSetup)return;s.sixStageSetup=true;
+ const heading=$('carnival-heading'),cards=s.sixOdds.querySelector('.six-round-cards'),banner=document.createElement('div');
+ banner.className='six-allclear-banner';banner.innerHTML='<strong>ALL CLEAR BONUS</strong><b></b><em>WIN</em>';
+ heading.replaceChildren(cards,banner);s.sixHeading=heading;
+ cards.querySelectorAll('.six-round-card').forEach(el=>{const n=Number(el.dataset.offset);el.querySelector('small').textContent=n<0?'PREV':n===0?'NOW':'NEXT';});
+ s.sixOdds.querySelectorAll('.six-clear-bonus,.six-round-rail,.six-bonus-total,.six-bonus-list').forEach(el=>el.remove());
+ for(const [role,label] of [['line','直線'],['triangle','トライアングル'],['hexagon','ヘキサゴン']]){
+  const col=s.sixOdds.querySelector('[data-role="'+role+'"]');col.setAttribute('aria-label',label);col.querySelector('.six-role-head').innerHTML='<canvas width="120" height="80" aria-hidden="true"></canvas>';
+  col.querySelectorAll('.six-role-row').forEach(row=>{const em=document.createElement('em');em.textContent='WIN';row.append(em);});
+ }
+ s.candyCanvas.dataset.version=SIX_STAGE_VERSION;
+};
+carnivalHud=function(a){
+ const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;setupCarnivalSlot(s);document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','シックスキャンディ・Round '+e.roundIndex+'・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
+ const bet=a.bet(2);fitGoldenNumber($('carnival-win'),num(medalWin(bet,e.totalHundredths)),23,100);
+ const artKey=e.roundIndex+'/'+sixCandyPngState.loaded;
+ for(const [role,count] of [['line',e.lines],['triangle',e.triangles],['hexagon',e.hexagons]]){
+  const col=s.sixOdds.querySelector('[data-role="'+role+'"]');
+  if(col.dataset.art!==artKey){col.dataset.art=artKey;sixDrawRoleIcon(col.querySelector('canvas'),role,e.roundIndex);}
+  if(col.dataset.bet!==String(bet)){col.dataset.bet=String(bet);col.querySelectorAll('.six-role-row').forEach(row=>{const v=num(medalWin(bet,Number(row.dataset.count)*SIX_PAY[role])),b=row.querySelector('b');b.textContent=v;b.style.fontSize=(v.length>6?7:v.length>5?8:10)+'px';});}
+  if(col.dataset.count!==String(count)){col.dataset.count=String(count);col.querySelector('.six-role-reel').style.transform='translateY('+(-Math.max(0,count-2)*32)+'px)';col.querySelectorAll('.six-role-row').forEach(row=>row.classList.toggle('chosen',Number(row.dataset.count)===count));}
+ }
+ for(const el of s.sixHeading.querySelectorAll('.six-round-card')){const offset=Number(el.dataset.offset),r=e.roundIndex+offset,valid=r>=1&&r<=8;el.classList.toggle('current',offset===0);el.classList.toggle('disabled',!valid);el.querySelector('b').textContent=valid?'R'+r:'—';el.querySelector('em').textContent=valid?num(medalWin(bet,sixRoundClearBonus(r)))+' WIN':'';const sugar=el.querySelector('.six-round-sugar');sugar.hidden=!valid||e.sugarRound!==r||e.wonderCollected;if(!sugar.hidden)applySugarTier(sugar,wonderTier(bet));}
+ const banner=s.sixHeading.querySelector('.six-allclear-banner');banner.querySelector('b').textContent=num(medalWin(bet,SIX_PAY.allClear));banner.classList.toggle('celebrate',e.phase==='pyramidAllClear');
+ const key=[e.version,e.phase,e.processed,e.roundIndex,e.boardGeneration,e.totalHundredths,e.clearBonusHundredths,bet,s.reachEpoch,s.reachStatus,a.paused,e.pendingDraws.size].join('/');if(s.candyKey!==key){s.candyKey=key;carnivalQueueFrame(s);}
+};
+function sixTransitionPose(fx,r,c,t,rows,p,reduced=false){
+ const pos=sixXY(r,c,rows),out={...pos,alpha:1,rotation:0,scale:1,visible:true};
+ if(fx?.phase==='pyramidSweep'){
+  if(reduced)return {...out,alpha:1-p,visible:p<1};
+  const dx=pos.x-160,dy=pos.y-164,a=Math.atan2(dy||-1,dx||.1),d=520*p*p;
+  return {x:pos.x+Math.cos(a)*d,y:pos.y+Math.sin(a)*d-55*p,alpha:Math.max(0,1-Math.max(0,p-.65)/.35),rotation:(t.id%2?1:-1)*(3+t.id%4)*p,scale:1-.12*p,visible:p<1};
+ }
+ if(fx?.phase==='pyramidRefill'){
+  if(reduced)return {...out,alpha:p,visible:p>0};
+  const age=p*(480+(rows-1)*96)-(rows-1-r)*96;
+  if(age<0)return {...out,visible:false};
+  const q=Math.min(1,age/400),bounce=age>400&&age<480?-Math.sin((age-400)/80*Math.PI)*2:0;
+  return {...out,y:-40+(pos.y+40)*q*q+bounce,rotation:Math.sin(q*Math.PI)*.12*(c%2?1:-1)};
+ }
+ return out;
+}
+function sixDrawRoleIcon(canvas,type,round){
+ const x=canvas.getContext('2d');x.clearRect(0,0,120,80);
+ const ps=type==='line'?[[18,40],[46,40],[74,40],[102,40]]:type==='triangle'?[[60,13],[45,39],[75,39],[30,65],[60,65],[90,65]]:[[45,14],[75,14],[90,40],[75,66],[45,66],[30,40]];
+ const color=type==='line'?2:type==='triangle'?0:Math.min(3,sixRoundColorCount(round)-1),sprite=sixArtCandySprite(color,round);
+ for(const [cx,cy] of ps)x.drawImage(sprite,cx-15,cy-15,30,30);
+}
+function sixStageEffects(x,fx,p,round,rows,reduced){
+ if(!fx)return;
+ if(fx.phase==='pyramidShape')for(const form of fx.forms||[]){
+  const ps=form.cells.map(cell=>sixXY(...cell,rows)),hull=form.type==='line'?ps:sixHull(ps),color=form.type==='line'?'#99f7ff':form.type==='triangle'?'#ffec94':'#f2b5ff';
+  x.save();x.strokeStyle=color;x.fillStyle=color+'33';x.shadowColor=color;x.shadowBlur=reduced?0:18;x.lineWidth=4;x.beginPath();hull.forEach((v,i)=>i?x.lineTo(v.x,v.y):x.moveTo(v.x,v.y));if(form.type!=='line'){x.closePath();x.fill();}x.stroke();
+  const cx=ps.reduce((n,v)=>n+v.x,0)/ps.length,cy=ps.reduce((n,v)=>n+v.y,0)/ps.length;
+  if(!reduced){if(form.type==='hexagon'){x.lineWidth=2;x.beginPath();x.arc(cx,cy,35+16*Math.sin(p*Math.PI),0,Math.PI*2);x.stroke();}for(let k=0;k<ps.length;k++){const a=p*Math.PI*2+k*Math.PI*2/ps.length,v=ps[k];sixArtStar(x,v.x+Math.cos(a)*6,v.y+Math.sin(a)*6,3.5,'#fffbe4',color);}}
+  x.restore();
+ }
+ if(fx.removed&&p<.9){
+  const q=Math.min(1,p/.9),tiles=fx.removed;x.save();x.globalAlpha=1-q;
+  for(const v of tiles){const pos=sixXY(v.r,v.c,rows),r=sixLayout(rows).radius;
+   if(reduced){x.fillStyle='#fff7c9';x.beginPath();x.arc(pos.x,pos.y,r,0,7);x.fill();continue;}
+   const sprite=sixArtCandySprite(v.tile.color,round),pieces=tiles.length>28?4:7;x.strokeStyle='#fff6ce';x.lineWidth=1.3;x.beginPath();x.arc(pos.x,pos.y,r*(.4+q),0,7);x.stroke();
+   for(let k=0;k<pieces;k++){const a=k*Math.PI*2/pieces+(v.tile.id%13)*.11,d=(16+k%3*8)*q;x.save();x.translate(pos.x+Math.cos(a)*d,pos.y+Math.sin(a)*d+q*q*14);x.rotate(a+q*(k%2?2:-2));x.beginPath();x.moveTo(-4,-5);x.lineTo(7,-2);x.lineTo(3,6);x.lineTo(-5,3);x.closePath();x.clip();x.drawImage(sprite,-r,-r,r*2,r*2);x.restore();}
+   if(v.tile.id%3===0)sixArtStar(x,pos.x+Math.sin(v.tile.id)*q*28,pos.y-q*24,3*(1-q),'#fff','#ffdc89');
+  }x.restore();
+ }
+}
+function sixTutorialScene(time){const t=((time%SIX_TUTORIAL_DURATION)+SIX_TUTORIAL_DURATION)%SIX_TUTORIAL_DURATION;return {index:t<4500?0:t<9000?1:t<14000?2:3,t};}
+const sixTutorialIconCache=new Map();
+function sixTutorialIcon(role){const key=role+'/'+sixCandyPngState.loaded;if(!sixTutorialIconCache.has(key)){const cv=document.createElement('canvas');cv.width=120;cv.height=80;sixDrawRoleIcon(cv,role,1);sixTutorialIconCache.set(key,cv);}return sixTutorialIconCache.get(key);}
+function sixDrawTutorial(s,time,bet){
+ const x=s.candyCtx,{index,t}=sixTutorialScene(time),ease=v=>Math.max(0,Math.min(1,v));
+ x.drawImage(sixArtBackdrop(10),0,0,320,320);x.fillStyle='#fff4e9ee';x.beginPath();x.roundRect(20,16,280,289,14);x.fill();
+ const title=['同じ番号に HIT!','同じ色４個以上で消える','役をそろえて NEXT ROUND!','シュガーと全消しをねらおう'][index];
+ sixText(x,'BET TIME · 遊び方の例',160,37,12,'#fff6ae');sixText(x,title,160,65,index===2?13:14,'#ffcfec');
+ const candy=(c,px,py,r=23,alpha=1,n=null)=>{x.save();x.globalAlpha=alpha;x.drawImage(sixArtCandySprite(c,1),px-r,py-r,r*2,r*2);if(n!==null)sixText(x,String(n),px,py+1,24);x.restore();};
+ const caption=(a,b)=>{sixText(x,a,160,247,12,'#fff8d5');if(b)sixText(x,b,160,269,10,'#fff5e8');};
+ if(index===0){
+  const p=t/4500,hit=p>.40,fade=hit?1-ease((p-.4)*6):1;
+  candy(0,83,195,26,1,3);candy(2,160,195,26,fade,7);candy(3,237,195,26,1,11);
+  sixText(x,'抽選番号 ７',160,108,18,'#ffe899');
+  if(!hit){x.strokeStyle='#ffba46';x.lineWidth=4;x.beginPath();x.moveTo(160,125);x.lineTo(160,155);x.moveTo(151,146);x.lineTo(160,155);x.lineTo(169,146);x.stroke();}
+  else{const q=ease((p-.4)*3);for(let k=0;k<7;k++){const a=k*6.28/7;sixArtStar(x,160+Math.cos(a)*q*52,195+Math.sin(a)*q*36,4*(1-q),'#fff','#e8a24e');}sixText(x,'HIT!',160,154,22,'#ffc2e7');}
+  caption('入った番号のキャンディが割れる','番号がないキャンディは HIT しない');
+ }else if(index===1){
+  const p=(t-4500)/4500,q=ease(p/.30),clear=p>.52,alpha=clear?1-ease((p-.52)*5):1;
+  candy(0,90,203,25,alpha);candy(0,140,203,25,alpha);candy(0,115,160,25,alpha);candy(0,165,96+(160-96)*q*q,25,alpha);
+  if(p>.35&&p<.70)sixText(x,'４個つながった！',160,115,17,'#e7ffb0');
+  if(p>.70){const z=ease((p-.70)*5);for(let k=0;k<4;k++)candy(2,100+(k%2)*50,110+Math.floor(k/2)*43+z*30,23,1-z*.6);sixText(x,'２ CHAIN!',160,118,23,'#bff7ff');}
+  caption('落下後もそろうと、つづけて連鎖！','消えたあとのつながりに注目');
+ }else if(index===2){
+  ['line','triangle','hexagon'].forEach((role,i)=>{const cx=65+i*95;x.drawImage(sixTutorialIcon(role),cx-43,127,86,58);sixText(x,num(medalWin(bet,SIX_PAY[role])),cx,204,13,'#ffe99c');sixText(x,'WIN',cx,221,8,'#fff');});
+  caption('形がそろうと配当＋次の Round','次の盤面にも残りの抽選で挑戦！');
+ }else{
+  const p=(t-14000)/4000;
+  if(p<.55){const q=ease(p/.5);for(let k=0;k<4;k++)candy(0,86+(k%2)*50,143+Math.floor(k/2)*43,23,1-Math.max(0,q-.65)*2);const sugar=getSugarSprite(wonderTier(bet));if(sugar)x.drawImage(sugar,67+q*75,124-q*13,38,38);sixText(x,p>.3?'SUGAR GET!':'シュガー入り',160,113,19,'#ffe5a1');caption('シュガー入りを含めて消すと GET!','同色４個以上、または役の成立で獲得');}
+  else{sixText(x,'ALL CLEAR!',160,133,30,'#ffe686');sixText(x,num(medalWin(bet,SIX_PAY.allClear))+' WIN',160,188,26,'#ffd4ef');for(let k=0;k<6;k++)sixArtStar(x,48+k*45,96+Math.sin(time/450+k)*8,5,'#fff7b9','#e9a25e');caption('盤面を全部消すと大きなボーナス','本番の番号はゲーム開始時に決まる');}
+ }
+ for(let k=0;k<4;k++){x.fillStyle=k===index?'#ed67a4':'#d6b8ca';x.beginPath();x.arc(139+k*14,291,k===index?4:3,0,7);x.fill();}
+ s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.setAttribute('aria-label','シックスキャンディ・遊び方の例・'+title);
+ s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent='BET待機中・18秒の遊び方';
+ s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
 }
 
 class Arcade{

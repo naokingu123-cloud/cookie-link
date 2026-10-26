@@ -284,8 +284,14 @@ class SixBallCandyEngine extends Engine{
     }
     if(!await this.wait((plan.chain||plan.advance?MINI_RESULT_MS:150)*this.speed,token))return;
     if(this.transitionPending){
-     this.fx={phase:'pyramidRound',nextRound:this.roundIndex+1,elapsed:0,stamp:null,ms:900,clearBonus:this.currentClearBonus,roundIndex:this.roundIndex};this.emit('pyramidRound',{nextRound:this.roundIndex+1,clearBonus:this.currentClearBonus,roundIndex:this.roundIndex});if(!await this.wait(900*this.speed,token))return;
-     this.roundIndex++;this.newBoard();this.fx={phase:'pyramidReady',elapsed:0,stamp:null,ms:400};this.candyMessage='Round '+this.roundIndex+'・'+this.sixColorCount+'色にチャレンジ！';this.emit('pyramidReady');if(!await this.wait(400*this.speed,token))return;
+     const outgoing=sixClone(this.pyramid),nextRound=this.roundIndex+1,sweepMs=(motionReduced?140:760)*this.speed;
+     this.fx={phase:'pyramidSweep',grid:outgoing,roundIndex:this.roundIndex,nextRound,elapsed:0,stamp:null,ms:sweepMs};
+     this.candyMessage='ROUND CLEAR!';this.emit('pyramidSweep',{nextRound});
+     if(!await this.wait(sweepMs,token))return;
+     this.roundIndex++;this.newBoard();const refillMs=(motionReduced?140:480+(this.rows-1)*96)*this.speed;
+     this.fx={phase:'pyramidRefill',grid:sixClone(this.pyramid),roundIndex:this.roundIndex,elapsed:0,stamp:null,ms:refillMs};
+     this.candyMessage='Round '+this.roundIndex+' START';this.emit('pyramidRefill',{roundIndex:this.roundIndex});
+     if(!await this.wait(refillMs,token))return;
      this.fx=null;this.transitionPending=false;this.emit('settled',{numbers,candy:true,newBoard:true});
     }
    }
