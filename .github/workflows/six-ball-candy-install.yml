@@ -1,0 +1,62 @@
+name: Verify Six Ball Candy
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/six-ball-candy-install.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Replace third game against exact verified source
+        run: python .github/maintenance/install_six_ball_candy_20261026.py
+      - name: Install isolated browser verification
+        run: |
+          pip install playwright >/tmp/six-browser.log 2>&1
+          python -m playwright install --with-deps chromium >>/tmp/six-browser.log 2>&1 || { tail -70 /tmp/six-browser.log; exit 1; }
+      - name: Verify finite pyramid, cascades, reach and shared UI
+        run: python .github/tests/six_ball_candy_20261026.py
+      - name: Retain verification images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-ball-candy-previews
+          path: qa-six-ball/
+          retention-days: 3
+          if-no-files-found: ignore
+      - name: Save verified game and handoff
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          note='\n\n## 追加更新: シックスボールキャンディ（2026-10-26）\n'
+          note+='- 第3タブのビン収集を完全に置換。名称は「シックスボールキャンディ」。第1クッキーリンク、第2ショコラディグ、各初期BET3000、20秒BET、既存発射タイミングと音声を維持。\n'
+          note+='- ゲーム開始時に1〜10個の10段、合計55個のキャンディピラミッド。1〜25の番号を各2〜3個配置。BET中は番号なしの装飾プレビュー。開始時の完成図形は除外。途中補充なし、各ゲームで55個から再開。\n'
+          note+='- 1球ごとの入賞で同番号の全キャンディを同時消去。空いている左下/右下へ隣接落下し、支持ができるまで転がる。落下後に同色6個の三角形（1+2+3、上下両向き）または同色6個の六角形の輪を検出。輪の中央の色や有無は不問。\n'
+          note+='- 図形を光る輪郭で強調→配当・該当6個を破片にして消去→再落下→図形の再判定を繰り返す。重なる図形は各図形を1役として配当合算、共有キャンディの除去は1回だけ。追加の同色一括消しや直線役は未実装。\n'
+          note+='- 仮配当: TRIANGLE 0.5倍、HEXAGON 2倍。1回の番号HITから続く図形消去ごとに1/1.5/2…最大5倍の連鎖倍率。図形の同時成立は合算。配当バランスは未調整。HEXAGONを1回以上完成するとゲーム終了時に通常シュガー1個（BET値）。虹/ダイレクトJPCの発生条件は変更なし。\n'
+          note+='- 第3タブはsingleの抽選/リーチ更新を維持。純粋な盤面コピーで同じ落下/図形消去を最後まで予測し、乱数は消費しない。クッキーの2/4/5/6/7/8球目リーチ仕様は変更なし。\n'
+          note+='- 大型配当吹き出しは3倍/10倍の強調を維持し下画面内に限定。ミニ盤面にも落下と図形を反映。リザルトはTRIANGLE/HEXAGON個数・最大図形連鎖・残数を表示。旧ビン/スター/5色完成表示は除去。\n'
+          note+='- Chromium検証: 10段55個/番号分布/上下三角形/中央色不問の六角形/単なる6個連結を非配当/境界/落下での数保存/多段連鎖/重複除去防止/予測と実Engine一致/10種シード8球/0BET/途中リセット/シュガー一度/3種同時進行・一度だけCREDIT/モバイル3サイズと横画面・PC/吹き出しと黒帯非重複/BGM再生とリセットを確認。\n'
+          note+='- 未検証: iPhone実機、聴感、自然物理抽選の全8球通し。着弾テストは制御された入賞番号通知。\n'
+          note+='- 編集元 assets/six-ball-candy.js/.css。適用スクリプト .github/maintenance/install_six_ball_candy_20261026.py。旧candy-carnival.jsは履歴資料であり本体には読み込まない。\n'
+          note+='- 最新index.html blob: `'+sha+'`。\n'
+          p=Path('HANDOFF.md');p.write_text(p.read_text()+note);print('VERIFIED_SIX_BALL_BLOB',sha)
+          PY
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/six-ball-candy-install.yml
+          git add index.html HANDOFF.md
+          git commit -m 'Replace third tab with Six Ball Candy pyramid cascades'
+          git push origin HEAD:main
