@@ -6,7 +6,7 @@ let boards=0,frames=0,samples=0,forms=0;
 assert.equal(q.sixCapacity(10),75);assert.equal(q.sixLayout(10).step,35);
 const expected=[['lime','green','aqua','navy'],['yellow','lime','green','aqua'],['orange','yellow','lime','green'],['red','orange','yellow','lime'],['violet','red','orange','yellow']];
 assert.equal(JSON.stringify(q.SIX_ROUND_THEMES.map(t=>t.colors)),JSON.stringify(expected));
-assert.equal(q.SIX_PAY.allClear,10000);assert.equal([1,2,3].reduce((s,r)=>s+q.sixRoundClearBonus(r),0),160);assert.equal(q.SIX_START_GAP_TEMPLATES.length,6);
+assert.equal(q.SIX_PAY.allClear,10000);assert.equal([1,2,3].reduce((s,r)=>s+q.sixRoundClearBonus(r),0),420);assert.equal(q.SIX_START_GAP_TEMPLATES.length,6);
 for(const [pi,holes] of q.SIX_START_GAP_TEMPLATES.entries())for(const colors of [3,4])for(let seed=1;seed<=3;seed++){
  const random=rng(1000*pi+seed*100+colors),g=q.sixMakeBoard(rows,colors,random,0,{holes}).grid;
  assert.equal(q.sixCount(g),75-holes.length);assert.equal(g.at(-1).length,8);assert.equal(g[0].length,7);
@@ -26,4 +26,4 @@ for(const [pi,holes] of q.SIX_START_GAP_TEMPLATES.entries())for(const colors of 
 for(const form of q.sixPatterns(rows)){const g=q.sixEmpty(rows);form.cells.forEach(([r,c],i)=>g[r][c]={id:i+1,color:0,number:null});const found=q.sixFindShapes(g);assert.equal(found.length,1);assert.equal(found[0].type,form.type);forms++;}
 for(const [dr,dx] of [[0,1],[1,-.5],[1,.5]]){const g=q.sixEmpty(rows);let p=[1,3];for(let i=0;i<4;i++){g[p[0]][p[1]]={id:i+1,color:0,number:null};p=q.sixStep(...p,dr,dx,rows);}assert.equal(q.sixResolve(g).lines,1);forms++;}
 const uniform=q.sixEmpty(rows);let id=0;for(const row of uniform)for(let c=0;c<row.length;c++)row[c]={id:++id,color:0,number:null};const resolved=q.sixResolve(uniform),used=resolved.forms.flatMap(f=>f.cells.map(p=>p.join(',')));assert.equal(used.length,new Set(used).size);assert.equal(resolved.forms[0].type,'hexagon');
-console.log('ROUNDS_V4_RULES_PASS',JSON.stringify({boards,frames,samples,forms,templates:6,initialFalls:0,firstThreeBonus:1.6,allClear:100,maxRounds:5}));
+console.log('ROUNDS_V4_RULES_PASS',JSON.stringify({boards,frames,samples,forms,templates:6,initialFalls:0,firstThreeBonus:4.2,allClear:100,maxRounds:5}));
