@@ -1,0 +1,225 @@
+/* Six Candy rules v2. Original deterministic simulation; no original-game code/assets.
+ * Triangular lattice: down-left (r+1,c), down-right (r+1,c+1).
+ * Actual Nintendo gravity implementation is unpublished; this model checks swept circle
+ * clearance, rolls around a support, and resolves fall frames bottom-up without teleporting.
+ */
+const SIX_ROWS=10,SIX_SQRT3_2=Math.sqrt(3)/2;
+const SIX_COLORS=[
+ {name:'いちご',light:'#ffcbdc',color:'#f34c86',dark:'#a22353'},
+ {name:'レモン',light:'#fff6b1',color:'#f6cc32',dark:'#aa741b'},
+ {name:'ミント',light:'#cbffe4',color:'#44c695',dark:'#247e60'},
+ {name:'ソーダ',light:'#d2f5ff',color:'#43bde8',dark:'#286ba9'},
+ {name:'ぶどう',light:'#efdcff',color:'#b77bea',dark:'#71369d'}
+];
+const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:6000};
+const sixEmpty=(rows=SIX_ROWS)=>Array.from({length:rows},(_,r)=>Array(r+1).fill(null));
+const sixClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
+const sixKey=(r,c)=>r*16+c;
+const sixCount=g=>g.reduce((n,row)=>n+row.filter(Boolean).length,0);
+const sixPoint=(r,c)=>({x:c-r/2,y:r*SIX_SQRT3_2});
+function sixLayout(rows=10){const step=Math.min(40,256/(rows-1));return {step,top:270-(rows-1)*step*SIX_SQRT3_2,radius:step*.47};}
+function sixXY(r,c,rows=10){const l=sixLayout(rows);return {x:160+(c-r/2)*l.step,y:l.top+r*l.step*SIX_SQRT3_2};}
+function sixNeighbors(r,c){return [[r,c-1],[r,c+1],[r-1,c-1],[r-1,c],[r+1,c],[r+1,c+1]];}
+const sixPatternCache=new Map();
+function sixPatterns(rows=10){
+ if(sixPatternCache.has(rows))return sixPatternCache.get(rows);const list=[];
+ const add=(type,cells)=>{if(cells.every(([r,c])=>r>=0&&r<rows&&c>=0&&c<=r))list.push({type,cells,key:cells.map(p=>sixKey(...p)).sort((a,b)=>a-b).join(',')});};
+ for(let r=0;r<rows;r++)for(let c=0;c<=r;c++){
+  add('triangle',[[r,c],[r+1,c],[r+1,c+1],[r+2,c],[r+2,c+1],[r+2,c+2]]);
+  add('triangle',[[r,c],[r,c+1],[r,c+2],[r+1,c+1],[r+1,c+2],[r+2,c+2]]);
+  add('hexagon',[[r-1,c-1],[r-1,c],[r,c+1],[r+1,c+1],[r+1,c],[r,c-1]]);
+ }
+ sixPatternCache.set(rows,list);return list;
+}
+const SIX_PATTERNS=sixPatterns(10);
+function sixComponents(grid){
+ const seen=new Set(),out=[];
+ for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++){
+  const tile=grid[r][c],key=sixKey(r,c);if(!tile||seen.has(key))continue;
+  const cells=[],stack=[[r,c]];seen.add(key);
+  while(stack.length){const [y,x]=stack.pop();cells.push([y,x]);for(const [a,b] of sixNeighbors(y,x)){const k=sixKey(a,b);if(a<0||a>=grid.length||b<0||b>a||seen.has(k)||grid[a][b]?.color!==tile.color)continue;seen.add(k);stack.push([a,b]);}}
+  out.push({cells,color:tile.color});
+ }
+ return out;
+}
+function sixUpperFirst(a,b){
+ const ra=Math.min(...a.cells.map(p=>p[0])),rb=Math.min(...b.cells.map(p=>p[0]));
+ return ra-rb||b.cells.length-a.cells.length||Math.min(...a.cells.map(p=>p[1]))-Math.min(...b.cells.map(p=>p[1]))||a.key.localeCompare(b.key);
+}
+function sixLines(grid,used=new Set()){
+ const out=[];
+ for(const [dr,dc] of [[0,1],[1,0],[1,1]])for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++){
+  const t=grid[r][c];if(!t||used.has(sixKey(r,c)))continue;
+  const same=(y,x)=>!!grid[y]?.[x]&&!used.has(sixKey(y,x))&&grid[y][x].color===t.color;
+  if(same(r-dr,c-dc))continue;
+  const cells=[];for(let y=r,x=c;same(y,x);y+=dr,x+=dc)cells.push([y,x]);
+  if(cells.length>=4)out.push({type:'line',cells,color:t.color,key:cells.map(p=>sixKey(...p)).join(',')});
+ }
+ return out.sort(sixUpperFirst);
+}
+function sixFindShapes(grid){
+ const used=new Set(),out=[],candidates=sixPatterns(grid.length).filter(p=>{const t=grid[p.cells[0][0]][p.cells[0][1]];return t&&p.cells.every(([r,c])=>grid[r][c]?.color===t.color);});
+ // Highest-paying shape first; same-kind candidates are taken from the top.
+ for(const type of ['hexagon','triangle'])for(const p of candidates.filter(p=>p.type===type).sort(sixUpperFirst)){
+  if(p.cells.some(cell=>used.has(sixKey(...cell))))continue;
+  p.cells.forEach(cell=>used.add(sixKey(...cell)));out.push({...p,color:grid[p.cells[0][0]][p.cells[0][1]].color});
+ }
+ for(;;){const p=sixLines(grid,used)[0];if(!p)break;p.cells.forEach(cell=>used.add(sixKey(...cell)));out.push(p);}
+ return out;
+}
+function sixResolve(grid){
+ const forms=sixFindShapes(grid),clusters=sixComponents(grid).filter(g=>g.cells.length>=4);
+ const cells=[...new Map(clusters.flatMap(g=>g.cells).map(p=>[sixKey(...p),p])).values()];
+ return {forms,clusters,cells,hexagons:forms.filter(f=>f.type==='hexagon').length,triangles:forms.filter(f=>f.type==='triangle').length,lines:forms.filter(f=>f.type==='line').length};
+}
+function sixMotionPoint(move,t){
+ const a=sixPoint(...move.from),b=sixPoint(...move.to);if(!move.pivot)return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
+ const p=sixPoint(...move.pivot),angle=Math.atan2(a.y-p.y,a.x-p.x)+move.turn*t;
+ return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
+}
+function sixPathClear(grid,move){
+ // Unit-diameter candy disks may touch but never cut through another candy.
+ for(let k=1;k<=12;k++){
+  const p=sixMotionPoint(move,k/12);
+  for(let r=Math.max(0,move.from[0]-1);r<=Math.min(grid.length-1,move.to[0]+1);r++)for(let c=0;c<=r;c++){
+   const t=grid[r][c];if(!t||t.id===move.id)continue;const q=sixPoint(r,c);
+   if((p.x-q.x)**2+(p.y-q.y)**2<.999999)return false;
+  }
+ }
+ return true;
+}
+function sixFallOptions(grid,r,c,momentum=new Map()){
+ const tile=grid[r]?.[c];if(!tile||r===grid.length-1)return [];
+ const left=grid[r+1][c],right=grid[r+1][c+1],sideL=grid[r][c-1],sideR=grid[r][c+1],options=[];
+ if(left&&right)return options;
+ const make=(to,pivot=null,turn=0)=>({id:tile.id,tile:{...tile},from:[r,c],to,pivot,turn});
+ // Two empty supports allow a truly vertical two-row fall, not an arbitrary zig-zag.
+ if(!left&&!right&&r+2<grid.length&&!grid[r+2][c+1])options.push(make([r+2,c+1]));
+ const l=!left&&!sideL?make([r+1,c],right?[r+1,c+1]:null,right?-Math.PI/3:0):null;
+ const rr=!right&&!sideR?make([r+1,c+1],left?[r+1,c]:null,left?Math.PI/3:0):null;
+ const prefer=momentum.get(tile.id)||tile.lean||(c-r/2<0?-1:1);
+ if(prefer<0){if(l)options.push(l);if(rr)options.push(rr);}else{if(rr)options.push(rr);if(l)options.push(l);}
+ return options.filter(m=>sixPathClear(grid,m));
+}
+function sixDrop(grid,{trace=false}={}){
+ const steps=[],paths=new Map(),momentum=new Map();let iterations=0;
+ for(;;){
+  let moved=false;if(++iterations>grid.length*grid.length+1)throw Error('Six Candy gravity did not converge');
+  for(let r=grid.length-2;r>=0;r--){
+   const proposals=[];
+   // All proposals in one row use the same occupancy, independent of scan direction.
+   for(let c=0;c<=r;c++){const candidates=sixFallOptions(grid,r,c,momentum);if(candidates.length)proposals.push({c,candidates});}
+   proposals.sort((a,b)=>a.candidates.length-b.candidates.length||Math.abs(a.c-r/2)-Math.abs(b.c-r/2)||a.c-b.c);
+   const accepted=[],targets=new Set();
+   for(const p of proposals)for(const m of p.candidates){
+    if(targets.has(sixKey(...m.to)))continue;let conflict=false;
+    for(const other of accepted)for(let k=0;k<=12;k++){const a=sixMotionPoint(m,k/12),b=sixMotionPoint(other,k/12);if((a.x-b.x)**2+(a.y-b.y)**2<.999999){conflict=true;break;}}
+    if(conflict)continue;accepted.push(m);targets.add(sixKey(...m.to));break;
+   }
+   if(!accepted.length)continue;
+   for(const m of accepted){grid[m.from[0]][m.from[1]]=null;grid[m.to[0]][m.to[1]]=m.tile;const dx=sixPoint(...m.to).x-sixPoint(...m.from).x;if(dx)momentum.set(m.id,Math.sign(dx));
+    if(!paths.has(m.id))paths.set(m.id,{id:m.id,tile:m.tile,points:[m.from]});paths.get(m.id).points.push(m.to);
+   }
+   if(trace)steps.push({grid:sixClone(grid),moves:accepted,ms:accepted.some(m=>m.to[0]-m.from[0]===2)?120:90});moved=true;
+  }
+  if(!moved)break;
+ }
+ return {steps,moves:[...paths.values()]};
+}
+function sixPlan(input,numbers,{trace=false}={}){
+ const grid=sixClone(input),timeline=[],used=new Set(numbers),hit=[];let triangles=0,hexagons=0,lines=0,chain=0,gain=0,removedCount=0,ordinaryGroups=0;
+ const push=(phase,detail={},ms=350)=>{if(trace)timeline.push({phase,...detail,grid:sixClone(grid),ms});};
+ const remove=cells=>{const removed=[];for(const [r,c] of cells){const t=grid[r]?.[c];if(t){removed.push({r,c,tile:{...t}});grid[r][c]=null;}}removedCount+=removed.length;return removed;};
+ const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length)push('pyramidFall',{...fall},motionReduced?100:fall.steps.reduce((n,f)=>n+f.ms,0)||350);};
+ for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++)if(grid[r][c]?.number!=null&&used.has(grid[r][c].number))hit.push([r,c]);
+ if(!hit.length){push('pyramidMiss',{},250);return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:0,cleared:false,advance:false};}
+ push('pyramidHit',{cells:hit},280);push('pyramidBreak',{removed:remove(hit)},260);drop();
+ for(;;){
+  const resolved=sixResolve(grid);if(!resolved.cells.length)break;if(++chain>Math.ceil(input.length*(input.length+1)/8))throw Error('Cascade exceeded finite board');
+  const award=resolved.hexagons*SIX_PAY.hexagon+resolved.triangles*SIX_PAY.triangle+resolved.lines*SIX_PAY.line;
+  push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.forms.length?550:260);
+  const removed=remove(resolved.cells);triangles+=resolved.triangles;hexagons+=resolved.hexagons;lines+=resolved.lines;gain+=award;ordinaryGroups+=resolved.clusters.length;
+  push('pyramidAward',{...resolved,removed,chain,gain:award},award?1000:300);drop();
+ }
+ const cleared=sixCount(grid)===0;
+ if(cleared){gain+=SIX_PAY.allClear;push('pyramidAllClear',{gain:SIX_PAY.allClear,chain,forms:[]},2100);}
+ return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:hit.length,cleared,advance:triangles+hexagons+lines>0||cleared};
+}
+function sixShuffle(list,random){for(let i=list.length-1;i>0;i--){const j=Math.min(i,Math.floor(random()*(i+1)));[list[i],list[j]]=[list[j],list[i]];}return list;}
+function sixMakeBoard(rows,colorCount,random,firstId=0){
+ let grid=null,lastId=firstId;
+ for(let attempt=0;attempt<32;attempt++){
+  const g=sixEmpty(rows);let ok=true,id=firstId;
+  outer:for(let r=0;r<rows;r++)for(let c=0;c<=r;c++){
+   const tile={id:++id,color:0,number:null,lean:random()<.5?-1:1};g[r][c]=tile;let placed=false;
+   for(const color of sixShuffle(Array.from({length:colorCount},(_,i)=>i),random)){
+    tile.color=color;if(sixComponents(g).every(p=>p.cells.length<4)){placed=true;break;}
+   }
+   if(!placed){ok=false;break outer;}
+  }
+  if(ok){grid=g;lastId=id;break;}
+ }
+ if(!grid){const palette=sixShuffle(Array.from({length:colorCount},(_,i)=>i),random);grid=sixEmpty(rows);for(let r=0;r<rows;r++)for(let c=0;c<=r;c++)grid[r][c]={id:++lastId,color:palette[(r+c)%colorCount],number:null,lean:c<r/2?-1:1};}
+ const spots=sixShuffle(grid.flat(),random),numbers=sixShuffle(Array.from({length:25},(_,i)=>i+1),random);numbers.forEach((n,i)=>spots[i].number=n);
+ if(sixResolve(grid).cells.length)throw Error('Initial board contains a connected group or role');
+ return {grid,lastId};
+}
+class SixBallCandyEngine extends Engine{
+ reset(){
+  this.kind='candy';this.gameName='シックスキャンディ';this.drawMode='single';this.reachMode='single';this.rows=[7,8,9,10].includes(this.rows)?this.rows:10;
+  this.version++;this.presentationRate=1;this.roundBet=this.roundBet||3000;this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
+  this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;this.transitionPending=false;
+  this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;
+  this.wonderCollected=false;this.wonderIssued=false;this.wonderToken=null;this.wonderColumn=0;this.pendingSugarAward=[];
+  this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
+  this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));this.pyramid=sixEmpty(this.rows);this.initialPyramid=null;
+  this.roundIndex=1;this.roundsCleared=0;this.sixColorCount=5;this.boardGeneration=0;
+  this.triangles=0;this.hexagons=0;this.lines=0;this.shapes=0;this.bestCascade=0;this.cascade=0;this.removedCandies=0;this.remainingCandies=this.rows*(this.rows+1)/2;this.pyramidCleared=false;this.lastGain=0;this.lastNumber=0;this.fx=null;
+  this.candyMessage='役をそろえて次のRoundへ！';this.emit('ready');
+ }
+ setRows(rows){if(this.running||![7,8,9,10].includes(rows))return false;this.rows=rows;this.reset();return true;}
+ colorsForRound(n){return Math.min(this.colorCount||5,n>=5?3:n>=3?4:5);}
+ newBoard(){
+  this.sixColorCount=this.colorsForRound(this.roundIndex);const made=sixMakeBoard(this.rows,this.sixColorCount,this.random,this.uid);this.uid=made.lastId;this.pyramid=made.grid;this.initialPyramid=sixClone(this.pyramid);this.boardGeneration++;this.remainingCandies=sixCount(this.pyramid);this.pyramidCleared=false;
+ }
+ start(){if(this.running||this.roundBet<=0)return;this.newBoard();this.running=true;this.opening=false;this.busy=false;this.candyMessage='Round '+this.roundIndex+'・番号HITでキャンディを落とそう';this.emit('waiting');}
+ reachSnapshot(){return Object.assign(Object.create(SixBallCandyEngine.prototype),{pyramid:sixClone(this.pyramid),drawn:new Set(this.drawn),totalHundredths:this.totalHundredths,initialPyramid:!!this.initialPyramid,rows:this.rows,boardGeneration:this.boardGeneration});}
+ predict(number){if(!this.initialPyramid||this.drawn.has(number))return null;const p=sixPlan(this.pyramid,[number]);return {number,total:this.totalHundredths+p.gain,gain:p.gain,maxLink:0,chain:p.chain,allClear:p.cleared,tier:reachTier(this.totalHundredths+p.gain,p.cleared),triangles:p.triangles,hexagons:p.hexagons,lines:p.lines};}
+ async drain(){
+  if(this.busy)return;const token=this.version;this.busy=true;
+  try{
+   while(this.queue.length&&token===this.version){
+    const numbers=this.queue.shift();for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}this.lastNumber=numbers.at(-1);this.cascade=0;this.lastGain=0;
+    const plan=sixPlan(this.pyramid,numbers,{trace:true});
+    for(const stage of plan.timeline){
+     if(token!==this.version)return;this.pyramid=sixClone(stage.grid);this.remainingCandies=sixCount(this.pyramid);this.fx={...stage,elapsed:0,stamp:null};this.cascade=stage.chain||this.cascade;
+     if(stage.phase==='pyramidHit')this.candyMessage=numbers.join('・')+'番 HIT！';
+     if(stage.phase==='pyramidMiss')this.candyMessage='この番号は消去済み・次の番号を待とう';
+     if(stage.phase==='pyramidFall')this.candyMessage='支えに沿って、ころころ落下！';
+     if(stage.phase==='pyramidShape')this.candyMessage=stage.forms.length?'役が完成！ '+stage.chain+'連鎖':stage.cells.length+'個つながった！ '+stage.chain+'連鎖';
+     if(stage.phase==='pyramidAward'){
+      this.totalHundredths+=stage.gain;this.lastGain=stage.gain;this.triangles+=stage.triangles;this.hexagons+=stage.hexagons;this.lines+=stage.lines;this.shapes=this.triangles+this.hexagons+this.lines;this.bestCascade=Math.max(this.bestCascade,stage.chain);
+     }
+     if(stage.phase==='pyramidAllClear'){this.totalHundredths+=SIX_PAY.allClear;this.lastGain=SIX_PAY.allClear;this.allClears++;this.candyMessage='ALL CLEAR！ 60倍ボーナス！';}
+     this.emit(stage.phase,{numbers,...stage});if(!await this.wait(stage.ms*this.speed,token))return;
+    }
+    this.pyramid=sixClone(plan.grid);this.remainingCandies=sixCount(this.pyramid);this.removedCandies+=plan.removedCount;this.pyramidCleared=plan.cleared;this.processed+=numbers.length;this.fx=null;
+    if(plan.advance)this.roundsCleared++;this.transitionPending=plan.advance&&this.processed<8;
+    this.candyMessage=plan.advance?'Round '+this.roundIndex+' CLEAR！':plan.chain?'連結消去・次の番号で役をねらおう':'次の番号で役をねらおう';
+    this.emit('settled',{numbers,candy:true,batchShapes:plan.triangles+plan.hexagons+plan.lines,batchChain:plan.chain,batchGain:plan.gain});
+    if(!await this.wait((plan.chain||plan.advance?MINI_RESULT_MS:150)*this.speed,token))return;
+    if(this.transitionPending){
+     this.fx={phase:'pyramidRound',nextRound:this.roundIndex+1,elapsed:0,stamp:null,ms:650};this.emit('pyramidRound',{nextRound:this.roundIndex+1});if(!await this.wait(650*this.speed,token))return;
+     this.roundIndex++;this.newBoard();this.fx={phase:'pyramidReady',elapsed:0,stamp:null,ms:400};this.candyMessage='Round '+this.roundIndex+'・'+this.sixColorCount+'色にチャレンジ！';this.emit('pyramidReady');if(!await this.wait(400*this.speed,token))return;
+     this.fx=null;this.transitionPending=false;this.emit('settled',{numbers,candy:true,newBoard:true});
+    }
+   }
+   if(token!==this.version)return;
+   if(this.processed===8){
+    if(this.hexagons>0&&!this.wonderCollected){this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'six-candy-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});if(!await this.wait(SUGAR_GET_WAIT*this.speed*(this.presentationRate||1),token))return;}
+    this.busy=false;this.running=false;this.candyMessage='Round '+this.roundIndex+'・⬡ '+this.hexagons+' / △ '+this.triangles+' / LINE '+this.lines;this.emit('complete');
+   }else{this.busy=false;this.emit('waiting');}
+  }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
+ }
+}
+const CandyCarnivalEngine=SixBallCandyEngine;
