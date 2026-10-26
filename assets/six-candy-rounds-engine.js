@@ -188,7 +188,7 @@ function sixPlan(input,numbers,{trace=false}={}){
  const grid=sixClone(input),timeline=[],used=new Set(numbers),hit=[];let triangles=0,hexagons=0,lines=0,chain=0,gain=0,removedCount=0,ordinaryGroups=0,sugarAward=false;
  const push=(phase,detail={},ms=350)=>{if(trace)timeline.push({phase,...detail,grid:sixClone(grid),ms});};
  const remove=cells=>{const removed=[];for(const [r,c] of cells){const t=grid[r]?.[c];if(t){removed.push({r,c,tile:{...t}});if(t.sugar)sugarAward=true;grid[r][c]=null;}}removedCount+=removed.length;return removed;};
- const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length)push('pyramidFall',{...fall},motionReduced?100:fall.steps.reduce((n,f)=>n+f.ms,0)||350);};
+ const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length)push('pyramidFall',{...fall},motionReduced?100:((fall.steps.reduce((n,f)=>n+f.ms,0)||350)+180));};
  for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]?.number!=null&&used.has(grid[r][c].number))hit.push([r,c]);
  if(!hit.length){push('pyramidMiss',{},250);return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:0,cleared:false,advance:false,sugarAward};}
  push('pyramidHit',{cells:hit},280);push('pyramidBreak',{removed:remove(hit)},260);drop();
