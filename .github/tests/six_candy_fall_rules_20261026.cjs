@@ -3,7 +3,7 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
 const src=fs.readFileSync('assets/six-candy-rounds-engine.js','utf8');
 const api=vm.runInNewContext(src.slice(0,src.indexOf('class SixBallCandyEngine'))+';({sixEmpty,sixClone,sixPoint,sixMotionPoint,sixDrop,sixFallOptions,sixMakeBoard,sixPlan,sixCount,SIX_FALL_RULES});',{motionReduced:false});
 const q=api,eq=(a,b,msg)=>assert.equal(JSON.stringify(a),JSON.stringify(b),msg),tile=(id,color=0,number=null)=>({id,color,number,lean:-1});
-assert.equal(q.SIX_FALL_RULES,'grid-support-synchronous-v3');
+assert.equal(q.SIX_FALL_RULES,'grid-support-synchronous-v4-gap-settle');
 const rng=seed=>{let state=seed;return()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};};
 // Lower-empty cells follow the side-neighbour rule, before considering vertical.
 let g=q.sixEmpty();g[3][1]=tile(1);g[3][0]=tile(2);eq(q.sixFallOptions(g,3,1)[0].to,[4,2],'Left neighbour must direct right');

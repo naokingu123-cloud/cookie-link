@@ -2990,9 +2990,27 @@ function sixResolve(grid){
 }
 // Grid-directed falling. Occupancy determines the destination; rendering does not
 // choose gameplay outcomes. No per-candy lean, id parity, random drift or momentum.
-const SIX_FALL_RULES='grid-support-synchronous-v3';
+const SIX_FALL_RULES='grid-support-synchronous-v4-gap-settle';
 function sixMotionPoint(move,t){
  t=Math.max(0,Math.min(1,t));const a=sixPoint(...move.from),b=sixPoint(...move.to);
+ if(t===0)return a;if(t===1)return b;
+ if(move.gap){
+  // Empty lower neighbours cannot support a candy. Descend through the open
+  // centre before settling sideways; a direct diagonal would clip a side candy.
+  const sign=Math.sign(b.x-a.x);
+  if(move.gapPivot){
+   // Approach the top of the next-row support, then roll only 30 degrees.
+   // This differs from the 60-degree arc around an immediate diagonal support.
+   const p=sixPoint(...move.gapPivot),vertical=p.y-1-a.y,arc=Math.PI/6,d=t*(vertical+arc);
+   if(d<=vertical)return {x:a.x,y:a.y+d};
+   const angle=-Math.PI/2+sign*(d-vertical);
+   return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
+  }
+  // Bottom boundary or open lower centre: fall first, then align with a free
+  // lattice slot. Keep the same candy identity and a continuous displayed path.
+  const vertical=b.y-a.y,d=t*(vertical+Math.abs(b.x-a.x));
+  return d<=vertical?{x:a.x,y:a.y+d}:{x:a.x+sign*(d-vertical),y:b.y};
+ }
  if(!move.pivot)return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
  const p=sixPoint(...move.pivot),angle=Math.atan2(a.y-p.y,a.x-p.x)+move.turn*t;
  return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
@@ -3015,8 +3033,11 @@ function sixFallOptions(grid,r,c,vacating=new Set()){
  const left=occupied(r+1,c),right=occupied(r+1,c+1),sideL=occupied(r,c-1),sideR=occupied(r,c+1);
  if(left&&right)return [];
  const make=(to,pivot=null,turn=0)=>({id:tile.id,tile:{...tile},from:[r,c],to,pivot,turn});
- const downLeft=()=>!left&&!sideL?make([r+1,c],right?[r+1,c+1]:null,right?-Math.PI/3:0):null;
- const downRight=()=>!right&&!sideR?make([r+1,c+1],left?[r+1,c]:null,left?Math.PI/3:0):null;
+ // When both supports are empty, lateral neighbours restrict the *path*, not
+ // the ability to fall. The v3 diagonal-only path incorrectly formed air bridges.
+ const gap=to=>({...make(to),gap:true,gapPivot:r+2<grid.length&&occupied(r+2,c+1)?[r+2,c+1]:null});
+ const downLeft=()=>left?null:!sideL?make([r+1,c],right?[r+1,c+1]:null,right?-Math.PI/3:0):!right?gap([r+1,c]):null;
+ const downRight=()=>right?null:!sideR?make([r+1,c+1],left?[r+1,c]:null,left?Math.PI/3:0):!left?gap([r+1,c+1]):null;
  const vertical=()=>!left&&!right&&r+2<grid.length&&!occupied(r+2,c+1)?make([r+2,c+1]):null;
  let options=[];
  if(left)options=[downRight()];
@@ -3065,7 +3086,7 @@ function sixDrop(grid,{trace=false}={}){
      // Earlier moves can have changed which neighbours are static.
      if(!sixPathClear(grid,m,vacating)||accepted.some(other=>!sixMotionsClear(m,other)))continue;
      accepted.push(m);vacating.add(m.id);targets.add(sixKey(...m.to));
-     if(m.pivot){const support=grid[m.pivot[0]][m.pivot[1]];if(support)pinned.add(support.id);}
+     for(const pivot of [m.pivot,m.gapPivot])if(pivot){const support=grid[pivot[0]][pivot[1]];if(support)pinned.add(support.id);}
      break;
     }
    }
@@ -3080,7 +3101,7 @@ function sixDrop(grid,{trace=false}={}){
    grid[m.to[0]][m.to[1]]=m.tile;
    if(!paths.has(m.id))paths.set(m.id,{id:m.id,tile:m.tile,points:[m.from]});paths.get(m.id).points.push(m.to);
   }
-  if(trace)steps.push({grid:sixClone(grid),moves:accepted,ms:accepted.some(m=>m.to[0]-m.from[0]===2)?120:90});
+  if(trace)steps.push({grid:sixClone(grid),moves:accepted,ms:accepted.some(m=>m.gap)?160:accepted.some(m=>m.to[0]-m.from[0]===2)?120:90});
  }
  return {steps,moves:[...paths.values()]};
 }

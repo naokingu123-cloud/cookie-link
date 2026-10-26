@@ -207,3 +207,12 @@
 - 参考調査: https://qiita.com/Jun_Ishikawa/items/fe6a533c0531a9071d99 および https://qiita.com/GANTZ/items/e6b5e9168b595404d582 。いずれも第三者による再現研究であり、Nintendo公式の内部アルゴリズムや原作の全配置との完全一致を確認したものではない。原作映像とのフレームごとの照合は未実施。
 - 新規検証: {'logicalFixtures': 6, 'boards': 80, 'frames': 483, 'samples': 12075, 'synchronousFrames': 371, 'predictions': 240}。左右の隣接球、垂直穴、支持1個/2個、中空六角形、上2球の左右分離、複数行同時追従、ID/lean非依存、描画軌道/最終配置/予測の一致を確認。既存Chromiumの段数・Round・配当・3ゲーム混在・0BET・リセット・モバイル/PC検証も再実行。実機iPhone・原作実機との全ケース比較は未実施。
 - 最新index.html blob: `e85d07c4a4d9a67a019e803b779288693204b857`。落下ソースはassets/six-candy-rounds-engine.js / assets/six-candy.js / index.htmlで一致。
+
+
+## 2026-10-26 — 真下が空いているのに止まる不具合の修正
+- 再現: 左右にキャンディがあり、斜め下2マスが空いていても、真下2段目が盤外または埋まっていると落下候補が空になっていた。旧版600盤面で206箇所（最下段の穴74、さらに下に支持球132）の停止を再現。
+- 修正: 左右の接触を支持とは扱わず、空いた中心を真下へ降りてから空きマスへ収まる連続経路を追加。さらに下に球があれば、その頂点まで降りて30度の円弧で左右に転がる。最下段付近も同様。隣のキャンディを貫通させず、既存の経路衝突検査と移動先予約を維持。
+- 実際に斜め下の2球で支えられた形や支持された中空ヘキサゴンは維持。変更は第3ゲームの落下のみ。段数7〜10、Round、番号、役の優先/配当、60倍、色数進行、他2ゲーム、抽選機と音声は変更なし。
+- 新規検証: {"baselineBoards": 600, "baselineUnsupported": 206, "baselineBottomGap": 74, "baselineLowerSupportGap": 132, "fixedUnsupported": 0, "fixtures": 8, "randomBoards": 300, "pathSamples": 109135, "frames": 1679, "gapMoves": 343, "predictions": 900}。旧版の同じ600盤面では修正後の無支持停止0箇所。別の300盤面で数保存、移動先重複なし、経路を65時点で確認、表示と最終配置一致、ID/lean非依存、予測と実処理一致を検証。既存の落下テストとブラウザの段数/役/Round/配当/リセット/3ゲーム同時集計/スマホ・PC検証も成功。
+- 確認限界: 原作全配置との一致やiPhone実機の確認ではない。ユーザーの具体的な停止画面は未取得で、コードから再現した同症状を修正した。
+- 最新 index.html blob: `0e38d3f664f71add328d4de825796fdc75488b1c`。更新箇所は assets/six-candy-rounds-engine.js / assets/six-candy.js / index.html で一致。
