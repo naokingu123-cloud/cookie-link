@@ -13,24 +13,25 @@ setupCarnivalSlot=function(s){
  heading.replaceChildren(cards,banner);s.sixHeading=heading;
  cards.querySelectorAll('.six-round-card').forEach(el=>{const n=Number(el.dataset.offset);el.querySelector('small').textContent=n<0?'PREV':n===0?'NOW':'NEXT';});
  s.sixOdds.querySelectorAll('.six-clear-bonus,.six-round-rail,.six-bonus-total,.six-bonus-list').forEach(el=>el.remove());
- for(const [role,label] of [['line','直線'],['triangle','トライアングル'],['hexagon','ヘキサゴン']]){
-  const col=s.sixOdds.querySelector('[data-role="'+role+'"]');col.setAttribute('aria-label',label);col.querySelector('.six-role-head').innerHTML='<canvas width="120" height="80" aria-hidden="true"></canvas>';
-  col.querySelectorAll('.six-role-row').forEach(row=>{const em=document.createElement('em');em.textContent='WIN';row.append(em);});
- }
- s.candyCanvas.dataset.version=SIX_STAGE_VERSION;
+ const wrap=s.sixOdds.querySelector('.six-role-tables');wrap.className='six-role-summary';
+ wrap.innerHTML=[['line','直線'],['triangle','△'],['hexagon','ヘキサゴン']].map(([role,label])=>'<div class="six-role-summary-row" data-role="'+role+'" aria-label="'+label+'"><div class="six-role-summary-icon"><canvas width="120" height="80" aria-hidden="true"></canvas><strong>'+label+'</strong></div><div class="six-role-summary-formula"><span class="unit">0 WIN</span><span class="times">×</span><span class="count">0個</span></div><b class="subtotal">0 WIN</b></div>').join('')+'<div class="six-role-summary-total"><span>TOTAL</span><b>0 WIN</b></div>';
+ s.sixRoleSummary=wrap;s.candyCanvas.dataset.version=SIX_STAGE_VERSION;
 };
 carnivalHud=function(a){
  const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;setupCarnivalSlot(s);document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','シックスキャンディ・Round '+e.roundIndex+'・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
  const bet=a.bet(2);fitGoldenNumber($('carnival-win'),num(medalWin(bet,e.totalHundredths)),23,100);
- const artKey=e.roundIndex+'/'+sixCandyPngState.loaded;
+ const artKey=e.roundIndex+'/'+sixCandyPngState.loaded+'/'+(e.chanceRound===e.roundIndex);let roleTotal=0;
  for(const [role,count] of [['line',e.lines],['triangle',e.triangles],['hexagon',e.hexagons]]){
-  const col=s.sixOdds.querySelector('[data-role="'+role+'"]');
-  if(col.dataset.art!==artKey){col.dataset.art=artKey;sixDrawRoleIcon(col.querySelector('canvas'),role,e.roundIndex);}
-  if(col.dataset.bet!==String(bet)){col.dataset.bet=String(bet);col.querySelectorAll('.six-role-row').forEach(row=>{const v=num(medalWin(bet,Number(row.dataset.count)*SIX_PAY[role])),b=row.querySelector('b');b.textContent=v;b.style.fontSize=(v.length>6?7:v.length>5?8:10)+'px';});}
-  if(col.dataset.count!==String(count)){col.dataset.count=String(count);col.querySelector('.six-role-reel').style.transform='translateY('+(-Math.max(0,count-2)*32)+'px)';col.querySelectorAll('.six-role-row').forEach(row=>row.classList.toggle('chosen',Number(row.dataset.count)===count));}
+  const row=s.sixOdds.querySelector('.six-role-summary-row[data-role="'+role+'"]');if(!row)continue;
+  if(row.dataset.art!==artKey){row.dataset.art=artKey;sixDrawRoleIcon(row.querySelector('canvas'),role,e.roundIndex);}
+  const unit=medalWin(bet,SIX_PAY[role]),subtotal=medalWin(bet,SIX_PAY[role]*count);roleTotal+=subtotal;
+  row.querySelector('.unit').textContent=num(unit)+' WIN';row.querySelector('.count').textContent=count+'個';row.querySelector('.subtotal').textContent=num(subtotal)+' WIN';row.classList.toggle('hot',count>0);
  }
- for(const el of s.sixHeading.querySelectorAll('.six-round-card')){const offset=Number(el.dataset.offset),r=e.roundIndex+offset,valid=r>=1&&r<=8;el.classList.toggle('current',offset===0);el.classList.toggle('disabled',!valid);el.querySelector('b').textContent=valid?'R'+r:'—';el.querySelector('em').textContent=valid?num(medalWin(bet,sixRoundClearBonus(r)))+' WIN':'';const sugar=el.querySelector('.six-round-sugar');sugar.hidden=!valid||e.sugarRound!==r||e.wonderCollected;if(!sugar.hidden)applySugarTier(sugar,wonderTier(bet));}
- const banner=s.sixHeading.querySelector('.six-allclear-banner');banner.querySelector('b').textContent=num(medalWin(bet,SIX_PAY.allClear));banner.classList.toggle('celebrate',e.phase==='pyramidAllClear');
+ const totalRow=s.sixOdds.querySelector('.six-role-summary-total b');if(totalRow)totalRow.textContent=num(roleTotal)+' WIN';
+ for(const el of s.sixHeading.querySelectorAll('.six-round-card')){const offset=Number(el.dataset.offset),r=e.roundIndex+offset,valid=r>=1&&r<=5;el.classList.toggle('current',offset===0);el.classList.toggle('disabled',!valid);el.querySelector('b').textContent=valid?'R'+r:'—';el.querySelector('em').textContent=valid?(e.chanceRound===r&&r===e.roundIndex+1?'CHANCE! 3色':num(medalWin(bet,sixRoundClearBonus(r)))+' WIN'):'';el.dataset.tone=valid?sixThemeTone(r):'';el.dataset.chance=valid&&e.chanceRound===r?'1':'0';const sugar=el.querySelector('.six-round-sugar');sugar.hidden=!valid||e.sugarRound!==r||e.wonderCollected;if(!sugar.hidden)applySugarTier(sugar,wonderTier(bet));}
+ sixRoundThemePaint(s.sixHeading,e.roundIndex);sixRoundThemePaint(s.sixOdds,e.roundIndex);
+ const banner=s.sixHeading.querySelector('.six-allclear-banner');banner.querySelector('b').textContent=num(medalWin(bet,SIX_PAY.allClear));banner.classList.toggle('celebrate',e.phase==='pyramidAllClear');banner.dataset.tone=sixThemeTone(e.roundIndex);
+ if(s.sixRoleEventKey!==[e.lines,e.triangles,e.hexagons,e.processed,e.roundIndex].join('/')){const prev=s.sixRoleLast||{line:0,triangle:0,hexagon:0};for(const [role,count] of [['line',e.lines],['triangle',e.triangles],['hexagon',e.hexagons]])if(count>prev[role])sixRolePop(s,role,bet,count);s.sixRoleLast={line:e.lines,triangle:e.triangles,hexagon:e.hexagons};s.sixRoleEventKey=[e.lines,e.triangles,e.hexagons,e.processed,e.roundIndex].join('/');}
  const key=[e.version,e.phase,e.processed,e.roundIndex,e.boardGeneration,e.totalHundredths,e.clearBonusHundredths,bet,s.reachEpoch,s.reachStatus,a.paused,e.pendingDraws.size].join('/');if(s.candyKey!==key){s.candyKey=key;carnivalQueueFrame(s);}
 };
 function sixTransitionPose(fx,r,c,t,rows,p,reduced=false){
@@ -80,33 +81,28 @@ function sixTutorialIcon(role){const key=role+'/'+sixCandyPngState.loaded;if(!si
 function sixDrawTutorial(s,time,bet){
  const x=s.candyCtx,{index,t}=sixTutorialScene(time),ease=v=>Math.max(0,Math.min(1,v));
  x.drawImage(sixArtBackdrop(10),0,0,320,320);x.fillStyle='#fff4e9ee';x.beginPath();x.roundRect(20,16,280,289,14);x.fill();
- const title=['同じ番号に HIT!','同じ色４個以上で消える','役をそろえて NEXT ROUND!','シュガーと全消しをねらおう'][index];
- sixText(x,'BET TIME · 遊び方の例',160,37,12,'#fff6ae');sixText(x,title,160,65,index===2?13:14,'#ffcfec');
+ const title=['同じ番号に HIT!','４個以上つながると消える','役成立で配当 + NEXT ROUND!','シュガーと全消しをねらおう'][index];
+ sixText(x,'BET TIME · 遊び方の例',160,37,12,'#fff6ae');sixText(x,title,160,65,index===2?12:14,'#ffcfec');
  const candy=(c,px,py,r=23,alpha=1,n=null)=>{x.save();x.globalAlpha=alpha;x.drawImage(sixArtCandySprite(c,1),px-r,py-r,r*2,r*2);if(n!==null)sixText(x,String(n),px,py+1,24);x.restore();};
  const caption=(a,b)=>{sixText(x,a,160,247,12,'#fff8d5');if(b)sixText(x,b,160,269,10,'#fff5e8');};
  if(index===0){
-  const p=t/4500,hit=p>.40,fade=hit?1-ease((p-.4)*6):1;
-  candy(0,83,195,26,1,3);candy(2,160,195,26,fade,7);candy(3,237,195,26,1,11);
-  sixText(x,'抽選番号 ７',160,108,18,'#ffe899');
-  if(!hit){x.strokeStyle='#ffba46';x.lineWidth=4;x.beginPath();x.moveTo(160,125);x.lineTo(160,155);x.moveTo(151,146);x.lineTo(160,155);x.lineTo(169,146);x.stroke();}
-  else{const q=ease((p-.4)*3);for(let k=0;k<7;k++){const a=k*6.28/7;sixArtStar(x,160+Math.cos(a)*q*52,195+Math.sin(a)*q*36,4*(1-q),'#fff','#e8a24e');}sixText(x,'HIT!',160,154,22,'#ffc2e7');}
+  const p=t/4500,hit=p>.40,fade=hit?1-ease((p-.4)*6):1;candy(0,83,195,26,1,3);candy(2,160,195,26,fade,7);candy(3,237,195,26,1,11);sixText(x,'抽選番号 ７',160,108,18,'#ffe899');
+  if(!hit){x.strokeStyle='#ffba46';x.lineWidth=4;x.beginPath();x.moveTo(160,125);x.lineTo(160,155);x.moveTo(151,146);x.lineTo(160,155);x.lineTo(169,146);x.stroke();}else{const q=ease((p-.4)*3);for(let k=0;k<7;k++){const a=k*6.28/7;sixArtStar(x,160+Math.cos(a)*q*52,195+Math.sin(a)*q*36,4*(1-q),'#fff','#e8a24e');}sixText(x,'HIT!',160,154,22,'#ffc2e7');}
   caption('入った番号のキャンディが割れる','番号がないキャンディは HIT しない');
  }else if(index===1){
-  const p=(t-4500)/4500,q=ease(p/.30),clear=p>.52,alpha=clear?1-ease((p-.52)*5):1;
-  candy(0,90,203,25,alpha);candy(0,140,203,25,alpha);candy(0,115,160,25,alpha);candy(0,165,96+(160-96)*q*q,25,alpha);
-  if(p>.35&&p<.70)sixText(x,'４個つながった！',160,115,17,'#e7ffb0');
-  if(p>.70){const z=ease((p-.70)*5);for(let k=0;k<4;k++)candy(2,100+(k%2)*50,110+Math.floor(k/2)*43+z*30,23,1-z*.6);sixText(x,'２ CHAIN!',160,118,23,'#bff7ff');}
-  caption('落下後もそろうと、つづけて連鎖！','消えたあとのつながりに注目');
+  const p=(t-4500)/4500,q=ease(p/.30),alpha=p>.55?1-ease((p-.55)*4):1;candy(0,90,203,25,alpha);candy(0,140,203,25,alpha);candy(0,115,160,25,alpha);candy(0,165,96+(160-96)*q*q,25,alpha);
+  if(p>.30&&p<.70){for(const [cx,cy] of [[90,203],[140,203],[115,160],[165,96+(160-96)*q*q]]){x.strokeStyle='#f8ffb6';x.lineWidth=3;x.beginPath();x.arc(cx,cy,29,0,Math.PI*2);x.stroke();}sixText(x,'４個つながった！',160,115,17,'#e7ffb0');}
+  if(p>.70){const z=ease((p-.70)*5);for(let k=0;k<4;k++)candy(2,100+(k%2)*50,110+Math.floor(k/2)*43+z*30,23,1-z*.6);sixText(x,'つながると消去！',160,118,19,'#bff7ff');}
+  caption('同じ色が４個以上つながると消える','落下後にまたつながると連鎖！');
  }else if(index===2){
-  ['line','triangle','hexagon'].forEach((role,i)=>{const cx=65+i*95;x.drawImage(sixTutorialIcon(role),cx-43,127,86,58);sixText(x,num(medalWin(bet,SIX_PAY[role])),cx,204,13,'#ffe99c');sixText(x,'WIN',cx,221,8,'#fff');});
-  caption('形がそろうと配当＋次の Round','次の盤面にも残りの抽選で挑戦！');
+  const p=(t-9000)/5000,glow=.5+.5*Math.sin(time/220);[[88,182],[136,182],[184,182],[232,182],[112,138],[208,138]].forEach(([px,py],i)=>candy(i<4?1:(i===4?0:2),px,py,23,1));
+  if(p>.15){x.strokeStyle='#c2fbff';x.lineWidth=4;x.shadowColor='#c2fbff';x.shadowBlur=12;x.beginPath();x.moveTo(66,182);x.lineTo(254,182);x.stroke();x.shadowBlur=0;sixText(x,'直線成立!',160,118,20,'#c8fbff');}
+  if(p>.42){sixText(x,'+'+num(medalWin(bet,SIX_PAY.line))+' WIN',110,222,14,'#ffe99c');x.fillStyle='rgba(255,255,190,'+(.18+.18*glow)+')';x.fillRect(77,210,66,23);}
+  if(p>.60){x.strokeStyle='#ffd883';x.lineWidth=3;x.beginPath();x.roundRect(176,206,96,28,12);x.stroke();sixText(x,'NEXT ROUND',224,220,12,'#ffd7f2');}
+  caption('役ができると配当を獲得','はじめて役が成立したRoundは次へ進出');
  }else{
-  const p=(t-14000)/4000;
-  if(p<.55){const q=ease(p/.5);for(let k=0;k<4;k++)candy(0,86+(k%2)*50,143+Math.floor(k/2)*43,23,1-Math.max(0,q-.65)*2);const sugar=getSugarSprite(wonderTier(bet));if(sugar)x.drawImage(sugar,67+q*75,124-q*13,38,38);sixText(x,p>.3?'SUGAR GET!':'シュガー入り',160,113,19,'#ffe5a1');caption('シュガー入りを含めて消すと GET!','同色４個以上、または役の成立で獲得');}
-  else{sixText(x,'ALL CLEAR!',160,133,30,'#ffe686');sixText(x,num(medalWin(bet,SIX_PAY.allClear))+' WIN',160,188,26,'#ffd4ef');for(let k=0;k<6;k++)sixArtStar(x,48+k*45,96+Math.sin(time/450+k)*8,5,'#fff7b9','#e9a25e');caption('盤面を全部消すと大きなボーナス','本番の番号はゲーム開始時に決まる');}
+  const p=(t-14000)/4000;if(p<.55){const q=ease(p/.5);for(let k=0;k<4;k++)candy(0,86+(k%2)*50,143+Math.floor(k/2)*43,23,1-Math.max(0,q-.65)*2);const sugar=getSugarSprite(wonderTier(bet));if(sugar)x.drawImage(sugar,67+q*75,124-q*13,38,38);sixText(x,p>.3?'SUGAR GET!':'シュガー入り',160,113,19,'#ffe5a1');caption('シュガー入りを含めて消すと GET!','同色４個以上、または役の成立で獲得');}else{sixText(x,'ALL CLEAR!',160,133,30,'#ffe686');sixText(x,num(medalWin(bet,SIX_PAY.allClear))+' WIN',160,188,26,'#ffd4ef');for(let k=0;k<6;k++)sixArtStar(x,48+k*45,96+Math.sin(time/450+k)*8,5,'#fff7b9','#e9a25e');caption('盤面を全部消すと大きなボーナス','本番の番号はゲーム開始時に決まる');}
  }
  for(let k=0;k<4;k++){x.fillStyle=k===index?'#ed67a4':'#d6b8ca';x.beginPath();x.arc(139+k*14,291,k===index?4:3,0,7);x.fill();}
- s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.setAttribute('aria-label','シックスキャンディ・遊び方の例・'+title);
- s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent='BET待機中・18秒の遊び方';
- s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
+ s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.setAttribute('aria-label','シックスキャンディ・遊び方の例・'+title);s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent='BET待機中・18秒の遊び方';s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
 }
