@@ -16,10 +16,10 @@ def replace(a,b):
  new=new.replace(a,b,1)
 replace("const SIX_FALL_RULES='grid-support-synchronous-v3';","const SIX_FALL_RULES='grid-support-synchronous-v4-gap-settle';")
 replace(" t=Math.max(0,Math.min(1,t));const a=sixPoint(...move.from),b=sixPoint(...move.to);\n if(!move.pivot)",""" t=Math.max(0,Math.min(1,t));const a=sixPoint(...move.from),b=sixPoint(...move.to);
+ if(t===0)return a;if(t===1)return b;
  if(move.gap){
   // Empty lower neighbours cannot support a candy. Descend through the open
   // centre before settling sideways; a direct diagonal would clip a side candy.
-  if(t===0)return a;if(t===1)return b;
   const sign=Math.sign(b.x-a.x);
   if(move.gapPivot){
    // Approach the top of the next-row support, then roll only 30 degrees.
