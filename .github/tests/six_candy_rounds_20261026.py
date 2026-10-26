@@ -55,7 +55,7 @@ with sync_playwright() as p:
  const hex=[[4,1],[4,2],[5,3],[6,3],[6,2],[5,1]];check(q.sixFindShapes(stamp(hex))[0].type==='hexagon','Hexagon');
  for(const cells of [[[9,1],[9,2],[9,3],[9,4],[9,5]],[[4,1],[5,1],[6,1],[7,1]],[[4,1],[5,2],[6,3],[7,4]]]){const roles=q.sixFindShapes(stamp(cells));check(roles.length===1&&roles[0].type==='line','Line axis or one maximal line');}
  const generic=stamp([[8,2],[9,2],[9,3],[9,4]]);check(q.sixFindShapes(generic).length===0&&q.sixResolve(generic).cells.length===4,'Generic 4 connected not detected');
- const solid=Array.from({length:8},(_,r)=>Array.from({length:r+1},(_,c)=>tile(r*16+c+1)));const roles=q.sixFindShapes(solid),allocated=roles.flatMap(f=>f.cells.map(v=>v.join(',')));check(new Set(allocated).size===allocated.length,'One cell contributes to two roles');check(roles[0].type==='hexagon'&&Math.min(...roles[0].cells.map(p=>p[0]))===0,'Topmost highest role not first');
+ const solid=Array.from({length:8},(_,r)=>Array.from({length:r+1},(_,c)=>tile(r*16+c+1)));const roles=q.sixFindShapes(solid),allocated=roles.flatMap(f=>f.cells.map(v=>v.join(',')));check(new Set(allocated).size===allocated.length,'One cell contributes to two roles');check(roles[0].type==='hexagon'&&Math.min(...roles[0].cells.map(p=>p[0]))===Math.min(...q.sixPatterns(8).filter(p=>p.type==='hexagon').map(p=>Math.min(...p.cells.map(v=>v[0])))),'Topmost highest role not first');
  // Stable bottom fixtures verify requested payouts and no old cascade multipliers.
  const tri=stamp([[7,1],[8,1],[8,2],[9,1],[9,2],[9,3]]);tri[9][9]=tile(99,2,1);
  let plan=q.sixPlan(tri,[1]);check(plan.triangles===1&&plan.hexagons===0&&plan.lines===0&&plan.cleared&&plan.gain===6030,'Triangle +60 all clear');
