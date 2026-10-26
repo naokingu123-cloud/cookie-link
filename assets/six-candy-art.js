@@ -17,7 +17,7 @@ function sixArtHeart(x,cx,cy,r,fill='#ff559b'){
  x.save();x.translate(cx,cy);x.beginPath();x.moveTo(0,r*.72);x.bezierCurveTo(-r*1.6,-r*.12,-r*.73,-r*1.28,0,-r*.52);x.bezierCurveTo(r*.73,-r*1.28,r*1.6,-r*.12,0,r*.72);x.fillStyle=fill;x.fill();x.strokeStyle='#fff5df';x.lineWidth=r*.12;x.stroke();x.restore();
 }
 function sixArtCandySprite(color){
- color=((color%5)+5)%5;const key='candy/'+color;if(sixArtCache.has(key))return sixArtCache.get(key);
+ color=([0,1,3,4,2][((color%5)+5)%5]);const key='candy/'+color;if(sixArtCache.has(key))return sixArtCache.get(key);
  const cv=document.createElement('canvas');cv.width=cv.height=144;const x=cv.getContext('2d'),p=SIX_ART_PALETTE[color];
  x.shadowColor=p[2]+'99';x.shadowBlur=4;x.shadowOffsetY=3;
  const shell=x.createRadialGradient(42,32,2,73,72,65);shell.addColorStop(0,'#ffffff');shell.addColorStop(.2,p[0]);shell.addColorStop(.52,p[1]);shell.addColorStop(.84,p[1]);shell.addColorStop(1,p[2]);
