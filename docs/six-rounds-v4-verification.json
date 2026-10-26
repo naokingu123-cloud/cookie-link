@@ -1,0 +1,113 @@
+{
+  "art": {
+    "originalPNG": true,
+    "roundVariants": 31,
+    "numerals": 25,
+    "candyDiameter": 35,
+    "miniMatches": true
+  },
+  "layouts": [
+    {
+      "width": 430,
+      "height": 932,
+      "panel": {
+        "x": 22.395832061767578,
+        "y": 530.5,
+        "right": 301.89580154418945,
+        "bottom": 818.9583129882812,
+        "width": 279.4999694824219,
+        "height": 288.45831298828125
+      },
+      "oddsFits": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "panel": {
+        "x": 20.3125,
+        "y": 480.5,
+        "right": 273.8125,
+        "bottom": 742.125,
+        "width": 253.5,
+        "height": 261.625
+      },
+      "oddsFits": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "panel": {
+        "x": 32.791664123535156,
+        "y": 326.5999755859375,
+        "right": 217.39167022705078,
+        "bottom": 517.1166381835938,
+        "width": 184.60000610351562,
+        "height": 190.51666259765625
+      },
+      "oddsFits": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "panel": {
+        "x": 334.65625,
+        "y": 224.25,
+        "right": 461.40625,
+        "bottom": 355.0625,
+        "width": 126.75,
+        "height": 130.8125
+      },
+      "oddsFits": true
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "panel": {
+        "x": 438.4375,
+        "y": 517.5,
+        "right": 730.9375,
+        "bottom": 819.375,
+        "width": 292.5,
+        "height": 301.875
+      },
+      "oddsFits": true
+    }
+  ],
+  "rounds": {
+    "seeded": 8,
+    "forcedRounds": 8,
+    "allClearMultiplier": 100,
+    "roundBonusSum": 194.6,
+    "firstThreeBonus": 1.6,
+    "sugarOnce": true,
+    "mixedGames": true,
+    "creditOnce": true,
+    "zeroBet": true
+  },
+  "motion": {
+    "fallChangesPixels": true
+  },
+  "reach": {
+    "commonLabels": 4,
+    "highOrbits": 2,
+    "allClearAura": true
+  },
+  "tables": {
+    "threeSlidingTables": true,
+    "beyondSeven": true
+  },
+  "audio": {
+    "effectBuffers": 4,
+    "voicesAfterReset": 0
+  },
+  "nativeDesktop": {
+    "width": 1280,
+    "height": 900,
+    "roulette": true
+  },
+  "errors": [],
+  "failedResponses": [],
+  "memoryOnly": false,
+  "physicalIPhone": false,
+  "naturalEightBallPhysics": false
+}
