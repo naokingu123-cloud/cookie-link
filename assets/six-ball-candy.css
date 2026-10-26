@@ -1,0 +1,33 @@
+/* Third tab only. Existing payout/Sugar emphasis and black-strip boundaries remain intact. */
+.carnival-tab-title{font-size:9.6px;letter-spacing:-.3px;line-height:17px;color:#7f4799}
+.carnival-tab-title small{font-size:5.4px;letter-spacing:1px;color:#967293}
+.six-ball-surface{background:#3c294b;border-color:#d8ac88;box-shadow:inset 0 0 0 2px #ffebbf,0 3px #7e4f6b}
+.six-ball-surface .carnival-topline{height:17px;min-height:17px;line-height:17px;padding:0 6px;background:linear-gradient(#f7d5c3,#dcb2bc);font-size:7.5px}
+.six-ball-surface .carnival-topline b{font-size:6.5px;line-height:13px;padding:0 3px}
+.six-ball-surface .carnival-canvas{background:linear-gradient(135deg,#342549,#3b344f);object-fit:contain}
+.six-ball-surface .carnival-status{height:17px;min-height:17px;line-height:17px;font-size:7.1px;background:#f9e8da;border-color:#cba3b7}
+#carnival-heading{padding:0 12px;gap:3px}
+#carnival-heading strong{font-size:17.5px;letter-spacing:-.4px;line-height:24px}
+#carnival-heading strong small{font-size:6.8px;letter-spacing:.2px}
+#carnival-heading>span{font-size:6.5px}#carnival-complete{font-size:22px}
+#carnival-odds{padding:4px;gap:3px;background:linear-gradient(#fff5e9,#eadcf5)}
+#carnival-odds .carnival-odds-title{font-size:7.3px;line-height:10px;padding-bottom:2px}
+#carnival-odds .carnival-odds-title small{font-size:6px;line-height:8px}
+#carnival-odds section span{font-size:7px;line-height:9px}
+#carnival-odds section em{font-size:7px;line-height:9px}
+#carnival-win{line-height:26px}
+.six-shape-guide{display:flex;align-items:center;gap:2px;min-height:38px;padding:2px 0;border-bottom:1px dotted #caabc6}
+.six-shape-guide svg{width:33px;height:30px;flex:none;overflow:visible}
+.six-shape-guide>span{font:900 7.1px/11px system-ui,sans-serif;text-align:left;letter-spacing:-.4px}
+.six-shape-guide small{display:block;font:800 6.1px/9px system-ui,sans-serif;color:#a45280;letter-spacing:-.3px}
+.six-chain-guide{font:900 8px/11px system-ui,sans-serif;color:#8e4b8f;padding:3px 0}
+.six-chain-guide small{font-size:6px;line-height:9px}
+#carnival-odds .carnival-sugar-goal{font-size:7px;line-height:10px;padding:2px}
+#carnival-odds .carnival-sugar-goal b{font-size:9px;line-height:12px}
+#carnival-odds p{font-size:6.2px;line-height:9px}
+#carnival-odds footer{font-size:5.7px;line-height:8px}
+.six-ball-surface .carnival-reward{top:58%;padding:10px 6px;max-width:260px}
+.six-ball-surface .carnival-reward small{font-size:10px;letter-spacing:.2px}
+body.mobile-landscape #carnival-heading strong{font-size:16px}
+body.mobile-landscape #carnival-heading{padding:0 9px}
+@media(forced-colors:active){.six-ball-surface{border-color:CanvasText}.six-shape-guide{border-color:CanvasText}.six-chain-guide,.six-shape-guide small{color:CanvasText}}
