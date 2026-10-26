@@ -5,6 +5,9 @@ on:
     paths: ['.github/workflows/six-candy-rounds-install.yml']
 permissions:
   contents: write
+concurrency:
+  group: six-candy-rounds-install
+  cancel-in-progress: true
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -17,8 +20,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Apply exact-source guarded update
-        run: python .github/maintenance/install_six_candy_rounds_20261026.py
+      - name: Apply guarded update and correct geometry fixture
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/tests/six_candy_rounds_20261026.py');s=p.read_text()
+          a="Math.min(...roles[0].cells.map(p=>p[0]))===0"
+          b="Math.min(...roles[0].cells.map(p=>p[0]))===Math.min(...q.sixPatterns(8).filter(p=>p.type==='hexagon').map(p=>Math.min(...p.cells.map(v=>v[0]))))"
+          assert s.count(a)==1;s=s.replace(a,b);p.write_text(s)
+          PY
+          python .github/maintenance/install_six_candy_rounds_20261026.py
       - name: Install browser verification
         run: |
           pip install playwright >/tmp/six-rounds-browser.log 2>&1
@@ -40,23 +51,23 @@ jobs:
           import hashlib
           raw=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
           note='\n\n## 追加更新: シックスキャンディ・Round進行と落下改修（2026-10-26）\n'
-          note+='- 第3タブの名称をシックスキャンディへ変更。盤面上部の暫定デバッグ選択で7/8/9/10段（28/36/45/55個）を選択。BET中のみ変更可能、他の2ゲームと抽選機をリセットしない。通常の次ゲームでも段数は保持、再読み込みは10段。初期BET3000/BET20秒/既存音声・物理抽選は維持。\n'
-          note+='- 各盤面の開始時に1〜25を各1個ずつ、異なる25キャンディへ割当。残りは番号なし。既に入賞した番号も新盤面には配置するが、共通8球抽選は番号重複なしのまま。初期配置は特殊役だけでなく4個以上の同色連結も禁止。\n'
-          note+='- 落下は横の隣接球/支持球と移動中の円の衝突を確認。支持球が1個ならその周囲の円弧で転がり、左右の支持がなく下2段に道がある場合は真下へ落下。ランダムな行ごとの左右反転は廃止。下の行から順に、同時に動けるキャンディのみ同じフレームで動かし、描画も同じ時系列を再生。\n'
-          note+='- Nintendoの6ボールパズルと完全一致を確認した実装ではない。公式の公開ページは概要のみ。独立した近似モデルであり、第三者の再現アルゴリズムの側方クリアランス解説を調査したがコードは転載していない。参考: https://www.nintendo.com/jp/switch/as7ta/games/index.html ; https://qiita.com/GANTZ/items/e6b5e9168b595404d582 。\n'
-          note+='- 同色のヘキサゴン6個→トライアングル6個（上下両向き）→直線4個以上の順に採用。同種は上側から。役同士で同じマスを使わない。直線は横/左下/右下の3軸、最大の連続1本を1役と数える。役以外も同色連結4個以上は消去して連鎖する（通常連結そのものに配当なし）。\n'
-          note+='- 配当は独立累計: HEX個数×0.5倍、TRI個数×0.3倍、LINE本数×0.1倍を加算。旧連鎖倍率は廃止。1盤面を全消しすると追加60倍を1回加算。通常連結だけで全消しした場合も60倍。\n'
-          note+='- 1役以上または全消しを達成したHITの連鎖を最後まで解決し、次のRoundへ。通常連結だけでは盤面変更なし。同じ8球の残りを新盤面で続ける。最終球で達成した場合は不要な次盤面を生成せずリザルト。次のBETではRound1へ戻る。色数は暫定でRound1〜2が5色、Round3〜4が4色、Round5以降が3色（共通デバッグ色数が少ない場合はそちらを上限）。\n'
-          note+='- シュガーは既存のヘキサゴン達成による通常シュガー1ゲーム1個を維持。虹/Direct JPCの発生条件は変更なし。独立配当欄、Round表示、残数、横斜めの直線強調、リザルトを更新。専用の既存キャンディ描画を使用。前チャットの生成PNG素材は今回未組込。\n'
-          note+='- 検証: 7〜10段×3〜5色の216初期盤面で25番号の一意性/空白/初期役と4連結なし、36盤面の落下フレームで数保存/静的・同時移動球とのすり抜けなし/落下後安定、上下三角形/3方向直線/優先順位/マス重複なし、独立配当/全消し60倍/予測一致、8球のRound進行と色数減少/0BET/途中リセット/シュガー一度/3種同時集計とCREDIT一度、段数選択の他ゲーム非干渉、モバイル3サイズ・横画面・PC、配当吹き出しと黒帯非重複をChromiumで確認。\n'
-          note+='- 未検証: Nintendo実機との完全一致、iPhone実機、自然な物理抽選の8球全軌道。テスト入賞は制御した番号コールバック。音声ソースは不変確認（今回聴感テストなし）。\n'
-          note+='- 編集元assets/six-candy-rounds-engine.js / six-candy-rounds-ui.js / six-candy-rounds.css。assets/six-candy.jsとindex.htmlへ組込。検証.github/tests/six_candy_rounds_20261026.py。最新index.html blob: `'+sha+'`。\n'
+          note+='- 第3タブをシックスキャンディへ改名。盤面上部で7/8/9/10段（28/36/45/55個）をBET中に選択。他のゲーム/抽選機はリセットしない。段数は次ゲームでも保持、再読込は10段。各初期BET3000、BET20秒、既存の発射/音声を維持。\n'
+          note+='- 各盤面に1〜25を異なる25キャンディへ1個ずつ割当。残りは番号なし。新盤面にも全25番号を配置するが、共通の8球抽選は番号重複なしのまま。初期配置は特殊役と4個以上の同色連結を禁止。\n'
+          note+='- 落下は横の隣接球・支持球・移動中の円の衝突を確認。支持1個ならその周囲を円弧で転がり、左右の支持がなく下2段に通路があれば真下へ落下。行ごとの任意な左右反転を廃止。下の行から安全に動ける球を同一フレームで動かし、描画も同じ時間順に再生。\n'
+          note+='- Nintendoの6ボールパズルとの完全一致は未確認。公式の公開情報は概要のみ。独立した近似モデルであり原作コードは未使用。側方クリアランスの調査参考: https://www.nintendo.com/jp/switch/as7ta/games/index.html ; https://qiita.com/GANTZ/items/e6b5e9168b595404d582 。\n'
+          note+='- ヘキサゴン6個→トライアングル6個（上下両向き）→直線4個以上の優先順。同種は上側から、マスの重複使用なし。直線は横/左右斜めの3軸で最大連続1本を1役。役以外も4個以上同色連結は消去・連鎖するが通常連結の直接配当なし。\n'
+          note+='- 独立配当累計: HEX個数×0.5倍、TRI個数×0.3倍、LINE本数×0.1倍。旧連鎖倍率を廃止。全消しした盤面に追加60倍を1回付与。通常連結のみの全消しも対象。\n'
+          note+='- 1役以上または全消しのHITから続く連鎖を最後まで処理して次のRoundへ。同じ8球の残りを新盤面で継続。通常連結だけでは盤面変更なし。8球目の後は不要な盤面を生成せずリザルト。次のBETはRound1。暫定色数: Round1〜2は5色、3〜4は4色、5以降は3色（共通のデバッグ色数を上限）。\n'
+          note+='- 既存のHEX達成シュガー1ゲーム1個、3倍/10倍吹き出し強調、黒帯非重複を維持。独立配当欄/Round/残数/直線演出/リザルトを更新。前チャットの生成PNG画像は今回未組込、既存のキャンディ描画を使用。\n'
+          note+='- 検証: 216初期盤面の番号一意性/空白/初期役・4連結なし、36盤面の落下フレームの数保存/すり抜けなし/安定、上下三角形/3軸直線/優先順位/重複なし、独立配当/60倍/予測一致、8球Roundと色数減少/0BET/途中リセット/シュガー一度/3ゲーム同時集計・CREDIT一度、段数選択の独立性、スマホ3サイズ・横画面・PC/吹き出しと黒帯非重複をChromiumで確認。\n'
+          note+='- 未検証: 原作実機との完全一致、iPhone実機、自然な物理抽選全8球。テストは制御した番号通知。音声ソースは不変確認、今回聴感テストなし。\n'
+          note+='- 編集元assets/six-candy-rounds-engine.js / six-candy-rounds-ui.js / six-candy-rounds.css。assets/six-candy.jsとindex.htmlに組込。検証.github/tests/six_candy_rounds_20261026.py。最新index.html blob: `'+sha+'`。\n'
           p=Path('HANDOFF.md');p.write_text(p.read_text()+note);print('VERIFIED_SIX_CANDY_ROUNDS_BLOB',sha)
           PY
           test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$GITHUB_SHA"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/workflows/six-candy-rounds-install.yml
-          git add index.html HANDOFF.md assets/six-candy.js
+          git add index.html HANDOFF.md assets/six-candy.js .github/tests/six_candy_rounds_20261026.py
           git commit -m 'Upgrade Six Candy gravity, independent roles and advancing rounds'
           git push origin HEAD:main
