@@ -36,3 +36,19 @@ body.carnival-active #carnival-odds{gap:4px;padding:3px;overflow:hidden}
 .six-role-summary-formula{display:flex;align-items:center;justify-content:center;gap:2px;min-width:0;font:900 6px/8px system-ui;color:#8f6e7d}.six-role-summary-formula .unit{color:#a72f73;font:1000 7px/8px ArcadePayout,system-ui;white-space:nowrap}.six-role-summary-formula .count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;padding:1px 3px;border-radius:999px;background:linear-gradient(#ff8ac0,#ff65a8);color:#fff8f0;font:1000 6px/8px system-ui;white-space:nowrap}.six-role-summary-formula .times{font:1000 7px/8px system-ui;color:#b8798d}
 .six-role-summary-row .subtotal{font:1000 8px/9px ArcadePayout,system-ui;color:#a72f73;white-space:nowrap}
 .six-role-summary-total{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;padding:5px 7px;border:2px solid #d8a2d5;border-radius:10px;background:linear-gradient(180deg,#f9d8ef,#fff3fb)}.six-role-summary-total span{font:1000 8px/9px system-ui;color:#7c4e74}.six-role-summary-total b{font:1000 10px/11px ArcadePayout,system-ui;color:#a72f73;white-space:nowrap}
+
+
+/* Six Candy v6.3 overlap-safe payout summary */
+.six-role-summary{display:grid!important;grid-template-columns:1fr!important;gap:3px!important;min-width:0!important;flex:none!important}
+.six-role-summary-row{display:grid!important;grid-template-columns:30px minmax(0,1fr)!important;grid-template-areas:"icon formula" "icon subtotal"!important;align-items:center!important;column-gap:4px!important;row-gap:1px!important;min-height:42px!important;padding:3px 5px!important;box-sizing:border-box!important;overflow:hidden!important}
+.six-role-summary-row>*{min-width:0!important}
+.six-role-summary-icon{grid-area:icon!important;align-self:center!important}
+.six-role-summary-icon canvas{width:28px!important;height:20px!important;object-fit:contain!important}
+.six-role-summary-icon strong{font:900 6px/7px system-ui!important;white-space:nowrap!important}
+.six-role-summary-formula{grid-area:formula!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:2px!important;white-space:nowrap!important;overflow:hidden!important;font:900 6px/8px system-ui!important}
+.six-role-summary-formula .unit{font:1000 7px/8px ArcadePayout,system-ui!important;white-space:nowrap!important}
+.six-role-summary-formula .times{font:1000 7px/8px system-ui!important;flex:none!important}
+.six-role-summary-formula .count{min-width:20px!important;padding:1px 3px!important;font:1000 6px/8px system-ui!important;white-space:nowrap!important;flex:none!important}
+.six-role-summary-row .subtotal{grid-area:subtotal!important;justify-self:end!important;max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important;font:1000 8px/9px ArcadePayout,system-ui!important;white-space:nowrap!important}
+.six-role-summary-total{display:grid!important;grid-template-columns:1fr auto!important;align-items:center!important;gap:5px!important;padding:5px 7px!important;min-width:0!important;overflow:hidden!important}
+.six-role-summary-total b{font:1000 10px/11px ArcadePayout,system-ui!important;white-space:nowrap!important}
