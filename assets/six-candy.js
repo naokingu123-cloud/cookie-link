@@ -287,16 +287,120 @@ class SixBallCandyEngine extends Engine{
 }
 const CandyCarnivalEngine=SixBallCandyEngine;
 
-const sixSprites=new Map();
-function sixCandySprite(color){
- if(sixSprites.has(color))return sixSprites.get(color);const p=SIX_COLORS[color],cv=document.createElement('canvas');cv.width=96;cv.height=96;const x=cv.getContext('2d');
- const g=x.createRadialGradient(30,22,2,49,50,46);g.addColorStop(0,p.light);g.addColorStop(.34,p.color);g.addColorStop(1,p.dark);x.fillStyle=g;x.beginPath();x.arc(48,47,43,0,Math.PI*2);x.fill();x.strokeStyle=p.dark;x.lineWidth=3;x.stroke();
- x.save();x.clip();x.strokeStyle='#fff8e66e';x.lineWidth=7;
- if(color%3===0){x.beginPath();for(let i=0;i<100;i++){const a=i*.19,r=i*.48;i?x.lineTo(48+Math.cos(a)*r,47+Math.sin(a)*r):x.moveTo(48,47);}x.stroke();}
- else if(color%3===1){for(let k=-60;k<140;k+=22){x.beginPath();x.moveTo(k,0);x.lineTo(k+90,96);x.stroke();}}
- else{for(const r of [17,31,41]){x.beginPath();x.arc(48,47,r,0,7);x.stroke();}}
- x.restore();x.fillStyle='#fff9e9bf';x.beginPath();x.ellipse(31,20,16,7,-.4,0,7);x.fill();x.strokeStyle='#fff8daaa';x.lineWidth=1.5;x.beginPath();x.arc(48,47,40,-2.9,-.6);x.stroke();sixSprites.set(color,cv);return cv;
+/* Six Candy visual skin — reference-informed vector/canvas artwork.
+ * This is not an embedding of the generated PNGs: connector egress for those
+ * attachments was unavailable. This file contains presentation only, no RNG,
+ * scoring, board generation, gravity or changes to the shared roulette/audio.
+ */
+const SIX_ART_VERSION='candy-illustrated-v1';
+const sixArtCache=new Map();
+const SIX_ART_PALETTE=[
+ ['#fff0f6','#ff478c','#b81051'],['#fffbc7','#ffd71c','#d57b06'],
+ ['#eeffd9','#67d826','#217d16'],['#dfffff','#28c9f1','#0660ab'],
+ ['#fbeaff','#bd54f5','#6c14ad']
+];
+function sixArtStar(x,cx,cy,r,fill='#ffdf3e',stroke='#df8b17'){
+ x.save();x.translate(cx,cy);x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,d=k%2?r*.48:r;k?x.lineTo(Math.cos(a)*d,Math.sin(a)*d):x.moveTo(Math.cos(a)*d,Math.sin(a)*d);}x.closePath();x.fillStyle=fill;x.strokeStyle=stroke;x.lineWidth=Math.max(.7,r*.13);x.lineJoin='round';x.fill();x.stroke();x.restore();
 }
+function sixArtHeart(x,cx,cy,r,fill='#ff559b'){
+ x.save();x.translate(cx,cy);x.beginPath();x.moveTo(0,r*.72);x.bezierCurveTo(-r*1.6,-r*.12,-r*.73,-r*1.28,0,-r*.52);x.bezierCurveTo(r*.73,-r*1.28,r*1.6,-r*.12,0,r*.72);x.fillStyle=fill;x.fill();x.strokeStyle='#fff5df';x.lineWidth=r*.12;x.stroke();x.restore();
+}
+function sixArtCandySprite(color){
+ color=((color%5)+5)%5;const key='candy/'+color;if(sixArtCache.has(key))return sixArtCache.get(key);
+ const cv=document.createElement('canvas');cv.width=cv.height=144;const x=cv.getContext('2d'),p=SIX_ART_PALETTE[color];
+ x.shadowColor=p[2]+'99';x.shadowBlur=4;x.shadowOffsetY=3;
+ const shell=x.createRadialGradient(42,32,2,73,72,65);shell.addColorStop(0,'#ffffff');shell.addColorStop(.2,p[0]);shell.addColorStop(.52,p[1]);shell.addColorStop(.84,p[1]);shell.addColorStop(1,p[2]);
+ x.fillStyle=shell;x.beginPath();x.arc(72,70,64,0,Math.PI*2);x.fill();x.shadowBlur=0;x.shadowOffsetY=0;x.strokeStyle=p[2];x.lineWidth=3;x.stroke();
+ x.strokeStyle='#ffffffcc';x.lineWidth=2.8;x.beginPath();x.arc(72,70,58,-2.9,-.35);x.stroke();
+ x.save();x.beginPath();x.arc(72,70,53,0,7);x.clip();
+ const core=x.createLinearGradient(34,20,105,121);core.addColorStop(0,p[0]);core.addColorStop(.3,p[1]);core.addColorStop(1,p[2]);x.fillStyle=core;x.fillRect(12,12,120,120);
+ if(color===0){
+  // Strawberry candy: fruit silhouette, leaves and seeds, not a flat color disk.
+  x.fillStyle='#f32355';x.beginPath();x.moveTo(72,34);x.bezierCurveTo(17,28,31,92,72,110);x.bezierCurveTo(113,92,127,28,72,34);x.fill();
+  x.fillStyle='#64bc2b';for(let k=-1;k<=1;k++){x.save();x.translate(72,38);x.rotate(k*.7);x.beginPath();x.ellipse(0,-8,6,15,0,0,7);x.fill();x.restore();}
+  x.fillStyle='#fff6b2';for(const [u,v,a] of [[50,55,-.2],[78,58,.2],[95,64,.4],[57,80,-.2],[79,86,.15]]){x.beginPath();x.ellipse(u,v,2.5,5,a,0,7);x.fill();}
+ }else if(color===1){
+  // Lemon cross-section with translucent segments.
+  x.fillStyle='#fff9b4';x.beginPath();x.arc(72,70,44,0,7);x.fill();
+  for(let k=0;k<8;k++){const a=k*Math.PI/4+.06;x.fillStyle=k%2?'#ffdc2f':'#ffc420';x.beginPath();x.moveTo(72+Math.cos(a)*7,70+Math.sin(a)*7);x.arc(72,70,37,a,a+Math.PI/4-.12);x.closePath();x.fill();}
+  x.strokeStyle='#fffce2';x.lineWidth=2;x.beginPath();x.arc(72,70,43,0,7);x.stroke();
+ }else if(color===2){
+  // Lime/kiwi hard candy, kept green to preserve the game's color identity.
+  x.fillStyle='#ddf38b';x.beginPath();x.arc(72,70,41,0,7);x.fill();
+  x.fillStyle='#fff3c3';x.beginPath();x.ellipse(72,70,14,17,0,0,7);x.fill();
+  for(let k=0;k<12;k++){const a=k*Math.PI/6;x.save();x.translate(72+Math.cos(a)*27,70+Math.sin(a)*27);x.rotate(a);x.fillStyle='#518120';x.beginPath();x.ellipse(0,0,3.6,2,0,0,7);x.fill();x.restore();}
+ }else if(color===3){
+  // Peppermint swirl with a blue candy-glass rim.
+  x.fillStyle='#e9fffb';for(let k=0;k<6;k++){x.save();x.translate(72,70);x.rotate(k*Math.PI/3);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(12,-29,41,-12,51,-18);x.arc(0,0,54,-.34,.17);x.bezierCurveTo(33,19,13,21,0,0);x.fill();x.restore();}
+ }else{
+  // Grape bonbon with separate glossy fruit lobes.
+  for(const [u,v,r] of [[53,53,17],[78,46,17],[93,64,17],[62,76,18],[83,88,17],[64,101,13]]){const g=x.createRadialGradient(u-5,v-6,1,u,v,r);g.addColorStop(0,'#f7ceff');g.addColorStop(.24,'#d875ff');g.addColorStop(.65,'#a83ae6');g.addColorStop(1,'#701cb4');x.fillStyle=g;x.beginPath();x.arc(u,v,r,0,7);x.fill();x.strokeStyle='#7721b0';x.lineWidth=1.5;x.stroke();}
+  x.fillStyle='#60cb4a';x.beginPath();x.ellipse(73,28,8,17,.7,0,7);x.fill();
+ }
+ x.restore();
+ x.strokeStyle='#ffffffa8';x.lineWidth=2;x.beginPath();x.arc(72,70,52,0,7);x.stroke();
+ x.fillStyle='#ffffffc0';x.beginPath();x.ellipse(43,28,18,8,-.55,0,7);x.fill();x.fillStyle='#ffffff70';x.beginPath();x.ellipse(109,86,5,15,.5,0,7);x.fill();
+ for(const [u,v,r] of [[22,76,2],[36,106,1.4],[105,35,1.6],[118,62,1.1],[91,119,1.8]]){x.fillStyle='#fffce6c0';x.beginPath();x.arc(u,v,r,0,7);x.fill();}
+ sixArtCache.set(key,cv);return cv;
+}
+function sixArtNumberSprite(number){
+ if(!Number.isInteger(number)||number<1||number>25)return null;const key='number/'+number;if(sixArtCache.has(key))return sixArtCache.get(key);
+ const cv=document.createElement('canvas');cv.width=192;cv.height=144;const x=cv.getContext('2d'),label=String(number);
+ const font='1000 112px "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif';
+ x.font=font;x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.lineCap='round';
+ const max=number>=10?168:112;
+ x.strokeStyle='#551246';x.lineWidth=18;x.strokeText(label,96,78,max);
+ x.strokeStyle='#ffce74';x.lineWidth=12;x.strokeText(label,96,73,max);
+ x.strokeStyle='#fffceb';x.lineWidth=7;x.strokeText(label,96,70,max);
+ const face=x.createLinearGradient(0,15,0,126);face.addColorStop(0,'#ffffff');face.addColorStop(.4,'#fffaf0');face.addColorStop(.6,'#ffe4ed');face.addColorStop(1,'#ff9cc3');x.fillStyle=face;x.fillText(label,96,70,max);
+ // The stripes are clipped to real text glyphs, so every 1–25 remains exact.
+ const mask=document.createElement('canvas');mask.width=192;mask.height=144;const z=mask.getContext('2d');z.font=font;z.textAlign='center';z.textBaseline='middle';z.fillStyle='#fff';z.fillText(label,96,70,max);z.globalCompositeOperation='source-in';z.strokeStyle='#f44787';z.lineWidth=9;
+ for(let k=-120;k<240;k+=30){z.beginPath();z.moveTo(k,0);z.lineTo(k+90,144);z.stroke();}
+ x.drawImage(mask,0,0);x.strokeStyle='#ffffffaa';x.lineWidth=1.8;x.strokeText(label,96,69,max);
+ sixArtCache.set(key,cv);return cv;
+}
+function sixPaintCandyNumber(x,number,cx,cy,radius){
+ const art=sixArtNumberSprite(number);if(!art)return;x.save();x.drawImage(art,cx-radius*.96,cy-radius*.77,radius*1.92,radius*1.44);x.restore();
+}
+function sixArtStripePattern(x){
+ const key='stripe-tile';let tile=sixArtCache.get(key);
+ if(!tile){tile=document.createElement('canvas');tile.width=tile.height=28;const p=tile.getContext('2d');p.fillStyle='#fff7e8';p.fillRect(0,0,28,28);p.strokeStyle='#ff4b99';p.lineWidth=11;for(const k of [-28,0,28,56]){p.beginPath();p.moveTo(k,-2);p.lineTo(k+30,30);p.stroke();}sixArtCache.set(key,tile);}
+ return x.createPattern(tile,'repeat');
+}
+function sixArtCloud(x,cx,cy,s){x.save();x.fillStyle='#ffffffb8';x.beginPath();x.ellipse(cx,cy,s*1.5,s*.46,0,0,7);x.ellipse(cx-s*.55,cy-s*.22,s*.65,s*.58,0,0,7);x.ellipse(cx+s*.25,cy-s*.43,s*.7,s*.7,0,0,7);x.fill();x.restore();}
+function sixArtTurret(x,cx,y,h,color){
+ x.save();x.fillStyle='#fff0ec';x.strokeStyle='#eb9ec9';x.lineWidth=1;x.beginPath();x.roundRect(cx-9,y,18,h,3);x.fill();x.stroke();
+ const roof=x.createLinearGradient(cx-12,y-24,cx+12,y);roof.addColorStop(0,'#fff4fc');roof.addColorStop(.4,color);roof.addColorStop(1,'#c64d99');x.fillStyle=roof;x.beginPath();x.moveTo(cx,y-26);x.quadraticCurveTo(cx-4,y-9,cx-14,y);x.lineTo(cx+14,y);x.quadraticCurveTo(cx+4,y-9,cx,y-26);x.fill();
+ x.fillStyle='#ef7fbc';for(let k=0;k<Math.floor(h/16);k++){x.beginPath();x.roundRect(cx-3,y+7+k*16,6,9,3);x.fill();}sixArtStar(x,cx,y-28,4);x.restore();
+}
+function sixArtBackdrop(rows){
+ const key='backdrop/'+rows;if(sixArtCache.has(key))return sixArtCache.get(key);
+ const cv=document.createElement('canvas');cv.width=cv.height=640;const x=cv.getContext('2d');x.scale(2,2);const l=sixLayout(rows),r=l.radius,half=(rows-1)*l.step/2;
+ const sky=x.createLinearGradient(0,0,0,320);sky.addColorStop(0,'#80dfff');sky.addColorStop(.5,'#d9f8ff');sky.addColorStop(.8,'#ffe3f4');sky.addColorStop(1,'#ffbedb');x.fillStyle=sky;x.fillRect(0,0,320,320);
+ x.save();x.globalAlpha=.65;x.lineWidth=5;['#ff82b0','#ffc568','#fff59d','#a6e99f','#9bdcff','#c8aff3'].forEach((color,i)=>{x.strokeStyle=color;x.beginPath();x.arc(153,196,183-i*5,Math.PI*1.08,Math.PI*1.93);x.stroke();});x.restore();
+ sixArtCloud(x,40,37,25);sixArtCloud(x,274,62,25);sixArtCloud(x,12,118,20);sixArtCloud(x,290,160,18);
+ x.save();x.globalAlpha=.5;sixArtTurret(x,29,95,82,'#f99cc9');sixArtTurret(x,54,128,65,'#c49af0');sixArtTurret(x,289,109,95,'#f398cd');sixArtTurret(x,264,146,65,'#c69be9');x.restore();
+ for(const [cx,cy,color] of [[21,207,0],[296,228,3],[48,250,4]]){x.strokeStyle='#fff4df';x.lineWidth=4;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx,cy+45);x.stroke();x.drawImage(sixArtCandySprite(color),cx-13,cy-13,26,26);}
+ const apex={x:160,y:l.top-r*2-7},a={x:160-half-r*1.35-3,y:270+r+7},b={x:160+half+r*1.35+3,y:a.y};
+ x.save();x.beginPath();x.moveTo(apex.x,apex.y);x.lineTo(b.x,b.y);x.lineTo(a.x,a.y);x.closePath();
+ const inside=x.createLinearGradient(0,apex.y,0,a.y);inside.addColorStop(0,'#ffd9e5');inside.addColorStop(.38,'#ffebdf');inside.addColorStop(1,'#ffcfdf');x.fillStyle=inside;x.fill();
+ x.save();x.clip();for(let y=0;y<320;y+=24)for(let u=0;u<320;u+=24){x.fillStyle=((u+y)/24)%2?'#ffffff26':'#f7a9c119';x.fillRect(u,y,24,24);}
+ x.restore();x.lineJoin='round';x.strokeStyle='#c97536';x.lineWidth=13;x.stroke();x.strokeStyle='#ffdf83';x.lineWidth=10.5;x.stroke();x.strokeStyle=sixArtStripePattern(x);x.lineWidth=8;x.stroke();x.restore();
+ sixArtStar(x,160,Math.max(12,apex.y),13,'#ffe24c','#efa42b');
+ // Base rail and candy jewels stay outside the collision lattice.
+ x.fillStyle='#fff1d9';x.beginPath();x.roundRect(5,295,310,23,10);x.fill();x.strokeStyle='#f989b4';x.lineWidth=2;x.stroke();
+ for(const cx of [17,303]){x.drawImage(sixArtCandySprite(0),cx-12,282-12,24,24);sixArtStar(x,cx===17?34:286,290,6);}
+ sixArtHeart(x,160,290,9);
+ sixArtCache.set(key,cv);return cv;
+}
+function sixArtLogoMarkup(instance='main'){
+ const id='sc-art-'+instance,colors=['#ff398d','#ffc833','#71d82c','#28c7f7','#ff3b8c','#ffca2d','#4bc8f6','#ad52f6','#ff509d'];
+ const defs=colors.map((c,i)=>'<linearGradient id="'+id+'-g'+i+'" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff5ff"/><stop offset=".2" stop-color="'+c+'"/><stop offset=".7" stop-color="'+c+'"/><stop offset="1" stop-color="#b12878"/></linearGradient>').join('');
+ const text=[...'シックスキャンディ'].map((ch,i)=>'<text x="'+(95+i*72)+'" y="113" fill="url(#'+id+'-g'+i+')">'+ch+'</text>').join('');
+ return '<svg class="six-art-logo" viewBox="0 0 760 174" role="img" aria-label="シックスキャンディ SIX CANDY" xmlns="http://www.w3.org/2000/svg"><defs>'+defs+'<pattern id="'+id+'-stripe" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="26" height="26" fill="#fff1e3"/><rect width="12" height="26" fill="#ff64aa"/></pattern><linearGradient id="'+id+'-r" x2="0" y2="1"><stop stop-color="#fff8d9"/><stop offset="1" stop-color="#ffd080"/></linearGradient></defs><g stroke-linejoin="round"><path d="M30 104Q380-22 730 104L715 146Q380 110 45 146Z" fill="#ff83b9" stroke="#e89c43" stroke-width="8"/><path d="M55 125Q380 90 705 125L690 159Q380 133 70 159Z" fill="url(#'+id+'-stripe)" stroke="#ffda88" stroke-width="5"/><g fill="#ffe561" stroke="#eaae3f" stroke-width="2"><path d="m382 5 7 16 18 2-13 12 3 18-15-8-16 8 3-18-13-12 18-2Z"/><path d="m81 24 5 12 13 2-9 9 2 13-11-6-12 6 3-13-10-9 13-2Z"/><path d="m673 22 5 12 13 2-9 9 2 13-11-6-12 6 3-13-10-9 13-2Z"/></g><g fill="#fff0f4" stroke="#e99ac2" stroke-width="3"><path d="M332 68V39h25v29M404 68V39h25v29M365 68V26h28v42"/><path d="m326 39 19-28 19 28m35 0 18-28 19 28m-77-13 20-23 20 23" fill="#ff86b9"/></g><g fill="#ff71ae" stroke="#fff2db" stroke-width="5"><circle cx="32" cy="77" r="28"/><circle cx="728" cy="79" r="28"/></g><g fill="none" stroke="#fff4eb" stroke-width="7"><path d="M25 83c-17-20 19-34 23-13s-18 24-23 12 12-17 14-6M720 87c-17-20 19-34 23-13s-18 24-23 12 12-17 14-6"/></g><g font-family="CookieLabels,Arial Rounded MT Bold,system-ui,sans-serif" font-size="77" font-weight="1000" text-anchor="middle" paint-order="stroke fill" stroke="#8f215e" stroke-width="16">'+text+'</g><g font-family="CookieLabels,Arial Rounded MT Bold,system-ui,sans-serif" font-size="77" font-weight="1000" text-anchor="middle" paint-order="stroke fill" stroke="#ffe7a5" stroke-width="11">'+text+'</g><g font-family="CookieLabels,Arial Rounded MT Bold,system-ui,sans-serif" font-size="77" font-weight="1000" text-anchor="middle" paint-order="stroke fill" stroke="#fffced" stroke-width="6">'+text+'</g><rect x="258" y="132" width="244" height="31" rx="13" fill="url(#'+id+'-r)" stroke="#e6a13d" stroke-width="3"/><text x="380" y="155" text-anchor="middle" font-family="system-ui,sans-serif" font-size="23" font-weight="1000" letter-spacing="4" fill="#e63987" stroke="#fff6e0" stroke-width="1" paint-order="stroke fill">SIX CANDY</text></g></svg>';
+}
+
+function sixCandySprite(color){return sixArtCandySprite(color);}
 function sixText(x,text,px,py,size,color='#fff1d6',align='center'){
  x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#46294c';x.lineWidth=Math.max(1.2,size*.2);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);
 }
@@ -312,11 +416,11 @@ function sixShapeIcon(type){
 }
 function setupCarnivalSlot(s){
  if(s.candyCanvas)return;s.panel.classList.add('carnival-panel','six-ball-panel');s.tab.classList.add('carnival-tab');s.holder.classList.add('carnival-slot');
- s.tab.querySelector('.tab-game-name').innerHTML='<span class="carnival-tab-title six-candy-wordmark">シックスキャンディ<small>SIX CANDY</small></span>';s.tab.querySelector('.tab-game-name').setAttribute('aria-label','シックスキャンディ');
+ s.tab.querySelector('.tab-game-name').innerHTML=sixArtLogoMarkup('tab');s.tab.querySelector('.tab-game-name').setAttribute('aria-label','シックスキャンディ');
  const wrap=document.createElement('div');wrap.className='carnival-surface six-ball-surface';wrap.innerHTML='<div class="carnival-topline"><span class="six-round-label">Round 1</span><label class="six-rows-control">段数 <select aria-label="シックスキャンディの段数・デバッグ用" id="six-row-select"><option value="7">7段</option><option value="8">8段</option><option value="9">9段</option><option value="10" selected>10段</option></select></label></div><canvas class="carnival-canvas" width="640" height="640" role="img" aria-label="キャンディピラミッド"></canvas><div class="carnival-status" role="status"></div><div class="carnival-reward" role="status" hidden></div>';
  s.panel.append(wrap);s.candyCanvas=wrap.querySelector('canvas');s.candyCtx=s.candyCanvas.getContext('2d');s.candyStatus=wrap.querySelector('.carnival-status');s.candyReward=wrap.querySelector('.carnival-reward');s.rowSelect=wrap.querySelector('select');s.roundLabel=wrap.querySelector('.six-round-label');
  s.rowSelect.onchange=()=>{if(!app||app.phase!=='ready'){s.rowSelect.value=String(s.engine.rows);return;}if(s.engine.setRows(Number(s.rowSelect.value))){s.candyKey='';s.dirtyMain=s.dirtyMini=true;invalidateReach(s);scheduleUI(app);}};
- const heading=document.createElement('div');heading.id='carnival-heading';heading.innerHTML='<strong class="six-candy-wordmark">シックスキャンディ<small>SIX CANDY · SWEET PUZZLE</small></strong><span>Round <b id="carnival-complete">1</b></span>';document.querySelector('.festival-top').append(heading);
+ const heading=document.createElement('div');heading.id='carnival-heading';heading.innerHTML='<strong>シックスキャンディ'+sixArtLogoMarkup('main')+'</strong><span>Round <b id="carnival-complete">1</b></span>';document.querySelector('.festival-top').append(heading);
  const odds=document.createElement('div');odds.id='carnival-odds';odds.innerHTML='<div class="carnival-odds-title">SIX CANDY<small>役ごとに配当を累積</small></div><section><span>今回の獲得</span><b id="carnival-win">0</b><em>WIN</em></section>'+[['hexagon','ヘキサゴン','0.5 / 1.0 / 1.5…'],['triangle','トライアングル','0.3 / 0.6 / 0.9…'],['line','直線 4個以上','0.1 / 0.2 / 0.3…']].map(([type,label,table])=>'<div class="six-pay-track" data-role="'+type+'">'+sixShapeIcon(type)+'<span>'+label+'<small>'+table+'倍</small><b>0役・0倍</b></span></div>').join('')+'<div class="six-clear-bonus">ALL CLEAR <b>60 × BET</b></div><div class="carnival-sugar-goal">ヘキサゴン完成で<br><b>シュガーGET</b></div><p>4個以上の連結も消去<br>通常連結だけは配当なし<br>役の連鎖終了で次Roundへ</p><footer>Round 3：4色 / Round 5：3色<br>0 BETは参加なし</footer>';$('odds-panel').append(odds);
 }
 function carnivalEvent(s,ev,e,a){
@@ -353,12 +457,7 @@ function drawCarnival(s,now=performance.now()){
  if(!paused)s.candyTime=now;const time=s.candyTime||now;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
  const progress=fx?(()=>{if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)*(e.presentationRate||1);fx.stamp=now;}else fx.stamp=null;return Math.min(1,fx.elapsed/Math.max(1,fx.ms));})():0;
  const fall=fx?.phase==='pyramidFall'?sixFallFrame(fx,motionReduced?1:progress):null,grid=ready?sixDemo(rows):fall?.grid||e.pyramid,moving=new Map((fall?.moves||[]).map(m=>[m.id,m]));
- const bg=x.createLinearGradient(0,0,320,320);bg.addColorStop(0,'#493955');bg.addColorStop(.55,'#674257');bg.addColorStop(1,'#35445f');x.fillStyle=bg;x.fillRect(0,0,320,320);
- // Candy-stick rails and lollipops frame an uncluttered playable triangle.
- for(const side of [8,312]){x.save();x.beginPath();x.roundRect(side-4,30,8,254,4);x.clip();x.fillStyle='#fff4df';x.fillRect(side-4,30,8,254);x.strokeStyle='#f18bb4';x.lineWidth=6;for(let y=20;y<290;y+=18){x.beginPath();x.moveTo(side-10,y);x.lineTo(side+10,y+14);x.stroke();}x.restore();}
- for(const [px,py,color] of [[14,17,0],[306,17,3]]){x.drawImage(sixCandySprite(color),px-12,py-12,24,24);}
- x.fillStyle='#f9daab';x.beginPath();x.roundRect(13,285,294,8,4);x.fill();
- x.strokeStyle='#eec7a01e';x.lineWidth=1;for(let r=0;r<rows;r++){const a=sixXY(r,0,rows),b=sixXY(r,r,rows);x.beginPath();x.moveTo(a.x-layout.radius,a.y+layout.radius);x.lineTo(b.x+layout.radius,b.y+layout.radius);x.stroke();}
+ x.drawImage(sixArtBackdrop(rows),0,0,320,320);
  const lit=new Set((fx?.phase==='pyramidHit'?fx.cells:[]).map(p=>sixKey(...p))),shaped=new Set((fx?.forms||[]).flatMap(f=>f.cells).map(p=>sixKey(...p))),byNumber=new Map((ready?[]:visibleReachResults(s,app)).map(p=>[p.number,p]));
  for(let r=0;r<grid.length;r++)for(let c=0;c<=r;c++){
   const t=grid[r][c];if(!t)continue;let pos=sixXY(r,c,rows);const m=moving.get(t.id);
@@ -366,11 +465,12 @@ function drawCarnival(s,now=performance.now()){
   const pending=t.number!=null&&(e.pendingDraws.has(t.number)||lit.has(sixKey(r,c))),reach=t.number!=null?byNumber.get(t.number):null,shape=shaped.has(sixKey(r,c)),radius=layout.radius;
   x.save();if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
   x.drawImage(sixCandySprite(t.color),pos.x-radius,pos.y-radius,radius*2,radius*2);x.shadowBlur=0;
-  if(!ready&&t.number!=null){const font=Math.max(11,layout.step*.41);x.fillStyle='#442141c8';x.beginPath();x.ellipse(pos.x,pos.y+1,font*(t.number>=10?.94:.68),font*.7,0,0,7);x.fill();sixText(x,String(t.number),pos.x,pos.y+1,font,'#fffdf4');}
+  if(!ready&&t.number!=null)sixPaintCandyNumber(x,t.number,pos.x,pos.y+1,radius);
   if(shape||pending||reach){x.strokeStyle=shape?'#fff6b3':pending?'#fff9e7':reach.tier>=2?'#f0a2ff':'#fff3b6';x.lineWidth=shape?2.3:1.5;x.beginPath();x.arc(pos.x,pos.y,radius,0,Math.PI*2);x.stroke();}x.restore();
  }
  if(fx?.phase==='pyramidShape')for(const form of fx.forms){const points=form.cells.map(p=>sixXY(...p,rows));x.save();x.strokeStyle=form.type==='hexagon'?'#edb3ff':form.type==='line'?'#83f5ef':'#ffec98';x.shadowColor=x.strokeStyle;x.shadowBlur=12;x.lineWidth=3;x.beginPath();if(form.type==='line'){x.moveTo(points[0].x,points[0].y);x.lineTo(points.at(-1).x,points.at(-1).y);}else{sixHull(points).forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.closePath();}x.stroke();x.restore();}
- sixText(x,'Round '+e.roundIndex+'  ·  '+(ready?5:e.sixColorCount)+' COLORS',160,19,12,'#fff3b9');
+ // Round remains in the live header; keep the apex star unobstructed.
+ sixText(x,(ready?5:e.sixColorCount)+' COLORS',277,19,8.2,'#fff8dd');
  if(fx?.removed&&progress<.75&&!motionReduced){const t=Math.min(1,progress/.75);x.save();x.globalAlpha=1-t;for(const v of fx.removed){const p=sixXY(v.r,v.c,rows);for(let k=0;k<4;k++){const a=v.tile.id*.7+k*Math.PI/2;x.save();x.translate(p.x+Math.cos(a)*t*24,p.y+Math.sin(a)*t*20+t*t*19);x.rotate(a+t*2);x.fillStyle=SIX_COLORS[v.tile.color].light;x.beginPath();x.moveTo(-3,-4);x.lineTo(5,-2);x.lineTo(2,5);x.lineTo(-4,2);x.closePath();x.fill();x.restore();}}x.restore();}
  sixText(x,'⬡ '+e.hexagons+'  △ '+e.triangles+'  LINE '+e.lines,17,307,10,'#ffdfb1','left');sixText(x,'残り '+(ready?rows*(rows+1)/2:e.remainingCandies),304,307,10,'#e3d9ff','right');
  if(!bet){x.fillStyle='#231b3ba8';x.fillRect(0,0,320,320);sixText(x,'0 BET',160,140,29);sixText(x,'BETして キャンディを落とそう',160,172,11);}
