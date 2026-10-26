@@ -1,4 +1,4 @@
-name: Verify and integrate original PNG Six Candy staggered board
+name: Verify original PNG Six Candy with settled tab and native desktop checks
 on:
   push:
     branches: [main]
@@ -12,7 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install guarded original PNG and staggered tray
-        run: python3 .github/maintenance/six-png-60/install.py
+        run: |
+          python3 .github/maintenance/six-png-60/install.py
+          python3 .github/maintenance/six-png-60/browser_check.py
       - name: Install browser verification
         run: |
           pip install playwright >/tmp/six-browser-install.log 2>&1
@@ -43,13 +45,14 @@ jobs:
           import json,hashlib,shutil
           report=json.loads(Path('qa-six-staggered/verification.json').read_text())
           assert report['roulette_loaded'] and not report['memory_only']
+          assert report['nativeDesktop']['rouletteLoaded'] and report['nativeDesktop']['candies']==60
           b=Path('index.html').read_bytes();sha=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
           note='\n\n## 2026-10-26 — 元PNGの4色キャンディ・8/7交互の60マス盤面\n'
           note+='- 元PNGを切り出したいちご・レモン・青渦巻き・ぶどうをWebP化して実際に組込。簡易Canvas模様への置換ではない。アトラスのSHA256と描画ピクセルを検証。数字は独立した1〜25の正確な描画、空白35マスに数字を描かない。メインと小盤面に共通使用。ロゴと背景装飾は既存のベクター/Canvasを維持。\n'
           note+='- デフォルト8段、上から7/8/7/8/7/8/7/8で60個。7〜10段の選択は残し、どの段数でも最下段8個。番号1〜25は各1個。初期4色、Round3以降3色を維持。\n'
           note+='- 同じ最密格子の新しい矩形境界へ隣接・上下三角形・六角形・3軸直線・落下を適応。下に空きがあるのに側面の接触だけで止まる問題の修正を維持し、移動先予約と同期経路検査を継続。\n'
           note+='- キャンディ中心と接触半径は静止中固定、光沢のみアニメ。落下中は経路を変えず絵を軽く回転。破砕/ビー玉効果音を既存の音声バス・ミュート・リセット取消へ接続し、別AudioContextによる無音化を修正。配当、他2ゲーム、抽選機、BGM等のホストコードは不変比較済み。\n'
-          note+='- ローカル検証: 144盤面、952落下フレーム、31,416経路時点、無支持停止0、442形役テスト。GitHub Actionsで縮小seedセットとHTTP経由の実画像読込・実3D抽選機初期化・320/390/430pxと横画面/1280px・25番号/空白・小盤面・12seedの8番号進行・8回全消し/60倍・Round進行・3ゲーム同時集計/CREDIT一度・0BET/リセット・4効果音の波形と発音取消を検証。入賞番号は制御通知。\n'
+          note+='- ローカル検証: 144盤面、952落下フレーム、31,416経路時点、無支持停止0、442形役テスト。GitHub Actionsで24盤面とHTTP経由の実画像読込・実3D抽選機初期化・320/390/430pxと横画面/1280px・別PCコンテキスト・25番号/空白・小盤面・12seedの8番号進行・8回全消し/60倍・Round進行・3ゲーム同時集計/CREDIT一度・0BET/リセット・4効果音の波形と発音取消を検証。タブ切替はrequestAnimationFrameで更新されるためテストはvisibleを待つ。入賞番号は制御通知。\n'
           note+='- 未確認: iPhone実機、スピーカーでの聴感、自然物理の8球全軌道、原作内部処理との全ケース一致。\n'
           note+='- 最新index.html blob: `'+sha+'`。検証レポート docs/six-candy-staggered-verification.json。\n'
           p=Path('HANDOFF.md');p.write_text(p.read_text()+note)
@@ -59,6 +62,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm --ignore-unmatch .github/workflows/six-candy-art-20261026.yml
-          git add index.html HANDOFF.md assets/six-candy.js assets/six-candy-rounds-engine.js assets/six-candy-rounds-ui.js assets/six-candy-art.js assets/six-candy-art.css assets/six-candy-png docs/six-candy-staggered-verification.json
+          git add index.html HANDOFF.md assets/six-candy.js assets/six-candy-rounds-engine.js assets/six-candy-rounds-ui.js assets/six-candy-art.js assets/six-candy-art.css assets/six-candy-png docs/six-candy-staggered-verification.json .github/tests/six_candy_staggered_browser.py
           git commit -m 'Use original PNG candies in playable 60-cell staggered Eight-row Six Candy'
           git push origin HEAD:main
