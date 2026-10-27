@@ -16,3 +16,5 @@ body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;
 .six-reach-cell .reach-comet .comet-head{stroke:#fff5dc}
 .six-reach-layer.is-paused .reach-comet circle,.paused .six-reach-cell .reach-comet circle{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){.six-reach-cell .reach-comet circle{animation:none!important}}
+
+.six-refill-note{font-size:clamp(8px,1.5vw,11px);line-height:1.4;text-align:center;color:#743456;background:#fff0c9;border:1px solid #e6bb7e;border-radius:7px;padding:4px 2px;margin-bottom:4px;font-weight:900;overflow-wrap:anywhere}
