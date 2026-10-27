@@ -20,7 +20,7 @@ for(const [pi,holes] of q.SIX_START_GAP_TEMPLATES.entries())for(const colors of 
  for(const f of drop.steps){frames++;const byId=new Map(f.moves.map(m=>[m.id,m]));assert.equal(new Set(f.moves.map(m=>m.to.join(','))).size,f.moves.length);const stationary=[];for(let r=0;r<rows;r++)for(let c=0;c<f.grid[r].length;c++)if(f.grid[r][c]&&!byId.has(f.grid[r][c].id))stationary.push(q.sixPoint(r,c,rows));
   for(let k=0;k<=32;k++){samples++;const moving=f.moves.map(m=>q.sixMotionPoint(m,k/32));for(let i=0;i<moving.length;i++){const p=moving[i];assert(p.x>=-3.50001&&p.x<=3.50001);for(const z of stationary.concat(moving.slice(i+1)))assert((p.x-z.x)**2+(p.y-z.y)**2>.9999,'Swept-circle collision');}}
  }
- for(const n of [1,13,25]){const a=q.sixPlan(before,[n]),b=q.sixPlan(before,[n],{trace:true});assert.equal(JSON.stringify(a.grid),JSON.stringify(b.grid));assert.equal(a.gain,b.gain);assert.equal(a.gain,a.hexagons*50+a.triangles*30+a.lines*10+(a.cleared?10000:0));}
+ for(const n of [1,13,25]){const a=q.sixPlan(before,[n]),b=q.sixPlan(before,[n],{trace:true});assert.equal(JSON.stringify(a.grid),JSON.stringify(b.grid));assert.equal(a.gain,b.gain);assert.equal(a.gain,a.hexagons*300+a.triangles*150+a.lines*10+(a.cleared?10000:0));}
  boards++;
 }
 for(const form of q.sixPatterns(rows)){const g=q.sixEmpty(rows);form.cells.forEach(([r,c],i)=>g[r][c]={id:i+1,color:0,number:null});const found=q.sixFindShapes(g);assert.equal(found.length,1);assert.equal(found[0].type,form.type);forms++;}
