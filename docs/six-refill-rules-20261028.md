@@ -1,6 +1,6 @@
 # Six Drop: fixed positions and miss refill
 
-Number-bearing starting cells are a fixed, left-right symmetric 25-cell mask in rows 6–10. Values 1–25 are shuffled across this mask. Surviving numbered drops move with gravity. Newly added drops receive as many missing undrawn labels as their available slots allow, excluding already drawn numbers and labels still on the board. The fixed symmetric mask applies to new-round starting boards.
+Number-bearing starting cells are a fixed, left-right symmetric 25-cell mask across all ten rows (2–4 cells per row; 13 in the upper half and 12 in the lower half). Values 1–25 are shuffled across this mask. Surviving numbered drops move with gravity. Newly added drops receive as many missing undrawn labels as their available slots allow, excluding already drawn numbers and labels still on the board. The fixed symmetric mask applies to new-round starting boards.
 
 For each incoming batch (3, 2, 1, 1, 1 draws), record which numbers were absent before processing. Resolve hits and all cascades first. If any number was absent and no role advanced the round, refill only top-accessible empty cells up to the original ten-row height. Existing drops block entry into internal gaps; these gaps remain empty. The resulting board may therefore contain fewer than 75 drops. A round advance instead creates its new starting board. Filling itself awards no payout and triggers no cascade.
 
@@ -8,7 +8,7 @@ Refill coloring uses bounded backtracking. In rare impossible remnants it change
 
 Clear bonuses: R1 0.2×, R2 0.4×, R3 1.0×, R4 3.0×, R5 10.0×. Role payouts remain line 0.1×, triangle 0.3×, hexagon 0.5×; all-clear remains 100×. Minimum payout increment remains 0.1×.
 
-Initial-board coloring now favors a less adjacent color on 37.5% of placement choices. This is a fixed generation parameter, not player-dependent or outcome-dependent adjustment. The 12% chance-round selection is unchanged.
+Initial-board coloring now favors a less adjacent color on 22% of placement choices. This is a fixed generation parameter, not player-dependent or outcome-dependent adjustment. The 12% chance-round selection is unchanged.
 
 The 18-second demonstration uses the actual 5/4/5 miniature rules: ordinary connected clearing followed by an absent 25 and top-entry refill with undrawn labels (6 seconds), then line, triangle and hexagon (4 seconds each). It does not consume gameplay random numbers. A persistent note explains that a number absent from the board triggers a refill, including undrawn numbered drops. The refill uses its own descending shower sound.
 
@@ -20,4 +20,8 @@ Historical validation of the earlier full-gap-fill rule: 10,000 games, seed 8827
 
 Sparkles are captured once before draws 1, 4, 5, 6, 7 and 8 (draw counts 0, 3, 4, 5, 6 and 7 on a settled board). Their tile IDs are separate from paid-reach predictions and survive incoming balls and reach invalidation. They include drops that trigger a clearing chain. At the next scheduled capture they are recomputed; removed drops do not transfer their sparkle to replacements. Paid reach remains restricted to after draws 2, 4, 5, 6, 7 and 8.
 
-Current top-entry validation: 10,000 games with seed 882731 returned **91.509%**, approximate 95% interval 87.33%–95.68%, including three all-clear awards. There were 3,212 refill attempts and no recoloring repairs. The earlier 89.994% result applies to the superseded full-gap-fill rule. The fixed color-spread parameter remains 0.375; the new estimate is consistent with the 90% target within sampling error.
+Historical lower-half mask top-entry validation: 10,000 games with seed 882731 returned **91.509%**, approximate 95% interval 87.33%–95.68%, including three all-clear awards. There were 3,212 refill attempts and no recoloring repairs. The earlier 89.994% result applies to the superseded full-gap-fill rule. That historical result used color spread 0.375 and the former lower-half number mask. It does not describe the latest balanced mask.
+
+Presentation revision: paid reach labels are borderless 9.5 px text with a slightly stronger cream outline. Each round records its first confirmed next-round popup; subsequent cascade/bonus awards in that round show only the increment (e.g. +300 WIN), without a frame. A new round or reset restores the first-popup allowance.
+
+Latest balanced-mask validation: two independent 10,000-game runs (seeds 28102891 and 28102892), total **20,000 games**, estimated return **91.637%**; approximate 95% interval **88.94%–94.33%**. Color spread 0.22 was selected before these runs. The 90% target is within sampling uncertainty; payouts and chance-round rate are unchanged. See `six-balanced-rtp-20261028.json`. Reproduce each sample with `node .github/tests/six_payout_sample.cjs 10000 SEED`.
