@@ -264,3 +264,31 @@ sixArtLogoMarkup=function(instance='main'){
 };
 const sixDropOriginalStageEffects=sixStageEffects;
 sixStageEffects=function(x,fx,p,round,rows,reduced){sixDropOriginalStageEffects(x,fx,p,round,rows,reduced);if(fx?.phase!=='pyramidShape'||!fx.forms?.length||reduced)return;for(const f of fx.forms){const ps=f.cells.map(c=>sixXY(...c,rows)),cx=ps.reduce((v,z)=>v+z.x,0)/ps.length,cy=ps.reduce((v,z)=>v+z.y,0)/ps.length;x.save();x.strokeStyle='#fff8ba';x.lineWidth=2;x.globalAlpha=(1-p)*.8;for(let k=0;k<9;k++){const yy=cy-32+k*8;x.beginPath();x.moveTo(cx-90+85*p,yy);x.lineTo(cx-45+85*p,yy);x.stroke();}x.restore();}};
+
+// Cabinet accents are presentation-only and use the existing paused visual clock.
+function sixArcadeCounter(s){
+ const e=s.engine,el=$('carnival-win');if(!el||!e)return;
+ const target=medalWin(app.bet(s.i),e.totalHundredths),t=s.sixWinTween;
+ let value=target;
+ if(t&&t.version===e.version&&t.to===target&&!motionReduced){const p=Math.max(0,Math.min(1,((s.candyTime||0)-t.start)/650));value=Math.floor(t.from+(t.to-t.from)*(1-Math.pow(1-p,3)));if(p===1)s.sixWinTween=null;}
+ if(el.textContent!==num(value))fitGoldenNumber(el,num(value),23,100);el.setAttribute('aria-label','TOTAL WIN '+num(target));s.sixDisplayedWin=value;
+}
+function sixArcadeAccents(s,x,time){
+ sixArcadeCounter(s);const e=s.engine,celebration=s.sixClearAccent,age=celebration&&celebration.version===e.version?time-celebration.start:2000,clear=age>=0&&age<1200;
+ s.sixHeading?.classList.toggle('six-clear-flash',clear&&!motionReduced);
+ if(!app.bet(s.i))return;
+ x.save();const hue=[168,66,35,340,280][Math.max(0,Math.min(4,e.roundIndex-1))];
+ // Small lamps stay outside the playable tray.
+ for(let k=0;k<14;k++)for(const side of [0,1]){const y=24+k*21,pulse=motionReduced?.35:.3+.7*Math.pow(.5+.5*Math.sin(time/260-k*.65+side*1.4),3);x.globalAlpha=.3+.5*pulse;x.fillStyle='hsl('+hue+' 90% '+(65+pulse*25)+'%)';x.shadowColor=x.fillStyle;x.shadowBlur=3+pulse*3;x.beginPath();x.arc(side?314:6,y,1.6+pulse*.5,0,Math.PI*2);x.fill();}
+ if(clear&&!motionReduced){const p=age/1200;x.shadowBlur=0;for(let k=0;k<24;k++){const side=k%2,delay=(k%6)*.025,u=Math.max(0,p-delay),cx=side?310:10,cy=30+u*240+(k%6)*19;x.globalAlpha=Math.max(0,(1-p)*.85);x.save();x.translate(cx+Math.sin(k*2.3+u*9)*6,cy);x.rotate(k+u*7);x.fillStyle=['#ffe7a1','#ffafd6','#b7f3e1'][k%3];x.fillRect(-2,-3,4,6);x.restore();}}
+ x.restore();
+}
+const sixArcadeBaseEvent=carnivalEvent;
+carnivalEvent=function(s,ev,e,a){
+ if(ev.phase==='ready'||ev.phase==='error'){s.sixWinTween=null;s.sixDisplayedWin=0;s.sixClearAccent=null;s.sixHeading?.classList.remove('six-clear-flash');}
+ sixArcadeBaseEvent(s,ev,e,a);
+ if(['pyramidAward','pyramidRoundBonus','pyramidAllClear'].includes(ev.phase)&&ev.gain>0){const target=medalWin(a.bet(s.i),e.totalHundredths);s.sixWinTween={version:e.version,from:Math.min(target,s.sixDisplayedWin??medalWin(a.bet(s.i),Math.max(0,e.totalHundredths-ev.gain))),to:target,start:s.candyTime||0};}
+ if(ev.phase==='pyramidRoundBonus'){s.sixClearAccent={version:e.version,start:s.candyTime||0};if(s.i===active)sixCandyAudio('clear');}
+};
+const sixArcadeBaseHud=carnivalHud;
+carnivalHud=function(a){sixArcadeBaseHud(a);const s=slots[2];if(s?.engine?.kind==='candy')sixArcadeCounter(s);};
