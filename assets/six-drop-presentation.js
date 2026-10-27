@@ -304,6 +304,11 @@ function sixCandyPromotionMarkup(round){
 const sixCandySignBaseEvent=carnivalEvent;
 carnivalEvent=function(s,ev,e,a){
  sixCandySignBaseEvent(s,ev,e,a);
- if(['pyramidAward','pyramidRoundBonus','pyramidAllClear'].includes(ev.phase)&&!s.candyReward.hidden){const next=s.candyReward.querySelector('.six-next'),advance=next?.textContent.startsWith('NEXT ROUND');s.candyReward.classList.toggle('six-candy-promotion',!!advance);if(advance)next.innerHTML=sixCandyPromotionMarkup(e.roundIndex+1);}
- if(ev.phase==='ready'||ev.phase==='error')s.candyReward.classList.remove('six-candy-promotion');
+ if(ev.phase==='ready'||ev.phase==='error'){s.sixPromotionShown=new Set();s.candyReward.classList.remove('six-candy-promotion','six-simple-award');}
+ if(['pyramidAward','pyramidRoundBonus','pyramidAllClear'].includes(ev.phase)&&!s.candyReward.hidden){
+  const key=e.version+'/'+e.roundIndex,next=s.candyReward.querySelector('.six-next'),advance=next?.textContent.startsWith('NEXT ROUND');s.sixPromotionShown??=new Set();
+  const simple=s.sixPromotionShown.has(key);if(!simple)s.candyReward.removeAttribute('aria-label');s.candyReward.classList.toggle('six-simple-award',simple);s.candyReward.classList.toggle('six-candy-promotion',!simple&&!!advance);
+  if(simple){s.candyReward.innerHTML='<strong>＋'+num(medalWin(a.bet(s.i),ev.gain))+' <em>WIN</em></strong>';s.candyReward.setAttribute('aria-label','配当増加 '+num(medalWin(a.bet(s.i),ev.gain))+' WIN');}
+  else if(advance){s.sixPromotionShown.add(key);next.innerHTML=sixCandyPromotionMarkup(e.roundIndex+1);}
+ }
 };
