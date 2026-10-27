@@ -3336,9 +3336,9 @@ class SixBallCandyEngine extends Engine{
  start(){if(this.running||this.roundBet<=0)return;this.newBoard();this.running=true;this.opening=false;this.busy=false;this.candyMessage='Round '+this.roundIndex+'・番号HITでキャンディを落とそう';this.emit('waiting');}
  reachSnapshot(){return Object.assign(Object.create(SixBallCandyEngine.prototype),{pyramid:sixClone(this.pyramid),drawn:new Set(this.drawn),totalHundredths:this.totalHundredths,initialPyramid:!!this.initialPyramid,rows:this.rows,boardGeneration:this.boardGeneration,roundIndex:this.roundIndex,clearedRounds:new Set(this.clearedRounds)});}
  async waitVisual(ms,token){let remaining=ms/this.speed;while(remaining>0&&token===this.version){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.version;}
- predict(number){
+ predict(number,pending=[]){
   if(!this.initialPyramid||this.drawn.has(number))return null;
-  const p=sixPlan(this.pyramid,[number]),bonus=p.advance&&!this.clearedRounds.has(this.roundIndex)?sixRoundClearBonus(this.roundIndex):0,gain=p.gain+bonus;
+  const p=sixPlan(this.pyramid,[...pending,number]),bonus=p.advance&&!this.clearedRounds.has(this.roundIndex)?sixRoundClearBonus(this.roundIndex):0,gain=p.gain+bonus;
   return {number,total:this.totalHundredths+gain,gain,roundBonus:bonus,maxLink:0,chain:p.chain,ordinaryGroups:p.ordinaryGroups,allClear:p.cleared,tier:reachTier(this.totalHundredths+gain,p.cleared),triangles:p.triangles,hexagons:p.hexagons,lines:p.lines};
  }
  async drain(){
@@ -3606,6 +3606,7 @@ function sixCandyAudio(kind,amount=1){
 
 function carnivalEvent(s,ev,e,a){
  setupCarnivalSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;
+ if(ev.phase==='drawpending'){invalidateReach(s);requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);return;}
  if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;s.candyLastDraw=0;s.candyClockStamp=null;s.sixFallSoundFx=null;s.sixRefillFx=null;s.candyTime=0;invalidateReach(s);}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
  if(ev.phase.startsWith('pyramid')){s.candyReward.hidden=true;s.candyReward.classList.remove('six-round-callout','six-special-award');invalidateReach(s);}
@@ -5118,6 +5119,7 @@ function reachCometMarkup(tier){
  return '<svg class="reach-comet-track" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g class="reach-comet">'+comet(0)+'</g>'+(tier===2?'<g class="reach-comet second">'+comet(.5)+'</g>':'')+'</svg>';
 }
 
+const paidReachDrawAllowed=a=>[2,4,5,6,7,8].includes(a?.draws?.length);
 const REACH_WORDS=['リーチ','高額','超高額','全消し'];
 function invalidateReach(s,{preserveTab=false}={}){
  if(!preserveTab){s.tabReachResults=[];s.tabReachBase=0;s.tabReachVersion=null;}
@@ -5131,7 +5133,12 @@ function reachContext(e,a=app){
  if(e?.kind==='candy'&&e.transitionPending)return null;
  if(!e||!a||e.kind==='choco'||!['playing','result','paying','complete'].includes(a.phase)||!reachBoardSettled(e)||e.opening||e.queue.length)return null;
  const count=a.draws.length;let pending=[];
- if(e.reachMode==='single'||e.drawMode==='single'){
+ if(e.kind==='candy'){
+  if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
+  else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
+  else if(count>=3&&count<=8){if(e.processed!==count)return null;}
+  else return null;
+ }else if(e.reachMode==='single'||e.drawMode==='single'){
   if(count<1||e.processed!==count)return null;
  }else{
   if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
@@ -5153,14 +5160,14 @@ function requestReach(s,e,a=app){
  function chunk(){
   if(s.reachEpoch!==epoch||s.engine!==e||s.reachBoardKey!==key||reachContextKey(e,a)!==key)return;
   const end=Math.min(numbers.length,index+3);
-  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index]):predictNextHit(snapshot,numbers[index],context.pending);if(result?.gain>0||(e.kind==='candy'&&result?.chain>0))results.push(result);}
+  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index],context.pending):predictNextHit(snapshot,numbers[index],context.pending);if((paidReachDrawAllowed(a)&&result?.gain>0)||(e.kind==='candy'&&result?.chain>0&&result.gain<=0))results.push(result);}
   if(index<numbers.length){setTimeout(chunk,0);return;}
-  s.reachResults=results;s.reachStatus='ready';s.tabReachResults=results;s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;s.reachCalculations=(s.reachCalculations||0)+1;s.reachAfterBall=context.count;scheduleUI(app);
+  s.reachResults=results;s.reachStatus='ready';s.tabReachResults=paidReachDrawAllowed(a)?results.filter(p=>p.gain>0):[];s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;if(paidReachDrawAllowed(a)){s.reachCalculations=(s.reachCalculations||0)+1;s.reachAfterBall=context.count;}scheduleUI(app);
  }
  setTimeout(chunk,0);
 }
 function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
-function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
+function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return paidReachDrawAllowed(a)&&reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
 function updateReachBoard(s,a){
  if(!s.engine)return;
  const results=visibleReachResults(s,a),byNumber=new Map(results.map(p=>[p.number,p])),tilesById=new Map(s.engine.board.flat().filter(Boolean).map(t=>[t.id,t]));
@@ -5185,7 +5192,7 @@ function updateReachBoard(s,a){
 const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
- if(!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
+ if(!paidReachDrawAllowed(a)||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
  const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
  return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
 }
