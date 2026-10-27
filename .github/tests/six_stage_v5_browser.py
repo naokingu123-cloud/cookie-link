@@ -10,8 +10,8 @@ assert "if(ev.phase==='drawpending'){clearMiniResult(s);invalidateReach(s);reque
 assert "idleLift=!m&&!transition&&!motionReduced" in html
 assert "for(const e of this.engines)e.presentationRate=3" in html
 assert "visualCritical=stage.phase==='pyramidFall'||stage.phase==='pyramidShape'||stage.phase==='pyramidBreak'" in html
-assert "stageWait=visualCritical?stage.ms" in html and "if(!await this.wait(stageWait*this.speed,token))return;" in html
-assert "visualCritical?this.waitVisual" not in html
+assert "stageWait=visualCritical?stage.ms" in html and "visualCritical?this.waitVisual(stageWait*this.speed,token):this.wait(stageWait*this.speed,token)" in html
+assert "const critical=['pyramidFall','pyramidShape','pyramidBreak'].includes(fx.phase),rate=critical?1:(e.presentationRate||1)" in html
 assert "motionMs=fall.steps.reduce" in html
 assert "sixBackdropCandyMotifs" in html and "function sixStageEffects" in html and "const crack=" in html
 assert "+180" in html and "sixBackdropCandyMotifs" in html and "const crack=" in html
