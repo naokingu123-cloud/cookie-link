@@ -4014,7 +4014,7 @@ function sixDropDemoRefill(input){
  if(!fill(0))throw Error('Demo refill failed');for(const [r,c] of holes)added.push(grid[r][c].id);return {grid,added};
 }
 sixDrawTutorial=function(s,time,bet){
- const x=s.candyCtx,t=Math.max(0,Math.min(17999,time)),index=Math.min(3,Math.floor(t/4500)),local=t%4500,type=['cluster','line','triangle','hexagon'][index],sample=sixDropDemoFixtures[type],rules=sixDropMiniRules,role=index>0;
+ const x=s.candyCtx,t=Math.max(0,Math.min(17999,time)),index=t<6000?0:Math.min(3,1+Math.floor((t-6000)/4000)),local=index===0?t:(t-6000)%4000,type=['cluster','line','triangle','hexagon'][index],sample=sixDropDemoFixtures[type],rules=sixDropMiniRules,role=index>0;
  const plan=sixDropDemoPlans[type]||(sixDropDemoPlans[type]=rules.sixPlan(sample.grid,sample.numbers,{trace:true})),total=plan.timeline.reduce((n,f)=>n+f.ms,0),playMs=Math.max(0,(local-550)/2750)*total;
  let remaining=playMs,fx=null,p=0,grid=sample.grid;if(local>=550){for(const stage of plan.timeline){if(remaining<=stage.ms){fx={...stage,elapsed:remaining};p=remaining/stage.ms;grid=stage.grid;break;}remaining-=stage.ms;}if(!fx)grid=plan.grid;}
  const topUp=!role&&local>=3300,refillDemo=topUp?(sixDropDemoPlans.refill||(sixDropDemoPlans.refill=sixDropDemoRefill(plan.grid))):null;if(topUp){grid=refillDemo.grid;fx=null;}
