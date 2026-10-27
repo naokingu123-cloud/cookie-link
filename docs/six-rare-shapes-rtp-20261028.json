@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-28",
+  "payouts": {
+    "line": 0.1,
+    "triangle": 1.5,
+    "hexagon": 3,
+    "allClear": 100
+  },
+  "colorSpread": 0.3,
+  "games": 20000,
+  "mean": 0.89775,
+  "standardError": 0.010873172809948347,
+  "approx95PercentInterval": [
+    0.8764385812925013,
+    0.9190614187074988
+  ],
+  "validationRuns": [
+    {
+      "triangles": 300,
+      "hexagons": 222,
+      "lines": 22651,
+      "N": 10000,
+      "seed": "28102941",
+      "mean": 0.89547,
+      "se": 0.01673467800437164,
+      "roles": 0.33811,
+      "bonus": 0.54736,
+      "clear": 0.01,
+      "refills": 3411,
+      "repairs": 0
+    },
+    {
+      "triangles": 343,
+      "hexagons": 232,
+      "lines": 22544,
+      "N": 10000,
+      "seed": "28102942",
+      "mean": 0.90003,
+      "se": 0.013887191937537265,
+      "roles": 0.34649,
+      "bonus": 0.55354,
+      "clear": 0,
+      "refills": 3371,
+      "repairs": 0
+    }
+  ],
+  "baselineAtOldPrizes": {
+    "triangles": 367,
+    "hexagons": 272,
+    "lines": 24639,
+    "N": 10000,
+    "seed": "28102911",
+    "mean": 0.91214,
+    "se": 0.01431326175405173,
+    "roles": 0.271,
+    "bonus": 0.64114,
+    "clear": 0,
+    "refills": 3455,
+    "repairs": 0
+  },
+  "calibration30": {
+    "triangles": 81,
+    "hexagons": 63,
+    "lines": 5710,
+    "N": 2500,
+    "seed": "28102921",
+    "mean": 0.9329999999999999,
+    "se": 0.03012652651734016,
+    "roles": 0.35259999999999997,
+    "bonus": 0.5804,
+    "clear": 0,
+    "refills": 851,
+    "repairs": 0
+  },
+  "rejectedSpread32": [
+    {
+      "triangles": 281,
+      "hexagons": 204,
+      "lines": 21822,
+      "N": 10000,
+      "seed": "28102931",
+      "mean": 0.88039,
+      "se": 0.022155979887831637,
+      "roles": 0.32156999999999997,
+      "bonus": 0.52882,
+      "clear": 0.03,
+      "refills": 3324,
+      "repairs": 0
+    },
+    {
+      "triangles": 295,
+      "hexagons": 199,
+      "lines": 21578,
+      "N": 10000,
+      "seed": "28102932",
+      "mean": 0.8359099999999999,
+      "se": 0.016178638607435424,
+      "roles": 0.31973,
+      "bonus": 0.5061800000000001,
+      "clear": 0.01,
+      "refills": 3437,
+      "repairs": 0
+    }
+  ],
+  "excludes": [
+    "JPC value",
+    "medal rounding"
+  ],
+  "verificationRun": 40597659315
+}
