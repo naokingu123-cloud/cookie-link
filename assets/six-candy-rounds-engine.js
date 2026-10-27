@@ -230,7 +230,7 @@ function sixMakeBoard(rows,colorCount,random,firstId=0,{holes=[]}={}){
 }
 class SixBallCandyEngine extends Engine{
  reset(){
-  this.kind='candy';this.gameName='シックスキャンディ';this.drawMode='grouped';this.reachMode='single';this.rows=SIX_ROWS;
+  this.kind='candy';this.gameName='シックスドロップ';this.drawMode='grouped';this.reachMode='single';this.rows=SIX_ROWS;
   this.version++;this.presentationRate=1;this.roundBet=this.roundBet||3000;this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
   this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;this.transitionPending=false;
   this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;
