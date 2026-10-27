@@ -37,10 +37,11 @@ for(let seed=1;seed<=200;seed++){
  for(let r=0;r<10;r++)for(let c=0;c<b.grid[r].length;c++)assert.equal(b.grid[r][c]?.number!=null,mask.has([r,c].join(',')));
  const plan=q.sixPlan(b.grid,[1,2,3]);if(plan.advance)continue;
  const before=q.sixClone(plan.grid),fill=f.sixRefillBoard(before,colors,random,b.lastId,new Set([1,2,3]));
- assert.equal(q.sixCount(fill.grid),75);assert.equal(q.sixResolve(fill.grid).cells.length,0);assert.equal(q.sixDrop(q.sixClone(fill.grid)).moves.length,0);
- const tiles=fill.grid.flat();assert.equal(new Set(tiles.map(t=>t.id)).size,75);const nums=tiles.filter(t=>t.number!=null).map(t=>t.number);assert.equal(new Set(nums).size,nums.length);
+ assert.equal(q.sixCount(fill.grid),q.sixCount(before)+fill.added.length);assert.equal(q.sixResolve(fill.grid).cells.length,0);assert.equal(q.sixDrop(q.sixClone(fill.grid)).moves.length,0);
+ const tiles=fill.grid.flat().filter(Boolean);assert.equal(new Set(tiles.map(t=>t.id)).size,tiles.length);const nums=tiles.filter(t=>t.number!=null).map(t=>t.number);assert.equal(new Set(nums).size,nums.length);
  for(let r=0;r<10;r++)for(let c=0;c<before[r].length;c++)if(before[r][c]){assert.equal(fill.grid[r][c].id,before[r][c].id);assert.equal(fill.grid[r][c].number,before[r][c].number);assert.equal(fill.grid[r][c].sugar,before[r][c].sugar);}
- for(const a of fill.added)if(a.tile.number!=null){assert(mask.has([a.r,a.c].join(',')));assert(![1,2,3].includes(a.tile.number));}
+ for(const a of fill.added)if(a.tile.number!=null){assert(![1,2,3].includes(a.tile.number));}
+ for(let r=0;r<10;r++)for(let c=0;c<before[r].length;c++)if(!before[r][c]){const x=q.sixPoint(r,c,10).x;let covered=false;for(let y=0;y<r;y++)for(let k=0;k<before[y].length;k++)if(before[y][k]&&Math.abs(q.sixPoint(y,k,10).x-x)<.999)covered=true;if(covered)assert.equal(fill.grid[r][c],null,'Interior hole filled');}
  topUps++;
 }
 assert(topUps>10);console.log('REFILL_RULES_PASS',{topUps});
