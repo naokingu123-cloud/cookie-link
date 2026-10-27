@@ -1,0 +1,18 @@
+{
+  "N": 1000,
+  "mean": 1.8562,
+  "se": 0.14170378103635767,
+  "roles": 0.2826,
+  "bonus": 1.5736,
+  "clear": 0,
+  "assumptions": "25 numbers uniformly shuffled without replacement; batches 3,2,1,1,1; current board generator and 12% chance round; excludes sugar/JPC value and medal rounding",
+  "current95PercentInterval": [
+    157.84605891687391,
+    213.39394108312612
+  ],
+  "provisionalUniformPayoutFactor": 0.4848615450921237,
+  "halfPayoutMeanPercent": 92.81,
+  "status": "Exploratory only. No payout or initial-board changes applied. Independent larger sample and sugar/JPC valuation required.",
+  "minimumPayoutMultiple": 0.1,
+  "calibrationConstraint": "All nonzero payout values must be multiples of 0.1 BET; do not use the uniform half-payout proposal because line would be 0.05."
+}
