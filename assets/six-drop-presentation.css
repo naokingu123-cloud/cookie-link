@@ -18,3 +18,11 @@ body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;
 @media(prefers-reduced-motion:reduce){.six-reach-cell .reach-comet circle{animation:none!important}}
 
 .six-refill-note{font-size:clamp(8px,1.5vw,11px);line-height:1.4;text-align:center;color:#743456;background:#fff0c9;border:1px solid #e6bb7e;border-radius:7px;padding:4px 2px;margin-bottom:4px;font-weight:900;overflow-wrap:anywhere}
+
+/* A short cabinet light sweep on a round clear, confined to the round frame. */
+#carnival-heading .six-round-card.current{position:relative;isolation:isolate}
+#carnival-heading.six-clear-flash .six-round-card.current{filter:drop-shadow(0 0 7px #ffdf83)}
+#carnival-heading.six-clear-flash .six-round-card.current::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,#fff9 48%,transparent 65%);background-size:250% 100%;animation:six-clear-sheen .7s ease-out both}
+@keyframes six-clear-sheen{from{background-position:120% 0}to{background-position:-80% 0}}
+.paused #carnival-heading .six-round-card.current::after{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#carnival-heading.six-clear-flash .six-round-card.current::after{display:none}}
