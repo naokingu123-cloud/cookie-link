@@ -1,0 +1,11 @@
+/* The same tab logo slot and miniature placement as Cookie Link. */
+.carnival-tab .tab-game-name{width:112px!important;height:32px!important;background:none!important;align-self:end!important}
+.carnival-tab .tab-game-name>.six-art-logo{width:112px!important;height:32px!important;overflow:visible}
+body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;gap:3px!important}
+#carnival-odds .six-role-summary{width:100%!important;min-width:0!important;gap:3px!important;flex:1!important;grid-template-rows:repeat(3,minmax(0,1fr)) auto!important;min-height:0!important}
+#carnival-odds .six-role-summary-row{grid-template-columns:28px minmax(0,1fr)!important;grid-template-areas:"icon formula" "subtotal subtotal"!important;padding:3px!important;gap:2px!important;min-height:0!important;overflow:visible!important}
+#carnival-odds .six-role-summary-formula{flex-wrap:wrap!important;white-space:normal!important;overflow:visible!important;justify-content:center!important;gap:1px!important}
+#carnival-odds .six-role-summary-formula .unit{flex-basis:100%!important;text-align:center;font-size:7px!important}
+#carnival-odds .six-role-summary-row .subtotal{justify-self:center!important;overflow:visible!important;text-overflow:clip!important;font-size:9px!important}
+#carnival-odds .six-role-summary-total{grid-template-columns:1fr!important;text-align:center!important;padding:3px!important;gap:1px!important}
+#carnival-odds .six-role-summary-total b{font-size:9px!important}
