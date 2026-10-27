@@ -47,6 +47,7 @@ function sixCandyAudio(kind,amount=1){
 
 function carnivalEvent(s,ev,e,a){
  setupCarnivalSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;
+ if(ev.phase==='drawpending'){invalidateReach(s);requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);return;}
  if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);s.candyReward.hidden=true;if(s.candyFrame)cancelAnimationFrame(s.candyFrame);s.candyFrame=0;s.candyLastDraw=0;s.candyClockStamp=null;s.sixFallSoundFx=null;s.sixRefillFx=null;s.candyTime=0;invalidateReach(s);}
  if(ev.phase==='drawpending'){clearMiniResult(s);invalidateReach(s);requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);return;}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
