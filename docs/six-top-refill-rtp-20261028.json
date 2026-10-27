@@ -1,0 +1,22 @@
+{
+  "N": 10000,
+  "seed": "882731",
+  "mean": 0.91509,
+  "se": 0.02130545303883492,
+  "roles": 0.27285,
+  "bonus": 0.61224,
+  "clear": 0.03,
+  "refills": 3212,
+  "repairs": 0,
+  "rule": "top-entry-only, preserved interior gaps, missing undrawn numbered drops",
+  "colorSpread": 0.375,
+  "target": 0.9,
+  "ci95Approx": [
+    0.8733313120438835,
+    0.9568486879561164
+  ],
+  "excluded": [
+    "separate JPC value",
+    "medal rounding"
+  ]
+}
