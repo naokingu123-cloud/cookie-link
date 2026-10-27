@@ -215,7 +215,7 @@ function sixColorFits(grid,r,c,color){
 }
 function sixRefillBoard(input,colorCount,random,firstId,drawn=new Set()){
  const grid=sixClone(input),empty=[],oldTiles=[];let lastId=firstId;
- for(let r=grid.length-1;r>=0;r--)for(let c=0;c<grid[r].length;c++)if(!grid[r][c])empty.push([r,c]);else oldTiles.push([r,c]);
+ for(let r=grid.length-1;r>=0;r--)for(let c=0;c<grid[r].length;c++){if(grid[r][c]){oldTiles.push([r,c]);continue;}const x=sixPoint(r,c,grid.length).x;let covered=false;for(let y=0;y<r;y++)for(let k=0;k<input[y].length;k++)if(input[y][k]&&Math.abs(sixPoint(y,k,grid.length).x-x)<.999)covered=true;if(!covered)empty.push([r,c]);}
  if(!empty.length)return {grid,lastId,added:[],recolored:[]};
  const palettes=empty.map(()=>sixShuffle(Array.from({length:colorCount},(_,i)=>i),random));let visits=0;
  function fill(i){if(i===empty.length)return true;if(++visits>16000)return false;const [r,c]=empty[i];for(const color of palettes[i]){if(!sixColorFits(grid,r,c,color))continue;grid[r][c]={id:firstId+i+1,color,number:null};if(fill(i+1))return true;}grid[r][c]=null;return false;}
@@ -227,12 +227,12 @@ function sixRefillBoard(input,colorCount,random,firstId,drawn=new Set()){
   // Bounded fallback: recolor this presentation only; never erase surviving
   // numbers/sugar or leave a hole. The 3-color lattice is a proper coloring.
   const palette=sixShuffle(Array.from({length:colorCount},(_,i)=>i),random);
-  for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){const color=palette[(r+c+Math.floor((r+grid.length%2)/2))%colorCount];if(grid[r][c]){if(grid[r][c].color!==color)recolored.push({r,c,before:grid[r][c].color,after:color});grid[r][c].color=color;}else grid[r][c]={id:++lastId,color,number:null};}
+  const fillable=new Set(empty.map(p=>p.join(',')));for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){if(!grid[r][c]&&!fillable.has([r,c].join(',')))continue;const color=palette[(r+c+Math.floor((r+grid.length%2)/2))%colorCount];if(grid[r][c]){if(grid[r][c].color!==color)recolored.push({r,c,before:grid[r][c].color,after:color});grid[r][c].color=color;}else grid[r][c]={id:++lastId,color,number:null};}
  }
  lastId=Math.max(lastId,...grid.flat().filter(Boolean).map(t=>t.id));
- const present=new Set(grid.flat().filter(t=>t?.number!=null).map(t=>t.number)),available=sixShuffle(Array.from({length:25},(_,i)=>i+1).filter(n=>!drawn.has(n)&&!present.has(n)),random),mask=new Set(SIX_NUMBER_CELLS.map(p=>p.join(','))),added=[];
- for(const [r,c] of empty){const tile=grid[r][c];if(mask.has([r,c].join(','))&&available.length)tile.number=available.pop();added.push({r,c,tile:{...tile}});}
- if(sixResolve(grid).cells.length||sixCount(grid)!==sixCapacity(grid.length))throw Error('Refill must be full and cascade-free');
+ const present=new Set(grid.flat().filter(t=>t?.number!=null).map(t=>t.number)),available=sixShuffle(Array.from({length:25},(_,i)=>i+1).filter(n=>!drawn.has(n)&&!present.has(n)),random),added=[];
+ for(const [r,c] of empty){const tile=grid[r][c];if(available.length)tile.number=available.pop();added.push({r,c,tile:{...tile}});}
+ if(sixResolve(grid).cells.length||sixDrop(sixClone(grid)).moves.length)throw Error('Top refill must be stable and cascade-free');
  return {grid,lastId,added,recolored};
 }
 
@@ -304,7 +304,7 @@ class SixBallCandyEngine extends Engine{
      const rate=roleReached?3:1,stage={...originalStage,ms:originalStage.ms/rate,...(originalStage.motionMs?{motionMs:originalStage.motionMs/rate}:{})};
      if(token!==this.version)return;this.pyramid=sixClone(stage.grid);this.remainingCandies=sixCount(this.pyramid);this.fx={...stage,elapsed:0,stamp:null};this.cascade=stage.chain||this.cascade;
      if(stage.phase==='pyramidHit')this.candyMessage=numbers.join('・')+'番 HIT！';
-     if(stage.phase==='pyramidMiss')this.candyMessage='番号にhitしなければドロップを補充！';
+     if(stage.phase==='pyramidMiss')this.candyMessage='盤面の番号にHITしなければ、未抽選番号付きドロップも上から補充！';
      if(stage.phase==='pyramidFall')this.candyMessage='カタカタと落下！';
      if(stage.phase==='pyramidShape')this.candyMessage=stage.forms.length?'役が完成！ '+stage.chain+'連鎖':'4個以上つながった！ '+stage.chain+'連鎖';
      if(stage.phase==='pyramidAward'){this.totalHundredths+=stage.gain;this.lastGain=stage.gain;this.triangles+=stage.triangles;this.hexagons+=stage.hexagons;this.lines+=stage.lines;this.shapes=this.triangles+this.hexagons+this.lines;this.bestCascade=Math.max(this.bestCascade,stage.chain);}
@@ -316,8 +316,8 @@ class SixBallCandyEngine extends Engine{
     if(missed.length&&!plan.advance){
      const fill=sixRefillBoard(this.pyramid,this.sixColorCount,this.random,this.uid,this.drawn);this.uid=fill.lastId;
      if(fill.added.length){this.pyramid=fill.grid;this.remainingCandies=sixCount(this.pyramid);this.boardGeneration++;this.lastRefill={added:fill.added.length,recolored:fill.recolored.length,missed:[...missed]};
-      this.fx={phase:'pyramidTopUp',grid:sixClone(fill.grid),added:fill.added,recolored:fill.recolored,elapsed:0,stamp:null,ms:900};this.candyMessage='番号にhitしなければドロップを補充！';this.emit('pyramidTopUp',{missed,added:fill.added});
-      if(!await this.waitVisual(900*this.speed,token))return;this.fx=null;
+      this.fx={phase:'pyramidTopUp',grid:sixClone(fill.grid),added:fill.added,recolored:fill.recolored,elapsed:0,stamp:null,ms:1400};this.candyMessage='盤面の番号にHITしなければ、未抽選番号付きドロップも上から補充！';this.emit('pyramidTopUp',{missed,added:fill.added});
+      if(!await this.waitVisual(1400*this.speed,token))return;this.fx=null;
      }
     }
     this.transitionPending=plan.advance&&this.processed<8&&this.roundIndex<this.maxRounds;
