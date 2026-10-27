@@ -1,0 +1,62 @@
+{
+  "N": 20000,
+  "mean": 0.91637,
+  "se": 0.013753864953350384,
+  "ci95Approx": [
+    0.8894124246914332,
+    0.9433275753085668
+  ],
+  "colorSpread": 0.22,
+  "target": 0.9,
+  "rows": [
+    2,
+    2,
+    2,
+    4,
+    3,
+    2,
+    2,
+    2,
+    2,
+    4
+  ],
+  "upperHalf": 13,
+  "lowerHalf": 12,
+  "leftRightSymmetric": true,
+  "runs": [
+    {
+      "N": 10000,
+      "seed": "28102891",
+      "mean": 0.90676,
+      "se": 0.016371085188221335,
+      "roles": 0.2752,
+      "bonus": 0.62156,
+      "clear": 0.01,
+      "refills": 3291,
+      "repairs": 1
+    },
+    {
+      "N": 10000,
+      "seed": "28102892",
+      "mean": 0.92598,
+      "se": 0.022105300358963683,
+      "roles": 0.27216,
+      "bonus": 0.6238199999999999,
+      "clear": 0.03,
+      "refills": 3442,
+      "repairs": 0
+    }
+  ],
+  "excluded": [
+    "separate JPC value",
+    "medal rounding"
+  ],
+  "clearBonuses": [
+    0.2,
+    0.4,
+    1,
+    3,
+    10
+  ],
+  "minimumPayoutIncrement": 0.1
+}
