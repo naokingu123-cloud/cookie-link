@@ -9,3 +9,10 @@ body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;
 #carnival-odds .six-role-summary-row .subtotal{justify-self:center!important;overflow:visible!important;text-overflow:clip!important;font-size:9px!important}
 #carnival-odds .six-role-summary-total{grid-template-columns:1fr!important;text-align:center!important;padding:3px!important;gap:1px!important}
 #carnival-odds .six-role-summary-total b{font-size:9px!important}
+
+/* Circular high-payout orbits follow the circular candy edge. */
+.six-reach-cell,.six-reach-cell .reach-orbit{border-radius:50%!important}
+.six-reach-cell .reach-comet circle{stroke:var(--orbit-color);stroke-linecap:round;stroke-dasharray:var(--dash);stroke-dashoffset:0;animation:reach-comet-lap var(--comet-time) linear var(--comet-delay) infinite}
+.six-reach-cell .reach-comet .comet-head{stroke:#fff5dc}
+.six-reach-layer.is-paused .reach-comet circle,.paused .six-reach-cell .reach-comet circle{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.six-reach-cell .reach-comet circle{animation:none!important}}
