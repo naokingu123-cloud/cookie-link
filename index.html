@@ -2173,6 +2173,13 @@ body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;
 #carnival-odds .six-role-summary-row .subtotal{justify-self:center!important;overflow:visible!important;text-overflow:clip!important;font-size:9px!important}
 #carnival-odds .six-role-summary-total{grid-template-columns:1fr!important;text-align:center!important;padding:3px!important;gap:1px!important}
 #carnival-odds .six-role-summary-total b{font-size:9px!important}
+
+/* Circular high-payout orbits follow the circular candy edge. */
+.six-reach-cell,.six-reach-cell .reach-orbit{border-radius:50%!important}
+.six-reach-cell .reach-comet circle{stroke:var(--orbit-color);stroke-linecap:round;stroke-dasharray:var(--dash);stroke-dashoffset:0;animation:reach-comet-lap var(--comet-time) linear var(--comet-delay) infinite}
+.six-reach-cell .reach-comet .comet-head{stroke:#fff5dc}
+.six-reach-layer.is-paused .reach-comet circle,.paused .six-reach-cell .reach-comet circle{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.six-reach-cell .reach-comet circle{animation:none!important}}
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -3297,7 +3304,7 @@ class SixBallCandyEngine extends Engine{
  predict(number){
   if(!this.initialPyramid||this.drawn.has(number))return null;
   const p=sixPlan(this.pyramid,[number]),bonus=p.advance&&!this.clearedRounds.has(this.roundIndex)?sixRoundClearBonus(this.roundIndex):0,gain=p.gain+bonus;
-  return {number,total:this.totalHundredths+gain,gain,roundBonus:bonus,maxLink:0,chain:p.chain,allClear:p.cleared,tier:reachTier(this.totalHundredths+gain,p.cleared),triangles:p.triangles,hexagons:p.hexagons,lines:p.lines};
+  return {number,total:this.totalHundredths+gain,gain,roundBonus:bonus,maxLink:0,chain:p.chain,ordinaryGroups:p.ordinaryGroups,allClear:p.cleared,tier:reachTier(this.totalHundredths+gain,p.cleared),triangles:p.triangles,hexagons:p.hexagons,lines:p.lines};
  }
  async drain(){
   if(this.busy)return;const token=this.version;this.busy=true;
@@ -3510,13 +3517,14 @@ function setupCarnivalSlot(s){
  const odds=document.createElement('div');odds.id='carnival-odds';odds.innerHTML='<section class="six-total"><span>TOTAL WIN</span><b id="carnival-win">0</b></section><div class="six-role-tables">'+sixRoleTrack('line','直線')+sixRoleTrack('triangle','トライアングル')+sixRoleTrack('hexagon','ヘキサゴン')+'</div><div class="six-clear-bonus">全消し <b>＋100×BET</b></div><div class="six-round-rail"><strong>ROUND CLEAR BONUS</strong><div class="six-round-cards">'+[-1,0,1].map(offset=>'<div class="six-round-card" data-offset="'+offset+'"><small>ROUND</small><b></b><em></em><span class="six-round-sugar sugar-gem" hidden></span></div>').join('')+'</div></div><div class="six-bonus-total">クリア累計 <b>0.0×</b></div><div class="six-bonus-list">'+Array.from({length:8},(_,i)=>'<span data-round="'+(i+1)+'">R'+(i+1)+' <b>'+ (sixRoundClearBonus(i+1)/100).toFixed(1)+'×</b></span>').join('')+'</div>';
  $('odds-panel').append(odds);s.sixOdds=odds;
 }
+function sixDropReachCometMarkup(tier){return reachCometMarkup(tier).replaceAll('<rect','<circle').replaceAll('x="4" y="4" width="92" height="92" rx="11"','cx="50" cy="50" r="46"');}
 function sixReachPresentation(s,results,grid,ready){
  const layer=s.sixReachLayer,w=layer.parentElement.clientWidth,h=layer.parentElement.clientHeight,k=Math.min(w,h)/320,layout=sixLayout(s.engine.rows),list=ready?[]:results;
  const key=[w,h,s.engine.version,s.engine.boardGeneration,s.engine.fx?.phase,list.map(p=>p.number+'/'+p.tier+'/'+p.total).join(',')].join('|');
  layer.classList.toggle('is-paused',!!app?.paused);if(key===s.sixReachKey)return;s.sixReachKey=key;layer.replaceChildren();
  const lookup=new Map(grid.flatMap((row,r)=>row.map((t,c)=>t?[t.number,[r,c]]:null)).filter(Boolean));
  for(const result of list){const pos=lookup.get(result.number);if(!pos)continue;const p=sixXY(...pos,s.engine.rows),el=document.createElement('div');el.className='six-reach-cell';el.style.cssText='left:'+((w-320*k)/2+(p.x-layout.radius)*k)+'px;top:'+((h-320*k)/2+(p.y-layout.radius)*k)+'px;width:'+layout.step*k+'px;height:'+layout.step*k+'px';
-  const tier=result.tier;el.innerHTML='<span class="reach-glints" data-tier="'+tier+'"><i></i><i></i><i></i></span>'+(tier===1||tier===2?'<span class="reach-orbit" data-tier="'+tier+'">'+reachCometMarkup(tier)+'</span>':'')+(tier===3?'<span class="allclear-reach-aura"><svg class="allclear-reach-perimeter" viewBox="0 0 100 100"><circle class="perimeter-rail" cx="50" cy="50" r="44" pathLength="100"/><circle class="perimeter-trail" cx="50" cy="50" r="44" pathLength="100"/><circle class="perimeter-core" cx="50" cy="50" r="44" pathLength="100"/></svg></span>':'')+'<span class="tile-reach '+(tier?'alternating':'')+'" data-tier="'+tier+'"><span class="reach-first">リーチ</span>'+(tier?'<span class="reach-second">'+REACH_WORDS[tier]+'</span>':'')+'</span>';layer.append(el);
+  const tier=result.tier;el.innerHTML='<span class="reach-glints" data-tier="'+tier+'"><i></i><i></i><i></i></span>'+(tier===1||tier===2?'<span class="reach-orbit" data-tier="'+tier+'">'+sixDropReachCometMarkup(tier)+'</span>':'')+(tier===3?'<span class="allclear-reach-aura"><svg class="allclear-reach-perimeter" viewBox="0 0 100 100"><circle class="perimeter-rail" cx="50" cy="50" r="44" pathLength="100"/><circle class="perimeter-trail" cx="50" cy="50" r="44" pathLength="100"/><circle class="perimeter-core" cx="50" cy="50" r="44" pathLength="100"/></svg></span>':'')+'<span class="tile-reach '+(tier?'alternating':'')+'" data-tier="'+tier+'"><span class="reach-first">リーチ</span>'+(tier?'<span class="reach-second">'+REACH_WORDS[tier]+'</span>':'')+'</span>';layer.append(el);
  }
 }
 // Deterministic PCM effects share the existing unlocked context, mute and reset bus.
@@ -3588,6 +3596,7 @@ function drawCarnival(s,now=performance.now()){
   const pose=sixTransitionPose(fx,r,c,t,rows,progress,motionReduced);if(!pose.visible)continue;if(transition)pos={x:pose.x,y:pose.y};
   const pending=!transition&&t.number!=null&&(e.pendingDraws.has(t.number)||lit.has(sixKey(r,c))),reach=t.number!=null?byNumber.get(t.number):null,shape=shaped.has(sixKey(r,c)),radius=layout.radius;
   x.save();x.globalAlpha=pose.alpha;if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
+  const ordinarySparkle=reachAvailable(s,app)&&s.reachResults.some(v=>v.number===t.number&&v.chain>0&&v.gain<=0);
   const candyR=radius,idleLift=!m&&!transition&&!motionReduced?Math.sin(time/780+t.id*.67)*.85:0,idleBreath=!m&&!transition&&!motionReduced?1+.017*Math.sin(time/930+t.id*.41):1,idleSway=!m&&!transition&&!motionReduced?1+.012*Math.sin(time/1110+t.id*.59):1;
   // Keep centres and outer radii fixed so resting candies stay in contact.
   // Resting candy artwork breathes slightly; the number remains upright.
@@ -3599,6 +3608,7 @@ function drawCarnival(s,now=performance.now()){
   x.shadowBlur=0;
   if(t.sugar){const img=getSugarSprite(wonderTier(bet));if(img)x.drawImage(img,pos.x-radius*.75,pos.y-radius*.75,radius*1.5,radius*1.5);}
   if(e.chanceRound===e.roundIndex&&!motionReduced&&!transition){const spark=.5+.5*Math.sin(time/350+t.id*2.4);x.globalAlpha*=spark;sixArtStar(x,pos.x+radius*.55,pos.y-radius*.55,1.4+spark*2,'#fff','#fff');x.globalAlpha=1;}
+  if(ordinarySparkle&&!m&&!transition){for(let k=0;k<3;k++){const a=k*2.094+t.id*.37,twinkle=motionReduced?.7:.3+.7*(.5+.5*Math.sin(time/240+k*2.1));sixArtStar(x,pos.x+Math.cos(a)*radius*.78,pos.y+Math.sin(a)*radius*.78,1.5+twinkle*2.3,'#fffce1','#e6f9ff');}}
   if(!ready&&t.number!=null)sixPaintCandyNumber(x,t.number,pos.x,pos.y+1,radius,t.color,e.roundIndex);
   if(shape||pending||reach){x.strokeStyle=shape?'#fff6b3':pending?'#fff9e7':reach.tier>=2?'#f0a2ff':'#fff3b6';x.lineWidth=shape?2.3:1.5;x.beginPath();x.arc(pos.x,pos.y,radius,0,Math.PI*2);x.stroke();}x.restore();
  }
@@ -3729,26 +3739,233 @@ function sixDrawTutorial(s,time,bet){
  for(let k=0;k<4;k++){x.fillStyle=k===index?'#ed67a4':'#d7c1cf';x.beginPath();x.arc(139+k*14,286,k===index?4:3,0,7);x.fill();}
  s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.setAttribute('aria-label','シックスドロップ・遊び方デモ');s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent='BET待機中・遊び方デモ';s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
 }
-/* Compact shape examples. These illustrate the production resolver's exact lattice. */
-const sixDropDemoFixtures={
- cluster:{cells:[[8,2],[8,3],[9,2],[9,3]],label:'同じ色が4個以上つながると消去',color:0},
- line:{cells:[[8,1],[8,2],[8,3],[8,4]],label:'直線・4個',color:2},
- triangle:{cells:[[6,3],[7,3],[7,4],[8,2],[8,3],[8,4]],label:'トライアングル・6個',color:1},
- hexagon:{cells:[[6,2],[6,3],[7,2],[7,4],[8,2],[8,3]],label:'ヘキサゴン・6個',color:3}
-};
+const sixDropMiniRules=(()=>{
+/* Six Candy rules v4. Fixed 10-row staggered tray with symmetric start gaps,
+ * round-specific candy palettes, and separate round-clear bonuses.
+ */
+const SIX_ROWS=3,SIX_SQRT3_2=Math.sqrt(3)/2;
+const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:10000};
+const SIX_CLEAR_BONUS=[0,20,100,300,1000,5000];
+const SIX_ROUND_THEMES=[
+ {id:'cool-1',label:'Round 1',colors:['lime','green','aqua','navy'],tier:1},
+ {id:'fresh-2',label:'Round 2',colors:['yellow','lime','green','aqua'],tier:2},
+ {id:'citrus-3',label:'Round 3',colors:['orange','yellow','lime','green'],tier:3},
+ {id:'hot-4',label:'Round 4',colors:['red','orange','yellow','lime'],tier:4},
+ {id:'hot-5',label:'Round 5',colors:['violet','red','orange','yellow'],tier:5}
+];
+const SIX_CHANCE_THEME={id:'chance-3',label:'CHANCE',colors:['gold','silver','diamond'],tier:8};
+const SIX_CHANCE_RATE=.12;
+const SIX_SUGAR_ROUND_CHOICES=[2,3,3,3,4];
+const SIX_START_GAP_TEMPLATES=[
+ [[0,2],[0,4],[2,1],[2,5],[6,1],[6,5]],
+ [[4,1],[4,5],[2,3],[7,1],[7,6]],
+ [[4,1],[4,5],[2,3],[7,1],[7,6],[0,3]],
+ [[4,2],[4,4],[7,1],[7,6]],
+ [[4,2],[4,4],[7,1],[7,6],[8,2],[8,4]],
+ [[0,1],[0,5],[5,1],[5,6],[7,1],[7,6]]
+];
+function sixRoundTheme(round){return SIX_ROUND_THEMES[Math.max(0,Math.min(4,round-1))];}
+function sixPickChanceRound(random){return random()<SIX_CHANCE_RATE?2+Math.floor(random()*4):null;}
+function sixRoundColorCount(round){return sixRoundTheme(round).colors.length;}
+function sixRoundClearBonus(round){return SIX_CLEAR_BONUS[Math.max(0,Math.min(5,round))]||0;}
+function sixPickSugarRound(random){return SIX_SUGAR_ROUND_CHOICES[Math.floor(random()*SIX_SUGAR_ROUND_CHOICES.length)]||3;}
+function sixPickGapTemplate(random,round){
+ const list=SIX_START_GAP_TEMPLATES;return list[(Math.floor(random()*list.length)+Math.max(0,round-1))%list.length].map(([r,c])=>[r,c]);
+}
+function sixRowWidth(r,rows=SIX_ROWS){return 5-((rows-1-r)&1);} // bottom is always 8
+function sixCapacity(rows=SIX_ROWS){return Array.from({length:rows},(_,r)=>sixRowWidth(r,rows)).reduce((a,b)=>a+b,0);}
+const sixEmpty=(rows=SIX_ROWS)=>Array.from({length:rows},(_,r)=>Array(sixRowWidth(r,rows)).fill(null));
+const sixClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
+const sixKey=(r,c)=>r*16+c;
+const sixCount=g=>g.reduce((n,row)=>n+row.filter(Boolean).length,0);
+const sixPoint=(r,c,rows=SIX_ROWS)=>({x:c-(sixRowWidth(r,rows)-1)/2,y:r*SIX_SQRT3_2});
+function sixValid(r,c,rows=SIX_ROWS){return r>=0&&r<rows&&Number.isInteger(c)&&c>=0&&c<sixRowWidth(r,rows);}
+function sixStep(r,c,dr,dx,rows=SIX_ROWS){return [r+dr,c+(sixRowWidth(r+dr,rows)-sixRowWidth(r,rows))/2+dx];}
+function sixLayout(rows=SIX_ROWS){const step=35;return {step,top:295.5-(rows-1)*step*SIX_SQRT3_2,radius:step*.50};}
+function sixXY(r,c,rows=SIX_ROWS){const l=sixLayout(rows),p=sixPoint(r,c,rows);return {x:160+p.x*l.step,y:l.top+p.y*l.step};}
+function sixNeighbors(r,c,rows=SIX_ROWS){return [[0,-1],[0,1],[-1,-.5],[-1,.5],[1,-.5],[1,.5]].map(([dr,dx])=>sixStep(r,c,dr,dx,rows));}
+const sixPatternCache=new Map();
+function sixPatterns(rows=SIX_ROWS){
+ if(sixPatternCache.has(rows))return sixPatternCache.get(rows);const list=[];
+ const add=(type,cells)=>{if(cells.every(([r,c])=>sixValid(r,c,rows)))list.push({type,cells,key:cells.map(p=>sixKey(...p)).sort((a,b)=>a-b).join(',')});};
+ for(let r=0;r<rows;r++)for(let c=0;c<sixRowWidth(r,rows);c++){
+  const at=offsets=>offsets.map(([dr,dx])=>sixStep(r,c,dr,dx,rows));
+  add('triangle',at([[0,0],[1,-.5],[1,.5],[2,-1],[2,0],[2,1]]));
+  add('triangle',at([[0,-1],[0,0],[0,1],[1,-.5],[1,.5],[2,0]]));
+  add('hexagon',sixNeighbors(r,c,rows));
+ }
+ sixPatternCache.set(rows,list);return list;
+}
+function sixComponents(grid){
+ const seen=new Set(),out=[];
+ for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){
+  const tile=grid[r][c],key=sixKey(r,c);if(!tile||seen.has(key))continue;
+  const cells=[],stack=[[r,c]];seen.add(key);
+  while(stack.length){const [y,x]=stack.pop();cells.push([y,x]);for(const [a,b] of sixNeighbors(y,x,grid.length)){const k=sixKey(a,b);if(!sixValid(a,b,grid.length)||seen.has(k)||grid[a][b]?.color!==tile.color)continue;seen.add(k);stack.push([a,b]);}}
+  out.push({cells,color:tile.color});
+ }
+ return out;
+}
+function sixUpperFirst(a,b){
+ const ra=Math.min(...a.cells.map(p=>p[0])),rb=Math.min(...b.cells.map(p=>p[0]));
+ return ra-rb||b.cells.length-a.cells.length||Math.min(...a.cells.map(p=>p[1]))-Math.min(...b.cells.map(p=>p[1]))||a.key.localeCompare(b.key);
+}
+function sixLines(grid,used=new Set()){
+ const out=[],rows=grid.length;
+ for(const [dr,dx] of [[0,1],[1,-.5],[1,.5]])for(let r=0;r<rows;r++)for(let c=0;c<grid[r].length;c++){
+  const t=grid[r][c];if(!t||used.has(sixKey(r,c)))continue;
+  const same=([y,x])=>sixValid(y,x,rows)&&!!grid[y][x]&&!used.has(sixKey(y,x))&&grid[y][x].color===t.color;
+  if(same(sixStep(r,c,-dr,-dx,rows)))continue;
+  const cells=[];for(let p=[r,c];same(p);p=sixStep(...p,dr,dx,rows))cells.push(p);
+  if(cells.length>=4)out.push({type:'line',cells,color:t.color,key:cells.map(p=>sixKey(...p)).join(',')});
+ }
+ return out.sort(sixUpperFirst);
+}
+function sixFindShapes(grid){
+ const used=new Set(),out=[],candidates=sixPatterns(grid.length).filter(p=>{const t=grid[p.cells[0][0]][p.cells[0][1]];return t&&p.cells.every(([r,c])=>grid[r][c]?.color===t.color);});
+ for(const type of ['hexagon','triangle'])for(const p of candidates.filter(p=>p.type===type).sort(sixUpperFirst)){
+  if(p.cells.some(cell=>used.has(sixKey(...cell))))continue;
+  p.cells.forEach(cell=>used.add(sixKey(...cell)));out.push({...p,color:grid[p.cells[0][0]][p.cells[0][1]].color});
+ }
+ for(;;){const p=sixLines(grid,used)[0];if(!p)break;p.cells.forEach(cell=>used.add(sixKey(...cell)));out.push(p);}
+ return out;
+}
+function sixResolve(grid){
+ const forms=sixFindShapes(grid),clusters=sixComponents(grid).filter(g=>g.cells.length>=4);
+ const cells=[...new Map(clusters.flatMap(g=>g.cells).map(p=>[sixKey(...p),p])).values()];
+ return {forms,clusters,cells,hexagons:forms.filter(f=>f.type==='hexagon').length,triangles:forms.filter(f=>f.type==='triangle').length,lines:forms.filter(f=>f.type==='line').length};
+}
+const SIX_FALL_RULES='grid-support-synchronous-v5-staggered-gap-settle';
+function sixMotionPoint(move,t){
+ t=Math.max(0,Math.min(1,t));const rows=move.rows||SIX_ROWS,a=sixPoint(...move.from,rows),b=sixPoint(...move.to,rows);
+ if(t===0)return a;if(t===1)return b;
+ if(move.gap){
+  const sign=Math.sign(b.x-a.x);
+  if(move.gapPivot){
+   const p=sixPoint(...move.gapPivot,rows),vertical=p.y-1-a.y,arc=Math.PI/6,d=t*(vertical+arc);
+   if(d<=vertical)return {x:a.x,y:a.y+d};
+   const angle=-Math.PI/2+sign*(d-vertical);
+   return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
+  }
+  const vertical=b.y-a.y,d=t*(vertical+Math.abs(b.x-a.x));
+  return d<=vertical?{x:a.x,y:a.y+d}:{x:a.x+sign*(d-vertical),y:b.y};
+ }
+ if(!move.pivot)return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
+ const p=sixPoint(...move.pivot,rows),angle=Math.atan2(a.y-p.y,a.x-p.x)+move.turn*t;
+ return {x:p.x+Math.cos(angle),y:p.y+Math.sin(angle)};
+}
+function sixPathClear(grid,move,vacating=new Set()){
+ for(let k=1;k<=16;k++){
+  const p=sixMotionPoint(move,k/16);
+  for(let r=Math.max(0,move.from[0]-1);r<=Math.min(grid.length-1,move.to[0]+1);r++)for(let c=0;c<grid[r].length;c++){
+   const t=grid[r][c];if(!t||t.id===move.id||vacating.has(t.id))continue;const q=sixPoint(r,c,grid.length);
+   if((p.x-q.x)**2+(p.y-q.y)**2<.999999)return false;
+  }
+ }
+ return true;
+}
+function sixFallOptions(grid,r,c,vacating=new Set()){
+ const rows=grid.length,tile=grid[r]?.[c];if(!tile||r===rows-1||vacating.has(tile.id))return [];
+ const valid=p=>sixValid(...p,rows),occupied=([y,x])=>{const t=grid[y]?.[x];return t&&!vacating.has(t.id)?t:null;};
+ const dl=sixStep(r,c,1,-.5,rows),dr=sixStep(r,c,1,.5,rows),down=sixStep(r,c,2,0,rows);
+ const left=occupied(dl),right=occupied(dr),sideL=occupied([r,c-1]),sideR=occupied([r,c+1]);
+ if(left&&right)return [];
+ const make=(to,pivot=null,turn=0)=>valid(to)?{id:tile.id,tile:{...tile},from:[r,c],to,pivot,turn,rows}:null;
+ const gap=to=>{const m=make(to);return m?{...m,gap:true,gapPivot:valid(down)&&occupied(down)?down:null}:null;};
+ const downLeft=()=>!valid(dl)||left?null:!sideL?make(dl,right?dr:null,right?-Math.PI/3:0):!right?gap(dl):null;
+ const downRight=()=>!valid(dr)||right?null:!sideR?make(dr,left?dl:null,left?Math.PI/3:0):!left?gap(dr):null;
+ const vertical=()=>!left&&!right&&valid(down)&&!occupied(down)?make(down):null;
+ let options=[];
+ if(left)options=[downRight()];
+ else if(right)options=[downLeft()];
+ else {
+  const biasL=!!grid[r]?.[c-1],biasR=!!grid[r]?.[c+1];
+  if(biasL&&!biasR)options=[downRight(),vertical(),downLeft()];
+  else if(biasR&&!biasL)options=[downLeft(),vertical(),downRight()];
+  else if(vertical())options=[vertical()];
+  else {
+   const l=downLeft(),rr=downRight();
+   const room=m=>m?[-.5,.5].map(dx=>sixStep(...m.to,1,dx,rows)).filter(p=>valid(p)&&!occupied(p)).length:-1;
+   options=room(rr)>room(l)?[rr,l]:[l,rr];
+  }
+ }
+ return options.filter(Boolean).filter(m=>sixPathClear(grid,m,vacating));
+}
+function sixMotionsClear(a,b){for(let k=0;k<=16;k++){const p=sixMotionPoint(a,k/16),q=sixMotionPoint(b,k/16);if((p.x-q.x)**2+(p.y-q.y)**2<.999999)return false;}return true;}
+function sixDrop(grid,{trace=false}={}){
+ const steps=[],paths=new Map(),count=sixCount(grid);let iterations=0;
+ for(;;){
+  if(++iterations>count*grid.length+1)throw Error('Six Candy gravity did not converge');
+  const accepted=[],vacating=new Set(),targets=new Set(),pinned=new Set();
+  for(let pass=0;pass<=count;pass++){
+   const previous=accepted.length;
+   for(let r=grid.length-2;r>=0;r--){
+    const proposals=[];
+    for(let c=0;c<grid[r].length;c++){
+     const t=grid[r][c];if(!t||vacating.has(t.id)||pinned.has(t.id))continue;
+     const candidates=sixFallOptions(grid,r,c,vacating);if(candidates.length)proposals.push({c,candidates});
+    }
+    proposals.sort((a,b)=>a.candidates.length-b.candidates.length||a.c-b.c);
+    for(const proposal of proposals)for(const m of proposal.candidates){
+     if(vacating.has(m.id)||pinned.has(m.id)||targets.has(sixKey(...m.to)))continue;
+     if(!sixPathClear(grid,m,vacating)||accepted.some(other=>!sixMotionsClear(m,other)))continue;
+     accepted.push(m);vacating.add(m.id);targets.add(sixKey(...m.to));
+     for(const pivot of [m.pivot,m.gapPivot])if(pivot){const support=grid[pivot[0]][pivot[1]];if(support)pinned.add(support.id);}break;
+    }
+   }
+   if(accepted.length===previous)break;
+  }
+  if(!accepted.length)break;
+  for(const m of accepted)grid[m.from[0]][m.from[1]]=null;
+  for(const m of accepted){
+   if(grid[m.to[0]][m.to[1]])throw Error('Reserved candy destination is occupied');
+   grid[m.to[0]][m.to[1]]=m.tile;
+   if(!paths.has(m.id))paths.set(m.id,{id:m.id,tile:m.tile,points:[m.from]});paths.get(m.id).points.push(m.to);
+  }
+  if(trace)steps.push({grid:sixClone(grid),moves:accepted,ms:accepted.some(m=>m.gap)?160:accepted.some(m=>m.to[0]-m.from[0]===2)?120:90});
+ }
+ return {steps,moves:[...paths.values()]};
+}
+function sixPlan(input,numbers,{trace=false}={}){
+ const grid=sixClone(input),timeline=[],used=new Set(numbers),hit=[];let triangles=0,hexagons=0,lines=0,chain=0,gain=0,removedCount=0,ordinaryGroups=0,sugarAward=false;
+ const push=(phase,detail={},ms=350)=>{if(trace)timeline.push({phase,...detail,grid:sixClone(grid),ms});};
+ const remove=cells=>{const removed=[];for(const [r,c] of cells){const t=grid[r]?.[c];if(t){removed.push({r,c,tile:{...t}});if(t.sugar)sugarAward=true;grid[r][c]=null;}}removedCount+=removed.length;return removed;};
+ const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length){const motionMs=fall.steps.reduce((n,f)=>n+f.ms,0)||350;push('pyramidFall',{...fall,motionMs},motionReduced?100:motionMs+180);}};
+ for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]?.number!=null&&used.has(grid[r][c].number))hit.push([r,c]);
+ if(!hit.length){push('pyramidMiss',{},250);return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:0,cleared:false,advance:false,sugarAward};}
+ push('pyramidHit',{cells:hit},280);push('pyramidBreak',{removed:remove(hit)},420);drop();
+ for(;;){
+  const resolved=sixResolve(grid);if(!resolved.cells.length)break;if(++chain>Math.ceil(Math.max(1,sixCount(input))/4))throw Error('Cascade exceeded finite board');
+  const award=resolved.hexagons*SIX_PAY.hexagon+resolved.triangles*SIX_PAY.triangle+resolved.lines*SIX_PAY.line;
+  push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.forms.length?650:500);
+  const removed=remove(resolved.cells);triangles+=resolved.triangles;hexagons+=resolved.hexagons;lines+=resolved.lines;gain+=award;ordinaryGroups+=resolved.clusters.length;
+  push('pyramidAward',{...resolved,removed,chain,gain:award},award?1000:300);drop();
+ }
+ const cleared=sixCount(grid)===0;
+ if(cleared){gain+=SIX_PAY.allClear;push('pyramidAllClear',{gain:SIX_PAY.allClear,chain,forms:[]},2100);}
+ return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:hit.length,cleared,advance:triangles+hexagons+lines>0||cleared,sugarAward};
+}
+
+return {sixEmpty,sixResolve,sixDrop,sixClone,sixPlan,sixPoint,sixMotionPoint};})();
+const sixDropDemoFixtures={"cluster":{"grid":[[{"id":1,"color":0,"number":1},{"id":2,"color":0,"number":2},{"id":3,"color":2,"number":3},{"id":4,"color":1,"number":4},{"id":5,"color":2,"number":5}],[{"id":6,"color":0,"number":6},{"id":7,"color":0,"number":7},{"id":8,"color":1,"number":8},{"id":9,"color":0,"number":9}],[{"id":10,"color":2,"number":10},{"id":11,"color":2,"number":11},{"id":12,"color":1,"number":12},{"id":13,"color":1,"number":13},{"id":14,"color":2,"number":14}]],"numbers":[3,13,14],"label":"4個以上つながって消去"},"line":{"grid":[[{"id":1,"color":1,"number":1},{"id":2,"color":2,"number":2},{"id":3,"color":2,"number":3},{"id":4,"color":1,"number":4},{"id":5,"color":2,"number":5}],[{"id":6,"color":2,"number":6},{"id":7,"color":2,"number":7},{"id":8,"color":1,"number":8},{"id":9,"color":1,"number":9}],[{"id":10,"color":0,"number":10},{"id":11,"color":0,"number":11},{"id":12,"color":1,"number":12},{"id":13,"color":0,"number":13},{"id":14,"color":2,"number":14}]],"numbers":[13,12,14],"label":"直線が成立！"},"hexagon":{"grid":[[{"id":1,"color":1,"number":1},{"id":2,"color":1,"number":2},{"id":3,"color":1,"number":3},{"id":4,"color":2,"number":4},{"id":5,"color":0,"number":5}],[{"id":6,"color":0,"number":6},{"id":7,"color":2,"number":7},{"id":8,"color":1,"number":8},{"id":9,"color":0,"number":9}],[{"id":10,"color":1,"number":10},{"id":11,"color":1,"number":11},{"id":12,"color":1,"number":12},{"id":13,"color":0,"number":13},{"id":14,"color":0,"number":14}]],"numbers":[5,6,13],"label":"ヘキサゴン成立！"},"triangle":{"grid":[[{"id":1,"color":2,"number":1},{"id":2,"color":1,"number":2},{"id":3,"color":1,"number":3},{"id":4,"color":0,"number":4},{"id":5,"color":2,"number":5}],[{"id":6,"color":1,"number":6},{"id":7,"color":1,"number":7},{"id":8,"color":2,"number":8},{"id":9,"color":1,"number":9}],[{"id":10,"color":1,"number":10},{"id":11,"color":1,"number":11},{"id":12,"color":2,"number":12},{"id":13,"color":2,"number":13},{"id":14,"color":1,"number":14}]],"numbers":[8,14,12],"label":"トライアングル成立！"}};
+const sixDropDemoPlans={};
 sixDrawTutorial=function(s,time,bet){
- const x=s.candyCtx,t=Math.max(0,Math.min(17999,time)),index=Math.min(3,Math.floor(t/4500)),local=t%4500,type=['cluster','line','triangle','hexagon'][index],sample=sixDropDemoFixtures[type],role=index>0;
- const clamp=v=>Math.max(0,Math.min(1,v)),ease=v=>{v=clamp(v);return v*v*(3-2*v)},join=ease((local-450)/1000),formed=local>=1450,leaving=local>=3250,exit=ease((local-3250)/650);
- x.drawImage(sixArtBackdrop(10),0,0,320,320);x.fillStyle='#fff7eff0';x.beginPath();x.roundRect(23,23,274,275,19);x.fill();sixText(x,role?'役の形の例':'消去と落下',160,43,10,'#fff4cc');sixText(x,sample.label,160,66,14,'#fff5b7');
- const ps=sample.cells.map(c=>sixPoint(...c,10)),cx=ps.reduce((v,p)=>v+p.x,0)/ps.length,cy=ps.reduce((v,p)=>v+p.y,0)/ps.length,points=ps.map(p=>({x:160+(p.x-cx)*49,y:160+(p.y-cy)*49}));
- x.save();x.globalAlpha=1-exit;
- for(let i=0;i<points.length;i++){const p=points[i],isLast=i===points.length-1,y=p.y-(isLast?(1-join)*35:0);x.drawImage(sixArtCandySprite(sample.color,1),p.x-24,y-24,48,48);if(formed){x.strokeStyle=role?'#fff0a0':'#d7ffb1';x.lineWidth=2.5;x.shadowColor=x.strokeStyle;x.shadowBlur=9;x.beginPath();x.arc(p.x,p.y,25,0,7);x.stroke();x.shadowBlur=0;}}
- if(formed&&role){const hull=type==='line'?points:sixHull(points);x.strokeStyle=['','#a6f6ff','#ffe691','#ebbbff'][index];x.shadowColor=x.strokeStyle;x.shadowBlur=15;x.lineWidth=4;x.lineJoin='round';x.beginPath();hull.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));if(type!=='line')x.closePath();x.stroke();x.shadowBlur=0;for(const p of points)sixArtStar(x,p.x+19,p.y-19,4,'#fff7cf','#f7c05a');}
- x.restore();
- if(formed&&role){sixText(x,'＋'+num(medalWin(bet,SIX_PAY[type]))+' WIN',160,238,16,'#ffe38c');x.fillStyle='#fff1aa';x.strokeStyle='#dd779e';x.lineWidth=2;x.beginPath();x.roundRect(49,253,222,31,12);x.fill();x.stroke();sixText(x,leaving?'ROUND '+(index+1)+' START!':'次ラウンド確定！',160,269,17,'#fff9de');if(leaving){x.save();x.globalAlpha=exit;sixText(x,'NEXT ROUND',160,157,24,'#fff4a3');x.restore();}}
- else sixText(x,role?'同じ色で図形がそろうと配当獲得':formed?'通常連結は配当なし・役をねらおう':'4個以上がつながると消えて、さらに落下',160,267,11,'#fff4c9');
- for(let k=0;k<4;k++){x.fillStyle=k===index?'#e35f9a':'#d9bdcc';x.beginPath();x.arc(139+k*14,291,3,0,7);x.fill();}
- s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.dataset.example=type;s.candyCanvas.setAttribute('aria-label','シックスドロップ・'+sample.label+(formed&&role?'・次ラウンド確定':''));s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent=sample.label;s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
+ const x=s.candyCtx,t=Math.max(0,Math.min(17999,time)),index=Math.min(3,Math.floor(t/4500)),local=t%4500,type=['cluster','line','triangle','hexagon'][index],sample=sixDropDemoFixtures[type],rules=sixDropMiniRules,role=index>0;
+ const plan=sixDropDemoPlans[type]||(sixDropDemoPlans[type]=rules.sixPlan(sample.grid,sample.numbers,{trace:true})),total=plan.timeline.reduce((n,f)=>n+f.ms,0),playMs=Math.max(0,(local-550)/2750)*total;
+ let remaining=playMs,fx=null,p=0,grid=sample.grid;if(local>=550){for(const stage of plan.timeline){if(remaining<=stage.ms){fx={...stage,elapsed:remaining};p=remaining/stage.ms;grid=stage.grid;break;}remaining-=stage.ms;}if(!fx)grid=plan.grid;}
+ const pos=cell=>{const z=rules.sixPoint(...cell,3);return {x:160+z.x*48,y:112+z.y*48};},finished=local>=3300;
+ x.drawImage(sixArtBackdrop(10),0,0,320,320);x.fillStyle='#fff8eeed';x.beginPath();x.roundRect(20,20,280,282,17);x.fill();sixText(x,role?sample.label:'同じ色が4個以上つながると消去',160,40,12,'#fff3ba');sixText(x,'抽選番号 '+sample.numbers.join('・'),160,62,11,'#fff3cf');
+ x.fillStyle='#eac9d5';x.strokeStyle='#cc8fac';x.lineWidth=2;x.beginPath();x.roundRect(32,79,256,147,19);x.fill();x.stroke();
+ for(let r=0;r<3;r++)for(let c=0;c<(r===1?4:5);c++){const z=pos([r,c]);x.fillStyle='#fff7f3';x.strokeStyle='#dcb3c5';x.lineWidth=1;x.beginPath();x.arc(z.x,z.y,23,0,7);x.fill();x.stroke();}
+ const fall=fx?.phase==='pyramidFall'?sixFallFrame(fx,p):null;if(fall)grid=fall.grid;const moves=new Map((fall?.moves||[]).map(m=>[m.id,m]));
+ for(let r=0;r<3;r++)for(let c=0;c<grid[r].length;c++){const tile=grid[r][c];if(!tile)continue;let z=pos([r,c]);const m=moves.get(tile.id);if(m){const v=rules.sixMotionPoint(m,fall.progress);z={x:160+v.x*48,y:112+v.y*48};}x.drawImage(sixArtCandySprite(tile.color,1),z.x-23,z.y-23,46,46);sixPaintCandyNumber(x,tile.number,z.x,z.y+1,19,tile.color,1);if((local<550||fx?.phase==='pyramidHit')&&sample.numbers.includes(tile.number)){x.strokeStyle='#fff6a3';x.lineWidth=3;x.shadowColor='#ffffcc';x.shadowBlur=11;x.beginPath();x.arc(z.x,z.y,24,0,7);x.stroke();x.shadowBlur=0;}}
+ if(fx?.phase==='pyramidShape'){for(const cell of fx.cells||[]){const z=pos(cell);x.strokeStyle='#fff1a0';x.lineWidth=3;x.shadowColor='#fff9b2';x.shadowBlur=12;x.beginPath();x.arc(z.x,z.y,23.5,0,7);x.stroke();}for(const form of fx.forms||[]){const points=form.cells.map(pos),hull=form.type==='line'?points:sixHull(points);x.strokeStyle='#fffbc9';x.lineWidth=4;x.beginPath();hull.forEach((z,i)=>i?x.lineTo(z.x,z.y):x.moveTo(z.x,z.y));if(form.type!=='line')x.closePath();x.stroke();}x.shadowBlur=0;}
+ if(fx?.removed){for(const v of fx.removed){const z=pos([v.r,v.c]);x.save();x.globalAlpha=1-p;for(let k=0;k<5;k++){const a=k*Math.PI*2/5;const dx=Math.cos(a)*p*30,dy=Math.sin(a)*p*30;x.fillStyle=['#ccefa9','#c9efda','#c9ecff'][v.tile.color%3];x.fillRect(z.x+dx-3,z.y+dy-3,6,6);}x.restore();}}
+ const caption=local<550?'番号HITでドロップを消す':fx?.phase==='pyramidFall'?'空いたところへドロップが落下':fx?.phase==='pyramidShape'?(role?sample.label:'4個以上がつながった！'):finished?(role?'次ラウンド確定！':'通常連結は配当なし・盤面を継続'):'消去 → 落下 → つながりを判定';sixText(x,caption,160,245,12,'#fff4bd');
+ if(role&&finished){x.fillStyle='#fff0a4';x.strokeStyle='#de83a4';x.lineWidth=2;x.beginPath();x.roundRect(48,258,224,30,12);x.fill();x.stroke();sixText(x,'＋'+num(medalWin(bet,plan.gain))+' WIN  → NEXT ROUND',160,274,11,'#fff9de');}
+ else sixText(x,role?'直線・三角・ヘキサゴンで配当＋次ROUND':'役以外の連結も消えて落下する',160,274,10,'#fff6da');
+ for(let k=0;k<4;k++){x.fillStyle=k===index?'#e35f9a':'#d9bdcc';x.beginPath();x.arc(139+k*14,295,3,0,7);x.fill();}
+ s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.dataset.example=type;s.candyCanvas.setAttribute('aria-label','シックスドロップ・5・4・5個の3段盤面・'+caption);s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent=caption;s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
 };
 sixArtNumberSprite=function(number,color=0,round=1){
  if(!Number.isInteger(number)||number<1||number>25)return null;const theme=sixRoundTheme(round),style=SIX_PNG_STYLES[theme.colors[color%theme.colors.length]],tint='hsl('+style.h+' '+Math.round(style.s*65)+'% 88%)',key='drop-number/'+number+'/'+color+'/'+round;if(sixArtCache.has(key))return sixArtCache.get(key);
@@ -4866,7 +5083,7 @@ function requestReach(s,e,a=app){
  function chunk(){
   if(s.reachEpoch!==epoch||s.engine!==e||s.reachBoardKey!==key||reachContextKey(e,a)!==key)return;
   const end=Math.min(numbers.length,index+3);
-  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index]):predictNextHit(snapshot,numbers[index],context.pending);if(result?.gain>0)results.push(result);}
+  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index]):predictNextHit(snapshot,numbers[index],context.pending);if(result?.gain>0||(e.kind==='candy'&&result?.chain>0))results.push(result);}
   if(index<numbers.length){setTimeout(chunk,0);return;}
   s.reachResults=results;s.reachStatus='ready';s.tabReachResults=results;s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;s.reachCalculations=(s.reachCalculations||0)+1;s.reachAfterBall=context.count;scheduleUI(app);
  }
