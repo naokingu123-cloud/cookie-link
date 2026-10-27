@@ -1,0 +1,28 @@
+{
+  "N": 10000,
+  "seed": "882731",
+  "mean": 0.89994,
+  "se": 0.01303534424708454,
+  "roles": 0.27152,
+  "bonus": 0.62842,
+  "clear": 0,
+  "refills": 3823,
+  "repairs": 4,
+  "colorSpread": 0.375,
+  "target": 0.9,
+  "ci95Approx": [
+    0.8743907252757143,
+    0.9254892747242857
+  ],
+  "excluded": [
+    "separate JPC value",
+    "medal rounding"
+  ],
+  "clearBonuses": [
+    0.2,
+    0.4,
+    1.0,
+    3.0,
+    10.0
+  ]
+}
