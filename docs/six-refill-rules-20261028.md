@@ -6,9 +6,9 @@ For each incoming batch (3, 2, 1, 1, 1 draws), record which numbers were absent 
 
 Refill coloring uses bounded backtracking. In rare impossible remnants it changes a surviving color while preserving identity, number and sugar; a proper lattice coloring is the final fallback. The result must have no connected group of four or more. Existing labels are never duplicated. The 1,400 ms top-up animation is protected from presentation fast-forward and reset cancels it.
 
-Clear bonuses: R1 0.2×, R2 0.4×, R3 1.0×, R4 3.0×, R5 10.0×. Role payouts remain line 0.1×, triangle 0.3×, hexagon 0.5×; all-clear remains 100×. Minimum payout increment remains 0.1×.
+Clear bonuses: R1 0.2×, R2 0.4×, R3 1.0×, R4 3.0×, R5 10.0×. Role payouts are line 0.1×, triangle 1.5×, hexagon 3.0×; all-clear remains 100×. Minimum payout increment remains 0.1×.
 
-Initial-board coloring now favors a less adjacent color on 22% of placement choices. This is a fixed generation parameter, not player-dependent or outcome-dependent adjustment. The 12% chance-round selection is unchanged.
+Initial-board coloring now favors a less adjacent color on 30% of placement choices. This is a fixed generation parameter, not player-dependent or outcome-dependent adjustment. The 12% chance-round selection is unchanged.
 
 The 18-second demonstration uses the actual 5/4/5 miniature rules: ordinary connected clearing followed by an absent 25 and top-entry refill with undrawn labels (6 seconds), then line, triangle and hexagon (4 seconds each). It does not consume gameplay random numbers. A persistent note explains that a number absent from the board triggers a refill, including undrawn numbered drops. The refill uses its own descending shower sound.
 
@@ -24,4 +24,8 @@ Historical lower-half mask top-entry validation: 10,000 games with seed 882731 r
 
 Presentation revision: paid reach labels are borderless 9.5 px text with a slightly stronger cream outline. Each round records its first confirmed next-round popup; subsequent cascade/bonus awards in that round show only the increment (e.g. +300 WIN), without a frame. A new round or reset restores the first-popup allowance.
 
-Latest balanced-mask validation: two independent 10,000-game runs (seeds 28102891 and 28102892), total **20,000 games**, estimated return **91.637%**; approximate 95% interval **88.94%–94.33%**. Color spread 0.22 was selected before these runs. The 90% target is within sampling uncertainty; payouts and chance-round rate are unchanged. See `six-balanced-rtp-20261028.json`. Reproduce each sample with `node .github/tests/six_payout_sample.cjs 10000 SEED`.
+Historical balanced-mask validation before rare-shape payout increases: two independent 10,000-game runs (seeds 28102891 and 28102892), total **20,000 games**, estimated return **91.637%**; approximate 95% interval **88.94%–94.33%**. Color spread 0.22 was selected before these runs. The 90% target is within sampling uncertainty; payouts and chance-round rate are unchanged. See `six-balanced-rtp-20261028.json`. Reproduce each sample with `node .github/tests/six_payout_sample.cjs 10000 SEED`.
+
+Rare-shape revision: triangle 1.5× and hexagon 3.0× (formerly 0.3× / 0.5×). The line prize and all round bonuses are unchanged. Gold layered triangle contours and rainbow hexagon jewel bursts are tied to the actual resolved cells. Dedicated ascending chime/fanfare audio distinguishes the shapes; ordinary clusters retain their pop sound. Rare shape stages hold for 750 ms (triangle) / 900 ms (hexagon) under the automatic 3× stage rate; the existing protected visual clock is retained. Reduced-motion keeps these contours static. Later round-confirmation awards remain simple and borderless.
+
+Latest rare-shape validation: 20,000 games, seeds 28102941 and 28102942, color spread 0.30: **89.775%** estimated return; approximate 95% interval **87.64%–91.91%**. Triangle 643 formations, hexagon 454 formations across the sample (counts, not per-game event probabilities). The initial 0.32 spread was rejected after 20,000 games returned 85.815%; the 0.30 choice was then validated using fresh seeds. No refill required recoloring in these final two samples. See `six-rare-shapes-rtp-20261028.json`. Browser workflow 40597659315 passed rules, responsive presentation/audio/reduced-motion checks and actual public-site automatic BET start.
