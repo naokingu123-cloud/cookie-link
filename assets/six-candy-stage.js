@@ -31,7 +31,7 @@ setupCarnivalSlot=function(s){
  s.sixRoleSummary=wrap;s.candyCanvas.dataset.version=SIX_STAGE_VERSION;
 };
 carnivalHud=function(a){
- const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;setupCarnivalSlot(s);document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','シックスキャンディ・Round '+e.roundIndex+'・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
+ const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;setupCarnivalSlot(s);document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','シックスドロップ・Round '+e.roundIndex+'・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
  const bet=a.bet(2);fitGoldenNumber($('carnival-win'),num(medalWin(bet,e.totalHundredths)),23,100);
  const artKey=e.roundIndex+'/'+sixCandyPngState.loaded+'/'+(e.chanceRound===e.roundIndex);let roleTotal=0;
  for(const [role,count] of [['line',e.lines],['triangle',e.triangles],['hexagon',e.hexagons]]){
@@ -106,5 +106,5 @@ function sixDrawTutorial(s,time,bet){
   const p=(t-14000)/4000,q=smooth(p/.55);for(let k=0;k<4;k++)candy(0,92+(k%2)*48,154+Math.floor(k/2)*42,22,1-Math.max(0,q-.72)*2);const sugar=getSugarSprite(wonderTier(bet));if(sugar)x.drawImage(sugar,72+q*70,124-q*10,34,34);if(p>.62){sixText(x,'ALL CLEAR',160,120,18,'#ffe786');for(let k=0;k<6;k++)sixArtStar(x,52+k*43,165+Math.sin(time/300+k)*7,4,'#fff7b9','#e9a25e');}
  }
  for(let k=0;k<4;k++){x.fillStyle=k===index?'#ed67a4':'#d7c1cf';x.beginPath();x.arc(139+k*14,286,k===index?4:3,0,7);x.fill();}
- s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.setAttribute('aria-label','シックスキャンディ・遊び方デモ');s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent='BET待機中・遊び方デモ';s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
+ s.candyCanvas.dataset.mode='tutorial';s.candyCanvas.dataset.scene=String(index);s.candyCanvas.setAttribute('aria-label','シックスドロップ・遊び方デモ');s.sixReachLayer.replaceChildren();s.sixReachKey='';s.candyReward.hidden=true;s.candyStatus.textContent='BET待機中・遊び方デモ';s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
 }
