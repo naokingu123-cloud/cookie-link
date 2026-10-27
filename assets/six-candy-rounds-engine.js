@@ -2,7 +2,7 @@
  * round-specific candy palettes, and separate round-clear bonuses.
  */
 const SIX_ROWS=10,SIX_SQRT3_2=Math.sqrt(3)/2;
-const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:10000};
+const SIX_PAY={hexagon:300,triangle:150,line:10,allClear:10000};
 const SIX_CLEAR_BONUS=[0,20,40,100,300,1000];
 const SIX_ROUND_THEMES=[
  {id:'cool-1',label:'Round 1',colors:['lime','green','aqua','navy'],tier:1},
@@ -13,7 +13,7 @@ const SIX_ROUND_THEMES=[
 ];
 const SIX_CHANCE_THEME={id:'chance-3',label:'CHANCE',colors:['gold','silver','diamond'],tier:8};
 const SIX_CHANCE_RATE=.12;
-const SIX_COLOR_SPREAD=.22;
+const SIX_COLOR_SPREAD=.32;
 const SIX_SUGAR_ROUND_CHOICES=[2,3,3,3,4];
 const SIX_START_GAP_TEMPLATES=[
  [[0,2],[0,4],[2,1],[2,5],[6,1],[6,5]],
@@ -196,7 +196,7 @@ function sixPlan(input,numbers,{trace=false}={}){
  for(;;){
   const resolved=sixResolve(grid);if(!resolved.cells.length)break;if(++chain>Math.ceil(Math.max(1,sixCount(input))/4))throw Error('Cascade exceeded finite board');
   const award=resolved.hexagons*SIX_PAY.hexagon+resolved.triangles*SIX_PAY.triangle+resolved.lines*SIX_PAY.line;
-  push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.forms.length?650:500);
+  push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.hexagons?2700:resolved.triangles?2250:resolved.forms.length?650:500);
   const removed=remove(resolved.cells);triangles+=resolved.triangles;hexagons+=resolved.hexagons;lines+=resolved.lines;gain+=award;ordinaryGroups+=resolved.clusters.length;
   push('pyramidAward',{...resolved,removed,chain,gain:award},award?1000:300);drop();
  }
