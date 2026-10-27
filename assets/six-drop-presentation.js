@@ -13,7 +13,7 @@ const sixDropMiniRules=(()=>{
  * round-specific candy palettes, and separate round-clear bonuses.
  */
 const SIX_ROWS=3,SIX_SQRT3_2=Math.sqrt(3)/2;
-const SIX_PAY={hexagon:50,triangle:30,line:10,allClear:10000};
+const SIX_PAY={hexagon:300,triangle:150,line:10,allClear:10000};
 const SIX_CLEAR_BONUS=[0,20,100,300,1000,5000];
 const SIX_ROUND_THEMES=[
  {id:'cool-1',label:'Round 1',colors:['lime','green','aqua','navy'],tier:1},
@@ -206,7 +206,7 @@ function sixPlan(input,numbers,{trace=false}={}){
  for(;;){
   const resolved=sixResolve(grid);if(!resolved.cells.length)break;if(++chain>Math.ceil(Math.max(1,sixCount(input))/4))throw Error('Cascade exceeded finite board');
   const award=resolved.hexagons*SIX_PAY.hexagon+resolved.triangles*SIX_PAY.triangle+resolved.lines*SIX_PAY.line;
-  push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.forms.length?650:500);
+  push('pyramidShape',{forms:resolved.forms,cells:resolved.cells,chain},resolved.hexagons?2700:resolved.triangles?2250:resolved.forms.length?650:500);
   const removed=remove(resolved.cells);triangles+=resolved.triangles;hexagons+=resolved.hexagons;lines+=resolved.lines;gain+=award;ordinaryGroups+=resolved.clusters.length;
   push('pyramidAward',{...resolved,removed,chain,gain:award},award?1000:300);drop();
  }
@@ -310,5 +310,32 @@ carnivalEvent=function(s,ev,e,a){
   const simple=s.sixPromotionShown.has(key);if(!simple)s.candyReward.removeAttribute('aria-label');s.candyReward.classList.toggle('six-simple-award',simple);s.candyReward.classList.toggle('six-candy-promotion',!simple&&!!advance);
   if(simple){s.candyReward.innerHTML='<strong>＋'+num(medalWin(a.bet(s.i),ev.gain))+' <em>WIN</em></strong>';s.candyReward.setAttribute('aria-label','配当増加 '+num(medalWin(a.bet(s.i),ev.gain))+' WIN');}
   else if(advance){s.sixPromotionShown.add(key);next.innerHTML=sixCandyPromotionMarkup(e.roundIndex+1);}
+ }
+};
+
+/* Rare shapes: deterministic, phase-bound jewels; never modify the board. */
+const sixRareBaseEffects=sixStageEffects;
+sixStageEffects=function(x,fx,p,round,rows,reduced){
+ if(reduced&&fx?.phase==='pyramidShape'&&fx.forms?.some(f=>f.type!=='line'))p=.5;
+ sixRareBaseEffects(x,fx,p,round,rows,reduced);
+ if(!fx||!['pyramidShape','pyramidAward'].includes(fx.phase))return;
+ for(const form of fx.forms||[]){
+  if(form.type==='line')continue;
+  const hex=form.type==='hexagon',ps=form.cells.map(c=>sixXY(...c,rows)),cx=ps.reduce((n,z)=>n+z.x,0)/ps.length,cy=ps.reduce((n,z)=>n+z.y,0)/ps.length,hull=sixHull(ps),award=fx.phase==='pyramidAward',u=reduced?.5:p;
+  x.save();x.lineJoin='round';x.globalAlpha=award?Math.max(0,1-p):.85;x.shadowBlur=reduced?0:14;x.shadowColor=hex?'#eeb8ff':'#ffd36a';
+  // Layered gem silhouette remains centered on the actual matching drops.
+  for(const [scale,width,color] of [[1.22,5,hex?'#b463df':'#d58a21'],[1.12,3,'#fff4b6'],[1,2,'#ffffff']]){
+   x.strokeStyle=color;x.lineWidth=width;x.beginPath();hull.forEach((v,i)=>{const xx=cx+(v.x-cx)*scale,yy=cy+(v.y-cy)*scale;i?x.lineTo(xx,yy):x.moveTo(xx,yy);});x.closePath();x.stroke();
+  }
+  if(!reduced){
+   const count=hex?24:15;
+   for(let k=0;k<count;k++){
+    const a=k*Math.PI*2/count+u*(hex?1.1:-.7),radius=35+(award?u*65:14*Math.sin(u*Math.PI))+(k%3)*8,xx=cx+Math.cos(a)*radius,yy=cy+Math.sin(a)*radius;
+    const color=hex?['#ffaadf','#ffe48d','#a5f5eb','#c8b5ff'][k%4]:'#ffe28e';
+    sixArtStar(x,xx,yy,2+(k%3), '#fffbea',color);
+    x.strokeStyle=color;x.lineWidth=1.3;x.beginPath();x.moveTo(cx+Math.cos(a)*(radius-10),cy+Math.sin(a)*(radius-10));x.lineTo(xx,yy);x.stroke();
+   }
+  }
+  x.restore();
  }
 };
