@@ -539,13 +539,14 @@ let sixCandyAudioLast={break:-100,fall:-100,role:-100,pop:-100};
 function sixCandyAudio(kind,amount=1){
  if(!audio||audio.state!=='running'||!$('sound').checked||app?.paused||document.hidden||!inView)return;
  const at=audio.currentTime;if(at-sixCandyAudioLast[kind]<(kind==='fall'?.055:.035))return;sixCandyAudioLast[kind]=at;
- const names=kind==='fall'?['six-marble-0','six-marble-1','six-marble-2']:kind==='role'?['six-role-rush']:kind==='refill'?['six-refill-shower']:kind==='pop'?['six-cluster-pop']:['six-hard-candy'];
+ const names=kind==='fall'?['six-marble-0','six-marble-1','six-marble-2']:kind==='role'?['six-role-rush']:kind==='clear'?['six-round-fanfare']:kind==='refill'?['six-refill-shower']:kind==='pop'?['six-cluster-pop']:['six-hard-candy'];
  names.forEach((name,j)=>{
-  if(sfxBuffers.has(name))return;const duration=kind==='fall'?.09:kind==='role'?.32:kind==='refill'?.72:.19,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);
+  if(sfxBuffers.has(name))return;const duration=kind==='fall'?.09:kind==='role'?.32:kind==='refill'?.72:kind==='clear'?.55:.19,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);
   let seed=71527+j*977,prev=0;for(let i=0;i<d.length;i++){
    const t=i/audio.sampleRate;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const n=seed/2147483648-1,high=n-prev;prev=n;
    if(kind==='fall'){const f=[1250,940,1510][j];d[i]=Math.min(1,t/.0015)*(Math.exp(-t*110)*high*.21+Math.sin(2*Math.PI*f*t)*Math.exp(-t*75)*.35+Math.sin(2*Math.PI*f*2.73*t)*Math.exp(-t*120)*.13);}
    else if(kind==='role'){const envelope=Math.sin(Math.PI*Math.min(1,t/.32))*Math.exp(-t*3);d[i]=(high*.16+Math.sin(2*Math.PI*(440*t+2400*t*t))*.30+Math.sin(2*Math.PI*(660*t+3200*t*t))*.12)*envelope;}
+   else if(kind==='clear'){const note=Math.min(3,Math.floor(t/.12)),f=[784,988,1175,1568][note],u=t-note*.12;d[i]=(Math.sin(2*Math.PI*f*u)*.25+Math.sin(2*Math.PI*f*2*u)*.08)*Math.exp(-u*15)*Math.min(1,u/.006);}
    else if(kind==='refill'){const env=Math.sin(Math.PI*t/.72);d[i]=(Math.sin(2*Math.PI*(1800*t-650*t*t))*.23+Math.sin(2*Math.PI*2700*t)*.12+high*.07)*env;}
    else if(kind==='pop'){d[i]=(Math.sin(2*Math.PI*(900*t-1500*t*t))*.55+high*.08)*Math.exp(-t*32)*Math.min(1,t/.002);}
    else{const burst=[0,.014,.033].reduce((v,b)=>v+(t>=b?Math.exp(-(t-b)*110):0),0);d[i]=Math.min(1,t/.001)*(high*burst*.19+(Math.sin(2*Math.PI*2340*t)+Math.sin(2*Math.PI*3710*t))*.10*Math.exp(-t*24));}
@@ -607,7 +608,7 @@ function drawCarnival(s,now=performance.now()){
   if(fx?.phase==='pyramidTopUp'&&!motionReduced&&fx.added.some(a=>a.tile.id===t.id)){const u=Math.max(0,Math.min(1,progress*fx.ms/1100));pos.y-=350*(1-u*u);}
   const pose=sixTransitionPose(fx,r,c,t,rows,progress,motionReduced);if(!pose.visible)continue;if(transition)pos={x:pose.x,y:pose.y};
   const pending=!transition&&t.number!=null&&(e.pendingDraws.has(t.number)||lit.has(sixKey(r,c))),reach=t.number!=null?byNumber.get(t.number):null,shape=shaped.has(sixKey(r,c)),radius=layout.radius;
-  x.save();x.globalAlpha=pose.alpha;if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
+  x.save();if(fx?.phase==='pyramidHit'&&lit.has(sixKey(r,c))&&!motionReduced){const bounce=Math.sin(Math.PI*progress);x.translate(pos.x,pos.y);x.scale(1+.09*bounce,1-.10*bounce);x.translate(-pos.x,-pos.y);}x.globalAlpha=pose.alpha;if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
   const ordinarySparkle=s.sixSparkleVersion===e.version&&s.sixSparkleIds?.has(t.id);
   const candyR=radius,idleLift=!m&&!transition&&!motionReduced?Math.sin(time/780+t.id*.67)*.85:0,idleBreath=!m&&!transition&&!motionReduced?1+.017*Math.sin(time/930+t.id*.41):1,idleSway=!m&&!transition&&!motionReduced?1+.012*Math.sin(time/1110+t.id*.59):1;
   // Keep centres and outer radii fixed so resting candies stay in contact.
@@ -625,6 +626,7 @@ function drawCarnival(s,now=performance.now()){
   if(shape||pending||reach){x.strokeStyle=shape?'#fff6b3':pending?'#fff9e7':reach.tier>=2?'#f0a2ff':'#fff3b6';x.lineWidth=shape?2.3:1.5;x.beginPath();x.arc(pos.x,pos.y,radius,0,Math.PI*2);x.stroke();}x.restore();
  }
  sixStageEffects(x,fx,progress,e.roundIndex,rows,motionReduced);
+ sixArcadeAccents(s,x,time);
  if(!bet){x.fillStyle='#231b3ba8';x.fillRect(0,0,320,320);sixText(x,'0 BET',160,140,29);sixText(x,'BETして キャンディを落とそう',160,172,11);}
  s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.candyCanvas,0,0,160,160);
  s.candyCanvas.setAttribute('aria-label','シックスドロップ・Round '+e.roundIndex+'、'+rows+'段、'+e.remainingCandies+'個、ヘキサゴン'+e.hexagons+'、トライアングル'+e.triangles+'、直線'+e.lines);
@@ -1018,3 +1020,31 @@ sixArtLogoMarkup=function(instance='main'){
 };
 const sixDropOriginalStageEffects=sixStageEffects;
 sixStageEffects=function(x,fx,p,round,rows,reduced){sixDropOriginalStageEffects(x,fx,p,round,rows,reduced);if(fx?.phase!=='pyramidShape'||!fx.forms?.length||reduced)return;for(const f of fx.forms){const ps=f.cells.map(c=>sixXY(...c,rows)),cx=ps.reduce((v,z)=>v+z.x,0)/ps.length,cy=ps.reduce((v,z)=>v+z.y,0)/ps.length;x.save();x.strokeStyle='#fff8ba';x.lineWidth=2;x.globalAlpha=(1-p)*.8;for(let k=0;k<9;k++){const yy=cy-32+k*8;x.beginPath();x.moveTo(cx-90+85*p,yy);x.lineTo(cx-45+85*p,yy);x.stroke();}x.restore();}};
+
+// Cabinet accents are presentation-only and use the existing paused visual clock.
+function sixArcadeCounter(s){
+ const e=s.engine,el=$('carnival-win');if(!el||!e)return;
+ const target=medalWin(app.bet(s.i),e.totalHundredths),t=s.sixWinTween;
+ let value=target;
+ if(t&&t.version===e.version&&t.to===target&&!motionReduced){const p=Math.max(0,Math.min(1,((s.candyTime||0)-t.start)/650));value=Math.floor(t.from+(t.to-t.from)*(1-Math.pow(1-p,3)));if(p===1)s.sixWinTween=null;}
+ if(el.textContent!==num(value))fitGoldenNumber(el,num(value),23,100);el.setAttribute('aria-label','TOTAL WIN '+num(target));s.sixDisplayedWin=value;
+}
+function sixArcadeAccents(s,x,time){
+ sixArcadeCounter(s);const e=s.engine,celebration=s.sixClearAccent,age=celebration&&celebration.version===e.version?time-celebration.start:2000,clear=age>=0&&age<1200;
+ s.sixHeading?.classList.toggle('six-clear-flash',clear&&!motionReduced);
+ if(!app.bet(s.i))return;
+ x.save();const hue=[168,66,35,340,280][Math.max(0,Math.min(4,e.roundIndex-1))];
+ // Small lamps stay outside the playable tray.
+ for(let k=0;k<14;k++)for(const side of [0,1]){const y=24+k*21,pulse=motionReduced?.35:.3+.7*Math.pow(.5+.5*Math.sin(time/260-k*.65+side*1.4),3);x.globalAlpha=.3+.5*pulse;x.fillStyle='hsl('+hue+' 90% '+(65+pulse*25)+'%)';x.shadowColor=x.fillStyle;x.shadowBlur=3+pulse*3;x.beginPath();x.arc(side?314:6,y,1.6+pulse*.5,0,Math.PI*2);x.fill();}
+ if(clear&&!motionReduced){const p=age/1200;x.shadowBlur=0;for(let k=0;k<24;k++){const side=k%2,delay=(k%6)*.025,u=Math.max(0,p-delay),cx=side?310:10,cy=30+u*240+(k%6)*19;x.globalAlpha=Math.max(0,(1-p)*.85);x.save();x.translate(cx+Math.sin(k*2.3+u*9)*6,cy);x.rotate(k+u*7);x.fillStyle=['#ffe7a1','#ffafd6','#b7f3e1'][k%3];x.fillRect(-2,-3,4,6);x.restore();}}
+ x.restore();
+}
+const sixArcadeBaseEvent=carnivalEvent;
+carnivalEvent=function(s,ev,e,a){
+ if(ev.phase==='ready'||ev.phase==='error'){s.sixWinTween=null;s.sixDisplayedWin=0;s.sixClearAccent=null;s.sixHeading?.classList.remove('six-clear-flash');}
+ sixArcadeBaseEvent(s,ev,e,a);
+ if(['pyramidAward','pyramidRoundBonus','pyramidAllClear'].includes(ev.phase)&&ev.gain>0){const target=medalWin(a.bet(s.i),e.totalHundredths);s.sixWinTween={version:e.version,from:Math.min(target,s.sixDisplayedWin??medalWin(a.bet(s.i),Math.max(0,e.totalHundredths-ev.gain))),to:target,start:s.candyTime||0};}
+ if(ev.phase==='pyramidRoundBonus'){s.sixClearAccent={version:e.version,start:s.candyTime||0};if(s.i===active)sixCandyAudio('clear');}
+};
+const sixArcadeBaseHud=carnivalHud;
+carnivalHud=function(a){sixArcadeBaseHud(a);const s=slots[2];if(s?.engine?.kind==='candy')sixArcadeCounter(s);};
