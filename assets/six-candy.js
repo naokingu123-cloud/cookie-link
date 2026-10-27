@@ -13,7 +13,7 @@ const SIX_ROUND_THEMES=[
 ];
 const SIX_CHANCE_THEME={id:'chance-3',label:'CHANCE',colors:['gold','silver','diamond'],tier:8};
 const SIX_CHANCE_RATE=.12;
-const SIX_COLOR_SPREAD=.375;
+const SIX_COLOR_SPREAD=.22;
 const SIX_SUGAR_ROUND_CHOICES=[2,3,3,3,4];
 const SIX_START_GAP_TEMPLATES=[
  [[0,2],[0,4],[2,1],[2,5],[6,1],[6,5]],
@@ -206,8 +206,8 @@ function sixPlan(input,numbers,{trace=false}={}){
 }
 function sixShuffle(list,random){for(let i=list.length-1;i>0;i--){const j=Math.min(i,Math.floor(random()*(i+1)));[list[i],list[j]]=[list[j],list[i]];}return list;}
 function sixApplyHoleTemplate(grid,holes){for(const [r,c] of holes||[])if(sixValid(r,c,grid.length))grid[r][c]=null;return grid;}
-// Fixed symmetric numbered cells; 25 labels concentrated in the supporting lower half.
-const SIX_NUMBER_CELLS=Object.freeze([[5,2],[5,3],[5,4],[5,5],[6,0],[6,2],[6,4],[6,6],[7,0],[7,2],[7,3],[7,4],[7,5],[7,7],[8,0],[8,1],[8,3],[8,5],[8,6],[9,1],[9,2],[9,3],[9,4],[9,5],[9,6]].map(Object.freeze));
+// Fixed symmetric numbered cells; 25 labels distributed across all ten rows and both sides.
+const SIX_NUMBER_CELLS=Object.freeze([[0,0],[0,6],[1,2],[1,5],[2,2],[2,4],[3,0],[3,2],[3,5],[3,7],[4,0],[4,3],[4,6],[5,3],[5,4],[6,0],[6,6],[7,2],[7,5],[8,1],[8,5],[9,0],[9,3],[9,4],[9,7]].map(Object.freeze));
 function sixColorFits(grid,r,c,color){
  const seen=new Set([sixKey(r,c)]),queue=[[r,c]];
  for(let i=0;i<queue.length;i++)for(const [y,x] of sixNeighbors(...queue[i],grid.length)){const key=sixKey(y,x);if(seen.has(key)||grid[y]?.[x]?.color!==color)continue;seen.add(key);if(seen.size>=4)return false;queue.push([y,x]);}
@@ -1060,6 +1060,11 @@ function sixCandyPromotionMarkup(round){
 const sixCandySignBaseEvent=carnivalEvent;
 carnivalEvent=function(s,ev,e,a){
  sixCandySignBaseEvent(s,ev,e,a);
- if(['pyramidAward','pyramidRoundBonus','pyramidAllClear'].includes(ev.phase)&&!s.candyReward.hidden){const next=s.candyReward.querySelector('.six-next'),advance=next?.textContent.startsWith('NEXT ROUND');s.candyReward.classList.toggle('six-candy-promotion',!!advance);if(advance)next.innerHTML=sixCandyPromotionMarkup(e.roundIndex+1);}
- if(ev.phase==='ready'||ev.phase==='error')s.candyReward.classList.remove('six-candy-promotion');
+ if(ev.phase==='ready'||ev.phase==='error'){s.sixPromotionShown=new Set();s.candyReward.classList.remove('six-candy-promotion','six-simple-award');}
+ if(['pyramidAward','pyramidRoundBonus','pyramidAllClear'].includes(ev.phase)&&!s.candyReward.hidden){
+  const key=e.version+'/'+e.roundIndex,next=s.candyReward.querySelector('.six-next'),advance=next?.textContent.startsWith('NEXT ROUND');s.sixPromotionShown??=new Set();
+  const simple=s.sixPromotionShown.has(key);if(!simple)s.candyReward.removeAttribute('aria-label');s.candyReward.classList.toggle('six-simple-award',simple);s.candyReward.classList.toggle('six-candy-promotion',!simple&&!!advance);
+  if(simple){s.candyReward.innerHTML='<strong>＋'+num(medalWin(a.bet(s.i),ev.gain))+' <em>WIN</em></strong>';s.candyReward.setAttribute('aria-label','配当増加 '+num(medalWin(a.bet(s.i),ev.gain))+' WIN');}
+  else if(advance){s.sixPromotionShown.add(key);next.innerHTML=sixCandyPromotionMarkup(e.roundIndex+1);}
+ }
 };
