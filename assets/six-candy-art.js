@@ -118,12 +118,26 @@ const SIX_PNG_STYLES={
 function sixHsl(r,g,b){r/=255;g/=255;b/=255;const hi=Math.max(r,g,b),lo=Math.min(r,g,b),d=hi-lo,l=(hi+lo)/2;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=hi===r?(g-b)/d+(g<b?6:0):hi===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return [h,s,l];}
 function sixRgb(h,s,l){h=(h%1+1)%1;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h*12)%12;return 255*(l-a*Math.max(-1,Math.min(k-3,9-k,1)));};return [f(0),f(8),f(4)];}
 function sixArtCandySprite(color,round=1,sugar=false,chance=false){
- const theme=chance?SIX_CHANCE_THEME:sixRoundTheme(round),name=theme.colors[color%theme.colors.length],style=SIX_PNG_STYLES[name],key='roundPNG/'+round+'/'+name+'/'+(chance?'chance':'base');
+ const theme=chance?SIX_CHANCE_THEME:sixRoundTheme(round),name=theme.colors[color%theme.colors.length],style=SIX_PNG_STYLES[name],key='orbPNG/'+round+'/'+name+'/'+(chance?'chance':'base');
  if(sixArtCache.has(key))return sixArtCache.get(key);
  const original=sixOriginalCandySprite(style.src),cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d');x.drawImage(original,0,0,128,128);
  const image=x.getImageData(0,0,128,128),d=image.data;
  for(let i=0;i<d.length;i+=4){if(!d[i+3])continue;const [h,s,l]=sixHsl(d[i],d[i+1],d[i+2]);if(s>.13){const rgb=sixRgb(style.h/360,Math.min(1,style.s*(.65+s*.35)),Math.min(.98,l*(style.light||1)));d[i]=rgb[0];d[i+1]=rgb[1];d[i+2]=rgb[2];}}
- x.putImageData(image,0,0);x.save();x.beginPath();x.arc(64,64,62,0,7);x.clip();
+ // Preserve the original fruit/swirl pixels, while rebuilding the outer candy lens.
+ const motif=document.createElement('canvas');motif.width=motif.height=128;motif.getContext('2d').putImageData(image,0,0);x.clearRect(0,0,128,128);
+ const sat=Math.round(style.s*86),hue=style.h,hsl=(light,alpha=1)=>'hsla('+hue+','+sat+'%,'+light+'%,'+alpha+')';
+ const disc=(r,fill)=>{x.fillStyle=fill;x.beginPath();x.arc(64,64,r,0,Math.PI*2);x.fill();};
+ disc(62,hsl(27));
+ const rim=x.createLinearGradient(25,8,100,119);rim.addColorStop(0,'#ffffe9');rim.addColorStop(.32,hsl(86));rim.addColorStop(.58,hsl(54));rim.addColorStop(.85,hsl(76));rim.addColorStop(1,hsl(34));disc(60,rim);
+ disc(55,hsl(43));
+ const face=x.createRadialGradient(43,32,4,65,68,62);face.addColorStop(0,hsl(85));face.addColorStop(.42,hsl(69));face.addColorStop(.8,hsl(53));face.addColorStop(1,hsl(37));disc(52,face);
+ x.save();x.beginPath();x.arc(64,64,49,0,Math.PI*2);x.clip();x.globalAlpha=.91;x.drawImage(motif,16,16,96,96,18,18,92,92);x.globalAlpha=1;
+ // Broad translucent diagonal polish, over the retained fruit and candy pattern.
+ const glaze=x.createLinearGradient(18,12,105,119);glaze.addColorStop(0,'#ffffff4d');glaze.addColorStop(.28,'#ffffff26');glaze.addColorStop(.35,'#ffffff08');glaze.addColorStop(.56,'#ffffff24');glaze.addColorStop(.63,'#ffffff00');glaze.addColorStop(1,'#00172c26');x.fillStyle=glaze;x.fillRect(10,10,108,108);x.restore();
+ x.strokeStyle='#fffde0c9';x.lineWidth=2.4;x.beginPath();x.arc(64,64,56,-Math.PI*.94,-Math.PI*.14);x.stroke();
+ x.strokeStyle=hsl(87,.8);x.lineWidth=2;x.beginPath();x.arc(64,64,53,.12,Math.PI*.83);x.stroke();
+ x.save();x.translate(43,29);x.rotate(-.5);const shine=x.createRadialGradient(0,0,1,0,0,15);shine.addColorStop(0,'#ffffffd9');shine.addColorStop(1,'#ffffff00');x.scale(1.4,.45);x.fillStyle=shine;x.beginPath();x.arc(0,0,15,0,7);x.fill();x.restore();
+ x.save();x.beginPath();x.arc(64,64,62,0,7);x.clip();
  if(round>=2){x.strokeStyle=round>=6?'#fff0afcc':'#ffffffb5';x.lineWidth=round>=6?2.2:1;x.beginPath();x.arc(64,64,58,0,7);x.stroke();}
  if(round>=3){const n=round*2;for(let i=0;i<n;i++){const ang=i*2*Math.PI/n,xp=64+Math.cos(ang)*56,yp=64+Math.sin(ang)*56;x.fillStyle=round>=6?'#ffe36d':'#fffbea';x.beginPath();x.arc(xp,yp,round>=6?1.9:1.25,0,7);x.fill();}}
  if(round>=4){x.strokeStyle='#fff3c790';x.lineWidth=1.1;x.beginPath();x.arc(64,64,51,0,7);x.stroke();}
