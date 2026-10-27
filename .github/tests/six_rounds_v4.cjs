@@ -30,7 +30,7 @@ console.log('ROUNDS_V4_RULES_PASS',JSON.stringify({boards,frames,samples,forms,t
 // New refill rules: fixed mirrored positions, top-filled safe grids, preserved identities.
 vm.runInContext('globalThis.refillQA={SIX_NUMBER_CELLS,sixRefillBoard};',ctx);
 const f=ctx.refillQA,mask=new Set(f.SIX_NUMBER_CELLS.map(p=>p.join(',')));
-assert.equal(mask.size,25);for(const [r,c] of f.SIX_NUMBER_CELLS)assert(mask.has([r,8-((9-r)&1)-1-c].join(',')));
+assert.equal(mask.size,25);const rowCounts=Array.from({length:10},(_,r)=>f.SIX_NUMBER_CELLS.filter(p=>p[0]===r).length);assert(rowCounts.every(n=>n>=2&&n<=4));assert.equal(f.SIX_NUMBER_CELLS.filter(p=>p[0]<5).length,13);for(const [r,c] of f.SIX_NUMBER_CELLS)assert(mask.has([r,8-((9-r)&1)-1-c].join(',')));
 let topUps=0;
 for(let seed=1;seed<=200;seed++){
  const random=rng(seed),colors=seed%2?3:4,b=q.sixMakeBoard(10,colors,random,0,{holes:q.SIX_START_GAP_TEMPLATES[seed%6]});
