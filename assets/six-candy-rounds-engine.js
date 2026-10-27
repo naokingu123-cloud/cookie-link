@@ -264,7 +264,10 @@ class SixBallCandyEngine extends Engine{
    while(this.queue.length&&token===this.version){
     const numbers=this.queue.shift();for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}this.lastNumber=numbers.at(-1);this.cascade=0;this.lastGain=0;this.currentClearBonus=0;
     const plan=sixPlan(this.pyramid,numbers,{trace:true});
-    for(const stage of plan.timeline){
+    let roleReached=false;
+    for(const originalStage of plan.timeline){
+     if(originalStage.phase==='pyramidShape'&&originalStage.forms?.length)roleReached=true;
+     const rate=roleReached?3:1,stage={...originalStage,ms:originalStage.ms/rate,...(originalStage.motionMs?{motionMs:originalStage.motionMs/rate}:{})};
      if(token!==this.version)return;this.pyramid=sixClone(stage.grid);this.remainingCandies=sixCount(this.pyramid);this.fx={...stage,elapsed:0,stamp:null};this.cascade=stage.chain||this.cascade;
      if(stage.phase==='pyramidHit')this.candyMessage=numbers.join('・')+'番 HIT！';
      if(stage.phase==='pyramidMiss')this.candyMessage='この番号は消去済み・次の番号を待とう';
