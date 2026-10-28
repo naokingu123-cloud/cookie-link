@@ -30,12 +30,13 @@ let sixCandyAudioLast={break:-100,fall:-100,role:-100,pop:-100};
 function sixCandyAudio(kind,amount=1){
  if(!audio||audio.state!=='running'||!$('sound').checked||app?.paused||document.hidden||!inView)return;
  const at=audio.currentTime;if(at-sixCandyAudioLast[kind]<(kind==='fall'?.055:.035))return;sixCandyAudioLast[kind]=at;
- const names=kind==='fall'?['six-marble-0','six-marble-1','six-marble-2']:kind==='triangle'?['six-triangle-chime']:kind==='hexagon'?['six-hexagon-fanfare']:kind==='role'?['six-role-rush']:kind==='clear'?['six-round-fanfare']:kind==='refill'?['six-refill-shower']:kind==='pop'?['six-cluster-pop']:['six-hard-candy'];
+ const names=kind==='glass'?['six-glass-contact']:kind==='fall'?['six-marble-0','six-marble-1','six-marble-2']:kind==='triangle'?['six-triangle-chime']:kind==='hexagon'?['six-hexagon-fanfare']:kind==='role'?['six-role-rush']:kind==='clear'?['six-round-fanfare']:kind==='refill'?['six-refill-shower']:kind==='pop'?['six-cluster-pop']:['six-hard-candy'];
  names.forEach((name,j)=>{
-  if(sfxBuffers.has(name))return;const duration=kind==='triangle'?.85:kind==='hexagon'?1.15:kind==='fall'?.09:kind==='role'?.32:kind==='refill'?.72:kind==='clear'?.55:.19,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);
+  if(sfxBuffers.has(name))return;const duration=kind==='glass'?.24:kind==='triangle'?.85:kind==='hexagon'?1.15:kind==='fall'?.09:kind==='role'?.32:kind==='refill'?.72:kind==='clear'?.55:.19,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);
   let seed=71527+j*977,prev=0;for(let i=0;i<d.length;i++){
    const t=i/audio.sampleRate;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const n=seed/2147483648-1,high=n-prev;prev=n;
    if(kind==='fall'){const f=[1250,940,1510][j];d[i]=Math.min(1,t/.0015)*(Math.exp(-t*110)*high*.21+Math.sin(2*Math.PI*f*t)*Math.exp(-t*75)*.35+Math.sin(2*Math.PI*f*2.73*t)*Math.exp(-t*120)*.13);}
+   else if(kind==='glass'){const env=Math.min(1,t/.0015)*Math.exp(-t*29);d[i]=(Math.sin(2*Math.PI*1760*t)*.28+Math.sin(2*Math.PI*2873*t)*.15+Math.sin(2*Math.PI*4211*t)*.08+high*Math.exp(-t*90)*.12)*env;}
    else if(kind==='role'){const envelope=Math.sin(Math.PI*Math.min(1,t/.32))*Math.exp(-t*3);d[i]=(high*.16+Math.sin(2*Math.PI*(440*t+2400*t*t))*.30+Math.sin(2*Math.PI*(660*t+3200*t*t))*.12)*envelope;}
    else if(kind==='triangle'||kind==='hexagon'){const hex=kind==='hexagon',notes=hex?[523,659,784,1047,1319,1568]:[659,831,988,1319],step=hex?.12:.13,note=Math.min(notes.length-1,Math.floor(t/step)),f=notes[note],u=t-note*step,env=Math.min(1,u/.008)*Math.exp(-u*8)*Math.min(1,(duration-t)/.12);d[i]=(Math.sin(2*Math.PI*f*u)*.23+Math.sin(2*Math.PI*f*2*u)*.07+Math.sin(2*Math.PI*f*1.5*u)*.06)*env;}
    else if(kind==='clear'){const note=Math.min(3,Math.floor(t/.12)),f=[784,988,1175,1568][note],u=t-note*.12;d[i]=(Math.sin(2*Math.PI*f*u)*.25+Math.sin(2*Math.PI*f*2*u)*.08)*Math.exp(-u*15)*Math.min(1,u/.006);}
@@ -45,7 +46,7 @@ function sixCandyAudio(kind,amount=1){
   }sfxBuffers.set(name,buffer);
  });
  const count=kind==='fall'?Math.min(3,Math.max(1,amount)):1;
- for(let i=0;i<count;i++)sound(names[i%names.length],{delay:i*18,volume:kind==='fall'?.55/(1+i*.4):.72});
+ for(let i=0;i<count;i++)sound(names[i%names.length],{delay:i*18,volume:kind==='glass'?.68*amount:kind==='fall'?.55/(1+i*.4):.72});
 }
 
 function carnivalEvent(s,ev,e,a){
@@ -83,7 +84,7 @@ function drawCarnival(s,now=performance.now()){
  if(s.engine?.kind!=='candy')return;setupCarnivalSlot(s);const e=s.engine,x=s.candyCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready',rows=e.rows,layout=sixLayout(rows),fx=e.fx;
  if(s.candyClockStamp==null)s.candyClockStamp=now;if(!paused)s.candyTime=(s.candyTime||0)+Math.min(100,Math.max(0,now-s.candyClockStamp));s.candyClockStamp=now;const time=s.candyTime||0;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
  if(ready){const guideTime=Math.min(SIX_TUTORIAL_DURATION-1,autoRoundRemaining>=0&&autoRoundRemaining<=BET_DURATION_MS?BET_DURATION_MS-autoRoundRemaining:time);sixDrawTutorial(s,guideTime,bet);if(!paused&&!jpcSession.active)carnivalQueueFrame(s);return;}s.candyCanvas.dataset.mode='playing';
- const progress=fx?(()=>{const critical=['pyramidFall','pyramidShape','pyramidBreak','pyramidTopUp'].includes(fx.phase),rate=critical?1:(e.presentationRate||1);if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)*rate;fx.stamp=now;}else fx.stamp=null;return Math.min(1,fx.elapsed/Math.max(1,fx.ms));})():0;
+ const progress=fx?(()=>{const critical=['pyramidFall','pyramidShape','pyramidBreak','pyramidTopUp','pyramidRefill'].includes(fx.phase),rate=critical?1:(e.presentationRate||1);if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp)*rate;fx.stamp=now;}else fx.stamp=null;return Math.min(1,fx.elapsed/Math.max(1,fx.ms));})():0;
  const sweep=fx?.phase==='pyramidSweep',refill=fx?.phase==='pyramidRefill',transition=sweep||refill;
  const fall=fx?.phase==='pyramidFall'?sixFallFrame(fx,motionReduced?1:progress):null,grid=transition?fx.grid:fall?.grid||e.pyramid,moving=new Map((fall?.moves||[]).map(m=>[m.id,m]));
  if(fall&&!paused&&!motionReduced&&s.i===active){
@@ -91,22 +92,22 @@ function drawCarnival(s,now=performance.now()){
   const landed=fall.progress>=.82?fall.index:fall.index-1;
   if(landed>s.sixFallSoundIndex){s.sixFallSoundIndex=landed;sixCandyAudio('fall',fall.moves.length);}
  }
- if(refill&&!paused&&!motionReduced&&s.i===active){const landed=Math.min(rows-1,Math.floor((progress*(480+(rows-1)*96)-400)/96));if(s.sixRefillFx!==fx){s.sixRefillFx=fx;s.sixRefillRow=-1;}if(landed>s.sixRefillRow){s.sixRefillRow=landed;sixCandyAudio('fall',2);}}
+ if((refill||fx?.phase==='pyramidTopUp')&&!paused&&s.i===active){const order=fx.rowOrder||sixGlassRows(fx.added,rows),elapsed=progress*fx.ms;if(s.sixRefillFx!==fx){s.sixRefillFx=fx;s.sixGlassSounds=new Set();}for(let i=0;i<order.length;i++)for(const [tap,delay] of [[0,0],[1,110]]){const key=i+'/'+tap;if(elapsed>=i*SIX_REFILL_ROW_MS+SIX_REFILL_FALL_MS+delay&&!s.sixGlassSounds.has(key)){s.sixGlassSounds.add(key);sixCandyAudio('glass',tap?0.35:1);}}}
  x.drawImage(sixArtBackdrop(rows),0,0,320,320);
  const lit=new Set((fx?.phase==='pyramidHit'?fx.cells:[]).map(p=>sixKey(...p))),shaped=new Set((fx?.forms||[]).flatMap(f=>f.cells).map(p=>sixKey(...p))),byNumber=new Map((ready?[]:visibleReachResults(s,app)).map(p=>[p.number,p]));
  for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){
   const t=grid[r][c];if(!t)continue;let pos=sixXY(r,c,rows);const m=moving.get(t.id);
   if(m&&!motionReduced){const p=sixMotionPoint(m,fall.progress);pos={x:160+p.x*layout.step,y:layout.top+p.y*layout.step};}
-  if(fx?.phase==='pyramidTopUp'&&!motionReduced&&fx.added.some(a=>a.tile.id===t.id)){const u=Math.max(0,Math.min(1,progress*fx.ms/1100));pos.y-=350*(1-u*u);}
+  const topping=fx?.phase==='pyramidTopUp',added=topping&&fx.added.some(a=>a.tile.id===t.id),glass=added?sixGlassPose(fx.rowOrder||sixGlassRows(fx.added,rows),r,progress*fx.ms,motionReduced):null;if(glass&&!glass.visible)continue;if(glass)pos.y+=glass.offset;
   const pose=sixTransitionPose(fx,r,c,t,rows,progress,motionReduced);if(!pose.visible)continue;if(transition)pos={x:pose.x,y:pose.y};
   const pending=!transition&&t.number!=null&&(e.pendingDraws.has(t.number)||lit.has(sixKey(r,c))),reach=t.number!=null?byNumber.get(t.number):null,shape=shaped.has(sixKey(r,c)),radius=layout.radius;
   x.save();if(fx?.phase==='pyramidHit'&&lit.has(sixKey(r,c))&&!motionReduced){const bounce=Math.sin(Math.PI*progress);x.translate(pos.x,pos.y);x.scale(1+.09*bounce,1-.10*bounce);x.translate(-pos.x,-pos.y);}x.globalAlpha=pose.alpha;if(!ready&&pending)x.globalAlpha=motionReduced?1:.55+.45*(.5+.5*Math.sin(time/115));if(shape||reach){x.shadowBlur=shape?12:6;x.shadowColor=shape?'#ffe39a':reach.tier>=2?'#eb93ff':'#fff3b6';}
   const ordinarySparkle=s.sixSparkleVersion===e.version&&s.sixSparkleIds?.has(t.id);
-  const candyR=radius,idleLift=!m&&!transition&&!motionReduced?Math.sin(time/780+t.id*.67)*.85:0,idleBreath=!m&&!transition&&!motionReduced?1+.017*Math.sin(time/930+t.id*.41):1,idleSway=!m&&!transition&&!motionReduced?1+.012*Math.sin(time/1110+t.id*.59):1;
+  const candyR=radius,idleLift=!m&&!transition&&!topping&&!motionReduced?Math.sin(time/780+t.id*.67)*.85:0,idleBreath=!m&&!transition&&!topping&&!motionReduced?1+.017*Math.sin(time/930+t.id*.41):1,idleSway=!m&&!transition&&!topping&&!motionReduced?1+.012*Math.sin(time/1110+t.id*.59):1;
   // Keep centres and outer radii fixed so resting candies stay in contact.
   // Resting candy artwork breathes slightly; the number remains upright.
   x.save();x.translate(pos.x,pos.y+idleLift);
-  if(transition){x.rotate(pose.rotation);x.scale(pose.scale,pose.scale);}else if(!m&&!motionReduced){x.rotate(Math.sin(time/1400+t.id*.53)*.016);x.scale(idleBreath,idleSway);}
+  if(transition){x.rotate(pose.rotation);x.scale(pose.scale,pose.scale);}else if(glass){x.rotate(glass.rotation);}else if(!m&&!topping&&!motionReduced){x.rotate(Math.sin(time/1400+t.id*.53)*.016);x.scale(idleBreath,idleSway);}
   if(m&&!motionReduced){const a=sixPoint(...m.from,rows),b=sixPoint(...m.to,rows);x.rotate(Math.sign(b.x-a.x||((t.id&1)?1:-1))*.22*Math.sin(Math.PI*fall.progress));}
   x.drawImage(sixArtCandySprite(t.color,ready?1:e.roundIndex,!!t.sugar,e.chanceRound===e.roundIndex),-candyR,-candyR,candyR*2,candyR*2);x.restore();
   if(!motionReduced&&!m&&!paused&&!transition){x.fillStyle='rgba(255,255,245,'+(.12+.11*(.5+.5*Math.sin(time/1050+t.id*2.1)))+')';x.beginPath();x.ellipse(pos.x-radius*.32,pos.y-radius*.42+idleLift*.28,radius*.16,radius*.07,-.55,0,Math.PI*2);x.fill();}
