@@ -27,6 +27,20 @@ function sixRoundTheme(round){return SIX_ROUND_THEMES[Math.max(0,Math.min(4,roun
 function sixPickChanceRound(random){return random()<SIX_CHANCE_RATE?2+Math.floor(random()*4):null;}
 function sixRoundColorCount(round){return sixRoundTheme(round).colors.length;}
 function sixRoundClearBonus(round){return SIX_CLEAR_BONUS[Math.max(0,Math.min(5,round))]||0;}
+
+const SIX_REFILL_ROW_MS=200,SIX_REFILL_FALL_MS=620,SIX_REFILL_SETTLE_MS=200;
+function sixGlassRows(added,rows=SIX_ROWS){return added?[...new Set(added.map(a=>a.r))].sort((a,b)=>b-a):Array.from({length:rows},(_,i)=>rows-1-i);}
+function sixGlassDuration(rowOrder){return Math.max(0,rowOrder.length-1)*SIX_REFILL_ROW_MS+SIX_REFILL_FALL_MS+SIX_REFILL_SETTLE_MS;}
+function sixGlassPose(rowOrder,r,elapsed,reduced=false){
+ const index=rowOrder.indexOf(r),age=elapsed-index*SIX_REFILL_ROW_MS;
+ if(index<0)return {visible:true,offset:0,rotation:0};
+ if(age<0)return {visible:false,offset:0,rotation:0};
+ if(reduced)return {visible:true,offset:0,rotation:0};
+ if(age<SIX_REFILL_FALL_MS){const u=age/SIX_REFILL_FALL_MS;return {visible:true,offset:-350*(1-u*u),rotation:Math.sin(u*Math.PI)*.055};}
+ const contact=age-SIX_REFILL_FALL_MS,bounce=contact<110?4*Math.sin(Math.PI*contact/110):contact<180?1.2*Math.sin(Math.PI*(contact-110)/70):0;
+ return {visible:true,offset:-bounce,rotation:contact<180?Math.sin(contact/180*Math.PI*4)*.035*(1-contact/180):0};
+}
+
 function sixPickSugarRound(random){return SIX_SUGAR_ROUND_CHOICES[Math.floor(random()*SIX_SUGAR_ROUND_CHOICES.length)]||3;}
 function sixPickGapTemplate(random,round){
  const list=SIX_START_GAP_TEMPLATES;return list[(Math.floor(random()*list.length)+Math.max(0,round-1))%list.length].map(([r,c])=>[r,c]);
@@ -316,8 +330,8 @@ class SixBallCandyEngine extends Engine{
     if(missed.length&&!plan.advance){
      const fill=sixRefillBoard(this.pyramid,this.sixColorCount,this.random,this.uid,this.drawn);this.uid=fill.lastId;
      if(fill.added.length){this.pyramid=fill.grid;this.remainingCandies=sixCount(this.pyramid);this.boardGeneration++;this.lastRefill={added:fill.added.length,recolored:fill.recolored.length,missed:[...missed]};
-      this.fx={phase:'pyramidTopUp',grid:sixClone(fill.grid),added:fill.added,recolored:fill.recolored,elapsed:0,stamp:null,ms:1400};this.candyMessage='盤面の番号にHITしなければ、未抽選番号付きドロップも上から補充！';this.emit('pyramidTopUp',{missed,added:fill.added});
-      if(!await this.waitVisual(1400*this.speed,token))return;this.fx=null;
+      const rowOrder=sixGlassRows(fill.added,this.rows),refillMs=sixGlassDuration(rowOrder);this.fx={rowOrder,phase:'pyramidTopUp',grid:sixClone(fill.grid),added:fill.added,recolored:fill.recolored,elapsed:0,stamp:null,ms:refillMs};this.candyMessage='盤面の番号にHITしなければ、未抽選番号付きドロップも上から補充！';this.emit('pyramidTopUp',{missed,added:fill.added});
+      if(!await this.waitVisual(refillMs*this.speed,token))return;this.fx=null;
      }
     }
     this.transitionPending=plan.advance&&this.processed<8&&this.roundIndex<this.maxRounds;
@@ -333,10 +347,10 @@ class SixBallCandyEngine extends Engine{
      this.fx={phase:'pyramidSweep',grid:outgoing,roundIndex:this.roundIndex,nextRound,elapsed:0,stamp:null,ms:sweepMs};
      this.candyMessage='ROUND CLEAR!';this.emit('pyramidSweep',{nextRound});
      if(!await this.wait(sweepMs,token))return;
-     this.roundIndex++;this.newBoard();const refillMs=(motionReduced?100:360+(this.rows-1)*60)*this.speed;
-     this.fx={phase:'pyramidRefill',grid:sixClone(this.pyramid),roundIndex:this.roundIndex,elapsed:0,stamp:null,ms:refillMs};
+     this.roundIndex++;this.newBoard();const rowOrder=sixGlassRows(null,this.rows),refillMs=sixGlassDuration(rowOrder);
+     this.fx={rowOrder,phase:'pyramidRefill',grid:sixClone(this.pyramid),roundIndex:this.roundIndex,elapsed:0,stamp:null,ms:refillMs};
      this.candyMessage='Round '+this.roundIndex+' START';this.emit('pyramidRefill',{roundIndex:this.roundIndex});
-     if(!await this.wait(refillMs,token))return;
+     if(!await this.waitVisual(refillMs*this.speed,token))return;
      this.fx=null;this.transitionPending=false;this.emit('settled',{numbers,candy:true,newBoard:true});
     }
    }
