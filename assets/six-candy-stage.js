@@ -54,11 +54,8 @@ function sixTransitionPose(fx,r,c,t,rows,p,reduced=false){
   return {x:pos.x+Math.cos(a)*d,y:pos.y+Math.sin(a)*d-55*p,alpha:Math.max(0,1-Math.max(0,p-.65)/.35),rotation:(t.id%2?1:-1)*(3+t.id%4)*p,scale:1-.12*p,visible:p<1};
  }
  if(fx?.phase==='pyramidRefill'){
-  if(reduced)return {...out,alpha:p,visible:p>0};
-  const age=p*(480+(rows-1)*96)-(rows-1-r)*96;
-  if(age<0)return {...out,visible:false};
-  const q=Math.min(1,age/400),bounce=age>400&&age<480?-Math.sin((age-400)/80*Math.PI)*2:0;
-  return {...out,y:-40+(pos.y+40)*q*q+bounce,rotation:Math.sin(q*Math.PI)*.12*(c%2?1:-1)};
+  const order=fx.rowOrder||sixGlassRows(null,rows),pose=sixGlassPose(order,r,p*(fx.ms||sixGlassDuration(order)),reduced);
+  return {...out,y:pos.y+pose.offset,rotation:pose.rotation,visible:pose.visible};
  }
  return out;
 }
