@@ -6,7 +6,7 @@ root=Path.cwd();memory=os.environ.get('SIX_MEMORY')=='1';html=(root/'index.html'
 assert "if(count===2)" in html and "else if(count===4)" in html and "count>=5&&count<=8" in html
 reach_src=html[html.find("function reachContext"):html.find("function requestReach")]
 assert "count===1" not in reach_src and "count===3" not in reach_src
-assert "if(ev.phase==='drawpending'){clearMiniResult(s);invalidateReach(s);requestReach(s,e,a);" in html
+assert "if(ev.phase==='drawpending'){requestSixSparkles(s,e,a);clearMiniResult(s);invalidateReach(s);requestReach(s,e,a);" in html
 assert "idleLift=!m&&!transition&&!topping&&!motionReduced" in html
 assert "for(const e of this.engines)e.presentationRate=3" in html
 assert "visualCritical=stage.phase==='pyramidFall'||stage.phase==='pyramidShape'||stage.phase==='pyramidBreak'" in html
