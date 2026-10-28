@@ -1,0 +1,876 @@
+{
+  "date": "2026-10-28",
+  "games": 50000,
+  "engineSha256": "6103c7649ddba5f6245c4fb2d6e081b908112146f8e58bb8fb6a898ea8c733b9",
+  "assumptions": [
+    "1–25 uniformly sampled without replacement; eight draws per game",
+    "Batch processing 3,2,1,1,1; production generation, chance, sugar RNG and top-entry refill",
+    "Entry means the board was created with at least one draw remaining; an eighth-ball clear counts as clear but not next-round entry",
+    "A clear means a paid role or all-clear, counted once per round; ordinary 4+ clears alone do not qualify",
+    "RTP excludes JPC value and medal rounding; animation durations do not affect scoring"
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "reached": 50000,
+      "cleared": 37051,
+      "entryDraws": {
+        "0": 50000,
+        "3": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0
+      },
+      "clearDraws": {
+        "0": 0,
+        "3": 23464,
+        "5": 6163,
+        "6": 2506,
+        "7": 2488,
+        "8": 2430
+      },
+      "normal": {
+        "reached": 50000,
+        "cleared": 37051
+      },
+      "chance": {
+        "reached": 0,
+        "cleared": 0
+      },
+      "reachRate": 1.0,
+      "conditionalClearRate": 0.74102,
+      "overallClearRate": 0.74102,
+      "conditionalClear95Wilson": [
+        0.7371617642490915,
+        0.7448412038598395
+      ],
+      "overallClear95Wilson": [
+        0.7371617642490915,
+        0.7448412038598395
+      ]
+    },
+    {
+      "round": 2,
+      "reached": 34621,
+      "cleared": 19476,
+      "entryDraws": {
+        "0": 0,
+        "3": 23464,
+        "5": 6163,
+        "6": 2506,
+        "7": 2488,
+        "8": 0
+      },
+      "clearDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 8971,
+        "6": 3886,
+        "7": 3378,
+        "8": 3241
+      },
+      "normal": {
+        "reached": 33565,
+        "cleared": 18544
+      },
+      "chance": {
+        "reached": 1056,
+        "cleared": 932
+      },
+      "reachRate": 0.69242,
+      "conditionalClearRate": 0.5625487420929494,
+      "overallClearRate": 0.38952,
+      "conditionalClear95Wilson": [
+        0.5573166438452528,
+        0.5677669613793619
+      ],
+      "overallClear95Wilson": [
+        0.38525435609459613,
+        0.3938026187760588
+      ]
+    },
+    {
+      "round": 3,
+      "reached": 16235,
+      "cleared": 6689,
+      "entryDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 8971,
+        "6": 3886,
+        "7": 3378,
+        "8": 0
+      },
+      "clearDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 0,
+        "6": 1980,
+        "7": 2295,
+        "8": 2414
+      },
+      "normal": {
+        "reached": 15796,
+        "cleared": 6350
+      },
+      "chance": {
+        "reached": 439,
+        "cleared": 339
+      },
+      "reachRate": 0.3247,
+      "conditionalClearRate": 0.41201108715737605,
+      "overallClearRate": 0.13378,
+      "conditionalClear95Wilson": [
+        0.40446163420273484,
+        0.4196021694100457
+      ],
+      "overallClear95Wilson": [
+        0.13082429504469073,
+        0.13679197339422405
+      ]
+    },
+    {
+      "round": 4,
+      "reached": 4275,
+      "cleared": 1323,
+      "entryDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 0,
+        "6": 1980,
+        "7": 2295,
+        "8": 0
+      },
+      "clearDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 0,
+        "6": 0,
+        "7": 503,
+        "8": 820
+      },
+      "normal": {
+        "reached": 4133,
+        "cleared": 1235
+      },
+      "chance": {
+        "reached": 142,
+        "cleared": 88
+      },
+      "reachRate": 0.0855,
+      "conditionalClearRate": 0.3094736842105263,
+      "overallClearRate": 0.02646,
+      "conditionalClear95Wilson": [
+        0.29579249244499134,
+        0.3234969774553553
+      ],
+      "overallClear95Wilson": [
+        0.025089154371029886,
+        0.02790360341544736
+      ]
+    },
+    {
+      "round": 5,
+      "reached": 503,
+      "cleared": 127,
+      "entryDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 0,
+        "6": 0,
+        "7": 503,
+        "8": 0
+      },
+      "clearDraws": {
+        "0": 0,
+        "3": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 127
+      },
+      "normal": {
+        "reached": 490,
+        "cleared": 123
+      },
+      "chance": {
+        "reached": 13,
+        "cleared": 4
+      },
+      "reachRate": 0.01006,
+      "conditionalClearRate": 0.2524850894632207,
+      "overallClearRate": 0.00254,
+      "conditionalClear95Wilson": [
+        0.216492968059952,
+        0.292229146781705
+      ],
+      "overallClear95Wilson": [
+        0.0021353892432223543,
+        0.0030210437686899894
+      ]
+    }
+  ],
+  "clearCountDistribution": [
+    12949,
+    17575,
+    12787,
+    5366,
+    1196,
+    127
+  ],
+  "rtp": 0.893816,
+  "rtpStandardError": 0.00719635374081069,
+  "runs": [
+    {
+      "N": 10000,
+      "seed": 281028101,
+      "engineSha256": "6103c7649ddba5f6245c4fb2d6e081b908112146f8e58bb8fb6a898ea8c733b9",
+      "rounds": [
+        {
+          "round": 1,
+          "reached": 10000,
+          "cleared": 7463,
+          "normal": {
+            "reached": 10000,
+            "cleared": 7463
+          },
+          "chance": {
+            "reached": 0,
+            "cleared": 0
+          },
+          "entryDraws": {
+            "0": 10000
+          },
+          "clearDraws": {
+            "3": 4748,
+            "5": 1202,
+            "6": 522,
+            "7": 502,
+            "8": 489
+          }
+        },
+        {
+          "round": 2,
+          "reached": 6974,
+          "cleared": 3906,
+          "normal": {
+            "reached": 6780,
+            "cleared": 3734
+          },
+          "chance": {
+            "reached": 194,
+            "cleared": 172
+          },
+          "entryDraws": {
+            "3": 4748,
+            "5": 1202,
+            "6": 522,
+            "7": 502
+          },
+          "clearDraws": {
+            "5": 1834,
+            "6": 789,
+            "7": 670,
+            "8": 613
+          }
+        },
+        {
+          "round": 3,
+          "reached": 3293,
+          "cleared": 1353,
+          "normal": {
+            "reached": 3206,
+            "cleared": 1285
+          },
+          "chance": {
+            "reached": 87,
+            "cleared": 68
+          },
+          "entryDraws": {
+            "5": 1834,
+            "6": 789,
+            "7": 670
+          },
+          "clearDraws": {
+            "6": 397,
+            "7": 465,
+            "8": 491
+          }
+        },
+        {
+          "round": 4,
+          "reached": 862,
+          "cleared": 259,
+          "normal": {
+            "reached": 837,
+            "cleared": 245
+          },
+          "chance": {
+            "reached": 25,
+            "cleared": 14
+          },
+          "entryDraws": {
+            "6": 397,
+            "7": 465
+          },
+          "clearDraws": {
+            "7": 116,
+            "8": 143
+          }
+        },
+        {
+          "round": 5,
+          "reached": 116,
+          "cleared": 25,
+          "normal": {
+            "reached": 113,
+            "cleared": 25
+          },
+          "chance": {
+            "reached": 3,
+            "cleared": 0
+          },
+          "entryDraws": {
+            "7": 116
+          },
+          "clearDraws": {
+            "8": 25
+          }
+        }
+      ],
+      "clearCounts": [
+        2537,
+        3557,
+        2553,
+        1094,
+        234,
+        25
+      ],
+      "refills": 3428,
+      "sumHundredths": 902660,
+      "sumSquaresHundredths": 489137000,
+      "rtp": 0.90266
+    },
+    {
+      "N": 10000,
+      "seed": 281028102,
+      "engineSha256": "6103c7649ddba5f6245c4fb2d6e081b908112146f8e58bb8fb6a898ea8c733b9",
+      "rounds": [
+        {
+          "round": 1,
+          "reached": 10000,
+          "cleared": 7343,
+          "normal": {
+            "reached": 10000,
+            "cleared": 7343
+          },
+          "chance": {
+            "reached": 0,
+            "cleared": 0
+          },
+          "entryDraws": {
+            "0": 10000
+          },
+          "clearDraws": {
+            "3": 4668,
+            "5": 1249,
+            "6": 479,
+            "7": 466,
+            "8": 481
+          }
+        },
+        {
+          "round": 2,
+          "reached": 6862,
+          "cleared": 3841,
+          "normal": {
+            "reached": 6665,
+            "cleared": 3664
+          },
+          "chance": {
+            "reached": 197,
+            "cleared": 177
+          },
+          "entryDraws": {
+            "3": 4668,
+            "5": 1249,
+            "6": 479,
+            "7": 466
+          },
+          "clearDraws": {
+            "5": 1741,
+            "6": 770,
+            "7": 699,
+            "8": 631
+          }
+        },
+        {
+          "round": 3,
+          "reached": 3210,
+          "cleared": 1362,
+          "normal": {
+            "reached": 3114,
+            "cleared": 1294
+          },
+          "chance": {
+            "reached": 96,
+            "cleared": 68
+          },
+          "entryDraws": {
+            "5": 1741,
+            "6": 770,
+            "7": 699
+          },
+          "clearDraws": {
+            "6": 394,
+            "7": 454,
+            "8": 514
+          }
+        },
+        {
+          "round": 4,
+          "reached": 848,
+          "cleared": 294,
+          "normal": {
+            "reached": 810,
+            "cleared": 269
+          },
+          "chance": {
+            "reached": 38,
+            "cleared": 25
+          },
+          "entryDraws": {
+            "6": 394,
+            "7": 454
+          },
+          "clearDraws": {
+            "7": 108,
+            "8": 186
+          }
+        },
+        {
+          "round": 5,
+          "reached": 108,
+          "cleared": 33,
+          "normal": {
+            "reached": 104,
+            "cleared": 32
+          },
+          "chance": {
+            "reached": 4,
+            "cleared": 1
+          },
+          "entryDraws": {
+            "7": 108
+          },
+          "clearDraws": {
+            "8": 33
+          }
+        }
+      ],
+      "clearCounts": [
+        2657,
+        3502,
+        2479,
+        1068,
+        261,
+        33
+      ],
+      "refills": 3438,
+      "sumHundredths": 911210,
+      "sumSquaresHundredths": 300136700,
+      "rtp": 0.91121
+    },
+    {
+      "N": 10000,
+      "seed": 281028103,
+      "engineSha256": "6103c7649ddba5f6245c4fb2d6e081b908112146f8e58bb8fb6a898ea8c733b9",
+      "rounds": [
+        {
+          "round": 1,
+          "reached": 10000,
+          "cleared": 7385,
+          "normal": {
+            "reached": 10000,
+            "cleared": 7385
+          },
+          "chance": {
+            "reached": 0,
+            "cleared": 0
+          },
+          "entryDraws": {
+            "0": 10000
+          },
+          "clearDraws": {
+            "3": 4679,
+            "5": 1233,
+            "6": 507,
+            "7": 483,
+            "8": 483
+          }
+        },
+        {
+          "round": 2,
+          "reached": 6902,
+          "cleared": 3931,
+          "normal": {
+            "reached": 6679,
+            "cleared": 3737
+          },
+          "chance": {
+            "reached": 223,
+            "cleared": 194
+          },
+          "entryDraws": {
+            "3": 4679,
+            "5": 1233,
+            "6": 507,
+            "7": 483
+          },
+          "clearDraws": {
+            "5": 1789,
+            "6": 765,
+            "7": 685,
+            "8": 692
+          }
+        },
+        {
+          "round": 3,
+          "reached": 3239,
+          "cleared": 1297,
+          "normal": {
+            "reached": 3151,
+            "cleared": 1228
+          },
+          "chance": {
+            "reached": 88,
+            "cleared": 69
+          },
+          "entryDraws": {
+            "5": 1789,
+            "6": 765,
+            "7": 685
+          },
+          "clearDraws": {
+            "6": 383,
+            "7": 438,
+            "8": 476
+          }
+        },
+        {
+          "round": 4,
+          "reached": 821,
+          "cleared": 257,
+          "normal": {
+            "reached": 796,
+            "cleared": 241
+          },
+          "chance": {
+            "reached": 25,
+            "cleared": 16
+          },
+          "entryDraws": {
+            "6": 383,
+            "7": 438
+          },
+          "clearDraws": {
+            "7": 86,
+            "8": 171
+          }
+        },
+        {
+          "round": 5,
+          "reached": 86,
+          "cleared": 26,
+          "normal": {
+            "reached": 85,
+            "cleared": 25
+          },
+          "chance": {
+            "reached": 1,
+            "cleared": 1
+          },
+          "entryDraws": {
+            "7": 86
+          },
+          "clearDraws": {
+            "8": 26
+          }
+        }
+      ],
+      "clearCounts": [
+        2615,
+        3454,
+        2634,
+        1040,
+        231,
+        26
+      ],
+      "refills": 3469,
+      "sumHundredths": 878550,
+      "sumSquaresHundredths": 269049100,
+      "rtp": 0.87855
+    },
+    {
+      "N": 10000,
+      "seed": 281028104,
+      "engineSha256": "6103c7649ddba5f6245c4fb2d6e081b908112146f8e58bb8fb6a898ea8c733b9",
+      "rounds": [
+        {
+          "round": 1,
+          "reached": 10000,
+          "cleared": 7452,
+          "normal": {
+            "reached": 10000,
+            "cleared": 7452
+          },
+          "chance": {
+            "reached": 0,
+            "cleared": 0
+          },
+          "entryDraws": {
+            "0": 10000
+          },
+          "clearDraws": {
+            "3": 4719,
+            "5": 1265,
+            "6": 498,
+            "7": 506,
+            "8": 464
+          }
+        },
+        {
+          "round": 2,
+          "reached": 6988,
+          "cleared": 3944,
+          "normal": {
+            "reached": 6751,
+            "cleared": 3734
+          },
+          "chance": {
+            "reached": 237,
+            "cleared": 210
+          },
+          "entryDraws": {
+            "3": 4719,
+            "5": 1265,
+            "6": 498,
+            "7": 506
+          },
+          "clearDraws": {
+            "5": 1802,
+            "6": 798,
+            "7": 688,
+            "8": 656
+          }
+        },
+        {
+          "round": 3,
+          "reached": 3288,
+          "cleared": 1359,
+          "normal": {
+            "reached": 3188,
+            "cleared": 1278
+          },
+          "chance": {
+            "reached": 100,
+            "cleared": 81
+          },
+          "entryDraws": {
+            "5": 1802,
+            "6": 798,
+            "7": 688
+          },
+          "clearDraws": {
+            "6": 408,
+            "7": 481,
+            "8": 470
+          }
+        },
+        {
+          "round": 4,
+          "reached": 889,
+          "cleared": 249,
+          "normal": {
+            "reached": 864,
+            "cleared": 237
+          },
+          "chance": {
+            "reached": 25,
+            "cleared": 12
+          },
+          "entryDraws": {
+            "6": 408,
+            "7": 481
+          },
+          "clearDraws": {
+            "7": 108,
+            "8": 141
+          }
+        },
+        {
+          "round": 5,
+          "reached": 108,
+          "cleared": 27,
+          "normal": {
+            "reached": 106,
+            "cleared": 26
+          },
+          "chance": {
+            "reached": 2,
+            "cleared": 1
+          },
+          "entryDraws": {
+            "7": 108
+          },
+          "clearDraws": {
+            "8": 27
+          }
+        }
+      ],
+      "clearCounts": [
+        2548,
+        3508,
+        2585,
+        1110,
+        222,
+        27
+      ],
+      "refills": 3371,
+      "sumHundredths": 906990,
+      "sumSquaresHundredths": 386544500,
+      "rtp": 0.90699
+    },
+    {
+      "N": 10000,
+      "seed": 281028105,
+      "engineSha256": "6103c7649ddba5f6245c4fb2d6e081b908112146f8e58bb8fb6a898ea8c733b9",
+      "rounds": [
+        {
+          "round": 1,
+          "reached": 10000,
+          "cleared": 7408,
+          "normal": {
+            "reached": 10000,
+            "cleared": 7408
+          },
+          "chance": {
+            "reached": 0,
+            "cleared": 0
+          },
+          "entryDraws": {
+            "0": 10000
+          },
+          "clearDraws": {
+            "3": 4650,
+            "5": 1214,
+            "6": 500,
+            "7": 531,
+            "8": 513
+          }
+        },
+        {
+          "round": 2,
+          "reached": 6895,
+          "cleared": 3854,
+          "normal": {
+            "reached": 6690,
+            "cleared": 3675
+          },
+          "chance": {
+            "reached": 205,
+            "cleared": 179
+          },
+          "entryDraws": {
+            "3": 4650,
+            "5": 1214,
+            "6": 500,
+            "7": 531
+          },
+          "clearDraws": {
+            "5": 1805,
+            "6": 764,
+            "7": 636,
+            "8": 649
+          }
+        },
+        {
+          "round": 3,
+          "reached": 3205,
+          "cleared": 1318,
+          "normal": {
+            "reached": 3137,
+            "cleared": 1265
+          },
+          "chance": {
+            "reached": 68,
+            "cleared": 53
+          },
+          "entryDraws": {
+            "5": 1805,
+            "6": 764,
+            "7": 636
+          },
+          "clearDraws": {
+            "6": 398,
+            "7": 457,
+            "8": 463
+          }
+        },
+        {
+          "round": 4,
+          "reached": 855,
+          "cleared": 264,
+          "normal": {
+            "reached": 826,
+            "cleared": 243
+          },
+          "chance": {
+            "reached": 29,
+            "cleared": 21
+          },
+          "entryDraws": {
+            "6": 398,
+            "7": 457
+          },
+          "clearDraws": {
+            "7": 85,
+            "8": 179
+          }
+        },
+        {
+          "round": 5,
+          "reached": 85,
+          "cleared": 16,
+          "normal": {
+            "reached": 82,
+            "cleared": 15
+          },
+          "chance": {
+            "reached": 3,
+            "cleared": 1
+          },
+          "entryDraws": {
+            "7": 85
+          },
+          "clearDraws": {
+            "8": 16
+          }
+        }
+      ],
+      "clearCounts": [
+        2592,
+        3554,
+        2536,
+        1054,
+        248,
+        16
+      ],
+      "refills": 3474,
+      "sumHundredths": 869670,
+      "sumSquaresHundredths": 249273900,
+      "rtp": 0.8696699999999999
+    }
+  ]
+}
