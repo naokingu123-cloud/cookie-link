@@ -5,6 +5,8 @@ on:
     paths:
       - index.html
       - 'assets/six-candy*'
+      - 'assets/choco-dig*'
+      - '.github/tests/canyon*'
       - 'assets/six-candy-png/**'
       - '.github/tests/six_stage_v5*'
       - .github/tests/run_with_system_chrome.py
@@ -19,7 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify symmetric gaps, motion and retained payouts
-        run: node .github/tests/six_rounds_v4.cjs
+        run: |
+          node .github/tests/six_rounds_v4.cjs
+          node .github/tests/canyon_rules.cjs
       - name: Prepare browser
         run: |
           timeout 120 python3 -m pip install --disable-pip-version-check --timeout 20 playwright
