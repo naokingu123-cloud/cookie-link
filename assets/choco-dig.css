@@ -73,3 +73,40 @@ body.choco-active:not(.mobile-landscape) #choco-heading strong{height:38px}
 body.choco-active:not(.mobile-landscape) .game>.field{height:384px}
 body.choco-active:not(.mobile-landscape) .choco-panel{height:384px}
 body.choco-active:not(.mobile-landscape) #odds-panel{height:384px}
+
+/* Seven drilling heads remain aligned with their columns; the board keeps square cells. */
+body.choco-active:not(.mobile-landscape) #screen>.game{height:526px}
+body.choco-active:not(.mobile-landscape) .game>.field,
+body.choco-active:not(.mobile-landscape) .choco-panel,
+body.choco-active:not(.mobile-landscape) #odds-panel{height:460px}
+#choco-odds{gap:3px;padding:5px 4px}
+.choco-lucky{border:1px solid #b48e52;border-radius:6px;padding:3px;background:linear-gradient(140deg,#634138,#342536);color:#fff0bf}
+.choco-lucky>strong{display:block;font:900 7px/11px system-ui;letter-spacing:.25px}
+.choco-lucky-row{display:flex;align-items:center;gap:4px;min-height:26px;padding:1px 2px;border-top:1px solid #ffffff25;text-align:left;position:relative}
+.choco-lucky-row>b{flex:0 0 23px;height:21px;text-align:center;border:1px solid #c89550;border-radius:6px;background:linear-gradient(#fff9d8,#e5bd72);color:#593d2b;font:900 17px/21px ElixirNumbers,system-ui}
+.choco-lucky-row>span{font:800 7.4px/10px system-ui;white-space:nowrap}
+.choco-lucky-row>i{margin-left:auto;color:#9af0b5;font:900 12px system-ui;font-style:normal}
+.choco-lucky-row.hit{background:#ffe2a51e}.choco-lucky-row.hit>b{background:#b0e6ad;border-color:#65b17b}
+.choco-lucky-row[data-lucky="2"]>b{background:linear-gradient(#f1ffff,#8fd9ef);border-color:#76aec7}
+.choco-level-table{padding:2px 3px;border:1px solid #c5a17a;border-radius:6px;background:#fff6df}
+.choco-level-table>div{display:flex;align-items:center;gap:3px;height:24px;border-bottom:1px solid #decab1}
+.choco-level-table>div:last-child{border:0}
+.choco-level-table canvas{width:18px;height:23px;flex:none}
+.choco-level-table span{font:900 8px/10px system-ui;text-align:left;white-space:nowrap}
+.choco-level-table span small{display:block;font:700 6px/8px system-ui}
+.choco-level-table b{margin-left:auto;font:900 15px/20px ArcadePayout,system-ui;white-space:nowrap;color:#643c31}
+.choco-level-table b small{font:700 6px system-ui;margin-left:1px}
+#choco-odds .canyon-prize-row{min-height:22px}
+body.mobile-landscape #choco-odds{gap:1px;padding:2px}
+body.mobile-landscape .choco-odds-title{font-size:7px;line-height:9px}
+body.mobile-landscape #choco-win{font-size:17px;line-height:18px}
+body.mobile-landscape #choco-odds section em{display:none}
+body.mobile-landscape .choco-lucky{padding:1px 2px}
+body.mobile-landscape .choco-lucky-row{min-height:20px;height:20px}
+body.mobile-landscape .choco-lucky-row>b{height:17px;font-size:14px;line-height:17px}
+body.mobile-landscape .choco-level-table>div{height:19px}
+body.mobile-landscape .choco-level-table canvas{height:18px;width:15px}
+body.mobile-landscape .choco-level-table span small{display:inline;margin-left:2px}
+body.mobile-landscape #choco-odds footer,body.mobile-landscape #choco-odds p{font-size:5.8px;line-height:7px}
+#choco-odds .canyon-prize-row{gap:2px}
+#choco-odds .canyon-prize-row b{font-size:9px;line-height:12px}

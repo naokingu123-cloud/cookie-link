@@ -37,7 +37,9 @@ jobs:
           curl --fail --location --max-time 75 'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/Japanese/NotoSansCJKjp-Regular.otf' --output "$HOME/.local/share/fonts/NotoSansCJKjp-Regular.otf"
           fc-cache -f "$HOME/.local/share/fonts"
       - name: Verify tutorial isolation, transitions and mobile/desktop layouts
-        run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_browser.py
+        run: |
+          python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_browser.py
+          python3 .github/tests/run_with_system_chrome.py .github/tests/canyon_drill_browser.py
       - name: Verify the real public Pages site and automatic BET start
         run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_public.py
       - name: Retain screenshots and deployment hashes
