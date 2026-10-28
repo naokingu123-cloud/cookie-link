@@ -3536,7 +3536,7 @@ function sixArtLogoMarkup(instance='main'){
 const SIX_PNG_STYLES={
  lime:{src:1,h:86,s:.90},green:{src:3,h:139,s:.75},aqua:{src:2,h:189,s:.78},navy:{src:2,h:227,s:.78,light:.78},
  orange:{src:1,h:26,s:.97},yellow:{src:1,h:51,s:.94},violet:{src:3,h:279,s:.82},red:{src:0,h:348,s:.90},
- gold:{src:1,h:45,s:.9},silver:{src:2,h:222,s:.09,light:1.08},diamond:{src:3,h:194,s:.30,light:1.12}
+ gold:{src:1,h:45,s:.9},silver:{src:2,h:225,s:.025,light:.82},diamond:{src:3,h:202,s:.92,light:.95}
 };
 function sixHsl(r,g,b){r/=255;g/=255;b/=255;const hi=Math.max(r,g,b),lo=Math.min(r,g,b),d=hi-lo,l=(hi+lo)/2;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=hi===r?(g-b)/d+(g<b?6:0):hi===g?(b-r)/d+2:(r-g)/d+4;h/=6;}return [h,s,l];}
 function sixRgb(h,s,l){h=(h%1+1)%1;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h*12)%12;return 255*(l-a*Math.max(-1,Math.min(k-3,9-k,1)));};return [f(0),f(8),f(4)];}
@@ -3566,7 +3566,18 @@ function sixArtCandySprite(color,round=1,sugar=false,chance=false){
  if(round>=4){x.strokeStyle='#fff3c790';x.lineWidth=1.1;x.beginPath();x.arc(64,64,51,0,7);x.stroke();}
  if(round>=6){for(const [px,py,r] of [[24,31,4],[100,84,3],[41,109,3]])sixArtStar(x,px,py,r,'#fff6bc','#f5c35e');}
  if(chance){const g=x.createLinearGradient(22,22,106,108);g.addColorStop(0,'#ffffffdd');g.addColorStop(.3,'#ffffff10');g.addColorStop(.55,'#ffffff77');g.addColorStop(1,'#ffffff00');x.fillStyle=g;x.beginPath();x.arc(64,64,51,0,7);x.fill();
-  if(name==='diamond'){x.beginPath();x.moveTo(64,25);x.lineTo(101,50);x.lineTo(88,98);x.lineTo(40,98);x.lineTo(27,50);x.closePath();x.fillStyle='#dffcff50';x.fill();x.strokeStyle='#ffffffdc';x.lineWidth=1.7;x.stroke();x.beginPath();x.moveTo(64,25);x.lineTo(40,98);x.moveTo(64,25);x.lineTo(88,98);x.moveTo(27,50);x.lineTo(101,50);x.stroke();}
+  // Distinct silhouettes inside the round lens remain visible at phone size.
+  if(name==='silver'){
+   x.strokeStyle='#434a60c9';x.lineWidth=7;x.beginPath();x.arc(64,64,43,0,Math.PI*2);x.stroke();
+   x.strokeStyle='#f7f8ff';x.lineWidth=2.5;x.beginPath();x.arc(64,64,43,-Math.PI*.9,Math.PI*.12);x.stroke();
+   x.strokeStyle='#ffffffa6';x.lineWidth=3;x.beginPath();x.moveTo(29,83);x.lineTo(83,29);x.moveTo(43,96);x.lineTo(96,43);x.stroke();
+  }
+  if(name==='diamond'){
+   x.beginPath();x.moveTo(43,27);x.lineTo(85,27);x.lineTo(105,49);x.lineTo(64,105);x.lineTo(23,49);x.closePath();
+   x.fillStyle='#06a5ec38';x.fill();x.strokeStyle='#074c92';x.lineWidth=8;x.lineJoin='round';x.stroke();x.strokeStyle='#efffff';x.lineWidth=3.5;x.stroke();
+   x.beginPath();x.moveTo(23,49);x.lineTo(105,49);x.moveTo(43,27);x.lineTo(48,49);x.lineTo(64,105);x.lineTo(80,49);x.lineTo(85,27);x.moveTo(43,27);x.lineTo(80,49);x.moveTo(85,27);x.lineTo(48,49);x.strokeStyle='#d5f8ffcf';x.lineWidth=2.5;x.stroke();
+   sixArtStar(x,97,32,6,'#ffffff','#64dcff');
+  }
  }
  x.restore();sixArtCache.set(key,cv);return cv;
 }
