@@ -1,143 +1,172 @@
-/* Chocolate digging prototype: inserted after Engine in the existing app scope. */
-const CHOCO_SAVE_KEY='cookie-link-choco-dig-v1';
+/* Chocolate Canyon: production rules, also loaded directly by statistical tests. */
+const CHOCO_SAVE_KEY='cookie-link-chocolate-canyon-v2',CHOCO_ROWS=12,CHOCO_COLS=7;
+const CHOCO_SILVER_RATE=.035,CHOCO_GOLD_RATE=.0075,CHOCO_PRIZES={silver:110,gold:1000};
 const CHOCO_TYPES=[
- {name:'ミルク',top:'#bd7c4a',mid:'#855030',edge:'#4e2c23',hp:1},
- {name:'いちご',top:'#f5acbe',mid:'#c46d89',edge:'#7b3d59',hp:1},
- {name:'ホワイト',top:'#fff3cc',mid:'#dfc18c',edge:'#9c7449',hp:1},
- {name:'抹茶',top:'#a7c782',mid:'#6f8f52',edge:'#3d5837',hp:1},
- {name:'ビター',top:'#785044',mid:'#48302c',edge:'#241b20',hp:2},
- {name:'ウエハース',top:'#e7bb7f',mid:'#a26a3b',edge:'#633d2d',hp:1},
- {name:'フォンダン',top:'#b76946',mid:'#703b32',edge:'#402329',hp:1},
- {name:'宝箱',top:'#ffe09b',mid:'#c98b3a',edge:'#794529',hp:2}
+ {name:'ミルク',top:'#d89b65',mid:'#995a38',edge:'#563329'},
+ {name:'いちご',top:'#ffc6d4',mid:'#e47e9e',edge:'#8f435b'},
+ {name:'ホワイト',top:'#fff4cb',mid:'#e3c58c',edge:'#957149'},
+ {name:'抹茶',top:'#c5e6a3',mid:'#87b968',edge:'#426846'}
 ];
+const chocoClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
+function chocoGroups(grid){
+ const seen=new Set(),groups=[],byId=new Map();
+ for(let r=0;r<grid.length;r++)for(let c=0;c<CHOCO_COLS;c++){
+  const tile=grid[r][c];if(!tile||seen.has(tile.id))continue;
+  const cells=[],stack=[[r,c]];seen.add(tile.id);
+  while(stack.length){const [y,x]=stack.pop(),t=grid[y][x];cells.push({r:y,c:x,tile:t});if(tile.color<0)continue;
+   for(const [dy,dx] of [[1,0],[-1,0],[0,1],[0,-1]]){const a=y+dy,b=x+dx,v=grid[a]?.[b];if(v&&v.color===tile.color&&!seen.has(v.id)){seen.add(v.id);stack.push([a,b]);}}
+  }
+  const id=groups.length;for(const v of cells)byId.set(v.tile.id,id);groups.push(cells);
+ }
+ return {groups,byId};
+}
+function chocoFallStep(grid){
+ const {groups,byId}=chocoGroups(grid),blocked=new Set(),deps=groups.map(()=>new Set());
+ groups.forEach((g,i)=>{for(const v of g){if(v.r===grid.length-1)blocked.add(i);else{const below=grid[v.r+1][v.c];if(below&&byId.get(below.id)!==i)deps[i].add(byId.get(below.id));}}});
+ for(let changed=true;changed;){changed=false;deps.forEach((d,i)=>{if(!blocked.has(i)&&[...d].some(j=>blocked.has(j))){blocked.add(i);changed=true;}});}
+ const next=chocoClone(grid),moves=[];groups.forEach((g,i)=>{if(!blocked.has(i))for(const v of g){next[v.r][v.c]=null;moves.push({id:v.tile.id,from:[v.r,v.c],to:[v.r+1,v.c],tile:{...v.tile}});}});
+ for(const m of moves){if(next[m.to[0]][m.to[1]])throw Error('Canyon fall collision');next[m.to[0]][m.to[1]]={...m.tile};}
+ const merged=[];if(moves.length){const after=chocoGroups(next);for(const g of after.groups){const old=new Set(g.map(v=>byId.get(v.tile.id)));if(old.size>1)merged.push(...g.map(v=>v.tile.id));}}
+ return {grid:next,moves,merged};
+}
+function chocoPlan(input,numbers,{trace=false}={}){
+ let grid=chocoClone(input);const timeline=[],removed=[],prizes=[],wanted=new Set(numbers),{groups}=chocoGroups(grid);
+ const hit=groups.filter(g=>g.some(v=>wanted.has(v.tile.number))),hitIds=hit.flatMap(g=>g.map(v=>v.tile.id));let gain=0,fallSteps=0,merges=0;
+ const push=(phase,detail,ms)=>{if(trace)timeline.push({phase,grid:chocoClone(grid),...detail,ms});};
+ push('canyonHit',{hitIds,numbers:[...numbers]},hit.length?280:180);
+ for(const group of hit)for(const v of group){removed.push({r:v.r,c:v.c,tile:{...v.tile}});grid[v.r][v.c]=v.tile.prize?{...v.tile,color:-1,number:null}:null;}
+ if(removed.length)push('canyonBreak',{removed},420);
+ for(let k=0;k<CHOCO_ROWS*CHOCO_COLS+1;k++){
+  const exposed=[];
+  for(let c=0;c<CHOCO_COLS;c++){const r=grid.findIndex(row=>row[c]);if(r>=0&&grid[r][c].prize){const tile=grid[r][c];exposed.push({r,c,tile:{...tile},gain:CHOCO_PRIZES[tile.prize]});grid[r][c]=null;}}
+  if(exposed.length){const win=exposed.reduce((n,v)=>n+v.gain,0);gain+=win;prizes.push(...exposed);push('canyonPrize',{prizes:exposed,gain:win},650);continue;}
+  const before=grid,step=chocoFallStep(grid);if(!step.moves.length)break;
+  if(k===CHOCO_ROWS*CHOCO_COLS)throw Error('Canyon gravity did not settle');grid=step.grid;fallSteps++;merges+=step.merged.length>0?1:0;
+  push('canyonFall',{before:chocoClone(before),moves:step.moves,merged:step.merged},180);
+ }
+ return {grid,timeline,removed,prizes,gain,fallSteps,merges,hitIds};
+}
 class ChocoDigEngine extends Engine{
  reset(){
-  this.kind='choco';
-  // Abandoning an unfinished round restores its checkpoint, not a new random map.
+  this.kind='choco';this.drawMode='grouped';this.gameName='チョコレートキャニオン';
   if(this.checkpoint&&this.phase!=='complete')this.restoreWorld(this.checkpoint);
-  if(!this.strata){this.seed=(Math.floor(this.random()*0xffffffff)||19351)>>>0;this.depth=0;this.dugTotal=0;this.chestsTotal=0;this.nextSugar=10;this.strata=[];this.ensureRows();}
-  this.version++;this.presentationRate=1;this.roundBet=this.roundBet||100;
-  this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();
-  this.history=[];this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
-  this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;
+  if(!this.strata||(this.phase==='complete'&&!this.continueDepth)){this.seed=(Math.floor(this.random()*0xffffffff)||19351)>>>0;this.uid=0;this.depth=0;this.dugTotal=0;this.chestsTotal=0;this.nextSugar=10;this.strata=[];this.ensureRows();this.assignNumbers(new Set(),true);}
+  else if(this.phase==='complete')this.assignNumbers(new Set(),true);
+  this.version++;this.presentationRate=1;this.roundBet=this.roundBet||100;this.queue=[];this.pendingDraws=new Set();this.seen=new Set();this.drawn=new Set();this.history=[];
+  this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;this.totalHundredths=0;this.maxLink=0;this.maxChain=0;this.lastChain=0;this.allClears=0;
   this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;this.roundBlocks=0;this.roundChests=0;this.roundDepth=0;this.roundCombo=0;this.startDepth=this.depth;
   this.wonderCollected=false;this.wonderIssued=false;this.wonderToken=null;this.wonderColumn=0;this.pendingSugarAward=[];
-  this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));
-  this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;
-  this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));
-  this.fx=null;this.hitColumns=[];this.checkpoint=null;this.digMessage='番号の列を掘って お菓子の地下へ！';this.emit('ready');
+  this.basketState=Array.from({length:SIZE},()=>({goal:10,remaining:10,weight:0,pending:[]}));this.hammerQueue=[];this.hammerPreview=Array.from({length:65},()=>[]);this.hammerPreviewVersion=0;this.board=Array.from({length:SIZE},()=>Array(SIZE).fill(null));
+  this.fx=null;this.checkpoint=null;this.continueDepth=null;this.digMessage='番号HITで同色ケーキを掘り進もう！';this.emit('ready');
  }
  rng(){this.seed=(Math.imul(this.seed,1664525)+1013904223)>>>0;return this.seed/4294967296;}
- makeRow(level){return Array.from({length:5},(_,c)=>{const p=this.rng();let kind=p<.24?0:p<.43?1:p<.61?2:p<.77?3:p<.88?4:p<.96?5:6;if(level%6===4&&c===Math.floor(level/6)%5)kind=7;const hp=CHOCO_TYPES[kind].hp;return {id:level*5+c+1,kind,hp,maxHp:hp};});}
- ensureRows(){while(this.strata.length<12)this.strata.push(this.makeRow(this.depth+this.strata.length));}
- world(){return JSON.parse(JSON.stringify({version:1,seed:this.seed,depth:this.depth,dugTotal:this.dugTotal,chestsTotal:this.chestsTotal,nextSugar:this.nextSugar,strata:this.strata}));}
- restoreWorld(w){this.seed=w.seed>>>0;this.depth=w.depth;this.dugTotal=w.dugTotal;this.chestsTotal=w.chestsTotal;this.nextSugar=w.nextSugar;this.strata=w.strata.map(row=>row.map(t=>t?{...t}:null));}
- validWorld(w){return w?.version===1&&Number.isInteger(w.seed)&&['depth','dugTotal','chestsTotal','nextSugar'].every(k=>Number.isSafeInteger(w[k])&&w[k]>=0&&w[k]<10000000)&&w.nextSugar>w.depth&&Array.isArray(w.strata)&&w.strata.length===12&&w.strata.every(row=>Array.isArray(row)&&row.length===5&&row.every(t=>t===null||(Number.isSafeInteger(t.id)&&Number.isInteger(t.kind)&&t.kind>=0&&t.kind<8&&Number.isInteger(t.hp)&&t.hp>0&&t.hp<=CHOCO_TYPES[t.kind].hp&&t.maxHp===CHOCO_TYPES[t.kind].hp)));}
- enablePersistence(storage){this.storage=storage;try{const text=storage?.getItem(CHOCO_SAVE_KEY);if(text){const w=JSON.parse(text);if(this.validWorld(w)){this.restoreWorld(w);this.startDepth=this.depth;this.emit('ready');}}}catch{}}
- persist(){try{this.storage?.setItem(CHOCO_SAVE_KEY,JSON.stringify(this.world()));this.saveFailed=false;}catch{this.saveFailed=true;}}
- start(){if(this.running||this.roundBet<=0)return;this.checkpoint=this.world();this.startDepth=this.depth;this.running=true;this.opening=false;this.busy=false;this.digMessage='入賞した番号の列にドリル！';this.emit('waiting');}
- frontier(c,grid=this.strata){return grid.findIndex(row=>row[c]);}
- previewDraw(n){const ok=super.previewDraw(n);if(ok)this.hitColumns=[...this.pendingDraws].map(v=>(v-1)%5);return ok;}
- plan(numbers){
-  const grid=this.strata.map(row=>row.map(t=>t?{...t}:null)),removed=new Map(),cracked=new Set(),explosions=[];let combo=0;
-  const remove=(r,c)=>{const t=grid[r]?.[c];if(!t)return;removed.set(r*5+c,{r,c,t:{...t}});grid[r][c]=null;if(t.kind===6)explosions.push([r,c]);};
-  const linked=(r,c,kind)=>{const found=[],seen=new Set(),stack=[[r,c]];while(stack.length){const [y,x]=stack.pop(),key=y*5+x,t=grid[y]?.[x];if(y<0||x<0||x>=5||seen.has(key)||!t||t.kind!==kind)continue;seen.add(key);found.push([y,x]);for(const [dy,dx] of [[0,1],[0,-1],[1,0],[-1,0]])stack.push([y+dy,x+dx]);}return found;};
-  for(const n of numbers){const c=(n-1)%5,r=this.frontier(c,grid);if(r<0)continue;const t=grid[r][c];cracked.add(r*5+c);t.hp--;if(t.hp<=0){const cluster=t.kind<4||t.kind===5?linked(r,c,t.kind):[[r,c]];if(cluster.length>=3){combo+=cluster.length;for(const [y,x] of cluster)remove(y,x);}else remove(r,c);}}
-  for(let i=0;i<explosions.length;i++){const [r,c]=explosions[i];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)remove(r+dy,c+dx);}
-  return {grid,removed:[...removed.values()],cracked:[...cracked],combo,treasures:[...removed.values()].filter(v=>v.t.kind===7).length};
+ makeRow(visibleRow){const row=[],above=this.strata.at(-1);for(let c=0;c<CHOCO_COLS;c++){const neighbor=this.rng()<.5?row[c-1]:above?.[c],color=this.rng()<.35&&neighbor?.color>=0?neighbor.color:Math.floor(this.rng()*4),p=this.rng(),prize=visibleRow<2?null:p<CHOCO_GOLD_RATE?'gold':p<CHOCO_GOLD_RATE+CHOCO_SILVER_RATE?'silver':null;row.push({id:++this.uid,color,number:null,prize});}return row;}
+ ensureRows(){while(this.strata.length<CHOCO_ROWS)this.strata.push(this.makeRow(this.strata.length));}
+ assignNumbers(drawn=new Set(),replace=false,minId=0){
+  const tiles=this.strata.flat().filter(t=>t&&t.color>=0);if(replace)for(const t of tiles)t.number=null;
+  const present=new Set(tiles.map(t=>t.number).filter(n=>n!=null)),numbers=Array.from({length:25},(_,i)=>i+1).filter(n=>!drawn.has(n)&&!present.has(n)),free=tiles.filter(t=>t.number==null&&t.id>minId);
+  for(let i=free.length-1;i>0;i--){const j=Math.floor(this.rng()*(i+1));[free[i],free[j]]=[free[j],free[i]];}
+  for(let i=0;i<numbers.length&&i<free.length;i++)free[i].number=numbers[i];
  }
+ world(){return {version:2,seed:this.seed,uid:this.uid,depth:this.depth,dugTotal:this.dugTotal,chestsTotal:this.chestsTotal,nextSugar:this.nextSugar,strata:chocoClone(this.strata)};}
+ restoreWorld(w){for(const k of ['seed','uid','depth','dugTotal','chestsTotal','nextSugar'])this[k]=w[k];this.strata=chocoClone(w.strata);}
+ validWorld(w){
+  if(w?.version!==2||!['seed','uid','depth','dugTotal','chestsTotal','nextSugar'].every(k=>Number.isSafeInteger(w[k])&&w[k]>=0&&w[k]<1e12)||!Array.isArray(w.strata)||w.strata.length!==12)return false;
+  const ids=new Set(),numbers=new Set();for(const row of w.strata){if(!Array.isArray(row)||row.length!==7)return false;for(const t of row){if(t===null)continue;if(!t||!Number.isSafeInteger(t.id)||t.id<1||t.id>w.uid||ids.has(t.id)||!Number.isInteger(t.color)||t.color< -1||t.color>3||![null,'silver','gold'].includes(t.prize)||t.color===-1&&!t.prize)return false;ids.add(t.id);if(t.number!=null){if(!Number.isInteger(t.number)||t.number<1||t.number>25||numbers.has(t.number)||t.color<0)return false;numbers.add(t.number);}}}return true;
+ }
+ enablePersistence(storage){this.storage=storage;try{const raw=storage?.getItem(CHOCO_SAVE_KEY);if(raw){const w=JSON.parse(raw);if(this.validWorld(w)){this.restoreWorld(w);this.assignNumbers(new Set(),true);this.startDepth=this.depth;this.emit('ready');}}}catch{}}
+ persist(){try{if(this.continueDepth)this.storage?.setItem(CHOCO_SAVE_KEY,JSON.stringify(this.world()));else this.storage?.removeItem?.(CHOCO_SAVE_KEY);this.saveFailed=false;}catch{this.saveFailed=true;}}
+ start(){if(this.running||this.roundBet<=0)return;this.checkpoint=this.world();this.startDepth=this.depth;this.running=true;this.opening=false;this.busy=false;this.digMessage='同色はひとつのケーキ！ 番号HITで消去';this.emit('waiting');}
+ frontier(c,grid=this.strata){return grid.findIndex(row=>row[c]);}
+ plan(numbers,options){return chocoPlan(this.strata,numbers,options);}
+ async visualWait(ms,token){let remaining=ms;while(remaining>0&&token===this.version){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.version;}
  async drain(){
   const token=this.version;if(this.busy)return;this.busy=true;
   try{
    while(this.queue.length&&token===this.version){
-    const numbers=this.queue.shift();this.hitColumns=numbers.map(n=>(n-1)%5);for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}
-    this.emit('digHit',{numbers});if(!await this.wait(400*this.speed,token))return;
-    const plan=this.plan(numbers);this.fx={phase:'crack',plan,elapsed:0,stamp:null};this.emit('digCrack',{numbers});if(!await this.wait(260*this.speed,token))return;
-    this.strata=plan.grid;this.roundBlocks+=plan.removed.length;this.dugTotal+=plan.removed.length;this.roundChests+=plan.treasures;this.chestsTotal+=plan.treasures;this.roundCombo=Math.max(this.roundCombo,plan.combo);
-    const gain=plan.treasures*100+Math.max(0,plan.combo-2)*5;this.totalHundredths+=gain;
-    this.fx={phase:'break',plan,elapsed:0,stamp:null};this.digMessage=plan.treasures?'宝箱発見！ ＋'+plan.treasures+'倍':plan.combo>=3?plan.combo+' BLOCKS！ チョコがつながった！':plan.removed.length?'チョコを砕いて深部へ！':plan.cracked.length?'硬いチョコにひびが入った！':'この列は深部に到達・ほかの列を待機';
-    this.emit('digBreak',{numbers,broken:plan.removed.length,combo:plan.combo,treasures:plan.treasures,gain});if(!await this.wait(620*this.speed,token))return;
-    let advanced=0;while(this.strata.length&&this.strata[0].every(t=>!t)){this.strata.shift();this.depth++;advanced++;}
-    this.totalHundredths+=advanced*20;this.roundDepth=this.depth-this.startDepth;this.ensureRows();this.fx=null;this.hitColumns=[];
-    this.processed+=numbers.length;this.emit('settled',{numbers,dig:true,advanced,broken:plan.removed.length,combo:plan.combo});if(!await this.wait(750*this.speed,token))return;
+    const numbers=this.queue.shift();for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}
+    const plan=this.plan(numbers,{trace:true});
+    for(const stage of plan.timeline){if(token!==this.version)return;this.strata=chocoClone(stage.grid);this.fx={...stage,elapsed:0,stamp:null};
+     if(stage.phase==='canyonPrize'){this.totalHundredths+=stage.gain;this.roundChests+=stage.prizes.length;this.chestsTotal+=stage.prizes.length;this.digMessage='配当チョコが露出！ ＋'+(stage.gain/100).toFixed(1)+'倍';}
+     else this.digMessage=stage.phase==='canyonHit'?plan.hitIds.length?'番号HIT！ つながるケーキを消去':'盤面に番号なし':stage.phase==='canyonFall'?stage.merged.length?'同色ケーキが合体！':'ケーキがかたまりで落下':'ケーキを掘り抜いた！';
+     this.emit(stage.phase,{numbers,...stage});if(!await this.visualWait(stage.ms,token))return;
+    }
+    this.strata=plan.grid;this.roundBlocks+=plan.removed.length;this.dugTotal+=plan.removed.length;this.roundCombo=Math.max(this.roundCombo,plan.removed.length);this.roundCleared=this.roundBlocks;
+    const before=chocoClone(this.strata);let advanced=0;while(this.strata.length&&this.strata[0].every(t=>!t)){this.strata.shift();this.depth++;advanced++;}
+    const oldUid=this.uid;this.ensureRows();this.assignNumbers(this.drawn,false,oldUid);this.roundDepth=this.depth-this.startDepth;
+    if(advanced){this.fx={phase:'canyonScroll',before,grid:chocoClone(this.strata),advanced,oldDepth:this.depth-advanced,ms:620,elapsed:0,stamp:null};this.digMessage=advanced+'m 掘り進んだ！';this.emit('canyonScroll',{advanced});if(!await this.visualWait(620,token))return;}
+    this.fx=null;this.processed+=numbers.length;this.emit('settled',{numbers,dig:true,advanced,broken:plan.removed.length});
    }
    if(token!==this.version)return;this.busy=false;
    if(this.processed===8){
-    if(this.depth>=this.nextSugar){this.nextSugar=(Math.floor(this.depth/10)+1)*10;this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'dig-'+this.depth+'-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});}
-    this.running=false;this.checkpoint=null;this.persist();this.emit('complete');
+    if(this.depth>=this.nextSugar){this.nextSugar=(Math.floor(this.depth/10)+1)*10;this.wonderCollected=true;this.wonderIssued=true;this.roundSteps=1;this.wonderToken={id:'canyon-'+this.depth+'-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};this.emit('stepcollect',{steps:[this.wonderToken]});this.emit('sugaraward',{steps:[this.wonderToken]});}
+    this.continueDepth=this.totalHundredths>0;this.digMessage=this.continueDepth?'配当GET！ '+this.depth+'mから探検を継続':'配当なし・次ゲームは0mから';this.running=false;this.checkpoint=null;this.persist();this.emit('complete');
    }else this.emit('waiting');
   }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
 const chocoSprites=new Map();
-function chocoTile(kind,hp){
- const key=kind+'/'+hp;if(chocoSprites.has(key))return chocoSprites.get(key);
- const cv=document.createElement('canvas');cv.width=120;cv.height=92;const x=cv.getContext('2d'),p=CHOCO_TYPES[kind];
- x.fillStyle=p.edge;x.beginPath();x.roundRect(3,7,114,82,11);x.fill();
- const g=x.createLinearGradient(0,4,0,80);g.addColorStop(0,p.top);g.addColorStop(.46,p.mid);g.addColorStop(1,p.edge);x.fillStyle=g;x.beginPath();x.roundRect(5,3,110,78,10);x.fill();x.strokeStyle=p.top;x.lineWidth=2;x.stroke();
- x.strokeStyle='#fff4c04d';x.lineWidth=2;x.beginPath();x.moveTo(17,10);x.lineTo(102,10);x.stroke();x.strokeStyle=p.edge;x.lineWidth=4;
- if(kind<5){
-  for(let row=0;row<2;row++)for(let col=0;col<3;col++){x.fillStyle=p.top;x.globalAlpha=.3;x.beginPath();x.roundRect(14+col*31,16+row*29,26,24,4);x.fill();x.globalAlpha=1;x.strokeStyle=p.edge;x.lineWidth=1.4;x.stroke();}
-  if(kind===1){x.fillStyle='#a7365c';for(let i=0;i<8;i++){x.beginPath();x.ellipse(17+i*12,26+(i%3)*12,1.5,2.8,.5,0,Math.PI*2);x.fill();}}
-  if(kind===2||kind===3){x.strokeStyle=kind===2?'#fffce0':'#e4efbd';x.lineWidth=2;x.beginPath();for(let i=0;i<=100;i++){const y=32+Math.sin(i*.12)*10;i?x.lineTo(10+i,y):x.moveTo(10+i,y);}x.stroke();}
- }else if(kind===5){for(let i=0;i<5;i++){x.fillStyle=i%2?'#efcf97':'#9d633a';x.fillRect(8,42+i*8,104,6);}x.strokeStyle='#6f412b';x.lineWidth=2;for(let i=-70;i<140;i+=16){x.beginPath();x.moveTo(i,8);x.lineTo(i+30,38);x.stroke();}}
- else if(kind===6){const core=x.createRadialGradient(61,39,1,61,39,35);core.addColorStop(0,'#ffdd74');core.addColorStop(.4,'#f49c48');core.addColorStop(1,'#632f25');x.fillStyle=core;x.beginPath();x.ellipse(60,39,32,25,0,0,Math.PI*2);x.fill();x.fillStyle='#ffcb63';x.beginPath();x.roundRect(52,36,16,39,7);x.fill();}
- else{x.fillStyle='#b27437';x.beginPath();x.roundRect(16,20,88,47,7);x.fill();x.strokeStyle='#ffde83';x.lineWidth=5;x.stroke();x.beginPath();x.moveTo(18,39);x.lineTo(102,39);x.stroke();x.fillStyle='#fff0a0';x.fillRect(31,21,6,44);x.fillRect(83,21,6,44);x.fillRect(51,34,18,17);x.fillStyle='#794529';x.beginPath();x.arc(60,42,3,0,7);x.fill();}
- if(hp<p.hp){x.strokeStyle='#fff0c5';x.lineWidth=4;x.beginPath();x.moveTo(20,9);x.lineTo(47,31);x.lineTo(38,46);x.lineTo(72,58);x.lineTo(87,80);x.stroke();x.strokeStyle='#271a1c';x.lineWidth=2;x.stroke();}
- chocoSprites.set(key,cv);return cv;
-}
+function chocoLogoMarkup(){return '<svg class="canyon-logo" viewBox="0 0 600 110" role="img" aria-label="チョコレートキャニオン"><defs><linearGradient id="canyon-logo-face" x2="0" y2="1"><stop stop-color="#fff9ca"/><stop offset=".5" stop-color="#ffc96b"/><stop offset="1" stop-color="#b9702e"/></linearGradient></defs><path d="M10 79 28 20 81 48 135 9 190 43 250 13 302 48 370 12 428 42 486 13 570 28 590 82Z" fill="#6e3a32" stroke="#d9a665" stroke-width="5"/><path d="M24 79Q300 63 576 79L553 106Q300 98 47 106Z" fill="#c87648" stroke="#ffe7a0" stroke-width="4"/><g stroke-linejoin="round"><path d="M61.168 44.396V51.216C62.356 51.128 64.072 51.04 65.392 51.04H76.876C75.864 56.892 72.476 61.424 65.964 64.372L72.78399999999999 68.948C80.044 64.504 83.212 58.036 84.048 51.04H94.916C96.19200000000001 51.04 97.732 51.128 99.05199999999999 51.216V44.396C98.03999999999999 44.484 95.708 44.66 94.78399999999999 44.66H84.268V38.544C86.6 38.192 88.844 37.752 90.912 37.224000000000004C91.70400000000001 37.048 93.024 36.696 94.828 36.256L90.47200000000001 30.404000000000003C88.228 31.504000000000005 84.18 32.428000000000004 79.51599999999999 33.132000000000005C74.632 33.88 67.768 33.88 64.38 33.836L66.05199999999999 39.952C68.824 39.908 73.136 39.732 77.228 39.42400000000001V44.66H65.348C63.94 44.66 62.488 44.528000000000006 61.168 44.396ZM110.668 61.688V68.156C111.416 68.112 113.352 68.024 114.53999999999999 68.024H130.644L130.6 69.74H137.288C137.288 68.904 137.244 67.1 137.244 66.396C137.244 63.052 137.244 46.156000000000006 137.244 44.264C137.244 43.29600000000001 137.244 41.536 137.288 40.876000000000005C136.54 40.92 134.60399999999998 40.964 133.548 40.964C129.896 40.964 121.316 40.964 117.092 40.964C115.2 40.964 112.428 40.876000000000005 111.108 40.744V47.124C112.34 47.036 115.2 46.948 117.092 46.948C121.316 46.948 128.796 46.948 130.644 46.948V51.128H117.664C115.904 51.128 113.66 51.084 112.34 50.996V57.244C113.484 57.156 115.904 57.156 117.664 57.156H130.644V61.864H114.584C112.956 61.864 111.416 61.775999999999996 110.668 61.688ZM151.984 57.816V65.428C153.568 65.252 156.34 65.12 158.012 65.12H177.328L177.284 67.32H185.028C184.89600000000002 65.604 184.808 63.096000000000004 184.808 61.6V38.764C184.808 37.312 184.89600000000002 35.376000000000005 184.94 34.32C184.28 34.364000000000004 182.168 34.452 180.76 34.452H158.32C156.736 34.452 154.272 34.32 152.512 34.144000000000005V41.536C153.876 41.448 156.34 41.36 158.32 41.36H177.372V58.08H157.792C155.724 58.08 153.7 57.948 151.984 57.816ZM197.92 64.064 202.98 68.464C204.212 67.628 205.356 67.276 206.016 67.056C216.048 63.536 225.244 58.388 231.448 51.128L227.664 45.056C221.944 51.832 212.352 57.376000000000005 205.884 59.356C205.884 55.396 205.884 42.944 205.884 37.664C205.884 35.728 206.06 34.144000000000005 206.368 32.120000000000005H198.008C198.316 33.572 198.58 35.728 198.58 37.664C198.58 42.988 198.58 57.156 198.58 60.808C198.58 61.908 198.536 62.744 197.92 64.064ZM237.784 44.88V53.284C239.588 53.152 242.888 53.02 245.396 53.02C251.644 53.02 264.404 53.02 268.76 53.02C270.564 53.02 273.028 53.24 274.172 53.284V44.88C272.896 44.968 270.74 45.188 268.76 45.188C264.448 45.188 251.688 45.188 245.396 45.188C243.24 45.188 239.544 45.012 237.784 44.88ZM291.244 61.6C291.244 63.404 291.024 66.352 290.716 68.244H299.076C298.856 66.264 298.592 62.788 298.592 61.6V50.292C303.256 51.964 309.284 54.296 313.728 56.584L316.764 49.147999999999996C313.068 47.344 304.532 44.22 298.592 42.504000000000005V36.476C298.592 34.364000000000004 298.856 32.428000000000004 299.032 30.756H290.716C291.068 32.428000000000004 291.244 34.716 291.244 36.476C291.244 40.216 291.244 57.728 291.244 61.6ZM325.696 52.624 327.192 59.664C328.204 59.4 329.876 59.092 331.856 58.74C333.66 58.388 337.444 57.728 341.624 57.024L342.988 64.504C343.252 65.824 343.34 67.408 343.56 69.124L351.216 67.804C350.82 66.264 350.38 64.636 350.072 63.316L348.62 55.88L357.42 54.472C359.092 54.208 361.116 53.856 362.436 53.768L361.028 46.772000000000006C359.752 47.124 357.904 47.564 356.188 47.916C354.34 48.268 351.04 48.84 347.388 49.456L346.244 43.428L354.20799999999997 42.152C355.616 41.976 357.64 41.668000000000006 358.784 41.58L357.508 34.628C356.276 34.980000000000004 354.296 35.42 352.844 35.684C351.436 35.948 348.444 36.476 345.056 37.004000000000005L344.396 33.308C344.176 32.208 344.044 30.580000000000005 343.912 29.700000000000003L336.388 30.888000000000005C336.74 31.988 337.048 33.088 337.356 34.408L338.06 38.06L329.876 39.248000000000005C328.512 39.42400000000001 327.104 39.512 325.564 39.6L326.972 46.86C328.6 46.42 329.788 46.156000000000006 331.284 45.848L339.292 44.528000000000006L340.436 50.556L330.624 52.096000000000004C329.128 52.316 326.928 52.58 325.696 52.624ZM405.116 44.704 400.804 41.668000000000006C400.144 41.976 399.176 42.284000000000006 398.296 42.46C396.448 42.856 390.992 43.912000000000006 385.8 44.924L384.744 41.096000000000004C384.48 39.952 384.172 38.676 383.996 37.488L376.868 39.16C377.396 40.216 377.924 41.403999999999996 378.23199999999997 42.548L379.244 46.156000000000006L375.636 46.772000000000006C374.096 47.036 372.82 47.168000000000006 371.368 47.3L372.996 53.636L380.784 51.92C382.324 57.728 383.952 64.108 384.656 66.66C385.052 67.98 385.36 69.608 385.536 70.884L392.752 69.124C392.4 68.2 391.696 65.912 391.476 65.164L387.384 50.512L395.788 48.796C394.776 50.688 391.872 54.208 389.892 56.056L395.744 58.96C398.868 55.484 403.224 48.620000000000005 405.116 44.704ZM417.26 35.42V43.164C418.844 43.076 421.176 42.988 422.936 42.988C425.532 42.988 438.336 42.988 440.756 42.988C442.34 42.988 444.628 43.120000000000005 445.948 43.164V35.42C444.672 35.596000000000004 442.604 35.728 440.756 35.728C438.248 35.728 427.16 35.728 422.892 35.728C421.352 35.728 418.976 35.64 417.26 35.42ZM413.608 56.804V64.944C415.368 64.768 417.832 64.636 419.636 64.636C422.584 64.636 441.416 64.636 444.276 64.636C445.64 64.636 447.884 64.768 449.6 64.944V56.804C447.972 56.980000000000004 445.86 57.112 444.276 57.112C441.416 57.112 422.584 57.112 419.636 57.112C417.832 57.112 415.456 56.936 413.608 56.804ZM455.98 58.564 460.864 64.108C467.288 60.72 474.152 55.132000000000005 478.112 50.116L478.156 59.752C478.156 61.028 477.716 61.6 476.704 61.6C475.296 61.6 472.964 61.424 471.028 61.116L471.644 68.024C474.328 68.2 476.704 68.288 479.608 68.288C483.348 68.288 485.108 66.44 485.064 63.316C484.976 57.156 484.8 50.556 484.668 44.264H489.552C490.784 44.264 492.588 44.308 494.172 44.352000000000004V37.356C493.028 37.532 490.74 37.752 489.156 37.752H484.492L484.448 35.2C484.404 33.704 484.492 31.768 484.712 30.272000000000006H477.188C477.408 31.592 477.54 33.176 477.672 35.2L477.804 37.752H464.076C462.492 37.752 459.984 37.576 458.752 37.400000000000006V44.44C460.38 44.352000000000004 462.58 44.264 464.252 44.264H474.768C471.248 49.104 464.296 54.648 455.98 58.564ZM508.956 31.856 503.896 37.268C507.064 39.512 512.608 44.352000000000004 514.94 46.903999999999996L520.396 41.316C517.756 38.5 511.992 33.924 508.956 31.856ZM502.444 61.072 506.976 68.112C512.52 67.232 518.24 64.944 522.728 62.304C530.076 57.992000000000004 536.324 51.876000000000005 539.844 45.628L535.708 38.104C532.76 44.308 526.82 51.128 518.9 55.704C514.588 58.212 508.912 60.192 502.444 61.072Z" transform="translate(0 3)" fill="#945032" stroke="#3b1c2b" stroke-width="7"/><path d="M61.168 44.396V51.216C62.356 51.128 64.072 51.04 65.392 51.04H76.876C75.864 56.892 72.476 61.424 65.964 64.372L72.78399999999999 68.948C80.044 64.504 83.212 58.036 84.048 51.04H94.916C96.19200000000001 51.04 97.732 51.128 99.05199999999999 51.216V44.396C98.03999999999999 44.484 95.708 44.66 94.78399999999999 44.66H84.268V38.544C86.6 38.192 88.844 37.752 90.912 37.224000000000004C91.70400000000001 37.048 93.024 36.696 94.828 36.256L90.47200000000001 30.404000000000003C88.228 31.504000000000005 84.18 32.428000000000004 79.51599999999999 33.132000000000005C74.632 33.88 67.768 33.88 64.38 33.836L66.05199999999999 39.952C68.824 39.908 73.136 39.732 77.228 39.42400000000001V44.66H65.348C63.94 44.66 62.488 44.528000000000006 61.168 44.396ZM110.668 61.688V68.156C111.416 68.112 113.352 68.024 114.53999999999999 68.024H130.644L130.6 69.74H137.288C137.288 68.904 137.244 67.1 137.244 66.396C137.244 63.052 137.244 46.156000000000006 137.244 44.264C137.244 43.29600000000001 137.244 41.536 137.288 40.876000000000005C136.54 40.92 134.60399999999998 40.964 133.548 40.964C129.896 40.964 121.316 40.964 117.092 40.964C115.2 40.964 112.428 40.876000000000005 111.108 40.744V47.124C112.34 47.036 115.2 46.948 117.092 46.948C121.316 46.948 128.796 46.948 130.644 46.948V51.128H117.664C115.904 51.128 113.66 51.084 112.34 50.996V57.244C113.484 57.156 115.904 57.156 117.664 57.156H130.644V61.864H114.584C112.956 61.864 111.416 61.775999999999996 110.668 61.688ZM151.984 57.816V65.428C153.568 65.252 156.34 65.12 158.012 65.12H177.328L177.284 67.32H185.028C184.89600000000002 65.604 184.808 63.096000000000004 184.808 61.6V38.764C184.808 37.312 184.89600000000002 35.376000000000005 184.94 34.32C184.28 34.364000000000004 182.168 34.452 180.76 34.452H158.32C156.736 34.452 154.272 34.32 152.512 34.144000000000005V41.536C153.876 41.448 156.34 41.36 158.32 41.36H177.372V58.08H157.792C155.724 58.08 153.7 57.948 151.984 57.816ZM197.92 64.064 202.98 68.464C204.212 67.628 205.356 67.276 206.016 67.056C216.048 63.536 225.244 58.388 231.448 51.128L227.664 45.056C221.944 51.832 212.352 57.376000000000005 205.884 59.356C205.884 55.396 205.884 42.944 205.884 37.664C205.884 35.728 206.06 34.144000000000005 206.368 32.120000000000005H198.008C198.316 33.572 198.58 35.728 198.58 37.664C198.58 42.988 198.58 57.156 198.58 60.808C198.58 61.908 198.536 62.744 197.92 64.064ZM237.784 44.88V53.284C239.588 53.152 242.888 53.02 245.396 53.02C251.644 53.02 264.404 53.02 268.76 53.02C270.564 53.02 273.028 53.24 274.172 53.284V44.88C272.896 44.968 270.74 45.188 268.76 45.188C264.448 45.188 251.688 45.188 245.396 45.188C243.24 45.188 239.544 45.012 237.784 44.88ZM291.244 61.6C291.244 63.404 291.024 66.352 290.716 68.244H299.076C298.856 66.264 298.592 62.788 298.592 61.6V50.292C303.256 51.964 309.284 54.296 313.728 56.584L316.764 49.147999999999996C313.068 47.344 304.532 44.22 298.592 42.504000000000005V36.476C298.592 34.364000000000004 298.856 32.428000000000004 299.032 30.756H290.716C291.068 32.428000000000004 291.244 34.716 291.244 36.476C291.244 40.216 291.244 57.728 291.244 61.6ZM325.696 52.624 327.192 59.664C328.204 59.4 329.876 59.092 331.856 58.74C333.66 58.388 337.444 57.728 341.624 57.024L342.988 64.504C343.252 65.824 343.34 67.408 343.56 69.124L351.216 67.804C350.82 66.264 350.38 64.636 350.072 63.316L348.62 55.88L357.42 54.472C359.092 54.208 361.116 53.856 362.436 53.768L361.028 46.772000000000006C359.752 47.124 357.904 47.564 356.188 47.916C354.34 48.268 351.04 48.84 347.388 49.456L346.244 43.428L354.20799999999997 42.152C355.616 41.976 357.64 41.668000000000006 358.784 41.58L357.508 34.628C356.276 34.980000000000004 354.296 35.42 352.844 35.684C351.436 35.948 348.444 36.476 345.056 37.004000000000005L344.396 33.308C344.176 32.208 344.044 30.580000000000005 343.912 29.700000000000003L336.388 30.888000000000005C336.74 31.988 337.048 33.088 337.356 34.408L338.06 38.06L329.876 39.248000000000005C328.512 39.42400000000001 327.104 39.512 325.564 39.6L326.972 46.86C328.6 46.42 329.788 46.156000000000006 331.284 45.848L339.292 44.528000000000006L340.436 50.556L330.624 52.096000000000004C329.128 52.316 326.928 52.58 325.696 52.624ZM405.116 44.704 400.804 41.668000000000006C400.144 41.976 399.176 42.284000000000006 398.296 42.46C396.448 42.856 390.992 43.912000000000006 385.8 44.924L384.744 41.096000000000004C384.48 39.952 384.172 38.676 383.996 37.488L376.868 39.16C377.396 40.216 377.924 41.403999999999996 378.23199999999997 42.548L379.244 46.156000000000006L375.636 46.772000000000006C374.096 47.036 372.82 47.168000000000006 371.368 47.3L372.996 53.636L380.784 51.92C382.324 57.728 383.952 64.108 384.656 66.66C385.052 67.98 385.36 69.608 385.536 70.884L392.752 69.124C392.4 68.2 391.696 65.912 391.476 65.164L387.384 50.512L395.788 48.796C394.776 50.688 391.872 54.208 389.892 56.056L395.744 58.96C398.868 55.484 403.224 48.620000000000005 405.116 44.704ZM417.26 35.42V43.164C418.844 43.076 421.176 42.988 422.936 42.988C425.532 42.988 438.336 42.988 440.756 42.988C442.34 42.988 444.628 43.120000000000005 445.948 43.164V35.42C444.672 35.596000000000004 442.604 35.728 440.756 35.728C438.248 35.728 427.16 35.728 422.892 35.728C421.352 35.728 418.976 35.64 417.26 35.42ZM413.608 56.804V64.944C415.368 64.768 417.832 64.636 419.636 64.636C422.584 64.636 441.416 64.636 444.276 64.636C445.64 64.636 447.884 64.768 449.6 64.944V56.804C447.972 56.980000000000004 445.86 57.112 444.276 57.112C441.416 57.112 422.584 57.112 419.636 57.112C417.832 57.112 415.456 56.936 413.608 56.804ZM455.98 58.564 460.864 64.108C467.288 60.72 474.152 55.132000000000005 478.112 50.116L478.156 59.752C478.156 61.028 477.716 61.6 476.704 61.6C475.296 61.6 472.964 61.424 471.028 61.116L471.644 68.024C474.328 68.2 476.704 68.288 479.608 68.288C483.348 68.288 485.108 66.44 485.064 63.316C484.976 57.156 484.8 50.556 484.668 44.264H489.552C490.784 44.264 492.588 44.308 494.172 44.352000000000004V37.356C493.028 37.532 490.74 37.752 489.156 37.752H484.492L484.448 35.2C484.404 33.704 484.492 31.768 484.712 30.272000000000006H477.188C477.408 31.592 477.54 33.176 477.672 35.2L477.804 37.752H464.076C462.492 37.752 459.984 37.576 458.752 37.400000000000006V44.44C460.38 44.352000000000004 462.58 44.264 464.252 44.264H474.768C471.248 49.104 464.296 54.648 455.98 58.564ZM508.956 31.856 503.896 37.268C507.064 39.512 512.608 44.352000000000004 514.94 46.903999999999996L520.396 41.316C517.756 38.5 511.992 33.924 508.956 31.856ZM502.444 61.072 506.976 68.112C512.52 67.232 518.24 64.944 522.728 62.304C530.076 57.992000000000004 536.324 51.876000000000005 539.844 45.628L535.708 38.104C532.76 44.308 526.82 51.128 518.9 55.704C514.588 58.212 508.912 60.192 502.444 61.072Z" fill="url(#canyon-logo-face)" stroke="#fff0b2" stroke-width="2.5" paint-order="stroke fill"/></g><text x="300" y="94" text-anchor="middle" fill="#fff1bd" font-size="12" font-weight="900" letter-spacing="3">CHOCOLATE CANYON</text><g fill="#fff1a1"><path d="m22 55 4 9 10 2-8 6 2 10-8-5-8 5 2-10-8-6 10-2Z"/><path d="m578 55 4 9 10 2-8 6 2 10-8-5-8 5 2-10-8-6 10-2Z"/></g></svg>';}
 function setupChocoSlot(s){
  if(s.chocoCanvas)return;s.panel.classList.add('choco-panel');s.tab.classList.add('choco-tab');s.holder.classList.add('choco-slot');
- s.tab.querySelector('.tab-game-name').innerHTML='<span class="choco-tab-title">ショコラディグ<small>CHOCOLATE EXPEDITION</small></span>';s.tab.querySelector('.tab-game-name').setAttribute('aria-label','ショコラディグ');
- const wrap=document.createElement('div');wrap.className='choco-surface';wrap.innerHTML='<div class="choco-topline"><span>CHOCOLATE EXPEDITION</span><b class="choco-save">継続式</b></div><canvas class="choco-canvas" width="640" height="640" role="img" aria-label="ショコラディグ・5本の縦穴とチョコの地層"></canvas><div class="choco-status" role="status"></div>';
+ s.tab.querySelector('.tab-game-name').innerHTML=chocoLogoMarkup();s.tab.setAttribute('aria-label','チョコレートキャニオン');
+ const wrap=document.createElement('div');wrap.className='choco-surface';wrap.innerHTML='<div class="choco-topline"><span>CHOCOLATE CANYON</span><b class="choco-save">配当GETで継続</b></div><canvas class="choco-canvas" width="640" height="640" role="img" aria-label="チョコレートキャニオン・7列12段"></canvas><div class="choco-status" role="status"></div>';
  s.panel.append(wrap);s.chocoCanvas=wrap.querySelector('canvas');s.chocoCtx=s.chocoCanvas.getContext('2d');s.chocoStatus=wrap.querySelector('.choco-status');s.chocoSave=wrap.querySelector('.choco-save');
- const info=document.createElement('div');info.id='choco-heading';info.innerHTML='<strong>ショコラディグ<small>おかしの地下へ、もう一段。</small></strong><span>DEPTH <b id="choco-depth">0</b> m</span>';document.querySelector('.festival-top').append(info);
- const odds=document.createElement('div');odds.id='choco-odds';odds.innerHTML='<div class="choco-odds-title">DIG REWARDS<small>試作版・仮配当</small></div><section><span>今回の獲得</span><b id="choco-win">0</b><em>WIN</em></section><dl><dt>1段を掘り抜く</dt><dd>BET × 0.2</dd><dt>宝箱をこわす</dt><dd>BET × 1.0</dd><dt>同色3個以上</dt><dd>3個から1個ごと<br>BET × 0.05</dd></dl><div class="choco-sugar-goal">次のシュガー<br><b id="choco-sugar-depth">10 m</b></div><p>番号 → その列を掘る<br>硬いチョコは2HIT<br>同色3個以上が連結崩し<br>フォンダンは周囲も消去</p><footer>地形は次のゲームへ継続<br>0 BETは掘削しません</footer>';$('odds-panel').append(odds);
+ const info=document.createElement('div');info.id='choco-heading';info.innerHTML='<strong>'+chocoLogoMarkup()+'</strong><span>DEPTH <b id="choco-depth">0</b> m</span>';document.querySelector('.festival-top').append(info);
+ const odds=document.createElement('div');odds.id='choco-odds';odds.innerHTML='<div class="choco-odds-title">EXPOSE & COLLECT<small>上から露出すると配当GET</small></div><section><span>TOTAL WIN</span><b id="choco-win">0</b><em>WIN</em></section><div class="canyon-prize-row silver"><i>銀</i><span>銀の配当チョコ<b>'+ (CHOCO_PRIZES.silver/100).toFixed(1)+'× BET</b></span></div><div class="canyon-prize-row gold"><i>金</i><span>金の配当チョコ<b>'+ (CHOCO_PRIZES.gold/100).toFixed(1)+'× BET</b></span></div><div class="choco-sugar-goal">次のシュガー<b id="choco-sugar-depth">10 m</b></div><p>① 番号HITで同色ケーキ消去<br>② 落下中も同色なら合体<br>③ 配当チョコが上から露出！</p><footer>1段＝1m・10mごとに看板<br>配当GETで深さと地形を継続<br>配当なしなら次は0mから</footer>';$('odds-panel').append(odds);
 }
 function chocoEvent(s,ev,e,a){
  setupChocoSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;s.reachResults=[];s.tabReachResults=[];s.reachStatus='ready';s.reachBoardKey=e.version+'/'+e.processed;
- if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);if(s.chocoFrame)cancelAnimationFrame(s.chocoFrame);s.chocoFrame=0;}
+ if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);if(s.chocoFrame)cancelAnimationFrame(s.chocoFrame);s.chocoFrame=0;s.chocoClockStamp=null;}
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
- if(ev.phase==='digBreak'&&s.i===active){sound('crack',{volume:.85});if(ev.treasures)sound('confirm',{delay:80,volume:.8});else if(ev.combo>=3)sound('magic',{volume:.5});}
+ if(s.i===active){if(ev.phase==='canyonBreak')sound('crack',{volume:.7});if(ev.phase==='canyonFall'&&ev.merged?.length)sound('magic',{volume:.35});if(ev.phase==='canyonPrize')sound('confirm',{volume:.8});}
  s.message=e.digMessage;chocoQueueFrame(s);scheduleUI(a);
 }
 function chocoQueueFrame(s){if(s.chocoFrame||document.hidden||!inView)return;s.chocoFrame=requestAnimationFrame(now=>{s.chocoFrame=0;if(s.chocoLastDraw&&now-s.chocoLastDraw<32){chocoQueueFrame(s);return;}s.chocoLastDraw=now;drawChoco(s,now);});}
-function chocoText(x,text,px,py,size,color='#fff1c9',align='center'){x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#311d24';x.lineWidth=Math.max(2,size*.15);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);}
+function chocoText(x,text,px,py,size,color='#fff1c9',align='center'){x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#422630';x.lineWidth=Math.max(1.5,size*.16);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);}
+function chocoFoil(x,prize,cx,cy,size){
+ const gold=prize==='gold';x.save();x.translate(cx,cy);const g=x.createLinearGradient(-size,-size,size,size);for(const [p,c] of gold?[[0,'#fff4bb'],[.3,'#fbd277'],[.5,'#b47829'],[.65,'#ffe8a0'],[1,'#c08a38']]:[[0,'#ffffff'],[.3,'#d2dfec'],[.5,'#728495'],[.65,'#edf7ff'],[1,'#8d9baa']])g.addColorStop(p,c);x.fillStyle=g;x.strokeStyle=gold?'#7c4c1f':'#405365';x.lineWidth=1.3;x.beginPath();x.roundRect(-size,-size*.6,size*2,size*1.2,2);x.fill();x.stroke();x.strokeStyle=gold?'#fff8d2':'#ffffff';x.lineWidth=.8;x.strokeRect(-size*.75,-size*.4,size*1.5,size*.8);chocoText(x,gold?'G':'S',0,0,size*.8,gold?'#fff1ac':'#ffffff');x.restore();
+}
+function chocoPaintTile(x,t,r,c,grid,px,py,w,h){
+ if(t.color<0){chocoFoil(x,t.prize,px+w/2,py+h/2,w*.35);return;}
+ const p=CHOCO_TYPES[t.color],same=(rr,cc)=>grid[rr]?.[cc]?.color===t.color,g=x.createLinearGradient(px,py,px,py+h);g.addColorStop(0,p.top);g.addColorStop(.25,p.mid);g.addColorStop(1,p.mid);x.fillStyle=g;x.fillRect(px,py,w,h);
+ x.lineWidth=1.8;x.strokeStyle=p.edge;x.beginPath();if(!same(r-1,c)){x.moveTo(px,py+1);x.lineTo(px+w,py+1);}if(!same(r+1,c)){x.moveTo(px,py+h-1);x.lineTo(px+w,py+h-1);}if(!same(r,c-1)){x.moveTo(px+1,py);x.lineTo(px+1,py+h);}if(!same(r,c+1)){x.moveTo(px+w-1,py);x.lineTo(px+w-1,py+h);}x.stroke();
+ if(!same(r+1,c)){x.fillStyle=p.top+'b0';x.fillRect(px+2,py+h-5,w-4,1.5);x.fillStyle=p.edge+'b0';x.fillRect(px+2,py+h-3,w-4,1);}
+ x.save();x.globalAlpha=.28;x.strokeStyle=p.top;x.fillStyle=p.edge;x.lineWidth=1;
+ if(t.color===0){x.strokeRect(px+5,py+5,7,6);x.strokeRect(px+w-12,py+5,7,6);}else if(t.color===1){for(const [a,b]of [[6,6],[w-7,6],[8,h-8]]){x.beginPath();x.ellipse(px+a,py+b,1,1.8,.4,0,7);x.fill();}}else if(t.color===2){x.beginPath();x.moveTo(px+4,py+7);x.lineTo(px+10,py+3);x.lineTo(px+16,py+7);x.stroke();}else{x.beginPath();x.ellipse(px+7,py+7,4,2,-.5,0,7);x.fill();}x.restore();
+ if(t.prize)chocoFoil(x,t.prize,px+w/2,py+h/2,w*.30);
+ if(t.number!=null){const cx=px+w*(t.prize?.78:.5),cy=py+h*(t.prize?.68:.5)-.3;x.save();x.font='900 '+(t.prize?10:14)+'px ElixirNumbers,system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#4b2b36';x.lineWidth=3.3;x.strokeText(String(t.number),cx,cy);x.strokeStyle='#fff8de';x.lineWidth=1.5;x.strokeText(String(t.number),cx,cy);x.fillStyle='#fffbea';x.fillText(String(t.number),cx,cy);x.restore();}
+}
 function drawChoco(s,now=performance.now()){
- if(!s.engine||s.engine.kind!=='choco')return;setupChocoSlot(s);
- const e=s.engine,x=s.chocoCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0;
- if(!paused)s.chocoTime=now;const time=s.chocoTime||now;x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
- const bg=x.createLinearGradient(0,0,0,320);bg.addColorStop(0,'#251928');bg.addColorStop(1,'#5b3035');x.fillStyle=bg;x.fillRect(0,0,320,320);
- const pending=new Set([...e.pendingDraws].map(n=>(n-1)%5)),activeCols=new Set(e.hitColumns||[]);
- for(let c=0;c<5;c++){
-  const left=20+c*56,pulse=(Math.sin(time/130)+1)*.5,hot=pending.has(c)||(['digHit','digCrack','digBreak'].includes(e.phase)&&activeCols.has(c));
-  x.fillStyle=hot?'#c88d50':'#594036';x.beginPath();x.roundRect(left,2,53,35,6);x.fill();x.strokeStyle=hot?'#ffe39c':'#bc9465';x.lineWidth=hot?2:1;x.stroke();
-  chocoText(x,[1+c,6+c,11+c].join('・'),left+26,13,8);chocoText(x,[16+c,21+c].join('・'),left+26,26,8);
-  x.fillStyle='#fff4c4';x.globalAlpha=hot?.4+.6*pulse:.35;x.beginPath();x.moveTo(left+19,39);x.lineTo(left+33,39);x.lineTo(left+26,47);x.closePath();x.fill();x.globalAlpha=1;
-  const top=e.frontier(c);
-  for(let r=0;r<8;r++){
-   const tile=e.strata[r]?.[c],y=48+r*30;if(!tile){x.fillStyle='#1a132150';x.fillRect(left,y,53,27);continue;}
-   x.globalAlpha=r>top?.8:1;if(hot&&r===top)x.globalAlpha=.48+.52*pulse;x.drawImage(chocoTile(tile.kind,tile.hp),left,y,53,28);x.globalAlpha=1;
-   if(r===top){x.strokeStyle=hot?'#fff4a8':'#f6d398';x.lineWidth=hot?2:1;x.beginPath();x.roundRect(left,y,53,28,4);x.stroke();}
-   if(tile.maxHp>1){x.fillStyle='#ffdf9e';for(let i=0;i<tile.hp;i++){x.beginPath();x.arc(left+43-i*7,y+6,2,0,7);x.fill();}}
-   if(e.fx?.phase==='crack'&&e.fx.plan.cracked.includes(r*5+c)){x.strokeStyle='#ffe4a5';x.lineWidth=2;x.beginPath();x.moveTo(left+17,y);x.lineTo(left+28,y+12);x.lineTo(left+20,y+20);x.lineTo(left+34,y+28);x.stroke();}
-  }
-  if(top>=8)chocoText(x,'▼ 深部',left+26,288,8,'#ffdf8b');
+ if(s.engine?.kind!=='choco')return;setupChocoSlot(s);const e=s.engine,x=s.chocoCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready';
+ if(s.chocoClockStamp==null)s.chocoClockStamp=now;if(!paused)s.chocoTime=(s.chocoTime||0)+Math.min(100,Math.max(0,now-s.chocoClockStamp));s.chocoClockStamp=now;
+ const time=s.chocoTime||0,fx=e.fx;if(fx){if(!paused){if(fx.stamp!=null)fx.elapsed+=Math.max(0,now-fx.stamp);fx.stamp=now;}else fx.stamp=null;}
+ const p=fx?Math.min(1,fx.elapsed/fx.ms):0,w=35,h=22,left=37,top=18,fall=fx?.phase==='canyonFall',scroll=fx?.phase==='canyonScroll',grid=fall?fx.before:e.strata,moves=new Map((fall?fx.moves:[]).map(m=>[m.id,m])),pending=new Set([...e.pendingDraws]);
+ const targets=new Set(chocoGroups(e.strata).groups.filter(g=>g.some(v=>pending.has(v.tile.number))).flatMap(g=>g.map(v=>v.tile.id)));
+ x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);const bg=x.createLinearGradient(0,0,0,320);bg.addColorStop(0,'#57313b');bg.addColorStop(1,'#271d2c');x.fillStyle=bg;x.fillRect(0,0,320,320);
+ for(let r=0;r<16;r++){x.fillStyle=r%2?'#ae73552b':'#ecb47b19';x.fillRect(0,r*22,320,11);}
+ x.fillStyle='#201821';x.fillRect(left-3,top-3,w*7+6,h*12+6);x.strokeStyle='#c89967';x.lineWidth=2;x.strokeRect(left-3,top-3,w*7+6,h*12+6);
+ x.save();x.beginPath();x.rect(left,top,w*7,h*12);x.clip();
+ if(scroll){const q=motionReduced?1:p;for(let r=0;r<12;r++)for(let c=0;c<7;c++){const tile=fx.before[r]?.[c];if(tile)chocoPaintTile(x,tile,r,c,fx.before,left+c*w,top+(r-fx.advanced*q)*h,w,h);}for(let r=12-fx.advanced;r<12;r++)for(let c=0;c<7;c++){const tile=e.strata[r][c];if(tile)chocoPaintTile(x,tile,r,c,e.strata,left+c*w,top+(r+fx.advanced*(1-q))*h,w,h);}}
+ else for(let r=0;r<12;r++)for(let c=0;c<7;c++){
+  const t=grid[r]?.[c];if(!t)continue;const move=moves.get(t.id),py=top+(r+(move?(motionReduced?1:p*p):0))*h,px=left+c*w;chocoPaintTile(x,t,r,c,grid,px,py,w,h);
+  if(targets.has(t.id)||fx?.phase==='canyonHit'&&fx.hitIds.includes(t.id)){x.fillStyle='#fff7bf66';x.fillRect(px+1,py+1,w-2,h-2);x.strokeStyle='#fff1ac';x.lineWidth=1.8;x.strokeRect(px+1,py+1,w-2,h-2);}
+  if(fall&&fx.merged.includes(t.id)&&p>.65){x.fillStyle='#fff5d3';x.globalAlpha=(1-p)*.9;x.fillRect(px+1,py+1,w-2,h-2);x.globalAlpha=1;}
  }
- for(let r=0;r<8;r++)chocoText(x,String(e.depth+r+1),9,61+r*30,7,'#d0b18f');
- if(['digHit','digCrack'].includes(e.phase))for(const c of activeCols){const r=Math.min(7,Math.max(0,e.frontier(c))),px=46+c*56,py=48+r*30;x.save();x.translate(px,py+5+Math.sin(time/35)*2);x.fillStyle='#f3d788';x.beginPath();x.moveTo(-9,-24);x.lineTo(9,-24);x.lineTo(2,0);x.lineTo(-2,0);x.closePath();x.fill();x.strokeStyle='#765544';x.lineWidth=3;for(let i=0;i<4;i++){x.beginPath();x.moveTo(-8+i,-22+i*5);x.lineTo(7-i,-18+i*5);x.stroke();}x.restore();}
- if(e.fx?.phase==='break'){
-  const fx=e.fx;if(!paused){if(fx.stamp!==null)fx.elapsed+=Math.max(0,now-fx.stamp);fx.stamp=now;}else fx.stamp=null;const t=Math.min(1,fx.elapsed/620);x.globalAlpha=1-t;
-  for(const v of fx.plan.removed){if(v.r>=8)continue;const px=46+v.c*56,py=61+v.r*30;for(let k=0;k<5;k++){const a=k*1.256+v.t.id*.71;x.save();x.translate(px+Math.cos(a)*t*39,py+Math.sin(a)*t*26+t*t*22);x.rotate(a+t*2);x.fillStyle=CHOCO_TYPES[v.t.kind].top;x.beginPath();x.moveTo(-4,-5);x.lineTo(6,-3);x.lineTo(4,5);x.lineTo(-5,3);x.closePath();x.fill();x.restore();}}x.globalAlpha=1;
- }
- x.fillStyle='#231722e6';x.fillRect(0,294,320,26);chocoText(x,e.depth+' m',24,307,12,'#ffe49c','left');const stage=['ミルク鉱山','ベリー洞窟','ビター岩盤','黄金の菓子遺跡'][Math.floor(e.depth/20)%4];chocoText(x,stage,188,307,9,'#e4c3a4');
- if(!bet){x.fillStyle='#1b15249c';x.fillRect(0,0,320,320);chocoText(x,'0 BET',160,144,28);chocoText(x,'BETして 探検を再開',160,175,12);}
- s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.chocoCanvas,0,0,160,160);
- s.chocoStatus.textContent=!bet?'0 BET・この地形を保持して待機':app?.phase==='ready'?'地形は継続！ 次の抽選でさらに深く':e.phase==='complete'?'探検を保存しました・次ゲームへ継続':e.digMessage;s.chocoSave.textContent=e.saveFailed?'保存不可・今回のみ':'継続式';
- if((pending.size||e.fx||e.phase==='digHit')&&!paused&&!jpcSession.active)chocoQueueFrame(s);
+ if(fx?.phase==='canyonBreak'){for(const v of fx.removed){const color=CHOCO_TYPES[v.tile.color]?.top||'#dfba86';for(let k=0;k<4;k++){const a=k*Math.PI/2+v.tile.id*.35,px=left+(v.c+.5)*w+Math.cos(a)*p*22,py=top+(v.r+.5)*h+Math.sin(a)*p*16+p*p*18;x.save();x.globalAlpha=1-p;x.translate(px,py);x.rotate(a+p);x.fillStyle=color;x.fillRect(-3,-2,6,4);x.restore();}}}
+ if(fx?.phase==='canyonPrize'){for(const v of fx.prizes){const cx=left+(v.c+.5)*w,cy=top+(v.r+.5)*h;const g=x.createLinearGradient(0,top,0,cy);g.addColorStop(0,'#fff6bd00');g.addColorStop(1,v.tile.prize==='gold'?'#ffe58999':'#d6f4ff99');x.fillStyle=g;x.fillRect(cx-12,top,24,cy-top);chocoFoil(x,v.tile.prize,cx,cy-(motionReduced?0:p*38),13);}}
+ x.restore();
+ const camera=scroll?fx.oldDepth+fx.advanced*(motionReduced?1:p):e.depth;
+ for(let r=-1;r<14;r++){const m=Math.floor(camera)+r+1,y=top+(m-camera-.5)*h;if(y<10||y>286)continue;if(m%10===0){x.fillStyle='#e9bd79';x.strokeStyle='#6c412e';x.lineWidth=1.5;x.beginPath();x.roundRect(2,y-8,29,16,3);x.fill();x.stroke();chocoText(x,m+'m',16.5,y,8,'#fff3c8');x.fillStyle='#b98b58';x.fillRect(30,y-1,5,2);}else{x.fillStyle='#b18a6e';x.fillRect(26,y,5,1);}}
+ x.fillStyle='#231722e8';x.fillRect(0,290,320,30);chocoText(x,e.depth+' m',15,305,15,'#ffe6a4','left');chocoText(x,ready?'番号HIT → 同色消去 → 落下・合体':e.totalHundredths>0?'配当GET！ 深さ継続':'+ 配当チョコを露出させよう',193,305,8.5,'#f5d4b6');
+ if(fx?.phase==='canyonPrize'){x.fillStyle='#3b2035e8';x.strokeStyle='#ffe5a3';x.lineWidth=2;x.beginPath();x.roundRect(70,125,180,44,12);x.fill();x.stroke();chocoText(x,'＋'+num(medalWin(bet,fx.gain))+' WIN',160,147,24,'#ffe49a');}
+ if(!bet){x.fillStyle='#211827a6';x.fillRect(0,0,320,320);chocoText(x,'0 BET',160,145,26);chocoText(x,'BETして 探検をはじめよう',160,174,11);}
+ s.chocoCanvas.dataset.columns='7';s.chocoCanvas.dataset.rows='12';s.chocoCanvas.setAttribute('aria-label','チョコレートキャニオン・7列12段・深さ'+e.depth+'m・配当'+num(medalWin(bet,e.totalHundredths))+' WIN');
+ s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);s.mini.drawImage(s.chocoCanvas,0,0,160,160);
+ s.chocoStatus.textContent=!bet?'0 BET・探検は待機中':ready?'上下左右の同色がひとつのケーキ・数字HITで消去':e.digMessage;s.chocoSave.textContent=e.saveFailed?'保存できません':e.phase==='complete'?e.continueDepth?'深さ継続！':'次は0mから':e.totalHundredths>0?'継続確定！':'配当GETで継続';
+ if((pending.size||e.fx)&&!paused&&!jpcSession.active)chocoQueueFrame(s);
 }
 function chocoHud(a){
- const s=slots[1],e=s.engine;if(!e||e.kind!=='choco')return;const selected=active===1;document.body.classList.toggle('choco-active',selected);s.tab.setAttribute('aria-label','ショコラディグ・深さ'+e.depth+'m・'+a.bet(1)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
- if(selected){put('choco-depth',e.depth);put('choco-win',num(medalWin(a.bet(1),e.totalHundredths)));put('choco-sugar-depth',e.nextSugar+' m');}
- const key=[e.version,e.phase,e.processed,e.depth,e.totalHundredths,a.bet(1)].join('/');if(s.chocoKey!==key){s.chocoKey=key;chocoQueueFrame(s);}
+ const s=slots[1],e=s.engine;if(e?.kind!=='choco')return;setupChocoSlot(s);document.body.classList.toggle('choco-active',active===1);s.tab.setAttribute('aria-label','チョコレートキャニオン・深さ'+e.depth+'m・'+a.bet(1)+' BET');
+ put('choco-depth',e.depth);put('choco-win',num(medalWin(a.bet(1),e.totalHundredths)));put('choco-sugar-depth',e.nextSugar+' m');const key=[e.version,e.phase,e.processed,e.depth,e.totalHundredths,a.bet(1),[...e.pendingDraws]].join('/');if(s.chocoKey!==key){s.chocoKey=key;chocoQueueFrame(s);}
 }
