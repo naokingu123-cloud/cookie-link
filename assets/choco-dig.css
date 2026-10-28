@@ -62,3 +62,14 @@ body.mobile-landscape #choco-heading strong{height:43px}
 .canyon-prize-row span{min-width:0}.canyon-prize-row b{font-size:11px;line-height:13px;white-space:nowrap}
 #choco-win{font-size:20px;line-height:24px}
 #choco-odds p{font-size:6px;line-height:8.5px}#choco-odds footer{font-size:6px;line-height:8px}
+
+/* Expand the tall square-cell board without changing other games or the roulette physics. */
+.choco-topline{display:none}
+.choco-status{height:16px;min-height:16px;line-height:16px;font-size:7px}
+body.choco-active:not(.mobile-landscape) #screen>.game{height:450px}
+body.choco-active:not(.mobile-landscape) #screen>.arena{min-height:120px}
+body.choco-active:not(.mobile-landscape) .game>.festival-top{height:40px}
+body.choco-active:not(.mobile-landscape) #choco-heading strong{height:38px}
+body.choco-active:not(.mobile-landscape) .game>.field{height:384px}
+body.choco-active:not(.mobile-landscape) .choco-panel{height:384px}
+body.choco-active:not(.mobile-landscape) #odds-panel{height:384px}
