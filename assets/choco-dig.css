@@ -34,3 +34,23 @@
 #choco-odds footer{font:700 6px/9px system-ui;color:#96765f}
 body.mobile-landscape #choco-heading{padding:0 10px}body.mobile-landscape #choco-heading strong{font-size:20px}
 @media(forced-colors:active){.choco-tab-title,#choco-heading strong{color:CanvasText;text-shadow:none}}
+/* Chocolate Canyon: compact seven-column excavation cabinet. */
+.canyon-logo{display:block;width:100%;height:100%;overflow:visible}
+.choco-tab .tab-game-name .canyon-logo{width:134px;height:30px;max-width:100%}
+#choco-heading{padding:0 12px;gap:6px}
+#choco-heading strong{display:block;width:min(75%,300px);height:48px;min-width:0}
+#choco-heading>span{flex:none;font-size:7px}
+#choco-depth{font-size:22px}
+.choco-surface{border-color:#d5a568;box-shadow:inset 0 0 0 2px #ffe6ab,0 3px 0 #704435}
+.choco-topline{background:linear-gradient(#805044,#4b2935);letter-spacing:.4px;font-size:6.8px}
+.choco-topline b{font-size:7px;padding:0 4px}
+#choco-odds{padding:5px 4px;background:linear-gradient(135deg,#fff4d5,#eac6a5);gap:4px}
+.choco-odds-title{font-size:8px;line-height:11px;padding-bottom:2px}
+.choco-odds-title small{font-size:6.2px;line-height:9px}
+.canyon-prize-row{display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 2px;border:1px solid #c1a17e;border-radius:7px;background:#fff8e3;font:800 6.5px/11px system-ui}
+.canyon-prize-row i{display:grid;place-items:center;width:23px;height:23px;border:2px solid #697586;border-radius:5px;background:linear-gradient(135deg,#fff,#a7bbcb 45%,#edf6ff 50%,#8295a3);font:900 11px system-ui;color:#3d5066;box-shadow:0 2px #8d7664}
+.canyon-prize-row.gold i{border-color:#ac732c;background:linear-gradient(135deg,#fff5c4,#dfb152 45%,#fff4b2 50%,#d39a32);color:#855322}
+.canyon-prize-row b{display:block;font:900 12px/15px ArcadePayout,system-ui;color:#8e4d38}
+.choco-sugar-goal{margin-top:auto;padding:2px;font-size:7px;line-height:10px}.choco-sugar-goal b{display:block;font-size:11px;line-height:14px}
+#choco-odds p{font-size:6.3px;line-height:10px;overflow-wrap:anywhere}#choco-odds footer{font-size:6.3px;line-height:10px}
+body.mobile-landscape #choco-heading strong{height:43px}
