@@ -6,7 +6,14 @@ let g=empty();g[0][0]=tile(1,0,1);g[0][1]=tile(2,0,2);g[1][1]=tile(3,0);g[1][2]=
 g=empty();g[9][1]=tile(1,0);g[10][0]=tile(2,0);g[11][0]=tile(3,0);let step=q.chocoFallStep(g);assert.equal(step.moves.length,1);assert.equal(step.grid[10][1].id,1);assert.equal(step.merged.length,3);assert.equal(q.chocoFallStep(step.grid).moves.length,0,'Merged floating arm must stop with anchored cake');
 g=empty();g[9][1]=tile(1,0);g[10][1]=tile(2,1);step=q.chocoFallStep(g);assert.equal(step.moves.length,2);assert.equal(step.grid[10][1].id,1);assert.equal(step.grid[11][1].id,2);
 g=empty();g[0][0]=tile(1,1,1);g[2][0]=tile(2,0,2,'silver');p=q.chocoPlan(g,[2],{trace:true});assert.equal(p.gain,0,'Buried foil paid too early');assert.equal(p.grid[11][0].color,-1);assert.equal(p.grid[11][0].id,2);p=q.chocoPlan(p.grid,[1],{trace:true});assert.equal(p.gain,q.CHOCO_PRIZES.silver);assert.equal(p.prizes.length,1);assert.equal(q.chocoPlan(p.grid,[1]).gain,0,'Double reward');
-g=empty();g[0][2]=tile(1,0,null,'gold');assert.equal(q.chocoPlan(g,[25]).gain,1000);
+g=empty();g[0][2]=tile(1,0,null,'gold');assert.equal(q.chocoPlan(g,[25]).gain,q.CHOCO_PRIZES.gold);
+// All four-cake clears must occur after gravity stops, including subsequent cascades.
+g=empty();g[0][0]=tile(1,0);g[0][1]=tile(2,0);g[1][0]=tile(3,0);g[1][1]=tile(4,0);
+p=q.chocoPlan(g,[25],{trace:true});assert.equal(p.removed.length,4);assert(p.timeline.findIndex(s=>s.phase==='canyonFall')<p.timeline.findIndex(s=>s.chain));
+for(let i=0;i<p.timeline.length;i++)if(p.timeline[i].chain){assert.equal(q.chocoFallStep(p.timeline[i-1].grid).moves.length,0,'Chain cleared before all falling cakes settled');}
+g=empty();g[11][0]=tile(1,0);g[11][1]=tile(2,0);g[11][2]=tile(3,0);assert.equal(q.chocoPlan(g,[25]).removed.length,0,'Three cakes auto-cleared');
+// Refills randomly restore only a subset of absent, undrawn numbers.
+const refill=new q.ChocoDigEngine({random:rng(765),sleep:()=>Promise.resolve()});refill.strata.flat().forEach(t=>t.number=null);refill.assignNumbers(new Set([1,2,3]));const restored=refill.strata.flat().map(t=>t.number).filter(Boolean);assert(restored.length>0&&restored.length<22);assert(!restored.some(n=>n<=3));assert.equal(new Set(restored).size,restored.length);
 async function idle(e){for(let i=0;i<20000;i++){if(!e.busy&&!e.queue.length)return;await Promise.resolve();}throw Error('Engine did not drain');}
 (async()=>{
  let games=0;for(let seed=1;seed<=80;seed++){
