@@ -327,14 +327,33 @@ const chocoMineSources={"mine":"data:image/webp;base64,UklGRkaBAgBXRUJQVlA4IDqBA
 const chocoMineImages=Object.fromEntries(Object.entries(chocoMineSources).map(([key,src])=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src=src;return [key,image];}));
 const CHOCO_DEPTH_SCENES=['surface','white','strawberry','milk','bitter','sapphire','emerald','topaz','ruby','amethyst','diamond'];
 const chocoDepthImages=CHOCO_DEPTH_SCENES.map(name=>{const im=new Image();im.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};im.src='assets/canyon-depth/'+name+'.webp';return im;});
-// Surface fades into white chocolate by 30 m; later themes arrive at their named hundred metres.
-function chocoDepthBlend(depth){const stops=[0,30,200,300,400,500,600,700,800,900,1000];let next=stops.findIndex(v=>v>depth);if(next<0)return {a:10,b:10,mix:0};if(next===0)return {a:0,b:0,mix:0};const end=stops[next],start=next===1?0:end-40,u=Math.max(0,Math.min(1,(depth-start)/(end-start)));return {a:next-1,b:next,mix:u*u*(3-2*u)};}
+// Every 100 m changes both fixed ground and moving walls; the opening transition spans 0–100 m.
+function chocoDepthBlend(depth){const stops=[0,100,200,300,400,500,600,700,800,900,1000];let next=stops.findIndex(v=>v>depth);if(next<0)return {a:10,b:10,mix:0};if(next===0)return {a:0,b:0,mix:0};const end=stops[next],start=next===1?0:end-40,u=Math.max(0,Math.min(1,(depth-start)/(end-start)));return {a:next-1,b:next,mix:u*u*(3-2*u)};}
+// Static cave floor and distant opening, with independently scrolling near walls.
+const chocoWallLayers=new Map();
+function chocoWallLayer(W,H){
+ const key=W+'/'+H;if(chocoWallLayers.has(key))return chocoWallLayers.get(key);
+ const canvas=document.createElement('canvas');canvas.width=Math.ceil(W);canvas.height=Math.ceil(H);
+ const mask=document.createElement('canvas');mask.width=canvas.width;mask.height=canvas.height;
+ const m=mask.getContext('2d'),pixels=m.createImageData(mask.width,mask.height),smooth=(a,b,v)=>{const u=Math.max(0,Math.min(1,(v-a)/(b-a)));return u*u*(3-2*u);};
+ for(let y=0;y<mask.height;y++)for(let x=0;x<mask.width;x++){
+  const side=Math.abs(x/W-.5)*2,ground=.55+.3*Math.pow(side,.7),wall=Math.max(smooth(.24,.68,side),1-smooth(.12,.3,y/H)),alpha=wall*(1-smooth(ground,ground+.10,y/H)),i=(y*mask.width+x)*4;
+  pixels.data[i]=pixels.data[i+1]=pixels.data[i+2]=255;pixels.data[i+3]=Math.round(alpha*255);
+ }
+ m.putImageData(pixels,0,0);const result={canvas,mask,ctx:canvas.getContext('2d')};chocoWallLayers.set(key,result);if(chocoWallLayers.size>4)chocoWallLayers.delete(chocoWallLayers.keys().next().value);return result;
+}
 function chocoDepthBackground(x,W,H,depth,travel){
- const {a,b,mix}=chocoDepthBlend(depth);x.save();x.beginPath();x.rect(0,0,W,H);x.clip();x.fillStyle='#233b4a';x.fillRect(0,0,W,H);
- // Mirrored repeated panels meet without a position jump; their motion is 18% of the foreground.
- const panel=H*1.08,offset=((travel*.18)%panel+panel)%panel;
- function paint(image,alpha){if(!image?.complete||!image.naturalWidth)return;x.globalAlpha=alpha;
-  for(let k=-1;k<=1;k++){const y=k*panel-offset,parity=((Math.floor(travel*.18/panel)+k)%2+2)%2;x.save();x.translate(0,y+(parity?panel:0));if(parity)x.scale(1,-1);x.drawImage(image,0,0,W,panel);x.restore();}}
+ const {a,b,mix}=chocoDepthBlend(depth),layer=chocoWallLayer(W,H),z=layer.ctx,panel=H*.95,offset=((travel*.18)%panel+panel)%panel;
+ x.save();x.beginPath();x.rect(0,0,W,H);x.clip();x.fillStyle='#233b4a';x.fillRect(0,0,W,H);
+ function paint(image,alpha){
+  if(!image?.complete||!image.naturalWidth)return;
+  // This full scene never translates: its floor stays anchored under the cart.
+  // Composite each theme first, so a depth crossfade does not double-darken the wall mask.
+  z.setTransform(1,0,0,1,0,0);z.globalAlpha=1;z.globalCompositeOperation='source-over';z.clearRect(0,0,W,H);
+  for(let k=-1;k<=1;k++){const y=k*panel-offset,parity=((Math.floor(travel*.18/panel)+k)%2+2)%2;z.save();z.translate(0,y+(parity?panel:0));if(parity)z.scale(1,-1);z.drawImage(image,0,0,image.naturalWidth,image.naturalHeight*.72,0,0,W,panel);z.restore();}
+  z.globalCompositeOperation='destination-in';z.drawImage(layer.mask,0,0);z.globalCompositeOperation='destination-over';z.drawImage(image,0,0,W,H);z.globalCompositeOperation='source-over';
+  x.globalAlpha=alpha;x.drawImage(layer.canvas,0,0);
+ }
  paint(chocoDepthImages[a],1);if(b!==a)paint(chocoDepthImages[b],mix);x.restore();
 }
 const chocoGemCakeImages=CHOCO_BONUS_GEMS.map(name=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src='assets/canyon-cakes/'+name+'.webp';return image;});
@@ -546,7 +565,7 @@ function chocoScrollEase(p){p=Math.max(0,Math.min(1,p));return p*p*p*(p*(p*6-15)
 function chocoDrawTutorial(s,time,bet,W,H){
  const x=s.chocoCtx,t=Math.max(0,Math.min(19999,time)),scene=Math.floor(t/5000),u=(t%5000)/5000,cell=Math.min(38,(H-112)/6),left=(W-cell*7)/2,top=60;
  const grid=Array.from({length:6},(_,r)=>Array.from({length:7},(_,c)=>({id:r*7+c+1,color:r%4}))),money=medalWin(bet||100,20),cx=left+3.5*cell;
- x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,W,H);chocoDepthBackground(x,W,H,scene===3?1000:30,0);x.fillStyle='#142d43b8';x.fillRect(left-10,top-12,cell*7+20,cell*6+20);
+ x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,W,H);chocoDepthBackground(x,W,H,scene===3?1000:100,0);x.fillStyle='#142d43b8';x.fillRect(left-10,top-12,cell*7+20,cell*6+20);
  chocoText(x,'チョコレートキャニオン',W/2,19,17,'#ffecab');
  const labels=['番号HIT → ドリルで連続掘削','4マス以上は落ちきってから消える','鉱石を回収して WIN！','累計100mごとにボーナス層'];chocoText(x,labels[scene],W/2,41,12,'#fff8d8');
  if(scene===0){
