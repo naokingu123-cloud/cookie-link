@@ -72,22 +72,6 @@
     "sourceSha256": "b300eab6bdee03d8eee0e798197209ffe5dce8976d605f23c7fcb16d8fe4a35d"
   },
   {
-    "key": "clear",
-    "source": "se_maoudamashii_chime06.mp3",
-    "scene": "キャニオン：全消し",
-    "file": "assets/audio/scenes/clear.wav",
-    "seconds": 1.776,
-    "sourceSha256": "9fe850a4ad9b8cd9e1118aeeb628d802fd1f0fd6e1fd5a37fed73177a3888d19"
-  },
-  {
-    "key": "bonus",
-    "source": "se_maoudamashii_chime08.mp3",
-    "scene": "キャニオン：ボーナスケーキ",
-    "file": "assets/audio/scenes/bonus.wav",
-    "seconds": 3.241,
-    "sourceSha256": "d348a4fccff3badf37368be576aa48f12bda87f8f80f85f024786406ef3cc511"
-  },
-  {
     "key": "transfer",
     "source": "small-bell01.mp3",
     "scene": "キャニオン：獲得WIN確定・TOTALへ加算",
@@ -192,19 +176,195 @@
     "sourceSha256": "786bbd72fb0802148dbd69c74d58ec0622346fb515227064786501f91ddc20a5"
   },
   {
-    "key": "allclear",
-    "source": "se_maoudamashii_chime10.mp3",
-    "scene": "クッキーリンク・シックスドロップ：全消しボーナス",
-    "file": "assets/audio/scenes/allclear.wav",
-    "seconds": 1.356,
-    "sourceSha256": "60235654fab183b26202432958f1aee09a59dcf8754347938168c66653963b7a"
-  },
-  {
     "key": "delivery",
     "source": "System_Enter01_panop.ogg",
     "scene": "クッキーリンク：シュガー補充",
     "file": "assets/audio/scenes/delivery.wav",
     "seconds": 0.637,
     "sourceSha256": "674d0a22f38652d080b77cfa6e4760ec342fc3494302c0c1147e6a73b7cc7283"
+  },
+  {
+    "key": "cookie-hit",
+    "source": "System_Cursor02_panop.ogg",
+    "scene": "クッキー：番号HIT",
+    "file": "assets/audio/scenes/cookie-hit.wav",
+    "seconds": 0.16,
+    "sourceSha256": "2fd06443473ff927f7abd0aaab4eb33215cd5547ec916cd2b1507c2b1790473a"
+  },
+  {
+    "key": "cookie-fall",
+    "source": "se_maoudamashii_se_fall01.mp3",
+    "scene": "クッキー：落下",
+    "file": "assets/audio/scenes/cookie-fall.wav",
+    "seconds": 0.23,
+    "sourceSha256": "f46645ed3e5a0603d3ceedb8037042beb756a5764ddfbef33e80a740ce878b91"
+  },
+  {
+    "key": "cookie-land",
+    "source": "Action_Knocking_wood_door1_Komori.ogg",
+    "scene": "クッキー：着地",
+    "file": "assets/audio/scenes/cookie-land.wav",
+    "seconds": 0.16,
+    "sourceSha256": "a96d4d481335d834121249c402c6a74d6ab414428f9dcdb9cd0611528bc274cc"
+  },
+  {
+    "key": "cookie-refill",
+    "source": "Action_Fall1_Komori.ogg",
+    "scene": "クッキー：通常補充",
+    "file": "assets/audio/scenes/cookie-refill.wav",
+    "seconds": 0.45,
+    "sourceSha256": "f990409cf7d3be7ef3347584556bbf8a1068bf188bf2f7cbf6fd083ac38fb5f9"
+  },
+  {
+    "key": "chain",
+    "source": "System_Cursor06_default.ogg",
+    "scene": "クッキー：連鎖成立",
+    "file": "assets/audio/scenes/chain.wav",
+    "seconds": 0.116,
+    "sourceSha256": "5a86a9794e9c1a12c233ca84f0ef173f8986ded874aa0f3402241a807e220fe0"
+  },
+  {
+    "key": "color-burst",
+    "source": "Action_God_sword1_Komori.ogg",
+    "scene": "クッキー：ハンマー色消し",
+    "file": "assets/audio/scenes/color-burst.wav",
+    "seconds": 0.9,
+    "sourceSha256": "b0072e3e9674fdfa6d550dcb1b5eb4ce9d82e0ed59a3dfa107c2ebfead956898"
+  },
+  {
+    "key": "hammer-launch",
+    "source": "Action_Cutting_wind1_Komori.ogg",
+    "scene": "クッキー：ハンマー振り上げ",
+    "file": "assets/audio/scenes/hammer-launch.wav",
+    "seconds": 0.238,
+    "sourceSha256": "01d2f7924c590806283388f684930a5eab9bc35ccccddc83816295a2abbd3dd7"
+  },
+  {
+    "key": "hammer-impact",
+    "source": "Action_Knocking_iron_door3_Komori.ogg",
+    "scene": "クッキー：ハンマー打撃",
+    "file": "assets/audio/scenes/hammer-impact.wav",
+    "seconds": 0.4,
+    "sourceSha256": "f6ca90fc8a111ae65876aa55a86828f82d4ca75fcef8bb986f37e6a021daebc4"
+  },
+  {
+    "key": "arrival",
+    "source": "System_Enter03_default.ogg",
+    "scene": "通常・JPC：入賞",
+    "file": "assets/audio/scenes/arrival.wav",
+    "seconds": 0.217,
+    "sourceSha256": "f0fdddc737e59a6b387b3e2a77e9882cfbf15554c3e214c94624a4cc63442e81"
+  },
+  {
+    "key": "canyon-fall",
+    "source": "se_maoudamashii_se_fall02.mp3",
+    "scene": "キャニオン：ケーキ落下",
+    "file": "assets/audio/scenes/canyon-fall.wav",
+    "seconds": 0.3,
+    "sourceSha256": "28dda4dae9e8836f2c921f8205fed433d5e5b1b204bf7e072b501bc0b1b0f8a5"
+  },
+  {
+    "key": "canyon-land",
+    "source": "Action_Kick1_Komori.ogg",
+    "scene": "キャニオン：ケーキ着地",
+    "file": "assets/audio/scenes/canyon-land.wav",
+    "seconds": 0.16,
+    "sourceSha256": "6257f7248d35779f230a9796d09b8e6057c39122e8398d259517a2e7fcfdc1df"
+  },
+  {
+    "key": "scroll",
+    "source": "Action_Steps1_Isooki.ogg",
+    "scene": "キャニオン：降下移動",
+    "file": "assets/audio/scenes/scroll.wav",
+    "seconds": 0.4,
+    "sourceSha256": "5afb124073d481e0661259a60c3c227d77d8ec014924c3d7957ff1afac9e59d0"
+  },
+  {
+    "key": "return",
+    "source": "Action_Switch2_Komori.ogg",
+    "scene": "キャニオン：ドリル帰還",
+    "file": "assets/audio/scenes/return.wav",
+    "seconds": 0.18,
+    "sourceSha256": "c298228392e39efd4b1717509893b51c6dedf3caafce72755254efbc3cef4e5f"
+  },
+  {
+    "key": "renew",
+    "source": "System_Cursor04_panop.ogg",
+    "scene": "キャニオン：番号交換",
+    "file": "assets/audio/scenes/renew.wav",
+    "seconds": 0.08,
+    "sourceSha256": "fc446ed369ea51e9da2bd04d198ed65264d7aac44466bf51c3e412d4a63ccb28"
+  },
+  {
+    "key": "all-drills",
+    "source": "System_Encount_default.ogg",
+    "scene": "キャニオン：ALL発進",
+    "file": "assets/audio/scenes/all-drills.wav",
+    "seconds": 0.7,
+    "sourceSha256": "41ce6af6c9b4e494d47f41dafb3c161fc7108d0714e26656d43079fd14dfc1d1"
+  },
+  {
+    "key": "six-hit",
+    "source": "System_Cursor03_panop.ogg",
+    "scene": "シックス：番号HIT",
+    "file": "assets/audio/scenes/six-hit.wav",
+    "seconds": 0.168,
+    "sourceSha256": "3fa0891b82747b6613bb5659bacf93950976c2a303e068b4c0bcf67aaa2bc707"
+  },
+  {
+    "key": "six-miss",
+    "source": "System_Cursor05_wolf.ogg",
+    "scene": "シックス：未HIT",
+    "file": "assets/audio/scenes/six-miss.wav",
+    "seconds": 0.052,
+    "sourceSha256": "b1ddadd7674f9093b5d8653623d774fce408c2284e3896a39fc293aed8f5a507"
+  },
+  {
+    "key": "sweep",
+    "source": "Action_Chinese_blade1_Komori.ogg",
+    "scene": "シックス：盤面掃き出し",
+    "file": "assets/audio/scenes/sweep.wav",
+    "seconds": 0.45,
+    "sourceSha256": "d8fd0f48fdb749b4bb7dae05bbf6e1e0aa8125f06f51b19a8316765ea040d556"
+  },
+  {
+    "key": "line",
+    "source": "se_maoudamashii_chime01.mp3",
+    "scene": "シックス：直線成立",
+    "file": "assets/audio/scenes/line.wav",
+    "seconds": 0.7,
+    "sourceSha256": "4d9835c3f5d811053311fe2d21dc3df90899362fbf6baf9f935f6222eab8cd16"
+  },
+  {
+    "key": "finish",
+    "source": "System_Enter04_panop.ogg",
+    "scene": "全ゲーム：盤面処理完了",
+    "file": "assets/audio/scenes/finish.wav",
+    "seconds": 0.346,
+    "sourceSha256": "30de3c8d31a3c76b76bc13aa6358c86be0d520805e5c077da8626b565b7ce4fe"
+  },
+  {
+    "key": "allclear",
+    "source": "battle_win4.wav",
+    "scene": "クッキー・シックス：全消しボーナス",
+    "file": "assets/audio/scenes/allclear.wav",
+    "seconds": 4.5,
+    "sourceSha256": "866c9cfc94863a5676ee795d37a6b6af26c8bd4b1a59855f9e67a91e1fb7ecab"
+  },
+  {
+    "key": "clear",
+    "source": "se_maoudamashii_explosion08.mp3",
+    "scene": "キャニオン：全消しアイテム",
+    "file": "assets/audio/scenes/clear.wav",
+    "seconds": 1.7,
+    "sourceSha256": "58577ba14bee8b6b3dbb301e8603dcb4b6d18936d1d0ab2a8d268c7ecb4a9bed"
+  },
+  {
+    "key": "bonus",
+    "source": "battle_win2.wav",
+    "scene": "キャニオン：ボーナスケーキ",
+    "file": "assets/audio/scenes/bonus.wav",
+    "seconds": 3.5,
+    "sourceSha256": "dd3e8b6b38e71dce7904d2f0160aadc0c20dd7f8f2b1bbf969a18405d60c89c5"
   }
 ]

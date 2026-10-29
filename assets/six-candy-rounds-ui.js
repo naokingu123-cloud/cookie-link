@@ -25,30 +25,10 @@ function sixReachPresentation(s,results,grid,ready){
   const tier=result.tier;el.innerHTML='<span class="reach-glints" data-tier="'+tier+'"><i></i><i></i><i></i></span>'+(tier===1||tier===2?'<span class="reach-orbit" data-tier="'+tier+'">'+sixDropReachCometMarkup(tier)+'</span>':'')+(tier===3?'<span class="allclear-reach-aura"><svg class="allclear-reach-perimeter" viewBox="0 0 100 100"><circle class="perimeter-rail" cx="50" cy="50" r="44" pathLength="100"/><circle class="perimeter-trail" cx="50" cy="50" r="44" pathLength="100"/><circle class="perimeter-core" cx="50" cy="50" r="44" pathLength="100"/></svg></span>':'')+'<span class="tile-reach '+(tier?'alternating':'')+'" data-tier="'+tier+'"><span class="reach-first">リーチ</span>'+(tier?'<span class="reach-second">'+REACH_WORDS[tier]+'</span>':'')+'</span>';layer.append(el);
  }
 }
-// Deterministic PCM effects share the existing unlocked context, mute and reset bus.
-let sixCandyAudioLast={break:-100,fall:-100,role:-100,pop:-100};
+// One restrained impact per cluster avoids a wall of overlapping landing sounds.
 function sixCandyAudio(kind,amount=1){
- if(!audio||audio.state!=='running'||!$('sound').checked||app?.paused||document.hidden||!inView)return;
- const at=audio.currentTime;if(at-sixCandyAudioLast[kind]<(kind==='fall'?.055:.035))return;sixCandyAudioLast[kind]=at;
- const cue={glass:'glass',fall:'landing',triangle:'triangle',hexagon:'hexagon',role:'role',clear:'round',refill:'refill',pop:'pop',break:'candy'}[kind]||'candy';
- if(sfxBuffers.has('scene-'+cue)){const count=kind==='fall'?Math.min(3,Math.max(1,amount)):1;for(let i=0;i<count;i++)sceneSound(cue,{delay:i*18,volume:(kind==='fall'?.45:.7)/(1+i*.4),rate:1+i*.025});return;}
- const names=kind==='glass'?['six-glass-contact']:kind==='fall'?['six-marble-0','six-marble-1','six-marble-2']:kind==='triangle'?['six-triangle-chime']:kind==='hexagon'?['six-hexagon-fanfare']:kind==='role'?['six-role-rush']:kind==='clear'?['six-round-fanfare']:kind==='refill'?['six-refill-shower']:kind==='pop'?['six-cluster-pop']:['six-hard-candy'];
- names.forEach((name,j)=>{
-  if(sfxBuffers.has(name))return;const duration=kind==='glass'?.24:kind==='triangle'?.85:kind==='hexagon'?1.15:kind==='fall'?.09:kind==='role'?.32:kind==='refill'?.72:kind==='clear'?.55:.19,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);
-  let seed=71527+j*977,prev=0;for(let i=0;i<d.length;i++){
-   const t=i/audio.sampleRate;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const n=seed/2147483648-1,high=n-prev;prev=n;
-   if(kind==='fall'){const f=[1250,940,1510][j];d[i]=Math.min(1,t/.0015)*(Math.exp(-t*110)*high*.21+Math.sin(2*Math.PI*f*t)*Math.exp(-t*75)*.35+Math.sin(2*Math.PI*f*2.73*t)*Math.exp(-t*120)*.13);}
-   else if(kind==='glass'){const env=Math.min(1,t/.0015)*Math.exp(-t*29);d[i]=(Math.sin(2*Math.PI*1760*t)*.28+Math.sin(2*Math.PI*2873*t)*.15+Math.sin(2*Math.PI*4211*t)*.08+high*Math.exp(-t*90)*.12)*env;}
-   else if(kind==='role'){const envelope=Math.sin(Math.PI*Math.min(1,t/.32))*Math.exp(-t*3);d[i]=(high*.16+Math.sin(2*Math.PI*(440*t+2400*t*t))*.30+Math.sin(2*Math.PI*(660*t+3200*t*t))*.12)*envelope;}
-   else if(kind==='triangle'||kind==='hexagon'){const hex=kind==='hexagon',notes=hex?[523,659,784,1047,1319,1568]:[659,831,988,1319],step=hex?.12:.13,note=Math.min(notes.length-1,Math.floor(t/step)),f=notes[note],u=t-note*step,env=Math.min(1,u/.008)*Math.exp(-u*8)*Math.min(1,(duration-t)/.12);d[i]=(Math.sin(2*Math.PI*f*u)*.23+Math.sin(2*Math.PI*f*2*u)*.07+Math.sin(2*Math.PI*f*1.5*u)*.06)*env;}
-   else if(kind==='clear'){const note=Math.min(3,Math.floor(t/.12)),f=[784,988,1175,1568][note],u=t-note*.12;d[i]=(Math.sin(2*Math.PI*f*u)*.25+Math.sin(2*Math.PI*f*2*u)*.08)*Math.exp(-u*15)*Math.min(1,u/.006);}
-   else if(kind==='refill'){const env=Math.sin(Math.PI*t/.72);d[i]=(Math.sin(2*Math.PI*(1800*t-650*t*t))*.23+Math.sin(2*Math.PI*2700*t)*.12+high*.07)*env;}
-   else if(kind==='pop'){d[i]=(Math.sin(2*Math.PI*(900*t-1500*t*t))*.55+high*.08)*Math.exp(-t*32)*Math.min(1,t/.002);}
-   else{const burst=[0,.014,.033].reduce((v,b)=>v+(t>=b?Math.exp(-(t-b)*110):0),0);d[i]=Math.min(1,t/.001)*(high*burst*.19+(Math.sin(2*Math.PI*2340*t)+Math.sin(2*Math.PI*3710*t))*.10*Math.exp(-t*24));}
-  }sfxBuffers.set(name,buffer);
- });
- const count=kind==='fall'?Math.min(3,Math.max(1,amount)):1;
- for(let i=0;i<count;i++)sound(names[i%names.length],{delay:i*18,volume:kind==='glass'?.68*amount:kind==='fall'?.55/(1+i*.4):.72});
+ const cue={glass:'glass',fall:'landing',triangle:'triangle',hexagon:'hexagon',role:'role',clear:'round',refill:'refill',pop:'pop',break:'candy',line:'line'}[kind]||'candy';
+ sceneSound(cue,{volume:kind==='fall'?.8:1});
 }
 
 function carnivalEvent(s,ev,e,a){
@@ -61,15 +41,17 @@ function carnivalEvent(s,ev,e,a){
   const gain=ev.gain;s.candyReward.hidden=false;s.candyReward.classList.add('six-special-award');s.candyReward.dataset.tier=gain>=1000?'2':gain>=300?'1':'0';
   const title=ev.phase==='pyramidAllClear'?'ALL CLEAR BONUS':ev.phase==='pyramidRoundBonus'?'ROUND '+ev.roundIndex+' CLEAR BONUS':[ev.lines?'直線 ×'+ev.lines:'',ev.triangles?'トライアングル ×'+ev.triangles:'',ev.hexagons?'ヘキサゴン ×'+ev.hexagons:''].filter(Boolean).join(' / ');
   const remain=e.processed+(ev.numbers?.length||0)<8,advance=e.roundIndex<5&&remain;
-  s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+ (ev.chain?ev.chain+' CHAIN':'') +'</span><b class="six-next">'+(advance?'NEXT ROUND '+(e.roundIndex+1)+' 進出':e.roundIndex===5?'ALL ROUNDS CLEAR':'ROUND CLEAR')+'</b>';if(s.i===active)sceneSound(ev.phase==='pyramidAllClear'?'allclear':'round',{volume:.85});
+  s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+ (ev.chain?ev.chain+' CHAIN':'') +'</span><b class="six-next">'+(advance?'NEXT ROUND '+(e.roundIndex+1)+' 進出':e.roundIndex===5?'ALL ROUNDS CLEAR':'ROUND CLEAR')+'</b>';if(s.i===active&&ev.phase==='pyramidAllClear')sceneSound('allclear');
  }
  if(ev.phase==='pyramidRound'){clearMiniResult(s);s.candyReward.hidden=false;s.candyReward.classList.add('six-round-callout');s.candyReward.dataset.tier='1';s.candyReward.innerHTML='<small>NEXT ROUND</small><strong>Round '+ev.nextRound+'</strong>';}
+ if(s.i===active&&ev.phase==='pyramidHit')sceneSound('six-hit');
+ if(s.i===active&&ev.phase==='pyramidMiss')sceneSound('six-miss');
  if(ev.phase==='pyramidBreak'&&ev.removed?.length&&s.i===active)sixCandyAudio('break');
  if(ev.phase==='pyramidAward'&&ev.removed?.length&&s.i===active&&!ev.forms?.length)sixCandyAudio('pop');
  if(ev.phase==='pyramidFall'&&motionReduced&&s.i===active)sixCandyAudio('fall',ev.moves?.length||1);
  if(ev.phase==='pyramidTopUp'&&s.i===active)sixCandyAudio('refill');
- if(ev.phase==='pyramidSweep'&&s.i===active)sceneSound('role',{volume:.35});
- if(ev.phase==='pyramidShape'&&ev.forms?.length&&s.i===active)sixCandyAudio(ev.forms.some(f=>f.type==='hexagon')?'hexagon':ev.forms.some(f=>f.type==='triangle')?'triangle':'role');
+ if(ev.phase==='pyramidSweep'&&s.i===active)sceneSound('sweep');
+ if(ev.phase==='pyramidShape'&&ev.forms?.length&&s.i===active)sixCandyAudio(ev.forms.some(f=>f.type==='hexagon')?'hexagon':ev.forms.some(f=>f.type==='triangle')?'triangle':'line');
  if(ev.phase==='settled'){if(!ev.advance)s.candyReward.hidden=true;clearMiniResult(s);if(ev.batchChain>0||ev.batchShapes>0){s.miniLastResult=(ev.batchShapes||0)+'役 · '+(ev.batchChain||0)+'連鎖';s.miniResult.innerHTML='<strong>'+(ev.batchShapes||0)+' SHAPES</strong><small>'+(ev.batchChain||0)+'連鎖</small>';s.miniResultState={remaining:MINI_RESULT_MS,stamp:null,version:e.version};}}
  if(['waiting','settled'].includes(ev.phase))requestSixSparkles(s,e,a);
  if(['waiting','settled','complete'].includes(ev.phase))requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);

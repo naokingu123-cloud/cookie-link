@@ -4,7 +4,7 @@ import threading,json
 from playwright.sync_api import sync_playwright
 root=Path.cwd();html=(root/'index.html').read_text();anchor='setupManualNumbers();'
 # Add hooks only to the test response; keep the production script encapsulated.
-hook='''window.__j={app,recordChanged,get outputLevels(){return [SFX_OUTPUT_LEVEL,NUMBER_OUTPUT_LEVEL]},playArrivalSound,get effectVoices(){return sfxVoices},boundedAudioOutput,prepareArrival,prepareHammerImpact,loadNumberVoice,get audio(){return audio},get gain(){return bgmGain},announceDraw,get voiceBusy(){return numberVoiceBusy},get voiceQueue(){return numberVoiceQueue},activateGameAudio,startReadyRound,debugResetRound,get tracks(){return bgmTracks},get selected(){return queuedGameBgm},toggleJpcMode,restartJpcRound,paintJpcDashboard,syncJpcBgm,jpcBgmFile,stopJpcTicker,stopAutoRound,get driver(){return rouletteDriver},get ready(){return rouletteReady},get player(){return bgmPlayer},get role(){return bgmRole},get context(){return audio},get session(){return jpcSession},pause(v){userPaused=v;syncPause();},freeze(){stopAutoRound();autoRoundRemaining=3600000;},stopBgm};'''
+hook='''window.__j={app,recordChanged,get outputLevels(){return [SFX_OUTPUT_LEVEL,NUMBER_OUTPUT_LEVEL]},playArrivalSound,prepareSceneSounds,stopSounds,get effectVoices(){return sfxVoices},boundedAudioOutput,prepareArrival,prepareHammerImpact,loadNumberVoice,get audio(){return audio},get gain(){return bgmGain},announceDraw,get voiceBusy(){return numberVoiceBusy},get voiceQueue(){return numberVoiceQueue},activateGameAudio,startReadyRound,debugResetRound,get tracks(){return bgmTracks},get selected(){return queuedGameBgm},toggleJpcMode,restartJpcRound,paintJpcDashboard,syncJpcBgm,jpcBgmFile,stopJpcTicker,stopAutoRound,get driver(){return rouletteDriver},get ready(){return rouletteReady},get player(){return bgmPlayer},get role(){return bgmRole},get context(){return audio},get session(){return jpcSession},pause(v){userPaused=v;syncPause();},freeze(){stopAutoRound();autoRoundRemaining=3600000;},stopBgm};'''
 assert html.count(anchor)==1;html=html.replace(anchor,anchor+hook)
 class H(SimpleHTTPRequestHandler):
  def __init__(self,*a,**kw):super().__init__(*a,directory=str(root),**kw)
@@ -25,7 +25,7 @@ with sync_playwright() as p:
  initial=page.evaluate('__j.driver.draw.state');print('JPC_STARTED',initial,flush=True)
  result=page.evaluate("""async()=>{
  const q=__j,music=(await q.player.prepare(q.tracks[0])).buffer,arrival=await q.prepareArrival(),hammer=await q.prepareHammerImpact(),voice=await q.loadNumberVoice(14);
- q.playArrivalSound();const jpcArrivalGain=[...q.effectVoices].at(-1).gain.gain.value;if(Math.abs(jpcArrivalGain-.18)>1e-6)throw Error('JPC arrival gain');
+ await q.prepareSceneSounds();q.stopSounds();q.playArrivalSound();const jpcArrivalGain=[...q.effectVoices].at(-1).gain.gain.value;if(Math.abs(jpcArrivalGain-.045)>1e-6)throw Error('JPC arrival gain');
  async function render(bounded,withMusic,withEffects){
   const ctx=new OfflineAudioContext(2,44100*3,44100);
   function play(buffer,to,when=0,offset=0){const src=ctx.createBufferSource();src.buffer=buffer;src.connect(to);src.start(when,offset);}

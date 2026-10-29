@@ -3,7 +3,7 @@ from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 import threading,json
 from playwright.sync_api import sync_playwright
 root=Path.cwd();html=(root/'index.html').read_text();anchor='setupManualNumbers();'
-hook='''window.__se={app,slots,unlock,prepareSceneSounds,sceneSound,SCENE_SOUND_KEYS,stopSounds,chocoEvent,chocoScaleValue,chocoPayoutFlightProgress,sixCandyAudio,chocoRockAudio,get buffers(){return sfxBuffers},get voices(){return sfxVoices},get gain(){return bgmGain},get audio(){return audio},select,freeze(){stopAutoRound();autoRoundRemaining=3600000;},pause(v){userPaused=v;syncPause();}};'''
+hook='''window.__se={app,slots,unlock,prepareSceneSounds,sceneSound,SCENE_SOUND_KEYS,SCENE_SOUND_PROFILES,cookieSceneEvent,playHammerImpact,playArrivalSound,stopSounds,chocoEvent,chocoScaleValue,chocoPayoutFlightProgress,sixCandyAudio,chocoRockAudio,get buffers(){return sfxBuffers},get voices(){return sfxVoices},get gain(){return bgmGain},get audio(){return audio},select,freeze(){stopAutoRound();autoRoundRemaining=3600000;},pause(v){userPaused=v;syncPause();}};'''
 assert html.count(anchor)==1;html=html.replace(anchor,anchor+hook)
 class H(SimpleHTTPRequestHandler):
  def __init__(self,*a,**kw):super().__init__(*a,directory=str(root),**kw)
@@ -25,6 +25,9 @@ with sync_playwright() as p:
   for(const key of keys){const buf=q.buffers.get('scene-'+key);if(!buf||buf.duration<=0||!buf.getChannelData(0).some(v=>Math.abs(v)>.01))throw Error('Missing '+key);q.stopSounds();q.sceneSound(key);if(![...q.voices].some(v=>v.source.buffer===buf))throw Error('Playback '+key);}
   q.stopSounds();q.chocoRockAudio(3);if(![...q.voices].every(v=>v.source.buffer===q.buffers.get('scene-stratum')))throw Error('Stratum routing');
   for(const [kind,key] of Object.entries({glass:'glass',fall:'landing',triangle:'triangle',hexagon:'hexagon',refill:'refill',pop:'pop',break:'candy'})){q.stopSounds();q.sixCandyAudio(kind,2);if(![...q.voices].some(v=>v.source.buffer===q.buffers.get('scene-'+key)))throw Error('Six routing '+kind);}
+  q.stopSounds();q.select(0);const cs=q.slots[0],ce={board:[[{id:1}],[null]],speed:1};q.cookieSceneEvent(cs,{phase:'remove'},ce);ce.board=[[null],[{id:1}]];q.cookieSceneEvent(cs,{phase:'fall'},ce);for(const k of ['cookie-fall','cookie-land'])if(![...q.voices].some(v=>v.source.buffer===q.buffers.get('scene-'+k)))throw Error('Silent cookie motion '+k);
+  q.stopSounds();q.playHammerImpact();if(![...q.voices].some(v=>v.source.buffer===q.buffers.get('scene-hammer-impact')))throw Error('Legacy hammer');q.stopSounds();q.playArrivalSound();if(![...q.voices].some(v=>v.source.buffer===q.buffers.get('scene-arrival')))throw Error('Legacy arrival');
+  q.stopSounds();q.sceneSound('landing');const frequent=[...q.voices][0].gain.gain.value;q.sceneSound('landing');if(q.voices.size!==1)throw Error('Landing spam');q.stopSounds();q.sceneSound('allclear');const rare=[...q.voices][0];for(const key of keys.filter(k=>q.SCENE_SOUND_PROFILES[k][2]===0))q.sceneSound(key);if(!q.voices.has(rare)||rare.gain.gain.value<frequent*4)throw Error('Rare effect not protected');
   if(q.gain?.gain.value!==gain)throw Error('BGM gain changed');
   q.stopSounds();document.querySelector('#sound').checked=false;q.sceneSound('bonus');if(q.voices.size)throw Error('Mute');document.querySelector('#sound').checked=true;q.pause(true);q.sceneSound('ore');if(q.voices.size)throw Error('Pause');q.pause(false);
   q.select(1);const s=q.slots[1],e=s.engine;e.version++;e.totalHundredths=0;e.cart=[];e.fx=null;q.chocoScaleValue(s,e,100,0);

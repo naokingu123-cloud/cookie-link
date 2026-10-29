@@ -389,9 +389,11 @@ function chocoEvent(s,ev,e,a){
   chocoScaleValue(s,e,a.bet(s.i),s.chocoTime||0);
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
  if(s.i===active){
+  if(ev.phase==='canyonFall'&&ev.moves?.length){sceneSound('canyon-fall');sceneSound('canyon-land',{delay:e.fx?.ms||200});}
+  if(ev.phase==='canyonScroll')sceneSound('scroll');
   if(ev.phase==='canyonSoften')chocoRockAudio(ev.impacts.length);
   if(ev.phase==='canyonMelt'&&!ev.drill)chocoRockAudio(1,true);
-  const cue={canyonDrill:'drill',canyonUpgrade:'level',canyonBoost:'level',canyonOdds:'rank',canyonBonus:'bonus',canyonTransform:'transform'}[ev.phase]||(ev.phase==='canyonPower'?(ev.kind==='clear'?'clear':'random'):null);
+  const cue={canyonDrill:'drill',canyonReturn:'return',canyonNumberRenew:'renew',canyonAll:'all-drills',canyonUpgrade:'level',canyonBoost:'level',canyonOdds:'rank',canyonBonus:'bonus',canyonTransform:'transform'}[ev.phase]||(ev.phase==='canyonPower'?(ev.kind==='clear'?'clear':'random'):null);
   if(cue)sceneSound(cue,{volume:cue==='bonus'?.9:.7});
  }
  s.message=e.digMessage;chocoQueueFrame(s);scheduleUI(a);
@@ -672,16 +674,7 @@ function chocoDrawCart(s,e,fx,p,time,bet=100){
  for(const i of visibleIndices){const at=chocoCartPose(chocoCartSlot(i),count);chocoDrawItem(x,e.cart[i],at.x,at.y,at.size,time,false,bet);}
  cv.dataset.count=visible.length;cv.dataset.rows=arrived?chocoCartPose(Math.min(14,arrived-1),count).row+1:0;cv.dataset.firstIndex=start;cv.dataset.itemIds=visible.map(t=>t.id).join(',');cv.setAttribute('aria-label','はかりの鉱石皿・最新15個：'+visible.map(t=>t.item==='ore'?CHOCO_ORES[t.ore].name+' '+num(medalWin(bet,t.value))+'WIN':'シュガー').join('、'));
 }
-function chocoRockAudio(impacts=1,melt=false){
- if(!audio||audio.state!=='running'||!$('sound').checked||app?.paused||document.hidden||!inView)return;
- const cue=melt?'melt':'stratum';if(sfxBuffers.has('scene-'+cue)){for(let i=0;i<Math.min(4,impacts);i++)sceneSound(cue,{volume:(melt?.5:.8)/Math.sqrt(impacts),delay:i*35,rate:1+(i%3)*.035});return;}
- const name=melt?'canyon-liquid-melt':'canyon-stratum-crush';if(!sfxBuffers.has(name)){
-  const duration=melt?.36:.46,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);let seed=79239,low=0;
-  for(let i=0;i<d.length;i++){const t=i/audio.sampleRate;seed=(Math.imul(seed,1664525)+1013904223)>>>0;const n=seed/2147483648-1;low=.91*low+.09*n;if(melt){const f=480-330*t/duration;d[i]=(Math.sin(2*Math.PI*f*t)*.22+low*.17)*Math.sin(Math.PI*t/duration)*Math.exp(-t*5);}else{const cracks=[0,.018,.057,.12].reduce((v,at)=>v+(t>=at?Math.exp(-(t-at)*70):0),0);d[i]=(n*.3*cracks+low*.7*Math.exp(-t*9)+Math.sin(2*Math.PI*(95*t-45*t*t))*.28*Math.exp(-t*12))*Math.min(1,t/.0015);}}
-  sfxBuffers.set(name,buffer);
- }
- for(let i=0;i<impacts;i++)sound(name,{volume:melt?.34:.80/Math.sqrt(impacts),delay:i*55,rate:1+(i%3)*.04});
-}
+function chocoRockAudio(impacts=1,melt=false){sceneSound(melt?'melt':'stratum',{volume:1/Math.sqrt(Math.max(1,impacts)*.35+.65)});}
 function chocoPaintMelt(x,t,r,c,grid,px,py,w,h,progress){
  const q=motionReduced?1:progress;if(q>=1)return;if(t.color<0){x.save();x.globalAlpha=1-q;chocoDrawItem(x,t,px+w/2,py+h/2,w*(1-q*.6),0,false);x.restore();return;}const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c),t.id%6,t.bonusKind||'fruit');if(!sprite)return;
  x.save();x.globalAlpha=(1-q)**.7;
