@@ -384,7 +384,7 @@ function setupChocoSlot(s){
 function chocoEvent(s,ev,e,a){
  setupChocoSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;if(!['waiting','settled','complete'].includes(ev.phase)){s.chocoReachKey=null;s.reachEpoch=(s.reachEpoch||0)+1;s.reachResults=[];s.tabReachResults=[];s.reachStatus='inactive';}else chocoRequestReach(s,e,a);
  if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);if(s.chocoFrame)cancelAnimationFrame(s.chocoFrame);s.chocoFrame=0;s.chocoClockStamp=null;}
- if(['canyonCollect','canyonBonus'].includes(ev.phase)&&e.fx?.continueConfirmed){s.chocoContinueAt=s.chocoTime||0;}
+ if(['canyonCollect','canyonBonus'].includes(ev.phase)&&e.fx?.continueConfirmed){s.chocoContinueAt=s.chocoTime||0;if(s.i===active)sceneSound('continue');}
  if(ev.phase==='ready')s.chocoContinueAt=null;
   chocoScaleValue(s,e,a.bet(s.i),s.chocoTime||0);
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
@@ -393,7 +393,7 @@ function chocoEvent(s,ev,e,a){
   if(ev.phase==='canyonScroll')sceneSound('scroll');
   if(ev.phase==='canyonSoften')chocoRockAudio(ev.impacts.length);
   if(ev.phase==='canyonMelt'&&!ev.drill)chocoRockAudio(1,true);
-  const cue={canyonDrill:'drill',canyonReturn:'return',canyonNumberRenew:'renew',canyonAll:'all-drills',canyonUpgrade:'level',canyonBoost:'level',canyonOdds:'rank',canyonBonus:'bonus',canyonTransform:'transform'}[ev.phase]||(ev.phase==='canyonPower'?(ev.kind==='clear'?'clear':'random'):null);
+  const cue={canyonDrill:'drill',canyonReturn:'return',canyonNumberRenew:'renew',canyonAll:'all-drills',canyonUpgrade:'level',canyonBoost:'level',canyonOdds:'rank',canyonBonus:ev.gain>=10000?'big-bonus':'bonus',canyonTransform:'transform'}[ev.phase]||(ev.phase==='canyonPower'?(ev.kind==='clear'?'clear':'random'):null);
   if(cue)sceneSound(cue,{volume:cue==='bonus'?.9:.7});
  }
  s.message=e.digMessage;chocoQueueFrame(s);scheduleUI(a);
@@ -559,6 +559,7 @@ function chocoScaleValue(s,e,bet,time){
  }
  chocoPayoutAdvance(s,time);
  if(motionReduced){for(const f of s.chocoPayoutFlights){f.landed=true;s.chocoLandedCart.add(f.cartIndex);}s.chocoOreValue=target-s.chocoDirectBonus.target;s.chocoBonusValue=s.chocoDirectBonus.target;s.chocoWinValue=target;s.chocoAwardValue=0;s.chocoAward={phase:'idle',target:0,start:time};s.chocoAwardPhase='idle';s.chocoWinCounting=false;}
+ if(typeof sceneCountSound==='function')sceneCountSound(s,'scale-tick',s.chocoAwardPhase==='add'?s.chocoWinValue:s.chocoAwardValue,e.version+'/'+s.chocoAwardPhase,s.i===active&&s.chocoWinCounting);
  return Math.floor(s.chocoWinValue);
 }
 function chocoPayoutFlightProgress(f,time,s){

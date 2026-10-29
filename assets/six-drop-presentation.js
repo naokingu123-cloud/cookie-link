@@ -267,6 +267,7 @@ function sixArcadeCounter(s){
  const target=medalWin(app.bet(s.i),e.totalHundredths),t=s.sixWinTween;
  let value=target;
  if(t&&t.version===e.version&&t.to===target&&!motionReduced){const p=Math.max(0,Math.min(1,((s.candyTime||0)-t.start)/650));value=Math.floor(t.from+(t.to-t.from)*(1-Math.pow(1-p,3)));if(p===1)s.sixWinTween=null;}
+ sceneCountSound(s,'six-count',value,e.version,s.i===active&&!!t);
  if(el.textContent!==num(value))fitGoldenNumber(el,num(value),23,100);el.setAttribute('aria-label','TOTAL WIN '+num(target));s.sixDisplayedWin=value;
 }
 function sixArcadeAccents(s,x,time){

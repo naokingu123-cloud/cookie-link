@@ -40,22 +40,6 @@
     "sourceSha256": "be9a78fbe653d4755c510cd708f52c48465f6815198716fe3ce5089e16da6b73"
   },
   {
-    "key": "level",
-    "source": "[SE]LevelUp.ogg",
-    "scene": "キャニオン：掘削後LvUP",
-    "file": "assets/audio/scenes/level.wav",
-    "seconds": 0.262,
-    "sourceSha256": "eaf9ba48e4e52dc1c4d0b773ca035327442cab3cb284c90a5a382051eb8e6f4a"
-  },
-  {
-    "key": "rank",
-    "source": "magic-statusup1.mp3",
-    "scene": "キャニオン：鉱石ランクアップ",
-    "file": "assets/audio/scenes/rank.wav",
-    "seconds": 1.983,
-    "sourceSha256": "c15a1f6744a23a2751449af481e4e7b19d44047b268f7f691927084f5f5962e6"
-  },
-  {
     "key": "random",
     "source": "magic-electron1.mp3",
     "scene": "キャニオン：ランダム消し",
@@ -70,14 +54,6 @@
     "file": "assets/audio/scenes/transform.wav",
     "seconds": 1.448,
     "sourceSha256": "b300eab6bdee03d8eee0e798197209ffe5dce8976d605f23c7fcb16d8fe4a35d"
-  },
-  {
-    "key": "transfer",
-    "source": "small-bell01.mp3",
-    "scene": "キャニオン：獲得WIN確定・TOTALへ加算",
-    "file": "assets/audio/scenes/transfer.wav",
-    "seconds": 1.1,
-    "sourceSha256": "d6b0d16f7623ef9ec59459db5ce94c02ae1e2a22cfae1abbc949cfb43c634f67"
   },
   {
     "key": "glass",
@@ -134,14 +110,6 @@
     "file": "assets/audio/scenes/role.wav",
     "seconds": 0.8,
     "sourceSha256": "5a0db80baac3a02aefde7a5adf9ec607814370f3761f3b00e3f4371610314e74"
-  },
-  {
-    "key": "round",
-    "source": "get_3.mp3",
-    "scene": "シックスドロップ：ラウンドクリア",
-    "file": "assets/audio/scenes/round.wav",
-    "seconds": 1.878,
-    "sourceSha256": "7f6728798c45c8fe3dcb1e106611d440176ce7a68d7b9389abb55cdb7c6f5291"
   },
   {
     "key": "candy",
@@ -352,19 +320,137 @@
     "sourceSha256": "866c9cfc94863a5676ee795d37a6b6af26c8bd4b1a59855f9e67a91e1fb7ecab"
   },
   {
-    "key": "clear",
-    "source": "se_maoudamashii_explosion08.mp3",
-    "scene": "キャニオン：全消しアイテム",
-    "file": "assets/audio/scenes/clear.wav",
-    "seconds": 1.7,
-    "sourceSha256": "58577ba14bee8b6b3dbb301e8603dcb4b6d18936d1d0ab2a8d268c7ecb4a9bed"
-  },
-  {
     "key": "bonus",
     "source": "battle_win2.wav",
     "scene": "キャニオン：ボーナスケーキ",
     "file": "assets/audio/scenes/bonus.wav",
     "seconds": 3.5,
     "sourceSha256": "dd3e8b6b38e71dce7904d2f0160aadc0c20dd7f8f2b1bbf969a18405d60c89c5"
+  },
+  {
+    "key": "credit-tick",
+    "source": "ui062.wav",
+    "archive": "SE2.rar",
+    "scene": "共通：CREDIT加算中",
+    "file": "assets/audio/scenes/credit-tick-v4.wav",
+    "seconds": 0.09,
+    "sourceSha256": "30ae6386a70e4a093c1f01248d75217a1d61cc614b069aeefc1572fa00e058ea"
+  },
+  {
+    "key": "credit-done",
+    "source": "ui061.wav",
+    "archive": "SE2.rar",
+    "scene": "共通：CREDIT加算完了",
+    "file": "assets/audio/scenes/credit-done-v4.wav",
+    "seconds": 0.3287083333333333,
+    "sourceSha256": "22282648efe93fca8db5bc001ba5f09b147d6486345f6570a129cdbaff87da7a"
+  },
+  {
+    "key": "pay-step",
+    "source": "ui041.wav",
+    "archive": "SE2.rar",
+    "scene": "クッキー：配当表の上昇",
+    "file": "assets/audio/scenes/pay-step-v4.wav",
+    "seconds": 0.13708333333333333,
+    "sourceSha256": "42a16ad77631ad92e4db4227a57a4c08566c282fb573ae4234b3f06c97b1f380"
+  },
+  {
+    "key": "pay-lock",
+    "source": "ui026.wav",
+    "archive": "SE2.rar",
+    "scene": "クッキー：配当表の到達",
+    "file": "assets/audio/scenes/pay-lock-v4.wav",
+    "seconds": 0.602625,
+    "sourceSha256": "19b631c6c23bb6232a9c2f1ba948fe82402f7d7c6931c979214beabd2fd817ff"
+  },
+  {
+    "key": "launch",
+    "source": "ui017.wav",
+    "archive": "SE2.rar",
+    "scene": "通常・JPC：ボール発射",
+    "file": "assets/audio/scenes/launch-v4.wav",
+    "seconds": 0.40370833333333334,
+    "sourceSha256": "0b0d896b5a7730bcc2dd557e0804408efc9a3c453cf8168c80ba01faf4307ab0"
+  },
+  {
+    "key": "continue",
+    "source": "ui221.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：継続確定",
+    "file": "assets/audio/scenes/continue-v4.wav",
+    "seconds": 2.012375,
+    "sourceSha256": "dc41f5b8f2811a8644994062ea76c66b5ad94cf188952dd8eaaf9fb034c55731"
+  },
+  {
+    "key": "scale-tick",
+    "source": "ui004.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：秤の数値加算",
+    "file": "assets/audio/scenes/scale-tick-v4.wav",
+    "seconds": 0.11,
+    "sourceSha256": "eefe324218a3aeee9879f610b7615b7363b4be69799d79c68d09a5b8879b70a5"
+  },
+  {
+    "key": "six-count",
+    "source": "ui011.wav",
+    "archive": "SE2.rar",
+    "scene": "シックス：獲得配当加算",
+    "file": "assets/audio/scenes/six-count-v4.wav",
+    "seconds": 0.12,
+    "sourceSha256": "5270e7bcc3590bcd33b555e2367fc0354f0c23e6d813d25909e17a73ce7394a0"
+  },
+  {
+    "key": "big-bonus",
+    "source": "ui222.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：高額ボーナス",
+    "file": "assets/audio/scenes/big-bonus-v4.wav",
+    "seconds": 1.9815,
+    "sourceSha256": "2683baa7590ee705f32acf83c306043ab8d6f86a649ee63ad0fe4fe29e6686c7"
+  },
+  {
+    "key": "level",
+    "source": "ui018.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：LvUP",
+    "file": "assets/audio/scenes/level-v4.wav",
+    "seconds": 0.415125,
+    "sourceSha256": "7bd8e659bcd941dca8c533d570c31903651926917b6609fd2876c83e01337886"
+  },
+  {
+    "key": "rank",
+    "source": "ui036.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：鉱石ランクアップ",
+    "file": "assets/audio/scenes/rank-v4.wav",
+    "seconds": 1.0284166666666668,
+    "sourceSha256": "ee453d86b4f6cfbd7cce126157c8bae0207a9680bc5401736d3b33a6cded89af"
+  },
+  {
+    "key": "round",
+    "source": "ui247.wav",
+    "archive": "SE2.rar",
+    "scene": "シックス：ラウンド突破",
+    "file": "assets/audio/scenes/round-v4.wav",
+    "seconds": 1.9581666666666666,
+    "sourceSha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80"
+  },
+  {
+    "key": "transfer",
+    "source": "ui215.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：配当確定と移し替え",
+    "file": "assets/audio/scenes/transfer-v4.wav",
+    "seconds": 0.7,
+    "sourceSha256": "2a22663620b1f70b47b118a38f07b86e1ef96c2fa3e96206690a92d06e7e0a9f"
+  },
+  {
+    "key": "clear",
+    "source": "e4014211.wav",
+    "archive": "SE2.rar",
+    "scene": "キャニオン：全消しアイテム",
+    "file": "assets/audio/scenes/clear-v4.wav",
+    "seconds": 1.8,
+    "sourceSha256": "b55cf2195b0e65c3e4fb9c877c59dbf883abc7df7f897dbdd73c85a4a351959e"
   }
 ]

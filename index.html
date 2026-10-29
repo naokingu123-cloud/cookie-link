@@ -3318,7 +3318,7 @@ function setupChocoSlot(s){
 function chocoEvent(s,ev,e,a){
  setupChocoSlot(s);s.event=ev;s.dirtyMain=true;s.dirtyMini=true;if(!['waiting','settled','complete'].includes(ev.phase)){s.chocoReachKey=null;s.reachEpoch=(s.reachEpoch||0)+1;s.reachResults=[];s.tabReachResults=[];s.reachStatus='inactive';}else chocoRequestReach(s,e,a);
  if(['ready','error'].includes(ev.phase)){stopSugarAward(s);clearMiniResult(s);if(s.chocoFrame)cancelAnimationFrame(s.chocoFrame);s.chocoFrame=0;s.chocoClockStamp=null;}
- if(['canyonCollect','canyonBonus'].includes(ev.phase)&&e.fx?.continueConfirmed){s.chocoContinueAt=s.chocoTime||0;}
+ if(['canyonCollect','canyonBonus'].includes(ev.phase)&&e.fx?.continueConfirmed){s.chocoContinueAt=s.chocoTime||0;if(s.i===active)sceneSound('continue');}
  if(ev.phase==='ready')s.chocoContinueAt=null;
   chocoScaleValue(s,e,a.bet(s.i),s.chocoTime||0);
  if(ev.phase==='sugaraward')showSugarAward(s,ev.steps);
@@ -3327,7 +3327,7 @@ function chocoEvent(s,ev,e,a){
   if(ev.phase==='canyonScroll')sceneSound('scroll');
   if(ev.phase==='canyonSoften')chocoRockAudio(ev.impacts.length);
   if(ev.phase==='canyonMelt'&&!ev.drill)chocoRockAudio(1,true);
-  const cue={canyonDrill:'drill',canyonReturn:'return',canyonNumberRenew:'renew',canyonAll:'all-drills',canyonUpgrade:'level',canyonBoost:'level',canyonOdds:'rank',canyonBonus:'bonus',canyonTransform:'transform'}[ev.phase]||(ev.phase==='canyonPower'?(ev.kind==='clear'?'clear':'random'):null);
+  const cue={canyonDrill:'drill',canyonReturn:'return',canyonNumberRenew:'renew',canyonAll:'all-drills',canyonUpgrade:'level',canyonBoost:'level',canyonOdds:'rank',canyonBonus:ev.gain>=10000?'big-bonus':'bonus',canyonTransform:'transform'}[ev.phase]||(ev.phase==='canyonPower'?(ev.kind==='clear'?'clear':'random'):null);
   if(cue)sceneSound(cue,{volume:cue==='bonus'?.9:.7});
  }
  s.message=e.digMessage;chocoQueueFrame(s);scheduleUI(a);
@@ -3493,6 +3493,7 @@ function chocoScaleValue(s,e,bet,time){
  }
  chocoPayoutAdvance(s,time);
  if(motionReduced){for(const f of s.chocoPayoutFlights){f.landed=true;s.chocoLandedCart.add(f.cartIndex);}s.chocoOreValue=target-s.chocoDirectBonus.target;s.chocoBonusValue=s.chocoDirectBonus.target;s.chocoWinValue=target;s.chocoAwardValue=0;s.chocoAward={phase:'idle',target:0,start:time};s.chocoAwardPhase='idle';s.chocoWinCounting=false;}
+ if(typeof sceneCountSound==='function')sceneCountSound(s,'scale-tick',s.chocoAwardPhase==='add'?s.chocoWinValue:s.chocoAwardValue,e.version+'/'+s.chocoAwardPhase,s.i===active&&s.chocoWinCounting);
  return Math.floor(s.chocoWinValue);
 }
 function chocoPayoutFlightProgress(f,time,s){
@@ -4781,6 +4782,7 @@ function sixArcadeCounter(s){
  const target=medalWin(app.bet(s.i),e.totalHundredths),t=s.sixWinTween;
  let value=target;
  if(t&&t.version===e.version&&t.to===target&&!motionReduced){const p=Math.max(0,Math.min(1,((s.candyTime||0)-t.start)/650));value=Math.floor(t.from+(t.to-t.from)*(1-Math.pow(1-p,3)));if(p===1)s.sixWinTween=null;}
+ sceneCountSound(s,'six-count',value,e.version,s.i===active&&!!t);
  if(el.textContent!==num(value))fitGoldenNumber(el,num(value),23,100);el.setAttribute('aria-label','TOTAL WIN '+num(target));s.sixDisplayedWin=value;
 }
 function sixArcadeAccents(s,x,time){
@@ -5189,7 +5191,7 @@ function buildSoundData(kind,sampleRate=24000){
  return {channels:[left,right],sampleRate,duration};
 }
 // Reserve output headroom per non-music bus. These static bounds never touch BGM.
-const SFX_OUTPUT_LEVEL=.15,NUMBER_OUTPUT_LEVEL=.25;
+const SFX_OUTPUT_LEVEL=.34,NUMBER_OUTPUT_LEVEL=.25;
 function boundedAudioOutput(context,input,ceiling,{level=1}={}){
  const shaper=context.createWaveShaper(),curve=new Float32Array(8193);
  for(let i=0;i<curve.length;i++){const x=i/(curve.length-1)*2-1;curve[i]=ceiling*Math.tanh(x/ceiling);}
@@ -5197,9 +5199,10 @@ function boundedAudioOutput(context,input,ceiling,{level=1}={}){
 }
 const sfxBuffers=new Map(),sfxVoices=new Set();let sfxBus=null;
 // Scene-specific samples selected from the supplied SE.rar. Music never enters this bus.
-const SCENE_SOUND_KEYS=["drill", "stratum", "melt", "ore", "sugar", "level", "rank", "random", "transform", "transfer", "glass", "landing", "refill", "pop", "triangle", "hexagon", "role", "round", "candy", "cookie", "record", "gift", "delivery", "cookie-hit", "cookie-fall", "cookie-land", "cookie-refill", "chain", "color-burst", "hammer-launch", "hammer-impact", "arrival", "canyon-fall", "canyon-land", "scroll", "return", "renew", "all-drills", "six-hit", "six-miss", "sweep", "line", "finish", "allclear", "clear", "bonus"];
-const SCENE_AUDIO_REVISION='v3';
-const sceneSoundFile=key=>'assets/audio/scenes/'+(key==='arrival'?'arrival-v3':key)+'.wav?rev='+SCENE_AUDIO_REVISION;
+const SCENE_SOUND_KEYS=["drill", "stratum", "melt", "ore", "sugar", "random", "transform", "glass", "landing", "refill", "pop", "triangle", "hexagon", "role", "candy", "cookie", "record", "gift", "delivery", "cookie-hit", "cookie-fall", "cookie-land", "cookie-refill", "chain", "color-burst", "hammer-launch", "hammer-impact", "arrival", "canyon-fall", "canyon-land", "scroll", "return", "renew", "all-drills", "six-hit", "six-miss", "sweep", "line", "finish", "allclear", "bonus", "credit-tick", "credit-done", "pay-step", "pay-lock", "launch", "continue", "scale-tick", "six-count", "big-bonus", "level", "rank", "round", "transfer", "clear"];
+const SCENE_AUDIO_REVISION="v4";
+const SCENE_SOUND_FILES={"drill": "assets/audio/scenes/drill.wav", "stratum": "assets/audio/scenes/stratum.wav", "melt": "assets/audio/scenes/melt.wav", "ore": "assets/audio/scenes/ore.wav", "sugar": "assets/audio/scenes/sugar.wav", "random": "assets/audio/scenes/random.wav", "transform": "assets/audio/scenes/transform.wav", "glass": "assets/audio/scenes/glass.wav", "landing": "assets/audio/scenes/landing.wav", "refill": "assets/audio/scenes/refill.wav", "pop": "assets/audio/scenes/pop.wav", "triangle": "assets/audio/scenes/triangle.wav", "hexagon": "assets/audio/scenes/hexagon.wav", "role": "assets/audio/scenes/role.wav", "candy": "assets/audio/scenes/candy.wav", "cookie": "assets/audio/scenes/cookie.wav", "record": "assets/audio/scenes/record.wav", "gift": "assets/audio/scenes/gift.wav", "delivery": "assets/audio/scenes/delivery.wav", "cookie-hit": "assets/audio/scenes/cookie-hit.wav", "cookie-fall": "assets/audio/scenes/cookie-fall.wav", "cookie-land": "assets/audio/scenes/cookie-land.wav", "cookie-refill": "assets/audio/scenes/cookie-refill.wav", "chain": "assets/audio/scenes/chain.wav", "color-burst": "assets/audio/scenes/color-burst.wav", "hammer-launch": "assets/audio/scenes/hammer-launch.wav", "hammer-impact": "assets/audio/scenes/hammer-impact.wav", "arrival": "assets/audio/scenes/arrival-v3.wav", "canyon-fall": "assets/audio/scenes/canyon-fall.wav", "canyon-land": "assets/audio/scenes/canyon-land.wav", "scroll": "assets/audio/scenes/scroll.wav", "return": "assets/audio/scenes/return.wav", "renew": "assets/audio/scenes/renew.wav", "all-drills": "assets/audio/scenes/all-drills.wav", "six-hit": "assets/audio/scenes/six-hit.wav", "six-miss": "assets/audio/scenes/six-miss.wav", "sweep": "assets/audio/scenes/sweep.wav", "line": "assets/audio/scenes/line.wav", "finish": "assets/audio/scenes/finish.wav", "allclear": "assets/audio/scenes/allclear.wav", "bonus": "assets/audio/scenes/bonus.wav", "credit-tick": "assets/audio/scenes/credit-tick-v4.wav", "credit-done": "assets/audio/scenes/credit-done-v4.wav", "pay-step": "assets/audio/scenes/pay-step-v4.wav", "pay-lock": "assets/audio/scenes/pay-lock-v4.wav", "launch": "assets/audio/scenes/launch-v4.wav", "continue": "assets/audio/scenes/continue-v4.wav", "scale-tick": "assets/audio/scenes/scale-tick-v4.wav", "six-count": "assets/audio/scenes/six-count-v4.wav", "big-bonus": "assets/audio/scenes/big-bonus-v4.wav", "level": "assets/audio/scenes/level-v4.wav", "rank": "assets/audio/scenes/rank-v4.wav", "round": "assets/audio/scenes/round-v4.wav", "transfer": "assets/audio/scenes/transfer-v4.wav", "clear": "assets/audio/scenes/clear-v4.wav"};
+const sceneSoundFile=key=>SCENE_SOUND_FILES[key]+"?rev="+SCENE_AUDIO_REVISION;
 const sceneSoundLoads=new Map();let sceneSoundPreparation=null;
 function sceneSoundsReady(){return SCENE_SOUND_KEYS.every(key=>sfxBuffers.has('scene-'+key));}
 function prepareSceneSounds(){
@@ -5212,7 +5215,7 @@ function prepareSceneSounds(){
  sceneSoundPreparation=Promise.all(Array.from({length:Math.min(3,pending.length)},worker)).then(()=>SCENE_SOUND_KEYS.map(key=>sfxBuffers.has('scene-'+key))).finally(()=>{sceneSoundPreparation=null;});return sceneSoundPreparation;
 }
 // [gain ceiling, retrigger interval in milliseconds, priority]. Only effects are balanced.
-const SCENE_SOUND_PROFILES={"drill": [0.45, 120, 0], "stratum": [0.45, 90, 0], "melt": [0.45, 90, 0], "ore": [0.45, 120, 0], "sugar": [0.7, 180, 1], "level": [0.45, 120, 0], "rank": [0.7, 180, 1], "random": [0.7, 180, 1], "transform": [0.7, 180, 1], "transfer": [0.45, 120, 0], "glass": [0.45, 90, 0], "landing": [0.45, 90, 0], "refill": [0.45, 90, 0], "pop": [0.45, 90, 0], "triangle": [0.7, 180, 1], "hexagon": [0.7, 180, 1], "role": [0.45, 120, 0], "round": [0.7, 180, 1], "candy": [0.45, 90, 0], "cookie": [0.45, 90, 0], "record": [0.7, 180, 1], "gift": [0.7, 180, 1], "delivery": [0.45, 120, 0], "cookie-hit": [0.45, 90, 0], "cookie-fall": [0.45, 90, 0], "cookie-land": [0.45, 90, 0], "cookie-refill": [0.45, 90, 0], "chain": [0.45, 90, 0], "color-burst": [0.7, 180, 1], "hammer-launch": [0.45, 120, 0], "hammer-impact": [0.65, 120, 0], "arrival": [0.65, 40, 0], "canyon-fall": [0.45, 90, 0], "canyon-land": [0.45, 90, 0], "scroll": [0.45, 90, 0], "return": [0.45, 90, 0], "renew": [0.45, 90, 0], "all-drills": [0.7, 180, 1], "six-hit": [0.45, 90, 0], "six-miss": [0.45, 90, 0], "sweep": [0.45, 120, 0], "line": [0.7, 180, 1], "finish": [0.45, 120, 0], "allclear": [1, 600, 2], "clear": [1, 600, 2], "bonus": [1, 600, 2]};
+const SCENE_SOUND_PROFILES={"drill": [0.45, 120, 0], "stratum": [0.45, 90, 0], "melt": [0.45, 90, 0], "ore": [0.45, 120, 0], "sugar": [0.7, 180, 1], "level": [0.45, 120, 0], "rank": [0.7, 180, 1], "random": [0.7, 180, 1], "transform": [0.7, 180, 1], "transfer": [0.45, 120, 0], "glass": [0.45, 90, 0], "landing": [0.45, 90, 0], "refill": [0.45, 90, 0], "pop": [0.45, 90, 0], "triangle": [0.7, 180, 1], "hexagon": [0.7, 180, 1], "role": [0.45, 120, 0], "round": [0.7, 180, 1], "candy": [0.45, 90, 0], "cookie": [0.45, 90, 0], "record": [0.7, 180, 1], "gift": [0.7, 180, 1], "delivery": [0.45, 120, 0], "cookie-hit": [0.45, 90, 0], "cookie-fall": [0.45, 90, 0], "cookie-land": [0.45, 90, 0], "cookie-refill": [0.45, 90, 0], "chain": [0.45, 90, 0], "color-burst": [0.7, 180, 1], "hammer-launch": [0.45, 120, 0], "hammer-impact": [0.65, 120, 0], "arrival": [0.65, 40, 0], "canyon-fall": [0.45, 90, 0], "canyon-land": [0.45, 90, 0], "scroll": [0.45, 90, 0], "return": [0.45, 90, 0], "renew": [0.45, 90, 0], "all-drills": [0.7, 180, 1], "six-hit": [0.45, 90, 0], "six-miss": [0.45, 90, 0], "sweep": [0.45, 120, 0], "line": [0.7, 180, 1], "finish": [0.45, 120, 0], "allclear": [1, 600, 2], "clear": [1, 600, 2], "bonus": [1, 600, 2], "credit-tick": [0.2, 110, 0], "credit-done": [0.65, 300, 1], "pay-step": [0.3, 90, 0], "pay-lock": [0.65, 200, 1], "launch": [0.55, 120, 1], "continue": [0.8, 700, 2], "scale-tick": [0.17, 120, 0], "six-count": [0.18, 120, 0], "big-bonus": [1, 600, 2]};
 const sceneSoundLast=new Map(),sceneSoundBursts=new Map();let sceneAccentUntil=0;
 function sceneSound(key,options={}){
  const jpc=!!options.jpc&&jpcSession.active&&!userPaused&&!menuOpen;
@@ -5223,7 +5226,8 @@ function sceneSound(key,options={}){
  const previous=sceneSoundLast.get(key)??-Infinity,burst=priority===0&&at-previous<.38?(sceneSoundBursts.get(key)||0)+1:0;
  sceneSoundBursts.set(key,burst);sceneSoundLast.set(key,at);
  if(priority===2)sceneAccentUntil=at+Math.min(3,sfxBuffers.get(name).duration);
- const volume=Math.max(.35,.7**burst)*ceiling*Math.min(1,Math.max(0,options.volume??1))*(priority===0&&at<sceneAccentUntil?.4:1);
+ const continuous=['credit-tick','scale-tick','six-count','pay-step'].includes(key);
+ const volume=(continuous?1:Math.max(.35,.7**burst))*ceiling*Math.min(1,Math.max(0,options.volume??1))*(priority===0&&at<sceneAccentUntil?.4:1);
  sound(name,{...options,volume,priority});return true;
 }
 function cookieSceneEvent(s,ev,e){
@@ -5233,6 +5237,17 @@ function cookieSceneEvent(s,ev,e){
  if(ev.phase==='link')sceneSound('chain',{rate:1+Math.min(6,ev.depth||0)*.025});
  if(ev.phase==='fall'&&previous&&[...rows].some(([id,r])=>previous.has(id)&&previous.get(id)<r)){sceneSound('cookie-fall');sceneSound('cookie-land',{delay:180/e.speed});}
  if(ev.phase==='refill'&&ev.freshCells?.length){sceneSound('cookie-refill');sceneSound('cookie-land',{delay:Math.max(100,(ev.duration||350)-60)});}
+}
+
+// Tick only when the displayed counter changes; never replay values after a pause/reset.
+function sceneCountSound(owner,key,value,version,enabled=true){
+ const counts=owner.sceneCounts||(owner.sceneCounts={}),previous=counts[key];counts[key]={value,version};
+ if(enabled&&previous?.version===version&&Number.isFinite(value)&&value>previous.value)sceneSound(key);
+}
+function creditPresentationAudio(a){
+ const previous=a.audioPayoutPhase;a.audioPayoutPhase=a.phase;
+ sceneCountSound(a,'credit-tick',a.displayCredit,a.token,a.phase==='paying');
+ if(previous==='paying'&&a.phase==='complete'&&a.payout?.amount>0)sceneSound('credit-done');
 }
 function unlock(){
  try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
@@ -5527,8 +5542,8 @@ function startPayClimb(s,previous,target,duration){
 function advancePayClimb(now=Date.now()){
  const s=slots[active],climb=s.payClimb;
  if(!climb||app.paused||document.hidden||!inView||now<climb.due)return;
- s.payDisplayedLink=Math.min(climb.target,s.payDisplayedLink+1);
- if(s.payDisplayedLink>=climb.target)stopPayClimb(s);else climb.due=now+climb.interval/(s.engine.presentationRate||1);
+ s.payDisplayedLink=Math.min(climb.target,s.payDisplayedLink+1);sceneSound('pay-step',{rate:1+Math.min(12,s.payDisplayedLink)*.015});
+ if(s.payDisplayedLink>=climb.target){sceneSound('pay-lock');stopPayClimb(s);}else climb.due=now+climb.interval/(s.engine.presentationRate||1);
  scheduleUI(app);
 }
 function syncPayClimb(){
@@ -6146,6 +6161,7 @@ const recordDate=at=>new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year
 const recordMonth=at=>recordDate(at).slice(0,7);
 const recordIcon=(name,box=36)=>'<svg class="record-icon" viewBox="0 0 '+box+' '+box+'" aria-hidden="true"><use href="#'+name+'"/></svg>';
 function recordChanged(a){
+ creditPresentationAudio(a);
  if(a.phase==='ready'||a.phase==='playing')scheduleAutoRound();
  if(a.phase==='playing'&&a.draws.length>announcedDrawCount){for(const n of a.draws.slice(announcedDrawCount))announceDraw(n);announcedDrawCount=a.draws.length;}
  if(a.phase==='ready')announcedDrawCount=0;
@@ -7547,7 +7563,7 @@ function startAnima8(){
  // Missing-ball recovery is handled inside the current physical group.
  draw.canLaunchJpc=spec=>launchPlanner.ready(draw.next,spec);
  physics.onBallCollision=hit=>{launchPlanner.recordCollision(hit.a);launchPlanner.recordCollision(hit.b);};
- draw.onLaunch=ball=>{if(draw.mode==='jpc')launchPlanner.recordLaunch(ball);addBallView(ball);if(draw.mode==='jpc')jpcAudio.launch(physics.serial);};
+ draw.onLaunch=ball=>{hooks.onLaunch?.();if(draw.mode==='jpc')launchPlanner.recordLaunch(ball);addBallView(ball);if(draw.mode==='jpc')jpcAudio.launch(physics.serial);};
  draw.onReset=()=>{retryAt=0;accumulator=0;last=performance.now();wake();candyGame.reset(draw.mode);launchPlanner.enabled=el('#a8-jpc-aim').checked;launchPlanner.reset();jpcAudio.reset();clearViews();slopeStarted=physics.time;slopeStopped=0;if(draw.mode!=='eight')restoreContinuousLights();};
  draw.onState=state=>{wake();if(state==='running'){candyGame.start();slopeStarted=physics.time;if(draw.mode==='jpc')jpcAudio.start();}if(state==='complete'&&draw.mode==='jpc')jpcAudio.complete(jpcFilledCount());if(state==='complete'){candyGame.end();}if(state==='complete')slopeStopped=physics.time-slopeStarted;updateDrawControls();};
  physics.onHit=hit=>{if(draw.mode==='eight')candyGame.hit(hit.pocket);hitTimes[hit.pocket-1]=physics.time;if(draw.mode==='jpc'){recordJpcHit(hit.pocket-1);launchPlanner.recordHit(hit);updateAimStatus();jpcAudio.hit(jpcFilledCount(),jpcReachPocket());}const span=document.createElement('span');span.className='a8-result';span.textContent=hit.pocket;span.setAttribute('aria-label',`${physics.hits.length}番目の入賞: ${hit.pocket}番`);el('.a8-empty')?.remove();results.append(span);while(results.children.length>60)results.firstElementChild.remove();updatePocketBadge(hit.pocket-1);status.textContent=draw.mode==='jpc'&&jackpotPocket>=0?'JACKPOT！':draw.mode==='jpc'&&jpcReachPocket()>=0?`${jpcReachPocket()+1}番 リーチ！ 残り1ポケット`:`${hit.pocket}番に入賞`;updateCount();};
@@ -7653,7 +7669,7 @@ async function loadCookieRoulette(){
  try{
   const [THREE,CANNON]=await loadRouletteModules();if(epoch!==rouletteLoadEpoch||!root.isConnected)return;
   rouletteDriver?.dispose();root.querySelectorAll('canvas').forEach(c=>c.remove());root.querySelector('.a8-pocket-grid').replaceChildren();
-  rouletteDriver=createCookieRoulette(root,{onNumber:n=>rouletteDrawSource.number(n),getAllClearNumbers:rouletteAllClearNumbers,onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
+  rouletteDriver=createCookieRoulette(root,{onLaunch:()=>sceneSound('launch',{volume:jpcSession.active?.65:1,jpc:jpcSession.active}),onNumber:n=>rouletteDrawSource.number(n),getAllClearNumbers:rouletteAllClearNumbers,onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
   rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(manualNumbers||app.paused);scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
  }catch(error){if(epoch!==rouletteLoadEpoch)return;rouletteReady=false;retry.hidden=false;loading.hidden=false;loading.textContent='抽選機を読み込めませんでした。「再読込」で再試行できます。';root.querySelector('[data-status]').textContent='抽選機の読込待ち';scheduleUI(app);console.error('Cookie Link roulette:',error);}
 }
