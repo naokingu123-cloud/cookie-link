@@ -912,6 +912,7 @@ body{--sugar-baking-tray:url("data:image/webp;base64,UklGRi5mAABXRUJQVlA4WAoAAAA
 .debug-colors button{height:29px;min-width:36px;padding:0 4px;border:1px solid #c9a176;border-radius:6px;background:#fff8e6;color:#8d6545;font:800 10px/25px system-ui,sans-serif;box-shadow:0 1px #c9a176}
 .debug-colors button[aria-pressed="true"]{background:#a66034;color:#fff8dc;border-color:#874621;box-shadow:inset 0 1px #eeb978}
 .debug-colors button:disabled{opacity:.45}
+.debug-depth{display:flex;align-items:center;gap:3px;font:700 10px system-ui}.debug-depth input{width:65px;padding:4px;border:1px solid #bc8f5d;border-radius:5px;background:#fffaf0;color:#54321f}.record-menu .debug-colors{width:auto!important;flex-wrap:wrap}#canyon-depth-status:empty{display:none}
 @media(forced-colors:active){.debug-colors,.debug-colors button{background:Canvas;color:CanvasText;border-color:CanvasText}.debug-colors button[aria-pressed="true"]{background:Highlight;color:HighlightText}}
 
 .tile.refill-retint .sweet{animation:cookie-refill-retint .38s ease-out}
@@ -2548,7 +2549,7 @@ Copyright 2016 The Rounded M+ Project Authors.
  <header class="record-menu-header"><span class="menu-art medal-art" aria-hidden="true"></span><h2 id="record-menu-heading">おかしのマイページ</h2><button type="button" id="record-close-top" aria-label="ゲームへ戻る">×</button></header>
  <div class="record-profile"><div class="record-pet-frame"><canvas id="record-pet" width="150" height="160" aria-label="マイゼリーペット"></canvas></div><div class="record-profile-text"><small>MY PET</small><strong>ゼリーペット</strong><span id="record-equipped">称号 未設定</span><span id="record-profile-earned"></span></div><span class="menu-art trophy-art" aria-hidden="true"></span></div>
  <nav class="record-nav" aria-label="マイページの表示"><button type="button" id="menu-page-records" aria-pressed="true">レコード</button><button type="button" id="menu-page-titles" aria-pressed="false">称号</button><button type="button" id="menu-page-best" aria-pressed="false">高配当</button><button type="button" id="menu-page-clears" aria-pressed="false">全消し</button></nav>
- <div class="debug-colors" role="group" aria-label="デバッグ用のクッキー色数"><small>デバッグ · 色数</small><button type="button" id="colors-3" aria-pressed="false">3色</button><button type="button" id="colors-4" aria-pressed="false">4色</button><button type="button" id="colors-5" aria-pressed="true">5色</button></div><div class="record-scope"><span>クッキーリンク</span></div>
+ <div class="debug-colors" role="group" aria-label="デバッグ用のクッキー色数"><small>デバッグ · 色数</small><button type="button" id="colors-3" aria-pressed="false">3色</button><button type="button" id="colors-4" aria-pressed="false">4色</button><button type="button" id="colors-5" aria-pressed="true">5色</button><label class="debug-depth">キャニオン <input id="canyon-debug-depth" type="number" min="0" max="999999" step="1" value="0" aria-label="キャニオン開始深度"> m</label><button type="button" id="canyon-depth-apply">深度設定</button><small id="canyon-depth-status" aria-live="polite"></small></div><div class="record-scope"><span>クッキーリンク</span></div>
  <div id="record-page" class="record-page"></div>
  <div class="record-bottom"><small id="record-storage"></small><button type="button" id="record-close">ゲームへ戻る</button></div>
 </section></div>
@@ -3545,12 +3546,16 @@ function chocoDetectorFrame(x,px,py,width,height,time){
 }
 function chocoMineUI(x,e,L,fx,p,time,W,H,bet,s){
  const sign=(px,py,width,height,hit=false)=>{x.fillStyle=hit?'#8d492bef':'#173343ef';x.strokeStyle=hit?'#fff69c':'#e5bb78';x.lineWidth=1;x.beginPath();x.roundRect(px,py,width,height,5);x.fill();x.stroke();};
- const topHit=chocoNumberHit(e,e.lucky.numbers[0]);sign(L.left,2,7*L.w,14,topHit);chocoText(x,e.lucky.numbers[0],L.left+14,7,10,topHit?'#fff26f':'#fff0b2');chocoText(x,(topHit?'HIT!':'ALL')+'  ↓ ↓ ↓ ↓ ↓ ↓ ↓',L.left+3.5*L.w+9,7,8,topHit?'#fff26f':'#fff0b2');
- chocoReachLabel(x,s,e.lucky.numbers[0],L.left+14,11,time,5.5);
+ const topHit=chocoNumberHit(e,e.lucky.numbers[0]),topY=L.top-55,topCx=L.left+3.5*L.w;
+ sign(L.left,topY,7*L.w,14,topHit);chocoText(x,e.lucky.numbers[0]+'  '+(topHit?'HIT!':'ALL'),topCx,topY+5,11,topHit?'#fff26f':'#fff0b2');
+ chocoReachLabel(x,s,e.lucky.numbers[0],topCx-19,topY+9,time,5.5);
+ for(let c=0;c<7;c++)chocoText(x,'↓',L.left+(c+.5)*L.w,topY+11,7,'#b7f5ff');
  for(let side=1;side<=2;side++){
-  const cx=side===1?L.left-L.w*3.5:L.left+7*L.w+L.w*3.5,cy=L.top+L.h*4.7,n=e.lucky.numbers[side],hit=chocoNumberHit(e,n);sign(cx-14,cy-24,28,48,hit);chocoText(x,n,cx,cy-14,15);chocoText(x,hit?'HIT!':'ALL',cx,cy+4,7,hit?'#fff36f':'#fff0b2');chocoReachLabel(x,s,n,cx,cy-8,time,6);chocoText(x,side===1?'→':'←',cx,cy+17,13,'#b7f5ff');
-  x.strokeStyle=hit?'#fff3a0':'#9ec4cd';x.lineWidth=1;x.beginPath();x.moveTo(cx,L.top+2.5*L.h);x.lineTo(cx,cy-32);x.moveTo(cx,cy+32);x.lineTo(cx,L.top+10.5*L.h);x.stroke();
-  for(const row of CHOCO_SIDE_ROWS){const y=L.top+(row+.5)*L.h;chocoText(x,side===1?'→':'←',cx,y,11,'#b7f5ff');}
+  const signDir=side===1?-1:1,edge=side===1?L.left:L.left+7*L.w,cx=edge+signDir*L.w*.84,cy=L.top+L.h*4.65,n=e.lucky.numbers[side],hit=chocoNumberHit(e,n);
+  sign(cx-18,cy-20,36,40,hit);chocoText(x,n,cx-5*signDir,cy-8,16);chocoText(x,hit?'HIT!':'ALL',cx,cy+9,8,hit?'#fff36f':'#fff0b2');chocoReachLabel(x,s,n,cx-5*signDir,cy-2,time,6);chocoText(x,side===1?'→':'←',cx-signDir*12,cy+1,10,'#b7f5ff');
+  // A close bracket connects ALL to the three matching side drills.
+  const bx=edge+signDir*L.w*.16;x.strokeStyle=hit?'#fff3a0':'#9ec4cd';x.lineWidth=1;x.beginPath();x.moveTo(cx-signDir*18,cy);x.lineTo(bx,cy);x.moveTo(bx,L.top+2.5*L.h);x.lineTo(bx,L.top+10.5*L.h);
+  for(const row of CHOCO_SIDE_ROWS){const y=L.top+(row+.5)*L.h;x.moveTo(bx,y);x.lineTo(edge+signDir*L.w*.34,y);}x.stroke();
  }
  const panelWidth=L.left-9,displayDepth=chocoDepthValue(s,e,time);chocoDetectorFrame(x,3,2,panelWidth,111,time);chocoDepthPanel(x,displayDepth,e.startDepth,10,10,panelWidth-14,19);chocoDepthTab(s,e,displayDepth);
  if(e.totalHundredths>0)chocoText(x,'継続確定',12,54,9,'#fff47b','left');
@@ -3601,7 +3606,14 @@ function chocoChainSections(grid){
  if(chocoGroups(trial).groups.some(g=>g[0].tile.color>=0&&g.length>=4&&g.some(v=>moved.has(v.tile.id))))section.forEach(v=>result.add(v.tile.id));}
  chocoChainCache.set(grid,result);return result;
 }
-function chocoChainSheen(x,px,py,w,h,time,id){x.save();x.beginPath();x.rect(px+1,py+1,w-2,h-2);x.clip();const at=motionReduced?.5:(time/2200+id*.013)%1,shine=x.createLinearGradient(px-w+at*w*3,py,px+at*w*3,py+h);shine.addColorStop(0,'#fff4c000');shine.addColorStop(.5,'#fff4c066');shine.addColorStop(1,'#fff4c000');x.fillStyle=shine;x.fillRect(px,py,w,h);chocoSparkle(x,px+w/2,py+h/2,Math.min(w,h),time,id,2);x.restore();}
+function chocoChainSheen(x,cells,w,h,time){
+ if(!cells.length)return;const minX=Math.min(...cells.map(v=>v.x)),minY=Math.min(...cells.map(v=>v.y)),maxX=Math.max(...cells.map(v=>v.x))+w,maxY=Math.max(...cells.map(v=>v.y))+h,span=maxX-minX,id=cells[0].id;
+ x.save();x.beginPath();for(const v of cells)x.rect(v.x,v.y,w,h);x.clip();
+ // One uninterrupted beam across the entire polyomino, with no per-cell border.
+ const at=motionReduced?.5:(time/2400+id*.013)%1,beam=minX-span+at*span*3,shine=x.createLinearGradient(beam,minY,beam+span,maxY);shine.addColorStop(0,'#fff4c000');shine.addColorStop(.5,'#fff4c05c');shine.addColorStop(1,'#fff4c000');x.fillStyle=shine;x.fillRect(minX,minY,span,maxY-minY);
+ // Sparse highlights belong to the section, not to every individual square.
+ const count=Math.min(3,Math.max(1,Math.ceil(cells.length/4)));for(let i=0;i<count;i++){const v=cells[Math.floor((i+.5)*cells.length/count)];chocoSparkle(x,v.x+w*.5,v.y+h*.5,Math.min(w,h)*.7,time,id+i*11,1);}x.restore();
+}
 function chocoDrawItem(x,t,cx,cy,size,time=0,label=true,bet=100){
  x.save();
  if(t.item==='ore'){
@@ -3734,9 +3746,10 @@ function drawChoco(s,now=performance.now()){
   if(dissolving.has(t.id))chocoPaintMelt(x,t,r,c,grid,px,py,w,h,p);
   else if(softening.has(t.id)){const a=Math.max(0,Math.min(1,(q-softening.get(t.id).wave*.3)/.7));x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,t,r,c,grid,-w/2,-h/2,w,h,time,bet);x.restore();x.fillStyle='rgba(255,223,161,'+(Math.sin(a*Math.PI)*.23)+')';x.fillRect(px+1,py+1,w-2,h-2);}
   else{const dest=finalPositions.get(t.id),nextMask=dest?chocoTileMask(e.strata,...dest):null;chocoPaintTile(x,t,r,c,grid,px,py,w,h,time,bet,nextMask,scrollQ);}
-  if(chainSections.has(t.id)&&!dissolving.has(t.id))chocoChainSheen(x,px,py,w,h,time,t.id);
   if((fx?.phase==='canyonOdds'&&fx.affected.includes(t.id))||(['canyonPower','canyonTransform'].includes(fx?.phase)&&fx.targets.some(v=>v.tile.id===t.id))){x.strokeStyle='#fff3a5';x.lineWidth=2;x.strokeRect(px+1,py+1,w-2,h-2);}
  }
+ // Paint connected highlights after all cake cells so seams cannot restart the beam.
+ for(const group of chocoGroups(grid).groups){if(!chainSections.has(group[0].tile.id))continue;const cells=group.filter(v=>!dissolving.has(v.tile.id)).map(v=>{const m=moves.get(v.tile.id);return {id:v.tile.id,x:left+v.c*w,y:top+(v.r+(m?Math.min(m.to[0]-m.from[0],(fx.fallDistance||1)*q*q):0)-(scroll?scroll.advanced*scrollQ:0))*h};});chocoChainSheen(x,cells,w,h,time);}
  // Previously hit strata keep softening/melting while the drill is already travelling onward.
  for(const effect of fx?.digEffects||[]){const age=(fx.digTime||0)+(fx.elapsed||0)-effect.start;if(age<0||age>=effect.duration)continue;for(const v of effect.targets){const px=left+v.c*w,py=top+v.r*h;if(age<160){const a=age/160;x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,v.tile,v.r,v.c,effect.before,-w/2,-h/2,w,h,time,bet);x.restore();}else chocoPaintMelt(x,v.tile,v.r,v.c,effect.before,px,py,w,h,(age-160)/600);}}
  if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const t=e.strata[r]?.[c];if(t)chocoPaintTile(x,t,r,c,e.strata,left+c*w,top+(r+scroll.advanced*(1-scrollQ))*h,w,h,time,bet);}
@@ -5627,6 +5640,7 @@ function hud(a){
  const editable=a.phase==='ready';for(const slot of slots){slot.controls.hidden=!editable;slot.lockedBet.hidden=false;for(const button of [slot.cycle,slot.addBet,slot.oneBet])button.disabled=!editable;const amount=units[unit[slot.i]];slot.addBet.textContent=amount+' BET';slot.addBet.setAttribute('aria-label','ゲーム'+(slot.i+1)+'に'+amount+' BET追加');}
  $('start').disabled=(a.phase==='ready'&&a.drawSource?.ready===false)||a.phase==='playing'||a.phase==='result'||paying||a.phase==='error'||(editable&&!a.bets.some(n=>n>0));put('start',a.phase==='result'?'リザルト':paying?'払い出し中…':a.phase==='complete'?'次のゲームへ':a.phase==='playing'?(a.dealing?'抽選中…':'連鎖処理中…'):'ゲーム開始');
  for(const count of [3,4,5]){const button=$('colors-'+count);button.disabled=a.phase!=='ready';button.setAttribute('aria-pressed',String(a.colorCount===count));}
+ $('canyon-debug-depth').disabled=a.phase!=='ready'||jpcSession.active;$('canyon-depth-apply').disabled=a.phase!=='ready'||jpcSession.active;
  $('pause').disabled=!['playing','result','paying'].includes(a.phase);put('pause',userPaused?'再開':'一時停止');tabs(a);updateReachUI(a);renderRoundResult(a);chocoHud(a);carnivalHud(a);styleWinWords($('screen'));
 }
 function clearMarks(s){s.outline.replaceChildren();s.labels.replaceChildren();s.outline.classList.remove('fade');s.board.classList.remove('big');s.board.dataset.recordTier='0';for(const el of s.tiles.values())el.classList.remove('record-scan');}
@@ -6278,7 +6292,7 @@ function renderRecordMenu(){
 function initRecordMenu(){
  $('open-record-menu').onclick=openRecordMenu;$('record-close').onclick=closeRecordMenu;$('record-close-top').onclick=closeRecordMenu;
  for(const page of ['records','titles','best','clears'])$('menu-page-'+page).onclick=()=>{recordPage=page;recordOffset=0;if(page==='titles')selectedTitle=TITLE_DEFS[0].id;renderRecordMenu();};
- $('record-menu-layer').addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.preventDefault();closeRecordMenu();}else if(ev.key==='Tab'){const buttons=[...$('record-menu').querySelectorAll('button')].filter(b=>!b.disabled&&!b.hidden),first=buttons[0],last=buttons[buttons.length-1];if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}}});
+ $('record-menu-layer').addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.preventDefault();closeRecordMenu();}else if(ev.key==='Tab'){const buttons=[...$('record-menu').querySelectorAll('button,input')].filter(b=>!b.disabled&&!b.hidden),first=buttons[0],last=buttons[buttons.length-1];if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}}});
  $('record-menu-layer').addEventListener('click',ev=>{if(ev.target===$('record-menu-layer'))closeRecordMenu();});updateEquippedTitle();
 }
 
@@ -7254,7 +7268,8 @@ function startAnima8(){
    warmLEDs.instanceColor.needsUpdate=true;halos.instanceColor.needsUpdate=true;return;
   }
   if(draw.mode!=='eight')return;
-  const phase=normalStage(),time=physics.time;
+  const phase=normalStage(),time=physics.time,highest=!phase.bet&&[...(hooks.getReachTiers?.()||new Map()).values()].includes(3);
+  root.dataset.highestReach=String(highest);
   if(slopePhaseKey!==phase.name){slopePrevious=warmLEDs.instanceColor.array.slice();slopeTransitionStart=slopePhaseKey?time:-Infinity;slopePhaseKey=phase.name;}
   const blend=ledTransitionProgress(slopeTransitionStart);
   for(let i=0;i<25;i++)for(let c=0;c<3;c++)for(let j=0;j<15;j++){
@@ -7264,6 +7279,7 @@ function startAnima8(){
    const hue=phase.bet?(u*.35+time*.035)%1:n===3?.96+wave*.09:n===4?(chase>.7?.13:.79):phase.hue;
    slopeColor.setHSL((hue+1)%1,phase.bet?.62:.94,.18+chase*.35+(n===2?wave*.13:0));const k=i*45+c*15+j;
    if(blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
+   if(highest){reachRainbowColor(time-r*.8+u*2,slopeColor);slopeColor.multiplyScalar(.7+1.2*(.5+.5*Math.cos(TAU*(time*1.5-r*.5))));}
    warmLEDs.setColorAt(k,slopeColor);halos.setColorAt(k,slopeColor);
   }
   warmLEDs.instanceColor.needsUpdate=true;halos.instanceColor.needsUpdate=true;
@@ -7455,8 +7471,14 @@ function startAnima8(){
  const centerPreviousContext=centerPrevious.getContext('2d');
  let centerCounterText=null,centerTransitionStart=-Infinity;
 
+ function drawBoardIcon(ctx,index){
+  // Pixel art is drawn directly into the same LED lens grid as the numbers.
+  if(index===0){for(let y=9;y<39;y++)for(let x=9;x<39;x++){const dx=x-24,dy=y-24;if(dx*dx+dy*dy>210)continue;ctx.fillStyle=dx*dx+dy*dy>155?'#a65220':y<21?'#ffe19b':'#e5a748';ctx.fillRect(x,y,1,1);}ctx.fillStyle='#67321c';for(const [x,y]of [[17,15],[28,14],[22,24],[13,26],[30,28],[22,34]])ctx.fillRect(x,y,3,3);}
+  else if(index===1){for(let y=18;y<37;y++)for(let x=10;x<38;x++){ctx.fillStyle=y<23?'#fff0bc':y<27?'#7c351d':y<30?'#f3b35e':'#8e4427';ctx.fillRect(x,y,1,1);}ctx.fillStyle='#ff6e8c';for(let i=0;i<3;i++)ctx.fillRect(13+i*9,14,5,5);ctx.fillStyle='#e1ffff';for(let y=0;y<9;y++)for(let x=0;x<9;x++)if(Math.abs(x-4)+Math.abs(y-4)<5)ctx.fillRect(20+x,25+y,1,1);}
+  else{for(const [cx,cy,color]of [[16,17,'#ff737e'],[31,19,'#65e8ff'],[23,32,'#c18cff']]){ctx.fillStyle=color;for(let y=-7;y<=7;y++)for(let x=-7;x<=7;x++)if(x*x+y*y<=48)ctx.fillRect(cx+x,cy+y,1,1);ctx.fillStyle='#fff8e5';ctx.fillRect(cx-3,cy-4,3,2);}}
+ }
  function updateCenterCounter(){
-  const active=draw.mode==='jpc',count=Math.max(0,Math.min(70,physics.serial)),phase=normalStage(),text=active?`${count}/70`:phase.name;
+  const active=draw.mode==='jpc',count=Math.max(0,Math.min(70,physics.serial)),phase=normalStage(),selected=hooks.getSelectedBoard?.()||{index:0,name:'クッキーリンク'},text=active?`${count}/70`:selected.name;
   const changed=text!==centerCounterText;
   if(!changed&&ledTransitionProgress(centerTransitionStart)>=1)return;
   if(changed){centerPreviousContext.clearRect(0,0,COUNTER_SIZE,COUNTER_SIZE);centerPreviousContext.drawImage(centerCanvas,0,0);centerTransitionStart=centerCounterText===null?-Infinity:physics.time;}
@@ -7477,7 +7499,7 @@ function startAnima8(){
   }
   if(!active){
    centerContext.strokeStyle=`hsl(${phase.hue*360},90%,65%)`;centerContext.lineWidth=2;centerContext.beginPath();centerContext.arc(24,24,21,0,TAU);centerContext.stroke();
-   centerContext.fillStyle='#fff5d8';ledText(centerContext,phase.lines[0],24,14);ledText(centerContext,phase.lines[1],24,26);
+   drawBoardIcon(centerContext,selected.index);centerDisplay.userData.board=selected.index;
   }
   const blend=ledTransitionProgress(centerTransitionStart);
   if(blend<1){centerContext.save();centerContext.globalAlpha=1-blend;centerContext.drawImage(centerPrevious,0,0);centerContext.restore();}
@@ -7616,7 +7638,7 @@ function startAnima8(){
    view.trail.visible=el('#a8-trails').checked&&!ball.resolved;
   }
   physics.balls=physics.balls.filter(b=>!b.dead);
-  const normalReach=draw.mode==='eight'?(hooks.getAllClearNumbers?.()||new Set()):new Set(),phase=normalStage();
+  const normalReach=draw.mode==='eight'?(hooks.getReachTiers?.()||new Map()):new Map(),phase=normalStage();
   panels.forEach((p,i)=>{
    if(draw.mode==='jpc'){
     // Occupied pockets stay continuously lit; only empty pockets pulse.
@@ -7640,20 +7662,21 @@ function startAnima8(){
     innerLights[i].color.copy(tint).multiplyScalar(brightness);
     innerLights[i].opacity=.32+.63*pulse;
    }else{
-    const flash=false,green=hitTimes[i]>-100,rainbow=!green&&normalReach.has(i+1);
-    const tick=Math.floor(physics.time*.8),textureKey=phase.bet?'bet/'+tick:'number';
+    const flash=false,green=hitTimes[i]>-100,tier=green||phase.bet?0:(normalReach.get(i+1)||0),rainbow=tier===3;
+    const tick=Math.floor((physics.time*.35-physics.angle)*25/TAU),textureKey=phase.bet?'bet/'+tick:'number';
     if(p.normalTextureKey!==textureKey){
      p.normalTextureKey=textureKey;
-     if(phase.bet){const ch='BET TIME  '[(i+tick)%10];p.ctx.fillStyle='#20252c';p.ctx.fillRect(0,0,20,20);p.ctx.fillStyle='#fff5d8';ledText(p.ctx,ch,10,3,2);p.texture.needsUpdate=true;}
+     if(phase.bet){const ch='BET TIME                 '[((i+tick)%25+25)%25];p.betLetter=ch;p.ctx.fillStyle='#20252c';p.ctx.fillRect(0,0,20,20);p.ctx.fillStyle='#fff5d8';ledText(p.ctx,ch,10,3,2);p.texture.needsUpdate=true;}
      else drawPanel(i);
     }
     if(rainbow&&!p.normalRainbow)p.rainbowStarted=physics.time;
-    p.green=green;p.normalRainbow=rainbow;
+    p.green=green;p.normalRainbow=rainbow;p.normalReachTier=tier;
     if(rainbow)reachRainbowColor(physics.time-p.rainbowStarted,p.material.uniforms.lightTint.value);
-    else if(phase.bet)p.material.uniforms.lightTint.value.setHSL((i/25+physics.time*.035)%1,.55,.72);
+    else if(tier)p.material.uniforms.lightTint.value.set(tier===1?'#ff163b':'#c42bff');
+    else if(phase.bet)p.material.uniforms.lightTint.value.setRGB(1,.94,.72);
     else p.material.uniforms.lightTint.value.setRGB(green?.035:1,1,green?.13:1);
     p.scatter.uniforms.lightTint.value.copy(p.material.uniforms.lightTint.value);
-    const shimmer=rainbow?1.75:1;
+    const shimmer=tier?(.35+1.65*(.5+.5*Math.cos(physics.time*TAU*1.5))):1;
     p.material.uniforms.brightness.value=brightness*1.35*shimmer;p.material.uniforms.flash.value=flash?1:0;
     innerLights[i].color.copy(p.material.uniforms.lightTint.value).multiplyScalar(brightness);innerLights[i].opacity=.85;
     p.scatter.uniforms.brightness.value=brightness*1.35*shimmer;p.scatter.uniforms.flash.value=flash?1:0;
@@ -7666,7 +7689,7 @@ function startAnima8(){
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();setPaused(true);el('.a8-loading').hidden=false;el('.a8-loading').textContent='描画が中断しました。再読込してください。';hooks.onError?.('描画が中断しました。再読込してください。');});
  // Keep a read-only inspection handle for reproducible smoke tests and future edits.
  root.anima8={physics,draw,scene,setPaused,start:()=>{setPaused(false);draw.start();wake();},reset:()=>{draw.reset();setPaused(false);wake();},dispose,
-  get ledState(){return {label:centerDisplay.userData.counter,stage:normalStage().name,rainbow:panels.flatMap((p,i)=>p.normalRainbow?[i+1]:[]),centerPosition:centerDisplay.position.toArray(),centerTilt:centerDisplay.rotation.x,centerBlend:ledTransitionProgress(centerTransitionStart),slopeBlend:ledTransitionProgress(slopeTransitionStart),rainbowColors:panels.flatMap((p,i)=>p.normalRainbow?[{number:i+1,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[])};},
+  get ledState(){return {label:centerDisplay.userData.counter,board:centerDisplay.userData.board,reachTiers:panels.map(p=>p.normalReachTier||0),reachColors:panels.flatMap((p,i)=>p.normalReachTier?[{number:i+1,tier:p.normalReachTier,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[]),betLetters:panels.map(p=>p.betLetter||' '),highestSlope:root.dataset.highestReach==='true',stage:normalStage().name,rainbow:panels.flatMap((p,i)=>p.normalRainbow?[i+1]:[]),centerPosition:centerDisplay.position.toArray(),centerTilt:centerDisplay.rotation.x,centerBlend:ledTransitionProgress(centerTransitionStart),slopeBlend:ledTransitionProgress(slopeTransitionStart),rainbowColors:panels.flatMap((p,i)=>p.normalRainbow?[{number:i+1,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[])};},
   get jpcCounts(){return [...jpcCounts];},
   get status(){return status.textContent;}};
  function dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);frame=0;observer.disconnect();cleanup.disconnect();renderer.dispose();renderer.domElement.remove();scene.traverse(o=>{if(o.geometry)o.geometry.dispose();});materials.forEach(m=>m.dispose());panels.forEach(p=>p.texture.dispose());centerTexture.dispose();}
@@ -7693,18 +7716,18 @@ async function loadCookieRoulette(){
  try{
   const [THREE,CANNON]=await loadRouletteModules();if(epoch!==rouletteLoadEpoch||!root.isConnected)return;
   rouletteDriver?.dispose();root.querySelectorAll('canvas').forEach(c=>c.remove());root.querySelector('.a8-pocket-grid').replaceChildren();
-  rouletteDriver=createCookieRoulette(root,{onLaunch:()=>sceneSound('launch',{volume:jpcSession.active?.65:1,jpc:jpcSession.active}),onNumber:n=>rouletteDrawSource.number(n),getAllClearNumbers:rouletteAllClearNumbers,onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
+  rouletteDriver=createCookieRoulette(root,{onLaunch:()=>sceneSound('launch',{volume:jpcSession.active?.65:1,jpc:jpcSession.active}),onNumber:n=>rouletteDrawSource.number(n),getAllClearNumbers:rouletteAllClearNumbers,getReachTiers:rouletteReachTiers,getSelectedBoard:rouletteSelectedBoard,onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
   rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(manualNumbers||app.paused);scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
  }catch(error){if(epoch!==rouletteLoadEpoch)return;rouletteReady=false;retry.hidden=false;loading.hidden=false;loading.textContent='抽選機を読み込めませんでした。「再読込」で再試行できます。';root.querySelector('[data-status]').textContent='抽選機の読込待ち';scheduleUI(app);console.error('Cookie Link roulette:',error);}
 }
-function rouletteAllClearNumbers(){
- const out=new Set();if(!app||app.phase!=='playing'||jpcSession.active)return out;
- for(const s of slots){const e=s.engine;
-  if(!e||app.bet(s.i)<=0||!reachAvailable(s,app)||s.reachBoardKey!==reachContextKey(e,app))continue;
-  for(const hit of s.reachResults||[])if(hit.allClear&&hit.tier===3&&!app.draws.includes(hit.number)&&!e.drawn.has(hit.number))out.add(hit.number);
- }
+function rouletteReachTiers(){
+ const out=new Map(),s=slots[active];if(!app||app.phase!=='playing'||jpcSession.active||!s)return out;
+ const e=s.engine;if(!e||!(e.kind==='choco'?chocoReachReady(s,app):reachAvailable(s,app)))return out;
+ for(const hit of s.reachResults||[])if(hit.tier>=1&&!app.draws.includes(hit.number)&&!e.drawn.has(hit.number))out.set(hit.number,hit.tier);
  return out;
 }
+function rouletteAllClearNumbers(){return new Set([...rouletteReachTiers()].filter(([,tier])=>tier===3).map(([n])=>n));}
+function rouletteSelectedBoard(){return {index:active,name:['クッキーリンク','チョコレートキャニオン','シックスドロップ'][active]};}
 // Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
 function setupManualNumbers(){
  const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
@@ -8116,6 +8139,15 @@ $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(
 $('reset').onclick=debugResetRound;
 function syncPause(){for(const s of slots){if(s.miniResultState)s.miniResultState.stamp=null;s.dirtyMini=true;}if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
  if(['ready','playing','result','paying','complete'].includes(app?.phase)){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();if(audio&&audio.state!=='running')unlock();}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;resultAutoStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);if(jpcSession.active){rouletteDriver?.setPaused(menuOpen||userPaused||document.hidden||!inView);syncJpcBgm();}syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused){requestShatter(slots[active]);if(musicWanted()&&bgmPlayer.paused&&bgmRole!=='transition')activateGameAudio();}}}
+function setCanyonDebugDepth(){
+ const input=$('canyon-debug-depth'),depth=Number(input.value);if(app.phase!=='ready'||jpcSession.active)return false;
+ if(input.value===''||!Number.isSafeInteger(depth)||depth<0||depth>999999){$('canyon-depth-status').textContent='0～999999mの整数を入力';return false;}
+ const slot=slots[1],e=slot.engine;e.checkpoint=null;e.depth=depth;e.startDepth=depth;e.dugTotal=depth;e.fruitCount=Math.floor(Math.max(0,depth-1)/100);e.bonusResolvedDepth=e.fruitCount*100;e.freshBoard();e.reset();
+ slot.chocoBgSmoothVersion=null;slot.chocoDepthVersion=null;slot.reachBoardKey=null;slot.chocoReachKey=null;slot.reachResults=[];slot.tabReachResults=[];slot.dirtyMain=slot.dirtyMini=true;
+ $('canyon-depth-status').textContent=depth+'mから開始';select(1);scheduleUI(app);return true;
+}
+$('canyon-depth-apply').onclick=setCanyonDebugDepth;
+$('canyon-debug-depth').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();setCanyonDebugDepth();}};
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=null;$('pause').hidden=true;$('pause').tabIndex=-1;
 $('sound').onchange=()=>{

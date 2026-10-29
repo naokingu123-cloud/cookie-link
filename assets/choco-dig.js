@@ -611,12 +611,16 @@ function chocoDetectorFrame(x,px,py,width,height,time){
 }
 function chocoMineUI(x,e,L,fx,p,time,W,H,bet,s){
  const sign=(px,py,width,height,hit=false)=>{x.fillStyle=hit?'#8d492bef':'#173343ef';x.strokeStyle=hit?'#fff69c':'#e5bb78';x.lineWidth=1;x.beginPath();x.roundRect(px,py,width,height,5);x.fill();x.stroke();};
- const topHit=chocoNumberHit(e,e.lucky.numbers[0]);sign(L.left,2,7*L.w,14,topHit);chocoText(x,e.lucky.numbers[0],L.left+14,7,10,topHit?'#fff26f':'#fff0b2');chocoText(x,(topHit?'HIT!':'ALL')+'  ↓ ↓ ↓ ↓ ↓ ↓ ↓',L.left+3.5*L.w+9,7,8,topHit?'#fff26f':'#fff0b2');
- chocoReachLabel(x,s,e.lucky.numbers[0],L.left+14,11,time,5.5);
+ const topHit=chocoNumberHit(e,e.lucky.numbers[0]),topY=L.top-55,topCx=L.left+3.5*L.w;
+ sign(L.left,topY,7*L.w,14,topHit);chocoText(x,e.lucky.numbers[0]+'  '+(topHit?'HIT!':'ALL'),topCx,topY+5,11,topHit?'#fff26f':'#fff0b2');
+ chocoReachLabel(x,s,e.lucky.numbers[0],topCx-19,topY+9,time,5.5);
+ for(let c=0;c<7;c++)chocoText(x,'↓',L.left+(c+.5)*L.w,topY+11,7,'#b7f5ff');
  for(let side=1;side<=2;side++){
-  const cx=side===1?L.left-L.w*3.5:L.left+7*L.w+L.w*3.5,cy=L.top+L.h*4.7,n=e.lucky.numbers[side],hit=chocoNumberHit(e,n);sign(cx-14,cy-24,28,48,hit);chocoText(x,n,cx,cy-14,15);chocoText(x,hit?'HIT!':'ALL',cx,cy+4,7,hit?'#fff36f':'#fff0b2');chocoReachLabel(x,s,n,cx,cy-8,time,6);chocoText(x,side===1?'→':'←',cx,cy+17,13,'#b7f5ff');
-  x.strokeStyle=hit?'#fff3a0':'#9ec4cd';x.lineWidth=1;x.beginPath();x.moveTo(cx,L.top+2.5*L.h);x.lineTo(cx,cy-32);x.moveTo(cx,cy+32);x.lineTo(cx,L.top+10.5*L.h);x.stroke();
-  for(const row of CHOCO_SIDE_ROWS){const y=L.top+(row+.5)*L.h;chocoText(x,side===1?'→':'←',cx,y,11,'#b7f5ff');}
+  const signDir=side===1?-1:1,edge=side===1?L.left:L.left+7*L.w,cx=edge+signDir*L.w*.84,cy=L.top+L.h*4.65,n=e.lucky.numbers[side],hit=chocoNumberHit(e,n);
+  sign(cx-18,cy-20,36,40,hit);chocoText(x,n,cx-5*signDir,cy-8,16);chocoText(x,hit?'HIT!':'ALL',cx,cy+9,8,hit?'#fff36f':'#fff0b2');chocoReachLabel(x,s,n,cx-5*signDir,cy-2,time,6);chocoText(x,side===1?'→':'←',cx-signDir*12,cy+1,10,'#b7f5ff');
+  // A close bracket connects ALL to the three matching side drills.
+  const bx=edge+signDir*L.w*.16;x.strokeStyle=hit?'#fff3a0':'#9ec4cd';x.lineWidth=1;x.beginPath();x.moveTo(cx-signDir*18,cy);x.lineTo(bx,cy);x.moveTo(bx,L.top+2.5*L.h);x.lineTo(bx,L.top+10.5*L.h);
+  for(const row of CHOCO_SIDE_ROWS){const y=L.top+(row+.5)*L.h;x.moveTo(bx,y);x.lineTo(edge+signDir*L.w*.34,y);}x.stroke();
  }
  const panelWidth=L.left-9,displayDepth=chocoDepthValue(s,e,time);chocoDetectorFrame(x,3,2,panelWidth,111,time);chocoDepthPanel(x,displayDepth,e.startDepth,10,10,panelWidth-14,19);chocoDepthTab(s,e,displayDepth);
  if(e.totalHundredths>0)chocoText(x,'継続確定',12,54,9,'#fff47b','left');
@@ -667,7 +671,14 @@ function chocoChainSections(grid){
  if(chocoGroups(trial).groups.some(g=>g[0].tile.color>=0&&g.length>=4&&g.some(v=>moved.has(v.tile.id))))section.forEach(v=>result.add(v.tile.id));}
  chocoChainCache.set(grid,result);return result;
 }
-function chocoChainSheen(x,px,py,w,h,time,id){x.save();x.beginPath();x.rect(px+1,py+1,w-2,h-2);x.clip();const at=motionReduced?.5:(time/2200+id*.013)%1,shine=x.createLinearGradient(px-w+at*w*3,py,px+at*w*3,py+h);shine.addColorStop(0,'#fff4c000');shine.addColorStop(.5,'#fff4c066');shine.addColorStop(1,'#fff4c000');x.fillStyle=shine;x.fillRect(px,py,w,h);chocoSparkle(x,px+w/2,py+h/2,Math.min(w,h),time,id,2);x.restore();}
+function chocoChainSheen(x,cells,w,h,time){
+ if(!cells.length)return;const minX=Math.min(...cells.map(v=>v.x)),minY=Math.min(...cells.map(v=>v.y)),maxX=Math.max(...cells.map(v=>v.x))+w,maxY=Math.max(...cells.map(v=>v.y))+h,span=maxX-minX,id=cells[0].id;
+ x.save();x.beginPath();for(const v of cells)x.rect(v.x,v.y,w,h);x.clip();
+ // One uninterrupted beam across the entire polyomino, with no per-cell border.
+ const at=motionReduced?.5:(time/2400+id*.013)%1,beam=minX-span+at*span*3,shine=x.createLinearGradient(beam,minY,beam+span,maxY);shine.addColorStop(0,'#fff4c000');shine.addColorStop(.5,'#fff4c05c');shine.addColorStop(1,'#fff4c000');x.fillStyle=shine;x.fillRect(minX,minY,span,maxY-minY);
+ // Sparse highlights belong to the section, not to every individual square.
+ const count=Math.min(3,Math.max(1,Math.ceil(cells.length/4)));for(let i=0;i<count;i++){const v=cells[Math.floor((i+.5)*cells.length/count)];chocoSparkle(x,v.x+w*.5,v.y+h*.5,Math.min(w,h)*.7,time,id+i*11,1);}x.restore();
+}
 function chocoDrawItem(x,t,cx,cy,size,time=0,label=true,bet=100){
  x.save();
  if(t.item==='ore'){
@@ -800,9 +811,10 @@ function drawChoco(s,now=performance.now()){
   if(dissolving.has(t.id))chocoPaintMelt(x,t,r,c,grid,px,py,w,h,p);
   else if(softening.has(t.id)){const a=Math.max(0,Math.min(1,(q-softening.get(t.id).wave*.3)/.7));x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,t,r,c,grid,-w/2,-h/2,w,h,time,bet);x.restore();x.fillStyle='rgba(255,223,161,'+(Math.sin(a*Math.PI)*.23)+')';x.fillRect(px+1,py+1,w-2,h-2);}
   else{const dest=finalPositions.get(t.id),nextMask=dest?chocoTileMask(e.strata,...dest):null;chocoPaintTile(x,t,r,c,grid,px,py,w,h,time,bet,nextMask,scrollQ);}
-  if(chainSections.has(t.id)&&!dissolving.has(t.id))chocoChainSheen(x,px,py,w,h,time,t.id);
   if((fx?.phase==='canyonOdds'&&fx.affected.includes(t.id))||(['canyonPower','canyonTransform'].includes(fx?.phase)&&fx.targets.some(v=>v.tile.id===t.id))){x.strokeStyle='#fff3a5';x.lineWidth=2;x.strokeRect(px+1,py+1,w-2,h-2);}
  }
+ // Paint connected highlights after all cake cells so seams cannot restart the beam.
+ for(const group of chocoGroups(grid).groups){if(!chainSections.has(group[0].tile.id))continue;const cells=group.filter(v=>!dissolving.has(v.tile.id)).map(v=>{const m=moves.get(v.tile.id);return {id:v.tile.id,x:left+v.c*w,y:top+(v.r+(m?Math.min(m.to[0]-m.from[0],(fx.fallDistance||1)*q*q):0)-(scroll?scroll.advanced*scrollQ:0))*h};});chocoChainSheen(x,cells,w,h,time);}
  // Previously hit strata keep softening/melting while the drill is already travelling onward.
  for(const effect of fx?.digEffects||[]){const age=(fx.digTime||0)+(fx.elapsed||0)-effect.start;if(age<0||age>=effect.duration)continue;for(const v of effect.targets){const px=left+v.c*w,py=top+v.r*h;if(age<160){const a=age/160;x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,v.tile,v.r,v.c,effect.before,-w/2,-h/2,w,h,time,bet);x.restore();}else chocoPaintMelt(x,v.tile,v.r,v.c,effect.before,px,py,w,h,(age-160)/600);}}
  if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const t=e.strata[r]?.[c];if(t)chocoPaintTile(x,t,r,c,e.strata,left+c*w,top+(r+scroll.advanced*(1-scrollQ))*h,w,h,time,bet);}

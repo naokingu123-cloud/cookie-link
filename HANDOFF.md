@@ -474,3 +474,10 @@
 - Cached deterministic support-removal previews mark cake sections whose removal causes a landed >=4 section to clear; shimmer is shared by main/mini board. No RNG consumption.
 - All ore drawing paths have rank-scaled sparkle, including burial clipping/table/crane/bowl. Single-line BET-scaled minimum table (300WIN～). Acquired counter six digits, animated downward arrows during transfer to TOTAL WIN. Existing retarget/hold/conservation preserved.
 - Tests: exact 1000 quantiles per ore, fully-landed crane collection, 80 games, scale counter conservation, five viewport browser layouts and drawing checks.
+
+## Selected roulette / Canyon presentation v21 (2026-10-30)
+- Roulette reach tiers come only from slots[active], using Canyon's own reach readiness or the shared Cookie/Six context key. Red/purple/rainbow numbers pulse; highest tier extends a moving rainbow over the outer slope LEDs. Switching tabs drops other boards' tiers; drawn/stale numbers excluded.
+- Central 48px dot LED uses code-native cookie/cake/drop pixel art for selected board; JPC retains 0–70 counter. BET TIME uses a 25-position ring (one phrase plus spaces), with positive world-angle / counterclockwise movement compensated for rotor rotation, avoiding the old 25-vs-10 wrap discontinuity.
+- Canyon ALL is centered over top drills and adjacent to side drills with connecting brackets. Menu color-count row includes depth input (0–999999 integer), editable only in BET; regenerates terrain at absolute depth, resets round presentation, preserves upcoming/exact milestone layer.
+- Cake chain glow is one gradient clipped to the entire connected section, with sparse section-level highlights (not one beam/star set per cell). Ore sparkles remain rank-scaled.
+- .github/tests/selected_roulette_browser.py: selected-only tier switches, actual red/purple shader colors/pulse, rainbow slope, central icons/JPC counter, BET world-angle direction/glyph ring, depth boundary/terrain validation, one continuous section gradient.
