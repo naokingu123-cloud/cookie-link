@@ -2554,6 +2554,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 </section></div>
 <div id="title-toast" class="title-toast" role="status" aria-live="polite" hidden><span class="menu-art medal-art" aria-hidden="true"></span><div><small>称号 GET!</small><strong id="title-toast-name"></strong></div></div>
 </main></div><dialog id="wardrobe"><h2>ゼリーペット</h2><div class="row"><label>ゼリー</label><div class="swatches" id="jelly-colors"></div></div><div class="row"><label>リボン</label><div class="swatches" id="ribbon-colors"></div></div><div class="row"><label>かざりの色</label><div class="swatches" id="charm-colors"></div></div><div class="row"><label>かざり</label><button type="button" data-pet-top="cookie">クッキー</button><button type="button" data-pet-top="drop">しずく</button></div><div class="row"><label>おめかし</label><button type="button" data-pet-outfit="bow">リボン</button><button type="button" data-pet-outfit="plain">なし</button></div><button id="close-dress">閉じる</button></dialog>
+<script src="assets/bgm-player.js"></script>
 <script>(()=>{'use strict';
 const THREE=(()=>{
 /**
@@ -7595,11 +7596,11 @@ function syncManualNumbers(){
 function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
 
-const bgmTracks=Array.from({length:7},(_,i)=>'assets/audio/wonder-'+String(i+1).padStart(2,'0')+'.mp3');
+const bgmTracks=Array.from({length:9},(_,i)=>Array.from({length:i<2?3:2},(_,j)=>'assets/audio/vocal-'+(i+1)+'-'+(j+1)+'.mp3')).flat();
 const BET_BGM_FILE='assets/audio/bet-time.mp3',BET_FADE_MS=900;
 let bgmRole='none',queuedGameBgm='',bgmTransition=null,bgmTransitionFrame=0,bgmTransitionSerial=0;
 const bgmPreloader=new Audio();bgmPreloader.preload='metadata';
-const bgmPlayer=new Audio();bgmPlayer.loop=true;bgmPlayer.preload='auto';bgmPlayer.setAttribute('playsinline','');
+const bgmPlayer=new LoopingBgmPlayer();bgmPlayer.loop=true;bgmPlayer.preload='auto';bgmPlayer.setAttribute('playsinline','');
 const normalBgmVolume=.075;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
 let arrivalBuffer=null,arrivalLoading=null;
@@ -7686,8 +7687,8 @@ let bgmFadeFrame=0,bgmFadeToken=0;
 let bgmMediaSource=null,bgmGain=null,bgmLevel=normalBgmVolume;
 function connectBgmAudio(){
  if(!audio||bgmMediaSource)return;
- bgmMediaSource=audio.createMediaElementSource(bgmPlayer);bgmGain=audio.createGain();bgmGain.gain.value=bgmLevel;
- bgmMediaSource.connect(bgmGain);bgmGain.connect(audio.destination);bgmPlayer.volume=1;
+ bgmGain=audio.createGain();bgmGain.gain.value=bgmLevel;
+ bgmPlayer.connect(audio,bgmGain);bgmMediaSource=bgmPlayer.mediaSource;bgmGain.connect(audio.destination);bgmPlayer.volume=1;
 }
 function setBgmLevel(value,{fade=false}={}){bgmLevel=fade?Math.max(0,Math.min(1,value)):normalBgmVolume;if(bgmGain){bgmGain.gain.cancelScheduledValues(audio.currentTime);bgmGain.gain.setValueAtTime(bgmLevel,audio.currentTime);}else bgmPlayer.volume=bgmLevel;}
 function cancelBgmFade(){bgmFadeToken++;if(bgmFadeFrame)cancelAnimationFrame(bgmFadeFrame);bgmFadeFrame=0;}
@@ -7781,7 +7782,7 @@ function queueRoundBgm(){
  const pool=bgmTracks.filter(x=>x!==lastBgm),choices=pool.length?pool:bgmTracks;
  queuedGameBgm=choices[Math.floor(Math.random()*choices.length)];lastBgm=queuedGameBgm;
  bgmRole='bet';bgmPlayer.src=BET_BGM_FILE;bgmPlayer.loop=true;bgmPlayer.muted=false;bgmPlayer.playbackRate=1;bgmPlayer.load();
- bgmPreloader.src=queuedGameBgm;bgmPreloader.load();
+ bgmPreloader.src=queuedGameBgm;bgmPreloader.load();if(audio)bgmPlayer.prepare(queuedGameBgm).catch(()=>{});
 }
 function normalAudioWanted(){return !!app&&app.phase==='playing'&&!app.paused&&!jpcSession.active&&!document.hidden&&inView&&$('sound').checked;}
 function betAudioWanted(){return !!app&&app.phase==='ready'&&!app.paused&&!jpcSession.active&&!document.hidden&&inView&&$('sound').checked;}
@@ -7797,7 +7798,7 @@ function activateGameAudio({gesture=false}={}){
  const valid=()=>attempt===audioAttempt&&epoch===audioRoundEpoch&&round===app.token&&role===bgmRole&&$('sound').checked;
  audioPreparing=true;audioPreparationFromGesture=gesture;audioAttemptedToken=app.token;setAudioStatus('loading');
  const resume=unlock();if(!audio){audioPreparing=false;setAudioStatus('error');return Promise.resolve(false);}
- try{connectBgmAudio();prepareAnnouncer();}catch(error){audioPreparing=false;setAudioStatus('error');return Promise.resolve(false);}
+ try{connectBgmAudio();prepareAnnouncer();if(queuedGameBgm)bgmPlayer.prepare(queuedGameBgm).catch(()=>{});}catch(error){audioPreparing=false;setAudioStatus('error');return Promise.resolve(false);}
  if(musicWanted())setBgmLevel(normalBgmVolume);
  let play=Promise.resolve();try{if(musicWanted())play=bgmPlayer.play();}catch(error){play=Promise.reject(error);}
  const task=audioTimeout(Promise.all([resume,play,prepareArrival(),prepareHammerImpact()]),8000).then(([running,,arrival,hammer])=>{
@@ -7886,10 +7887,45 @@ function ensureJpcCells(){
  const grid=$('jpc-grid');if(grid.children.length===25)return;
  for(let n=1;n<=25;n++){const cell=document.createElement('div');cell.className='jpc-pocket';cell.setAttribute('role','listitem');cell.innerHTML='<b>'+n+'</b><small>0 HIT</small>';cell.dataset.count='0';grid.append(cell);}
 }
+// JPC uses the same single music player/bus; number announcements remain independent.
+const JPC_BGM_FILES=['assets/audio/jpc-1.mp3','assets/audio/jpc-2.mp3','assets/audio/jpc-3.mp3','assets/audio/jpc-4.mp3'];
+const JPC_REACH_BGM_FILE='assets/audio/jpc-reach.mp3';
+let jpcAudioTask=null;
+function jpcBgmFile(){
+ if(!jpcSession.active||!rouletteDriver)return '';
+ const d=rouletteDriver,filled=d.jpcCounts.filter(n=>n>0).length;
+ if(d.draw.state==='ready'||d.draw.state==='complete'||filled===25)return '';
+ if(filled===24)return JPC_REACH_BGM_FILE;
+ return JPC_BGM_FILES[Math.min(3,Math.floor((Math.max(1,d.physics.serial)-1)/20))];
+}
+function jpcAudioWanted(){return !!jpcBgmFile()&&$('sound').checked&&!menuOpen&&!userPaused&&!document.hidden&&inView;}
+function syncJpcBgm({gesture=false}={}){
+ const file=jpcBgmFile();
+ if(!file){if(bgmRole==='jpc'){audioRoundEpoch++;cancelAudioPreparation();cancelBgmFade();cancelBgmTransition();bgmPlayer.pause();bgmPlayer.currentTime=0;bgmRole='none';jpcAudioTask=null;}return Promise.resolve(false);}
+ if(!jpcAudioWanted()){if(bgmRole==='jpc')bgmPlayer.pause();return Promise.resolve(false);}
+ if(bgmRole!=='jpc'||bgmPlayer.getAttribute('src')!==file){
+  audioRoundEpoch++;cancelAudioPreparation();cancelBgmFade();cancelBgmTransition();jpcAudioTask=null;
+  bgmPlayer.pause();bgmRole='jpc';bgmPlayer.src=file;bgmPlayer.loop=true;bgmPlayer.muted=false;bgmPlayer.playbackRate=1;bgmPlayer.load();
+  setBgmLevel(normalBgmVolume);audioNeedsGesture=false;
+ }
+ if(!gesture&&audioNeedsGesture)return Promise.resolve(false);
+ if(jpcAudioTask)return jpcAudioTask;
+ if(!bgmPlayer.paused&&audio?.state==='running')return Promise.resolve(true);
+ const epoch=audioRoundEpoch,valid=()=>epoch===audioRoundEpoch&&bgmRole==='jpc'&&jpcBgmFile()===file;
+ const resume=unlock();
+ try{connectBgmAudio();prepareAnnouncer();prepareArrival();}catch{}
+ const task=audioTimeout(Promise.all([resume,bgmPlayer.play()]),8000).then(()=>{
+  if(!valid())return false;
+  if(!jpcAudioWanted())bgmPlayer.pause();
+  audioNeedsGesture=false;setAudioStatus('ready');return true;
+ }).catch(error=>{if(valid()){audioNeedsGesture=error?.name==='NotAllowedError';setAudioStatus(audioNeedsGesture?'blocked':'error');}return false;})
+ .finally(()=>{if(jpcAudioTask===task)jpcAudioTask=null;});
+ jpcAudioTask=task;return task;
+}
 function stopJpcTicker(){if(jpcSession.timer!==null)clearTimeout(jpcSession.timer);jpcSession.timer=null;}
 function paintJpcDashboard(){
  if(!jpcSession.active||!rouletteDriver)return;
- ensureJpcCells();const driver=rouletteDriver,counts=driver.jpcCounts,launched=driver.physics.serial,hits=driver.physics.hits,filled=counts.filter(n=>n>0).length,state=driver.draw.state;
+ syncJpcBgm();ensureJpcCells();const driver=rouletteDriver,counts=driver.jpcCounts,launched=driver.physics.serial,hits=driver.physics.hits,filled=counts.filter(n=>n>0).length,state=driver.draw.state;
  const key=[launched,state,...counts].join(',');if(key===jpcSession.key){syncDebugButtons();return;}jpcSession.key=key;
  const reach=filled===24?counts.findIndex(n=>n===0):-1;
  put('jpc-launched',String(launched));put('jpc-landed',String(hits.length));put('jpc-filled',String(filled));put('jpc-round','ROUND '+Math.min(4,Math.ceil(Math.max(1,launched)/20))+' / 4');
@@ -7918,7 +7954,7 @@ function toggleJpcMode(){
  if(!rouletteReady||!rouletteDriver||menuOpen)return false;
  if(jpcSession.active){
   jpcSession.direct=false;put('jpc-heading','JACKPOT CHANCE');
-  stopJpcTicker();stopSounds();jpcSession.active=false;$('screen').classList.remove('jpc-active');$('jpc-dashboard').hidden=true;
+  stopJpcTicker();stopBgm();stopSounds();jpcSession.active=false;$('screen').classList.remove('jpc-active');$('jpc-dashboard').hidden=true;
   for(const [el,was] of jpcSession.inert)el.inert=was;jpcSession.inert=[];
   $('a8-mode').value='eight';rouletteDriver.draw.select('eight');userPaused=false;app.prepare();syncPause();scheduleAutoRound();scheduleUI(app);requestFit();return true;
  }
@@ -7932,7 +7968,7 @@ function toggleJpcMode(){
 function wakeAudioFromGesture(event){
  if(!event.isTrusted||!app||!$('sound').checked||!['ready','playing'].includes(app.phase)||menuOpen||userPaused||document.hidden||!inView)return;
  if(event.target?.closest?.('#debug-reset,#sound'))return;
- if(jpcSession.active){Promise.resolve(unlock()).then(()=>{prepareAnnouncer();pumpNumberAnnouncements();});return;}
+ if(jpcSession.active){syncJpcBgm({gesture:true});Promise.resolve(unlock()).then(()=>{prepareAnnouncer();pumpNumberAnnouncements();});return;}
  pumpNumberAnnouncements();
  if(bgmRole==='transition'||audio?.state==='running'&&!bgmPlayer.paused&&arrivalBuffer&&hammerImpactBuffer&&!audioNeedsGesture)return;
  activateGameAudio({gesture:true});
@@ -7951,12 +7987,12 @@ $('jpc-mode').onclick=toggleJpcMode;
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=debugResetRound;
 function syncPause(){for(const s of slots){if(s.miniResultState)s.miniResultState.stamp=null;s.dirtyMini=true;}if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
- if(['ready','playing'].includes(app?.phase)){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();if(audio&&audio.state!=='running')unlock();}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;resultAutoStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);if(jpcSession.active)rouletteDriver?.setPaused(menuOpen||userPaused||document.hidden||!inView);syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused){requestShatter(slots[active]);if(musicWanted()&&bgmPlayer.paused&&bgmRole!=='transition')activateGameAudio();}}}
+ if(['ready','playing'].includes(app?.phase)){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();if(audio&&audio.state!=='running')unlock();}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;resultAutoStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);if(jpcSession.active){rouletteDriver?.setPaused(menuOpen||userPaused||document.hidden||!inView);syncJpcBgm();}syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused){requestShatter(slots[active]);if(musicWanted()&&bgmPlayer.paused&&bgmRole!=='transition')activateGameAudio();}}}
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=null;$('pause').hidden=true;$('pause').tabIndex=-1;
 $('sound').onchange=()=>{
  if(!$('sound').checked){stopBgm();stopSounds();audioNeedsGesture=false;setAudioStatus('off');scheduleAutoRound();}
- else{audioPreparedToken=-1;audioNeedsGesture=false;if(jpcSession.active)Promise.resolve(unlock()).then(()=>prepareAnnouncer());else activateGameAudio({gesture:true});}
+ else{audioPreparedToken=-1;audioNeedsGesture=false;if(jpcSession.active){syncJpcBgm({gesture:true});Promise.resolve(unlock()).then(()=>prepareAnnouncer());}else activateGameAudio({gesture:true});}
 };
 for(const type of ['pointerup','touchend','keydown'])document.addEventListener(type,wakeAudioFromGesture,{passive:true});
 const soundLabel=$('sound').closest('label');if(soundLabel)$('bet-countdown').append(soundLabel);

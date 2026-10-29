@@ -1,0 +1,227 @@
+{
+  "assets/audio/vocal-2-1.mp3": {
+    "title": "アニマロッタ2ワンダー1ボーカル",
+    "start": 0.12,
+    "end": 50.07975,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 50.07975
+  },
+  "assets/audio/vocal-2-2.mp3": {
+    "title": "アニマロッタ2ワンダー2ボーカル",
+    "start": 19.96,
+    "end": 89.84,
+    "crossfade": 0.06,
+    "method": "spectral-repeat",
+    "score": 0.80849,
+    "duration": 101.72375
+  },
+  "assets/audio/vocal-2-3.mp3": {
+    "title": "アニマロッタ2ワンダー3ボーカル",
+    "start": 0.12,
+    "end": 75.13125,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 75.13125
+  },
+  "assets/audio/vocal-3-1.mp3": {
+    "title": "アニマロッタ3ワンダー1ボーカル",
+    "start": 0.12,
+    "end": 100.496,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 100.496
+  },
+  "assets/audio/vocal-3-2.mp3": {
+    "title": "アニマロッタ3ワンダー2ボーカル",
+    "start": 3,
+    "end": 68.9325,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.77517,
+    "duration": 76.41125
+  },
+  "assets/audio/jpc-1.mp3": {
+    "title": "アニマロッタ4BIGJPC1",
+    "start": 93,
+    "end": 275.3155,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.9748,
+    "duration": 313.2355
+  },
+  "assets/audio/jpc-2.mp3": {
+    "title": "アニマロッタ4BIGJPC2",
+    "start": 108,
+    "end": 284.37625,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.97209,
+    "duration": 361.62725
+  },
+  "assets/audio/jpc-3.mp3": {
+    "title": "アニマロッタ4BIGJPC3",
+    "start": 39.02925,
+    "end": 210,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.96399,
+    "duration": 350.1335
+  },
+  "assets/audio/jpc-4.mp3": {
+    "title": "アニマロッタ4BIGJPC4",
+    "start": 20,
+    "end": 268.7485,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.98038,
+    "duration": 339.9195
+  },
+  "assets/audio/jpc-reach.mp3": {
+    "title": "アニマロッタ4BIGJPCリーチ",
+    "start": 10,
+    "end": 48.8055,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.95642,
+    "duration": 116.8215
+  },
+  "assets/audio/vocal-4-1.mp3": {
+    "title": "アニマロッタ4ワンダー1ボーカル",
+    "start": 15.2,
+    "end": 102.48,
+    "crossfade": 0.06,
+    "method": "spectral-repeat",
+    "score": 0.79662,
+    "duration": 105.45925
+  },
+  "assets/audio/vocal-4-2.mp3": {
+    "title": "アニマロッタ4ワンダー2ボーカル",
+    "start": 0.12,
+    "end": 84.692,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 84.692
+  },
+  "assets/audio/vocal-5-1.mp3": {
+    "title": "アニマロッタ5ワンダー1ボーカル",
+    "start": 19.72,
+    "end": 87.48,
+    "crossfade": 0.06,
+    "method": "spectral-repeat",
+    "score": 0.69549,
+    "duration": 113.66175
+  },
+  "assets/audio/vocal-5-2.mp3": {
+    "title": "アニマロッタ5ワンダー2ボーカル",
+    "start": 0.12,
+    "end": 105.04125,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 105.04125
+  },
+  "assets/audio/vocal-6-1.mp3": {
+    "title": "アニマロッタ6ワンダー1ボーカル",
+    "start": 0.12,
+    "end": 111.154,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 111.154
+  },
+  "assets/audio/vocal-6-2.mp3": {
+    "title": "アニマロッタ6ワンダー2ボーカル",
+    "start": 0.12,
+    "end": 78.16125,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 78.16125
+  },
+  "assets/audio/vocal-7-1.mp3": {
+    "title": "アニマロッタ7ワンダー1ボーカル",
+    "start": 0.12,
+    "end": 76.85525,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 76.85525
+  },
+  "assets/audio/vocal-7-2.mp3": {
+    "title": "アニマロッタ7ワンダー2ボーカル",
+    "start": 3,
+    "end": 79.8,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.81678,
+    "duration": 129.46575
+  },
+  "assets/audio/vocal-8-1.mp3": {
+    "title": "アニマロッタ8ワンダー1ボーカル",
+    "start": 20,
+    "end": 266.05,
+    "crossfade": 0.025,
+    "method": "waveform-repeat",
+    "score": 0.9932,
+    "duration": 427.317
+  },
+  "assets/audio/vocal-8-2.mp3": {
+    "title": "アニマロッタ8ワンダー2ボーカル",
+    "start": 2.0,
+    "end": 103.57675,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 103.57675
+  },
+  "assets/audio/vocal-9-1.mp3": {
+    "title": "アニマロッタ9ワンダー1ボーカル",
+    "start": 2.06,
+    "end": 108.0,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 109.48025
+  },
+  "assets/audio/vocal-9-2.mp3": {
+    "title": "アニマロッタ9ワンダー2ボーカル",
+    "start": 0.12,
+    "end": 108.28,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 109.0885
+  },
+  "assets/audio/vocal-1-1.mp3": {
+    "title": "アニマロッタ初代ワンダー1ボーカル",
+    "start": 0.2,
+    "end": 72.4145,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 72.4145
+  },
+  "assets/audio/vocal-1-2.mp3": {
+    "title": "アニマロッタ初代ワンダー2ボーカル",
+    "start": 0.12,
+    "end": 71.52625,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 71.52625
+  },
+  "assets/audio/vocal-1-3.mp3": {
+    "title": "アニマロッタ初代ワンダー3ボーカル",
+    "start": 0.12,
+    "end": 71.474,
+    "crossfade": 0.12,
+    "method": "full-song-boundary",
+    "score": 0,
+    "duration": 71.474
+  }
+}

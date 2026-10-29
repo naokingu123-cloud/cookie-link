@@ -415,3 +415,10 @@
 - chocoDemoHitsは本番連結グループ単位でデモ掘削。半分だけ残る問題を鉱石/ボーナス両場面で修正。
 - cookieMiniEventで盤面/演出のイベント時スナップショット。miniatureは共通素材に加え、本盤面の落下時間/補充タイミング/破片描画を再利用。選択中はCSSラベル＋明滅。
 - achievementTicker/achievementEventを共通recordEventへ接続。黒いroulette-info-strip内へ白文字で右→左、pause対応、手動ボタンを避ける。外部送信なし。
+
+## 追加更新: JPC段階BGM・通常ボーカル20曲・サンプル単位ループ（2026-10-30）
+- JPC1/2/3/4は発射1–20/21–40/41–60/61–70球、24ポケット成立時はリーチBGM優先。JP成立/70球終了で停止、再開時JPC1、通常復帰時BET曲。
+- 通常ゲームは添付の初代～9ボーカル20曲から1曲をゲームごとに選択。直前曲を除外し、ゲーム内では変えない。BET曲と既存の音量・フェード・番号音声は維持。
+- 新規25音源は元MP3をそのまま assets/audio/jpc-*.mp3 / vocal-*-*.mp3 として保存。assets/bgm-player.js がAudioBufferSourceNodeのloopStart/loopEndを用いてサンプルクロックでループ。最初のイントロは維持、pause位置保持、古い非同期再生を世代ガード、デコード済みキャッシュ2曲。
+- ループ設定 assets/audio/bgm-loops.json：波形/スペクトル反復一致11曲、明確な一致なし14曲は全曲の可聴範囲+120ms境界ブレンド。後者は音楽的なフレーズ位置未確定であり、ユーザー指定時刻で改善可能。全曲を聴感検証済みと主張しない。
+- .github/tests/jpc_bgm_browser.py にJPC切替と25曲のデコード/境界/実ループ/通常選曲維持/リセット検証。詳細 docs/bgm-v19.md。
