@@ -1,12 +1,14 @@
 const fs=require('fs'),assert=require('node:assert/strict');
 const html=fs.readFileSync('index.html','utf8'),source=fs.readFileSync('assets/choco-dig.js','utf8'),base=html.slice(html.indexOf('class Engine{'),html.indexOf('/* Chocolate Canyon:',html.indexOf('class Engine{')));
 assert(html.includes(source.trim()),'Shipped engine and dedicated source differ');
-const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY,chocoFillRows,chocoOreRates,CHOCO_FRUIT_DEPTH,chocoFruitWin,chocoFallDuration,chocoBonusKind};')(5,()=>0);
+const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY,chocoFillRows,chocoOreValue,chocoOreRates,CHOCO_FRUIT_DEPTH,chocoFruitWin,chocoFallDuration,chocoBonusKind};')(5,()=>0);
 const empty=()=>Array.from({length:12},()=>Array(7).fill(null)),tile=(id,color,prize=null)=>({id,color,number:null,prize}),rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 const full=()=>Array.from({length:12},(_,r)=>Array.from({length:7},(_,c)=>tile(r*7+c+1,(r+c)%4)));
 const state=()=>({drills:Array.from({length:13},(_,c)=>({numbers:[c+1],hits:[],level:1})),lucky:{numbers:[14,15,16],hits:[],drawn:[]}});
 // Consecutive fall steps become one accelerated movement without resetting at each metre.
 {const a=empty(),b=empty(),c=empty();a[0][0]=tile(1,0);b[1][0]=tile(1,0);c[2][0]=tile(1,0);const joined=q.chocoJoinMotion([{phase:'canyonFall',before:a,grid:b,depth:0,ms:180},{phase:'canyonFall',before:b,grid:c,depth:0,ms:180}]);assert.equal(joined.length,1);assert.equal(joined[0].ms,q.chocoFallDuration(2));assert.deepEqual(joined[0].moves[0].from,[0,0]);assert.deepEqual(joined[0].moves[0].to,[2,0]);}
+// Frequent continuation copper retains both legal payouts; every ore respects its range/step.
+{const w={seed:72819};let small=0;for(let i=0;i<5000;i++){const value=q.chocoOreValue(w,'copper');assert([10,20].includes(value));small+=value===10;}assert(small>3950&&small<4450);for(const [kind,min,max,step]of [['silver',50,100,10],['gold',200,400,100],['diamond',500,1000,100]])for(let i=0;i<200;i++){const v=q.chocoOreValue(w,kind);assert(v>=min&&v<=max&&(v-min)%step===0);}}
 // One connected component is one stratum, regardless of its cell count.
 assert.deepEqual(q.CHOCO_DRILL_POWER,[0,1,2,3,4,5]);
 for(let level=1;level<=5;level++){

@@ -2938,9 +2938,10 @@ const chocoFruitWin=index=>[300,500,1000,2000,3000,5000,7500,10000,20000,30000][
 const chocoBonusKind=index=>index<=4?'fruit':CHOCO_BONUS_GEMS[Math.min(5,index-5)];
 const chocoFallDuration=distance=>Math.round(125*Math.sqrt(Math.max(1,distance)));
 const CHOCO_POWERS={clear:'全消し',random:'ランダム消し',transmute:'鉱石化'};
-function chocoOreRates(distance=0){const t=Math.min(1,Math.max(0,distance)/60);return {...CHOCO_ITEM_RATES,copper:.1332-.004*t,silver:.004+.002*t,gold:.0021+.001*t,diamond:.00045+.0002*t,odds:.0015};}
+function chocoOreRates(distance=0){const t=Math.min(1,Math.max(0,distance)/60);return {...CHOCO_ITEM_RATES,copper:.25-.004*t,silver:.002+.001*t,gold:.0004+.0003*t,diamond:.0001+.0001*t,odds:.0008};}
 function chocoRankOre(tile){const keys=Object.keys(CHOCO_ORES),index=keys.indexOf(tile.ore);if(index<0||index===3)return false;const old=CHOCO_ORES[tile.ore],next=keys[index+1],def=CHOCO_ORES[next],u=Math.max(0,Math.min(1,(tile.baseValue-old.min)/(old.max-old.min)));tile.ore=next;tile.baseValue=def.min+Math.round(u*(def.max-def.min)/def.step)*def.step;tile.value=tile.baseValue;tile.multiplier=1;return true;}
-function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0)),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=def.min+Math.floor(chocoRandom(w)*((def.max-def.min)/def.step+1))*def.step;return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
+function chocoOreValue(w,kind){const def=CHOCO_ORES[kind],u=chocoRandom(w);return kind==='copper'?(u<.84?10:20):def.min+Math.floor(u*((def.max-def.min)/def.step+1))*def.step;}
+function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0)),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=chocoOreValue(w,kind);return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
 
 const CHOCO_TYPES=[
  {name:'ミルク',top:'#d89b65',mid:'#995a38',edge:'#563329'},
@@ -3003,7 +3004,7 @@ function chocoFillRows(w){
   const groupId=board[r][c],cells=regions[groupId];if(cells.length<4||specials.has(groupId)||extensions.has(groupId)&&r===0)continue;
   // Replace an end/corner cell only when the remaining terrain stays connected.
   const remaining=cells.filter(([y,x])=>y!==r||x!==c),seen=new Set([remaining[0].join(',')]),queue=[remaining[0]];for(let i=0;i<queue.length;i++)for(const cell of remaining)if(!seen.has(cell.join(','))&&Math.abs(cell[0]-queue[i][0])+Math.abs(cell[1]-queue[i][1])===1){seen.add(cell.join(','));queue.push(cell);}if(seen.size!==remaining.length)continue;
-  const tile=rows[r][c];if(CHOCO_ORES[kind]||kind==='sugar')tile.encased=true;else tile.color=-1;specials.add(groupId);if(CHOCO_ORES[kind]){const def=CHOCO_ORES[kind],baseValue=def.min+Math.floor(chocoRandom(w)*((def.max-def.min)/def.step+1))*def.step;Object.assign(tile,{item:'ore',ore:kind,baseValue,value:baseValue,multiplier:1});}else{tile.item=kind;if(kind==='sugar')w.nextSugar=w.depth+start+r+18;}
+  const tile=rows[r][c];if(CHOCO_ORES[kind]||kind==='sugar')tile.encased=true;else tile.color=-1;specials.add(groupId);if(CHOCO_ORES[kind]){const def=CHOCO_ORES[kind],baseValue=chocoOreValue(w,kind);Object.assign(tile,{item:'ore',ore:kind,baseValue,value:baseValue,multiplier:1});}else{tile.item=kind;if(kind==='sugar')w.nextSugar=w.depth+start+r+18;}
  }
  w.strata.push(...rows);if(w.strata.length<12)chocoFillRows(w);
 }
