@@ -72,9 +72,9 @@ for(let seed=1;seed<=80;seed++){grid=full();for(let c=0;c<7;c++)grid[0][c]={...t
 {const board=full();board[1][0]={...tile(8,-1),item:'clear'};const p=q.chocoExcavate(board,[{column:0,level:1}],{trace:true});const melt=p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill);assert(melt?.scroll);assert(melt.scroll.advanced>0);assert(melt.before[0].some(Boolean));}
 // Rare items activate on exposure and operate on whole connected sections.
 for(const kind of ['clear','random','transmute']){
- const board=full();board[0][0]={...tile(1,-1),item:kind};board[5][5]=ore(41,'diamond',500);const before=q.chocoGroups(board),p=q.chocoExcavate(board,[{column:6,level:1}],{trace:true,refill:false,seed:93});const effect=p.timeline.find(s=>s.phase==='canyonPower');assert.equal(effect.kind,kind);assert(!effect.targets.some(v=>v.tile.id===41));
+ const board=full();board[0][0]={...tile(1,-1),item:kind};board[5][5]=ore(41,'diamond',500);const before=q.chocoGroups(board),p=q.chocoExcavate(board,[{column:6,level:1}],{trace:true,refill:false,seed:93});const effect=p.timeline.find(s=>s.phase===(kind==='transmute'?'canyonTransform':'canyonPower'));assert.equal(effect.kind,kind);assert(!effect.targets.some(v=>v.tile.id===41));
  if(kind==='clear'){assert.equal(effect.targets.length,82);assert(p.collected.some(v=>v.tile.id===41));assert(!p.removed.some(v=>v.tile.id===41));}
- else{assert.equal(new Set(effect.targets.map(v=>before.byId.get(v.tile.id))).size,kind==='random'?3:1);if(kind==='transmute'){const transformed=p.timeline.find(s=>s.phase==='canyonTransform');for(const v of effect.targets)assert.equal(transformed.grid[v.r][v.c].item,'ore');}}
+ else{assert.equal(new Set(effect.targets.map(v=>before.byId.get(v.tile.id))).size,kind==='random'?3:1);if(kind==='transmute'){assert.equal(p.timeline.filter(s=>s.phase==='canyonTransform').length,1);assert(!p.timeline.some(s=>s.phase==='canyonPower'&&s.kind==='transmute'));const transformed=p.timeline.find(s=>s.phase==='canyonTransform');for(const v of effect.targets)assert.equal(transformed.grid[v.r][v.c].item,'ore');}}
 }
 // Rarity follows this game's distance, never accumulated lifetime depth.
 for(const key of ['silver','gold','diamond'])assert(q.chocoOreRates(60)[key]>q.chocoOreRates(30)[key]&&q.chocoOreRates(30)[key]>q.chocoOreRates(0)[key]);
