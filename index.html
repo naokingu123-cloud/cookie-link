@@ -5152,11 +5152,17 @@ function buildSoundData(kind,sampleRate=24000){
  for(let i=0;i<length;i++){const end=Math.min(1,(length-1-i)/(sampleRate*.018));left[i]*=gain*end;right[i]*=gain*end;}
  return {channels:[left,right],sampleRate,duration};
 }
+// Reserve output headroom per non-music bus. These static bounds never touch BGM.
+function boundedAudioOutput(context,input,ceiling){
+ const shaper=context.createWaveShaper(),curve=new Float32Array(8193);
+ for(let i=0;i<curve.length;i++){const x=i/(curve.length-1)*2-1;curve[i]=ceiling*Math.tanh(x/ceiling);}
+ shaper.curve=curve;shaper.oversample='none';input.connect(shaper);shaper.connect(context.destination);return shaper;
+}
 const sfxBuffers=new Map(),sfxVoices=new Set();let sfxBus=null;
 function unlock(){
  try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
   if(!audio){audio=new A();sfxBus=audio.createGain();sfxBus.gain.value=1.35;
-   const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=4;limiter.attack.value=.003;limiter.release.value=.13;sfxBus.connect(limiter);limiter.connect(audio.destination);
+   const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=4;limiter.attack.value=.003;limiter.release.value=.13;sfxBus.connect(limiter);boundedAudioOutput(audio,limiter,.28);
    for(const kind of ['crack','confirm','magic','sugar','hammer','sugar-spawn']){const data=buildSoundData(kind),buffer=audio.createBuffer(2,data.channels[0].length,data.sampleRate);data.channels.forEach((samples,ch)=>buffer.copyToChannel(samples,ch));sfxBuffers.set(kind,buffer);}
   }sfxBus.gain.cancelScheduledValues(audio.currentTime);sfxBus.gain.setValueAtTime(1.35,audio.currentTime);return audio.resume().then(()=>audio.state==='running').catch(()=>false);
  }catch{}
@@ -7663,7 +7669,7 @@ function pumpNumberAnnouncements(){
   if(numberVoiceBusy!==job||job.epoch!==numberVoiceEpoch)return;
   if(!buffer||!numberAudioAllowed()||job.round!==app.token||job.jpc!==jpcSession.active){numberVoiceBusy=null;pumpNumberAnnouncements();return;}
   if(audio.state!=='running'){numberVoiceBusy=null;numberVoiceQueue.unshift(job);return;}
-  if(!numberVoiceBus){numberVoiceBus=audio.createGain();numberVoiceBus.gain.value=NUMBER_VOICE_GAIN;numberVoiceBus.connect(audio.destination);}
+  if(!numberVoiceBus){numberVoiceBus=audio.createGain();numberVoiceBus.gain.value=NUMBER_VOICE_GAIN;boundedAudioOutput(audio,numberVoiceBus,.22);}
   const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=buffer;source.playbackRate.value=1;gain.gain.value=1;
   source.connect(gain);gain.connect(numberVoiceBus);job.source=source;job.gain=gain;
   source.onended=()=>{try{source.disconnect();gain.disconnect();}catch{}if(numberVoiceBusy!==job||job.epoch!==numberVoiceEpoch)return;numberVoiceBusy=null;pumpNumberAnnouncements();};
