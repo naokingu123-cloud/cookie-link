@@ -5153,16 +5153,17 @@ function buildSoundData(kind,sampleRate=24000){
  return {channels:[left,right],sampleRate,duration};
 }
 // Reserve output headroom per non-music bus. These static bounds never touch BGM.
-function boundedAudioOutput(context,input,ceiling){
+const SFX_OUTPUT_LEVEL=.15,NUMBER_OUTPUT_LEVEL=.25;
+function boundedAudioOutput(context,input,ceiling,{level=1}={}){
  const shaper=context.createWaveShaper(),curve=new Float32Array(8193);
  for(let i=0;i<curve.length;i++){const x=i/(curve.length-1)*2-1;curve[i]=ceiling*Math.tanh(x/ceiling);}
- shaper.curve=curve;shaper.oversample='none';input.connect(shaper);shaper.connect(context.destination);return shaper;
+ shaper.curve=curve;shaper.oversample='none';const output=context.createGain();output.gain.value=level;input.connect(shaper);shaper.connect(output);output.connect(context.destination);return shaper;
 }
 const sfxBuffers=new Map(),sfxVoices=new Set();let sfxBus=null;
 function unlock(){
  try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;
   if(!audio){audio=new A();sfxBus=audio.createGain();sfxBus.gain.value=1.35;
-   const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=4;limiter.attack.value=.003;limiter.release.value=.13;sfxBus.connect(limiter);boundedAudioOutput(audio,limiter,.28);
+   const limiter=audio.createDynamicsCompressor();limiter.threshold.value=-10;limiter.knee.value=12;limiter.ratio.value=4;limiter.attack.value=.003;limiter.release.value=.13;sfxBus.connect(limiter);boundedAudioOutput(audio,limiter,.28,{level:SFX_OUTPUT_LEVEL});
    for(const kind of ['crack','confirm','magic','sugar','hammer','sugar-spawn']){const data=buildSoundData(kind),buffer=audio.createBuffer(2,data.channels[0].length,data.sampleRate);data.channels.forEach((samples,ch)=>buffer.copyToChannel(samples,ch));sfxBuffers.set(kind,buffer);}
   }sfxBus.gain.cancelScheduledValues(audio.currentTime);sfxBus.gain.setValueAtTime(1.35,audio.currentTime);return audio.resume().then(()=>audio.state==='running').catch(()=>false);
  }catch{}
@@ -6067,7 +6068,7 @@ function recordChanged(a){
  if(a.phase==='ready'||a.phase==='playing')scheduleAutoRound();
  if(a.phase==='playing'&&a.draws.length>announcedDrawCount){for(const n of a.draws.slice(announcedDrawCount))announceDraw(n);announcedDrawCount=a.draws.length;}
  if(a.phase==='ready')announcedDrawCount=0;
- if(a.phase==='result')fadeBgm();
+ // Keep game BGM at its fixed level through result and payout effects.
  const result=recordBook.capture(a);titlePending.push(...result.unlocked);
  if(result.changed){updateEquippedTitle();if(menuOpen)renderRecordMenu();}
  if(result.round&&titlePending.length){showTitleToast(titlePending);titlePending=[];}
@@ -7669,7 +7670,7 @@ function pumpNumberAnnouncements(){
   if(numberVoiceBusy!==job||job.epoch!==numberVoiceEpoch)return;
   if(!buffer||!numberAudioAllowed()||job.round!==app.token||job.jpc!==jpcSession.active){numberVoiceBusy=null;pumpNumberAnnouncements();return;}
   if(audio.state!=='running'){numberVoiceBusy=null;numberVoiceQueue.unshift(job);return;}
-  if(!numberVoiceBus){numberVoiceBus=audio.createGain();numberVoiceBus.gain.value=NUMBER_VOICE_GAIN;boundedAudioOutput(audio,numberVoiceBus,.22);}
+  if(!numberVoiceBus){numberVoiceBus=audio.createGain();numberVoiceBus.gain.value=NUMBER_VOICE_GAIN;boundedAudioOutput(audio,numberVoiceBus,.22,{level:NUMBER_OUTPUT_LEVEL});}
   const source=audio.createBufferSource(),gain=audio.createGain();source.buffer=buffer;source.playbackRate.value=1;gain.gain.value=1;
   source.connect(gain);gain.connect(numberVoiceBus);job.source=source;job.gain=gain;
   source.onended=()=>{try{source.disconnect();gain.disconnect();}catch{}if(numberVoiceBusy!==job||job.epoch!==numberVoiceEpoch)return;numberVoiceBusy=null;pumpNumberAnnouncements();};
@@ -7790,12 +7791,12 @@ function queueRoundBgm(){
  bgmRole='bet';bgmPlayer.src=BET_BGM_FILE;bgmPlayer.loop=true;bgmPlayer.muted=false;bgmPlayer.playbackRate=1;bgmPlayer.load();
  bgmPreloader.src=queuedGameBgm;bgmPreloader.load();if(audio)bgmPlayer.prepare(queuedGameBgm).catch(()=>{});
 }
-function normalAudioWanted(){return !!app&&app.phase==='playing'&&!app.paused&&!jpcSession.active&&!document.hidden&&inView&&$('sound').checked;}
+function normalAudioWanted(){return !!app&&['playing','result','paying','complete'].includes(app.phase)&&!app.paused&&!jpcSession.active&&!document.hidden&&inView&&$('sound').checked;}
 function betAudioWanted(){return !!app&&app.phase==='ready'&&!app.paused&&!jpcSession.active&&!document.hidden&&inView&&$('sound').checked;}
 function musicWanted(){return normalAudioWanted()||betAudioWanted();}
 function roundAudioReady(){return !$('sound').checked||(audio?.state==='running'&&!!arrivalBuffer&&!!hammerImpactBuffer&&bgmPlayer.readyState>=2&&!bgmPlayer.paused);}
 function activateGameAudio({gesture=false}={}){
- if(!app||!$('sound').checked||!['ready','playing'].includes(app.phase)||jpcSession.active)return Promise.resolve(false);
+ if(!app||!$('sound').checked||!['ready','playing','result','paying','complete'].includes(app.phase)||jpcSession.active)return Promise.resolve(false);
  if(app.phase==='ready')queueRoundBgm();
  if(bgmRole==='none'){bgmRole=app.phase==='ready'?'bet':'game';bgmPlayer.src=bgmRole==='bet'?BET_BGM_FILE:(queuedGameBgm||bgmTracks[0]);bgmPlayer.loop=true;bgmPlayer.load();}
  if(bgmRole==='transition')return Promise.resolve(true);
@@ -7972,7 +7973,7 @@ function toggleJpcMode(){
 }
 
 function wakeAudioFromGesture(event){
- if(!event.isTrusted||!app||!$('sound').checked||!['ready','playing'].includes(app.phase)||menuOpen||userPaused||document.hidden||!inView)return;
+ if(!event.isTrusted||!app||!$('sound').checked||!['ready','playing','result','paying','complete'].includes(app.phase)||menuOpen||userPaused||document.hidden||!inView)return;
  if(event.target?.closest?.('#debug-reset,#sound'))return;
  if(jpcSession.active){syncJpcBgm({gesture:true});Promise.resolve(unlock()).then(()=>{prepareAnnouncer();pumpNumberAnnouncements();});return;}
  pumpNumberAnnouncements();
@@ -7993,7 +7994,7 @@ $('jpc-mode').onclick=toggleJpcMode;
 $('sound-test').onclick=()=>{unlock();prepareAnnouncer();prepareArrival()?.then(()=>announceDraw(5));};
 $('reset').onclick=debugResetRound;
 function syncPause(){for(const s of slots){if(s.miniResultState)s.miniResultState.stamp=null;s.dirtyMini=true;}if(menuOpen||userPaused||document.hidden||!inView)stopSounds();
- if(['ready','playing'].includes(app?.phase)){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();if(audio&&audio.state!=='running')unlock();}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;resultAutoStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);if(jpcSession.active){rouletteDriver?.setPaused(menuOpen||userPaused||document.hidden||!inView);syncJpcBgm();}syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused){requestShatter(slots[active]);if(musicWanted()&&bgmPlayer.paused&&bgmRole!=='transition')activateGameAudio();}}}
+ if(['ready','playing','result','paying','complete'].includes(app?.phase)){if(menuOpen||userPaused||document.hidden||!inView)bgmPlayer.pause();if(audio&&audio.state!=='running')unlock();}for(const s of slots)if(s.shatter)s.shatter.stamp=null;payoutStamp=null;resultAutoStamp=null;app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);if(jpcSession.active){rouletteDriver?.setPaused(menuOpen||userPaused||document.hidden||!inView);syncJpcBgm();}syncReachPager();syncPayClimb();document.body.classList.toggle('paused',menuOpen||userPaused||document.hidden||!inView);syncBetPreview(app);if(inView&&!document.hidden){scheduleUI(app);if(!app.paused){requestShatter(slots[active]);if(musicWanted()&&bgmPlayer.paused&&bgmRole!=='transition')activateGameAudio();}}}
 for(const count of [3,4,5])$('colors-'+count).onclick=()=>{if(app.setColorCount(count))syncPause();};
 $('pause').onclick=null;$('pause').hidden=true;$('pause').tabIndex=-1;
 $('sound').onchange=()=>{
