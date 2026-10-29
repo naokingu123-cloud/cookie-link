@@ -28,6 +28,11 @@ with sync_playwright() as p:
  page.wait_for_function('window.__drillQA && document.querySelector("#manual-number-toggle")')
  page.locator('#manual-number-toggle').click()
  page.evaluate('__drillQA.resume();__drillQA.setPhysicalReady(false)')
+ page.wait_for_function('document.querySelector(".choco-canvas").dataset.mode==="tutorial"')
+ frames=[]
+ for _ in range(8):
+  page.wait_for_timeout(450);frames.append(page.locator('.choco-canvas').screenshot())
+ assert len(set(frames))>1,'Manual waiting tutorial froze'
  page.locator('#manual-start').click()
  page.wait_for_function('__drillQA.app.phase==="playing"')
  page.locator('#manual-number-grid button[data-number="1"]').click()
