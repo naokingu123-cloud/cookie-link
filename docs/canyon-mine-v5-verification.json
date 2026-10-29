@@ -1,0 +1,146 @@
+{
+  "layouts": [
+    {
+      "width": 320,
+      "height": 740,
+      "cell": 20.666668352230456,
+      "boardWidth": 144.6666784656132,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "cell": 20.666666666666668,
+      "boardWidth": 144.66666666666669,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "cell": 20.666665412293458,
+      "boardWidth": 144.6666578860542,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 932,
+      "height": 430,
+      "cell": 20.666665412293458,
+      "boardWidth": 144.6666578860542,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "cell": 20.666666666666668,
+      "boardWidth": 144.66666666666669,
+      "oneNumber": true,
+      "noSidebar": true
+    }
+  ],
+  "sharedGeometry": [
+    [
+      [
+        10.75,
+        41.375,
+        408.5,
+        267.8541564941406
+      ],
+      [
+        10.75,
+        313.70831298828125,
+        408.5,
+        159.45834350585938
+      ]
+    ],
+    [
+      [
+        10.75,
+        41.375,
+        408.5,
+        267.8541564941406
+      ],
+      [
+        10.75,
+        313.70831298828125,
+        408.5,
+        159.45834350585938
+      ]
+    ],
+    [
+      [
+        10.75,
+        41.375,
+        408.5,
+        267.8541564941406
+      ],
+      [
+        10.75,
+        313.70831298828125,
+        408.5,
+        159.45834350585938
+      ]
+    ]
+  ],
+  "singleBallRouting": [
+    [
+      3,
+      2,
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    [
+      3,
+      2,
+      1,
+      1,
+      1
+    ]
+  ],
+  "scaleCounter": [
+    0,
+    297,
+    703,
+    962,
+    1000
+  ],
+  "continuous": {
+    "launches": 1,
+    "layers": 3,
+    "frames": 12,
+    "postDigLevel": 4
+  },
+  "assets": {
+    "autotiles": 1024,
+    "generatedScene": true,
+    "generatedLogo": true,
+    "generatedCart": true
+  },
+  "cartWin": {
+    "items": 7,
+    "rows": 2,
+    "win": 7200
+  },
+  "audio": {
+    "effects": 2,
+    "voicesAfterReset": 0
+  },
+  "ruleGames": 80,
+  "shapeBoards": 1000,
+  "lateDrawReplacement": true,
+  "physicalIPhone": false
+}

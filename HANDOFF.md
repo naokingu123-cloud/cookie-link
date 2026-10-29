@@ -268,3 +268,10 @@
 - 最新仕様は docs/canyon-mine-v4.md。初期Lv1、現在Lvで連続掘削→LvUP。2つの全LvUP番号はHIT枠のみ未使用番号へ更新。その他はMAX以外1台強化。
 - 主盤面ロゴ/配当欄削除、生成鉱山・トロッコ・タブロゴ、拡大7×12盤面、BET依存WIN。亀裂なし軟化溶解。
 - 配当率は未調整。新ルールの直接配当10kサンプル43.93%。検証 docs/canyon-mine-v4-verification.json。
+
+
+## 2026-10-29 — mine v5 / 13方向ドリル・16更新番号
+- 最新仕様は docs/canyon-mine-v5.md。上7・左3・右3、全掘削は各方向1番号。全LvUP番号・未HIT強化は廃止。HIT枠だけ未入賞・未使用番号へ更新。初期Lv1→掘削後LvUP。
+- chocoのみdrawMode=single。他2ゲームはグループ抽選維持。共通上部geometryを維持しCanyonの独自高さ上書きを削除。
+- ビター黒寄り・連結辺の縁取り修正。シュガー地下予定と残m、鉱石下デジタル秤カウントアップ。
+- 検証 docs/canyon-mine-v5-verification.json。配当率再調整はしていない。
