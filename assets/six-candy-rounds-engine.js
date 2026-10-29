@@ -28,7 +28,7 @@ function sixPickChanceRound(random){return random()<SIX_CHANCE_RATE?2+Math.floor
 function sixRoundColorCount(round){return sixRoundTheme(round).colors.length;}
 function sixRoundClearBonus(round){return SIX_CLEAR_BONUS[Math.max(0,Math.min(5,round))]||0;}
 
-const SIX_REFILL_ROW_MS=200,SIX_REFILL_FALL_MS=620,SIX_REFILL_SETTLE_MS=200;
+const SIX_REFILL_ROW_MS=130,SIX_REFILL_FALL_MS=450,SIX_REFILL_SETTLE_MS=120;
 function sixGlassRows(added,rows=SIX_ROWS){return added?[...new Set(added.map(a=>a.r))].sort((a,b)=>b-a):Array.from({length:rows},(_,i)=>rows-1-i);}
 function sixGlassDuration(rowOrder){return Math.max(0,rowOrder.length-1)*SIX_REFILL_ROW_MS+SIX_REFILL_FALL_MS+SIX_REFILL_SETTLE_MS;}
 function sixGlassPose(rowOrder,r,elapsed,reduced=false){
@@ -37,7 +37,7 @@ function sixGlassPose(rowOrder,r,elapsed,reduced=false){
  if(age<0)return {visible:false,offset:0,rotation:0};
  if(reduced)return {visible:true,offset:0,rotation:0};
  if(age<SIX_REFILL_FALL_MS){const u=age/SIX_REFILL_FALL_MS;return {visible:true,offset:-350*(1-u*u),rotation:Math.sin(u*Math.PI)*.055};}
- const contact=age-SIX_REFILL_FALL_MS,bounce=contact<110?4*Math.sin(Math.PI*contact/110):contact<180?1.2*Math.sin(Math.PI*(contact-110)/70):0;
+ const contact=(age-SIX_REFILL_FALL_MS)*180/SIX_REFILL_SETTLE_MS,bounce=contact<110?4*Math.sin(Math.PI*contact/110):contact<180?1.2*Math.sin(Math.PI*(contact-110)/70):0;
  return {visible:true,offset:-bounce,rotation:contact<180?Math.sin(contact/180*Math.PI*4)*.035*(1-contact/180):0};
 }
 
@@ -203,7 +203,7 @@ function sixPlan(input,numbers,{trace=false}={}){
  const grid=sixClone(input),timeline=[],used=new Set(numbers),hit=[];let triangles=0,hexagons=0,lines=0,chain=0,gain=0,removedCount=0,ordinaryGroups=0,sugarAward=false;
  const push=(phase,detail={},ms=350)=>{if(trace)timeline.push({phase,...detail,grid:sixClone(grid),ms});};
  const remove=cells=>{const removed=[];for(const [r,c] of cells){const t=grid[r]?.[c];if(t){removed.push({r,c,tile:{...t}});if(t.sugar)sugarAward=true;grid[r][c]=null;}}removedCount+=removed.length;return removed;};
- const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length){const motionMs=fall.steps.reduce((n,f)=>n+f.ms,0)||350;push('pyramidFall',{...fall,motionMs},motionReduced?100:motionMs+180);}};
+ const drop=()=>{const fall=sixDrop(grid,{trace});if(fall.moves.length){const motionMs=fall.steps.reduce((n,f)=>n+f.ms,0)||350;push('pyramidFall',{...fall,motionMs},motionReduced?100:motionMs+50);}};
  for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++)if(grid[r][c]?.number!=null&&used.has(grid[r][c].number))hit.push([r,c]);
  if(!hit.length){push('pyramidMiss',{},250);return {grid,timeline,gain,triangles,hexagons,lines,chain,removedCount,ordinaryGroups,hit:0,cleared:false,advance:false,sugarAward};}
  push('pyramidHit',{cells:hit},280);push('pyramidBreak',{removed:remove(hit)},420);drop();
