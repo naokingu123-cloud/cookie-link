@@ -467,3 +467,10 @@
 ## 配当音v5（最新）
 - `docs/payout-audio-v5.md`。配当関連18音を金属的上昇・余韻のある素材へ変更。連続加算は発音パルスごとに音程上昇、確定音で締める。高額・全消しのみ強いアクセント。
 - 素材末尾-v5.wav、全音源rev=v5。BGM0.15固定/SFX出力0.34を維持。
+
+## Canyon rewards v20 (2026-10-30)
+- Explicit 0.1%-resolution ore payout tables match the user probabilities; mineral rank-up maps the old outcome's cumulative midpoint into the next table. Spawn rates unchanged; old economy estimates are not a new calibration for these tables.
+- Ore/sugar collection waits until drilling has returned and the collectible itself is fully supported. Falling events precede crane events. Independent already-landed collectibles may be collected while other pieces move.
+- Cached deterministic support-removal previews mark cake sections whose removal causes a landed >=4 section to clear; shimmer is shared by main/mini board. No RNG consumption.
+- All ore drawing paths have rank-scaled sparkle, including burial clipping/table/crane/bowl. Single-line BET-scaled minimum table (300WIN～). Acquired counter six digits, animated downward arrows during transfer to TOTAL WIN. Existing retarget/hold/conservation preserved.
+- Tests: exact 1000 quantiles per ore, fully-landed crane collection, 80 games, scale counter conservation, five viewport browser layouts and drawing checks.

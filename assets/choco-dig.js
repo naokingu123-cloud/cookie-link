@@ -7,7 +7,7 @@ const CHOCO_SIDE_ROWS=[2,6,10];
 const chocoDrillRoute=i=>i<7?{index:i,direction:'top',column:i}:i<10?{index:i,direction:'left',row:CHOCO_SIDE_ROWS[i-7]}:{index:i,direction:'right',row:CHOCO_SIDE_ROWS[i-10]};
 const chocoCopyDrills=drills=>drills.map(d=>({numbers:[...d.numbers],hits:[...d.hits],level:chocoDrillLevel(d)}));
 const chocoCopyLucky=lucky=>({numbers:[...lucky.numbers],hits:[...lucky.hits],drawn:[...(lucky.drawn||[])]});
-const CHOCO_ORES={copper:{name:'銅',min:10,max:20,step:10,tint:'#e9a071'},silver:{name:'銀',min:50,max:100,step:10,tint:'#e3f2ff'},gold:{name:'金',min:200,max:400,step:100,tint:'#ffe391'},diamond:{name:'ダイヤ',min:500,max:1000,step:100,tint:'#a9f6ff'}};
+const CHOCO_ORES={copper:{name:'銅',min:10,max:100,step:10,tint:'#e9a071'},silver:{name:'銀',min:50,max:500,step:10,tint:'#e3f2ff'},gold:{name:'金',min:200,max:2000,step:50,tint:'#ffe391'},diamond:{name:'ダイヤ',min:500,max:10000,step:100,tint:'#a9f6ff'}};
 const CHOCO_PRIZES={copper:10,silver:50,gold:200,diamond:500};
 // Rates are calibrated with the full production flow, including in-cascade refills and odds-up tiles.
 const CHOCO_ITEM_RATES={copper:.067,silver:.01675,gold:.00335,diamond:.001,sugar:.0029,odds:.004,clear:.002,random:.003,transmute:.0012};
@@ -19,8 +19,16 @@ const chocoBonusKind=index=>index<=4?'fruit':CHOCO_BONUS_GEMS[Math.min(5,index-5
 const chocoFallDuration=distance=>Math.round(125*Math.sqrt(Math.max(1,distance)));
 const CHOCO_POWERS={clear:'全消し',random:'ランダム消し',transmute:'鉱石化'};
 function chocoOreRates(distance=0){const t=Math.min(1,Math.max(0,distance)/60);return {...CHOCO_ITEM_RATES,copper:.25-.004*t,silver:.002+.001*t,gold:.0004+.0003*t,diamond:.0001+.0001*t,odds:.0008};}
-function chocoRankOre(tile){const keys=Object.keys(CHOCO_ORES),index=keys.indexOf(tile.ore);if(index<0||index===3)return false;const old=CHOCO_ORES[tile.ore],next=keys[index+1],def=CHOCO_ORES[next],u=Math.max(0,Math.min(1,(tile.baseValue-old.min)/(old.max-old.min)));tile.ore=next;tile.baseValue=def.min+Math.round(u*(def.max-def.min)/def.step)*def.step;tile.value=tile.baseValue;tile.multiplier=1;return true;}
-function chocoOreValue(w,kind){const def=CHOCO_ORES[kind],u=chocoRandom(w);return kind==='copper'?(u<.84?10:20):def.min+Math.floor(u*((def.max-def.min)/def.step+1))*def.step;}
+// Integer weights total 1000 per mineral (0.1 percentage-point precision).
+const CHOCO_ORE_DISTRIBUTIONS={
+ copper:[[10,800],[20,150],[30,30],[40,10],[50,9],[100,1]],
+ silver:[[50,700],[60,200],[70,50],[80,30],[90,10],[100,9],[500,1]],
+ gold:[[200,400],[250,200],[300,200],[350,100],[400,50],[450,30],[500,19],[2000,1]],
+ diamond:[[500,200],[600,200],[700,150],[800,150],[900,100],[1000,100],[1500,30],[2000,30],[3000,20],[5000,19],[10000,1]]
+};
+function chocoOreQuantile(kind,u){let n=Math.min(.999999999,Math.max(0,u))*1000;for(const [value,weight]of CHOCO_ORE_DISTRIBUTIONS[kind]){n-=weight;if(n<0)return value;}return CHOCO_ORES[kind].max;}
+function chocoRankOre(tile){const keys=Object.keys(CHOCO_ORES),index=keys.indexOf(tile.ore);if(index<0||index===3)return false;let cumulative=0,u=0;for(const [value,weight]of CHOCO_ORE_DISTRIBUTIONS[tile.ore]){u=(cumulative+weight/2)/1000;if(value>=tile.baseValue)break;cumulative+=weight;}tile.ore=keys[index+1];tile.baseValue=chocoOreQuantile(tile.ore,u);tile.value=tile.baseValue;tile.multiplier=1;return true;}
+function chocoOreValue(w,kind){return chocoOreQuantile(kind,chocoRandom(w));}
 function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0)),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=chocoOreValue(w,kind);return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
 
 const CHOCO_TYPES=[
@@ -156,7 +164,8 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
  function surface(){
   const joined=[];
   for(let guard=0;guard<300;guard++){
-   const exposed=[];for(let r=0;r<12;r++)for(let c=0;c<7;c++){const t=w.strata[r][c];if(t?.color<0&&w.strata.findIndex(row=>row[c])===r)exposed.push({r,c,tile:{...t}});}
+   const fallingItems=new Set(chocoFallStep(w.strata).moves.map(v=>v.id));
+   const exposed=[];for(let r=0;r<12;r++)for(let c=0;c<7;c++){const t=w.strata[r][c];if(t?.color<0&&(!['ore','sugar'].includes(t.item)||(!digging&&!fallingItems.has(t.id)))&&w.strata.findIndex(row=>row[c])===r)exposed.push({r,c,tile:{...t}});}
    if(exposed.length){
     const power=exposed.find(v=>CHOCO_POWERS[v.tile.item]);
     if(power){
@@ -586,7 +595,7 @@ function chocoOreTable(x,L,W,bet,time){
  const px=L.left+7*L.w+5,py=3,width=W-px-4,height=112;
  if(chocoPayoutFrame.complete&&chocoPayoutFrame.naturalWidth)x.drawImage(chocoPayoutFrame,px,py,width,height);else{x.fillStyle='#412517';x.fillRect(px,py,width,height);}
  chocoText(x,'鉱石配当',px+width/2,py+12,10,'#ffe8aa');
- Object.entries(CHOCO_ORES).forEach(([kind,def],i)=>{const y=py+33+i*22;chocoDrawItem(x,{id:0,item:'ore',ore:kind},px+19,y,23,time,false);const text=medalWin(bet,def.min)+'–'+medalWin(bet,def.max);x.save();const size=Math.min(10,(width-37)/Math.max(1,text.length)*1.5);chocoGoldWin(x,text,px+width/2+12,y-2,size,'center');chocoText(x,'WIN',px+width/2+12,y+8,7,'#ffe4a0');x.restore();});
+ Object.entries(CHOCO_ORES).forEach(([kind,def],i)=>{const y=py+33+i*22;chocoDrawItem(x,{id:0,item:'ore',ore:kind},px+19,y,23,time,false);const text=medalWin(bet,def.min)+'WIN～';x.save();const size=Math.min(10,(width-37)/Math.max(1,text.length)*1.5);chocoGoldWin(x,text,px+width/2+12,y,size,'center');x.restore();});
 }
 function chocoScaleSink(s){return 11*(1-Math.exp(-Math.max(0,(s.chocoWinValue||0)+(s.chocoAwardValue||0))/1800));}
 function chocoSevenSegment(x,value,px,py,width,height,digitCount=6){
@@ -617,8 +626,8 @@ function chocoMineUI(x,e,L,fx,p,time,W,H,bet,s){
  const value=chocoScaleValue(s,e,bet,time),sink=chocoScaleSink(s),width=L.left-9,cx=3+width/2;
  x.strokeStyle='#d9c6a0';x.lineWidth=1.5;for(const dx of [-29,8]){x.beginPath();for(let j=0;j<7;j++){const yy=H-114+sink+j*(18-sink)/6,xx=cx+dx+(j%2?3:-3);j?x.lineTo(xx,yy):x.moveTo(xx,yy);}x.stroke();}
  x.fillStyle='#bfa178';x.fillRect(0,H-116+sink,64,4);
- const awardY=H-92;sign(3,awardY,width,35);x.fillStyle='#071d21';x.fillRect(8,awardY+12,width-10,20);chocoText(x,s.chocoAwardPhase==='add'?'合計へ加算':'獲得 WIN',11,awardY+6,7,'#ffe9ae','left');chocoSevenSegment(x,Math.floor(s.chocoAwardValue||0),11,awardY+15,width-35,14,5);chocoText(x,'WIN',width-7,awardY+24,8,'#a5ffd2');
- chocoText(x,'↓',30,H-43,12,s.chocoAwardPhase==='add'?'#a5ffd2':'#a58b65');chocoText(x,'TOTAL',9,H-31,6,'#ffe9ae','left');
+ const awardY=H-92;sign(3,awardY,width,35);x.fillStyle='#071d21';x.fillRect(8,awardY+12,width-10,20);chocoText(x,s.chocoAwardPhase==='add'?'合計へ加算':'獲得 WIN',11,awardY+6,7,'#ffe9ae','left');chocoSevenSegment(x,Math.floor(s.chocoAwardValue||0),11,awardY+15,width-35,14,6);chocoText(x,'WIN',width-7,awardY+24,8,'#a5ffd2');
+ if(s.chocoAwardPhase==='add'){x.save();x.shadowColor='#83ffbd';x.shadowBlur=7;for(let i=0;i<3;i++){x.globalAlpha=motionReduced?.9:.3+.7*((time/500+i/3)%1);chocoText(x,'▼',30,H-54+i*7,10,'#a5ffd2');}x.restore();}chocoText(x,'TOTAL WIN',9,H-31,6,'#ffe9ae','left');
  const totalWidth=L.left-35;sign(3,H-26,totalWidth,24);x.fillStyle='#071d21';x.fillRect(7,H-23,totalWidth-8,18);chocoSevenSegment(x,value,10,H-21,totalWidth-31,14);chocoText(x,'WIN',totalWidth-7,H-12,8,'#a5ffd2');
 
 
@@ -645,15 +654,28 @@ function chocoItemCake(x,kind,cx,cy,size){
   c.fillStyle='#ffe399';for(const [xx,yy]of [[13,39],[115,39],[13,115],[115,115]]){c.beginPath();c.moveTo(xx,yy-5);c.lineTo(xx+4,yy);c.lineTo(xx,yy+5);c.lineTo(xx-4,yy);c.closePath();c.fill();}chocoItemCakeCache.set(kind,cv);
  }x.drawImage(cv,cx-size/2,cy-size/2,size,size);
 }
+function chocoSparkle(x,cx,cy,size,time,id,rank=1){
+ x.save();x.strokeStyle=rank===1?'#ffe2be':rank===2?'#f3fbff':rank===3?'#fff2aa':'#eaffff';x.shadowColor=x.strokeStyle;x.shadowBlur=rank*1.4;x.lineWidth=Math.max(.6,size*.022);
+ for(let i=0;i<rank+1;i++){const phase=id*.73+i*2.4,light=motionReduced?.65:.18+.82*Math.pow(Math.sin(time/(510-rank*55)+phase),4),dx=Math.sin(phase*2.7)*.30,dy=Math.cos(phase*1.9)*.29,k=size*(.045+rank*.012)*light;x.globalAlpha=light*(.55+rank*.1);x.beginPath();x.moveTo(cx+dx*size-k,cy+dy*size);x.lineTo(cx+dx*size+k,cy+dy*size);x.moveTo(cx+dx*size,cy+dy*size-k);x.lineTo(cx+dx*size,cy+dy*size+k);x.stroke();}x.restore();
+}
+// Cache deterministic support-removal previews; no game RNG or rewards are touched.
+const chocoChainCache=new WeakMap();
+function chocoChainSections(grid){
+ if(chocoChainCache.has(grid))return chocoChainCache.get(grid);const result=new Set();
+ for(const section of chocoGroups(grid).groups){if(section[0].tile.color<0||section[0].tile.color>3)continue;const removed=new Set(section.map(v=>v.tile.id));let trial=grid.map(row=>row.map(t=>removed.has(t?.id)?(t.encased?{...t,color:-1,encased:false}:null):t)),moved=new Set();
+ for(let step=0;step<12;step++){const fall=chocoFallStep(trial);if(!fall.moves.length)break;fall.moves.forEach(v=>moved.add(v.id));trial=fall.grid;}
+ if(chocoGroups(trial).groups.some(g=>g[0].tile.color>=0&&g.length>=4&&g.some(v=>moved.has(v.tile.id))))section.forEach(v=>result.add(v.tile.id));}
+ chocoChainCache.set(grid,result);return result;
+}
+function chocoChainSheen(x,px,py,w,h,time,id){x.save();x.beginPath();x.rect(px+1,py+1,w-2,h-2);x.clip();const at=motionReduced?.5:(time/2200+id*.013)%1,shine=x.createLinearGradient(px-w+at*w*3,py,px+at*w*3,py+h);shine.addColorStop(0,'#fff4c000');shine.addColorStop(.5,'#fff4c066');shine.addColorStop(1,'#fff4c000');x.fillStyle=shine;x.fillRect(px,py,w,h);chocoSparkle(x,px+w/2,py+h/2,Math.min(w,h),time,id,2);x.restore();}
 function chocoDrawItem(x,t,cx,cy,size,time=0,label=true,bet=100){
  x.save();
  if(t.item==='ore'){
   const image=chocoOreImages[t.ore],d=t.ore==='diamond';
   if(image?.complete&&image.naturalWidth){x.globalAlpha=d?.86:1;x.drawImage(image,cx-size/2,cy-size/2,size,size);x.globalAlpha=1;}
   else{x.fillStyle=CHOCO_ORES[t.ore]?.tint||'#fff';x.beginPath();x.roundRect(cx-size*.35,cy-size*.35,size*.7,size*.7,3);x.fill();}
-  if(d){const light=motionReduced?.8:.5+.5*Math.sin(time/240+t.id);x.strokeStyle='#efffff';x.lineWidth=Math.max(.65,size*.035);x.globalAlpha=light;for(const [dx,dy,k] of [[-.22,-.22,.13],[.25,.08,.09]]){x.beginPath();x.moveTo(cx+(dx-k)*size,cy+dy*size);x.lineTo(cx+(dx+k)*size,cy+dy*size);x.moveTo(cx+dx*size,cy+(dy-k)*size);x.lineTo(cx+dx*size,cy+(dy+k)*size);x.stroke();}x.globalAlpha=1;}
-  
- }else if(t.item==='sugar'){
+  chocoSparkle(x,cx,cy,size,time,t.id||0,Object.keys(CHOCO_ORES).indexOf(t.ore)+1);
+  }else if(t.item==='sugar'){
   const g=x.createLinearGradient(cx-size/2,cy-size/2,cx+size/2,cy+size/2);g.addColorStop(0,'#fff6fd');g.addColorStop(.35,'#faacd6');g.addColorStop(.65,'#c9a0ef');g.addColorStop(1,'#8ae4ed');x.fillStyle=g;x.strokeStyle='#fff4cc';x.lineWidth=size*.055;x.beginPath();for(let i=0;i<12;i++){const a=-Math.PI/2+i*Math.PI/6,r=size*(i%2?.28:.47),px=cx+Math.cos(a)*r,py=cy+Math.sin(a)*r;i?x.lineTo(px,py):x.moveTo(px,py);}x.closePath();x.fill();x.stroke();x.fillStyle='#ffffffb8';x.beginPath();x.ellipse(cx-size*.12,cy-size*.16,size*.10,size*.17,.6,0,Math.PI*2);x.fill();if(label)chocoText(x,'S',cx,cy+size*.04,size*.35,'#fff9d8');
  }else{chocoItemCake(x,t.item,cx,cy,size);}
 
@@ -757,6 +779,7 @@ function drawChoco(s,now=performance.now()){
  Object.assign(s.chocoCanvas.dataset,{columns:'7',rows:'12',rules:'mine-v7',background:'depth-v13'});
  if(ready){const guideTime=autoRoundStamp!==null&&autoRoundRemaining>=0&&autoRoundRemaining<=BET_DURATION_MS?Math.min(19999,BET_DURATION_MS-autoRoundRemaining):time%20000;chocoDrawTutorial(s,guideTime,bet,W,H);if(!paused&&!jpcSession.active)chocoQueueFrame(s);return;}s.chocoCanvas.dataset.mode='playing';delete s.chocoCanvas.dataset.scene;
  const L=chocoBoardLayout(W,H),{w,h,left,top}=L,p=fx?Math.min(1,fx.elapsed/fx.ms):0,q=motionReduced?1:p,fall=fx?.phase==='canyonFall',melt=fx?.phase==='canyonMelt',scroll=fx?.phase==='canyonScroll'?fx:fx?.scroll,grid=scroll?scroll.before:fall?fx.before:fx?.before&&melt?fx.before:e.strata,moves=new Map((fall?fx.moves:[]).map(m=>[m.id,m])),scrollQ=fall?q*q:q,camera=scroll?scroll.oldDepth+scroll.advanced*scrollQ:e.depth;
+ const chainSections=chocoChainSections(grid);
  const finalPositions=new Map();if(scroll)e.strata.forEach((row,r)=>row.forEach((t,c)=>{if(t)finalPositions.set(t.id,[r,c]);}));
  const dissolving=new Set((melt?fx.targets:[]).map(v=>v.tile.id)),softening=new Map((fx?.phase==='canyonSoften'?fx.targets:[]).map(v=>[v.tile.id,v]));
  x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,W,H);x.fillStyle='#5a3b39';x.fillRect(0,0,W,H);
@@ -777,6 +800,7 @@ function drawChoco(s,now=performance.now()){
   if(dissolving.has(t.id))chocoPaintMelt(x,t,r,c,grid,px,py,w,h,p);
   else if(softening.has(t.id)){const a=Math.max(0,Math.min(1,(q-softening.get(t.id).wave*.3)/.7));x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,t,r,c,grid,-w/2,-h/2,w,h,time,bet);x.restore();x.fillStyle='rgba(255,223,161,'+(Math.sin(a*Math.PI)*.23)+')';x.fillRect(px+1,py+1,w-2,h-2);}
   else{const dest=finalPositions.get(t.id),nextMask=dest?chocoTileMask(e.strata,...dest):null;chocoPaintTile(x,t,r,c,grid,px,py,w,h,time,bet,nextMask,scrollQ);}
+  if(chainSections.has(t.id)&&!dissolving.has(t.id))chocoChainSheen(x,px,py,w,h,time,t.id);
   if((fx?.phase==='canyonOdds'&&fx.affected.includes(t.id))||(['canyonPower','canyonTransform'].includes(fx?.phase)&&fx.targets.some(v=>v.tile.id===t.id))){x.strokeStyle='#fff3a5';x.lineWidth=2;x.strokeRect(px+1,py+1,w-2,h-2);}
  }
  // Previously hit strata keep softening/melting while the drill is already travelling onward.
