@@ -132,8 +132,8 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
    const before=w.strata,fall=chocoFallStep(before);if(!fall.moves.length)return;
    w.strata=fall.grid;fallSteps++;if(fall.merged.length)merges++;
    const scroll=shift();push('canyonFall',{before:chocoClone(before),moves:fall.moves,merged:fall.merged,...(scroll?{scroll:{...scroll,before:chocoClone(before)}}:{})},180);
-   // Check after EACH one-row movement/contact, even while other groups are still falling.
-   triggers=new Set([...fall.moves.map(m=>m.id),...fall.merged,...(scroll?.joined||[])]);
+   // Only a newly joined group triggers a chain. Falling an existing large group is not a match.
+   triggers=new Set([...fall.merged,...(scroll?.joined||[])]);
   }
   throw Error('Canyon cascade exceeded safety bound');
  }
@@ -277,19 +277,26 @@ function chocoCanonicalMask(mask){let m=mask&15;for(const [a,b,d] of [[8,1,16],[
 function chocoTileMask(grid,r,c){const color=grid[r]?.[c]?.color;if(color==null||color<0)return 0;let mask=0;for(const [dy,dx,bit]of [[-1,0,1],[0,1,2],[1,0,4],[0,-1,8],[-1,-1,16],[-1,1,32],[1,1,64],[1,-1,128]])if(grid[r+dy]?.[c+dx]?.color===color)mask|=bit;return mask;}
 function chocoAutoSprite(color,mask){
  mask=chocoCanonicalMask(mask);const image=chocoCakeImages[color];if(!image?.complete||!image.naturalWidth)return null;const key=color+'/'+mask;if(chocoSprites.has(key))return chocoSprites.get(key);
- const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),sample=document.createElement('canvas');sample.width=sample.height=96;const sx=sample.getContext('2d'),sw=image.naturalWidth,sh=image.naturalHeight;
- sx.drawImage(image,sw*.16,sh*.38,sw*.12,sh*.22,0,0,96,96);const texture=sx.getImageData(0,0,96,96).data;sx.clearRect(0,0,96,96);sx.drawImage(image,sw*.055,sh*.055,sw*.89,sh*.89,0,0,96,96);const face=sx.getImageData(0,0,96,96).data,pixels=x.createImageData(96,96),d=pixels.data;
+ const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),sample=document.createElement('canvas');sample.width=sample.height=256;const sx=sample.getContext('2d');sx.drawImage(image,0,0,256,256);const src=sx.getImageData(0,0,256,256).data,pixels=x.createImageData(96,96),d=pixels.data;
+ const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);},read=(u,v,k)=>src[(Math.min(255,Math.max(0,Math.round(v*255)))*256+Math.min(255,Math.max(0,Math.round(u*255))))*4+k];
  for(let y=0;y<96;y++)for(let px=0;px<96;px++){
-  const i=(y*96+px)*4,tx=Math.round(47.5*(1-Math.cos(px/95*Math.PI*2))),ty=Math.round(47.5*(1-Math.cos(y/95*Math.PI*2))),j=(ty*96+tx)*4;
-  const left=mask&8?999:px,right=mask&2?999:95-px,top=mask&1?999:y,bottom=mask&4?999:95-y,edge=Math.min(left,right,top,bottom),shine=left<5?.10*(1-left/5):top<5?.13*(1-top/5):0,shadow=right<5?.24*(1-right/5):bottom<5?.29*(1-bottom/5):0,blend=Math.exp(-Math.pow((px-48)/18,4)-Math.pow((y-48)/17,4))*.93;
-  for(let k=0;k<3;k++){let v=texture[j+k]*(1-blend)+face[i+k]*blend;v=v*(1-shadow)+255*shine;if(edge<1)v*=.65;d[i+k]=color===3?v*[.42,.46,.54][k]:v;}
+  const u=px/95,v=y/95,i=(y*96+px)*4;
+  // Keep the original sculpted face, highlights, bevels and real painted topping.
+  const sourceX=.055+.89*u,sourceY=Math.min((mask&4)?.80:.945,(mask&1)?Math.max(.34,.055+.89*v):v<.32?.055+v/.32*.255:.31+(v-.32)/.68*.635);
+  const joinX=Math.max(mask&8?1-smooth((px-14)/14):0,mask&2?1-smooth((81-px)/14):0),joinY=Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
+  for(let k=0;k<3;k++){
+   let value=read(sourceX,sourceY,k);
+   // Connected sides share the same material profile, with no baked-in side rim.
+   value=value*(1-joinX)+read(.24,sourceY,k)*joinX;
+   const edgeU=.055+.89*u,body=read(edgeU,.46,k),sideBody=read(.24,.46,k),rim=1-smooth(Math.min(u,1-u)/.24),vertical=sideBody+(body-sideBody)*rim*(1-joinX);
+   value=value*(1-joinY)+vertical*joinY;
+   if(color===3)value*=value>175?.66:[.48,.50,.57][k];d[i+k]=value;
+  }
   let alpha=255;
-  for(const [hb,vb,diag,cx,cy]of [[8,1,16,0,0],[2,1,32,95,0],[8,4,128,0,95],[2,4,64,95,95]]){const dx=Math.abs(px-cx),dy=Math.abs(y-cy);if(!(mask&hb)&&!(mask&vb)&&dx<7&&dy<7)alpha=Math.min(alpha,Math.max(0,Math.min(255,(7-Math.hypot(7-dx,7-dy))*255)));if((mask&hb)&&(mask&vb)&&!(mask&diag)&&dx<6&&dy<6)alpha=Math.min(alpha,Math.max(0,Math.min(255,(Math.hypot(dx,dy)-5)*255)));}
+  for(const [hb,vb,diag,cx,cy]of [[8,1,16,0,0],[2,1,32,95,0],[8,4,128,0,95],[2,4,64,95,95]]){const dx=Math.abs(px-cx),dy=Math.abs(y-cy);if(!(mask&hb)&&!(mask&vb)&&dx<6&&dy<6)alpha=Math.min(alpha,Math.max(0,Math.min(255,(6-Math.hypot(6-dx,6-dy))*255)));if((mask&hb)&&(mask&vb)&&!(mask&diag)&&dx<4&&dy<4)alpha=Math.min(alpha,Math.max(0,Math.min(255,(Math.hypot(dx,dy)-3)*255)));}
   d[i+3]=alpha;
  }
- x.putImageData(pixels,0,0);
- if(!(mask&1)){x.save();x.beginPath();x.roundRect(0,0,96,96,[(mask&8)?0:7,(mask&2)?0:7,0,0]);x.clip();x.fillStyle=['#efbc83','#ffc2d5','#fff6d5','#62433a'][color];x.strokeStyle=['#b37848','#df7ca0','#d9b77d','#271915'][color];x.lineWidth=1.3;x.beginPath();x.moveTo(0,0);x.lineTo(96,0);for(let px=96;px>=0;px-=2)x.lineTo(px,15+8*Math.pow(.5+.5*Math.cos(px*Math.PI/24),2));x.closePath();x.fill();x.beginPath();x.moveTo(96,23);for(let px=96;px>=0;px-=2)x.lineTo(px,15+8*Math.pow(.5+.5*Math.cos(px*Math.PI/24),2));x.stroke();x.restore();}
- chocoSprites.set(key,cv);return cv;
+ x.putImageData(pixels,0,0);chocoSprites.set(key,cv);return cv;
 }
 function chocoBoardLayout(width,height){const header=68,footer=2,cell=Math.min((width-120)/9,(height-header-footer)/12);return {w:cell,h:cell,left:(width-cell*7)/2,top:header,header,footer};}
 
@@ -414,7 +421,7 @@ function chocoPaintMelt(x,t,r,c,grid,px,py,w,h,progress){
 }
 function chocoPaintTile(x,t,r,c,grid,px,py,w,h,time=0,bet=100){
  if(t.color<0){chocoDrawItem(x,t,px+w/2,py+h/2,w*.96,time,true,bet);return;}
- const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c));if(sprite)x.drawImage(sprite,px-.35,py-.35,w+.7,h+.7);
+ const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c));if(sprite){const ax=Math.round(px*2)/2,ay=Math.round(py*2)/2,bx=Math.round((px+w)*2)/2,by=Math.round((py+h)*2)/2;x.drawImage(sprite,ax,ay,bx-ax,by-ay);}
 }
 function chocoScrollEase(p){p=Math.max(0,Math.min(1,p));return p*p*p*(p*(p*6-15)+10);}
 function drawChoco(s,now=performance.now()){
@@ -445,7 +452,7 @@ function drawChoco(s,now=performance.now()){
  chocoDrawCart(s,e,fx,p,time,bet);const cartW=88,cartH=65,cartX=5,cartY=H-cartH-29;x.drawImage(s.chocoCart,cartX,cartY,cartW,cartH);
  if(fx?.phase==='canyonCollect')for(let i=0;i<fx.items.length;i++){const v=fx.items[i],u=Math.max(0,Math.min(1,(q-i*.025)/.92)),sx=left+(v.c+.5)*w,sy=top+(v.r+.5)*h;chocoDrawItem(x,v.tile,sx+(cartX+cartW/2-sx)*u,sy+(cartY+55-sy)*u-Math.sin(u*Math.PI)*45,w*(1-u*.5),time,false,bet);}
  if(!bet){x.fillStyle='#142c40a6';x.fillRect(left,top,7*w,12*h);chocoText(x,'0 BET',W/2,H/2,26);}
- Object.assign(s.chocoCanvas.dataset,{columns:'7',rows:'12',drills:'13',rules:'mine-v6',background:'cavity-v6',hitNumbers:[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers].filter(n=>chocoNumberHit(e,n)).join(','),reachNumbers:(s.reachResults||[]).map(r=>r.number).join(','),drillNumbers:e.drills.map(d=>d.numbers[0]).join(','),levels:e.drills.map(d=>d.level).join(','),lucky:e.lucky.numbers.join(','),win:String(medalWin(bet,e.totalHundredths)),cart:String(e.cart.length),displayWin:String(Math.floor(s.chocoWinValue||0)),sugarDistance:String(chocoSugarDistance(e))});
+ Object.assign(s.chocoCanvas.dataset,{columns:'7',rows:'12',drills:'13',rules:'mine-v7',background:'cavity-v6',hitNumbers:[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers].filter(n=>chocoNumberHit(e,n)).join(','),reachNumbers:(s.reachResults||[]).map(r=>r.number).join(','),drillNumbers:e.drills.map(d=>d.numbers[0]).join(','),levels:e.drills.map(d=>d.level).join(','),lucky:e.lucky.numbers.join(','),win:String(medalWin(bet,e.totalHundredths)),cart:String(e.cart.length),displayWin:String(Math.floor(s.chocoWinValue||0)),sugarDistance:String(chocoSugarDistance(e))});
  s.chocoCanvas.setAttribute('aria-label','チョコレート鉱山・7列12段・深さ'+e.depth+'m・'+num(medalWin(bet,e.totalHundredths))+' WIN・'+e.drills.map((d,c)=>(c+1)+'列 番号'+d.numbers[0]+' Lv.'+d.level).join('／')+'・方向別全掘削 上・左・右 '+e.lucky.numbers.join('、')+'・シュガーまであと '+chocoSugarDistance(e)+'m');
  s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);const scale=Math.min(160/s.chocoCanvas.width,160/s.chocoCanvas.height),mw=s.chocoCanvas.width*scale,mh=s.chocoCanvas.height*scale;s.mini.drawImage(s.chocoCanvas,(160-mw)/2,(160-mh)/2,mw,mh);
  s.chocoStatus.textContent=!bet?'0 BET・探検は待機中':ready?'1球ごとに抽選・HITで掘削 → LvUP → 番号更新':e.digMessage;
