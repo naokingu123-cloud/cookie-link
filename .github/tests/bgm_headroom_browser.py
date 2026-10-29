@@ -25,7 +25,7 @@ with sync_playwright() as p:
  initial=page.evaluate('__j.driver.draw.state');print('JPC_STARTED',initial,flush=True)
  result=page.evaluate("""async()=>{
  const q=__j,music=(await q.player.prepare(q.tracks[0])).buffer,arrival=await q.prepareArrival(),hammer=await q.prepareHammerImpact(),voice=await q.loadNumberVoice(14);
- await q.prepareSceneSounds();q.stopSounds();q.playArrivalSound();const jpcArrivalGain=[...q.effectVoices].at(-1).gain.gain.value;if(Math.abs(jpcArrivalGain-.045)>1e-6)throw Error('JPC arrival gain');
+ await q.prepareSceneSounds();q.stopSounds();q.playArrivalSound();const jpcArrivalGain=[...q.effectVoices].at(-1).gain.gain.value;if(Math.abs(jpcArrivalGain-.13)>1e-6)throw Error('JPC arrival gain');
  async function render(bounded,withMusic,withEffects){
   const ctx=new OfflineAudioContext(2,44100*3,44100);
   function play(buffer,to,when=0,offset=0){const src=ctx.createBufferSource();src.buffer=buffer;src.connect(to);src.start(when,offset);}

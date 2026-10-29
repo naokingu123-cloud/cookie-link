@@ -1,26 +1,31 @@
 // Scene-specific samples selected from the supplied SE.rar. Music never enters this bus.
 const SCENE_SOUND_KEYS=["drill", "stratum", "melt", "ore", "sugar", "level", "rank", "random", "transform", "transfer", "glass", "landing", "refill", "pop", "triangle", "hexagon", "role", "round", "candy", "cookie", "record", "gift", "delivery", "cookie-hit", "cookie-fall", "cookie-land", "cookie-refill", "chain", "color-burst", "hammer-launch", "hammer-impact", "arrival", "canyon-fall", "canyon-land", "scroll", "return", "renew", "all-drills", "six-hit", "six-miss", "sweep", "line", "finish", "allclear", "clear", "bonus"];
-const sceneSoundLoads=new Map();
+const SCENE_AUDIO_REVISION='v3';
+const sceneSoundFile=key=>'assets/audio/scenes/'+(key==='arrival'?'arrival-v3':key)+'.wav?rev='+SCENE_AUDIO_REVISION;
+const sceneSoundLoads=new Map();let sceneSoundPreparation=null;
+function sceneSoundsReady(){return SCENE_SOUND_KEYS.every(key=>sfxBuffers.has('scene-'+key));}
 function prepareSceneSounds(){
- if(!audio)return Promise.resolve([]);
- return Promise.all(SCENE_SOUND_KEYS.map(key=>{
-  if(sfxBuffers.has('scene-'+key))return Promise.resolve(true);
-  if(sceneSoundLoads.has(key))return sceneSoundLoads.get(key);
-  const task=loadEffectSample('assets/audio/scenes/'+key+'.wav').then(buffer=>{sfxBuffers.set('scene-'+key,buffer);return true;}).catch(error=>{console.warn('Scene sound unavailable: '+key,error);return false;}).finally(()=>sceneSoundLoads.delete(key));sceneSoundLoads.set(key,task);return task;
- }));
+ if(!audio)return Promise.resolve([]);if(sceneSoundPreparation)return sceneSoundPreparation;
+ const pending=SCENE_SOUND_KEYS.filter(key=>!sfxBuffers.has('scene-'+key));let cursor=0;
+ async function worker(){while(cursor<pending.length){const key=pending[cursor++];for(let attempt=0;attempt<2;attempt++){
+  try{const buffer=await loadEffectSample(sceneSoundFile(key));sfxBuffers.set('scene-'+key,buffer);break;}
+  catch(error){effectBytes.delete(sceneSoundFile(key));if(attempt===1)console.warn('Scene sound unavailable: '+key,error);}
+ }}}
+ sceneSoundPreparation=Promise.all(Array.from({length:Math.min(3,pending.length)},worker)).then(()=>SCENE_SOUND_KEYS.map(key=>sfxBuffers.has('scene-'+key))).finally(()=>{sceneSoundPreparation=null;});return sceneSoundPreparation;
 }
 // [gain ceiling, retrigger interval in milliseconds, priority]. Only effects are balanced.
-const SCENE_SOUND_PROFILES={"drill": [0.28, 120, 0], "stratum": [0.16, 90, 0], "melt": [0.16, 90, 0], "ore": [0.28, 120, 0], "sugar": [0.52, 180, 1], "level": [0.28, 120, 0], "rank": [0.52, 180, 1], "random": [0.52, 180, 1], "transform": [0.52, 180, 1], "transfer": [0.28, 120, 0], "glass": [0.16, 90, 0], "landing": [0.16, 90, 0], "refill": [0.16, 90, 0], "pop": [0.16, 90, 0], "triangle": [0.52, 180, 1], "hexagon": [0.52, 180, 1], "role": [0.32, 120, 0], "round": [0.52, 180, 1], "candy": [0.16, 90, 0], "cookie": [0.16, 90, 0], "record": [0.52, 180, 1], "gift": [0.52, 180, 1], "delivery": [0.28, 120, 0], "cookie-hit": [0.16, 90, 0], "cookie-fall": [0.16, 90, 0], "cookie-land": [0.16, 90, 0], "cookie-refill": [0.16, 90, 0], "chain": [0.16, 90, 0], "color-burst": [0.52, 180, 1], "hammer-launch": [0.28, 120, 0], "hammer-impact": [0.28, 120, 0], "arrival": [0.18, 40, 0], "canyon-fall": [0.16, 90, 0], "canyon-land": [0.16, 90, 0], "scroll": [0.16, 90, 0], "return": [0.16, 90, 0], "renew": [0.16, 90, 0], "all-drills": [0.52, 180, 1], "six-hit": [0.16, 90, 0], "six-miss": [0.16, 90, 0], "sweep": [0.28, 120, 0], "line": [0.52, 180, 1], "finish": [0.28, 120, 0], "allclear": [1, 600, 2], "clear": [1, 600, 2], "bonus": [1, 600, 2]};
-const sceneSoundLast=new Map();let sceneAccentUntil=0;
+const SCENE_SOUND_PROFILES={"drill": [0.45, 120, 0], "stratum": [0.45, 90, 0], "melt": [0.45, 90, 0], "ore": [0.45, 120, 0], "sugar": [0.7, 180, 1], "level": [0.45, 120, 0], "rank": [0.7, 180, 1], "random": [0.7, 180, 1], "transform": [0.7, 180, 1], "transfer": [0.45, 120, 0], "glass": [0.45, 90, 0], "landing": [0.45, 90, 0], "refill": [0.45, 90, 0], "pop": [0.45, 90, 0], "triangle": [0.7, 180, 1], "hexagon": [0.7, 180, 1], "role": [0.45, 120, 0], "round": [0.7, 180, 1], "candy": [0.45, 90, 0], "cookie": [0.45, 90, 0], "record": [0.7, 180, 1], "gift": [0.7, 180, 1], "delivery": [0.45, 120, 0], "cookie-hit": [0.45, 90, 0], "cookie-fall": [0.45, 90, 0], "cookie-land": [0.45, 90, 0], "cookie-refill": [0.45, 90, 0], "chain": [0.45, 90, 0], "color-burst": [0.7, 180, 1], "hammer-launch": [0.45, 120, 0], "hammer-impact": [0.65, 120, 0], "arrival": [0.65, 40, 0], "canyon-fall": [0.45, 90, 0], "canyon-land": [0.45, 90, 0], "scroll": [0.45, 90, 0], "return": [0.45, 90, 0], "renew": [0.45, 90, 0], "all-drills": [0.7, 180, 1], "six-hit": [0.45, 90, 0], "six-miss": [0.45, 90, 0], "sweep": [0.45, 120, 0], "line": [0.7, 180, 1], "finish": [0.45, 120, 0], "allclear": [1, 600, 2], "clear": [1, 600, 2], "bonus": [1, 600, 2]};
+const sceneSoundLast=new Map(),sceneSoundBursts=new Map();let sceneAccentUntil=0;
 function sceneSound(key,options={}){
  const jpc=!!options.jpc&&jpcSession.active&&!userPaused&&!menuOpen;
  if(!audio||audio.state!=='running'||!$('sound').checked||(app?.paused&&!jpc)||document.hidden||!inView)return false;
  const name='scene-'+key;if(!sfxBuffers.has(name)){prepareSceneSounds();return false;}
  const [ceiling,gap,priority]=SCENE_SOUND_PROFILES[key]||[.25,120,0],now=audio.currentTime,at=now+(options.delay||0)/1000;
  if(at-(sceneSoundLast.get(key)??-Infinity)<gap/1000)return false;
- sceneSoundLast.set(key,at);
+ const previous=sceneSoundLast.get(key)??-Infinity,burst=priority===0&&at-previous<.38?(sceneSoundBursts.get(key)||0)+1:0;
+ sceneSoundBursts.set(key,burst);sceneSoundLast.set(key,at);
  if(priority===2)sceneAccentUntil=at+Math.min(3,sfxBuffers.get(name).duration);
- const volume=ceiling*Math.min(1,Math.max(0,options.volume??1))*(priority===0&&at<sceneAccentUntil?.4:1);
+ const volume=Math.max(.35,.7**burst)*ceiling*Math.min(1,Math.max(0,options.volume??1))*(priority===0&&at<sceneAccentUntil?.4:1);
  sound(name,{...options,volume,priority});return true;
 }
 function cookieSceneEvent(s,ev,e){

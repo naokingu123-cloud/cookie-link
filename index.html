@@ -5198,27 +5198,32 @@ function boundedAudioOutput(context,input,ceiling,{level=1}={}){
 const sfxBuffers=new Map(),sfxVoices=new Set();let sfxBus=null;
 // Scene-specific samples selected from the supplied SE.rar. Music never enters this bus.
 const SCENE_SOUND_KEYS=["drill", "stratum", "melt", "ore", "sugar", "level", "rank", "random", "transform", "transfer", "glass", "landing", "refill", "pop", "triangle", "hexagon", "role", "round", "candy", "cookie", "record", "gift", "delivery", "cookie-hit", "cookie-fall", "cookie-land", "cookie-refill", "chain", "color-burst", "hammer-launch", "hammer-impact", "arrival", "canyon-fall", "canyon-land", "scroll", "return", "renew", "all-drills", "six-hit", "six-miss", "sweep", "line", "finish", "allclear", "clear", "bonus"];
-const sceneSoundLoads=new Map();
+const SCENE_AUDIO_REVISION='v3';
+const sceneSoundFile=key=>'assets/audio/scenes/'+(key==='arrival'?'arrival-v3':key)+'.wav?rev='+SCENE_AUDIO_REVISION;
+const sceneSoundLoads=new Map();let sceneSoundPreparation=null;
+function sceneSoundsReady(){return SCENE_SOUND_KEYS.every(key=>sfxBuffers.has('scene-'+key));}
 function prepareSceneSounds(){
- if(!audio)return Promise.resolve([]);
- return Promise.all(SCENE_SOUND_KEYS.map(key=>{
-  if(sfxBuffers.has('scene-'+key))return Promise.resolve(true);
-  if(sceneSoundLoads.has(key))return sceneSoundLoads.get(key);
-  const task=loadEffectSample('assets/audio/scenes/'+key+'.wav').then(buffer=>{sfxBuffers.set('scene-'+key,buffer);return true;}).catch(error=>{console.warn('Scene sound unavailable: '+key,error);return false;}).finally(()=>sceneSoundLoads.delete(key));sceneSoundLoads.set(key,task);return task;
- }));
+ if(!audio)return Promise.resolve([]);if(sceneSoundPreparation)return sceneSoundPreparation;
+ const pending=SCENE_SOUND_KEYS.filter(key=>!sfxBuffers.has('scene-'+key));let cursor=0;
+ async function worker(){while(cursor<pending.length){const key=pending[cursor++];for(let attempt=0;attempt<2;attempt++){
+  try{const buffer=await loadEffectSample(sceneSoundFile(key));sfxBuffers.set('scene-'+key,buffer);break;}
+  catch(error){effectBytes.delete(sceneSoundFile(key));if(attempt===1)console.warn('Scene sound unavailable: '+key,error);}
+ }}}
+ sceneSoundPreparation=Promise.all(Array.from({length:Math.min(3,pending.length)},worker)).then(()=>SCENE_SOUND_KEYS.map(key=>sfxBuffers.has('scene-'+key))).finally(()=>{sceneSoundPreparation=null;});return sceneSoundPreparation;
 }
 // [gain ceiling, retrigger interval in milliseconds, priority]. Only effects are balanced.
-const SCENE_SOUND_PROFILES={"drill": [0.28, 120, 0], "stratum": [0.16, 90, 0], "melt": [0.16, 90, 0], "ore": [0.28, 120, 0], "sugar": [0.52, 180, 1], "level": [0.28, 120, 0], "rank": [0.52, 180, 1], "random": [0.52, 180, 1], "transform": [0.52, 180, 1], "transfer": [0.28, 120, 0], "glass": [0.16, 90, 0], "landing": [0.16, 90, 0], "refill": [0.16, 90, 0], "pop": [0.16, 90, 0], "triangle": [0.52, 180, 1], "hexagon": [0.52, 180, 1], "role": [0.32, 120, 0], "round": [0.52, 180, 1], "candy": [0.16, 90, 0], "cookie": [0.16, 90, 0], "record": [0.52, 180, 1], "gift": [0.52, 180, 1], "delivery": [0.28, 120, 0], "cookie-hit": [0.16, 90, 0], "cookie-fall": [0.16, 90, 0], "cookie-land": [0.16, 90, 0], "cookie-refill": [0.16, 90, 0], "chain": [0.16, 90, 0], "color-burst": [0.52, 180, 1], "hammer-launch": [0.28, 120, 0], "hammer-impact": [0.28, 120, 0], "arrival": [0.18, 40, 0], "canyon-fall": [0.16, 90, 0], "canyon-land": [0.16, 90, 0], "scroll": [0.16, 90, 0], "return": [0.16, 90, 0], "renew": [0.16, 90, 0], "all-drills": [0.52, 180, 1], "six-hit": [0.16, 90, 0], "six-miss": [0.16, 90, 0], "sweep": [0.28, 120, 0], "line": [0.52, 180, 1], "finish": [0.28, 120, 0], "allclear": [1, 600, 2], "clear": [1, 600, 2], "bonus": [1, 600, 2]};
-const sceneSoundLast=new Map();let sceneAccentUntil=0;
+const SCENE_SOUND_PROFILES={"drill": [0.45, 120, 0], "stratum": [0.45, 90, 0], "melt": [0.45, 90, 0], "ore": [0.45, 120, 0], "sugar": [0.7, 180, 1], "level": [0.45, 120, 0], "rank": [0.7, 180, 1], "random": [0.7, 180, 1], "transform": [0.7, 180, 1], "transfer": [0.45, 120, 0], "glass": [0.45, 90, 0], "landing": [0.45, 90, 0], "refill": [0.45, 90, 0], "pop": [0.45, 90, 0], "triangle": [0.7, 180, 1], "hexagon": [0.7, 180, 1], "role": [0.45, 120, 0], "round": [0.7, 180, 1], "candy": [0.45, 90, 0], "cookie": [0.45, 90, 0], "record": [0.7, 180, 1], "gift": [0.7, 180, 1], "delivery": [0.45, 120, 0], "cookie-hit": [0.45, 90, 0], "cookie-fall": [0.45, 90, 0], "cookie-land": [0.45, 90, 0], "cookie-refill": [0.45, 90, 0], "chain": [0.45, 90, 0], "color-burst": [0.7, 180, 1], "hammer-launch": [0.45, 120, 0], "hammer-impact": [0.65, 120, 0], "arrival": [0.65, 40, 0], "canyon-fall": [0.45, 90, 0], "canyon-land": [0.45, 90, 0], "scroll": [0.45, 90, 0], "return": [0.45, 90, 0], "renew": [0.45, 90, 0], "all-drills": [0.7, 180, 1], "six-hit": [0.45, 90, 0], "six-miss": [0.45, 90, 0], "sweep": [0.45, 120, 0], "line": [0.7, 180, 1], "finish": [0.45, 120, 0], "allclear": [1, 600, 2], "clear": [1, 600, 2], "bonus": [1, 600, 2]};
+const sceneSoundLast=new Map(),sceneSoundBursts=new Map();let sceneAccentUntil=0;
 function sceneSound(key,options={}){
  const jpc=!!options.jpc&&jpcSession.active&&!userPaused&&!menuOpen;
  if(!audio||audio.state!=='running'||!$('sound').checked||(app?.paused&&!jpc)||document.hidden||!inView)return false;
  const name='scene-'+key;if(!sfxBuffers.has(name)){prepareSceneSounds();return false;}
  const [ceiling,gap,priority]=SCENE_SOUND_PROFILES[key]||[.25,120,0],now=audio.currentTime,at=now+(options.delay||0)/1000;
  if(at-(sceneSoundLast.get(key)??-Infinity)<gap/1000)return false;
- sceneSoundLast.set(key,at);
+ const previous=sceneSoundLast.get(key)??-Infinity,burst=priority===0&&at-previous<.38?(sceneSoundBursts.get(key)||0)+1:0;
+ sceneSoundBursts.set(key,burst);sceneSoundLast.set(key,at);
  if(priority===2)sceneAccentUntil=at+Math.min(3,sfxBuffers.get(name).duration);
- const volume=ceiling*Math.min(1,Math.max(0,options.volume??1))*(priority===0&&at<sceneAccentUntil?.4:1);
+ const volume=Math.max(.35,.7**burst)*ceiling*Math.min(1,Math.max(0,options.volume??1))*(priority===0&&at<sceneAccentUntil?.4:1);
  sound(name,{...options,volume,priority});return true;
 }
 function cookieSceneEvent(s,ev,e){
@@ -5238,7 +5243,7 @@ function unlock(){
  }catch{}
 }
 function stopSounds(){
- sceneSoundLast.clear();sceneAccentUntil=0;
+ sceneSoundLast.clear();sceneSoundBursts.clear();sceneAccentUntil=0;
  stopNumberAnnouncements();
  for(const voice of [...sfxVoices]){voice.source.onended=null;try{voice.source.stop();}catch{}try{voice.source.disconnect();}catch{}try{voice.gain.disconnect();}catch{}sfxVoices.delete(voice);}
 }
@@ -5250,12 +5255,12 @@ function sound(kind,{delay=0,volume=1,rate=1,priority=0,jpc=false}={}){
  const source=audio.createBufferSource(),gain=audio.createGain(),voice={source,gain,priority};source.buffer=buffer;source.playbackRate.value=rate;gain.gain.value=volume;source.connect(gain);gain.connect(sfxBus);sfxVoices.add(voice);
  source.onended=()=>{sfxVoices.delete(voice);source.disconnect();gain.disconnect();};source.start(audio.currentTime+Math.max(0,delay)/1000/(app?.fastForward&&app.phase==='playing'?3:1));
 }
-// Use the supplied Grand Cross impact recording when available; preserve the previous effect as a fallback.
+// Warm the selected scene samples before the round starts.
 let hammerImpactBuffer=null,hammerImpactLoad=null;
 function prepareHammerImpact(){
  if(hammerImpactBuffer)return Promise.resolve(hammerImpactBuffer);
  if(hammerImpactLoad)return hammerImpactLoad;if(!audio)return Promise.resolve(null);
- hammerImpactLoad=loadEffectSample('assets/audio/scenes/hammer-impact.wav').then(b=>hammerImpactBuffer=b).catch(error=>{console.warn('ハンマー音源は合成音へ切替',error);hammerImpactLoad=null;return hammerImpactBuffer=sfxBuffers.get('hammer')||null;});
+ hammerImpactLoad=loadEffectSample(sceneSoundFile('hammer-impact')).then(b=>{sfxBuffers.set('scene-hammer-impact',b);return hammerImpactBuffer=b;}).catch(error=>{console.warn('ハンマー音源は合成音へ切替',error);hammerImpactLoad=null;return hammerImpactBuffer=sfxBuffers.get('hammer')||null;});
  return hammerImpactLoad;
 }
 
@@ -7687,14 +7692,14 @@ const bgmPlayer=new LoopingBgmPlayer();bgmPlayer.loop=true;bgmPlayer.preload='au
 const normalBgmVolume=.15;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
 let arrivalBuffer=null,arrivalLoading=null;
-const arrivalFile='assets/audio/scenes/arrival.wav';
+const arrivalFile=sceneSoundFile('arrival');
 function prepareArrival(){
  if(arrivalBuffer)return Promise.resolve(arrivalBuffer);
  if(arrivalLoading)return arrivalLoading;if(!audio)return Promise.resolve(null);
- arrivalLoading=loadEffectSample(arrivalFile).then(b=>arrivalBuffer=b).catch(error=>{console.warn('入賞音源は合成音へ切替',error);arrivalLoading=null;return arrivalBuffer=sfxBuffers.get('magic')||null;});return arrivalLoading;
+ arrivalLoading=loadEffectSample(arrivalFile).then(b=>{sfxBuffers.set('scene-arrival',b);return arrivalBuffer=b;}).catch(error=>{console.warn('入賞音源は合成音へ切替',error);arrivalLoading=null;return arrivalBuffer=sfxBuffers.get('magic')||null;});return arrivalLoading;
 }
 
-function playArrivalSound(){if(!audio||audio.state!=='running'){unlock();return;}sceneSound('arrival',{volume:jpcSession.active?.25:1,jpc:jpcSession.active});}
+function playArrivalSound(){if(!audio||audio.state!=='running'){unlock();return;}sceneSound('arrival',{volume:jpcSession.active?.2:1,jpc:jpcSession.active});}
 // Pre-rendered Japanese announcements share the game's AudioContext, not OS TTS.
 // The voice bus and queue never read or change BGM gain, fades, or media playback.
 const numberVoiceBuffers=new Map(),numberVoiceLoads=new Map(),numberVoiceQueue=[];
@@ -7827,7 +7832,7 @@ const effectBytes=new Map();
 function fetchEffectBytes(file){
  if(effectBytes.has(file))return effectBytes.get(file);
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
- const task=fetch(encodeURI(file),{signal:controller.signal}).then(r=>{if(!r.ok)throw Error(file+' HTTP '+r.status);return r.arrayBuffer();}).catch(error=>{effectBytes.delete(file);throw error;}).finally(()=>clearTimeout(timer));effectBytes.set(file,task);return task;
+ const task=fetch(encodeURI(file),{signal:controller.signal,cache:file.includes('assets/audio/scenes/')?'reload':'default'}).then(r=>{if(!r.ok)throw Error(file+' HTTP '+r.status);return r.arrayBuffer();}).catch(error=>{effectBytes.delete(file);throw error;}).finally(()=>clearTimeout(timer));effectBytes.set(file,task);return task;
 }
 async function loadEffectSample(file){
  const bytes=await fetchEffectBytes(file),buffer=await audio.decodeAudioData(bytes.slice(0));
@@ -7890,8 +7895,13 @@ function activateGameAudio({gesture=false}={}){
  audioPreparationTask=task;return task;
 }
 
+let sceneStartWait=null,sceneStartReadyToken=-1;
 function startReadyRound(){
  if(jpcSession.active||debugResetting||roundStarting||app.phase!=='ready'||(!manualNumbers&&!rouletteReady)||!app.bets.some(b=>b>0)||document.hidden||menuOpen||userPaused||!inView)return false;
+ if($('sound').checked&&audio?.state==='running'&&!sceneSoundsReady()&&sceneStartReadyToken!==app.token){
+  countdownText('…','効果音準備中');if(sceneStartWait)return false;const round=app.token;
+  sceneStartWait=audioTimeout(prepareSceneSounds(),8000).catch(()=>false).finally(()=>{sceneStartWait=null;if(app.token===round&&app.phase==='ready'){sceneStartReadyToken=round;startReadyRound();if(app.phase==='ready')scheduleAutoRound();}});return false;
+ }
  roundStarting=true;stopAutoRound();cancelAudioPreparation();cancelBgmFade();setBgmLevel(normalBgmVolume);
  try{
   payoutStamp=null;const ok=app.start();
@@ -7901,6 +7911,7 @@ function startReadyRound(){
 }
 // Recover interrupted playback without a confirmation modal or changing the user's sound setting.
 setInterval(()=>{
+ if($('sound').checked&&audio?.state==='running'&&!document.hidden&&!sceneSoundsReady())prepareSceneSounds();
  if(!musicWanted()||bgmRole==='transition'||audioPreparing||audioNeedsGesture)return;
  if(audio?.state!=='running'||bgmPlayer.paused||bgmLevel<=.001||!arrivalBuffer||!hammerImpactBuffer)activateGameAudio();
 },1500);
@@ -8073,7 +8084,7 @@ $('sound').onchange=()=>{
 };
 for(const type of ['pointerup','touchend','keydown'])document.addEventListener(type,wakeAudioFromGesture,{passive:true});
 const soundLabel=$('sound').closest('label');if(soundLabel)$('bet-countdown').append(soundLabel);
-fetchEffectBytes(arrivalFile).catch(()=>{});fetchEffectBytes('グランドクロス被弾.wav').catch(()=>{});
+fetchEffectBytes(arrivalFile).catch(()=>{});fetchEffectBytes(sceneSoundFile('hammer-impact')).catch(()=>{});
 for(let n=1;n<=25;n++)fetchEffectBytes(numberVoiceFile(n)).catch(()=>{});
 scheduleAutoRound();
 

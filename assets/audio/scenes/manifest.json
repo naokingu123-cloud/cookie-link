@@ -249,11 +249,11 @@
   },
   {
     "key": "arrival",
-    "source": "System_Enter03_default.ogg",
+    "source": "se_maoudamashii_chime02.mp3",
     "scene": "通常・JPC：入賞",
-    "file": "assets/audio/scenes/arrival.wav",
-    "seconds": 0.217,
-    "sourceSha256": "f0fdddc737e59a6b387b3e2a77e9882cfbf15554c3e214c94624a4cc63442e81"
+    "file": "assets/audio/scenes/arrival-v3.wav",
+    "seconds": 0.9,
+    "sourceSha256": "e47bcfcba5f6ddc7f6131994d35ca3b8db4aa828016b4eb5e5d5caa3b239948f"
   },
   {
     "key": "canyon-fall",
