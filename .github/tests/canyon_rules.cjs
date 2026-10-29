@@ -1,7 +1,7 @@
 const fs=require('fs'),assert=require('node:assert/strict');
 const html=fs.readFileSync('index.html','utf8'),source=fs.readFileSync('assets/choco-dig.js','utf8'),base=html.slice(html.indexOf('class Engine{'),html.indexOf('/* Chocolate Canyon:',html.indexOf('class Engine{')));
 assert(html.includes(source.trim()),'Shipped engine and dedicated source differ');
-const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY};')(5,()=>0);
+const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY,chocoFillRows,chocoOreRates,CHOCO_FRUIT_DEPTH};')(5,()=>0);
 const empty=()=>Array.from({length:12},()=>Array(7).fill(null)),tile=(id,color,prize=null)=>({id,color,number:null,prize}),rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 const full=()=>Array.from({length:12},(_,r)=>Array.from({length:7},(_,c)=>tile(r*7+c+1,(r+c)%4)));
 const state=()=>({drills:Array.from({length:13},(_,c)=>({numbers:[c+1],hits:[],level:1})),lucky:{numbers:[14,15,16],hits:[],drawn:[]}});
@@ -59,9 +59,28 @@ for(let seed=1;seed<=25;seed++){const e=new q.ChocoDigEngine({random:rng(seed)})
 // Collection and camera advance share a stage: no wait for flight or remaining cascades.
 grid=full();for(let c=0;c<7;c++)grid[0][c]=ore(c+1,'copper',10);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true});const collect=p.timeline.find(s=>s.phase==='canyonCollect');assert.equal(collect.scroll.advanced,1);assert.equal(collect.depth,1);assert.equal(collect.items.length,7);
 for(let seed=1;seed<=80;seed++){grid=full();for(let c=0;c<7;c++)grid[0][c]={...tile(c+1,-1),item:'odds'};p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,seed});const up=p.timeline.find(s=>s.phase==='canyonOdds');assert.equal(up.scroll.advanced,1);for(const t of up.grid.flat())if(t?.item==='ore'&&t.id>84)assert.equal(t.multiplier,1,'Future ore received past odds upgrade');}
+// Refills can extend the old bottom section without treating generation as a match.
+{let continued=0;for(let seed=1;seed<=200;seed++){const board=full();board[0].fill(null);const p=q.chocoExcavate(board,[],{trace:true,seed});const extensions=p.grid.flat().filter(t=>t?.extension);if(!extensions.length)continue;continued++;for(const t of extensions){const group=q.chocoGroups(p.grid).groups.find(g=>g.some(v=>v.tile.id===t.id));assert(group.some(v=>v.tile.id<=84));assert(group.length<=9);assert(!p.removed.some(v=>v.tile.id===t.id));}assert(!p.timeline.some(s=>s.phase==='canyonMelt'));}assert(continued>=20);}
+// Rare items activate on exposure and operate on whole connected sections.
+for(const kind of ['clear','random','transmute']){
+ const board=full();board[0][0]={...tile(1,-1),item:kind};board[5][5]=ore(41,'diamond',500);const before=q.chocoGroups(board),p=q.chocoExcavate(board,[{column:6,level:1}],{trace:true,refill:false,seed:93});const effect=p.timeline.find(s=>s.phase==='canyonPower');assert.equal(effect.kind,kind);assert(!effect.targets.some(v=>v.tile.id===41));
+ if(kind==='clear'){assert.equal(effect.targets.length,82);assert(p.collected.some(v=>v.tile.id===41));assert(!p.removed.some(v=>v.tile.id===41));}
+ else{assert.equal(new Set(effect.targets.map(v=>before.byId.get(v.tile.id))).size,kind==='random'?3:1);if(kind==='transmute'){const transformed=p.timeline.find(s=>s.phase==='canyonTransform');for(const v of effect.targets)assert.equal(transformed.grid[v.r][v.c].item,'ore');}}
+}
+// Rarity follows this game's distance, never accumulated lifetime depth.
+for(const key of ['silver','gold','diamond'])assert(q.chocoOreRates(60)[key]>q.chocoOreRates(30)[key]&&q.chocoOreRates(30)[key]>q.chocoOreRates(0)[key]);
+{const w={strata:[],seed:71,uid:0,depth:129,startDepth:100,nextSugar:10000,fruitState:0};q.chocoFillRows(w);assert(!w.strata.flat().some(t=>t.item==='fruit'));w.depth=130;w.strata.shift();q.chocoFillRows(w);assert.equal(w.fruitState,1);assert(w.strata.at(-1).every(t=>t.item==='fruit'));w.depth++;w.strata.shift();q.chocoFillRows(w);assert(w.strata.slice(-2).flat().every(t=>t.item==='fruit'));}
+// The full-width cake awards exactly 50x once even when seven drills hit together.
+{const board=empty();for(let r=0;r<2;r++)for(let c=0;c<7;c++)board[r][c]={...tile(r*7+c+1,4),item:'fruit'};
+ const p=q.chocoExcavate(board,Array.from({length:7},(_,column)=>({column,level:1})),{trace:true,refill:false,fruitState:1});assert.equal(p.gain,5000);assert.equal(p.fruitState,2);assert.equal(p.timeline.filter(s=>s.phase==='canyonBonus').length,1);assert.equal(p.removed.length,14);
+ const w={strata:[],seed:71,uid:0,depth:80,startDepth:0,nextSugar:10000,fruitState:2};q.chocoFillRows(w);assert(!w.strata.flat().some(t=>t.item==='fruit'));
+}
+// Fruit cake never clears merely by falling; only drilling awards the bonus.
+{const board=empty();for(let c=0;c<7;c++)board[8][c]={...tile(c+1,4),item:'fruit'};board[0][6]=tile(90,0);const p=q.chocoExcavate(board,[{column:6,level:1}],{trace:true,refill:false,fruitState:1});assert.equal(p.gain,0);assert.equal(p.grid.flat().filter(t=>t?.item==='fruit').length,7);}
 async function idle(e){for(let i=0;i<30000;i++){if(!e.busy&&!e.queue.length)return;await Promise.resolve();}throw Error('Engine did not drain');}
 function assigned(e){assert(e.strata.flat().filter(Boolean).every(t=>t.number==null));assert.equal(e.drills.length,13);const all=[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers];assert.equal(all.length,16);assert.equal(new Set(all).size,16);assert(e.drills.every(d=>d.numbers.length===1&&d.level>=1&&d.level<=5));assert(e.lucky.drawn.every(n=>n>=1&&n<=25));}
 (async()=>{
+ {const e=new q.ChocoDigEngine({random:rng(41),sleep:()=>Promise.resolve()});e.visualWait=async(ms,token)=>token===e.version;e.strata=empty();for(let c=0;c<7;c++)e.strata[0][c]={...tile(c+1,4),item:'fruit'};e.uid=7;e.fruitState=1;e.start();const n=e.drills[0].numbers[0];const plan=e.plan([n]);e.enqueue(n);await idle(e);assert.equal(e.totalHundredths,plan.gain);assert(e.totalHundredths>=5000);assert.equal(e.fruitState,2);assert(e.validWorld(e.world()));e.freshBoard();assert.equal(e.fruitState,0);assert.equal(e.startDepth,e.depth);}
  let games=0;for(let seed=1;seed<=80;seed++){
   const events=[],e=new q.ChocoDigEngine({random:rng(seed),sleep:()=>Promise.resolve(),onEvent:ev=>{events.push(ev);if(ev.phase==='error')throw Error(ev.message)}});e.visualWait=async(ms,token)=>token===e.version;
   assigned(e);const original=e.world();assert(e.validWorld(original));const bad=structuredClone(original);bad.drills[0].numbers[0]=bad.drills[1].numbers[0];assert(!e.validWorld(bad));const badTile=structuredClone(original);badTile.strata[0][1].id=badTile.strata[0][0].id;assert(!e.validWorld(badTile));
