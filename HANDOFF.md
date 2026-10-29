@@ -248,3 +248,10 @@
 - 編集元 assets/six-candy-stage.js/.css、rounds-ui.js、rounds-engine.js。バンドルとindex.htmlへ組込。検証 docs/six-stage-v5-verification.json。
 
 - Stage v5補正: 説明をフレーム数ではなく本物のBET残り時間へ同期。低FPSでも18秒で完了し、残り2秒は最後の説明を保持。全消し見出しの旧CSS優先度を修正しヘッダー内へ収める。
+
+
+## 2026-10-29 — 地層掘削・即時連鎖・鉱石回収
+- Lv.1〜5は1〜5地層。同色連結を1層として掘り、亀裂波及→溶解。通常4個以上の落下・合体はその場で亀裂なし溶解。
+- 最上段消失で連鎖中・回収飛行中もせり上がり。単独鉱石4種・シュガー・盤面限定2倍を露出時に回収。トロッコは獲得順に1段5個。
+- 生成チョコ4色・鉱石4種と47ケースのblobオートタイル。旧深度シュガー付与は廃止。
+- 仕様・生成プロンプト・検証は docs/canyon-geology.md / canyon-geology-asset-prompts.json / canyon-geology-verification.json。既存の他ゲーム・物理・音声ホストは維持。

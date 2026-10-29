@@ -110,3 +110,25 @@ body.mobile-landscape .choco-level-table span small{display:inline;margin-left:2
 body.mobile-landscape #choco-odds footer,body.mobile-landscape #choco-odds p{font-size:5.8px;line-height:7px}
 #choco-odds .canyon-prize-row{gap:2px}
 #choco-odds .canyon-prize-row b{font-size:9px;line-height:12px}
+
+/* Four ore classes and a five-wide collection trolley. */
+#choco-odds{gap:2px;padding:4px 3px}
+#choco-odds section{padding:0 2px}#choco-win{font-size:19px;line-height:22px}
+.choco-odds-title{line-height:9px;font-size:7.5px}.choco-odds-title small{line-height:9px}
+.choco-lucky{padding:1px 2px}.choco-lucky-row{min-height:23px;height:23px;padding:0 2px}
+.choco-level-table{padding:1px 2px}.choco-level-table>div{height:18px}.choco-level-table canvas{width:14px;height:17px}.choco-level-table span{font-size:7px;line-height:8px}.choco-level-table span small{display:inline;font-size:5.5px;margin-left:2px}.choco-level-table b{font-size:12px;line-height:16px}
+.choco-ore-table{display:grid;grid-template-columns:1fr;gap:1px}
+#choco-odds .canyon-prize-row{height:24px;min-height:24px;padding:0 2px;justify-content:flex-start;border-radius:5px;gap:3px}
+.canyon-prize-row img{width:24px;height:24px;object-fit:contain;flex:none}.canyon-prize-row span{text-align:left;font-size:6px;line-height:8px}
+#choco-odds .canyon-prize-row b{font:900 8px/11px system-ui;white-space:nowrap}
+.choco-cart{display:block;width:100%;height:79px;min-height:65px;object-fit:contain;border-radius:7px;background:#272035;border:1px solid #9f7651;box-sizing:border-box;margin-top:auto}
+.choco-special-guide{font:800 6px/10px system-ui;text-align:left}.choco-special-guide span{display:block}.choco-special-guide b{color:#9b5695;font-size:6px}
+#choco-odds footer{font-size:5.6px;line-height:7px}
+body.mobile-landscape .choco-cart{height:56px;min-height:40px}body.mobile-landscape .choco-level-table>div{height:15px}
+body.mobile-landscape #choco-odds .canyon-prize-row{height:20px;min-height:20px}body.mobile-landscape .canyon-prize-row img{height:20px;width:20px}
+.choco-active #choco-odds{gap:1px}
+.choco-cart{min-height:50px;height:65px;flex:1 1 65px}
+.choco-level-table>div,.choco-lucky-row,#choco-odds .canyon-prize-row{box-sizing:border-box}
+body.mobile-landscape .choco-cart{min-height:32px;height:40px;flex-basis:40px}
+body.mobile-landscape .choco-lucky-row{height:18px;min-height:18px}
+body.mobile-landscape .choco-level-table>div{height:14px}

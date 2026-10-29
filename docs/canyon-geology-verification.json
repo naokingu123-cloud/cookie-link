@@ -1,0 +1,141 @@
+{
+  "baseCommit": "86f0e6091b235f06c966051d4cd911caae27c72d",
+  "rules": {
+    "seededGames": 80,
+    "layerPowers": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "midairRemoval": true,
+    "instantCollectionScroll": true,
+    "onlyExistingOreDoubled": true
+  },
+  "browser": {
+    "layouts": [
+      {
+        "width": 320,
+        "height": 740,
+        "cell": 28.336605296415442,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "cell": 28.336601307189543,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 430,
+        "height": 932,
+        "cell": 28.336602587816696,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 932,
+        "height": 430,
+        "cell": 28.336598338463293,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 1280,
+        "height": 900,
+        "cell": 28.336601307189543,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      }
+    ],
+    "materials": {
+      "distinct": 5
+    },
+    "levels": [
+      2,
+      3,
+      4,
+      5,
+      5,
+      3,
+      2
+    ],
+    "allAttack": {
+      "columns": 7,
+      "levels": [
+        2,
+        3,
+        4,
+        5,
+        5,
+        3,
+        2
+      ]
+    },
+    "engine": {
+      "processed": 8,
+      "maxLevel": 5,
+      "phase": "complete"
+    },
+    "geology": {
+      "cartRows": 2,
+      "cartItems": 7,
+      "animationFrames": 6,
+      "autotileCases": 1024,
+      "oreImages": 4
+    },
+    "sugar": {
+      "singleAward": true,
+      "cart": 2
+    },
+    "audio": {
+      "buffers": [
+        {
+          "name": "canyon-stratum-crush",
+          "duration": 0.46,
+          "energy": 139.05864990673751
+        },
+        {
+          "name": "canyon-liquid-melt",
+          "duration": 0.36,
+          "energy": 40.585457663280145
+        }
+      ],
+      "voicesAfterReset": 0
+    }
+  },
+  "payout": {
+    "N": 40000,
+    "rtp": 0.8834425,
+    "max": 24.3,
+    "depth": 18.44045,
+    "sugars": 0.0635,
+    "odds": 0.08805,
+    "ores": {
+      "copper": 57184,
+      "silver": 14292,
+      "gold": 2876,
+      "diamond": 804
+    },
+    "layers": 11.639625,
+    "rates": {
+      "copper": 0.0148,
+      "silver": 0.0037,
+      "gold": 0.00074,
+      "diamond": 0.00022,
+      "sugar": 0.00065,
+      "odds": 0.0009
+    }
+  },
+  "sharedHostUnchangedExceptCanyonSugarLabel": true,
+  "physicalIPhone": false,
+  "physicalSpeakers": false
+}

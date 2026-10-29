@@ -1,0 +1,38 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    [
+      "cake-milk",
+      "A milk-chocolate cake terrain tile, rich caramel-brown ganache, fine marbled cocoa swirls, very subtle glossy ripples, small sculpted cocoa motifs and delicately layered sponge visible only at the outer edge."
+    ],
+    [
+      "cake-strawberry",
+      "A strawberry chocolate cake terrain tile, saturated strawberry-pink icing, delicate embossed strawberry motifs, silky strawberry glaze ripples and fine pale pink cream marbling, delicately layered pink sponge only at outer edge."
+    ],
+    [
+      "cake-white",
+      "A white-chocolate cake terrain tile, warm ivory vanilla ganache, intricate embossed cream curls and subtle ivory marbling, luxurious soft sheen, layered pale sponge only at outer edge."
+    ],
+    [
+      "cake-bitter",
+      "A dark bitter-chocolate cake terrain tile, deep espresso-brown cacao ganache, refined embossed cocoa leaf curls and fine dark marbling, lustrous dark chocolate highlights, thin chocolate cake layers only at outer edge."
+    ],
+    [
+      "ore-copper",
+      "One chunky copper ore nugget cluster: warm reddish orange copper metal crystalline chunks with a few dark rocky crevices, gleaming bevels, approximately square silhouette, rounded-cube cluster, readable at tiny game-icon size."
+    ],
+    [
+      "ore-silver",
+      "One chunky silver ore nugget cluster: brilliant cool silver metal crystalline chunks with a few dark slate rocky crevices, gleaming broad reflective bevels, approximately square silhouette, rounded-cube cluster, readable at tiny game-icon size."
+    ],
+    [
+      "ore-gold",
+      "One chunky gold ore nugget cluster: rich saturated yellow-gold crystalline chunks with small amber rocky crevices, gleaming broad bevels, approximately square silhouette, rounded-cube cluster, readable at tiny game-icon size."
+    ],
+    [
+      "ore-diamond",
+      "One large compact diamond crystal cluster: transparent and translucent icy cyan diamond with crisp prismatic facets, sparkling white glints and subtle rainbow refractions, approximately square silhouette, equally tall and wide, not an elongated crystal, readable at tiny game-icon size."
+    ]
+  ],
+  "shared": "Transparent background; square compact orthographic arcade sprite; no text or watermark; cake quadrants for autotiling; ores fit square cells."
+}
