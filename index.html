@@ -7607,7 +7607,7 @@ const BET_BGM_FILE='assets/audio/bet-time.mp3',BET_FADE_MS=900;
 let bgmRole='none',queuedGameBgm='',bgmTransition=null,bgmTransitionFrame=0,bgmTransitionSerial=0;
 const bgmPreloader=new Audio();bgmPreloader.preload='metadata';
 const bgmPlayer=new LoopingBgmPlayer();bgmPlayer.loop=true;bgmPlayer.preload='auto';bgmPlayer.setAttribute('playsinline','');
-const normalBgmVolume=.075;bgmPlayer.volume=normalBgmVolume;
+const normalBgmVolume=.15;bgmPlayer.volume=normalBgmVolume;
 let announcedDrawCount=0;
 let arrivalBuffer=null,arrivalLoading=null;
 const arrivalFile='ジゴスパークちゅぴーん強化.wav';
@@ -7620,9 +7620,9 @@ function prepareArrival(){
 function playArrivalSound(){
  if(!$('sound').checked)return;
  if(!audio||audio.state!=='running'){unlock();return;}
- if(!arrivalBuffer){prepareArrival();sound('magic',{volume:.85});return;}
+ if(!arrivalBuffer){prepareArrival();sound('magic',{volume:jpcSession.active?.12:.85});return;}
  const src=audio.createBufferSource(),gain=audio.createGain();src.buffer=arrivalBuffer;
- gain.gain.value=1.25;src.connect(gain);gain.connect(sfxBus);
+ gain.gain.value=jpcSession.active?.18:1.25;src.connect(gain);gain.connect(sfxBus);
  trackEffectVoice(src,gain);src.start();
 }
 // Pre-rendered Japanese announcements share the game's AudioContext, not OS TTS.
