@@ -11,7 +11,7 @@ body.choco-active .game>.field{flex:1;min-height:0;height:auto;grid-template-col
 body.choco-active #panels{width:100%;min-height:0;height:100%}
 /* v6: all space below the common tabs belongs to the enlarged scene. */
 .choco-status{display:none!important}
-.choco-tab-depth{position:absolute;right:2px;bottom:45px;width:78px;padding:1px 0;border-radius:4px;background:#17394ae8;color:#fff4c9;font:900 8px/11px system-ui;text-align:center;z-index:15;pointer-events:none}
+.choco-tab-depth{position:absolute;right:3px;bottom:78px;width:48px;padding:1px 0;border-radius:4px;background:#17394ae8;color:#fff4c9;font:900 8px/11px system-ui;text-align:center;z-index:15;pointer-events:none}
 
 .choco-continue{display:block;color:#fff279;text-shadow:0 1px 2px #573800;font:900 7px/10px system-ui;white-space:nowrap}
 .choco-tab-depth[data-continued="true"]{box-shadow:0 0 5px #f9d778;border:1px solid #ffe8a3;box-sizing:border-box}
