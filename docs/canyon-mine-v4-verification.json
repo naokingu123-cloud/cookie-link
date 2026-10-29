@@ -1,0 +1,90 @@
+{
+  "layouts": [
+    {
+      "width": 320,
+      "height": 740,
+      "cell": 33.49999953868781,
+      "boardWidth": 234.49999677081468,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "cell": 33.5,
+      "boardWidth": 234.5,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "cell": 33.50000034330214,
+      "boardWidth": 234.500002403115,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 932,
+      "height": 430,
+      "cell": 33.50000034330214,
+      "boardWidth": 234.500002403115,
+      "oneNumber": true,
+      "noSidebar": true
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "cell": 33.5,
+      "boardWidth": 234.5,
+      "oneNumber": true,
+      "noSidebar": true
+    }
+  ],
+  "continuous": {
+    "launches": 1,
+    "layers": 3,
+    "frames": 12,
+    "postDigLevel": 4
+  },
+  "assets": {
+    "autotiles": 1024,
+    "generatedScene": true,
+    "generatedLogo": true,
+    "generatedCart": true
+  },
+  "cartWin": {
+    "items": 7,
+    "rows": 2,
+    "win": 7200
+  },
+  "audio": {
+    "effects": 2,
+    "voicesAfterReset": 0
+  },
+  "payoutSample": {
+    "N": 10000,
+    "rtp": 0.4393,
+    "max": 20.6,
+    "depth": 1.5637,
+    "sugars": 0.0316,
+    "odds": 0.0413,
+    "ores": {
+      "copper": 7135,
+      "silver": 1783,
+      "gold": 360,
+      "diamond": 100
+    },
+    "layers": 6.6053,
+    "rates": {
+      "copper": 0.067,
+      "silver": 0.01675,
+      "gold": 0.00335,
+      "diamond": 0.001,
+      "sugar": 0.0029,
+      "odds": 0.004
+    }
+  },
+  "sharedBrowserPassed": true,
+  "physicalIPhone": false
+}

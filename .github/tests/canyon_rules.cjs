@@ -4,24 +4,28 @@ assert(html.includes(source.trim()),'Shipped engine and dedicated source differ'
 const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY};')(5,()=>0);
 const empty=()=>Array.from({length:12},()=>Array(7).fill(null)),tile=(id,color,prize=null)=>({id,color,number:null,prize}),rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 const full=()=>Array.from({length:12},(_,r)=>Array.from({length:7},(_,c)=>tile(r*7+c+1,(r+c)%4)));
-const state=()=>({drills:Array.from({length:7},(_,c)=>({numbers:[c*3+1,c*3+2,c*3+3],hits:[]})),lucky:{numbers:[22,23,24],hits:[]}});
+const state=()=>({drills:Array.from({length:7},(_,c)=>({numbers:[c+1],hits:[],level:1})),lucky:{numbers:[8,9,10],hits:[],drawn:[]}});
 // One connected component is one stratum, regardless of its cell count.
 assert.deepEqual(q.CHOCO_DRILL_POWER,[0,1,2,3,4,5]);
 for(let level=1;level<=5;level++){
- const grid=full(),p=q.chocoExcavate(grid,[{column:3,level}],{trace:true,refill:false}),impacts=p.timeline.filter(s=>s.phase==='canyonImpact');assert.equal(impacts.length,level);assert(impacts.every(s=>s.targets.length===1));assert.deepEqual(grid,full(),'Planning mutated input');
+ const grid=full(),p=q.chocoExcavate(grid,[{column:3,level}],{trace:true,refill:false}),impacts=p.timeline.filter(s=>s.phase==='canyonSoften');assert.equal(impacts.length,level);assert(impacts.every(s=>s.targets.length===1));assert.deepEqual(grid,full(),'Planning mutated input');
 }
-let grid=full();grid[0][0].color=grid[0][1].color;let p=q.chocoExcavate(grid,[{column:0,level:1}],{trace:true,refill:false});let impact=p.timeline.find(s=>s.phase==='canyonImpact');assert.equal(impact.targets.length,3);assert.deepEqual(impact.targets.map(t=>t.wave).sort(),[0,1,1]);assert.equal(impact.impacts.length,1);
-p=q.chocoExcavate(grid,[{column:0,level:1},{column:1,level:1}],{trace:true,refill:false});assert.equal(p.timeline.find(s=>s.phase==='canyonImpact').impacts.length,1,'Same stratum hit twice');
-const levels=p=>p.timeline.filter(s=>s.phase==='canyonLevel').map(s=>s.level);
-p=q.chocoPlan(full(),[1,2,3],{...state(),trace:true});assert.deepEqual(levels(p),[1,2,3]);assert.equal(q.chocoDrillLevel(p.drills[0],p.lucky),3);
-p=q.chocoPlan(full(),[22,23,1,2,3],{...state(),trace:true});assert.deepEqual(levels(p),[3,4,5]);assert.equal(q.chocoDrillLevel(p.drills[0],p.lucky),5);
-p=q.chocoPlan(full(),[22,23],{...state(),trace:true});assert.deepEqual(p.grid,full());assert.equal(p.gain,0);
-p=q.chocoPlan(full(),[24],{...state(),trace:true});assert.equal(p.timeline.find(s=>s.phase==='canyonDrill').attacks.length,7);assert(p.drills.every(d=>q.chocoDrillLevel(d,p.lucky)===0));
-p=q.chocoPlan(full(),[25],{...state(),trace:true});assert.deepEqual(p.grid,full());assert.equal(p.timeline[0].phase,'canyonMiss');
-let first=q.chocoPlan(full(),[1,22],{...state()});p=q.chocoPlan(first.grid,[1,22],{drills:first.drills,lucky:first.lucky,trace:true});assert.deepEqual(p.grid,first.grid);assert.equal(p.timeline.length,0);
+let grid=full();grid[0][0].color=grid[0][1].color;let p=q.chocoExcavate(grid,[{column:0,level:1}],{trace:true,refill:false});let impact=p.timeline.find(s=>s.phase==='canyonSoften');assert.equal(impact.targets.length,3);assert.deepEqual(impact.targets.map(t=>t.wave).sort(),[0,1,1]);assert.equal(impact.impacts.length,1);
+p=q.chocoExcavate(grid,[{column:0,level:1},{column:1,level:1}],{trace:true,refill:false});assert.equal(p.timeline.find(s=>s.phase==='canyonSoften').impacts.length,1,'Same stratum hit twice');
+// A single number per drill, Lv.1 start, current-level excavation BEFORE upgrade.
+p=q.chocoPlan(full(),[1],{...state(),trace:true,refill:false});assert.equal(p.timeline[0].phase,'canyonDrill');assert.equal(p.timeline[0].attacks[0].level,1);assert.equal(p.drills[0].level,2);assert.equal(p.timeline.at(-1).phase,'canyonUpgrade');assert(p.timeline.at(-1).afterDig);
+let st=state();st.drills[0].level=3;p=q.chocoPlan(full(),[1],{...st,trace:true,refill:false});assert.equal(p.timeline.filter(s=>s.phase==='canyonDrill').length,1);assert.equal(p.timeline.filter(s=>s.phase==='canyonBore').length,2);assert.equal(p.timeline.filter(s=>s.phase==='canyonSoften').length,3);assert.equal(p.drills[0].level,4);assert(p.timeline.filter(s=>s.phase!=='canyonUpgrade').every(s=>s.flights.length===1));
+const bores=p.timeline.filter(s=>['canyonDrill','canyonBore'].includes(s.phase));assert(bores[0].flights[0].launch);for(let i=1;i<bores.length;i++){assert(!bores[i].flights[0].launch);assert.equal(bores[i].flights[0].from,bores[i-1].flights[0].to);}
+// Random upgrades never choose Lv.5; no drilling for non-special numbers.
+st=state();st.drills.forEach(d=>d.level=5);st.drills[4].level=3;p=q.chocoPlan(full(),[11,12,13],{...st,trace:true});assert.equal(p.drills[4].level,5);assert.deepEqual(p.grid,full());assert.deepEqual(p.timeline.filter(s=>s.phase==='canyonUpgrade').map(s=>s.columns),[[4],[4]]);assert.equal(p.timeline.at(-1).phase,'canyonMax');
+// Two renewable global-upgrade slots, excluding drawn and occupied numbers.
+p=q.chocoPlan(full(),[8],{...state(),trace:true,seed:81});assert(p.drills.every(d=>d.level===2));assert(![1,2,3,4,5,6,7,8,9,10].includes(p.lucky.numbers[0]));assert.equal(p.lucky.numbers[1],9);assert.equal(p.timeline.at(-1).phase,'canyonLuckyRenew');
+let next=q.chocoPlan(p.grid,[p.lucky.numbers[0]],{drills:p.drills,lucky:p.lucky,trace:true,seed:p.seed});assert(next.drills.every(d=>d.level===3));assert(!next.lucky.drawn.includes(next.lucky.numbers[0]));
+p=q.chocoPlan(full(),[10],{...state(),trace:true});assert.equal(p.timeline.find(s=>s.phase==='canyonDrill').attacks.length,7);assert(p.drills.every(d=>d.level===2));
+let first=q.chocoPlan(full(),[1,8],{...state()});p=q.chocoPlan(first.grid,[1,8],{drills:first.drills,lucky:first.lucky,trace:true});assert.deepEqual(p.grid,first.grid);assert.equal(p.timeline.length,0);
 // Falling four-cell groups melt midair, immediately after the first row of travel.
 grid=empty();for(let c=0;c<4;c++)grid[0][c]=tile(c+1,0);grid[11][6]=tile(90,2);
-p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});const auto=p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill);assert(auto);assert(auto.targets.every(v=>v.r===1));assert.equal(p.timeline.filter(s=>s.phase==='canyonImpact').length,1);assert.equal(p.removed.length,5);
+p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});const auto=p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill);assert(auto);assert(auto.targets.every(v=>v.r===1));assert.equal(p.timeline.filter(s=>s.phase==='canyonSoften').length,1);assert.equal(p.removed.length,5);
 // An anchored static four does not clear; any falling merger to four does.
 grid=empty();for(let c=0;c<4;c++)grid[11][c]=tile(c+1,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.removed.length,1);
 grid=empty();for(let r=9;r<12;r++)grid[r][0]=tile(r,0);grid[8][1]=tile(20,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill).targets.length,4);
@@ -38,7 +42,7 @@ for(let seed=1;seed<=25;seed++){const e=new q.ChocoDigEngine({random:rng(seed)})
 grid=full();for(let c=0;c<7;c++)grid[0][c]=ore(c+1,'copper',10);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true});const collect=p.timeline.find(s=>s.phase==='canyonCollect');assert.equal(collect.scroll.advanced,1);assert.equal(collect.depth,1);assert.equal(collect.items.length,7);
 for(let seed=1;seed<=80;seed++){grid=full();for(let c=0;c<7;c++)grid[0][c]={...tile(c+1,-1),item:'odds'};p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,seed});const up=p.timeline.find(s=>s.phase==='canyonOdds');assert.equal(up.scroll.advanced,1);for(const t of up.grid.flat())if(t?.item==='ore'&&t.id>84)assert.equal(t.multiplier,1,'Future ore received past odds upgrade');}
 async function idle(e){for(let i=0;i<30000;i++){if(!e.busy&&!e.queue.length)return;await Promise.resolve();}throw Error('Engine did not drain');}
-function assigned(e){assert(e.strata.flat().filter(Boolean).every(t=>t.number==null));assert.equal(e.drills.length,7);const all=[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers,e.missNumber];assert.deepEqual([...all].sort((a,b)=>a-b),Array.from({length:25},(_,i)=>i+1));}
+function assigned(e){assert(e.strata.flat().filter(Boolean).every(t=>t.number==null));assert.equal(e.drills.length,7);const all=[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers];assert.equal(all.length,10);assert.equal(new Set(all).size,10);assert(e.drills.every(d=>d.numbers.length===1&&d.level>=1&&d.level<=5));assert(e.lucky.drawn.every(n=>n>=1&&n<=25));}
 (async()=>{
  let games=0;for(let seed=1;seed<=80;seed++){
   const events=[],e=new q.ChocoDigEngine({random:rng(seed),sleep:()=>Promise.resolve(),onEvent:ev=>{events.push(ev);if(ev.phase==='error')throw Error(ev.message)}});e.visualWait=async(ms,token)=>token===e.version;

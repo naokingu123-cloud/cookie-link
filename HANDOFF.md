@@ -262,3 +262,9 @@
 - 3〜6マスの35種ポリオミノで盤面と補充分を分割。1〜2マス孤立・複雑な枝を回避。報酬は塊を分断しない位置に配置。
 - せり上がりは距離に応じ505〜1100ms、加減速付き。描画間隔32ms→15ms。最上段消失で即開始する条件は維持。
 - 1000盤面・80ゲーム・5画面サイズ・既存他ゲームを検証。詳細 docs/canyon-compact.md と canyon-compact-verification.json。素材は assets/canyon-geology/、プロンプトは docs/canyon-compact-art-prompts.json。
+
+
+## 2026-10-29 — mine v4 / 1番号・連続ドリル
+- 最新仕様は docs/canyon-mine-v4.md。初期Lv1、現在Lvで連続掘削→LvUP。2つの全LvUP番号はHIT枠のみ未使用番号へ更新。その他はMAX以外1台強化。
+- 主盤面ロゴ/配当欄削除、生成鉱山・トロッコ・タブロゴ、拡大7×12盤面、BET依存WIN。亀裂なし軟化溶解。
+- 配当率は未調整。新ルールの直接配当10kサンプル43.93%。検証 docs/canyon-mine-v4-verification.json。

@@ -1,0 +1,20 @@
+{
+  "assets": [
+    [
+      "mine",
+      false,
+      "A highly polished Japanese cute fantasy arcade game background, portrait 4:5 canvas. Chocolate mine underground: layered cocoa cliffs and white chocolate strata on narrow left and right edges, wafer timber supports, amber mining lamps, scattered colorful candy crystals. Large central rectangular excavation shaft occupying middle 70% width and 80% height, its interior is a subdued desaturated dark blue slate, calm and unpatterned, no chocolate blocks in the shaft. Bottom 15% is a charming mining railway platform, horizontal rails and small piles of sweet rocks, space for a minecart near lower right. No text, numbers, UI, logo, grid, buttons or characters. Warm detailed chocolate framing, cool distinct central void, elegant depth, hand-painted glossy 3D arcade illustration, bright readable edges. Entire composition filled, no transparent background."
+    ],
+    [
+      "cart",
+      true,
+      "A single charming ornate chocolate-mine trolley game sprite, orthographic side view, squat broad copper-brown wooden minecart with golden metal rim and rivets, four small steel wheels, whimsical candy mining arcade aesthetic, cute polished 3D illustration. Empty open top for stacking acquired gems, its front wall low enough to see cargo piled above rim. Wide 2:1 silhouette, centered, isolated on genuinely transparent background. No track, background, words, letters, numbers, gems or cargo. Rich detailed rounded toy-like materials, matches a chocolate candy mine."
+    ],
+    [
+      "logo",
+      true,
+      "Create an extremely ornate premium Japanese arcade medal game logo with exact Japanese title チョコレートキャニオン. Title split into two compact centered lines: チョコレート on top, キャニオン below. Thick playful custom sculpted lettering, milk and dark chocolate layers with ivory cream and strawberry pink accents, gold bevel outlines and bright highlights. Surround the title closely with cute chocolate cliffs, waffle biscuits, sparkling cyan gemstones, a miniature gold spiral drill, caramel ribbons and stars. As elaborate and joyful as a premium sweets arcade game logo. Strong legibility when small, wide 2:1 compact silhouette. Genuine transparent background, no rectangular plaque, no scene background, no English subtitle, no extra text, no watermark."
+    ]
+  ],
+  "backgroundCorrection": "Remove the minecart from the lower-right railway platform, preserve chocolate cliffs, lamps, rails and central cool empty shaft. The runtime draws a separate generated cart."
+}

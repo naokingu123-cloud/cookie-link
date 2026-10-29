@@ -132,3 +132,12 @@ body.mobile-landscape #choco-odds .canyon-prize-row{height:20px;min-height:20px}
 body.mobile-landscape .choco-cart{min-height:32px;height:40px;flex-basis:40px}
 body.mobile-landscape .choco-lucky-row{height:18px;min-height:18px}
 body.mobile-landscape .choco-level-table>div{height:14px}
+/* Mine v4: one full-width scene; no separate payout sidebar or board logo. */
+body.choco-active #odds-panel,body.choco-active .game>.festival-top{display:none!important}
+body.choco-active #screen>.game{height:548px!important}
+body.choco-active .game>.field{height:522px!important;grid-template-columns:minmax(0,1fr)!important;gap:0}
+body.choco-active .choco-panel{height:522px!important;width:100%!important}
+body.choco-active #panels{width:100%;min-width:0}
+.choco-surface{border:0;border-radius:12px;box-shadow:none}
+.choco-status{height:14px;min-height:14px;line-height:14px;font-size:7px}
+.choco-tab .tab-game-name .canyon-logo{height:44px;width:146px;object-fit:contain}
