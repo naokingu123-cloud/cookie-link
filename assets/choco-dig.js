@@ -132,8 +132,8 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
    const before=w.strata,fall=chocoFallStep(before);if(!fall.moves.length)return;
    w.strata=fall.grid;fallSteps++;if(fall.merged.length)merges++;
    const scroll=shift();push('canyonFall',{before:chocoClone(before),moves:fall.moves,merged:fall.merged,...(scroll?{scroll:{...scroll,before:chocoClone(before)}}:{})},180);
-   // Only a newly joined group triggers a chain. Falling an existing large group is not a match.
-   triggers=new Set([...fall.merged,...(scroll?.joined||[])]);
+   // A newly joined group or a group that just fell clears when it has at least four cells.
+   triggers=new Set([...fall.moves.map(v=>v.id),...fall.merged,...(scroll?.joined||[])]);
   }
   throw Error('Canyon cascade exceeded safety bound');
  }

@@ -26,12 +26,16 @@ st=state();st.drills[0].level=5;p=q.chocoPlan(full(),[1],{...st,trace:true});ass
 let first=q.chocoPlan(full(),[1,14],{...state()});p=q.chocoPlan(first.grid,[1,14],{drills:first.drills,lucky:first.lucky,trace:true});assert.deepEqual(p.grid,first.grid);assert.equal(p.timeline.length,0);
 // Even eight consecutive hits leave sixteen distinct unhit numbers.
 st=state();let seen=[];for(let i=0;i<8;i++){const n=st.drills[0].numbers[0];seen.push(n);const z=q.chocoPlan(full(),[n],{...st,seed:81+i});st={drills:z.drills,lucky:z.lucky};const all=[...st.drills.flatMap(d=>d.numbers),...st.lucky.numbers];assert.equal(new Set(all).size,16);assert(all.every(n=>!seen.includes(n)));}
-// A four-cell group falling without joining stays intact through landing.
-grid=empty();for(let c=0;c<4;c++)grid[0][c]=tile(c+1,0);grid[11][6]=tile(90,2);
-p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});const auto=p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill);assert(!auto);assert.equal(p.timeline.filter(s=>s.phase==='canyonSoften').length,1);assert.equal(p.removed.length,1);assert(p.grid[11].slice(0,4).every(t=>t?.color===0));
-for(const size of [5,6]){grid=empty();for(let c=0;c<size;c++)grid[0][c]=tile(c+1,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert(!p.timeline.some(s=>s.phase==='canyonMelt'&&!s.drill));assert.equal(p.grid[11].filter(t=>t?.color===0).length,size);}
+// Existing groups of four or more clear after a fall step, even without a new join.
+for(const size of [3,4,5,6]){
+ grid=empty();for(let c=0;c<size;c++)grid[0][c]=tile(c+1,0);grid[11][6]=tile(90,2);
+ p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});
+ const at=p.timeline.findIndex(s=>s.phase==='canyonMelt'&&!s.drill);
+ if(size<4){assert.equal(at,-1);assert.equal(p.grid[11].filter(t=>t?.color===0).length,size);}
+ else{assert(at>0);assert.equal(p.timeline[at-1].phase,'canyonFall');assert.equal(p.timeline[at-1].merged.length,0);assert.equal(p.timeline[at].targets.length,size);assert.equal(p.removed.length,size+1);assert(!p.grid.flat().some(t=>t?.color===0));}
+}
 // Two existing large groups joining are still a new merger and clear together.
-grid=empty();for(let c=0;c<4;c++){grid[0][c]=tile(c+1,0);grid[11][c]=tile(c+20,0);}grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill).targets.length,8);
+grid=empty();for(let c=0;c<4;c++){grid[9][c]=tile(c+1,0);grid[11][c]=tile(c+20,0);}grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill).targets.length,8);
 // An anchored static four does not clear; any falling merger to four does.
 grid=empty();for(let c=0;c<4;c++)grid[11][c]=tile(c+1,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.removed.length,1);
 grid=empty();for(let r=9;r<12;r++)grid[r][0]=tile(r,0);grid[8][1]=tile(20,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill).targets.length,4);
