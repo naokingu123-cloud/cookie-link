@@ -422,3 +422,7 @@
 - 新規25音源は元MP3をそのまま assets/audio/jpc-*.mp3 / vocal-*-*.mp3 として保存。assets/bgm-player.js がAudioBufferSourceNodeのloopStart/loopEndを用いてサンプルクロックでループ。最初のイントロは維持、pause位置保持、古い非同期再生を世代ガード、デコード済みキャッシュ2曲。
 - ループ設定 assets/audio/bgm-loops.json：波形/スペクトル反復一致11曲、明確な一致なし14曲は全曲の可聴範囲+120ms境界ブレンド。後者は音楽的なフレーズ位置未確定であり、ユーザー指定時刻で改善可能。全曲を聴感検証済みと主張しない。
 - .github/tests/jpc_bgm_browser.py にJPC切替と25曲のデコード/境界/実ループ/通常選曲維持/リセット検証。詳細 docs/bgm-v19.md。
+
+## 追加更新: JPC番号読み上げ停止（2026-10-30）
+- JPCではnumberAudioAllowedをfalseとし「〇番です」をキューへ追加しない。入賞通知はplayArrivalSoundのみでBGM/入賞効果音を維持。通常ゲームの番号読み上げは維持。JPC入場時は既存のstopSounds/stopBgmで以前の音声・待ち列を消去。
+- jpc_bgm_browser.pyでJPCの直接読み上げ拒否・重複入賞時の音声キュー空・通常復帰後の読み上げ許可を確認。

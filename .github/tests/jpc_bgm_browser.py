@@ -4,7 +4,7 @@ import threading,json
 from playwright.sync_api import sync_playwright
 root=Path.cwd();html=(root/'index.html').read_text();anchor='setupManualNumbers();'
 # Add hooks only to the test response; keep the production script encapsulated.
-hook='''window.__j={app,activateGameAudio,startReadyRound,debugResetRound,get tracks(){return bgmTracks},get selected(){return queuedGameBgm},toggleJpcMode,restartJpcRound,paintJpcDashboard,syncJpcBgm,jpcBgmFile,stopJpcTicker,stopAutoRound,get driver(){return rouletteDriver},get ready(){return rouletteReady},get player(){return bgmPlayer},get role(){return bgmRole},get context(){return audio},get session(){return jpcSession},pause(v){userPaused=v;syncPause();},freeze(){stopAutoRound();autoRoundRemaining=3600000;},stopBgm};'''
+hook='''window.__j={app,announceDraw,get voiceBusy(){return numberVoiceBusy},get voiceQueue(){return numberVoiceQueue},activateGameAudio,startReadyRound,debugResetRound,get tracks(){return bgmTracks},get selected(){return queuedGameBgm},toggleJpcMode,restartJpcRound,paintJpcDashboard,syncJpcBgm,jpcBgmFile,stopJpcTicker,stopAutoRound,get driver(){return rouletteDriver},get ready(){return rouletteReady},get player(){return bgmPlayer},get role(){return bgmRole},get context(){return audio},get session(){return jpcSession},pause(v){userPaused=v;syncPause();},freeze(){stopAutoRound();autoRoundRemaining=3600000;},stopBgm};'''
 assert html.count(anchor)==1;html=html.replace(anchor,anchor+hook)
 class H(SimpleHTTPRequestHandler):
  def __init__(self,*a,**kw):super().__init__(*a,directory=str(root),**kw)
@@ -23,6 +23,10 @@ with sync_playwright() as p:
  page.evaluate("__j.freeze();document.querySelector('#sound').checked=true;__j.toggleJpcMode();__j.stopJpcTicker();__j.driver.setPaused(true)")
  page.wait_for_function("__j.role==='jpc'&&!__j.player.paused&&__j.player.currentTime>.05",timeout=20000)
  initial=page.evaluate('__j.driver.draw.state');print('JPC_STARTED',initial,flush=True)
+ # JPC retains arrival effects but never queues spoken pocket numbers.
+ assert page.evaluate('__j.announceDraw(14)') is False
+ page.evaluate('for(const pocket of [14,14]){const d=__j.driver,hit={pocket,time:d.physics.time};d.physics.hits.push(hit);d.physics.onHit(hit);}__j.paintJpcDashboard();')
+ assert page.evaluate('!__j.voiceBusy&&__j.voiceQueue.length===0&&!__j.player.paused')
  snapshots=[]
  for ball,track in [(1,1),(20,1),(21,2),(40,2),(41,3),(60,3),(61,4),(70,4)]:
   page.evaluate('(n)=>{__j.driver.physics.serial=n;__j.paintJpcDashboard()}',ball)
@@ -58,6 +62,8 @@ with sync_playwright() as p:
  page.evaluate('__j.startReadyRound();__j.driver.setPaused(true)')
  page.wait_for_function("__j.role==='game'&&__j.player.currentTime>.1",timeout=20000)
  assert page.evaluate('__j.player.src')==selected
+ assert page.evaluate('__j.announceDraw(14)') is True
+ page.wait_for_function('!__j.voiceBusy&&__j.voiceQueue.length===0',timeout=10000)
  page.evaluate('''async()=>{const p=__j.player;p.currentTime=p._points.end-.08;await p.play();window.__loopNode=p._source;window.__loopEnd=p._points.end;window.__loopStart=p._points.start;}''')
  page.wait_for_timeout(250)
  assert page.evaluate('__j.player._source===__loopNode&&__j.player.currentTime>=__loopStart&&__j.player.currentTime<__loopEnd-1')

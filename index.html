@@ -7627,7 +7627,7 @@ const NUMBER_VOICE_GAIN=.95;
 const numberVoiceFile=n=>'assets/audio/numbers/'+String(n).padStart(2,'0')+'.wav';
 function numberAudioAllowed(){
  return !!app&&$('sound').checked&&!document.hidden&&inView&&!menuOpen&&!userPaused&&
-  (jpcSession.active||(!app.paused&&['playing','result','paying','complete'].includes(app.phase)));
+  (!jpcSession.active&&!app.paused&&['playing','result','paying','complete'].includes(app.phase));
 }
 function loadNumberVoice(n){
  if(numberVoiceBuffers.has(n))return Promise.resolve(numberVoiceBuffers.get(n));
@@ -7935,7 +7935,7 @@ function paintJpcDashboard(){
  const ended=state==='complete',remaining=25-filled;
  put('jpc-message',filled===25?'JACKPOT! 全25ポケット達成':reach>=0?(ended?'JPC終了・':'')+(reach+1)+'番 リーチ！':ended?'JPC終了・'+filled+' / 25 ポケット入賞':'あと '+remaining+' ポケットで JACKPOT!');
  $('jpc-history').replaceChildren(...hits.slice(-10).map(hit=>{const b=document.createElement('b');b.textContent=String(hit.pocket);return b;}));
- if(hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!userPaused&&inView)for(const hit of hits.slice(jpcSession.previousHits))announceDraw(hit.pocket);
+ if(hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!userPaused&&inView)for(const hit of hits.slice(jpcSession.previousHits))playArrivalSound();
  jpcSession.previousCounts=[...counts];jpcSession.previousHits=hits.length;syncDebugButtons();
 }
 function runJpcTicker(){
