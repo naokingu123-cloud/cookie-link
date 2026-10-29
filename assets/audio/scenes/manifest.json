@@ -25,19 +25,41 @@
   },
   {
     "key": "ore",
-    "source": "System_Get1_default.ogg",
+    "source": "ui036.wav",
     "scene": "キャニオン：鉱石が秤へ着地",
-    "file": "assets/audio/scenes/ore.wav",
-    "seconds": 0.45,
-    "sourceSha256": "608422de934ccd8c8a9290c164dc416bccdf4fcdc07b9134d5a3aba33ea18a1c"
+    "file": "assets/audio/scenes/ore-v5.wav",
+    "seconds": 1.07,
+    "sourceSha256": "ee453d86b4f6cfbd7cce126157c8bae0207a9680bc5401736d3b33a6cded89af",
+    "archive": "SE2.rar",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui036.wav",
+        "start": 0,
+        "length": 0.85,
+        "sha256": "ee453d86b4f6cfbd7cce126157c8bae0207a9680bc5401736d3b33a6cded89af"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "sugar",
-    "source": "System_Get2_wolf.ogg",
+    "source": "se_maoudamashii_chime07.mp3",
     "scene": "シュガー獲得",
-    "file": "assets/audio/scenes/sugar.wav",
-    "seconds": 0.337,
-    "sourceSha256": "be9a78fbe653d4755c510cd708f52c48465f6815198716fe3ce5089e16da6b73"
+    "file": "assets/audio/scenes/sugar-v5.wav",
+    "seconds": 1.47,
+    "sourceSha256": "584d88d5f3124669434ef205bee68e91451866665efa436a0214234410881eca",
+    "archive": "SE.rar",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime07.mp3",
+        "start": 0,
+        "length": 1.25,
+        "sha256": "584d88d5f3124669434ef205bee68e91451866665efa436a0214234410881eca"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "random",
@@ -89,19 +111,41 @@
   },
   {
     "key": "triangle",
-    "source": "se_maoudamashii_chime13.mp3",
+    "source": "se_maoudamashii_chime12.mp3",
     "scene": "シックスドロップ：三角形成立",
-    "file": "assets/audio/scenes/triangle.wav",
-    "seconds": 1.502,
-    "sourceSha256": "9195002b52625dc4ca8f260a009fa577d9df10ce37c72680acda71f586a94702"
+    "file": "assets/audio/scenes/triangle-v5.wav",
+    "seconds": 1.82,
+    "sourceSha256": "f142a41a66689004d1cd30412820a58a2ce87666d07429ea6c127065f14cd5f8",
+    "archive": "SE.rar",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime12.mp3",
+        "start": 0,
+        "length": 1.6,
+        "sha256": "f142a41a66689004d1cd30412820a58a2ce87666d07429ea6c127065f14cd5f8"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "hexagon",
-    "source": "se_maoudamashii_chime14.mp3",
+    "source": "ui222.wav",
     "scene": "シックスドロップ：六角形成立",
-    "file": "assets/audio/scenes/hexagon.wav",
-    "seconds": 2.086,
-    "sourceSha256": "773c91cefb2e651cebf7a8102dd5a2f78b15e08e5e984412fa1adcb2b7da8fbd"
+    "file": "assets/audio/scenes/hexagon-v5.wav",
+    "seconds": 2.203291666666667,
+    "sourceSha256": "2683baa7590ee705f32acf83c306043ab8d6f86a649ee63ad0fe4fe29e6686c7",
+    "archive": "SE2.rar",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui222.wav",
+        "start": 0,
+        "length": 2.1,
+        "sha256": "2683baa7590ee705f32acf83c306043ab8d6f86a649ee63ad0fe4fe29e6686c7"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "role",
@@ -129,11 +173,22 @@
   },
   {
     "key": "record",
-    "source": "get.mp3",
+    "source": "ui247.wav",
     "scene": "クッキーリンク：最大LINK更新",
-    "file": "assets/audio/scenes/record.wav",
-    "seconds": 1.205,
-    "sourceSha256": "1feb4b700b90bf1fd34259ee55d6d403d8ebddff4a6ee467442e18106ce9c805"
+    "file": "assets/audio/scenes/record-v5.wav",
+    "seconds": 2.02,
+    "sourceSha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80",
+    "archive": "SE2.rar",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui247.wav",
+        "start": 0,
+        "length": 1.8,
+        "sha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "gift",
@@ -297,11 +352,22 @@
   },
   {
     "key": "line",
-    "source": "se_maoudamashii_chime01.mp3",
+    "source": "se_maoudamashii_chime04.mp3",
     "scene": "シックス：直線成立",
-    "file": "assets/audio/scenes/line.wav",
-    "seconds": 0.7,
-    "sourceSha256": "4d9835c3f5d811053311fe2d21dc3df90899362fbf6baf9f935f6222eab8cd16"
+    "file": "assets/audio/scenes/line-v5.wav",
+    "seconds": 1.07,
+    "sourceSha256": "facab3a7c54636cfafb97205203e2d6c649948e3d3433247069a37d91f89e4a8",
+    "archive": "SE.rar",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime04.mp3",
+        "start": 0,
+        "length": 0.85,
+        "sha256": "facab3a7c54636cfafb97205203e2d6c649948e3d3433247069a37d91f89e4a8"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "finish",
@@ -315,53 +381,121 @@
     "key": "allclear",
     "source": "battle_win4.wav",
     "scene": "クッキー・シックス：全消しボーナス",
-    "file": "assets/audio/scenes/allclear.wav",
-    "seconds": 4.5,
-    "sourceSha256": "866c9cfc94863a5676ee795d37a6b6af26c8bd4b1a59855f9e67a91e1fb7ecab"
+    "file": "assets/audio/scenes/allclear-v5.wav",
+    "seconds": 3.92,
+    "sourceSha256": "866c9cfc94863a5676ee795d37a6b6af26c8bd4b1a59855f9e67a91e1fb7ecab",
+    "archive": "SE.rar",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "battle_win4.wav",
+        "start": 0,
+        "length": 3.7,
+        "sha256": "866c9cfc94863a5676ee795d37a6b6af26c8bd4b1a59855f9e67a91e1fb7ecab"
+      },
+      {
+        "archive": "SE.rar",
+        "source": "キーン！.mp3",
+        "sha256": "af014de78de9411ee3ba3824f1b934e73a71a48be23d7aac3e22997a084172a7",
+        "length": 0.65
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "bonus",
-    "source": "battle_win2.wav",
+    "source": "se_maoudamashii_chime08.mp3",
     "scene": "キャニオン：ボーナスケーキ",
-    "file": "assets/audio/scenes/bonus.wav",
-    "seconds": 3.5,
-    "sourceSha256": "dd3e8b6b38e71dce7904d2f0160aadc0c20dd7f8f2b1bbf969a18405d60c89c5"
+    "file": "assets/audio/scenes/bonus-v5.wav",
+    "seconds": 2.72,
+    "sourceSha256": "d348a4fccff3badf37368be576aa48f12bda87f8f80f85f024786406ef3cc511",
+    "archive": "SE.rar",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime08.mp3",
+        "start": 0,
+        "length": 2.5,
+        "sha256": "d348a4fccff3badf37368be576aa48f12bda87f8f80f85f024786406ef3cc511"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "credit-tick",
-    "source": "ui062.wav",
+    "source": "ui036.wav",
     "archive": "SE2.rar",
     "scene": "共通：CREDIT加算中",
-    "file": "assets/audio/scenes/credit-tick-v4.wav",
-    "seconds": 0.09,
-    "sourceSha256": "30ae6386a70e4a093c1f01248d75217a1d61cc614b069aeefc1572fa00e058ea"
+    "file": "assets/audio/scenes/credit-tick-v5.wav",
+    "seconds": 0.145,
+    "sourceSha256": "ee453d86b4f6cfbd7cce126157c8bae0207a9680bc5401736d3b33a6cded89af",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui036.wav",
+        "start": 0.18,
+        "length": 0.12,
+        "sha256": "ee453d86b4f6cfbd7cce126157c8bae0207a9680bc5401736d3b33a6cded89af"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "credit-done",
-    "source": "ui061.wav",
-    "archive": "SE2.rar",
+    "source": "se_maoudamashii_chime11.mp3",
+    "archive": "SE.rar",
     "scene": "共通：CREDIT加算完了",
-    "file": "assets/audio/scenes/credit-done-v4.wav",
-    "seconds": 0.3287083333333333,
-    "sourceSha256": "22282648efe93fca8db5bc001ba5f09b147d6486345f6570a129cdbaff87da7a"
+    "file": "assets/audio/scenes/credit-done-v5.wav",
+    "seconds": 1.47,
+    "sourceSha256": "535032bc484ed57917a936d0fb74f79fe41fc0ff63ca6476bc125565b43663ba",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime11.mp3",
+        "start": 0,
+        "length": 1.25,
+        "sha256": "535032bc484ed57917a936d0fb74f79fe41fc0ff63ca6476bc125565b43663ba"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "pay-step",
-    "source": "ui041.wav",
-    "archive": "SE2.rar",
+    "source": "se_maoudamashii_chime07.mp3",
+    "archive": "SE.rar",
     "scene": "クッキー：配当表の上昇",
-    "file": "assets/audio/scenes/pay-step-v4.wav",
-    "seconds": 0.13708333333333333,
-    "sourceSha256": "42a16ad77631ad92e4db4227a57a4c08566c282fb573ae4234b3f06c97b1f380"
+    "file": "assets/audio/scenes/pay-step-v5.wav",
+    "seconds": 0.185,
+    "sourceSha256": "584d88d5f3124669434ef205bee68e91451866665efa436a0214234410881eca",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime07.mp3",
+        "start": 0.05,
+        "length": 0.16,
+        "sha256": "584d88d5f3124669434ef205bee68e91451866665efa436a0214234410881eca"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "pay-lock",
-    "source": "ui026.wav",
-    "archive": "SE2.rar",
+    "source": "se_maoudamashii_chime09.mp3",
+    "archive": "SE.rar",
     "scene": "クッキー：配当表の到達",
-    "file": "assets/audio/scenes/pay-lock-v4.wav",
-    "seconds": 0.602625,
-    "sourceSha256": "19b631c6c23bb6232a9c2f1ba948fe82402f7d7c6931c979214beabd2fd817ff"
+    "file": "assets/audio/scenes/pay-lock-v5.wav",
+    "seconds": 1.67,
+    "sourceSha256": "ee899a8a724913ab055fcb52d488ff440bfe46d52c43ce916ef21c1e2c1d2cb3",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime09.mp3",
+        "start": 0,
+        "length": 1.45,
+        "sha256": "ee899a8a724913ab055fcb52d488ff440bfe46d52c43ce916ef21c1e2c1d2cb3"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "launch",
@@ -374,39 +508,85 @@
   },
   {
     "key": "continue",
-    "source": "ui221.wav",
+    "source": "ui232.wav",
     "archive": "SE2.rar",
     "scene": "キャニオン：継続確定",
-    "file": "assets/audio/scenes/continue-v4.wav",
-    "seconds": 2.012375,
-    "sourceSha256": "dc41f5b8f2811a8644994062ea76c66b5ad94cf188952dd8eaaf9fb034c55731"
+    "file": "assets/audio/scenes/continue-v5.wav",
+    "seconds": 2.22,
+    "sourceSha256": "701c89a57b604765ee30ca98f1be83781072e575726a92ceaafb5f35577776bd",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui232.wav",
+        "start": 0,
+        "length": 2.0,
+        "sha256": "701c89a57b604765ee30ca98f1be83781072e575726a92ceaafb5f35577776bd"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "scale-tick",
-    "source": "ui004.wav",
-    "archive": "SE2.rar",
+    "source": "se_maoudamashii_chime12.mp3",
+    "archive": "SE.rar",
     "scene": "キャニオン：秤の数値加算",
-    "file": "assets/audio/scenes/scale-tick-v4.wav",
-    "seconds": 0.11,
-    "sourceSha256": "eefe324218a3aeee9879f610b7615b7363b4be69799d79c68d09a5b8879b70a5"
+    "file": "assets/audio/scenes/scale-tick-v5.wav",
+    "seconds": 0.155,
+    "sourceSha256": "f142a41a66689004d1cd30412820a58a2ce87666d07429ea6c127065f14cd5f8",
+    "sources": [
+      {
+        "archive": "SE.rar",
+        "source": "se_maoudamashii_chime12.mp3",
+        "start": 0.08,
+        "length": 0.13,
+        "sha256": "f142a41a66689004d1cd30412820a58a2ce87666d07429ea6c127065f14cd5f8"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "six-count",
-    "source": "ui011.wav",
+    "source": "ui247.wav",
     "archive": "SE2.rar",
     "scene": "シックス：獲得配当加算",
-    "file": "assets/audio/scenes/six-count-v4.wav",
-    "seconds": 0.12,
-    "sourceSha256": "5270e7bcc3590bcd33b555e2367fc0354f0c23e6d813d25909e17a73ce7394a0"
+    "file": "assets/audio/scenes/six-count-v5.wav",
+    "seconds": 0.145,
+    "sourceSha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui247.wav",
+        "start": 0.15,
+        "length": 0.12,
+        "sha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "big-bonus",
-    "source": "ui222.wav",
+    "source": "ui247.wav",
     "archive": "SE2.rar",
     "scene": "キャニオン：高額ボーナス",
-    "file": "assets/audio/scenes/big-bonus-v4.wav",
-    "seconds": 1.9815,
-    "sourceSha256": "2683baa7590ee705f32acf83c306043ab8d6f86a649ee63ad0fe4fe29e6686c7"
+    "file": "assets/audio/scenes/big-bonus-v5.wav",
+    "seconds": 2.203291666666667,
+    "sourceSha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui247.wav",
+        "start": 0,
+        "length": 2.0,
+        "sha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80"
+      },
+      {
+        "archive": "SE.rar",
+        "source": "キーン！.mp3",
+        "sha256": "af014de78de9411ee3ba3824f1b934e73a71a48be23d7aac3e22997a084172a7",
+        "length": 0.65
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "level",
@@ -428,21 +608,41 @@
   },
   {
     "key": "round",
-    "source": "ui247.wav",
+    "source": "ui238.wav",
     "archive": "SE2.rar",
     "scene": "シックス：ラウンド突破",
-    "file": "assets/audio/scenes/round-v4.wav",
-    "seconds": 1.9581666666666666,
-    "sourceSha256": "f00c31b6369143ead7a185812698395178eda730ebdf073c4946883d0c153f80"
+    "file": "assets/audio/scenes/round-v5.wav",
+    "seconds": 2.22,
+    "sourceSha256": "ee1ded2fa7277ec9ed59907e79d9f4319ae058a869f9004680ec1646937b1282",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui238.wav",
+        "start": 0,
+        "length": 2.0,
+        "sha256": "ee1ded2fa7277ec9ed59907e79d9f4319ae058a869f9004680ec1646937b1282"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "transfer",
-    "source": "ui215.wav",
+    "source": "ui221.wav",
     "archive": "SE2.rar",
     "scene": "キャニオン：配当確定と移し替え",
-    "file": "assets/audio/scenes/transfer-v4.wav",
-    "seconds": 0.7,
-    "sourceSha256": "2a22663620b1f70b47b118a38f07b86e1ef96c2fa3e96206690a92d06e7e0a9f"
+    "file": "assets/audio/scenes/transfer-v5.wav",
+    "seconds": 1.47,
+    "sourceSha256": "dc41f5b8f2811a8644994062ea76c66b5ad94cf188952dd8eaaf9fb034c55731",
+    "sources": [
+      {
+        "archive": "SE2.rar",
+        "source": "ui221.wav",
+        "start": 0,
+        "length": 1.25,
+        "sha256": "dc41f5b8f2811a8644994062ea76c66b5ad94cf188952dd8eaaf9fb034c55731"
+      }
+    ],
+    "revision": "v5"
   },
   {
     "key": "clear",
