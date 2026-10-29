@@ -1,10 +1,12 @@
 const fs=require('fs'),assert=require('node:assert/strict');
 const html=fs.readFileSync('index.html','utf8'),source=fs.readFileSync('assets/choco-dig.js','utf8'),base=html.slice(html.indexOf('class Engine{'),html.indexOf('/* Chocolate Canyon:',html.indexOf('class Engine{')));
 assert(html.includes(source.trim()),'Shipped engine and dedicated source differ');
-const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY};')(5,()=>0);
+const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY};')(5,()=>0);
 const empty=()=>Array.from({length:12},()=>Array(7).fill(null)),tile=(id,color,prize=null)=>({id,color,number:null,prize}),rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 const full=()=>Array.from({length:12},(_,r)=>Array.from({length:7},(_,c)=>tile(r*7+c+1,(r+c)%4)));
 const state=()=>({drills:Array.from({length:13},(_,c)=>({numbers:[c+1],hits:[],level:1})),lucky:{numbers:[14,15,16],hits:[],drawn:[]}});
+// Consecutive fall steps become one linear movement without resetting at each metre.
+{const a=empty(),b=empty(),c=empty();a[0][0]=tile(1,0);b[1][0]=tile(1,0);c[2][0]=tile(1,0);const joined=q.chocoJoinMotion([{phase:'canyonFall',before:a,grid:b,depth:0,ms:180},{phase:'canyonFall',before:b,grid:c,depth:0,ms:180}]);assert.equal(joined.length,1);assert.equal(joined[0].ms,360);assert.deepEqual(joined[0].moves[0].from,[0,0]);assert.deepEqual(joined[0].moves[0].to,[2,0]);}
 // One connected component is one stratum, regardless of its cell count.
 assert.deepEqual(q.CHOCO_DRILL_POWER,[0,1,2,3,4,5]);
 for(let level=1;level<=5;level++){
@@ -37,7 +39,7 @@ grid=full();grid[0][0]=ore(1,'copper',20);grid[0][1]={...tile(2,-1),item:'odds'}
 p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true,refill:false});assert.equal(p.gain,40);assert.equal(p.sugarCount,1);assert.equal(p.oddsCount,1);assert.equal(p.grid.flat().find(t=>t?.id===40).value,600);assert.equal(p.timeline.find(s=>s.phase==='canyonOdds').factor,2);assert.equal(q.chocoExcavate(p.grid,[{column:6,level:1}],{refill:false}).gain,0);
 grid=empty();grid[11][0]=ore(1,'silver',70);grid[11][1]=ore(2,'silver',70);assert.equal(q.chocoGroups(grid).groups.length,2);
 // The top row scrolls during a cascade and may scroll simultaneously with midair melt.
-grid=empty();for(let c=0;c<4;c++)grid[0][c]=tile(c+1,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true});const simultaneous=p.timeline.find(s=>s.phase==='canyonMelt'&&!s.drill&&s.scroll);assert(simultaneous);assert.equal(simultaneous.scroll.advanced,1);assert.equal(p.timeline[p.timeline.indexOf(simultaneous)-1].phase,'canyonFall');
+grid=empty();for(let c=0;c<4;c++)grid[0][c]=tile(c+1,0);grid[11][6]=tile(90,2);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true});const simultaneous=p.timeline.find(s=>s.phase==='canyonFall'&&s.scroll);assert(simultaneous);assert.equal(simultaneous.scroll.advanced,1);assert(simultaneous.moves.length>0);assert(simultaneous.ms<=240);assert.equal(simultaneous.scroll.before[0][0].id,1);
 for(let seed=1;seed<=25;seed++){const e=new q.ChocoDigEngine({random:rng(seed)}),before=JSON.stringify(e.world()),a=e.plan([...e.lucky.numbers,...e.drills[0].numbers],{trace:true}),b=e.plan([...e.lucky.numbers,...e.drills[0].numbers]);assert.deepEqual(a.grid,b.grid);assert.equal(a.gain,b.gain);assert.equal(a.seed,b.seed);assert.equal(JSON.stringify(e.world()),before);}
 // Collection and camera advance share a stage: no wait for flight or remaining cascades.
 grid=full();for(let c=0;c<7;c++)grid[0][c]=ore(c+1,'copper',10);p=q.chocoExcavate(grid,[{column:6,level:1}],{trace:true});const collect=p.timeline.find(s=>s.phase==='canyonCollect');assert.equal(collect.scroll.advanced,1);assert.equal(collect.depth,1);assert.equal(collect.items.length,7);

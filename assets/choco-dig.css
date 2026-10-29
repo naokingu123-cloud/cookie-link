@@ -9,3 +9,6 @@
 body.choco-active #odds-panel,body.choco-active .game>.festival-top,body.choco-active .game>.statusline{display:none!important}
 body.choco-active .game>.field{flex:1;min-height:0;height:auto;grid-template-columns:minmax(0,1fr);gap:0}
 body.choco-active #panels{width:100%;min-height:0;height:100%}
+/* v6: all space below the common tabs belongs to the enlarged scene. */
+.choco-status{display:none!important}
+.choco-tab-depth{position:absolute;right:2px;bottom:45px;width:40px;padding:1px 0;border-radius:4px;background:#17394ae8;color:#fff4c9;font:900 8px/11px system-ui;text-align:center;z-index:15;pointer-events:none}
