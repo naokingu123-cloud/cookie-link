@@ -3059,7 +3059,7 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
  }
  return {grid:w.strata,seed:w.seed,uid:w.uid,depth:w.depth,nextSugar:w.nextSugar,timeline,removed,prizes,collected,gain,fallSteps,merges,hitIds,sugarCount,oddsCount,layers};
 }
-function chocoPlan(input,numbers,{trace=false,drills,lucky,seed=1,uid=Math.max(0,...input.flat().filter(Boolean).map(t=>t.id)),depth=0,nextSugar=18,refill=true,unavailable=[]}={}){
+function chocoPlan(input,numbers,{trace=false,drills,lucky,seed=1,uid=Math.max(0,...input.flat().filter(Boolean).map(t=>t.id)),depth=0,nextSugar=18,refill=true}={}){
  if(!drills||!lucky)throw Error('Canyon drill numbers are required');
  let grid=chocoClone(input),state=chocoCopyDrills(drills),luck=chocoCopyLucky(lucky),gain=0,fallSteps=0,merges=0,sugarCount=0,oddsCount=0,layers=0;
  const timeline=[],removed=[],prizes=[],collected=[],hitIds=[];
@@ -3075,7 +3075,7 @@ function chocoPlan(input,numbers,{trace=false,drills,lucky,seed=1,uid=Math.max(0
   if(trace)for(const stage of plan.timeline)timeline.push({...stage,number,drills:chocoCopyDrills(state),lucky:chocoCopyLucky(luck)});
   const upgraded=[];for(const i of indices)if(state[i].level<5){state[i].level++;upgraded.push(i);}
   push('canyonUpgrade',{number,columns:upgraded,afterDig:true,levels:state.map(d=>d.level)},500);
-  const occupied=new Set([...state.flatMap(d=>d.numbers),...luck.numbers,...luck.drawn,...unavailable]),pool=Array.from({length:25},(_,i)=>i+1).filter(n=>!occupied.has(n));
+  const occupied=new Set([...state.flatMap(d=>d.numbers),...luck.numbers,...luck.drawn]),pool=Array.from({length:25},(_,i)=>i+1).filter(n=>!occupied.has(n));
   if(!pool.length)throw Error('No unused Canyon number');const w={seed},replacement=pool[Math.floor(chocoRandom(w)*pool.length)];seed=w.seed;
   if(index>=0)state[index].numbers[0]=replacement;else luck.numbers[li]=replacement;
   push('canyonNumberRenew',{number,replacement,index,luckyIndex:li},350);
@@ -3118,7 +3118,7 @@ class ChocoDigEngine extends Engine{
  persist(){try{if(this.continueDepth)this.storage?.setItem(CHOCO_SAVE_KEY,JSON.stringify(this.world()));else this.storage?.removeItem?.(CHOCO_SAVE_KEY);this.saveFailed=false;}catch{this.saveFailed=true;}}
  start(){if(this.running||this.roundBet<=0)return;this.checkpoint=this.world();this.startDepth=this.depth;this.running=true;this.opening=false;this.busy=false;this.digMessage='番号HITでドリル発進！ Lv.1→5で1〜5地層';this.emit('waiting');}
  frontier(c,grid=this.strata){return grid.findIndex(row=>row[c]);}
- plan(numbers,options){return chocoPlan(this.strata,numbers,{...options,drills:this.drills,lucky:this.lucky,seed:this.seed,uid:this.uid,depth:this.depth,nextSugar:this.nextSugar,unavailable:[...this.seen]});}
+ plan(numbers,options){return chocoPlan(this.strata,numbers,{...options,drills:this.drills,lucky:this.lucky,seed:this.seed,uid:this.uid,depth:this.depth,nextSugar:this.nextSugar});}
  async visualWait(ms,token){let remaining=ms;while(remaining>0&&token===this.version){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.version;}
  async drain(){
   const token=this.version;if(this.busy)return;this.busy=true;
@@ -3127,11 +3127,6 @@ class ChocoDigEngine extends Engine{
     const numbers=this.queue.shift();for(const n of numbers){this.pendingDraws.delete(n);this.drawn.add(n);}
     const plan=this.plan(numbers,{trace:true});
     for(const stage of plan.timeline){if(token!==this.version)return;
-     if(stage.phase==='canyonNumberRenew'&&this.seen.has(stage.replacement)){
-      const target=stage.index>=0?plan.drills[stage.index].numbers:plan.lucky.numbers,at=stage.index>=0?0:stage.luckyIndex;
-      const occupied=new Set([...plan.drills.flatMap(d=>d.numbers),...plan.lucky.numbers,...this.seen]),pool=Array.from({length:25},(_,i)=>i+1).filter(n=>!occupied.has(n));
-      if(!pool.length)throw Error('No unused Canyon number');const w={seed:plan.seed},replacement=pool[Math.floor(chocoRandom(w)*pool.length)];target[at]=replacement;plan.seed=w.seed;stage.seed=w.seed;stage.replacement=replacement;stage.drills=chocoCopyDrills(plan.drills);stage.lucky=chocoCopyLucky(plan.lucky);
-     }
 this.strata=chocoClone(stage.grid);this.seed=stage.seed;this.uid=stage.uid;this.depth=stage.depth;this.nextSugar=stage.nextSugar;this.roundDepth=this.depth-this.startDepth;this.drills=chocoCopyDrills(stage.drills);this.lucky=chocoCopyLucky(stage.lucky);this.fx={...stage,elapsed:0,stamp:null};
      if(stage.phase==='canyonCollect'){
       this.totalHundredths+=stage.gain;const ores=stage.items.filter(v=>v.tile.item==='ore');this.roundChests+=ores.length;this.chestsTotal+=ores.length;this.fx.cartStart=this.cart.length;this.cart.push(...stage.items.map(v=>({...v.tile,gain:v.gain})));

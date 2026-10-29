@@ -141,6 +141,6 @@
   },
   "ruleGames": 80,
   "shapeBoards": 1000,
-  "lateDrawReplacement": true,
+  "queuedBallCanHitRenewedDrill": true,
   "physicalIPhone": false
 }
