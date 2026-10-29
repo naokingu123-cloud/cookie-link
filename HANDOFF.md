@@ -255,3 +255,10 @@
 - 最上段消失で連鎖中・回収飛行中もせり上がり。単独鉱石4種・シュガー・盤面限定2倍を露出時に回収。トロッコは獲得順に1段5個。
 - 生成チョコ4色・鉱石4種と47ケースのblobオートタイル。旧深度シュガー付与は廃止。
 - 仕様・生成プロンプト・検証は docs/canyon-geology.md / canyon-geology-asset-prompts.json / canyon-geology-verification.json。既存の他ゲーム・物理・音声ホストは維持。
+
+
+## 2026-10-29 — コンパクト地形・明るい宝石・滑らかなスクロール
+- 生成チョコ4色と宝石4種を丸いアーケード調に更新。青灰色の背景でダークチョコと空洞を区別。
+- 3〜6マスの35種ポリオミノで盤面と補充分を分割。1〜2マス孤立・複雑な枝を回避。報酬は塊を分断しない位置に配置。
+- せり上がりは距離に応じ505〜1100ms、加減速付き。描画間隔32ms→15ms。最上段消失で即開始する条件は維持。
+- 1000盤面・80ゲーム・5画面サイズ・既存他ゲームを検証。詳細 docs/canyon-compact.md と canyon-compact-verification.json。素材は assets/canyon-geology/、プロンプトは docs/canyon-compact-art-prompts.json。

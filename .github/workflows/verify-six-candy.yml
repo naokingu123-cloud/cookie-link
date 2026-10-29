@@ -24,6 +24,7 @@ jobs:
         run: |
           node .github/tests/six_rounds_v4.cjs
           node .github/tests/canyon_rules.cjs
+          node .github/tests/canyon_shapes.cjs
       - name: Prepare browser
         run: |
           timeout 120 python3 -m pip install --disable-pip-version-check --timeout 20 playwright

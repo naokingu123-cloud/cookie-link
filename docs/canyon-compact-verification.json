@@ -1,0 +1,149 @@
+{
+  "baseCommit": "37fe791fb432e2e1808c57c90e290f845ea64766",
+  "shapes": {
+    "boards": 1000,
+    "total": 21574,
+    "small": 0,
+    "large": 0,
+    "hist": {
+      "3": 8576,
+      "4": 10146,
+      "5": 2410,
+      "6": 442
+    },
+    "refillHist": {
+      "3": 4692,
+      "4": 4817,
+      "5": 1151,
+      "6": 195
+    },
+    "templates": 35
+  },
+  "browser": {
+    "layouts": [
+      {
+        "width": 320,
+        "height": 740,
+        "cell": 28.336605296415442,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "cell": 28.336601307189543,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 430,
+        "height": 932,
+        "cell": 28.336602587816696,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 932,
+        "height": 430,
+        "cell": 28.336598338463293,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      },
+      {
+        "width": 1280,
+        "height": 900,
+        "cell": 28.336601307189543,
+        "oddsFit": true,
+        "heads": 7,
+        "noGameMutation": true
+      }
+    ],
+    "smoothScroll": {
+      "samples": 101,
+      "easedStartAndStop": true
+    },
+    "materials": {
+      "distinct": 5
+    },
+    "levels": [
+      2,
+      3,
+      4,
+      5,
+      5,
+      3,
+      2
+    ],
+    "allAttack": {
+      "columns": 7,
+      "levels": [
+        2,
+        3,
+        4,
+        5,
+        5,
+        3,
+        2
+      ]
+    },
+    "engine": {
+      "processed": 8,
+      "maxLevel": 5,
+      "phase": "complete"
+    },
+    "geology": {
+      "cartRows": 2,
+      "cartItems": 7,
+      "animationFrames": 6,
+      "autotileCases": 1024,
+      "oreImages": 4
+    },
+    "sugar": {
+      "singleAward": true,
+      "cart": 2
+    },
+    "audio": {
+      "buffers": [
+        {
+          "name": "canyon-stratum-crush",
+          "duration": 0.46,
+          "energy": 139.05864990673751
+        },
+        {
+          "name": "canyon-liquid-melt",
+          "duration": 0.36,
+          "energy": 40.585457663280145
+        }
+      ],
+      "voicesAfterReset": 0
+    }
+  },
+  "payout": {
+    "N": 20000,
+    "rtp": 0.87669,
+    "max": 24.4,
+    "depth": 3.7926,
+    "sugars": 0.06025,
+    "odds": 0.0767,
+    "ores": {
+      "copper": 27705,
+      "silver": 6967,
+      "gold": 1463,
+      "diamond": 419
+    },
+    "layers": 12.1022,
+    "rates": {
+      "copper": 0.067,
+      "silver": 0.01675,
+      "gold": 0.00335,
+      "diamond": 0.001,
+      "sugar": 0.0029,
+      "odds": 0.004
+    }
+  },
+  "hostUnchanged": true
+}

@@ -1,0 +1,37 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "key": "cake-milk",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of a caramel milk chocolate square. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Rounded square tile, slight soft scalloped cream accent across the top rim, mostly plain smooth colored chocolate face, no intricate patterns or ornamental motifs, minimal shallow embossed diamond in centre, strong readable edges, no side perspective. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "cake-strawberry",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of a vivid pink strawberry chocolate square. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Rounded square tile, slight soft scalloped cream accent across the top rim, mostly plain smooth colored chocolate face, no intricate patterns or ornamental motifs, minimal shallow embossed diamond in centre, strong readable edges, no side perspective. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "cake-white",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of a warm ivory white chocolate square. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Rounded square tile, slight soft scalloped cream accent across the top rim, mostly plain smooth colored chocolate face, no intricate patterns or ornamental motifs, minimal shallow embossed diamond in centre, strong readable edges, no side perspective. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "cake-bitter",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of a medium cocoa brown dark chocolate square with bright caramel edge highlights, clearly visible even on dark backgrounds. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Rounded square tile, slight soft scalloped cream accent across the top rim, mostly plain smooth colored chocolate face, no intricate patterns or ornamental motifs, minimal shallow embossed diamond in centre, strong readable edges, no side perspective. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "ore-copper",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of one large rounded copper-orange gemstone, with two small companion facets, metallic copper. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Clean large broad facets, jewel looks like a precious candy treasure, no gritty rock, no realistic mineral cluster, few chunky shapes, white star glints integrated closely. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "ore-silver",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of one large rounded pearlescent silver gemstone, with two small companion facets, silver metallic. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Clean large broad facets, jewel looks like a precious candy treasure, no gritty rock, no realistic mineral cluster, few chunky shapes, white star glints integrated closely. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "ore-gold",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of one large rounded golden-yellow gemstone with two small companion facets. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Clean large broad facets, jewel looks like a precious candy treasure, no gritty rock, no realistic mineral cluster, few chunky shapes, white star glints integrated closely. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    },
+    {
+      "key": "ore-diamond",
+      "prompt": "Use case: stylized-concept. A single transparent-background game sprite of one large icy cyan translucent diamond with two small companion facets, sparkling. Cute colorful Japanese family arcade medal-game sweet fantasy, Anima Lotta-like cheerful glossy toy illustration, simple readable silhouette at 32 pixels, smooth rounded bevels, bright soft highlights, polished hand-painted cartoon 3D, NOT photorealistic. Square composition, centered object occupies 90% width and height, straight-on orthographic view, equal width and height. Clean large broad facets, jewel looks like a precious candy treasure, no gritty rock, no realistic mineral cluster, few chunky shapes, white star glints integrated closely. No text, numbers, frame, scene or cast shadow outside the sprite. Transparent alpha background."
+    }
+  ]
+}

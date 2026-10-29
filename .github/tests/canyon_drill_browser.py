@@ -5,7 +5,7 @@ import threading,json
 from playwright.sync_api import sync_playwright
 root=Path.cwd();html=(root/'index.html').read_text()
 anchor="app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);"
-hook="""window.__drillQA={app,slots,select,drawChoco,chocoHud,chocoBoardLayout,chocoDrawDrill,chocoDrillLevel,chocoCakeImages,chocoOreImages,chocoExcavate,chocoAutoSprite,chocoCanonicalMask,chocoCartPose,chocoRockAudio,unlock,stopSounds,get audio(){return audio},get soundBuffers(){return sfxBuffers},get voices(){return sfxVoices},resume(){userPaused=false;syncPause();},ChocoDigEngine,freeze(){stopAutoRound();autoRoundRemaining=3600000;userPaused=true;syncPause();},render(){chocoHud(app);drawChoco(slots[1]);}};document.querySelector('#sound').checked=false;__drillQA.freeze();__drillQA.select(1);"""
+hook="""window.__drillQA={app,slots,select,drawChoco,chocoHud,chocoBoardLayout,chocoDrawDrill,chocoDrillLevel,chocoCakeImages,chocoOreImages,chocoExcavate,chocoAutoSprite,chocoCanonicalMask,chocoScrollEase,chocoCartPose,chocoRockAudio,unlock,stopSounds,get audio(){return audio},get soundBuffers(){return sfxBuffers},get voices(){return sfxVoices},resume(){userPaused=false;syncPause();},ChocoDigEngine,freeze(){stopAutoRound();autoRoundRemaining=3600000;userPaused=true;syncPause();},render(){chocoHud(app);drawChoco(slots[1]);}};document.querySelector('#sound').checked=false;__drillQA.freeze();__drillQA.select(1);"""
 assert html.count(anchor)==1;html=html.replace(anchor,anchor+hook)
 class H(SimpleHTTPRequestHandler):
  def __init__(self,*a,**k):super().__init__(*a,directory=str(root),**k)
@@ -31,6 +31,7 @@ with sync_playwright() as p:
   report['layouts'].append(result);print('DRILL_LAYOUT',result,flush=True)
   page.screenshot(path=str(out/f'drill-{w}.png'))
  page.set_viewport_size({'width':430,'height':932});page.wait_for_timeout(160)
+ report['smoothScroll']=page.evaluate('''()=>{const f=__drillQA.chocoScrollEase;let last=-1;for(let i=0;i<=100;i++){const v=f(i/100);if(v<last||v<0||v>1)throw Error('Scroll discontinuity');last=v;}if(f(0)!==0||f(1)!==1||f(.1)>=.1||f(.9)<=.9||Math.abs(f(.5)-.5)>1e-9)throw Error('Bad scroll easing');return {samples:101,easedStartAndStop:true}}''')
  report['materials']=page.evaluate('''()=>{const q=__drillQA,images=[];for(let level=1;level<=5;level++){const cv=document.createElement('canvas');cv.width=120;cv.height=140;q.chocoDrawDrill(cv.getContext('2d'),60,70,88,level);images.push(cv.toDataURL());}if(new Set(images).size!==5)throw Error('Materials indistinguishable');return {distinct:5}}''')
  report['levels']=page.evaluate('''()=>{const q=__drillQA,e=q.slots[1].engine;e.lucky.hits=e.lucky.numbers.slice(0,2);e.drills.forEach((d,i)=>d.hits=d.numbers.slice(0,[0,1,2,3,3,1,0][i]));q.render();const levels=e.drills.map(d=>q.chocoDrillLevel(d,e.lucky));if(levels.join()!=='2,3,4,5,5,3,2'||document.querySelectorAll('.choco-lucky-row.hit').length!==2)throw Error('Upgrade UI out of sync');return levels}''')
  page.screenshot(path=str(out/'drill-levels.png'))
