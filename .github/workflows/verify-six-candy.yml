@@ -6,6 +6,8 @@ on:
       - index.html
       - 'assets/six-candy*'
       - 'assets/choco-dig*'
+      - 'assets/manual-numbers*'
+      - '.github/tests/manual_numbers_browser.py'
       - '.github/tests/canyon*'
       - 'assets/six-candy-png/**'
       - '.github/tests/six_stage_v5*'
@@ -41,6 +43,7 @@ jobs:
         run: |
           python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_browser.py
           python3 .github/tests/run_with_system_chrome.py .github/tests/canyon_drill_browser.py
+          python3 .github/tests/run_with_system_chrome.py .github/tests/manual_numbers_browser.py
       - name: Verify the real public Pages site and automatic BET start
         run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_public.py
       - name: Retain screenshots and deployment hashes

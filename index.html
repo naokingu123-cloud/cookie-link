@@ -2182,6 +2182,18 @@ body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;
 .six-candy-promotion::after{display:none!important}
 .six-candy-promotion .six-next{margin:3px -2px 0;line-height:1;font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN",sans-serif}
 .six-promotion-sign{display:block;width:100%;max-height:86px;overflow:visible}
+/* Manual numbers replace only the roulette surface; shared layout stays fixed. */
+#manual-number-toggle{position:absolute;z-index:25;right:8px;bottom:4px;padding:3px 10px;border:1px solid #e6ba75;border-radius:8px;background:#183c4d;color:#fff1c8;font-size:11px;font-weight:900;cursor:pointer}
+#manual-number-panel{position:absolute;z-index:20;inset:52px 105px 36px 12px;padding:8px;border:2px solid #ecc47c;border-radius:12px;background:#173342f5;color:#fff5d8;display:flex;flex-direction:column;gap:5px}
+#manual-number-panel[hidden]{display:none}
+#manual-number-panel header{display:flex;align-items:center;gap:7px;font-size:11px;flex-shrink:0}
+#manual-start{margin-left:auto;border:1px solid #ffe6a5;border-radius:6px;background:#e6b55e;color:#402c1d;padding:2px 8px;font-weight:bold}
+#manual-number-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,minmax(0,1fr));gap:4px}
+#manual-number-grid button{min-width:0;min-height:0;padding:0;border:1px solid #cce8e9;border-radius:6px;background:#f9edce;color:#3b3943;font-family:ElixirNumbers,system-ui;font-size:16px;font-weight:900;touch-action:manipulation}
+#manual-number-grid button:disabled{opacity:.45}#manual-number-grid button.selected{background:#75d8b2;color:#133c30;opacity:.8}
+#manual-history{position:static!important;transform:none!important;inset:auto!important;width:auto!important;height:auto!important;flex-shrink:0;margin:0!important;font-size:9px;line-height:1.2;min-height:11px;color:#e9e2be!important;display:block!important;white-space:normal}
+.manual-number-mode .a8-stage canvas,.manual-number-mode .a8-loading{visibility:hidden}
+
 </style></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
@@ -7265,14 +7277,15 @@ function startAnima8(){
  return startAnima8();
 }
 
+let manualNumbers=false;
 let rouletteDriver=null,rouletteLoadEpoch=0,rouletteReady=false;
 const rouletteDrawSource={
- get ready(){return rouletteReady;},
- start(callbacks){if(!rouletteReady||!rouletteDriver)throw Error('抽選機を読み込み中です');this.callbacks=callbacks;rouletteDriver.start();rouletteDriver.setPaused(app.paused);},
- pause(value){rouletteDriver?.setPaused(value);},
- reset(){this.callbacks=null;rouletteDriver?.reset();},
- number(n){this.callbacks?.onNumber(n);},
- fail(message){this.callbacks?.onError(message);}
+ get ready(){return manualNumbers||rouletteReady;},
+ start(callbacks){this.callbacks=callbacks;if(manualNumbers){rouletteDriver?.setPaused(true);syncManualNumbers();return;}if(!rouletteReady||!rouletteDriver)throw Error('抽選機を読み込み中です');rouletteDriver.start();rouletteDriver.setPaused(app.paused);},
+ pause(value){rouletteDriver?.setPaused(manualNumbers||value);},
+ reset(){this.callbacks=null;rouletteDriver?.reset();if(manualNumbers)rouletteDriver?.setPaused(true);},
+ number(n){if(!manualNumbers)this.callbacks?.onNumber(n);},
+ fail(message){if(!manualNumbers)this.callbacks?.onError(message);}
 };
 async function loadCookieRoulette(){
  const epoch=++rouletteLoadEpoch,root=$('cookie-roulette'),loading=root.querySelector('.a8-loading'),retry=$('roulette-retry');
@@ -7281,7 +7294,7 @@ async function loadCookieRoulette(){
   const [THREE,CANNON]=await loadRouletteModules();if(epoch!==rouletteLoadEpoch||!root.isConnected)return;
   rouletteDriver?.dispose();root.querySelectorAll('canvas').forEach(c=>c.remove());root.querySelector('.a8-pocket-grid').replaceChildren();
   rouletteDriver=createCookieRoulette(root,{onNumber:n=>rouletteDrawSource.number(n),getAllClearNumbers:rouletteAllClearNumbers,onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
-  rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(app.paused);scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
+  rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(manualNumbers||app.paused);scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
  }catch(error){if(epoch!==rouletteLoadEpoch)return;rouletteReady=false;retry.hidden=false;loading.hidden=false;loading.textContent='抽選機を読み込めませんでした。「再読込」で再試行できます。';root.querySelector('[data-status]').textContent='抽選機の読込待ち';scheduleUI(app);console.error('Cookie Link roulette:',error);}
 }
 function rouletteAllClearNumbers(){
@@ -7292,6 +7305,22 @@ function rouletteAllClearNumbers(){
  }
  return out;
 }
+// Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
+function setupManualNumbers(){
+ const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
+ for(let n=1;n<=25;n++){const b=document.createElement('button');b.type='button';b.textContent=n;b.dataset.number=n;b.setAttribute('aria-label',n+'番を入賞');b.onclick=()=>{if(!manualNumbers||app.phase!=='playing'||app.paused||app.draws.includes(n)||app.draws.length>=8)return;rouletteDrawSource.callbacks?.onNumber(n);syncManualNumbers();};panel.querySelector('#manual-number-grid').append(b);}root.append(panel);
+ const toggle=document.createElement('button');toggle.id='manual-number-toggle';toggle.type='button';toggle.title='番号指定／ルーレットを切替。進行中の場合は現在のゲームをリセット';toggle.onclick=()=>{if(jpcSession.active)return;manualNumbers=!manualNumbers;if(app.phase!=='ready')debugResetRound();else{rouletteDrawSource.reset();stopAutoRound();}syncPause();syncManualNumbers();scheduleAutoRound();scheduleUI(app);};root.append(toggle);
+ $('manual-start').onclick=()=>{activateGameAudio({gesture:true});startReadyRound();syncManualNumbers();};syncManualNumbers();
+}
+function syncManualNumbers(){
+ const panel=$('manual-number-panel'),toggle=$('manual-number-toggle');if(!panel||!app)return;
+ panel.hidden=!manualNumbers;toggle.textContent=manualNumbers?'ルーレットに戻す':'番号指定モード';toggle.setAttribute('aria-pressed',String(manualNumbers));toggle.disabled=jpcSession.active;document.body.classList.toggle('manual-number-mode',manualNumbers);
+ $('manual-count').textContent=app.draws.length+' / 8球';$('manual-start').disabled=app.phase!=='ready'||!app.bets.some(n=>n>0)||menuOpen;
+ for(const b of $('manual-number-grid').children){const hit=app.draws.includes(Number(b.dataset.number));b.disabled=!manualNumbers||app.phase!=='playing'||app.paused||hit||app.draws.length>=8;b.classList.toggle('selected',hit);b.setAttribute('aria-pressed',String(hit));}
+ $('manual-history').textContent=app.draws.length?app.draws.join(' → ')+(app.draws.length===8?' ／ 抽選終了':''):app.phase==='ready'?'開始後、番号をタップ':'1球目の番号を選択';
+ $('roulette-speed').disabled=manualNumbers;
+}
+
 function loadRouletteModules(){return Promise.resolve([THREE,CANNON]);}
 
 
@@ -7514,7 +7543,7 @@ function activateGameAudio({gesture=false}={}){
 }
 
 function startReadyRound(){
- if(jpcSession.active||debugResetting||roundStarting||app.phase!=='ready'||!rouletteReady||!app.bets.some(b=>b>0)||document.hidden||menuOpen||userPaused||!inView)return false;
+ if(jpcSession.active||debugResetting||roundStarting||app.phase!=='ready'||(!manualNumbers&&!rouletteReady)||!app.bets.some(b=>b>0)||document.hidden||menuOpen||userPaused||!inView)return false;
  roundStarting=true;stopAutoRound();cancelAudioPreparation();cancelBgmFade();setBgmLevel(normalBgmVolume);
  try{
   payoutStamp=null;const ok=app.start();
@@ -7531,6 +7560,7 @@ setInterval(()=>{
 function scheduleAutoRound(){
  syncDebugButtons();if(jpcSession.active){stopAutoRound();countdownText('JPC','デバッグ抽選');return;}
  if(!app||roundStarting||debugResetting)return;
+ if(manualNumbers){stopAutoRound();syncManualNumbers();countdownText('MANUAL','番号指定');return;}
  if(app.phase!=='ready'){stopAutoRound();countdownText(app.phase==='playing'?'PLAY':'RESULT',app.phase==='playing'?'ゲーム中':'結果表示');return;}
  if(autoRoundToken!==app.token){stopAutoRound();autoRoundToken=app.token;autoRoundRemaining=BET_DURATION_MS;queueRoundBgm();}
  if(autoRoundTimer!==null)return;
@@ -7565,11 +7595,12 @@ function debugResetRound(){
 }
 
 function syncDebugButtons(){
+ syncManualNumbers();
  const start=$('debug-start'),mode=$('jpc-mode');if(!start||!mode||!app)return;
- const ready=rouletteReady&&!!rouletteDriver,state=rouletteDriver?.draw.state;
+ const ready=manualNumbers||(rouletteReady&&!!rouletteDriver),state=rouletteDriver?.draw.state;
  start.disabled=!ready||menuOpen||(jpcSession.active?!['ready','complete'].includes(state):app.phase!=='ready'||!app.bets.some(n=>n>0));
  start.textContent=jpcSession.active?(state==='complete'?'もう一度':state==='ready'?'JPC開始':'抽選中'):'すぐ開始';
- mode.disabled=!ready||menuOpen||(!jpcSession.active&&!['ready','complete'].includes(app.phase));
+ mode.disabled=manualNumbers||!ready||menuOpen||(!jpcSession.active&&!['ready','complete'].includes(app.phase));
  mode.textContent=jpcSession.active?'通常モード':'JPCモード';mode.setAttribute('aria-pressed',String(jpcSession.active));
  mode.title=!jpcSession.active&&app.phase!=='ready'&&app.phase!=='complete'?'通常ゲーム終了後、または即リセット後に切り替えられます':'暫定JPC。通常ゲームの配当と成績には加算しません';
 }
@@ -7636,7 +7667,7 @@ function wakeAudioFromGesture(event){
  activateGameAudio({gesture:true});
 }
 
-app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);
+app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);setupManualNumbers();
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;
  document.fonts.ready.then(()=>{slots.forEach(s=>s.dirtyMini=true);scheduleUI(app);});
