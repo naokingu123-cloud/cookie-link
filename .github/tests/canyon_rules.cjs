@@ -102,6 +102,14 @@ for(let index=1;index<=12;index++){
 async function idle(e){for(let i=0;i<30000;i++){if(!e.busy&&!e.queue.length)return;await Promise.resolve();}throw Error('Engine did not drain');}
 function assigned(e){assert(e.strata.flat().filter(Boolean).every(t=>t.number==null));assert.equal(e.drills.length,13);const all=[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers];assert.equal(all.length,16);assert.equal(new Set(all).size,16);assert(e.drills.every(d=>d.numbers.length===1&&d.level>=1&&d.level<=5));assert(e.lucky.drawn.every(n=>n>=1&&n<=25));}
 (async()=>{
+ // A delayed callback consumes actual elapsed time; pause and cancellation still stop it.
+ {let now=0,calls=0;const wait=new Function('performance','return '+q.ChocoDigEngine.prototype.visualWait.toString().replace('async visualWait','async function'))({now:()=>now});
+ const e={version:1,paused:false,fx:{stamp:0},sleep:async()=>{calls++;now+=120;}};
+ assert(await wait.call(e,100,1));assert.equal(calls,1,'Timer delay added an end-of-motion hold');
+ now=0;calls=0;e.paused=true;e.sleep=async()=>{calls++;now+=50;if(calls===2)e.paused=false;};assert(await wait.call(e,100,1));assert.equal(calls,4,'Paused time consumed motion');
+ e.sleep=async()=>{e.version++;};assert.equal(await wait.call(e,100,1),false);
+ }
+
  // Only the first positive award triggers the continuation announcement.
  {const flags=[];let e;e=new q.ChocoDigEngine({random:rng(82),sleep:()=>Promise.resolve(),onEvent:ev=>{if(['canyonCollect','canyonBonus'].includes(ev.phase))flags.push(e.fx.continueConfirmed);}});e.visualWait=async(ms,token)=>token===e.version;e.strata=full();e.strata[0][0]=ore(1,'gold',300);e.strata[1][6]=ore(14,'gold',300);e.start();e.enqueue(e.drills[6].numbers[0]);await idle(e);assert.deepEqual(flags,[true,false]);assert.equal(e.totalHundredths,600);e.reset();assert.equal(e.totalHundredths,0);}
  {const e=new q.ChocoDigEngine({random:rng(41),sleep:()=>Promise.resolve()});e.visualWait=async(ms,token)=>token===e.version;e.strata=empty();for(let c=0;c<7;c++)e.strata[0][c]={...tile(c+1,4),item:'fruit'};e.uid=7;e.fruitState=1;e.start();const n=e.drills[0].numbers[0];const plan=e.plan([n]);e.enqueue(n);await idle(e);assert.equal(e.totalHundredths,plan.gain);assert(e.totalHundredths>=300);assert.equal(e.bonusResolvedDepth,100);assert(e.validWorld(e.world()));e.freshBoard();assert.equal(e.fruitState,0);assert.equal(e.startDepth,e.depth);assert.equal(e.bonusResolvedDepth,100);e.depth=95;e.freshBoard();assert(!e.strata.flat().some(t=>t.item==='fruit'));const saved=e.world();e.restoreWorld(saved);assert.equal(e.bonusResolvedDepth,100);}
