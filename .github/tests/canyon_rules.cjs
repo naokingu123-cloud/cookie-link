@@ -18,6 +18,14 @@ p=q.chocoExcavate(grid,[{column:0,level:1},{column:1,level:1}],{trace:true,refil
 p=q.chocoPlan(full(),[1],{...state(),trace:true,refill:false});assert.equal(p.timeline[0].phase,'canyonDrill');assert.equal(p.timeline[0].attacks[0].level,1);assert.equal(p.drills[0].level,2);assert.equal(p.timeline.at(-2).phase,'canyonUpgrade');assert(p.timeline.at(-2).afterDig);
 let st=state();st.drills[0].level=3;p=q.chocoPlan(full(),[1],{...st,trace:true,refill:false});assert.equal(p.timeline.filter(s=>s.phase==='canyonDrill').length,1);assert.equal(p.timeline.filter(s=>s.phase==='canyonBore').length,2);assert.equal(p.timeline.filter(s=>s.phase==='canyonSoften').length,3);assert.equal(p.drills[0].level,4);assert(p.timeline.filter(s=>!['canyonUpgrade','canyonNumberRenew'].includes(s.phase)).every(s=>s.flights.length===1));
 const bores=p.timeline.filter(s=>['canyonDrill','canyonBore'].includes(s.phase));assert(bores[0].flights[0].launch);for(let i=1;i<bores.length;i++){assert(!bores[i].flights[0].launch);assert.equal(bores[i].flights[0].from,bores[i-1].flights[0].to);}
+// Mixed-depth drills all finish and return home before gravity or chain melting starts.
+{const grid=full();grid[1][5]=null;const p=q.chocoExcavate(grid,[{...q.chocoDrillRoute(0),level:1},{...q.chocoDrillRoute(3),level:3}],{trace:true,refill:false});
+ const ret=p.timeline.findIndex(s=>s.phase==='canyonReturn');assert(ret>0);assert.equal(p.timeline.filter(s=>s.phase==='canyonSoften').length,3);
+ assert.deepEqual(p.timeline[ret].flights.map(f=>f.index).sort(),[0,3]);
+ assert(!p.timeline.slice(0,ret).some(s=>s.phase==='canyonFall'||(s.phase==='canyonMelt'&&!s.drill)));
+ assert(p.timeline.slice(ret+1).some(s=>s.phase==='canyonFall'));assert(p.timeline.slice(ret+1).every(s=>s.flights.length===0));
+ const short=p.timeline[ret].flights.find(f=>f.index===0);assert.equal(short.toY,p.timeline.find(s=>s.phase==='canyonDrill').flights.find(f=>f.index===0).toY);
+}
 // Misses do nothing. Every hit renews only its number; all 16 remain unhit and unique.
 st=state();p=q.chocoPlan(full(),[17],{...st,trace:true});assert.deepEqual(p.drills,st.drills);assert.deepEqual(p.grid,full());assert.equal(p.timeline.length,0);
 for(const li of [0,1,2]){p=q.chocoPlan(full(),[14+li],{...state(),trace:true,refill:false});const attack=p.timeline.find(s=>s.phase==='canyonDrill').attacks;assert.equal(attack.length,li===0?7:3);assert(attack.every(a=>a.direction===['top','left','right'][li]));for(let i=0;i<13;i++)assert.equal(p.drills[i].level,((li===0&&i<7)||(li===1&&i>=7&&i<10)||(li===2&&i>=10))?2:1);assert(!p.lucky.numbers.includes(14+li));assert.equal(p.timeline.at(-1).phase,'canyonNumberRenew');}

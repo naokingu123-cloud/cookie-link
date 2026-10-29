@@ -87,7 +87,7 @@ function chocoJoinMotion(stages){
 // A pure transactional resolver. Every visual stage captures the same board/depth used by the rules.
 function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input.flat().filter(Boolean).map(t=>t.id)),depth=0,nextSugar=18,refill=true}={}){
  const w={strata:chocoClone(input),seed,uid,depth,nextSugar},timeline=[],removed=[],prizes=[],collected=[],hitIds=[];let gain=0,fallSteps=0,merges=0,sugarCount=0,oddsCount=0,layers=0;
- let flights=[];
+ let flights=[];const pendingJoins=[];
  const push=(phase,detail,ms)=>{if(detail.scroll&&phase!=='canyonFall')ms=Math.max(ms,Math.min(800,280+detail.scroll.advanced*45));if(trace)timeline.push({phase,grid:chocoClone(w.strata),flights:flights.map(f=>({...f})),seed:w.seed,uid:w.uid,depth:w.depth,nextSugar:w.nextSugar,...detail,ms});};
  const removeIds=ids=>{for(let r=0;r<12;r++)for(let c=0;c<7;c++)if(ids.has(w.strata[r][c]?.id))w.strata[r][c]=null;};
  function shift(){
@@ -138,7 +138,7 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
   throw Error('Canyon cascade exceeded safety bound');
  }
  for(let layer=0;layer<Math.max(0,...attacks.map(a=>a.level));layer++){
-  const freshJoins=surface();if(freshJoins.length)settle(freshJoins);
+  pendingJoins.push(...surface());
   const {groups,byId}=chocoGroups(w.strata),selected=new Map(),contacts=[];
   for(const attack of attacks){
    if(layer>=attack.level)continue;const direction=attack.direction||'top',index=attack.index??attack.column,old=flights.find(f=>f.index===index);let r=-1,c=-1;
@@ -153,12 +153,15 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
    const far=Math.max(1,...distances.values());for(const v of group)targets.push({...v,tile:{...v.tile},wave:distances.get(v.tile.id)/far});
   }
   layers+=selected.size;hitIds.push(...targets.map(v=>v.tile.id));
-  flights=contacts.map(c=>{const old=flights.find(f=>f.index===c.index),toX=c.c+.5,toY=w.depth+c.r+(c.direction==='top'?.18:.5);return {index:c.index,direction:c.direction,column:c.c,level:c.level,fromX:old?.toX??(c.direction==='left'?-.7:c.direction==='right'?7.7:toX),fromY:old?.toY??(c.direction==='top'?w.depth-.8:toY),toX,toY,from:old?.toY??w.depth-.8,to:toY,launch:!old};});
+  const movingFlights=contacts.map(c=>{const old=flights.find(f=>f.index===c.index),toX=c.c+.5,toY=w.depth+c.r+(c.direction==='top'?.18:.5);return {index:c.index,direction:c.direction,column:c.c,level:c.level,fromX:old?.toX??(c.direction==='left'?-.7:c.direction==='right'?7.7:toX),fromY:old?.toY??(c.direction==='top'?w.depth-.8:toY),toX,toY,from:old?.toY??w.depth-.8,to:toY,launch:!old};});
+  flights=[...flights.filter(f=>!movingFlights.some(n=>n.index===f.index)),...movingFlights];
   push(layer===0?'canyonDrill':'canyonBore',{attacks,contacts,layer:layer+1},layer===0?360:240);
   flights=flights.map(f=>({...f,from:f.to,fromX:f.toX,fromY:f.toY,launch:false}));
   push('canyonSoften',{targets,contacts,layer:layer+1,impacts:[...selected.values()].map(v=>v.origin)},420);
-  const joins=melt([...selected.values()].map(v=>v.group),true,contacts);settle(joins);
+  pendingJoins.push(...melt([...selected.values()].map(v=>v.group),true,contacts));
  }
+ if(flights.length){push('canyonReturn',{},320);flights=[];}
+ settle(pendingJoins);
  return {grid:w.strata,seed:w.seed,uid:w.uid,depth:w.depth,nextSugar:w.nextSugar,timeline:trace?chocoJoinMotion(timeline):timeline,removed,prizes,collected,gain,fallSteps,merges,hitIds,sugarCount,oddsCount,layers};
 }
 function chocoPlan(input,numbers,{trace=false,drills,lucky,seed=1,uid=Math.max(0,...input.flat().filter(Boolean).map(t=>t.id)),depth=0,nextSugar=18,refill=true}={}){
@@ -275,8 +278,9 @@ function chocoText(x,text,px,py,size,color='#fff1c9',align='center'){x.font='900
 // Eight-neighbour quadrant autotiles: outer corners, straight edges, solid centres and concave corners.
 function chocoCanonicalMask(mask){let m=mask&15;for(const [a,b,d] of [[8,1,16],[2,1,32],[2,4,64],[8,4,128]])if((mask&a)&&(mask&b)&&(mask&d))m|=d;return m;}
 function chocoTileMask(grid,r,c){const color=grid[r]?.[c]?.color;if(color==null||color<0)return 0;let mask=0;for(const [dy,dx,bit]of [[-1,0,1],[0,1,2],[1,0,4],[0,-1,8],[-1,-1,16],[-1,1,32],[1,1,64],[1,-1,128]])if(grid[r+dy]?.[c+dx]?.color===color)mask|=bit;return mask;}
-function chocoAutoSprite(color,mask){
- mask=chocoCanonicalMask(mask);const image=chocoCakeImages[color];if(!image?.complete||!image.naturalWidth)return null;const key=color+'/'+mask;if(chocoSprites.has(key))return chocoSprites.get(key);
+function chocoAutoSprite(color,mask,variant=0){
+ variant=((variant%6)+6)%6;
+ mask=chocoCanonicalMask(mask);const image=chocoCakeImages[color];if(!image?.complete||!image.naturalWidth)return null;const key=color+'/'+mask+'/'+variant;if(chocoSprites.has(key))return chocoSprites.get(key);
  const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),sample=document.createElement('canvas');sample.width=sample.height=256;const sx=sample.getContext('2d');sx.drawImage(image,0,0,256,256);const src=sx.getImageData(0,0,256,256).data,pixels=x.createImageData(96,96),d=pixels.data;
  const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);},read=(u,v,k)=>src[(Math.min(255,Math.max(0,Math.round(v*255)))*256+Math.min(255,Math.max(0,Math.round(u*255))))*4+k];
  for(let y=0;y<96;y++)for(let px=0;px<96;px++){
@@ -290,7 +294,13 @@ function chocoAutoSprite(color,mask){
    value=value*(1-joinX)+read(.24,sourceY,k)*joinX;
    const edgeU=.055+.89*u,body=read(edgeU,.46,k),sideBody=read(.24,.46,k),rim=1-smooth(Math.min(u,1-u)/.24),vertical=sideBody+(body-sideBody)*rim*(1-joinX);
    value=value*(1-joinY)+vertical*joinY;
-   if(color===3)value*=value>175?.66:[.48,.50,.57][k];d[i+k]=value;
+   if(color===3)value*=value>175?.66:[.48,.50,.57][k];
+   // Hand-finished variants fade to identical edge pixels, preserving every autotile join.
+   const fade=Math.sin(Math.PI*u)**2*Math.sin(Math.PI*v)**2;
+   const grain=Math.sin(px*12.9898+y*78.233+variant*37.719)*43758.5453;
+   const sheen=Math.sin(u*5+variant*1.7)*Math.cos(v*7-variant*.9);
+   value+=fade*((variant-2.5)*1.4+sheen*4+(grain-Math.floor(grain)-.5)*3);
+   d[i+k]=value;
   }
   let alpha=255;
   for(const [hb,vb,diag,cx,cy]of [[8,1,16,0,0],[2,1,32,95,0],[8,4,128,0,95],[2,4,64,95,95]]){const dx=Math.abs(px-cx),dy=Math.abs(y-cy);if(!(mask&hb)&&!(mask&vb)&&dx<6&&dy<6)alpha=Math.min(alpha,Math.max(0,Math.min(255,(6-Math.hypot(6-dx,6-dy))*255)));if((mask&hb)&&(mask&vb)&&!(mask&diag)&&dx<4&&dy<4)alpha=Math.min(alpha,Math.max(0,Math.min(255,(Math.hypot(dx,dy)-3)*255)));}
@@ -298,7 +308,7 @@ function chocoAutoSprite(color,mask){
  }
  x.putImageData(pixels,0,0);chocoSprites.set(key,cv);return cv;
 }
-function chocoBoardLayout(width,height){const header=68,footer=2,cell=Math.min((width-120)/9,(height-header-footer)/12);return {w:cell,h:cell,left:(width-cell*7)/2,top:header,header,footer};}
+function chocoBoardLayout(width,height){const header=57,footer=2,cell=Math.min((width-120)/9,(height-header-footer)/12);return {w:cell,h:cell,left:(width-cell*7)/2,top:header,header,footer};}
 
 // Polished toy-like screw drills, with separate metal palettes and diamond facets.
 const CHOCO_METALS=[null,
@@ -330,21 +340,24 @@ function chocoDrawDrill(x,cx,cy,size,level,time=0,spinning=false){
  x.restore();
 }
 function chocoDrillPose(index,L){
- const route=chocoDrillRoute(index);return route.direction==='top'?{cx:L.left+(route.column+.5)*L.w,cy:L.top-24,angle:0}: {cx:route.direction==='left'?L.left-L.w*.62:L.left+7*L.w+L.w*.62,cy:L.top+(route.row+.5)*L.h,angle:route.direction==='left'?-Math.PI/2:Math.PI/2};
+ const route=chocoDrillRoute(index);return route.direction==='top'?{cx:L.left+(route.column+.5)*L.w,cy:L.top-20,angle:0}: {cx:route.direction==='left'?L.left-L.w*.62:L.left+7*L.w+L.w*.62,cy:L.top+(route.row+.5)*L.h,angle:route.direction==='left'?-Math.PI/2:Math.PI/2};
 }
 function chocoNumberHit(e,n){return e.seen.has(n)||e.fx?.number===n;}
 function chocoReachLabel(x,s,n,cx,cy,time,size=6.5){
  const result=(s.reachResults||[]).find(r=>r.number===n);if(!result)return;
- const color=['#ffe867','#ff686a','#df90ff','#fff3b6'][result.tier],word=result.tier&&Math.floor(time/850)%2?REACH_WORDS[result.tier]:'リーチ';chocoText(x,word,cx,cy,size,color);
+ const color=['#ffe867','#ff686a','#df90ff','#fff3b6'][result.tier],word=result.tier&&(motionReduced||Math.floor(time/2000)%2)?REACH_WORDS[result.tier]:'リーチ';
+ const phase=(time%1000)/1000,alpha=motionReduced?1:phase<.48||phase>.84?1:1-.7*Math.sin((phase-.48)/.36*Math.PI)**2;x.save();x.globalAlpha=alpha;x.translate(cx,cy);x.shadowColor=color;x.shadowBlur=4;chocoText(x,word,0,0,size,color);x.restore();
+ // Match the other games' glints and orbiting high-payout light around each number.
+ if(!motionReduced)for(let i=0;i<(result.tier?3:1);i++){const a=time/600+i*Math.PI*2/3,px=cx+Math.cos(a)*10,py=cy-5+Math.sin(a)*8;x.save();x.strokeStyle=color;x.globalAlpha=.55+.4*Math.sin(time/240+i)**2;x.lineWidth=.7;x.beginPath();x.moveTo(px-1.8,py);x.lineTo(px+1.8,py);x.moveTo(px,py-1.8);x.lineTo(px,py+1.8);x.stroke();x.restore();}
 }
 function chocoDrillHeader(x,e,L,fx,p,time,s){
  for(let i=0;i<13;i++){
-  const d=e.drills[i],n=d.numbers[0],level=chocoDrillLevel(d),at=chocoDrillPose(i,L),up=fx?.phase==='canyonUpgrade'&&fx.columns.includes(i),flying=fx?.flights?.some(f=>f.index===i),width=L.w,height=53,hit=chocoNumberHit(e,n);
+  const d=e.drills[i],n=d.numbers[0],level=chocoDrillLevel(d),at=chocoDrillPose(i,L),up=fx?.phase==='canyonUpgrade'&&fx.columns.includes(i),flying=fx?.flights?.some(f=>f.index===i),width=L.w,height=42,hit=chocoNumberHit(e,n);
   x.fillStyle=hit?'#854123ef':up?'#93652eea':'#182c3eea';x.strokeStyle=hit?'#fff193':'#c0ae86';x.lineWidth=hit?1.5:.8;x.beginPath();x.roundRect(at.cx-width/2,at.cy-height/2,width,height,4);x.fill();x.stroke();
-  x.fillStyle=hit?'#fff291':'#fff4d6';x.beginPath();x.roundRect(at.cx-9,at.cy-25,18,15,4);x.fill();x.fillStyle='#4c3731';x.font='900 12px ElixirNumbers,system-ui';x.textAlign='center';x.textBaseline='middle';x.fillText(n,at.cx,at.cy-17);
-  if(hit)chocoText(x,'HIT!',at.cx,at.cy-5,8,'#fff36d');else chocoReachLabel(x,s,n,at.cx,at.cy-5,time);
-  if(!flying){x.save();x.translate(at.cx,at.cy+9);x.rotate(at.angle);chocoDrawDrill(x,0,0,14,level,time,up&&!motionReduced);x.restore();}
-  chocoText(x,up?'LvUP!':'Lv.'+level,at.cx,at.cy+24,6.8,CHOCO_METALS[level].light);
+  x.fillStyle=hit?'#fff291':'#fff4d6';x.beginPath();x.roundRect(at.cx-9,at.cy-20,18,15,4);x.fill();x.fillStyle='#4c3731';x.font='900 12px ElixirNumbers,system-ui';x.textAlign='center';x.textBaseline='middle';x.fillText(n,at.cx,at.cy-12);
+  if(hit)chocoText(x,'HIT!',at.cx,at.cy-7,8,'#fff36d');else chocoReachLabel(x,s,n,at.cx,at.cy-7,time);
+  if(!flying){x.save();x.translate(at.cx,at.cy+5);x.rotate(at.angle);chocoDrawDrill(x,0,0,14,level,time,up&&!motionReduced);x.restore();}
+  chocoText(x,up?'LvUP!':'Lv.'+level,at.cx,at.cy+18,6.8,CHOCO_METALS[level].light);
  }
 }
 function chocoSugarDistance(e){const rows=e.strata.map((row,r)=>row.some(t=>t?.item==='sugar')?r:Infinity),distance=Math.min(...rows);return Number.isFinite(distance)?distance:Math.max(0,e.nextSugar-e.depth);}
@@ -354,18 +367,27 @@ function chocoScaleValue(s,e,bet,time){
  if(target!==s.chocoWinTarget){s.chocoWinFrom=s.chocoWinValue||0;s.chocoWinTarget=target;s.chocoWinStart=time;}
  const u=motionReduced?1:Math.min(1,Math.max(0,(time-s.chocoWinStart)/900));s.chocoWinValue=s.chocoWinFrom+(target-s.chocoWinFrom)*(1-(1-u)**3);s.chocoWinCounting=u<1&&s.chocoWinFrom!==target;return Math.floor(s.chocoWinValue);
 }
+function chocoScaleSink(s){return 11*(1-Math.exp(-Math.max(0,s.chocoWinValue||0)/1800));}
+function chocoSevenSegment(x,value,px,py,width,height){
+ const digits=String(Math.max(0,Math.floor(value))).padStart(6,'0'),step=width/digits.length,w=step*.72,h=height;
+ const patterns=[63,6,91,79,102,109,125,7,127,111],segments=[[.15,0,.85,0],[1,.12,1,.43],[1,.57,1,.88],[.15,1,.85,1],[0,.57,0,.88],[0,.12,0,.43],[.15,.5,.85,.5]];
+ x.save();x.lineWidth=Math.max(.7,step*.12);x.lineCap='round';for(let i=0;i<digits.length;i++)for(let k=0;k<7;k++){const on=patterns[Number(digits[i])]&(1<<k),a=segments[k];x.strokeStyle=on?'#a5ffd2':'#183b31';x.shadowColor='#74ffb5';x.shadowBlur=on?2:0;x.beginPath();x.moveTo(px+i*step+a[0]*w,py+a[1]*h);x.lineTo(px+i*step+a[2]*w,py+a[3]*h);x.stroke();}x.restore();
+}
 function chocoMineUI(x,e,L,fx,p,time,W,H,bet,s){
  const sign=(px,py,width,height,hit=false)=>{x.fillStyle=hit?'#8d492bef':'#173343ef';x.strokeStyle=hit?'#fff69c':'#e5bb78';x.lineWidth=1;x.beginPath();x.roundRect(px,py,width,height,5);x.fill();x.stroke();};
- const topHit=chocoNumberHit(e,e.lucky.numbers[0]);sign(L.left,2,7*L.w,17,topHit);chocoText(x,e.lucky.numbers[0]+'  '+(topHit?'HIT!':'全作動')+'  ↓ ↓ ↓ ↓ ↓ ↓ ↓',L.left+3.5*L.w,7,8,topHit?'#fff26f':'#fff0b2');
- chocoReachLabel(x,s,e.lucky.numbers[0],L.left+3.5*L.w,15,time,5.5);
+ const topHit=chocoNumberHit(e,e.lucky.numbers[0]);sign(L.left,2,7*L.w,14,topHit);chocoText(x,e.lucky.numbers[0],L.left+14,7,10,topHit?'#fff26f':'#fff0b2');chocoText(x,(topHit?'HIT!':'ALL')+'  ↓ ↓ ↓ ↓ ↓ ↓ ↓',L.left+3.5*L.w+9,7,8,topHit?'#fff26f':'#fff0b2');
+ chocoReachLabel(x,s,e.lucky.numbers[0],L.left+14,11,time,5.5);
  for(let side=1;side<=2;side++){
-  const cx=side===1?L.left-L.w*1.8:L.left+7*L.w+L.w*1.8,cy=L.top+L.h*6,n=e.lucky.numbers[side],hit=chocoNumberHit(e,n);sign(cx-14,cy-31,28,62,hit);chocoText(x,n,cx,cy-20,15);chocoText(x,hit?'HIT!':'全作動',cx,cy-3,7,hit?'#fff36f':'#fff0b2');chocoReachLabel(x,s,n,cx,cy+8,time,6);chocoText(x,side===1?'→':'←',cx,cy+22,17,'#b7f5ff');
+  const cx=side===1?L.left-L.w*1.8:L.left+7*L.w+L.w*1.8,cy=L.top+L.h*6,n=e.lucky.numbers[side],hit=chocoNumberHit(e,n);sign(cx-14,cy-24,28,48,hit);chocoText(x,n,cx,cy-14,15);chocoText(x,hit?'HIT!':'ALL',cx,cy+4,7,hit?'#fff36f':'#fff0b2');chocoReachLabel(x,s,n,cx,cy-8,time,6);chocoText(x,side===1?'→':'←',cx,cy+17,13,'#b7f5ff');
   x.strokeStyle=hit?'#fff3a0':'#9ec4cd';x.lineWidth=1;x.beginPath();x.moveTo(cx,L.top+2.5*L.h);x.lineTo(cx,cy-32);x.moveTo(cx,cy+32);x.lineTo(cx,L.top+10.5*L.h);x.stroke();
   for(const row of CHOCO_SIDE_ROWS){const y=L.top+(row+.5)*L.h;chocoText(x,side===1?'→':'←',cx,y,11,'#b7f5ff');}
  }
  chocoText(x,e.depth+'m',8,12,13,'#fff3c7','left');
  // The collection scale occupies the outside wall, never a footer below the board.
- const cx=49,sy=H-15;sign(cx-43,sy-11,86,22);x.fillStyle='#071d21';x.fillRect(cx-39,sy-8,78,16);x.font='bold 12px monospace';x.textAlign='right';x.textBaseline='middle';x.fillStyle='#a5ffd2';x.shadowColor='#74ffb5';x.shadowBlur=3;x.fillText(String(chocoScaleValue(s,e,bet,time)),cx+23,sy);x.shadowBlur=0;x.font='bold 5px sans-serif';x.fillText('WIN',cx+37,sy+3);
+ const value=chocoScaleValue(s,e,bet,time),sink=chocoScaleSink(s),cx=49,sy=H-15;
+ // Fixed digital base, compressed springs and a loaded platform that sinks with the counter.
+ x.strokeStyle='#d9c6a0';x.lineWidth=1.5;for(const dx of [-29,29]){x.beginPath();for(let j=0;j<7;j++){const yy=H-39+sink+j*(13-sink)/6,xx=cx+dx+(j%2?3:-3);j?x.lineTo(xx,yy):x.moveTo(xx,yy);}x.stroke();}
+ x.fillStyle='#bfa178';x.fillRect(7,H-41+sink,84,4);sign(cx-43,sy-11,86,22);x.fillStyle='#071d21';x.fillRect(cx-39,sy-8,78,16);chocoSevenSegment(x,value,cx-36,sy-6,66,12);chocoText(x,'WIN',cx+34,sy+3,5,'#a5ffd2');
 }
 function chocoCavity(x,L,time,camera){
  const {left,top,w,h}=L,bw=7*w,bh=12*h;x.save();x.beginPath();x.rect(left,top,bw,bh);x.clip();
@@ -395,12 +417,13 @@ function chocoDrawItem(x,t,cx,cy,size,time=0,label=true,bet=100){
  }
  x.restore();
 }
-function chocoCartPose(index,count){const rows=Math.max(1,Math.ceil(count/5)),size=Math.min(28,74/rows),x=95+((index%5)-2)*size,y=102-Math.floor(index/5)*size*.88;return {x,y,size};}
+function chocoCartPose(index,count){const rows=Math.max(1,Math.ceil(count/5)),size=Math.min(25,88/rows),x=95+((index%5)-2)*size,y=94-Math.floor(index/5)*size*.83;return {x,y,size};}
+function chocoCartArrival(i,count){return .65+.3*i/Math.max(1,count-1);}
 function chocoDrawCart(s,e,fx,p,time,bet=100){
  const cv=s.chocoCart;if(!cv)return;const x=cv.getContext('2d'),count=e.cart.length;x.clearRect(0,0,190,150);
  const image=chocoMineImages.cart;if(image?.complete&&image.naturalWidth)x.drawImage(image,5,60,180,90);
  else{x.fillStyle='#81573b';x.strokeStyle='#f2d69a';x.lineWidth=2;x.beginPath();x.roundRect(18,106,154,29,6);x.fill();x.stroke();for(const cx of [43,146]){x.fillStyle='#2d3442';x.beginPath();x.arc(cx,139,8,0,Math.PI*2);x.fill();}}
- for(let i=0;i<count;i++){const at=chocoCartPose(i,count),fresh=fx?.phase==='canyonCollect'&&i>=fx.cartStart;if(fresh&&p<.55)continue;const q=fresh?Math.min(1,(p-.55)/.45):1;chocoDrawItem(x,e.cart[i],at.x,at.y-48-(1-q)*35,at.size,time,false,bet);}
+ for(let i=0;i<count;i++){const at=chocoCartPose(i,count),fresh=fx?.phase==='canyonCollect'&&i>=fx.cartStart;if(fresh&&p<chocoCartArrival(i-fx.cartStart,fx.items.length))continue;chocoDrawItem(x,e.cart[i],at.x,at.y,at.size,time,false,bet);}
  cv.dataset.count=count;cv.dataset.rows=Math.ceil(count/5);cv.setAttribute('aria-label','トロッコ・獲得順に1段5個：'+e.cart.map(t=>t.item==='ore'?CHOCO_ORES[t.ore].name+' '+num(medalWin(bet,t.value))+'WIN':'シュガー').join('、'));
 }
 function chocoRockAudio(impacts=1,melt=false){
@@ -413,7 +436,7 @@ function chocoRockAudio(impacts=1,melt=false){
  for(let i=0;i<impacts;i++)sound(name,{volume:melt?.34:.80/Math.sqrt(impacts),delay:i*55,rate:1+(i%3)*.04});
 }
 function chocoPaintMelt(x,t,r,c,grid,px,py,w,h,progress){
- const q=motionReduced?1:progress;if(q>=1)return;const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c));if(!sprite)return;
+ const q=motionReduced?1:progress;if(q>=1)return;const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c),t.id%6);if(!sprite)return;
  x.save();x.globalAlpha=(1-q)**.7;
  // Narrow vertical ribbons sag and stretch into drops; no fracture shards or crack marks.
  const strips=10;for(let k=0;k<strips;k++){const sag=q*q*h*(.14+.38*(.5+.5*Math.sin(k*1.9+t.id*.73))),height=h*(1-q*.68);x.drawImage(sprite,k*96/strips,0,96/strips,96,px+k*w/strips,py+sag,w/strips+.55,height);}
@@ -421,7 +444,7 @@ function chocoPaintMelt(x,t,r,c,grid,px,py,w,h,progress){
 }
 function chocoPaintTile(x,t,r,c,grid,px,py,w,h,time=0,bet=100){
  if(t.color<0){chocoDrawItem(x,t,px+w/2,py+h/2,w*.96,time,true,bet);return;}
- const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c));if(sprite){const ax=Math.round(px*2)/2,ay=Math.round(py*2)/2,bx=Math.round((px+w)*2)/2,by=Math.round((py+h)*2)/2;x.drawImage(sprite,ax,ay,bx-ax,by-ay);}
+ const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c),t.id%6);if(sprite){const ax=Math.round(px*2)/2,ay=Math.round(py*2)/2,bx=Math.round((px+w)*2)/2,by=Math.round((py+h)*2)/2;x.drawImage(sprite,ax,ay,bx-ax,by-ay);}
 }
 function chocoScrollEase(p){p=Math.max(0,Math.min(1,p));return p*p*p*(p*(p*6-15)+10);}
 function drawChoco(s,now=performance.now()){
@@ -448,9 +471,9 @@ function drawChoco(s,now=performance.now()){
  if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const t=e.strata[r]?.[c];if(t)chocoPaintTile(x,t,r,c,e.strata,left+c*w,top+(r+scroll.advanced*(1-scrollQ))*h,w,h,time,bet);}
  x.restore();chocoDrillHeader(x,e,L,fx,p,time,s);chocoMineUI(x,e,L,fx,p,time,W,H,bet,s);
  // Persistent directional flight coordinates are world-anchored while the mine scrolls.
- for(const f of fx?.flights||[]){const u=['canyonDrill','canyonBore'].includes(fx.phase)?q:1,wx=f.fromX+(f.toX-f.fromX)*u,wy=f.fromY+(f.toY-f.fromY)*u,angle=f.direction==='left'?-Math.PI/2:f.direction==='right'?Math.PI/2:0;x.save();x.translate(left+wx*w,top+(wy-camera)*h);x.rotate(angle);chocoDrawDrill(x,0,-h*.25,w*.85,f.level,time,!motionReduced);x.restore();}
- chocoDrawCart(s,e,fx,p,time,bet);const cartW=88,cartH=65,cartX=5,cartY=H-cartH-29;x.drawImage(s.chocoCart,cartX,cartY,cartW,cartH);
- if(fx?.phase==='canyonCollect')for(let i=0;i<fx.items.length;i++){const v=fx.items[i],u=Math.max(0,Math.min(1,(q-i*.025)/.92)),sx=left+(v.c+.5)*w,sy=top+(v.r+.5)*h;chocoDrawItem(x,v.tile,sx+(cartX+cartW/2-sx)*u,sy+(cartY+55-sy)*u-Math.sin(u*Math.PI)*45,w*(1-u*.5),time,false,bet);}
+ for(const f of fx?.flights||[]){const returning=fx.phase==='canyonReturn',u=['canyonDrill','canyonBore'].includes(fx.phase)?q:1,wx=f.fromX+(f.toX-f.fromX)*u,wy=f.fromY+(f.toY-f.fromY)*u,home=chocoDrillPose(f.index,L),back=returning?chocoScrollEase(q):0,angle=f.direction==='left'?-Math.PI/2:f.direction==='right'?Math.PI/2:0;x.save();const ax=left+wx*w+Math.sin(angle)*h*.25,ay=top+(wy-camera)*h-Math.cos(angle)*h*.25;x.translate(ax+(home.cx-ax)*back,ay+(home.cy+5-ay)*back);x.rotate(angle);chocoDrawDrill(x,0,0,w*.85+(14-w*.85)*back,f.level,time,!motionReduced);x.restore();}
+ chocoDrawCart(s,e,fx,p,time,bet);const cartW=88,cartH=65,cartX=5,cartY=H-cartH-41+chocoScaleSink(s);x.drawImage(s.chocoCart,cartX,cartY,cartW,cartH);
+ if(fx?.phase==='canyonCollect')for(let i=0;i<fx.items.length;i++){const v=fx.items[i],arrival=chocoCartArrival(i,fx.items.length);if(q>=arrival)continue;const u=Math.max(0,Math.min(1,(q-(arrival-.6))/.6)),sx=left+(v.c+.5)*w,sy=top+(v.r+.5)*h,at=chocoCartPose(fx.cartStart+i,e.cart.length),tx=cartX+at.x*cartW/190,ty=cartY+at.y*cartH/150;chocoDrawItem(x,v.tile,sx+(tx-sx)*u,sy+(ty-sy)*u-Math.sin(u*Math.PI)*45,w+(at.size*cartW/190-w)*u,time,false,bet);}
  if(!bet){x.fillStyle='#142c40a6';x.fillRect(left,top,7*w,12*h);chocoText(x,'0 BET',W/2,H/2,26);}
  Object.assign(s.chocoCanvas.dataset,{columns:'7',rows:'12',drills:'13',rules:'mine-v7',background:'cavity-v6',hitNumbers:[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers].filter(n=>chocoNumberHit(e,n)).join(','),reachNumbers:(s.reachResults||[]).map(r=>r.number).join(','),drillNumbers:e.drills.map(d=>d.numbers[0]).join(','),levels:e.drills.map(d=>d.level).join(','),lucky:e.lucky.numbers.join(','),win:String(medalWin(bet,e.totalHundredths)),cart:String(e.cart.length),displayWin:String(Math.floor(s.chocoWinValue||0)),sugarDistance:String(chocoSugarDistance(e))});
  s.chocoCanvas.setAttribute('aria-label','チョコレート鉱山・7列12段・深さ'+e.depth+'m・'+num(medalWin(bet,e.totalHundredths))+' WIN・'+e.drills.map((d,c)=>(c+1)+'列 番号'+d.numbers[0]+' Lv.'+d.level).join('／')+'・方向別全掘削 上・左・右 '+e.lucky.numbers.join('、')+'・シュガーまであと '+chocoSugarDistance(e)+'m');
