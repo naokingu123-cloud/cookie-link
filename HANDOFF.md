@@ -339,3 +339,12 @@
 - fruitCountを全計画・ステージ・保存に伝搬。ゲーム内10mごとに横7列×縦1行、fruitIndexで異なる層の結合を禁止。配当は5/20/50/100/200倍、以後100倍ずつ。掘削・落下着地で各層1回加算。全消しによる消去は従来通りボーナスなし。
 - assets/canyon-depth/に10種類の生成背景。累計深度0地上、30white、200strawberry、300milk、400bitter、500sapphire、600emerald、700topaz、800ruby、900diamond。各到達前40mでクロスフェード、地上→whiteは0–30m。盤面内外に共通描画、内部は青い半透明の空洞シェード。落下/カメラ移動の18%でパララックスし、着地後も位置を維持。
 - docs/canyon-depth-art.mdに生成プロンプトと実装仕様。canyon_rulesに10m反復生成/同時複数層/独立結合/掘削と着地配当/速度の検証、ブラウザに深度10環境と切替連続性の検証を追加。
+
+
+## 2026-10-29 — mine v13 / 累計100m層・宝石ケーキ・継続確定・FIFO
+- v12のゲーム内10m配置を廃止。絶対座標depth+rowが100の倍数になる1段を配置。100/200/300/400mはfruit、500sapphire、600emerald、700topaz、800ruby、900amethyst、1000以後diamond。配当hundredthsは300/500/1000/2000/3000/5000/7500/10000/20000/30000、以後30000固定。
+- bonusDepth/bonusKindを各層のタイルに付与、bonusResolvedDepthを全計画/ステージ/世界保存に伝搬。処理済み層を次ゲームfreshBoardで再生成しない。保存v7(旧2–6互換)。ゲーム内startDepthは鉱石レア率にのみ使用し、ボーナス配置には使用しない。
+- assets/canyon-cakes/に宝石6種の生成画像、既存8近傍オートタイルアルゴリズムに接続。assets/canyon-depth/amethyst.webp追加。背景900amethyst/1000diamondへ変更。
+- 最初の正の配当で継続確定演出とmagic音。e.totalHundredths>0の間、深度の近くに盤面/タブ共通の継続確定表示。次ゲームリセットで解除。
+- トロッコ15枠はindex%15で最古から置換。配当履歴は全件保持。canyonCollectの到着判定まで旧鉱石を表示し、16件目以降もクレーンを省略しない。
+- 仕様・生成プロンプトはdocs/canyon-milestones-v13.md。検証:100–1200m正確配置/表どおり配当/次ゲーム再生成防止、6種12接続シーム、継続表示と上限後クレーン/FIFO。

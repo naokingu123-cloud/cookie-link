@@ -1,5 +1,7 @@
 # Canyon depth art and motion — v12
 
+> Bonus rules and the 900/1000 m backgrounds are superseded by [v13](canyon-milestones-v13.md).
+
 Ten generated opaque environment paintings are stored as 512 × 768 WebP images under `assets/canyon-depth/`.
 
 | Cumulative depth | Environment |
