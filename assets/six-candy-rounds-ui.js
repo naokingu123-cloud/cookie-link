@@ -30,6 +30,8 @@ let sixCandyAudioLast={break:-100,fall:-100,role:-100,pop:-100};
 function sixCandyAudio(kind,amount=1){
  if(!audio||audio.state!=='running'||!$('sound').checked||app?.paused||document.hidden||!inView)return;
  const at=audio.currentTime;if(at-sixCandyAudioLast[kind]<(kind==='fall'?.055:.035))return;sixCandyAudioLast[kind]=at;
+ const cue={glass:'glass',fall:'landing',triangle:'triangle',hexagon:'hexagon',role:'role',clear:'round',refill:'refill',pop:'pop',break:'candy'}[kind]||'candy';
+ if(sfxBuffers.has('scene-'+cue)){const count=kind==='fall'?Math.min(3,Math.max(1,amount)):1;for(let i=0;i<count;i++)sceneSound(cue,{delay:i*18,volume:(kind==='fall'?.45:.7)/(1+i*.4),rate:1+i*.025});return;}
  const names=kind==='glass'?['six-glass-contact']:kind==='fall'?['six-marble-0','six-marble-1','six-marble-2']:kind==='triangle'?['six-triangle-chime']:kind==='hexagon'?['six-hexagon-fanfare']:kind==='role'?['six-role-rush']:kind==='clear'?['six-round-fanfare']:kind==='refill'?['six-refill-shower']:kind==='pop'?['six-cluster-pop']:['six-hard-candy'];
  names.forEach((name,j)=>{
   if(sfxBuffers.has(name))return;const duration=kind==='glass'?.24:kind==='triangle'?.85:kind==='hexagon'?1.15:kind==='fall'?.09:kind==='role'?.32:kind==='refill'?.72:kind==='clear'?.55:.19,buffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*duration),audio.sampleRate),d=buffer.getChannelData(0);
@@ -59,14 +61,14 @@ function carnivalEvent(s,ev,e,a){
   const gain=ev.gain;s.candyReward.hidden=false;s.candyReward.classList.add('six-special-award');s.candyReward.dataset.tier=gain>=1000?'2':gain>=300?'1':'0';
   const title=ev.phase==='pyramidAllClear'?'ALL CLEAR BONUS':ev.phase==='pyramidRoundBonus'?'ROUND '+ev.roundIndex+' CLEAR BONUS':[ev.lines?'直線 ×'+ev.lines:'',ev.triangles?'トライアングル ×'+ev.triangles:'',ev.hexagons?'ヘキサゴン ×'+ev.hexagons:''].filter(Boolean).join(' / ');
   const remain=e.processed+(ev.numbers?.length||0)<8,advance=e.roundIndex<5&&remain;
-  s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+ (ev.chain?ev.chain+' CHAIN':'') +'</span><b class="six-next">'+(advance?'NEXT ROUND '+(e.roundIndex+1)+' 進出':e.roundIndex===5?'ALL ROUNDS CLEAR':'ROUND CLEAR')+'</b>';if(s.i===active)sound('confirm',{volume:1});
+  s.candyReward.innerHTML='<small>'+title+'</small><strong>＋'+num(medalWin(a.bet(s.i),gain))+' <em>WIN</em></strong><span>'+ (ev.chain?ev.chain+' CHAIN':'') +'</span><b class="six-next">'+(advance?'NEXT ROUND '+(e.roundIndex+1)+' 進出':e.roundIndex===5?'ALL ROUNDS CLEAR':'ROUND CLEAR')+'</b>';if(s.i===active)sceneSound(ev.phase==='pyramidAllClear'?'allclear':'round',{volume:.85});
  }
  if(ev.phase==='pyramidRound'){clearMiniResult(s);s.candyReward.hidden=false;s.candyReward.classList.add('six-round-callout');s.candyReward.dataset.tier='1';s.candyReward.innerHTML='<small>NEXT ROUND</small><strong>Round '+ev.nextRound+'</strong>';}
  if(ev.phase==='pyramidBreak'&&ev.removed?.length&&s.i===active)sixCandyAudio('break');
  if(ev.phase==='pyramidAward'&&ev.removed?.length&&s.i===active&&!ev.forms?.length)sixCandyAudio('pop');
  if(ev.phase==='pyramidFall'&&motionReduced&&s.i===active)sixCandyAudio('fall',ev.moves?.length||1);
  if(ev.phase==='pyramidTopUp'&&s.i===active)sixCandyAudio('refill');
- if(ev.phase==='pyramidSweep'&&s.i===active)sound('magic',{volume:.35});
+ if(ev.phase==='pyramidSweep'&&s.i===active)sceneSound('role',{volume:.35});
  if(ev.phase==='pyramidShape'&&ev.forms?.length&&s.i===active)sixCandyAudio(ev.forms.some(f=>f.type==='hexagon')?'hexagon':ev.forms.some(f=>f.type==='triangle')?'triangle':'role');
  if(ev.phase==='settled'){if(!ev.advance)s.candyReward.hidden=true;clearMiniResult(s);if(ev.batchChain>0||ev.batchShapes>0){s.miniLastResult=(ev.batchShapes||0)+'役 · '+(ev.batchChain||0)+'連鎖';s.miniResult.innerHTML='<strong>'+(ev.batchShapes||0)+' SHAPES</strong><small>'+(ev.batchChain||0)+'連鎖</small>';s.miniResultState={remaining:MINI_RESULT_MS,stamp:null,version:e.version};}}
  if(['waiting','settled'].includes(ev.phase))requestSixSparkles(s,e,a);

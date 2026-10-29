@@ -334,7 +334,7 @@ class SixBallCandyEngine extends Engine{
       if(!await this.waitVisual(refillMs*this.speed,token))return;this.fx=null;
      }
     }
-    this.transitionPending=plan.advance&&this.processed<8&&this.roundIndex<this.maxRounds;
+    this.transitionPending=plan.advance&&this.roundIndex<this.maxRounds;
     this.candyMessage=plan.advance?'Round '+this.roundIndex+' CLEAR！':plan.chain?'連結消去・次の番号で役をねらおう':'次の番号で役をねらおう';
     if(this.currentClearBonus){this.emit('pyramidRoundBonus',{roundIndex:this.roundIndex,gain:this.currentClearBonus,nextRound:this.transitionPending?this.roundIndex+1:null});if(!await this.wait(420*this.speed,token))return;}
     this.emit('settled',{numbers,candy:true,batchShapes:plan.triangles+plan.hexagons+plan.lines,batchChain:plan.chain,batchGain:plan.gain,advance:plan.advance,clearBonus:this.currentClearBonus,sugarAward:plan.sugarAward});
@@ -355,7 +355,7 @@ class SixBallCandyEngine extends Engine{
     }
    }
    if(token!==this.version)return;
-   if(this.processed===8){this.busy=false;this.running=false;this.candyMessage='Round '+this.roundIndex+'・⬡ '+this.hexagons+' / △ '+this.triangles+' / LINE '+this.lines;this.emit('complete');}
+   if(this.processed===8){if(this.beforeComplete)await this.beforeComplete(token);if(token!==this.version)return;this.busy=false;this.running=false;this.candyMessage='Round '+this.roundIndex+'・⬡ '+this.hexagons+' / △ '+this.triangles+' / LINE '+this.lines;this.emit('complete');}
    else{this.busy=false;this.emit('waiting');}
   }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }

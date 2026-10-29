@@ -442,3 +442,10 @@
 - 効果音のソフト制限後に固定ゲイン0.15、読み上げの制限後に固定ゲイン0.25を追加（出力上限は約0.042/0.055）。ソフト制限のカーブをさらに潰す方式は避け、音色を保って効果音側だけ下げる。
 - resultに入ると2.9秒でゲームBGMをフェードアウトしていた処理の呼び出しを削除。playing/result/paying/complete全てで同じ曲・固定音量を維持し、次BETへの切替と手動ミュート/一時停止のみで停止する。BET→ゲームの意図した曲切替フェードは維持。
 - bgm_headroom_browser.pyで合成出力のBGM差分不変とplaying/result/paying/completeの実コールバック後の音量・再生維持を検証。
+
+## 2026-10-29 場面別SEと秤配当
+- `docs/scene-audio-and-scale.md` を参照。26種の提供SEをゲームの各場面へ割り当て。元音源対応は `assets/audio/scenes/manifest.json`。
+- `assets/scene-audio.js` はindexのunlock直前に同文埋め込み。CanyonとSixは従来同様にソース/結合版/indexを同期。
+- 獲得WINルーレットを廃止。着地ごとに合算計数→確定→TOTALへ移し替え中はクレーン待機。ボーナスはTOTAL直行。8球目は表示終了を待つ。
+- BGM音量固定・JPC入賞減音・JPC読み上げなしを維持。
+- 3ゲーム共通で `beforeComplete` に最終リーチ計算・600ms表示待ちを追加。Sixは8球目のラウンド突破でも次盤面補充。Canyonの8球目リーチも有効化。`final_board_browser.py` で検証。
