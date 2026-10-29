@@ -1913,7 +1913,7 @@ body.choco-active .game>.field{flex:1;min-height:0;height:auto;grid-template-col
 body.choco-active #panels{width:100%;min-height:0;height:100%}
 /* v6: all space below the common tabs belongs to the enlarged scene. */
 .choco-status{display:none!important}
-.choco-tab-depth{position:absolute;right:2px;bottom:45px;width:40px;padding:1px 0;border-radius:4px;background:#17394ae8;color:#fff4c9;font:900 8px/11px system-ui;text-align:center;z-index:15;pointer-events:none}
+.choco-tab-depth{position:absolute;right:2px;bottom:45px;width:78px;padding:1px 0;border-radius:4px;background:#17394ae8;color:#fff4c9;font:900 8px/11px system-ui;text-align:center;z-index:15;pointer-events:none}
 
 .choco-continue{display:block;color:#fff279;text-shadow:0 1px 2px #573800;font:900 7px/10px system-ui;white-space:nowrap}
 .choco-tab-depth[data-continued="true"]{box-shadow:0 0 5px #f9d778;border:1px solid #ffe8a3;box-sizing:border-box}
@@ -2930,7 +2930,7 @@ const chocoCopyLucky=lucky=>({numbers:[...lucky.numbers],hits:[...lucky.hits],dr
 const CHOCO_ORES={copper:{name:'銅',min:10,max:20,step:10,tint:'#e9a071'},silver:{name:'銀',min:50,max:100,step:10,tint:'#e3f2ff'},gold:{name:'金',min:200,max:400,step:100,tint:'#ffe391'},diamond:{name:'ダイヤ',min:500,max:1000,step:100,tint:'#a9f6ff'}};
 const CHOCO_PRIZES={copper:10,silver:50,gold:200,diamond:500};
 // Rates are calibrated with the full production flow, including in-cascade refills and odds-up tiles.
-const CHOCO_ITEM_RATES={copper:.067,silver:.01675,gold:.00335,diamond:.001,sugar:.0029,odds:.004,clear:.0012,random:.0018,transmute:.0012};
+const CHOCO_ITEM_RATES={copper:.067,silver:.01675,gold:.00335,diamond:.001,sugar:.0029,odds:.004,clear:.002,random:.003,transmute:.0012};
 const CHOCO_FRUIT_DEPTH=100;
 const CHOCO_BONUS_GEMS=['sapphire','emerald','topaz','ruby','amethyst','diamond'];
 const CHOCO_BONUS_NAMES={fruit:'フルーツケーキ',sapphire:'サファイアケーキ',emerald:'エメラルドケーキ',topaz:'トパーズケーキ',ruby:'ルビーケーキ',amethyst:'アメジストケーキ',diamond:'ダイヤケーキ'};
@@ -2938,7 +2938,7 @@ const chocoFruitWin=index=>[300,500,1000,2000,3000,5000,7500,10000,20000,30000][
 const chocoBonusKind=index=>index<=4?'fruit':CHOCO_BONUS_GEMS[Math.min(5,index-5)];
 const chocoFallDuration=distance=>Math.round(125*Math.sqrt(Math.max(1,distance)));
 const CHOCO_POWERS={clear:'全消し',random:'ランダム消し',transmute:'鉱石化'};
-function chocoOreRates(distance=0){const t=Math.min(1,Math.max(0,distance)/60);return {...CHOCO_ITEM_RATES,copper:.067-.025*t,silver:.01675+.012*t,gold:.00335+.009*t,diamond:.001+.004*t};}
+function chocoOreRates(distance=0){const t=Math.min(1,Math.max(0,distance)/60);return {...CHOCO_ITEM_RATES,copper:(.067-.025*t)*.56,silver:(.01675+.012*t)*.56,gold:(.00335+.009*t)*.56,diamond:(.001+.004*t)*.56};}
 function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0)),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=def.min+Math.floor(chocoRandom(w)*((def.max-def.min)/def.step+1))*def.step;return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
 
 const CHOCO_TYPES=[
@@ -3262,21 +3262,30 @@ function chocoWallLayer(W,H){
  }
  m.putImageData(pixels,0,0);const result={canvas,mask,ctx:canvas.getContext('2d')};chocoWallLayers.set(key,result);if(chocoWallLayers.size>4)chocoWallLayers.delete(chocoWallLayers.keys().next().value);return result;
 }
+// Pre-baked periodic wall texture: broad crossfade at the seam, no mirrored horizon.
+const chocoWallTextures=new WeakMap();
+function chocoWallTexture(image,W,H){
+ let cache=chocoWallTextures.get(image);if(!cache){cache=new Map();chocoWallTextures.set(image,cache);}const key=W+'/'+H;if(cache.has(key))return cache.get(key);
+ const width=Math.ceil(W),period=Math.ceil(H*.95),overlap=Math.ceil(period/3),full=period+overlap;
+ const src=document.createElement('canvas');src.width=width;src.height=full;const c=src.getContext('2d');c.drawImage(image,0,0,image.naturalWidth,image.naturalHeight*.72,0,0,width,full);
+ const tile=document.createElement('canvas');tile.width=width;tile.height=period;const t=tile.getContext('2d');t.drawImage(src,0,0);
+ for(let y=0;y<overlap;y++){const u=y/overlap,a=u*u*(3-2*u);t.globalAlpha=1;t.drawImage(src,0,period+y,width,1,0,y,width,1);t.globalAlpha=a;t.drawImage(src,0,y,width,1,0,y,width,1);}t.globalAlpha=1;
+ cache.set(key,tile);if(cache.size>4)cache.delete(cache.keys().next().value);return tile;
+}
 function chocoDepthBackground(x,W,H,depth,travel){
- const {a,b,mix}=chocoDepthBlend(depth),layer=chocoWallLayer(W,H),z=layer.ctx,panel=H*.95,offset=((travel*.18)%panel+panel)%panel;
+ const {a,b,mix}=chocoDepthBlend(depth),layer=chocoWallLayer(W,H),z=layer.ctx;
  x.save();x.beginPath();x.rect(0,0,W,H);x.clip();x.fillStyle='#233b4a';x.fillRect(0,0,W,H);
  function paint(image,alpha){
-  if(!image?.complete||!image.naturalWidth)return;
-  // This full scene never translates: its floor stays anchored under the cart.
-  // Composite each theme first, so a depth crossfade does not double-darken the wall mask.
+  if(!image?.complete||!image.naturalWidth)return;const tile=chocoWallTexture(image,W,H),period=tile.height,offset=((travel*.18)%period+period)%period;
   z.setTransform(1,0,0,1,0,0);z.globalAlpha=1;z.globalCompositeOperation='source-over';z.clearRect(0,0,W,H);
-  for(let k=-1;k<=1;k++){const y=k*panel-offset,parity=((Math.floor(travel*.18/panel)+k)%2+2)%2;z.save();z.translate(0,y+(parity?panel:0));if(parity)z.scale(1,-1);z.drawImage(image,0,0,image.naturalWidth,image.naturalHeight*.72,0,0,W,panel);z.restore();}
+  // Draw enough complete panels to cover tall views at every fractional offset.
+  for(let y=-offset;y<H;y+=period)z.drawImage(tile,0,y,W,period);
   z.globalCompositeOperation='destination-in';z.drawImage(layer.mask,0,0);z.globalCompositeOperation='destination-over';z.drawImage(image,0,0,W,H);z.globalCompositeOperation='source-over';
   x.globalAlpha=alpha;x.drawImage(layer.canvas,0,0);
  }
- paint(chocoDepthImages[a],1);if(b!==a)paint(chocoDepthImages[b],mix);x.restore();
+ paint(chocoDepthImages[a],1);if(b!==a&&mix>0)paint(chocoDepthImages[b],mix);x.restore();
 }
-const chocoGemCakeImages=CHOCO_BONUS_GEMS.map(name=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src='assets/canyon-cakes/'+name+'.webp';return image;});
+const chocoGemCakeImages=CHOCO_BONUS_GEMS.map(name=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src='assets/canyon-cakes/'+name+'.webp?v=14';return image;});
 function chocoLogoMarkup(){return '<img class="canyon-logo" src="'+chocoMineSources.logo+'" alt="チョコレートキャニオン">';}
 function setupChocoSlot(s){
  if(s.chocoCanvas)return;s.panel.classList.add('choco-panel');s.tab.classList.add('choco-tab');s.holder.classList.add('choco-slot');
@@ -3293,7 +3302,7 @@ function chocoEvent(s,ev,e,a){
  if(s.i===active){if(ev.phase==='canyonSoften')chocoRockAudio(ev.impacts.length);if(ev.phase==='canyonMelt')chocoRockAudio(1,true);if(['canyonUpgrade','canyonBoost','canyonAll','canyonOdds','canyonPower','canyonBonus'].includes(ev.phase))sound('magic',{volume:.6});if(ev.phase==='canyonCollect')sound('confirm',{volume:.8});}
  s.message=e.digMessage;chocoQueueFrame(s);scheduleUI(a);
 }
-function chocoQueueFrame(s){if(s.chocoFrame||document.hidden||!inView)return;s.chocoFrame=requestAnimationFrame(now=>{s.chocoFrame=0;if(s.chocoLastDraw&&now-s.chocoLastDraw<15){chocoQueueFrame(s);return;}s.chocoLastDraw=now;drawChoco(s,now);});}
+function chocoQueueFrame(s){if(s.chocoFrame||document.hidden||!inView)return;s.chocoFrame=requestAnimationFrame(now=>{s.chocoFrame=0;s.chocoLastDraw=now;drawChoco(s,now);});}
 function chocoText(x,text,px,py,size,color='#fff1c9',align='center'){x.font='900 '+size+'px system-ui,sans-serif';x.textAlign=align;x.textBaseline='middle';x.lineJoin='round';x.strokeStyle='#422630';x.lineWidth=Math.max(1.5,size*.16);x.strokeText(text,px,py);x.fillStyle=color;x.fillText(text,px,py);}
 // Eight-neighbour quadrant autotiles: outer corners, straight edges, solid centres and concave corners.
 function chocoCanonicalMask(mask){let m=mask&15;for(const [a,b,d] of [[8,1,16],[2,1,32],[2,4,64],[8,4,128]])if((mask&a)&&(mask&b)&&(mask&d))m|=d;return m;}
@@ -3317,11 +3326,11 @@ function chocoAutoSprite(color,mask,variant=0,kind='fruit'){
   const u=px/95,v=y/95,i=(y*96+px)*4;
   // Keep the original sculpted face, highlights, bevels and real painted topping.
   const sourceX=.055+.89*u,sourceY=Math.min((mask&4)?.80:.945,(mask&1)?Math.max(.34,.055+.89*v):v<.32?.055+v/.32*.255:.31+(v-.32)/.68*.635);
-  const joinX=Math.max(mask&8?1-smooth((px-14)/14):0,mask&2?1-smooth((81-px)/14):0),joinY=Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
+  const joinX=color>=5?Math.max(mask&8?1-smooth(px/9):0,mask&2?1-smooth((95-px)/9):0):Math.max(mask&8?1-smooth((px-14)/14):0,mask&2?1-smooth((81-px)/14):0),joinY=Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
   for(let k=0;k<3;k++){
    let value=read(sourceX,sourceY,k);
    // Connected sides share the same material profile, with no baked-in side rim.
-   value=value*(1-joinX)+read(.24,sourceY,k)*joinX;
+   value=value*(1-joinX)+read(color>=5?.07:.24,sourceY,k)*joinX;
    const edgeU=.055+.89*u,body=read(edgeU,.46,k),sideBody=read(.24,.46,k),rim=1-smooth(Math.min(u,1-u)/.24),vertical=sideBody+(body-sideBody)*rim*(1-joinX);
    value=value*(1-joinY)+vertical*joinY;
    if(color===3)value*=value>175?.66:[.48,.50,.57][k];
@@ -3398,6 +3407,16 @@ function chocoScaleValue(s,e,bet,time){
  if(target!==s.chocoWinTarget){s.chocoWinFrom=s.chocoWinValue||0;s.chocoWinTarget=target;s.chocoWinStart=time;}
  const u=motionReduced?1:Math.min(1,Math.max(0,(time-s.chocoWinStart)/900));s.chocoWinValue=s.chocoWinFrom+(target-s.chocoWinFrom)*(1-(1-u)**3);s.chocoWinCounting=u<1&&s.chocoWinFrom!==target;return Math.floor(s.chocoWinValue);
 }
+function chocoDepthValue(s,e,time){
+ const target=e.depth;if(s.chocoDepthVersion!==e.version||s.chocoDepthTarget==null||target<s.chocoDepthTarget){s.chocoDepthVersion=e.version;s.chocoDepthTarget=target;s.chocoDepthFrom=target;s.chocoDepthValue=target;s.chocoDepthStart=time;}
+ if(target!==s.chocoDepthTarget){s.chocoDepthFrom=s.chocoDepthValue;s.chocoDepthTarget=target;s.chocoDepthStart=time;}
+ const u=motionReduced?1:Math.max(0,Math.min(1,(time-s.chocoDepthStart)/650));s.chocoDepthValue=s.chocoDepthFrom+(target-s.chocoDepthFrom)*(1-(1-u)**3);s.chocoDepthCounting=u<1&&s.chocoDepthFrom!==target;return s.chocoDepthValue;
+}
+function chocoDepthTab(s,e,value){
+ if(!s.tabDepthCanvas){const cv=document.createElement('canvas');cv.width=150;cv.height=28;cv.style.cssText='width:75px;height:14px;vertical-align:middle';s.tabDepthCanvas=cv;}
+ const cv=s.tabDepthCanvas,c=cv.getContext('2d');c.clearRect(0,0,150,28);chocoSevenSegment(c,value,2,3,125,20);c.fillStyle='#a5ffd2';c.font='bold 18px sans-serif';c.fillText('m',132,23);cv.setAttribute('aria-label',Math.floor(value)+'m');
+ if(!s.tabDepth.contains(cv)){s.tabDepth.replaceChildren(cv);const mark=document.createElement('strong');mark.className='choco-continue';mark.textContent='継続確定';s.tabDepth.append(mark);}s.tabDepth.querySelector('.choco-continue').textContent=e.totalHundredths>0?'継続確定':'';s.tabDepth.dataset.continued=String(e.totalHundredths>0);
+}
 function chocoScaleSink(s){return 11*(1-Math.exp(-Math.max(0,s.chocoWinValue||0)/1800));}
 function chocoSevenSegment(x,value,px,py,width,height){
  const digits=String(Math.max(0,Math.floor(value))).padStart(6,'0'),step=width/digits.length,w=step*.72,h=height;
@@ -3413,7 +3432,7 @@ function chocoMineUI(x,e,L,fx,p,time,W,H,bet,s){
   x.strokeStyle=hit?'#fff3a0':'#9ec4cd';x.lineWidth=1;x.beginPath();x.moveTo(cx,L.top+2.5*L.h);x.lineTo(cx,cy-32);x.moveTo(cx,cy+32);x.lineTo(cx,L.top+10.5*L.h);x.stroke();
   for(const row of CHOCO_SIDE_ROWS){const y=L.top+(row+.5)*L.h;chocoText(x,side===1?'→':'←',cx,y,11,'#b7f5ff');}
  }
- chocoText(x,e.depth+'m',8,12,13,'#fff3c7','left');if(e.totalHundredths>0)chocoText(x,'継続確定',8,25,9,'#fff47b','left');chocoText(x,'今回 +'+Math.max(0,e.depth-e.startDepth)+'m',8,e.totalHundredths>0?37:26,8,'#fff3c7','left');chocoText(x,'次の層 '+Math.max(Math.ceil(Math.max(1,e.depth)/100)*100,(e.bonusResolvedDepth||0)+100)+'m',8,e.totalHundredths>0?48:37,7,'#ffe0ec','left');
+ const displayDepth=chocoDepthValue(s,e,time);x.fillStyle='#071d21';x.fillRect(4,3,77,17);chocoSevenSegment(x,displayDepth,8,6,61,11);chocoText(x,'m',76,12,8,'#a5ffd2');chocoDepthTab(s,e,displayDepth);if(e.totalHundredths>0)chocoText(x,'継続確定',8,25,9,'#fff47b','left');chocoText(x,'今回 +'+Math.max(0,e.depth-e.startDepth)+'m',8,e.totalHundredths>0?37:26,8,'#fff3c7','left');chocoText(x,'次の層 '+Math.max(Math.ceil(Math.max(1,e.depth)/100)*100,(e.bonusResolvedDepth||0)+100)+'m',8,e.totalHundredths>0?48:37,7,'#ffe0ec','left');
  // The collection scale occupies the outside wall, never a footer below the board.
  const value=chocoScaleValue(s,e,bet,time),sink=chocoScaleSink(s),cx=49,sy=H-15;
  // Fixed digital base, compressed springs and a loaded platform that sinks with the counter.
@@ -3476,6 +3495,13 @@ function chocoPaintMelt(x,t,r,c,grid,px,py,w,h,progress){
  const strips=10;for(let k=0;k<strips;k++){const sag=q*q*h*(.14+.38*(.5+.5*Math.sin(k*1.9+t.id*.73))),height=h*(1-q*.68);x.drawImage(sprite,k*96/strips,0,96/strips,96,px+k*w/strips,py+sag,w/strips+.55,height);}
  x.fillStyle=CHOCO_TYPES[t.color]?.top||'#fff0c1';for(let k=0;k<3;k++){const cx=px+w*(k+1)/4,cy=py+h*(.72+q*.42)+Math.sin(k+t.id)*q*h*.1,rad=w*.065*Math.sin(Math.PI*q);x.beginPath();x.ellipse(cx,cy,rad,rad*(1+q*2),0,0,Math.PI*2);x.fill();}x.restore();
 }
+function chocoBonusLabel(x,t,cx,py,width,height,bet,alpha=1){
+ const win=medalWin(bet,t.fruitValue||chocoFruitWin(t.fruitIndex||1))+' WIN',size=Math.min(13,height*.46),bonusWidth=size*4.4,winSize=Math.min(11,height*.38),gap=8;
+ x.save();x.globalAlpha*=alpha;x.font='900 '+winSize+'px system-ui,sans-serif';const winWidth=x.measureText(win).width,total=bonusWidth+gap+winWidth,scale=Math.min(1,(width-12)/total);x.translate(cx,py+height*.55);x.scale(scale,scale);
+ x.textAlign='left';x.textBaseline='middle';x.font='900 '+size+'px Georgia,serif';x.lineJoin='round';x.lineWidth=3;x.strokeStyle='#48200c';x.shadowColor='#4c1c0a';x.shadowBlur=3;x.strokeText('BONUS',-total/2,0);
+ const gold=x.createLinearGradient(0,-size/2,0,size/2);gold.addColorStop(0,'#fffce0');gold.addColorStop(.35,'#ffe28b');gold.addColorStop(.5,'#c78017');gold.addColorStop(.64,'#fff3ad');gold.addColorStop(1,'#f5b834');x.fillStyle=gold;x.fillText('BONUS',-total/2,0);x.shadowBlur=0;
+ chocoText(x,win,-total/2+bonusWidth+gap,0,winSize,'#fff8e9','left');x.restore();
+}
 function chocoPaintTile(x,t,r,c,grid,px,py,w,h,time=0,bet=100,nextMask=null,blend=0){
  if(t.color<0){chocoDrawItem(x,t,px+w/2,py+h/2,w*.96,time,true,bet);return;}
  const sprite=chocoAutoSprite(t.color,chocoTileMask(grid,r,c),t.id%6,t.bonusKind||'fruit');if(sprite){const ax=Math.round(px*2)/2,ay=Math.round(py*2)/2,bx=Math.round((px+w)*2)/2,by=Math.round((py+h)*2)/2;x.drawImage(sprite,ax,ay,bx-ax,by-ay);if(nextMask!=null&&blend>0&&nextMask!==chocoTileMask(grid,r,c)){const next=chocoAutoSprite(t.color,nextMask,t.id%6,t.bonusKind||'fruit');if(next){x.save();x.globalAlpha=blend;x.drawImage(next,ax,ay,bx-ax,by-ay);x.restore();}}}if(t.encased){x.save();x.globalAlpha=.82;chocoDrawItem(x,t,px+w/2,py+h*.53,w*.66,time,true,bet);x.restore();}
@@ -3508,7 +3534,7 @@ function chocoDrawTutorial(s,time,bet,W,H){
   chocoText(x,Math.floor(money*Math.min(1,Math.max(0,(u-.82)/.15)))+' WIN',left+cell*5,top+cell*4,25,'#a7ffd4');if(u>.82)chocoText(x,'継続確定！',W/2,top+cell,22,'#fff28c');
  }else{
   const row=Array.from({length:7},(_,c)=>({id:300+c,color:4,item:'fruit',fruitIndex:10,bonusKind:'diamond'})),g=[row],progress=Math.max(0,Math.min(1,(u-.5)/.2));
-  for(let c=0;c<7;c++){if(progress)chocoPaintMelt(x,row[c],0,c,g,left+c*cell,top+cell*2,cell,cell,progress);else chocoPaintTile(x,row[c],0,c,g,left+c*cell,top+cell*2,cell,cell,time,bet);}
+  for(let c=0;c<7;c++){if(progress)chocoPaintMelt(x,row[c],0,c,g,left+c*cell,top+cell*2,cell,cell,progress);else chocoPaintTile(x,row[c],0,c,g,left+c*cell,top+cell*2,cell,cell,time,bet);}if(!progress)chocoBonusLabel(x,row[3],left+3.5*cell,top+cell*2,7*cell,cell,bet);
   chocoText(x,'1000m  ダイヤケーキ',W/2,top+cell*.8,18,'#defbff');if(u>.7){chocoText(x,'BONUS',W/2,top+cell*2.5,26,'#fff2b5');chocoText(x,num(medalWin(bet||100,30000))+' WIN',W/2,top+cell*3.5,24,'#fff8d8');}
   chocoText(x,'1000m以降は100mごとに300倍',W/2,top+cell*5,11,'#fff4c3');
  }
@@ -3530,7 +3556,10 @@ function drawChoco(s,now=performance.now()){
  x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,W,H);x.fillStyle='#5a3b39';x.fillRect(0,0,W,H);
  if(s.chocoBgVersion!==e.version){s.chocoBgVersion=e.version;s.chocoBgExtra=0;s.chocoBgFall=null;}
  if(s.chocoBgFall!==fx){if(s.chocoBgFall&&s.chocoBgFall.phase==='canyonFall'&&!s.chocoBgFall.scroll)s.chocoBgExtra+=(s.chocoBgFall.fallDistance||1);s.chocoBgFall=fx;}
- chocoDepthBackground(x,W,H,camera,(camera+(s.chocoBgExtra||0)+(fall&&!scroll?(fx.fallDistance||1)*q*q:0))*h);
+ const bgTarget=(camera+(s.chocoBgExtra||0)+(fall&&!scroll?(fx.fallDistance||1)*q*q:0))*h;
+ if(s.chocoBgSmoothVersion!==e.version){s.chocoBgSmoothVersion=e.version;s.chocoBgTravel=bgTarget;s.chocoBgStamp=time;}
+ const bgDt=Math.max(0,time-(s.chocoBgStamp??time));s.chocoBgStamp=time;s.chocoBgTravel+=(bgTarget-s.chocoBgTravel)*(motionReduced?1:1-Math.exp(-bgDt/65));s.chocoBgMoving=Math.abs(bgTarget-s.chocoBgTravel)>.02;
+ chocoDepthBackground(x,W,H,camera,s.chocoBgTravel);
  // Moving depth marks on the walls make immediate camera travel visible.
  for(let r=-1;r<14;r++){const y=top+(r-camera%1)*h;if(y<top||y>top+12*h)continue;x.fillStyle='#f1d59899';x.fillRect(left-6,y,4,1);x.fillRect(left+w*7+2,y,4,1);}
  chocoCavity(x,L,time,camera);x.strokeStyle='#aac8c9';x.lineWidth=2;x.strokeRect(left-1,top-1,7*w+2,12*h+2);
@@ -3545,6 +3574,9 @@ function drawChoco(s,now=performance.now()){
  // Previously hit strata keep softening/melting while the drill is already travelling onward.
  for(const effect of fx?.digEffects||[]){const age=(fx.digTime||0)+(fx.elapsed||0)-effect.start;if(age<0||age>=effect.duration)continue;for(const v of effect.targets){const px=left+v.c*w,py=top+v.r*h;if(age<160){const a=age/160;x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,v.tile,v.r,v.c,effect.before,-w/2,-h/2,w,h,time,bet);x.restore();}else chocoPaintMelt(x,v.tile,v.r,v.c,effect.before,px,py,w,h,(age-160)/600);}}
  if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const t=e.strata[r]?.[c];if(t)chocoPaintTile(x,t,r,c,e.strata,left+c*w,top+(r+scroll.advanced*(1-scrollQ))*h,w,h,time,bet);}
+ // One payout label per complete milestone layer; it follows falling and scrolling terrain.
+ for(let r=0;r<12;r++){const t=grid[r]?.[3];if(t?.item!=='fruit'||dissolving.has(t.id))continue;const move=moves.get(t.id),py=top+(r+(move?Math.min(move.to[0]-move.from[0],(fx.fallDistance||1)*q*q):0)-(scroll?scroll.advanced*scrollQ:0))*h;chocoBonusLabel(x,t,left+3.5*w,py,7*w,h,bet);}
+ if(scroll)for(let r=12-scroll.advanced;r<12;r++){const t=e.strata[r]?.[3];if(t?.item==='fruit')chocoBonusLabel(x,t,left+3.5*w,top+(r+scroll.advanced*(1-scrollQ))*h,7*w,h,bet);}
  if(scroll){const mist=x.createLinearGradient(0,top+11.25*h,0,top+12*h);mist.addColorStop(0,'#18323f00');mist.addColorStop(1,'#18323f');x.save();x.globalAlpha=.3*Math.sin(Math.PI*scrollQ);x.fillStyle=mist;x.fillRect(left,top+11.25*h,7*w,.75*h);x.restore();}
  x.restore();chocoDrillHeader(x,e,L,fx,p,time,s);chocoMineUI(x,e,L,fx,p,time,W,H,bet,s);
  // Persistent directional flight coordinates are world-anchored while the mine scrolls.
@@ -3569,10 +3601,10 @@ function drawChoco(s,now=performance.now()){
  s.chocoStatus.textContent=!bet?'0 BET・探検は待機中':ready?'1球ごとに抽選・HITで掘削 → LvUP → 番号更新':e.digMessage;
  const confirming=e.totalHundredths>0&&s.chocoContinueAt!=null&&time-s.chocoContinueAt<1800;
  if(confirming){const age=Math.max(0,(time-s.chocoContinueAt)/1800);x.save();x.globalAlpha=Math.min(1,age*8,(1-age)*5);const cy=top+2*h;x.fillStyle='#633215e8';x.strokeStyle='#ffed85';x.lineWidth=2;x.beginPath();x.roundRect(left-7,cy-17,w*7+14,36,8);x.fill();x.stroke();chocoText(x,'継続確定！',left+3.5*w,cy+1,20,'#fff597');x.restore();}
- const sparkle=s.i===active&&(e.strata.flat().some(t=>t?.ore==='diamond')||e.cart.some(t=>t.ore==='diamond'));if((e.pendingDraws.size||e.fx||sparkle||confirming||s.chocoWinCounting||(s.reachResults||[]).length)&&!paused&&!jpcSession.active)chocoQueueFrame(s);
+ const sparkle=s.i===active&&(e.strata.flat().some(t=>t?.ore==='diamond')||e.cart.some(t=>t.ore==='diamond'));if((e.pendingDraws.size||e.fx||sparkle||confirming||s.chocoBgMoving||s.chocoWinCounting||s.chocoDepthCounting||(s.reachResults||[]).length)&&!paused&&!jpcSession.active)chocoQueueFrame(s);
 }
 function chocoHud(a){
- const s=slots[1],e=s.engine;if(e?.kind!=='choco')return;setupChocoSlot(s);document.body.classList.toggle('choco-active',active===1);s.tabDepth.replaceChildren(document.createTextNode(e.depth+'m'));if(e.totalHundredths>0){const mark=document.createElement('strong');mark.className='choco-continue';mark.textContent='継続確定';s.tabDepth.append(mark);}s.tabDepth.dataset.continued=String(e.totalHundredths>0);s.tab.setAttribute('aria-label','チョコレートキャニオン・深さ'+e.depth+'m・'+a.bet(1)+' BET');
+ const s=slots[1],e=s.engine;if(e?.kind!=='choco')return;setupChocoSlot(s);document.body.classList.toggle('choco-active',active===1);chocoDepthTab(s,e,chocoDepthValue(s,e,s.chocoTime||0));s.tab.setAttribute('aria-label','チョコレートキャニオン・深さ'+e.depth+'m・'+a.bet(1)+' BET');
  const key=[e.version,e.phase,e.processed,e.depth,e.totalHundredths,a.bet(1),...e.drills.map(d=>d.level),...e.lucky.numbers,[...e.pendingDraws]].join('/');if(s.chocoKey!==key){s.chocoKey=key;chocoQueueFrame(s);}
 }
 /* Six Candy rules v4. Fixed 10-row staggered tray with symmetric start gaps,
