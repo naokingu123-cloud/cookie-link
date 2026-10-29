@@ -105,11 +105,11 @@ function chocoJoinMotion(stages){
 // A pure transactional resolver. Every visual stage captures the same board/depth used by the rules.
 function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input.flat().filter(Boolean).map(t=>t.id)),depth=0,nextSugar=18,startDepth=depth,fruitState=0,refill=true}={}){
  const w={strata:chocoClone(input),seed,uid,depth,nextSugar,startDepth,fruitState},timeline=[],removed=[],prizes=[],collected=[],hitIds=[];let gain=0,fallSteps=0,merges=0,sugarCount=0,oddsCount=0,layers=0;
- let flights=[];const pendingJoins=[];
- const push=(phase,detail,ms)=>{if(detail.scroll&&phase!=='canyonFall')ms=Math.max(ms,Math.min(800,280+detail.scroll.advanced*45));if(trace)timeline.push({phase,grid:chocoClone(w.strata),flights:flights.map(f=>({...f})),seed:w.seed,uid:w.uid,depth:w.depth,nextSugar:w.nextSugar,startDepth:w.startDepth,fruitState:w.fruitState,...detail,ms});};
+ let flights=[],digging=true,clock=0,bonusPending=false;const pendingJoins=[],digEffects=[];
+ const push=(phase,detail,ms)=>{if(detail.scroll&&phase!=='canyonFall')ms=Math.max(ms,Math.min(800,280+detail.scroll.advanced*45));if(trace)timeline.push({phase,digTime:clock,digEffects:digEffects.filter(e=>clock-e.start<e.duration),grid:chocoClone(w.strata),flights:flights.map(f=>({...f})),seed:w.seed,uid:w.uid,depth:w.depth,nextSugar:w.nextSugar,startDepth:w.startDepth,fruitState:w.fruitState,...detail,ms});clock+=ms;};
  const removeIds=ids=>{for(let r=0;r<12;r++)for(let c=0;c<7;c++)if(ids.has(w.strata[r][c]?.id))w.strata[r][c]=null;};
  function shift(){
-  if(!refill||!w.strata[0].every(t=>!t))return null;
+  if(digging||!refill||!w.strata[0].every(t=>!t))return null;
   const before=chocoClone(w.strata),oldDepth=w.depth,oldIds=new Set(before.flat().filter(Boolean).map(t=>t.id));let advanced=0;
   while(w.strata.length&&w.strata[0].every(t=>!t)){w.strata.shift();w.depth++;advanced++;}
   chocoFillRows(w);
@@ -121,7 +121,8 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
   const targets=groups.flat().map(v=>({...v,tile:{...v.tile}})),ids=new Set(targets.map(v=>v.tile.id));if(!targets.length)return [];
   // If falling emptied the top row, scrolling starts with this melt, not after the cascade.
   const scroll=shift();
-  push('canyonMelt',{targets,drill,chain:!drill,contacts,...(scroll?{scroll}:{}),before:scroll?.before||chocoClone(w.strata)},drill?560:480);
+  if(drill)digEffects.push({targets,before:chocoClone(w.strata),start:clock,duration:760});
+  push('canyonMelt',{targets,drill,chain:!drill,contacts,...(scroll?{scroll}:{}),before:scroll?.before||chocoClone(w.strata)},drill?0:480);
   removed.push(...targets);removeIds(ids);return scroll?.joined||[];
  }
  function surface(){
@@ -156,20 +157,20 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
  function settle(initial=[]){
   let triggers=new Set(initial);
   for(let guard=0;guard<2400;guard++){
-   const matched=chocoGroups(w.strata).groups.filter(g=>g[0].tile.color>=0&&g[0].tile.color<4&&g.length>=4&&g.some(v=>triggers.has(v.tile.id)));
-   triggers=new Set();
-   if(matched.length){const joined=melt(matched);surface().forEach(id=>joined.push(id));triggers=new Set(joined);continue;}
-   const joined=surface();if(joined.length){triggers=new Set(joined);continue;}
+   const moving=new Set(chocoFallStep(w.strata).moves.map(v=>v.id));
+   const matched=chocoGroups(w.strata).groups.filter(g=>g[0].tile.color>=0&&g[0].tile.color<4&&g.length>=4&&g.some(v=>triggers.has(v.tile.id))&&!g.some(v=>moving.has(v.tile.id)));
+   if(matched.length){for(const v of matched.flat())triggers.delete(v.tile.id);const joined=melt(matched);surface().forEach(id=>joined.push(id));joined.forEach(id=>triggers.add(id));continue;}
+   const joined=surface();if(joined.length){joined.forEach(id=>triggers.add(id));continue;}
    const before=w.strata,fall=chocoFallStep(before);if(!fall.moves.length)return;
    w.strata=fall.grid;fallSteps++;if(fall.merged.length)merges++;
    const scroll=shift();push('canyonFall',{before:chocoClone(before),moves:fall.moves,merged:fall.merged,...(scroll?{scroll:{...scroll,before:chocoClone(before)}}:{})},180);
-   // A newly joined group or a group that just fell clears when it has at least four cells.
-   triggers=new Set([...fall.moves.map(v=>v.id),...fall.merged,...(scroll?.joined||[])]);
+   // Remember every falling/merged section until it lands; midair sections never clear.
+   for(const id of [...fall.moves.map(v=>v.id),...fall.merged,...(scroll?.joined||[])])triggers.add(id);
   }
   throw Error('Canyon cascade exceeded safety bound');
  }
+ pendingJoins.push(...surface());
  for(let layer=0;layer<Math.max(0,...attacks.map(a=>a.level));layer++){
-  pendingJoins.push(...surface());
   const {groups,byId}=chocoGroups(w.strata),selected=new Map(),contacts=[];
   for(const attack of attacks){
    if(layer>=attack.level)continue;const direction=attack.direction||'top',index=attack.index??attack.column,old=flights.find(f=>f.index===index);let r=-1,c=-1;
@@ -188,13 +189,15 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
   flights=[...flights.filter(f=>!movingFlights.some(n=>n.index===f.index)),...movingFlights];
   push(layer===0?'canyonDrill':'canyonBore',{attacks,contacts,layer:layer+1},layer===0?360:240);
   flights=flights.map(f=>({...f,from:f.to,fromX:f.toX,fromY:f.toY,launch:false}));
-  push('canyonSoften',{targets,contacts,layer:layer+1,impacts:[...selected.values()].map(v=>v.origin)},420);
+  push('canyonSoften',{targets,contacts,layer:layer+1,impacts:[...selected.values()].map(v=>v.origin)},0);
   const fruitHit=targets.some(v=>v.tile.item==='fruit')&&w.fruitState!==2;if(fruitHit)w.fruitState=2;
   pendingJoins.push(...melt([...selected.values()].map(v=>v.group),true,contacts));
-  if(fruitHit){gain+=CHOCO_FRUIT_WIN;push('canyonBonus',{gain:CHOCO_FRUIT_WIN,targets},1800);}
+  if(fruitHit){gain+=CHOCO_FRUIT_WIN;bonusPending=true;}
  }
  if(flights.length){push('canyonReturn',{},320);flights=[];}
- settle(pendingJoins);
+ const remaining=Math.max(0,...digEffects.map(e=>e.start+e.duration-clock));if(remaining)push('canyonDigFinish',{},remaining);
+ if(bonusPending)push('canyonBonus',{gain:CHOCO_FRUIT_WIN},1800);
+ digging=false;settle(pendingJoins);
  return {grid:w.strata,seed:w.seed,uid:w.uid,depth:w.depth,nextSugar:w.nextSugar,startDepth:w.startDepth,fruitState:w.fruitState,timeline:trace?chocoJoinMotion(timeline):timeline,removed,prizes,collected,gain,fallSteps,merges,hitIds,sugarCount,oddsCount,layers};
 }
 function chocoPlan(input,numbers,{trace=false,drills,lucky,seed=1,uid=Math.max(0,...input.flat().filter(Boolean).map(t=>t.id)),depth=0,nextSugar=18,startDepth=depth,fruitState=0,refill=true}={}){
@@ -444,7 +447,7 @@ function chocoReachReady(s,a){const e=s.engine;return a.bet(s.i)>0&&a.phase!=='r
 function chocoRequestReach(s,e,a){
  if(a.bet(s.i)<=0||a.phase==='ready'||e.processed<1||e.processed>=8||e.fx||e.queue.length||e.accepted!==e.processed)return;
  const key=[e.version,e.processed,e.seed,e.totalHundredths].join('/');if(s.chocoReachKey===key)return;s.chocoReachKey=key;const snapshot=e.world(),base=e.totalHundredths,epoch=s.reachEpoch=(s.reachEpoch||0)+1,numbers=[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers].filter(n=>!a.draws.includes(n));s.reachStatus='pending';let index=0;const results=[];
- function chunk(){if(s.reachEpoch!==epoch||s.chocoReachKey!==key)return;for(let end=Math.min(numbers.length,index+2);index<end;index++){const number=numbers[index],p=chocoPlan(snapshot.strata,[number],snapshot);if(p.gain>0)results.push({number,gain:p.gain,total:base+p.gain,tier:reachTier(base+p.gain,false)});}if(index<numbers.length){setTimeout(chunk,0);return;}s.reachResults=results;s.tabReachResults=results;s.tabReachBase=base;s.tabReachVersion=e.version;s.reachStatus='ready';s.reachAfterBall=e.processed;chocoQueueFrame(s);scheduleUI(a);}
+ function chunk(){if(s.reachEpoch!==epoch||s.chocoReachKey!==key)return;for(let end=Math.min(numbers.length,index+2);index<end;index++){const number=numbers[index],p=chocoPlan(snapshot.strata,[number],snapshot);if(p.gain>0)results.push({number,gain:p.gain,total:base+p.gain,tier:reachTier(base+p.gain,false)});}if(index<numbers.length){setTimeout(chunk,0);return;}results.sort((a,b)=>a.number-b.number);s.reachResults=results;s.tabReachResults=results;s.tabReachBase=base;s.tabReachVersion=e.version;s.reachStatus='ready';s.reachAfterBall=e.processed;chocoQueueFrame(s);scheduleUI(a);}
  setTimeout(chunk,0);
 }
 function chocoDrawItem(x,t,cx,cy,size,time=0,label=true,bet=100){
@@ -516,6 +519,8 @@ function drawChoco(s,now=performance.now()){
   else{const dest=finalPositions.get(t.id),nextMask=dest?chocoTileMask(e.strata,...dest):null;chocoPaintTile(x,t,r,c,grid,px,py,w,h,time,bet,nextMask,scrollQ);}
   if((fx?.phase==='canyonOdds'&&fx.affected.includes(t.id))||(['canyonPower','canyonTransform'].includes(fx?.phase)&&fx.targets.some(v=>v.tile.id===t.id))){x.strokeStyle='#fff3a5';x.lineWidth=2;x.strokeRect(px+1,py+1,w-2,h-2);}
  }
+ // Previously hit strata keep softening/melting while the drill is already travelling onward.
+ for(const effect of fx?.digEffects||[]){const age=(fx.digTime||0)+(fx.elapsed||0)-effect.start;if(age<0||age>=effect.duration)continue;for(const v of effect.targets){const px=left+v.c*w,py=top+v.r*h;if(age<160){const a=age/160;x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,v.tile,v.r,v.c,effect.before,-w/2,-h/2,w,h,time,bet);x.restore();}else chocoPaintMelt(x,v.tile,v.r,v.c,effect.before,px,py,w,h,(age-160)/600);}}
  if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const t=e.strata[r]?.[c];if(t)chocoPaintTile(x,t,r,c,e.strata,left+c*w,top+(r+scroll.advanced*(1-scrollQ))*h,w,h,time,bet);}
  if(scroll){const mist=x.createLinearGradient(0,top+11.25*h,0,top+12*h);mist.addColorStop(0,'#18323f00');mist.addColorStop(1,'#18323f');x.save();x.globalAlpha=.3*Math.sin(Math.PI*scrollQ);x.fillStyle=mist;x.fillRect(left,top+11.25*h,7*w,.75*h);x.restore();}
  x.restore();chocoDrillHeader(x,e,L,fx,p,time,s);chocoMineUI(x,e,L,fx,p,time,W,H,bet,s);
