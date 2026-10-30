@@ -1,0 +1,55 @@
+/* The same tab logo slot and miniature placement as Cookie Link. */
+.carnival-tab .tab-game-name{width:112px!important;height:32px!important;background:none!important;align-self:end!important}
+.carnival-tab .tab-game-name>.six-art-logo{width:112px!important;height:32px!important;overflow:visible}
+body.carnival-active #carnival-odds{min-width:0!important;padding:3px!important;gap:3px!important}
+#carnival-odds .six-role-summary{width:100%!important;min-width:0!important;gap:3px!important;flex:1!important;grid-template-rows:repeat(3,minmax(0,1fr)) auto!important;min-height:0!important}
+#carnival-odds .six-role-summary-row{grid-template-columns:28px minmax(0,1fr)!important;grid-template-areas:"icon formula" "subtotal subtotal"!important;padding:3px!important;gap:2px!important;min-height:0!important;overflow:visible!important}
+#carnival-odds .six-role-summary-formula{flex-wrap:wrap!important;white-space:normal!important;overflow:visible!important;justify-content:center!important;gap:1px!important}
+#carnival-odds .six-role-summary-formula .unit{flex-basis:100%!important;text-align:center;font-size:7px!important}
+#carnival-odds .six-role-summary-row .subtotal{justify-self:center!important;overflow:visible!important;text-overflow:clip!important;font-size:9px!important}
+#carnival-odds .six-role-summary-total{grid-template-columns:1fr!important;text-align:center!important;padding:3px!important;gap:1px!important}
+#carnival-odds .six-role-summary-total b{font-size:9px!important}
+
+/* Circular high-payout orbits follow the circular candy edge. */
+.six-reach-cell,.six-reach-cell .reach-orbit{border-radius:50%!important}
+.six-reach-cell .reach-comet circle{stroke:var(--orbit-color);stroke-linecap:round;stroke-dasharray:var(--dash);stroke-dashoffset:0;animation:reach-comet-lap var(--comet-time) linear var(--comet-delay) infinite}
+.six-reach-cell .reach-comet .comet-head{stroke:#fff5dc}
+.six-reach-layer.is-paused .reach-comet circle,.paused .six-reach-cell .reach-comet circle{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.six-reach-cell .reach-comet circle{animation:none!important}}
+
+.six-refill-note{font-size:clamp(8px,1.5vw,11px);line-height:1.4;text-align:center;color:#743456;background:#fff0c9;border:1px solid #e6bb7e;border-radius:7px;padding:4px 2px;margin-bottom:4px;font-weight:900;overflow-wrap:anywhere}
+
+/* A short cabinet light sweep on a round clear, confined to the round frame. */
+#carnival-heading .six-round-card.current{position:relative;isolation:isolate}
+#carnival-heading.six-clear-flash .six-round-card.current{filter:drop-shadow(0 0 7px #ffdf83)}
+#carnival-heading.six-clear-flash .six-round-card.current::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,#fff9 48%,transparent 65%);background-size:250% 100%;animation:six-clear-sheen .7s ease-out both}
+@keyframes six-clear-sheen{from{background-position:120% 0}to{background-position:-80% 0}}
+.paused #carnival-heading .six-round-card.current::after{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){#carnival-heading.six-clear-flash .six-round-card.current::after{display:none}}
+
+/* Match Cookie Link's unobtrusive text; strengthen only the letter outline. */
+.six-reach-cell .tile-reach{top:auto!important;bottom:0!important;left:0!important;right:0!important;height:12px!important;line-height:12px!important;font-family:SweetReachRounded,"Hiragino Maru Gothic ProN",system-ui!important;font-size:9.5px!important;font-weight:900!important;letter-spacing:-.45px!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important}
+.six-reach-cell .tile-reach>span{background:none!important;-webkit-text-stroke:.45px currentColor!important;text-shadow:-1px 0 #fff9e7,1px 0 #fff9e7,0 -1px #fff9e7,0 1px #fff9e7,-.8px -.8px #fff9e7,.8px -.8px #fff9e7,-.8px .8px #fff9e7,.8px .8px #fff9e7,0 1.5px #71364d!important}
+.six-reach-cell .tile-reach[data-tier="0"]>span{color:#008b8d!important;-webkit-text-fill-color:#008b8d!important}
+.six-reach-cell .tile-reach[data-tier="1"]>span{color:#df254b!important;-webkit-text-fill-color:#df254b!important}
+.six-reach-cell .tile-reach[data-tier="2"]>span{color:#9226be!important;-webkit-text-fill-color:#9226be!important}
+.six-reach-cell .tile-reach[data-tier="3"]>span{color:#a62a7e!important;-webkit-text-fill-color:#a62a7e!important}
+.six-ball-surface .carnival-reward.six-simple-award{background:none!important;border:0!important;box-shadow:none!important;padding:3px!important;width:auto!important;max-width:92%!important;border-radius:0!important;color:#c4327c!important}
+.six-ball-surface .carnival-reward.six-simple-award::after{display:none!important}
+.six-ball-surface .carnival-reward.six-simple-award strong{font-size:27px!important;line-height:34px!important;-webkit-text-stroke:2px #fff5df!important;paint-order:stroke fill;text-shadow:0 2px #823263!important}
+.six-candy-promotion{border:6px solid transparent!important;background:linear-gradient(#fffbea,#ffe0ef) padding-box,repeating-linear-gradient(40deg,#fff9d8 0 8px,#ff85b7 8px 16px) border-box!important;border-radius:28px!important;box-shadow:0 4px #aa4379,0 0 0 2px #ffe6a2,0 5px 18px #8b346455!important;padding:9px 6px 5px!important}
+.six-candy-promotion::after{display:none!important}
+.six-candy-promotion .six-next{margin:3px -2px 0;line-height:1;font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN",sans-serif}
+.six-promotion-sign{display:block;width:100%;max-height:86px;overflow:visible}
+/* Manual numbers replace only the roulette surface; shared layout stays fixed. */
+#manual-number-toggle{position:absolute;z-index:25;right:8px;bottom:4px;padding:3px 10px;border:1px solid #e6ba75;border-radius:8px;background:#183c4d;color:#fff1c8;font-size:11px;font-weight:900;cursor:pointer}
+#manual-number-panel{position:absolute;z-index:20;inset:52px 105px 36px 12px;padding:8px;border:2px solid #ecc47c;border-radius:12px;background:#173342f5;color:#fff5d8;display:flex;flex-direction:column;gap:5px}
+#manual-number-panel[hidden]{display:none}
+#manual-number-panel header{display:flex;align-items:center;gap:7px;font-size:11px;flex-shrink:0}
+#manual-start{margin-left:auto;border:1px solid #ffe6a5;border-radius:6px;background:#e6b55e;color:#402c1d;padding:2px 8px;font-weight:bold}
+#manual-number-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,minmax(0,1fr));gap:4px}
+#manual-number-grid button{min-width:0;min-height:0;padding:0;border:1px solid #cce8e9;border-radius:6px;background:#f9edce;color:#3b3943;font-family:ElixirNumbers,system-ui;font-size:16px;font-weight:900;touch-action:manipulation}
+#manual-number-grid button:disabled{opacity:.45}#manual-number-grid button.selected{background:#75d8b2;color:#133c30;opacity:.8}
+#manual-history{position:static!important;transform:none!important;inset:auto!important;width:auto!important;height:auto!important;flex-shrink:0;margin:0!important;font-size:9px;line-height:1.2;min-height:11px;color:#e9e2be!important;display:block!important;white-space:normal}
+.manual-number-mode .a8-stage canvas,.manual-number-mode .a8-loading{visibility:hidden}
+
