@@ -2139,6 +2139,8 @@ body.carnival-active #carnival-odds{gap:4px;padding:3px;overflow:hidden}
 .six-role-summary-total{display:grid!important;grid-template-columns:1fr auto!important;align-items:center!important;gap:5px!important;padding:5px 7px!important;min-width:0!important;overflow:hidden!important}
 .six-role-summary-total b{font:1000 10px/11px ArcadePayout,system-ui!important;white-space:nowrap!important}
 
+/* Rainbow sugar / JPC extension */
+.jpc-win-display{border:2px solid #e9c278;background:linear-gradient(100deg,#fff5cb,#ffdef1,#d8eaff);border-radius:12px;padding:4px;font:900 14px system-ui;color:#7d396d}.jpc-win-display b{font:900 24px ArcadePayout,serif;color:#d58717}.jpc-win-display small{display:block;font-size:8px}.jpc-pocket[data-count="5"]{background:linear-gradient(145deg,#ffeab1,#ff8bca,#d5aeff);box-shadow:0 0 8px #ffc3f7}.jpc-dashboard.is-jackpot{animation:jpc-rainbow-border 1s linear infinite}.sugar-special-cutin{position:fixed;z-index:10000;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#210c3888;color:white;text-align:center}.sugar-special-cutin[hidden],.jpc-celebration[hidden]{display:none!important}.sugar-special-cutin strong{font:1000 clamp(28px,8vw,82px) CookieLabels,system-ui;-webkit-text-stroke:2px #872e64;color:#ffe060;text-shadow:0 4px #671a61,0 0 35px #fff}.sugar-special-cutin.rainbow strong{background:linear-gradient(90deg,#ff667d,#ffd43b,#66e8a5,#6cc8ff,#cb83fa);background-clip:text;color:transparent;-webkit-text-stroke:1px #fff1bb}.sugar-special-cutin span{font:900 clamp(13px,3vw,30px) system-ui;text-shadow:0 2px #6f2260}.sugar-special-cutin.playing{animation:sugar-cutin-entrance 3.2s both}.jpc-celebration{position:fixed;z-index:9999;inset:0;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#ffec7a66,#51269955 70%);overflow:hidden}.jpc-celebration strong{font:1000 clamp(50px,13vw,160px) Georgia,serif;color:#ffe66b;-webkit-text-stroke:3px #a94c17;text-shadow:0 5px #5c2675,0 0 35px #fff6c4;animation:jpc-pop 1.5s ease-in-out infinite alternate}.jpc-celebration small{color:#fff;font:900 clamp(14px,3vw,30px) system-ui;text-shadow:0 2px #7c319b}.jpc-coins{position:absolute;inset:-100% 0 0;background-image:radial-gradient(ellipse 13px 20px at 10% 13%,#ffdb50 55%,#ae6e08 65%,transparent 70%),radial-gradient(ellipse 11px 17px at 35% 30%,#ffde77 55%,#ae6e08 65%,transparent 70%),radial-gradient(ellipse 14px 18px at 70% 17%,#ffe883 55%,#b67d10 65%,transparent 70%),radial-gradient(ellipse 13px 21px at 89% 42%,#ffe365 55%,#98610b 65%,transparent 70%);background-size:180px 230px;animation:jpc-coins-fall 2.2s linear infinite}@keyframes jpc-coins-fall{to{transform:translateY(50%) rotate(4deg)}}@keyframes jpc-pop{to{transform:scale(1.08)}}@keyframes jpc-rainbow-border{50%{border-color:#7ceaff;box-shadow:0 0 38px #e7a0ff}}@keyframes sugar-cutin-entrance{0%{opacity:0;transform:scale(1.5)}12%,75%{opacity:1;transform:scale(1)}100%{opacity:0}}#screen.jpc-active .cookie-roulette{inset:0 0 0 5px}#screen.jpc-active .arena{filter:drop-shadow(0 0 8px #ffe19a)}
 </style><style>
 /* Candy-cane frames grow from wrapped sweets to jewel crowns. */
 #carnival-heading .six-round-card{position:relative;border:3px solid transparent!important;background:linear-gradient(#fff7ed,#ffe6ef) padding-box,repeating-linear-gradient(45deg,#fff6e9 0 5px,#f58cae 5px 10px) border-box!important;border-radius:13px!important;overflow:visible}
@@ -2569,8 +2571,8 @@ Copyright 2016 The Rounded M+ Project Authors.
 <header><span class="jpc-kicker">SWEETS KINGDOM</span><h2 id="jpc-heading">JACKPOT CHANCE</h2><p>25ポケットすべてに入賞で JACKPOT!</p></header>
 <div class="jpc-summary"><span><small>発射</small><b id="jpc-launched">0</b><em>/ 70</em></span><span><small>入賞ポケット</small><b id="jpc-filled">0</b><em>/ 25</em></span><span><small id="jpc-round">ROUND 1 / 4</small><b id="jpc-landed">0</b><em>球入賞</em></span></div>
 <div class="jpc-progress" role="progressbar" aria-label="70球JPC発射進捗" aria-valuemin="0" aria-valuemax="70" aria-valuenow="0"><i id="jpc-progress-fill"></i></div>
-<div id="jpc-grid" class="jpc-grid" role="list" aria-label="各ポケットの入賞球数"></div>
-<p id="jpc-message" class="jpc-message" role="status" aria-live="polite">JPC準備中</p><div class="jpc-last"><small>最近の入賞</small><div id="jpc-history"></div></div><footer>暫定デバッグモード・通常ゲームの配当と成績には加算しません</footer>
+<div class="jpc-win-display">JPC WIN <b id="jpc-win">0</b> WIN <small>500ベース／2HIT:1・3HIT:2・4HIT:4・5HIT以降:7</small></div><div id="jpc-grid" class="jpc-grid" role="list" aria-label="各ポケットの入賞球数"></div>
+<p id="jpc-message" class="jpc-message" role="status" aria-live="polite">JPC準備中</p><div class="jpc-last"><small>最近の入賞</small><div id="jpc-history"></div></div><footer>JPC配当は累積HIT数に応じて獲得し、終了時にCREDITへ加算します</footer>
 </section>
 <div id="record-menu-layer" class="record-menu-layer" hidden>
 <section id="record-menu" class="record-menu" role="dialog" aria-modal="true" aria-labelledby="record-menu-heading">
@@ -2679,9 +2681,10 @@ const MIN_PAID_LINK=4,BASE_TENTHS=[0,0,0,0,2,4,10,20,30];
 const payoutTenths=n=>n<MIN_PAID_LINK?0:n<=8?BASE_TENTHS[n]:(n-8)*50;
 const hammerReward=depth=>Math.max(0,depth-4);
 const wonderTier=value=>value<=200?0:value<=400?1:value<=600?2:value<=1200?3:value<=2400?4:value<=4800?5:6;
-const NORMAL_SUGAR_NAMES=Object.freeze(['白砂糖','ピンクシュガー','銅シュガー','銀シュガー','金シュガー']);
+const NORMAL_SUGAR_NAMES=Object.freeze(['シュガーⅠ','シュガーⅡ','シュガーⅢ','シュガーⅣ','シュガーⅤ']);
 const DIRECT_JPC_SUGAR_TIER=6;
-const WONDER_NAMES=[...NORMAL_SUGAR_NAMES,'金シュガー','ダイレクトJPCシュガー'];
+const WONDER_NAMES=[...NORMAL_SUGAR_NAMES,'シュガーⅤ','虹色シュガー'];
+const RAINBOW_SUGAR_CHANCE=1/10000;
 const NORMAL_DRAW_GROUPS=Object.freeze([3,2,1,1,1]);
 const MINI_RESULT_MS=1800;
 const isDirectJpcSugar=token=>!!token&&typeof token==='object'&&(token.kind==='direct-jpc'||token.directJpc===true);
@@ -4997,7 +5000,7 @@ class Arcade{
   Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
   for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:i===2?CandyCarnivalEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
-   if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>({...step,game:i})));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
+   if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>Math.random()<RAINBOW_SUGAR_CHANCE?{...step,game:i,kind:'direct-jpc',directJpc:true,tier:6}:{...step,game:i}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
    if(ev.phase==='complete'&&!this.paid[i]&&this.enabled[i]&&this.phase==='playing'){
     this.paid[i]=true;this.roundWins[i]=medalWin(this.locked[i],e.totalHundredths);
     if(this.enabled.every((yes,j)=>!yes||this.paid[j]))this.finishRound();
@@ -6348,7 +6351,7 @@ function drawAchievementTicker(now){
  ticker.node.style.transform='translateX('+ticker.current.x+'px)';
  if(ticker.current.x< -ticker.node.offsetWidth-10)ticker.current=null;ticker.frame=requestAnimationFrame(drawAchievementTicker);
 }
-function recordEvent(i,ev,e,a){event(i,ev,e,a);achievementEvent(i,ev,e,a);if(ev.phase==='complete')recordChanged(a);}
+function recordEvent(i,ev,e,a){event(i,ev,e,a);achievementEvent(i,ev,e,a);if(ev.phase==='stepcollect'){const rainbow=a.wonderBank.some(t=>t.game===i&&isDirectJpcSugar(t)&&!t.announced);if(rainbow){for(const t of a.wonderBank)if(t.game===i&&isDirectJpcSugar(t))t.announced=true;select(i);showSugarCutin('虹色シュガー出現!!','次ゲームは直接JPCへ！',true);}}if(ev.phase==='complete')recordChanged(a);}
 function updateEquippedTitle(){
  const eq=recordBook.data.equipped,def=eq&&TITLE_DEFS.find(t=>t.id===eq.id),label=def?def.name:'';
  const badge=$('equipped-title');badge.hidden=!def;badge.textContent=label;badge.dataset.rarity=def?.rarity??0;
@@ -6429,7 +6432,12 @@ function syncPresentationRate(){
 }
 const RESULT_DISPLAY_MS=8000;
 let resultInert=[],resultAutoTimer=null,resultAutoToken=-1,resultAutoElapsed=0,resultAutoStamp=null;
-const jpcSession={active:false,timer:null,key:'',previousCounts:Array(25).fill(0),previousHits:0,inert:[]};
+const jpcSession={active:false,direct:false,timer:null,key:'',previousCounts:Array(25).fill(0),previousHits:0,inert:[],win:0,awarded:false,jackpotShown:false};
+function jpcMilestone(n){return n===2?1:n===3?2:n===4?4:n>=5?7:0;}
+function jpcIncrement(previous,next){let value=0;for(let hit=previous+1;hit<=next;hit++)value+=jpcMilestone(hit);return value;}
+function showSugarCutin(title,subtitle,rainbow=false){const el=document.getElementById('sugar-special-cutin');if(!el)return;el.classList.toggle('rainbow',rainbow);el.querySelector('strong').textContent=title;el.querySelector('span').textContent=subtitle;el.hidden=false;el.classList.remove('playing');void el.offsetWidth;el.classList.add('playing');clearTimeout(showSugarCutin.timer);showSugarCutin.timer=setTimeout(()=>{el.hidden=true;},3200);}
+function celebrateJpc(){if(jpcSession.jackpotShown)return;jpcSession.jackpotShown=true;document.getElementById('jpc-celebration').hidden=false;showSugarCutin('JACKPOT!!','全25ポケット入賞！',true);}
+
 function stopResultAuto(){if(resultAutoTimer!==null)clearTimeout(resultAutoTimer);resultAutoTimer=null;resultAutoStamp=null;}
 function syncResultAuto(a){
  if(!a.result||!['result','paying','complete'].includes(a.phase)||jpcSession.active){stopResultAuto();resultAutoToken=-1;return;}
@@ -6469,7 +6477,7 @@ function renderRoundResult(a){
  put('result-status',a.phase==='result'?a.enabled.filter(Boolean).length+'ゲームの結果':a.phase==='paying'?'CREDITへ払い出し中…':'払い出し完了');
  $('result-next').disabled=a.phase!=='complete';
 }
-function nextFromResult(){if(app.phase!=='complete'||jpcSession.active)return;const ticket=app.wonderBank.find(t=>isDirectJpcSugar(t)&&!t.jpcRedeemed);if(ticket&&rouletteReady&&toggleJpcMode()){ticket.jpcRedeemed=true;jpcSession.direct=true;put('jpc-heading','DIRECT JPC');return;}stopResultAuto();resultAutoToken=-1;stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();scheduleAutoRound();}
+function nextFromResult(){if(app.phase!=='complete'||jpcSession.active)return;const ticket=app.wonderBank.find(t=>isDirectJpcSugar(t)&&!t.jpcRedeemed);if(ticket&&rouletteReady&&toggleJpcMode()){ticket.jpcRedeemed=true;jpcSession.direct=true;put('jpc-heading','RAINBOW JACKPOT CHANCE');showSugarCutin('JACKPOT CHANCE','虹色シュガーの力でJPC突入！',true);return;}stopResultAuto();resultAutoToken=-1;stopBgm();userPaused=false;payoutStamp=null;app.prepare();syncPause();scheduleAutoRound();}
 function updateLinkSelection(track,shown,snap){
  let mark=track.querySelector('.link-selection');if(!mark){mark=document.createElement('span');mark.className='link-selection';mark.setAttribute('aria-hidden','true');mark.hidden=true;track.append(mark);}
  const hidden=shown<MIN_PAID_LINK;
@@ -8204,7 +8212,11 @@ function paintJpcDashboard(){
  put('jpc-launched',String(launched));put('jpc-landed',String(hits.length));put('jpc-filled',String(filled));put('jpc-round','ROUND '+Math.min(4,Math.ceil(Math.max(1,launched)/20))+' / 4');
  $('jpc-progress-fill').style.width=Math.min(100,launched/70*100)+'%';$('jpc-progress-fill').parentNode.setAttribute('aria-valuenow',String(launched));
  [...$('jpc-grid').children].forEach((cell,i)=>{const count=counts[i];cell.dataset.count=String(Math.min(5,count));cell.classList.toggle('hit',count>0);cell.classList.toggle('is-reach',i===reach);cell.querySelector('small').textContent=count+' HIT';cell.setAttribute('aria-label',(i+1)+'番 '+count+'球入賞'+(i===reach?' リーチ':''));if(count>jpcSession.previousCounts[i]){cell.classList.remove('just-hit');void cell.offsetWidth;cell.classList.add('just-hit');}});
+ for(let i=0;i<25;i++)jpcSession.win+=jpcIncrement(jpcSession.previousCounts[i],counts[i]);
+ put('jpc-win',String(jpcSession.win*500));
  $('jpc-dashboard').classList.toggle('is-jackpot',filled===25);
+ if(filled===25)celebrateJpc();
+ if(state==='complete'&&!jpcSession.awarded){jpcSession.awarded=true;app.credit+=jpcSession.win*500;app.displayCredit=app.credit;}
  const ended=state==='complete',remaining=25-filled;
  put('jpc-message',filled===25?'JACKPOT! 全25ポケット達成':reach>=0?(ended?'JPC終了・':'')+(reach+1)+'番 リーチ！':ended?'JPC終了・'+filled+' / 25 ポケット入賞':'あと '+remaining+' ポケットで JACKPOT!');
  $('jpc-history').replaceChildren(...hits.slice(-10).map(hit=>{const b=document.createElement('b');b.textContent=String(hit.pocket);return b;}));
@@ -8218,7 +8230,7 @@ function runJpcTicker(){
 function restartJpcRound(){
  if(!jpcSession.active||!rouletteReady||!rouletteDriver)return false;
  stopAutoRound();stopResultAuto();stopSounds();stopBgm();stopBetPreview();rouletteDrawSource.callbacks=null;
- jpcSession.key='';jpcSession.previousCounts=Array(25).fill(0);jpcSession.previousHits=0;
+ jpcSession.key='';jpcSession.previousCounts=Array(25).fill(0);jpcSession.previousHits=0;jpcSession.win=0;jpcSession.awarded=false;jpcSession.jackpotShown=false;document.getElementById('jpc-celebration').hidden=true;
  $('a8-mode').value='jpc';rouletteDriver.draw.select('jpc');rouletteDriver.start();
  app.paused=true;for(const e of app.engines)e.paused=true;
  rouletteDriver.setPaused(document.hidden||menuOpen||userPaused||!inView);countdownText('JPC','デバッグ抽選');runJpcTicker();return true;
@@ -8227,7 +8239,7 @@ function toggleJpcMode(){
  if(!rouletteReady||!rouletteDriver||menuOpen)return false;
  if(jpcSession.active){
   jpcSession.direct=false;put('jpc-heading','JACKPOT CHANCE');
-  stopJpcTicker();stopBgm();stopSounds();jpcSession.active=false;$('screen').classList.remove('jpc-active');$('jpc-dashboard').hidden=true;
+  stopJpcTicker();stopBgm();stopSounds();jpcSession.active=false;document.getElementById('jpc-celebration').hidden=true;showSugarCutin('NEXT GAME','次のゲームへ',false);$('screen').classList.remove('jpc-active');$('jpc-dashboard').hidden=true;
   for(const [el,was] of jpcSession.inert)el.inert=was;jpcSession.inert=[];
   $('a8-mode').value='eight';rouletteDriver.draw.select('eight');userPaused=false;app.prepare();syncPause();scheduleAutoRound();scheduleUI(app);requestFit();return true;
  }
@@ -8337,4 +8349,4 @@ fit();
 playerLounge=window.SweetsPlayer.boot({$,THREE,recordBook,titles:TITLE_DEFS,isMenuOpen:()=>menuOpen,navigate:page=>{recordPage=page;if(!menuOpen)openRecordMenu();else renderRecordMenu();}});
 playerLounge.refreshPet();initRecordMenu();
 
-})();</script></body></html>
+})();</script><div id="sugar-special-cutin" class="sugar-special-cutin" hidden><strong></strong><span></span></div><div id="jpc-celebration" class="jpc-celebration" hidden><div class="jpc-coins"></div><strong>JACKPOT</strong><small>CONGRATULATIONS!</small></div></body></html>
