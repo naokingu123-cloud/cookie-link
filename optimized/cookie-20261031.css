@@ -1,0 +1,15 @@
+/* Candy roulette / Wonder Sugar / progressive all-clear / WILD */
+#sugar-collection{overflow:visible!important;box-shadow:none!important;min-width:240px}
+#sugar-collection .sugar-slots{position:relative!important;display:flex!important;width:146px!important;height:39px!important;flex:0 0 146px!important;box-sizing:border-box!important;padding:8px 8px 9px!important;gap:5px!important;background:url("../assets/sugar-five-candy-frame.svg") center /100% 100% no-repeat!important;filter:drop-shadow(0 2px 2px #83492755)}
+#sugar-collection .sugar-slot{box-sizing:border-box;flex:0 0 22px!important;width:22px!important;height:22px!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important}
+#sugar-collection .sugar-step-frame{display:none!important}
+#sugar-collection .sugar-gem{position:relative;z-index:3}
+#sugar-collection .sugar-caption{z-index:2;flex-basis:76px!important;width:76px!important}
+#sugar-collection:before{display:none!important}
+.festival-top{position:relative}
+#cookie-next-clear{position:absolute;left:4px;bottom:0;display:block;max-width:314px;z-index:5;white-space:nowrap;font:900 10px/15px system-ui,sans-serif;color:#8d3e58;text-shadow:0 1px #fff5d7;background:linear-gradient(90deg,#fff8cf,#ffe2a5);padding:0 7px;border-radius:7px;border:1px solid #d9a472}
+#cookie-next-clear[hidden]{display:none!important}
+.tile.cookie-wild .sweet{overflow:visible}
+.tile.cookie-wild .cookie-wild-label{position:absolute;z-index:12;left:9%;right:9%;top:31%;padding:2px 1px;text-align:center;pointer-events:none;font:1000 11px/14px system-ui,sans-serif;letter-spacing:-.5px;color:#fff7d4;-webkit-text-stroke:1px #7930b7;paint-order:stroke fill;text-shadow:0 1px 2px #682667;transform:rotate(-8deg);border-radius:8px;background:linear-gradient(90deg,#e75ba4b8,#72c8ffbd,#ffee78bd);box-shadow:0 0 9px #ef65cdb8}
+.tile.cookie-wild:after{content:"✦";position:absolute;right:1px;top:-4px;color:#fff7ab;font-size:13px;filter:drop-shadow(0 0 3px #ffb47d);animation:cookie-wild-pulse 1.8s ease-in-out infinite;pointer-events:none}
+@keyframes cookie-wild-pulse{0%,100%{opacity:.65;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
