@@ -7388,7 +7388,8 @@ function startAnima8(){
   if(draw.state==='complete')return {name:'DRAW END',lines:['DRAW','END'],hue:.12,index:5};
   const index=Math.min(4,draw.displayGroup||0);return {...NORMAL_STAGES[index],index};
  }
- const LED_TRANSITION_SECONDS=2.4; // Smooth changes between normal/JPC stages
+ function petalPulse(u,r,t){return Math.pow(.5+.5*Math.cos(TAU*(u*6+r*.3-t*.10)),8);}
+ const LED_TRANSITION_SECONDS=4.8; // Smooth changes between normal/JPC stages
  let slopePhaseKey='',slopeTransitionStart=-Infinity,slopePrevious=null;
  function ledTransitionProgress(start){const u=Math.max(0,Math.min(1,(physics.time-start)/LED_TRANSITION_SECONDS));return u*u*(3-2*u);}
  function updateSlopeLights(){
@@ -7417,14 +7418,19 @@ function startAnima8(){
    if(jpc){
     // Switch between parallel waves, radial flashes, checkerboard, meteors, fireworks.
     const checker=(Math.floor(u*25/2)+Math.floor(r*9)+Math.floor(t*(1.2+stage*.45)))%2? .36:1;
-    // Each pattern stays for 12 seconds; blend across the last 3 seconds.
-    const patternTime=t/12,pattern=Math.floor(patternTime)%5,patternNext=(pattern+1)%5;
-    const edge=patternTime-Math.floor(patternTime),transition=Math.max(0,Math.min(1,(edge-.75)/.25));
+    // Each non-spiral pattern lasts 24 seconds, with a smooth 5.5-second crossover.
+    const patternTime=t/24,pattern=Math.floor(patternTime)%5,patternNext=(pattern+1)%5;
+    const edge=patternTime-Math.floor(patternTime),transition=Math.max(0,Math.min(1,(edge-.77)/.23));
     const smooth=transition*transition*(3-2*transition);
-    const patterns=[.58+.48*wave,.60+.46*rays,.59+.48*checker,.58+.49*meteor,.57+.53*firework];
+    const bands=.72+.34*Math.pow(.5+.5*Math.cos(TAU*(r*3-t*.09)),4);
+    const petals=.74+.34*Math.pow(.5+.5*Math.cos(TAU*(u*6+r*.24-t*.08)),8);
+    const diamonds=.73+.36*Math.pow(.5+.5*Math.cos(TAU*(u*5+r*5-t*.07)),10);
+    const curtains=.72+.38*Math.pow(.5+.5*Math.cos(TAU*(u*3-t*.09)),7);
+    const glitter=.76+.28*spark+.19*Math.pow(.5+.5*Math.sin(TAU*(u*7+r*4+t*.12)),12);
+    const patterns=[bands,petals,diamonds,curtains,glitter];
     intensity=patterns[pattern]*(1-smooth)+patterns[patternNext]*smooth;
-    intensity=(intensity+.15*spark+stage*.12*spark)*(.7+stage*.24);
-    if(stage===3)intensity+=.35*meteor+.35*firework;
+    intensity=(intensity+.09*spark+stage*.13*spark)*(1.04+stage*.16);
+    if(stage===3)intensity+=.16*firework+.18*glitter;
     if(draw.state==='ready')intensity*=.88;
     const pocket=((Math.round((angle/TAU-u)*25)%25)+25)%25;
     if(pocket===reachIndex){slopeColor.setRGB(1,.01,.02);intensity=1.6+.6*breath;}
@@ -7432,12 +7438,12 @@ function startAnima8(){
     if(jackpotPocket>=0){slopeColor.lerp(celebrationGold,.4+.4*firework);intensity=Math.max(intensity,1.1+firework);}
    }else if(draw.state==='complete'){
     slopeColor.set('#a9bfdc').lerp(new THREE.Color('#d8c8f0'),.25+.25*breath);
-    intensity=.52+.10*breath;
+    intensity=.77+.055*breath;
    }else if(phase.bet){
     slopeColor.set('#bce3e4').lerp(new THREE.Color('#f2d6e5'),.35+.2*breath);
-    intensity=.57+.12*breath;
+    intensity=.82+.09*breath;
    }else{
-    intensity=[.60+.15*breath+.13*wave,.62+.17*breath+.17*wave,.63+.19*stripe+.16*spark,.65+.22*rays+.18*wave+.14*spark,.68+.23*rays+.22*wave+.21*spark][stage];
+    intensity=[.85+.10*breath+.10*wave,.89+.11*breath+.12*stripe,.94+.13*petalPulse(u,r,t)+.13*spark,.98+.16*rays+.13*wave+.09*spark,1.04+.17*rays+.15*wave+.13*spark][stage];
     if(highest)intensity+=.12+.12*spark;
    }
    slopeColor.multiplyScalar(intensity);
