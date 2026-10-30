@@ -99,7 +99,7 @@ recordBook.equip=function(id){
  const ok=originalEquip(id);save();return ok;
 };
 const rarity=['','★ かんたん','★★ やさしい','★★★ ふつう','★★★★ むずかしい','★★★★★ 伝説'];
-const icon=(d,locked=false)=>'<i class="v3-icon'+(locked?' v3-locked':'')+'" style="background-position:'+(d.icon%8*100*146/(144*7)).toFixed(4)+'% '+(Math.floor(d.icon/8)*100*148/(144*4)).toFixed(4)+'%" aria-hidden="true"></i>';
+const icon=(d,locked=false)=>'<i class="v3-icon'+(locked?' v3-locked':'')+'" style="background-position:'+Math.min(100,d.icon%8*100*146/(144*7)).toFixed(4)+'% '+Math.min(100,Math.floor(d.icon/8)*100*148/(144*4)).toFixed(4)+'%" aria-hidden="true"></i>';
 renderTitles=function(){
  const eq=recordBook.data.equipped, perPage=20;
  recordOffset=Math.min(recordOffset,Math.ceil(defs.length/perPage)-1);
