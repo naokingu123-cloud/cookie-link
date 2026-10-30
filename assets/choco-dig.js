@@ -792,6 +792,24 @@ function chocoDrawTutorial(s,time,bet,W,H){
  s.chocoCtx.drawImage(layer,0,0,W,H);s.chocoCanvas.dataset.mode='tutorial';s.chocoCanvas.dataset.scene=String(scene);s.chocoCanvas.setAttribute('aria-label','チョコレートキャニオン・遊び方デモ・'+labels[scene]);s.chocoStatus.textContent=labels[scene];s.miniCanvas.hidden=false;s.miniLogo.hidden=true;s.mini.setTransform(1,0,0,1,0,0);s.mini.clearRect(0,0,160,160);const mw=140,mh=160;s.mini.drawImage(layer,left*2,(top-32)*2,cell*14,(cell*8+32)*2,10,0,mw,mh);s.miniCanvas.dataset.renderer='board-only-demo';
 }
 
+// Sunlight follows the rendered terrain, including gravity and camera motion.
+// Cakes occlude the shaft; their own artwork is excluded from the shadow mask.
+function chocoShaftLighting(x,L,cells){
+ const {left,top,w,h}=L,bottom=top+12*h;
+ x.save();x.beginPath();x.rect(left,top,7*w,12*h);x.clip();
+ for(let c=0;c<7;c++){
+  const column=cells.filter(v=>v.c===c&&v.y+h>top&&v.y<bottom),first=column.reduce((y,v)=>Math.min(y,v.y),bottom),px=left+c*w;
+  x.save();x.beginPath();x.rect(px,top,w,12*h);
+  for(const v of column)if(v.tile.color>=0)x.rect(px,v.y,w,h);
+  x.clip('evenodd');
+  // A soft-edged vertical ray makes open access visibly different from a roofed pocket.
+  const beam=x.createLinearGradient(px,0,px+w,0);beam.addColorStop(0,'rgba(255,240,190,0.025)');beam.addColorStop(.3,'rgba(255,240,190,0.15)');beam.addColorStop(.7,'rgba(255,240,190,0.15)');beam.addColorStop(1,'rgba(255,240,190,0.025)');
+  x.fillStyle=beam;x.fillRect(px,top,w,Math.max(0,first-top+h));
+  if(first<bottom){const edge=Math.max(top,first+h),shade=x.createLinearGradient(0,edge,0,edge+h*.65);shade.addColorStop(0,'rgba(6,12,28,0)');shade.addColorStop(1,'rgba(6,12,28,0.62)');x.fillStyle=shade;x.fillRect(px,edge,w,bottom-edge);}
+  x.restore();
+ }
+ x.restore();
+}
 function drawChoco(s,now=performance.now()){
  if(s.engine?.kind!=='choco')return;setupChocoSlot(s);const e=s.engine,x=s.chocoCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready';
  chocoPresentationTime(s,now);
@@ -829,6 +847,11 @@ function drawChoco(s,now=performance.now()){
  // Previously hit strata keep softening/melting while the drill is already travelling onward.
  for(const effect of fx?.digEffects||[]){const age=(fx.digTime||0)+(fx.elapsed||0)-effect.start;if(age<0||age>=effect.duration)continue;for(const v of effect.targets){const px=left+v.c*w,py=top+v.r*h;if(age<160){const a=age/160;x.save();x.translate(px+w/2,py+h/2);x.scale(1+a*.035,1-a*.075);chocoPaintTile(x,v.tile,v.r,v.c,effect.before,-w/2,-h/2,w,h,time,bet);x.restore();}else chocoPaintMelt(x,v.tile,v.r,v.c,effect.before,px,py,w,h,(age-160)/600);}}
  if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const t=e.strata[r]?.[c];if(t)chocoPaintTile(x,t,r,c,e.strata,left+c*w,top+(r+scroll.advanced*(1-scrollQ))*h,w,h,time,bet);}
+ // Use the exact animation positions for light and shade, without row-sized jumps.
+ const lightingCells=[];
+ for(let r=0;r<12;r++)for(let c=0;c<7;c++){const tile=grid[r]?.[c];if(!tile||dissolving.has(tile.id))continue;const move=moves.get(tile.id);lightingCells.push({tile,c,y:top+(r+(move?Math.min(move.to[0]-move.from[0],(fx.fallDistance||1)*q*q):0)-(scroll?scroll.advanced*scrollQ:0))*h});}
+ if(scroll)for(let r=12-scroll.advanced;r<12;r++)for(let c=0;c<7;c++){const tile=e.strata[r]?.[c];if(tile)lightingCells.push({tile,c,y:top+(r+scroll.advanced*(1-scrollQ))*h});}
+ chocoShaftLighting(x,L,lightingCells);
  // One payout label per complete milestone layer; it follows falling and scrolling terrain.
  for(let r=0;r<12;r++){const t=grid[r]?.[3];if(t?.item!=='fruit'||dissolving.has(t.id))continue;const move=moves.get(t.id),py=top+(r+(move?Math.min(move.to[0]-move.from[0],(fx.fallDistance||1)*q*q):0)-(scroll?scroll.advanced*scrollQ:0))*h;chocoBonusLabel(x,t,left+3.5*w,py,7*w,h,bet);}
  if(scroll)for(let r=12-scroll.advanced;r<12;r++){const t=e.strata[r]?.[3];if(t?.item==='fruit')chocoBonusLabel(x,t,left+3.5*w,top+(r+scroll.advanced*(1-scrollQ))*h,7*w,h,bet);}
