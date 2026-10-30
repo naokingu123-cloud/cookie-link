@@ -758,11 +758,11 @@ this.strata=chocoClone(stage.grid);this.seed=stage.seed;this.uid=stage.uid;this.
 }
 const chocoSprites=new Map();
 const chocoSourcePixels=new WeakMap();
-const chocoCakeSources=["media/c9cfce2b92714ca7.webp","media/1785f53d9b38e124.webp","media/014bdf0e39eadeda.webp","media/580c0b671a95a2c8.webp"];
+const chocoCakeSources=["optimized/media/c9cfce2b92714ca7.webp","optimized/media/1785f53d9b38e124.webp","optimized/media/014bdf0e39eadeda.webp","optimized/media/580c0b671a95a2c8.webp"];
 const chocoCakeImages=chocoCakeSources.map(src=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src=src;return image;});
-const chocoOreSources={"copper":"media/82e7965c3fa4648b.webp","silver":"media/46a45cf2e915077c.webp","gold":"media/6e829c60f267d0f6.webp","diamond":"media/69b8afc83cbbd6bc.webp"};
+const chocoOreSources={"copper":"optimized/media/82e7965c3fa4648b.webp","silver":"optimized/media/46a45cf2e915077c.webp","gold":"optimized/media/6e829c60f267d0f6.webp","diamond":"optimized/media/69b8afc83cbbd6bc.webp"};
 const chocoOreImages=Object.fromEntries(Object.entries(chocoOreSources).map(([key,src])=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src=src;return [key,image];}));
-const chocoMineSources={"mine":"media/fbcd2f7c5115795e.webp","cart":"media/d923367f03c3232d.webp","logo":"media/c05f7a6c993af123.webp"};
+const chocoMineSources={"mine":"optimized/media/fbcd2f7c5115795e.webp","cart":"optimized/media/d923367f03c3232d.webp","logo":"optimized/media/c05f7a6c993af123.webp"};
 const chocoMineImages=Object.fromEntries(Object.entries(chocoMineSources).map(([key,src])=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src=src;return [key,image];}));
 const CHOCO_DEPTH_SCENES=['surface','white','strawberry','milk','bitter','sapphire','emerald','topaz','ruby','amethyst','diamond'];
 const chocoDepthImages=CHOCO_DEPTH_SCENES.map(name=>{const im=new Image();im.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};im.src='assets/canyon-depth/'+name+'.webp';return im;});
