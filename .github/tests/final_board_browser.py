@@ -39,7 +39,7 @@ with sync_playwright() as p:
  // A completed payout must release the eighth-ball waiter without a canvas RAF.
  await q.withoutCanyonFrames(async()=>{const e={version:99,totalHundredths:0,cart:[],fx:null},s={i:1,engine:e};q.chocoScaleValue(s,e,100,0);e.totalHundredths=100;q.chocoScaleValue(s,e,100,0);s.chocoTime=10000;s.chocoClockStamp=performance.now();await Promise.race([q.chocoWaitForPayout(s,99),new Promise((_,reject)=>setTimeout(()=>reject(Error('Payout waiter depends on RAF')),1000))]);if(s.chocoWinCounting||s.chocoWinValue!==100)throw Error('Payout did not finalize');});
  // Prediction errors must not trap the game in the final pending-reach loop.
- {const s=q.slots[2],e=s.engine;e.phase='settled';s.reachBoardKey=null;e.reachSnapshot=()=>({predict(){throw Error('injected reach preview failure')}});await q.finishGamePresentation(s,e,q.app,e.version);if(s.reachStatus!=='error')throw Error('Prediction failure not released');}
+ {q.app.phase='playing';q.app.result=null;const s=q.slots[2],e=s.engine;e.phase='settled';s.reachBoardKey=null;e.reachSnapshot=()=>({predict(){throw Error('injected reach preview failure')}});await q.finishGamePresentation(s,e,q.app,e.version);if(s.reachStatus!=='error')throw Error('Prediction failure not released');}
  q.pause(true);return reports;
  }''');assert not errors,errors;print('FINAL_EIGHTH_BALL_REACH_PASS',json.dumps(result));b.close()
 server.shutdown()

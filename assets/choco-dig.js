@@ -9,8 +9,8 @@ const chocoCopyDrills=drills=>drills.map(d=>({numbers:[...d.numbers],hits:[...d.
 const chocoCopyLucky=lucky=>({numbers:[...lucky.numbers],hits:[...lucky.hits],drawn:[...(lucky.drawn||[])]});
 const CHOCO_ORES={copper:{name:'銅',min:10,max:100,step:10,tint:'#e9a071'},silver:{name:'銀',min:50,max:500,step:10,tint:'#e3f2ff'},gold:{name:'金',min:200,max:2000,step:50,tint:'#ffe391'},diamond:{name:'ダイヤ',min:500,max:10000,step:100,tint:'#a9f6ff'}};
 const CHOCO_PRIZES={copper:10,silver:50,gold:200,diamond:500};
-// Rates are calibrated with the full production flow, including in-cascade refills and odds-up tiles.
-const CHOCO_ITEM_RATES={copper:.067,silver:.01675,gold:.00335,diamond:.001,sugar:.0029,odds:.004,clear:.002,random:.003,transmute:.0012};
+// Direct-game calibration includes cascade refills, mineral rank-up and cumulative bonus cakes.
+const CHOCO_ITEM_RATES={copper:.242,silver:.0025,gold:.0005,diamond:.00012,sugar:.0029,odds:.0003,clear:.0024,random:.0036,transmute:.0014};
 const CHOCO_FRUIT_DEPTH=100;
 const CHOCO_BONUS_GEMS=['sapphire','emerald','topaz','ruby','amethyst','diamond'];
 const CHOCO_BONUS_NAMES={fruit:'フルーツケーキ',sapphire:'サファイアケーキ',emerald:'エメラルドケーキ',topaz:'トパーズケーキ',ruby:'ルビーケーキ',amethyst:'アメジストケーキ',diamond:'ダイヤケーキ'};
@@ -18,7 +18,7 @@ const chocoFruitWin=index=>[300,500,1000,2000,3000,5000,7500,10000,20000,30000][
 const chocoBonusKind=index=>index<=4?'fruit':CHOCO_BONUS_GEMS[Math.min(5,index-5)];
 const chocoFallDuration=distance=>Math.round(125*Math.sqrt(Math.max(1,distance)));
 const CHOCO_POWERS={clear:'全消し',random:'ランダム消し',transmute:'鉱石化'};
-function chocoOreRates(distance=0){const t=Math.min(1,Math.max(0,distance)/60);return {...CHOCO_ITEM_RATES,copper:.25-.004*t,silver:.002+.001*t,gold:.0004+.0003*t,diamond:.0001+.0001*t,odds:.0008};}
+function chocoOreRates(distance=0,totalDepth=0){const t=Math.min(1,Math.max(0,distance)/60),deep=Math.min(1,Math.max(0,totalDepth-300)/100);return {...CHOCO_ITEM_RATES,copper:(CHOCO_ITEM_RATES.copper-.004*t)*(1-.35*deep),silver:CHOCO_ITEM_RATES.silver+.0012*t,gold:CHOCO_ITEM_RATES.gold+.00036*t,diamond:CHOCO_ITEM_RATES.diamond+.00012*t};}
 // Integer weights total 1000 per mineral (0.1 percentage-point precision).
 const CHOCO_ORE_DISTRIBUTIONS={
  copper:[[10,800],[20,150],[30,30],[40,10],[50,9],[100,1]],
@@ -29,7 +29,7 @@ const CHOCO_ORE_DISTRIBUTIONS={
 function chocoOreQuantile(kind,u){let n=Math.min(.999999999,Math.max(0,u))*1000;for(const [value,weight]of CHOCO_ORE_DISTRIBUTIONS[kind]){n-=weight;if(n<0)return value;}return CHOCO_ORES[kind].max;}
 function chocoRankOre(tile){const keys=Object.keys(CHOCO_ORES),index=keys.indexOf(tile.ore);if(index<0||index===3)return false;let cumulative=0,u=0;for(const [value,weight]of CHOCO_ORE_DISTRIBUTIONS[tile.ore]){u=(cumulative+weight/2)/1000;if(value>=tile.baseValue)break;cumulative+=weight;}tile.ore=keys[index+1];tile.baseValue=chocoOreQuantile(tile.ore,u);tile.value=tile.baseValue;tile.multiplier=1;return true;}
 function chocoOreValue(w,kind){return chocoOreQuantile(kind,chocoRandom(w));}
-function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0)),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=chocoOreValue(w,kind);return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
+function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0),w.depth),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=chocoOreValue(w,kind);return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
 
 const CHOCO_TYPES=[
  {name:'ミルク',top:'#d89b65',mid:'#995a38',edge:'#563329'},
@@ -88,7 +88,7 @@ function chocoFillRows(w){
  }
  const rows=board.map(row=>row.map(id=>({id:++w.uid,color:colors[id],number:null,prize:null,...(extensions.has(id)?{extension:true}:{})}))),specials=new Set();
  for(let r=0;r<height;r++)for(let c=0;c<7;c++){
-  const p=chocoRandom(w);if(start+r<2)continue;let kind=null,sum=0;for(const [name,rate] of Object.entries(chocoOreRates(w.depth-(w.startDepth||0)))){sum+=rate;if(p<sum){kind=name;break;}}if(kind==='sugar')kind=null;const scheduled=Number.isFinite(w.nextSugar)&&w.depth+start+r>=w.nextSugar;if(scheduled)kind='sugar';if(!kind)continue;
+  const p=chocoRandom(w);if(start+r<2)continue;let kind=null,sum=0;for(const [name,rate] of Object.entries(chocoOreRates(w.depth-(w.startDepth||0),w.depth))){sum+=rate;if(p<sum){kind=name;break;}}if(kind==='sugar')kind=null;const scheduled=Number.isFinite(w.nextSugar)&&w.depth+start+r>=w.nextSugar;if(scheduled)kind='sugar';if(!kind)continue;
   const groupId=board[r][c],cells=regions[groupId];if(cells.length<4||specials.has(groupId)||extensions.has(groupId)&&r===0)continue;
   // Replace an end/corner cell only when the remaining terrain stays connected.
   const remaining=cells.filter(([y,x])=>y!==r||x!==c),seen=new Set([remaining[0].join(',')]),queue=[remaining[0]];for(let i=0;i<queue.length;i++)for(const cell of remaining)if(!seen.has(cell.join(','))&&Math.abs(cell[0]-queue[i][0])+Math.abs(cell[1]-queue[i][1])===1){seen.add(cell.join(','));queue.push(cell);}if(seen.size!==remaining.length)continue;
@@ -793,19 +793,20 @@ function chocoDrawTutorial(s,time,bet,W,H){
 }
 
 // Sunlight follows the rendered terrain, including gravity and camera motion.
-// Cakes occlude the shaft; their own artwork is excluded from the shadow mask.
+// Only cakes occlude the shaft; exposed ores are collectible and transmit light.
+// Keep the shade translucent so empty space cannot resemble dark chocolate.
 function chocoShaftLighting(x,L,cells){
  const {left,top,w,h}=L,bottom=top+12*h;
  x.save();x.beginPath();x.rect(left,top,7*w,12*h);x.clip();
  for(let c=0;c<7;c++){
-  const column=cells.filter(v=>v.c===c&&v.y+h>top&&v.y<bottom),first=column.reduce((y,v)=>Math.min(y,v.y),bottom),px=left+c*w;
+  const column=cells.filter(v=>v.c===c&&v.y+h>top&&v.y<bottom),first=column.filter(v=>v.tile.color>=0).reduce((y,v)=>Math.min(y,v.y),bottom),px=left+c*w;
   x.save();x.beginPath();x.rect(px,top,w,12*h);
   for(const v of column)if(v.tile.color>=0)x.rect(px,v.y,w,h);
   x.clip('evenodd');
   // A soft-edged vertical ray makes open access visibly different from a roofed pocket.
   const beam=x.createLinearGradient(px,0,px+w,0);beam.addColorStop(0,'rgba(255,240,190,0.025)');beam.addColorStop(.3,'rgba(255,240,190,0.15)');beam.addColorStop(.7,'rgba(255,240,190,0.15)');beam.addColorStop(1,'rgba(255,240,190,0.025)');
   x.fillStyle=beam;x.fillRect(px,top,w,Math.max(0,first-top+h));
-  if(first<bottom){const edge=Math.max(top,first+h),shade=x.createLinearGradient(0,edge,0,edge+h*.65);shade.addColorStop(0,'rgba(6,12,28,0)');shade.addColorStop(1,'rgba(6,12,28,0.62)');x.fillStyle=shade;x.fillRect(px,edge,w,bottom-edge);}
+  if(first<bottom){const edge=Math.max(top,first+h),shade=x.createLinearGradient(0,edge,0,edge+h*.65);shade.addColorStop(0,'rgba(6,12,28,0)');shade.addColorStop(1,'rgba(6,12,28,0.18)');x.fillStyle=shade;x.fillRect(px,edge,w,bottom-edge);}
   x.restore();
  }
  x.restore();
