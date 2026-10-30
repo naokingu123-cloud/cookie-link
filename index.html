@@ -5029,13 +5029,20 @@ class Arcade{
   const rainbow=(debugForceRainbowSugar||this.random()<RAINBOW_SUGAR_CHANCE);
   let rainbowBoard=-1;
   if(rainbow&&this.enabled[0]){
-   const e=this.engines[0],candidates=[];
+   const e=this.engines[0],sugarCells=[],emptyCells=[],otherCells=[];
    for(let r=0;r<SIZE;r++)for(let col=0;col<SIZE;col++){
     const tile=e.board[r][col];
-    if(tile&&!tile.special&&tile.number==null)candidates.push(tile);
+    if(!tile||tile.special)continue;
+    if(tile.step)sugarCells.push(tile);
+    else if(tile.number==null)emptyCells.push(tile);
+    else otherCells.push(tile);
    }
+   // Prefer an existing on-board sugar. If none exists, make one usable
+   // tile available so the debug guarantee never silently fails.
+   const candidates=sugarCells.length?sugarCells:emptyCells.length?emptyCells:otherCells;
    const tile=candidates.length?candidates[Math.floor(this.random()*candidates.length)]:null;
    if(tile){
+    if(tile.number!=null)tile.number=null;
     // Keep the original sugar's value and replace only its identity/art.
     const original=e.wonderToken||e.basketState?.[e.wonderColumn]?.pending?.[0];
     const step={id:++e.stepUid,value:original?.value||Math.max(1,this.locked[0]),tier:6,kind:'direct-jpc',directJpc:true};
