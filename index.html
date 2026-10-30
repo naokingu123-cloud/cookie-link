@@ -375,7 +375,13 @@ Copyright 2016 The Rounded M+ Project Authors.
   const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title12'];
   const responses=await Promise.all(paths.map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
-  const [game,extension]=await Promise.all(responses.map(r=>r.text()));
+  let [game,extension]=await Promise.all(responses.map(r=>r.text()));
+  // Visual-only: slightly steepen the amber platter's outer 0.26-unit rim.
+  // Leave ball physics, pocket positions, and the central plateau unchanged.
+  const originalAmberProfile="return hubHeight(r)*(1-blend)+deckHeight(r)*blend+.025+.012*Math.sin((r-.90)/1.83*Math.PI);";
+  const slopedAmberProfile="const edge=Math.max(0,Math.min(1,(r-2.47)/.26));const eased=edge*edge*(3-2*edge);return hubHeight(r)*(1-blend)+deckHeight(r)*blend+.025+.012*Math.sin((r-.90)/1.83*Math.PI)-.045*eased;";
+  if(!game.includes(originalAmberProfile))console.warn('Amber rim profile patch: source not found');
+  else game=game.replace(originalAmberProfile,slopedAmberProfile);
   const end=game.lastIndexOf('})();');
   if(end<0)throw new Error('ゲームスクリプト構造が不正です');
   const merged=game.slice(0,end)+'\n'+extension+'\n'+game.slice(end);
