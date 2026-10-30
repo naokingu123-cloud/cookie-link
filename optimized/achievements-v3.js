@@ -83,21 +83,29 @@ recordBook.equip=function(id){
 const rarity=['','★ かんたん','★★ やさしい','★★★ ふつう','★★★★ むずかしい','★★★★★ 伝説'];
 const icon=(d,locked=false)=>'<i class="v3-icon'+(locked?' v3-locked':'')+'" style="background-position:'+(d.icon%8*100*146/(144*7)).toFixed(4)+'% '+(Math.floor(d.icon/8)*100*148/(144*4)).toFixed(4)+'%" aria-hidden="true"></i>';
 renderTitles=function(){
- const eq=recordBook.data.equipped;
- recordOffset=Math.min(recordOffset,Math.ceil(defs.length/8)-1);
- const list=defs.slice(recordOffset*8,recordOffset*8+8);
+ const eq=recordBook.data.equipped, perPage=16;
+ recordOffset=Math.min(recordOffset,Math.ceil(defs.length/perPage)-1);
+ const list=defs.slice(recordOffset*perPage,recordOffset*perPage+perPage);
  const selected=defs.find(x=>x.id===selectedTitle)||list[0],has=!!store.titles[selected.id];
- const rows=list.map(d=>{const unlocked=!!store.titles[d.id],equipped=eq?.id===d.id;return '<button class="v3-title-row '+(unlocked?'unlocked':'locked')+(equipped?' equipped':'')+'" data-title="'+d.id+'" aria-pressed="'+(selected.id===d.id)+'">'+icon(d,!unlocked)+'<span class="v3-desc"><strong>'+(unlocked?d.name:'？？？')+'</strong><small>'+rarity[d.rarity]+'</small><small>'+(unlocked?'取得 '+recordDate(store.titles[d.id]):'未取得 · '+d.condition)+'</small></span>'+(equipped?'<b>装備中</b>':'')+'</button>';}).join('');
- const current=store.stats[selected.metric]||0,progress=Math.min(selected.target,current);
- document.getElementById('record-page').innerHTML='<div class="v3-header">称号コレクション　'+Object.keys(store.titles).length+' / '+defs.length+'</div><div class="v3-list">'+rows+'</div><div class="v3-detail">'+icon(selected,!has)+'<div><strong>'+selected.name+'</strong><span>'+rarity[selected.rarity]+' · '+selected.condition+'</span><small>'+(has?'獲得日 '+recordDate(store.titles[selected.id]):'進捗 '+progress+' / '+selected.target)+'</small></div></div><div class="title-actions"><button id="title-equip" '+(!has||eq?.id===selected.id?'disabled':'')+'>称号とアイコンをセット</button><button id="title-unset" '+(!eq?'disabled':'')+'>はずす</button></div>'+recordPager(defs.length,8);
+ const rows=list.map(d=>{
+  const unlocked=!!store.titles[d.id],equipped=eq?.id===d.id;
+  return '<button type="button" class="v3-title-row '+(unlocked?'unlocked':'locked')+(equipped?' equipped':'')+'" data-title="'+d.id+'" aria-label="'+(unlocked?d.name:'未獲得 '+d.condition)+'" aria-pressed="'+(selected.id===d.id)+'">'
+   +icon(d,!unlocked)+'<span class="v3-desc"><strong>'+(unlocked?d.name:'？？？')+'</strong><small class="v3-stars">'+('★'.repeat(d.rarity))+'</small><small class="v3-date">'+(unlocked?recordDate(store.titles[d.id]):'未獲得')+'</small></span>'
+   +(equipped?'<b>SET</b>':'')+'</button>';
+ }).join('');
+ const current=store.stats[selected.metric]||0,progress=Math.min(selected.target,current),percent=selected.target?Math.min(100,100*progress/selected.target):0;
+ document.getElementById('record-page').innerHTML='<div class="v3-header"><span>称号コレクション</span><span>獲得 '+Object.keys(store.titles).length+' / '+defs.length+'</span></div>'
+ +'<div class="v3-list">'+rows+'</div>'
+ +'<div class="v3-detail">'+icon(selected,!has)+'<div class="v3-detail-text"><strong>'+selected.name+'</strong><span class="v3-detail-stars">'+('★'.repeat(selected.rarity))+'　'+selected.category+'</span><span>'+selected.condition+'</span><small>'+(has?'獲得日 '+recordDate(store.titles[selected.id]):'進捗 '+progress.toLocaleString('ja-JP')+' / '+selected.target.toLocaleString('ja-JP'))+'</small><div class="v3-progress"><i style="width:'+percent.toFixed(2)+'%"></i></div></div></div>'
+ +'<div class="title-actions"><button id="title-equip" '+(!has||eq?.id===selected.id?'disabled':'')+'>称号とアイコンをセット</button><button id="title-unset" '+(!eq?'disabled':'')+'>はずす</button></div>'+recordPager(defs.length,perPage);
  for(const el of document.querySelectorAll('#record-page [data-title]'))el.onclick=()=>{selectedTitle=el.dataset.title;renderRecordMenu();};
  document.getElementById('title-equip').onclick=()=>{recordBook.equip(selected.id);updateEquippedTitle();renderRecordMenu();};
  document.getElementById('title-unset').onclick=()=>{recordBook.equip(null);updateEquippedTitle();renderRecordMenu();};
- const max=Math.ceil(defs.length/8)-1;
+ const max=Math.ceil(defs.length/perPage)-1;
  document.getElementById('record-prev').disabled=recordOffset===0;
  document.getElementById('record-next').disabled=recordOffset===max;
- document.getElementById('record-prev').onclick=()=>{recordOffset--;selectedTitle=defs[recordOffset*8].id;renderRecordMenu();};
- document.getElementById('record-next').onclick=()=>{recordOffset++;selectedTitle=defs[recordOffset*8].id;renderRecordMenu();};
+ document.getElementById('record-prev').onclick=()=>{recordOffset--;selectedTitle=defs[recordOffset*perPage].id;renderRecordMenu();};
+ document.getElementById('record-next').onclick=()=>{recordOffset++;selectedTitle=defs[recordOffset*perPage].id;renderRecordMenu();};
 };
 // Override selection of old ID when opening the menu.
 const previousOpen=openRecordMenu;
