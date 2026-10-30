@@ -372,7 +372,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
  try{
-  const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title4'];
+  const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title6'];
   const responses=await Promise.all(paths.map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
   const [game,extension]=await Promise.all(responses.map(r=>r.text()));
