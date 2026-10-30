@@ -97,8 +97,10 @@ renderTitles=function(){
  document.getElementById('record-page').innerHTML='<div class="v3-header"><span>称号コレクション</span><span>獲得 '+Object.keys(store.titles).length+' / '+defs.length+'</span></div>'
  +'<div class="v3-list">'+rows+'</div>'
  +'<div class="v3-detail">'+icon(selected,!has)+'<div class="v3-detail-text"><strong>'+selected.name+'</strong><span class="v3-detail-stars">'+('★'.repeat(selected.rarity))+'　'+selected.category+'</span><span>'+selected.condition+'</span><small>'+(has?'獲得日 '+recordDate(store.titles[selected.id]):'進捗 '+progress.toLocaleString('ja-JP')+' / '+selected.target.toLocaleString('ja-JP'))+'</small><div class="v3-progress"><i style="width:'+percent.toFixed(2)+'%"></i></div></div></div>'
+ +'<div class="v3-debug"><button type="button" id="v3-debug-unlock">デバッグ：全称号開放</button></div>'
  +'<div class="title-actions"><button id="title-equip" '+(!has||eq?.id===selected.id?'disabled':'')+'>称号とアイコンをセット</button><button id="title-unset" '+(!eq?'disabled':'')+'>はずす</button></div>'+recordPager(defs.length,perPage);
  for(const el of document.querySelectorAll('#record-page [data-title]'))el.onclick=()=>{selectedTitle=el.dataset.title;renderRecordMenu();};
+ document.getElementById('v3-debug-unlock').onclick=()=>{if(!confirm('デバッグ用に全103称号を開放します。よろしいですか？'))return;const now=Date.now();for(const d of defs)if(!store.titles[d.id])store.titles[d.id]=now;records.titles={...store.titles};save();renderRecordMenu();updateEquippedTitle();};
  document.getElementById('title-equip').onclick=()=>{recordBook.equip(selected.id);updateEquippedTitle();renderRecordMenu();};
  document.getElementById('title-unset').onclick=()=>{recordBook.equip(null);updateEquippedTitle();renderRecordMenu();};
  const max=Math.ceil(defs.length/perPage)-1;
