@@ -258,7 +258,7 @@ function sixMakeBoard(rows,colorCount,random,firstId=0,{holes=[]}={}){
    if(g[r][c]===null&&holes.some(p=>p[0]===r&&p[1]===c))continue;
    const tile={id:++id,color:0,number:null,lean:random()<.5?-1:1};g[r][c]=tile;let placed=false;
    const choices=sixShuffle(Array.from({length:colorCount},(_,i)=>i),random);
-   if(random()<SIX_COLOR_SPREAD){const nearby=color=>sixNeighbors(r,c,rows).filter(([y,x])=>g[y]?.[x]?.color===color).length;choices.sort((a,b)=>nearby(a)-nearby(b));}
+   const spread=typeof debugEconomyProfile==='function'?debugEconomyProfile().sixSpread:SIX_COLOR_SPREAD;if(random()<Math.abs(spread)){const nearby=color=>sixNeighbors(r,c,rows).filter(([y,x])=>g[y]?.[x]?.color===color).length;choices.sort((a,b)=>(nearby(a)-nearby(b))*(spread<0?-1:1));}
    for(const color of choices){
     tile.color=color;if(sixComponents(g).every(p=>p.cells.length<4)){placed=true;break;}
    }

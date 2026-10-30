@@ -18,7 +18,7 @@ const chocoFruitWin=index=>[300,500,1000,2000,3000,5000,7500,10000,20000,30000][
 const chocoBonusKind=index=>index<=4?'fruit':CHOCO_BONUS_GEMS[Math.min(5,index-5)];
 const chocoFallDuration=distance=>Math.round(125*Math.sqrt(Math.max(1,distance)));
 const CHOCO_POWERS={clear:'全消し',random:'ランダム消し',transmute:'鉱石化'};
-function chocoOreRates(distance=0,totalDepth=0){const t=Math.min(1,Math.max(0,distance)/60),deep=Math.min(1,Math.max(0,totalDepth-300)/100);return {...CHOCO_ITEM_RATES,copper:(CHOCO_ITEM_RATES.copper-.004*t)*(1-.35*deep),silver:CHOCO_ITEM_RATES.silver+.0012*t,gold:CHOCO_ITEM_RATES.gold+.00036*t,diamond:CHOCO_ITEM_RATES.diamond+.00012*t};}
+function chocoOreRates(distance=0,totalDepth=0){const t=Math.min(1,Math.max(0,distance)/60),deep=Math.min(1,Math.max(0,totalDepth-300)/100);const rates={...CHOCO_ITEM_RATES,copper:(CHOCO_ITEM_RATES.copper-.004*t)*(1-.35*deep),silver:CHOCO_ITEM_RATES.silver+.0012*t,gold:CHOCO_ITEM_RATES.gold+.00036*t,diamond:CHOCO_ITEM_RATES.diamond+.00012*t};const density=typeof debugEconomyProfile==='function'?debugEconomyProfile().canyonDensity:1;for(const k of Object.keys(rates))if(k!=='sugar')rates[k]*=density;const rare=typeof debugEconomyProfile==='function'?debugEconomyProfile().canyonRareBoost:1;for(const k of ['silver','gold','diamond'])rates[k]*=rare;return rates;}
 // Integer weights total 1000 per mineral (0.1 percentage-point precision).
 const CHOCO_ORE_DISTRIBUTIONS={
  copper:[[10,800],[20,150],[30,30],[40,10],[50,9],[100,1]],

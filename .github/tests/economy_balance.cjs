@@ -1,11 +1,12 @@
 // Production-rule Monte Carlo. Equal BET, uniform 8/25 draws, ordinary 5-colour mode.
 // Direct game payouts only: the shared Wonder Sugar/JPC is reported separately, not valued here.
-// node .github/tests/economy_balance.cjs canyon|cookie [rounds=50000] [seed=834917]
+// node .github/tests/economy_balance.cjs canyon|cookie [rounds=50000] [seed=834917] [target=90]
 const fs=require('fs'),assert=require('assert');
 const html=fs.readFileSync('index.html','utf8');
 const cookieSource=html.slice(html.indexOf('const SPECIAL_RATE='),html.indexOf('const elixirGlyphs='));
 const canyonSource=fs.readFileSync('assets/choco-dig.js','utf8').split('const chocoSprites=')[0];
-const {Engine,ChocoDigEngine,groups}=new Function(cookieSource+canyonSource+';return {Engine,ChocoDigEngine,groups};')();
+const target=Number(process.argv[5]||90);assert(Number.isInteger(target)&&target>=50&&target<=150);
+const {Engine,ChocoDigEngine,groups}=new Function(cookieSource+canyonSource+';debugPayoutTarget='+target+';return {Engine,ChocoDigEngine,groups};')();
 const kind=process.argv[2]||'canyon',N=+(process.argv[3]||50000),initialSeed=+(process.argv[4]||834917);
 assert(['canyon','cookie'].includes(kind));let seed=initialSeed;
 const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
@@ -35,5 +36,5 @@ let sum=0,bonus=0,winning=0,episodes=0,episodeDepth=0,maxDepth=0,clears=0,sugars
  }
  const mean=blocks.reduce((a,b)=>a+b,0)/blocks.length,se=blocks.length>1?Math.sqrt(blocks.reduce((a,b)=>a+(b-mean)**2,0)/(blocks.length-1)/blocks.length):null;
  const wilson=(k,n)=>{const z=1.96,p=k/n,d=1+z*z/n,center=(p+z*z/(2*n))/d,half=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;return [center-half,center+half];};
- console.log(JSON.stringify({kind,rounds:N,seed:initialSeed,scope:'Direct game payouts; excludes shared Wonder Sugar/JPC',rtp:sum/N,rtp95:se===null?null:[sum/N-1.96*se,sum/N+1.96*se],blockMeans:blocks,winningRate:winning/N,sugarsPerRound:sugars/N,...(kind==='canyon'?{bonusReturn:bonus/N,collected,oreReturn,completedExpeditions:episodes,maxDepth,unfinishedExpeditionDepth:episodeDepth,reach:thresholds.map((depth,i)=>({depth,count:reached[i],rate:reached[i]/episodes,ci95:wilson(reached[i],episodes)}))}:{allClears:clears,maxLinkHistogram:hist})},null,2));
+ console.log(JSON.stringify({kind,target,rounds:N,seed:initialSeed,scope:'Direct game payouts; excludes shared Wonder Sugar/JPC',rtp:sum/N,rtp95:se===null?null:[sum/N-1.96*se,sum/N+1.96*se],blockMeans:blocks,winningRate:winning/N,sugarsPerRound:sugars/N,...(kind==='canyon'?{bonusReturn:bonus/N,collected,oreReturn,completedExpeditions:episodes,maxDepth,unfinishedExpeditionDepth:episodeDepth,reach:thresholds.map((depth,i)=>({depth,count:reached[i],rate:reached[i]/episodes,ci95:wilson(reached[i],episodes)}))}:{allClears:clears,maxLinkHistogram:hist})},null,2));
 })();
