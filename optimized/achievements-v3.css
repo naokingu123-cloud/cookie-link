@@ -47,3 +47,16 @@
 @media(max-width:430px){.v3-title-row .v3-icon{width:28px;height:28px;flex-basis:28px}.v3-list{gap:3px}}
 
 .v3-debug{display:flex;justify-content:flex-end;margin:2px 0}.v3-debug button{font-size:9px;padding:4px 9px;border-radius:8px;border:1px solid #b78453;background:linear-gradient(#fff5cc,#f6d69c);color:#8b5137;font-weight:900}
+
+/* Five-column title-only gallery, debug panel on independent tab. */
+.v3-list{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(4,58px);gap:3px}
+.v3-title-row .v3-icon{width:29px;height:29px;flex-basis:29px;flex-shrink:0}
+.v3-title-row .v3-desc strong{font-size:6.5px}
+.v3-title-row .v3-desc small{font-size:6px}
+.v4-debug-achievements{display:flex;flex-direction:column;gap:6px;padding:7px;border:1px solid #c79a69;border-radius:9px;background:#fff6e2}
+.v4-debug-achievements h3{margin:0;font-size:12px;color:#895537}
+.v4-debug-achievements button{padding:8px;border-radius:7px;border:1px solid #c38f58;background:#ffde9b;color:#825035;font-weight:900}
+.v4-debug-achievements small{font-size:8px;color:#966e54}
+#record-page>.debug-colors{display:block!important;position:static!important;max-width:100%;margin:0 0 7px}
+#v4-debug-dock{display:none!important}
+.record-nav #menu-page-debug{white-space:nowrap}
