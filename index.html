@@ -22,7 +22,7 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
 })();
-</script></head><body><template id="mobile-third-party-notices">three-0.160.0
+</script><link rel="stylesheet" href="optimized/cookie-20261031.css?v=1"></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -327,7 +327,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <section class="games-deck" aria-label="ワンダーシュガーとゲーム切り替え"><div class="deck-top"></div><nav id="tabs" class="tabs" role="tablist" aria-label="ゲーム切り替え"></nav></section>
 <section class="game">
 
-<div class="festival-top"><div class="allclear-award" id="allclear-award"><span class="allclear-award-art allclear-art"><span class="art-alt">全消し</span></span><b id="bonus-value">5,000</b><span class="win-word">WIN</span></div></div>
+<div class="festival-top"><small id="cookie-next-clear" hidden></small><div class="allclear-award" id="allclear-award"><span class="allclear-award-art allclear-art"><span class="art-alt">全消し</span></span><b id="bonus-value">5,000</b><span class="win-word">WIN</span></div></div>
 <div class="field"><div id="panels"></div><aside class="odds" id="odds-panel"><svg class="menu-trim" viewBox="0 0 110 312" preserveAspectRatio="none" aria-hidden="true"><use href="#menu-frame"/></svg><section class="hammer-prize"><h2>連鎖 → ハンマー</h2><table aria-label="補充後に出現するハンマー個数"><tbody id="hammer-pay"></tbody></table><p id="hammer-next">5連鎖から・補充後に出現</p></section><h2 class="link-pay-title">最大LINK配当</h2><div class="link-pay-window" id="pay-window" role="table" aria-label="最大LINK配当・降順"><div class="link-pay-track" id="pay" role="rowgroup"></div></div><p class="sugar-help" aria-label="シュガーマス消去でシュガーGET！"><span class="sugar-help-line"><svg class="sugar-help-icon" viewBox="0 0 48 48" aria-hidden="true"><use href="#wonder-crystal0"/></svg><span>マス消去で</span></span><span class="sugar-help-line"><svg class="sugar-help-icon" viewBox="0 0 48 48" aria-hidden="true"><use href="#wonder-crystal0"/></svg><b>GET!</b></span></p></aside></div>
 <div class="statusline"><span id="status" role="status" aria-live="polite"></span><span id="best"></span></div>
 </section>
@@ -368,6 +368,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 </main></div><dialog id="wardrobe"><h2>ゼリーペット</h2><div class="row"><label>ゼリー</label><div class="swatches" id="jelly-colors"></div></div><div class="row"><label>リボン</label><div class="swatches" id="ribbon-colors"></div></div><div class="row"><label>かざりの色</label><div class="swatches" id="charm-colors"></div></div><div class="row"><label>かざり</label><button type="button" data-pet-top="cookie">クッキー</button><button type="button" data-pet-top="drop">しずく</button></div><div class="row"><label>おめかし</label><button type="button" data-pet-outfit="bow">リボン</button><button type="button" data-pet-outfit="plain">なし</button></div><button id="close-dress">閉じる</button></dialog>
 <script src="assets/player-lounge.js?v=1"></script>
 <script src="assets/bgm-player.js"></script>
+<script src="assets/cookie-upgrade-patches.js?v=1"></script>
 <script>
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
@@ -382,6 +383,8 @@ Copyright 2016 The Rounded M+ Project Authors.
   const slopedAmberProfile="const edge=Math.max(0,Math.min(1,(r-2.47)/.26));const eased=edge*edge*(3-2*edge);return hubHeight(r)*(1-blend)+deckHeight(r)*blend+.025+.012*Math.sin((r-.90)/1.83*Math.PI)-.045*eased;";
   if(!game.includes(originalAmberProfile))console.warn('Amber rim profile patch: source not found');
   else game=game.replace(originalAmberProfile,slopedAmberProfile);
+  if(!window.CookieUpgradePatch)throw new Error("Cookie upgrade patch failed to load");
+  game=window.CookieUpgradePatch.patch(game);
   const end=game.lastIndexOf('})();');
   if(end<0)throw new Error('ゲームスクリプト構造が不正です');
   const merged=game.slice(0,end)+'\n'+extension+'\n'+game.slice(end);
