@@ -913,7 +913,7 @@ body{--sugar-baking-tray:url("data:image/webp;base64,UklGRi5mAABXRUJQVlA4WAoAAAA
 .debug-colors button[aria-pressed="true"]{background:#a66034;color:#fff8dc;border-color:#874621;box-shadow:inset 0 1px #eeb978}
 .debug-colors button:disabled{opacity:.45}
 .debug-depth{display:flex;align-items:center;gap:3px;font:700 10px system-ui}.debug-depth input{width:65px;padding:4px;border:1px solid #bc8f5d;border-radius:5px;background:#fffaf0;color:#54321f}.record-menu .debug-colors{width:auto!important;flex-wrap:wrap}#canyon-depth-status:empty{display:none}
-.debug-settings-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:flex-start;width:100%}.debug-setting{display:flex;gap:4px;align-items:center;font:700 10px system-ui}#debug-payout-rate{width:49px}.record-menu .debug-colors{align-self:stretch;margin-left:0}.debug-colors #debug-payout-status{text-align:left;font-weight:500}
+.debug-settings-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:flex-start;width:100%}.debug-setting{display:flex;gap:4px;align-items:center;font:700 10px system-ui}.debug-rainbow-setting{padding:3px 7px;border:1px solid #b8a1cb;border-radius:7px;background:#fff6fc;white-space:nowrap}.debug-rainbow-setting input{accent-color:#a34dc2;width:15px;height:15px}.debug-rainbow-setting #debug-rainbow-state{font-weight:900;color:#8a708a}.debug-rainbow-setting #debug-rainbow-state.active{color:#a32ca6;text-shadow:0 0 3px #ffb8e6}#debug-payout-rate{width:49px}.record-menu .debug-colors{align-self:stretch;margin-left:0}.debug-colors #debug-payout-status{text-align:left;font-weight:500}
 @media(forced-colors:active){.debug-colors,.debug-colors button{background:Canvas;color:CanvasText;border-color:CanvasText}.debug-colors button[aria-pressed="true"]{background:Highlight;color:HighlightText}}
 
 .tile.refill-retint .sweet{animation:cookie-refill-retint .38s ease-out}
@@ -2579,7 +2579,7 @@ Copyright 2016 The Rounded M+ Project Authors.
  <header class="record-menu-header"><span class="menu-art medal-art" aria-hidden="true"></span><h2 id="record-menu-heading">おかしのマイページ</h2><button type="button" id="record-close-top" aria-label="ゲームへ戻る">×</button></header>
  <div class="record-profile"><div class="record-pet-frame"><canvas id="record-pet" width="150" height="160" aria-label="マイお菓子ペット"></canvas></div><div class="record-profile-text"><small>MY PET</small><strong id="player-display-name">プレイヤー</strong><span id="record-equipped">称号 未設定</span><span id="record-profile-earned"></span></div><span class="menu-art trophy-art" aria-hidden="true"></span></div>
  <nav class="record-nav" aria-label="マイページの表示"><button type="button" id="menu-page-ranking" aria-pressed="false">ランキング</button><button type="button" id="menu-page-player" aria-pressed="false">プレイヤー設定</button><button type="button" id="menu-page-wardrobe" aria-pressed="false">きせかえ</button><button type="button" id="menu-page-records" aria-pressed="true">レコード</button><button type="button" id="menu-page-titles" aria-pressed="false">称号</button><button type="button" id="menu-page-best" aria-pressed="false">高配当</button><button type="button" id="menu-page-clears" aria-pressed="false">全消し</button></nav>
- <div class="debug-colors" role="group" aria-label="デバッグ設定"><small>デバッグ</small><div class="debug-settings-row"><div class="debug-setting"><label class="debug-depth">目標配当率 <input id="debug-payout-rate" type="number" min="50" max="150" step="1" value="90" aria-label="目標ペイアウト率（50から150パーセント）"> %</label><button type="button" id="debug-payout-apply">設定</button></div><div class="debug-setting"><span>色数</span><button type="button" id="colors-3" aria-pressed="false">3色</button><button type="button" id="colors-4" aria-pressed="false">4色</button><button type="button" id="colors-5" aria-pressed="true">5色</button></div><div class="debug-setting"><label class="debug-depth">キャニオン <input id="canyon-debug-depth" type="number" min="0" max="999999" step="1" value="0" aria-label="キャニオン開始深度"> m</label><button type="button" id="canyon-depth-apply">深度設定</button></div></div><small id="debug-payout-status" aria-live="polite">全3ゲーム共通・通常5色基準／次ゲームから適用（JPC除外）</small><small id="canyon-depth-status" aria-live="polite"></small></div><div class="record-scope"><span>クッキーリンク</span></div>
+ <div class="debug-colors" role="group" aria-label="デバッグ設定"><small>デバッグ</small><div class="debug-settings-row"><div class="debug-setting"><label class="debug-depth">目標配当率 <input id="debug-payout-rate" type="number" min="50" max="150" step="1" value="90" aria-label="目標ペイアウト率（50から150パーセント）"> %</label><button type="button" id="debug-payout-apply">設定</button></div><div class="debug-setting debug-rainbow-setting"><label for="debug-rainbow-force">🌈 虹シュガー確定</label><input type="checkbox" id="debug-rainbow-force" aria-label="虹色シュガー確定出現モード"><span id="debug-rainbow-state" aria-live="polite">OFF</span></div><div class="debug-setting"><span>色数</span><button type="button" id="colors-3" aria-pressed="false">3色</button><button type="button" id="colors-4" aria-pressed="false">4色</button><button type="button" id="colors-5" aria-pressed="true">5色</button></div><div class="debug-setting"><label class="debug-depth">キャニオン <input id="canyon-debug-depth" type="number" min="0" max="999999" step="1" value="0" aria-label="キャニオン開始深度"> m</label><button type="button" id="canyon-depth-apply">深度設定</button></div></div><small id="debug-payout-status" aria-live="polite">全3ゲーム共通・通常5色基準／次ゲームから適用（JPC除外）</small><small id="canyon-depth-status" aria-live="polite"></small></div><div class="record-scope"><span>クッキーリンク</span></div>
  <div id="record-page" class="record-page"></div>
  <div class="record-bottom"><small id="record-storage"></small><button type="button" id="record-close">ゲームへ戻る</button></div>
 </section></div>
@@ -2685,6 +2685,8 @@ const NORMAL_SUGAR_NAMES=Object.freeze(['シュガーⅠ','シュガーⅡ','シ
 const DIRECT_JPC_SUGAR_TIER=6;
 const WONDER_NAMES=[...NORMAL_SUGAR_NAMES,'シュガーⅤ','虹色シュガー'];
 const RAINBOW_SUGAR_CHANCE=1/10000;
+// Debug override: force the first awarded sugar of each round to be rainbow.
+let debugForceRainbowSugar=false;
 const NORMAL_DRAW_GROUPS=Object.freeze([3,2,1,1,1]);
 const MINI_RESULT_MS=1800;
 const isDirectJpcSugar=token=>!!token&&typeof token==='object'&&(token.kind==='direct-jpc'||token.directJpc===true);
@@ -5000,7 +5002,7 @@ class Arcade{
   Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
   for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:i===2?CandyCarnivalEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
-   if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>Math.random()<RAINBOW_SUGAR_CHANCE?{...step,game:i,kind:'direct-jpc',directJpc:true,tier:6}:{...step,game:i}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
+   if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>{const force=debugForceRainbowSugar&&!this.debugRainbowIssued;const rainbow=force||Math.random()<RAINBOW_SUGAR_CHANCE;if(force)this.debugRainbowIssued=true;return rainbow?{...step,game:i,kind:'direct-jpc',directJpc:true,tier:6}:{...step,game:i};}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
    if(ev.phase==='complete'&&!this.paid[i]&&this.enabled[i]&&this.phase==='playing'){
     this.paid[i]=true;this.roundWins[i]=medalWin(this.locked[i],e.totalHundredths);
     if(this.enabled.every((yes,j)=>!yes||this.paid[j]))this.finishRound();
@@ -5020,7 +5022,7 @@ class Arcade{
  setBet(i,n){if(this.phase!=='ready'||!Number.isSafeInteger(n)||n<0)return false;this.bets[i]=n;this.onChange(this);return true;}
  start(){
   if(this.phase!=='ready'||!this.bets.some(n=>n>0)||this.drawSource?.ready===false)return false;
-  this.enabled=this.bets.map(n=>n>0);this.locked=[...this.bets];this.paid=[false,false,false];this.roundWins=[0,0,0];this.totalWin=0;this.payout=null;this.result=null;this.fastForward=false;this.engines.forEach(e=>e.presentationRate=1);this.displayCredit=this.credit;this.draws=[];this.phase='playing';this.dealing=true;
+  this.debugRainbowIssued=false;this.enabled=this.bets.map(n=>n>0);this.locked=[...this.bets];this.paid=[false,false,false];this.roundWins=[0,0,0];this.totalWin=0;this.payout=null;this.result=null;this.fastForward=false;this.engines.forEach(e=>e.presentationRate=1);this.displayCredit=this.credit;this.draws=[];this.phase='playing';this.dealing=true;
   const token=++this.token;this.engines.forEach((e,i)=>{e.roundBet=this.locked[i];if(this.enabled[i])e.start();});this.onChange(this);
   if(this.drawSource){try{this.drawSource.start({token,onNumber:n=>this.acceptNumber(n,token),onError:message=>this.failDraw(message,token)});}catch(error){this.failDraw(error.message,token);return false;}}else this.deal(token);return true;
  }
@@ -8291,6 +8293,12 @@ function setDebugPayoutRate(){
  }
  $('debug-payout-status').textContent='全3ゲーム：目標 '+value+'%・次ゲームから適用（通常5色基準／配当表固定／JPC除外）';syncPause();scheduleUI(app);return true;
 }
+$('debug-rainbow-force').checked=false;
+$('debug-rainbow-force').onchange=()=>{
+ debugForceRainbowSugar=$('debug-rainbow-force').checked;
+ $('debug-rainbow-state').textContent=debugForceRainbowSugar?'ON':'OFF';
+ $('debug-rainbow-state').classList.toggle('active',debugForceRainbowSugar);
+};
 $('debug-payout-rate').value=String(debugPayoutTarget);
 $('debug-payout-apply').onclick=setDebugPayoutRate;
 $('debug-payout-rate').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();setDebugPayoutRate();}};
