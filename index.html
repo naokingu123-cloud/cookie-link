@@ -7414,9 +7414,26 @@ function startAnima8(){
      slopeColor.setHSL(.77+sweep*.13,.95,.30+wave*.22);
      slopeColor.lerp(reachGold,Math.pow(sweep,8)*.7).multiplyScalar(1.5+wave*.7);
     }else{
-     const hue=jackpotPocket>=0?u+r*.3-t*.35:round===0?.58+fan*.08:round===1?.39+fan*.22:round===2?.10+fan*.54:u+r*.35-t*.24;
-     slopeColor.setHSL(((hue%1)+1)%1,.94,.28+fan*(.07+round*.025)+chase*.25+sparkle*.16);
-     slopeColor.multiplyScalar(active?1.25+round*.18+(.12+.06*round)*Math.sin(t*TAU*.75)**2:.35);
+     // Candy-themed stage slope LEDs. Visual only: no physics or payout changes.
+     // 1st: peppermint / fruit candy; 2nd: caramel / chocolate;
+     // 3rd: strawberry-cream frosting; FINAL: rainbow crystal sugar.
+     const sweetPalettes=[
+      ['#ff6dac','#69e9ef','#baff75','#fff1b3'],
+      ['#ffb43c','#ffdc84','#e27b39','#fff1bc'],
+      ['#ffa1d7','#fff1df','#ad7dff','#ffcc70'],
+      ['#ff4d76','#ffbf43','#b8ff61','#4ce8fa','#a17aff','#fffaff']
+     ];
+     const palette=sweetPalettes[Math.min(3,round)];
+     const band=(u*(round===3?7:4)+r*.32-t*(.10+round*.07));
+     const idx=((Math.floor(band*palette.length)%palette.length)+palette.length)%palette.length;
+     const next=(idx+1)%palette.length;
+     const mix=.5+.5*Math.cos(TAU*(band*palette.length));
+     slopeColor.set(palette[idx]).lerp(new THREE.Color(palette[next]),mix*.28);
+     // Candy pieces chase outward; FINAL adds glittering rainbow sugar.
+     const candyPulse=.38+.62*Math.pow(.5+.5*Math.cos(TAU*(r-t*(.48+round*.17)+u*2)),4);
+     const crystal=round===3?Math.pow(Math.max(0,Math.sin(i*5.7+c*8.9+j*2.8+t*8)),20):0;
+     slopeColor.multiplyScalar(active?(.65+fan*.24+chase*.65+sparkle*.4+crystal*.90)*candyPulse:(.20+.10*fan));
+     if(round===3&&crystal>.7)slopeColor.lerp(new THREE.Color('#fffdfa'),crystal*.65);
     }
     warmLEDs.setColorAt(k,slopeColor);halos.setColorAt(k,slopeColor);
    }
