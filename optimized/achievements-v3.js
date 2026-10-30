@@ -27,16 +27,23 @@ const originalCapture=recordBook.capture.bind(recordBook),track=new WeakMap();
 recordBook.capture=function(a){
  const result=originalCapture(a);
  if(!a?.engines)return result;
- let seen=track.get(a);if(!seen||seen.token!==a.token){seen={token:a.token,done:false};track.set(a,seen);}
- const e=a.engines[1];
- if(!seen.done&&a.paid?.[1]&&e?.processed===8&&a.enabled?.[1]){
-   seen.done=true;bump('gamesChoco');
-   peak('bestDepth',e.depth||0);peak('bestAdvance',Math.max(0,(e.depth||0)-(e.startDepth||0)));
-   bump('blocks',e.roundBlocks||0);bump('ores',e.roundChests||0);peak('bestOres',e.roundChests||0);
-   peak('maxChocoWin',a.roundWins?.[1]||0);bump('chocoWinTotal',a.roundWins?.[1]||0);bump('cookieWinTotal',a.roundWins?.[0]||0);bump('dropWinTotal',a.roundWins?.[2]||0);
-   if((a.roundWins?.[1]||0)>0)bump('successGames');
-   // Ore type, bonus and drill milestones are recorded by event handler below.
-   result.changed=true;
+ let seen=track.get(a);if(!seen||seen.token!==a.token){seen={token:a.token,paid:[false,false,false]};track.set(a,seen);}
+ for(let i=0;i<3;i++){
+  const engine=a.engines[i];
+  if(seen.paid[i]||!a.paid?.[i]||!a.enabled?.[i]||engine?.processed!==8)continue;
+  seen.paid[i]=true;
+  const amount=Math.max(0,Number(a.roundWins?.[i])||0);
+  bump(['cookieWinTotal','chocoWinTotal','dropWinTotal'][i],amount);
+  if(i===1){
+   bump('gamesChoco');
+   peak('bestDepth',engine.depth||0);
+   peak('bestAdvance',Math.max(0,(engine.depth||0)-(engine.startDepth||0)));
+   bump('blocks',engine.roundBlocks||0);
+   bump('ores',engine.roundChests||0);
+   peak('bestOres',engine.roundChests||0);
+   peak('maxChocoWin',amount);
+   if(amount>0)bump('successGames');
+  }
  }
  flush();return result;
 };
