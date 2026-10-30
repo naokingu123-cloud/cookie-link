@@ -7388,7 +7388,7 @@ function startAnima8(){
   if(draw.state==='complete')return {name:'DRAW END',lines:['DRAW','END'],hue:.12,index:5};
   const index=Math.min(4,draw.displayGroup||0);return {...NORMAL_STAGES[index],index};
  }
- const LED_TRANSITION_SECONDS=.9;
+ const LED_TRANSITION_SECONDS=2.4; // Smooth changes between normal/JPC stages
  let slopePhaseKey='',slopeTransitionStart=-Infinity,slopePrevious=null;
  function ledTransitionProgress(start){const u=Math.max(0,Math.min(1,(physics.time-start)/LED_TRANSITION_SECONDS));return u*u*(3-2*u);}
  function updateSlopeLights(){
@@ -7399,11 +7399,10 @@ function startAnima8(){
   if(!normal&&!jpc)return;
   const phase=normal?normalStage():null,stage=jpc?Math.min(3,jpcRound()):Math.max(0,Math.min(4,phase.index)),pal=jpc?jpPal[stage]:normalPal[stage],angle=physics.angle,reachIndex=jpc?jpcReachPocket():-1;
   const highest=normal&&!phase.bet&&draw.state!=='complete'&&[...(hooks.getReachTiers?.()||new Map()).values()].includes(3);
-  if(normal){
-   root.dataset.highestReach=String(highest);
-   if(slopePhaseKey!==phase.name){slopePrevious=warmLEDs.instanceColor.array.slice();slopeTransitionStart=slopePhaseKey?t:-Infinity;slopePhaseKey=phase.name;}
-  }
-  const blend=normal?ledTransitionProgress(slopeTransitionStart):1;
+  if(normal)root.dataset.highestReach=String(highest);
+  const ledPhaseKey=(jpc?'jpc-'+stage+'-'+(draw.state==='ready'?'ready':'active'):'normal-'+phase.name);
+  if(slopePhaseKey!==ledPhaseKey){slopePrevious=warmLEDs.instanceColor.array.slice();slopeTransitionStart=slopePhaseKey?t:-Infinity;slopePhaseKey=ledPhaseKey;}
+  const blend=ledTransitionProgress(slopeTransitionStart);
   for(let i=0;i<25;i++)for(let c=0;c<3;c++)for(let j=0;j<15;j++){
    const u=(i+(c-1)*.28)/25,r=j/14,k=i*45+c*15+j,breath=.5+.5*Math.sin(t*1.25+u*TAU);
    const wave=Math.pow(.5+.5*Math.cos(TAU*(r*1.6-t*.24)),4);
@@ -7418,27 +7417,31 @@ function startAnima8(){
    if(jpc){
     // Switch between parallel waves, radial flashes, checkerboard, meteors, fireworks.
     const checker=(Math.floor(u*25/2)+Math.floor(r*9)+Math.floor(t*(1.2+stage*.45)))%2? .36:1;
-    const pattern=Math.floor(t/3.4)%5;
-    intensity=[.38+.56*wave,.4+.58*rays,.38+.6*checker,.39+.59*meteor,.37+.65*firework][pattern];
+    // Each pattern stays for 12 seconds; blend across the last 3 seconds.
+    const patternTime=t/12,pattern=Math.floor(patternTime)%5,patternNext=(pattern+1)%5;
+    const edge=patternTime-Math.floor(patternTime),transition=Math.max(0,Math.min(1,(edge-.75)/.25));
+    const smooth=transition*transition*(3-2*transition);
+    const patterns=[.58+.48*wave,.60+.46*rays,.59+.48*checker,.58+.49*meteor,.57+.53*firework];
+    intensity=patterns[pattern]*(1-smooth)+patterns[patternNext]*smooth;
     intensity=(intensity+.15*spark+stage*.12*spark)*(.7+stage*.24);
     if(stage===3)intensity+=.35*meteor+.35*firework;
-    if(draw.state==='ready')intensity*=.25;
+    if(draw.state==='ready')intensity*=.88;
     const pocket=((Math.round((angle/TAU-u)*25)%25)+25)%25;
     if(pocket===reachIndex){slopeColor.setRGB(1,.01,.02);intensity=1.6+.6*breath;}
     else if(reachIndex>=0){slopeColor.lerp(reachGold,.55);intensity=Math.max(intensity,1.2);}
     if(jackpotPocket>=0){slopeColor.lerp(celebrationGold,.4+.4*firework);intensity=Math.max(intensity,1.1+firework);}
    }else if(draw.state==='complete'){
     slopeColor.set('#a9bfdc').lerp(new THREE.Color('#d8c8f0'),.25+.25*breath);
-    intensity=.11+.06*breath;
+    intensity=.52+.10*breath;
    }else if(phase.bet){
     slopeColor.set('#bce3e4').lerp(new THREE.Color('#f2d6e5'),.35+.2*breath);
-    intensity=.16+.1*breath;
+    intensity=.57+.12*breath;
    }else{
-    intensity=[.18+.13*breath+.08*wave,.22+.16*breath+.17*wave,.26+.18*stripe+.15*spark,.31+.2*rays+.17*wave+.15*spark,.38+.23*rays+.22*wave+.21*spark][stage];
+    intensity=[.60+.15*breath+.13*wave,.62+.17*breath+.17*wave,.63+.19*stripe+.16*spark,.65+.22*rays+.18*wave+.14*spark,.68+.23*rays+.22*wave+.21*spark][stage];
     if(highest)intensity+=.12+.12*spark;
    }
    slopeColor.multiplyScalar(intensity);
-   if(normal&&blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
+   if(blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
    warmLEDs.setColorAt(k,slopeColor);halos.setColorAt(k,slopeColor);
   }
   warmLEDs.instanceColor.needsUpdate=true;halos.instanceColor.needsUpdate=true;
