@@ -2685,7 +2685,7 @@ const NORMAL_SUGAR_NAMES=Object.freeze(['シュガーⅠ','シュガーⅡ','シ
 const DIRECT_JPC_SUGAR_TIER=6;
 const WONDER_NAMES=[...NORMAL_SUGAR_NAMES,'シュガーⅤ','虹色シュガー'];
 const RAINBOW_SUGAR_CHANCE=1/10000;
-// Debug override: force the first awarded sugar of each round to be rainbow.
+// Debug override: replace a sugar already on the board as soon as the game starts.
 let debugForceRainbowSugar=false;
 const NORMAL_DRAW_GROUPS=Object.freeze([3,2,1,1,1]);
 const MINI_RESULT_MS=1800;
@@ -5002,7 +5002,7 @@ class Arcade{
   Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
   for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:i===2?CandyCarnivalEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
-   if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>{const force=debugForceRainbowSugar&&!this.debugRainbowIssued;const rainbow=force||Math.random()<RAINBOW_SUGAR_CHANCE;if(force)this.debugRainbowIssued=true;return rainbow?{...step,game:i,kind:'direct-jpc',directJpc:true,tier:6}:{...step,game:i};}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
+   if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>{return {...step,game:i};}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
    if(ev.phase==='complete'&&!this.paid[i]&&this.enabled[i]&&this.phase==='playing'){
     this.paid[i]=true;this.roundWins[i]=medalWin(this.locked[i],e.totalHundredths);
     if(this.enabled.every((yes,j)=>!yes||this.paid[j]))this.finishRound();
@@ -5023,7 +5023,32 @@ class Arcade{
  start(){
   if(this.phase!=='ready'||!this.bets.some(n=>n>0)||this.drawSource?.ready===false)return false;
   this.debugRainbowIssued=false;this.enabled=this.bets.map(n=>n>0);this.locked=[...this.bets];this.paid=[false,false,false];this.roundWins=[0,0,0];this.totalWin=0;this.payout=null;this.result=null;this.fastForward=false;this.engines.forEach(e=>e.presentationRate=1);this.displayCredit=this.credit;this.draws=[];this.phase='playing';this.dealing=true;
-  const token=++this.token;this.engines.forEach((e,i)=>{e.roundBet=this.locked[i];if(this.enabled[i])e.start();});this.onChange(this);
+  const token=++this.token;
+  // Rainbow is decided at round start, and replaces the on-board sugar rather
+  // than being awarded automatically when a normal sugar is collected.
+  const rainbow=(debugForceRainbowSugar||this.random()<RAINBOW_SUGAR_CHANCE);
+  let rainbowBoard=-1;
+  if(rainbow&&this.enabled[0]){
+   const e=this.engines[0],candidates=[];
+   for(let r=0;r<SIZE;r++)for(let col=0;col<SIZE;col++){
+    const tile=e.board[r][col];
+    if(tile&&!tile.special&&tile.number==null)candidates.push(tile);
+   }
+   const tile=candidates.length?candidates[Math.floor(this.random()*candidates.length)]:null;
+   if(tile){
+    // Keep the original sugar's value and replace only its identity/art.
+    const original=e.wonderToken||e.basketState?.[e.wonderColumn]?.pending?.[0];
+    const step={id:++e.stepUid,value:original?.value||Math.max(1,this.locked[0]),tier:6,kind:'direct-jpc',directJpc:true};
+    for(const row of e.board)for(const t of row)if(t?.step)t.step=null;
+    tile.step=step;e.wonderToken=step;e.wonderIssued=true;e.wonderCollected=false;
+    const basket=e.basketState[e.wonderColumn];
+    if(basket){basket.pending.length=0;basket.remaining=0;}
+    this.debugRainbowIssued=true;rainbowBoard=0;
+   }
+  }
+  this.engines.forEach((e,i)=>{e.roundBet=this.locked[i];if(this.enabled[i])e.start();});
+  this.onChange(this);
+  if(rainbowBoard>=0)this.onEvent(rainbowBoard,{phase:'rainbowappear'},this.engines[rainbowBoard],this);
   if(this.drawSource){try{this.drawSource.start({token,onNumber:n=>this.acceptNumber(n,token),onError:message=>this.failDraw(message,token)});}catch(error){this.failDraw(error.message,token);return false;}}else this.deal(token);return true;
  }
  async wait(ms,token){let remaining=ms;while(remaining>0&&token===this.token){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.token;}
@@ -6353,7 +6378,7 @@ function drawAchievementTicker(now){
  ticker.node.style.transform='translateX('+ticker.current.x+'px)';
  if(ticker.current.x< -ticker.node.offsetWidth-10)ticker.current=null;ticker.frame=requestAnimationFrame(drawAchievementTicker);
 }
-function recordEvent(i,ev,e,a){event(i,ev,e,a);achievementEvent(i,ev,e,a);if(ev.phase==='stepcollect'){const rainbow=a.wonderBank.some(t=>t.game===i&&isDirectJpcSugar(t)&&!t.announced);if(rainbow){for(const t of a.wonderBank)if(t.game===i&&isDirectJpcSugar(t))t.announced=true;select(i);showSugarCutin('虹色シュガー出現!!','次ゲームは直接JPCへ！',true);}}if(ev.phase==='complete')recordChanged(a);}
+function recordEvent(i,ev,e,a){if(ev.phase==='rainbowappear'){select(i);showSugarCutin('🌈 虹色シュガー出現!!','獲得すると次ゲームは直接JPC！',true);scheduleUI(a);return;}event(i,ev,e,a);achievementEvent(i,ev,e,a);if(ev.phase==='stepcollect'){const rainbow=a.wonderBank.some(t=>t.game===i&&isDirectJpcSugar(t)&&!t.announced);if(rainbow){for(const t of a.wonderBank)if(t.game===i&&isDirectJpcSugar(t))t.announced=true;select(i);showSugarCutin('虹色シュガー獲得!!','次ゲームは直接JPCへ！',true);}}if(ev.phase==='complete')recordChanged(a);}
 function updateEquippedTitle(){
  const eq=recordBook.data.equipped,def=eq&&TITLE_DEFS.find(t=>t.id===eq.id),label=def?def.name:'';
  const badge=$('equipped-title');badge.hidden=!def;badge.textContent=label;badge.dataset.rarity=def?.rarity??0;
