@@ -7392,67 +7392,53 @@ function startAnima8(){
  let slopePhaseKey='',slopeTransitionStart=-Infinity,slopePrevious=null;
  function ledTransitionProgress(start){const u=Math.max(0,Math.min(1,(physics.time-start)/LED_TRANSITION_SECONDS));return u*u*(3-2*u);}
  function updateSlopeLights(){
-  if(draw.mode==='jpc'){
-   const t=physics.time,round=jpcRound(),active=draw.state!=='ready',angle=physics.angle,reachIndex=jpcReachPocket();
-   for(let i=0;i<25;i++)for(let c=0;c<3;c++)for(let j=0;j<15;j++){
-    const u=(i+(c-1)*.28)/25,r=j/14,k=i*45+c*15+j;
-    // Stationary slope LEDs track the rotating pocket's outward radial line.
-    const pocket=((Math.round((angle/TAU-u)*25)%25)+25)%25;
-    const reach=pocket===reachIndex;
-    const speed=.14+round*.095,fan=.5+.5*Math.cos(TAU*(u*(round+1)-t*speed+r*.22));
-    const chase=Math.pow(Math.max(0,Math.cos(TAU*(r-t*(.55+round*.28)+u*(round+1)))),6-round);
-    const sparkle=round>1?Math.pow(Math.max(0,Math.sin(i*7.1+c*3.7+j*2.3+t*(4+round))),18)*.35:0;
-    if(jackpotPocket>=0){
-     const burst=Math.pow(.5+.5*Math.cos(TAU*(r*1.7-t*1.25+u*3)),3);
-     const gold=Math.pow(.5+.5*Math.sin(TAU*(u*5+t*.8-r*.4)),5);
-     slopeColor.setHSL((u*2+r*.5-t*.38+1)%1,.92,.38+burst*.20);
-     slopeColor.lerp(celebrationGold,gold*.80).multiplyScalar(1.8+burst*.9);
-    }else if(reach){slopeColor.setRGB(1,.006,.012).multiplyScalar(1.5+.7*Math.sin(t*TAU*1.5)**2);}
-    else if(reachIndex>=0){
-     const sweep=.5+.5*Math.cos(TAU*(u*3-t*.65+r*.25));
-     const wave=Math.pow(.5+.5*Math.cos(TAU*(r-t*1.1+u*2)),4);
-     slopeColor.setHSL(.77+sweep*.13,.95,.30+wave*.22);
-     slopeColor.lerp(reachGold,Math.pow(sweep,8)*.7).multiplyScalar(1.5+wave*.7);
-    }else{
-     // Candy-themed stage slope LEDs. Visual only: no physics or payout changes.
-     // 1st: peppermint / fruit candy; 2nd: caramel / chocolate;
-     // 3rd: strawberry-cream frosting; FINAL: rainbow crystal sugar.
-     const sweetPalettes=[
-      ['#ff6dac','#69e9ef','#baff75','#fff1b3'],
-      ['#ffb43c','#ffdc84','#e27b39','#fff1bc'],
-      ['#ffa1d7','#fff1df','#ad7dff','#ffcc70'],
-      ['#ff4d76','#ffbf43','#b8ff61','#4ce8fa','#a17aff','#fffaff']
-     ];
-     const palette=sweetPalettes[Math.min(3,round)];
-     const band=(u*(round===3?7:4)+r*.32-t*(.10+round*.07));
-     const idx=((Math.floor(band*palette.length)%palette.length)+palette.length)%palette.length;
-     const next=(idx+1)%palette.length;
-     const mix=.5+.5*Math.cos(TAU*(band*palette.length));
-     slopeColor.set(palette[idx]).lerp(new THREE.Color(palette[next]),mix*.28);
-     // Candy pieces chase outward; FINAL adds glittering rainbow sugar.
-     const candyPulse=.38+.62*Math.pow(.5+.5*Math.cos(TAU*(r-t*(.48+round*.17)+u*2)),4);
-     const crystal=round===3?Math.pow(Math.max(0,Math.sin(i*5.7+c*8.9+j*2.8+t*8)),20):0;
-     slopeColor.multiplyScalar(active?(.65+fan*.24+chase*.65+sparkle*.4+crystal*.90)*candyPulse:(.20+.10*fan));
-     if(round===3&&crystal>.7)slopeColor.lerp(new THREE.Color('#fffdfa'),crystal*.65);
-    }
-    warmLEDs.setColorAt(k,slopeColor);halos.setColorAt(k,slopeColor);
-   }
-   warmLEDs.instanceColor.needsUpdate=true;halos.instanceColor.needsUpdate=true;return;
+  const t=physics.time,white=new THREE.Color('#fff9ee');
+  const normalPal=[['#f9a9d5','#7fdee8','#b8f5af'],['#ffb855','#ffe8b8','#d58a57'],['#ff9bc6','#dfbbfa','#fff2ed'],['#ff719e','#ffee93','#a9ffae','#83deff'],['#ffd15b','#ff719d','#7ce3ff','#a5f3a3','#c49aff']].map(a=>a.map(x=>new THREE.Color(x)));
+  const jpPal=[['#f8a9d1','#7edee9','#fff3b3'],['#f9ba68','#ffe4a6','#f4a3bb'],['#ff83bc','#a69bfa','#79e8ff'],['#fa6a8f','#fbc34f','#a4fb7c','#75def7','#aa8bff']].map(a=>a.map(x=>new THREE.Color(x)));
+  const normal=draw.mode==='eight',jpc=draw.mode==='jpc';
+  if(!normal&&!jpc)return;
+  const phase=normal?normalStage():null,stage=jpc?Math.min(3,jpcRound()):Math.max(0,Math.min(4,phase.index)),pal=jpc?jpPal[stage]:normalPal[stage],angle=physics.angle,reachIndex=jpc?jpcReachPocket():-1;
+  const highest=normal&&!phase.bet&&draw.state!=='complete'&&[...(hooks.getReachTiers?.()||new Map()).values()].includes(3);
+  if(normal){
+   root.dataset.highestReach=String(highest);
+   if(slopePhaseKey!==phase.name){slopePrevious=warmLEDs.instanceColor.array.slice();slopeTransitionStart=slopePhaseKey?t:-Infinity;slopePhaseKey=phase.name;}
   }
-  if(draw.mode!=='eight')return;
-  const phase=normalStage(),time=physics.time,highest=!phase.bet&&[...(hooks.getReachTiers?.()||new Map()).values()].includes(3);
-  root.dataset.highestReach=String(highest);
-  if(slopePhaseKey!==phase.name){slopePrevious=warmLEDs.instanceColor.array.slice();slopeTransitionStart=slopePhaseKey?time:-Infinity;slopePhaseKey=phase.name;}
-  const blend=ledTransitionProgress(slopeTransitionStart);
+  const blend=normal?ledTransitionProgress(slopeTransitionStart):1;
   for(let i=0;i<25;i++)for(let c=0;c<3;c++)for(let j=0;j<15;j++){
-   const u=(i+(c-1)*.28)/25,r=j/14,n=phase.index;
-   const chase=Math.pow(.5+.5*Math.cos(TAU*(u*(n===1?2:1)-time*(phase.bet?.10:.20+n*.045)+r*(n===2?1.8:.2))),4);
-   const wave=.5+.5*Math.sin(TAU*(r*.65-time*.30));
-   const hue=phase.bet?(u*.35+time*.035)%1:n===3?.96+wave*.09:n===4?(chase>.7?.13:.79):phase.hue;
-   slopeColor.setHSL((hue+1)%1,phase.bet?.62:.94,.18+chase*.35+(n===2?wave*.13:0));const k=i*45+c*15+j;
-   if(blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
-   if(phase.bet){const sweetHues=[.91,.52,.12],band=((Math.floor(u*6-time*.28+r*.45)%3)+3)%3,runner=Math.pow(.5+.5*Math.cos(TAU*(r-time*.65+u*2)),7);slopeColor.setHSL(sweetHues[band],.78,.22+chase*.19+runner*.24);}
-   if(highest){reachRainbowColor(time-r*.8+u*2,slopeColor);slopeColor.multiplyScalar(.7+1.2*(.5+.5*Math.cos(TAU*(time*1.5-r*.5))));}
+   const u=(i+(c-1)*.28)/25,r=j/14,k=i*45+c*15+j,breath=.5+.5*Math.sin(t*1.25+u*TAU);
+   const wave=Math.pow(.5+.5*Math.cos(TAU*(r*1.6-t*.24)),4);
+   const stripe=Math.pow(.5+.5*Math.cos(TAU*(u*4-t*.17)),6);
+   const spark=Math.pow(Math.max(0,Math.sin(i*7.3+j*3.7+c*4.1+t*4)),20);
+   const rays=Math.pow(.5+.5*Math.cos(TAU*(u*9-t*.36)),11);
+   const meteor=Math.pow(.5+.5*Math.cos(TAU*(u*5+r*.5-t*.62)),16);
+   const firework=Math.pow(.5+.5*Math.cos(TAU*(Math.hypot(u-.5,r-.5)*2.4-t*.65)),12);
+   const ci=((Math.floor(u*(stage>=3?9:5)+r*2+t*.05)%pal.length)+pal.length)%pal.length;
+   slopeColor.copy(pal[ci]);
+   let intensity;
+   if(jpc){
+    // Switch between parallel waves, radial flashes, checkerboard, meteors, fireworks.
+    const checker=(Math.floor(u*25/2)+Math.floor(r*9)+Math.floor(t*(1.2+stage*.45)))%2? .36:1;
+    const pattern=Math.floor(t/3.4)%5;
+    intensity=[.38+.56*wave,.4+.58*rays,.38+.6*checker,.39+.59*meteor,.37+.65*firework][pattern];
+    intensity=(intensity+.15*spark+stage*.12*spark)*(.7+stage*.24);
+    if(stage===3)intensity+=.35*meteor+.35*firework;
+    if(draw.state==='ready')intensity*=.25;
+    const pocket=((Math.round((angle/TAU-u)*25)%25)+25)%25;
+    if(pocket===reachIndex){slopeColor.setRGB(1,.01,.02);intensity=1.6+.6*breath;}
+    else if(reachIndex>=0){slopeColor.lerp(reachGold,.55);intensity=Math.max(intensity,1.2);}
+    if(jackpotPocket>=0){slopeColor.lerp(celebrationGold,.4+.4*firework);intensity=Math.max(intensity,1.1+firework);}
+   }else if(draw.state==='complete'){
+    slopeColor.set('#a9bfdc').lerp(new THREE.Color('#d8c8f0'),.25+.25*breath);
+    intensity=.11+.06*breath;
+   }else if(phase.bet){
+    slopeColor.set('#bce3e4').lerp(new THREE.Color('#f2d6e5'),.35+.2*breath);
+    intensity=.16+.1*breath;
+   }else{
+    intensity=[.18+.13*breath+.08*wave,.22+.16*breath+.17*wave,.26+.18*stripe+.15*spark,.31+.2*rays+.17*wave+.15*spark,.38+.23*rays+.22*wave+.21*spark][stage];
+    if(highest)intensity+=.12+.12*spark;
+   }
+   slopeColor.multiplyScalar(intensity);
+   if(normal&&blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
    warmLEDs.setColorAt(k,slopeColor);halos.setColorAt(k,slopeColor);
   }
   warmLEDs.instanceColor.needsUpdate=true;halos.instanceColor.needsUpdate=true;
@@ -7806,12 +7792,25 @@ function startAnima8(){
  el('#a8-jpc-aim').addEventListener('change',()=>{launchPlanner.enabled=el('#a8-jpc-aim').checked;launchPlanner.reset();updateDrawControls();});
  const speedToggle=document.getElementById('roulette-speed');
  let rouletteTimeScale=1;
+ let originalJpcRpm=null,jpcRpmFactor=1;
+ function syncJpcRpm(dt){
+  if(draw.mode!=='jpc'){
+   if(originalJpcRpm!==null)physics.settings.rpm=originalJpcRpm;
+   originalJpcRpm=null;jpcRpmFactor=1;return;
+  }
+  if(originalJpcRpm===null)originalJpcRpm=physics.settings.rpm;
+  // 41st launch onwards, smoothly accelerate the rotor by 38%.
+  const target=physics.serial>=40?1.38:1,alpha=1-Math.exp(-Math.max(0,dt)*1.35);
+  jpcRpmFactor+=(target-jpcRpmFactor)*alpha;
+  physics.settings.rpm=originalJpcRpm*jpcRpmFactor;
+ }
  speedToggle?.addEventListener('click',()=>{rouletteTimeScale=rouletteTimeScale===1?2:1;speedToggle.textContent=rouletteTimeScale+'×';speedToggle.setAttribute('aria-pressed',String(rouletteTimeScale===2));wake();});
  function render(now){
   frame=0;if(disposed)return;
   const drawing=true; // Keep the physical rotor turning before and after the draw.
   if(drawing&&!paused&&now-paintStamp<1000/30){wake();return;}paintStamp=now;
   const elapsed=Math.min((now-last)/1000,.1);last=now;
+  syncJpcRpm(elapsed);
   if(drawing&&!paused&&!document.hidden){accumulator+=elapsed*rate*rouletteTimeScale;let steps=0;while(accumulator>=1/120&&steps<48){draw.update();physics.step();accumulator-=1/120;steps++;}}
   rotor.quaternion.copy(physics.rotor.quaternion);pocketFill.rotation.value=physics.angle;pocketFill.strength.value=brightness;
   for(const ball of physics.balls){const view=ballViews.get(ball.id);if(!view)continue;if(ball.dead){scene.remove(view.mesh,view.trail);view.mesh.geometry.dispose();view.trail.geometry.dispose();view.trail.material.dispose();ballViews.delete(ball.id);continue;}view.mesh.scale.setScalar(ball.radius/DIM.ball);view.mesh.position.copy(ball.body.position);view.mesh.quaternion.copy(ball.body.quaternion);
