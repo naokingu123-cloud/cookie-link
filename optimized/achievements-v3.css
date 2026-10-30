@@ -60,3 +60,6 @@
 #record-page>.debug-colors{display:block!important;position:static!important;max-width:100%;margin:0 0 7px}
 #v4-debug-dock{display:none!important}
 .record-nav #menu-page-debug{white-space:nowrap}
+
+/* Exact 5 x 21 atlas: each of 103 achievements has its own 96px square. */
+.v3-icon{background-image:url('media/title-achievements-103.webp');background-size:500% 2100%;background-repeat:no-repeat;background-color:#bcecf4}
