@@ -487,3 +487,9 @@
 - 17 cells outside the 8-position phrase show cached 20px cookie/cake/drop pixel art in sequence, with small animated glints. The separator between BET and TIME remains blank for readability. Letter brightness gently breathes; sweets use untinted source colors.
 - BET slope LEDs use moving pink/cyan/gold bands and radial chasers; normal/JPC effects unchanged.
 - selected_roulette_browser.py verifies glyph continuity, local LED direction and all 17 icon cells/three kinds, plus selected reach/JPC regression. /tmp/bet-v22.png visual inspection.
+
+## Rewards and themes v23 (2026-10-30)
+- See docs/rewards-and-themes-v23.md (asset prompt + tests). Supersedes v20 landing-first collection: exposed ore collected before falling again.
+- Acquired WIN stays fixed during transfer; zero/reset rarity at completion. Rare red thresholds copper .3/silver .7/gold 4/diamond 15; ultra rainbow 1/5/20/100. Pre-count anticipation and sound, no BGM change.
+- Payout clock no longer depends on selected canvas RAF or caps elapsed time at100ms; pause-aware monotonic ticks. Prediction error clears pending instead of hanging final wait.
+- New generated sugar vine assets/wonder-sugar-vine-v23.webp; five live wells. Per-game palette and slower/lower/larger tab balloons in assets/reward-themes.css, embedded at final inline-style tail.

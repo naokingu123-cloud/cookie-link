@@ -164,8 +164,7 @@ function chocoExcavate(input,attacks,{trace=false,seed=1,uid=Math.max(0,...input
  function surface(){
   const joined=[];
   for(let guard=0;guard<300;guard++){
-   const fallingItems=new Set(chocoFallStep(w.strata).moves.map(v=>v.id));
-   const exposed=[];for(let r=0;r<12;r++)for(let c=0;c<7;c++){const t=w.strata[r][c];if(t?.color<0&&(!['ore','sugar'].includes(t.item)||(!digging&&!fallingItems.has(t.id)))&&w.strata.findIndex(row=>row[c])===r)exposed.push({r,c,tile:{...t}});}
+   const exposed=[];for(let r=0;r<12;r++)for(let c=0;c<7;c++){const t=w.strata[r][c];if(t?.color<0&&w.strata.findIndex(row=>row[c])===r)exposed.push({r,c,tile:{...t}});}
    if(exposed.length){
     const power=exposed.find(v=>CHOCO_POWERS[v.tile.item]);
     if(power){
@@ -385,7 +384,7 @@ function chocoDepthBackground(x,W,H,depth,travel){
 const chocoGemCakeImages=CHOCO_BONUS_GEMS.map(name=>{const image=new Image();image.onload=()=>{for(const s of slots)if(s.engine?.kind==='choco')chocoQueueFrame(s);};image.src='assets/canyon-cakes/'+name+'.webp?v=14';return image;});
 function chocoLogoMarkup(){return '<img class="canyon-logo" src="assets/canyon-title-v2.webp" alt="チョコレートキャニオン">';}
 function setupChocoSlot(s){
- if(s.chocoCanvas)return;s.engine.waitForPayout=async token=>{while(token===s.engine.version&&s.chocoWinCounting){chocoQueueFrame(s);await new Promise(resolve=>setTimeout(resolve,16));}};s.panel.classList.add('choco-panel');s.tab.classList.add('choco-tab');s.holder.classList.add('choco-slot');
+ s.engine.waitForPayout=token=>chocoWaitForPayout(s,token);if(s.chocoCanvas)return;s.panel.classList.add('choco-panel');s.tab.classList.add('choco-tab');s.holder.classList.add('choco-slot');
  s.tab.querySelector('.tab-game-name').innerHTML=chocoLogoMarkup();s.tab.setAttribute('aria-label','チョコレートキャニオン');
  const wrap=document.createElement('div');wrap.className='choco-surface';wrap.innerHTML='<canvas class="choco-canvas" width="860" height="1040" role="img" aria-label="チョコレート鉱山・7列12段"></canvas><div class="choco-status" role="status"></div>';
  const depth=document.createElement('span');depth.className='choco-tab-depth';s.tab.append(depth);s.tabDepth=depth;s.panel.append(wrap);s.chocoCanvas=wrap.querySelector('canvas');s.chocoCtx=s.chocoCanvas.getContext('2d');s.chocoStatus=wrap.querySelector('.choco-status');s.chocoCart=document.createElement('canvas');s.chocoCart.width=190;s.chocoCart.height=150;
@@ -505,25 +504,36 @@ function chocoDrillHeader(x,e,L,fx,p,time,s){
  }
 }
 function chocoSugarDistance(e){const rows=e.strata.map((row,r)=>row.some(t=>t?.item==='sugar')?r:Infinity),distance=Math.min(...rows);return Number.isFinite(distance)?distance:Math.max(0,e.nextSugar-e.depth);}
+function chocoPresentationTime(s,now=performance.now()){
+ const paused=!app||app.paused||document.hidden||!inView;if(s.chocoClockStamp==null)s.chocoClockStamp=now;
+ const stamp=Math.max(now,s.chocoClockStamp);if(!paused)s.chocoTime=(s.chocoTime||0)+(stamp-s.chocoClockStamp);s.chocoClockStamp=stamp;return s.chocoTime||0;
+}
+async function chocoWaitForPayout(s,token){
+ // Advance the presentation clock even when this canvas is not being painted.
+ while(token===s.engine.version){chocoScaleValue(s,s.engine,app.bet(s.i),chocoPresentationTime(s));if(!s.chocoWinCounting)return;chocoQueueFrame(s);await new Promise(resolve=>setTimeout(resolve,16));}
+}
 function chocoPayoutEase(age){const u=Math.max(0,Math.min(2,age/1000));return u<=1?.9*u:.9+.1*(u-1);}
+function chocoOreRarity(tile){const rare={copper:30,silver:70,gold:400,diamond:1500},ultra={copper:100,silver:500,gold:2000,diamond:10000},value=tile?.baseValue??tile?.value??0;return tile?.item!=='ore'?0:value>=ultra[tile.ore]?2:value>=rare[tile.ore]?1:0;}
 function chocoPayoutSample(s,time){
  const a=s.chocoAward;
- if(a.phase==='count')s.chocoAwardValue=a.from+(a.target-a.from)*chocoPayoutEase(time-a.start);
+ if(a.phase==='anticipation')s.chocoAwardValue=a.from;
+ else if(a.phase==='count')s.chocoAwardValue=a.from+(a.target-a.from)*chocoPayoutEase(time-a.start);
  else if(a.phase==='fixed')s.chocoAwardValue=a.target;
- else if(a.phase==='add'){const moved=Math.floor(a.target*chocoPayoutEase(time-a.start));s.chocoAwardValue=a.target-moved;s.chocoOreValue=a.base+moved;}
+ else if(a.phase==='add'){const moved=Math.floor(a.target*chocoPayoutEase(time-a.start));s.chocoAwardValue=a.target;s.chocoOreValue=a.base+moved;}
  else s.chocoAwardValue=0;
- const b=s.chocoDirectBonus,u=Math.max(0,Math.min(1,(time-b.start)/650));s.chocoBonusValue=b.from+(b.target-b.from)*u;
+ const b=s.chocoDirectBonus,u=Math.max(0,Math.min(1,(time-b.start)/650));s.chocoBonusValue=u>=1?b.target:b.from+(b.target-b.from)*u;
 }
 function chocoPayoutSound(s,key,age){if(age<120&&typeof sceneSound==='function'&&s.i===active)sceneSound(key,{volume:.65});}
 function chocoPayoutAdvance(s,time){
  // Resolve transitions and landings in chronological order, including sparse frames.
  for(let guard=0;guard<10000;guard++){
-  const a=s.chocoAward,end=a.phase==='count'?a.start+2000:a.phase==='fixed'?a.start+160:a.phase==='add'?a.start+2000:Infinity;
+  const a=s.chocoAward,end=a.phase==='anticipation'?a.start+(a.rarity===2?1100:700):a.phase==='count'?a.start+2000:a.phase==='fixed'?a.start+160:a.phase==='add'?a.start+2000:Infinity;
   const flight=s.chocoPayoutFlights.filter(f=>!f.landed).sort((a,b)=>a.landAt-b.landAt)[0],land=flight?.landAt??Infinity,next=Math.min(end,land);
   if(next>time||!Number.isFinite(next))break;
   chocoPayoutSample(s,next);
   if(end<=land){
-   if(a.phase==='count'){a.phase='fixed';a.start=next;s.chocoAwardValue=a.target;}
+   if(a.phase==='anticipation'){a.phase='count';a.start=next;}
+   else if(a.phase==='count'){a.phase='fixed';a.start=next;s.chocoAwardValue=a.target;}
    else if(a.phase==='fixed'){a.phase='add';a.start=next;a.base=s.chocoOreValue;chocoPayoutSound(s,'transfer',time-next);}
    else{ s.chocoOreValue=a.base+a.target;s.chocoAwardValue=0;s.chocoAward={phase:'idle',target:0,start:next};
     for(const f of s.chocoPayoutFlights)if(f.held&&!f.landed){f.release=next;f.landAt=next+160;f.held=false;}
@@ -532,7 +542,7 @@ function chocoPayoutAdvance(s,time){
    flight.held=true;flight.landAt=Infinity;
   }else{
    flight.landed=true;s.chocoLandedCart.add(flight.cartIndex);chocoPayoutSound(s,flight.tile?.item==='sugar'?'sugar':'ore',time-next);
-   if(flight.gain>0){s.chocoAward={phase:'count',from:s.chocoAwardValue,target:(a.phase==='idle'?0:a.target)+flight.gain,start:next};}
+   if(flight.gain>0){const rarity=chocoOreRarity(flight.tile),level=Math.max(a.rarity||0,rarity),anticipate=rarity>0||a.phase==='anticipation',keep=a.phase==='anticipation'&&level===(a.rarity||0);s.chocoAward={phase:anticipate?'anticipation':'count',from:s.chocoAwardValue,target:(a.phase==='idle'?0:a.target)+flight.gain,start:keep?a.start:next,rarity:level};if(rarity)chocoPayoutSound(s,rarity===2?'big-bonus':'record',time-next);}
   }
  }
  chocoPayoutSample(s,time);s.chocoAwardPhase=s.chocoAward.phase;
@@ -595,13 +605,13 @@ function chocoOreTable(x,L,W,bet,time){
  const px=L.left+7*L.w+5,py=3,width=W-px-4,height=112;
  if(chocoPayoutFrame.complete&&chocoPayoutFrame.naturalWidth)x.drawImage(chocoPayoutFrame,px,py,width,height);else{x.fillStyle='#412517';x.fillRect(px,py,width,height);}
  chocoText(x,'鉱石配当',px+width/2,py+12,10,'#ffe8aa');
- Object.entries(CHOCO_ORES).forEach(([kind,def],i)=>{const y=py+33+i*22;chocoDrawItem(x,{id:0,item:'ore',ore:kind},px+19,y,23,time,false);const text=medalWin(bet,def.min)+'WIN～';x.save();const size=Math.min(10,(width-37)/Math.max(1,text.length)*1.5);chocoGoldWin(x,text,px+width/2+12,y,size,'center');x.restore();});
+ Object.entries(CHOCO_ORES).forEach(([kind,def],i)=>{const y=py+33+i*22;chocoDrawItem(x,{id:0,item:'ore',ore:kind},px+18,y,23,time,false);const text=String(medalWin(bet,def.min)),suffix='WIN～',textX=px+34;x.save();x.font='700 14px ArcadePayout,Georgia,serif';const digitsWidth=x.measureText(text).width;x.font='700 8px ArcadePayout,Georgia,serif';const suffixWidth=x.measureText(suffix).width,scale=Math.min(1,(width-39)/(digitsWidth+suffixWidth+2));chocoGoldWin(x,text,textX,y,14*scale,'left');chocoGoldWin(x,suffix,textX+digitsWidth*scale+2,y,8*scale,'left');x.restore();});
 }
-function chocoScaleSink(s){return 11*(1-Math.exp(-Math.max(0,(s.chocoWinValue||0)+(s.chocoAwardValue||0))/1800));}
-function chocoSevenSegment(x,value,px,py,width,height,digitCount=6){
+function chocoScaleSink(s){const a=s.chocoAward,untransferred=a?.phase==='add'?Math.max(0,a.target-((s.chocoOreValue||0)-a.base)):(s.chocoAwardValue||0);return 11*(1-Math.exp(-Math.max(0,(s.chocoWinValue||0)+untransferred)/1800));}
+function chocoSevenSegment(x,value,px,py,width,height,digitCount=6,rarity=0,time=0){
  const digits=String(Math.max(0,Math.floor(value))).padStart(digitCount,'0'),step=width/digits.length,w=step*.72,h=height;
  const patterns=[63,6,91,79,102,109,125,7,127,111],segments=[[.15,0,.85,0],[1,.12,1,.43],[1,.57,1,.88],[.15,1,.85,1],[0,.57,0,.88],[0,.12,0,.43],[.15,.5,.85,.5]];
- x.save();x.lineWidth=Math.max(.7,step*.12);x.lineCap='round';for(let i=0;i<digits.length;i++)for(let k=0;k<7;k++){const on=patterns[Number(digits[i])]&(1<<k),a=segments[k];x.strokeStyle=on?'#a5ffd2':'#183b31';x.shadowColor='#74ffb5';x.shadowBlur=on?2:0;x.beginPath();x.moveTo(px+i*step+a[0]*w,py+a[1]*h);x.lineTo(px+i*step+a[2]*w,py+a[3]*h);x.stroke();}x.restore();
+ x.save();x.lineWidth=Math.max(.7,step*.12);x.lineCap='round';for(let i=0;i<digits.length;i++)for(let k=0;k<7;k++){const on=patterns[Number(digits[i])]&(1<<k),a=segments[k];const color=rarity===2?'hsl('+((time*.06+i*43+k*9)%360)+' 100% 68%)':rarity===1?'#ff455d':'#a5ffd2';x.strokeStyle=on?color:rarity?'#3b1820':'#183b31';x.shadowColor=color;x.shadowBlur=on?2:0;x.beginPath();x.moveTo(px+i*step+a[0]*w,py+a[1]*h);x.lineTo(px+i*step+a[2]*w,py+a[3]*h);x.stroke();}x.restore();
 }
 function chocoDetectorFrame(x,px,py,width,height,time){
  x.save();const shell=x.createLinearGradient(px,py,px+width,py+height);shell.addColorStop(0,'#b87a45');shell.addColorStop(.25,'#63371e');shell.addColorStop(.7,'#321d16');shell.addColorStop(1,'#a96332');x.fillStyle=shell;x.strokeStyle='#e5b76b';x.lineWidth=1.5;x.beginPath();x.roundRect(px,py,width,height,9);x.fill();x.stroke();
@@ -630,7 +640,8 @@ function chocoMineUI(x,e,L,fx,p,time,W,H,bet,s){
  const value=chocoScaleValue(s,e,bet,time),sink=chocoScaleSink(s),width=L.left-9,cx=3+width/2;
  x.strokeStyle='#d9c6a0';x.lineWidth=1.5;for(const dx of [-29,8]){x.beginPath();for(let j=0;j<7;j++){const yy=H-114+sink+j*(18-sink)/6,xx=cx+dx+(j%2?3:-3);j?x.lineTo(xx,yy):x.moveTo(xx,yy);}x.stroke();}
  x.fillStyle='#bfa178';x.fillRect(0,H-116+sink,64,4);
- const awardY=H-92;sign(3,awardY,width,35);x.fillStyle='#071d21';x.fillRect(8,awardY+12,width-10,20);chocoText(x,s.chocoAwardPhase==='add'?'合計へ加算':'獲得 WIN',11,awardY+6,7,'#ffe9ae','left');chocoSevenSegment(x,Math.floor(s.chocoAwardValue||0),11,awardY+15,width-35,14,6);chocoText(x,'WIN',width-7,awardY+24,8,'#a5ffd2');
+ const awardY=H-92;sign(3,awardY,width,35);x.fillStyle='#071d21';x.fillRect(8,awardY+12,width-10,20);chocoText(x,s.chocoAwardPhase==='anticipation'?(s.chocoAward.rarity===2?'超レア配当！':'レア配当！'):s.chocoAwardPhase==='add'?'合計へ加算':'獲得 WIN',11,awardY+6,7,'#ffe9ae','left');chocoSevenSegment(x,Math.floor(s.chocoAwardValue||0),11,awardY+15,width-35,14,6,s.chocoAward?.rarity||0,time);chocoText(x,'WIN',width-7,awardY+24,8,'#a5ffd2');
+ if(s.chocoAward?.rarity){const rare=s.chocoAward.rarity,pulse=motionReduced?1:.55+.45*Math.sin(time/180)**2,color=rare===2?'hsl('+(time*.06%360)+' 100% 70%)':'#ff5265';x.save();x.strokeStyle=color;x.shadowColor=color;x.shadowBlur=rare===2?10:6;x.globalAlpha=pulse;x.lineWidth=2;x.beginPath();x.roundRect(3,awardY,width,35,5);x.stroke();if(s.chocoAwardPhase==='anticipation'){x.beginPath();for(let k=0;k<8;k++){const a=k*Math.PI/4,r=8+(time%500)/500*8,xx=cx+Math.cos(a)*r,yy=awardY+21+Math.sin(a)*7;x.moveTo(xx-2,yy);x.lineTo(xx+2,yy);x.moveTo(xx,yy-2);x.lineTo(xx,yy+2);}x.stroke();}x.restore();}
  if(s.chocoAwardPhase==='add'){x.save();x.shadowColor='#83ffbd';x.shadowBlur=7;for(let i=0;i<3;i++){x.globalAlpha=motionReduced?.9:.3+.7*((time/500+i/3)%1);chocoText(x,'▼',30,H-54+i*7,10,'#a5ffd2');}x.restore();}chocoText(x,'TOTAL WIN',9,H-31,6,'#ffe9ae','left');
  const totalWidth=L.left-35;sign(3,H-26,totalWidth,24);x.fillStyle='#071d21';x.fillRect(7,H-23,totalWidth-8,18);chocoSevenSegment(x,value,10,H-21,totalWidth-31,14);chocoText(x,'WIN',totalWidth-7,H-12,8,'#a5ffd2');
 
@@ -644,7 +655,7 @@ function chocoReachReady(s,a){const e=s.engine;return a.bet(s.i)>0&&a.phase!=='r
 function chocoRequestReach(s,e,a){
  if(a.bet(s.i)<=0||a.phase==='ready'||e.processed<1||e.processed>8||e.fx||e.queue.length||e.accepted!==e.processed)return;
  const key=[e.version,e.processed,e.seed,e.totalHundredths].join('/');if(s.chocoReachKey===key)return;s.chocoReachKey=key;const snapshot=e.world(),base=e.totalHundredths,epoch=s.reachEpoch=(s.reachEpoch||0)+1,numbers=[...e.drills.flatMap(d=>d.numbers),...e.lucky.numbers].filter(n=>!a.draws.includes(n));s.reachStatus='pending';let index=0;const results=[];
- function chunk(){if(s.reachEpoch!==epoch||s.chocoReachKey!==key)return;for(let end=Math.min(numbers.length,index+2);index<end;index++){const number=numbers[index],p=chocoPlan(snapshot.strata,[number],snapshot);if(p.gain>0)results.push({number,gain:p.gain,total:base+p.gain,tier:reachTier(base+p.gain,false)});}if(index<numbers.length){setTimeout(chunk,0);return;}results.sort((a,b)=>a.number-b.number);s.reachResults=results;s.tabReachResults=results;s.tabReachBase=base;s.tabReachVersion=e.version;s.reachStatus='ready';s.reachAfterBall=e.processed;chocoQueueFrame(s);scheduleUI(a);}
+ function chunk(){if(s.reachEpoch!==epoch||s.chocoReachKey!==key)return;try{for(let end=Math.min(numbers.length,index+2);index<end;index++){const number=numbers[index],p=chocoPlan(snapshot.strata,[number],snapshot);if(p.gain>0)results.push({number,gain:p.gain,total:base+p.gain,tier:reachTier(base+p.gain,false)});}if(index<numbers.length){setTimeout(chunk,0);return;}results.sort((a,b)=>a.number-b.number);s.reachResults=results;s.tabReachResults=results;s.tabReachBase=base;s.tabReachVersion=e.version;s.reachStatus='ready';s.reachAfterBall=e.processed;chocoQueueFrame(s);scheduleUI(a);}catch(error){failReachPreview(s,epoch,error);}}
  setTimeout(chunk,0);
 }
 const chocoItemCakeCache=new Map();
@@ -783,7 +794,7 @@ function chocoDrawTutorial(s,time,bet,W,H){
 
 function drawChoco(s,now=performance.now()){
  if(s.engine?.kind!=='choco')return;setupChocoSlot(s);const e=s.engine,x=s.chocoCtx,paused=!app||app.paused||document.hidden||!inView,bet=app?.bet(s.i)||0,ready=app?.phase==='ready';
- if(s.chocoClockStamp==null)s.chocoClockStamp=now;if(!paused)s.chocoTime=(s.chocoTime||0)+Math.min(100,Math.max(0,now-s.chocoClockStamp));s.chocoClockStamp=now;
+ chocoPresentationTime(s,now);
  const time=s.chocoTime||0,fx=e.fx;if(fx){if(!paused){if(fx.stamp!=null)fx.elapsed+=Math.max(0,now-fx.stamp);fx.stamp=now;}else fx.stamp=null;}
  const rect=s.chocoCanvas.getBoundingClientRect(),W=430,H=rect.width>0?Math.max(200,W*rect.height/rect.width):520;
  if(s.chocoCanvas.width!==860)s.chocoCanvas.width=860;if(s.chocoCanvas.height!==Math.round(H*2))s.chocoCanvas.height=Math.round(H*2);

@@ -1,0 +1,25 @@
+/* Per-game confectionery palettes and calmer, larger reward balloons. */
+.tab-slot:nth-child(1){--game-pale:#fff0cc;--game-mid:#e9b85e;--game-edge:#a66b29;--game-ink:#643818}
+.tab-slot:nth-child(2){--game-pale:#ecd5c5;--game-mid:#b47a60;--game-edge:#704331;--game-ink:#442416}
+.tab-slot:nth-child(3){--game-pale:#d8f8ff;--game-mid:#7fd3e9;--game-edge:#398fae;--game-ink:#174d6c}
+.tab-slot:before{background:linear-gradient(145deg,var(--game-pale),var(--game-mid));background-clip:padding-box;border-image-slice:20%}
+.tab-slot>.tab,.tab-slot>.tab[aria-selected="true"]{background:linear-gradient(155deg,var(--game-pale),var(--game-mid))!important;border-radius:7px}
+.tab-slot .tab-locked-bet,.tab-slot .reach-strip{background-color:var(--game-mid);border-color:var(--game-edge)}
+.tab-slot .tab-win-bubble{top:-3px;height:29px;border-color:var(--game-edge);background:linear-gradient(var(--game-pale),var(--game-mid));box-shadow:inset 0 0 0 1px #ffffffa0,0 2px 3px #43251860;animation-duration:5.8s}
+.tab-slot .tab-win-bubble{min-width:72px;max-width:98px;padding:2px 5px}
+.tab-slot .tab-win-bubble .tabwin{font-size:19px}.tab-slot .tab-win-bubble .win-word{font-size:10px}
+.tab-slot .tab-sugar{background:linear-gradient(var(--game-pale),var(--game-mid));border-color:var(--game-edge)}
+.tab-slot .tab-win-bubble:after,.tab-slot .tab-sugar:after,.tab-slot .tab-sugar.collected:after{background:var(--game-mid);border-color:var(--game-edge)}
+.tab-slot .mini-result-label{top:57%;width:calc(100% + 2px);padding:6px 3px 7px;background:var(--game-pale);border-color:var(--game-edge);color:var(--game-ink)}
+.tab-slot .mini-result-label:after{background:var(--game-pale);border-color:var(--game-edge)}
+.tab-slot .mini-result-label strong{font-size:13px;line-height:16px}.tab-slot .mini-result-label small{font-size:11px;line-height:14px}
+@keyframes tab-reward-breathe{0%,100%{opacity:.25}25%,65%{opacity:1}85%{opacity:.35}}
+
+/* Five existing hexagon wells nest in the generated confectionery flowers. */
+.arena #sugar-collection{width:200px;height:82px;background:url('assets/wonder-sugar-vine-v23.webp') left 14px / 200px 66px no-repeat!important}
+.arena #sugar-collection .sugar-caption{width:200px;text-align:center;padding-left:0}
+.arena #sugar-collection .sugar-caption em{right:-20px;top:28px}
+.arena #sugar-slots{inset:14px auto auto 0;width:200px;height:66px;display:block}
+.arena #sugar-slots .sugar-slot{position:absolute;left:calc(var(--flower-x) * 1%)!important;top:48%!important;width:20px;height:23.1px;transform:translate(-50%,-50%);margin:0!important}
+#sugar-slots .sugar-slot:nth-child(1){--flower-x:13.5}#sugar-slots .sugar-slot:nth-child(2){--flower-x:32}#sugar-slots .sugar-slot:nth-child(3){--flower-x:50.3}#sugar-slots .sugar-slot:nth-child(4){--flower-x:68.4}#sugar-slots .sugar-slot:nth-child(5){--flower-x:86.8}
+.arena #sugar-slots .sugar-slot .sugar-gem{width:16px;height:18px}
