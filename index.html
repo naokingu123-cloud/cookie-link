@@ -7493,9 +7493,7 @@ function startAnima8(){
      slopeColor.setRGB(.77+.47*star,.30+.71*star,.45+.55*star);
      intensity=1.11+.22*star*(.65+.35*twinkle)+.08*glow;
     }
-    if(highest)intensity+=.10+.12*Math.max(0,twinkle);w
-    ][stage];
-    if(highest)intensity+=.12+.12*starTwinkle*starSeed;
+    if(highest)intensity+=.10+.12*Math.max(0,twinkle);
    }
    slopeColor.multiplyScalar(intensity);
    if(blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
