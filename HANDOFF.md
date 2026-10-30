@@ -481,3 +481,9 @@
 - Canyon ALL is centered over top drills and adjacent to side drills with connecting brackets. Menu color-count row includes depth input (0–999999 integer), editable only in BET; regenerates terrain at absolute depth, resets round presentation, preserves upcoming/exact milestone layer.
 - Cake chain glow is one gradient clipped to the entire connected section, with sparse section-level highlights (not one beam/star set per cell). Ore sparkles remain rank-scaled.
 - .github/tests/selected_roulette_browser.py: selected-only tier switches, actual red/purple shader colors/pulse, rainbow slope, central icons/JPC counter, BET world-angle direction/glyph ring, depth boundary/terrain validation, one continuous section gradient.
+
+## BET LED sweets v22 (2026-10-30)
+- BET TIME now advances counterclockwise relative to the numbered LED cells at 2 cells/sec, independently of rotor rotation (supersedes v21 world-angle compensation).
+- 17 cells outside the 8-position phrase show cached 20px cookie/cake/drop pixel art in sequence, with small animated glints. The separator between BET and TIME remains blank for readability. Letter brightness gently breathes; sweets use untinted source colors.
+- BET slope LEDs use moving pink/cyan/gold bands and radial chasers; normal/JPC effects unchanged.
+- selected_roulette_browser.py verifies glyph continuity, local LED direction and all 17 icon cells/three kinds, plus selected reach/JPC regression. /tmp/bet-v22.png visual inspection.

@@ -21,14 +21,15 @@ with sync_playwright() as pw:
  # Debug values are validated and create actual terrain at absolute depth (including exact milestones).
  depth=page.evaluate("""()=>{const q=__qa,input=document.querySelector('#canyon-debug-depth'),e=q.slots[1].engine;input.value='500';if(!q.setCanyonDebugDepth())throw Error('debug refused');if(e.depth!==500||e.startDepth!==500||!e.strata[0].every(t=>t.bonusDepth===500))throw Error('depth terrain');input.value='-1';if(q.setCanyonDebugDepth()||e.depth!==500)throw Error('negative depth accepted');input.value='490';q.setCanyonDebugDepth();if(!e.strata[10].every(t=>t.bonusDepth===500))throw Error('next bonus depth');q.app.phase='playing';input.value='900';if(q.setCanyonDebugDepth()||e.depth!==490)throw Error('mid-round mutation');q.app.phase='ready';input.value='490';q.openRecordMenu();return {depth:e.depth,bonusRow:10};}""")
  page.screenshot(path='/tmp/canyon-depth-menu.png');page.evaluate('__qa.closeRecordMenu();__qa.resume();__qa.driver.draw.state="ready"')
- # Complete glyph ring, one unbroken phrase, world-space counterclockwise progression.
+ # Complete glyph ring; phrase moves counterclockwise across the LED cells themselves.
  page.wait_for_function('__qa.driver.ledState.betLetters.join("").includes("BET TIME")||(__qa.driver.ledState.betLetters.join("")+__qa.driver.ledState.betLetters.join("")).includes("BET TIME")')
  frames=[]
  for _ in range(3):
   frames.append(page.evaluate('({state:__qa.driver.ledState,time:__qa.driver.physics.time,angle:__qa.driver.physics.angle})'));page.wait_for_timeout(600)
  for f in frames:
   letters=''.join(f['state']['betLetters']);assert len(letters)==25 and (letters+letters).count('BET TIME') in [1,2],letters
-  i=letters.index('B');world=f['angle']-i*6.283185307179586/25;target=f['time']*.35;error=(world-target)%6.283185307179586;assert error>6.283185307179586-.27 or error<.01,(world,target,error)
+  i=letters.index('B');expected=(-int(f['time']*2))%25;assert i==expected,(i,expected);icons=f['state']['betIcons'];assert sum(v is not None for v in icons)==17;assert set(v for v in icons if v is not None)=={0,1,2}
+ page.screenshot(path='/tmp/bet-v22.png')
  # Selected board only, including Canyon's separate reach lifecycle.
  fixture=page.evaluate("""()=>{const q=__qa,a=q.app;a.phase='playing';a.locked=[100,100,100];a.enabled=[true,true,true];a.draws=[24,25];q.driver.draw.state='complete';for(const s of q.slots){const e=s.engine;e.phase='settled';e.busy=false;e.queue=[];e.opening=false;e.transitionPending=false;e.processed=s.i===1?2:0;e.accepted=e.processed;e.drawn=new Set();e.fx=null;s.reachEpoch++;s.reachStatus='ready';s.reachBoardKey=q.reachContextKey(e,a);s.tabReachVersion=e.version;s.reachResults=s.i===0?[{number:3,tier:1},{number:4,tier:2},{number:5,tier:3}]:s.i===1?[{number:7,tier:2}]:[];}q.select(0);return [...q.rouletteReachTiers()];}""");assert fixture==[[3,1],[4,2],[5,3]],fixture
  page.wait_for_function('__qa.driver.ledState.reachTiers[4]===3&&__qa.driver.ledState.highestSlope');first=page.evaluate('__qa.driver.ledState');assert first['reachTiers'][2:5]==[1,2,3]
