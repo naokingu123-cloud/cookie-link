@@ -7412,7 +7412,9 @@ function startAnima8(){
    const rays=Math.pow(.5+.5*Math.cos(TAU*(u*9-t*.36)),11);
    const meteor=Math.pow(.5+.5*Math.cos(TAU*(u*5+r*.5-t*.62)),16);
    const firework=Math.pow(.5+.5*Math.cos(TAU*(Math.hypot(u-.5,r-.5)*2.4-t*.65)),12);
-   const ci=((Math.floor(u*(stage>=3?9:5)+r*2+t*.05)%pal.length)+pal.length)%pal.length;
+   // Stable candy-color regions during each normal stage. No moving angular color wheel.
+   const ci=jpc?((Math.floor(u*(stage>=3?9:5)+r*2+t*.05)%pal.length)+pal.length)%pal.length:
+     ((Math.floor(u*(stage>=3?8:5))+Math.floor(r*3))%pal.length+pal.length)%pal.length;
    slopeColor.copy(pal[ci]);
    let intensity;
    if(jpc){
@@ -7443,8 +7445,27 @@ function startAnima8(){
     slopeColor.set('#bce3e4').lerp(new THREE.Color('#f2d6e5'),.35+.2*breath);
     intensity=.82+.09*breath;
    }else{
-    intensity=[.85+.10*breath+.10*wave,.89+.11*breath+.12*stripe,.94+.13*petalPulse(u,r,t)+.13*spark,.98+.16*rays+.13*wave+.09*spark,1.04+.17*rays+.15*wave+.13*spark][stage];
-    if(highest)intensity+=.12+.12*spark;
+    // Each ball group keeps ONE motif throughout its full duration:
+    // 1-3: pastel candy stripes; 4-5: breathing sugar bands;
+    // 6: twinkling sugar crystals; 7: diamond checker lattice; 8: bright star confetti.
+    // All motions pulse in place; there is no spiral, rotating stripe or angular travelling wave.
+    const sugarStripe=Math.pow(.5+.5*Math.cos(TAU*u*5),8);
+    const softBands=Math.pow(.5+.5*Math.cos(TAU*r*3),6);
+    const sugarCrystal=Math.pow(.5+.5*Math.cos(TAU*(u*10+r*4)),14);
+    const checkerCell=(Math.floor(u*25/2)+Math.floor(r*9))%2;
+    const diamond=Math.pow(.5+.5*Math.cos(TAU*(u*8+r*5)),12)*Math.pow(.5+.5*Math.cos(TAU*(u*8-r*5)),12);
+    const starSeed=Math.pow(Math.max(0,Math.sin(i*12.9898+j*7.233+c*3.71)),10);
+    const slowGlow=.5+.5*Math.sin(t*(.65+stage*.13));
+    const crystalTwinkle=.5+.5*Math.sin(t*1.7+i*2.37+j*1.13);
+    const starTwinkle=.5+.5*Math.sin(t*2.1+i*3.73+j*1.89);
+    intensity=[
+      .97+.20*sugarStripe+.09*slowGlow,
+      1.00+.22*softBands+.12*slowGlow,
+      1.03+.25*sugarCrystal*crystalTwinkle+.10*slowGlow,
+      1.08+.22*(checkerCell?1:.35)+.23*diamond*crystalTwinkle,
+      1.14+.28*starSeed*starTwinkle+.16*diamond+.08*slowGlow
+    ][stage];
+    if(highest)intensity+=.12+.12*starTwinkle*starSeed;
    }
    slopeColor.multiplyScalar(intensity);
    if(blend<1&&slopePrevious){const off=k*3;slopeColor.setRGB(slopePrevious[off]*(1-blend)+slopeColor.r*blend,slopePrevious[off+1]*(1-blend)+slopeColor.g*blend,slopePrevious[off+2]*(1-blend)+slopeColor.b*blend);}
