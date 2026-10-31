@@ -167,7 +167,8 @@ try{
  function paintOne(item,data){
    if(!data?.engine)return false;
    const group=item.game,id=data.id,e=data.engine;
-   if(data.selected)return true;
+   // Only the currently selected mini button is hidden by the caller.
+   // A board with the same index in either inactive game STILL renders.
    let view=views.get(id);
    if(!view||view.base.engine!==e){
      view=createBase(data,group);views.set(id,view);
