@@ -623,3 +623,95 @@ body.twelve-mini-tabs-v16 #tabs .mini-four-reach-badge[data-tier="3"]::after{
     animation:none!important;
   }
 }
+
+/* v20: reclaim a few lateral pixels from gutters without expanding the
+   overall 430px game cabinet, and avoid 2-digit reach edge cropping. */
+body.twelve-mini-tabs-v16 #tabs{
+  width:calc(100% + 4px)!important;
+  margin-left:-2px!important;
+  margin-right:-2px!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  column-gap:3px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .tab-slot{
+  min-width:0!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-grid{
+  left:0!important;
+  right:0!important;
+  column-gap:1px!important;
+  row-gap:2px!important;
+  padding:0!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell{
+  padding:1px!important;
+  min-width:0!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach{
+  gap:1px!important;
+  overflow:hidden!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-badge{
+  width:19px!important;
+  min-width:19px!important;
+  flex:0 0 19px!important;
+  font-size:5.8px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digits{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-page>.mini-four-reach-digit{
+  font-size:10.5px!important;
+  letter-spacing:-1px!important;
+  min-width:0!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  transform:scaleX(.91)!important;
+  transform-origin:center center!important;
+}
+/* The 8-degree payout badge used to touch the clipped far-left edge.
+   Keep its whole tilted outline WITHIN each mini tab. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+  left:5px!important;
+  top:4px!important;
+  right:auto!important;
+  max-width:calc(100% - 25px)!important;
+  min-width:0!important;
+  padding:0 3px!important;
+  overflow:visible!important;
+  transform:rotate(-8deg)!important;
+  transform-origin:50% 50%!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay::after{
+  bottom:-3px!important;
+}
+/* The selected one of twelve previews shows "選択中" instead of redrawing
+   its small board. Other miniatures and reach/payout/sugar stay unchanged. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-selected-label{
+  display:none!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell.is-selected-mini{
+  border:1.5px solid #ffde8a!important;
+  box-shadow:0 0 4px #ffe29a88,inset 0 0 5px #fff6c066!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell.is-selected-mini .mini-four-canvas{
+  display:none!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell.is-selected-mini .mini-four-selected-label{
+  display:flex!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-height:22px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  color:#ffe9a2!important;
+  font:1000 12px/1.25 "Hiragino Maru Gothic ProN",system-ui,sans-serif!important;
+  letter-spacing:.1px!important;
+  -webkit-text-stroke:.25px #aa417e!important;
+  text-shadow:0 1px 2px #5b2b69,0 0 4px #ff9db9!important;
+  background:radial-gradient(ellipse,rgba(255,231,166,.22),transparent 75%)!important;
+  border-radius:5px!important;
+  white-space:nowrap!important;
+}
