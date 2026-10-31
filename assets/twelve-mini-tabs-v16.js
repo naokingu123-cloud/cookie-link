@@ -160,12 +160,13 @@ try{
       // changes the highlighted preview, NOT the underlying paid engine.
       selectedByGame[game]=index;
       if(original?.getAttribute('aria-selected')!=='true')original?.click();
+      window.sweets12Live?.selectBoard(game,index);
       updateSelection();
     });
    }
    host.append(grid);
   }
-  document.body.classList.add('twelve-mini-tabs-v16');
+  // Mode visibility is now controlled by the 3/12-menu service.
   installed=true;return true;
  }
  function renderReach(node,numbers,pageIndex=0){
@@ -216,6 +217,76 @@ try{
       ()=>incoming.classList.remove('mini-four-reach-page-enter'),{once:true});
   }else node.replaceChildren(incoming);
  }
+ /* Authentic mini-rendering uses engine-owned boards, not seeded demo art. */
+ function paintReal(item,data,skipCanvas=false){
+  const {game,ctx,phase,reachDigits,payAmount,sugar,cell}=item;
+  const {engine:e,enabled,bet,score}=data;
+  if(!e)return;
+  if(!skipCanvas){
+   const w=48,h=48;
+   ctx.clearRect(0,0,w,h);
+   ctx.fillStyle=game===0?'#372a2c':game===1?'#34252e':'#d8b8ee';
+   ctx.fillRect(0,0,w,h);
+   if(game===0 && Array.isArray(e.board)){
+    const a=Array.isArray(e.board)?e.board:[];
+    const count=a.length||6,cellSize=44/count;
+    for(let row=0;row<a.length;row++)for(let col=0;col<(a[row]?.length||0);col++){
+      const t=a[row][col];if(!t)continue;
+      let c=palette.cookie[(Number(t.color)||0)%palette.cookie.length]||'#dca36f';
+      ctx.fillStyle=c;
+      ctx.beginPath();ctx.roundRect(2+col*cellSize,2+row*cellSize,cellSize-.5,cellSize-.5,1);ctx.fill();
+      if(t.step){ctx.fillStyle='#fff8ab';ctx.fillRect(3+col*cellSize,3+row*cellSize,Math.max(1,cellSize-3),1.5);}
+      if(t.number!=null){ctx.font='bold 3.8px system-ui';ctx.fillStyle='#54263e';ctx.textAlign='center';ctx.fillText(String(t.number),2+(col+.5)*cellSize,2+(row+.66)*cellSize);}
+    }
+   }else if(game===1&&Array.isArray(e.strata)){
+    const ww=6.05,hh=3.56,top=3.5;
+    for(let row=0;row<Math.min(12,e.strata.length);row++)
+     for(let col=0;col<7;col++){
+      const t=e.strata[row]?.[col];if(!t)continue;
+      let c=Number(t.color)<0?'#ffe099':
+        palette.canyon[Math.max(0,(Number(t.color)||0)%palette.canyon.length)];
+      ctx.fillStyle=c;ctx.fillRect(3+col*ww,top+row*hh,ww-.35,hh-.25);
+      if(t.item==='fruit'||t.item==='ore'||t.item==='sugar'){
+       ctx.fillStyle=t.item==='sugar'?'#de93ff':'#ffe48a';
+       ctx.fillRect(4+col*ww,top+row*hh+.7,Math.max(1,ww-2),Math.max(1,hh-1.6));
+      }
+     }
+    ctx.textAlign='right';ctx.font='bold 5px system-ui';ctx.fillStyle='#ffda97';
+    ctx.fillText((e.depth||0)+'m',46,47);
+   }else if(game===2&&Array.isArray(e.pyramid)){
+    const rows=e.pyramid.length||10,dy=41/Math.max(1,rows-1);
+    for(let row=0;row<rows;row++){
+      const a=e.pyramid[row]||[],cols=a.length||8;
+      const diam=4.7,step=5.15;
+      const left=24-(cols-1)*step/2;
+      for(let col=0;col<a.length;col++){
+       const t=a[col];if(!t)continue;
+       let n=Number(t.color);
+       if(!Number.isFinite(n))n=['lime','green','aqua','navy','yellow','orange'].indexOf(t.color);
+       const colors=palette.drop;
+       ctx.beginPath();ctx.arc(left+col*step,3+row*dy,diam*.5,0,Math.PI*2);
+       ctx.fillStyle=colors[Math.abs(n||0)%colors.length];ctx.fill();
+       ctx.strokeStyle='#fff1e1';ctx.lineWidth=.35;ctx.stroke();
+       if(t.sugar){ctx.fillStyle='#fff8bb';ctx.fillRect(left+col*step-.6,3+row*dy-.6,1.2,1.2);}
+      }
+    }
+   }
+  }
+  item.phase.textContent=String(data.status||'準備').slice(0,5);
+  item.cell.classList.toggle('is-disabled-mini',!enabled);
+  // Real calculated reward, original Gold/SweetMedal text.
+  payAmount.textContent=Number(score||0).toLocaleString('ja-JP');
+  sugar.classList.toggle('is-collected',!!data.sugar);
+  sugar.title=data.sugar?'シュガー獲得済み':'シュガー未獲得';
+  renderReach(reachDigits,data.reach||[],Math.floor(Date.now()/2000));
+  // Header remains distinguishable when users rename individual boards.
+  const badge=cell.querySelector('.mini-four-number');
+  if(badge){
+    const v=String(data.name||'').trim();
+    badge.textContent=(v.length<=5?v:keys[game]+(item.index+1));
+    badge.title=v;
+  }
+ }
  function paint(item,live,skipCanvas=false){
   const {ctx,index,game,phase,reachDigits,payAmount,sugar,host}=item;
   if(index>0){
@@ -253,7 +324,8 @@ try{
     host.querySelector('.mini-four-grid')?.classList.toggle('game-selected',gameSelected);
     for(const item of ITEMS){
       if(item.game!==game)continue;
-      const chosen=gameSelected&&item.index===selectedByGame[game];
+      const selectedIndex=window.sweets12Live?.selected?.[game]??selectedByGame[game];
+      const chosen=gameSelected&&item.index===selectedIndex;
       item.cell.classList.toggle('is-selected-mini',chosen);
       item.cell.setAttribute('aria-pressed',String(chosen));
       const previewOnly=chosen&&item.index>0;
@@ -265,21 +337,21 @@ try{
  }
  function update(){
   if(!installed&&!build())return;
+  const liveService=window.sweets12Live;
+  if(liveService?.mode!=='12')return;
   updateSelection();
   if(document.hidden)return;
   const states=hosts.map((h,g)=>stateFor(h,g));
-  // Avoid drawing the hidden thumbnail: keep selected board text only.
   for(const item of ITEMS){
     const isCurrent=item.cell.classList.contains('is-selected-mini');
-    if(!isCurrent)paint(item,states[item.game]);
-    else{
-      // Still update reach, payout, and sugar, but skip thumbnail painting.
-      paint(item,states[item.game],true);
-    }
+    const actual=liveService.getBoard(item.game,item.index);
+    if(actual)paintReal(item,actual,isCurrent);
+    else paint(item,states[item.game],isCurrent);
   }
  }
- update();
- period=setInterval(update,650);
+ // Deferred until the main Arcade and v21 independent board service exist.
+ setTimeout(update,35);
+ period=setInterval(update,350);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)update();});
  window.addEventListener('pagehide',()=>clearInterval(period),{once:true});
  window.sweetsTab12Layout={get boards(){return ITEMS.length;},get trial(){return true;}};
