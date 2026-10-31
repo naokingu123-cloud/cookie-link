@@ -237,3 +237,20 @@ body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-value{
  background:#723d65!important;color:#fff0a1!important;
  border-radius:8px!important;
 }
+
+/* Sharp source-image fix: directly composite the genuine generated-art
+ * 640x640 WebP whose middle was physically removed to alpha 0.
+ * Never enlarge the obsolete 120px atlas across live tiles. */
+body.carnival-active #panels .six-board-viewport::after{
+ background:url('../assets/sixdrop-generated-jar-clean.webp?v=1') center / 100% 100% no-repeat!important;
+ -webkit-mask:none!important;
+ mask:none!important;
+ -webkit-mask-image:none!important;
+ mask-image:none!important;
+ background-position:center!important;
+ background-size:100% 100%!important;
+ opacity:.98!important;
+ filter:none!important;
+ image-rendering:auto!important;
+ pointer-events:none!important;
+}
