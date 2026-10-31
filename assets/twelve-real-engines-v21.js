@@ -45,6 +45,7 @@ function install(){
   const ghostMap=new Map();
   const cb=app.onEvent,betFn=app.bet.bind(app);
   const miniReachCache=new Map();
+  const lastEvents=new Map();
   let pane=null,modeInfo=null,modeButtons=[],configsHolder=null;
   let syncTimer=0;
   const savedSet=()=>{try{localStorage.setItem(KEY,JSON.stringify({mode,boards:configs}));}catch{}};
@@ -85,6 +86,8 @@ function install(){
   function getEngine(i){return i<3?app.engines[i]:ghostMap.get(i);}
   function ghostEvent(i,ev,e){
     if(!app||currentMode!=='12'||!app.engines.includes(e))return;
+    // Keep actual event payload for compact full-renderer fall/refill FX.
+    lastEvents.set(i,ev);
     const game=gameFor(i);
     if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[i]){
       app.wonderBank.push(...(ev.steps||[]).map(step=>({...step,game,board:i})));
@@ -114,6 +117,7 @@ function install(){
   // Original Arcade callbacks still account for main-board payouts, but
   // must not overwrite the main view when a secondary board is selected.
   app.onEvent=function(i,ev,e,a){
+    lastEvents.set(i,ev);
     if(currentMode==='12'&&selected[i]>0&&ev.phase!=='rainbowappear'){
       if(ev.phase==='complete')recordChanged(a);
       return;
@@ -301,7 +305,8 @@ function install(){
     const bet=betAt(i);
     const score=medalWin(bet,e.totalHundredths||0);
     return {id:i,game:group,mini,name:cfg.name,bet,enabled:bet>0,
-      engine:e,score,sugar:!!e.wonderCollected,
+      engine:e,event:lastEvents.get(i)||{phase:e.phase||'ready'},
+      score,sugar:!!e.wonderCollected,
       reach:reachFor(i),selected:selected[group]===mini,
       status:bet<=0?'不参加':app.phase==='ready'?'準備':
         e.phase==='complete'?'終了':e.busy?'処理中':'待機'};
