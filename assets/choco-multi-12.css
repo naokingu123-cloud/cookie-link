@@ -2,7 +2,7 @@
  * Small Canvas: 84x148 internal pixels, intentionally pixelated/scaled.
  * The original full-quality renderer is reserved for the selected board.
  */
-.choco-panel>.canyon-fleet{visibility:visible!important;pointer-events:auto!important;display:flex!important}
+.choco-panel>.canyon-fleet:not(.choco-surface){visibility:visible!important;pointer-events:auto!important;display:flex!important}
 .choco-panel>.canyon-fleet{position:absolute!important;left:0;right:0;top:0;height:203px;z-index:24;box-sizing:border-box;flex-direction:column;gap:3px;overflow:hidden;padding:3px;border:1px solid #e5ae76;border-radius:9px;background:linear-gradient(160deg,#673d3a,#261b2a);color:#fff0d2}
 .choco-panel>.choco-surface{top:203px!important;border-radius:0 0 10px 10px!important}
 .canyon-fleet-head{height:21px;flex:none;display:flex;align-items:center;gap:4px;min-width:0}
@@ -34,3 +34,7 @@
  .choco-panel>.choco-surface{top:166px!important}
  .canyon-fleet-note{display:none}
 }
+
+/* Must beat the older .choco-panel>:not(.choco-surface) rule (specificity 0,3,0). */
+body.choco-active #panels .choco-panel>.canyon-fleet:not(.choco-surface){visibility:visible!important;pointer-events:auto!important;opacity:1!important;display:flex!important}
+body.choco-active #panels .choco-panel>.canyon-fleet:not(.choco-surface) *{visibility:visible!important;pointer-events:auto!important}
