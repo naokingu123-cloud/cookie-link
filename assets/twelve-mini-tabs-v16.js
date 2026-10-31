@@ -218,6 +218,15 @@ try{
   }else node.replaceChildren(incoming);
  }
  /* Authentic mini-rendering uses engine-owned boards, not seeded demo art. */
+ function setMiniPayout(node,value){
+  const raw=String(value??0).replace(/[，,\s]/g,'');
+  const n=Number(raw);
+  // The original coin count, but without thousands separators. A
+  // tiny 12-board corner badge must fit four or more digits.
+  const result=Number.isFinite(n)?String(Math.max(0,Math.round(n))):raw;
+  if(node.textContent!==result)node.textContent=result;
+  node.dataset.digits=String((result.match(/\d/g)||[]).length);
+ }
  function paintReal(item,data,skipCanvas=false){
   const {game,ctx,phase,reachDigits,payAmount,sugar,cell}=item;
   const {engine:e,enabled,bet,score}=data;
@@ -279,7 +288,7 @@ try{
   item.phase.textContent=String(data.status||'準備').slice(0,5);
   item.cell.classList.toggle('is-disabled-mini',!enabled);
   // Real calculated reward, original Gold/SweetMedal text.
-  payAmount.textContent=Number(score||0).toLocaleString('ja-JP');
+  setMiniPayout(payAmount,score);
   sugar.classList.toggle('is-collected',!!data.sugar);
   sugar.title=data.sugar?'シュガー獲得済み':'シュガー未獲得';
   renderReach(reachDigits,data.reach||[],Math.floor(Date.now()/2000));
@@ -302,7 +311,7 @@ try{
      .map((number,j)=>({value:String(number),tier:j===1?'1':'0'}));
    phase.textContent='見本';
    renderReach(reachDigits,values,Math.floor(Date.now()/2000));
-   payAmount.textContent=String([0,100,200,500][(index+game)%4]);
+   setMiniPayout(payAmount,[0,100,200,500][(index+game)%4]);
    sugar.classList.toggle('is-collected',index===2);
    sugar.title=index===2?'見本：シュガー獲得':'見本：シュガー未獲得';
    return;
@@ -317,7 +326,7 @@ try{
   }
   phase.textContent=live.status;
   renderReach(reachDigits,live.reach,slots?.[game]?.reachPage||0);
-  payAmount.textContent=live.pay;
+  setMiniPayout(payAmount,live.pay);
   sugar.classList.toggle('is-collected',live.sugar);
   sugar.title=live.sugar?'シュガー獲得済み':'シュガー未獲得';
  }
