@@ -1,0 +1,76 @@
+/* Six Drop: full-frame candy kingdom, 2026-10-31.
+ * Decorative only: keep the live 8/7 staggered grid, 35px drop geometry,
+ * paytable values and existing bottle entrance animation untouched.
+ * This stylesheet MUST be loaded after sixdrop-candy-kingdom-bottle.css.
+ */
+body.carnival-active .game > .field{
+  position:relative!important;
+  isolation:isolate!important;
+  background-image:
+    linear-gradient(110deg,rgba(255,234,250,.10),rgba(250,241,255,.04)),
+    url('../assets/sixdrop-candy-kingdom-20261031.webp?v=1')!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  border-radius:12px!important;
+}
+/* One scene extends to the outer odds frame, rather than a second
+   independent 'cover' crop behind the payout panel. */
+body.carnival-active #panels .carnival-panel,
+body.carnival-active #panels .six-ball-surface,
+body.carnival-active #odds-panel{
+  background-color:transparent!important;
+}
+body.carnival-active #panels .carnival-panel,
+body.carnival-active #panels .six-ball-surface{
+  background-image:none!important;
+}
+body.carnival-active #odds-panel{
+  position:relative!important;
+  isolation:isolate!important;
+  background-image:none!important;
+}
+/* Payout readability: preserve the existing original decorative frame,
+   but show the kingdom through the glass-like center and all outer edges. */
+body.carnival-active #carnival-odds.six-simple-glass-odds{
+  background-image:linear-gradient(155deg,
+    rgba(255,250,255,.78),rgba(238,248,255,.72),
+    rgba(255,228,246,.79))!important;
+  background-color:transparent!important;
+  border-color:rgba(255,223,245,.80)!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role{
+  background:rgba(255,252,255,.79)!important;
+}
+/* Do not shrink the board/candies to make room for decorations. */
+body.carnival-active .game > .field{
+  grid-template-columns:312px 110px!important;
+}
+body.carnival-active #panels .six-board-viewport{
+  min-width:0!important;
+  min-height:0!important;
+}
+/* Let the existing transparent candy-glass bottle frame remain the highest
+   visual rim, and keep game elements and reach hints below the rim. */
+body.carnival-active #panels .six-board-viewport::after{
+  background-image:url('../assets/sixdrop-candy-bottle-20261031.webp?v=1')!important;
+  background-size:100% 100%!important;
+  background-position:center!important;
+  opacity:1!important;
+  pointer-events:none!important;
+}
+/* ROUND and all-clear markers keep their original layout; above the bottle
+   is not a reserved empty margin. Avoid introducing a board scale change. */
+body.carnival-active #carnival-heading,
+body.carnival-active .six-allclear-banner,
+body.carnival-active .six-round-cards{
+  position:relative;
+  z-index:10;
+}
+/* Handheld: retain the existing viewport fitted board, do not force a
+   different aspect ratio or independently scale the active candy canvas. */
+@media(max-width:650px){
+  body.carnival-active .game > .field{
+    background-position:center center!important;
+  }
+}
