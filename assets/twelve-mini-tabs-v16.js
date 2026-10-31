@@ -252,20 +252,30 @@ try{
       if(t.number!=null){ctx.font='bold 3.8px system-ui';ctx.fillStyle='#54263e';ctx.textAlign='center';ctx.fillText(String(t.number),2+(col+.5)*cellSize,2+(row+.66)*cellSize);}
     }
    }else if(game===1&&Array.isArray(e.strata)){
-    const ww=6.05,hh=3.56,top=3.5;
-    for(let row=0;row<Math.min(12,e.strata.length);row++)
+    // Main-game cake sprite + auto-tiles even when full renderer is
+    // temporarily unavailable. No sidewalls, payout table or drill HUD.
+    const fx=e.fx,grid=fx?.before&&
+      ['canyonFall','canyonMelt','canyonSoften'].includes(fx.phase)
+      ?fx.before:e.strata;
+    const ww=5.9,hh=3.8,left=3.35,top=1.05;
+    const progress=Math.max(0,Math.min(1,(fx?.elapsed||0)/Math.max(1,fx?.ms||1)));
+    const moves=new Map((fx?.phase==='canyonFall'?(fx.moves||[]):[]).map(m=>[m.id,m]));
+    const offset=fx?.phase==='canyonScroll'?(fx.advanced||0)*progress:0;
+    ctx.save();
+    ctx.beginPath();ctx.rect(left,top,ww*7,hh*12);ctx.clip();
+    for(let row=0;row<Math.min(12,grid.length);row++)
      for(let col=0;col<7;col++){
-      const t=e.strata[row]?.[col];if(!t)continue;
-      let c=Number(t.color)<0?'#ffe099':
-        palette.canyon[Math.max(0,(Number(t.color)||0)%palette.canyon.length)];
-      ctx.fillStyle=c;ctx.fillRect(3+col*ww,top+row*hh,ww-.35,hh-.25);
-      if(t.item==='fruit'||t.item==='ore'||t.item==='sugar'){
-       ctx.fillStyle=t.item==='sugar'?'#de93ff':'#ffe48a';
-       ctx.fillRect(4+col*ww,top+row*hh+.7,Math.max(1,ww-2),Math.max(1,hh-1.6));
-      }
+      const t=grid[row]?.[col];if(!t)continue;
+      const move=moves.get(t.id),yrow=move
+        ?move.from[0]+(move.to[0]-move.from[0])*progress:row;
+      const x=left+col*ww,y=top+(yrow-offset)*hh;
+      if(y>48||y+hh<0)continue;
+      if(fx?.phase==='canyonMelt'&&fx.targets?.some(v=>v.tile?.id===t.id))
+        ctx.globalAlpha=Math.max(.06,1-progress);
+      chocoPaintTile(ctx,t,row,col,grid,x,y,ww,hh,performance.now(),bet);
+      ctx.globalAlpha=1;
      }
-    ctx.textAlign='right';ctx.font='bold 5px system-ui';ctx.fillStyle='#ffda97';
-    ctx.fillText((e.depth||0)+'m',46,47);
+    ctx.restore();
    }else if(game===2&&Array.isArray(e.pyramid)){
     // Fallback itself uses the APPROVED main-game candy art, never flat
     // colored dots. Render at 112 physical pixels but 48 logical units.
