@@ -1,0 +1,53 @@
+/* Six Drop v11: maintain native 120%-size candies and keep the entire
+ * staggered 8/7 board clear of decorative bottle rails.
+ * Render correction only. All score/animation/refill code remains untouched.
+ */
+
+/* This fallback works immediately with the existing uploaded luxury art:
+ * reveal only the outside 7% rails and the very bottom 4% instead of
+ * painting the thick foreground ornaments over the first/last columns.
+ */
+body.carnival-active.six-v8-art-ready #panels .six-board-viewport::after{
+  background-image:url('../assets/sixdrop_glass_sideframe.png?v=8')!important;
+  background-size:100% auto!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+  -webkit-mask-image:
+    linear-gradient(to right,#000 0%,#000 6%,transparent 7.4%,transparent 92.6%,#000 94%,#000 100%),
+    linear-gradient(to bottom,transparent 0%,transparent 95.6%,#000 97%,#000 100%)!important;
+  -webkit-mask-composite:source-over!important;
+  mask-image:
+    linear-gradient(to right,#000 0%,#000 6%,transparent 7.4%,transparent 92.6%,#000 94%,#000 100%),
+    linear-gradient(to bottom,transparent 0%,transparent 95.6%,#000 97%,#000 100%)!important;
+  mask-composite:add!important;
+  pointer-events:none!important;
+}
+
+/* Automatically replace the fallback mask with the purpose-built narrow
+ * jewel/candy frame when the PNG is uploaded to /assets.
+ * This asset's decorative rails occupy x=0..68 and x=956..1024;
+ * the bottom lip is only 64/1024 tall. Keep dimensions proportional. */
+body.carnival-active.six-v11-slim-ready #panels .six-board-viewport::after{
+  background-image:url('../assets/sixdrop_glass_sideframe_slim.png?v=11')!important;
+  background-size:100% auto!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+  -webkit-mask:none!important;
+  -webkit-mask-image:none!important;
+  mask:none!important;
+  mask-image:none!important;
+  opacity:1!important;
+}
+
+/* The candy glass inside the jar stays light and transparent. */
+body.carnival-active #panels .six-board-viewport::before{
+  box-shadow:inset 3px 0 7px rgba(255,255,255,.34),
+             inset -3px 0 7px rgba(255,255,255,.34)!important;
+}
+
+/* No CSS enlargement: it would misalign the draw canvas, hit markers and
+ * refill movement. The exact +20% scale is applied in sixLayout. */
+body.carnival-active #panels .six-board-viewport .carnival-canvas,
+body.carnival-active #panels .six-board-viewport .six-reach-layer{
+  transform:none!important;
+}
