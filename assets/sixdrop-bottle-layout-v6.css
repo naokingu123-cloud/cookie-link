@@ -154,3 +154,59 @@ body.carnival-active.six-bottle-v6 #panels .six-board-viewport::after{
 body.carnival-active.six-bottle-v6 #panels .six-board-viewport .carnival-canvas{
  transform:none!important;
 }
+
+/* v7 corrective patch:
+ * Delete the OLD lip and duplicate upper shoulders, while keeping the
+ * original detailed candy ornaments on the lower sides of the jar.
+ * The previous two full-frame backgrounds were the source of the
+ * stretched/duplicated decorative rail seen on iPhone.
+ */
+body.carnival-active.six-bottle-v6 #panels .six-board-viewport::after{
+  background-image:url('../assets/sixdrop-candy-bottle-20261031.webp?v=1')!important;
+  background-size:100% auto!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+  /* No OLD image pixels in the upper 14% of the live board.
+     The new neck rail overlays the transition at 14-18%. */
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 0%,transparent 13.5%,rgba(0,0,0,.25) 15.5%,
+    #000 18%,#000 100%)!important;
+  mask-image:linear-gradient(to bottom,
+    transparent 0%,transparent 13.5%,rgba(0,0,0,.25) 15.5%,
+    #000 18%,#000 100%)!important;
+  image-rendering:auto!important;
+}
+/* Retire the former header-only art. It stopped above the tray,
+   leaving a duplicated horizontal bottle top at the seam. */
+body.carnival-active.six-bottle-v6 .game>.festival-top::before{
+  display:none!important;
+}
+/* The replacement is ONE correctly proportioned 640x220 image.
+   312x107.25 CSS units; upper part goes through the old ROUND slot,
+   and its shoulders continue ~55 units into the actual board. */
+body.carnival-active.six-bottle-v6 .game>.field::before{
+  content:"";
+  display:block!important;
+  position:absolute!important;
+  top:-51px!important;
+  left:0!important;
+  width:312px!important;
+  height:107.25px!important;
+  background:url('../assets/sixdrop-bottle-neck-v7.svg?v=1') top left / 312px 107.25px no-repeat!important;
+  border:0!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+  z-index:11!important;
+}
+/* Make the increase visible on a real iPhone as well as in the
+   canvas-coordinate geometry update. Apply the exact same small CSS
+   magnification to reach labels so their centers remain aligned. */
+body.carnival-active.six-bottle-v6 #panels .six-board-viewport .carnival-canvas,
+body.carnival-active.six-bottle-v6 #panels .six-board-viewport .six-reach-layer{
+  transform:scale(1.025)!important;
+  transform-origin:center center!important;
+}
+/* Do not allow extra container padding to reduce the playable viewport. */
+body.carnival-active.six-bottle-v6 #panels .six-board-viewport{
+  padding:0!important;
+}
