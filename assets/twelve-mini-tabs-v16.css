@@ -195,3 +195,170 @@ body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-times{
   font-size:14px!important;
   line-height:19px!important;
 }
+
+/* v17: miniaturize the ORIGINAL three-tab presentation, not its contents.
+ * Same icing-like reach badge, tier-coloured arcade numbers, gold WIN face
+ * and diamond sugar-gem. Sizes fit a roughly 67px x 85px quarter panel. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-head{
+  height:11px!important;
+  min-height:11px!important;
+  flex:0 0 11px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-phase{
+  font-size:6.7px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-canvas{
+  max-height:42px!important;
+  max-width:42px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  height:12px!important;
+  min-height:12px!important;
+  flex:0 0 12px!important;
+  gap:1px!important;
+  padding:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-badge{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 21px!important;
+  width:21px!important;
+  min-width:21px!important;
+  height:11px!important;
+  border:1px solid rgba(255,248,218,.95)!important;
+  border-radius:7px!important;
+  background:linear-gradient(#65edeb,#1ebbb8 57%,#13939e)!important;
+  box-shadow:inset 0 1px #ecfffb,0 1px #2e747c!important;
+  color:#fffdf4!important;
+  text-shadow:0 .5px #23727a!important;
+  font:1000 6.1px/10px "Hiragino Maru Gothic ProN",system-ui,sans-serif!important;
+  letter-spacing:-.6px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digits{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-around!important;
+  flex:1 1 auto!important;
+  gap:0!important;
+  height:12px!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit{
+  flex:1 1 0!important;
+  display:grid!important;
+  place-items:center!important;
+  min-width:0!important;
+  padding:0!important;
+  font:400 11px/12px ElixirNumbers,system-ui,sans-serif!important;
+  font-variant-numeric:tabular-nums!important;
+  letter-spacing:-.7px!important;
+  color:#f5fff0!important;
+  -webkit-text-fill-color:#caffd8!important;
+  -webkit-text-stroke:.4px #177c80!important;
+  text-shadow:0 .8px #14666b!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit[data-tier="1"]{
+  -webkit-text-fill-color:#ff9fa4!important;
+  -webkit-text-stroke:.4px #bd355a!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit[data-tier="2"]{
+  -webkit-text-fill-color:#ffd57c!important;
+  -webkit-text-stroke:.4px #ab5680!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit[data-tier="3"]{
+  background:linear-gradient(110deg,#fa75ad,#ffe96c,#5af5b2,#6ccaff,#dd96f5)!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-no-reach{
+  flex:1!important;
+  font:900 10px/12px system-ui,sans-serif!important;
+  color:#cfddd8!important;
+  text-align:center!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:baseline!important;
+  width:100%!important;
+  height:13px!important;
+  min-height:13px!important;
+  flex:0 0 13px!important;
+  gap:2px!important;
+  padding:0!important;
+  margin:0!important;
+  background:linear-gradient(180deg,rgba(64,37,33,.86),rgba(43,28,31,.9))!important;
+  border-radius:4px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount{
+  flex:0 1 auto!important;
+  font:700 12px/13px SweetMedal,Georgia,serif!important;
+  font-variant-numeric:tabular-nums!important;
+  color:#ffecac!important;
+  -webkit-text-fill-color:#ffeaa6!important;
+  -webkit-text-stroke:.25px #8e593d!important;
+  text-shadow:0 1px #9c5b39!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-unit{
+  font:900 6px/10px system-ui,sans-serif!important;
+  color:#ffd68d!important;
+  white-space:nowrap!important;
+  letter-spacing:-.2px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar{
+  position:relative!important;
+  flex:0 0 13px!important;
+  width:13px!important;
+  min-width:13px!important;
+  height:13px!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  overflow:visible!important;
+  background:linear-gradient(#fff3d6,#e9c8a4)!important;
+  border:1px solid #dbaa77!important;
+  border-radius:4px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar .sugar-gem{
+  display:block!important;
+  position:relative!important;
+  width:8px!important;
+  height:8px!important;
+  min-width:8px!important;
+  opacity:.48!important;
+  filter:grayscale(.65)!important;
+  transform:rotate(45deg) scale(.95)!important;
+  border-width:.8px!important;
+  outline-width:.4px!important;
+  margin:0!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar.is-collected{
+  border-color:#ffbd54!important;
+  background:linear-gradient(#fff5c6,#ffd981)!important;
+  box-shadow:0 0 4px #fff0a4!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar.is-collected .sugar-gem{
+  opacity:1!important;
+  filter:none!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar.is-collected::after{
+  content:"✓"!important;
+  position:absolute!important;
+  right:-2px!important;
+  bottom:-3px!important;
+  font:1000 7px/8px system-ui,sans-serif!important;
+  color:#429d56!important;
+  text-shadow:0 1px #fff8!important;
+}
