@@ -161,8 +161,9 @@ try{
   document.body.classList.add('twelve-mini-tabs-v16');
   installed=true;return true;
  }
- function renderReach(node,numbers){
-  // Numerical ascending order, retaining the strongest tier per number.
+ function renderReach(node,numbers,pageIndex=0){
+  // Match the native 3-tab pager: numeric order, FOUR digits per page,
+  // 2-second page cadence, 650ms horizontal page-swap animation.
   const best=new Map();
   for(const item of numbers||[]){
     const value=Number(item?.value);
@@ -170,33 +171,43 @@ try{
     const tier=Math.max(0,Math.min(3,Number(item?.tier)||0));
     best.set(value,Math.max(tier,best.get(value)||0));
   }
-  const vals=[...best].sort((a,b)=>a[0]-b[0])
+  const all=[...best].sort((a,b)=>a[0]-b[0])
     .map(([value,tier])=>({value:String(value),tier:String(tier)}));
-  const sig=vals.map(n=>n.value+':'+n.tier).join('|')||'-';
-  if(node.dataset.signature===sig)return;
-  node.dataset.signature=sig;
-  node.replaceChildren();
-  node.classList.toggle('mini-four-reach-scrolling',vals.length>=5);
-  node.setAttribute('aria-label',vals.length?'リーチ '+vals.map(v=>v.value+'番').join('、'):'リーチなし');
-  if(!vals.length){node.append(makeEl('span','mini-four-no-reach','—'));return;}
-  function makeSequence(duplicate=false){
-    const seq=makeEl('span','mini-four-reach-sequence');
-    if(duplicate)seq.setAttribute('aria-hidden','true');
-    for(const n of vals){
-      const digit=makeEl('b','mini-four-reach-digit',n.value);
-      digit.dataset.tier=n.tier;
-      seq.append(digit);
-    }
-    return seq;
+  const pages=Math.max(1,Math.ceil(all.length/4));
+  const index=((Math.floor(pageIndex)||0)%pages+pages)%pages;
+  const current=all.slice(index*4,index*4+4);
+  const highest=Math.max(0,...all.map(n=>Number(n.tier)));
+  const badge=node.parentElement?.querySelector('.mini-four-reach-badge');
+  if(badge)badge.dataset.tier=String(highest); // native 3-tab rule
+  node.parentElement?.setAttribute('data-reach-tier',String(highest));
+  node.setAttribute('aria-label',all.length
+    ?'リーチ '+all.map(n=>n.value+'番').join('、')
+    :'リーチなし');
+  node.classList.remove('mini-four-reach-scrolling');
+  node.style.removeProperty('--mini-reach-duration');
+  const sig=all.map(n=>n.value+':'+n.tier).join('|')||'-';
+  const key=sig+'@'+index;
+  if(node.dataset.pageKey===key)return;
+  const hadPage=!!node.querySelector('.mini-four-reach-page:not(.mini-four-reach-page-leave)');
+  // Cancel any older exiting pages before starting a new transition.
+  node.querySelectorAll('.mini-four-reach-page-leave').forEach(el=>el.remove());
+  const old=node.querySelector('.mini-four-reach-page');
+  const incoming=makeEl('span','mini-four-reach-page');
+  if(!current.length)incoming.append(makeEl('span','mini-four-no-reach','—'));
+  else for(const n of current){
+    const digit=makeEl('b','mini-four-reach-digit',n.value);
+    digit.dataset.tier=n.tier;
+    incoming.append(digit);
   }
-  const track=makeEl('span','mini-four-reach-track');
-  track.append(makeSequence());
-  if(vals.length>=5){
-    track.append(makeSequence(true));
-    // Slow continuous traversal, keeping adjacent numbers readable.
-    node.style.setProperty('--mini-reach-duration',(vals.length*1.8).toFixed(1)+'s');
-  }else node.style.removeProperty('--mini-reach-duration');
-  node.append(track);
+  node.dataset.pageKey=key;
+  if(old&&hadPage&&all.length>4){
+    old.classList.add('mini-four-reach-page-leave');
+    incoming.classList.add('mini-four-reach-page-enter');
+    node.append(incoming);
+    old.addEventListener('animationend',()=>old.remove(),{once:true});
+    incoming.addEventListener('animationend',
+      ()=>incoming.classList.remove('mini-four-reach-page-enter'),{once:true});
+  }else node.replaceChildren(incoming);
  }
  function paint(item,live){
   const {ctx,index,game,phase,reachDigits,payAmount,sugar,host}=item;
@@ -204,11 +215,11 @@ try{
    // Sample data explicitly labelled as layout fixtures.
    sampleCanvas(ctx,game,item.seed);
    const v=seedRandom(item.seed+4421);
-   const values=Array.from({length:index===2?7:4},(_,j)=>({
-     value:String(1+Math.floor(v()*25)),tier:j===1?'1':'0'
-   }));
+   const values=[...new Set(Array.from({length:25},(_,n)=>n+1)
+     .sort(()=>v()-.5).slice(0,index===2?7:4))]
+     .map((number,j)=>({value:String(number),tier:j===1?'1':'0'}));
    phase.textContent='見本';
-   renderReach(reachDigits,values);
+   renderReach(reachDigits,values,Math.floor(Date.now()/2000));
    payAmount.textContent=String([0,100,200,500][(index+game)%4]);
    sugar.classList.toggle('is-collected',index===2);
    sugar.title=index===2?'見本：シュガー獲得':'見本：シュガー未獲得';
@@ -221,7 +232,7 @@ try{
     catch{sampleCanvas(ctx,game,item.seed);}
   }else sampleCanvas(ctx,game,item.seed);
   phase.textContent=live.status;
-  renderReach(reachDigits,live.reach);
+  renderReach(reachDigits,live.reach,slots?.[game]?.reachPage||0);
   payAmount.textContent=live.pay;
   sugar.classList.toggle('is-collected',live.sugar);
   sugar.title=live.sugar?'シュガー獲得済み':'シュガー未獲得';
