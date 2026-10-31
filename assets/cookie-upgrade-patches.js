@@ -31,6 +31,11 @@
    'rare WILD placement'
   );
   once(
+   'if(tile&&tile.number==null&&!tile.special&&!tile.step)pools[tile.color].push([r,c]);',
+   'if(tile&&tile.number==null&&!tile.special&&!tile.step&&!tile.wild)pools[tile.color].push([r,c]);',
+   'keep hammer placement off WILD tiles'
+  );
+  once(
    'if(numberSet.has(this.board[r][c]?.number))hit.push([r,c]);',
    'if(numberSet.has(this.board[r][c]?.number)||this.board[r][c]?.wild)hit.push([r,c]);',
    'WILD auto-hit on next draw'
