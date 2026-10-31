@@ -6,14 +6,15 @@
  'use strict';
  try{
   if(typeof sixLayout!=='function'||typeof carnivalHud!=='function'||!slots?.[2])return;
-  // The 320x320 game canvas has a usable center opening of about x=39..281.
-  // 29.6 makes the standard 8-row drops 5.7% larger without covering edges.
-  // For 10+ rows the step is limited so top/bottom remain clear of bottle lips.
+  // Render geometry, rather than CSS-only resizing:
+  // the default 8-row game is +7.9% in step and +11.1% in diameter
+  // compared with the old 28px radius=14 layout.
+  // Cap taller debug grids to stay inside the glass bottle aperture.
   sixLayout=function(rows=SIX_ROWS){
    const count=Number.isFinite(+rows)?Math.max(1,+rows):SIX_ROWS;
    const verticalLimit=250/(1+(count-1)*SIX_SQRT3_2);
-   const step=Math.max(28,Math.min(29.6,verticalLimit));
-   return {step,top:164-(count-1)*step*SIX_SQRT3_2/2,radius:step*.5};
+   const step=Math.min(30.2,verticalLimit);
+   return {step,top:164-(count-1)*step*SIX_SQRT3_2/2,radius:step*.515};
   };
   function syncRound(){
    const source=document.querySelector('#carnival-heading .six-round-cards');
@@ -37,6 +38,7 @@
   const previousHud=carnivalHud;
   carnivalHud=function(a){const result=previousHud(a);syncRound();return result;};
   syncRound();
+  slots[2].candyKey=''; // invalidate cached board image at the new draw geometry
   carnivalQueueFrame(slots[2]);
   scheduleUI(app);
   console.info('[SixDropBottleV6] larger candy grid and synchronized ROUND panel');
