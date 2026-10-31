@@ -1,0 +1,122 @@
+/* ORIGINAL GENERATED IMAGE ASSETS: keep these images; do not redraw as SVG.
+ * Original PNG sources: キャンディガラスの宝石フレーム.png and
+ * 光り輝くキャンディ報酬パネル.png.
+ * assets/sixdrop-generated-artwork.avif is a two-column compressed image
+ * atlas (left 120x120 glass jar frame; right 120x300 payout panel).
+ */
+body.carnival-active #panels .six-board-viewport{
+ background:rgba(250,249,254,.87)!important;
+}
+body.carnival-active #panels .six-board-viewport::after{
+ background-image:url('../assets/sixdrop-generated-artwork.avif?v=1')!important;
+ background-size:200% 250%!important;
+ background-position:0 0!important;
+ background-repeat:no-repeat!important;
+ opacity:1!important;
+ filter:none!important;
+ pointer-events:none!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds{
+ position:relative!important;
+ background-image:url('../assets/sixdrop-generated-artwork.avif?v=1')!important;
+ background-size:200% 100%!important;
+ background-position:100% 0!important;
+ background-repeat:no-repeat!important;
+ background-color:transparent!important;
+ border:0!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+ padding:0!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-ui{
+ position:absolute!important;inset:0!important;
+ display:block!important;
+ box-sizing:border-box!important;
+ padding:0!important;
+ pointer-events:none!important;
+ background:transparent!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-roles,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role{
+ display:contents!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-icon,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-label{
+ display:none!important;
+}
+/* Overlay live payouts over the placeholders baked into the generated artwork.
+ * The glossy hearts, candy shapes, pillars and TOTAL WIN plaque remain pixels
+ * from the user's actual generated image. */
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-formula{
+ display:flex!important;
+ position:absolute!important;
+ left:21%!important;
+ width:65%!important;
+ right:auto!important;
+ height:5.5%!important;
+ margin:0!important;
+ padding:0 1px!important;
+ gap:1px!important;
+ justify-content:center!important;
+ align-items:center!important;
+ box-sizing:border-box!important;
+ border-radius:100px!important;
+ background:linear-gradient(100deg,#f7a1d8 0%,#f4a3db 68%,#d3a1ef 100%)!important;
+ box-shadow:0 0 2px #fcd2f7,inset 0 1px 2px #fff8!important;
+ z-index:10!important;
+ white-space:nowrap!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds [data-simple-role="line"] .six-glass-formula{top:24.3%!important}
+body.carnival-active #carnival-odds.six-simple-glass-odds [data-simple-role="triangle"] .six-glass-formula{top:47.1%!important}
+body.carnival-active #carnival-odds.six-simple-glass-odds [data-simple-role="hexagon"] .six-glass-formula{top:70.9%!important}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-unit{
+ font:900 clamp(5px,.48vw,7px)/1 system-ui,sans-serif!important;
+ border:0!important;
+ box-shadow:none!important;
+ text-shadow:0 1px #9c3874!important;
+ color:#fff!important;
+ background:transparent!important;
+ padding:0!important;
+ overflow:visible!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-times,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-count{
+ font:1000 clamp(5px,.48vw,8px)/1 system-ui,sans-serif!important;
+ color:#fff9b0!important;
+ text-shadow:0 1px #8b3980!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-total{
+ display:block!important;
+ position:absolute!important;
+ top:85.2%!important;
+ left:20%!important;
+ right:20%!important;
+ width:60%!important;
+ height:7.6%!important;
+ min-height:0!important;
+ margin:0!important;
+ padding:0!important;
+ border:0!important;
+ border-radius:50px!important;
+ background:transparent!important;
+ box-shadow:none!important;
+ overflow:hidden!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-total strong{
+ display:none!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-value{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:100%!important;height:100%!important;
+ margin:0!important;border:0!important;
+ background:transparent!important;
+ color:#fff4a8!important;
+ font:1000 clamp(11px,1.35vw,21px)/1 system-ui,sans-serif!important;
+ text-shadow:0 1px 2px #903a67,0 0 3px #ffdaf1!important;
+}
+/* Visible debug marker, only when intentionally requested (?skin_debug=1). */
+body.six-generated-skin-debug #carnival-odds.six-simple-glass-odds:after{
+ content:"GENERATED PNG ART";position:absolute;bottom:0;right:0;font-size:6px;color:#000;background:#ffe6ff;
+}
