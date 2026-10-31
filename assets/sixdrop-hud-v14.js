@@ -123,7 +123,14 @@
       return clone;
     }));
   }
-  function refresh(){syncTop();ensureRolePictures();}
+  function refresh(){
+    syncTop();
+    // v6 used to mirror PREV/NOW/NEXT inside the odds column on every
+    // official HUD update. Remove the duplicate AFTER its wrapper runs.
+    // The top Round1/Round2 indicators stay bound to the real HUD.
+    card.sixOdds?.querySelectorAll('.six-side-round-cards').forEach(el=>el.remove());
+    ensureRolePictures();
+  }
   const previousHud=carnivalHud;
   carnivalHud=function(a){const output=previousHud(a);refresh();return output;};
   refresh();
