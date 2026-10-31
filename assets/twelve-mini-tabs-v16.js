@@ -66,11 +66,18 @@ try{
   }
  }
  function reachNumbers(host){
+  // Carry the colour/tier of the real three-tab reach page into the 2x2.
   const rows=[...host.querySelectorAll('.reach-num')]
     .filter(el=>!el.closest('.mini-four-grid'))
-    .map(el=>el.textContent.trim())
-    .filter(v=>/^\d{1,2}$/.test(v));
-  return [...new Set(rows)].slice(0,2);
+    .map(el=>({value:el.textContent.trim(),tier:el.dataset.reachTier||'0'}))
+    .filter(v=>/^\d{1,2}$/.test(v.value));
+  const unique=[],used=new Set();
+  for(const value of rows){
+    if(used.has(value.value))continue;
+    used.add(value.value);unique.push(value);
+    if(unique.length===4)break;
+  }
+  return unique;
  }
  function stateFor(host,game){
   const tab=host.querySelector('.tab');
@@ -101,16 +108,26 @@ try{
     const head=makeEl('span','mini-four-head');
     const badge=makeEl('b','mini-four-number',keys[game]+(index+1));
     const phase=makeEl('small','mini-four-phase',index===0?'準備':'見本');
-    const sugar=makeEl('i','mini-four-sugar','◇');
+    const sugar=makeEl('span','mini-four-sugar');
+    // Reuse the same sugar-gem artwork/class used by the original 3-tab UI.
+    const sourceGem=host.querySelector('.tab-sugar .sugar-gem');
+    const gem=sourceGem?sourceGem.cloneNode(true):makeEl('span','sugar-gem');
+    gem.removeAttribute('id');sugar.append(gem);
     sugar.title='シュガー未獲得';
     head.append(badge,phase,sugar);
     const canvas=document.createElement('canvas');
     canvas.width=48;canvas.height=48;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
-    const reach=makeEl('span','mini-four-reach','リーチ —');
-    const pay=makeEl('span','mini-four-pay','配当 0 WIN');
+    const reach=makeEl('span','mini-four-reach');
+    const reachBadge=makeEl('span','mini-four-reach-badge','リーチ');
+    const reachDigits=makeEl('span','mini-four-reach-digits');
+    reach.append(reachBadge,reachDigits);
+    const pay=makeEl('span','mini-four-pay');
+    const payAmount=makeEl('b','mini-four-pay-amount','0');
+    const payUnit=makeEl('small','mini-four-pay-unit','WIN');
+    pay.append(payAmount,payUnit);
     cell.append(head,canvas,reach,pay);grid.append(cell);
     const ctx=canvas.getContext('2d',{alpha:false});
-    const item={host,original,game,index,cell,ctx,phase,reach,pay,sugar,seed:(index+1)*1009+game*307};
+    const item={host,original,game,index,cell,ctx,phase,reach,pay,payAmount,reachDigits,sugar,seed:(index+1)*1009+game*307};
     ITEMS.push(item);
     cell.addEventListener('click',event=>{
       event.preventDefault();event.stopPropagation();
@@ -124,17 +141,31 @@ try{
   document.body.classList.add('twelve-mini-tabs-v16');
   installed=true;return true;
  }
+ function renderReach(node,numbers){
+  const vals=(numbers||[]).slice(0,4);
+  const sig=vals.map(n=>n.value+':'+n.tier).join('|')||'-';
+  if(node.dataset.signature===sig)return;
+  node.dataset.signature=sig;
+  node.replaceChildren();
+  if(!vals.length){node.append(makeEl('span','mini-four-no-reach','—'));return;}
+  for(const n of vals){
+    const digit=makeEl('b','mini-four-reach-digit',n.value);
+    digit.dataset.tier=String(n.tier||0);
+    node.append(digit);
+  }
+ }
  function paint(item,live){
-  const {ctx,index,game,phase,reach,pay,sugar,host}=item;
+  const {ctx,index,game,phase,reachDigits,payAmount,sugar,host}=item;
   if(index>0){
    // Sample data explicitly labelled as layout fixtures.
    sampleCanvas(ctx,game,item.seed);
    const v=seedRandom(item.seed+4421);
-   const a=1+Math.floor(v()*25),b=1+Math.floor(v()*25);
+   const values=Array.from({length:4},(_,j)=>({
+     value:String(1+Math.floor(v()*25)),tier:j===1?'1':'0'
+   }));
    phase.textContent='見本';
-   reach.textContent='リーチ '+String(a).padStart(2,'0')+'·'+String(b).padStart(2,'0');
-   pay.textContent='配当 '+[0,100,200,500][(index+game)%4]+' WIN';
-   sugar.textContent=index===2?'◆':'◇';
+   renderReach(reachDigits,values);
+   payAmount.textContent=String([0,100,200,500][(index+game)%4]);
    sugar.classList.toggle('is-collected',index===2);
    sugar.title=index===2?'見本：シュガー獲得':'見本：シュガー未獲得';
    return;
@@ -146,9 +177,8 @@ try{
     catch{sampleCanvas(ctx,game,item.seed);}
   }else sampleCanvas(ctx,game,item.seed);
   phase.textContent=live.status;
-  reach.textContent='リーチ '+(live.reach.length?live.reach.join('·'):'—');
-  pay.textContent='配当 '+live.pay+' WIN';
-  sugar.textContent=live.sugar?'◆':'◇';
+  renderReach(reachDigits,live.reach);
+  payAmount.textContent=live.pay;
   sugar.classList.toggle('is-collected',live.sugar);
   sugar.title=live.sugar?'シュガー獲得済み':'シュガー未獲得';
  }
