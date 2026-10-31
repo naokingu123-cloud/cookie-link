@@ -9,6 +9,13 @@ try{
  if(!card||!app||typeof carnivalHud!=='function'||typeof sixArtBackdrop!=='function')throw Error('Six Drop is not initialized');
  // The previous candy-filled backdrop is intentionally removed from INSIDE the tray.
  // The playfield is almost clear glass; its colorful enclosure is a separate CSS overlay.
+ // Keep every staggered candy INSIDE the bottle's open glass window.
+ // The old 35px spacing put outer candies underneath the 39px decorative rails.
+ // This is visual geometry only: grid cells, awards and reach logic stay intact.
+ sixLayout=function(rows=SIX_ROWS){
+  const step=28,top=164-(rows-1)*step*SIX_SQRT3_2/2;
+  return {step,top,radius:step*.5};
+ };
  const clearPlateCache=new Map();
  sixArtBackdrop=function(rows){
   const key=rows;
@@ -78,6 +85,17 @@ try{
  carnivalHud=function(a){existingHud(a);update(a);};
  install();update(app);
  // Change the background immediately even on the idle / BET demonstration screen.
+ // The existing top-refill animation begins above the screen at y=-350;
+ // the generated bottle lid (drawn as a foreground layer) hides the travel
+ // until the candy emerges below the lip. Do not skip fall or landing frames.
+ const baseCandyDraw=drawCarnival;
+ drawCarnival=function(s,now){
+  if(s?.candyCanvas){
+   const refilling=['pyramidTopUp','pyramidRefill'].includes(s.engine?.fx?.phase);
+   s.candyCanvas.parentElement?.classList.toggle('jar-refilling',refilling);
+  }
+  return baseCandyDraw(s,now);
+ };
  card.candyKey='';carnivalQueueFrame(card);scheduleUI(app);
  console.info('[SixDropGlass] jar frame and 3-role transparent award panel ready');
 }catch(error){console.error('[SixDropGlass]',error);}
