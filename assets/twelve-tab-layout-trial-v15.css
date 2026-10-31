@@ -1,0 +1,166 @@
+/* SWEETS LINK v15: four compact board previews inside EACH of the
+ * three existing tabs. The main playfield and its selected game are untouched.
+ */
+body.twelve-tab-layout-trial #tabs .tab-slot>.tab{
+  position:relative!important;
+  display:block!important;
+  isolation:isolate!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+body.twelve-tab-layout-trial #tabs .tab-slot>.tab>:not(.tab-game-name):not(.mini-fleet-four){
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.twelve-tab-layout-trial #tabs .tab-slot>.tab .tab-game-name{
+  position:absolute!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  top:0!important;
+  left:4px!important;
+  width:calc(100% - 8px)!important;
+  min-width:0!important;
+  height:20px!important;
+  max-height:20px!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  overflow:visible!important;
+  transform:none!important;
+  pointer-events:none!important;
+  z-index:2!important;
+}
+body.twelve-tab-layout-trial #tabs .tab-game-name .six-art-logo,
+body.twelve-tab-layout-trial #tabs .tab-game-name .canyon-logo,
+body.twelve-tab-layout-trial #tabs .tab-game-name .sweet-link-logo{
+  width:100%!important;
+  height:21px!important;
+  max-height:21px!important;
+  object-fit:contain!important;
+}
+body.twelve-tab-layout-trial #tabs .tab-slot>.tab .mini-fleet-four{
+  display:grid!important;
+  position:absolute!important;
+  top:21px!important;
+  left:5px!important;
+  right:5px!important;
+  bottom:4px!important;
+  min-height:0!important;
+  min-width:0!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
+  gap:2px!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  z-index:3!important;
+  pointer-events:none!important;
+}
+body.twelve-tab-layout-trial #tabs .mini-fleet-pane{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  gap:1px!important;
+  border:1px solid rgba(255,236,189,.94)!important;
+  border-radius:5px!important;
+  background:linear-gradient(135deg,rgba(75,37,44,.90),rgba(99,45,72,.83))!important;
+  box-shadow:inset 0 0 2px #ffffff66!important;
+  box-sizing:border-box!important;
+}
+body.twelve-tab-layout-trial #tabs .tab[aria-selected="true"] .mini-fleet-pane{
+  border-color:#fff1aa!important;
+  box-shadow:0 0 3px #ffeb9b88,inset 0 0 2px #ffffff66!important;
+}
+body.twelve-tab-layout-trial #tabs .mini-fleet-pane canvas{
+  display:block!important;
+  flex:0 1 auto!important;
+  width:min(37px,70%)!important;
+  height:min(37px,100%)!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:37px!important;
+  max-height:37px!important;
+  object-fit:contain!important;
+  image-rendering:auto!important;
+  border:0!important;
+  border-radius:4px!important;
+  box-shadow:none!important;
+}
+body.twelve-tab-layout-trial #tabs .mini-fleet-pane .mini-fleet-meta{
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  width:17px!important;
+  max-width:17px!important;
+  gap:1px!important;
+  min-width:0!important;
+}
+body.twelve-tab-layout-trial #tabs .mini-fleet-meta b{
+  font:900 8px/10px system-ui,sans-serif!important;
+  color:#fff1ad!important;
+  text-shadow:0 1px #6d3a65!important;
+}
+body.twelve-tab-layout-trial #tabs .mini-fleet-meta small{
+  font:800 4.5px/6px system-ui,sans-serif!important;
+  color:#f8c7e9!important;
+  letter-spacing:-.15px!important;
+}
+body.twelve-tab-layout-trial #tabs .tab-slot .tab-bets,
+body.twelve-tab-layout-trial #tabs .tab-slot .tab-locked-bet,
+body.twelve-tab-layout-trial #tabs .tab-slot .reach-strip{
+  /* Original per-game BET and reach displays stay as they were. */
+  visibility:visible!important;
+}
+
+/* Remove the duplicate PREV/NOW/NEXT row from the right payout panel;
+   the Round1/Round2 indicators at upper right are the ONLY ones. */
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-side-round-cards,
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  flex-basis:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+/* Only the actual candy example and amount are needed: no text explanations. */
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-label{
+  display:none!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role{
+  gap:2px!important;
+  padding:2px 1px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-icon{
+  width:100%!important;
+  height:62px!important;
+  min-height:45px!important;
+  max-height:66px!important;
+  flex:1 1 auto!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-formula{
+  min-height:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
+  margin:0!important;
+  gap:2px!important;
+  padding:1px 2px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-unit{
+  font-size:13px!important;
+  line-height:18px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-times,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-count{
+  font-size:13px!important;
+  line-height:18px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-roles{
+  grid-template-rows:repeat(3,minmax(0,1fr))!important;
+  gap:4px!important;
+}
