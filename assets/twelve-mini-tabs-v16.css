@@ -1,0 +1,197 @@
+/* v16: THREE original tab slots, each replaced as a whole with a 2 x 2
+ * miniature board grid. No new space in the large / main game panel.
+ */
+body.twelve-mini-tabs-v16 #tabs .tab-slot{
+  position:relative!important;
+  display:block!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+  padding:0!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+/* Preserve the original button/score elements in DOM so the genuine
+ * app continues updating them, but place their UI underneath the grid. */
+body.twelve-mini-tabs-v16 #tabs .tab-slot>.tab,
+body.twelve-mini-tabs-v16 #tabs .tab-slot>.reach-strip,
+body.twelve-mini-tabs-v16 #tabs .tab-slot>.tab-bets,
+body.twelve-mini-tabs-v16 #tabs .tab-slot>.tab-locked-bet{
+  opacity:0!important;
+  pointer-events:none!important;
+  position:absolute!important;
+  top:0!important;
+  left:0!important;
+  width:100%!important;
+}
+body.twelve-mini-tabs-v16 #tabs .tab-slot>.tab{height:100%!important}
+body.twelve-mini-tabs-v16 #tabs .mini-four-grid{
+  position:absolute!important;
+  inset:0!important;
+  z-index:24!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
+  gap:2px!important;
+  padding:1px!important;
+  min-width:0!important;
+  min-height:0!important;
+  box-sizing:border-box!important;
+  pointer-events:auto!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  gap:1px!important;
+  padding:2px!important;
+  margin:0!important;
+  border-radius:7px!important;
+  border:1px solid rgba(255,230,168,.95)!important;
+  box-shadow:inset 0 0 3px #fff7,0 1px 2px #6f335277!important;
+  background:linear-gradient(140deg,#5b344adf,#402333e8)!important;
+  color:#fff7d8!important;
+  text-align:center!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  cursor:pointer!important;
+  touch-action:manipulation!important;
+}
+body.twelve-mini-tabs-v16 #tabs .tab-slot:nth-child(2) .mini-four-cell{
+  background:linear-gradient(140deg,#603c32ef,#302229ee)!important;
+}
+body.twelve-mini-tabs-v16 #tabs .tab-slot:nth-child(3) .mini-four-cell{
+  background:linear-gradient(140deg,#885b90eb,#50386deb)!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-grid.game-selected .mini-four-cell{
+  border-color:#ffe585!important;
+  box-shadow:inset 0 0 3px #fff9,0 0 3px #ffeb8b77!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell.is-live{
+  border-width:1.5px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:1px!important;
+  width:100%!important;
+  flex:0 0 10px!important;
+  height:10px!important;
+  min-height:10px!important;
+  line-height:10px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-number{
+  flex:0 0 auto!important;
+  font:1000 7px/10px system-ui,sans-serif!important;
+  color:#ffe6a1!important;
+  white-space:nowrap!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-phase{
+  min-width:0!important;
+  max-width:30px!important;
+  flex:1 1 auto!important;
+  font:850 6px/10px system-ui,sans-serif!important;
+  color:#ffe6ed!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar{
+  flex:0 0 auto!important;
+  font:900 10px/10px system-ui,sans-serif!important;
+  font-style:normal!important;
+  color:#eee1f0!important;
+  white-space:nowrap!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-sugar.is-collected{
+  color:#ffde75!important;
+  text-shadow:0 0 4px #fff6bd!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-canvas{
+  display:block!important;
+  flex:1 1 auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  min-width:0!important;
+  max-width:min(48px,100%)!important;
+  max-height:48px!important;
+  aspect-ratio:1/1!important;
+  object-fit:contain!important;
+  border:1px solid #f9d5bb!important;
+  border-radius:3px!important;
+  box-shadow:none!important;
+  margin:0 auto!important;
+  padding:0!important;
+  image-rendering:auto!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach,
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+  display:block!important;
+  width:100%!important;
+  flex:0 0 10px!important;
+  height:10px!important;
+  line-height:10px!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  font-family:system-ui,sans-serif!important;
+  letter-spacing:-.28px!important;
+  color:#bbffff!important;
+  text-shadow:0 .5px #482c4d!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+  color:#ffdc88!important;
+  font-family:SweetMedal,Georgia,serif!important;
+  font-size:8px!important;
+  line-height:10px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell:focus-visible{
+  outline:2px solid #fff9b4!important;
+  outline-offset:-2px!important;
+}
+/* Right-side Six Drop: ONLY upper-right Round1/2. The old inner row is
+ * removed from DOM in v14 after the HUD, and hidden as a fallback here. */
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-side-round-cards{
+  display:none!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  flex:0 0 0!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-label{
+  display:none!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role{
+  gap:1px!important;
+  padding:2px 1px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-icon{
+  width:100%!important;
+  height:67px!important;
+  max-height:70px!important;
+  min-height:45px!important;
+  flex:1 1 auto!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-formula{
+  flex:0 0 26px!important;
+  height:26px!important;
+  min-height:26px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-unit{
+  font-size:14px!important;
+  line-height:19px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-count,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-times{
+  font-size:14px!important;
+  line-height:19px!important;
+}
