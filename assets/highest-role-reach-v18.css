@@ -1,0 +1,31 @@
+/* v18 highest-role reach: use Cookie Link's rainbow look on each
+ * actual tier-3 reach number in the 2x2 tab miniatures.
+ * Canyon 500m+ 100m BONUS and Six Drop all-clear use this same tier.
+ */
+@keyframes sweetsMiniHighestHue {
+  0%{background-position:0% 50%;filter:drop-shadow(0 0 1px #ffd96f)}
+  50%{background-position:100% 50%;filter:drop-shadow(0 0 2px #96e9ff)}
+  100%{background-position:0% 50%;filter:drop-shadow(0 0 1px #ffd96f)}
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit[data-tier="3"]{
+  color:#fff7df!important;
+  background-image:linear-gradient(100deg,#fc658a,#ffde68,#7bea97,#53dbf3,#a17de8,#ff87d7,#fc658a)!important;
+  background-size:250% 100%!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  -webkit-text-stroke:.28px #fff5d1!important;
+  text-shadow:none!important;
+  animation:sweetsMiniHighestHue 2.3s linear infinite!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach:has(.mini-four-reach-digit[data-tier="3"]) .mini-four-reach-badge{
+  background:linear-gradient(100deg,#ff839a,#ffc976,#92ed9c,#65d0ef,#d58ee9)!important;
+  border-color:#fff5c1!important;
+  color:#4e2d69!important;
+  text-shadow:0 1px rgba(255,255,255,.65)!important;
+}
+@media(prefers-reduced-motion:reduce){
+ body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit[data-tier="3"]{
+  animation:none!important;
+ }
+}
