@@ -31,7 +31,7 @@ function install(){
   let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch{}
   let mode=saved.mode==='3'?'3':'12';
   let pendingMode=null, selected=[0,0,0], currentMode='3';
-  const baseBets=app.bets.slice(0,3);
+  let baseBets=app.bets.slice(0,3);
   const configs=defaults.map((d,i)=>{
     const v=Array.isArray(saved.boards)?saved.boards[i]||{}:{};
     return {
@@ -165,7 +165,15 @@ function install(){
     app.enabled=app.bets.map(n=>n>0);
     currentMode='3';selected=[0,0,0];
     document.body.classList.remove('twelve-mini-tabs-v16');
-    for(let g=0;g<3;g++)refreshLarge(g);
+    // Immediately restore the original three engines to their native panels.
+    for(let g=0;g<3;g++){
+      const slot=slots[g],e=app.engines[g];
+      slot.engine=e;slot.event={phase:e.phase||'ready'};
+      slot.dirtyMain=true;slot.dirtyMini=true;slot.catchUp=true;
+      slot.tabKey=null;slot.reachBoardKey=null;slot.chocoReachKey=null;
+      slot.sixReachKey=null;slot.candyKey='';
+      if(g===active){try{event(g,slot.event,e,app);}catch(error){console.warn('[Sweets12] original view',error);}}
+    }
     app.onChange(app);
   }
   function applyMode(value){
@@ -193,6 +201,15 @@ function install(){
     if(pendingMode){const chosen=pendingMode;pendingMode=null;applyMode(chosen);}
     if(currentMode==='12')applySettingsToInstances(true);
     return out;
+  };
+  const nativeSetBet=app.setBet.bind(app);
+  app.setBet=function(i,n){
+    const ok=nativeSetBet(i,n);
+    if(ok&&currentMode==='3'&&i<3)baseBets[i]=n;
+    if(ok&&currentMode==='12'&&i<12){
+      configs[i].bet=n;configs[i].enabled=n>0;savedSet();
+    }
+    return ok;
   };
   const nativeColor=app.setColorCount.bind(app);
   app.setColorCount=function(...args){
@@ -376,6 +393,28 @@ function install(){
     }).join('');
     configsHolder.innerHTML=section;
   }
+  // The original result layout was designed for only 3 rows.
+  // In twelve-board mode it becomes a 3x4 compact, scrollable scorecard.
+  const nativeResult=renderRoundResult;
+  renderRoundResult=function(a){
+    nativeResult(a);
+    const list=document.getElementById('result-games');
+    if(!list)return;
+    list.classList.toggle('sweets12-result-grid',currentMode==='12');
+    if(currentMode!=='12')return;
+    list.querySelectorAll('.result-game').forEach((row,i)=>{
+      const icon=row.querySelector('use');
+      if(icon)icon.setAttribute('href','#candy'+[0,2,4][gameFor(i)]);
+      const name=row.querySelector('.result-game-name');
+      if(name && !name.querySelector('.sweets12-result-id')){
+        const tag=document.createElement('span');
+        tag.className='sweets12-result-id';
+        tag.textContent=' '+(ordered[i]?.mini+1||1)+'番';
+        const small=name.querySelector('small');
+        if(small)small.before(tag);else name.append(tag);
+      }
+    });
+  };
   function attachImmediate(){
     // Always initialize the visible menu, even if currently in 3-board mode.
     makeMenu();
