@@ -22,6 +22,9 @@ try{
  };
  const ITEMS=[];
  let installed=false,period=null;
+ // Only one mini board is selected within the currently active game;
+ // extra trial cells remain layout samples, not paid engines.
+ const selectedByGame=[0,0,0];
  const seedRandom=n=>{let x=n|0;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296;}};
  const text=(v,max=12)=>String(v??'').replace(/\s+/g,' ').trim().slice(0,max);
  function makeEl(tag,cls,contents){
@@ -133,6 +136,8 @@ try{
     head.append(badge,phase,sugar);
     const canvas=document.createElement('canvas');
     canvas.width=48;canvas.height=48;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
+    const chosenLabel=makeEl('span','mini-four-selected-label','選択中');
+    chosenLabel.setAttribute('aria-hidden','true');
     const reach=makeEl('span','mini-four-reach');
     const reachBadge=makeEl('span','mini-four-reach-badge','リーチ');
     const reachDigits=makeEl('span','mini-four-reach-digits');
@@ -145,15 +150,17 @@ try{
     const payAmount=makeEl('b','mini-four-pay-amount','0');
     const payUnit=makeEl('small','mini-four-pay-unit','WIN');
     pay.append(payAmount,payUnit);
-    cell.append(pay,head,canvas,reach);grid.append(cell);
+    cell.append(pay,head,canvas,chosenLabel,reach);grid.append(cell);
     const ctx=canvas.getContext('2d',{alpha:false});
     const item={host,original,game,index,cell,ctx,phase,reach,pay,payAmount,reachDigits,sugar,seed:(index+1)*1009+game*307};
     ITEMS.push(item);
     cell.addEventListener('click',event=>{
       event.preventDefault();event.stopPropagation();
-      // Choosing any small board still selects the original GAME only.
-      // It does not claim a separate paid engine for the DEMO cells.
+      // The other nine panels are still visual DEMO boards, so this
+      // changes the highlighted preview, NOT the underlying paid engine.
+      selectedByGame[game]=index;
       if(original?.getAttribute('aria-selected')!=='true')original?.click();
+      updateSelection();
     });
    }
    host.append(grid);
@@ -209,11 +216,11 @@ try{
       ()=>incoming.classList.remove('mini-four-reach-page-enter'),{once:true});
   }else node.replaceChildren(incoming);
  }
- function paint(item,live){
+ function paint(item,live,skipCanvas=false){
   const {ctx,index,game,phase,reachDigits,payAmount,sugar,host}=item;
   if(index>0){
    // Sample data explicitly labelled as layout fixtures.
-   sampleCanvas(ctx,game,item.seed);
+   if(!skipCanvas)sampleCanvas(ctx,game,item.seed);
    const v=seedRandom(item.seed+4421);
    const values=[...new Set(Array.from({length:25},(_,n)=>n+1)
      .sort(()=>v()-.5).slice(0,index===2?7:4))]
@@ -225,27 +232,51 @@ try{
    sugar.title=index===2?'見本：シュガー獲得':'見本：シュガー未獲得';
    return;
   }
-  ctx.clearRect(0,0,48,48);
-  const src=live.source;
-  if(src?.width>0&&src?.height>0){
-    try{ctx.drawImage(src,0,0,48,48);}
-    catch{sampleCanvas(ctx,game,item.seed);}
-  }else sampleCanvas(ctx,game,item.seed);
+  if(!skipCanvas){
+    ctx.clearRect(0,0,48,48);
+    const src=live.source;
+    if(src?.width>0&&src?.height>0){
+      try{ctx.drawImage(src,0,0,48,48);}
+      catch{sampleCanvas(ctx,game,item.seed);}
+    }else sampleCanvas(ctx,game,item.seed);
+  }
   phase.textContent=live.status;
   renderReach(reachDigits,live.reach,slots?.[game]?.reachPage||0);
   payAmount.textContent=live.pay;
   sugar.classList.toggle('is-collected',live.sugar);
   sugar.title=live.sugar?'シュガー獲得済み':'シュガー未獲得';
  }
+ function updateSelection(){
+  if(!installed)return;
+  hosts.forEach((host,game)=>{
+    const gameSelected=host.querySelector('.tab')?.getAttribute('aria-selected')==='true';
+    host.querySelector('.mini-four-grid')?.classList.toggle('game-selected',gameSelected);
+    for(const item of ITEMS){
+      if(item.game!==game)continue;
+      const chosen=gameSelected&&item.index===selectedByGame[game];
+      item.cell.classList.toggle('is-selected-mini',chosen);
+      item.cell.setAttribute('aria-pressed',String(chosen));
+      const previewOnly=chosen&&item.index>0;
+      item.cell.title=chosen
+        ?(previewOnly?'選択中（配置見本・独立抽選なし）':'選択中')
+        :(item.index===0?'現在のゲーム盤面':'配置試験用の見本盤面（独立抽選なし）');
+    }
+  });
+ }
  function update(){
   if(!installed&&!build())return;
+  updateSelection();
   if(document.hidden)return;
   const states=hosts.map((h,g)=>stateFor(h,g));
-  for(const item of ITEMS)paint(item,states[item.game]);
-  hosts.forEach((host,g)=>{
-    const selected=host.querySelector('.tab')?.getAttribute('aria-selected')==='true';
-    host.querySelector('.mini-four-grid')?.classList.toggle('game-selected',selected);
-  });
+  // Avoid drawing the hidden thumbnail: keep selected board text only.
+  for(const item of ITEMS){
+    const isCurrent=item.cell.classList.contains('is-selected-mini');
+    if(!isCurrent)paint(item,states[item.game]);
+    else{
+      // Still update reach, payout, and sugar, but skip thumbnail painting.
+      paint(item,states[item.game],true);
+    }
+  }
  }
  update();
  period=setInterval(update,650);
