@@ -76,8 +76,18 @@
   once(
    "const plateMat=new THREE.MeshPhysicalMaterial({color:'#e9a83c',transparent:true,opacity:.87,metalness:.12,roughness:.28,clearcoat:.7,clearcoatRoughness:.15,side:THREE.DoubleSide});materials.push(plateMat);",
    `const plateMat=new THREE.MeshPhysicalMaterial({color:'#fff9e3',transparent:true,opacity:.94,metalness:.07,roughness:.34,clearcoat:.7,clearcoatRoughness:.15,side:THREE.DoubleSide});materials.push(plateMat);
- const pastryTexture=new THREE.TextureLoader().load('assets/cookie-platter-sweets.svg',()=>{plateMat.needsUpdate=true;});
- pastryTexture.colorSpace=THREE.SRGBColorSpace;pastryTexture.wrapS=THREE.RepeatWrapping;pastryTexture.magFilter=THREE.LinearFilter;plateMat.map=pastryTexture;plateMat.needsUpdate=true;`,
+ // The bundled Three.js is intentionally tree-shaken and has CanvasTexture,
+ // but no TextureLoader. Decode the artwork in an ordinary browser Image first.
+ const pastryCanvas=document.createElement('canvas');pastryCanvas.width=1024;pastryCanvas.height=1024;
+ const pastryContext=pastryCanvas.getContext('2d');
+ const pastryTexture=new THREE.CanvasTexture(pastryCanvas);
+ pastryTexture.colorSpace=THREE.SRGBColorSpace;pastryTexture.magFilter=THREE.LinearFilter;
+ pastryTexture.minFilter=THREE.LinearFilter;
+ const pastryImage=new Image();
+ pastryImage.onload=()=>{if(!pastryContext)return;pastryContext.drawImage(pastryImage,0,0,1024,1024);pastryTexture.needsUpdate=true;};
+ pastryImage.onerror=()=>console.warn('Candy platter illustration could not be loaded');
+ pastryImage.src='assets/cookie-platter-sweets.svg';
+ plateMat.map=pastryTexture;plateMat.needsUpdate=true;`,
    'candy illustration on yellow roulette plate'
   );
   once(
