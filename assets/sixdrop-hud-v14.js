@@ -78,6 +78,9 @@
    for(const type of roles){
      const row=root.querySelector('[data-simple-role="'+type+'"]');
      if(!row)return;
+     const label=row.querySelector('.six-glass-role-label');
+     const newLabel=({line:'直線\n同色4個以上',triangle:'トライアングル\n同色6個',hexagon:'ヘキサゴン\n同色6個'})[type];
+     if(label && label.textContent!==newLabel)label.textContent=newLabel;
      const icon=row.querySelector('.six-glass-role-icon');
      if(!icon || icon.classList.contains('six-real-candy-role'))continue;
      icon.outerHTML=candySample(type);
