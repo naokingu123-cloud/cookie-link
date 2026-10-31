@@ -67,14 +67,16 @@ try{
  }
  function reachNumbers(host,game){
   // The live tab numbers are SVG PATH glyphs: their textContent is empty.
-  // Get each original predicted number and tier from the same paged reach
-  // model that renders the real three-tab HUD. This also carries tier=3.
+  // Collect the FULL prediction set, not only the current 4-number page.
+  // Sorted ascending; a separate slow, continuous animation reveals 5+.
+  // Tier 3 comes from the genuine engine predictor.
   const slot=slots?.[game];
   if(slot?.reachStrip && !slot.reachStrip.hidden){
     const page=slot.reachPageResults||[];
-    const first=(slot.reachPage||0)*4;
-    if(page.length)return page.slice(first,first+4)
-      .map(p=>({value:String(p.number),tier:String(p.tier||0)}));
+    if(page.length)return page
+      .filter(p=>Number.isInteger(Number(p.number))&&Number(p.number)>0)
+      .map(p=>({value:String(p.number),tier:String(p.tier||0)}))
+      .sort((a,b)=>Number(a.value)-Number(b.value));
   }
   // Fallback for an older HUD: use its accessible label, not SVG text.
   const rows=[...host.querySelectorAll('.reach-num')]
@@ -90,9 +92,8 @@ try{
   for(const value of rows){
     if(used.has(value.value))continue;
     used.add(value.value);unique.push(value);
-    if(unique.length===4)break;
   }
-  return unique;
+  return unique.sort((a,b)=>Number(a.value)-Number(b.value));
  }
  function stateFor(host,game){
   const tab=host.querySelector('.tab');
@@ -136,11 +137,15 @@ try{
     const reachBadge=makeEl('span','mini-four-reach-badge','リーチ');
     const reachDigits=makeEl('span','mini-four-reach-digits');
     reach.append(reachBadge,reachDigits);
+    // Small blinking payout bubble remains at the TOP LEFT, as in the
+    // original three-tab version. No payout strip below the board.
     const pay=makeEl('span','mini-four-pay');
+    pay.setAttribute('aria-label','現在の配当');
+    pay.style.setProperty('--mini-bubble-delay',(-.28*(index+game*4)).toFixed(2)+'s');
     const payAmount=makeEl('b','mini-four-pay-amount','0');
     const payUnit=makeEl('small','mini-four-pay-unit','WIN');
     pay.append(payAmount,payUnit);
-    cell.append(head,canvas,reach,pay);grid.append(cell);
+    cell.append(pay,head,canvas,reach);grid.append(cell);
     const ctx=canvas.getContext('2d',{alpha:false});
     const item={host,original,game,index,cell,ctx,phase,reach,pay,payAmount,reachDigits,sugar,seed:(index+1)*1009+game*307};
     ITEMS.push(item);
@@ -157,17 +162,41 @@ try{
   installed=true;return true;
  }
  function renderReach(node,numbers){
-  const vals=(numbers||[]).slice(0,4);
+  // Numerical ascending order, retaining the strongest tier per number.
+  const best=new Map();
+  for(const item of numbers||[]){
+    const value=Number(item?.value);
+    if(!Number.isInteger(value)||value<1||value>25)continue;
+    const tier=Math.max(0,Math.min(3,Number(item?.tier)||0));
+    best.set(value,Math.max(tier,best.get(value)||0));
+  }
+  const vals=[...best].sort((a,b)=>a[0]-b[0])
+    .map(([value,tier])=>({value:String(value),tier:String(tier)}));
   const sig=vals.map(n=>n.value+':'+n.tier).join('|')||'-';
   if(node.dataset.signature===sig)return;
   node.dataset.signature=sig;
   node.replaceChildren();
+  node.classList.toggle('mini-four-reach-scrolling',vals.length>=5);
+  node.setAttribute('aria-label',vals.length?'リーチ '+vals.map(v=>v.value+'番').join('、'):'リーチなし');
   if(!vals.length){node.append(makeEl('span','mini-four-no-reach','—'));return;}
-  for(const n of vals){
-    const digit=makeEl('b','mini-four-reach-digit',n.value);
-    digit.dataset.tier=String(n.tier||0);
-    node.append(digit);
+  function makeSequence(duplicate=false){
+    const seq=makeEl('span','mini-four-reach-sequence');
+    if(duplicate)seq.setAttribute('aria-hidden','true');
+    for(const n of vals){
+      const digit=makeEl('b','mini-four-reach-digit',n.value);
+      digit.dataset.tier=n.tier;
+      seq.append(digit);
+    }
+    return seq;
   }
+  const track=makeEl('span','mini-four-reach-track');
+  track.append(makeSequence());
+  if(vals.length>=5){
+    track.append(makeSequence(true));
+    // Slow continuous traversal, keeping adjacent numbers readable.
+    node.style.setProperty('--mini-reach-duration',(vals.length*1.8).toFixed(1)+'s');
+  }else node.style.removeProperty('--mini-reach-duration');
+  node.append(track);
  }
  function paint(item,live){
   const {ctx,index,game,phase,reachDigits,payAmount,sugar,host}=item;
@@ -175,7 +204,7 @@ try{
    // Sample data explicitly labelled as layout fixtures.
    sampleCanvas(ctx,game,item.seed);
    const v=seedRandom(item.seed+4421);
-   const values=Array.from({length:4},(_,j)=>({
+   const values=Array.from({length:index===2?7:4},(_,j)=>({
      value:String(1+Math.floor(v()*25)),tier:j===1?'1':'0'
    }));
    phase.textContent='見本';
