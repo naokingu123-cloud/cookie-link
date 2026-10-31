@@ -210,3 +210,11 @@ body.carnival-active.six-bottle-v6 #panels .six-board-viewport .six-reach-layer{
 body.carnival-active.six-bottle-v6 #panels .six-board-viewport{
   padding:0!important;
 }
+
+/* Text must remain legible over the glass lip that crosses its old slot. */
+body.carnival-active.six-bottle-v6 .game>.festival-top{
+ z-index:20!important;
+}
+body.carnival-active.six-bottle-v6 .game>.field{
+ z-index:2!important;
+}
