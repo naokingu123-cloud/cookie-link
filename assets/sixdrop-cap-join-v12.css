@@ -1,0 +1,60 @@
+/* Six Drop v12 - joined cap / rail geometry.
+ *
+ * The original 1.2x drop layout is correct; its first row is visually
+ * hidden by the 82.27px lid overflowing into the 320-unit canvas.
+ * Keep candyCanvas, reach layer, and sixLayout unchanged.
+ *
+ * The previous sideframe was attached to the 290px interior viewport,
+ * while the cap was positioned relative to the entire 312px field.
+ * Move BOTH ornaments to the same field coordinate space.
+ */
+
+/* Lift the wide jeweled lid 12 CSS pixels. Its lower glass lip now ends
+ * at field y=18.27, ABOVE the actual playfield starting after the 22px
+ * in-panel title bar. The complete 1.2x first candy row is unobstructed.
+ */
+body.carnival-active.six-v8-art-ready.six-bottle-v6 .game>.field::before{
+  top:-64px!important;
+  height:82.27px!important;
+  width:312px!important;
+  left:0!important;
+  background:url('../assets/sixdrop_candy_lid.png?v=8') left top/312px 82.27px no-repeat!important;
+  z-index:11!important;
+  pointer-events:none!important;
+}
+
+/* The new slimmer U frame is drawn in the same field coordinate system as
+ * the lid, 6px below the field origin. This lets its shoulders CONNECT
+ * with the underside of the raised lid without covering the first row.
+ * Its native 1024x1024 shape is uniformly scaled to a 312px square.
+ */
+body.carnival-active.six-v8-art-ready.six-v11-slim-ready .game>.field::after{
+  content:""!important;
+  position:absolute!important;
+  display:block!important;
+  left:0!important;
+  top:6px!important;
+  width:312px!important;
+  height:312px!important;
+  background:url('../assets/sixdrop_glass_sideframe_slim.png?v=11') center/312px 312px no-repeat!important;
+  opacity:1!important;
+  filter:none!important;
+  box-shadow:none!important;
+  border:0!important;
+  z-index:10!important;
+  pointer-events:none!important;
+}
+
+/* Do not paint a SECOND sideframe inside the shrunken viewport.
+ * The extra image previously created a poorly aligned upper joint and
+ * also obscured the first and last droplet columns. */
+body.carnival-active.six-v8-art-ready.six-v11-slim-ready #panels .six-board-viewport::after{
+  display:none!important;
+  background-image:none!important;
+}
+
+/* Keep the live canvas / flying drops independent of this cosmetic change. */
+body.carnival-active #panels .six-board-viewport .carnival-canvas,
+body.carnival-active #panels .six-board-viewport .six-reach-layer{
+  transform:none!important;
+}
