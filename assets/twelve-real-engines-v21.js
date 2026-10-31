@@ -409,7 +409,7 @@ function install(){
       if(name && !name.querySelector('.sweets12-result-id')){
         const tag=document.createElement('span');
         tag.className='sweets12-result-id';
-        tag.textContent=' '+(ordered[i]?.mini+1||1)+'番';
+        tag.textContent=' '+(configs[i]?.name||String((ordered[i]?.mini||0)+1)+'番');
         const small=name.querySelector('small');
         if(small)small.before(tag);else name.append(tag);
       }
