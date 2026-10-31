@@ -222,7 +222,11 @@ try{
   const {game,ctx,phase,reachDigits,payAmount,sugar,cell}=item;
   const {engine:e,enabled,bet,score}=data;
   if(!e)return;
-  if(!skipCanvas){
+  // The shared full-game renderer is the primary source. Keep the previous
+  // lightweight renderer only as a fallback if an image is unavailable.
+  const exactDrawn=!skipCanvas&&
+    window.sweets12ThumbnailRenderer?.(item,data)===true;
+  if(!skipCanvas&&!exactDrawn){
    const w=48,h=48;
    ctx.clearRect(0,0,w,h);
    ctx.fillStyle=game===0?'#372a2c':game===1?'#34252e':'#d8b8ee';
@@ -351,7 +355,9 @@ try{
  }
  // Deferred until the main Arcade and v21 independent board service exist.
  setTimeout(update,35);
- period=setInterval(update,350);
+ // Smooth shared art motion: 8fps for active game's mini boards, 4-5fps
+ // for the other two groups. The render helper owns its own frame budget.
+ period=setInterval(update,125);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)update();});
  window.addEventListener('pagehide',()=>clearInterval(period),{once:true});
  window.sweetsTab12Layout={get boards(){return ITEMS.length;},get trial(){return true;}};
