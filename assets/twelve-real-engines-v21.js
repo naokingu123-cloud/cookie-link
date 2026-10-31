@@ -137,7 +137,7 @@ function install(){
           if(reset)e.reset({keepWonder:true,keepHammers:false});
         }
       }
-      if(i>=3)e.speed=Math.max(2,app.speed*cfg.speed);
+      e.speed=i>=3?Math.max(2,app.speed*cfg.speed):app.speed*cfg.speed;
     }
     if(app.phase==='ready')app.enabled=app.bets.map(n=>n>0);
     app.onChange(app);
