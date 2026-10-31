@@ -20,6 +20,7 @@ body.carnival-active #odds-panel{
  background-image:none!important;
  background-color:transparent!important;
 }
+/* Luxury 1024 x 270 lid renders at its exact 3.79:1 aspect ratio (312 x 82.27). */
 /* Default fallback: existing v7 game art remains while manual image upload
    is pending. Once BOTH images load, the following class is enabled. */
 body.carnival-active.six-v8-art-ready .game>.field::before{
@@ -29,10 +30,10 @@ body.carnival-active.six-v8-art-ready .game>.field::before{
  left:0!important;
  top:-52px!important;
  width:312px!important;
- height:67.04px!important;
+ height:82.27px!important;
  background:
   url('../assets/sixdrop_candy_lid.png?v=8')
-  left top/312px 67.04px no-repeat!important;
+  left top/312px 82.27px no-repeat!important;
  z-index:11!important;
  border:0!important;
  box-shadow:none!important;
