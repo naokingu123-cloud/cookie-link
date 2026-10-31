@@ -181,9 +181,12 @@ try{
    const activeGroup=group===active;
    // Dynamic: ~10fps in visible group, ~4.5fps in other groups. Still
    // redraw immediately on phase change or completion for responsive HUD.
-   const cadence=app.paused?500:activeGroup?100:220;
+   // Watchdog: if a renderer becomes costly on this device, reduce
+   // its next refresh rate rather than slowing the live roulette.
+   const costPenalty=Math.min(250,Math.max(0,(view.paintCost||0)-8)*12);
+   const cadence=app.paused?650:(activeGroup?100:220)+costPenalty;
    if(view.lastKey===key && now-view.stamp<cadence)return true;
-   if(!animation && view.lastKey===key && now-view.stamp<700)return true;
+   if(!animation && view.lastKey===key && now-view.stamp<750)return true;
    view.stamp=now;view.lastKey=key;
    const v=view.base;
    v.engine=e;v.event=data.event||{phase:e.phase||'waiting'};
@@ -235,6 +238,9 @@ try{
        g.drawImage(v.candyCanvas,0,0,48,48);
        applyBottle(g,48,48);
      }
+     view.paintCost=view.paintCost==null
+       ?performance.now()-now
+       :view.paintCost*.76+(performance.now()-now)*.24;
      return true;
    }catch(error){
      view.failed=true;
