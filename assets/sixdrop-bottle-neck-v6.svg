@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="120" viewBox="0 0 640 120" preserveAspectRatio="xMidYMid meet">
+ <defs>
+  <linearGradient id="c" x1="0" y1="0" x2=".9" y2="1">
+   <stop stop-color="#fff8f4"/><stop offset=".2" stop-color="#f8a0d3"/>
+   <stop offset=".45" stop-color="#fbe6f5"/><stop offset=".7" stop-color="#adf1ff"/><stop offset="1" stop-color="#f07fbb"/>
+  </linearGradient>
+  <linearGradient id="gl" x1="0" x2="1"><stop stop-color="#fff" stop-opacity=".85"/><stop offset=".45" stop-color="#9debff" stop-opacity=".2"/><stop offset="1" stop-color="#fff" stop-opacity=".65"/></linearGradient>
+  <pattern id="stripes" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><rect width="34" height="34" fill="#ffe9f3"/><rect width="12" height="34" fill="#fa86bb"/><rect x="17" width="5" height="34" fill="#fff9d8"/></pattern>
+ </defs>
+ <!-- Wide bottle neck in the freed former ROUND area. Connect shoulders to
+      the current live bottle frame at left/right x≈70, y≈120. -->
+ <path d="M208 20 L208 44 Q208 57 190 69 C143 77 94 93 74 120" fill="none" stroke="#fff5f8" stroke-width="24" stroke-linecap="round" opacity=".82"/>
+ <path d="M432 20 L432 44 Q432 57 450 69 C497 77 546 93 566 120" fill="none" stroke="#fff5f8" stroke-width="24" stroke-linecap="round" opacity=".82"/>
+ <path d="M208 20 L208 44 Q208 57 190 69 C143 77 94 93 74 120" fill="none" stroke="url(#gl)" stroke-width="16" stroke-linecap="round"/>
+ <path d="M432 20 L432 44 Q432 57 450 69 C497 77 546 93 566 120" fill="none" stroke="url(#gl)" stroke-width="16" stroke-linecap="round"/>
+ <rect x="192" y="9" width="256" height="42" rx="20" fill="url(#stripes)" stroke="#f6c3e4" stroke-width="7"/>
+ <rect x="198" y="15" width="244" height="25" rx="12" fill="none" stroke="url(#c)" stroke-width="8"/>
+ <path d="M222 19 H414" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".73"/>
+ <g fill="#fff"><circle cx="195" cy="39" r="3" opacity=".8"/><circle cx="445" cy="37" r="3" opacity=".72"/></g>
+</svg>
