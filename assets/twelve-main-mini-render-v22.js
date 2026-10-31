@@ -67,6 +67,19 @@ try{
      surface.canvas.getBoundingClientRect=()=>({width:430,height:520,left:0,top:0,right:430,bottom:520});
      base.chocoCanvas=surface.canvas;base.chocoCtx=surface.context;
      base.chocoBoardLayer=board.canvas;
+     // The main renderer crops its large offscreen board into its old
+     // 160px tab thumbnail. Translate those source coordinates to our
+     // reduced backing store to prevent a clipped drawImage exception.
+     const miniDraw=base.mini.drawImage.bind(base.mini);
+     base.mini.drawImage=function(source,...args){
+       if(source===base.chocoBoardLayer && args.length===8){
+         const shrink=size/860;
+         return miniDraw(source,
+           args[0]*shrink,args[1]*shrink,args[2]*shrink,args[3]*shrink,
+           args[4],args[5],args[6],args[7]);
+       }
+       return miniDraw(source,...args);
+     };
      // Helpers query this canvas for the mini's own 7-segment display.
      return {base,mode:'canyon',stamp:0,failed:false,phase:''};
    }
@@ -190,11 +203,26 @@ try{
          cookieMiniEvent(v,v.event,proxy);
          view.lastEvent=evId;view.phase=phase;
        }
-       miniature(v);
-       // Cookie miniature already uses the full PNG, number glyph,
-       // sugar and shatter drawing pipeline.
-       item.ctx.clearRect(0,0,48,48);
-       item.ctx.drawImage(v.miniCanvas,0,0,48,48);
+       if(app.phase==='ready'){
+         const g=item.ctx,board=e.board||[],count=board.length||6;
+         const step=44/count;
+         g.clearRect(0,0,48,48);
+         g.fillStyle='#382017';g.fillRect(0,0,48,48);
+         for(let row=0;row<board.length;row++)for(let col=0;col<(board[row]?.length||0);col++){
+           const tile=board[row][col];if(!tile)continue;
+           const image=cookieSprites[tile.color*2+Number(!!tile.special)];
+           if(image?.complete&&image.naturalWidth)
+             g.drawImage(image,2+col*step,2+row*step,step,step);
+           if(tile.step){g.fillStyle='#fff6a8';g.beginPath();
+             g.arc(2+(col+.5)*step,2+(row+.5)*step,step*.22,0,7);g.fill();}
+         }
+       }else{
+         miniature(v);
+         // Cookie miniature uses the exact full PNG, numbered glyphs,
+         // sugar and shatter drawing pipeline at a reduced 160px buffer.
+         item.ctx.clearRect(0,0,48,48);
+         item.ctx.drawImage(v.miniCanvas,0,0,48,48);
+       }
      }else if(group===1){
        drawChoco(v,now);
        const g=item.ctx;
