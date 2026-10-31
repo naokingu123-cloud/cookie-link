@@ -173,7 +173,13 @@ try{
    if(!view||view.base.engine!==e){
      view=createBase(data,group);views.set(id,view);
    }
-   if(view.failed)return false;
+   // Some browser image decoders report incomplete sprites on the very
+   // first frame. Retry occasionally rather than locking into simple
+   // geometric fallbacks for the rest of the entire game.
+   if(view.failed){
+     if(performance.now()<(view.retryAt||0))return false;
+     view.failed=false;
+   }
    const now=performance.now();
    const key=[e.version,e.phase,e.fx?.phase,e.fx?.ms,e.boardGeneration||0,
      e.processed||0,e.totalHundredths||0,e.depth||0,e.roundIndex||0].join('/');
@@ -231,13 +237,26 @@ try{
        drawChoco(v,now);
        const g=item.ctx;
        g.clearRect(0,0,48,48);
-       g.drawImage(v.chocoCanvas,0,0,48,48);
+       // The main renderer already produces a central-board-only crop for
+       // its original small tab. It excludes wall scenery, payout tables,
+       // depth gauges and side UI; preserve the actual cake tiles and FX.
+       g.imageSmoothingEnabled=true;
+       g.imageSmoothingQuality='high';
+       g.drawImage(v.miniCanvas,0,0,48,48);
      }else{
        drawCarnival(v,now);
        const g=item.ctx;
-       g.clearRect(0,0,48,48);
-       g.drawImage(v.candyCanvas,0,0,48,48);
-       applyBottle(g,48,48);
+       const res=item.canvas?.width||item.ctx?.canvas?.width||96;
+       g.save();
+       g.setTransform(1,0,0,1,0,0);
+       g.clearRect(0,0,res,res);
+       g.imageSmoothingEnabled=true;
+       g.imageSmoothingQuality='high';
+       g.drawImage(v.candyCanvas,0,0,res,res);
+       // Same crown/rails artwork as the full-size jar, but overlay
+       // at native mini resolution for polished candy detail.
+       applyBottle(g,res,res);
+       g.restore();
      }
      view.paintCost=view.paintCost==null
        ?performance.now()-now
@@ -245,7 +264,11 @@ try{
      return true;
    }catch(error){
      view.failed=true;
-     console.warn('[Sweets12Thumbnail] Falling back for '+id,error);
+     view.retryAt=now+1800;
+     if(!view.lastErrorAt||now-view.lastErrorAt>10000){
+       view.lastErrorAt=now;
+       console.warn('[Sweets12Thumbnail] Retrying full-art renderer for '+id,error);
+     }
      return false;
    }finally{
      app.bet=prevBet;
