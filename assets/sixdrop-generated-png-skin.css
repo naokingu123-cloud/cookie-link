@@ -120,3 +120,120 @@ body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-value{
 body.six-generated-skin-debug #carnival-odds.six-simple-glass-odds:after{
  content:"GENERATED PNG ART";position:absolute;bottom:0;right:0;font-size:6px;color:#000;background:#ffe6ff;
 }
+
+/* 2026-10-31 emergency repair: keep the REAL generated art ONLY on outer rails.
+   The previous full-bleed image covered the playing numbers and made all text unreadable. */
+body.carnival-active #panels .six-board-viewport{
+ background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(239,250,255,.93),rgba(251,241,255,.94))!important;
+ overflow:hidden!important;
+}
+body.carnival-active #panels .six-board-viewport::after{
+ opacity:.92!important;
+ filter:none!important;
+ /* Union of side rails and top/bottom rails; fully transparent in the central tray. */
+ -webkit-mask-image:
+  linear-gradient(to right,#000 0%,#000 10%,transparent 17%,transparent 83%,#000 90%,#000 100%),
+  linear-gradient(to bottom,#000 0%,#000 10%,transparent 17%,transparent 83%,#000 90%,#000 100%);
+ -webkit-mask-composite:source-over!important;
+ mask-image:
+  linear-gradient(to right,#000 0%,#000 10%,transparent 17%,transparent 83%,#000 90%,#000 100%),
+  linear-gradient(to bottom,#000 0%,#000 10%,transparent 17%,transparent 83%,#000 90%,#000 100%);
+ mask-composite:add!important;
+ pointer-events:none!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds{
+ display:flex!important;
+ flex-direction:column!important;
+ isolation:isolate!important;
+ padding:10px 7px!important;
+ background-image:linear-gradient(150deg,rgba(255,251,255,.96),rgba(225,239,254,.95),rgba(253,232,249,.96))!important;
+ border:1px solid rgba(242,151,215,.9)!important;
+ border-radius:13px!important;
+ box-shadow:0 1px 7px rgba(192,97,160,.3)!important;
+ overflow:hidden!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds::before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ z-index:0;
+ background-image:url('../assets/sixdrop-generated-artwork.avif?v=1');
+ background-size:200% 100%;background-position:right center;background-repeat:no-repeat;
+ opacity:.8;
+ -webkit-mask-image:
+  linear-gradient(to right,#000 0%,#000 10%,transparent 15%,transparent 85%,#000 90%,#000 100%),
+  linear-gradient(to bottom,#000 0%,#000 6%,transparent 13%,transparent 87%,#000 94%,#000 100%);
+ -webkit-mask-composite:source-over;
+ mask-image:
+  linear-gradient(to right,#000 0%,#000 10%,transparent 15%,transparent 85%,#000 90%,#000 100%),
+  linear-gradient(to bottom,#000 0%,#000 6%,transparent 13%,transparent 87%,#000 94%,#000 100%);
+ mask-composite:add;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-ui{
+ position:relative!important;inset:auto!important;z-index:1!important;
+ display:flex!important;flex-direction:column!important;
+ padding:7px 4px!important;
+ height:100%!important;max-height:100%!important;
+ pointer-events:none!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-roles{
+ display:grid!important;
+ flex:1!important;min-height:0!important;
+ grid-template-rows:repeat(3,minmax(0,1fr))!important;
+ gap:3px!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role{
+ display:flex!important;position:relative!important;
+ min-height:0!important;flex-direction:column!important;
+ justify-content:center!important;align-items:center!important;
+ padding:2px 0!important;
+ border-radius:7px!important;
+ background:rgba(255,253,255,.73)!important;
+ border:1px solid rgba(232,174,223,.62)!important;
+ overflow:hidden!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-icon{
+ display:block!important;width:95%!important;height:36%!important;
+ max-height:40px!important;min-height:16px!important;
+ object-fit:contain!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-role-label{
+ display:block!important;text-align:center!important;
+ font-size:clamp(6px,.8vw,9px)!important;line-height:1.05!important;
+ font-weight:900!important;white-space:nowrap!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-formula{
+ display:flex!important;position:static!important;
+ left:auto!important;top:auto!important;right:auto!important;
+ width:auto!important;height:auto!important;min-height:0!important;
+ margin:1px auto!important;padding:1px 3px!important;
+ gap:3px!important;
+ border-radius:7px!important;
+ background:rgba(245,144,201,.83)!important;
+ box-shadow:0 1px 3px rgba(162,52,115,.18)!important;
+ white-space:nowrap!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-unit,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-times,
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-count{
+ font-size:clamp(7px,1vw,12px)!important;
+ color:#fff9e8!important;font-weight:900!important;
+ text-shadow:0 1px 1px #8b3980!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-total{
+ display:flex!important;position:relative!important;flex:none!important;
+ top:auto!important;left:auto!important;right:auto!important;
+ width:100%!important;height:auto!important;min-height:35px!important;
+ margin:4px auto 0!important;padding:2px!important;
+ background:linear-gradient(#ffe7f5,#efc7ea)!important;
+ border:1px solid #f4acd1!important;border-radius:9px!important;
+ overflow:hidden!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-total strong{
+ display:block!important;line-height:1.1!important;font-size:clamp(7px,.9vw,12px)!important;
+ color:#79345e!important;
+}
+body.carnival-active #carnival-odds.six-simple-glass-odds .six-glass-value{
+ width:93%!important;height:auto!important;min-height:18px!important;
+ font-size:clamp(12px,1.6vw,19px)!important;
+ background:#723d65!important;color:#fff0a1!important;
+ border-radius:8px!important;
+}
