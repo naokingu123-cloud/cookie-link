@@ -67,9 +67,12 @@ function install(){
     });
     // Offscreen boards resolve animation delays rapidly; physics, random
     // drops, rewards and bonus planning are the real engine implementation.
-    const rush=async(_ms,token)=>{
+    const rush=async(ms,token)=>{
       while(e.paused&&token===e.version)await new Promise(r=>setTimeout(r,32));
-      await new Promise(r=>setTimeout(r,0));
+      // The per-board 1x/2x/3x setting is meaningful even for offscreen
+      // boards, but a short upper bound avoids twelve slow animations.
+      const delay=Math.max(5,Math.min(110,(Number(ms)||0)/(8*Math.max(1,e.speed))));
+      await new Promise(r=>setTimeout(r,delay));
       return token===e.version;
     };
     if(group===0)e.wait=rush;
