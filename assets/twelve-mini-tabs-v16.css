@@ -715,3 +715,54 @@ body.twelve-mini-tabs-v16 #tabs .mini-four-cell.is-selected-mini .mini-four-sele
   border-radius:5px!important;
   white-space:nowrap!important;
 }
+
+/* v22: 4-number pages start at the LEFT, like the full three-tab reach strip.
+ * Keep one quarter of the available line for each number (up to four),
+ * even when the last page has only 1, 2, or 3 entries. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-page{
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-page>.mini-four-reach-digit{
+  flex:0 0 25%!important;
+  width:25%!important;
+  max-width:25%!important;
+  text-align:center!important;
+  margin:0!important;
+}
+/* Four-digit WINs never get cut by a comma or by the small rotated bubble.
+ * The original -8 degree tilt and glow remain untouched. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+  max-width:calc(100% - 18px)!important;
+  gap:1px!important;
+  padding:0 2px!important;
+  white-space:nowrap!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount{
+  font-size:10.4px!important;
+  line-height:14px!important;
+  letter-spacing:-.3px!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount[data-digits="4"]{
+  font-size:9.1px!important;
+  letter-spacing:-.45px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount[data-digits="5"]{
+  font-size:8px!important;
+  letter-spacing:-.55px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount[data-digits="6"],
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount[data-digits="7"],
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount[data-digits="8"]{
+  font-size:7px!important;
+  letter-spacing:-.65px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-unit{
+  font-size:5.3px!important;
+  line-height:12px!important;
+}
