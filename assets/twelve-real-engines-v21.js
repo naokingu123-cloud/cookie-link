@@ -107,7 +107,11 @@ function install(){
       if(app.enabled.every((yes,j)=>!yes||app.paid[j]))app.finishRound();
       app.onChange(app);
     }
-    miniReachCache.delete(i);
+    // A full preview can emit dozens of visual-only stages per ball.
+    // Invalidate costly reach predictions only when a stable board state
+    // is available; its cache key also observes depth/board generation.
+    if(['waiting','settled','complete','ready'].includes(ev.phase))
+      miniReachCache.delete(i);
     if(selected[game]===ordered[i].mini&&active===game){
       event(game,ev,e,app);
     }else if(ev.phase==='complete'||ev.phase==='sugaraward'){
@@ -320,7 +324,10 @@ function install(){
     else if(field==='colors')cfg.colors=[3,4,5].includes(+v)?+v:5;
     else if(field==='speed')cfg.speed=[1,2,3].includes(+v)?+v:1;
     savedSet();
-    if(isReady()&&currentMode==='12')applySettingsToInstances(true);
+    // Changing a display name must not reset real engines or trigger a
+    // full 12-board status/payout recomputation on every typed character.
+    if(field!=='name'&&isReady()&&currentMode==='12')
+      applySettingsToInstances(field==='colors');
     if(modeInfo)modeInfo.textContent=isReady()?'設定を保存しました':'設定は次ゲームから反映されます';
   }
   function makeMenu(){
