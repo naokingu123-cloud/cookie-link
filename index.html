@@ -22,7 +22,7 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
 })();
-</script><link rel="stylesheet" href="optimized/cookie-20261031.css?v=3"><link rel="stylesheet" href="assets/six-drop-glass-theme.css?v=2"><link rel="stylesheet" href="assets/six-drop-simple-glass.css?v=1"><link rel="stylesheet" href="assets/sixdrop-generated-png-skin.css?v=3"><link rel="stylesheet" href="assets/sixdrop-candy-kingdom-bottle.css?v=1"><link rel="stylesheet" href="assets/sixdrop-kingdom-fullframe-20261031.css?v=2"><link rel="stylesheet" href="assets/sixdrop-bottle-layout-v6.css?v=2"><link rel="stylesheet" href="assets/sixdrop-bottle-v8.css?v=2"><link rel="stylesheet" href="assets/sixdrop-thinframe-v11.css?v=1"><link rel="stylesheet" href="assets/sixdrop-cap-join-v12.css?v=1"><link rel="stylesheet" href="assets/sixdrop-cap-join-v13.css?v=1"><link rel="stylesheet" href="assets/sixdrop-hud-v14.css?v=2"><link rel="stylesheet" href="assets/twelve-mini-tabs-v16.css?v=17"></head><body><template id="mobile-third-party-notices">three-0.160.0
+</script><link rel="stylesheet" href="optimized/cookie-20261031.css?v=3"><link rel="stylesheet" href="assets/six-drop-glass-theme.css?v=2"><link rel="stylesheet" href="assets/six-drop-simple-glass.css?v=1"><link rel="stylesheet" href="assets/sixdrop-generated-png-skin.css?v=3"><link rel="stylesheet" href="assets/sixdrop-candy-kingdom-bottle.css?v=1"><link rel="stylesheet" href="assets/sixdrop-kingdom-fullframe-20261031.css?v=2"><link rel="stylesheet" href="assets/sixdrop-bottle-layout-v6.css?v=2"><link rel="stylesheet" href="assets/sixdrop-bottle-v8.css?v=2"><link rel="stylesheet" href="assets/sixdrop-thinframe-v11.css?v=1"><link rel="stylesheet" href="assets/sixdrop-cap-join-v12.css?v=1"><link rel="stylesheet" href="assets/sixdrop-cap-join-v13.css?v=1"><link rel="stylesheet" href="assets/sixdrop-hud-v14.css?v=2"><link rel="stylesheet" href="assets/twelve-mini-tabs-v16.css?v=17"><link rel="stylesheet" href="assets/highest-role-reach-v18.css?v=1"></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -373,10 +373,10 @@ Copyright 2016 The Rounded M+ Project Authors.
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
  try{
-  const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title12','assets/six-drop-simple-glass.js?v=2','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=11','assets/sixdrop-hud-v14.js?v=3','assets/twelve-mini-tabs-v16.js?v=17'];
+  const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title12','assets/six-drop-simple-glass.js?v=2','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=11','assets/sixdrop-hud-v14.js?v=3','assets/highest-role-reach-v18.js?v=1','assets/twelve-mini-tabs-v16.js?v=18'];
   const responses=await Promise.all(paths.map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
-  let [game,extension,sixGlassUI,sixBottleV6,sixBottleV8,sixHudV14,miniTabsV16]=await Promise.all(responses.map(r=>r.text()));
+  let [game,extension,sixGlassUI,sixBottleV6,sixBottleV8,sixHudV14,highestReachV18,miniTabsV16]=await Promise.all(responses.map(r=>r.text()));
   // Visual-only: slightly steepen the amber platter's outer 0.26-unit rim.
   // Leave ball physics, pocket positions, and the central plateau unchanged.
   const originalAmberProfile="return hubHeight(r)*(1-blend)+deckHeight(r)*blend+.025+.012*Math.sin((r-.90)/1.83*Math.PI);";
@@ -387,7 +387,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   game=window.CookieUpgradePatch.patch(game);
   const end=game.lastIndexOf('})();');
   if(end<0)throw new Error('ゲームスクリプト構造が不正です');
-  const merged=game.slice(0,end)+'\n'+extension+'\n'+sixGlassUI+'\n'+sixBottleV6+'\n'+sixBottleV8+'\n'+sixHudV14+'\n'+miniTabsV16+'\n'+game.slice(end);
+  const merged=game.slice(0,end)+'\n'+extension+'\n'+sixGlassUI+'\n'+sixBottleV6+'\n'+sixBottleV8+'\n'+sixHudV14+'\n'+highestReachV18+'\n'+miniTabsV16+'\n'+game.slice(end);
   const script=document.createElement('script');
   script.textContent=merged;
   document.body.appendChild(script);
