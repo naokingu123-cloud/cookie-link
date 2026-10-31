@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" preserveAspectRatio="none">
+<defs>
+ <linearGradient id="glass" x1="0" y1="0" x2="1" y2=".9"><stop stop-color="#fff" stop-opacity=".92"/><stop offset=".18" stop-color="#9deeff" stop-opacity=".56"/><stop offset=".45" stop-color="#ffe3f9" stop-opacity=".22"/><stop offset=".78" stop-color="#f2a7ed" stop-opacity=".48"/><stop offset="1" stop-color="#fff" stop-opacity=".85"/></linearGradient>
+ <linearGradient id="neck" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#fff6e4"/><stop offset=".26" stop-color="#fa86ba"/><stop offset=".5" stop-color="#ffe8f7"/><stop offset=".79" stop-color="#aaedff"/><stop offset="1" stop-color="#ee75bb"/></linearGradient>
+ <linearGradient id="rail" x1="0" x2="1" y1="0" y2="0"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".25" stop-color="#8de7ff" stop-opacity=".4"/><stop offset=".5" stop-color="#ffb4e5" stop-opacity=".12"/><stop offset=".8" stop-color="#ffdeef" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity=".85"/></linearGradient>
+ <filter id="shine" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+</defs>
+<!-- Bottle neck is positioned in the header clearance, not across live candies. -->
+<path d="M201 6 Q198 2 217 2 H423 Q442 2 439 6 L438 21 Q439 43 460 51 C502 62 551 76 574 105" stroke="#f8e5ff" stroke-width="19" stroke-linecap="round" fill="none" opacity=".93"/>
+<path d="M201 6 L202 19 Q200 43 180 51 C138 62 89 76 66 105" stroke="#f8e5ff" stroke-width="19" stroke-linecap="round" fill="none" opacity=".93"/>
+<path d="M205 9 L205 21 Q204 44 182 54 C135 68 92 82 71 113" stroke="url(#glass)" stroke-width="13" stroke-linecap="round" fill="none"/>
+<path d="M435 9 L435 21 Q436 44 458 54 C505 68 548 82 569 113" stroke="url(#glass)" stroke-width="13" stroke-linecap="round" fill="none"/>
+<!-- Large readable mouth cap with candy-glass reflections. -->
+<rect x="187" y="1" width="266" height="37" rx="18.5" fill="url(#neck)" stroke="#fff3e4" stroke-width="5"/>
+<rect x="200" y="7" width="240" height="15" rx="7" fill="#fff" opacity=".49"/>
+<path d="M228 34 H412" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".78"/>
+<path d="M71 112 C62 220 62 440 75 566 Q84 598 122 606 H518 Q556 597 565 566 C578 440 578 220 569 112" fill="none" stroke="#ffdeef" stroke-width="14" stroke-linecap="round" opacity=".57"/>
+<path d="M77 116 C67 220 68 431 81 559 Q89 587 124 596 H516 Q550 587 558 559 C571 431 573 220 563 116" fill="none" stroke="url(#rail)" stroke-width="9" stroke-linecap="round"/>
+<path d="M89 123 C82 233 82 436 93 548" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6" filter="url(#shine)"/>
+<path d="M550 123 C557 233 557 436 547 548" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6" filter="url(#shine)"/>
+<!-- Bottom is decorative, below the last settled candy. -->
+<path d="M104 599 Q320 622 536 599" fill="none" stroke="#fff4ef" stroke-width="14" opacity=".76"/>
+<path d="M122 610 Q320 628 518 610" fill="none" stroke="#f97bb9" stroke-width="7" opacity=".82"/>
+<g fill="#fff" opacity=".75"><circle cx="136" cy="63" r="4"/><circle cx="506" cy="70" r="3"/><circle cx="64" cy="321" r="3"/><circle cx="577" cy="416" r="3"/></g>
+</svg>
