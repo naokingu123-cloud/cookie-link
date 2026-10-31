@@ -1,0 +1,154 @@
+/* SWEETS LINK v21: 3/12 real engine mode and per-board configuration. */
+body:not(.twelve-mini-tabs-v16) #tabs .mini-four-grid{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.twelve-live-active #tabs .mini-four-cell.is-disabled-mini{
+  filter:saturate(.55)!important;
+  opacity:.66!important;
+}
+body.twelve-live-active #tabs .mini-four-cell.is-disabled-mini .mini-four-phase{
+  color:#ffe0b5!important;
+}
+#record-menu .record-nav #menu-page-boards{
+  color:#843e67;
+  background:linear-gradient(#fff5c9,#ffbfdc);
+  border:1px solid #da94a9;
+  border-radius:8px;
+  font-weight:900;
+}
+#record-menu .record-nav #menu-page-boards[aria-pressed="true"]{
+  color:#fffbe4;
+  background:linear-gradient(125deg,#d263a7,#9b4b96);
+  border-color:#ffc8b6;
+}
+#sweets12-board-settings{
+  display:block;
+  overflow-y:auto;
+  overflow-x:hidden;
+  box-sizing:border-box;
+  width:100%;
+  max-width:100%;
+  max-height:min(58vh,480px);
+  margin:2px 0 8px;
+  padding:6px;
+  color:#76415e;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+#sweets12-board-settings[hidden]{
+  display:none!important;
+}
+#sweets12-board-settings .sweets12-mode-select{
+  display:flex;
+  gap:7px;
+  margin:0 0 5px;
+  align-items:center;
+  justify-content:center;
+}
+#sweets12-board-settings .sweets12-mode-select button{
+  flex:1 1 0;
+  min-height:30px;
+  padding:4px 10px;
+  border:1px solid #df9aa7;
+  border-radius:10px;
+  background:linear-gradient(#fff8e9,#f8d9d8);
+  color:#9a5079;
+  font:900 13px/19px system-ui,sans-serif;
+  touch-action:manipulation;
+}
+#sweets12-board-settings .sweets12-mode-select button[aria-pressed="true"]{
+  border-color:#c26890;
+  color:#fffbe7;
+  background:linear-gradient(135deg,#f195b5,#a85395);
+  box-shadow:inset 0 1px #ffffff9f,0 0 5px #e7a8d9;
+}
+#sweets12-mode-info{
+  margin:3px 0;
+  text-align:center;
+  color:#a04677;
+  font:850 10px/14px system-ui,sans-serif;
+}
+#sweets12-board-settings .sweets12-info{
+  margin:3px 1px 7px;
+  font:700 10px/1.45 system-ui,sans-serif;
+  color:#855f74;
+}
+#sweets12-board-settings .sweets12-config-group{
+  margin:7px 0 9px;
+  padding:5px;
+  background:linear-gradient(165deg,#fff6ec,#ffebf5);
+  border:1px solid #e8bed4;
+  border-radius:9px;
+}
+#sweets12-board-settings .sweets12-config-group h3{
+  font:1000 12px/20px "Hiragino Maru Gothic ProN",system-ui,sans-serif;
+  color:#b3487c;
+  margin:0 0 4px;
+  padding:0 3px;
+}
+#sweets12-board-settings .sweets12-board-row{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin:4px 0;
+  padding:5px;
+  border:1px solid #edc6d4;
+  border-radius:6px;
+  background:#fffdfbe9;
+}
+#sweets12-board-settings .sweets12-board-row-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+  font-size:11px;
+}
+#sweets12-board-settings .sweets12-board-row-top strong{
+  color:#8b3979;
+}
+#sweets12-board-settings .sweets12-switch{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font:800 10px/15px system-ui,sans-serif;
+}
+#sweets12-board-settings .sweets12-board-fields{
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,.74fr) minmax(0,.74fr);
+  align-items:end;
+  gap:4px;
+}
+#sweets12-board-settings .sweets12-board-fields label{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  gap:1px;
+  font:800 9px/12px system-ui,sans-serif;
+  color:#946174;
+}
+#sweets12-board-settings .sweets12-board-fields input,
+#sweets12-board-settings .sweets12-board-fields select{
+  width:100%;
+  box-sizing:border-box;
+  height:26px;
+  min-width:0;
+  padding:2px 3px;
+  border:1px solid #d79eaf;
+  border-radius:5px;
+  background:#fff;
+  font:700 11px/18px system-ui,sans-serif;
+  color:#6f3c5e;
+}
+#sweets12-board-settings .sweets12-board-fields label:nth-child(3):last-child{
+  grid-column:4;
+}
+@media(max-width:400px){
+ #sweets12-board-settings .sweets12-board-fields{
+  grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,.8fr);
+  gap:3px;
+ }
+ #sweets12-board-settings .sweets12-board-fields input,
+ #sweets12-board-settings .sweets12-board-fields select{font-size:10px}
+}
