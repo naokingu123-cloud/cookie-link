@@ -274,7 +274,7 @@ try{
     const grid=fall?.grid||e.pyramid;
     const moves=new Map((fall?.moves||[]).map(move=>[move.id,move]));
     const rows=e.rows||grid.length||10,layout=sixLayout(rows);
-    const transform=ctx.getTransform(),physical=ctx.canvas.width;
+    const physical=ctx.canvas.width;
     ctx.save();
     ctx.setTransform(physical/48,0,0,physical/48,0,0);
     ctx.clearRect(0,0,48,48);
