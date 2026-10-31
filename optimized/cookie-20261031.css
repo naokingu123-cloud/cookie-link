@@ -13,3 +13,7 @@
 .tile.cookie-wild .cookie-wild-label{position:absolute;z-index:12;left:9%;right:9%;top:31%;padding:2px 1px;text-align:center;pointer-events:none;font:1000 11px/14px system-ui,sans-serif;letter-spacing:-.5px;color:#fff7d4;-webkit-text-stroke:1px #7930b7;paint-order:stroke fill;text-shadow:0 1px 2px #682667;transform:rotate(-8deg);border-radius:8px;background:linear-gradient(90deg,#e75ba4b8,#72c8ffbd,#ffee78bd);box-shadow:0 0 9px #ef65cdb8}
 .tile.cookie-wild:after{content:"✦";position:absolute;right:1px;top:-4px;color:#fff7ab;font-size:13px;filter:drop-shadow(0 0 3px #ffb47d);animation:cookie-wild-pulse 1.8s ease-in-out infinite;pointer-events:none}
 @keyframes cookie-wild-pulse{0%,100%{opacity:.65;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+
+/* A hammer waiting inside the basket is the very one that will be delivered. */
+.basket .cookie-hammer-preview-mark{position:absolute;z-index:16;left:50%;top:-5px;transform:translateX(-50%);display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:linear-gradient(145deg,#ffecb0,#ff9dc4);border:1px solid #a4583c;box-shadow:0 1px 5px #5f2a3499;pointer-events:none;font:15px/1 sans-serif;animation:cookie-basket-hammer-glow .8s ease-in-out infinite alternate}
+@keyframes cookie-basket-hammer-glow{from{filter:brightness(1)}to{filter:brightness(1.3) drop-shadow(0 0 4px #fff0a8)}}
