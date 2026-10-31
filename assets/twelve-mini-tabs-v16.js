@@ -135,7 +135,7 @@ try{
     sugar.title='シュガー未獲得';
     head.append(badge,phase,sugar);
     const canvas=document.createElement('canvas');
-    canvas.width=48;canvas.height=48;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
+    canvas.width=game===2?112:48;canvas.height=game===2?112:48;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
     const chosenLabel=makeEl('span','mini-four-selected-label','選択中');
     chosenLabel.setAttribute('aria-hidden','true');
     const reach=makeEl('span','mini-four-reach');
@@ -267,22 +267,40 @@ try{
     ctx.textAlign='right';ctx.font='bold 5px system-ui';ctx.fillStyle='#ffda97';
     ctx.fillText((e.depth||0)+'m',46,47);
    }else if(game===2&&Array.isArray(e.pyramid)){
-    const rows=e.pyramid.length||10,dy=41/Math.max(1,rows-1);
-    for(let row=0;row<rows;row++){
-      const a=e.pyramid[row]||[],cols=a.length||8;
-      const diam=4.7,step=5.15;
-      const left=24-(cols-1)*step/2;
-      for(let col=0;col<a.length;col++){
-       const t=a[col];if(!t)continue;
-       let n=Number(t.color);
-       if(!Number.isFinite(n))n=['lime','green','aqua','navy','yellow','orange'].indexOf(t.color);
-       const colors=palette.drop;
-       ctx.beginPath();ctx.arc(left+col*step,3+row*dy,diam*.5,0,Math.PI*2);
-       ctx.fillStyle=colors[Math.abs(n||0)%colors.length];ctx.fill();
-       ctx.strokeStyle='#fff1e1';ctx.lineWidth=.35;ctx.stroke();
-       if(t.sugar){ctx.fillStyle='#fff8bb';ctx.fillRect(left+col*step-.6,3+row*dy-.6,1.2,1.2);}
+    // Fallback itself uses the APPROVED main-game candy art, never flat
+    // colored dots. Render at 112 physical pixels but 48 logical units.
+    const fx=e.fx,fall=fx?.phase==='pyramidFall'?sixFallFrame(fx,
+      Math.min(1,(fx.elapsed||0)/Math.max(1,fx.ms||1))):null;
+    const grid=fall?.grid||e.pyramid;
+    const moves=new Map((fall?.moves||[]).map(move=>[move.id,move]));
+    const rows=e.rows||grid.length||10,layout=sixLayout(rows);
+    const transform=ctx.getTransform(),physical=ctx.canvas.width;
+    ctx.save();
+    ctx.setTransform(physical/48,0,0,physical/48,0,0);
+    ctx.clearRect(0,0,48,48);
+    ctx.fillStyle='#efd5ee';ctx.fillRect(0,0,48,48);
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    for(let row=0;row<grid.length;row++){
+      const tiles=grid[row]||[];
+      for(let col=0;col<tiles.length;col++){
+        const tile=tiles[col];if(!tile)continue;
+        let pos=sixXY(row,col,rows);
+        const move=moves.get(tile.id);
+        if(move&&fall){
+          const p=sixMotionPoint(move,fall.progress);
+          pos={x:160+p.x*layout.step,y:layout.top+p.y*layout.step};
+        }
+        const cx=pos.x*48/320,cy=pos.y*48/320,r=Math.max(2.1,layout.radius*48/320);
+        const img=sixArtCandySprite(tile.color,e.roundIndex||1,!!tile.sugar,
+          e.chanceRound===e.roundIndex);
+        if(img)ctx.drawImage(img,cx-r,cy-r,r*2,r*2);
+        if(tile.number!=null) {
+          try{sixPaintCandyNumber(ctx,tile.number,cx,cy,r*.93);}
+          catch{ctx.font='bold 3px sans-serif';ctx.fillStyle='#fff';ctx.fillText(String(tile.number),cx,cy);}
+        }
       }
     }
+    ctx.restore();
    }
   }
   item.phase.textContent=String(data.status||'準備').slice(0,5);
