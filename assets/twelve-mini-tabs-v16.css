@@ -362,3 +362,151 @@ body.twelve-mini-tabs-v16 #tabs .mini-four-sugar.is-collected::after{
   color:#429d56!important;
   text-shadow:0 1px #fff8!important;
 }
+
+/* v18 - classic blinking payout in the top-left corner of each quarter.
+ * Remove the retired bottom payout strip from flex layout completely. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-cell{
+  position:relative!important;
+  gap:1px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+  position:absolute!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  top:1px!important;
+  left:0px!important;
+  right:auto!important;
+  bottom:auto!important;
+  flex:none!important;
+  height:15px!important;
+  min-height:15px!important;
+  width:auto!important;
+  min-width:29px!important;
+  max-width:calc(100% - 23px)!important;
+  gap:2px!important;
+  margin:0!important;
+  padding:0 3px!important;
+  box-sizing:border-box!important;
+  z-index:6!important;
+  border:1px solid #bd7942!important;
+  border-radius:0 7px 7px 0!important;
+  background:linear-gradient(#fff9e9,#ffe1b6)!important;
+  box-shadow:inset 0 1px 1px #fff,0 1px 3px #6a39506b!important;
+  color:#7c3e26!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  animation:tab-reward-breathe 3.3s ease-in-out var(--mini-bubble-delay,0s) infinite!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-amount{
+  display:block!important;
+  flex:0 1 auto!important;
+  min-width:0!important;
+  font:700 11px/14px SweetMedal,Georgia,serif!important;
+  color:#c27c2c!important;
+  -webkit-text-fill-color:#d79a33!important;
+  -webkit-text-stroke:.22px #7e3c32!important;
+  text-shadow:0 1px #fff9d7!important;
+  font-variant-numeric:tabular-nums!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-pay-unit{
+  flex:0 0 auto!important;
+  font:900 5.8px/12px system-ui,sans-serif!important;
+  color:#a75a42!important;
+  letter-spacing:-.2px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-head{
+  justify-content:flex-end!important;
+  padding-left:25px!important;
+  gap:1px!important;
+}
+/* Winning the 13px of vertical space lets the actual board grow. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-canvas{
+  flex:1 1 auto!important;
+  width:min(53px,100%)!important;
+  height:auto!important;
+  max-height:53px!important;
+  max-width:53px!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach{
+  order:3!important;
+  margin-top:1px!important;
+  flex:0 0 13px!important;
+  height:13px!important;
+  min-height:13px!important;
+}
+/* The mini reach strip shows up to 4 numbers at once; 5 or more move
+ * smoothly across the strip in ascending order. The duplicated sequence
+ * makes the marquee loop without jumping backward at the seam. */
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digits{
+  position:relative!important;
+  display:block!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  width:100%!important;
+  height:13px!important;
+  max-height:13px!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-track{
+  display:flex!important;
+  width:100%!important;
+  height:13px!important;
+  align-items:center!important;
+  transform:translate3d(0,0,0);
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-sequence{
+  display:flex!important;
+  height:13px!important;
+  width:100%!important;
+  min-width:0!important;
+  flex:1 1 auto!important;
+  align-items:center!important;
+  justify-content:space-around!important;
+  gap:0!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-scrolling .mini-four-reach-track{
+  width:max-content!important;
+  max-width:none!important;
+  animation:miniReachFlow var(--mini-reach-duration,10s) linear infinite!important;
+  will-change:transform;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-scrolling .mini-four-reach-sequence{
+  width:max-content!important;
+  flex:0 0 auto!important;
+  gap:2px!important;
+  padding-right:6px!important;
+  box-sizing:border-box!important;
+  justify-content:flex-start!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-digit{
+  display:grid!important;
+  flex:1 1 auto!important;
+  place-items:center!important;
+  height:13px!important;
+  min-width:0!important;
+  font-size:11.5px!important;
+  line-height:13px!important;
+}
+body.twelve-mini-tabs-v16 #tabs .mini-four-reach-scrolling .mini-four-reach-digit{
+  flex:0 0 14px!important;
+  width:14px!important;
+}
+@keyframes miniReachFlow {
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-50%,0,0)}
+}
+@media(prefers-reduced-motion:reduce){
+  body.twelve-mini-tabs-v16 #tabs .mini-four-reach-scrolling .mini-four-reach-track{
+    animation:none!important;
+    will-change:auto!important;
+  }
+  body.twelve-mini-tabs-v16 #tabs .mini-four-pay{
+    animation:none!important;
+  }
+}
