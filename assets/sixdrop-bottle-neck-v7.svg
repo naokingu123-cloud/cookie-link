@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="220" viewBox="0 0 640 220">
+<defs>
+ <linearGradient id="lip" x1="0" y1="0" x2="0" y2="1">
+  <stop stop-color="#fff5db"/><stop offset=".16" stop-color="#fc9fce"/>
+  <stop offset=".42" stop-color="#fff2fb"/><stop offset=".69" stop-color="#a8eaff"/>
+  <stop offset="1" stop-color="#ff9ac9"/>
+ </linearGradient>
+ <linearGradient id="glass" x1="0" y1="0" x2="1" y2=".2">
+  <stop stop-color="#fff" stop-opacity=".9"/>
+  <stop offset=".24" stop-color="#b2ebff" stop-opacity=".36"/>
+  <stop offset=".65" stop-color="#ffe6f7" stop-opacity=".25"/>
+  <stop offset="1" stop-color="#fff" stop-opacity=".8"/>
+ </linearGradient>
+ <pattern id="mint" width="33" height="33" patternUnits="userSpaceOnUse" patternTransform="rotate(25)">
+  <rect width="33" height="33" fill="#fff6f9"/>
+  <rect width="10" height="33" fill="#f584b9"/>
+  <rect x="15" width="5" height="33" fill="#fbe3a3"/>
+ </pattern>
+</defs>
+<!-- Rounded candy glass mouth, centered above the live candy tray. -->
+<path d="M204 38 V72 Q204 93 181 105 Q100 144 77 213" fill="none" stroke="#f7e4ff" stroke-opacity=".88" stroke-width="23" stroke-linecap="round"/>
+<path d="M436 38 V72 Q436 93 459 105 Q540 144 563 213" fill="none" stroke="#f7e4ff" stroke-opacity=".88" stroke-width="23" stroke-linecap="round"/>
+<path d="M204 38 V72 Q204 93 181 105 Q100 144 77 213" fill="none" stroke="url(#glass)" stroke-width="16" stroke-linecap="round"/>
+<path d="M436 38 V72 Q436 93 459 105 Q540 144 563 213" fill="none" stroke="url(#glass)" stroke-width="16" stroke-linecap="round"/>
+<rect x="188" y="15" width="264" height="51" rx="23" fill="url(#mint)" stroke="#fff3f3" stroke-width="5"/>
+<rect x="198" y="23" width="244" height="34" rx="16" fill="none" stroke="url(#lip)" stroke-width="11"/>
+<path d="M223 27 H417" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".74"/>
+<g fill="#fff"><circle cx="155" cy="121" r="4" opacity=".8"/><circle cx="484" cy="120" r="4" opacity=".8"/><circle cx="80" cy="210" r="3"/><circle cx="560" cy="209" r="3"/></g>
+</svg>
