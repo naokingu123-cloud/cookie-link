@@ -1,0 +1,89 @@
+/* Six Drop: original generated kingdom scene + original generated glass candy bottle.
+   Unlike the previous 120px or square overlay, the jar is image-sliced to fit
+   the actual 10-row 8/7 staggered playfield (layout step 28px).
+   640x640 overlay bands: left/right <=78, top <=78, bottom starts 578.
+   Candy extent after fit: x=96..544, y≈82..574 in the same 640px units.
+   Thus no resting candy is underneath opaque bottle decoration. */
+
+body.carnival-active #panels .carnival-panel,
+body.carnival-active #panels .six-ball-surface{
+ background-image:url('../assets/sixdrop-candy-kingdom-20261031.webp?v=1')!important;
+ background-position:center center!important;
+ background-size:cover!important;
+ background-repeat:no-repeat!important;
+}
+
+body.carnival-active #panels .six-board-viewport{
+ position:relative!important;
+ overflow:hidden!important;
+ isolation:isolate!important;
+ background:
+  linear-gradient(135deg,rgba(246,240,255,.09),rgba(240,253,255,.11),rgba(255,224,243,.09)),
+  url('../assets/sixdrop-candy-kingdom-20261031.webp?v=1') center center / cover no-repeat!important;
+ border-radius:10px!important;
+}
+
+/* The bottle WALL is translucent candy glass, not a transparent hole.
+   It is behind every active candy, number and reach indicator. */
+body.carnival-active #panels .six-board-viewport::before{
+ content:"";
+ position:absolute;
+ inset:11.8% 12% 9.4%;
+ z-index:0!important;
+ pointer-events:none!important;
+ border-radius:13% / 9%;
+ background:
+  radial-gradient(ellipse at 49% 46%,rgba(255,255,255,.15) 0%,rgba(249,247,255,.17) 52%,rgba(235,200,244,.29) 100%),
+  linear-gradient(95deg,rgba(255,255,255,.40) 0%,rgba(226,247,255,.22) 9%,rgba(252,234,253,.15) 27%,rgba(231,248,255,.23) 53%,rgba(250,238,255,.18) 78%,rgba(255,255,255,.40) 100%)!important;
+ border:1px solid rgba(255,251,255,.45);
+ box-shadow:
+  inset 12px 0 19px -16px rgba(255,255,255,.95),
+  inset -12px 0 19px -16px rgba(255,255,255,.95),
+  inset 0 0 17px rgba(246,188,232,.25),
+  0 0 3px rgba(255,255,255,.32);
+}
+
+body.carnival-active #panels .six-board-viewport .carnival-canvas{
+ position:relative!important;
+ z-index:2!important;
+ background:transparent!important;
+}
+
+body.carnival-active #panels .six-board-viewport .six-reach-layer{
+ z-index:5!important;
+}
+
+/* The genuine image is the FOREGROUND bottle lid and rail.
+   Incoming drops start above the canvas and are occluded by the solid
+   top 12.2% (y=0..78/640), then enter from under the candy-glass lip.
+   After settling the uppermost drop begins below y=82/640. */
+body.carnival-active #panels .six-board-viewport::after{
+ content:"";
+ position:absolute!important;
+ inset:0!important;
+ z-index:8!important;
+ display:block!important;
+ background-image:url('../assets/sixdrop-candy-bottle-20261031.webp?v=1')!important;
+ background-size:100% 100%!important;
+ background-position:center!important;
+ background-repeat:no-repeat!important;
+ opacity:1!important;
+ filter:none!important;
+ mask:none!important;
+ -webkit-mask:none!important;
+ mask-image:none!important;
+ -webkit-mask-image:none!important;
+ image-rendering:auto!important;
+ pointer-events:none!important;
+}
+
+body.carnival-active #panels .six-board-viewport.jar-refilling::after{
+ filter:drop-shadow(0 0 2px rgba(255,242,206,.42))!important;
+}
+
+/* Keep text and animations visually above the translucent wall; no
+   altered payouts, generated game grids or extra draw calls. */
+body.carnival-active #panels .six-ball-surface{
+ border-color:rgba(255,208,237,.81)!important;
+ box-shadow:0 0 10px rgba(234,133,199,.20)!important;
+}
