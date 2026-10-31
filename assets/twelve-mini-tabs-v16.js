@@ -65,11 +65,26 @@ try{
    }
   }
  }
- function reachNumbers(host){
-  // Carry the colour/tier of the real three-tab reach page into the 2x2.
+ function reachNumbers(host,game){
+  // The live tab numbers are SVG PATH glyphs: their textContent is empty.
+  // Get each original predicted number and tier from the same paged reach
+  // model that renders the real three-tab HUD. This also carries tier=3.
+  const slot=slots?.[game];
+  if(slot?.reachStrip && !slot.reachStrip.hidden){
+    const page=slot.reachPageResults||[];
+    const first=(slot.reachPage||0)*4;
+    if(page.length)return page.slice(first,first+4)
+      .map(p=>({value:String(p.number),tier:String(p.tier||0)}));
+  }
+  // Fallback for an older HUD: use its accessible label, not SVG text.
   const rows=[...host.querySelectorAll('.reach-num')]
     .filter(el=>!el.closest('.mini-four-grid'))
-    .map(el=>({value:el.textContent.trim(),tier:el.dataset.reachTier||'0'}))
+    .map(el=>{
+      const label=el.getAttribute('aria-label')||'';
+      const match=label.match(/^(\d{1,2})番/);
+      return {value:match?match[1]:el.textContent.trim(),
+        tier:el.dataset.reachTier||'0'};
+    })
     .filter(v=>/^\d{1,2}$/.test(v.value));
   const unique=[],used=new Set();
   for(const value of rows){
@@ -88,7 +103,7 @@ try{
   const sugar=!!host.querySelector('.tab-sugar.collected, .tab-sugar.is-collected, .tab-sugar.earned');
   return {
     source, status:text(stateText||(app.phase==='ready'?'準備':'進行'),5),
-    reach:reachNumbers(host),
+    reach:reachNumbers(host,game),
     pay:win?win[0]:'0',sugar
   };
  }
