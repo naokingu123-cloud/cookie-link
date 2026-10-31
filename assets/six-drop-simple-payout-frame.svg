@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 800"><defs>
+<linearGradient id="edge" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fd94cf"/><stop offset=".17" stop-color="#fff4ff"/><stop offset=".37" stop-color="#86e6fb"/><stop offset=".58" stop-color="#f15faf"/><stop offset=".8" stop-color="#ffd187"/><stop offset="1" stop-color="#c668da"/></linearGradient>
+<linearGradient id="inner" x1="0" x2="1"><stop stop-color="#ea70bc" stop-opacity=".7"/><stop offset=".3" stop-color="#fff" stop-opacity=".73"/><stop offset=".59" stop-color="#96eaff" stop-opacity=".47"/><stop offset="1" stop-color="#e888d9" stop-opacity=".7"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff8c1"/><stop offset=".4" stop-color="#eeb34f"/><stop offset=".75" stop-color="#d17f3b"/><stop offset="1" stop-color="#fff6c9"/></linearGradient>
+<radialGradient id="heart" cx=".28" cy=".2"><stop stop-color="#fff"/><stop offset=".22" stop-color="#ffe0f4"/><stop offset=".55" stop-color="#fa57ae"/><stop offset="1" stop-color="#9f288d"/></radialGradient>
+<radialGradient id="gem" cx=".25" cy=".25"><stop stop-color="#fff"/><stop offset=".35" stop-color="#b2edfb"/><stop offset=".8" stop-color="#39b9ef"/><stop offset="1" stop-color="#6858ac"/></radialGradient>
+<filter id="sd"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#a83e8e" flood-opacity=".37"/></filter>
+</defs>
+<g filter="url(#sd)">
+<rect x="13" y="27" width="274" height="743" rx="56" fill="#f5b3d9" fill-opacity=".18" stroke="url(#edge)" stroke-width="21"/>
+<rect x="26" y="38" width="248" height="720" rx="48" fill="none" stroke="url(#inner)" stroke-width="13"/>
+<rect x="39" y="55" width="222" height="686" rx="39" fill="#fff9ff" fill-opacity=".08" stroke="#fff" stroke-opacity=".78" stroke-width="3"/>
+<path d="M45 150Q27 400 43 645M255 150Q273 400 257 645" fill="none" stroke="#fff" stroke-opacity=".58" stroke-width="8" stroke-linecap="round"/>
+<path d="M60 52Q150 91 239 52" fill="none" stroke="#fff6dc" stroke-opacity=".78" stroke-width="7" stroke-linecap="round"/>
+</g>
+<g stroke="url(#gold)" stroke-width="8" fill="url(#heart)">
+<path d="M150 62C103 3 54 42 86 89Q117 131 150 139Q185 130 215 90C251 39 196 1 150 62Z"/>
+<path d="M150 734C112 686 70 712 92 757Q119 793 150 797Q185 793 208 757C228 712 188 688 150 734Z"/>
+</g>
+<path d="M122 51Q142 39 151 71" fill="none" stroke="#fff" stroke-opacity=".79" stroke-width="10" stroke-linecap="round"/>
+<path d="M125 732Q142 722 152 746" fill="none" stroke="#fff" stroke-opacity=".79" stroke-width="8" stroke-linecap="round"/>
+<g fill="url(#gem)" stroke="url(#gold)" stroke-width="6">
+<circle cx="40" cy="90" r="19"/><circle cx="260" cy="90" r="19"/>
+<circle cx="26" cy="361" r="21"/><circle cx="274" cy="361" r="21"/>
+<circle cx="31" cy="625" r="19"/><circle cx="269" cy="625" r="19"/>
+<circle cx="76" cy="770" r="17"/><circle cx="224" cy="770" r="17"/>
+</g>
+<g fill="#fff" opacity=".74"><circle cx="30" cy="84" r="5"/><circle cx="249" cy="84" r="5"/><circle cx="17" cy="354" r="5"/><circle cx="263" cy="354" r="5"/><circle cx="67" cy="764" r="4"/></g>
+</svg>
