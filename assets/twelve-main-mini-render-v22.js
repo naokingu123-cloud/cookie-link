@@ -123,6 +123,37 @@ try{
      ctx.drawImage(bottleCap,0,0,w,Math.max(7,h*.19));ctx.restore();
    }
  }
+ // BET-time Canyon and rare renderer-failure fallback: still use the
+ // exact main-game cake auto-tiles and connected-surface masks.
+ function paintCanyonCenterOnly(g,e,now,bet){
+   const fx=e.fx,grid=fx?.phase==='canyonFall'&&fx.before?fx.before:
+      fx?.phase==='canyonMelt'&&fx.before?fx.before:e.strata;
+   if(!Array.isArray(grid))return false;
+   const cw=5.9,ch=3.8,left=3.35,top=1.05;
+   const elapsed=Number(fx?.elapsed)||0;
+   const p=fx?.ms?Math.max(0,Math.min(1,elapsed/fx.ms)):1;
+   const moving=new Map((fx?.phase==='canyonFall'?(fx.moves||[]):[]).map(v=>[v.id,v]));
+   const shifted=fx?.phase==='canyonScroll'?(fx.advanced||0)*p:0;
+   g.save();
+   g.setTransform(1,0,0,1,0,0);
+   g.clearRect(0,0,48,48);
+   g.fillStyle='#302026';g.fillRect(0,0,48,48);
+   g.beginPath();g.rect(left,top,cw*7,ch*12);g.clip();
+   for(let r=0;r<Math.min(12,grid.length);r++)
+     for(let c=0;c<7;c++){
+       const t=grid[r]?.[c];if(!t)continue;
+       const m=moving.get(t.id);
+       const row=m?m.from[0]+(m.to[0]-m.from[0])*p:r;
+       const x=left+c*cw,y=top+(row-shifted)*ch;
+       if(y+ch<0||y>48)continue;
+       if(fx?.phase==='canyonMelt'&&fx.targets?.some(v=>v.tile?.id===t.id))
+         g.globalAlpha=Math.max(.05,1-p);
+       chocoPaintTile(g,t,r,c,grid,x,y,cw,ch,now,bet);
+       g.globalAlpha=1;
+     }
+   g.restore();
+   return true;
+ }
  // Keep full renderer's own RAF loops from inadvertently starting
  // twelve more continuous 60fps animation loops.
  const originalCookieFrame=requestMiniFrame;
@@ -234,15 +265,22 @@ try{
          item.ctx.drawImage(v.miniCanvas,0,0,48,48);
        }
      }else if(group===1){
-       drawChoco(v,now);
        const g=item.ctx;
-       g.clearRect(0,0,48,48);
-       // The main renderer already produces a central-board-only crop for
-       // its original small tab. It excludes wall scenery, payout tables,
-       // depth gauges and side UI; preserve the actual cake tiles and FX.
-       g.imageSmoothingEnabled=true;
-       g.imageSmoothingQuality='high';
-       g.drawImage(v.miniCanvas,0,0,48,48);
+       if(app.phase==='ready'){
+         // The main renderer stops after the BET tutorial, before it
+         // updates its mini tab crop. Render real cake auto-tiles directly.
+         paintCanyonCenterOnly(g,e,now,data.bet);
+       }else{
+         drawChoco(v,now);
+         g.save();g.setTransform(1,0,0,1,0,0);
+         g.clearRect(0,0,48,48);
+         // Exact mini board crop from the full Canyon renderer:
+         // no left/right wall scenery, payouts, scale or side meters.
+         g.imageSmoothingEnabled=true;
+         g.imageSmoothingQuality='high';
+         g.drawImage(v.miniCanvas,0,0,48,48);
+         g.restore();
+       }
      }else{
        drawCarnival(v,now);
        const g=item.ctx;
