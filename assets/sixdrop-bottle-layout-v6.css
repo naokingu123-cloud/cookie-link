@@ -1,0 +1,156 @@
+/* Six Drop v6 • bottle proportion, raised neck, compact side ROUND display.
+ * Only applies to the selected Six Drop tab; no drawing/score overrides here.
+ */
+/* Remove the retired PREV/NOW/NEXT strip from ABOVE the bottle. */
+body.carnival-active.six-bottle-v6 #carnival-heading{
+ display:block!important;
+ position:relative!important;
+ width:430px!important;
+ height:52px!important;
+ min-height:52px!important;
+ padding:0!important;
+ z-index:9!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-heading>.six-round-cards,
+body.carnival-active.six-bottle-v6 #carnival-heading .six-round-cards{
+ display:none!important;
+}
+/* Visually extend the bottle mouth up into the area where ROUND used to be.
+   The source is 640x120, drawn at 312x58.5: no skew/stretch. */
+body.carnival-active.six-bottle-v6 .game>.festival-top{
+ isolation:isolate!important;
+ overflow:visible!important;
+}
+body.carnival-active.six-bottle-v6 .game>.festival-top::before{
+ content:"";
+ position:absolute;
+ left:0;
+ top:-2px;
+ width:312px;
+ height:59px;
+ background:url('../assets/sixdrop-bottle-neck-v6.svg?v=1') left top/312px 58.5px no-repeat;
+ z-index:3;
+ pointer-events:none;
+}
+/* The only floating information above the bottle is the all-clear payout.
+   Keep the real amount and celebration class updated by the existing HUD. */
+body.carnival-active.six-bottle-v6 #carnival-heading .six-allclear-banner{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto!important;
+ align-content:center!important;
+ position:absolute!important;
+ top:1px!important;
+ left:115px!important;
+ width:193px!important;
+ height:48px!important;
+ margin:0!important;
+ padding:0 2px!important;
+ border:0!important;
+ border-radius:0!important;
+ background:none!important;
+ box-shadow:none!important;
+ color:#b72874!important;
+ text-shadow:0 1px 2px #fff,0 0 4px #fff9d4!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-heading .six-allclear-banner strong{
+ grid-column:1 / -1!important;
+ font:1000 9px/12px system-ui,sans-serif!important;
+ color:#a92a72!important;
+ -webkit-text-stroke:.3px #fff9ea;
+}
+body.carnival-active.six-bottle-v6 #carnival-heading .six-allclear-banner b{
+ font:1000 23px/27px ArcadePayout,system-ui,sans-serif!important;
+ min-width:0!important;
+ color:#ffac44!important;
+ text-align:right!important;
+ text-shadow:0 1px 2px #8f4263,0 0 3px #fff7b7!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-heading .six-allclear-banner em{
+ font:1000 10px/23px system-ui,sans-serif!important;
+ padding-left:2px!important;
+ color:#bd347d!important;
+}
+/* ROUND preview is now part of the right-hand payout panel. All three
+   live cards are mirrored after each official HUD update. */
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-glass-ui{
+ padding:5px 3px 5px!important;
+ gap:3px!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards{
+ display:grid!important;
+ position:relative!important;
+ flex:0 0 43px!important;
+ height:43px!important;
+ min-height:43px!important;
+ width:100%!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:2px!important;
+ margin:0!important;
+ padding:0!important;
+ box-sizing:border-box!important;
+ z-index:2!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards .six-round-card{
+ width:100%!important;
+ min-width:0!important;
+ height:41px!important;
+ min-height:0!important;
+ box-sizing:border-box!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:center!important;
+ align-items:center!important;
+ gap:0!important;
+ padding:1px 0!important;
+ border:1px solid #e9a5c3!important;
+ border-radius:7px!important;
+ background:linear-gradient(#fff9e9ee,#ffdceef0)!important;
+ box-shadow:0 1px 2px #ae6c9566!important;
+ overflow:hidden!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards .six-round-card.current{
+ background:linear-gradient(#fff8abea,#ffbde4f7)!important;
+ border:2px solid #e37ca8!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards .six-round-card small{
+ font:900 5.6px/7px system-ui,sans-serif!important;
+ white-space:nowrap!important;
+ color:#a25980!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards .six-round-card>b{
+ font:1000 13px/15px system-ui,sans-serif!important;
+ color:#a52e73!important;
+ white-space:nowrap!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-side-round-cards .six-round-card em{
+ font:900 6px/8px system-ui,sans-serif!important;
+ font-style:normal!important;
+ color:#9a4277!important;
+ white-space:nowrap!important;
+}
+/* Leave some room for the 3 award icons and TOTAL below the added header. */
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-glass-roles{
+ flex:1 1 auto!important;
+ min-height:0!important;
+ grid-template-rows:repeat(3,minmax(0,1fr))!important;
+}
+body.carnival-active.six-bottle-v6 #carnival-odds.six-simple-glass-odds .six-glass-role-icon{
+ min-height:13px!important;
+ max-height:34px!important;
+}
+/* Preserve proportions of the actual user-approved candy-ornament assets:
+   no more squeezing a square background to a taller viewport. */
+body.carnival-active.six-bottle-v6 #panels .six-board-viewport::after{
+ background-image:
+  url('../assets/sixdrop-bottle-shoulders-live.svg?v=2'),
+  url('../assets/sixdrop-candy-bottle-20261031.webp?v=1')!important;
+ background-size:100% auto,100% auto!important;
+ background-position:center bottom,center bottom!important;
+ background-repeat:no-repeat,no-repeat!important;
+ pointer-events:none!important;
+}
+/* The larger drops are rendered natively by sixLayout, so do not CSS zoom
+   the canvas or its reach indicators independently. */
+body.carnival-active.six-bottle-v6 #panels .six-board-viewport .carnival-canvas{
+ transform:none!important;
+}
