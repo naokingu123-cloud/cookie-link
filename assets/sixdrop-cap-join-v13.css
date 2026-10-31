@@ -1,0 +1,63 @@
+/* Six Drop v13 - wide, connected candy lid and fully visible upper row.
+ * No changes to real 1.2x candy positions or fall timing.
+ */
+body.carnival-active.six-v8-art-ready.six-bottle-v6 .game>.field{
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+/* Natural 1024:270 cap used with a modest +10% width, which brings both
+   shoulders to the slim side rails. New curved jewel-glass underlip fills
+   the clipped source-image bottom; it is not another opaque flat bar. */
+body.carnival-active.six-v8-art-ready.six-bottle-v6 .game>.field::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  top:-70px!important;
+  left:-16px!important;
+  width:344px!important;
+  height:99px!important;
+  background-image:
+    url('../assets/sixdrop-lid-underlip-v13.svg?v=1'),
+    url('../assets/sixdrop_candy_lid.png?v=8')!important;
+  background-size:344px 26px,344px 90.7px!important;
+  background-position:center bottom,center top!important;
+  background-repeat:no-repeat,no-repeat!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+  opacity:1!important;
+  pointer-events:none!important;
+  /* The jar's candies will be drawn above this foreground decoration.
+     Its visible jewel crown is almost entirely outside the playfield. */
+  z-index:10!important;
+}
+/* The sideframe already fits the 312px bottle; keep it ABOVE the board
+   so the fine candy rails can overlap the new cap shoulders at the seam. */
+body.carnival-active.six-v8-art-ready.six-v11-slim-ready .game>.field::after{
+  top:4px!important;
+  z-index:14!important;
+}
+/* The important hierarchy:
+   cap (10) < live board/candies (12) < thin side rails (14).
+   This explicitly allows even partly overlapped TOP candies to be drawn
+   in front of the cap. Previously cap z=11 sat above the whole board. */
+body.carnival-active.six-v8-art-ready.six-bottle-v6 .game>.field #panels{
+  position:relative!important;
+  z-index:12!important;
+  isolation:isolate!important;
+}
+body.carnival-active.six-v8-art-ready.six-bottle-v6 #panels .carnival-panel{
+  position:relative!important;
+  background-color:transparent!important;
+}
+body.carnival-active.six-v8-art-ready.six-bottle-v6 #panels .six-ball-surface{
+  background-color:transparent!important;
+}
+/* No opaque fallback rail or extra lip in the small viewport. */
+body.carnival-active.six-v8-art-ready.six-v11-slim-ready #panels .six-board-viewport::after{
+  display:none!important;
+}
+body.carnival-active.six-v8-art-ready.six-bottle-v6 #panels .six-board-viewport .carnival-canvas,
+body.carnival-active.six-v8-art-ready.six-bottle-v6 #panels .six-board-viewport .six-reach-layer{
+  transform:none!important;
+}
