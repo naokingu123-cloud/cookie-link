@@ -283,7 +283,7 @@ try{
   const badge=cell.querySelector('.mini-four-number');
   if(badge){
     const v=String(data.name||'').trim();
-    badge.textContent=(v.length<=5?v:keys[game]+(item.index+1));
+    badge.textContent=v?v.slice(0,5):keys[game]+(item.index+1);
     badge.title=v;
   }
  }
