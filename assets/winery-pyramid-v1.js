@@ -1,4 +1,4 @@
-/* Winery Pyramid v2: juice river illustrations, crystal glasses, boost HUD and MIX multiplier. */
+/* Winery Pyramid v54: calibrated initial white juice, premium visuals and Sugar markers. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,10 +9,14 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=2';document.head.appendChild(style);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=54';document.head.appendChild(style);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
- '<aside class="wp-sidebar"><div class="wp-title">ワイナリー<br>ピラミッド</div>'+
+ '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
+ '<input class="wp-rate-range" type="range" min="50" max="150" value="90" step="1" aria-label="ワイナリー初期盤面配当率50から150パーセント">'+
+ '<div class="wp-rate-ends"><span>50%</span><span>100%</span><span>150%</span></div>'+
+ '<small>白ジュース・左右対称</small></div>'+
+ '<aside class="wp-sidebar">'+
  '<div class="wp-power">'+
    '<div class="wp-boost-heading">✦ 注入量UP ✦</div>'+
    '<div class="wp-power-next"><small>次の注入量</small><b>1杯</b></div>'+
@@ -21,15 +25,28 @@ scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="
    '<div class="wp-boost-caption">HITで次から2倍に！</div>'+
    '<div class="wp-boost-numbers">'+Array.from({length:4},(_,i)=>
      '<span class="wp-boost-number" data-index="'+i+'">?</span>').join('')+'</div></div>'+
- '<div class="wp-score"><span>満タン</span><strong>0 / 21</strong></div>'+
- '<div class="wp-pay-fixed"><span>21杯 全満</span><b>0WIN</b></div>'+
- '<div class="wp-pay-window"><div class="wp-pay-track">'+Array.from({length:21},(_,i)=>20-i).map(n=>'<div class="wp-pay-row" data-full="'+n+'"><span>'+n+'杯</span><b>0WIN</b></div>').join('')+'</div></div>'+
+ '<div class="wp-score"><span>満タン</span><strong>0 / 21</strong><small class="wp-sugar-summary">✦12杯</small></div>'+
+ '<div class="wp-pay-fixed"><span>21杯 全満</span><small class="wp-sugar-mark"></small><b>0WIN</b></div>'+
+ '<div class="wp-pay-window"><div class="wp-pay-track">'+Array.from({length:21},(_,i)=>20-i).map(n=>'<div class="wp-pay-row" data-full="'+n+'"><span>'+n+'杯</span><small class="wp-sugar-mark"></small><b>0WIN</b></div>').join('')+'</div></div>'+
  '<div class="wp-mix"><span>MIX <i>0</i>杯</span><b>×1.0倍</b></div>'+
  '<div class="wp-total"><span>TOTAL</span><b>0</b><small>WIN</small></div>'+
  '</aside>'+
  '<div class="wp-message" hidden></div>';
 S.panel.appendChild(scene);
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
+const ratePanel=scene.querySelector('.wp-rate-panel');
+const rateRange=ratePanel.querySelector('.wp-rate-range');
+const rateOutput=ratePanel.querySelector('.wp-rate-output');
+const fullFx=new Map();
+function refreshRateDisplay(){
+ rateOutput.textContent=rateRange.value+'%';
+ ratePanel.hidden=app.phase!=='ready';rateRange.disabled=app.phase!=='ready';
+}
+try{
+ const stored=Number(localStorage.getItem('winery-pyramid-target-rate-v1'));
+ if(Number.isInteger(stored)&&stored>=50&&stored<=150)rateRange.value=String(stored);
+}catch{}
+refreshRateDisplay();
 const header=S.tab.querySelector('.tab-game-name');
 header.innerHTML='<span class="wp-tab-logo"><img class="wp-tab-logo-img" src="assets/winery-pyramid-tab-art-v51.webp?v=52" alt="ワイナリーピラミッド" decoding="async"><b class="wp-fallback">ワイナリー<br>ピラミッド</b></span>';
 const wineryLogo=header.querySelector('.wp-tab-logo');
@@ -51,7 +68,19 @@ const depthStatus=document.getElementById('canyon-depth-status');if(depthStatus)
 function signal(text){const el=scene.querySelector('.wp-message');el.textContent=text;el.hidden=false;clearTimeout(signal.timer);signal.timer=setTimeout(()=>el.hidden=true,1600);}
 function event(ev,e){
  S.engine=e;S.event=ev;S.dirtyMain=true;S.dirtyMini=true;
+ if(ev.phase==='wineryAward')for(const index of ev.justFilled||[])fullFx.set(index,clock);
+ if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[1]){
+   app.wonderBank.push(...ev.steps.map(step=>({...step,game:1})));
+   app.wonderSteps=app.wonderBank.length;
+   app.wonderValue+=ev.steps.reduce((sum,step)=>sum+step.value,0);
+ }
+ if(ev.phase==='sugaraward'){
+   signal('✦ WONDER SUGAR GET!');
+   if(typeof showSugarAward==='function')showSugarAward(S,ev.steps);
+ }
+ refreshRateDisplay();
  if(ev.phase==='ready'){
+  fullFx.clear();
   S.reachEpoch=(S.reachEpoch||0)+1;S.reachBoardKey=null;S.reachStatus='inactive';S.reachResults=[];S.tabReachResults=[];
   miniKey='';uiKey='';scene.querySelector('.wp-message').hidden=true;
  }
@@ -74,8 +103,19 @@ function event(ev,e){
 }
 engine=new K.WineryEngine({random:app.random,sleep:app.sleep,speed:app.speed,onEvent:event});
 app.engines[1]=engine;S.engine=engine;
+engine.setPayoutTarget(Number(rateRange.value));
+rateRange.addEventListener('input',refreshRateDisplay);
+rateRange.addEventListener('change',()=>{
+ if(app.phase!=='ready'){refreshRateDisplay();return;}
+ const target=Math.round(Number(rateRange.value));
+ if(!engine.setPayoutTarget(target))return;
+ try{localStorage.setItem('winery-pyramid-target-rate-v1',String(target));}catch{}
+ uiKey='';miniKey='';S.dirtyMain=S.dirtyMini=true;
+ signal('白ジュースの初期盤面を再生成 · '+target+'%');
+ refreshRateDisplay();queueFrame();scheduleUI(app);
+});
 engine.beforeComplete=token=>engine.wait(300,token);
-const emptySugar=S.tabSugar;if(emptySugar)emptySugar.hidden=true;
+const emptySugar=S.tabSugar;if(emptySugar)emptySugar.hidden=false;
 function stable(e){return e.processed>0&&e.processed<8&&e.running&&!e.queue.length&&e.accepted===e.processed&&['waiting','settled'].includes(e.phase);}
 function wineryReach(s,e,a){
  const context=typeof reachContext==='function'?reachContext(e,a):null;
