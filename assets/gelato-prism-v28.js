@@ -1,4 +1,4 @@
-/* GELATO PRISM v29 - faithful 19-point/24-triangle reference star */
+/* GELATO PRISM v30 - symmetric, enlarged glossy icecream mold */
 (()=>{
 'use strict';
 try{
@@ -7,11 +7,11 @@ try{
  // Indices: top; five upper; two upper diagonals; three center;
  // two lower diagonals; five lower; bottom tip.
  const RAW=[
-  [250,46],[44,132],[202,132],[250,132],[294,132],[455,132],
-  [160,213],[339,213],[129,272],[250,272],[370,272],
-  [166,333],[332,333],[55,412],[212,412],[250,412],[288,412],[443,412],[250,470]
+  [250,62],[44,132],[206,132],[250,132],[294,132],[456,132],
+  [161,213],[339,213],[127,272],[250,272],[373,272],
+  [161,331],[339,331],[44,412],[206,412],[250,412],[294,412],[456,412],[250,482]
  ];
- const P=RAW.map(([x,y])=>({x:160+(x-250)*.71,y:8+(y-46)*.70}));
+ const P=RAW.map(([x,y])=>({x:160+(x-250)*.71,y:157+(y-272)*.70}));
  // Every path is a continuous stroke in the supplied drawing. Intersections
  // are explicit so the board has no inadvertent extra faces or missing links.
  const LINES=[
@@ -163,7 +163,7 @@ try{
  function boardSVG(prefix){
    const defs=['<defs>'];
    defs.push('<radialGradient id="'+prefix+'-shell"><stop stop-color="#fffbef"/><stop offset=".46" stop-color="#ffe1f2"/><stop offset=".88" stop-color="#d3b7fa"/><stop offset="1" stop-color="#9b76a6"/></radialGradient>');
-   defs.push('<linearGradient id="'+prefix+'-rail" x2=".8" y2=".9"><stop stop-color="#fffef3"/><stop offset=".4" stop-color="#d2f9f3"/><stop offset="1" stop-color="#8ab5e6"/></linearGradient>');
+   defs.push('<linearGradient id="'+prefix+'-rail" x2=".8" y2=".9"><stop stop-color="#fffef8"/><stop offset=".42" stop-color="#fff2dc"/><stop offset="1" stop-color="#dba46d"/></linearGradient>');defs.push('<radialGradient id="'+prefix+'-gold"><stop stop-color="#fffff2"/><stop offset=".4" stop-color="#ffe58c"/><stop offset=".85" stop-color="#d99433"/><stop offset="1" stop-color="#96501c"/></radialGradient>');
    for(let i=0;i<6;i++)defs.push('<radialGradient id="'+prefix+'-ice'+i+'" cx=".35" cy=".16" r=".85"><stop stop-color="#ffffff"/><stop offset=".26" stop-color="#fff9f5"/><stop offset=".57" stop-color="'+flavors[i]+'"/><stop offset="1" stop-color="#b179af"/></radialGradient>');
    for(const f of FACES)defs.push('<clipPath id="'+prefix+'-clip'+f.id+'"><polygon points="'+path(f.nodes)+'"/></clipPath>');
    defs.push('</defs>');
@@ -176,18 +176,18 @@ try{
        '<path d="M'+(f.x-21)+' '+(f.y-7)+'q18-16 37 1t-8 19" stroke="#fff8ec" stroke-width="5" fill="none" opacity=".62"/>'+
        '<ellipse cx="'+(f.x-7)+'" cy="'+(f.y-7)+'" rx="4" ry="2" fill="#fffefa" opacity=".7"/>'+
        '</g><polygon class="gp-face-border" points="'+path(f.nodes)+'" fill="none" stroke="#fffaf3" stroke-width="1.8"/>'+
-       '<text class="gp-face-value" x="'+cx+'" y="'+(f.y+3).toFixed(1)+'">'+(f.reward/100).toFixed(2)+'×</text>'+
+       '<text class="gp-face-value" data-reward="'+f.reward+'" x="'+cx+'" y="'+(f.y+3).toFixed(1)+'">'+f.reward+'WIN</text>'+
        '<text class="gp-sugar" x="'+cx+'" y="'+(f.y-9).toFixed(1)+'">✦</text></g>';
    }).join('');
    const lines=EDGES.map(e=>{
      const a=P[e.a],b=P[e.b],d='M'+a.x.toFixed(1)+' '+a.y.toFixed(1)+'L'+b.x.toFixed(1)+' '+b.y.toFixed(1);
-     return '<g data-edge="'+e.id+'" class="gp-edge"><path d="'+d+'" stroke="#654974" stroke-width="7" stroke-linecap="round"/>'+
-       '<path d="'+d+'" stroke="url(#'+prefix+'-rail)" stroke-width="4.2" stroke-linecap="round"/>'+
+     return '<g data-edge="'+e.id+'" class="gp-edge"><path d="'+d+'" stroke="#c28961" stroke-width="11" stroke-linecap="round"/>'+
+       '<path d="'+d+'" stroke="url(#'+prefix+'-rail)" stroke-width="7.5" stroke-linecap="round"/>'+
        '<path class="gp-glowing-line" d="'+d+'" stroke="#ffefa1" stroke-width="5.2" stroke-linecap="round"/></g>';
    }).join('');
    const nodes=P.map((p,i)=>'<g data-node="'+i+'" class="gp-node" transform="translate('+p.x.toFixed(1)+' '+p.y.toFixed(1)+')">'+
-      '<circle r="13.8" fill="#745281" stroke="#fffcee" stroke-width="2.5"/>'+
-      '<circle r="11.6" fill="url(#'+prefix+'-shell)" stroke="#f7bfd0" stroke-width="1.2"/>'+
+      '<circle r="13.8" fill="#c18a4d" stroke="#fffcee" stroke-width="2.5"/>'+
+      '<circle r="11.6" fill="url(#'+prefix+'-gold)" stroke="#fff5c4" stroke-width="1.2"/>'+
       '<ellipse cx="-4" cy="-5" rx="4" ry="2.2" transform="rotate(-28)" fill="#ffffffa5"/>'+
       '<text class="gp-digit" y="4.3" text-anchor="middle">?</text>'+
       '<circle class="gp-hit-ring" r="14.2" fill="none" stroke="#ffdf64" stroke-width="3"/></g>').join('');
@@ -195,7 +195,7 @@ try{
    const tri=(indices)=>indices.map((i,k)=>(k?'L':'M')+major[i].x.toFixed(1)+' '+major[i].y.toFixed(1)).join('')+'Z';
    return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 314" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
       '<circle cx="160" cy="157" r="154" fill="url(#'+prefix+'-shell)" stroke="#fffcf6" stroke-width="7"/>'+
-      '<circle cx="160" cy="157" r="143" fill="#f7eafa" stroke="#e9c0e7" stroke-width="4"/>'+
+      '<circle cx="160" cy="157" r="143" fill="#fff5e8" fill-opacity=".28" stroke="#f7dfbc" stroke-width="4"/>'+
       faces+'<path d="'+tri([0,2,4])+'" fill="none" stroke="#fff2d4" stroke-width="5" opacity=".7"/>'+
       '<path d="'+tri([1,3,5])+'" fill="none" stroke="#e690b9" stroke-width="5" opacity=".6"/>'+
       lines+nodes+'</svg>';
@@ -205,24 +205,15 @@ try{
  slot.tab.querySelector('.tab-game-name').innerHTML='<span class="gp-logo"><b>ジェラート<br>プリズム</b><small>GELATO PRISM ✦</small></span>';
  slots[1].holder.style.order='0';slots[2].holder.style.order='1';slot.holder.style.order='2';
  const scene=document.createElement('div');scene.className='gp-scene';
- scene.innerHTML='<div class="gp-land"></div>'+
-  '<div class="gp-head"><b>GELATO PRISM</b><small>19 DOTS / 24 SWEET TRIANGLES</small></div>'+
+ scene.innerHTML='<div class="gp-land" aria-hidden="true"></div>'+
+  '<div class="gp-head"><b>GELATO PRISM</b><small>ジェラートプリズム</small></div>'+
+  '<div class="gp-bonus-crest" aria-label="RAINBOW GELATO BONUS 全埋めボーナス">'+
+   '<span class="gp-crest-crown">♛ ✦ ♛</span><b>RAINBOW</b><strong>GELATO BONUS</strong><small>全埋めボーナス</small></div>'+
   '<div class="gp-mold">'+boardSVG('gp-main')+'</div>'+
-  '<div class="gp-status"><span><small>FILL</small><b class="gp-fill-count">0 / 24</b></span>'+
-  '<span><small>今回のWIN</small><b class="gp-earned">0 WIN</b></span>'+
-  '<span><small>SUGAR</small><b class="gp-sugar-state">✦</b></span></div>'+
-  '<div class="gp-note">HIT点をつなぐとジェラートが流れ込む！<small>PRISMは次ゲームにも蓄積・24面でボーナス</small></div>'+
   '<div class="gp-flash" hidden></div>';
  slot.panel.append(scene);
  // Native right-hand payout furniture remains intact for Canyon/Drop.
  // Gelato replaces it with the 24-face difficulty/odds legend.
- const gpOdds=document.createElement('div');gpOdds.className='gp-prism-odds';
- gpOdds.innerHTML='<div class="gp-odds-heading"><span>✦</span><b>PRISM REWARDS</b><small>GELATO PRISM</small></div>'+
-   '<div class="gp-odds-instructions">24個のトライアングルを完成させよう！</div>'+
-   [3,2,1,0].map(t=>'<div class="gp-odds-row gp-tier-'+t+'"><i>✦</i><b>'+['C','B','A','S'][t]+' RANK</b><strong>'+([32,42,62,95][t]/100).toFixed(2)+'×</strong></div>').join('')+
-   '<div class="gp-odds-sugar"><span>✧</span><b>WONDER SUGAR</b><small>特別な三角形でGET!</small></div>'+
-   '<div class="gp-odds-bonus"><b>24 / 24</b><strong>+35.0×</strong><small>RAINBOW GELATO BONUS</small></div>';
- $('odds-panel')?.append(gpOdds);
  const gpSign=document.createElement('div');gpSign.className='gp-bonus-sign';
  gpSign.innerHTML='<span>✦ RAINBOW GELATO ✦</span><b>24 FILL BONUS</b>';
  document.querySelector('.festival-top')?.append(gpSign);
@@ -244,9 +235,6 @@ try{
      el.classList.toggle('is-sugar',id===e.sugarFace&&!e.sugarAwarded);
    }
  }
- const gpFillLabel=scene.querySelector('.gp-fill-count'),
-       gpWinLabel=scene.querySelector('.gp-earned'),
-       gpSugarLabel=scene.querySelector('.gp-sugar-state');
  let lastGeometryKey='';
  function drawGelato(){
    const e=app.engines[0];if(e?.kind!=='gelato')return;
@@ -258,11 +246,14 @@ try{
      lastGeometryKey=geometryKey;
      updateDraw(scene,e);updateDraw(mini,e);
    }
-   const count=e.filled.size+' / 24',win=num(medalWin(app.bet(0),e.totalHundredths))+' WIN',
-         sugar=e.sugarAwarded?'GET!':'✦';
-   if(gpFillLabel.textContent!==count)gpFillLabel.textContent=count;
-   if(gpWinLabel.textContent!==win)gpWinLabel.textContent=win;
-   if(gpSugarLabel.textContent!==sugar)gpSugarLabel.textContent=sugar;
+   // The visible value is a real WIN amount derived from the current BET.
+   const bet=app.bet(0);
+   if(scene.dataset.gpBet!==String(bet)){
+     scene.dataset.gpBet=String(bet);
+     for(const root of [scene,mini])
+       for(const el of root.querySelectorAll('[data-reward]'))
+         el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
+   }
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
