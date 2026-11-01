@@ -288,7 +288,8 @@ try{
       '<circle r="11.6" fill="url(#'+prefix+'-gold)" stroke="#ffecc0" stroke-width="1.3"/>'+
       '<ellipse cx="-4" cy="-4.8" rx="5.2" ry="2.7" transform="rotate(-27)" fill="#ffffffc5"/>'+
       '<text class="gp-digit" y="4.3" text-anchor="middle">?</text>'+
-      '<circle class="gp-hit-ring" r="14.4" fill="none" stroke="#fff06e" stroke-width="3.8"/></g>').join('');
+      '<circle class="gp-hit-ring" r="16.6" fill="none" stroke="#fff06e" stroke-width="3.8"/>'+
+      '<text class="gp-hit-text" y="24" text-anchor="middle">HIT!</text></g>').join('');
    const outline=path([0,4,5,10,17,16,18,14,13,8,1,2]);
    return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-22 -23 364 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="19交点・24三角形の高級ワッフルジェラート型">'+defs.join('')+
       '<polygon points="'+outline+'" fill="#7e3a20" stroke="#744024" stroke-width="16" stroke-linejoin="round"/>'+
@@ -1084,7 +1085,7 @@ try{
  // gameplay RNG or other games' renderers. Six Drop reach uses native CSS.
  setInterval(()=>{
    if(document.hidden||app.paused||!document.body.classList.contains('gelato-active'))return;
-   if(!e.links.size&&!e.hits.size)return;
+   if(!e.links.size&&(!e.hitVisualTime||![...e.hitVisualTime.values()].some(t=>performance.now()-t<1000)))return;
    rasterKey='';
    drawRaster(e,app.bet(0));
  },90);
