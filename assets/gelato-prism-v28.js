@@ -1,4 +1,4 @@
-/* GELATO PRISM v35 - restored v32 logic, ornate wafer artwork, playable mini/main */
+/* GELATO PRISM v36 - optional photorealistic PNG/Canvas replacement for ornate SVG */
 (()=>{
 'use strict';
 try{
@@ -31,7 +31,7 @@ try{
    if(x==null||y==null||z==null)continue;
    FACES.push({id:FACES.length,nodes:[a,b,c],edges:[x,y,z],
      x:(P[a].x+P[b].x+P[c].x)/3,y:(P[a].y+P[b].y+P[c].y)/3,
-     flavor:(a+2*b+5*c)%6});
+     flavor:FACES.length%6});
  }
  if(P.length!==19||EDGES.length!==42||FACES.length!==24)
    throw Error('Prism reference geometry invalid: '+P.length+'/'+EDGES.length+'/'+FACES.length);
@@ -234,6 +234,112 @@ try{
  document.querySelector('.festival-top')?.append(gpSign);
  const mini=document.createElement('div');mini.className='gp-mini';mini.innerHTML=boardSVG('gp-tab');
  slot.tab.querySelector('.mini-wrap').append(mini);
+
+ // The user supplies two high-resolution raster assets at assets/:
+ // gelato-prism-cookie-v36.png, gelato-prism-gelato-v36.png.
+ // No SVG is painted when both load successfully.  Old SVG remains a safe
+ // fallback until the upload is complete (avoids a broken production game).
+ const rasterMain=document.createElement('canvas'),rasterMini=document.createElement('canvas');
+ for(const canv of [rasterMain,rasterMini]){
+   canv.className='gp-raster-board';canv.width=1000;canv.height=1000;
+   canv.setAttribute('aria-label','ジェラートプリズム画像盤面');
+ }
+ const rasterMold=scene.querySelector('.gp-mold');
+ rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
+ const rasterImages={board:new Image(),fill:new Image(),ready:false};
+ let rasterKey='';
+ const rasterCoords=RAW.map(([x,y])=>({x,y}));
+ function loadRasterAsset(img,name){
+   return new Promise((resolve,reject)=>{
+     img.onload=()=>img.naturalWidth>0?resolve():reject(new Error(name));
+     img.onerror=()=>reject(new Error(name));
+     img.src='assets/'+name+'?v=36';
+   });
+ }
+ Promise.all([
+   loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v36.png'),
+   loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v36.png')
+ ]).then(()=>{
+   rasterImages.ready=true;
+   rasterMold.classList.add('gp-raster-ready');
+   mini.classList.add('gp-raster-ready');
+   rasterKey='';lastGeometryKey='';
+   drawGelato();
+   console.info('[GelatoPrism] 1600px PNG board and gelato texture loaded');
+ }).catch(()=>{
+   console.info('[GelatoPrism] PNG assets pending GitHub upload; existing board remains visible');
+ });
+ function rasterBoard(ctx,e,bet,small){
+   ctx.setTransform(2,0,0,2,0,0);
+   ctx.clearRect(0,0,500,500);
+   ctx.drawImage(rasterImages.board,0,0,500,500);
+   for(const f of FACES){
+     if(!e.filled.has(f.id))continue;
+     const [a,b,c]=f.nodes.map(i=>rasterCoords[i]);
+     ctx.save();ctx.beginPath();
+     ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);
+     ctx.closePath();ctx.clip();
+     ctx.drawImage(rasterImages.fill,0,0,500,500);
+     ctx.restore();
+   }
+   ctx.save();
+   for(const edgeIndex of e.links){
+     const edgeData=EDGES[edgeIndex];
+     if(!edgeData)continue;
+     const a=rasterCoords[edgeData.a],b=rasterCoords[edgeData.b];
+     ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+     ctx.strokeStyle='#fff8af';ctx.lineWidth=5;
+     ctx.shadowColor='#ffe045';ctx.shadowBlur=11;
+     ctx.lineCap='round';ctx.stroke();
+   }
+   ctx.restore();
+   if(!small){
+     ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+     for(const f of FACES){
+       const a=rasterCoords[f.nodes[0]],b=rasterCoords[f.nodes[1]],c=rasterCoords[f.nodes[2]];
+       const x=(a.x+b.x+c.x)/3,y=(a.y+b.y+c.y)/3;
+       const selected=e.filled.has(f.id);
+       const value=num(medalWin(bet,f.reward));
+       ctx.lineJoin='round';ctx.strokeStyle=selected?'#712e69':'#fff5db';
+       ctx.fillStyle=selected?'#fffdeb':'#742b62';
+       ctx.lineWidth=3.2;ctx.font='1000 11px system-ui,sans-serif';
+       ctx.strokeText(value,x,y-3,38);ctx.fillText(value,x,y-3,38);
+       ctx.font='1000 8px system-ui,sans-serif';
+       ctx.strokeText('WIN',x,y+9,32);ctx.fillText('WIN',x,y+9,32);
+       if(f.id===e.sugarFace&&!e.sugarAwarded){
+         ctx.fillStyle='#ffef8f';ctx.strokeStyle='#be55b0';
+         ctx.lineWidth=2.5;ctx.font='1000 18px system-ui,sans-serif';
+         ctx.strokeText('✦',x,y-18);ctx.fillText('✦',x,y-18);
+       }
+     }
+     ctx.restore();
+   }
+   for(let idx=0;idx<rasterCoords.length;idx++){
+     const p=rasterCoords[idx],n=e.nodeNumbers[idx];
+     if(e.hits.has(idx)||e.pendingDraws.has(n)){
+       ctx.save();ctx.beginPath();ctx.arc(p.x,p.y,14.6,0,Math.PI*2);
+       ctx.lineWidth=e.hits.has(idx)?4.1:2.6;
+       ctx.strokeStyle=e.hits.has(idx)?'#ffe34d':'#fff8bc';
+       ctx.shadowColor='#fff09c';ctx.shadowBlur=e.hits.has(idx)?12:7;
+       ctx.stroke();ctx.restore();
+     }
+     ctx.save();ctx.font='1000 15px system-ui,sans-serif';
+     ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+     ctx.strokeStyle='#fff8cf';ctx.lineWidth=3.0;ctx.fillStyle='#703322';
+     ctx.strokeText(String(n),p.x,p.y+.5);ctx.fillText(String(n),p.x,p.y+.5);
+     ctx.restore();
+   }
+ }
+ function drawRaster(e,bet){
+   if(!rasterImages.ready)return;
+   const state=[e.cycle,e.version,e.phase,e.hits.size,e.links.size,
+     e.filled.size,e.lastNode,e.pendingDraws.size,e.sugarAwarded,bet].join('/');
+   if(state===rasterKey)return;
+   rasterKey=state;
+   rasterBoard(rasterMain.getContext('2d'),e,bet,false);
+   rasterBoard(rasterMini.getContext('2d'),e,bet,true);
+ }
+
  function updateDraw(root,e){
    const svg=root.querySelector('.gp-board-svg');if(!svg)return;
    for(const el of svg.querySelectorAll('[data-node]')){
@@ -269,6 +375,7 @@ try{
        for(const el of root.querySelectorAll('[data-reward]'))
          el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
    }
+   drawRaster(e,bet);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
