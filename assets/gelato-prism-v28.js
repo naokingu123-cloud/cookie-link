@@ -421,7 +421,75 @@ try{
    labelsBet:null,numbersKey:null
  };
  const rasterCoords=RAW.map(([x,y])=>({x,y}));
+ // Rectangles are in the generated 1024×1024 fruit-gelato source image.
+ // cyan=icy berries, green=frozen mint/kiwi, yellow=lemon,
+ // red=strawberry, purple=blueberries/grapes.
+ const FROZEN_FRUIT_CROPS=[
+   [405,520,110,130],[195,318,118,128],[510,323,116,118],
+   [518,330,112,126],[703,327,115,130]
+ ];
+ const frozenFruitBackdrop=document.createElement('canvas');
+ frozenFruitBackdrop.className='gp-frozen-fruit-backdrop';
+ frozenFruitBackdrop.width=1024;frozenFruitBackdrop.height=640;
+ scene.insertBefore(frozenFruitBackdrop,scene.firstChild);
  let rasterKey='';
+ function paintFrozenFruitBackdrop(){
+   const canvas=frozenFruitBackdrop,ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+   const bg=ctx.createLinearGradient(0,0,w,h);
+   bg.addColorStop(0,'#8ecbf8');bg.addColorStop(.34,'#b9e5f7');
+   bg.addColorStop(.63,'#c0bbf2');bg.addColorStop(1,'#5689cf');
+   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+   ctx.save();
+   for(let k=0;k<15;k++){
+     const x=k*81-68,y=h-8-(k%4)*27,peak=200+(k%3)*46;
+     const ice=ctx.createLinearGradient(x,y-peak,x,y);
+     ice.addColorStop(0,'rgba(255,255,255,.63)');
+     ice.addColorStop(.6,'rgba(142,204,251,.3)');
+     ice.addColorStop(1,'rgba(52,110,187,.08)');
+     ctx.fillStyle=ice;ctx.strokeStyle='rgba(248,255,255,.46)';ctx.lineWidth=2;
+     ctx.beginPath();ctx.moveTo(x-51,y);ctx.lineTo(x+5,y-peak);
+     ctx.lineTo(x+66,y);ctx.closePath();ctx.fill();ctx.stroke();
+   }
+   ctx.restore();
+   // Fruit clusters frozen inside cloudy, transparent ice medallions.
+   const fruit=[
+     [92,132,101,1],[924,124,86,4],[54,428,104,3],
+     [973,423,114,2],[248,545,72,2],[838,528,76,1],
+     [385,35,57,0],[650,52,51,3]
+   ];
+   for(const [x,y,r,grade] of fruit){
+     const crop=FROZEN_FRUIT_CROPS[grade];
+     ctx.save();ctx.beginPath();ctx.ellipse(x,y,r,r*.9,-.15,0,Math.PI*2);ctx.clip();
+     ctx.globalAlpha=.85;
+     ctx.drawImage(rasterImages.fill,crop[0],crop[1],crop[2],crop[3],
+       x-r,y-r*.9,r*2,r*1.8);
+     ctx.globalAlpha=1;
+     const frost=ctx.createRadialGradient(x-r*.3,y-r*.4,2,x,y,r);
+     frost.addColorStop(0,'rgba(255,255,255,.04)');
+     frost.addColorStop(.65,'rgba(221,250,255,.17)');
+     frost.addColorStop(1,'rgba(228,249,255,.68)');
+     ctx.fillStyle=frost;ctx.fillRect(x-r,y-r,r*2,r*2);
+     ctx.restore();
+     ctx.beginPath();ctx.ellipse(x,y,r,r*.9,-.15,0,Math.PI*2);
+     ctx.strokeStyle='rgba(251,255,255,.82)';ctx.lineWidth=5;ctx.stroke();
+     ctx.beginPath();ctx.ellipse(x-r*.18,y-r*.2,r*.78,r*.55,-.4,Math.PI*1.17,Math.PI*1.65);
+     ctx.strokeStyle='rgba(255,255,255,.83)';ctx.lineWidth=3;ctx.stroke();
+   }
+   // Frozen dust: deterministic, decorative and rendered only at startup.
+   for(let i=0;i<195;i++){
+     const x=(i*73+Math.sin(i*13)*120+w)%w;
+     const y=(i*109+Math.cos(i*17)*65+h)%h;
+     const z=i%6===0?2.2:.9;
+     ctx.beginPath();ctx.arc(x,y,z,0,Math.PI*2);
+     ctx.fillStyle=i%4?'rgba(250,255,255,.56)':'rgba(255,241,250,.8)';
+     ctx.fill();
+   }
+   const calm=ctx.createRadialGradient(w*.46,h*.48,12,w*.46,h*.48,340);
+   calm.addColorStop(0,'rgba(242,253,255,.31)');
+   calm.addColorStop(1,'rgba(245,251,255,0)');
+   ctx.fillStyle=calm;ctx.fillRect(0,0,w,h);
+ }
+
  function loadRasterAsset(img,name){
    return new Promise((resolve,reject)=>{
      img.onload=()=>img.naturalWidth>0?resolve():reject(new Error(name+' was empty'));
@@ -458,19 +526,33 @@ try{
        ctx.beginPath();ctx.moveTo(px[0]-left,py[0]-top);
        for(let k=1;k<3;k++)ctx.lineTo(px[k]-left,py[k]-top);
        ctx.closePath();ctx.clip();
-       if(rasterImages.candyAtlasReady){
-         const source=rasterImages.candyAtlas;
-         const srcWidth=source.naturalWidth/5;
-         // Match each triangular cavity to a whole candy texture tile.
-         ctx.drawImage(source,grade*srcWidth,0,srcWidth,source.naturalHeight,
-           0,0,width,height);
-       }else{
-         // Existing glossy PNG remains a fallback if the new atlas cannot load.
-         ctx.drawImage(fillSheet,-left,-top);
-         ctx.globalCompositeOperation='color';
-         ctx.fillStyle=GRADE_COLORS[grade];
-         ctx.fillRect(0,0,width,height);
-         ctx.globalCompositeOperation='source-over';
+       // Frozen fruit, not a popsicle-on-a-stick: reuse detailed source
+       // photography from the approved generated gelato image.  Each of the
+       // five crops contains real frozen fruit/ice textures and no ice-stick.
+       const fruitCrop=FROZEN_FRUIT_CROPS[grade];
+       const fruitIce=ctx.createLinearGradient(0,0,0,height);
+       fruitIce.addColorStop(0,'#e7fcff');
+       fruitIce.addColorStop(.36,GRADE_COLORS[grade]);
+       fruitIce.addColorStop(1,'#37538a');
+       ctx.fillStyle=fruitIce;ctx.fillRect(0,0,width,height);
+       ctx.globalAlpha=.89;
+       ctx.drawImage(rasterImages.fill,
+         fruitCrop[0],fruitCrop[1],fruitCrop[2],fruitCrop[3],
+         0,0,width,height);
+       ctx.globalAlpha=.33;
+       ctx.globalCompositeOperation='color';
+       ctx.fillStyle=GRADE_COLORS[grade];
+       ctx.fillRect(0,0,width,height);
+       ctx.globalAlpha=1;
+       ctx.globalCompositeOperation='source-over';
+       // Frost flecks and trapped tiny air bubbles are cached, never animated.
+       for(let k=0;k<9;k++){
+         const x=(k*29+f.id*17+grade*13)%(Math.max(1,width));
+         const y=(k*41+f.id*19+grade*9)%(Math.max(1,height));
+         const radius=1+((k+grade)%3)*.35;
+         ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);
+         ctx.fillStyle=k%2?'rgba(255,255,255,.58)':'rgba(235,251,255,.83)';
+         ctx.fill();
        }
        const gloss=ctx.createLinearGradient(0,0,width,height);
        gloss.addColorStop(0,'rgba(255,255,255,.54)');
@@ -496,22 +578,14 @@ try{
    rasterImages.labelsBet=null;
    rasterImages.numbersKey=null;
  }
- // Optional 5-column ice-candy artwork.  The v40 crystal mould is unchanged.
- // Once the atlas is present, it replaces all five flat-tinted face textures.
- loadRasterAsset(rasterImages.candyAtlas,'gelato-prism-popsicle-atlas-v43.png').then(()=>{
-   rasterImages.candyAtlasReady=true;
-   if(rasterImages.ready){
-     createRasterCache();
-     rasterKey='';lastGeometryKey='';
-     drawGelato();
-   }
-   console.info('[GelatoPrism] v43 high-gloss popsicle textures active');
- }).catch(err=>console.warn('[GelatoPrism] popsicle atlas fallback:',err.message));
+ // Popsicle sprites are intentionally not loaded in v44.  Existing detailed
+ // gelato/fruit imagery is used with a frozen texture treatment instead.
  const standardAssetsReady=Promise.all([
    loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v37.png'),
    loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v37.png'),
    loadRasterAsset(rasterImages.trim,'gelato-prism-trim-v37.png')
  ]).then(()=>{
+   paintFrozenFruitBackdrop();
    createRasterCache();
    rasterImages.ready=true;
    rasterMold.classList.add('gp-raster-ready');
