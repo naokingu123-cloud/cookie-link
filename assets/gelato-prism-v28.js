@@ -1,4 +1,4 @@
-/* GELATO PRISM v44 - frozen fruit panels, sliding payout table, compact collectors */
+/* GELATO PRISM v45 - ice kingdom sprites, sticky descending payout, 10% panel sugar and luxury tab logo */
 (()=>{
 'use strict';
 try{
@@ -140,7 +140,10 @@ try{
      this.faceGrades=this.pattern.grades.slice();
      this.collectorCounts=[0,0,0,0,0];
      this.collectorMult=0;this.countMult=0;
-     this.filled=new Set();this.sugarFace=Math.floor(this.random()*24);
+     // Exactly ~10% sugar-acquisition probability under the 25-number, 8-ball model.
+     // P(>=16)=11.34318%, P(>=17)=8.48457%.
+     this.sugarTarget=this.random()<0.5301280807296723?16:17;
+     this.filled=new Set();this.sugarFace=-1;
      this.sugarAwarded=false;this.allComplete=false;
    }
    reset(){
@@ -209,7 +212,7 @@ try{
            this.lastFilled=newFaces;
            if(newFaces.length){
              this.roundCleared+=newFaces.length;
-             if(newFaces.includes(this.sugarFace)&&!this.sugarAwarded){
+             if(this.filled.size>=this.sugarTarget&&!this.sugarAwarded){
                this.sugarAwarded=true;this.wonderCollected=true;this.roundSteps++;
                const step={id:this.version*100+this.processed+1,value:Math.max(1,this.roundBet),tier:wonderTier(this.roundBet)};
                this.wonderToken=step;this.emit('stepcollect',{steps:[step]});this.emit('sugaraward',{steps:[step]});
@@ -300,7 +303,7 @@ try{
  const gpTabLogo=gpTabName.querySelector('.gp-tab-logo-img');
  gpTabLogo.onload=()=>{gpTabLogo.hidden=false;gpTabName.classList.add('gp-has-tab-art');};
  gpTabLogo.onerror=()=>{gpTabLogo.hidden=true;gpTabName.classList.remove('gp-has-tab-art');};
- gpTabLogo.src='assets/gelato-prism-tab-logo-v39.png?v=39-'+Date.now();
+ gpTabLogo.src='assets/gelato-prism-tab-logo-v45.svg?v=45';
  slots[1].holder.style.order='0';slots[2].holder.style.order='1';slot.holder.style.order='2';
  const scene=document.createElement('div');scene.className='gp-scene';
  scene.innerHTML='<div class="gp-land" aria-hidden="true"></div>'+
@@ -410,85 +413,23 @@ try{
  }
 
  // Bonus emblem is now layered over the playable board, not a cropped header.
- const gpBoardBonus=document.createElement('div');
- gpBoardBonus.className='gp-board-bonus';
- gpBoardBonus.innerHTML='<span class="gp-board-bonus-fallback">✦ 全獲り ✦<small>24枚で100倍</small></span>';
- rasterMold.appendChild(gpBoardBonus);
+ // The old on-board 100x emblem is removed; 24/24 is pinned in the payout table.
  const rasterImages={
    board:new Image(),fill:new Image(),trim:new Image(),ice:new Image(),ready:false,iceReady:false,iceCache:null,exactV40:false,
-   candyAtlas:new Image(),candyAtlasReady:false,
+   candyAtlas:new Image(),candyAtlasReady:false,crystalTiles:new Image(),crystalTilesReady:false,
    base:null,trimCache:null,faceTiles:[],labels:null,numbers:null,
    labelsBet:null,numbersKey:null
  };
  const rasterCoords=RAW.map(([x,y])=>({x,y}));
- // Rectangles are in the generated 1024×1024 fruit-gelato source image.
- // cyan=icy berries, green=frozen mint/kiwi, yellow=lemon,
- // red=strawberry, purple=blueberries/grapes.
- const FROZEN_FRUIT_CROPS=[
-   [405,520,110,130],[195,318,118,128],[510,323,116,118],
-   [518,330,112,126],[703,327,115,130]
- ];
+ // Five transparent faceted ice colors: water blue, green, yellow, red, violet.
  const frozenFruitBackdrop=document.createElement('canvas');
  frozenFruitBackdrop.className='gp-frozen-fruit-backdrop';
  frozenFruitBackdrop.width=1024;frozenFruitBackdrop.height=640;
  scene.insertBefore(frozenFruitBackdrop,scene.firstChild);
  let rasterKey='';
- function paintFrozenFruitBackdrop(){
-   const canvas=frozenFruitBackdrop,ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
-   const bg=ctx.createLinearGradient(0,0,w,h);
-   bg.addColorStop(0,'#8ecbf8');bg.addColorStop(.34,'#b9e5f7');
-   bg.addColorStop(.63,'#c0bbf2');bg.addColorStop(1,'#5689cf');
-   ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-   ctx.save();
-   for(let k=0;k<15;k++){
-     const x=k*81-68,y=h-8-(k%4)*27,peak=200+(k%3)*46;
-     const ice=ctx.createLinearGradient(x,y-peak,x,y);
-     ice.addColorStop(0,'rgba(255,255,255,.63)');
-     ice.addColorStop(.6,'rgba(142,204,251,.3)');
-     ice.addColorStop(1,'rgba(52,110,187,.08)');
-     ctx.fillStyle=ice;ctx.strokeStyle='rgba(248,255,255,.46)';ctx.lineWidth=2;
-     ctx.beginPath();ctx.moveTo(x-51,y);ctx.lineTo(x+5,y-peak);
-     ctx.lineTo(x+66,y);ctx.closePath();ctx.fill();ctx.stroke();
-   }
-   ctx.restore();
-   // Fruit clusters frozen inside cloudy, transparent ice medallions.
-   const fruit=[
-     [92,132,101,1],[924,124,86,4],[54,428,104,3],
-     [973,423,114,2],[248,545,72,2],[838,528,76,1],
-     [385,35,57,0],[650,52,51,3]
-   ];
-   for(const [x,y,r,grade] of fruit){
-     const crop=FROZEN_FRUIT_CROPS[grade];
-     ctx.save();ctx.beginPath();ctx.ellipse(x,y,r,r*.9,-.15,0,Math.PI*2);ctx.clip();
-     ctx.globalAlpha=.85;
-     ctx.drawImage(rasterImages.fill,crop[0],crop[1],crop[2],crop[3],
-       x-r,y-r*.9,r*2,r*1.8);
-     ctx.globalAlpha=1;
-     const frost=ctx.createRadialGradient(x-r*.3,y-r*.4,2,x,y,r);
-     frost.addColorStop(0,'rgba(255,255,255,.04)');
-     frost.addColorStop(.65,'rgba(221,250,255,.17)');
-     frost.addColorStop(1,'rgba(228,249,255,.68)');
-     ctx.fillStyle=frost;ctx.fillRect(x-r,y-r,r*2,r*2);
-     ctx.restore();
-     ctx.beginPath();ctx.ellipse(x,y,r,r*.9,-.15,0,Math.PI*2);
-     ctx.strokeStyle='rgba(251,255,255,.82)';ctx.lineWidth=5;ctx.stroke();
-     ctx.beginPath();ctx.ellipse(x-r*.18,y-r*.2,r*.78,r*.55,-.4,Math.PI*1.17,Math.PI*1.65);
-     ctx.strokeStyle='rgba(255,255,255,.83)';ctx.lineWidth=3;ctx.stroke();
-   }
-   // Frozen dust: deterministic, decorative and rendered only at startup.
-   for(let i=0;i<195;i++){
-     const x=(i*73+Math.sin(i*13)*120+w)%w;
-     const y=(i*109+Math.cos(i*17)*65+h)%h;
-     const z=i%6===0?2.2:.9;
-     ctx.beginPath();ctx.arc(x,y,z,0,Math.PI*2);
-     ctx.fillStyle=i%4?'rgba(250,255,255,.56)':'rgba(255,241,250,.8)';
-     ctx.fill();
-   }
-   const calm=ctx.createRadialGradient(w*.46,h*.48,12,w*.46,h*.48,340);
-   calm.addColorStop(0,'rgba(242,253,255,.31)');
-   calm.addColorStop(1,'rgba(245,251,255,0)');
-   ctx.fillStyle=calm;ctx.fillRect(0,0,w,h);
- }
+ // The v45 ice-candy kingdom is a full-resolution illustrated image, not
+ // a generative procedural canvas.  The inert fallback canvas stays hidden.
+ function paintFrozenFruitBackdrop(){/* v45 background is the SVG asset */}
 
  function loadRasterAsset(img,name){
    return new Promise((resolve,reject)=>{
@@ -526,33 +467,28 @@ try{
        ctx.beginPath();ctx.moveTo(px[0]-left,py[0]-top);
        for(let k=1;k<3;k++)ctx.lineTo(px[k]-left,py[k]-top);
        ctx.closePath();ctx.clip();
-       // Frozen fruit, not a popsicle-on-a-stick: reuse detailed source
-       // photography from the approved generated gelato image.  Each of the
-       // five crops contains real frozen fruit/ice textures and no ice-stick.
-       const fruitCrop=FROZEN_FRUIT_CROPS[grade];
-       const fruitIce=ctx.createLinearGradient(0,0,0,height);
-       fruitIce.addColorStop(0,'#e7fcff');
-       fruitIce.addColorStop(.36,GRADE_COLORS[grade]);
-       fruitIce.addColorStop(1,'#37538a');
-       ctx.fillStyle=fruitIce;ctx.fillRect(0,0,width,height);
-       ctx.globalAlpha=.89;
-       ctx.drawImage(rasterImages.fill,
-         fruitCrop[0],fruitCrop[1],fruitCrop[2],fruitCrop[3],
-         0,0,width,height);
-       ctx.globalAlpha=.33;
-       ctx.globalCompositeOperation='color';
-       ctx.fillStyle=GRADE_COLORS[grade];
-       ctx.fillRect(0,0,width,height);
-       ctx.globalAlpha=1;
-       ctx.globalCompositeOperation='source-over';
-       // Frost flecks and trapped tiny air bubbles are cached, never animated.
-       for(let k=0;k<9;k++){
+       if(rasterImages.crystalTilesReady){
+         const source=rasterImages.crystalTiles;
+         const sy=Math.min(...verts.map(p=>p.y)),sameTop=verts.filter(p=>Math.abs(p.y-sy)<.01).length;
+         ctx.save();
+         if(sameTop===2){ctx.translate(0,height);ctx.scale(1,-1);}
+         ctx.drawImage(source,grade*256,0,256,256,0,0,width,height);
+         ctx.restore();
+       }else{
+         // Gentle color-only fallback while the external SVG image loads.
+         const ice=ctx.createLinearGradient(0,0,width,height);
+         ice.addColorStop(0,'#f0ffff');
+         ice.addColorStop(.28,GRADE_COLORS[grade]);
+         ice.addColorStop(1,'#3659a1');
+         ctx.fillStyle=ice;
+         ctx.fillRect(0,0,width,height);
+       }
+       // Pores/ice crystals are subdued to keep all five colors distinguishable.
+       for(let k=0;k<7;k++){
          const x=(k*29+f.id*17+grade*13)%(Math.max(1,width));
          const y=(k*41+f.id*19+grade*9)%(Math.max(1,height));
-         const radius=1+((k+grade)%3)*.35;
-         ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);
-         ctx.fillStyle=k%2?'rgba(255,255,255,.58)':'rgba(235,251,255,.83)';
-         ctx.fill();
+         ctx.beginPath();ctx.arc(x,y,1+(k%3)*.35,0,Math.PI*2);
+         ctx.fillStyle='rgba(250,254,255,.58)';ctx.fill();
        }
        const gloss=ctx.createLinearGradient(0,0,width,height);
        gloss.addColorStop(0,'rgba(255,255,255,.54)');
@@ -564,7 +500,7 @@ try{
        const dim=offscreen(width,height),dc=dim.getContext('2d');
        dc.drawImage(bright,0,0);
        dc.globalCompositeOperation='source-atop';
-       dc.fillStyle='rgba(3,16,45,.76)';
+       dc.fillStyle='rgba(2,12,37,.64)';
        dc.fillRect(0,0,width,height);
        dc.globalCompositeOperation='source-over';
        images.push(bright);dimImages.push(dim);
@@ -578,14 +514,18 @@ try{
    rasterImages.labelsBet=null;
    rasterImages.numbersKey=null;
  }
- // Popsicle sprites are intentionally not loaded in v44.  Existing detailed
- // gelato/fruit imagery is used with a frozen texture treatment instead.
+ // Crystal sprite atlas: loading is optional so the game remains functional
+ // on a slow connection; once ready all 24 cached triangle tiles are rebuilt.
+ loadRasterAsset(rasterImages.crystalTiles,'gelato-prism-crystal-tiles-v45.svg')
+ .then(()=>{
+   rasterImages.crystalTilesReady=true;
+   if(rasterImages.ready){createRasterCache();rasterKey='';drawGelato();}
+ }).catch(err=>console.warn('[GelatoPrism] crystal atlas fallback',err.message));
  const standardAssetsReady=Promise.all([
    loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v37.png'),
    loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v37.png'),
    loadRasterAsset(rasterImages.trim,'gelato-prism-trim-v37.png')
  ]).then(()=>{
-   paintFrozenFruitBackdrop();
    createRasterCache();
    rasterImages.ready=true;
    rasterMold.classList.add('gp-raster-ready');
@@ -637,10 +577,15 @@ try{
      ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);
      ctx.setTransform(MAIN_SCALE,0,0,MAIN_SCALE,0,0);
      ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
-     ctx.strokeStyle='#fff4db';ctx.fillStyle='#642b56';ctx.lineWidth=4.2;
-     ctx.font='1000 19px system-ui,sans-serif';
+     ctx.strokeStyle='#fff1c8';ctx.fillStyle='#65328a';ctx.lineWidth=4.3;
+     ctx.font='700 21px ArcadePayout,Georgia,serif';
      for(let idx=0;idx<rasterCoords.length;idx++){
        const p=rasterCoords[idx],n=String(e.nodeNumbers[idx]);
+       // Enlarge the original circles slightly, without moving the exact nodes.
+       ctx.beginPath();ctx.arc(p.x,p.y,14.6,0,Math.PI*2);
+       ctx.fillStyle='#d8edffa8';ctx.strokeStyle='#edfdff';ctx.lineWidth=2.1;
+       ctx.fill();ctx.stroke();
+       ctx.fillStyle='#56317f';ctx.strokeStyle='#fff6da';ctx.lineWidth=3.8;
        ctx.strokeText(n,p.x,p.y+.5);ctx.fillText(n,p.x,p.y+.5);
      }
    }
@@ -821,8 +766,7 @@ try{
          el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
    }
    drawRaster(e,bet);
-   updateCollectorHUD(e);
-   gpBoardBonus.classList.toggle('gp-bonus-complete',e.allComplete);
+   updateCollectorHUD(e,bet);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
@@ -961,7 +905,7 @@ try{
    get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
    get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,
-     pattern:e.pattern?.id,counts:e.collectorCounts.slice(),countMult:e.countMult,
+     pattern:e.pattern?.id,counts:e.collectorCounts.slice(),sugarTarget:e.sugarTarget,sugarAwarded:e.sugarAwarded,countMult:e.countMult,
      collectorMult:e.collectorMult,totalHundredths:e.totalHundredths,bonus:e.allComplete};},
    patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,grades:p.grades.slice()})),
    prizes:{countMultiplier:COUNT_MULT.slice(),colorMultipliers:COLLECTOR_MULT.slice()},
