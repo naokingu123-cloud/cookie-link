@@ -273,7 +273,7 @@ try{
    return new Promise((resolve,reject)=>{
      img.onload=()=>img.naturalWidth>0?resolve():reject(new Error(name+' was empty'));
      img.onerror=()=>reject(new Error(name+' missing'));
-     img.src='assets/'+name+'?v=37';
+     img.src='assets/'+name+'?v=37-'+Date.now();
    });
  }
  function offscreen(w,h=w){
