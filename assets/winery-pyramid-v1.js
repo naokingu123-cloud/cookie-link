@@ -1,4 +1,4 @@
-/* Winery Pyramid v56: generated luxury art + live glass contents, win indicators and pour streams. */
+/* Winery Pyramid v57: Fruit Juice Palace theme, interactive upper HUD and live 21-glass tower. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -33,6 +33,15 @@ scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="
  '</aside>'+
  '<div class="wp-message" hidden></div>';
 S.panel.appendChild(scene);
+ // Two compact game-data banners fill the unused space beside the summit.
+ // They do not obscure any of the 21 glasses, and preserve the original logic.
+ scene.insertAdjacentHTML('beforeend',
+ '<div class="wp-upper-hud wp-upper-round" aria-label="抽選の進行"><span class="wp-hud-label">✦ JUICE ROUND ✦</span><strong class="wp-hud-main wp-hud-round">1 / 8</strong>'+
+ '<div class="wp-hud-progress" aria-hidden="true">'+Array.from({length:8},()=>'<i></i>').join('')+'</div></div>'+
+ '<div class="wp-upper-hud wp-upper-juice" aria-label="次のジュースと注入量"><span class="wp-hud-label">✦ NEXT JUICE ✦</span>'+
+ '<strong class="wp-hud-main wp-hud-volume">1杯</strong>'+
+ '<div class="wp-hud-flavor"><i class="wp-hud-swatch"></i><span class="wp-hud-flavor-name">りんご</span></div></div>'
+ );
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
 const ratePanel=scene.querySelector('.wp-rate-panel');
 const rateRange=ratePanel.querySelector('.wp-rate-range');
@@ -301,6 +310,18 @@ luxuryImg.onload=()=>{
 };
 luxuryImg.onerror=()=>console.warn('[Winery] Upload assets/winery-luxury-screen-v56.webp to activate luxurious scene.');
 luxuryImg.src='assets/winery-luxury-screen-v56.webp?v=56';
+ // The new 1672×941 sweets-palace artwork is an image-only skin.
+ // Keep the v56 image as an uninterrupted fallback until the new art is uploaded.
+ const sweetsImg=new Image();
+ sweetsImg.decoding='async';
+ sweetsImg.onload=()=>{
+   luxuryReady=true;
+   scene.classList.add('wp-luxury-ready','wp-sweets-ready');
+   canvas.width=836;canvas.height=471;
+   lastPaint=0;uiKey='';miniKey='';queueFrame();
+ };
+ sweetsImg.onerror=()=>console.info('[Winery] Sweets palace image not published yet; v56 glass scene stays playable. Expected assets/winery-sweets-kingdom-v57.webp');
+ sweetsImg.src='assets/winery-sweets-kingdom-v57.webp?v=57';
 const luxuryPos=i=>{const p=K.CELLS[i];return {x:692+(p.c-p.r/2)*150,y:38+p.r*133};};
 function paintLuxuryGlass(x,i,g,t){
  const p=luxuryPos(i),cx=p.x,cy=p.y;
@@ -437,6 +458,14 @@ function updateHUD(){
  const top=Math.max(5,Math.min(20,engine.fullCount+3));scene.querySelector('.wp-pay-track').style.setProperty('--offset',20-top);
  scene.querySelector('.wp-mix i').textContent=engine.mixCount;scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
+ // Real-time top banners: completed balls, next fruit flavor and current pour power.
+ const done=Math.max(0,Math.min(8,engine.processed));
+ scene.querySelector('.wp-hud-round').textContent=done>=8?'8 / 8':(done+1)+' / 8';
+ scene.querySelectorAll('.wp-hud-progress i').forEach((dot,i)=>dot.classList.toggle('done',i<done));
+ const next=K.FLAVORS[K.flavorFor(Math.min(8,done+1))];
+ scene.querySelector('.wp-hud-volume').textContent=done>=8?'FINISH':engine.power+'杯';
+ scene.querySelector('.wp-hud-flavor-name').textContent=done>=8?'ゲーム終了':next.name;
+ scene.querySelector('.wp-hud-swatch').style.setProperty('--wp-next-juice',done>=8?'#ffe0a5':next.color);
 }
 function paintMini(){
  const k=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,app.bet(1)].join('/');if(k===miniKey)return;miniKey=k;
@@ -496,7 +525,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:56,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:57,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid] 21 glasses / 4 boosts / 8 draws; Six Drop + Gelato + Winery installed');
 })();
