@@ -1808,3 +1808,27 @@ body.gelato-active #panel0 .gp-mold .gp-reach-stage:not([hidden]){
   animation:none!important;
  }
 }
+
+/* v48 fallback SVG HIT markers, hidden until the corresponding number is hit. */
+body.gelato-enabled .gp-board-svg .gp-node .gp-hit-text{
+ display:none;
+ font:900 10.5px/1 SweetReachRounded,system-ui,sans-serif!important;
+ fill:#fff7a0!important;
+ stroke:#5f3285!important;
+ stroke-width:2.4!important;
+ paint-order:stroke fill!important;
+ filter:drop-shadow(0 0 3px #ffe87a);
+ pointer-events:none!important;
+}
+body.gelato-enabled .gp-board-svg .gp-node.is-hit .gp-hit-text{
+ display:block!important;
+ animation:gp-hit-pop .5s ease-out both;
+}
+@keyframes gp-hit-pop{
+ 0%{opacity:0;transform:scale(.75)}
+ 65%{opacity:1;transform:scale(1.12)}
+ 100%{opacity:1;transform:scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ body.gelato-enabled .gp-board-svg .gp-node.is-hit .gp-hit-text{animation:none!important}
+}
