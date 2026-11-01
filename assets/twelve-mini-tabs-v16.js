@@ -384,6 +384,18 @@ try{
  const movingBoards=new Set();
  let idleRequest=0,urgentTimer=0,motionTimer=0,reachTimer=0,animationTick=0,animationCursor=0;
  let processedFrames=0,skippedFrames=0,lastCost=0;
+ let lastRouletteFrame=0,rouletteFrameGap=0,rouletteJankUntil=0,lastMiniPaint=0;
+ function noteRouletteFrame(now){
+   if(!liveMode()||document.hidden)return;
+   if(lastRouletteFrame>0){
+     const gap=Math.max(0,now-lastRouletteFrame);
+     rouletteFrameGap=rouletteFrameGap*.78+gap*.22;
+     // A 30fps roulette normally paints every ~33ms.
+     // Defer miniature graphics briefly when frames miss that budget.
+     if(gap>58&&gap<1000)rouletteJankUntil=performance.now()+175;
+   }
+   lastRouletteFrame=now;
+ }
  const liveMode=()=>window.sweets12Live?.mode==='12';
  const itemId=item=>item.game*4+item.index;
  const getItemById=id=>ITEMS.find(item=>itemId(item)===id);
@@ -427,7 +439,14 @@ try{
  function drainBoards(deadline){
    idleRequest=0;
    if(!liveMode()||document.hidden||!installed)return;
+   const now=performance.now();
+   if(now<rouletteJankUntil&&now-lastMiniPaint<850){
+     skippedFrames++;
+     urgentTimer=setTimeout(()=>{urgentTimer=0;scheduleBoard();},55);
+     return;
+   }
    if(deadline&&!deadline.didTimeout&&deadline.timeRemaining()<3){
+     skippedFrames++;
      urgentTimer=setTimeout(()=>{urgentTimer=0;scheduleBoard();},24);
      return;
    }
@@ -448,6 +467,7 @@ try{
    else paint(item,stateFor(item.host,item.game),selected);
    const duration=performance.now()-started;
    lastCost=lastCost*.8+duration*.2;
+   lastMiniPaint=performance.now();
    processedFrames++;
    const engine=data?.engine;
    if(engine?.busy||engine?.opening||engine?.queue?.length||
@@ -511,7 +531,8 @@ try{
  // The live engine reports each phase change. A Set coalesces all those
  // notifications; neither the engine nor the 3D physics is delayed.
  window.sweets12FrameScheduler={
-   markBoard,markAll:invalidateAll,selectionChanged:invalidateAll,
+   markBoard,markAll:invalidateAll,selectionChanged:invalidateAll,noteRouletteFrame,
+   get rouletteGapMs(){return rouletteFrameGap;},
    get pending(){return queuedBoards.size;},
    get frames(){return processedFrames;},
    get paintCostMs(){return lastCost;},
