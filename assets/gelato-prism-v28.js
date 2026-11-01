@@ -451,27 +451,38 @@ try{
  }
  const payoutTrack=collectorPanel.querySelector('.gp-payout-track');
  const payoutDivider=collectorPanel.querySelector('.gp-payout-break');
- let payoutSlideIndex=null,payoutSlideTarget=null,payoutSlideTimer=null,payoutSlideCycle=-1;
- function slidePayoutOneRow(){
-   payoutSlideTimer=null;
-   if(payoutSlideIndex===payoutSlideTarget)return;
-   payoutSlideIndex+=Math.sign(payoutSlideTarget-payoutSlideIndex);
-   payoutTrack.style.setProperty('--gp-slide-index',String(payoutSlideIndex));
-   payoutDivider.classList.toggle('gp-has-skip',payoutSlideIndex!==0);
-   if(payoutSlideIndex!==payoutSlideTarget)
-     payoutSlideTimer=setTimeout(slidePayoutOneRow,260);
+ // Follow each newly earned panel one at a time, even after a large
+ // multi-face completion. The six-row viewport follows only as needed.
+ let payoutSlideCycle=-1,payoutShown=0,payoutTarget=0,payoutTick=null;
+ function paintPayoutStep(){
+   const top=payoutWindowFor(payoutShown)[1];
+   payoutTrack.style.setProperty('--gp-slide-index',String(22-top));
+   payoutDivider.classList.toggle('gp-has-skip',top!==22);
+   for(const row of collectorPanel.querySelectorAll('.gp-pay-row')){
+     row.classList.toggle('gp-current',+row.dataset.panels===payoutShown);
+   }
+ }
+ function advancePayoutStep(){
+   payoutTick=null;
+   if(payoutShown===payoutTarget)return;
+   payoutShown+=Math.sign(payoutTarget-payoutShown);
+   // 23 faces cannot occur: there is no corresponding payout row.
+   if(payoutShown===23)payoutShown=payoutTarget===24?24:22;
+   paintPayoutStep();
+   if(payoutShown!==payoutTarget)payoutTick=setTimeout(advancePayoutStep,230);
  }
  function schedulePayoutSlide(e){
-   const top=payoutWindowFor(e.filled.size)[1];
-   payoutSlideTarget=22-top;
-   if(payoutSlideCycle!==e.cycle||payoutSlideIndex==null){
-     if(payoutSlideTimer){clearTimeout(payoutSlideTimer);payoutSlideTimer=null;}
-     payoutSlideCycle=e.cycle;payoutSlideIndex=payoutSlideTarget;
+   if(payoutSlideCycle!==e.cycle){
+     if(payoutTick!==null){clearTimeout(payoutTick);payoutTick=null;}
+     payoutSlideCycle=e.cycle;
+     payoutShown=0;payoutTarget=0;
      payoutTrack.classList.add('gp-snap');
-     payoutTrack.style.setProperty('--gp-slide-index',String(payoutSlideIndex));
-     payoutDivider.classList.toggle('gp-has-skip',top!==22);
+     paintPayoutStep();
      requestAnimationFrame(()=>requestAnimationFrame(()=>payoutTrack.classList.remove('gp-snap')));
-   }else if(payoutSlideIndex!==payoutSlideTarget&&!payoutSlideTimer)slidePayoutOneRow();
+   }
+   payoutTarget=e.filled.size;
+   if(payoutShown!==payoutTarget&&payoutTick===null)
+     payoutTick=setTimeout(advancePayoutStep,125);
  }
  let collectorKey='';
  function updateCollectorHUD(e,bet){
@@ -511,7 +522,8 @@ try{
      const payout=num(medalWin(bet,Math.round(COUNT_MULT[n]*100)))+'WIN';
      const label=row.querySelector('.gp-pay-win');
      if(label.textContent!==payout)label.textContent=payout;
-     row.classList.toggle('gp-current',n===e.filled.size);
+     // The current-highlight is owned by paintPayoutStep(), so it advances
+     // through 0,1,2,... rather than jumping straight to the final count.
      const tag=row.querySelector('.gp-sugar-status');
      if(tag){
        const selected=n===e.sugarTarget;
@@ -940,6 +952,14 @@ try{
    if(ev.phase==='complete')recordChanged(app);
  },app.sleep);
  app.engines[0]=e;slot.engine=e;
+ // Keep reach highlights lively without involving full world rerendering.
+ // Only the two small 2D canvases refresh while these numbered reaches exist.
+ setInterval(()=>{
+   if(document.hidden||!document.body.classList.contains('gelato-active'))return;
+   if(getNodeReachTiers(e).size===0)return;
+   rasterKey='';
+   drawRaster(e,app.bet(0));
+ },115);
  e.beforeComplete=async token=>{if(token===e.version)await e.wait(280,token);};
  // Keep the other two original game engines and all common accounting.
  const nativeRender=render;
