@@ -1,0 +1,99 @@
+/* GELATO PRISM v28 - full bespoke ice-cream world, hand-rendered SVG mould.
+ * All geometry is scaled from the same 19-node/24-face original in main
+ * panel and small tab; this is not a generic dot-placeholder board.
+ */
+body.gelato-enabled #panel0{
+ position:relative!important;width:100%!important;height:100%!important;min-height:0!important;
+ background:transparent!important;overflow:hidden!important;
+}
+body.gelato-enabled #panel0>:not(.gp-scene){display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.gelato-enabled #panel0 .gp-scene{
+ position:absolute;inset:0;overflow:hidden;isolation:isolate;
+ border-radius:15px;border:2px solid #fdf7d9;
+ background:linear-gradient(#fff3fd5c,#e8ffef38),url('../assets/gelato-prism-kingdom-v28.svg') center/cover no-repeat;
+ box-shadow:inset 0 0 0 3px #fff8d5c9,inset 0 0 20px #c171c088,0 2px 7px #80426b6b;
+ color:#6a315c;
+}
+.gp-scene:before{content:"";position:absolute;inset:6px;border:3px solid #fff8e5b8;border-radius:13px;pointer-events:none;z-index:8}
+.gp-scene:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at center,#fffafabb 15%,#fff6df69 57%,transparent 84%)}
+.gp-land{position:absolute;inset:0;pointer-events:none}
+.gp-head{position:absolute;z-index:4;left:5%;right:5%;top:1.8%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+ text-shadow:0 2px #fff6ec,1px 0 #fff6ec,-1px 0 #fff6ec}
+.gp-head b{font:1000 clamp(15px,4.5vw,25px)/1.15 system-ui,sans-serif;letter-spacing:1.7px;color:#d457a5;-webkit-text-stroke:.4px #fff9e9;
+ filter:drop-shadow(0 2px 2px #92386a55)}
+.gp-head small{font:950 clamp(6px,1.65vw,9px)/1.3 system-ui,sans-serif;letter-spacing:2.1px;color:#9e72ae}
+.gp-mold{position:absolute;z-index:3;left:2%;right:2%;top:10.2%;height:67.5%;display:grid;place-items:center;
+ background:radial-gradient(circle,#ffffffd6,transparent 72%)}
+.gp-mold:before{content:"";position:absolute;width:86%;height:92%;border-radius:50%;z-index:-1;
+ background:radial-gradient(circle,#fff1b9bd,transparent 72%);filter:blur(8px)}
+.gp-board-svg{display:block;width:100%;height:100%;object-fit:contain;overflow:visible;
+ filter:drop-shadow(0 2px 5px #6e4c8f8c);user-select:none;-webkit-user-select:none}
+.gp-board-svg .gp-blank{transition:opacity .25s ease-out}
+.gp-board-svg .gp-ice{opacity:0;transform:translateY(-8%) scaleY(.02);transform-origin:50% 0;transform-box:fill-box;pointer-events:none}
+.gp-board-svg .gp-face.is-filled .gp-ice{opacity:1;transform:translateY(0) scaleY(1);transition:opacity .38s ease-out,transform .64s cubic-bezier(.19,.8,.24,1)}
+.gp-board-svg .gp-face.is-new .gp-ice{animation:gp-ice-pour .65s cubic-bezier(.2,.8,.22,1) both}
+@keyframes gp-ice-pour{0%{opacity:0;transform:translateY(-15%) scaleY(.01)}38%{opacity:1}78%{transform:translateY(2%) scaleY(1.09)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
+.gp-board-svg .gp-face.is-filled .gp-blank{opacity:0}
+.gp-board-svg .gp-face-value{font:900 8px/1 system-ui,sans-serif;fill:#a26896;stroke:#fffbea;stroke-width:1;paint-order:stroke;dominant-baseline:middle;text-anchor:middle;pointer-events:none}
+.gp-board-svg .gp-face.is-filled .gp-face-value{fill:#633e5f;stroke:#fff9eb;stroke-width:1.5}
+.gp-board-svg .gp-face.is-new .gp-face-value{animation:gp-value-pop .7s ease-out}
+@keyframes gp-value-pop{35%{font-size:10px;fill:#fffa83}100%{font-size:8px}}
+.gp-board-svg .gp-sugar{display:none;font:1000 15px/1 system-ui;text-anchor:middle;fill:#fff3a1;stroke:#bd68ca;stroke-width:1.4;paint-order:stroke;
+ filter:drop-shadow(0 1px 2px #8e4379)}
+.gp-board-svg .gp-face.is-sugar .gp-sugar{display:block;animation:gp-sugar-glow 1.9s ease-in-out infinite alternate}
+@keyframes gp-sugar-glow{from{opacity:.7;transform:translateY(-1px)}to{opacity:1;transform:translateY(1px)}}
+.gp-board-svg .gp-glowing-line{opacity:0;transition:opacity .3s ease-out;filter:drop-shadow(0 0 2px #fff9a2)}
+.gp-board-svg .gp-edge.is-lit .gp-glowing-line{opacity:1}
+.gp-board-svg .gp-node .gp-digit{font:1000 12px/1 "Arial Rounded MT Bold",system-ui,sans-serif;fill:#763956;stroke:#fffdef;stroke-width:1;paint-order:stroke}
+.gp-board-svg .gp-node{filter:drop-shadow(0 1px 1px #66375980);transition:filter .16s}
+.gp-board-svg .gp-node.is-hit{filter:drop-shadow(0 0 4px #fff29b)}
+.gp-board-svg .gp-node.is-hit>.gp-hit-ring{opacity:1}
+.gp-board-svg .gp-hit-ring{opacity:0;transition:opacity .25s}
+.gp-board-svg .gp-node.is-pending .gp-hit-ring{opacity:.8;animation:gp-node-blink .45s ease-in-out infinite alternate}
+@keyframes gp-node-blink{from{opacity:.35;stroke-width:2}to{opacity:1;stroke-width:4}}
+.gp-board-svg .gp-node.is-hit .gp-digit{fill:#bf3f7e;stroke:#fff7b6;stroke-width:1.5}
+.gp-status{position:absolute;z-index:4;left:2.4%;right:2.4%;bottom:9.1%;height:12%;display:grid;grid-template-columns:1fr 1.18fr .85fr;gap:3px}
+.gp-status>span{min-width:0;border-radius:11px;border:2px solid #ffcdd9;
+ background:linear-gradient(160deg,#fffcf1f2,#ffdfedee 55%,#dfc6f4ee);
+ box-shadow:inset 0 0 0 1px #fff9d9,0 2px #91578566;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px}
+.gp-status small{font:900 clamp(5px,1.6vw,8px)/1.1 system-ui;color:#9b6889;letter-spacing:.4px}
+.gp-status b{font:1000 clamp(9px,3vw,16px)/1.15 "Arial Rounded MT Bold",system-ui;color:#993d7d;text-shadow:0 1px #fff3e3;white-space:nowrap}
+.gp-status .gp-earned{font-size:clamp(9px,3vw,15px)}
+.gp-note{position:absolute;z-index:4;left:3%;right:3%;bottom:1.7%;font:900 clamp(7px,2vw,10px)/1.25 system-ui;text-align:center;color:#763e7a;
+ text-shadow:0 1px 1px #fff}
+.gp-note small{display:block;font:750 clamp(6px,1.6vw,8px)/1.3 system-ui;color:#9a6480}
+.gp-flash[hidden]{display:none!important}
+.gp-flash{position:absolute;left:4%;right:4%;top:41%;z-index:12;padding:13px 4px;
+ color:#fff9db;background:linear-gradient(110deg,#9d58bfe8,#f579b5e8,#b459b5e8);
+ border:3px solid #fff2b0;border-radius:18px;text-align:center;font:1000 clamp(13px,4.5vw,23px)/1.2 system-ui;
+ text-shadow:0 2px 2px #6a2469;box-shadow:0 0 15px #fff8af,0 2px 9px #804683;pointer-events:none}
+.gp-flash-in{animation:gp-flash .65s cubic-bezier(.21,.85,.24,1.08)}
+@keyframes gp-flash{0%{opacity:0;transform:scale(.35)}65%{opacity:1;transform:scale(1.09)}100%{transform:scale(1)}}
+body.gelato-enabled .gp-slot>.gp-tab .tab-game-name{background:none!important;overflow:visible!important}
+body.gelato-enabled .gp-logo{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1}
+body.gelato-enabled .gp-logo b{font:1000 clamp(9px,2.3vw,12px)/.96 "Hiragino Maru Gothic ProN",system-ui;color:#d454a3;
+ -webkit-text-stroke:.4px #fff7dc;text-align:center;letter-spacing:1px;filter:drop-shadow(0 1px 0 #d17fac)}
+body.gelato-enabled .gp-logo small{font:900 5px/1 system-ui;letter-spacing:.6px;color:#886aa5}
+body.gelato-enabled .gp-slot .mini-wrap{position:relative;overflow:hidden!important;background:#f9e3f5!important;border:2px solid #fff5bb;border-radius:10px}
+body.gelato-enabled .gp-slot .mini-wrap>canvas{display:none!important}
+.gp-mini{position:absolute;inset:1px;overflow:visible;display:grid;place-items:center}
+.gp-mini .gp-board-svg{width:100%;height:100%;filter:none}
+.gp-mini .gp-face-value{font-size:0!important;stroke:none!important}
+.gp-mini .gp-sugar{font-size:16px}
+.gp-mini .gp-hit-ring{stroke-width:4}
+.gp-mini .gp-node{filter:none}
+body.gelato-enabled .gp-slot .mini-logo{display:none!important}
+body.gelato-enabled #tab0[aria-selected="true"] .gp-mini{display:none}
+body.gelato-enabled #tab0[aria-selected="true"] .mini-wrap{background:linear-gradient(#ffe6fa,#e4d7fc)!important}
+body.gelato-enabled #tab0[aria-selected="true"] .mini-wrap:after{content:"選択中";position:absolute;inset:0;display:grid;place-items:center;z-index:8;
+ color:#994b85;font:900 12px/1 system-ui;text-shadow:0 1px #fff}
+/* Hide stale Cookie-only tables when viewing the Gelato tab; all global
+   BET, DRAW, WIN, CREDIT and Wonder Sugar controls stay visible. */
+body.gelato-active #odds-panel,
+body.gelato-active #allclear-award{visibility:hidden!important}
+body.gelato-active .game .festival-top{visibility:hidden}
+body.gelato-active .field{background:linear-gradient(#f4efff,#d6f5ef)}
+body.gelato-enabled .gp-slot{order:2}
+@media(prefers-reduced-motion:reduce){
+ .gp-face.is-new .gp-ice,.gp-flash-in,.gp-sugar{animation:none!important}
+}
