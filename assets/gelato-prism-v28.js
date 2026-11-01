@@ -345,16 +345,13 @@ try{
  // This UI is outside the PNG mould so it never obscures the star's digits.
  const collectorPanel=document.createElement('div');
  collectorPanel.className='gp-collector-panel';
- const payoutRows=COUNT_MULT.slice(10).map((multiple,i)=>{
-   const n=10+i,amount=multiple.toFixed(1);
-   return '<div class="gp-pay-row" data-panels="'+n+'">'+
-     '<span class="gp-pay-panel-n">'+n+'枚</span>'+
-     '<strong>'+amount+'倍</strong></div>';
- }).join('');
+ // 24/24 is always pinned, followed by exactly 5 visible descending tiers.
+ // The sliding rows extend through 0/24 so there are no empty initial states.
+ const payoutRows=Array.from({length:24},(_,i)=>23-i).map(n=>
+   '<div class="gp-pay-row" data-panels="'+n+'">'+
+   '<span class="gp-pay-panel-n">'+n+'枚<span class="gp-sugar-status"></span></span>'+
+   '<strong class="gold-number gp-pay-win">0WIN</strong></div>').join('');
  collectorPanel.innerHTML=
-  '<div class="gp-payout-header"><span>配当表</span><small>最終獲得枚数</small></div>'+
-  '<div class="gp-payout-window"><div class="gp-payout-track">'+payoutRows+'</div></div>'+
-  '<div class="gp-payout-nav"><span>▲</span><span>スライド配当</span><span>▼</span></div>'+
   '<div class="gp-collector-title">4色コレクター</div>'+
   '<div class="gp-collector-grid">'+
   [1,2,3,4].map(g=>'<div class="gp-collector-row" data-grade="'+g+'">'+
@@ -362,56 +359,63 @@ try{
        Array.from({length:4},(_,i)=>'<i class="gp-diamond-piece" data-piece="'+i+'"></i>').join('')+
     '</span></span>'+
     '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b><small class="gp-collected-n">0/4</small></span>'+
-    '<strong>'+COLLECTOR_MULT[g].toFixed(1)+'倍</strong></div>').join('')+
+    '<strong class="gold-number gp-collector-win">0WIN</strong></div>').join('')+
   '</div>'+
-  '<div class="gp-total-tally"><b>獲得 <span class="gp-tally-n">0</span> / 24</b>'+
-  '<small>枚数配当 <span class="gp-tally-m">0.0倍</span></small></div>'+
-  '<div class="gp-pattern-label"></div>';
+  '<div class="gp-payout-header"><span>配当表</span>'+
+     '<small class="gp-current-panels">0/24</small><small class="gp-sugar-header">✦ 16枚</small></div>'+
+  '<div class="gp-pay-row gp-pay-fixed" data-panels="24">'+
+     '<span class="gp-pay-panel-n">24枚</span><strong class="gold-number gp-pay-win">0WIN</strong></div>'+
+  '<div class="gp-payout-window"><div class="gp-payout-track">'+payoutRows+'</div></div>';
  scene.appendChild(collectorPanel);
- // During the BET phase, cycle payout tiers; in play follow earned panels.
- let gpPayoutTour=0;
- setInterval(()=>{
-   const engine=app?.engines?.[0];
-   if(engine?.kind!=='gelato'||app.phase!=='ready'||
-      !document.body.classList.contains('gelato-active'))return;
-   gpPayoutTour=(gpPayoutTour+1)%11;
-   const track=collectorPanel.querySelector('.gp-payout-track');
-   if(track)track.style.setProperty('--gp-slide-index',String(gpPayoutTour));
- },3600);
+ // Keep this calculation pure: n=10 -> 24,12,11,10,9,8;
+ // n=23 -> 24,23,22,21,20,19.  The descending 24 row never scrolls.
+ function payoutWindowFor(n){
+   const first=Math.max(4,Math.min(23,n+2));
+   return [24,first,first-1,first-2,first-3,first-4];
+ }
  let collectorKey='';
- function updateCollectorHUD(e){
+ function updateCollectorHUD(e,bet){
    if(!e?.faceGrades)return;
-   const key=[e.cycle,e.phase,e.filled.size,e.totalHundredths,e.pattern?.id].join('/');
+   const key=[e.cycle,e.phase,e.filled.size,e.totalHundredths,
+     e.pattern?.id,e.sugarTarget,e.sugarAwarded,bet].join('/');
    if(key===collectorKey)return;
    collectorKey=key;
    const counts=e.collectorCounts||evaluatePrize(e.filled,e.faceGrades).counts;
    for(const row of collectorPanel.querySelectorAll('[data-grade]')){
      const grade=+row.dataset.grade,count=counts[grade],color=GRADE_COLORS[grade];
-     row.querySelector('.gp-collected-n').textContent=count+' / 4';
+     row.querySelector('.gp-collected-n').textContent=count+'/4';
      const diamond=row.querySelector('.gp-diamond');
      for(const [index,piece] of [...diamond.querySelectorAll('.gp-diamond-piece')].entries()){
        piece.classList.toggle('is-filled',index<count);
        piece.style.setProperty('--gp-gem-color',color);
+       piece.style.setProperty('--gp-crystal-pos',grade*25+'%');
      }
+     const win=medalWin(bet,COLLECTOR_MULT[grade]*100);
+     row.querySelector('.gp-collector-win').textContent=num(win)+'WIN';
      row.classList.toggle('gp-complete',count===4);
    }
-   collectorPanel.querySelector('.gp-tally-n').textContent=e.filled.size;
-   collectorPanel.querySelector('.gp-tally-m').textContent=(e.countMult||0).toFixed(1)+'倍';
-   collectorPanel.querySelector('.gp-pattern-label').textContent=
-     (e.pattern?.id||'')+' '+(e.pattern?.name||'');
-   const activeRow=Math.max(10,e.filled.size);
-   const activeIndex=Math.max(0,activeRow-10);
-   const visibleRows=5;
-   const firstRow=Math.max(0,Math.min(COUNT_MULT.length-10-visibleRows,activeIndex-2));
+   collectorPanel.querySelector('.gp-current-panels').textContent=e.filled.size+'/24';
+   const sugarHeader=collectorPanel.querySelector('.gp-sugar-header');
+   sugarHeader.textContent=e.sugarAwarded?'✦ GET!':'✦ '+e.sugarTarget+'枚';
+   sugarHeader.classList.toggle('is-get',e.sugarAwarded);
+   const first=payoutWindowFor(e.filled.size)[1];
    const track=collectorPanel.querySelector('.gp-payout-track');
-   track.style.setProperty('--gp-slide-index',String(firstRow));
-   for(const row of track.querySelectorAll('.gp-pay-row')){
+   track.style.setProperty('--gp-slide-index',String(23-first));
+   for(const row of collectorPanel.querySelectorAll('.gp-pay-row')){
      const n=+row.dataset.panels;
-     row.classList.toggle('gp-current',n===activeRow&&e.filled.size>=10);
-     row.classList.toggle('gp-next',n===10&&e.filled.size<10);
+     const payout=num(medalWin(bet,Math.round(COUNT_MULT[n]*100)))+'WIN';
+     const label=row.querySelector('.gp-pay-win');
+     if(label.textContent!==payout)label.textContent=payout;
+     row.classList.toggle('gp-current',n===e.filled.size);
+     const tag=row.querySelector('.gp-sugar-status');
+     if(tag){
+       const selected=n===e.sugarTarget;
+       tag.textContent=selected?(e.sugarAwarded?'✦GET!':'✦'):'';
+       tag.classList.toggle('is-get',selected&&e.sugarAwarded);
+       row.classList.toggle('gp-sugar-row',selected);
+     }
    }
  }
-
  // Bonus emblem is now layered over the playable board, not a cropped header.
  // The old on-board 100x emblem is removed; 24/24 is pinned in the payout table.
  const rasterImages={
@@ -909,6 +913,7 @@ try{
      collectorMult:e.collectorMult,totalHundredths:e.totalHundredths,bonus:e.allComplete};},
    patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,grades:p.grades.slice()})),
    prizes:{countMultiplier:COUNT_MULT.slice(),colorMultipliers:COLLECTOR_MULT.slice()},
+   payoutWindowFor,
    engine:e,faces:FACES
  };
  console.info('[GelatoPrism] ready: 19 nodes / 24 faces / 8 draws');
