@@ -460,8 +460,22 @@ function premiumGlass(x,i,g,t){
  // The full transparent SVG includes gold crown/rim, facets, ruby jewel, stem
  // and ornate gold foot. Painting it over the fluid preserves those details.
  if(rasterCupReady&&rasterCup.naturalWidth){
-  x.save();x.shadowColor='#fff0bc';x.shadowBlur=full?12:7;
+  // EXCLUDE the source PNG's printed red juice and digit 1 from the upper
+  // glass layer. Preserve photographic gold rim, faceted edge, jewel and foot.
+  x.save();x.beginPath();x.rect(cx-74,cy-12,148,147);
+  x.moveTo(cx-51,cy+12);
+  x.bezierCurveTo(cx-49,cy+37,cx-28,cy+68,cx,cy+77);
+  x.bezierCurveTo(cx+28,cy+68,cx+49,cy+37,cx+51,cy+12);
+  x.closePath();x.clip('evenodd');
+  x.shadowColor='#fff0bc';x.shadowBlur=full?11:5;
   x.drawImage(rasterCup,cx-73,cy-10,146,130);x.restore();
+  // Restore a fine transparent-cut crystal edge, never a white opaque disk.
+  x.save();x.strokeStyle='#fff9ea';x.lineWidth=2.3;
+  x.beginPath();x.moveTo(cx-48,cy+16);
+  x.quadraticCurveTo(cx-46,cy+46,cx-20,cy+67);x.stroke();
+  x.beginPath();x.moveTo(cx+48,cy+16);
+  x.quadraticCurveTo(cx+46,cy+46,cx+20,cy+67);x.stroke();
+  x.restore();
  }else if(glassArt.complete&&glassArt.naturalWidth){
   x.save();x.shadowColor='#fff0bc';x.shadowBlur=full?10:5;
   x.drawImage(glassArt,cx-70,cy-16,140,158);x.restore();
@@ -495,23 +509,24 @@ function premiumGlass(x,i,g,t){
   x.drawImage(photoHighlights,oldX-70,oldY-12,140,158,cx-70,cy-16,140,158);
   x.restore();
  }
- // Live number displayed on an enamel medallion, never taken from the artwork.
- const badge=x.createRadialGradient(cx-7,cy+27,1,cx,cy+39,27);
- badge.addColorStop(0,'#fff5d0');badge.addColorStop(.28,'#ffe197');
- badge.addColorStop(.55,'#c78535');badge.addColorStop(.81,'#fff2ae');
- badge.addColorStop(1,'#8c4d36');
- x.fillStyle=badge;x.shadowColor='#ffdf9d';x.shadowBlur=7;
- x.beginPath();x.arc(cx,cy+39,26,0,Math.PI*2);x.fill();
+ // Place the hit digit below the liquid bowl so 21 fill levels are visible.
+ const badgeY=cy+97;
+ const rim=x.createRadialGradient(cx-8,badgeY-10,1,cx,badgeY,26);
+ rim.addColorStop(0,'#fffaf0');rim.addColorStop(.28,'#ffe7a4');
+ rim.addColorStop(.61,'#b56a2a');rim.addColorStop(1,'#fff2b2');
+ x.fillStyle=rim;x.shadowColor='#ffdfa1';x.shadowBlur=7;
+ x.beginPath();x.ellipse(cx,badgeY,25,20,0,0,Math.PI*2);x.fill();
  x.shadowBlur=0;
- const core=x.createRadialGradient(cx-7,cy+33,1,cx,cy+41,24);
- core.addColorStop(0,'#6c3a60');core.addColorStop(.58,'#342244');core.addColorStop(1,'#180f2c');
- x.fillStyle=core;x.beginPath();x.arc(cx,cy+39,22,0,Math.PI*2);x.fill();
- x.strokeStyle='#fff1c2';x.lineWidth=1.2;x.stroke();
+ const core=x.createRadialGradient(cx-8,badgeY-8,1,cx,badgeY,20);
+ core.addColorStop(0,'#74375d');core.addColorStop(.5,'#351d49');core.addColorStop(1,'#150d26');
+ x.fillStyle=core;x.beginPath();x.ellipse(cx,badgeY,20,15,0,0,Math.PI*2);x.fill();
+ x.strokeStyle='#fff4c2';x.lineWidth=1.5;x.stroke();
  const number=String(engine.nodeNumbers[i]);
  x.textAlign='center';x.textBaseline='middle';
- x.font='900 28px ElixirNumbers,Georgia,serif';
- x.lineWidth=2;x.lineJoin='round';x.strokeStyle='#613357';
- x.strokeText(number,cx,cy+40);x.fillStyle='#fff7d8';x.fillText(number,cx,cy+40);
+ x.font='900 27px ElixirNumbers,Georgia,serif';x.lineWidth=2;
+ x.lineJoin='round';x.strokeStyle='#492444';
+ x.strokeText(number,cx,badgeY+1);
+ x.fillStyle='#fffbe8';x.fillText(number,cx,badgeY+1);
  // Crown jewel highlight + gently animated prismatic caustics.
  const pulse=.5+.5*Math.sin(t*.0031+i*.62);
  x.save();x.globalAlpha=.56+.35*pulse;
@@ -521,12 +536,12 @@ function premiumGlass(x,i,g,t){
  if(full){
   x.save();x.textAlign='center';x.font='900 15px system-ui,sans-serif';
   x.lineJoin='round';x.lineWidth=3;x.strokeStyle='#80405f';
-  x.strokeText('FULL',cx,cy+76);x.fillStyle='#fff6b4';x.fillText('FULL',cx,cy+76);
+  x.strokeText('FULL',cx+41,cy+18);x.fillStyle='#fff6b4';x.fillText('FULL',cx+41,cy+18);
   x.restore();
   if(new Set(g.layers.filter(l=>l.amount>K.EPS).map(l=>l.flavor)).size>1){
    x.save();x.textAlign='center';x.font='900 10px system-ui';
    x.fillStyle='#fffaf1';x.shadowColor='#e8a0ef';x.shadowBlur=6;
-   x.fillText('MIX',cx,cy+89);x.restore();
+   x.fillText('MIX',cx-43,cy+20);x.restore();
   }
  }
  for(let n=0;n<(fresh?5:2);n++){
