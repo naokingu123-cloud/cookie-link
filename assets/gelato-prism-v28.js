@@ -201,6 +201,18 @@ try{
   '<div class="gp-note">HIT点をつなぐとジェラートが流れ込む！<small>PRISMは次ゲームにも蓄積・24面でボーナス</small></div>'+
   '<div class="gp-flash" hidden></div>';
  slot.panel.append(scene);
+ // Native right-hand payout furniture remains intact for Canyon/Drop.
+ // Gelato replaces it with the 24-face difficulty/odds legend.
+ const gpOdds=document.createElement('div');gpOdds.className='gp-prism-odds';
+ gpOdds.innerHTML='<div class="gp-odds-heading"><span>✦</span><b>PRISM REWARDS</b><small>GELATO PRISM</small></div>'+
+   '<div class="gp-odds-instructions">24個のトライアングルを完成させよう！</div>'+
+   [3,2,1,0].map(t=>'<div class="gp-odds-row gp-tier-'+t+'"><i>✦</i><b>'+['C','B','A','S'][t]+' RANK</b><strong>'+([32,42,62,95][t]/100).toFixed(2)+'×</strong></div>').join('')+
+   '<div class="gp-odds-sugar"><span>✧</span><b>WONDER SUGAR</b><small>特別な三角形でGET!</small></div>'+
+   '<div class="gp-odds-bonus"><b>24 / 24</b><strong>+35.0×</strong><small>RAINBOW GELATO BONUS</small></div>';
+ $('odds-panel')?.append(gpOdds);
+ const gpSign=document.createElement('div');gpSign.className='gp-bonus-sign';
+ gpSign.innerHTML='<span>✦ RAINBOW GELATO ✦</span><b>24 FILL BONUS</b>';
+ document.querySelector('.festival-top')?.append(gpSign);
  const mini=document.createElement('div');mini.className='gp-mini';mini.innerHTML=boardSVG('gp-tab');
  slot.tab.querySelector('.mini-wrap').append(mini);
  function updateDraw(root,e){
