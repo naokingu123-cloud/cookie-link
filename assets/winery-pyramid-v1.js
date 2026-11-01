@@ -345,60 +345,67 @@ function premiumClip(x,cx,cy){
 }
 function premiumJuice(x,i,g,t){
  const {x:cx,y:cy}=premiumPos(i);
- if(rasterReady){
-  // Make the baked example liquid visually disappear even for an empty cup.
-  // Real liquid, its meniscus and bubbles are rendered into this same clip.
-  x.save();premiumClip(x,cx,cy);x.clip();
-  const clearGlass=x.createLinearGradient(cx-55,cy,cx+55,cy+82);
-  clearGlass.addColorStop(0,'#fffaf2');clearGlass.addColorStop(.5,'#fff0f5');
-  clearGlass.addColorStop(1,'#ffe8d2');
-  x.fillStyle=clearGlass;x.globalAlpha=.91;x.fillRect(cx-60,cy,120,95);
-  x.restore();
- }
- if(!(g?.volume>0))return;
  x.save();premiumClip(x,cx,cy);x.clip();
- let filled=0;
- for(let k=0;k<g.layers.length;k++){
-  const layer=g.layers[k];
-  if(!(layer.amount>1e-5))continue;
-  const f=K.FLAVORS[layer.flavor]||K.FLAVORS[5];
-  const lower=cy+80-Math.min(1,filled)*70;
-  filled+=layer.amount;
-  const upper=cy+80-Math.min(1,filled)*70;
-  const liquid=x.createLinearGradient(cx-51,upper,cx+52,lower);
-  liquid.addColorStop(0,f.light);liquid.addColorStop(.24,f.color);
-  liquid.addColorStop(.61,f.light);liquid.addColorStop(1,f.color);
-  x.fillStyle=liquid;x.globalAlpha=.81;x.beginPath();
-  x.moveTo(cx-59,lower+2);x.lineTo(cx-59,upper);
-  const amp=1.65+(k===g.layers.length-1?.85:.25);
-  for(let dx=-59;dx<=59;dx+=3){
-   const yy=upper+amp*Math.sin(t*.004+dx*.13+i*.53+k*.47)
-              +.4*Math.sin(t*.008-dx*.22);
-   x.lineTo(cx+dx,yy);
+ // A clean transparent glass, with no baked red liquid or white opaque wipe.
+ const clear=x.createLinearGradient(cx-56,cy+7,cx+56,cy+80);
+ clear.addColorStop(0,'rgba(220,245,255,.20)');
+ clear.addColorStop(.52,'rgba(255,246,231,.10)');
+ clear.addColorStop(1,'rgba(175,201,239,.19)');
+ x.fillStyle=clear;x.fillRect(cx-60,cy+8,120,75);
+ if(g&&g.volume>0){
+  let filled=0;
+  for(let k=0;k<g.layers.length;k++){
+   const l=g.layers[k],amt=Math.max(0,Math.min(1,l.amount));
+   if(amt<1e-6)continue;
+   const f=K.FLAVORS[l.flavor]||K.FLAVORS[5],lower=cy+80-Math.min(1,filled)*70;
+   filled+=amt;
+   const top=cy+80-Math.min(1,filled)*70;
+   const liquid=x.createLinearGradient(cx-55,top,cx+55,lower);
+   if(l.flavor===5){
+    // Initial white juice must also be visibly filled.
+    liquid.addColorStop(0,'#fffef2');
+    liquid.addColorStop(.28,'#aedce9');
+    liquid.addColorStop(.53,'#fff7dd');
+    liquid.addColorStop(1,'#8ebbd9');
+   }else{
+    liquid.addColorStop(0,f.light);liquid.addColorStop(.20,f.color);
+    liquid.addColorStop(.62,f.color);liquid.addColorStop(1,f.light);
+   }
+   x.globalAlpha=l.flavor===5?.94:.99;
+   x.fillStyle=liquid;x.beginPath();x.moveTo(cx-60,lower+3);x.lineTo(cx-60,top);
+   const amp=1.6+(k===g.layers.length-1?.8:.25);
+   for(let dx=-60;dx<=60;dx+=3){
+    const wave=amp*Math.sin(t*.0041+i*.49+k*.37+dx*.133)
+       +.4*Math.sin(t*.0072-dx*.23);
+    x.lineTo(cx+dx,top+wave);
+   }
+   x.lineTo(cx+60,lower+3);x.closePath();x.fill();
+   // Crisp meniscus even at 1/4 cup.
+   x.globalAlpha=1;x.strokeStyle=l.flavor===5?'#f7ffff':f.light;
+   x.lineWidth=2.9;x.shadowColor=l.flavor===5?'#b7e8ff':f.light;x.shadowBlur=5;
+   x.beginPath();
+   for(let dx=-54;dx<=54;dx+=3){
+    const yy=top+amp*Math.sin(t*.0041+i*.49+k*.37+dx*.133);
+    dx===-54?x.moveTo(cx+dx,yy):x.lineTo(cx+dx,yy);
+   }
+   x.stroke();x.shadowBlur=0;
+   // Refraction strip.
+   const stripeX=cx-55+((t*.022+i*18+k*31)%110);
+   const stripe=x.createLinearGradient(stripeX-12,top,stripeX+12,top);
+   stripe.addColorStop(0,'#ffffff00');stripe.addColorStop(.5,'#fffef5b9');
+   stripe.addColorStop(1,'#ffffff00');
+   x.globalAlpha=.19;x.fillStyle=stripe;
+   x.fillRect(cx-58,top,116,Math.max(0,lower-top));
+   x.globalAlpha=.63;x.fillStyle='#ffffff';
+   for(let n=0;n<4;n++){
+    const yy=lower-((t*.024+n*17+i*14+k*11)%Math.max(8,lower-top+8));
+    if(yy>top+3&&yy<lower){
+     const xx=cx-23+(n*19+i*13+k*9)%46;
+     x.beginPath();x.arc(xx,yy,.75+(n%3)*.4,0,Math.PI*2);x.fill();
+    }
+   }
+   x.globalAlpha=1;
   }
-  x.lineTo(cx+59,lower+2);x.closePath();x.fill();
-  x.globalAlpha=.9;x.strokeStyle=f.light;x.lineWidth=1.7;
-  x.beginPath();
-  for(let dx=-53;dx<=53;dx+=3){
-   const yy=upper+amp*Math.sin(t*.004+dx*.13+i*.53+k*.47);
-   if(dx===-53)x.moveTo(cx+dx,yy);else x.lineTo(cx+dx,yy);
-  }
-  x.stroke();
-  // Moving caustic bands and fine bubbles are clipped to the bowl.
-  x.globalAlpha=.15;
-  const sx=cx-50+((t*.028+i*19+k*31)%105);
-  const stripe=x.createLinearGradient(sx-12,upper,sx+12,upper);
-  stripe.addColorStop(0,'#ffffff00');stripe.addColorStop(.5,'#fffdf7aa');
-  stripe.addColorStop(1,'#ffffff00');x.fillStyle=stripe;
-  x.fillRect(cx-58,upper,116,lower-upper+1);
-  x.globalAlpha=.45;x.fillStyle='#ffffff';
-  for(let b=0;b<3;b++){
-   const vy=lower-((t*.022+b*15+i*17+k*21)%Math.max(8,lower-upper+8));
-   if(vy<=upper+3||vy>=lower)continue;
-   const vx=cx-21+((i*19+b*17+k*23)%42);
-   x.beginPath();x.arc(vx,vy,.8+(b%2)*.55,0,Math.PI*2);x.fill();
-  }
-  x.globalAlpha=1;
  }
  x.restore();
 }
