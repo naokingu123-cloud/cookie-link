@@ -214,18 +214,19 @@ try{
    const now=performance.now();
    const key=[e.version,e.phase,e.fx?.phase,e.fx?.ms,e.boardGeneration||0,
      e.processed||0,e.totalHundredths||0,e.depth||0,e.roundIndex||0].join('/');
-   const animation=!!e.fx||!!e.busy||!!e.pendingDraws?.size||
-      !!e.queue?.length||(group===2&&app.phase==='playing');
+   const animation=!!e.busy||!!e.opening||!!e.pendingDraws?.size||
+     !!e.queue?.length||!!(e.fx&&e.fx.elapsed<e.fx.ms&&e.busy);
+   const changed=view.lastKey!==key||view.lastPaintEvent!==data.event
+     ||view.lastPaintFx!==e.fx;
    const activeGroup=group===active;
-   // Dynamic: ~10fps in visible group, ~4.5fps in other groups. Still
-   // redraw immediately on phase change or completion for responsive HUD.
-   // Watchdog: if a renderer becomes costly on this device, reduce
-   // its next refresh rate rather than slowing the live roulette.
-   const costPenalty=Math.min(250,Math.max(0,(view.paintCost||0)-8)*12);
+   // Freeze a settled mini board until its engine/event actually changes.
+   // Only ongoing refill, falling or clearing animation spends frames.
+   if(!changed&&!animation)return true;
+   const costPenalty=Math.min(300,Math.max(0,(view.paintCost||0)-8)*12);
    const cadence=app.paused?650:(activeGroup?100:220)+costPenalty;
-   if(view.lastKey===key && now-view.stamp<cadence)return true;
-   if(!animation && view.lastKey===key && now-view.stamp<750)return true;
-   view.stamp=now;view.lastKey=key;
+   if(!changed&&now-view.stamp<cadence)return true;
+   view.stamp=now;view.lastKey=key;view.lastPaintEvent=data.event;
+   view.lastPaintFx=e.fx;
    const v=view.base;
    v.engine=e;v.event=data.event||{phase:e.phase||'waiting'};
    const fx=captureFx(e,view,now);
