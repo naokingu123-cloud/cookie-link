@@ -59,3 +59,199 @@ body.winery-enabled .wp-tab .wp-tab-logo.is-art-ready .wp-fallback{display:none!
  body.winery-enabled .wp-tab .tab-game-name{height:39px!important}
  body.winery-enabled .wp-tab .wp-tab-logo-img{max-height:39px!important}
 }
+
+
+/* Winery Pyramid v2: rich fruit-waterfall kingdom + detailed board art.
+   The scenery never overlays the animated juice or glass numbers. */
+body.winery-enabled #panel1 .wp-scene{
+ background:
+  linear-gradient(145deg,rgba(63,22,89,.1),rgba(65,32,100,.16) 72%,rgba(58,23,85,.25)),
+  url('winery-juice-kingdom-v2.svg?v=2') center 52%/cover no-repeat!important;
+ border:3px solid #fff0b2!important;
+ box-shadow:inset 0 0 0 2px #fff2ce,inset 0 0 25px #f3d5f288,0 3px 10px #5f2d6473!important;
+}
+body.winery-enabled #panel1 .wp-canvas{
+ background:transparent!important;
+ filter:drop-shadow(0 1px 2px rgba(48,20,92,.36))!important;
+}
+body.winery-enabled #panel1 .wp-sidebar{
+ background:
+  radial-gradient(ellipse at 24% 0%,rgba(168,83,159,.48),transparent 52%),
+  linear-gradient(162deg,rgba(49,20,81,.95),rgba(41,31,93,.96) 53%,rgba(89,32,85,.96))!important;
+ border:2px solid #fff0bd!important;
+ box-shadow:inset 0 0 0 1px #bc81c6,inset 0 0 13px #ffaef75c,0 1px 9px #4d205c85!important;
+ padding:5px 4px!important;
+ gap:4px!important;
+ overflow:hidden!important;
+}
+body.winery-enabled #panel1 .wp-title{
+ color:#ffefc0!important;
+ text-shadow:0 1px 1px #6b205a,0 0 6px #ffbca6!important;
+ letter-spacing:.04em!important;
+}
+/* Prominent BOOST cabinet above the full-glass payout chart. */
+body.winery-enabled #panel1 .wp-power{
+ position:relative!important;display:flex!important;
+ flex-direction:column!important;align-items:stretch!important;
+ justify-content:center!important;gap:3px!important;
+ flex:0 0 auto!important;
+ margin:1px 0!important;
+ padding:5px 3px 6px!important;
+ border:2px solid #ffedaf!important;
+ border-radius:10px!important;
+ background:
+  radial-gradient(ellipse at 50% 15%,rgba(255,249,190,.16),transparent 61%),
+  linear-gradient(152deg,rgba(134,34,85,.96),rgba(155,68,115,.96) 54%,rgba(86,52,131,.97))!important;
+ box-shadow:inset 0 0 0 1px #fff2d180,0 0 10px #ffb9e388!important;
+}
+body.winery-enabled #panel1 .wp-boost-heading{
+ font:1000 clamp(10px,2.1vw,15px)/1.02 system-ui,sans-serif!important;
+ text-align:center!important;
+ letter-spacing:.03em!important;
+ color:#fff3a8!important;
+ text-shadow:0 1px 2px #6f2150,0 0 6px #ffb2ca!important;
+}
+body.winery-enabled #panel1 .wp-power-next{
+ display:flex!important;justify-content:center!important;
+ align-items:baseline!important;gap:5px!important;
+ padding:2px 1px!important;
+}
+body.winery-enabled #panel1 .wp-power-next small{
+ font:800 clamp(7px,1.2vw,10px)/1.1 system-ui,sans-serif!important;
+ color:#ffefd1!important;white-space:nowrap!important;
+}
+body.winery-enabled #panel1 .wp-power-next b{
+ font:750 clamp(17px,3.0vw,24px)/1 ArcadePayout,Georgia,serif!important;
+ color:#ffed78!important;
+ text-shadow:0 1px 2px #713a4f,0 0 8px #fff4b3!important;
+}
+body.winery-enabled #panel1 .wp-boost-ladder{
+ display:grid!important;
+ grid-template-columns:repeat(5,minmax(0,1fr))!important;
+ gap:2px!important;
+ width:100%!important;
+}
+body.winery-enabled #panel1 .wp-boost-stage{
+ display:grid!important;place-items:center!important;
+ min-width:0!important;
+ min-height:17px!important;
+ border-radius:4px!important;
+ border:1px solid #aa8cb8!important;
+ background:linear-gradient(#594464,#342950)!important;
+ color:#c8bbd6!important;
+ font:900 clamp(6px,1vw,9px)/1.05 system-ui,sans-serif!important;
+ white-space:nowrap!important;
+ box-sizing:border-box!important;
+}
+body.winery-enabled #panel1 .wp-boost-stage.earned{
+ border-color:#ffe3a0!important;
+ background:linear-gradient(#df8d57,#a14770)!important;
+ color:#fffbea!important;
+}
+body.winery-enabled #panel1 .wp-boost-stage.current{
+ background:linear-gradient(135deg,#fff6ba,#ffb960,#f26e9c)!important;
+ border-color:#fff9e2!important;
+ color:#7b2457!important;
+ text-shadow:0 1px #fff7e8!important;
+ box-shadow:0 0 6px #ffeca4,inset 0 0 3px #fff!important;
+ animation:wp-power-glow 1.8s ease-in-out infinite alternate!important;
+}
+body.winery-enabled #panel1 .wp-boost-caption{
+ text-align:center!important;
+ color:#fff1d1!important;
+ font:850 clamp(7px,1.05vw,9px)/1.05 system-ui,sans-serif!important;
+}
+body.winery-enabled #panel1 .wp-boost-numbers{
+ display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:4px!important;
+ padding:2px 1px!important;
+}
+body.winery-enabled #panel1 .wp-boost-number{
+ display:grid!important;place-items:center!important;
+ aspect-ratio:1/1!important;
+ width:80%!important;
+ max-width:30px!important;
+ min-width:18px!important;
+ justify-self:center!important;
+ border:2px solid #ffdda5!important;
+ border-radius:50%!important;
+ background:radial-gradient(circle at 30% 26%,#9e74a4,#623a78 68%,#482455)!important;
+ color:#fff5c4!important;
+ font:400 clamp(12px,2vw,17px)/1 ElixirNumbers,system-ui,sans-serif!important;
+ text-shadow:0 1px #462047!important;
+ box-shadow:inset 0 1px #fff0d188,0 1px 3px #552b77!important;
+}
+body.winery-enabled #panel1 .wp-boost-number.hit{
+ background:radial-gradient(circle at 30% 26%,#f9ffcb,#bff396 48%,#4ba979)!important;
+ border-color:#fffecc!important;
+ color:#245a48!important;
+ box-shadow:0 0 7px #cdffd7!important;
+}
+@keyframes wp-power-glow{
+ from{filter:brightness(.98)}
+ to{filter:brightness(1.18)}
+}
+body.winery-enabled #panel1 .wp-score{
+ min-height:18px!important;
+ flex:0 0 auto!important;
+ font-weight:900!important;
+ color:#fff6d8!important;
+}
+body.winery-enabled #panel1 .wp-pay-fixed{
+ border:1.5px solid #ffedb1!important;
+ background:linear-gradient(105deg,#a15b65,#cb7a99,#b25cb7)!important;
+ box-shadow:inset 0 0 3px #fff5e577!important;
+}
+body.winery-enabled #panel1 .wp-pay-window{
+ border-color:#e6cbea!important;
+ background:linear-gradient(160deg,#342561bd,#3a2768db)!important;
+}
+body.winery-enabled #panel1 .wp-pay-row{
+ background:linear-gradient(90deg,#3c2e68dc,#4b3979dc)!important;
+ border-bottom:1px solid #d3b3e15a!important;
+}
+body.winery-enabled #panel1 .wp-pay-row.current{
+ background:linear-gradient(90deg,#e6ab55,#b56b96,#d8a366)!important;
+ box-shadow:inset 0 0 1px 1px #fff1bc!important;
+}
+body.winery-enabled #panel1 .wp-mix{
+ min-height:42px!important;flex:1 1 42px!important;
+ background:
+  radial-gradient(circle at 24% 35%,#9d61b973,transparent 60%),
+  linear-gradient(135deg,#4c327e,#282d76)!important;
+ border:2px solid #f9d99d!important;
+ padding:4px 2px!important;
+}
+body.winery-enabled #panel1 .wp-mix span{
+ font:900 clamp(8px,1.45vw,11px)/1.1 system-ui,sans-serif!important;
+ color:#f0e8ff!important;
+}
+body.winery-enabled #panel1 .wp-mix b{
+ font:750 clamp(17px,3.25vw,25px)/1.06 ArcadePayout,Georgia,serif!important;
+ color:#ffe6a0!important;
+ letter-spacing:-.035em!important;
+ white-space:nowrap!important;
+ text-shadow:0 1px #592c64,0 0 8px #ffe4ac9c!important;
+}
+body.winery-enabled #panel1 .wp-total{
+ border:2px solid #ffe6af!important;
+ background:linear-gradient(135deg,#67367e,#4c2961)!important;
+ flex:1 1 41px!important;
+}
+body.winery-enabled #panel1 .wp-guide{display:none!important}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-sidebar{gap:2px!important;padding:3px 2px!important}
+ body.winery-enabled #panel1 .wp-power{gap:2px!important;padding:3px 2px!important}
+ body.winery-enabled #panel1 .wp-boost-heading{font-size:11px!important}
+ body.winery-enabled #panel1 .wp-power-next b{font-size:17px!important}
+ body.winery-enabled #panel1 .wp-boost-numbers{gap:1px!important}
+ body.winery-enabled #panel1 .wp-boost-number{min-width:15px!important;border-width:1.5px!important;font-size:11px!important}
+ body.winery-enabled #panel1 .wp-boost-ladder{gap:1px!important}
+ body.winery-enabled #panel1 .wp-boost-stage{font-size:6px!important;min-height:14px!important}
+ body.winery-enabled #panel1 .wp-mix b{font-size:15px!important}
+ body.winery-enabled #panel1 .wp-total b{font-size:13px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled #panel1 .wp-boost-stage.current{animation:none!important}
+}
