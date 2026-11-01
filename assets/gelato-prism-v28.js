@@ -378,7 +378,7 @@ try{
  let collectorKey='';
  function updateCollectorHUD(e){
    if(!e?.faceGrades)return;
-   const key=[e.cycle,e.filled.size,e.totalHundredths,e.pattern?.id].join('/');
+   const key=[e.cycle,e.phase,e.filled.size,e.totalHundredths,e.pattern?.id].join('/');
    if(key===collectorKey)return;
    collectorKey=key;
    const counts=e.collectorCounts||evaluatePrize(e.filled,e.faceGrades).counts;
