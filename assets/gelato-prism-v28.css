@@ -1078,3 +1078,212 @@ body.gelato-active #panel0 .gp-mold .gp-board-bonus.gp-bonus-complete{
   width:19px!important;height:19px!important;
  }
 }
+
+
+/* v45 — illustrated ice-candy kingdom, crystal atlas and compact 4-gem
+   collector above a pinned-top jackpot / descending five-row payout window. */
+body.gelato-active #panel0 .gp-scene{
+ background:
+ linear-gradient(180deg,rgba(229,247,255,.04),rgba(226,248,255,.1)),
+ url('../assets/gelato-prism-ice-kingdom-v45.svg') center/cover no-repeat!important;
+}
+body.gelato-active #panel0 .gp-frozen-fruit-backdrop{
+ display:none!important;
+ visibility:hidden!important;
+}
+body.gelato-enabled .gp-tab .tab-game-name .gp-tab-logo-img{
+ width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;
+ filter:drop-shadow(0 1px 1.5px #406cbd) drop-shadow(0 0 2px #e4fdff)!important;
+}
+body.gelato-active #panel0 .gp-mold .gp-board-bonus,
+body.gelato-active #panel0 .gp-mold .gp-board-bonus.gp-bonus-complete{
+ display:none!important;
+}
+body.gelato-active #panel0 .gp-collector-panel{
+ top:1%!important;bottom:1%!important;height:98%!important;
+ right:.6%!important;width:23.8%!important;
+ gap:3px!important;padding:4px 4px!important;
+ justify-content:space-between!important;
+ background:linear-gradient(155deg,#074985f5,#18376ff7 48%,#143a7ff5)!important;
+ box-shadow:inset 0 0 0 1px #c4faff,0 2px 8px #14468198!important;
+ overflow:hidden!important;
+}
+body.gelato-active #panel0 .gp-collector-title{
+ order:0;flex:none!important;
+ padding:3px 1px!important;margin:0!important;
+ background:linear-gradient(90deg,#114e95,#348fdd,#2352a2)!important;
+ border:1px solid #b7f6ff!important;border-radius:7px!important;
+ font:1000 clamp(8px,1.85vw,12px)/1.1 system-ui,sans-serif!important;
+ color:#fff6d6!important;
+ text-align:center!important;
+}
+body.gelato-active #panel0 .gp-collector-grid{
+ order:1;
+ width:100%!important;
+ flex:0 1 132px!important;
+ min-height:88px!important;
+ max-height:142px!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(2,minmax(0,1fr))!important;
+ gap:3px!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-row{
+ display:flex!important;min-height:0!important;flex-direction:column!important;
+ justify-content:center!important;align-items:center!important;
+ gap:0!important;padding:3px 1px!important;
+ background:linear-gradient(145deg,#1a4a88,#1a2568)!important;
+ border:1px solid #93c2ee!important;
+ border-radius:7px!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-diamond-wrap{
+ flex:0 1 32px!important;width:31px!important;height:31px!important;
+ filter:drop-shadow(0 0 3px #b5f2ff)!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-diamond{
+ width:30px!important;height:30px!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-diamond-piece{
+ background:linear-gradient(150deg,#a4d6ff38,#1c3764c9 50%,#041d48ce)!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-diamond-piece.is-filled{
+ background-image:url('../assets/gelato-prism-crystal-tiles-v45.svg'),
+ linear-gradient(150deg,#f4ffff,var(--gp-gem-color),#2f56a0)!important;
+ background-position:var(--gp-crystal-pos) center,center!important;
+ background-size:500% 100%,100% 100%!important;
+ background-repeat:no-repeat!important;
+ filter:brightness(1.23) saturate(1.45) drop-shadow(0 0 2px #fff)!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-meta{
+ font:900 clamp(7px,1.35vw,9px)/1 system-ui,sans-serif!important;
+ color:#f5faff!important;gap:4px!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-meta small{
+ font:800 clamp(7px,1.30vw,9px)/1 system-ui,sans-serif!important;
+ color:#d9faff!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-row strong.gp-collector-win{
+ display:block!important;
+ grid-column:auto!important;grid-row:auto!important;
+ max-width:100%;
+ color:#ffef9c!important;
+ font:700 clamp(9px,1.7vw,12px)/1.03 ArcadePayout,Georgia,serif!important;
+ -webkit-text-stroke:.25px #765023!important;
+ text-shadow:0 1px 1px #2f2559!important;
+ letter-spacing:-.035em!important;
+ white-space:nowrap!important;
+}
+body.gelato-active #panel0 .gp-payout-header{
+ order:2;flex:none!important;min-height:30px!important;
+ display:grid!important;
+ grid-template-columns:1fr auto!important;
+ grid-template-rows:1fr 1fr!important;
+ gap:0 3px!important;
+ align-items:center!important;
+ padding:3px 4px!important;
+ background:linear-gradient(100deg,#0e70ba,#3d86d4,#2b4fa6)!important;
+}
+body.gelato-active #panel0 .gp-payout-header span{
+ grid-column:1!important;grid-row:1/3!important;
+ font:1000 clamp(11px,2.25vw,15px)/1.1 system-ui,sans-serif!important;
+ text-align:left!important;
+}
+body.gelato-active #panel0 .gp-payout-header small{
+ font:800 clamp(7px,1.4vw,9px)/1.0 system-ui,sans-serif!important;
+ text-align:right!important;
+ color:#e5faff!important;
+}
+body.gelato-active #panel0 .gp-payout-header .gp-current-panels{grid-column:2!important;grid-row:1!important}
+body.gelato-active #panel0 .gp-payout-header .gp-sugar-header{grid-column:2!important;grid-row:2!important}
+body.gelato-active #panel0 .gp-payout-header .gp-sugar-header.is-get{
+ color:#ffe365!important;
+ text-shadow:0 0 4px #eae9ff,0 0 2px #fff!important;
+}
+body.gelato-active #panel0 .gp-pay-row.gp-pay-fixed{
+ order:3;flex:0 0 24px!important;
+ height:24px!important;
+ display:flex!important;
+ justify-content:space-between!important;align-items:center!important;
+ padding:2px 5px!important;
+ border:1.5px solid #fff6ad!important;
+ border-radius:5px!important;
+ background:linear-gradient(100deg,#a15732,#d978b3,#855bc4)!important;
+ color:#fff6bd!important;
+ box-shadow:inset 0 0 6px #ffefd7b5,0 0 4px #f6caff7a!important;
+}
+body.gelato-active #panel0 .gp-payout-window{
+ order:4;
+ display:block!important;flex:1 1 108px!important;
+ min-height:94px!important;max-height:120px!important;
+ overflow:hidden!important;
+ border:1.5px solid #a2eaff!important;border-radius:7px!important;
+ background:#0b2357dd!important;
+}
+body.gelato-active #panel0 .gp-payout-track{
+ --gp-slide-index:0;
+ transform:translate3d(0,calc(-23px * var(--gp-slide-index)),0)!important;
+ transition:transform .62s cubic-bezier(.23,.76,.21,1)!important;
+ will-change:transform;
+}
+body.gelato-active #panel0 .gp-pay-row:not(.gp-pay-fixed){
+ box-sizing:border-box!important;
+ height:23px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ padding:0 5px!important;
+ border-bottom:1px solid #6fb0e47e!important;
+ background:linear-gradient(90deg,#1e5ca5a8,#0d397fba)!important;
+ color:#effcff!important;
+ font:800 clamp(8px,1.55vw,11px)/1 system-ui,sans-serif!important;
+}
+body.gelato-active #panel0 .gp-pay-panel-n{
+ white-space:nowrap!important;
+ font:900 clamp(9px,1.65vw,12px)/1 system-ui,sans-serif!important;
+}
+body.gelato-active #panel0 .gp-pay-row .gold-number.gp-pay-win{
+ font-family:ArcadePayout,Georgia,serif!important;
+ font-size:clamp(9px,1.65vw,12px)!important;
+ font-weight:700!important;line-height:1!important;
+ letter-spacing:-.04em!important;
+ color:#ffec9d!important;
+ -webkit-text-fill-color:#ffec9d!important;
+ -webkit-text-stroke:.35px #74431e!important;
+ background:none!important;
+ white-space:nowrap!important;
+}
+body.gelato-active #panel0 .gp-pay-row.gp-current:not(.gp-pay-fixed){
+ background:linear-gradient(90deg,#9b5838,#e5a35e,#906ab9)!important;
+ box-shadow:inset 0 0 0 1px #fff1b4!important;
+ color:#fff9d9!important;
+}
+body.gelato-active #panel0 .gp-pay-row.gp-current .gp-pay-win{
+ color:#fff7bd!important;-webkit-text-fill-color:#fff7bd!important;
+}
+body.gelato-active #panel0 .gp-sugar-status{
+ margin-left:3px!important;
+ font:1000 clamp(8px,1.4vw,10px)/1 system-ui,sans-serif!important;
+ color:#fff79c!important;
+ text-shadow:0 0 5px #d7a6ef!important;
+}
+body.gelato-active #panel0 .gp-sugar-status.is-get{
+ color:#fff2a4!important;
+ animation:gp-sugar-get-glow 1.4s ease-in-out infinite alternate!important;
+}
+@keyframes gp-sugar-get-glow{
+ from{text-shadow:0 0 1px #eeeaff}
+ to{text-shadow:0 0 6px #fff,0 0 8px #ffce5a}
+}
+body.gelato-active #panel0 .gp-total-tally,
+body.gelato-active #panel0 .gp-pattern-label,
+body.gelato-active #panel0 .gp-payout-nav{
+ display:none!important;
+}
+@media(max-width:470px){
+ body.gelato-active #panel0 .gp-collector-panel{padding:3px 2px!important;gap:2px!important}
+ body.gelato-active #panel0 .gp-collector-grid{min-height:82px!important;max-height:115px!important;gap:2px!important}
+ body.gelato-active #panel0 .gp-collector-grid .gp-diamond-wrap{width:26px!important;height:26px!important;flex-basis:26px!important}
+ body.gelato-active #panel0 .gp-collector-grid .gp-diamond{width:25px!important;height:25px!important}
+ body.gelato-active #panel0 .gp-pay-row.gp-pay-fixed{height:22px!important;flex-basis:22px!important}
+ body.gelato-active #panel0 .gp-payout-header{padding:2px 3px!important;min-height:27px!important}
+}
