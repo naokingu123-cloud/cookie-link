@@ -1832,3 +1832,23 @@ body.gelato-enabled .gp-board-svg .gp-node.is-hit .gp-hit-text{
 @media(prefers-reduced-motion:reduce){
  body.gelato-enabled .gp-board-svg .gp-node.is-hit .gp-hit-text{animation:none!important}
 }
+
+/* v52: install the original ornate Gelato Prism image in the tab */
+body.gelato-enabled .gp-tab .tab-game-name{
+  width:100%!important;min-width:0!important;height:44px!important;
+  padding:0!important;overflow:visible!important;
+}
+body.gelato-enabled .gp-tab .gp-logo{
+  width:100%!important;height:100%!important;
+  padding:0!important;overflow:visible!important;
+}
+body.gelato-enabled .gp-tab .gp-tab-logo-img{
+  width:100%!important;height:100%!important;
+  max-width:100%!important;max-height:44px!important;
+  object-fit:contain!important;object-position:center!important;
+  filter:drop-shadow(0 1px 2px #2942a2a8)!important;
+}
+@media(max-width:470px){
+ body.gelato-enabled .gp-tab .tab-game-name{height:39px!important}
+ body.gelato-enabled .gp-tab .gp-tab-logo-img{max-height:39px!important}
+}
