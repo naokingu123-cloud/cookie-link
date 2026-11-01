@@ -618,7 +618,9 @@ try{
    if(ev.phase==='ready'){pourToken++;e.pouring=null;slot.reachStatus='inactive';slot.reachEpoch=(slot.reachEpoch||0)+1;slot.reachBoardKey=null;slot.reachResults=[];slot.tabReachResults=[];}
    if(ev.phase==='gelatoFill'){
      startGelatoPour(ev,e);
-     flash(ev.full?'全埋め！':ev.newFaces.length+' GELATO GET! +'+num(medalWin(app.bet(0),ev.gain))+' WIN');
+     // A large flash would obscure the bucket and liquid animation.
+     // Reserve the short announcement only for the rare 24/24 full-clear.
+     if(ev.full)flash('全埋め！');
    }
    if(ev.phase==='sugaraward')flash('✦ WONDER SUGAR GET!');
    if(['waiting','settled','complete'].includes(ev.phase))requestReach(slot,e,app);
