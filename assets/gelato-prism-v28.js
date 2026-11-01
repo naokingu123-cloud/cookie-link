@@ -340,6 +340,52 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
+ // Reach status on the actual star, matching the other games' four tiers.
+ const gpReachStage=document.createElement('div');
+ gpReachStage.className='gp-reach-stage';
+ gpReachStage.hidden=true;
+ gpReachStage.innerHTML='<span class="gp-reach-spark" aria-hidden="true">✦</span>'+
+   '<strong class="gp-reach-name"></strong>'+
+   '<small class="gp-reach-hint"></small>';
+ rasterMold.appendChild(gpReachStage);
+ let gpReachKey='';
+ function updateReachBanner(engine){
+   if(!engine||engine.kind!=='gelato')return;
+   const key=[engine.cycle,engine.phase,engine.processed,engine.accepted,
+     engine.filled.size,engine.totalHundredths,engine.running,
+     engine.allComplete,[...engine.pendingDraws].join(',')].join('/');
+   if(key===gpReachKey)return;
+   gpReachKey=key;
+   if(engine.allComplete&&engine.processed>=8){
+     gpReachStage.hidden=false;gpReachStage.dataset.tier='3';
+     gpReachStage.querySelector('.gp-reach-name').textContent='全獲り！';
+     gpReachStage.querySelector('.gp-reach-hint').textContent='24パネル完成';
+     return;
+   }
+   if(!engine.running||engine.processed<1||engine.processed>=8||
+     engine.accepted!==engine.processed||engine.busy){
+     gpReachStage.hidden=true;return;
+   }
+   let best=-1,numberCount=0;
+   for(const number of engine.nodeNumbers){
+     if(engine.seen.has(number)||engine.pendingDraws.has(number))continue;
+     const pred=engine.predict(number);
+     if(pred.gain<=0)continue;
+     // ALL CLEAR is the 24-panel tier. Other reaches are classified by the
+     // incremental prize available on exactly one further drawn ball.
+     let tier=pred.gain>=10000?3:pred.gain>=1000?2:pred.gain>=300?1:0;
+     if(tier>best){best=tier;numberCount=1}
+     else if(tier===best)numberCount++;
+   }
+   if(best<0){gpReachStage.hidden=true;return;}
+   gpReachStage.dataset.tier=String(best);
+   gpReachStage.hidden=false;
+   gpReachStage.querySelector('.gp-reach-name').textContent=
+     ['リーチ','高額リーチ','超高額リーチ','全獲りリーチ'][best];
+   gpReachStage.querySelector('.gp-reach-hint').textContent=
+     'チャンス番号 '+numberCount+'個';
+ }
+
 
  // Four 4-piece diamond collectors, plus the single final count payout.
  // This UI is outside the PNG mould so it never obscures the star's digits.
@@ -805,6 +851,7 @@ try{
    }
    drawRaster(e,bet);
    updateCollectorHUD(e,bet);
+   updateReachBanner(e);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
@@ -948,6 +995,7 @@ try{
    patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,grades:p.grades.slice()})),
    prizes:{countMultiplier:COUNT_MULT.slice(),colorMultipliers:COLLECTOR_MULT.slice()},
    payoutWindowFor,
+   get reach(){return {tier:gpReachStage.dataset.tier,label:gpReachStage.querySelector('.gp-reach-name').textContent,hidden:gpReachStage.hidden};},
    engine:e,faces:FACES
  };
  console.info('[GelatoPrism] ready: 19 nodes / 24 faces / 8 draws');
