@@ -1,4 +1,4 @@
-/* GELATO PRISM v30 - symmetric, enlarged glossy icecream mold */
+/* GELATO PRISM v32 - generated fantasy art, unclipped waffle-star mold */
 (()=>{
 'use strict';
 try{
@@ -47,7 +47,7 @@ try{
  const ranked=[...FACES].sort((a,b)=>
    a.edges.reduce((n,i)=>n+1/supports[i],0)-b.edges.reduce((n,i)=>n+1/supports[i],0));
  ranked.forEach((f,i)=>{f.tier=Math.min(3,Math.floor(i/6));f.reward=[32,42,62,95][f.tier];});
- const BONUS=3500,flavors=['#f88fb9','#fff1c7','#b0e9d9','#ffe0a7','#b1ccfa','#d6b6f1'];
+ const BONUS=3500,flavors=['#ff3b82','#ffc224','#38db80','#00bfe9','#536cf7','#bb55f7'];
  function link(hits){
    const result=new Set();
    for(const line of LINES){
@@ -162,9 +162,9 @@ try{
  const path=nodes=>nodes.map(i=>P[i].x.toFixed(1)+','+P[i].y.toFixed(1)).join(' ');
  function boardSVG(prefix){
    const defs=['<defs>'];
-   defs.push('<radialGradient id="'+prefix+'-shell"><stop stop-color="#fffbef"/><stop offset=".46" stop-color="#ffe1f2"/><stop offset=".88" stop-color="#d3b7fa"/><stop offset="1" stop-color="#9b76a6"/></radialGradient>');
-   defs.push('<linearGradient id="'+prefix+'-rail" x2=".8" y2=".9"><stop stop-color="#fffef8"/><stop offset=".42" stop-color="#fff2dc"/><stop offset="1" stop-color="#dba46d"/></linearGradient>');defs.push('<radialGradient id="'+prefix+'-gold"><stop stop-color="#fffff2"/><stop offset=".4" stop-color="#ffe58c"/><stop offset=".85" stop-color="#d99433"/><stop offset="1" stop-color="#96501c"/></radialGradient>');
-   for(let i=0;i<6;i++)defs.push('<radialGradient id="'+prefix+'-ice'+i+'" cx=".35" cy=".16" r=".85"><stop stop-color="#ffffff"/><stop offset=".26" stop-color="#fff9f5"/><stop offset=".57" stop-color="'+flavors[i]+'"/><stop offset="1" stop-color="#b179af"/></radialGradient>');
+   defs.push('<radialGradient id="'+prefix+'-shell"><stop stop-color="#fffee8"/><stop offset=".63" stop-color="#fbe0b1"/><stop offset="1" stop-color="#cc8b5e"/></radialGradient>');
+   defs.push('<linearGradient id="'+prefix+'-rail" x2=".8" y2=".9"><stop stop-color="#fffefa"/><stop offset=".34" stop-color="#fff8e8"/><stop offset=".68" stop-color="#f4d8b4"/><stop offset="1" stop-color="#bc7d55"/></linearGradient>');defs.push('<radialGradient id="'+prefix+'-gold"><stop stop-color="#ffffff"/><stop offset=".29" stop-color="#fff9ca"/><stop offset=".65" stop-color="#ffca55"/><stop offset="1" stop-color="#9c501f"/></radialGradient>');defs.push('<linearGradient id="'+prefix+'-waffle" x2=".42" y2="1"><stop stop-color="#fff2c9"/><stop offset=".44" stop-color="#e8b77f"/><stop offset="1" stop-color="#bf7950"/></linearGradient>');defs.push('<pattern id="'+prefix+'-biscuit" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V14M0 0H14" fill="none" stroke="#8f6039" stroke-width="2" opacity=".23"/></pattern>');
+   for(let i=0;i<6;i++)defs.push('<radialGradient id="'+prefix+'-ice'+i+'" cx=".28" cy=".15" r=".88"><stop stop-color="#ffffff"/><stop offset=".13" stop-color="#fffbea"/><stop offset=".29" stop-color="'+flavors[i]+'"/><stop offset=".75" stop-color="'+flavors[i]+'"/><stop offset="1" stop-color="#81436d"/></radialGradient>');
    for(const f of FACES)defs.push('<clipPath id="'+prefix+'-clip'+f.id+'"><polygon points="'+path(f.nodes)+'"/></clipPath>');
    defs.push('</defs>');
    const faces=FACES.map(f=>{
@@ -192,10 +192,11 @@ try{
       '<text class="gp-digit" y="4.3" text-anchor="middle">?</text>'+
       '<circle class="gp-hit-ring" r="14.2" fill="none" stroke="#ffdf64" stroke-width="3"/></g>').join('');
    const major=[P[0],P[5],P[17],P[18],P[13],P[1]];
+   const outline=path([0,4,5,10,17,16,18,14,13,8,1,2]);
    const tri=(indices)=>indices.map((i,k)=>(k?'L':'M')+major[i].x.toFixed(1)+' '+major[i].y.toFixed(1)).join('')+'Z';
-   return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 314" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
-      '<circle cx="160" cy="157" r="154" fill="url(#'+prefix+'-shell)" stroke="#fffcf6" stroke-width="7"/>'+
-      '<circle cx="160" cy="157" r="143" fill="#fff5e8" fill-opacity=".28" stroke="#f7dfbc" stroke-width="4"/>'+
+   return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-16 -18 352 350" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
+      '<polygon points="'+outline+'" fill="url(#'+prefix+'-waffle)" stroke="#fff0be" stroke-width="7" stroke-linejoin="round"/>'+
+      '<polygon points="'+outline+'" fill="url(#'+prefix+'-biscuit)" stroke="#ae7c4f" stroke-width="3.3" stroke-linejoin="round"/>'+
       faces+'<path d="'+tri([0,2,4])+'" fill="none" stroke="#fff2d4" stroke-width="5" opacity=".7"/>'+
       '<path d="'+tri([1,3,5])+'" fill="none" stroke="#e690b9" stroke-width="5" opacity=".6"/>'+
       lines+nodes+'</svg>';
