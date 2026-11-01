@@ -1,27 +1,40 @@
-/* GELATO PRISM v28 - 3-game SWEETS LINK integration, playable prototype */
+/* GELATO PRISM v29 - faithful 19-point/24-triangle reference star */
 (()=>{
 'use strict';
 try{
- const S3=Math.sqrt(3),P=[],LINES=[],EDGES=[],FACES=[],R=2;
- for(let r=-R;r<=R;r++)for(let q=-R;q<=R;q++)if(Math.abs(q+r)<=R)
-   P.push({q,r,x:160+(q+r/2)*61,y:157+r*S3/2*61});
- for(const dir of ['q','r','s'])for(let k=-2;k<=2;k++){
-   const row=P.map((p,i)=>({...p,i})).filter(p=>(dir==='q'?p.q:dir==='r'?p.r:p.q+p.r)===k);
-   row.sort((a,b)=>dir==='q'?a.r-b.r:a.q-b.q);LINES.push(row.map(p=>p.i));
- }
- const emap=new Map(),length2=(a,b)=>{let q=a.q-b.q,r=a.r-b.r;return q*q+r*r+q*r;};
- for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)if(length2(P[i],P[j])===1){
-   const id=EDGES.length;EDGES.push({a:i,b:j,id});
-   emap.set(i+':'+j,id);
+ // Geometry follows the user's 500 x 500 six-point star reference exactly:
+ // 19 labeled intersections, 42 segments and 24 elementary triangular faces.
+ // Indices: top; five upper; two upper diagonals; three center;
+ // two lower diagonals; five lower; bottom tip.
+ const RAW=[
+  [250,46],[44,132],[202,132],[250,132],[294,132],[455,132],
+  [160,213],[339,213],[129,272],[250,272],[370,272],
+  [166,333],[332,333],[55,412],[212,412],[250,412],[288,412],[443,412],[250,470]
+ ];
+ const P=RAW.map(([x,y])=>({x:160+(x-250)*.71,y:8+(y-46)*.70}));
+ // Every path is a continuous stroke in the supplied drawing. Intersections
+ // are explicit so the board has no inadvertent extra faces or missing links.
+ const LINES=[
+  [0,2,6,8,13],[0,4,7,10,17],[1,2,3,4,5],[13,14,15,16,17],
+  [1,6,9,12,17],[5,7,9,11,13],[1,8,11,14,18],[5,10,12,16,18],
+  [0,3,9,15,18],[8,9,10],[2,9,16],[4,9,14]
+ ];
+ const EDGES=[],FACES=[],emap=new Map();
+ for(const line of LINES)for(let k=0;k<line.length-1;k++){
+   const a=line[k],b=line[k+1],key=Math.min(a,b)+':'+Math.max(a,b);
+   if(emap.has(key))continue;
+   const id=EDGES.length;EDGES.push({a,b,id});emap.set(key,id);
  }
  const edge=(a,b)=>emap.get(Math.min(a,b)+':'+Math.max(a,b));
  for(let a=0;a<P.length;a++)for(let b=a+1;b<P.length;b++)for(let c=b+1;c<P.length;c++){
    const x=edge(a,b),y=edge(b,c),z=edge(a,c);
    if(x==null||y==null||z==null)continue;
    FACES.push({id:FACES.length,nodes:[a,b,c],edges:[x,y,z],
-     x:(P[a].x+P[b].x+P[c].x)/3,y:(P[a].y+P[b].y+P[c].y)/3,flavor:(a+2*b+5*c)%6});
+     x:(P[a].x+P[b].x+P[c].x)/3,y:(P[a].y+P[b].y+P[c].y)/3,
+     flavor:(a+2*b+5*c)%6});
  }
- if(P.length!==19||EDGES.length!==42||FACES.length!==24)throw Error('Prism geometry invalid');
+ if(P.length!==19||EDGES.length!==42||FACES.length!==24)
+   throw Error('Prism reference geometry invalid: '+P.length+'/'+EDGES.length+'/'+FACES.length);
  const supports=EDGES.map(e=>{
    let total=0;
    for(const line of LINES){
@@ -178,7 +191,7 @@ try{
       '<ellipse cx="-4" cy="-5" rx="4" ry="2.2" transform="rotate(-28)" fill="#ffffffa5"/>'+
       '<text class="gp-digit" y="4.3" text-anchor="middle">?</text>'+
       '<circle class="gp-hit-ring" r="14.2" fill="none" stroke="#ffdf64" stroke-width="3"/></g>').join('');
-   const major=[[-2,0],[0,-2],[2,-2],[2,0],[0,2],[-2,2]].map(([q,r])=>P.find(p=>p.q===q&&p.r===r));
+   const major=[P[0],P[5],P[17],P[18],P[13],P[1]];
    const tri=(indices)=>indices.map((i,k)=>(k?'L':'M')+major[i].x.toFixed(1)+' '+major[i].y.toFixed(1)).join('')+'Z';
    return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 314" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
       '<circle cx="160" cy="157" r="154" fill="url(#'+prefix+'-shell)" stroke="#fffcf6" stroke-width="7"/>'+
