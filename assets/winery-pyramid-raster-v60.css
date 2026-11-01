@@ -107,7 +107,7 @@ body.winery-enabled #panel1 .wp-scene.wp-raster-ready .wp-sidebar::before{
  content:""!important;display:block!important;position:absolute!important;
  inset:0!important;transform:none!important;
  width:100%!important;height:100%!important;
- background:url('winery-payout-ornate-v60.png?v=60') center/100% 100% no-repeat!important;
+ background:url('winery-payout-ornate-v60.webp?v=60') center/100% 100% no-repeat!important;
  opacity:.95!important;pointer-events:none!important;z-index:6!important;
 }
 body.winery-enabled #panel1 .wp-scene.wp-raster-ready .wp-sidebar::after{display:none!important}
