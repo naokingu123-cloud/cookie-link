@@ -1,0 +1,187 @@
+/* Winery Pyramid v59 — layered premium glass / real fluids / fruit river.
+ * This wins over the earlier v56-v58 screenshot and minimalist styles.
+ * No image with printed fake numbers is used in the game board. */
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready{
+  background:
+    linear-gradient(175deg,rgba(255,248,215,.065),rgba(249,101,169,.07) 70%,rgba(255,169,64,.065)),
+    url('winery-juice-river-luxury-v59.svg?v=59') center center/100% 100% no-repeat!important;
+  background-color:#d96da4!important;
+  border:3px solid #fff2b6!important;
+  box-shadow:inset 0 0 0 2px #e6ac76,0 0 16px #f8b2bf99!important;
+  isolation:isolate!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready::before,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready::after{content:none!important;display:none!important}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-liquid-layer,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-canvas{
+  position:absolute!important;inset:0!important;display:block!important;
+  width:100%!important;height:100%!important;object-fit:fill!important;
+  max-width:none!important;max-height:none!important;
+  margin:0!important;padding:0!important;border:0!important;
+  background:none!important;filter:none!important;
+  pointer-events:none!important;image-rendering:auto!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-liquid-layer{z-index:2!important}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-canvas{z-index:3!important}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-message{z-index:11!important}
+body.winery-active #screen{
+  background:
+    linear-gradient(135deg,#ffedd24c,#fff6f047),
+    url('winery-juice-river-luxury-v59.svg?v=59') center 52%/cover no-repeat!important;
+  background-color:#f3c7df!important;
+}
+body.winery-active .game{
+  background:
+    linear-gradient(135deg,#fff8ef34,#ffdbea33),
+    url('winery-juice-river-luxury-v59.svg?v=59') center center/cover no-repeat!important;
+  border:2px solid #ffedd0!important;
+  box-shadow:inset 0 0 0 2px #f4bcda,0 2px 10px #ca538984!important;
+}
+/* Royal strawberry jewel cabinet, with live and vertically fitting payouts. */
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar{
+  --wp-row-height:19px;
+  position:absolute!important;top:.55%!important;bottom:.5%!important;
+  height:98.95%!important;right:.4%!important;width:24.55%!important;
+  box-sizing:border-box!important;display:grid!important;
+  grid-template-rows:auto minmax(14px,auto) var(--wp-row-height) minmax(0,1fr) 30px 30px!important;
+  align-content:stretch!important;align-items:stretch!important;gap:2px!important;
+  padding:5px 5px!important;min-height:0!important;overflow:hidden!important;
+  border:3px double #ffebae!important;border-radius:15px!important;
+  background:
+    radial-gradient(ellipse at 52% -10%,rgba(255,253,203,.46),transparent 54%),
+    radial-gradient(ellipse at 100% 95%,#d8559894,transparent 40%),
+    linear-gradient(158deg,#9b2b67fa,#7f296cf8 48%,#612d72f9)!important;
+  box-shadow:inset 0 0 0 2px #f8a2b9,inset 0 0 16px #fff1ab5e,0 2px 9px #6a1a6580!important;
+  color:#fff7dc!important;z-index:8!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar::before{
+  content:"✦  🍓  ✦"!important;display:block!important;
+  position:absolute;top:-2px;left:50%;transform:translateX(-50%);
+  z-index:1;color:#fff6c4;font-size:10px;line-height:1;
+  text-shadow:0 0 6px #fff6be,0 1px #7d315c;
+  pointer-events:none;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar::after{
+  content:"✦"!important;display:block!important;position:absolute;bottom:0;left:50%;
+  transform:translateX(-50%);font-size:8px;color:#fff3ac;text-shadow:0 0 6px #fff1a7;
+  pointer-events:none;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar>*{
+  position:relative;z-index:2;min-width:0!important;box-sizing:border-box!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-power{
+  min-height:0!important;max-height:112px!important;
+  flex:none!important;margin:0!important;padding:2px 2px 3px!important;gap:2px!important;
+  overflow:hidden!important;border:1.6px solid #fff1b4!important;border-radius:10px!important;
+  background:radial-gradient(ellipse at 40% -8%,#fff3d28c,transparent 70%),
+    linear-gradient(145deg,#d56d9df0,#94438bfc 55%,#6d3978fb)!important;
+  box-shadow:inset 0 0 0 1px #e6a2a4,0 1px 6px #4e1c6080!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-heading,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-caption{
+  color:#fff3b8!important;text-shadow:0 1px #712f60,0 0 5px #fff9c1a9!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-power-next b{
+  color:#ffe9a5!important;text-shadow:0 1px #613465,0 0 8px #ffedaa!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-stage{
+  min-height:12px!important;background:linear-gradient(#ad70a6,#6c4379)!important;
+  border:1px solid #ebbbbe!important;color:#ffe9dd!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-stage.current{
+  background:linear-gradient(120deg,#fff4c1,#f4c46e,#fca4b4)!important;color:#8c3165!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-number{
+  background:radial-gradient(circle at 35% 25%,#fff3ea,#ce73aa 36%,#853e87 80%)!important;
+  border-color:#fff2c2!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-score{
+  color:#fff1ce!important;text-shadow:0 1px #68316a!important;
+  min-height:0!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-fixed{
+  min-height:var(--wp-row-height)!important;height:var(--wp-row-height)!important;
+  border-color:#fff2be!important;color:#6d2a4e!important;
+  background:linear-gradient(94deg,#ffe5be,#f6b3cb 48%,#ffe1a6)!important;
+  box-shadow:inset 0 1px #fff9d6!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-window{
+  min-height:0!important;height:100%!important;max-height:none!important;
+  background:linear-gradient(180deg,#612c6fe8,#462358ed)!important;
+  border:1px solid #f6d4a2!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-track{transition:transform .4s cubic-bezier(.25,.72,.23,1)!important}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-row{
+  height:var(--wp-row-height)!important;min-height:var(--wp-row-height)!important;
+  background:linear-gradient(90deg,#7d3e81,#552961)!important;
+  border-bottom:1px solid #f5c7a95a!important;
+  color:#fff5dc!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-row.current{
+  background:linear-gradient(95deg,#e7aa78,#b75c91,#f5c985)!important;
+  box-shadow:inset 0 0 0 1px #ffe6a5!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-row b{
+  color:#fff2b8!important;text-shadow:0 1px #5d2760!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-fixed b{
+  color:#aa3e65!important;text-shadow:0 1px #fff7e5!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-mix,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-total{
+  flex:none!important;height:30px!important;min-height:0!important;max-height:none!important;
+  border-radius:8px!important;padding:1px!important;border:1.5px solid #ffe5b1!important;
+  background:
+    radial-gradient(ellipse at 30% -10%,#fff1a850,transparent 65%),
+    linear-gradient(132deg,#ad508e,#69377e)!important;
+  box-shadow:inset 0 0 0 1px #ffdbbb88!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-mix b,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-total b{
+  color:#fff1ae!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-upper-hud{
+  z-index:7!important;top:.7%!important;
+  border:2px solid #fff2ba!important;border-radius:14px!important;
+  background:
+    radial-gradient(ellipse at 52% -5%,#fff6e09c,transparent 70%),
+    linear-gradient(145deg,#ed9ebedc,#ad5aa2ed 70%,#8c4e97e8)!important;
+  box-shadow:inset 0 0 0 1px #ffe2d4a1,0 2px 8px #85386f67!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-hud-label{
+  color:#fff9d8!important;text-shadow:0 1px 2px #803a75!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-hud-main{
+  color:#fff4b6!important;text-shadow:0 1px #7e3374,0 0 6px #fff7cb!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-hud-flavor{
+  color:#fff5de!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-rate-panel{
+  z-index:8!important;top:1%!important;left:.8%!important;
+  border-color:#fff2c5!important;
+  background:linear-gradient(145deg,#f8bad7eb,#b76ca8ee)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-message{
+  top:20%!important;left:7%!important;border-color:#fff2bd!important;
+  background:linear-gradient(120deg,#ad437fe8,#df8ba7f4)!important;
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar{
+   --wp-row-height:16px;top:.35%!important;bottom:.45%!important;height:99.2%!important;
+   gap:1px!important;padding:2px!important;border-width:1.5px!important;border-radius:9px!important;
+   grid-template-rows:auto minmax(11px,auto) var(--wp-row-height) minmax(0,1fr) 25px 25px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar::before{font-size:6px}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-power{
+   max-height:92px!important;padding:1px!important;gap:1px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-heading{font-size:8px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-stage{font-size:5px!important;min-height:11px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-boost-number{min-width:10px!important;max-width:19px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-mix,
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-total{height:25px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-upper-hud{
+   top:.6%!important;padding:2px 2px!important;gap:1px!important;border-width:1px!important;
+ }
+}
