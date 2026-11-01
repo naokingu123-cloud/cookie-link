@@ -231,12 +231,25 @@ try{
      el.classList.toggle('is-sugar',id===e.sugarFace&&!e.sugarAwarded);
    }
  }
+ const gpFillLabel=scene.querySelector('.gp-fill-count'),
+       gpWinLabel=scene.querySelector('.gp-earned'),
+       gpSugarLabel=scene.querySelector('.gp-sugar-state');
+ let lastGeometryKey='';
  function drawGelato(){
    const e=app.engines[0];if(e?.kind!=='gelato')return;
-   updateDraw(scene,e);updateDraw(mini,e);
-   scene.querySelector('.gp-fill-count').textContent=e.filled.size+' / 24';
-   scene.querySelector('.gp-earned').textContent=num(medalWin(app.bet(0),e.totalHundredths))+' WIN';
-   scene.querySelector('.gp-sugar-state').textContent=e.sugarAwarded?'GET!':'✦';
+   // Cache DOM changes during the 3D roulette's continuous render loop.
+   // Repaint node/edge/triangle classes only on actual gameplay changes.
+   const geometryKey=[e.cycle,e.version,e.phase,e.hits.size,e.links.size,
+     e.filled.size,e.lastNode,e.pendingDraws.size,e.sugarAwarded].join('/');
+   if(geometryKey!==lastGeometryKey){
+     lastGeometryKey=geometryKey;
+     updateDraw(scene,e);updateDraw(mini,e);
+   }
+   const count=e.filled.size+' / 24',win=num(medalWin(app.bet(0),e.totalHundredths))+' WIN',
+         sugar=e.sugarAwarded?'GET!':'✦';
+   if(gpFillLabel.textContent!==count)gpFillLabel.textContent=count;
+   if(gpWinLabel.textContent!==win)gpWinLabel.textContent=win;
+   if(gpSugarLabel.textContent!==sugar)gpSugarLabel.textContent=sugar;
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
