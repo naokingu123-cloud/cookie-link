@@ -199,7 +199,7 @@ try{
    // Edge art is taken solely from the 42 true segments; no decorative
    // large-triangle overlay which could suggest false connecting lines.
    const outline=path([0,4,5,10,17,16,18,14,13,8,1,2]);
-   return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-16 -18 352 350" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
+   return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-16 -28 352 360" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
       '<polygon points="'+outline+'" fill="url(#'+prefix+'-waffle)" stroke="#fff0be" stroke-width="7" stroke-linejoin="round"/>'+
       '<polygon points="'+outline+'" fill="url(#'+prefix+'-biscuit)" stroke="#ae7c4f" stroke-width="3.3" stroke-linejoin="round"/>'+
       faces+lines+nodes+'</svg>';
