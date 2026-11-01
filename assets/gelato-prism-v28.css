@@ -495,3 +495,46 @@ body.gelato-enabled .gp-mini.gp-raster-ready .gp-raster-board{
  width:100%!important;height:100%!important;
  filter:none!important;
 }
+
+
+/* v38: mandatory PNG Canvas for the active main Gelato board.
+   Stronger than the legacy #panel0 .gp-board-svg display:block!important. */
+body.gelato-active #panel0 .gp-mold.gp-raster-ready{
+ position:absolute!important;
+ inset:0!important;
+ box-sizing:border-box!important;
+ display:grid!important;
+ place-items:center!important;
+ overflow:hidden!important;
+ width:100%!important;
+ height:100%!important;
+ padding:0 5px 5px!important;
+ margin:0!important;
+ transform:none!important;
+}
+body.gelato-active #panel0 .gp-mold.gp-raster-ready > svg.gp-board-svg{
+ display:none!important;
+ visibility:hidden!important;
+ opacity:0!important;
+ pointer-events:none!important;
+}
+body.gelato-active #panel0 .gp-mold.gp-raster-ready > canvas.gp-raster-board{
+ display:block!important;
+ visibility:visible!important;
+ opacity:1!important;
+ position:relative!important;
+ inset:auto!important;
+ z-index:5!important;
+ width:100%!important;
+ height:100%!important;
+ min-width:0!important;
+ min-height:0!important;
+ max-width:100%!important;
+ max-height:100%!important;
+ object-fit:contain!important;
+ margin:auto!important;
+ pointer-events:none!important;
+}
+body.gelato-active #panel0 .gp-mold.gp-raster-ready::before{
+ display:none!important;
+}
