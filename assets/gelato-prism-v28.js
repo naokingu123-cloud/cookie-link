@@ -342,6 +342,70 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
+ // Same per-cell presentation as Six Drop: circular light comets and
+ // alternating REACH/award labels, never floating rectangular cards.
+ const sixReachLayer=document.createElement('div');
+ sixReachLayer.className='gp-six-drop-reach-layer six-reach-layer';
+ sixReachLayer.setAttribute('aria-label','ジェラートプリズム 番号別リーチ');
+ rasterMold.appendChild(sixReachLayer);
+ let sixReachKey='';
+ function gelatoDropReachComet(tier){
+   if(typeof sixDropReachCometMarkup==='function')return sixDropReachCometMarkup(tier);
+   return '<svg class="reach-comet-track" viewBox="0 0 100 100">'+
+     '<g class="reach-comet" style="--dash:0 9 7 84;--start:0">'+
+     '<circle cx="50" cy="50" r="46" pathLength="100" class="comet-glow"/>'+
+     '<circle cx="50" cy="50" r="46" pathLength="100" class="comet-mid"/>'+
+     '<circle cx="50" cy="50" r="46" pathLength="100" class="comet-head"/>'+
+     '</g></svg>';
+ }
+ function updateGelatoSixReach(e){
+   const reach=getNodeReachTiers(e);
+   const board=rasterMain.getBoundingClientRect(),mold=rasterMold.getBoundingClientRect();
+   if(!board.width||!board.height||!mold.width||!mold.height){
+     sixReachLayer.replaceChildren();sixReachKey='';return;
+   }
+   const rendered=Math.min(board.width,board.height);
+   const ox=board.left-mold.left+(board.width-rendered)/2;
+   const oy=board.top-mold.top+(board.height-rendered)/2;
+   const diameter=Math.max(24,Math.min(42,rendered*42/500));
+   const content=[...reach].map(([i,v])=>i+'/'+v.tier).join(',');
+   const key=[e.cycle,e.version,e.phase,e.processed,content,
+     Math.round(ox),Math.round(oy),Math.round(rendered),Math.round(mold.width),
+     Math.round(mold.height),!!app.paused].join('|');
+   sixReachLayer.classList.toggle('is-paused',!!app.paused);
+   if(key===sixReachKey)return;
+   sixReachKey=key;sixReachLayer.replaceChildren();
+   if(!reach.size||!rasterImages.ready)return;
+   const frag=document.createDocumentFragment();
+   for(const [index,result] of reach){
+     const p=rasterCoords[index],tier=result.tier;
+     if(!p)continue;
+     const el=document.createElement('div');
+     el.className='six-reach-cell gp-six-reach-cell';
+     el.dataset.tier=String(tier);
+     el.dataset.number=String(result.number);
+     el.style.left=(ox+rendered*p.x/500-diameter/2)+'px';
+     el.style.top=(oy+rendered*p.y/500-diameter/2)+'px';
+     el.style.width=diameter+'px';el.style.height=diameter+'px';
+     const comets=(tier===1||tier===2)?
+       '<span class="reach-orbit" data-tier="'+tier+'">'+gelatoDropReachComet(tier)+'</span>':'';
+     const rainbow=tier===3?
+       '<span class="allclear-reach-aura"><svg class="allclear-reach-perimeter" viewBox="0 0 100 100">'+
+       '<circle class="perimeter-rail" cx="50" cy="50" r="44" pathLength="100"/>'+
+       '<circle class="perimeter-trail" cx="50" cy="50" r="44" pathLength="100"/>'+
+       '<circle class="perimeter-core" cx="50" cy="50" r="44" pathLength="100"/>'+
+       '</svg></span>':'';
+     const words=['','高額','超高額','全獲り'][tier];
+     el.innerHTML='<span class="reach-glints" data-tier="'+tier+'"><i></i><i></i><i></i></span>'+
+       comets+rainbow+
+       '<span class="tile-reach '+(tier?'alternating':'')+'" data-tier="'+tier+'">'+
+       '<span class="reach-first">リーチ</span>'+
+       (tier?'<span class="reach-second">'+words+'</span>':'')+'</span>';
+     frag.appendChild(el);
+   }
+   sixReachLayer.appendChild(frag);
+ }
+
  // Reach uses the exact numbered sockets (same four-tier language as Candy),
  // never an overlay banner. Each number predicts the next ball independently.
  const REACH_NAMES=['リーチ','高額','超高額','全獲り'];
@@ -957,6 +1021,7 @@ try{
          el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
    }
    drawRaster(e,bet);
+   updateGelatoSixReach(e);
    updateCollectorHUD(e,bet);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
@@ -1015,14 +1080,14 @@ try{
    if(ev.phase==='complete')recordChanged(app);
  },app.sleep);
  app.engines[0]=e;slot.engine=e;
- // Keep reach highlights lively without involving full world rerendering.
- // Only the two small 2D canvases refresh while these numbered reaches exist.
+ // Animate active photon streams on existing links without touching
+ // gameplay RNG or other games' renderers. Six Drop reach uses native CSS.
  setInterval(()=>{
-   if(document.hidden||!document.body.classList.contains('gelato-active'))return;
-   if(getNodeReachTiers(e).size===0)return;
+   if(document.hidden||app.paused||!document.body.classList.contains('gelato-active'))return;
+   if(!e.links.size&&!e.hits.size)return;
    rasterKey='';
    drawRaster(e,app.bet(0));
- },115);
+ },90);
  e.beforeComplete=async token=>{if(token===e.version)await e.wait(280,token);};
  // Keep the other two original game engines and all common accounting.
  const nativeRender=render;
