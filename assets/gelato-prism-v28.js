@@ -177,7 +177,7 @@ try{
        '<g class="gp-ice" clip-path="url(#'+prefix+'-clip'+f.id+')">'+
        '<polygon points="'+path(f.nodes)+'" fill="url(#'+prefix+'-ice'+f.flavor+')"/>'+
        '<path d="M'+(f.x-21)+' '+(f.y-7)+'q18-16 37 1t-8 19" stroke="#fff8ec" stroke-width="5" fill="none" opacity=".62"/>'+
-       '<ellipse cx="'+(f.x-7)+'" cy="'+(f.y-7)+'" rx="4" ry="2" fill="#fffefa" opacity=".7"/>'++
+       '<ellipse cx="'+(f.x-7)+'" cy="'+(f.y-7)+'" rx="4" ry="2" fill="#fffefa" opacity=".7"/>'+
        '<path d="M'+(f.x-15)+' '+(f.y+7)+'Q'+(f.x-5)+' '+(f.y-12)+' '+(f.x+17)+' '+(f.y+1)+'" fill="none" stroke="#fff" stroke-width="2" opacity=".56"/>'+
        '<circle cx="'+(f.x+8)+'" cy="'+(f.y+7)+'" r="2" fill="#fff" opacity=".72"/>'+
        '</g><polygon class="gp-face-border" points="'+path(f.nodes)+'" fill="none" stroke="#fffaf3" stroke-width="1.8"/>'+
