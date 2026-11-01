@@ -235,10 +235,13 @@ function paint(target,time,small=false){
  if(!app.bet(1)){x.fillStyle='#201d40aa';x.fillRect(30,60,460,490);text(x,'BETしてください',260,300,30);}
 }
 function updateHUD(){
- const bet=app.bet(1),key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,engine.fullCount,engine.mixCount,bet].join('/');
+ const bet=app.bet(1),key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,engine.fullCount,engine.mixCount,engine.sugarTarget,engine.sugarAwarded,bet].join('/');
  if(key===uiKey)return;uiKey=key;
  scene.querySelector('.wp-power-next b').textContent=engine.power+'杯';
  scene.querySelector('.wp-score strong').textContent=engine.fullCount+' / 21';
+ const summary=scene.querySelector('.wp-sugar-summary');
+ summary.textContent=engine.sugarAwarded?'✦GET!':'✦'+engine.sugarTarget+'杯';
+ summary.classList.toggle('is-get',engine.sugarAwarded);
  for(const node of scene.querySelectorAll('.wp-boost-stage')){
    const level=+node.dataset.power;
    node.classList.toggle('current',level===engine.power);
@@ -250,8 +253,17 @@ function updateHUD(){
    node.setAttribute('aria-label',n+'番：'+(engine.seen.has(n)?'獲得':'注入量UP待機'));
  });
  scene.querySelector('.wp-pay-fixed b').textContent=money(bet,100)+'WIN';
- for(const row of scene.querySelectorAll('[data-full]')){const n=+row.dataset.full;row.querySelector('b').textContent=money(bet,K.PAY[n])+'WIN';row.classList.toggle('current',n===engine.fullCount);}
+ for(const row of scene.querySelectorAll('[data-full]')){
+  const n=+row.dataset.full;
+  row.querySelector('b').textContent=money(bet,K.PAY[n])+'WIN';
+  row.classList.toggle('current',n===engine.fullCount);
+  const marker=row.querySelector('.wp-sugar-mark');
+  marker.textContent=n===engine.sugarTarget?(engine.sugarAwarded?'✦GET!':'✦'):'';
+  marker.classList.toggle('is-get',n===engine.sugarTarget&&engine.sugarAwarded);
+ }
  scene.querySelector('.wp-pay-fixed').classList.toggle('current',engine.fullCount===21);
+ scene.querySelector('.wp-pay-fixed .wp-sugar-mark').textContent=
+   engine.sugarTarget===21?(engine.sugarAwarded?'✦GET!':'✦'):'';
  const top=Math.max(5,Math.min(20,engine.fullCount+3));scene.querySelector('.wp-pay-track').style.setProperty('--offset',20-top);
  scene.querySelector('.wp-mix i').textContent=engine.mixCount;scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
@@ -280,7 +292,9 @@ const tabs0=tabs;tabs=function(a){
  const saved=S.engine;S.engine=null;try{tabs0(a);}finally{S.engine=saved;}
  const bet=a.bet(1),win=medalWin(bet,engine.totalHundredths);
  fitGoldenNumber(S.tabBet,num(bet),14,76);S.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(S.tabWin,num(win),17,50);
- S.tabSugar.hidden=true;S.sugarGet.hidden=true;S.tab.classList.toggle('off',bet<=0);
+ S.tabSugar.hidden=false;S.tabSugar.classList.toggle('collected',engine.sugarAwarded);
+ if(typeof applySugarTier==='function')applySugarTier(S.tabSugar.querySelector('.sugar-gem'),wonderTier(bet));
+ S.sugarGet.hidden=!engine.sugarAwarded;S.tab.classList.toggle('off',bet<=0);
 };
 const hud0=hud;hud=function(a){
  if(active!==1){document.body.classList.remove('winery-active');return hud0(a);}
@@ -312,7 +326,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:2,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:54,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid] 21 glasses / 4 boosts / 8 draws; Six Drop + Gelato + Winery installed');
 })();
