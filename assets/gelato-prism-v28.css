@@ -626,3 +626,25 @@ body.gelato-active #panel0 .gp-board-bonus.gp-bonus-complete{
   right:1%!important;top:1%!important;width:25%!important;height:18%!important;
  }
 }
+
+
+/* v41: generated Popsicle Kingdom backdrop, keep crystal PNG mold on top. */
+body.gelato-active #panel0 .gp-scene{
+ background:
+  radial-gradient(ellipse at 50% 42%,rgba(255,252,244,.38),rgba(247,251,255,.10) 58%,transparent 82%),
+  url('../assets/gelato-ice-candy-kingdom-v41.webp') center center/cover no-repeat!important;
+ background-color:#b8e6ff!important;
+}
+/* Let the animated ice-bucket liquid be visible over prize triangles. */
+body.gelato-active #panel0 .gp-flash{
+ top:7%!important;left:31%!important;right:31%!important;
+ padding:5px 2px!important;
+ font-size:clamp(9px,2vw,13px)!important;
+ border-radius:10px!important;
+ opacity:.94;
+}
+/* Canvas number and prize caches stay above the PNG gelato and crystal rails. */
+body.gelato-active #panel0 .gp-mold.gp-raster-ready>canvas.gp-raster-board{
+ image-rendering:auto!important;
+ z-index:6!important;
+}
