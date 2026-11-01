@@ -354,7 +354,7 @@ try{
    rasterImages.labels=offscreen(MAIN_PX);
    rasterImages.numbers=offscreen(MAIN_PX);
  }
- Promise.all([
+ const standardAssetsReady=Promise.all([
    loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v37.png'),
    loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v37.png'),
    loadRasterAsset(rasterImages.trim,'gelato-prism-trim-v37.png')
@@ -368,6 +368,7 @@ try{
    console.info('[GelatoPrism] v37 PNG renderer ready (640 + 192 px, cached tiles)');
  }).catch(err=>{
    console.info('[GelatoPrism] v37 PNGs are not uploaded yet; fallback board remains',err.message);
+   throw err;
  });
  // Use the generated snowflake exterior, with ALL internal 42 rails rebuilt
  // from the same regular-hexagram coordinates as the payout engine. v40 has
@@ -375,6 +376,7 @@ try{
  // Two PNGs can be uploaded after the code; failed loads preserve v37 intact.
  const exactIceBoard=new Image(),exactIceRails=new Image();
  Promise.all([
+   standardAssetsReady,
    loadRasterAsset(exactIceBoard,'gelato-prism-ice-base-v40.png'),
    loadRasterAsset(exactIceRails,'gelato-prism-ice-rails-v40.png')
  ]).then(()=>{
