@@ -435,6 +435,44 @@ try{
      }
    }
  }
+ // Small stylized enamel bucket is drawn only during payout filling.
+ // The cached image layers remain fully raster; this is an animated overlay.
+ function drawIceBucket(ctx,pour){
+   const faces=pour.faces;if(!faces.length)return;
+   const step=Math.min(faces.length-1,Math.floor(pour.progress*faces.length));
+   const f=FACES[faces[step]];if(!f)return;
+   const x=f.nodes.reduce((n,i)=>n+rasterCoords[i].x,0)/3*MAIN_SCALE;
+   const y=f.nodes.reduce((n,i)=>n+rasterCoords[i].y,0)/3*MAIN_SCALE;
+   const bx=Math.min(590,Math.max(70,x+40)),by=Math.max(52,y-116);
+   ctx.save();
+   const liquid=ctx.createLinearGradient(bx-6,by+26,x,y);
+   liquid.addColorStop(0,'#fffbf0');liquid.addColorStop(.45,'#fc80c8');liquid.addColorStop(1,'#ffecf1');
+   ctx.beginPath();ctx.moveTo(bx-17,by+24);
+   ctx.quadraticCurveTo(bx-12,by+65,x,y-4);
+   ctx.strokeStyle='#d66df7';ctx.lineWidth=13;ctx.globalAlpha=.83;ctx.stroke();
+   ctx.strokeStyle=liquid;ctx.lineWidth=9;ctx.stroke();
+   ctx.globalAlpha=1;
+   for(let i=0;i<5;i++){
+     const t=(pour.progress*2+i*.17)%1;
+     const dx=bx-17+(x-bx+17)*t,dy=by+25+(y-by-25)*t*t;
+     ctx.beginPath();ctx.ellipse(dx,dy,3+i%3,4+i%2,0,0,Math.PI*2);
+     ctx.fillStyle=i%2?'#fff8ef':'#f696e5';ctx.fill();
+   }
+   ctx.translate(bx,by);ctx.rotate(-.32);
+   const enamel=ctx.createLinearGradient(-38,-26,32,35);
+   enamel.addColorStop(0,'#fffefd');enamel.addColorStop(.22,'#c4edff');
+   enamel.addColorStop(.64,'#77b7ed');enamel.addColorStop(1,'#35579d');
+   ctx.lineWidth=7;ctx.strokeStyle='#eafaff';
+   ctx.beginPath();ctx.ellipse(0,-10,39,20,0,Math.PI,Math.PI*2);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(-32,-8);ctx.lineTo(-24,28);
+   ctx.quadraticCurveTo(0,47,26,27);ctx.lineTo(33,-8);ctx.closePath();
+   ctx.fillStyle=enamel;ctx.fill();ctx.lineWidth=4;ctx.strokeStyle='#ffe8a4';ctx.stroke();
+   ctx.beginPath();ctx.ellipse(0,-11,35,12,0,0,Math.PI*2);
+   ctx.fillStyle='#ffc2e9';ctx.fill();ctx.strokeStyle='#fff9f1';ctx.lineWidth=5;ctx.stroke();
+   ctx.fillStyle='#ffffff';ctx.font='1000 26px system-ui';
+   ctx.textAlign='center';ctx.fillText('❄',0,21);
+   ctx.restore();
+ }
  function paintRaster(ctx,e,bet,small){
    const size=small?MINI_PX:MAIN_PX,scale=size/MAIN_PX;
    ctx.setTransform(1,0,0,1,0,0);
@@ -443,10 +481,26 @@ try{
    for(const f of FACES){
      if(!e.filled.has(f.id))continue;
      const t=rasterImages.faceTiles[f.id];
-     ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+     // Newly awarded gelato rises from the bottom of its crystal cavity.
+     const pour=e.pouring,order=pour?.faces.indexOf(f.id)??-1;
+     if(pour&&order>=0){
+       const n=pour.faces.length;
+       const amount=Math.max(0,Math.min(1,(pour.progress*n-order)/Math.min(1.8,n)));
+       if(amount<=0)continue;
+       if(amount<1){
+         ctx.save();
+         ctx.beginPath();
+         ctx.rect(t.x*scale,t.y*scale+t.height*scale*(1-amount),
+           t.width*scale,t.height*scale*amount);
+         ctx.clip();
+       }
+       ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+       if(amount<1)ctx.restore();
+     }else ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
    }
    ctx.drawImage(rasterImages.trimCache,0,0,size,size);
    if(rasterImages.iceReady&&!rasterImages.exactV40)ctx.drawImage(rasterImages.iceCache,0,0,size,size);
+   if(!small&&e.pouring&&e.pouring.progress<1)drawIceBucket(ctx,e.pouring);
    if(!small){
      ctx.drawImage(rasterImages.labels,0,0);
      // Sugar icon is dynamic and can move without repainting label cache.
@@ -483,7 +537,8 @@ try{
  function drawRaster(e,bet){
    if(!rasterImages.ready)return;
    const key=[e.cycle,e.version,e.hits.size,e.links.size,e.filled.size,
-     e.lastNode,[...e.pendingDraws].join(','),e.sugarAwarded,bet].join('/');
+     e.lastNode,[...e.pendingDraws].join(','),e.sugarAwarded,bet,
+     e.pouring?Math.floor(e.pouring.progress*50):-1].join('/');
    if(key===rasterKey)return;
    rasterKey=key;
    updateStaticLabels(e,bet);
@@ -536,10 +591,35 @@ try{
    if(flashTimer)clearTimeout(flashTimer);
    flashTimer=setTimeout(()=>{el.hidden=true},1550);
  }
+ let pourToken=0;
+ function startGelatoPour(ev,e){
+   const token=++pourToken,version=e.version;
+   const faces=ev.newFaces.slice();
+   if(!faces.length)return;
+   const state={faces,progress:0};
+   e.pouring=state;
+   let started=null,lastUpdate=0;
+   const duration=Math.min(2000,950+faces.length*50);
+   function frame(now){
+     if(token!==pourToken||e.version!==version||e.pouring!==state)return;
+     if(started==null)started=now;
+     if(now-lastUpdate>=30||now-started>=duration){
+       lastUpdate=now;
+       state.progress=Math.min(1,(now-started)/duration);
+       drawGelato();
+     }
+     if(state.progress<1)requestAnimationFrame(frame);
+     else{e.pouring=null;drawGelato();}
+   }
+   requestAnimationFrame(frame);
+ }
  function onGelatoEvent(ev,e){
    slot.engine=e;slot.event=ev;slot.dirtyMain=true;slot.dirtyMini=true;
-   if(ev.phase==='ready'){slot.reachStatus='inactive';slot.reachEpoch=(slot.reachEpoch||0)+1;slot.reachBoardKey=null;slot.reachResults=[];slot.tabReachResults=[];}
-   if(ev.phase==='gelatoFill')flash(ev.full?'RAINBOW GELATO BONUS!!':ev.newFaces.length+' GELATO FILL! +'+num(medalWin(app.bet(0),ev.gain))+' WIN');
+   if(ev.phase==='ready'){pourToken++;e.pouring=null;slot.reachStatus='inactive';slot.reachEpoch=(slot.reachEpoch||0)+1;slot.reachBoardKey=null;slot.reachResults=[];slot.tabReachResults=[];}
+   if(ev.phase==='gelatoFill'){
+     startGelatoPour(ev,e);
+     flash(ev.full?'全埋め！':ev.newFaces.length+' GELATO GET! +'+num(medalWin(app.bet(0),ev.gain))+' WIN');
+   }
    if(ev.phase==='sugaraward')flash('✦ WONDER SUGAR GET!');
    if(['waiting','settled','complete'].includes(ev.phase))requestReach(slot,e,app);
    drawGelato();scheduleUI(app);
