@@ -301,7 +301,7 @@ try{
  };
  const nativeHud=hud;
  hud=function(a){
-   if(active!==0)return nativeHud(a);
+   if(active!==0){document.body.classList.remove('gelato-active');return nativeHud(a);}
    active=1;
    try{nativeHud(a);}finally{active=0;}
    document.body.classList.remove('choco-active','carnival-active');document.body.classList.add('gelato-active');
