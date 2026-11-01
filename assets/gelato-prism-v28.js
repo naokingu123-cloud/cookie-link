@@ -1,4 +1,4 @@
-/* GELATO PRISM v43 - dark unfilled panels, luminous popsicle textures, four triangle collectors */
+/* GELATO PRISM v44 - frozen fruit panels, sliding payout table, compact collectors */
 (()=>{
 'use strict';
 try{
@@ -342,17 +342,39 @@ try{
  // This UI is outside the PNG mould so it never obscures the star's digits.
  const collectorPanel=document.createElement('div');
  collectorPanel.className='gp-collector-panel';
- collectorPanel.innerHTML='<div class="gp-collector-title">ジェラート収集</div>'+
-   [1,2,3,4].map(g=>'<div class="gp-collector-row" data-grade="'+g+'">'+
-     '<span class="gp-diamond-wrap"><span class="gp-diamond">'+
+ const payoutRows=COUNT_MULT.slice(10).map((multiple,i)=>{
+   const n=10+i,amount=multiple.toFixed(1);
+   return '<div class="gp-pay-row" data-panels="'+n+'">'+
+     '<span class="gp-pay-panel-n">'+n+'枚</span>'+
+     '<strong>'+amount+'倍</strong></div>';
+ }).join('');
+ collectorPanel.innerHTML=
+  '<div class="gp-payout-header"><span>配当表</span><small>最終獲得枚数</small></div>'+
+  '<div class="gp-payout-window"><div class="gp-payout-track">'+payoutRows+'</div></div>'+
+  '<div class="gp-payout-nav"><span>▲</span><span>スライド配当</span><span>▼</span></div>'+
+  '<div class="gp-collector-title">4色コレクター</div>'+
+  '<div class="gp-collector-grid">'+
+  [1,2,3,4].map(g=>'<div class="gp-collector-row" data-grade="'+g+'">'+
+    '<span class="gp-diamond-wrap"><span class="gp-diamond">'+
        Array.from({length:4},(_,i)=>'<i class="gp-diamond-piece" data-piece="'+i+'"></i>').join('')+
-     '</span></span>'+
-     '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b><small class="gp-collected-n">0 / 4</small></span>'+
-     '<strong>'+COLLECTOR_MULT[g].toFixed(1)+'倍</strong></div>').join('')+
-   '<div class="gp-total-tally"><b>獲得 <span class="gp-tally-n">0</span> / 24</b>'+
-   '<small>最終枚数 <span class="gp-tally-m">0.0倍</span></small></div>'+
-   '<div class="gp-pattern-label"></div>';
+    '</span></span>'+
+    '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b><small class="gp-collected-n">0/4</small></span>'+
+    '<strong>'+COLLECTOR_MULT[g].toFixed(1)+'倍</strong></div>').join('')+
+  '</div>'+
+  '<div class="gp-total-tally"><b>獲得 <span class="gp-tally-n">0</span> / 24</b>'+
+  '<small>枚数配当 <span class="gp-tally-m">0.0倍</span></small></div>'+
+  '<div class="gp-pattern-label"></div>';
  scene.appendChild(collectorPanel);
+ // During the BET phase, cycle payout tiers; in play follow earned panels.
+ let gpPayoutTour=0;
+ setInterval(()=>{
+   const engine=app?.engines?.[0];
+   if(engine?.kind!=='gelato'||app.phase!=='ready'||
+      !document.body.classList.contains('gelato-active'))return;
+   gpPayoutTour=(gpPayoutTour+1)%11;
+   const track=collectorPanel.querySelector('.gp-payout-track');
+   if(track)track.style.setProperty('--gp-slide-index',String(gpPayoutTour));
+ },3600);
  let collectorKey='';
  function updateCollectorHUD(e){
    if(!e?.faceGrades)return;
@@ -374,6 +396,17 @@ try{
    collectorPanel.querySelector('.gp-tally-m').textContent=(e.countMult||0).toFixed(1)+'倍';
    collectorPanel.querySelector('.gp-pattern-label').textContent=
      (e.pattern?.id||'')+' '+(e.pattern?.name||'');
+   const activeRow=Math.max(10,e.filled.size);
+   const activeIndex=Math.max(0,activeRow-10);
+   const visibleRows=5;
+   const firstRow=Math.max(0,Math.min(COUNT_MULT.length-10-visibleRows,activeIndex-2));
+   const track=collectorPanel.querySelector('.gp-payout-track');
+   track.style.setProperty('--gp-slide-index',String(firstRow));
+   for(const row of track.querySelectorAll('.gp-pay-row')){
+     const n=+row.dataset.panels;
+     row.classList.toggle('gp-current',n===activeRow&&e.filled.size>=10);
+     row.classList.toggle('gp-next',n===10&&e.filled.size<10);
+   }
  }
 
  // Bonus emblem is now layered over the playable board, not a cropped header.
