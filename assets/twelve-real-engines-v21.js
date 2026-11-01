@@ -10,15 +10,18 @@
 function install(){
  try{
   if(!app||!slots?.length)return;
-  const KEY='sweets-link-board-system-v21';
+  const KEY='sweets-link-board-system-v21'; // keep old key for migration
   const TYPES=['cookie','canyon','drop'];
   const TITLES=['クッキーリンク','チョコレートキャニオン','シックスドロップ'];
+  // Ten independent engines: Cookie 4 / Canyon 3 / Six Drop 3.
   const ordered=[
     {game:0,mini:0},{game:1,mini:0},{game:2,mini:0},
     {game:0,mini:1},{game:0,mini:2},{game:0,mini:3},
-    {game:1,mini:1},{game:1,mini:2},{game:1,mini:3},
-    {game:2,mini:1},{game:2,mini:2},{game:2,mini:3}
+    {game:1,mini:1},{game:1,mini:2},
+    {game:2,mini:1},{game:2,mini:2}
   ];
+  const BOARD_COUNT=ordered.length;
+  const priorTwelveIndices=[0,1,2,3,4,5,6,7,9,10];
   const indexByGame=Array.from({length:3},(_,g)=>
     ordered.map((p,i)=>p.game===g?i:-1).filter(i=>i>=0));
   const defaults=ordered.map((p,id)=>({
@@ -29,11 +32,13 @@ function install(){
     speed:1
   }));
   let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch{}
-  let mode=saved.mode==='3'?'3':'12';
+  let mode=saved.mode==='3'?'3':'10';
   let pendingMode=null, selected=[0,0,0], currentMode='3';
   let baseBets=app.bets.slice(0,3);
   const configs=defaults.map((d,i)=>{
-    const v=Array.isArray(saved.boards)?saved.boards[i]||{}:{};
+    const originalIndex=Array.isArray(saved.boards)&&saved.boards.length===12
+      ?priorTwelveIndices[i]:i;
+    const v=Array.isArray(saved.boards)?saved.boards[originalIndex]||{}:{};
     return {
       name:String(v.name||d.name).slice(0,16),
       bet:Number.isSafeInteger(v.bet)&&v.bet>=0&&v.bet<=100000?v.bet:d.bet,
@@ -45,7 +50,7 @@ function install(){
   const ghostMap=new Map();
   const cb=app.onEvent,betFn=app.bet.bind(app);
   const miniReachCache=new Map();
-  // Shared cooperative reach scheduler: one small budget for all 12 boards.
+  // Shared cooperative reach scheduler: one small budget for all ten boards.
   // Never create twelve independent timer chains for the same draw.
   const reachJobs=[];
   let reachTimer=null;
@@ -62,7 +67,7 @@ function install(){
     if(deadline&&!deadline.didTimeout&&deadline.timeRemaining()<3){
       scheduleReachPump();return;
     }
-    if(currentMode!=='12'||app.phase==='ready'){
+    if(currentMode!=='10'||app.phase==='ready'){
       reachJobs.length=0;return;
     }
     const finishBy=performance.now()+3;
@@ -120,7 +125,7 @@ function install(){
   const savedSet=()=>{try{localStorage.setItem(KEY,JSON.stringify({mode,boards:configs}));}catch{}};
   const optionFor=(i)=>configs[i];
   const gameFor=i=>ordered[i].game;
-  const groupPos=(group,mini)=>indexByGame[group][mini]??group;
+  const groupPos=(group,mini)=>indexByGame[group]?.[mini];
   const isReady=()=>app.phase==='ready';
   function activeSlot(group){return groupPos(group,selected[group]);}
   function betAt(i){
@@ -185,7 +190,7 @@ function install(){
   }
   function getEngine(i){return i<3?app.engines[i]:ghostMap.get(i);}
   function ghostEvent(i,ev,e){
-    if(!app||currentMode!=='12'||!app.engines.includes(e))return;
+    if(!app||currentMode!=='10'||!app.engines.includes(e))return;
     // Keep actual event payload for compact full-renderer fall/refill FX.
     lastEvents.set(i,ev);
     window.sweets12FrameScheduler?.markBoard(i);
@@ -222,20 +227,20 @@ function install(){
   app.onEvent=function(i,ev,e,a){
     lastEvents.set(i,ev);
     window.sweets12FrameScheduler?.markBoard(i);
-    if(currentMode==='12'&&selected[i]>0&&ev.phase!=='rainbowappear'){
+    if(currentMode==='10'&&selected[i]>0&&ev.phase!=='rainbowappear'){
       if(ev.phase==='complete')recordChanged(a);
       return;
     }
     return cb(i,ev,e,a);
   };
   app.bet=function(i){
-    if(currentMode==='12'&&Number.isInteger(i)&&i>=0&&i<3){
+    if(currentMode==='10'&&Number.isInteger(i)&&i>=0&&i<3){
       return betAt(activeSlot(i));
     }
     return betFn(i);
   };
   function applySettingsToInstances(reset=false){
-    for(let i=0;i<12;i++){
+    for(let i=0;i<BOARD_COUNT;i++){
       const cfg=configs[i],e=getEngine(i);
       if(!e)continue;
       app.bets[i]=want(i);
@@ -251,24 +256,24 @@ function install(){
     app.onChange(app);
     window.sweets12FrameScheduler?.markAll();
   }
-  function attachTwelve(){
-    if(currentMode==='12')return;
-    for(let i=3;i<12;i++){
+  function attachTen(){
+    if(currentMode==='10')return;
+    for(let i=3;i<BOARD_COUNT;i++){
       let e=ghostMap.get(i);
       if(!e)e=makeGhost(i);
       app.engines[i]=e;
       e.reset({keepWonder:true,keepHammers:false});
     }
-    app.engines.length=12;
-    while(app.bets.length<12)app.bets.push(3000);
-    while(app.locked.length<12)app.locked.push(0);
-    while(app.paid.length<12)app.paid.push(false);
-    while(app.roundWins.length<12)app.roundWins.push(0);
-    currentMode='12';
+    app.engines.length=BOARD_COUNT;
+    while(app.bets.length<BOARD_COUNT)app.bets.push(3000);
+    while(app.locked.length<BOARD_COUNT)app.locked.push(0);
+    while(app.paid.length<BOARD_COUNT)app.paid.push(false);
+    while(app.roundWins.length<BOARD_COUNT)app.roundWins.push(0);
+    currentMode='10';
     applySettingsToInstances(true);
     document.body.classList.add('twelve-mini-tabs-v16');
   }
-  function detachTwelve(){
+  function detachTen(){
     if(currentMode==='3')return;
     for(const e of ghostMap.values()){e.paused=true;}
     app.engines.length=3;
@@ -290,16 +295,16 @@ function install(){
   }
   function applyMode(value){
     if(value!==currentMode){
-      if(value==='12')attachTwelve();else detachTwelve();
+      if(value==='10')attachTen();else detachTen();
     }
-    document.body.classList.toggle('twelve-live-active',currentMode==='12');
+    document.body.classList.toggle('twelve-live-active',currentMode==='10');
     document.body.dataset.gameMode=currentMode;
     window.sweets12FrameScheduler?.markAll();
-    if(currentMode==='12')for(let g=0;g<3;g++)refreshLarge(g);
+    if(currentMode==='10')for(let g=0;g<3;g++)refreshLarge(g);
     refreshMenu();
   }
   function requestMode(next){
-    if(!['3','12'].includes(next))return;
+    if(!['3','10'].includes(next))return;
     mode=next;savedSet();
     if(!isReady()){
       pendingMode=next;
@@ -312,14 +317,14 @@ function install(){
   app.prepare=function(...args){
     const out=nativePrepare(...args);
     if(pendingMode){const chosen=pendingMode;pendingMode=null;applyMode(chosen);}
-    if(currentMode==='12')applySettingsToInstances(true);
+    if(currentMode==='10')applySettingsToInstances(true);
     return out;
   };
   const nativeSetBet=app.setBet.bind(app);
   app.setBet=function(i,n){
     const ok=nativeSetBet(i,n);
     if(ok&&currentMode==='3'&&i<3)baseBets[i]=n;
-    if(ok&&currentMode==='12'&&i<12){
+    if(ok&&currentMode==='10'&&i<BOARD_COUNT){
       configs[i].bet=n;configs[i].enabled=n>0;savedSet();
       window.sweets12FrameScheduler?.markBoard(i);
     }
@@ -328,17 +333,17 @@ function install(){
   const nativeColor=app.setColorCount.bind(app);
   app.setColorCount=function(...args){
     const result=nativeColor(...args);
-    if(result&&currentMode==='12'&&app.phase==='ready')applySettingsToInstances(true);
+    if(result&&currentMode==='10'&&app.phase==='ready')applySettingsToInstances(true);
     return result;
   };
   const nativeReset=app.resetDebug.bind(app);
   app.resetDebug=function(...args){
     const result=nativeReset(...args);
-    if(currentMode==='12')applySettingsToInstances(true);
+    if(currentMode==='10')applySettingsToInstances(true);
     return result;
   };
   function refreshLarge(group){
-    if(!app||currentMode!=='12')return;
+    if(!app||currentMode!=='10')return;
     const slot=slots[group],i=activeSlot(group),e=getEngine(i);
     if(!slot||!e)return;
     if(slot.engine===e)return;
@@ -356,8 +361,9 @@ function install(){
     scheduleUI(app);
   }
   function selectBoard(group,mini){
-    if(currentMode!=='12')return;
-    if(group<0||group>2||mini<0||mini>3)return;
+    if(currentMode!=='10')return;
+    if(group<0||group>2||mini<0||mini>=indexByGame[group].length)return;
+    if(mini>=indexByGame[group].length)return;
     selected[group]=mini;
     refreshLarge(group);
     window.sweets12FrameScheduler?.selectionChanged();
@@ -405,8 +411,10 @@ function install(){
     return values;
   }
   function getBoard(group,mini){
-    if(currentMode!=='12')return null;
-    const i=groupPos(group,mini),cfg=configs[i],e=getEngine(i);
+    if(currentMode!=='10')return null;
+    const i=groupPos(group,mini);
+    if(i==null)return null;
+    const cfg=configs[i],e=getEngine(i);
     if(!e)return null;
     const bet=betAt(i);
     const score=medalWin(bet,e.totalHundredths||0);
@@ -427,8 +435,8 @@ function install(){
     else if(field==='speed')cfg.speed=[1,2,3].includes(+v)?+v:1;
     savedSet();
     // Changing a display name must not reset real engines or trigger a
-    // full 12-board status/payout recomputation on every typed character.
-    if(field!=='name'&&isReady()&&currentMode==='12')
+    // full multi-board status/payout recomputation on every typed character.
+    if(field!=='name'&&isReady()&&currentMode==='10')
       applySettingsToInstances(field==='colors');
     if(modeInfo)modeInfo.textContent=isReady()?'設定を保存しました':'設定は次ゲームから反映されます';
   }
@@ -444,9 +452,9 @@ function install(){
     pane.innerHTML=
       '<div class="sweets12-mode-select" role="group" aria-label="ゲーム盤面数">'+
       '<button type="button" data-mode="3">3面</button>'+
-      '<button type="button" data-mode="12">12面</button></div>'+
+      '<button type="button" data-mode="10">10面</button></div>'+
       '<p id="sweets12-mode-info" aria-live="polite"></p>'+
-      '<p class="sweets12-info">12面は実際に独立抽選・配当計算します。同じルーレットの8球を使用します。BETや設定は各盤面で個別です。</p>'+
+      '<p class="sweets12-info">10面は独立した盤面・配当計算です。クッキー4面／キャニオン3面／ドロップ3面で、共通の8球を使用します。BETと設定は個別です。</p>'+
       '<div id="sweets12-board-configs" class="sweets12-board-configs"></div>';
     root.before(pane);
     modeInfo=pane.querySelector('#sweets12-mode-info');
@@ -468,7 +476,7 @@ function install(){
     },true);
     configsHolder.addEventListener('change',ev=>{
       const target=ev.target,idx=Number(target.dataset.board),field=target.dataset.field;
-      if(!Number.isInteger(idx)||idx<0||idx>=12||!field)return;
+      if(!Number.isInteger(idx)||idx<0||idx>=BOARD_COUNT||!field)return;
       persistSettingsFromForm(field,idx,field==='enabled'?target.checked:target.value);
       if(field==='enabled'||field==='colors')refreshMenu();
     });
@@ -476,7 +484,7 @@ function install(){
       const target=ev.target;
       if(target.dataset.field==='name'){
         const i=Number(target.dataset.board);
-        if(Number.isInteger(i)&&i>=0&&i<12)persistSettingsFromForm('name',i,target.value);
+        if(Number.isInteger(i)&&i>=0&&i<BOARD_COUNT)persistSettingsFromForm('name',i,target.value);
       }
     });
   }
@@ -506,19 +514,19 @@ function install(){
          [1,2,3].map(v=>'<option value="'+v+'" '+(c.speed===v?'selected':'')+'>'+v+'倍</option>').join('')+
         '</select></label></div></div>';
       }).join('');
-      return '<section class="sweets12-config-group"><h3>'+TITLES[g]+'（4面）</h3>'+cards+'</section>';
+      return '<section class="sweets12-config-group"><h3>'+TITLES[g]+'（'+indexByGame[g].length+'面）</h3>'+cards+'</section>';
     }).join('');
     configsHolder.innerHTML=section;
   }
   // The original result layout was designed for only 3 rows.
-  // In twelve-board mode it becomes a 3x4 compact, scrollable scorecard.
+  // In ten-board mode it becomes a compact scrollable scorecard.
   const nativeResult=renderRoundResult;
   renderRoundResult=function(a){
     nativeResult(a);
     const list=document.getElementById('result-games');
     if(!list)return;
-    list.classList.toggle('sweets12-result-grid',currentMode==='12');
-    if(currentMode!=='12')return;
+    list.classList.toggle('sweets12-result-grid',currentMode==='10');
+    if(currentMode!=='10')return;
     list.querySelectorAll('.result-game').forEach((row,i)=>{
       const icon=row.querySelector('use');
       if(icon)icon.setAttribute('href','#candy'+[0,2,4][gameFor(i)]);
@@ -535,7 +543,7 @@ function install(){
   function attachImmediate(){
     // Always initialize the visible menu, even if currently in 3-board mode.
     makeMenu();
-    if(mode==='12')applyMode('12');
+    if(mode==='10')applyMode('12');
     else{document.body.classList.remove('twelve-mini-tabs-v16');currentMode='3';}
     savedSet();
     scheduleUI(app);
