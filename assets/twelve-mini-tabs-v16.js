@@ -162,6 +162,7 @@ try{
       if(original?.getAttribute('aria-selected')!=='true')original?.click();
       window.sweets12Live?.selectBoard(game,index);
       updateSelection();
+      window.sweets12FrameScheduler?.markAll('board-selected');
     });
    }
    host.append(grid);
@@ -376,28 +377,152 @@ try{
     }
   });
  }
- function update(){
-  if(!installed&&!build())return;
-  const liveService=window.sweets12Live;
-  if(liveService?.mode!=='12')return;
-  updateSelection();
-  if(document.hidden)return;
-  const states=hosts.map((h,g)=>stateFor(h,g));
-  for(const item of ITEMS){
-    const isCurrent=item.cell.classList.contains('is-selected-mini');
-    const actual=liveService.getBoard(item.game,item.index);
-    if(actual)paintReal(item,actual,isCurrent);
-    else paint(item,states[item.game],isCurrent);
-  }
+ // Event-driven miniature scheduler; no 125ms scan of all twelve boards.
+ // The roulette and the full-size board have rendering priority.
+ const pendingBoards=[];
+ const queuedBoards=new Set();
+ const movingBoards=new Set();
+ let idleRequest=0,urgentTimer=0,motionTimer=0,reachTimer=0,animationTick=0;
+ let processedFrames=0,skippedFrames=0,lastCost=0;
+ const liveMode=()=>window.sweets12Live?.mode==='12';
+ const itemId=item=>item.game*4+item.index;
+ const getItemById=id=>ITEMS.find(item=>itemId(item)===id);
+ function enqueue(id){
+   if(!Number.isInteger(id)||id<0||id>=12)return;
+   if(!queuedBoards.has(id)){
+     queuedBoards.add(id);
+     pendingBoards.push(id);
+   }
+   scheduleBoard();
  }
- // Deferred until the main Arcade and v21 independent board service exist.
- setTimeout(update,35);
- // Smooth shared art motion: 8fps for active game's mini boards, 4-5fps
- // for the other two groups. The render helper owns its own frame budget.
- period=setInterval(update,125);
- document.addEventListener('visibilitychange',()=>{if(!document.hidden)update();});
- window.addEventListener('pagehide',()=>clearInterval(period),{once:true});
- window.sweetsTab12Layout={get boards(){return ITEMS.length;},get trial(){return true;}};
- console.info('[Sweets12Tab] 3 existing tab slots replaced by 2x2 miniature layouts; independent engines remain unchanged');
+ function invalidateAll(){
+   if(!installed&&!build())return;
+   updateSelection();
+   for(const item of ITEMS)enqueue(itemId(item));
+ }
+ function markBoard(index){
+   // Real engine IDs are 0,3,4,5 / 1,6,7,8 / 2,9,10,11.
+   const g=index===0||index===3||index===4||index===5?0:
+           index===1||index===6||index===7||index===8?1:
+           index===2||index===9||index===10||index===11?2:-1;
+   const mini=index<3?0:g===0?index-2:g===1?index-5:index-8;
+   if(g>=0)enqueue(g*4+mini);
+ }
+ function scheduleBoard(){
+   if(idleRequest||urgentTimer||!liveMode()||document.hidden)return;
+   if(typeof requestIdleCallback==='function'){
+     idleRequest=requestIdleCallback(drainBoards,{timeout:240});
+   }else{
+     // Safari fallback: never process in the same rAF as roulette physics.
+     // Defer to a task after the next paint and only draw one mini.
+     urgentTimer=setTimeout(()=>{
+       urgentTimer=0;
+       idleRequest=requestAnimationFrame(()=>{
+         idleRequest=0;
+         urgentTimer=setTimeout(()=>{urgentTimer=0;drainBoards(null);},0);
+       });
+     },12);
+   }
+ }
+ function drainBoards(deadline){
+   idleRequest=0;
+   if(!liveMode()||document.hidden||!installed)return;
+   if(deadline&&!deadline.didTimeout&&deadline.timeRemaining()<3){
+     urgentTimer=setTimeout(()=>{urgentTimer=0;scheduleBoard();},24);
+     return;
+   }
+   // Exactly one thumbnail per idle slice even when 12 boards change in
+   // the same draw. No burst of 9 Canvas renders before a roulette frame.
+   const id=pendingBoards.shift();
+   if(id==null)return;
+   queuedBoards.delete(id);
+   const item=getItemById(id);
+   if(!item){if(pendingBoards.length)scheduleBoard();return;}
+   const live=window.sweets12Live;
+   const started=performance.now();
+   const selected=live?.selected?.[item.game]===item.index&&
+      item.host.querySelector('.tab')?.getAttribute('aria-selected')==='true';
+   // No expensive stateFor() DOM scans or prediction calls for other tabs.
+   const data=live?.getBoard(item.game,item.index);
+   if(data)paintReal(item,data,selected);
+   else paint(item,stateFor(item.host,item.game),selected);
+   const duration=performance.now()-started;
+   lastCost=lastCost*.8+duration*.2;
+   processedFrames++;
+   const engine=data?.engine;
+   if(engine?.busy||engine?.opening||engine?.queue?.length||
+       engine?.pendingDraws?.size){
+     movingBoards.add(id);
+     scheduleMotion();
+   }else movingBoards.delete(id);
+   if((data?.reach?.length||0)>4){
+     item.pagedReach=data.reach;
+     scheduleReachPager();
+   }else item.pagedReach=null;
+   if(pendingBoards.length)scheduleBoard();
+ }
+ function scheduleMotion(){
+   if(motionTimer||!movingBoards.size||!liveMode()||document.hidden)return;
+   motionTimer=setTimeout(()=>{
+     motionTimer=0;
+     if(!liveMode()||document.hidden||app?.paused)return;
+     animationTick++;
+     // At most 2 animations requested per pulse; event changes always
+     // take precedence, and hidden games update at a reduced frequency.
+     let added=0;
+     for(const id of movingBoards){
+       const item=getItemById(id);
+       if(!item)continue;
+       const activeGame=item.host.querySelector('.tab')?.getAttribute('aria-selected')==='true';
+       if(!activeGame&&animationTick%3!==id%3)continue;
+       enqueue(id);
+       if(++added>=2)break;
+     }
+     if(movingBoards.size)scheduleMotion();
+   },110);
+ }
+ function scheduleReachPager(){
+   if(reachTimer||!liveMode()||document.hidden)return;
+   const due=2000-Date.now()%2000+8;
+   reachTimer=setTimeout(()=>{
+     reachTimer=0;
+     if(!liveMode()||document.hidden)return;
+     let paged=false;
+     for(const item of ITEMS){
+       if(!item.pagedReach||item.pagedReach.length<=4)continue;
+       renderReach(item.reachDigits,item.pagedReach,Math.floor(Date.now()/2000));
+       paged=true;
+     }
+     if(paged)scheduleReachPager();
+   },due);
+ }
+ function wake(){
+   if(!installed&&!build())return;
+   if(!liveMode())return;
+   invalidateAll();
+   if(movingBoards.size)scheduleMotion();
+ }
+ // The live engine reports each phase change. A Set coalesces all those
+ // notifications; neither the engine nor the 3D physics is delayed.
+ window.sweets12FrameScheduler={
+   markBoard,markAll:invalidateAll,selectionChanged:invalidateAll,
+   get pending(){return queuedBoards.size;},
+   get frames(){return processedFrames;},
+   get paintCostMs(){return lastCost;},
+   get droppedPolls(){return skippedFrames;}
+ };
+ setTimeout(wake,60);
+ document.addEventListener('visibilitychange',()=>{
+   if(!document.hidden)wake();
+ });
+ window.addEventListener('pagehide',()=>{
+   if(typeof cancelIdleCallback==='function'&&idleRequest)cancelIdleCallback(idleRequest);
+   if(urgentTimer)clearTimeout(urgentTimer);
+   if(motionTimer)clearTimeout(motionTimer);
+   if(reachTimer)clearTimeout(reachTimer);
+ },{once:true});
+ window.sweetsTab12Layout={get boards(){return ITEMS.length;},get trial(){return false;}};
+ console.info('[Sweets12Tab] Event-triggered, one-board-per-idle miniature scheduler enabled');
+
 }catch(error){console.error('[Sweets12Tab]',error);}
 })();
