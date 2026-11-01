@@ -1,4 +1,4 @@
-/* GELATO PRISM v37 - regular equilateral star and cached PNG renderer */
+/* GELATO PRISM v39 - icy translucent mold, tab logo and enclosed-region rewards */
 (()=>{
 'use strict';
 try{
@@ -66,7 +66,35 @@ try{
    }
    return result;
  }
- const fill=links=>new Set(FACES.filter(f=>f.edges.every(e=>links.has(e))).map(f=>f.id));
+ // Each 3-node elementary face is a region in the embedded planar graph.
+ // Lit line segments become impermeable walls. Flood-fill from the exterior
+ // through UNLIT segments, then pay every face not reachable from outside.
+ // This includes smaller triangles inside any large enclosed polygon.
+ const faceAtEdge=EDGES.map(()=>[]);
+ for(const f of FACES)for(const id of f.edges)faceAtEdge[id].push(f.id);
+ if(faceAtEdge.some(a=>a.length<1||a.length>2))
+   throw Error('Gelato planar adjacency invalid');
+ function fill(links){
+   const outside=new Set(),queue=[];
+   for(let id=0;id<EDGES.length;id++){
+     if(links.has(id)||faceAtEdge[id].length!==1)continue;
+     const face=faceAtEdge[id][0];
+     if(!outside.has(face)){outside.add(face);queue.push(face);}
+   }
+   for(let pos=0;pos<queue.length;pos++){
+     for(const edgeId of FACES[queue[pos]].edges){
+       if(links.has(edgeId))continue;
+       for(const adjacent of faceAtEdge[edgeId]){
+         if(outside.has(adjacent))continue;
+         outside.add(adjacent);queue.push(adjacent);
+       }
+     }
+   }
+   return new Set(FACES.filter(f=>!outside.has(f.id)).map(f=>f.id));
+ }
+ // Six outer star tips bound both large triangles and must contain all 24.
+ if(fill(link(new Set([0,1,5,13,17,18]))).size!==24)
+   throw Error('Six-tip full-area completion regression');
  class GelatoEngine {
    constructor(random,onEvent,sleep){
      this.random=random;this.onEvent=onEvent;this.sleep=sleep;this.speed=1.4;
@@ -125,7 +153,7 @@ try{
      const next=new Set(this.hits);next.add(pos);
      const state=this.stateFor(next),fresh=[...state.faces].filter(i=>!this.filled.has(i));
      let gain=fresh.reduce((n,i)=>n+FACES[i].reward,0);
-     if(state.faces.size===24&&!this.allComplete)gain+=BONUS;
+     if(this.filled.size+fresh.length===24&&!this.allComplete)gain+=BONUS;
      return {number,gain,total:this.totalHundredths+gain,tier:gain>=BONUS?3:gain>=170?2:gain>=85?1:0};
    }
    async drain(){
@@ -143,7 +171,10 @@ try{
            if(!await this.wait(newHit?250:110,token))return;
            const next=this.stateFor(this.hits);
            const newFaces=[...next.faces].filter(i=>!this.filled.has(i));
-           this.links=next.edges;this.filled=next.faces;this.lastFilled=newFaces;
+           this.links=next.edges;
+           // Accumulate awarded areas across rounds; HIT dots themselves reset.
+           for(const id of newFaces)this.filled.add(id);
+           this.lastFilled=newFaces;
            if(newFaces.length){
              let gain=newFaces.reduce((n,i)=>n+FACES[i].reward,0);
              this.roundCleared+=newFaces.length;
@@ -225,7 +256,13 @@ try{
  }
  const slot=slots[0],originalEvent=app.onEvent;
  slot.holder.classList.add('gp-slot');slot.panel.classList.add('gp-panel');slot.tab.classList.add('gp-tab');
- slot.tab.querySelector('.tab-game-name').innerHTML='<span class="gp-logo"><b>ジェラート<br>プリズム</b><small>GELATO PRISM ✦</small></span>';
+ const gpTabName=slot.tab.querySelector('.tab-game-name');
+ gpTabName.innerHTML='<span class="gp-logo"><img class="gp-tab-logo-img" alt="GELATO PRISM" hidden>'+
+   '<span class="gp-logo-text"><b>ジェラート<br>プリズム</b><small>GELATO PRISM ✦</small></span></span>';
+ const gpTabLogo=gpTabName.querySelector('.gp-tab-logo-img');
+ gpTabLogo.onload=()=>{gpTabLogo.hidden=false;gpTabName.classList.add('gp-has-tab-art');};
+ gpTabLogo.onerror=()=>{gpTabLogo.hidden=true;gpTabName.classList.remove('gp-has-tab-art');};
+ gpTabLogo.src='assets/gelato-prism-tab-logo-v39.png?v=39-'+Date.now();
  slots[1].holder.style.order='0';slots[2].holder.style.order='1';slot.holder.style.order='2';
  const scene=document.createElement('div');scene.className='gp-scene';
  scene.innerHTML='<div class="gp-land" aria-hidden="true"></div>'+
@@ -262,8 +299,18 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
+ // Bonus emblem is now layered over the playable board, not a cropped header.
+ const gpBoardBonus=document.createElement('div');
+ gpBoardBonus.className='gp-board-bonus';
+ gpBoardBonus.innerHTML='<img class="gp-board-bonus-art" alt="RAINBOW GELATO BONUS" hidden>'+
+  '<span class="gp-board-bonus-fallback">✦ RAINBOW<br>GELATO BONUS ✦<small>全埋めボーナス</small></span>';
+ rasterMold.appendChild(gpBoardBonus);
+ const gpBonusArt=gpBoardBonus.querySelector('.gp-board-bonus-art');
+ gpBonusArt.onload=()=>{gpBonusArt.hidden=false;gpBoardBonus.classList.add('gp-has-art');};
+ gpBonusArt.onerror=()=>{gpBonusArt.hidden=true;gpBoardBonus.classList.remove('gp-has-art');};
+ gpBonusArt.src='assets/gelato-prism-bonus-v39.png?v=39-'+Date.now();
  const rasterImages={
-   board:new Image(),fill:new Image(),trim:new Image(),ready:false,
+   board:new Image(),fill:new Image(),trim:new Image(),ice:new Image(),ready:false,iceReady:false,iceCache:null,
    base:null,trimCache:null,faceTiles:[],labels:null,numbers:null,
    labelsBet:null,numbersKey:null
  };
@@ -322,6 +369,12 @@ try{
  }).catch(err=>{
    console.info('[GelatoPrism] v37 PNGs are not uploaded yet; fallback board remains',err.message);
  });
+ // Optional frost-mold asset; old v37 board remains usable until uploaded.
+ loadRasterAsset(rasterImages.ice,'gelato-prism-ice-mold-v39.png').then(()=>{
+   rasterImages.iceCache=scaledAsset(rasterImages.ice);
+   rasterImages.iceReady=true;
+   rasterKey='';drawGelato();
+ }).catch(()=>console.info('[GelatoPrism] v39 frost mold PNG pending upload'));
  function updateStaticLabels(e,bet){
    if(rasterImages.labelsBet!==bet){
      rasterImages.labelsBet=bet;
@@ -366,6 +419,7 @@ try{
      ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
    }
    ctx.drawImage(rasterImages.trimCache,0,0,size,size);
+   if(rasterImages.iceReady)ctx.drawImage(rasterImages.iceCache,0,0,size,size);
    if(!small){
      ctx.drawImage(rasterImages.labels,0,0);
      // Sugar icon is dynamic and can move without repainting label cache.
@@ -445,6 +499,7 @@ try{
          el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
    }
    drawRaster(e,bet);
+   gpBoardBonus.classList.toggle('gp-bonus-complete',e.allComplete);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
