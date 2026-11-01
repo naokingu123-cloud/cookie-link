@@ -1,4 +1,4 @@
-/* GELATO PRISM v40 - exact 24-cell PNG ice mold with generated snowflake frame */
+/* GELATO PRISM v41 - round reset, calibrated payout, cached text and gelato pour */
 (()=>{
 'use strict';
 try{
@@ -54,7 +54,11 @@ try{
  });
  const ranked=[...FACES].sort((a,b)=>
    a.edges.reduce((n,i)=>n+1/supports[i],0)-b.edges.reduce((n,i)=>n+1/supports[i],0));
- ranked.forEach((f,i)=>{f.tier=Math.min(3,Math.floor(i/6));f.reward=[32,42,62,95][f.tier];});
+ // Monte Carlo, 45,000 eight-ball draws across 25 slots:
+ // ≈2.63 rare and ≈5.05 common face hits per round.
+ // Face awards ≈88% of BET; full-clear bonus adds ≈0.5%
+ // leaving limited room for Wonder Sugar-related value.
+ ranked.forEach((f,i)=>{f.tier=Math.min(3,Math.floor(i/6));f.reward=[19,17,9,7][f.tier];});
  const BONUS=3500,flavors=['#ff3b82','#ffc224','#38db80','#00bfe9','#536cf7','#bb55f7'];
  function link(hits){
    const result=new Set();
@@ -99,7 +103,7 @@ try{
    constructor(random,onEvent,sleep){
      this.random=random;this.onEvent=onEvent;this.sleep=sleep;this.speed=1.4;
      this.kind='gelato';this.gameName='ジェラートプリズム';this.drawMode='single';this.reachMode='single';
-     this.colorCount=5;this.version=0;this.cycle=0;this.newPrism();this.reset();
+     this.colorCount=5;this.version=0;this.cycle=0;this.reset();
    }
    emit(phase,extras={}){
      if(!['queued','drawpending','stepcollect'].includes(phase))this.phase=phase;
@@ -114,10 +118,9 @@ try{
      this.sugarAwarded=false;this.allComplete=false;
    }
    reset(){
-     if(this.allComplete)this.newPrism();
-     // Reset HIT points and illuminated links each eight-ball game.
-     // The completed triangle reward layer is maintained until full-clear.
-     this.hits=new Set();this.links=new Set();
+     // Each eight-ball game gets a fresh board: no previous gelato persists.
+     this.newPrism();
+     this.pouring=null;
      this.version++;this.queue=[];this.pendingDraws=new Set();this.drawn=new Set();this.seen=new Set();
      this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
      this.presentationRate=1;this.roundBet=this.roundBet||3000;this.totalHundredths=0;this.maxLink=0;this.maxChain=0;
@@ -172,7 +175,7 @@ try{
            const next=this.stateFor(this.hits);
            const newFaces=[...next.faces].filter(i=>!this.filled.has(i));
            this.links=next.edges;
-           // Accumulate awarded areas across rounds; HIT dots themselves reset.
+           // Awards apply only to the current eight-ball round.
            for(const id of newFaces)this.filled.add(id);
            this.lastFilled=newFaces;
            if(newFaces.length){
@@ -353,6 +356,9 @@ try{
    // Cache node and WIN labels independent of hit animations and filled state.
    rasterImages.labels=offscreen(MAIN_PX);
    rasterImages.numbers=offscreen(MAIN_PX);
+   // The v37 -> v40 asset swap creates blank caches; invalidate text keys.
+   rasterImages.labelsBet=null;
+   rasterImages.numbersKey=null;
  }
  const standardAssetsReady=Promise.all([
    loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v37.png'),
@@ -408,10 +414,10 @@ try{
        const y=f.nodes.reduce((n,i)=>n+rasterCoords[i].y,0)/3;
        const payout=num(medalWin(bet,f.reward));
        ctx.strokeStyle='#fff9e9';ctx.fillStyle='#6d2d60';ctx.lineWidth=2.8;
-       ctx.font='1000 10px system-ui,sans-serif';
-       ctx.strokeText(payout,x,y-3,34);ctx.fillText(payout,x,y-3,34);
-       ctx.font='1000 7.5px system-ui,sans-serif';
-       ctx.strokeText('WIN',x,y+8,26);ctx.fillText('WIN',x,y+8,26);
+       ctx.font='1000 13px system-ui,sans-serif';
+       ctx.strokeText(payout,x,y-4,41);ctx.fillText(payout,x,y-4,41);
+       ctx.font='1000 9px system-ui,sans-serif';
+       ctx.strokeText('WIN',x,y+10,32);ctx.fillText('WIN',x,y+10,32);
      }
    }
    const key=e.nodeNumbers.join(',');
@@ -421,8 +427,8 @@ try{
      ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);
      ctx.setTransform(MAIN_SCALE,0,0,MAIN_SCALE,0,0);
      ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
-     ctx.strokeStyle='#fff8d6';ctx.fillStyle='#713923';ctx.lineWidth=2.9;
-     ctx.font='1000 15px system-ui,sans-serif';
+     ctx.strokeStyle='#fff4db';ctx.fillStyle='#642b56';ctx.lineWidth=4.2;
+     ctx.font='1000 19px system-ui,sans-serif';
      for(let idx=0;idx<rasterCoords.length;idx++){
        const p=rasterCoords[idx],n=String(e.nodeNumbers[idx]);
        ctx.strokeText(n,p.x,p.y+.5);ctx.fillText(n,p.x,p.y+.5);
