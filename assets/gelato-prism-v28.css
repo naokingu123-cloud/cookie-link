@@ -323,25 +323,135 @@ body.gelato-active .gp-board-svg .gp-face-border{
  body.gelato-active #panel0 .gp-bonus-crest{width:29%!important}
 }
 
-/* v33 — exact-diagram mould clearance: move up without clipping vertices. */
-body.gelato-active #panel0 .gp-mold{
- top:-5px!important;
- right:2%!important;
- bottom:18px!important;
- left:2%!important;
- width:96%!important;
- height:auto!important;
+
+/* v35 real clipping fix + ornate 24-cell waffle. Previous v34 offsets are not used. */
+/* The formerly invisible top banner consumed 52 px, leaving a 312 px field. */
+body.gelato-active #screen>.game > .festival-top,
+body.gelato-active #screen>.game > .statusline,
+body.gelato-active .game > .festival-top,
+body.gelato-active .game > .statusline{
+ display:none!important;height:0!important;min-height:0!important;
+ padding:0!important;margin:0!important;
+}
+body.gelato-active #screen>.game > .field,
+body.gelato-active .game > .field{
+ flex:1 1 auto!important;
  min-height:0!important;
- transform:none!important;
+ height:auto!important;
+ width:100%!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:minmax(0,1fr)!important;
+ gap:0!important;
+ overflow:hidden!important;
+ background:transparent!important;
+}
+body.gelato-active .game #panel0{
+ position:relative!important;
+ grid-column:1!important;
+ grid-row:1!important;
+ width:100%!important;
+ max-width:100%!important;
+ height:100%!important;
+ min-height:0!important;
+ overflow:hidden!important;
+}
+body.gelato-active #panel0 .gp-scene{
+ position:absolute!important;
+ inset:0!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+ background:
+  radial-gradient(ellipse at 50% 48%,rgba(255,253,241,.17),transparent 74%),
+  url('../assets/gelato-generated-background-v32.webp') center center/cover no-repeat!important;
+}
+body.gelato-active #panel0 .gp-mold{
+ position:absolute!important;
+ top:0!important;
+ right:0!important;
+ bottom:6px!important;
+ left:0!important;
+ width:100%!important;
+ height:calc(100% - 6px)!important;
+ margin:0!important;
+ padding:0!important;
+ overflow:visible!important;
+ transform:translateY(-3px)!important;
  display:grid!important;
  place-items:center!important;
+ background:transparent!important;
+}
+body.gelato-active #panel0 .gp-mold:before{
+ width:94%!important;
+ height:90%!important;
+ background:radial-gradient(ellipse,#fff8d133,transparent 74%)!important;
+ filter:blur(3px)!important;
 }
 body.gelato-active #panel0 .gp-board-svg{
  display:block!important;
+ box-sizing:border-box!important;
+ overflow:visible!important;
  width:100%!important;
  height:100%!important;
- max-width:100%!important;
  max-height:100%!important;
- overflow:visible!important;
+ max-width:100%!important;
  object-fit:contain!important;
+ transform:none!important;
+ filter:drop-shadow(0 2px 0 #fff3c8a6)
+ drop-shadow(0 4px 1px #96532e9b)
+ drop-shadow(0 8px 7px #77406588)!important;
+}
+/* A sweet glass glaze is visible from the start; opaque gelato fills on wins. */
+body.gelato-active #panel0 .gp-blank{
+ opacity:.94!important;
+ fill-opacity:1!important;
+ filter:saturate(1.2)!important;
+}
+body.gelato-active #panel0 .gp-face.is-filled .gp-blank{opacity:0!important}
+body.gelato-active #panel0 .gp-face.is-filled .gp-ice{
+ filter:saturate(1.8) contrast(1.08) brightness(1.07)
+  drop-shadow(0 0 2px #fff9df)!important;
+}
+body.gelato-active #panel0 .gp-edge path:first-child{
+ stroke:#92512c!important;
+ stroke-width:14.5!important;
+ filter:drop-shadow(0 1.3px 1px #6e3821bb)!important;
+}
+body.gelato-active #panel0 .gp-edge path:nth-child(2){
+ stroke-width:10!important;
+ filter:drop-shadow(0 -.65px .6px #ffffff96)!important;
+}
+body.gelato-active #panel0 .gp-edge path:nth-child(3){
+ stroke:#fffefa!important;
+ stroke-width:2.1!important;
+ opacity:.78!important;
+}
+body.gelato-active #panel0 .gp-face-border{
+ stroke:#fff6e4!important;
+ stroke-width:1.35!important;
+}
+body.gelato-active #panel0 .gp-face-value{
+ font:1000 7.5px/1 system-ui,sans-serif!important;
+ letter-spacing:-.38px!important;
+ fill:#6e255d!important;
+ stroke:#fff5e6!important;
+ stroke-width:1.8px!important;
+ paint-order:stroke fill!important;
+}
+body.gelato-active #panel0 .gp-face.is-filled .gp-face-value{
+ fill:#fffdeb!important;stroke:#752350!important;
+}
+body.gelato-active #panel0 .gp-node .gp-digit{
+ fill:#633721!important;
+ stroke:#fff5d5!important;
+ stroke-width:1.35px!important;
+}
+body.gelato-active #panel0 .gp-node.is-hit .gp-digit{
+ fill:#ad1b65!important;stroke:#fff7ab!important;
+}
+body.gelato-active #panel0 .gp-head,
+body.gelato-active #panel0 .gp-bonus-crest{
+ pointer-events:none!important;
+}
+@media(max-width:470px){
+ body.gelato-active #panel0 .gp-mold{top:0!important;bottom:4px!important;height:calc(100% - 4px)!important;transform:translateY(-2px)!important}
 }
