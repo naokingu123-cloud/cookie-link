@@ -1,8 +1,8 @@
-/* Winery Pyramid v1. Pure deterministic fluid model; no DOM, no visual RNG. */
+/* Winery Pyramid v2. Multiplicative MIX bonus and 90% calibrated full-glass payouts. */
 (function(root){
 'use strict';
 const EPS=1e-9, ROWS=6, SIZE=21;
-const PAY=[0,0,0,0,0,0,0,.1,.3,.4,.5,.7,1,1.5,2,3,4,6,10,15,30,100];
+const PAY=[0,0,0,0,0,0,0,.1,.4,.5,.6,.7,1,1.5,2,3,4,6,10,15,30,100];
 const WEIGHTS=[16,16,16,17,19,16];
 const NAMES=['りんごの雫','双翼の果樹園','中央の泉','ジュースの花冠','果実のリボン','夕映えの王冠'];
 const PREFILLS=[
@@ -27,7 +27,11 @@ function choose(random){let x=random()*100;for(let i=0;i<6;i++){x-=WEIGHTS[i];if
 function prize(glasses){
  let full=0,mix=0;
  for(const g of glasses)if(g.volume>=1-EPS){full++;if(new Set(g.layers.filter(l=>l.amount>EPS).map(l=>l.flavor)).size>=2)mix++;}
- return {full,mix,countMultiplier:PAY[full],mixMultiplier:mix*.1,hundredths:Math.round(PAY[full]*100)+mix*10,allFull:full===SIZE};
+ // MIX is a final odds multiplier, not a free-standing WIN award:
+ // three full mixed glasses => base payout ×1.3; five => ×1.5.
+ const mixTenths=10+mix,baseHundredths=Math.round(PAY[full]*100);
+ return {full,mix,countMultiplier:PAY[full],mixMultiplier:mixTenths/10,
+   hundredths:Math.round(baseHundredths*mixTenths/10),allFull:full===SIZE};
 }
 function pour(glasses,source,amount,flavor){
  if(!Number.isInteger(source)||source<0||source>=SIZE||!Number.isFinite(amount)||amount<0||!Number.isInteger(flavor)||flavor<0||flavor>4)throw Error('Invalid winery pour');
@@ -70,7 +74,7 @@ class WineryEngine{
   for(let i=24;i>0;i--){const j=Math.floor(this.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
   this.nodeNumbers=nums.slice(0,SIZE);this.boostNumbers=nums.slice(SIZE);
   this.pattern=choose(this.random);this.glasses=initial(this.pattern);this.initialVolume=this.glasses.reduce((s,g)=>s+g.volume,0);
-  this.fullCount=0;this.mixCount=0;this.countMultiplier=0;this.mixMultiplier=0;
+  this.fullCount=0;this.mixCount=0;this.countMultiplier=0;this.mixMultiplier=1;
   this.emit('ready');
  }
  get idle(){return !this.busy&&!this.queue.length;}
@@ -127,6 +131,6 @@ class WineryEngine{
   }catch(error){if(token===this.version){this.fx=null;this.queue=[];this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
-const api={version:1,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
+const api={version:2,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.WineryPyramidCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
