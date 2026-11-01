@@ -239,3 +239,86 @@ body.gelato-active .gp-bonus-crest small{
  body.gelato-active .gp-head{max-width:25%!important}
  body.gelato-active .gp-bonus-crest{width:23%;padding:2px}
 }
+
+
+/* v32 — AI-generated artwork, safe complete hexagram viewport. */
+body.gelato-active #panel0 .gp-scene{
+ background:
+  radial-gradient(ellipse at 50% 49%,rgba(255,250,239,.27) 0%,rgba(255,248,234,.17) 38%,transparent 76%),
+  url('../assets/gelato-generated-background-v32.webp') center center/cover no-repeat!important;
+ box-shadow:inset 0 0 0 2px #fff5d3,0 2px 10px #9b63929a!important;
+}
+body.gelato-active #panel0 .gp-scene:after{
+ background:radial-gradient(ellipse at 50% 52%,rgba(255,255,255,.11) 0%,transparent 73%)!important;
+}
+body.gelato-active #panel0 .gp-mold{
+ inset:5px 2px 10px!important;
+ width:calc(100% - 4px)!important;
+ height:calc(100% - 15px)!important;
+ min-height:0!important;
+ overflow:visible!important;
+ box-sizing:border-box!important;
+}
+body.gelato-active #panel0 .gp-board-svg{
+ max-width:100%!important;
+ max-height:100%!important;
+ width:100%!important;
+ height:100%!important;
+ object-fit:contain!important;
+ overflow:visible!important;
+ filter:drop-shadow(0 1px 1px rgba(255,248,216,.9))
+   drop-shadow(0 4px 1px #b27b58bb)
+   drop-shadow(0 7px 6px #7e477e99)!important;
+}
+body.gelato-active #panel0 .gp-head{
+ left:1%!important;top:.8%!important;
+ width:min(35%,146px)!important;
+ height:min(29%,79px)!important;
+ max-width:none!important;
+ padding:0!important;right:auto!important;
+ display:block!important;
+ background:url('../assets/gelato-generated-title-v32.webp') center/contain no-repeat!important;
+ z-index:2!important;
+ filter:drop-shadow(0 2px 2px #b64d9799);
+ pointer-events:none!important;
+}
+body.gelato-active #panel0 .gp-head b,
+body.gelato-active #panel0 .gp-head small{
+ visibility:hidden!important;
+}
+body.gelato-active #panel0 .gp-bonus-crest{
+ right:1%!important;top:.2%!important;
+ width:min(33%,137px)!important;
+ height:min(29%,88px)!important;
+ min-height:0!important;
+ padding:0!important;margin:0!important;
+ display:block!important;
+ border:0!important;border-radius:0!important;
+ background:url('../assets/gelato-generated-bonus-v32.webp') center/contain no-repeat!important;
+ box-shadow:none!important;
+ transform:none!important;
+ z-index:2!important;
+ filter:drop-shadow(0 2px 2px #a55f9d99);
+ pointer-events:none!important;
+}
+body.gelato-active #panel0 .gp-bonus-crest>*{visibility:hidden!important}
+body.gelato-enabled .gp-mini .gp-board-svg{
+ width:100%!important;height:100%!important;overflow:visible!important;
+}
+body.gelato-active .gp-board-svg .gp-face-value{
+ font-size:8.4px!important;letter-spacing:-.6px!important;
+ stroke-width:1.5px!important;
+}
+body.gelato-active .gp-board-svg .gp-face.is-filled .gp-ice{
+ filter:saturate(1.8) contrast(1.15) brightness(1.12) drop-shadow(0 1px 2px #ffffffbb)!important;
+}
+body.gelato-active .gp-board-svg .gp-edge path:nth-child(2){
+ stroke:#fff3e0!important;stroke-width:7.5!important;
+}
+body.gelato-active .gp-board-svg .gp-face-border{
+ stroke:#fffbec!important;stroke-width:1.25!important;
+}
+@media (max-width:460px){
+ body.gelato-active #panel0 .gp-head{width:29%!important}
+ body.gelato-active #panel0 .gp-bonus-crest{width:29%!important}
+}
