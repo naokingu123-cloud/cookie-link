@@ -347,7 +347,7 @@ try{
  collectorPanel.className='gp-collector-panel';
  // 24/24 is always pinned, followed by exactly 5 visible descending tiers.
  // The sliding rows extend through 0/24 so there are no empty initial states.
- const payoutRows=Array.from({length:24},(_,i)=>23-i).map(n=>
+ const payoutRows=Array.from({length:23},(_,i)=>22-i).map(n=>
    '<div class="gp-pay-row" data-panels="'+n+'">'+
    '<span class="gp-pay-panel-n">'+n+'枚<span class="gp-sugar-status"></span></span>'+
    '<strong class="gold-number gp-pay-win">0WIN</strong></div>').join('');
@@ -367,10 +367,10 @@ try{
      '<span class="gp-pay-panel-n">24枚</span><strong class="gold-number gp-pay-win">0WIN</strong></div>'+
   '<div class="gp-payout-window"><div class="gp-payout-track">'+payoutRows+'</div></div>';
  scene.appendChild(collectorPanel);
- // Keep this calculation pure: n=10 -> 24,12,11,10,9,8;
- // n=23 -> 24,23,22,21,20,19.  The descending 24 row never scrolls.
+ // The 23-panel result is impossible in the 19-node capture geometry.
+ // n=10 -> 24,12,11,10,9,8; n>=20 -> 24,22,21,20,19,18.
  function payoutWindowFor(n){
-   const first=Math.max(4,Math.min(23,n+2));
+   const first=Math.max(4,Math.min(22,n+2));
    return [24,first,first-1,first-2,first-3,first-4];
  }
  let collectorKey='';
@@ -400,7 +400,7 @@ try{
    sugarHeader.classList.toggle('is-get',e.sugarAwarded);
    const first=payoutWindowFor(e.filled.size)[1];
    const track=collectorPanel.querySelector('.gp-payout-track');
-   track.style.setProperty('--gp-slide-index',String(23-first));
+   track.style.setProperty('--gp-slide-index',String(22-first));
    for(const row of collectorPanel.querySelectorAll('.gp-pay-row')){
      const n=+row.dataset.panels;
      const payout=num(medalWin(bet,Math.round(COUNT_MULT[n]*100)))+'WIN';
