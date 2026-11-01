@@ -12,7 +12,7 @@
 try{
  const oldPaint=window.sweets12ThumbnailRenderer;
  if(typeof oldPaint!=='function')throw Error('v22 mini renderer not loaded');
- const SIZE=112,CACHE_LIMIT=288;
+ const SIZE=80,SPRITE_SIZE=48,CACHE_LIMIT=288;
  const views=new Map(),candyTiles=new Map(),backdrops=new Map();
  let assetEpoch=0,painted=0,skipped=0,failed=0;
  let originalPngReady=!!sixCandyPngState.loaded;
@@ -51,16 +51,18 @@ try{
   if(candyTiles.has(key))return candyTiles.get(key);
   const src=sixArtCandySprite(tile.color,round,!!tile.sugar,chance);
   if(!src)return null;
-  const c=cv(64),ctx=c.getContext('2d');
+  // One pre-scaled 48px sprite for all twelve boards; the original
+  // 128px image remains in the shared main-game cache.
+  const c=cv(SPRITE_SIZE),ctx=c.getContext('2d');
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-  ctx.drawImage(src,0,0,64,64);
+  ctx.drawImage(src,0,0,SPRITE_SIZE,SPRITE_SIZE);
   if(tile.sugar){
    const sugar=getSugarSprite(level);
-   if(sugar)ctx.drawImage(sugar,8,8,48,48);
+   if(sugar)ctx.drawImage(sugar,6,6,36,36);
   }
   if(number){
    // The same number artwork used on the main bottle's candy.
-   sixPaintCandyNumber(ctx,number,32,33,32);
+   sixPaintCandyNumber(ctx,number,24,25,24);
   }
   // Bound all shared sprites to ~5 MiB; keep recently used ones.
   if(candyTiles.size>=CACHE_LIMIT){
@@ -308,7 +310,9 @@ try{
   get errors(){return failed;},
   get cachedCandySprites(){return candyTiles.size;},
   get cachedBackdrops(){return backdrops.size;},
-  get activeViews(){return views.size;}
+  get activeViews(){return views.size;},
+  get outputPixels(){return SIZE;},
+  get spritePixels(){return SPRITE_SIZE;}
  };
  console.info('[Sweets12MiniV24] cake-only draw, cached glossy candy PNGs, static redraw skipping');
 }catch(error){console.error('[Sweets12MiniV24]',error);}
