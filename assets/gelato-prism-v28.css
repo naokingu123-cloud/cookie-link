@@ -455,3 +455,43 @@ body.gelato-active #panel0 .gp-bonus-crest{
 @media(max-width:470px){
  body.gelato-active #panel0 .gp-mold{top:0!important;bottom:4px!important;height:calc(100% - 4px)!important;transform:translateY(-2px)!important}
 }
+
+
+/* v36: rasterized luxury cookie image + canvas-only live indicators.
+   The old SVG becomes a temporary fallback ONLY until both PNG files exist. */
+body.gelato-enabled .gp-raster-board{
+ display:none!important;
+ width:100%!important;
+ height:100%!important;
+ max-width:100%!important;
+ max-height:100%!important;
+ object-fit:contain!important;
+ background:transparent!important;
+ image-rendering:auto!important;
+ pointer-events:none!important;
+ filter:drop-shadow(0 4px 7px rgba(65,28,54,.42))!important;
+}
+body.gelato-enabled .gp-raster-ready>.gp-board-svg{display:none!important}
+body.gelato-enabled .gp-raster-ready>.gp-raster-board{display:block!important}
+body.gelato-active #panel0 .gp-mold.gp-raster-ready{
+ inset:0!important;
+ width:100%!important;
+ height:100%!important;
+ padding:0 5px 5px!important;
+ margin:0!important;
+ transform:none!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+ place-items:center!important;
+}
+body.gelato-active #panel0 .gp-mold.gp-raster-ready:before{display:none!important}
+body.gelato-enabled .gp-mini.gp-raster-ready{
+ inset:0!important;
+ display:grid!important;
+ place-items:center!important;
+ overflow:hidden!important;
+}
+body.gelato-enabled .gp-mini.gp-raster-ready .gp-raster-board{
+ width:100%!important;height:100%!important;
+ filter:none!important;
+}
