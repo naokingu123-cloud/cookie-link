@@ -382,7 +382,7 @@ try{
  const pendingBoards=[];
  const queuedBoards=new Set();
  const movingBoards=new Set();
- let idleRequest=0,urgentTimer=0,motionTimer=0,reachTimer=0,animationTick=0;
+ let idleRequest=0,urgentTimer=0,motionTimer=0,reachTimer=0,animationTick=0,animationCursor=0;
  let processedFrames=0,skippedFrames=0,lastCost=0;
  const liveMode=()=>window.sweets12Live?.mode==='12';
  const itemId=item=>item.game*4+item.index;
@@ -470,14 +470,20 @@ try{
      // At most 2 animations requested per pulse; event changes always
      // take precedence, and hidden games update at a reduced frequency.
      let added=0;
-     for(const id of movingBoards){
+     // Round-robin rather than repeatedly favoring the first two items
+     // in the Set. Keep all twelve boards moving without drawing them
+     // together in one browser frame.
+     for(let step=0;step<12 && added<2;step++){
+       const id=(animationCursor+step)%12;
+       if(!movingBoards.has(id))continue;
        const item=getItemById(id);
        if(!item)continue;
        const activeGame=item.host.querySelector('.tab')?.getAttribute('aria-selected')==='true';
        if(!activeGame&&animationTick%3!==id%3)continue;
        enqueue(id);
-       if(++added>=2)break;
+       added++;
      }
+     animationCursor=(animationCursor+Math.max(1,added*2+1))%12;
      if(movingBoards.size)scheduleMotion();
    },110);
  }
