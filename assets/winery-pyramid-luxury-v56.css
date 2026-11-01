@@ -1,0 +1,138 @@
+/* Winery Pyramid luxury scene v56. Loaded after v54 styles; isolated to panel1. */
+body.winery-enabled #panel1 .wp-scene.wp-luxury-ready{
+  background:#180612 url('winery-luxury-screen-v56.webp?v=56') center center / 100% 100% no-repeat!important;
+  border:3px solid #f5d17a!important;
+  box-shadow:inset 0 0 0 2px rgba(255,239,180,.72),0 0 12px rgba(238,163,51,.67)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-luxury-ready .wp-canvas{
+  position:absolute!important;left:0!important;top:0!important;
+  width:100%!important;height:100%!important;object-fit:fill!important;
+  display:block!important;background:transparent!important;
+  z-index:2!important;filter:none!important;pointer-events:none!important;
+}
+/* The payout is a live, opaque burgundy panel: it conceals screenshot-only
+   example payouts and preserves the ornate gold border around the picture. */
+body.winery-enabled #panel1 .wp-sidebar{
+  --wp-row-height:19px;
+  box-sizing:border-box!important;
+  position:absolute!important;top:.35%!important;bottom:.8%!important;
+  height:98.85%!important;right:.6%!important;width:24.3%!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(14px,auto) var(--wp-row-height) minmax(0,1fr) 30px 30px!important;
+  gap:2px!important;align-content:stretch!important;align-items:stretch!important;
+  padding:3px 3px 4px!important;margin:0!important;
+  overflow:hidden!important;min-height:0!important;
+  border:2px solid #eac56f!important;border-radius:10px!important;
+  outline:1px solid rgba(255,239,162,.38)!important;outline-offset:-5px!important;
+  background:
+    radial-gradient(ellipse at 48% -20%,rgba(255,185,110,.24),transparent 52%),
+    linear-gradient(150deg,rgba(68,7,26,.97),rgba(105,12,31,.98) 55%,rgba(37,5,22,.98))!important;
+  box-shadow:inset 0 0 0 1px #ad6c36,inset 0 0 16px #240207,0 2px 8px #19040891!important;
+  color:#fff4cb!important;
+  z-index:4!important;
+}
+body.winery-enabled #panel1 .wp-title{display:none!important}
+body.winery-enabled #panel1 .wp-sidebar > *{min-width:0!important;box-sizing:border-box!important}
+body.winery-enabled #panel1 .wp-sidebar .wp-power{
+  min-height:0!important;max-height:112px!important;flex:none!important;
+  margin:0!important;padding:2px 2px 3px!important;gap:2px!important;
+  overflow:hidden!important;border:1px solid #f5d988!important;
+  background:linear-gradient(145deg,#821e36,#411023)!important;
+  box-shadow:inset 0 1px #fff0ba63,0 0 5px #ffbd6752!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-heading{
+  font-size:clamp(9px,1.45vw,13px)!important;color:#ffe39a!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-power-next{
+  padding:0!important;gap:3px!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-power-next b{
+  color:#fff0a7!important;font-size:clamp(15px,2.5vw,22px)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-ladder{gap:1px!important}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-stage{
+  min-height:12px!important;font-size:clamp(5px,.78vw,7px)!important;
+  border-color:#c79664!important;
+  background:linear-gradient(#61233c,#340c26)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-stage.current{
+  background:linear-gradient(135deg,#fff0a8,#ffc96b,#e79366)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-caption{font-size:7px!important}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-numbers{gap:1px!important;padding:0!important}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-number{
+  min-width:13px!important;max-width:24px!important;width:75%!important;
+  border:1.5px solid #e8bd6c!important;
+  background:radial-gradient(circle at 32% 22%,#a85c64,#4b1a34 70%)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-score{
+  min-height:0!important;height:auto!important;line-height:1!important;
+  color:#ffe9aa!important;font-size:8px!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-fixed{
+  flex:none!important;min-height:0!important;height:var(--wp-row-height)!important;
+  background:linear-gradient(95deg,#e9b65d,#7e2239,#a35346)!important;
+  border:1px solid #efd28c!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-window{
+  flex:none!important;width:100%!important;height:100%!important;
+  min-height:0!important;max-height:none!important;overflow:hidden!important;
+  border:1px solid #d6ab66!important;
+  background:#370d25!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-row{
+  height:var(--wp-row-height)!important;min-height:var(--wp-row-height)!important;
+  background:linear-gradient(90deg,#511226,#3a0a22)!important;
+  border-bottom:1px solid #bc784e70!important;
+  color:#fff1bd!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-row.current{
+  background:linear-gradient(90deg,#af503e,#874020,#d3a451)!important;
+  box-shadow:inset 0 0 0 1px #ffe9a5!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-row b,
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-fixed b{
+  color:#ffe09a!important;font-size:clamp(8px,1.3vw,11px)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-mix,
+body.winery-enabled #panel1 .wp-sidebar .wp-total{
+  width:100%!important;min-height:0!important;max-height:none!important;
+  height:30px!important;flex:none!important;padding:1px!important;
+  border:1px solid #ebc478!important;border-radius:6px!important;
+  background:linear-gradient(130deg,#741a32,#3b0c25)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-mix b,
+body.winery-enabled #panel1 .wp-sidebar .wp-total b{
+  font-size:clamp(12px,2vw,18px)!important;line-height:1!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-mix span,
+body.winery-enabled #panel1 .wp-sidebar .wp-total span{font-size:8px!important}
+body.winery-enabled #panel1 .wp-scene.wp-luxury-ready .wp-message{
+  z-index:6!important;background:linear-gradient(125deg,#7b1632ed,#3b0b29f5)!important;
+  border-color:#ffe2a0!important;
+}
+@media (max-width:480px){
+ body.winery-enabled #panel1 .wp-sidebar{
+   --wp-row-height:16px;
+   top:.25%!important;bottom:.6%!important;height:99.15%!important;
+   grid-template-rows:auto minmax(12px,auto) var(--wp-row-height) minmax(0,1fr) 25px 25px!important;
+   gap:1px!important;padding:2px!important;border-width:1.5px!important;
+ }
+ body.winery-enabled #panel1 .wp-sidebar .wp-power{
+   max-height:91px!important;padding:1px!important;gap:1px!important;
+ }
+ body.winery-enabled #panel1 .wp-sidebar .wp-boost-heading{font-size:8px!important}
+ body.winery-enabled #panel1 .wp-sidebar .wp-power-next b{font-size:15px!important}
+ body.winery-enabled #panel1 .wp-sidebar .wp-boost-caption{font-size:5.5px!important}
+ body.winery-enabled #panel1 .wp-sidebar .wp-boost-stage{min-height:11px!important;font-size:5px!important}
+ body.winery-enabled #panel1 .wp-sidebar .wp-boost-number{
+   min-width:11px!important;max-width:19px!important;font-size:10px!important;
+ }
+ body.winery-enabled #panel1 .wp-sidebar .wp-mix,
+ body.winery-enabled #panel1 .wp-sidebar .wp-total{height:25px!important}
+ body.winery-enabled #panel1 .wp-sidebar .wp-mix b,
+ body.winery-enabled #panel1 .wp-sidebar .wp-total b{font-size:12px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled #panel1 .wp-sidebar .wp-pay-track{transition:none!important}
+}
