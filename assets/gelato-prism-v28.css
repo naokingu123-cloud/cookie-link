@@ -97,3 +97,42 @@ body.gelato-enabled .gp-slot{order:2}
 @media(prefers-reduced-motion:reduce){
  .gp-face.is-new .gp-ice,.gp-flash-in,.gp-sugar{animation:none!important}
 }
+
+/* Dedicated ice-cream-kingdom odds cabinet instead of Cookie's old table. */
+body.gelato-enabled .gp-prism-odds{display:none}
+body.gelato-active #odds-panel{visibility:visible!important;overflow:hidden!important;position:relative;isolation:isolate;
+ background:linear-gradient(150deg,#fff7e5,#ffe2ef 43%,#e3c6f6)!important;
+ box-shadow:inset 0 0 0 2px #fff9df,0 2px 7px #904b8080!important;
+ border:3px solid #e0a1c1!important;border-radius:15px!important;padding:5px!important}
+body.gelato-active #odds-panel>:not(.gp-prism-odds){display:none!important}
+body.gelato-active #odds-panel .gp-prism-odds{display:flex!important;flex-direction:column;align-items:stretch;justify-content:space-around;gap:5px;
+ height:100%;min-height:0;box-sizing:border-box;position:relative;z-index:2;text-align:center}
+.gp-odds-heading{display:flex;flex-direction:column;align-items:center;gap:1px;border-bottom:2px dashed #e6acc4;padding-bottom:3px}
+.gp-odds-heading span{font-size:23px;color:#ed8fb2;line-height:18px}
+.gp-odds-heading b{font:1000 clamp(10px,2.6vw,13px)/1.1 system-ui;color:#c45c96;letter-spacing:.5px}
+.gp-odds-heading small{font:900 7px/1.1 system-ui;letter-spacing:1px;color:#a875b6}
+.gp-odds-instructions{font:900 clamp(7px,1.8vw,9px)/1.35 system-ui;color:#8a6c83;margin:2px 0}
+.gp-odds-row{display:flex;align-items:center;justify-content:space-between;border:1px solid #f3c2dd;border-radius:8px;padding:3px 4px;gap:2px;background:linear-gradient(135deg,#fff9f1,#f8dcf0);box-shadow:inset 0 1px #fff}
+.gp-odds-row i{font-size:11px;color:#f6b85b}
+.gp-odds-row b{font:900 8px/1 system-ui;color:#865778;white-space:nowrap}
+.gp-odds-row strong{font:1000 12px/1.15 system-ui;color:#ae4c7d;text-shadow:0 1px white;white-space:nowrap}
+.gp-odds-row.gp-tier-3{background:linear-gradient(115deg,#e9dcff,#ffeffe,#fff2c7);border-color:#d49ee4}
+.gp-odds-row.gp-tier-3 strong{color:#aa55c6}
+.gp-odds-sugar{display:flex;flex-direction:column;gap:2px;padding:4px 2px;border:2px solid #f1d9a1;border-radius:10px;background:radial-gradient(ellipse,#fff9e2,#f7d1df);color:#d578aa}
+.gp-odds-sugar span{font-size:15px;line-height:14px}
+.gp-odds-sugar b{font:1000 9px/1.2 system-ui;letter-spacing:.4px}
+.gp-odds-sugar small{font:750 7px/1.1 system-ui;color:#a5798e}
+.gp-odds-bonus{display:flex;flex-direction:column;gap:2px;padding:6px 3px;border-radius:11px;
+ border:2px solid #ffe6a3;background:linear-gradient(110deg,#d9a6ed,#f49fcb,#ffefba);
+ box-shadow:inset 0 0 0 2px #fffdeda8,0 1px 4px #ad779988}
+.gp-odds-bonus b{font:900 12px/1 system-ui;color:#fff5e4;text-shadow:0 2px #a15b84}
+.gp-odds-bonus strong{font:1000 17px/1.1 system-ui;color:#fff6b5;text-shadow:0 2px 2px #a361a0}
+.gp-odds-bonus small{font:900 7px/1.1 system-ui;color:#7f4d8b;letter-spacing:.4px}
+body.gelato-enabled .gp-bonus-sign{display:none}
+body.gelato-active .gp-bonus-sign{display:flex!important;position:absolute;inset:2px 5% 0;align-items:center;justify-content:center;gap:5px;
+ border-radius:14px;border:2px solid #ffedbf;background:linear-gradient(105deg,#e2b5f2,#f5aad5,#ffe0a5);
+ box-shadow:inset 0 1px #fff8e8,0 1px 5px #b37b97;z-index:7;pointer-events:none}
+.gp-bonus-sign span{font:1000 clamp(9px,2.4vw,12px)/1.1 system-ui;color:#fffdf0;text-shadow:0 1px 2px #9d5a98}
+.gp-bonus-sign b{font:900 clamp(8px,2.4vw,12px)/1.1 system-ui;color:#955e96}
+body.gelato-active .game .festival-top{visibility:visible!important}
+body.gelato-active #allclear-award{display:none!important}
