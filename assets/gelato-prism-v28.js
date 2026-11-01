@@ -1,4 +1,4 @@
-/* GELATO PRISM v45 - ice kingdom sprites, sticky descending payout, 10% panel sugar and luxury tab logo */
+/* GELATO PRISM v46 - six-row animated payout and crystal reach effects */
 (()=>{
 'use strict';
 try{
@@ -345,33 +345,62 @@ try{
  // This UI is outside the PNG mould so it never obscures the star's digits.
  const collectorPanel=document.createElement('div');
  collectorPanel.className='gp-collector-panel';
- // 24/24 is always pinned, followed by exactly 5 visible descending tiers.
- // The sliding rows extend through 0/24 so there are no empty initial states.
+ // 24 WIN is fixed. Six descending rows scroll, and 23 is impossible.
  const payoutRows=Array.from({length:23},(_,i)=>22-i).map(n=>
-   '<div class="gp-pay-row" data-panels="'+n+'">'+
-   '<span class="gp-pay-panel-n">'+n+'枚<span class="gp-sugar-status"></span></span>'+
+   '<div class="gp-pay-row" data-panels="'+n+'"><span class="gp-pay-panel-n">'+
+   n+'枚<span class="gp-sugar-status"></span></span>'+
    '<strong class="gold-number gp-pay-win">0WIN</strong></div>').join('');
  collectorPanel.innerHTML=
-  '<div class="gp-collector-title">4色コレクター</div>'+
   '<div class="gp-collector-grid">'+
   [1,2,3,4].map(g=>'<div class="gp-collector-row" data-grade="'+g+'">'+
     '<span class="gp-diamond-wrap"><span class="gp-diamond">'+
-       Array.from({length:4},(_,i)=>'<i class="gp-diamond-piece" data-piece="'+i+'"></i>').join('')+
+      Array.from({length:4},(_,i)=>'<i class="gp-diamond-piece" data-piece="'+i+'"></i>').join('')+
     '</span></span>'+
-    '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b><small class="gp-collected-n">0/4</small></span>'+
-    '<strong class="gold-number gp-collector-win">0WIN</strong></div>').join('')+
+    '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b>'+
+      '<small class="gp-collected-n">0/4</small></span>'+
+    '<strong class="gold-number gp-collector-win">'+
+      '<span class="gp-win-number">0</span><small>WIN</small></strong></div>').join('')+
   '</div>'+
-  '<div class="gp-payout-header"><span>配当表</span>'+
-     '<small class="gp-current-panels">0/24</small><small class="gp-sugar-header">✦ 16枚</small></div>'+
   '<div class="gp-pay-row gp-pay-fixed" data-panels="24">'+
-     '<span class="gp-pay-panel-n">24枚</span><strong class="gold-number gp-pay-win">0WIN</strong></div>'+
-  '<div class="gp-payout-window"><div class="gp-payout-track">'+payoutRows+'</div></div>';
+     '<span class="gp-pay-panel-n">24枚</span>'+
+     '<strong class="gold-number gp-pay-win">0WIN</strong></div>'+
+  '<div class="gp-payout-break" aria-hidden="true"><i></i></div>'+
+  '<div class="gp-payout-window"><div class="gp-payout-track">'+payoutRows+'</div></div>'+
+  '<div class="gp-highest-frame">'+
+    '<span class="gp-highest-heading">✦ 最高役 ✦ '+
+      '<small class="gp-sugar-header">✦16枚</small></span>'+
+    '<div class="gp-highest-bottom"><span class="gp-highest-name">未成立</span>'+
+       '<strong class="gold-number gp-highest-win">0WIN</strong></div>'+
+  '</div>';
  scene.appendChild(collectorPanel);
- // The 23-panel result is impossible in the 19-node capture geometry.
- // n=10 -> 24,12,11,10,9,8; n>=20 -> 24,22,21,20,19,18.
+ // For 10 panels: 24,13,12,11,10,9,8.  For 22: 24,22,21,20,19,18,17.
  function payoutWindowFor(n){
-   const first=Math.max(4,Math.min(22,n+2));
-   return [24,first,first-1,first-2,first-3,first-4];
+   const top=Math.max(5,Math.min(22,Math.floor(n)+3));
+   return [24,top,top-1,top-2,top-3,top-4,top-5];
+ }
+ const payoutTrack=collectorPanel.querySelector('.gp-payout-track');
+ const payoutDivider=collectorPanel.querySelector('.gp-payout-break');
+ let payoutSlideIndex=null,payoutSlideTarget=null,payoutSlideTimer=null,payoutSlideCycle=-1;
+ function slidePayoutOneRow(){
+   payoutSlideTimer=null;
+   if(payoutSlideIndex===payoutSlideTarget)return;
+   payoutSlideIndex+=Math.sign(payoutSlideTarget-payoutSlideIndex);
+   payoutTrack.style.setProperty('--gp-slide-index',String(payoutSlideIndex));
+   payoutDivider.classList.toggle('gp-has-skip',payoutSlideIndex!==0);
+   if(payoutSlideIndex!==payoutSlideTarget)
+     payoutSlideTimer=setTimeout(slidePayoutOneRow,260);
+ }
+ function schedulePayoutSlide(e){
+   const top=payoutWindowFor(e.filled.size)[1];
+   payoutSlideTarget=22-top;
+   if(payoutSlideCycle!==e.cycle||payoutSlideIndex==null){
+     if(payoutSlideTimer){clearTimeout(payoutSlideTimer);payoutSlideTimer=null;}
+     payoutSlideCycle=e.cycle;payoutSlideIndex=payoutSlideTarget;
+     payoutTrack.classList.add('gp-snap');
+     payoutTrack.style.setProperty('--gp-slide-index',String(payoutSlideIndex));
+     payoutDivider.classList.toggle('gp-has-skip',top!==22);
+     requestAnimationFrame(()=>requestAnimationFrame(()=>payoutTrack.classList.remove('gp-snap')));
+   }else if(payoutSlideIndex!==payoutSlideTarget&&!payoutSlideTimer)slidePayoutOneRow();
  }
  let collectorKey='';
  function updateCollectorHUD(e,bet){
@@ -381,6 +410,8 @@ try{
    if(key===collectorKey)return;
    collectorKey=key;
    const counts=e.collectorCounts||evaluatePrize(e.filled,e.faceGrades).counts;
+   const best=[{mult:COUNT_MULT[e.filled.size]||0,
+     name:e.filled.size>=10?e.filled.size+'枚パネル':'未成立'}];
    for(const row of collectorPanel.querySelectorAll('[data-grade]')){
      const grade=+row.dataset.grade,count=counts[grade],color=GRADE_COLORS[grade];
      row.querySelector('.gp-collected-n').textContent=count+'/4';
@@ -390,17 +421,20 @@ try{
        piece.style.setProperty('--gp-gem-color',color);
        piece.style.setProperty('--gp-crystal-pos',grade*25+'%');
      }
-     const win=medalWin(bet,COLLECTOR_MULT[grade]*100);
-     row.querySelector('.gp-collector-win').textContent=num(win)+'WIN';
+     row.querySelector('.gp-win-number').textContent=
+       num(medalWin(bet,COLLECTOR_MULT[grade]*100));
      row.classList.toggle('gp-complete',count===4);
+     if(count===4)best.push({mult:COLLECTOR_MULT[grade],name:GRADE_NAMES[grade]+'4個'});
    }
-   collectorPanel.querySelector('.gp-current-panels').textContent=e.filled.size+'/24';
+   const highest=best.sort((a,b)=>b.mult-a.mult)[0];
+   collectorPanel.querySelector('.gp-highest-name').textContent=
+     e.filled.size===24?'全獲り':highest.name;
+   collectorPanel.querySelector('.gp-highest-win').textContent=
+     num(medalWin(bet,Math.round(highest.mult*100)))+'WIN';
    const sugarHeader=collectorPanel.querySelector('.gp-sugar-header');
    sugarHeader.textContent=e.sugarAwarded?'✦ GET!':'✦ '+e.sugarTarget+'枚';
    sugarHeader.classList.toggle('is-get',e.sugarAwarded);
-   const first=payoutWindowFor(e.filled.size)[1];
-   const track=collectorPanel.querySelector('.gp-payout-track');
-   track.style.setProperty('--gp-slide-index',String(22-first));
+   schedulePayoutSlide(e);
    for(const row of collectorPanel.querySelectorAll('.gp-pay-row')){
      const n=+row.dataset.panels;
      const payout=num(medalWin(bet,Math.round(COUNT_MULT[n]*100)))+'WIN';
