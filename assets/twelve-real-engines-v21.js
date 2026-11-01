@@ -148,6 +148,37 @@ function install(){
     if(group===0)e.wait=rush;
     if(group===1)e.visualWait=rush;
     if(group===2)e.waitVisual=rush;
+    // Keep enqueueBatch, accepted counters and queue order synchronous.
+    // Only defer the first CPU-heavy drain, shifting the 9 independent
+    // planning tasks across ~160ms instead of starting them together.
+    const actualDrain=e.drain.bind(e);
+    let queuedDrain=null;
+    e.drain=function(){
+      if(this.busy)return;
+      if(queuedDrain?.version===this.version)return;
+      const token={version:this.version};
+      queuedDrain=token;
+      this.busy=true;
+      const delay=8+(i-3)*18;
+      setTimeout(()=>{
+        if(queuedDrain!==token)return;
+        queuedDrain=null;
+        if(this.version!==token.version)return; // round was reset
+        this.busy=false;
+        if(!this.queue.length)return;
+        try{
+          const job=actualDrain();
+          if(job?.catch)job.catch(error=>{
+            if(this.version===token.version){
+              this.busy=false;this.emit('error',{message:error.message||String(error)});
+            }
+          });
+        }catch(error){
+          this.busy=false;
+          this.emit('error',{message:error.message||String(error)});
+        }
+      },delay);
+    };
     e.presentationRate=3;
     ghostMap.set(i,e);
     return e;
@@ -157,6 +188,7 @@ function install(){
     if(!app||currentMode!=='12'||!app.engines.includes(e))return;
     // Keep actual event payload for compact full-renderer fall/refill FX.
     lastEvents.set(i,ev);
+    window.sweets12FrameScheduler?.markBoard(i);
     const game=gameFor(i);
     if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[i]){
       app.wonderBank.push(...(ev.steps||[]).map(step=>({...step,game,board:i})));
@@ -189,6 +221,7 @@ function install(){
   // must not overwrite the main view when a secondary board is selected.
   app.onEvent=function(i,ev,e,a){
     lastEvents.set(i,ev);
+    window.sweets12FrameScheduler?.markBoard(i);
     if(currentMode==='12'&&selected[i]>0&&ev.phase!=='rainbowappear'){
       if(ev.phase==='complete')recordChanged(a);
       return;
@@ -216,6 +249,7 @@ function install(){
     }
     if(app.phase==='ready')app.enabled=app.bets.map(n=>n>0);
     app.onChange(app);
+    window.sweets12FrameScheduler?.markAll();
   }
   function attachTwelve(){
     if(currentMode==='12')return;
@@ -260,6 +294,7 @@ function install(){
     }
     document.body.classList.toggle('twelve-live-active',currentMode==='12');
     document.body.dataset.gameMode=currentMode;
+    window.sweets12FrameScheduler?.markAll();
     if(currentMode==='12')for(let g=0;g<3;g++)refreshLarge(g);
     refreshMenu();
   }
@@ -286,6 +321,7 @@ function install(){
     if(ok&&currentMode==='3'&&i<3)baseBets[i]=n;
     if(ok&&currentMode==='12'&&i<12){
       configs[i].bet=n;configs[i].enabled=n>0;savedSet();
+      window.sweets12FrameScheduler?.markBoard(i);
     }
     return ok;
   };
@@ -324,6 +360,7 @@ function install(){
     if(group<0||group>2||mini<0||mini>3)return;
     selected[group]=mini;
     refreshLarge(group);
+    window.sweets12FrameScheduler?.selectionChanged();
     if(active!==group)select(group);
     scheduleUI(app);
   }
