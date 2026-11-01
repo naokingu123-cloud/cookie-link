@@ -235,8 +235,9 @@ try{
  const mini=document.createElement('div');mini.className='gp-mini';mini.innerHTML=boardSVG('gp-tab');
  slot.tab.querySelector('.mini-wrap').append(mini);
 
- // The user supplies two high-resolution raster assets at assets/:
- // gelato-prism-cookie-v36.png, gelato-prism-gelato-v36.png.
+ // The user supplies three high-resolution raster assets at assets/:
+ // gelato-prism-cookie-v36.png, gelato-prism-gelato-v36.png,
+ // gelato-prism-trim-v36.png.
  // No SVG is painted when both load successfully.  Old SVG remains a safe
  // fallback until the upload is complete (avoids a broken production game).
  const rasterMain=document.createElement('canvas'),rasterMini=document.createElement('canvas');
@@ -246,7 +247,7 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
- const rasterImages={board:new Image(),fill:new Image(),ready:false};
+ const rasterImages={board:new Image(),fill:new Image(),trim:new Image(),ready:false};
  let rasterKey='';
  const rasterCoords=RAW.map(([x,y])=>({x,y}));
  function loadRasterAsset(img,name){
@@ -258,7 +259,8 @@ try{
  }
  Promise.all([
    loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v36.png'),
-   loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v36.png')
+   loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v36.png'),
+   loadRasterAsset(rasterImages.trim,'gelato-prism-trim-v36.png')
  ]).then(()=>{
    rasterImages.ready=true;
    rasterMold.classList.add('gp-raster-ready');
@@ -282,6 +284,8 @@ try{
      ctx.drawImage(rasterImages.fill,0,0,500,500);
      ctx.restore();
    }
+   // Raster icing and gold-node layer stays on top of rewarded gelato.
+   ctx.drawImage(rasterImages.trim,0,0,500,500);
    ctx.save();
    for(const edgeIndex of e.links){
      const edgeData=EDGES[edgeIndex];
