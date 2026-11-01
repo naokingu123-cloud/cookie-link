@@ -388,7 +388,11 @@ try{
  const pendingBoards=[];
  const queuedBoards=new Set();
  const movingBoards=new Set();
- let idleRequest=0,urgentTimer=0,motionTimer=0,reachTimer=0,animationTick=0,animationCursor=0;
+ let idleRequest=0,urgentTimer=0,motionTimer=0,reachTimer=0,animationCursor=0;
+ // Independently deadline each moving thumbnail. This gives moving boards
+ // ~70ms in the active game and ~130ms elsewhere when idle CPU allows.
+ const motionDue=new Map();
+ let activePaintStreak=0;
  let processedFrames=0,skippedFrames=0,lastCost=0;
  let lastRouletteFrame=0,rouletteFrameGap=0,rouletteJankUntil=0,lastMiniPaint=0;
  function noteRouletteFrame(now){
@@ -429,7 +433,8 @@ try{
  function scheduleBoard(){
    if(idleRequest||urgentTimer||!liveMode()||document.hidden)return;
    if(typeof requestIdleCallback==='function'){
-     idleRequest=requestIdleCallback(drainBoards,{timeout:240});
+     // Avoid waiting for an arbitrary 240ms timeout while animations move.
+     idleRequest=requestIdleCallback(drainBoards,{timeout:110});
    }else{
      // Safari fallback: never process in the same rAF as roulette physics.
      // Defer to a task after the next paint and only draw one mini.
@@ -458,8 +463,13 @@ try{
    }
    // Exactly one thumbnail per idle slice even when 12 boards change in
    // the same draw. No burst of 9 Canvas renders before a roulette frame.
-   const id=pendingBoards.shift();
+   // Spend most idle slices on the visible game's three thumbnails,
+   // but give at least every fourth slice to other games.
+   let idx=pendingBoards.findIndex(id=>(Math.floor(id/4)===active)===(activePaintStreak<3));
+   if(idx<0)idx=0;
+   const [id]=pendingBoards.splice(idx,1);
    if(id==null)return;
+   activePaintStreak=Math.floor(id/4)===active?Math.min(3,activePaintStreak+1):0;
    queuedBoards.delete(id);
    const item=getItemById(id);
    if(!item){if(pendingBoards.length)scheduleBoard();return;}
@@ -479,8 +489,14 @@ try{
    if(engine?.busy||engine?.opening||engine?.queue?.length||
        engine?.pendingDraws?.size){
      movingBoards.add(id);
+     // The next render is based on the last actually painted frame,
+     // not on an accumulating timer that causes bursty redraws.
+     motionDue.set(id,performance.now()+(item.game===active?70:130));
      scheduleMotion();
-   }else movingBoards.delete(id);
+   }else{
+     movingBoards.delete(id);
+     motionDue.delete(id);
+   }
    if((data?.reach?.length||0)>4){
      item.pagedReach=data.reach;
      scheduleReachPager();
@@ -489,29 +505,34 @@ try{
  }
  function scheduleMotion(){
    if(motionTimer||!movingBoards.size||!liveMode()||document.hidden)return;
+   const now=performance.now();
+   let earliest=Infinity;
+   for(const id of movingBoards){
+     // A queued thumbnail is already committed for a future idle slice.
+     if(queuedBoards.has(id))continue;
+     earliest=Math.min(earliest,motionDue.get(id)??now);
+   }
+   if(!Number.isFinite(earliest))return; // drainBoards will re-arm it
    motionTimer=setTimeout(()=>{
      motionTimer=0;
-     if(!liveMode()||document.hidden||app?.paused)return;
-     animationTick++;
-     // At most 2 animations requested per pulse; event changes always
-     // take precedence, and hidden games update at a reduced frequency.
-     let added=0;
-     // Round-robin rather than repeatedly favoring the first two items
-     // in the Set. Keep all twelve boards moving without drawing them
-     // together in one browser frame.
-     for(let step=0;step<12 && added<2;step++){
-       const id=(animationCursor+step)%12;
-       if(!movingBoards.has(id))continue;
-       const item=getItemById(id);
-       if(!item)continue;
-       const activeGame=item.host.querySelector('.tab')?.getAttribute('aria-selected')==='true';
-       if(!activeGame&&animationTick%3!==id%3)continue;
-       enqueue(id);
-       added++;
+     if(!liveMode()||document.hidden)return;
+     if(app?.paused){scheduleMotion();return;}
+     const current=performance.now();
+     const due=[];
+     for(const id of movingBoards){
+       if(queuedBoards.has(id))continue;
+       const target=motionDue.get(id)??current;
+       if(current>=target)due.push({id,target,visible:Math.floor(id/4)===active});
      }
-     animationCursor=(animationCursor+Math.max(1,added*2+1))%12;
+     due.sort((a,b)=>Number(b.visible)-Number(a.visible)||a.target-b.target);
+     // At most two changes are queued in one pulse. Idle scheduler
+     // still draws only one mini per task, never two in one render call.
+     for(const {id} of due.slice(0,2)){
+       motionDue.set(id,current+(Math.floor(id/4)===active?70:130));
+       enqueue(id);
+     }
      if(movingBoards.size)scheduleMotion();
-   },110);
+   },Math.max(8,Math.min(80,earliest-now)));
  }
  function scheduleReachPager(){
    if(reachTimer||!liveMode()||document.hidden)return;
