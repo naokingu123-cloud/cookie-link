@@ -338,6 +338,9 @@ try{
    row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+num(a.locked[0])+' BET</small>';
    const details=row.querySelector('.result-game-details');
    if(details)details.innerHTML='<span>'+e.filled.size+' / 24 FILL</span><span>'+e.roundCleared+' GELATO GET!</span>';
+   // Visually follow the three-tab order without changing app.engine indices.
+   const panel=$('result-games'),cards=[...panel.querySelectorAll('.result-game')];
+   if(cards.length===3)panel.append(cards[1],cards[2],cards[0]);
  };
  document.body.classList.add('gelato-enabled');
  drawGelato();select(1);scheduleUI(app);
