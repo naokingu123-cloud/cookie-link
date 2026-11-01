@@ -1,4 +1,4 @@
-/* Winery Pyramid v2. Multiplicative MIX bonus and 90% calibrated full-glass payouts. */
+/* Winery Pyramid v54. Symmetric white initial juices, calibrated RTP 50–150, random sugar ~10%. */
 (function(root){
 'use strict';
 const EPS=1e-9, ROWS=6, SIZE=21;
@@ -17,12 +17,59 @@ const FLAVORS=[{name:'りんご',color:'#f05e67',light:'#ffc4a8'},
 {name:'レモン',color:'#ffd539',light:'#fff4a2'},
 {name:'メロン',color:'#50cc79',light:'#d0ffb4'},
 {name:'ソーダ',color:'#41c8f5',light:'#ccfaff'},
-{name:'ぶどう',color:'#a569e7',light:'#e8bdff'}];
+{name:'ぶどう',color:'#a569e7',light:'#e8bdff'},
+{name:'白ジュース',color:'#f7f3e9',light:'#ffffff'}];
 const CELLS=[];
 for(let r=0;r<ROWS;r++)for(let c=0;c<=r;c++)CELLS.push({r,c,id:r*(r+1)/2+c});
 const flavorFor=ball=>ball<=3?0:ball<=5?1:ball===6?2:ball===7?3:4;
 const clone=glasses=>glasses.map(g=>({volume:g.volume,layers:g.layers.map(x=>({...x}))}));
-function initial(pattern){return PREFILLS[pattern].map(v=>({volume:v,layers:v>0?[{flavor:0,amount:v}]:[]}));}
+// Rates measured from 250,000 seeded 8-ball games per initial fill scale.
+ // A 50–150% request interpolates between two *complete symmetric boards*;
+ // individual left/right glass volumes are never independently randomized.
+ const RATE_ANCHORS=[
+  [0,45.188, .0954,.0636,.0393,.0231],
+  [.10,63.206,.0955,.0637,.0396,.0233],
+  [.25,65.837,.0994,.0661,.0420,.0251],
+  [.50,72.056,.1129,.0738,.0473,.0284],
+  [.75,78.061,.1253,.0818,.0533,.0327],
+  [.85,84.885,.1418,.0918,.0588,.0358],
+  [.95,87.067,.1465,.0957,.0612,.0376],
+  [1,96.127,.1731,.1106,.0694,.0420],
+  [1.10,98.407,.1772,.1132,.0713,.0434],
+  [1.20,103.934,.1866,.1210,.0773,.0479],
+  [1.35,117.037,.2210,.1440,.0906,.0554],
+  [1.45,119.346,.2256,.1476,.0934,.0572],
+  [1.55,125.337,.2358,.1558,.1001,.0618],
+  [1.65,135.684,.2520,.1663,.1069,.0660],
+  [1.75,142.288,.2660,.1783,.1157,.0721],
+  [1.85,149.495,.2803,.1890,.1236,.0767],
+  [1.95,152.959,.2873,.1943,.1278,.0796]
+ ];
+ function rateAnchor(rate,random=Math.random){
+   const target=Math.max(50,Math.min(150,Number(rate)||90));
+   let j=1;while(j<RATE_ANCHORS.length-1&&RATE_ANCHORS[j][1]<target)j++;
+   const a=RATE_ANCHORS[j-1],b=RATE_ANCHORS[j];
+   const fraction=Math.max(0,Math.min(1,(target-a[1])/(b[1]-a[1])));
+   const selected=random()<fraction?b:a;
+   return {scale:selected[0],expected:target,observed:selected[1],anchor:selected};
+ }
+ function initial(pattern,scale=1){
+   return PREFILLS[pattern].map(v=>{
+     const amount=Math.min(.97,Math.max(0,v*scale));
+     return {volume:amount,layers:amount>EPS?[{flavor:5,amount}]:[]};
+   });
+ }
+ function sugarThreshold(anchor,random=Math.random){
+   // Choose a threshold for the final number of full glasses, keeping the
+   // mean acquisition around 10% under this particular initial fill mode.
+   const target=.10,tails=[anchor[2],anchor[3],anchor[4],anchor[5]];
+   if(tails[0]<=target)return 11;
+   for(let i=0;i<3;i++)if(tails[i]>=target&&tails[i+1]<=target){
+     const upperProbability=(target-tails[i+1])/(tails[i]-tails[i+1]);
+     return random()<upperProbability?11+i:12+i;
+   }
+   return 14;
+ }
 function choose(random){let x=random()*100;for(let i=0;i<6;i++){x-=WEIGHTS[i];if(x<0)return i;}return 5;}
 function prize(glasses){
  let full=0,mix=0;
@@ -61,9 +108,9 @@ class WineryEngine{
  constructor({random=Math.random,sleep=ms=>new Promise(r=>setTimeout(r,ms)),onEvent=()=>{},speed=1.4}={}){
   this.random=random;this.sleep=sleep;this.onEvent=onEvent;this.speed=speed;
   this.kind='winery';this.gameName='ワイナリーピラミッド';this.drawMode='single';this.reachMode='single';this.colorCount=5;
-  this.version=0;this.cycle=0;this.roundBet=3000;this.reset();
+  this.version=0;this.cycle=0;this.roundBet=3000;this.payoutTarget=90;this.reset();
  }
- emit(phase,data={}){if(!['drawpending','queued'].includes(phase))this.phase=phase;this.onEvent({phase,...data},this);}
+ emit(phase,data={}){if(!['drawpending','queued','stepcollect','sugaraward'].includes(phase))this.phase=phase;this.onEvent({phase,...data},this);}
  reset(){
   this.version++;this.cycle++;this.running=false;this.busy=false;this.opening=false;this.paused=false;this.presentationRate=1;
   this.queue=[];this.pendingDraws=new Set();this.drawn=new Set();this.seen=new Set();this.hits=new Set();this.accepted=0;this.processed=0;
@@ -73,9 +120,19 @@ class WineryEngine{
   const nums=Array.from({length:25},(_,i)=>i+1);
   for(let i=24;i>0;i--){const j=Math.floor(this.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
   this.nodeNumbers=nums.slice(0,SIZE);this.boostNumbers=nums.slice(SIZE);
-  this.pattern=choose(this.random);this.glasses=initial(this.pattern);this.initialVolume=this.glasses.reduce((s,g)=>s+g.volume,0);
+  this.pattern=choose(this.random);
+   const calibrated=rateAnchor(this.payoutTarget,this.random);
+   this.fillScale=calibrated.scale;this.calibratedRtp=calibrated.observed;
+   this.glasses=initial(this.pattern,this.fillScale);
+   this.initialVolume=this.glasses.reduce((s,g)=>s+g.volume,0);
+   this.sugarTarget=sugarThreshold(calibrated.anchor,this.random);
+   this.sugarAwarded=false;this.justFilled=[];
   this.fullCount=0;this.mixCount=0;this.countMultiplier=0;this.mixMultiplier=1;
   this.emit('ready');
+ }
+ setPayoutTarget(rate){
+   if(!Number.isInteger(rate)||rate<50||rate>150||this.running)return false;
+   this.payoutTarget=rate;this.reset();return true;
  }
  get idle(){return !this.busy&&!this.queue.length;}
  start(){if(this.running||this.roundBet<=0)return;this.running=true;this.emit('waiting');}
@@ -115,8 +172,20 @@ class WineryEngine{
       this.fx={type:'pour',source:pos,number:n,volume,flavor,before,elapsed:0,duration};
       this.emit('wineryPour',{number:n,ball,volume,flavor});
       if(!await this.wait(duration,token))return;
-      this.glasses=plan.glasses;this.wasted+=plan.wasted;this.totalPoured+=volume;this.refreshPrize();this.lastGain=this.totalHundredths-previous;
-      this.fx=null;this.emit('wineryAward',{gain:this.lastGain,full:this.fullCount,mix:this.mixCount});
+      this.glasses=plan.glasses;this.wasted+=plan.wasted;this.totalPoured+=volume;
+       this.refreshPrize();this.lastGain=this.totalHundredths-previous;
+       this.justFilled=plan.glasses.map((g,i)=>g.volume>=1-EPS&&before[i].volume<1-EPS?i:-1).filter(i=>i>=0);
+       this.fx=null;
+       this.emit('wineryAward',{gain:this.lastGain,full:this.fullCount,mix:this.mixCount,justFilled:this.justFilled.slice()});
+       if(!this.sugarAwarded&&this.fullCount>=this.sugarTarget){
+         this.sugarAwarded=true;this.wonderCollected=true;this.roundSteps=1;
+         const step={id:this.version*100+this.processed+1,
+           value:Math.max(1,this.roundBet),tier:Math.max(1,Math.min(5,Math.ceil(this.roundBet/1000))),
+           kind:'winery',source:'full-glass'};
+         this.wonderToken=step;
+         this.emit('stepcollect',{steps:[step]});
+         this.emit('sugaraward',{steps:[step],full:this.fullCount});
+       }
       if(plan.allFull){this.emit('wineryAllFull');if(!await this.wait(850,token))return;}
      }
      this.fx=null;this.processed++;this.emit('settled',{number:n,ball});
@@ -131,6 +200,6 @@ class WineryEngine{
   }catch(error){if(token===this.version){this.fx=null;this.queue=[];this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
-const api={version:2,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
+const api={version:54,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.WineryPyramidCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
