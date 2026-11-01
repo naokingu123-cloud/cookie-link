@@ -1,4 +1,4 @@
-/* GELATO PRISM v47 - per-number reach, 0-to-count animated payouts, luxury logo */
+/* GELATO PRISM v48 - HIT marks, luminous flowing lines and Six Drop reach visuals */
 (()=>{
 'use strict';
 try{
@@ -154,7 +154,8 @@ try{
      this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
      this.presentationRate=1;this.roundBet=this.roundBet||3000;this.totalHundredths=0;this.maxLink=0;this.maxChain=0;
      this.allClears=0;this.roundSteps=0;this.roundHammers=0;this.roundCleared=0;this.lastGain=0;
-     this.lastFilled=[];this.lastNode=-1;this.wonderCollected=this.sugarAwarded;this.wonderToken=null;
+     this.lastFilled=[];this.lastNode=-1;this.hitVisualTime=new Map();
+     this.wonderCollected=this.sugarAwarded;this.wonderToken=null;
      this.emit('ready',{filled:this.filled.size});
    }
    get idle(){return !this.busy&&!this.queue.length;}
@@ -200,6 +201,7 @@ try{
            const pos=this.nodeNumbers.indexOf(number),newHit=pos>=0&&!this.hits.has(pos);
            if(newHit)this.hits.add(pos);
            this.lastNode=pos;
+           if(newHit)this.hitVisualTime.set(pos,typeof performance!=='undefined'?performance.now():Date.now());
            this.emit('gelatoHit',{number,index:pos,newHit});
            if(!await this.wait(newHit?250:110,token))return;
            const next=this.stateFor(this.hits);
@@ -824,25 +826,77 @@ try{
        }
      }
    }
+   // Same 42 exact segments are used for both geometry and visible lines.
+   // Three layered paths make each connected edge readable against ice artwork.
+   // A moving white/cyan dash and traveling pearls circulate on live links.
+   const motion=typeof performance!=='undefined'?performance.now():Date.now();
+   const phase=motion*.033;
+   const flowing=!app.paused&&!document.hidden;
    ctx.save();
    ctx.setTransform(size/500,0,0,size/500,0,0);
+   ctx.lineCap='round';ctx.lineJoin='round';
    for(const edgeIndex of e.links){
      const ed=EDGES[edgeIndex],a=rasterCoords[ed.a],b=rasterCoords[ed.b];
+     const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-     ctx.lineCap='round';ctx.lineWidth=small?4:5;
-     ctx.strokeStyle='#ffe568';ctx.stroke();
+     ctx.save();
+     ctx.shadowColor='#52e9ff';ctx.shadowBlur=small?4:9;
+     ctx.globalAlpha=.65;ctx.strokeStyle='#38dbff';
+     ctx.lineWidth=small?8:10.5;ctx.stroke();
+     ctx.restore();
+     ctx.lineWidth=small?5.3:6.3;ctx.strokeStyle='#fff5b7';ctx.stroke();
+     ctx.lineWidth=small?2.5:3.1;ctx.strokeStyle='#f8ffff';ctx.stroke();
+     if(flowing&&length>1){
+       ctx.save();
+       ctx.setLineDash([8,13]);
+       ctx.lineDashOffset=-(phase+edgeIndex*5.2);
+       ctx.lineWidth=small?2.8:3.6;
+       ctx.strokeStyle='#8cf8ff';
+       ctx.shadowColor='#eaffff';ctx.shadowBlur=small?0:6;
+       ctx.stroke();
+       ctx.restore();
+       const t=((motion*.00042+edgeIndex*.113)%1);
+       const x=a.x+dx*t,y=a.y+dy*t;
+       ctx.beginPath();ctx.arc(x,y,small?2.7:3.5,0,Math.PI*2);
+       ctx.fillStyle='#ffffff';ctx.shadowColor='#65efff';
+       ctx.shadowBlur=small?3:9;ctx.fill();ctx.shadowBlur=0;
+     }
    }
    for(let k=0;k<rasterCoords.length;k++){
      const p=rasterCoords[k],n=e.nodeNumbers[k];
      if(!e.hits.has(k)&&!e.pendingDraws.has(n))continue;
-     ctx.beginPath();ctx.arc(p.x,p.y,small?17:15,0,Math.PI*2);
-     ctx.lineWidth=small?5:3.7;
-     ctx.strokeStyle=e.hits.has(k)?'#ffec55':'#ffffff';
-     ctx.stroke();
+     ctx.beginPath();ctx.arc(p.x,p.y,small?18:17.5,0,Math.PI*2);
+     ctx.lineWidth=small?4.4:3.8;
+     ctx.strokeStyle=e.hits.has(k)?'#fff0a9':'#ffffff';
+     ctx.shadowColor=e.hits.has(k)?'#ffda6a':'#a9f4ff';
+     ctx.shadowBlur=small?3:8;ctx.stroke();
+     ctx.shadowBlur=0;
    }
    ctx.restore();
    if(!small)ctx.drawImage(rasterImages.numbers,0,0);
-   drawReachOnNodes(ctx,e,small);
+   // HIT! is attached to the numbered socket, not to every filled triangle.
+   // The underlying numeral stays readable inside its enlarged ice circle.
+   if(e.hits.size){
+     ctx.save();ctx.setTransform(size/500,0,0,size/500,0,0);
+     ctx.textAlign='center';ctx.textBaseline='middle';
+     for(const node of e.hits){
+       const p=rasterCoords[node];if(!p)continue;
+       const t=typeof performance!=='undefined'?performance.now():Date.now();
+       const age=t-(e.hitVisualTime?.get(node)||0);
+       const pop=age>=0&&age<850?1+.12*Math.sin(age/850*Math.PI):1;
+       if(small){
+         ctx.beginPath();ctx.arc(p.x,p.y+11,4.2,0,Math.PI*2);
+         ctx.fillStyle='#ffe778';ctx.fill();continue;
+       }
+       ctx.save();ctx.translate(p.x,p.y+20);ctx.scale(pop,pop);
+       ctx.font='900 10.5px SweetReachRounded,system-ui,sans-serif';
+       ctx.lineJoin='round';ctx.lineWidth=3.1;
+       ctx.strokeStyle='#642c8a';ctx.fillStyle='#fff5a5';
+       ctx.shadowColor='#ffea69';ctx.shadowBlur=age<850?8:3;
+       ctx.strokeText('HIT!',0,0);ctx.fillText('HIT!',0,0);ctx.restore();
+     }
+     ctx.restore();
+   }
  }
  function drawRaster(e,bet){
    if(!rasterImages.ready)return;
