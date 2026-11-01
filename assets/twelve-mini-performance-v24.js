@@ -94,6 +94,8 @@ try{
   if(view.lastFx!==src){
    view.lastFx=src;view.fxBegin=now;
    view.fxStart=src?.elapsed||0;
+   // Allocate once per effect stage, not once per preview frame.
+   view.fxFrame=src?{...src}:null;
   }
   if(!src)return null;
   const ms=Math.max(1,Number(src.ms)||1);
@@ -101,7 +103,8 @@ try{
   // only paint a copy, not mutate the original animation timestamp.
   const elapsed=Math.max(Number(src.elapsed)||0,
     view.fxStart+(app.paused?0:(now-view.fxBegin)*Math.min(3,Math.max(1,e.speed||1))));
-  return {...src,elapsed:clamp(elapsed,0,ms)};
+  view.fxFrame.elapsed=clamp(elapsed,0,ms);
+  return view.fxFrame;
  }
  function canyonPaint(item,e,view,fx,now){
   const g=item.ctx,physical=g.canvas.width||48;
@@ -113,11 +116,15 @@ try{
     ?old:e.strata;
   if(!Array.isArray(grid))return false;
   const progress=fx?.ms?clamp(fx.elapsed/fx.ms):1;
-  const moves=new Map((stage==='canyonFall'?(fx.moves||[]):[]).map(m=>[m.id,m]));
-  const gone=new Set((stage==='canyonMelt'?fx.targets||[]:[])
-    .map(m=>m.tile?.id).filter(Number.isFinite));
-  const softened=new Set((stage==='canyonSoften'?fx.targets||[]:[])
-    .map(m=>m.tile?.id).filter(Number.isFinite));
+  const moves=view.canyonMoves||(view.canyonMoves=new Map());
+  const gone=view.canyonGone||(view.canyonGone=new Set());
+  const softened=view.canyonSoft||(view.canyonSoft=new Set());
+  moves.clear();gone.clear();softened.clear();
+  if(stage==='canyonFall')for(const m of fx.moves||[])moves.set(m.id,m);
+  if(stage==='canyonMelt')for(const v of fx.targets||[])
+    if(v.tile?.id!=null)gone.add(v.tile.id);
+  if(stage==='canyonSoften')for(const v of fx.targets||[])
+    if(v.tile?.id!=null)softened.add(v.tile.id);
   const scroll=stage==='canyonScroll'?(fx.advanced||0)*progress:0;
   g.save();
   g.setTransform(factor,0,0,factor,0,0);
@@ -166,9 +173,14 @@ try{
   const transitioning=phase==='pyramidSweep'||phase==='pyramidRefill';
   const grid=transitioning?(fx.grid||e.pyramid):falling?.grid||e.pyramid;
   if(!Array.isArray(grid))return false;
-  const moveMap=new Map((falling?.moves||[]).map(m=>[m.id,m]));
-  const lit=new Set((phase==='pyramidHit'?(fx.cells||[]):[]).map(v=>sixKey(...v)));
-  const formed=new Set((fx?.forms||[]).flatMap(f=>f.cells||[]).map(v=>sixKey(...v)));
+  const moveMap=view.dropMoves||(view.dropMoves=new Map());
+  const lit=view.dropLit||(view.dropLit=new Set());
+  const formed=view.dropForms||(view.dropForms=new Set());
+  moveMap.clear();lit.clear();formed.clear();
+  for(const m of falling?.moves||[])moveMap.set(m.id,m);
+  if(phase==='pyramidHit')for(const p of fx.cells||[])lit.add(sixKey(...p));
+  for(const form of fx?.forms||[])for(const p of form.cells||[])
+    formed.add(sixKey(...p));
   const {bg,glass}=getBackdrop(rows);
   g.save();
   g.setTransform(1,0,0,1,0,0);
