@@ -117,16 +117,17 @@ try{
   if(hosts.some(h=>!h.querySelector('.tab')))return false;
   for(let game=0;game<3;game++){
    const host=hosts[game],original=host.querySelector('.tab');
-   const grid=makeEl('div','mini-four-grid');
-   grid.setAttribute('aria-label',names[game]+'、4面表示試験');
-   for(let index=0;index<4;index++){
-    const cell=makeEl('button','mini-four-cell'+(index===0?' is-live':' is-demo'));
+   const count=game===0?4:3;
+   const grid=makeEl('div','mini-four-grid'+(count===3?' three-mini':''));
+   grid.setAttribute('aria-label',names[game]+'、'+count+'面');
+   for(let index=0;index<count;index++){
+    const cell=makeEl('button','mini-four-cell is-live');
     cell.type='button';
-    cell.title=index===0?'現在のゲーム盤面':'配置試験用の見本盤面（独立抽選なし）';
-    cell.setAttribute('aria-label',names[game]+' '+(index+1)+'番小盤面。'+(index===0?'本番盤面の表示':'配置見本'));
+    cell.title=names[game]+' '+(index+1)+'番';
+    cell.setAttribute('aria-label',names[game]+' '+(index+1)+'番の独立盤面');
     const head=makeEl('span','mini-four-head');
     const badge=makeEl('b','mini-four-number',keys[game]+(index+1));
-    const phase=makeEl('small','mini-four-phase',index===0?'準備':'見本');
+    const phase=makeEl('small','mini-four-phase','準備');
     const sugar=makeEl('span','mini-four-sugar');
     // Reuse the same sugar-gem artwork/class used by the original 3-tab UI.
     const sourceGem=host.querySelector('.tab-sugar .sugar-gem');
@@ -156,8 +157,7 @@ try{
     ITEMS.push(item);
     cell.addEventListener('click',event=>{
       event.preventDefault();event.stopPropagation();
-      // The other nine panels are still visual DEMO boards, so this
-      // changes the highlighted preview, NOT the underlying paid engine.
+      // All visible panels are independent, genuinely scored game engines.
       selectedByGame[game]=index;
       if(original?.getAttribute('aria-selected')!=='true')original?.click();
       window.sweets12Live?.selectBoard(game,index);
@@ -376,10 +376,7 @@ try{
       const chosen=gameSelected&&item.index===selectedIndex;
       item.cell.classList.toggle('is-selected-mini',chosen);
       item.cell.setAttribute('aria-pressed',String(chosen));
-      const previewOnly=chosen&&item.index>0;
-      item.cell.title=chosen
-        ?(previewOnly?'選択中（配置見本・独立抽選なし）':'選択中')
-        :(item.index===0?'現在のゲーム盤面':'配置試験用の見本盤面（独立抽選なし）');
+      item.cell.title=chosen?'選択中':names[game]+' '+(item.index+1)+'番の独立盤面';
     }
   });
  }
@@ -406,11 +403,11 @@ try{
    }
    lastRouletteFrame=now;
  }
- const liveMode=()=>window.sweets12Live?.mode==='12';
+ const liveMode=()=>window.sweets12Live?.mode==='10';
  const itemId=item=>item.game*4+item.index;
  const getItemById=id=>ITEMS.find(item=>itemId(item)===id);
  function enqueue(id){
-   if(!Number.isInteger(id)||id<0||id>=12)return;
+   if(!Number.isInteger(id)||id<0||id>=12||!getItemById(id))return;
    if(!queuedBoards.has(id)){
      queuedBoards.add(id);
      pendingBoards.push(id);
@@ -422,19 +419,16 @@ try{
    updateSelection();
    for(const item of ITEMS)enqueue(itemId(item));
  }
+ // Index order: 0/3/4/5 Cookie, 1/6/7 Canyon, 2/8/9 Six Drop.
+ const engineToMiniId=[0,4,8,1,2,3,5,6,9,10];
  function markBoard(index){
-   // Real engine IDs are 0,3,4,5 / 1,6,7,8 / 2,9,10,11.
-   const g=index===0||index===3||index===4||index===5?0:
-           index===1||index===6||index===7||index===8?1:
-           index===2||index===9||index===10||index===11?2:-1;
-   const mini=index<3?0:g===0?index-2:g===1?index-5:index-8;
-   if(g>=0)enqueue(g*4+mini);
+   if(index>=0&&index<engineToMiniId.length)enqueue(engineToMiniId[index]);
  }
  function scheduleBoard(){
    if(idleRequest||urgentTimer||!liveMode()||document.hidden)return;
    if(typeof requestIdleCallback==='function'){
      // Avoid waiting for an arbitrary 240ms timeout while animations move.
-     idleRequest=requestIdleCallback(drainBoards,{timeout:110});
+     idleRequest=requestIdleCallback(drainBoards,{timeout:75});
    }else{
      // Safari fallback: never process in the same rAF as roulette physics.
      // Defer to a task after the next paint and only draw one mini.
@@ -491,7 +485,7 @@ try{
      movingBoards.add(id);
      // The next render is based on the last actually painted frame,
      // not on an accumulating timer that causes bursty redraws.
-     motionDue.set(id,performance.now()+(item.game===active?70:130));
+     motionDue.set(id,performance.now()+(item.game===active?50:100));
      scheduleMotion();
    }else{
      movingBoards.delete(id);
@@ -533,11 +527,11 @@ try{
      // At most two changes are queued in one pulse. Idle scheduler
      // still draws only one mini per task, never two in one render call.
      for(const {id} of due.slice(0,2)){
-       motionDue.set(id,current+(Math.floor(id/4)===active?70:130));
+       motionDue.set(id,current+(Math.floor(id/4)===active?50:100));
        enqueue(id);
      }
      if(movingBoards.size)scheduleMotion();
-   },Math.max(8,Math.min(80,earliest-now)));
+   },Math.max(5,Math.min(55,earliest-now)));
  }
  function scheduleReachPager(){
    if(reachTimer||!liveMode()||document.hidden)return;
@@ -581,7 +575,7 @@ try{
    if(reachTimer)clearTimeout(reachTimer);
  },{once:true});
  window.sweetsTab12Layout={get boards(){return ITEMS.length;},get trial(){return false;}};
- console.info('[Sweets12Tab] Event-triggered, one-board-per-idle miniature scheduler enabled');
+ console.info('[SweetsMini] 10 live boards with 50ms/100ms event-paced drawing enabled');
 
 }catch(error){console.error('[Sweets12Tab]',error);}
 })();
