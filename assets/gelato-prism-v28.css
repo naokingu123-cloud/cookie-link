@@ -538,3 +538,91 @@ body.gelato-active #panel0 .gp-mold.gp-raster-ready > canvas.gp-raster-board{
 body.gelato-active #panel0 .gp-mold.gp-raster-ready::before{
  display:none!important;
 }
+
+
+/* v39: real transparent PNG ice mold. Logo belongs only to the mini tab,
+ * and the bonus emblem is explicitly layered OVER the game board. */
+body.gelato-active #panel0 .gp-head,
+body.gelato-active #panel0 .gp-bonus-crest,
+body.gelato-active .gp-bonus-sign{display:none!important}
+body.gelato-enabled .gp-tab .tab-game-name{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ padding:0 2px!important;
+ overflow:hidden!important;
+}
+body.gelato-enabled .gp-tab .tab-game-name .gp-logo{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ position:relative!important;
+ width:100%!important;
+ height:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ overflow:hidden!important;
+}
+body.gelato-enabled .gp-tab .gp-tab-logo-img[hidden]{display:none!important}
+body.gelato-enabled .gp-tab .gp-tab-logo-img{
+ display:block!important;
+ width:100%!important;
+ height:100%!important;
+ max-height:100%!important;
+ max-width:100%!important;
+ object-fit:contain!important;
+ filter:drop-shadow(0 1px 2px #a45b79a8)!important;
+}
+body.gelato-enabled .gp-tab .gp-has-tab-art .gp-logo-text{display:none!important}
+body.gelato-enabled .gp-tab .gp-logo-text{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px}
+body.gelato-active #panel0 .gp-mold .gp-board-bonus{
+ position:absolute!important;
+ z-index:12!important;
+ top:1.5%!important;
+ right:1.5%!important;
+ width:29%!important;
+ max-width:145px!important;
+ height:20%!important;
+ max-height:83px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ pointer-events:none!important;
+ transform:translateZ(0)!important;
+ filter:drop-shadow(0 3px 4px #723c97a0)!important;
+}
+body.gelato-active #panel0 .gp-board-bonus-art[hidden]{display:none!important}
+body.gelato-active #panel0 .gp-board-bonus-art{
+ display:block!important;
+ width:100%!important;height:100%!important;
+ object-fit:contain!important;
+}
+body.gelato-active #panel0 .gp-board-bonus.gp-has-art .gp-board-bonus-fallback{display:none!important}
+body.gelato-active #panel0 .gp-board-bonus-fallback{
+ display:block;
+ background:linear-gradient(125deg,#8b50d5e8,#4dbff4d4,#ea92d5dd);
+ color:#fff7bc;
+ border:2px solid #ffedab;
+ border-radius:14px;
+ font:900 clamp(9px,2vw,13px)/1.1 system-ui,sans-serif;
+ text-shadow:0 1px 2px #6e2b70;
+ text-align:center;
+ padding:4px 3px;
+ width:100%;
+ box-sizing:border-box;
+}
+body.gelato-active #panel0 .gp-board-bonus-fallback small{
+ display:block;color:white;font-size:8px;
+}
+body.gelato-active #panel0 .gp-board-bonus.gp-bonus-complete{
+ animation:gp-board-bonus-winner 1.4s ease-in-out infinite alternate;
+}
+@keyframes gp-board-bonus-winner{
+ from{filter:drop-shadow(0 0 2px #ffe4ba);transform:scale(1)}
+ to{filter:drop-shadow(0 0 13px #fff095);transform:scale(1.06)}
+}
+@media(max-width:470px){
+ body.gelato-active #panel0 .gp-mold .gp-board-bonus{
+  right:1%!important;top:1%!important;width:25%!important;height:18%!important;
+ }
+}
