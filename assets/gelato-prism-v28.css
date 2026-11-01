@@ -839,3 +839,242 @@ body.gelato-active #panel0 .gp-collector-row .gp-diamond:before{
 body.gelato-active #panel0 .gp-collector-row.gp-complete .gp-diamond{
  filter:drop-shadow(0 0 4px #fff0a8) drop-shadow(0 0 3px #9af2ff)!important;
 }
+
+
+/* v44: frozen fruit (no ice-lolly buildings), sliding partial payout table.
+   All rules are scoped to the active Gelato tab. */
+body.gelato-active #panel0 .gp-scene{
+ background:linear-gradient(130deg,#b3e4fc,#cfddfa 55%,#8faee8)!important;
+}
+body.gelato-active #panel0 .gp-land{display:none!important}
+body.gelato-active #panel0 .gp-frozen-fruit-backdrop{
+ display:block!important;
+ position:absolute!important;
+ inset:0!important;
+ width:100%!important;
+ height:100%!important;
+ object-fit:cover!important;
+ z-index:0!important;
+ pointer-events:none!important;
+ filter:saturate(1.12) contrast(1.04)!important;
+}
+/* Let the new right-hand payout list consume the height previously reserved
+   by the bonus banner; the main PNG star retains its left-side footprint. */
+body.gelato-active #panel0 .gp-collector-panel{
+ position:absolute!important;
+ z-index:16!important;
+ top:1.2%!important;
+ right:.65%!important;
+ bottom:1.2%!important;
+ width:23.5%!important;
+ height:97.6%!important;
+ max-height:none!important;
+ min-height:0!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:flex-start!important;
+ gap:3px!important;
+ padding:4px 4px 3px!important;
+ overflow:hidden!important;
+ border:2px solid #baf4ff!important;
+ border-radius:12px!important;
+ background:linear-gradient(165deg,rgba(12,53,110,.96),rgba(19,37,95,.97) 57%,rgba(67,48,119,.97))!important;
+ box-shadow:inset 0 0 0 1px #ecfaff,0 2px 8px #193b739c!important;
+ color:#f5faff!important;
+}
+body.gelato-active #panel0 .gp-payout-header{
+ flex:0 0 auto;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:0;
+ padding:2px 2px 4px;
+ background:linear-gradient(100deg,#0b609d,#278cdb,#15499c);
+ color:#fff8da;
+ border:1px solid #91e5ff;
+ border-radius:8px;
+ box-shadow:inset 0 1px 3px #ffffffb3;
+ text-align:center;
+ text-shadow:0 1px 2px #143b75;
+}
+body.gelato-active #panel0 .gp-payout-header span{
+ font:1000 clamp(10px,2.5vw,15px)/1.15 system-ui,sans-serif;
+ letter-spacing:.08em;
+}
+body.gelato-active #panel0 .gp-payout-header small{
+ font:800 clamp(7px,1.3vw,9px)/1.1 system-ui,sans-serif;
+ color:#e0faff;
+}
+body.gelato-active #panel0 .gp-payout-window{
+ display:block;
+ position:relative;
+ flex:1 1 97px;
+ min-height:78px;
+ max-height:101px;
+ border-radius:7px;
+ overflow:hidden!important;
+ border:1px solid #65baf9;
+ background:linear-gradient(180deg,#14294fa8,#0d245bdd);
+ box-shadow:inset 0 0 8px #091e4ba8;
+}
+body.gelato-active #panel0 .gp-payout-track{
+ position:relative;
+ display:block;
+ --gp-slide-index:0;
+ transform:translate3d(0,calc(-20px * var(--gp-slide-index)),0);
+ transition:transform .68s cubic-bezier(.25,.7,.2,1)!important;
+ will-change:transform;
+}
+body.gelato-active #panel0 .gp-pay-row{
+ box-sizing:border-box;
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ justify-content:space-between;
+ height:20px!important;
+ padding:0 4px;
+ border-bottom:1px solid #3b89c688;
+ background:linear-gradient(90deg,#174a9b8f,#103465bc);
+ color:#dff5ff;
+ white-space:nowrap;
+ font:800 clamp(8px,1.6vw,10px)/1 system-ui,sans-serif;
+}
+body.gelato-active #panel0 .gp-pay-row strong{
+ font:1000 clamp(9px,1.9vw,12px)/1 system-ui,sans-serif;
+ color:#fff2bc;
+ text-shadow:0 1px 2px #2358b9;
+}
+body.gelato-active #panel0 .gp-pay-row.gp-current{
+ background:linear-gradient(90deg,#8d5017,#eab144,#82468a);
+ color:#fff;
+ box-shadow:inset 0 0 0 1px #fff2ba,0 0 5px #fff0a8c2;
+}
+body.gelato-active #panel0 .gp-pay-row.gp-next{
+ background:linear-gradient(90deg,#2273ad,#42aece);
+ color:#fff;
+}
+body.gelato-active #panel0 .gp-payout-nav{
+ display:flex;
+ flex:0 0 auto;
+ align-items:center;
+ justify-content:space-between;
+ font:800 7px/1 system-ui,sans-serif;
+ color:#adf4ff;
+ text-align:center;
+}
+body.gelato-active #panel0 .gp-collector-title{
+ flex:0 0 auto;
+ padding:2px 0!important;
+ margin:2px 0 0!important;
+ border-bottom:1px solid #66bff1!important;
+ background:linear-gradient(90deg,transparent,#416bb68f,transparent);
+ color:#fff2c8!important;
+ font:900 clamp(8px,1.8vw,11px)/1.05 system-ui,sans-serif!important;
+}
+body.gelato-active #panel0 .gp-collector-grid{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(2,minmax(0,1fr))!important;
+ gap:3px!important;
+ width:100%;
+ flex:1 1 100px;
+ min-height:68px;
+ max-height:122px;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-row{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:1px!important;
+ min-width:0!important;
+ min-height:0!important;
+ padding:2px 0!important;
+ border:1px solid #4383c5!important;
+ border-radius:6px!important;
+ background:linear-gradient(145deg,#163a73,#21467b)!important;
+ box-shadow:inset 0 1px #89c9ff6e!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-diamond-wrap{
+ display:grid!important;place-items:center!important;
+ flex:0 0 23px!important;
+ width:23px!important;height:23px!important;
+ filter:drop-shadow(0 0 2px #b6e2ff88)!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-diamond{
+ width:22px!important;height:22px!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-meta{
+ display:flex!important;
+ flex:0 0 auto!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:3px!important;
+ min-width:0!important;
+ grid-column:auto!important;grid-row:auto!important;
+ color:#fffaf0!important;
+ font:900 clamp(6px,1.28vw,8px)/1 system-ui,sans-serif!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-meta small{
+ font:800 clamp(6px,1.2vw,8px)/1 system-ui,sans-serif!important;
+ color:#c8f2ff!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-row strong{
+ grid-column:auto!important;grid-row:auto!important;
+ color:#ffeab5!important;
+ font:1000 clamp(7px,1.45vw,10px)/1 system-ui,sans-serif!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-row.gp-complete{
+ background:linear-gradient(130deg,#95683d,#ecad47)!important;
+ border-color:#ffdf76!important;
+}
+body.gelato-active #panel0 .gp-total-tally{
+ flex:0 0 auto;
+ padding-top:3px!important;
+ color:#fff6da!important;
+ border-top:1px solid #77e5ff!important;
+}
+body.gelato-active #panel0 .gp-total-tally b{
+ font-size:clamp(8px,1.75vw,11px)!important;
+}
+body.gelato-active #panel0 .gp-total-tally small{
+ font-size:clamp(7px,1.35vw,9px)!important;
+ color:#fbe9ad!important;
+}
+body.gelato-active #panel0 .gp-pattern-label{
+ flex:0 0 auto;
+ color:#bfeeff!important;
+}
+body.gelato-active #panel0 .gp-mold .gp-board-bonus{
+ display:none!important;
+}
+body.gelato-active #panel0 .gp-mold .gp-board-bonus.gp-bonus-complete{
+ display:flex!important;
+ top:1%!important;
+ left:24%!important;
+ right:auto!important;
+ width:33%!important;
+ max-width:none!important;
+ height:18%!important;
+ z-index:20!important;
+}
+@media(max-width:480px){
+ body.gelato-active #panel0 .gp-collector-panel{
+  width:24%!important;top:.8%!important;bottom:.8%!important;
+  padding:3px 2px!important;gap:2px!important;
+ }
+ body.gelato-active #panel0 .gp-payout-window{
+  flex-basis:90px!important;max-height:100px!important;
+ }
+ body.gelato-active #panel0 .gp-collector-grid{
+  gap:2px!important;
+ }
+ body.gelato-active #panel0 .gp-collector-grid .gp-diamond-wrap{
+  flex-basis:20px!important;width:20px!important;height:20px!important;
+ }
+ body.gelato-active #panel0 .gp-collector-grid .gp-diamond{
+  width:19px!important;height:19px!important;
+ }
+}
