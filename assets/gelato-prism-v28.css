@@ -136,3 +136,106 @@ body.gelato-active .gp-bonus-sign{display:flex!important;position:absolute;inset
 .gp-bonus-sign b{font:900 clamp(8px,2.4vw,12px)/1.1 system-ui;color:#955e96}
 body.gelato-active .game .festival-top{visibility:visible!important}
 body.gelato-active #allclear-award{display:none!important}
+
+
+/* v30: large, glossy ice-cream mold. Only active Gelato tab is affected. */
+body.gelato-active .game .field{
+  grid-template-columns:minmax(0,1fr)!important;
+  width:100%!important;
+  gap:0!important;
+}
+body.gelato-active #odds-panel{display:none!important;visibility:hidden!important}
+body.gelato-active .game .festival-top{visibility:hidden!important}
+body.gelato-active .gp-bonus-sign{display:none!important}
+body.gelato-active #panel0{width:100%!important;max-width:none!important}
+body.gelato-active #panel0 .gp-scene{
+ background:linear-gradient(180deg,#fff7e710,#ffebfa12),url('../assets/gelato-prism-kingdom-v28.svg') center 57%/cover no-repeat!important;
+ border:3px solid #fff3d4!important;border-radius:18px!important;
+ box-shadow:inset 0 0 12px #ffffff9c,0 3px 12px #8b539450!important;
+}
+body.gelato-active #panel0 .gp-scene:after{
+ background:radial-gradient(ellipse at 50% 52%,#fffaed1c 10%,#fff9ea1c 65%,transparent 88%)!important
+}
+body.gelato-active #panel0 .gp-mold{
+ inset:0!important;width:100%!important;height:100%!important;
+ background:none!important;display:grid!important;place-items:center!important;
+}
+body.gelato-active #panel0 .gp-mold:before{
+ width:78%!important;height:95%!important;
+ background:radial-gradient(ellipse,#fff4cf55,#fee0ca00 75%)!important
+}
+body.gelato-active #panel0 .gp-board-svg{
+ width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;
+ filter:drop-shadow(0 4px 1px #ad754f9b) drop-shadow(0 9px 7px #884d8299)!important
+}
+body.gelato-enabled #panel0 .gp-status,
+body.gelato-enabled #panel0 .gp-note{display:none!important}
+body.gelato-active .gp-head{
+ left:1.2%!important;right:auto!important;top:1.4%!important;
+ align-items:flex-start!important;max-width:27%;gap:1px!important;z-index:7!important
+}
+body.gelato-active .gp-head b{
+ font:1000 clamp(11px,2.9vw,18px)/.98 system-ui!important;
+ letter-spacing:.1px!important;color:#fff3a8!important;
+ -webkit-text-stroke:.55px #b45082!important;
+ text-shadow:0 1px 1px #8a466d,0 2px 4px #75366a!important
+}
+body.gelato-active .gp-head small{
+ color:#fffef5!important;letter-spacing:0!important;
+ font:900 clamp(7px,1.3vw,10px)/1.1 system-ui!important;
+ text-shadow:0 1px 3px #995282!important
+}
+body.gelato-active .gp-bonus-crest{
+ position:absolute;right:1.2%;top:1.4%;z-index:7;
+ width:min(27%,116px);padding:3px 4px 5px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ border-radius:14px;transform:rotate(3deg);
+ border:2px solid #fff7bb;
+ background:radial-gradient(circle at 50% 7%,#fff9ac 0%,transparent 22%),
+ linear-gradient(128deg,#e758bd,#7456d9 42%,#21b9f9 72%,#eb7ac8);
+ box-shadow:inset 0 0 0 1px #f8dbff,0 3px 1px #8e4585,0 0 9px #fff0aa;
+ text-align:center;line-height:1
+}
+body.gelato-active .gp-crest-crown{font-size:12px;line-height:1;color:#fff4a8;letter-spacing:2px;text-shadow:0 1px #6f267f}
+body.gelato-active .gp-bonus-crest b{
+ font:1000 clamp(9px,2.2vw,14px)/1.05 system-ui;color:#ffec78;
+ -webkit-text-stroke:.3px #7c328f;text-shadow:0 2px #77276a
+}
+body.gelato-active .gp-bonus-crest strong{
+ font:1000 clamp(9px,2.1vw,13px)/1.0 system-ui;color:white;
+ text-shadow:0 2px #803181,0 0 3px #fff6af
+}
+body.gelato-active .gp-bonus-crest small{
+ font:900 clamp(7px,1.5vw,10px)/1.1 system-ui;color:#fff6b4;
+ text-shadow:0 1px #7b338b
+}
+.gp-board-svg .gp-face .gp-ice{
+ filter:saturate(1.65) contrast(1.15) brightness(1.1)
+}
+.gp-board-svg .gp-face.is-filled .gp-ice{
+ filter:saturate(2.15) contrast(1.2) brightness(1.13) drop-shadow(0 1px 3px #ffffffbb)
+}
+.gp-board-svg .gp-blank{fill-opacity:.65}
+.gp-board-svg .gp-edge path:first-child{
+ stroke:#bc8056!important;stroke-width:11!important;filter:drop-shadow(0 1px 1px #8d5e4999)
+}
+.gp-board-svg .gp-edge path:nth-child(2){
+ stroke-width:7.5!important;filter:drop-shadow(0 -1px 1px #ffffffda)
+}
+.gp-board-svg .gp-node .gp-digit{
+ fill:#6e3c43!important;stroke:#fff8d9!important;stroke-width:1.5!important
+}
+.gp-board-svg .gp-face-value{
+ font:1000 7.1px/1 system-ui,sans-serif!important;
+ fill:#752f66!important;stroke:#fffaf0!important;stroke-width:1.7px!important;
+ paint-order:stroke fill!important;letter-spacing:-.45px;text-anchor:middle
+}
+.gp-board-svg .gp-face.is-filled .gp-face-value{
+ fill:#fffef7!important;stroke:#8b367d!important;stroke-width:1.8px!important
+}
+.gp-mini .gp-face-value{font-size:0!important}
+@media(max-width:470px){
+ body.gelato-active .gp-head{max-width:25%!important}
+ body.gelato-active .gp-bonus-crest{width:23%;padding:2px}
+}
