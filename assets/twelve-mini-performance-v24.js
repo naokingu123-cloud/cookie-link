@@ -279,7 +279,7 @@ try{
   if(!changed&&!activeFx&&!pending){skipped++;return true;}
   // Up to ~10fps while moving in the active game, less in other groups.
   const penalty=Math.min(300,Math.max(0,view.paintCost-6)*14);
-  const interval=(item.game===active?100:220)+penalty;
+  const interval=(item.game===active?70:130)+penalty;
   if(!changed&&now-view.stamp<interval){skipped++;return true;}
   const originalFx=e.fx;const frameFx=getFx(e,view,now);
   const t0=performance.now();
