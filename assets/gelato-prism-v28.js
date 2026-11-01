@@ -1104,12 +1104,27 @@ try{
    applySugarTier(slot.tabSugar.querySelector('.sugar-gem'),wonderTier(bet));
    slot.sugarGet.hidden=!saved.wonderCollected;slot.tab.classList.toggle('off',bet<=0);
  };
+ // The shared Cookie payout cabinet must never cover the Gelato-specific
+ // 24-panel payout window. Restore it on every other game, including Winery.
+ const cookieOddsCabinet=document.getElementById('odds-panel');
+ function syncGelatoOdds(){
+   const selected=active===0;
+   document.body.classList.toggle('gelato-active',selected);
+   if(cookieOddsCabinet){
+     if(selected)cookieOddsCabinet.style.setProperty('display','none','important');
+     else cookieOddsCabinet.style.removeProperty('display');
+   }
+   collectorPanel.hidden=!selected;
+ }
+ const nativeSelect=select;
+ select=function(i){const result=nativeSelect(i);syncGelatoOdds();return result;};
  const nativeHud=hud;
  hud=function(a){
-   if(active!==0){document.body.classList.remove('gelato-active');return nativeHud(a);}
+   if(active!==0){syncGelatoOdds();return nativeHud(a);}
    active=1;
    try{nativeHud(a);}finally{active=0;}
    document.body.classList.remove('choco-active','carnival-active');document.body.classList.add('gelato-active');
+   syncGelatoOdds();
    put('best','PRISM '+e.filled.size+' / 24 · '+(e.pattern?.name||''));
    put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');
    fitGoldenNumber($('credit'),num(a.displayCredit),17,68);
@@ -1136,7 +1151,7 @@ try{
    if(cards.length===3)panel.append(cards[1],cards[2],cards[0]);
  };
  document.body.classList.add('gelato-enabled');
- drawGelato();select(1);scheduleUI(app);
+ syncGelatoOdds();drawGelato();select(0);scheduleUI(app);
  window.GelatoPrism={
    get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
