@@ -1,4 +1,4 @@
-/* GELATO PRISM v39 - icy translucent mold, tab logo and enclosed-region rewards */
+/* GELATO PRISM v40 - exact 24-cell PNG ice mold with generated snowflake frame */
 (()=>{
 'use strict';
 try{
@@ -310,7 +310,7 @@ try{
  gpBonusArt.onerror=()=>{gpBonusArt.hidden=true;gpBoardBonus.classList.remove('gp-has-art');};
  gpBonusArt.src='assets/gelato-prism-bonus-v39.png?v=39-'+Date.now();
  const rasterImages={
-   board:new Image(),fill:new Image(),trim:new Image(),ice:new Image(),ready:false,iceReady:false,iceCache:null,
+   board:new Image(),fill:new Image(),trim:new Image(),ice:new Image(),ready:false,iceReady:false,iceCache:null,exactV40:false,
    base:null,trimCache:null,faceTiles:[],labels:null,numbers:null,
    labelsBet:null,numbersKey:null
  };
@@ -369,12 +369,31 @@ try{
  }).catch(err=>{
    console.info('[GelatoPrism] v37 PNGs are not uploaded yet; fallback board remains',err.message);
  });
- // Optional frost-mold asset; old v37 board remains usable until uploaded.
- loadRasterAsset(rasterImages.ice,'gelato-prism-ice-mold-v39.png').then(()=>{
-   rasterImages.iceCache=scaledAsset(rasterImages.ice);
-   rasterImages.iceReady=true;
-   rasterKey='';drawGelato();
- }).catch(()=>console.info('[GelatoPrism] v39 frost mold PNG pending upload'));
+ // Use the generated snowflake exterior, with ALL internal 42 rails rebuilt
+ // from the same regular-hexagram coordinates as the payout engine. v40 has
+ // exactly 19 numbered sockets and 24 tiny triangle cavities.
+ // Two PNGs can be uploaded after the code; failed loads preserve v37 intact.
+ const exactIceBoard=new Image(),exactIceRails=new Image();
+ Promise.all([
+   loadRasterAsset(exactIceBoard,'gelato-prism-ice-base-v40.png'),
+   loadRasterAsset(exactIceRails,'gelato-prism-ice-rails-v40.png')
+ ]).then(()=>{
+   rasterImages.board=exactIceBoard;
+   rasterImages.trim=exactIceRails;
+   rasterImages.exactV40=true;
+   rasterImages.iceReady=false;
+   rasterImages.iceCache=null;
+   createRasterCache();
+   rasterImages.ready=true;
+   rasterMold.classList.add('gp-raster-ready');
+   mini.classList.add('gp-raster-ready');
+   rasterKey='';lastGeometryKey='';
+   drawGelato();
+   console.info('[GelatoPrism] v40 exact 19/42/24 crystalline PNG board active');
+ }).catch(()=>{
+   // Until PNGs are uploaded, the published v37 game still functions.
+   console.info('[GelatoPrism] v40 snowflake PNG assets pending; preserving v37 renderer');
+ });
  function updateStaticLabels(e,bet){
    if(rasterImages.labelsBet!==bet){
      rasterImages.labelsBet=bet;
@@ -419,7 +438,7 @@ try{
      ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
    }
    ctx.drawImage(rasterImages.trimCache,0,0,size,size);
-   if(rasterImages.iceReady)ctx.drawImage(rasterImages.iceCache,0,0,size,size);
+   if(rasterImages.iceReady&&!rasterImages.exactV40)ctx.drawImage(rasterImages.iceCache,0,0,size,size);
    if(!small){
      ctx.drawImage(rasterImages.labels,0,0);
      // Sugar icon is dynamic and can move without repainting label cache.
@@ -608,6 +627,7 @@ try{
  document.body.classList.add('gelato-enabled');
  drawGelato();select(1);scheduleUI(app);
  window.GelatoPrism={
+   get imageVersion(){return rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
    get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,bonus:e.allComplete};},
    engine:e,faces:FACES
