@@ -255,3 +255,18 @@ body.winery-enabled #panel1 .wp-guide{display:none!important}
 @media(prefers-reduced-motion:reduce){
  body.winery-enabled #panel1 .wp-boost-stage.current{animation:none!important}
 }
+
+/* Separate WHOLE-GAME kingdom backdrop from the closer board backdrop. */
+body.winery-active #screen{
+ background:
+  linear-gradient(180deg,rgba(255,246,226,.16),rgba(249,207,233,.11) 75%,rgba(116,54,129,.12)),
+  url('winery-juice-kingdom-v2.svg?v=2') center 54%/cover no-repeat!important;
+ background-color:#ceabdf!important;
+}
+body.winery-active .game{
+ background:
+  linear-gradient(180deg,rgba(255,249,237,.09),rgba(255,234,242,.14)),
+  url('winery-juice-kingdom-v2.svg?v=2') center 47%/cover no-repeat!important;
+ border-color:#fff1b5!important;
+ box-shadow:0 0 0 2px #b87daf,0 4px #ad6a94,inset 0 0 0 2px #fff8d8!important;
+}
