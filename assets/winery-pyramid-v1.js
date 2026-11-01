@@ -164,6 +164,7 @@ function loadPremiumArtwork(){
 
  const stageArt=new Image(),glassArt=new Image();
  stageArt.onload=()=>{
+  if(premiumStageReady)return;
   bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bg.width,bg.height);
   bx.drawImage(stageArt,0,0,bg.width,bg.height);miniKey='';queueFrame();
  };
