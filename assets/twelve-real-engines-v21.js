@@ -45,6 +45,63 @@ function install(){
   const ghostMap=new Map();
   const cb=app.onEvent,betFn=app.bet.bind(app);
   const miniReachCache=new Map();
+  // Shared cooperative reach scheduler: one small budget for all 12 boards.
+  // Never create twelve independent timer chains for the same draw.
+  const reachJobs=[];
+  let reachTimer=null;
+  let reachCalculations=0,reachCacheHits=0;
+  function pumpReachJobs(){
+    reachTimer=null;
+    if(currentMode!=='12'||app.phase==='ready'){
+      reachJobs.length=0;return;
+    }
+    const deadline=performance.now()+5;
+    let processed=0;
+    while(reachJobs.length){
+      const job=reachJobs.shift(),{id,cache,e,numbers,group,bet,snapshot}=job;
+      if(miniReachCache.get(id)!==cache||app.phase==='ready'||e.version!==job.version)continue;
+      // A board can become busy while a snapshot is being processed.
+      if(e.busy||e.queue?.length){
+        cache.busy=false;miniReachCache.delete(id);continue;
+      }
+      try{
+        const n=numbers[job.position++];
+        if(n!==undefined){
+          let prediction;
+          if(group===0)prediction=predictNextHit(e,n);
+          else if(group===2)prediction=snapshot.predict(n);
+          else{
+            const p=chocoPlan(snapshot.strata,[n],snapshot);
+            const resolved=Number(snapshot.bonusResolvedDepth)||0;
+            const depth=Number(p.bonusResolvedDepth)||0;
+            prediction={number:n,gain:p.gain,total:e.totalHundredths+p.gain,
+              tier:depth>=500&&depth>resolved&&depth%100===0?3:
+              reachTier(e.totalHundredths+p.gain,false)};
+          }
+          reachCalculations++;
+          if(prediction?.gain>0&&medalWin(bet,prediction.gain)>0){
+            cache.values.push({value:String(n),tier:String(prediction.tier||0)});
+          }
+        }
+        if(job.position<numbers.length){
+          reachJobs.push(job);
+        }else{
+          cache.busy=false;
+          cache.values.sort((a,b)=>Number(a.value)-Number(b.value));
+        }
+      }catch(error){
+        cache.busy=false;cache.error=true;
+        console.warn('[Sweets12] reach prediction board '+id,error);
+      }
+      processed++;
+      if(processed>=2||performance.now()>deadline)break;
+    }
+    if(reachJobs.length)reachTimer=setTimeout(pumpReachJobs,16);
+  }
+  function queueReach(job){
+    reachJobs.push(job);
+    if(reachTimer===null)reachTimer=setTimeout(pumpReachJobs,8);
+  }
   const lastEvents=new Map();
   let pane=null,modeInfo=null,modeButtons=[],configsHolder=null;
   let syncTimer=0;
@@ -107,11 +164,9 @@ function install(){
       if(app.enabled.every((yes,j)=>!yes||app.paid[j]))app.finishRound();
       app.onChange(app);
     }
-    // A full preview can emit dozens of visual-only stages per ball.
-    // Invalidate costly reach predictions only when a stable board state
-    // is available; its cache key also observes depth/board generation.
-    if(['waiting','settled','complete','ready'].includes(ev.phase))
-      miniReachCache.delete(i);
+    // On a stable board a result is keyed by state; repeated 'waiting'
+    // and 'settled' events do not invalidate it. Reset only on a new round.
+    if(ev.phase==='ready'||ev.phase==='error')miniReachCache.delete(i);
     if(selected[game]===ordered[i].mini&&active===game){
       event(game,ev,e,app);
     }else if(ev.phase==='complete'||ev.phase==='sugaraward'){
@@ -263,44 +318,42 @@ function install(){
   function reachFor(i){
     const e=getEngine(i);
     if(!e||app.phase==='ready'||betAt(i)<=0||e.busy||e.queue?.length
-       ||(e.processed||0)<1||e.phase==='error')return [];
-    const key=[e.version,e.processed,e.boardGeneration||0,
-      e.depth||0,e.totalHundredths||0,e.roundIndex||0].join('/');
-    let cache=miniReachCache.get(i);
-    if(cache?.key===key)return cache.values;
-    cache={key,values:[],busy:true};miniReachCache.set(i,cache);
-    let numbers=[];
-    const group=gameFor(i);
-    if(group===1)numbers=[...new Set([...(e.drills||[]).flatMap(d=>d.numbers||[]),
-      ...(e.lucky?.numbers||[])])].filter(n=>!app.draws.includes(n));
-    else numbers=Array.from({length:25},(_,j)=>j+1).filter(n=>!app.draws.includes(n));
-    let j=0;const bet=betAt(i),used=new Set();
-    const snapshot=group===1?e.world():group===2?e.reachSnapshot():null;
-    const runner=()=>{
-      if(miniReachCache.get(i)!==cache||app.phase==='ready')return;
-      try{
-        for(let max=Math.min(numbers.length,j+2);j<max;j++){
-          const n=numbers[j];if(used.has(n))continue;used.add(n);
-          let prediction=null;
-          if(group===0)prediction=predictNextHit(e,n);
-          else if(group===2)prediction=snapshot.predict(n);
-          else{
-            const p=chocoPlan(snapshot.strata,[n],snapshot);
-            const resolved=Number(snapshot.bonusResolvedDepth)||0;
-            const depth=Number(p.bonusResolvedDepth)||0;
-            prediction={number:n,gain:p.gain,total:(e.totalHundredths||0)+p.gain,
-              tier:depth>=500&&depth>resolved&&depth%100===0?3:
-              reachTier((e.totalHundredths||0)+p.gain,false)};
-          }
-          if(prediction?.gain>0&&medalWin(bet,prediction.gain)>0)
-            cache.values.push({value:String(n),tier:String(prediction.tier||0)});
-        }
-        if(j<numbers.length){setTimeout(runner,12);return;}
-        cache.values.sort((a,b)=>Number(a.value)-Number(b.value));
-        cache.busy=false;
-      }catch(err){cache.busy=false;console.warn('[Sweets12] reach',err);}
-    };
-    setTimeout(runner,0);return cache.values;
+      ||e.opening||e.transitionPending||(e.processed||0)<1
+      ||e.phase==='error'||app.draws.length>=8)return [];
+    const group=gameFor(i),bet=betAt(i);
+    // All fields that materially change the calculation are in this key.
+    // Scrolling numbers, switching tabs, and repainting do not change it.
+    const key=[e.version,e.processed,e.boardGeneration||0,e.depth||0,
+      e.totalHundredths||0,e.roundIndex||0,bet,app.draws.join(',')].join('/');
+    const old=miniReachCache.get(i);
+    if(old?.key===key){reachCacheHits++;return old.values;}
+    // Main-board reach forecasts are already computed by the original
+    // engine. Reuse them instead of simulating the same numbers again.
+    const slot=slots[group];
+    if(slot?.engine===e && slot.reachStatus==='ready'
+      && slot.tabReachVersion===e.version
+      && slot.reachAfterBall===e.processed && slot.reachPageResults?.length){
+      const result=slot.reachPageResults.map(p=>({
+        value:String(p.number),tier:String(p.tier||0)
+      })).sort((a,b)=>Number(a.value)-Number(b.value));
+      miniReachCache.set(i,{key,values:result,busy:false,source:'main'});
+      return result;
+    }
+    const values=[];
+    const cache={key,values,busy:true,source:'simulation'};
+    miniReachCache.set(i,cache);
+    const drawn=new Set(app.draws);
+    let numbers=group===1?
+      [...new Set([...(e.drills||[]).flatMap(d=>d.numbers||[]),
+        ...(e.lucky?.numbers||[])])]:
+      Array.from({length:25},(_,n)=>n+1);
+    numbers=numbers.filter(n=>!drawn.has(n)).sort((a,b)=>a-b);
+    if(!numbers.length){cache.busy=false;return values;}
+    let snapshot;
+    try{snapshot=group===1?e.world():group===2?e.reachSnapshot():null;}
+    catch(error){cache.busy=false;console.warn('[Sweets12] reach snapshot',error);return values;}
+    queueReach({id:i,cache,e,group,bet,numbers,snapshot,position:0,version:e.version});
+    return values;
   }
   function getBoard(group,mini){
     if(currentMode!=='12')return null;
@@ -439,6 +492,11 @@ function install(){
     scheduleUI(app);
     console.info('[Sweets12V21] mode '+currentMode+', active engines '+app.engines.length);
   }
+  window.sweets12ReachStats={
+    get calculations(){return reachCalculations;},
+    get cacheHits(){return reachCacheHits;},
+    get queued(){return reachJobs.length;}
+  };
   window.sweets12Live={
     get mode(){return currentMode;},
     get selected(){return selected.slice();},
