@@ -1,4 +1,4 @@
-/* GELATO PRISM v32 - generated fantasy art, unclipped waffle-star mold */
+/* GELATO PRISM v33 - exact reference 19-node, 42-line, 24-face waffle-star */
 (()=>{
 'use strict';
 try{
@@ -7,9 +7,9 @@ try{
  // Indices: top; five upper; two upper diagonals; three center;
  // two lower diagonals; five lower; bottom tip.
  const RAW=[
-  [250,62],[44,132],[206,132],[250,132],[294,132],[456,132],
-  [161,213],[339,213],[127,272],[250,272],[373,272],
-  [161,331],[339,331],[44,412],[206,412],[250,412],[294,412],[456,412],[250,482]
+  [250,46],[44,132],[202,132],[250,132],[294,132],[455,132],
+  [160,213],[339,213],[129,272],[250,272],[370,272],
+  [166,333],[332,333],[55,412],[212,412],[250,412],[288,412],[443,412],[250,470]
  ];
  const P=RAW.map(([x,y])=>({x:160+(x-250)*.71,y:157+(y-272)*.70}));
  // Every path is a continuous stroke in the supplied drawing. Intersections
@@ -79,6 +79,9 @@ try{
    }
    reset(){
      if(this.allComplete)this.newPrism();
+     // Each eight-ball game starts with no active HIT dots or connecting lines.
+     // Previously earned filled cells persist until the 24/24 bonus is reached.
+     this.hits=new Set();this.links=new Set();
      this.version++;this.queue=[];this.pendingDraws=new Set();this.drawn=new Set();this.seen=new Set();
      this.accepted=0;this.processed=0;this.busy=false;this.running=false;this.opening=false;this.paused=false;
      this.presentationRate=1;this.roundBet=this.roundBet||3000;this.totalHundredths=0;this.maxLink=0;this.maxChain=0;
@@ -174,7 +177,9 @@ try{
        '<g class="gp-ice" clip-path="url(#'+prefix+'-clip'+f.id+')">'+
        '<polygon points="'+path(f.nodes)+'" fill="url(#'+prefix+'-ice'+f.flavor+')"/>'+
        '<path d="M'+(f.x-21)+' '+(f.y-7)+'q18-16 37 1t-8 19" stroke="#fff8ec" stroke-width="5" fill="none" opacity=".62"/>'+
-       '<ellipse cx="'+(f.x-7)+'" cy="'+(f.y-7)+'" rx="4" ry="2" fill="#fffefa" opacity=".7"/>'+
+       '<ellipse cx="'+(f.x-7)+'" cy="'+(f.y-7)+'" rx="4" ry="2" fill="#fffefa" opacity=".7"/>'++
+       '<path d="M'+(f.x-15)+' '+(f.y+7)+'Q'+(f.x-5)+' '+(f.y-12)+' '+(f.x+17)+' '+(f.y+1)+'" fill="none" stroke="#fff" stroke-width="2" opacity=".56"/>'+
+       '<circle cx="'+(f.x+8)+'" cy="'+(f.y+7)+'" r="2" fill="#fff" opacity=".72"/>'+
        '</g><polygon class="gp-face-border" points="'+path(f.nodes)+'" fill="none" stroke="#fffaf3" stroke-width="1.8"/>'+
        '<text class="gp-face-value" data-reward="'+f.reward+'" x="'+cx+'" y="'+(f.y+3).toFixed(1)+'">'+f.reward+'WIN</text>'+
        '<text class="gp-sugar" x="'+cx+'" y="'+(f.y-9).toFixed(1)+'">✦</text></g>';
@@ -191,15 +196,13 @@ try{
       '<ellipse cx="-4" cy="-5" rx="4" ry="2.2" transform="rotate(-28)" fill="#ffffffa5"/>'+
       '<text class="gp-digit" y="4.3" text-anchor="middle">?</text>'+
       '<circle class="gp-hit-ring" r="14.2" fill="none" stroke="#ffdf64" stroke-width="3"/></g>').join('');
-   const major=[P[0],P[5],P[17],P[18],P[13],P[1]];
+   // Edge art is taken solely from the 42 true segments; no decorative
+   // large-triangle overlay which could suggest false connecting lines.
    const outline=path([0,4,5,10,17,16,18,14,13,8,1,2]);
-   const tri=(indices)=>indices.map((i,k)=>(k?'L':'M')+major[i].x.toFixed(1)+' '+major[i].y.toFixed(1)).join('')+'Z';
    return '<svg class="gp-board-svg" xmlns="http://www.w3.org/2000/svg" viewBox="-16 -18 352 350" role="img" aria-label="19交点・24三角形のジェラートプリズム">'+defs.join('')+
       '<polygon points="'+outline+'" fill="url(#'+prefix+'-waffle)" stroke="#fff0be" stroke-width="7" stroke-linejoin="round"/>'+
       '<polygon points="'+outline+'" fill="url(#'+prefix+'-biscuit)" stroke="#ae7c4f" stroke-width="3.3" stroke-linejoin="round"/>'+
-      faces+'<path d="'+tri([0,2,4])+'" fill="none" stroke="#fff2d4" stroke-width="5" opacity=".7"/>'+
-      '<path d="'+tri([1,3,5])+'" fill="none" stroke="#e690b9" stroke-width="5" opacity=".6"/>'+
-      lines+nodes+'</svg>';
+      faces+lines+nodes+'</svg>';
  }
  const slot=slots[0],originalEvent=app.onEvent;
  slot.holder.classList.add('gp-slot');slot.panel.classList.add('gp-panel');slot.tab.classList.add('gp-tab');
@@ -363,7 +366,7 @@ try{
  document.body.classList.add('gelato-enabled');
  drawGelato();select(1);scheduleUI(app);
  window.GelatoPrism={
-   geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
+   geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length,points:P.map(p=>({x:p.x,y:p.y})),lines:LINES.map(l=>[...l]),segments:EDGES.map(e=>[e.a,e.b])},
    get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,bonus:e.allComplete};},
    engine:e,faces:FACES
  };
