@@ -542,6 +542,15 @@ try{
    labelsBet:null,numbersKey:null
  };
  const rasterCoords=RAW.map(([x,y])=>({x,y}));
+ // The number layer is cached, so repaint after the shared Anima number
+ // font has finished loading (the browser may initially show a fallback).
+ if(document.fonts?.load){
+   document.fonts.load('400 23px ElixirNumbers').then(()=>{
+     rasterImages.numbersKey=null;rasterKey='';
+     if(rasterImages.ready)drawGelato();
+   }).catch(()=>{});
+ }
+
  // Five transparent faceted ice colors: water blue, green, yellow, red, violet.
  const frozenFruitBackdrop=document.createElement('canvas');
  frozenFruitBackdrop.className='gp-frozen-fruit-backdrop';
