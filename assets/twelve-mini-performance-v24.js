@@ -22,10 +22,19 @@ try{
   cap:'assets/sixdrop_candy_lid.png?v=8'
  };
  const imgs={};
+ // Assets can finish loading after the last gameplay event. Explicitly
+ // wake the event-driven mini scheduler instead of restoring old polling.
+ if(typeof sixCandyPng!=='undefined'&&sixCandyPng?.addEventListener)
+   sixCandyPng.addEventListener('load',()=>{
+     candyTiles.clear();assetEpoch++;
+     window.sweets12FrameScheduler?.markAll();
+   });
  for(const [name,src] of Object.entries(artSrc)){
   const img=new Image();imgs[name]=img;
-  img.onload=()=>{assetEpoch++;backdrops.clear();};
-  img.onerror=()=>{assetEpoch++;backdrops.clear();};
+  img.onload=()=>{assetEpoch++;backdrops.clear();
+    window.sweets12FrameScheduler?.markAll();};
+  img.onerror=()=>{assetEpoch++;backdrops.clear();
+    window.sweets12FrameScheduler?.markAll();};
   img.decoding='async';img.src=src;
  }
  const cv=(w=SIZE,h=w)=>{
