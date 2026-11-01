@@ -486,8 +486,8 @@ try{
    lastMiniPaint=performance.now();
    processedFrames++;
    const engine=data?.engine;
-   if(engine?.busy||engine?.opening||engine?.queue?.length||
-       engine?.pendingDraws?.size){
+   if(!selected&&(engine?.busy||engine?.opening||engine?.queue?.length||
+       engine?.pendingDraws?.size)){
      movingBoards.add(id);
      // The next render is based on the last actually painted frame,
      // not on an accumulating timer that causes bursty redraws.
@@ -505,6 +505,11 @@ try{
  }
  function scheduleMotion(){
    if(motionTimer||!movingBoards.size||!liveMode()||document.hidden)return;
+   // A menu or user pause must not cause an 8ms expired-timer loop.
+   if(app?.paused){
+     motionTimer=setTimeout(()=>{motionTimer=0;scheduleMotion();},240);
+     return;
+   }
    const now=performance.now();
    let earliest=Infinity;
    for(const id of movingBoards){
