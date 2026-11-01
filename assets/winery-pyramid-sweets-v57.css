@@ -1,0 +1,177 @@
+/* Winery Pyramid v57 — a fruit-juice and candy-kingdom companion to Gelato / Six Drop.
+   Load after v56. Keep the 21-glass geometry and live payout logic unchanged. */
+body.winery-enabled #panel1 .wp-scene.wp-luxury-ready.wp-sweets-ready{
+ background-image:url('winery-sweets-kingdom-v57.webp?v=57')!important;
+ background-size:100% 100%!important;
+ background-position:center!important;
+ background-repeat:no-repeat!important;
+ background-color:#efaab9!important;
+ border-color:#fff0ae!important;
+ box-shadow:inset 0 0 0 2px #fff7d6,0 0 13px #ffc2d5a8!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-luxury-ready:not(.wp-sweets-ready)::before{
+ /* Immediate candy-color transition while the new image has not been uploaded. */
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:
+  radial-gradient(ellipse at 34% 14%,rgba(255,206,244,.31),transparent 38%),
+  linear-gradient(125deg,rgba(255,190,220,.17),rgba(210,160,255,.08) 55%,rgba(255,200,126,.11));
+ mix-blend-mode:screen;
+}
+body.winery-enabled #panel1 .wp-scene.wp-sweets-ready::before{display:none!important}
+body.winery-active #screen{
+ background:
+  linear-gradient(180deg,#fff4df3a,#ffd9f13a),
+  url('winery-juice-kingdom-v2.svg?v=2') center/cover no-repeat!important;
+ background-color:#f6c8ea!important;
+}
+body.winery-active .game{
+ background:
+  linear-gradient(135deg,#ffecf450,#fff5c73a),
+  url('winery-juice-kingdom-v2.svg?v=2') center/cover no-repeat!important;
+ border-color:#fff4c5!important;
+ box-shadow:0 0 0 2px #d98eb7,0 2px 8px #ae6ac955,inset 0 0 0 2px #fff4de!important;
+}
+/* Translucent upper display badges use the available space to the two sides
+   of the top glass; no extra canvas overlays are placed on the liquid/glasses. */
+body.winery-enabled #panel1 .wp-upper-hud{
+ position:absolute!important;z-index:5!important;
+ top:1%!important;box-sizing:border-box!important;
+ display:flex!important;flex-direction:column!important;align-items:center!important;
+ justify-content:center!important;gap:2px!important;
+ min-width:0!important;min-height:0!important;
+ padding:5px 7px 7px!important;
+ border-radius:15px!important;
+ border:1.5px solid #fff2b6!important;
+ outline:1px solid #b8588780;outline-offset:-4px;
+ background:
+  radial-gradient(ellipse at 50% 0%,#fff9e99a,transparent 70%),
+  linear-gradient(135deg,#e676a8e6,#ab4a9de8 58%,#893f8bdc)!important;
+ box-shadow:inset 0 1px #fffaf7ae,0 3px 8px #6e21655c,0 0 9px #ffe3b15a!important;
+ color:#fff8dd!important;font-family:system-ui,sans-serif!important;
+ text-align:center!important;pointer-events:none!important;
+}
+body.winery-enabled #panel1 .wp-upper-hud.wp-upper-round{
+ left:19.5%!important;width:20.5%!important;
+}
+body.winery-enabled #panel1 .wp-upper-hud.wp-upper-juice{
+ left:53%!important;width:19.5%!important;
+ background:
+  radial-gradient(ellipse at 45% 0%,#fff6cf96,transparent 70%),
+  linear-gradient(135deg,#ee99b4ec,#c05b9de9 56%,#9d478ce1)!important;
+}
+body.winery-enabled #panel1 .wp-hud-label{
+ display:block;max-width:100%;
+ font:900 clamp(7px,1vw,10px)/1.15 system-ui,sans-serif!important;
+ letter-spacing:.085em;color:#fff7d7;
+ text-shadow:0 1px 2px #79335d;
+ white-space:nowrap!important;
+}
+body.winery-enabled #panel1 .wp-hud-main{
+ display:block;max-width:100%;white-space:nowrap!important;
+ font:900 clamp(13px,2.15vw,22px)/1.06 ArcadePayout,Georgia,serif!important;
+ letter-spacing:.01em!important;
+ color:#fff9be!important;text-shadow:0 2px 1px #80395c,0 0 7px #fff7c5a6;
+}
+body.winery-enabled #panel1 .wp-upper-juice .wp-hud-main{
+ color:#fff2c7!important;
+ font-size:clamp(12px,2vw,21px)!important;
+}
+body.winery-enabled #panel1 .wp-hud-sub{
+ font:850 clamp(7px,.92vw,10px)/1.1 system-ui,sans-serif!important;
+ white-space:nowrap!important;color:#fff7e6!important;
+}
+body.winery-enabled #panel1 .wp-hud-progress{
+ display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;
+ gap:3px!important;justify-items:center!important;align-items:center!important;
+ width:93%!important;max-width:165px!important;margin:2px auto 0!important;
+}
+body.winery-enabled #panel1 .wp-hud-progress i{
+ display:block!important;box-sizing:border-box!important;
+ width:clamp(5px,.82vw,9px)!important;height:clamp(5px,.82vw,9px)!important;
+ border-radius:50%;border:1px solid #ffecbd!important;
+ background:radial-gradient(circle at 32% 25%,#ffeeeee8,#8f3b8096 70%)!important;
+ box-shadow:inset 0 0 2px #fff9e6a8;
+}
+body.winery-enabled #panel1 .wp-hud-progress i.done{
+ background:radial-gradient(circle at 28% 20%,#fffde9,#ffbe65 46%,#f05d83 85%)!important;
+ box-shadow:0 0 5px #fff0a2!important;
+}
+body.winery-enabled #panel1 .wp-hud-flavor{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:4px!important;white-space:nowrap!important;max-width:100%!important;
+ font:850 clamp(7px,.95vw,10px)/1.15 system-ui,sans-serif!important;
+ color:#fff3d9!important;
+}
+body.winery-enabled #panel1 .wp-hud-swatch{
+ display:inline-block!important;width:10px!important;height:10px!important;flex:none!important;
+ border-radius:50%!important;border:1px solid #fff1d8!important;
+ box-shadow:inset 1px 1px 1px #ffffffb0,0 0 5px #fffcffa5!important;
+ background:var(--wp-next-juice,#f86b87)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar{
+ background:
+  radial-gradient(ellipse at 50% 0%,rgba(255,204,146,.30),transparent 53%),
+  linear-gradient(155deg,rgba(125,29,81,.96),rgba(126,34,105,.97) 53%,rgba(78,23,80,.98))!important;
+ border-color:#ffe09f!important;
+ box-shadow:inset 0 0 0 1px #e69fb8,inset 0 0 17px #e48cc342,0 2px 8px #52226087!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-power{
+ background:linear-gradient(145deg,#f7b1c5,#ad5da4 52%,#8f4289)!important;
+ border-color:#fff1bd!important;
+ box-shadow:inset 0 1px #fff5edab,0 0 8px #ffd1b096!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-number{
+ background:radial-gradient(circle at 30% 26%,#fff2fa,#d182be 39%,#8c4a99 92%)!important;
+ border-color:#ffe7b5!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-boost-stage{
+ background:linear-gradient(#ba76a7,#744478)!important;
+ border-color:#f5c5c0!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-window{
+ background:linear-gradient(160deg,#673171,#452158)!important;
+ border-color:#f2d199!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-row{
+ background:linear-gradient(90deg,#7a356c,#58305f)!important;
+ border-bottom-color:#ffe0ab63!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-row.current{
+ background:linear-gradient(90deg,#ffa47d,#c968a0,#f3bd84)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-pay-fixed{
+ background:linear-gradient(100deg,#ffc69c,#c368a1,#c998d8)!important;
+}
+body.winery-enabled #panel1 .wp-sidebar .wp-mix,
+body.winery-enabled #panel1 .wp-sidebar .wp-total{
+ background:linear-gradient(130deg,#a8539a,#673b8f)!important;
+ border-color:#ffe0b0!important;
+}
+body.winery-enabled #panel1 .wp-rate-panel{
+ border-color:#fff2c4!important;
+ background:linear-gradient(135deg,#f1a5c4f1,#c46caaeb)!important;
+}
+@media(max-width:520px){
+ body.winery-enabled #panel1 .wp-upper-hud{
+   top:.7%!important;padding:3px 3px 4px!important;
+   border-radius:8px!important;border-width:1px!important;gap:1px!important;
+   box-shadow:inset 0 1px #fff6eab8,0 1px 4px #7c376050!important;
+ }
+ body.winery-enabled #panel1 .wp-upper-hud.wp-upper-round{
+   left:20%!important;width:19.5%!important;
+ }
+ body.winery-enabled #panel1 .wp-upper-hud.wp-upper-juice{
+   left:53.5%!important;width:19%!important;
+ }
+ body.winery-enabled #panel1 .wp-hud-label{font-size:5.8px!important;letter-spacing:0!important}
+ body.winery-enabled #panel1 .wp-hud-main{font-size:11px!important}
+ body.winery-enabled #panel1 .wp-upper-juice .wp-hud-main{font-size:10px!important}
+ body.winery-enabled #panel1 .wp-hud-sub,
+ body.winery-enabled #panel1 .wp-hud-flavor{font-size:5.6px!important}
+ body.winery-enabled #panel1 .wp-hud-progress{gap:1px!important;margin:0!important}
+ body.winery-enabled #panel1 .wp-hud-progress i{width:4px!important;height:4px!important;border-width:.5px!important}
+ body.winery-enabled #panel1 .wp-hud-swatch{width:5px!important;height:5px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled #panel1 .wp-upper-hud{transition:none!important}
+}
