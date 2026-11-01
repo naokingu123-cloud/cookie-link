@@ -1,4 +1,4 @@
-/* Winery Pyramid v54: calibrated initial white juice, premium visuals and Sugar markers. */
+/* Winery Pyramid v56: generated luxury art + live glass contents, win indicators and pour streams. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=54';document.head.appendChild(style);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -173,7 +173,9 @@ function loadPremiumArtwork(){
  glassArt.onload=()=>{miniKey='';queueFrame();};
  glassArt.onerror=()=>console.warn('[Winery] glass art unavailable; fallback retained');
  glassArt.src='assets/winery-royal-crystal-goblet-v2.svg?v=2';
- loadPremiumArtwork();
+
+ // v55 images were not published. The v56 image is the single premium source.
+
 function text(x,s,px,py,size=16,color='#fff3c9',font='system-ui'){
  x.save();x.textAlign='center';x.textBaseline='middle';x.font='900 '+size+'px '+font;x.lineJoin='round';x.strokeStyle='#432c55';x.lineWidth=3;x.strokeText(s,px,py);x.fillStyle=color;x.fillText(s,px,py);x.restore();
 }
@@ -289,14 +291,101 @@ function bottle(x,p,flavor,volume,t){
  x.fillStyle='#fff4d8';x.fillRect(-15,1,30,15);text(x,'JUICE',0,8,7,'#5e3759');x.restore();
  text(x,volume+'杯',bx+20,by-20,12,'#fff3b9');
 }
+
+/* Image-space artwork coordinates; matches screenshot at every panel size. */
+const luxuryImg=new Image();let luxuryReady=false;
+luxuryImg.decoding='async';
+luxuryImg.onload=()=>{
+ luxuryReady=true;scene.classList.add('wp-luxury-ready');
+ canvas.width=836;canvas.height=471;lastPaint=0;uiKey='';miniKey='';queueFrame();
+};
+luxuryImg.onerror=()=>console.warn('[Winery] Upload assets/winery-luxury-screen-v56.webp to activate luxurious scene.');
+luxuryImg.src='assets/winery-luxury-screen-v56.webp?v=56';
+const luxuryPos=i=>{const p=K.CELLS[i];return {x:692+(p.c-p.r/2)*150,y:38+p.r*133};};
+function paintLuxuryGlass(x,i,g,t){
+ const p=luxuryPos(i),cx=p.x,cy=p.y;
+ if(g.volume>0){
+  x.save();x.beginPath();
+  x.moveTo(cx-65,cy+14);x.bezierCurveTo(cx-58,cy+55,cx-33,cy+74,cx,cy+77);
+  x.bezierCurveTo(cx+33,cy+74,cx+58,cy+55,cx+65,cy+14);x.closePath();x.clip();
+  let filled=0;
+  for(const layer of g.layers){
+   if(layer.amount<=.0001)continue;
+   const f=K.FLAVORS[layer.flavor],bottom=cy+77-filled*61;
+   filled+=layer.amount;
+   const surface=cy+77-filled*61,gr=x.createLinearGradient(cx-65,surface,cx+65,bottom);
+   gr.addColorStop(0,f.light);gr.addColorStop(.46,f.color);gr.addColorStop(1,f.light);
+   x.globalAlpha=.68;x.fillStyle=gr;x.beginPath();x.moveTo(cx-68,bottom+2);x.lineTo(cx-68,surface);
+   for(let dx=-68;dx<=68;dx+=4)x.lineTo(cx+dx,surface+1.6*Math.sin(t*.004+i*.37+dx*.1));
+   x.lineTo(cx+68,bottom+2);x.closePath();x.fill();
+   x.globalAlpha=.8;x.lineWidth=1.8;x.strokeStyle=f.light;x.beginPath();
+   for(let dx=-64;dx<=64;dx+=4){const yy=surface+1.6*Math.sin(t*.004+i*.37+dx*.1);if(dx===-64)x.moveTo(cx+dx,yy);else x.lineTo(cx+dx,yy);}x.stroke();
+   x.globalAlpha=1;
+  }
+  x.restore();
+ }
+ // Cover preprinted example digits: the engine's randomized numbers win.
+ x.save();
+ const medal=x.createRadialGradient(cx-9,cy+31,1,cx,cy+42,28);
+ medal.addColorStop(0,'#fff1b4');medal.addColorStop(.32,'#a76321');medal.addColorStop(.62,'#d89a39');medal.addColorStop(1,'#ffe7a0');
+ x.fillStyle=medal;x.shadowColor='#ffe0a1';x.shadowBlur=5;
+ x.beginPath();x.arc(cx,cy+42,27,0,Math.PI*2);x.fill();x.shadowBlur=0;
+ x.fillStyle='#28130e';x.beginPath();x.arc(cx,cy+42,22,0,Math.PI*2);x.fill();
+ x.font='bold 32px Georgia,serif';x.textAlign='center';x.textBaseline='middle';
+ x.lineWidth=1.5;x.strokeStyle='#6b3e24';x.strokeText(String(engine.nodeNumbers[i]),cx,cy+44);
+ x.fillStyle='#fff1c2';x.fillText(String(engine.nodeNumbers[i]),cx,cy+44);
+ x.restore();
+ if(g.volume>=1-K.EPS){
+  x.save();x.shadowColor='#fff3b8';x.shadowBlur=12;
+  x.strokeStyle='#fff3a8';x.lineWidth=3;x.beginPath();x.ellipse(cx,cy+45,65,40,0,0,Math.PI*2);x.stroke();x.restore();
+  x.save();x.font='bold 16px system-ui';x.textAlign='center';x.fillStyle='#fff9ba';
+  x.shadowColor='#542111';x.shadowBlur=5;x.fillText('FULL',cx,cy+87);x.restore();
+ }
+}
+function paintLuxury(x,glasses,flows,fx,t){
+ for(let i=0;i<21;i++)paintLuxuryGlass(x,i,glasses[i],t);
+ if(fx?.type==='pour'){
+  const f=K.FLAVORS[fx.flavor];
+  for(const flow of flows){
+   const a=luxuryPos(flow.from),b=flow.to<0?{x:a.x,y:874}:luxuryPos(flow.to);
+   x.save();x.lineCap='round';x.shadowColor=f.light;x.shadowBlur=7;
+   x.strokeStyle=f.color;x.lineWidth=Math.min(11,7+Math.sqrt(flow.amount)*3);
+   x.beginPath();x.moveTo(a.x,a.y+71);x.bezierCurveTo(a.x,a.y+102,b.x,b.y-14,b.x,b.y+22);x.stroke();
+   x.shadowBlur=0;x.strokeStyle=f.light;x.lineWidth=2.5;x.setLineDash([10,13]);x.lineDashOffset=-t*.055;x.stroke();x.restore();
+  }
+  const source=luxuryPos(fx.source),bx=Math.min(1100,source.x+82),by=source.y-45;
+  x.save();x.translate(bx,by);x.rotate(-.72);
+  const grad=x.createLinearGradient(-22,-32,24,38);
+  grad.addColorStop(0,'#eefcff');grad.addColorStop(.5,f.light);grad.addColorStop(1,f.color);
+  x.fillStyle=grad;x.strokeStyle='#fff1af';x.lineWidth=3;
+  x.beginPath();x.moveTo(-10,-36);x.lineTo(10,-36);x.lineTo(10,-20);x.lineTo(23,-6);
+  x.lineTo(23,28);x.quadraticCurveTo(0,38,-23,28);x.lineTo(-23,-6);x.lineTo(-10,-20);x.closePath();x.fill();x.stroke();
+  x.fillStyle='#ffecca';x.fillRect(-17,0,34,18);x.fillStyle='#582319';x.font='bold 10px Georgia';x.textAlign='center';x.fillText('JUICE',0,13);x.restore();
+  x.save();x.font='bold 23px Georgia';x.textAlign='center';x.fillStyle='#fff0bd';x.shadowColor='#471326';x.shadowBlur=7;
+  x.fillText(fx.volume+'杯',bx+36,by-43);x.restore();
+ }
+ if(stable(engine))for(const p of S.reachResults||[]){
+  const i=engine.nodeNumbers.indexOf(p.number);if(i<0)continue;
+  const a=luxuryPos(i);x.save();x.lineWidth=3;x.shadowBlur=10;x.shadowColor='#fff0af';x.strokeStyle='#fff0af';
+  x.beginPath();x.ellipse(a.x,a.y+42,65,45,0,0,Math.PI*2);x.stroke();x.restore();
+ }
+ if(!app.bet(1)){
+  x.save();x.fillStyle='#401026de';x.strokeStyle='#f8d487';x.lineWidth=3;
+  x.fillRect(415,826,555,56);x.strokeRect(415,826,555,56);
+  x.font='bold 28px system-ui';x.textAlign='center';x.fillStyle='#fff1be';
+  x.fillText('BETしてください',692,865);x.restore();
+ }
+}
+
 function paint(target,time,small=false){
  const x=target.getContext('2d'),W=target.width,H=target.height;
- x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,W,H);x.drawImage(bg,0,0,W,H);x.setTransform(W/520,0,0,H/600,0,0);
+ x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,W,H);if(!luxuryReady||small)x.drawImage(bg,0,0,W,H);x.setTransform(W/520,0,0,H/600,0,0);
  const fx=engine.fx;let display=engine.glasses,flows=[];
  if(fx?.type==='pour'){
   const progress=Math.max(0,Math.min(1,fx.elapsed/fx.duration));
   const interim=K.pour(fx.before,fx.source,fx.volume*progress,fx.flavor);display=interim.glasses;flows=interim.flows;
  }
+ if(luxuryReady&&!small){x.setTransform(W/1672,0,0,H/941,0,0);paintLuxury(x,display,flows,fx,time);return;}
  text(x,'ワイナリーピラミッド',260,24,23,'#fff1bf');
  const nextFlavor=K.FLAVORS[K.flavorFor(Math.min(8,engine.processed+1))];
  text(x,engine.processed>=8?'8球終了':(engine.processed+1)+'球目 '+nextFlavor.name,260,51,12,'#fff7df');
@@ -407,7 +496,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:54,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:56,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid] 21 glasses / 4 boosts / 8 draws; Six Drop + Gelato + Winery installed');
 })();
