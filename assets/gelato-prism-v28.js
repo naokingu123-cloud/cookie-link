@@ -1,4 +1,4 @@
-/* GELATO PRISM v42 - 16 symmetric board patterns, color quartets, final panel-count payouts */
+/* GELATO PRISM v43 - dark unfilled panels, luminous popsicle textures, four triangle collectors */
 (()=>{
 'use strict';
 try{
@@ -344,7 +344,9 @@ try{
  collectorPanel.className='gp-collector-panel';
  collectorPanel.innerHTML='<div class="gp-collector-title">ジェラート収集</div>'+
    [1,2,3,4].map(g=>'<div class="gp-collector-row" data-grade="'+g+'">'+
-     '<span class="gp-diamond-wrap"><span class="gp-diamond"></span></span>'+
+     '<span class="gp-diamond-wrap"><span class="gp-diamond">'+
+       Array.from({length:4},(_,i)=>'<i class="gp-diamond-piece" data-piece="'+i+'"></i>').join('')+
+     '</span></span>'+
      '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b><small class="gp-collected-n">0 / 4</small></span>'+
      '<strong>'+COLLECTOR_MULT[g].toFixed(1)+'倍</strong></div>').join('')+
    '<div class="gp-total-tally"><b>獲得 <span class="gp-tally-n">0</span> / 24</b>'+
@@ -362,8 +364,10 @@ try{
      const grade=+row.dataset.grade,count=counts[grade],color=GRADE_COLORS[grade];
      row.querySelector('.gp-collected-n').textContent=count+' / 4';
      const diamond=row.querySelector('.gp-diamond');
-     diamond.style.background='conic-gradient(from -45deg,'+
-       Array.from({length:4},(_,k)=>(k<count?color:'#dbe9f2')+' '+(k*90)+'deg '+((k+1)*90)+'deg').join(',')+')';
+     for(const [index,piece] of [...diamond.querySelectorAll('.gp-diamond-piece')].entries()){
+       piece.classList.toggle('is-filled',index<count);
+       piece.style.setProperty('--gp-gem-color',color);
+     }
      row.classList.toggle('gp-complete',count===4);
    }
    collectorPanel.querySelector('.gp-tally-n').textContent=e.filled.size;
@@ -379,6 +383,7 @@ try{
  rasterMold.appendChild(gpBoardBonus);
  const rasterImages={
    board:new Image(),fill:new Image(),trim:new Image(),ice:new Image(),ready:false,iceReady:false,iceCache:null,exactV40:false,
+   candyAtlas:new Image(),candyAtlasReady:false,
    base:null,trimCache:null,faceTiles:[],labels:null,numbers:null,
    labelsBet:null,numbersKey:null
  };
@@ -413,24 +418,43 @@ try{
      const top=Math.max(0,Math.floor(Math.min(...py))-2);
      const right=Math.min(MAIN_PX,Math.ceil(Math.max(...px))+2);
      const bottom=Math.min(MAIN_PX,Math.ceil(Math.max(...py))+2);
-     const images=GRADE_COLORS.map((color,grade)=>{
-       const tile=offscreen(right-left,bottom-top),ctx=tile.getContext('2d');
+     const width=right-left,height=bottom-top;
+     const images=[],dimImages=[];
+     for(let grade=0;grade<5;grade++){
+       const bright=offscreen(width,height),ctx=bright.getContext('2d');
        ctx.beginPath();ctx.moveTo(px[0]-left,py[0]-top);
        for(let k=1;k<3;k++)ctx.lineTo(px[k]-left,py[k]-top);
        ctx.closePath();ctx.clip();
-       ctx.drawImage(fillSheet,-left,-top);
-       // Re-hue the generated gelato photo while keeping its glossy lighting.
-       ctx.globalCompositeOperation='color';
-       ctx.fillStyle=color;ctx.fillRect(0,0,tile.width,tile.height);
-       ctx.globalCompositeOperation='source-over';
-       const light=ctx.createLinearGradient(0,0,tile.width,tile.height);
-       light.addColorStop(0,'rgba(255,255,255,.34)');
-       light.addColorStop(.48,'rgba(255,255,255,0)');
-       light.addColorStop(1,'rgba(30,15,70,.23)');
-       ctx.fillStyle=light;ctx.fillRect(0,0,tile.width,tile.height);
-       return tile;
-     });
-     return {images,x:left,y:top,width:right-left,height:bottom-top};
+       if(rasterImages.candyAtlasReady){
+         const source=rasterImages.candyAtlas;
+         const srcWidth=source.naturalWidth/5;
+         // Match each triangular cavity to a whole candy texture tile.
+         ctx.drawImage(source,grade*srcWidth,0,srcWidth,source.naturalHeight,
+           0,0,width,height);
+       }else{
+         // Existing glossy PNG remains a fallback if the new atlas cannot load.
+         ctx.drawImage(fillSheet,-left,-top);
+         ctx.globalCompositeOperation='color';
+         ctx.fillStyle=GRADE_COLORS[grade];
+         ctx.fillRect(0,0,width,height);
+         ctx.globalCompositeOperation='source-over';
+       }
+       const gloss=ctx.createLinearGradient(0,0,width,height);
+       gloss.addColorStop(0,'rgba(255,255,255,.54)');
+       gloss.addColorStop(.32,'rgba(255,255,255,.10)');
+       gloss.addColorStop(.7,'rgba(255,255,255,.0)');
+       gloss.addColorStop(1,'rgba(10,12,80,.23)');
+       ctx.fillStyle=gloss;ctx.fillRect(0,0,width,height);
+       ctx.restore?.();
+       const dim=offscreen(width,height),dc=dim.getContext('2d');
+       dc.drawImage(bright,0,0);
+       dc.globalCompositeOperation='source-atop';
+       dc.fillStyle='rgba(3,16,45,.76)';
+       dc.fillRect(0,0,width,height);
+       dc.globalCompositeOperation='source-over';
+       images.push(bright);dimImages.push(dim);
+     }
+     return {images,dimImages,x:left,y:top,width,height};
    });
    // Cache node and WIN labels independent of hit animations and filled state.
    rasterImages.labels=offscreen(MAIN_PX);
@@ -439,6 +463,17 @@ try{
    rasterImages.labelsBet=null;
    rasterImages.numbersKey=null;
  }
+ // Optional 5-column ice-candy artwork.  The v40 crystal mould is unchanged.
+ // Once the atlas is present, it replaces all five flat-tinted face textures.
+ loadRasterAsset(rasterImages.candyAtlas,'gelato-prism-popsicle-atlas-v43.png').then(()=>{
+   rasterImages.candyAtlasReady=true;
+   if(rasterImages.ready){
+     createRasterCache();
+     rasterKey='';lastGeometryKey='';
+     drawGelato();
+   }
+   console.info('[GelatoPrism] v43 high-gloss popsicle textures active');
+ }).catch(err=>console.warn('[GelatoPrism] popsicle atlas fallback:',err.message));
  const standardAssetsReady=Promise.all([
    loadRasterAsset(rasterImages.board,'gelato-prism-cookie-v37.png'),
    loadRasterAsset(rasterImages.fill,'gelato-prism-gelato-v37.png'),
@@ -546,13 +581,11 @@ try{
    ctx.setTransform(1,0,0,1,0,0);
    ctx.clearRect(0,0,size,size);
    ctx.drawImage(rasterImages.base,0,0,size,size);
-   // All 24 colors are visible from the start.  Captured cells glow
-   // brighter; during the bucket pour they progressively brighten upward.
+   // Unacquired faces remain dark translucent ice-candy.  Each captured
+   // face is lit from within; the bucket reveal advances from bottom upward.
    for(const f of FACES){
-     const t=rasterImages.faceTiles[f.id];
-     const texture=t.images[e.faceGrades[f.id]];
-     ctx.globalAlpha=.64;
-     ctx.drawImage(texture,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+     const t=rasterImages.faceTiles[f.id],grade=e.faceGrades[f.id];
+     ctx.drawImage(t.dimImages[grade],t.x*scale,t.y*scale,t.width*scale,t.height*scale);
      if(!e.filled.has(f.id))continue;
      const pour=e.pouring,order=pour?.faces.indexOf(f.id)??-1;
      let amount=1;
@@ -571,12 +604,28 @@ try{
        ctx.clip();
      }
      ctx.globalAlpha=1;
-     ctx.drawImage(texture,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+     ctx.drawImage(t.images[grade],t.x*scale,t.y*scale,t.width*scale,t.height*scale);
      ctx.restore();
    }
-   ctx.globalAlpha=1;
    ctx.drawImage(rasterImages.trimCache,0,0,size,size);
    if(rasterImages.iceReady&&!rasterImages.exactV40)ctx.drawImage(rasterImages.iceCache,0,0,size,size);
+   // Neon icing outlines follow only awarded triangles. Cached PNG textures
+   // supply the detailed popsicles; these light strokes communicate status.
+   ctx.save();
+   ctx.setTransform(size/500,0,0,size/500,0,0);
+   for(const faceId of e.filled){
+     const face=FACES[faceId],pts=face.nodes.map(i=>rasterCoords[i]);
+     ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+     ctx.lineTo(pts[1].x,pts[1].y);ctx.lineTo(pts[2].x,pts[2].y);ctx.closePath();
+     ctx.strokeStyle=GRADE_COLORS[e.faceGrades[faceId]];
+     ctx.globalAlpha=.8;
+     ctx.lineWidth=small?2.5:3;
+     ctx.shadowColor=GRADE_COLORS[e.faceGrades[faceId]];
+     ctx.shadowBlur=small?0:5;
+     ctx.stroke();
+   }
+   ctx.restore();
+
    if(!small&&e.pouring&&e.pouring.progress<1)drawIceBucket(ctx,e.pouring);
    if(!small){
      ctx.drawImage(rasterImages.labels,0,0);
@@ -802,7 +851,7 @@ try{
  document.body.classList.add('gelato-enabled');
  drawGelato();select(1);scheduleUI(app);
  window.GelatoPrism={
-   get imageVersion(){return rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
+   get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
    get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,
      pattern:e.pattern?.id,counts:e.collectorCounts.slice(),countMult:e.countMult,
