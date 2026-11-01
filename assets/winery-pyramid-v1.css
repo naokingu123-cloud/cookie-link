@@ -29,3 +29,33 @@ body.winery-active .game .field{grid-template-columns:minmax(0,1fr)!important;wi
 body.winery-active #panels{width:100%!important;max-width:none!important}
 body.winery-active .game .festival-top{visibility:hidden!important}
 body.winery-active #allclear-award{display:none!important}
+
+/* v52: original generated Winery Pyramid tab logo replaces the placeholder */
+body.winery-enabled .wp-tab .tab-game-name{
+  height:44px!important;padding:0!important;overflow:visible!important;
+}
+body.winery-enabled .wp-tab .wp-tab-logo{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  position:relative!important;width:100%!important;height:100%!important;
+  min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;transform:none!important;
+  background:none!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;overflow:visible!important;
+}
+body.winery-enabled .wp-tab .wp-tab-logo-img{
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:100%!important;max-height:44px!important;
+  object-fit:contain!important;object-position:center!important;
+  filter:drop-shadow(0 1px 2px #64356c66);
+}
+body.winery-enabled .wp-tab .wp-tab-logo-img[hidden]{display:none!important}
+body.winery-enabled .wp-tab .wp-fallback{
+  font:1000 clamp(10px,2.3vw,14px)/.97 system-ui,sans-serif!important;
+  text-align:center!important;position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+}
+body.winery-enabled .wp-tab .wp-tab-logo.is-art-ready .wp-fallback{display:none!important}
+@media(max-width:470px){
+ body.winery-enabled .wp-tab .tab-game-name{height:39px!important}
+ body.winery-enabled .wp-tab .wp-tab-logo-img{max-height:39px!important}
+}
