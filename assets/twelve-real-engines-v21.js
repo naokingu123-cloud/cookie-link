@@ -362,7 +362,7 @@ function install(){
     const bet=betAt(i);
     const score=medalWin(bet,e.totalHundredths||0);
     return {id:i,game:group,mini,name:cfg.name,bet,enabled:bet>0,
-      engine:e,event:lastEvents.get(i)||{phase:e.phase||'ready'},
+      engine:e,event:lastEvents.get(i)||e,
       score,sugar:!!e.wonderCollected,
       reach:reachFor(i),selected:selected[group]===mini,
       status:bet<=0?'不参加':app.phase==='ready'?'準備':
