@@ -236,3 +236,10 @@ body.twelve-live-active .round-result .result-logo{
 body.twelve-live-active .round-result .result-next-info{
   margin:4px 0!important;
 }
+
+/* Ten-game result: 3/3/3 plus one final centered scorecard.
+   Remains scrollable on a compact iPhone and keeps large WIN numerals. */
+body.twelve-live-active #result-games.sweets12-result-grid .result-game:last-child:nth-child(10){
+  grid-column:2!important;
+  justify-self:stretch!important;
+}
