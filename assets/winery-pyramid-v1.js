@@ -144,6 +144,24 @@ function background(x){
  }
 }
 const bg=document.createElement('canvas');bg.width=780;bg.height=900;const bx=bg.getContext('2d');bx.scale(1.5,1.5);background(bx);
+let premiumStageReady=false,premiumGlassReady=false;
+function loadPremiumArtwork(){
+ const stage=new Image();
+ stage.decoding='async';
+ stage.onload=()=>{
+   premiumStageReady=true;
+   bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bg.width,bg.height);
+   bx.drawImage(stage,0,0,bg.width,bg.height);miniKey='';queueFrame();
+ };
+ stage.onerror=()=>{premiumStageReady=false;};
+ stage.src='assets/winery-kingdom-stage-v55.webp?v=55';
+ const premiumGlass=new Image();
+ premiumGlass.decoding='async';
+ premiumGlass.onload=()=>{premiumGlassReady=true;glassArt.src=premiumGlass.src;miniKey='';queueFrame();};
+ premiumGlass.onerror=()=>{premiumGlassReady=false;};
+ premiumGlass.src='assets/winery-crystal-glass-v55.webp?v=55';
+}
+
  const stageArt=new Image(),glassArt=new Image();
  stageArt.onload=()=>{
   bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bg.width,bg.height);
@@ -154,26 +172,67 @@ const bg=document.createElement('canvas');bg.width=780;bg.height=900;const bx=bg
  glassArt.onload=()=>{miniKey='';queueFrame();};
  glassArt.onerror=()=>console.warn('[Winery] glass art unavailable; fallback retained');
  glassArt.src='assets/winery-royal-crystal-goblet-v2.svg?v=2';
+ loadPremiumArtwork();
 function text(x,s,px,py,size=16,color='#fff3c9',font='system-ui'){
  x.save();x.textAlign='center';x.textBaseline='middle';x.font='900 '+size+'px '+font;x.lineJoin='round';x.strokeStyle='#432c55';x.lineWidth=3;x.strokeText(s,px,py);x.fillStyle=color;x.fillText(s,px,py);x.restore();
 }
 function bowl(x,px,py){x.beginPath();x.moveTo(px-29,py);x.bezierCurveTo(px-29,py+33,px-20,py+46,px,py+47);x.bezierCurveTo(px+20,py+46,px+29,py+33,px+29,py);x.closePath();}
 function glass(x,i,g,t,activePour){
  const {x:cx,y:cy}=pos(i),full=g.volume>=1-K.EPS;
+ const reachedAt=fullFx.get(i),flashAge=reachedAt==null?Infinity:t-reachedAt;
+ const newborn=full&&flashAge>=0&&flashAge<1650;
+ const pulse=.5+.5*Math.sin(t*.006+i*.8);
  x.save();
+ if(full){
+   x.save();
+   const glow=x.createRadialGradient(cx,cy+29,5,cx,cy+29,newborn?58:42);
+   glow.addColorStop(0,newborn?'#fff4ad60':'#fff6bf28');
+   glow.addColorStop(.55,newborn?'#ffbcf34f':'#ffd58e15');
+   glow.addColorStop(1,'#ffffff00');
+   x.fillStyle=glow;x.beginPath();x.arc(cx,cy+29,newborn?58:42,0,Math.PI*2);x.fill();
+   x.restore();
+ }
  const base=x.createLinearGradient(cx-30,cy,cx+28,cy+45);base.addColorStop(0,'#ccefff55');base.addColorStop(.3,'#eaffff16');base.addColorStop(.7,'#fcfaff24');base.addColorStop(1,'#efffff73');
  bowl(x,cx,cy);x.fillStyle=base;x.fill();
  x.save();bowl(x,cx,cy);x.clip();
  let cumulative=0;
  for(let layer=0;layer<g.layers.length;layer++){
   const l=g.layers[layer],f=K.FLAVORS[l.flavor],bottom=cy+46-cumulative*43;cumulative+=l.amount;
-  const surface=cy+46-cumulative*43,amp=layer===g.layers.length-1?(activePour?1.8:.65):.3;
+  const surface=cy+46-cumulative*43,
+      amp=layer===g.layers.length-1?(activePour?2.9:1.45):.78;
   const gradient=x.createLinearGradient(cx-29,surface,cx+29,bottom);gradient.addColorStop(0,f.color);gradient.addColorStop(.24,f.light);gradient.addColorStop(.58,f.color);gradient.addColorStop(1,f.light);
   x.fillStyle=gradient;x.globalAlpha=.85;x.beginPath();x.moveTo(cx-32,bottom+1);x.lineTo(cx-32,surface);
-  for(let dx=-32;dx<=32;dx+=4)x.lineTo(cx+dx,surface+Math.sin(dx*.15+t*.003+i*.6)*amp);
+  for(let dx=-32;dx<=32;dx+=3){
+   const u=dx*.18+t*.0032+i*.49;
+   const wave=Math.sin(u)*amp+.48*Math.sin(dx*.37-t*.0018+layer*.7);
+   x.lineTo(cx+dx,surface+wave);
+  }
   x.lineTo(cx+32,bottom+1);x.closePath();x.fill();
   x.globalAlpha=.8;x.strokeStyle=f.light;x.lineWidth=1;x.beginPath();
-  for(let dx=-28;dx<=28;dx+=4){const yy=surface+Math.sin(dx*.15+t*.003+i*.6)*amp;dx===-28?x.moveTo(cx+dx,yy):x.lineTo(cx+dx,yy);}x.stroke();
+  for(let dx=-28;dx<=28;dx+=3){
+   const yy=surface+Math.sin(dx*.18+t*.0032+i*.49)*amp+
+     .48*Math.sin(dx*.37-t*.0018+layer*.7);
+   dx===-28?x.moveTo(cx+dx,yy):x.lineTo(cx+dx,yy);
+  }x.stroke();
+  // Tiny caustic bands and buoyant glints are continuously animated,
+  // while the fluid volume and flavor layers remain unchanged.
+  const causticX=cx-29+((t*.015+i*13+layer*23)%66);
+  const caustic=x.createLinearGradient(causticX-9,surface,causticX+9,surface);
+  caustic.addColorStop(0,'#ffffff00');caustic.addColorStop(.5,'#fffdfc6a');
+  caustic.addColorStop(1,'#ffffff00');
+  x.globalCompositeOperation='screen';x.globalAlpha=.23;
+  x.fillStyle=caustic;x.fillRect(cx-30,surface,60,bottom-surface+1);
+  x.globalCompositeOperation='source-over';x.globalAlpha=.75;
+  const bubbles=(l.flavor===3?5:2);
+  for(let b=0;b<bubbles;b++){
+    const fromBottom=((t*(l.flavor===3?.027:.012)+i*19+b*29+layer*17)%Math.max(7,(bottom-surface)+12));
+    const y=bottom+4-fromBottom;
+    if(y<=surface+2||y>=bottom)continue;
+    const xp=cx+Math.sin(i*7+b*2.13+layer)*16+Math.sin(t*.0008+b)*2;
+    x.beginPath();x.arc(xp,y,l.flavor===3?1.4:.82,0,Math.PI*2);
+    x.fillStyle='#fff';x.globalAlpha=l.flavor===3?.43:.19;x.fill();
+  }
+  x.globalAlpha=.85;
  }
  x.restore();
  x.globalAlpha=1;
@@ -191,7 +250,28 @@ function glass(x,i,g,t,activePour){
  }
  if(typeof drawElixirNumber==='function')drawElixirNumber(x,engine.nodeNumbers[i],cx,cy+22,24,'#fff8d9','#543161',3.3);
  else text(x,String(engine.nodeNumbers[i]),cx,cy+23,22,'#fff8d9','ElixirNumbers,system-ui');
- if(full){text(x,'FULL',cx,cy+43,9,'#fff0a3');if(new Set(g.layers.map(l=>l.flavor)).size>1)text(x,'MIX',cx,cy+55,7,'#eeffc2');}
+ if(full){
+  const flare=newborn?1+.2*Math.sin(Math.min(1,flashAge/700)*Math.PI):1;
+  x.save();x.translate(cx,cy+43);x.scale(flare,flare);
+  x.shadowColor='#fff2a2';x.shadowBlur=newborn?12:5;
+  text(x,'満タン!!',0,0,newborn?13:11,'#fff3a9','SweetReachRounded,system-ui');
+  x.restore();
+  if(new Set(g.layers.map(l=>l.flavor)).size>1)text(x,'MIX',cx,cy+57,8,'#efffbe');
+  const count=newborn?7:3;
+  for(let k=0;k<count;k++){
+    const a=(t*.0014+k*2.399+i*.37),orbit=newborn?39+9*Math.sin(flashAge*.003):34;
+    const px=cx+Math.cos(a)*orbit,py=cy+19+Math.sin(a)*(newborn?34:27);
+    const radius=newborn?2.1+.9*pulse:1.3+.5*pulse;
+    x.save();x.shadowColor=k%2?'#fff6ae':'#cae8ff';
+    x.shadowBlur=newborn?8:4;x.fillStyle=k%2?'#ffef91':'#fff';
+    x.beginPath();
+    x.moveTo(px,py-radius*2.2);x.lineTo(px+radius*.6,py-radius*.45);
+    x.lineTo(px+radius*2.2,py);x.lineTo(px+radius*.6,py+radius*.45);
+    x.lineTo(px,py+radius*2.2);x.lineTo(px-radius*.6,py+radius*.45);
+    x.lineTo(px-radius*2.2,py);x.lineTo(px-radius*.6,py-radius*.45);
+    x.closePath();x.fill();x.restore();
+  }
+ }
  x.restore();
 }
 function stream(x,from,to,flavor,t,width=3){
