@@ -1,4 +1,4 @@
-/* GELATO PRISM v48 - HIT marks, luminous flowing lines and Six Drop reach visuals */
+/* GELATO PRISM v49 - reach anchored to exact numbered circles on the Canvas */
 (()=>{
 'use strict';
 try{
@@ -343,70 +343,7 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
- // Same per-cell presentation as Six Drop: circular light comets and
- // alternating REACH/award labels, never floating rectangular cards.
- const sixReachLayer=document.createElement('div');
- sixReachLayer.className='gp-six-drop-reach-layer six-reach-layer';
- sixReachLayer.setAttribute('aria-label','ジェラートプリズム 番号別リーチ');
- rasterMold.appendChild(sixReachLayer);
- let sixReachKey='';
- function gelatoDropReachComet(tier){
-   if(typeof sixDropReachCometMarkup==='function')return sixDropReachCometMarkup(tier);
-   return '<svg class="reach-comet-track" viewBox="0 0 100 100">'+
-     '<g class="reach-comet" style="--dash:0 9 7 84;--start:0">'+
-     '<circle cx="50" cy="50" r="46" pathLength="100" class="comet-glow"/>'+
-     '<circle cx="50" cy="50" r="46" pathLength="100" class="comet-mid"/>'+
-     '<circle cx="50" cy="50" r="46" pathLength="100" class="comet-head"/>'+
-     '</g></svg>';
- }
- function updateGelatoSixReach(e){
-   const reach=getNodeReachTiers(e);
-   const board=rasterMain.getBoundingClientRect(),mold=rasterMold.getBoundingClientRect();
-   if(!board.width||!board.height||!mold.width||!mold.height){
-     sixReachLayer.replaceChildren();sixReachKey='';return;
-   }
-   const rendered=Math.min(board.width,board.height);
-   const ox=board.left-mold.left+(board.width-rendered)/2;
-   const oy=board.top-mold.top+(board.height-rendered)/2;
-   const diameter=Math.max(24,Math.min(42,rendered*42/500));
-   const content=[...reach].map(([i,v])=>i+'/'+v.tier).join(',');
-   const key=[e.cycle,e.version,e.phase,e.processed,content,
-     Math.round(ox),Math.round(oy),Math.round(rendered),Math.round(mold.width),
-     Math.round(mold.height),!!app.paused].join('|');
-   sixReachLayer.classList.toggle('is-paused',!!app.paused);
-   if(key===sixReachKey)return;
-   sixReachKey=key;sixReachLayer.replaceChildren();
-   if(!reach.size||!rasterImages.ready)return;
-   const frag=document.createDocumentFragment();
-   for(const [index,result] of reach){
-     const p=rasterCoords[index],tier=result.tier;
-     if(!p)continue;
-     const el=document.createElement('div');
-     el.className='six-reach-cell gp-six-reach-cell';
-     el.dataset.tier=String(tier);
-     el.dataset.number=String(result.number);
-     el.style.left=(ox+rendered*p.x/500-diameter/2)+'px';
-     el.style.top=(oy+rendered*p.y/500-diameter/2)+'px';
-     el.style.width=diameter+'px';el.style.height=diameter+'px';
-     const comets=(tier===1||tier===2)?
-       '<span class="reach-orbit" data-tier="'+tier+'">'+gelatoDropReachComet(tier)+'</span>':'';
-     const rainbow=tier===3?
-       '<span class="allclear-reach-aura"><svg class="allclear-reach-perimeter" viewBox="0 0 100 100">'+
-       '<circle class="perimeter-rail" cx="50" cy="50" r="44" pathLength="100"/>'+
-       '<circle class="perimeter-trail" cx="50" cy="50" r="44" pathLength="100"/>'+
-       '<circle class="perimeter-core" cx="50" cy="50" r="44" pathLength="100"/>'+
-       '</svg></span>':'';
-     const words=['','高額','超高額','全獲り'][tier];
-     el.innerHTML='<span class="reach-glints" data-tier="'+tier+'"><i></i><i></i><i></i></span>'+
-       comets+rainbow+
-       '<span class="tile-reach '+(tier?'alternating':'')+'" data-tier="'+tier+'">'+
-       '<span class="reach-first">リーチ</span>'+
-       (tier?'<span class="reach-second">'+words+'</span>':'')+'</span>';
-     frag.appendChild(el);
-   }
-   sixReachLayer.appendChild(frag);
- }
-
+ // Reach is rendered on the same Canvas coordinates as the numbered sockets.
  // Reach uses the exact numbered sockets (same four-tier language as Candy),
  // never an overlay banner. Each number predicts the next ball independently.
  const REACH_NAMES=['リーチ','高額','超高額','全獲り'];
@@ -438,48 +375,80 @@ try{
    return result;
  }
  function drawReachOnNodes(ctx,e,small){
+   // Six Drop visual language: sparkling ordinary reach, revolving red/purple
+   // light trails, rainbow full-clear. Uses exact rasterCoords of each socket.
+   // No DOM position calculations, so mobile object-fit cannot shift badges.
    const tiers=getNodeReachTiers(e);
    if(!tiers.size)return;
-   const time=(typeof performance!=='undefined'?performance.now():Date.now());
-   const phase=time/750;
-   ctx.save();
-   ctx.setTransform((small?MINI_PX:MAIN_PX)/500,0,0,
-       (small?MINI_PX:MAIN_PX)/500,0,0);
-   ctx.textAlign='center';ctx.textBaseline='middle';
+   const seconds=(typeof performance!=='undefined'?performance.now():Date.now())/1000;
+   const unit=(small?MINI_PX:MAIN_PX)/500;
+   ctx.save();ctx.setTransform(unit,0,0,unit,0,0);
+   ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineCap='round';
    for(const [index,reach] of tiers){
-     const p=rasterCoords[index],tier=reach.tier;
-     const hue=REACH_RAINBOW[(Math.floor(phase*2)+index)%REACH_RAINBOW.length];
-     const tint=tier===3?hue:REACH_COLORS[tier];
-     const bob=.5+.5*Math.sin(phase*3+index);
-     ctx.globalAlpha=.84+.16*bob;
-     ctx.shadowColor=tint;ctx.shadowBlur=small?4:(9+tier*3);
-     ctx.lineWidth=tier===3?3.6:2.9;ctx.strokeStyle=tint;
-     ctx.beginPath();ctx.arc(p.x,p.y,19.8+bob*1.4,0,Math.PI*2);
-     ctx.stroke();
-     if(tier>=2){
-       ctx.lineWidth=1.4;
-       ctx.beginPath();ctx.arc(p.x,p.y,23.5,.35+phase,Math.PI*1.32+phase);
-       ctx.stroke();
+     const p=rasterCoords[index];if(!p)continue;
+     const tier=reach.tier,angle=seconds*(tier===2?3.05:2.55)+index*.22;
+     const radius=20.5;
+     ctx.save();ctx.translate(p.x,p.y);
+     if(tier===0){
+       // Three sparkles like Six Drop's .reach-glints layer.
+       for(let k=0;k<3;k++){
+         const a=angle*.35+k*Math.PI*2/3;
+         const x=Math.cos(a)*21,y=Math.sin(a)*21;
+         ctx.globalAlpha=.55+.4*Math.sin(seconds*3+k)**2;
+         ctx.beginPath();ctx.arc(x,y,small?1.7:2.4,0,Math.PI*2);
+         ctx.fillStyle='#eefffc';ctx.shadowColor='#6bfff2';
+         ctx.shadowBlur=small?3:7;ctx.fill();
+       }
+     }else if(tier===1||tier===2){
+       // Two illuminated comet heads run along the numbered circle.
+       const color=tier===1?'#ff365c':'#c04fff';
+       for(let k=0;k<2;k++){
+         const a=angle+k*Math.PI;
+         ctx.beginPath();ctx.arc(0,0,radius,a-1.12,a);
+         ctx.lineWidth=small?2.1:3.2;ctx.strokeStyle=color;
+         ctx.shadowColor=color;ctx.shadowBlur=small?4:8;
+         ctx.globalAlpha=.77;ctx.stroke();
+         ctx.beginPath();ctx.arc(0,0,radius,a-.42,a);
+         ctx.strokeStyle='#fff8e7';ctx.lineWidth=small?1.4:2.4;
+         ctx.globalAlpha=1;ctx.stroke();
+         ctx.beginPath();
+         ctx.arc(Math.cos(a)*radius,Math.sin(a)*radius,small?1.9:2.7,0,Math.PI*2);
+         ctx.fillStyle='#fffefa';ctx.fill();
+       }
+     }else{
+       // Six Drop's full-clear class: moving multi-colored perimeter.
+       const colors=['#ff6bad','#ffe882','#92ffe0','#89dfff','#c9a0ff','#ff6bad'];
+       for(let k=0;k<6;k++){
+         ctx.beginPath();ctx.arc(0,0,radius,angle+k*Math.PI/3,angle+(k+1)*Math.PI/3);
+         ctx.strokeStyle=colors[k];ctx.lineWidth=small?2.3:3.7;
+         ctx.shadowColor=colors[k];ctx.shadowBlur=small?4:10;
+         ctx.globalAlpha=.95;ctx.stroke();
+       }
+       ctx.beginPath();ctx.arc(0,0,radius+2,0,Math.PI*2);
+       ctx.strokeStyle='#fff7c6';ctx.lineWidth=1.2;ctx.stroke();
+       for(let k=0;k<4;k++){
+         const a=angle*.55+k*Math.PI/2;
+         ctx.beginPath();ctx.arc(Math.cos(a)*(radius+4),Math.sin(a)*(radius+4),small?1.6:2.4,0,Math.PI*2);
+         ctx.fillStyle=k%2?'#fff8c3':'#defaff';ctx.fill();
+       }
      }
-     ctx.shadowBlur=0;
+     ctx.restore();
      if(small)continue;
-     // Floating individual badge above each numbered circle, not global text.
-     const badgeWidth=tier===0?35:tier===1?31:45;
-     const labelY=p.y-32;
-     ctx.fillStyle=tier===3?'#6f36ab':tier===2?'#9e2679':tier===1?'#9d5826':'#226daa';
-     ctx.beginPath();
-     const rx=p.x-badgeWidth/2,ry=labelY-8;
-     ctx.roundRect(rx,ry,badgeWidth,16,4);
-     ctx.fill();
-     ctx.lineWidth=1.4;ctx.strokeStyle=tint;ctx.stroke();
-     ctx.font=(tier===2||tier===3?'900 10px ':'900 11px ')+'system-ui,sans-serif';
-     ctx.lineWidth=2.2;ctx.strokeStyle='#59367a';ctx.fillStyle='#fff9df';
-     ctx.strokeText(reach.name,p.x,labelY+.6);
-     ctx.fillText(reach.name,p.x,labelY+.6);
+     // Alternate REACH / prize just below this socket, never over a triangle.
+     const alternate=tier>0&&Math.floor(seconds/1.2)%2===1;
+     const title=alternate?REACH_NAMES[tier]:'リーチ';
+     const color=['#008b8d','#df254b','#9226be','#a62a7e'][tier];
+     ctx.save();ctx.font='900 10px SweetReachRounded,system-ui,sans-serif';
+     ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+     ctx.lineWidth=3.4;ctx.strokeStyle='#fff9e7';
+     ctx.strokeText(title,p.x,p.y+26);
+     ctx.lineWidth=.7;ctx.strokeStyle='#6c3d74';
+     ctx.strokeText(title,p.x,p.y+26);
+     ctx.fillStyle=color;ctx.fillText(title,p.x,p.y+26);
+     ctx.restore();
    }
    ctx.restore();
- }
- // Four 4-piece diamond collectors, plus the single final count payout.
+ } // Four 4-piece diamond collectors, plus the single final count payout.
  // This UI is outside the PNG mould so it never obscures the star's digits.
  const collectorPanel=document.createElement('div');
  collectorPanel.className='gp-collector-panel';
@@ -962,6 +931,7 @@ try{
      }
      ctx.restore();
    }
+   drawReachOnNodes(ctx,e,small);
  }
  function drawRaster(e,bet){
    if(!rasterImages.ready)return;
@@ -1022,7 +992,6 @@ try{
          el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
    }
    drawRaster(e,bet);
-   updateGelatoSixReach(e);
    updateCollectorHUD(e,bet);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
@@ -1085,7 +1054,9 @@ try{
  // gameplay RNG or other games' renderers. Six Drop reach uses native CSS.
  setInterval(()=>{
    if(document.hidden||app.paused||!document.body.classList.contains('gelato-active'))return;
-   if(!e.links.size&&(!e.hitVisualTime||![...e.hitVisualTime.values()].some(t=>performance.now()-t<1000)))return;
+   const hasReach=getNodeReachTiers(e).size>0;
+   const recentHit=e.hitVisualTime&&[...e.hitVisualTime.values()].some(t=>performance.now()-t<1000);
+   if(!e.links.size&&!recentHit&&!hasReach)return;
    rasterKey='';
    drawRaster(e,app.bet(0));
  },90);
