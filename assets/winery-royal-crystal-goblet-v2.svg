@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="360" viewBox="0 0 160 180" role="img" aria-label="金細工と宝石彫刻を施した透明クリスタルワイングラス">
+ <defs>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffceb"/><stop offset=".18" stop-color="#ffe9a3"/><stop offset=".4" stop-color="#bf7c38"/><stop offset=".59" stop-color="#fff6d2"/><stop offset=".8" stop-color="#d99c4f"/><stop offset="1" stop-color="#fff5c0"/></linearGradient>
+ <linearGradient id="crystal" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#ffffff" stop-opacity=".48"/><stop offset=".17" stop-color="#bcfaff" stop-opacity=".13"/><stop offset=".48" stop-color="#d6b6ff" stop-opacity=".07"/><stop offset=".75" stop-color="#fff" stop-opacity=".18"/><stop offset=".94" stop-color="#acd8ff" stop-opacity=".26"/><stop offset="1" stop-color="#fff" stop-opacity=".45"/></linearGradient>
+ <linearGradient id="stem" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#b0d7fd" stop-opacity=".6"/><stop offset=".28" stop-color="#faffff" stop-opacity=".96"/><stop offset=".5" stop-color="#dabaf9" stop-opacity=".6"/><stop offset=".71" stop-color="#fdfaff"/><stop offset="1" stop-color="#c4d6f5" stop-opacity=".7"/></linearGradient>
+ <linearGradient id="facet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".6"/><stop offset=".28" stop-color="#bbecfb" stop-opacity=".08"/><stop offset=".7" stop-color="#d5b6ff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity=".5"/></linearGradient>
+ <radialGradient id="gem"><stop stop-color="#fff"/><stop offset=".24" stop-color="#ffdfb8"/><stop offset=".54" stop-color="#cc83f1"/><stop offset="1" stop-color="#5b60c2"/></radialGradient>
+ <filter id="shine" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="1.3" stdDeviation="1.5" flood-color="#7656a7" flood-opacity=".45"/></filter>
+ <path id="bowl" d="M15 18 C16 64 31 105 58 113 Q80 124 102 113 C130 103 144 63 145 18 Z"/>
+ </defs>
+ <g filter="url(#shine)">
+ <path d="M75 113 L75 148 Q80 153 85 148 L85 113" fill="url(#stem)" stroke="url(#gold)" stroke-width="2.6"/>
+ <path d="M75 142 Q62 147 62 154 L98 154 Q98 147 85 142" fill="url(#stem)" stroke="#f9e9ba" stroke-width="1.8"/>
+ <ellipse cx="80" cy="163" rx="47" ry="8.1" fill="url(#stem)" fill-opacity=".86" stroke="url(#gold)" stroke-width="3"/>
+ <ellipse cx="80" cy="159" rx="35" ry="3.4" fill="none" stroke="#fffdf0" stroke-width="1.5" opacity=".8"/>
+ <path d="M46 162 Q80 172 114 162" stroke="#cd95d5" stroke-opacity=".65" stroke-width="2" fill="none"/>
+ <use href="#bowl" fill="url(#crystal)" stroke="#eefcff" stroke-width="3.2" stroke-linejoin="round"/>
+ <path d="M19 23Q21 72 50 101 Q56 108 68 112" stroke="#e4faff" stroke-width="5.5" fill="none" stroke-linecap="round" opacity=".77"/>
+ <path d="M140 24Q136 69 110 101 Q103 109 93 112" stroke="#f2e6ff" stroke-width="5.4" fill="none" opacity=".65"/>
+ <path d="M32 25 L63 106 L80 118 L97 106 L128 25" fill="none" stroke="#fff1ff" stroke-width="1.6" opacity=".62"/>
+ <path d="M27 26 L46 84 L64 111 M133 26 L114 84 L96 111" fill="none" stroke="#e5faff" stroke-width="1.7" opacity=".55"/>
+ <path d="M24 23 L53 64 L63 102 L80 114 L98 102 L108 64 L137 23" fill="none" stroke="#e7ddff" stroke-width="1.6" opacity=".4"/>
+ <path d="M40 67 L56 80 L80 116 L104 80 L120 67 M52 91L80 102L108 91" stroke="#fffdf2" stroke-width="1.3" opacity=".38" fill="none"/>
+ <path d="M60 104 Q80 116 100 104" stroke="#fffce5" stroke-width="2.3" opacity=".75" fill="none"/>
+ <path d="M45 46 Q42 70 53 86" stroke="#ffffff" stroke-width="2" fill="none" opacity=".36"/>
+ <path d="M118 48 Q119 77 105 92" stroke="#fff" stroke-width="2" fill="none" opacity=".4"/>
+ <ellipse cx="80" cy="18.5" rx="65.5" ry="8.5" fill="#f9faff" fill-opacity=".13" stroke="url(#gold)" stroke-width="5.5"/>
+ <ellipse cx="80" cy="18.5" rx="62" ry="5.3" fill="none" stroke="#fffaff" stroke-width="2.2" opacity=".95"/>
+ <ellipse cx="80" cy="18.1" rx="57" ry="2.4" fill="none" stroke="#caa5ed" stroke-width="1.5" opacity=".7"/>
+ <path d="M20 21Q80 8 140 21" stroke="#fffce3" stroke-width="2.6" fill="none"/>
+ <path d="M17.5 22.5 Q20 64 37 88" stroke="url(#gold)" stroke-width="2.5" fill="none" opacity=".8"/>
+ <path d="M142.5 22.5 Q139 64 123 88" stroke="url(#gold)" stroke-width="2.5" fill="none" opacity=".8"/>
+ <path d="M64 111Q80 125 96 111" fill="none" stroke="url(#gold)" stroke-width="3.4"/>
+ <g fill="url(#gold)" stroke="#fffbe3" stroke-width=".5">
+  <path d="M22 25l4-4 4 4-4 4Z"/><path d="M134 25l4-4 4 4-4 4Z"/>
+  <path d="M48 102l3-3 3 3-3 3Z"/><path d="M112 102l3-3 3 3-3 3Z"/>
+ </g>
+ <g transform="translate(80 151)">
+  <path d="M0-12L6-4L0 5L-6-4Z" fill="url(#gem)" stroke="url(#gold)" stroke-width="2.3"/>
+  <path d="M0-12L0 5M-6-4L6-4" stroke="#fff5eb" stroke-width=".85" fill="none"/>
+ </g>
+ <path d="M80 130Q90 136 80 139Q70 136 80 130" fill="#f3e5ff" stroke="url(#gold)" stroke-width="1.3"/>
+ <path d="M38 28Q58 35 80 32Q105 34 125 29" fill="none" stroke="#fff" stroke-width="2" opacity=".42"/>
+ </g>
+ <g fill="#fffdf5"><circle cx="41" cy="28" r="2.4"/><circle cx="119" cy="30" r="2.2"/><circle cx="105" cy="115" r="1.8"/><circle cx="55" cy="111" r="1.8"/><path d="M39 9L40 1L41 9L49 10L41 11L40 19L39 11L31 10Z" opacity=".9"/></g>
+ </svg>
