@@ -306,7 +306,7 @@ try{
  const gpTabLogo=gpTabName.querySelector('.gp-tab-logo-img');
  gpTabLogo.onload=()=>{gpTabLogo.hidden=false;gpTabName.classList.add('gp-has-tab-art');};
  gpTabLogo.onerror=()=>{gpTabLogo.hidden=true;gpTabName.classList.remove('gp-has-tab-art');};
- gpTabLogo.src='assets/gelato-prism-tab-logo-v47.svg?v=47';
+ gpTabLogo.src='assets/gelato-prism-tab-art-v51.webp?v=52';
  slots[1].holder.style.order='0';slots[2].holder.style.order='1';slot.holder.style.order='2';
  const scene=document.createElement('div');scene.className='gp-scene';
  scene.innerHTML='<div class="gp-land" aria-hidden="true"></div>'+
