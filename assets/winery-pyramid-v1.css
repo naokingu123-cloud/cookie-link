@@ -270,3 +270,255 @@ body.winery-active .game{
  border-color:#fff1b5!important;
  box-shadow:0 0 0 2px #b87daf,0 4px #ad6a94,inset 0 0 0 2px #fff8d8!important;
 }
+
+
+/* v54 layout repair: no unnecessary Winery title in the right payout stack.
+   Height reservations give six complete odds rows and a visible TOTAL. */
+body.winery-enabled #panel1 .wp-sidebar{
+ top:.4%!important;bottom:.4%!important;height:99.2%!important;
+ gap:2px!important;
+ padding:3px 3px 4px!important;
+ justify-content:flex-start!important;
+ overflow:hidden!important;
+}
+body.winery-enabled #panel1 .wp-title{display:none!important}
+body.winery-enabled #panel1 .wp-power{
+ flex:0 0 auto!important;
+ gap:2px!important;
+ padding:3px 3px 4px!important;
+ margin:0!important;
+}
+body.winery-enabled #panel1 .wp-power-next{padding:0!important}
+body.winery-enabled #panel1 .wp-boost-numbers{
+ padding:0!important;gap:2px!important;
+}
+body.winery-enabled #panel1 .wp-boost-stage{min-height:15px!important}
+body.winery-enabled #panel1 .wp-boost-number{
+ min-width:16px!important;width:78%!important;max-width:25px!important;
+}
+body.winery-enabled #panel1 .wp-score{
+ display:flex!important;align-items:center!important;
+ justify-content:space-between!important;gap:1px!important;
+ font-size:8px!important;min-height:15px!important;
+}
+body.winery-enabled #panel1 .wp-score strong{
+ font:400 clamp(10px,2.0vw,13px)/1 ElixirNumbers,system-ui,sans-serif!important;
+ white-space:nowrap!important;
+}
+body.winery-enabled #panel1 .wp-sugar-summary{
+ flex:0 0 28px!important;
+ width:28px!important;max-width:28px!important;
+ font:900 6.5px/1.1 system-ui,sans-serif!important;
+ white-space:nowrap!important;
+ color:#fff4b7!important;text-align:center!important;
+}
+body.winery-enabled #panel1 .wp-sugar-summary.is-get{
+ color:#fff597!important;
+ text-shadow:0 0 4px #fffa9d!important;
+}
+body.winery-enabled #panel1 .wp-sidebar{
+ --wp-row-height:19px;
+}
+body.winery-enabled #panel1 .wp-pay-fixed{
+ flex:0 0 var(--wp-row-height)!important;
+ height:var(--wp-row-height)!important;
+ min-height:var(--wp-row-height)!important;
+ position:relative!important;
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) 14px minmax(0,1.05fr)!important;
+ align-items:center!important;
+ padding:0 2px!important;
+}
+body.winery-enabled #panel1 .wp-pay-window{
+ flex:1 1 calc(6 * var(--wp-row-height))!important;
+ height:auto!important;
+ min-height:0!important;
+ max-height:none!important;
+ overflow:hidden!important;
+ margin:0!important;
+}
+body.winery-enabled #panel1 .wp-pay-track{
+ transform:translate3d(0,calc(-1 * var(--wp-row-height) * var(--offset)),0)!important;
+ transition:transform .42s cubic-bezier(.25,.72,.23,1)!important;
+}
+body.winery-enabled #panel1 .wp-pay-row{
+ box-sizing:border-box!important;
+ display:grid!important;
+ grid-template-columns:minmax(0,.85fr) 14px minmax(0,1.3fr)!important;
+ align-items:center!important;
+ height:var(--wp-row-height)!important;
+ min-height:var(--wp-row-height)!important;
+ gap:1px!important;
+ padding:0 2px!important;
+ font-size:8px!important;
+ white-space:nowrap!important;
+}
+body.winery-enabled #panel1 .wp-pay-row span,
+body.winery-enabled #panel1 .wp-pay-fixed span{
+ display:block!important;min-width:0!important;
+ overflow:hidden!important;white-space:nowrap!important;
+ font-weight:900!important;letter-spacing:-.03em!important;
+}
+body.winery-enabled #panel1 .wp-pay-row b,
+body.winery-enabled #panel1 .wp-pay-fixed b{
+ display:block!important;
+ text-align:right!important;
+ white-space:nowrap!important;
+ font:750 clamp(8px,1.33vw,11px)/1.04 ArcadePayout,Georgia,serif!important;
+ letter-spacing:-.04em!important;
+ min-width:0!important;
+}
+body.winery-enabled #panel1 .wp-sugar-mark{
+ display:inline-block!important;
+ width:14px!important;
+ max-width:14px!important;
+ line-height:1!important;
+ text-align:center!important;
+ color:#fff2a6!important;
+ font:900 8px/1 system-ui,sans-serif!important;
+ overflow:visible!important;
+ white-space:nowrap!important;
+ pointer-events:none!important;
+}
+body.winery-enabled #panel1 .wp-sugar-mark.is-get{
+ font-size:5.8px!important;
+ color:#fffde4!important;
+ text-shadow:0 0 4px #fff0a2!important;
+}
+body.winery-enabled #panel1 .wp-mix{
+ min-height:28px!important;max-height:45px!important;
+ flex:0 0 38px!important;
+ padding:2px 1px!important;
+}
+body.winery-enabled #panel1 .wp-mix b{
+ font-size:clamp(13px,2.25vw,20px)!important;
+ line-height:1.03!important;
+}
+body.winery-enabled #panel1 .wp-total{
+ min-height:27px!important;max-height:40px!important;
+ flex:0 0 35px!important;
+ padding:2px 1px!important;
+}
+body.winery-enabled #panel1 .wp-total span,
+body.winery-enabled #panel1 .wp-total small{line-height:1!important}
+body.winery-enabled #panel1 .wp-total b{
+ font-size:clamp(13px,2.25vw,19px)!important;
+ line-height:1.03!important;
+}
+
+/* Separate, clearly labeled initial-board RTP control.
+   It hides automatically after BET/round start and does not overlay glasses. */
+body.winery-enabled #panel1 .wp-rate-panel[hidden]{display:none!important}
+body.winery-enabled #panel1 .wp-rate-panel{
+ position:absolute!important;
+ top:1.5%!important;left:1.1%!important;
+ width:23%!important;max-width:114px!important;
+ z-index:10!important;
+ pointer-events:auto!important;
+ box-sizing:border-box!important;
+ padding:5px 5px 4px!important;
+ border:2px solid #ffebae!important;border-radius:10px!important;
+ background:
+   linear-gradient(150deg,rgba(61,29,100,.96),rgba(138,45,105,.96) 65%,rgba(55,26,93,.97))!important;
+ box-shadow:0 2px 9px #2a165db0,inset 0 0 0 1px #f0b6e599!important;
+ color:#fff8d9!important;
+ display:flex!important;flex-direction:column!important;
+ align-items:stretch!important;gap:2px!important;
+}
+body.winery-enabled #panel1 .wp-rate-panel strong{
+ font:900 clamp(8px,1.35vw,11px)/1.13 system-ui,sans-serif!important;
+ text-align:center!important;
+ color:#ffe6bd!important;
+ text-shadow:0 1px 2px #54184e!important;
+}
+body.winery-enabled #panel1 .wp-rate-panel output{
+ text-align:center!important;
+ font:750 clamp(13px,2.45vw,19px)/1 ArcadePayout,Georgia,serif!important;
+ color:#fff6ae!important;
+ text-shadow:0 0 5px #ffd1a5!important;
+}
+body.winery-enabled #panel1 .wp-rate-range{
+ display:block!important;
+ width:100%!important;
+ height:13px!important;
+ margin:0!important;
+ padding:0!important;
+ accent-color:#ffaade!important;
+ cursor:pointer!important;
+}
+body.winery-enabled #panel1 .wp-rate-ends{
+ display:flex!important;justify-content:space-between!important;
+ font:900 6.4px/1 system-ui,sans-serif!important;
+ color:#fff1d7!important;
+}
+body.winery-enabled #panel1 .wp-rate-panel>small{
+ font:800 7px/1.1 system-ui,sans-serif!important;
+ text-align:center!important;
+ color:#f8f2e8!important;
+}
+/* Uploadable luxury artwork is tried first. If not uploaded, v2 SVG still
+   provides a working fallback instead of a broken or blank scene. */
+body.winery-active #screen{
+ background-image:
+  linear-gradient(180deg,rgba(255,246,226,.11),rgba(127,66,145,.15)),
+  url('winery-kingdom-world-v55.webp?v=55'),
+  url('winery-juice-kingdom-v2.svg?v=2')!important;
+ background-size:cover,cover,cover!important;
+ background-position:center,center,center!important;
+}
+body.winery-active .game{
+ background-image:
+  linear-gradient(180deg,rgba(255,245,229,.1),rgba(199,121,183,.12)),
+  url('winery-kingdom-world-v55.webp?v=55'),
+  url('winery-juice-kingdom-v2.svg?v=2')!important;
+ background-size:cover,cover,cover!important;
+ background-position:center,center,center!important;
+}
+body.winery-enabled #panel1 .wp-scene{
+ background-image:
+  linear-gradient(140deg,rgba(91,21,125,.05),rgba(59,29,92,.1)),
+  url('winery-kingdom-world-v55.webp?v=55'),
+  url('winery-juice-kingdom-v2.svg?v=2')!important;
+ background-size:cover,cover,cover!important;
+ background-position:center,center,center!important;
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-sidebar{
+  --wp-row-height:17px;
+  gap:1px!important;padding:2px 2px 3px!important;
+ }
+ body.winery-enabled #panel1 .wp-power{gap:1px!important;padding:2px!important}
+ body.winery-enabled #panel1 .wp-boost-heading{font-size:9.5px!important}
+ body.winery-enabled #panel1 .wp-boost-caption{font-size:6.5px!important}
+ body.winery-enabled #panel1 .wp-boost-ladder{gap:1px!important}
+ body.winery-enabled #panel1 .wp-boost-stage{
+  font-size:5.5px!important;min-height:12px!important;
+ }
+ body.winery-enabled #panel1 .wp-boost-number{
+  width:79%!important;min-width:13px!important;max-width:23px!important;
+  border-width:1px!important;font-size:11px!important;
+ }
+ body.winery-enabled #panel1 .wp-pay-row,
+ body.winery-enabled #panel1 .wp-pay-fixed{
+  grid-template-columns:minmax(0,.92fr) 11px minmax(0,1.35fr)!important;
+  gap:0!important;padding:0 1px!important;
+  font-size:7.5px!important;
+ }
+ body.winery-enabled #panel1 .wp-sugar-mark{
+  width:11px!important;max-width:11px!important;
+  font-size:7px!important;
+ }
+ body.winery-enabled #panel1 .wp-sugar-mark.is-get{font-size:5.1px!important}
+ body.winery-enabled #panel1 .wp-mix{flex-basis:32px!important;min-height:25px!important}
+ body.winery-enabled #panel1 .wp-total{flex-basis:30px!important;min-height:25px!important}
+ body.winery-enabled #panel1 .wp-mix b{font-size:13px!important}
+ body.winery-enabled #panel1 .wp-total b{font-size:13px!important}
+ body.winery-enabled #panel1 .wp-rate-panel{
+  left:1%!important;top:1%!important;
+  width:22%!important;max-width:100px!important;
+  padding:3px 3px 4px!important;gap:1px!important;
+ }
+ body.winery-enabled #panel1 .wp-rate-panel strong{font-size:7.5px!important}
+ body.winery-enabled #panel1 .wp-rate-panel output{font-size:13px!important}
+ body.winery-enabled #panel1 .wp-rate-panel>small{font-size:6px!important}
+}
