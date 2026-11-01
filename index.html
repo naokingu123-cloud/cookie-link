@@ -385,13 +385,9 @@ Copyright 2016 The Rounded M+ Project Authors.
   else game=game.replace(originalAmberProfile,slopedAmberProfile);
   if(!window.CookieUpgradePatch)throw new Error("Cookie upgrade patch failed to load");
   game=window.CookieUpgradePatch.patch(game);
-  // The landed ball is already removed from Cannon's world and follows
-  // the rotor quaternion for display.  Do not add a new collision sphere to
-  // the rotor: that unnecessarily increases solver work after every hit.
-  const landedPlug='const plug=new C.Sphere(b.radius);b.holdShape=plug;this.rotor.addShape(plug,b.local);this.holds.push(plug);this.rotor.updateBoundingRadius();this.rotor.aabbNeedsUpdate=true;';
-  if(game.split(landedPlug).length!==2)
-    throw new Error('入賞済みボールの軽量化パッチが適用できません');
-  game=game.replace(landedPlug,'/* landed ball: visual-only, no collision shape */');
+  // Pocket balls keep a static collision sphere in the rotor frame.
+  // Their visual positions follow the rotor quaternion, with no individual
+  // post-capture rigid-body simulation. This prevents later balls passing through.
   // The original rare rainbow cookie placement assumes Engine.board[8][8].
   // Gelato uses a 19-point constellation instead; keep the standard
   // rainbow behavior off that slot without touching the 8-ball draw.
