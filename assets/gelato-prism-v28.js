@@ -381,7 +381,7 @@ try{
    gpReachStage.dataset.tier=String(best);
    gpReachStage.hidden=false;
    gpReachStage.querySelector('.gp-reach-name').textContent=
-     ['リーチ','高額リーチ','超高額リーチ','全獲りリーチ'][best];
+     ['リーチ','高額','超高額','全獲り'][best];
    gpReachStage.querySelector('.gp-reach-hint').textContent=
      'チャンス番号 '+numberCount+'個';
  }
