@@ -363,7 +363,6 @@ function install(){
   function selectBoard(group,mini){
     if(currentMode!=='10')return;
     if(group<0||group>2||mini<0||mini>=indexByGame[group].length)return;
-    if(mini>=indexByGame[group].length)return;
     selected[group]=mini;
     refreshLarge(group);
     window.sweets12FrameScheduler?.selectionChanged();
@@ -543,7 +542,7 @@ function install(){
   function attachImmediate(){
     // Always initialize the visible menu, even if currently in 3-board mode.
     makeMenu();
-    if(mode==='10')applyMode('12');
+    if(mode==='10')applyMode('10');
     else{document.body.classList.remove('twelve-mini-tabs-v16');currentMode='3';}
     savedSet();
     scheduleUI(app);
