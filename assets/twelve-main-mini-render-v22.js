@@ -9,7 +9,7 @@
 (()=>{
 'use strict';
 try{
- const NUM_PIXELS=112;
+ const NUM_PIXELS=80;
  const views=new Map();
  const imageCache=new Map();
  const cheapCanvas=(width,height,cssWidth,cssHeight,modelScale)=>{
@@ -54,14 +54,14 @@ try{
    if(group===0){
      // Original Cookie Link miniature(s) renders real cookie PNGs,
      // numbers, sugar, cracks and falling motion from cookieMiniEvent.
-     const c=cheapCanvas(160,160,0,0,.25);
+     const c=cheapCanvas(96,96,0,0,96/640);
      base.cookieMiniSurface=c.canvas;
      base.cookieMiniScalePatched=true;
      base.cookieMiniEventVersion=null;
      return {base,mode:'cookie',stamp:0,failed:false,phase:''};
    }
    if(group===1){
-     const size=112,ht=approx(size,520/430),factor=(size/430)/2;
+     const size=40,ht=approx(size,520/430),factor=(size/430)/2;
      const surface=cheapCanvas(size,ht,860,1040,factor);
      const board=cheapCanvas(size,ht,860,1040,factor);
      surface.canvas.getBoundingClientRect=()=>({width:430,height:520,left:0,top:0,right:430,bottom:520});
@@ -83,7 +83,7 @@ try{
      // Helpers query this canvas for the mini's own 7-segment display.
      return {base,mode:'canyon',stamp:0,failed:false,phase:''};
    }
-   const size=112;
+   const size=80;
    const surface=cheapCanvas(size,size,0,0,(size/320)/2);
    base.candyCanvas=surface.canvas;
    base.candyCtx=surface.context;
@@ -135,7 +135,8 @@ try{
    const moving=new Map((fx?.phase==='canyonFall'?(fx.moves||[]):[]).map(v=>[v.id,v]));
    const shifted=fx?.phase==='canyonScroll'?(fx.advanced||0)*p:0;
    g.save();
-   g.setTransform(1,0,0,1,0,0);
+   const scale=g.canvas.width/48;
+   g.setTransform(scale,0,0,scale,0,0);
    g.clearRect(0,0,48,48);
    g.fillStyle='#302026';g.fillRect(0,0,48,48);
    g.beginPath();g.rect(left,top,cw*7,ch*12);g.clip();
@@ -239,6 +240,11 @@ try{
    app.bet=function(i){return i===offscreenId?data.bet:prevBet.call(this,i);};
    try{
      if(group===0){
+       // Legacy mini painting uses 48px logical coordinates; the user
+       // visible buffer is now 40px. Scale before drawing, never crop.
+       item.ctx.save();
+       const k=item.ctx.canvas.width/48;
+       item.ctx.setTransform(k,0,0,k,0,0);
        const phase=v.event?.phase||e.phase||'waiting';
        const evId=v.event;
        if(view.lastEvent!==evId||view.phase!==phase){
@@ -265,6 +271,7 @@ try{
          item.ctx.clearRect(0,0,48,48);
          item.ctx.drawImage(v.miniCanvas,0,0,48,48);
        }
+       item.ctx.restore();
      }else if(group===1){
        const g=item.ctx;
        if(app.phase==='ready'){
