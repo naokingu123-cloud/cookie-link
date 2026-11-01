@@ -1151,7 +1151,7 @@ try{
    if(cards.length===3)panel.append(cards[1],cards[2],cards[0]);
  };
  document.body.classList.add('gelato-enabled');
- syncGelatoOdds();drawGelato();select(0);scheduleUI(app);
+ syncGelatoOdds();drawGelato();select(1);scheduleUI(app);
  window.GelatoPrism={
    get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
