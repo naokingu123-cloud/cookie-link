@@ -15,6 +15,7 @@ try{
  const SIZE=112,CACHE_LIMIT=288;
  const views=new Map(),candyTiles=new Map(),backdrops=new Map();
  let assetEpoch=0,painted=0,skipped=0,failed=0;
+ let originalPngReady=!!sixCandyPngState.loaded;
  const artSrc={
   land:'assets/sixdrop-candy-kingdom-20261031.webp?v=1',
   side:'assets/sixdrop_glass_sideframe.png?v=8',
@@ -223,6 +224,15 @@ try{
  }
  function smartPaint(item,data){
   if(!data?.engine)return false;
+  // The main artwork switches from temporary vectors to the user's
+  // approved PNG asynchronously. Drop *all* composite fallback sprites
+  // when that source becomes ready so none stay simplified forever.
+  const pngReady=!!sixCandyPngState.loaded;
+  if(pngReady!==originalPngReady){
+    originalPngReady=pngReady;
+    candyTiles.clear();
+    assetEpoch++;
+  }
   if(item.game===0)return oldPaint(item,data); // Cookie main-art renderer
   const e=data.engine,id=data.id;
   let view=views.get(id);
