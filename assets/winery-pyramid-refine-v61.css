@@ -1,0 +1,111 @@
+/* Winery Pyramid v61 — fill the reclaimed main field, no duplicated title/HUD,
+ * real raised juice levels and numeric medallions below each glass bowl. */
+body.winery-active .game>.festival-top,
+body.winery-active .game>.statusline{
+  display:none!important;visibility:hidden!important;height:0!important;
+  min-height:0!important;margin:0!important;padding:0!important;
+}
+body.winery-active .game{
+  display:flex!important;flex-direction:column!important;
+}
+body.winery-active .game>.field{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  flex:1 1 auto!important;height:auto!important;min-height:0!important;
+  margin:0!important;padding:0!important;gap:0!important;
+}
+body.winery-active .game>.field>#panels,
+body.winery-active #panels{
+  display:block!important;width:100%!important;height:100%!important;
+  min-height:0!important;max-height:none!important;
+}
+body.winery-enabled #panel1.wp-panel{
+  display:block!important;position:relative!important;
+  width:100%!important;height:100%!important;min-height:0!important;
+}
+body.winery-enabled #panel1.wp-panel[hidden]{display:none!important}
+body.winery-enabled #panel1 .wp-scene{
+  inset:0!important;width:100%!important;height:100%!important;
+  box-sizing:border-box!important;border-radius:10px!important;
+}
+body.winery-enabled #panel1 .wp-upper-hud,
+body.winery-enabled #panel1 .wp-raster-logo,
+body.winery-enabled #panel1 .wp-title{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-canvas,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-liquid-layer{
+  position:absolute!important;inset:0!important;left:0!important;top:0!important;
+  display:block!important;width:100%!important;height:100%!important;
+  object-fit:fill!important;background:transparent!important;
+  border:0!important;filter:none!important;pointer-events:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-liquid-layer{z-index:3!important}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-canvas{z-index:4!important}
+/* Preserve a bright photographic river when the cleaned raster artwork is present.
+ * The SVG stage (which has no baked-in text) remains the self-contained fallback.
+ */
+body.winery-enabled #panel1 .wp-scene.wp-clean-ready{
+  background:
+   linear-gradient(165deg,rgba(255,248,231,.015),rgba(245,112,151,.02)),
+   url('winery-juice-world-clean-v61.webp?v=61') center/100% 100% no-repeat!important;
+  border:3px solid #ffe2a0!important;
+  box-shadow:inset 0 0 0 2px #ffedc8,0 0 12px #f18eafa0!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-clean-ready::before,
+body.winery-enabled #panel1 .wp-scene.wp-clean-ready::after{
+  display:none!important;content:none!important;
+}
+/* Remove old photo screenshot masks, logo shields and three upper panels.
+ * The actual game artwork is now behind a separate transparent 21-glass layer.
+ */
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-rate-panel{
+  position:absolute!important;top:1.2%!important;left:1.2%!important;
+  width:24%!important;max-width:140px!important;min-width:0!important;
+  padding:5px 5px 4px!important;z-index:10!important;
+  border:2px solid #fff0b6!important;border-radius:11px!important;
+  background:
+   radial-gradient(ellipse at 50% -15%,#fff0c26a,transparent 67%),
+   linear-gradient(145deg,#b85090ee,#7c3979ee)!important;
+  box-shadow:inset 0 0 0 1px #ffdaaf92,0 2px 7px #5b225ba1!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar{
+  position:absolute!important;top:.5%!important;right:.5%!important;bottom:.5%!important;
+  height:99%!important;width:24.3%!important;
+  display:grid!important;align-content:stretch!important;align-items:stretch!important;
+  grid-template-rows:auto minmax(12px,auto) var(--wp-row-height) minmax(0,1fr) 29px 29px!important;
+  padding:5px 5px!important;gap:2px!important;box-sizing:border-box!important;
+  overflow:hidden!important;z-index:10!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-power{
+  max-height:116px!important;min-height:0!important;overflow:hidden!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-pay-window{
+  flex:none!important;height:100%!important;min-height:0!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-mix,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-total{
+  flex:none!important;height:29px!important;min-height:0!important;max-height:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-message{
+  z-index:12!important;top:3%!important;left:27%!important;width:45%!important;
+}
+/* Existing v60 photo border stays above real payouts, not over the glass tower. */
+body.winery-enabled #panel1 .wp-scene.wp-clean-ready .wp-sidebar::before{
+  background-image:url('winery-payout-ornate-v60.webp?v=60')!important;
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-sidebar{
+  --wp-row-height:16px!important;
+  grid-template-rows:auto minmax(11px,auto) var(--wp-row-height) minmax(0,1fr) 25px 25px!important;
+  gap:1px!important;padding:2px 3px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-mix,
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-total{height:25px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-rate-panel{
+  top:.8%!important;left:.8%!important;
+  width:23.5%!important;max-width:none!important;
+  padding:2px!important;border-width:1px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-rate-panel strong{font-size:7px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-premium-ready .wp-rate-panel output{font-size:12px!important}
+}
