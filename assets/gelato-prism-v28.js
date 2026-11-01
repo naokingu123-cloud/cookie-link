@@ -485,7 +485,9 @@ try{
      const pour=e.pouring,order=pour?.faces.indexOf(f.id)??-1;
      if(pour&&order>=0){
        const n=pour.faces.length;
-       const amount=Math.max(0,Math.min(1,(pour.progress*n-order)/Math.min(1.8,n)));
+       const phaseWidth=n===1?.6:Math.min(.55,Math.max(.14,1.8/n));
+       const startAt=n===1?0:order/(n-1)*(1-phaseWidth);
+       const amount=Math.max(0,Math.min(1,(pour.progress-startAt)/phaseWidth));
        if(amount<=0)continue;
        if(amount<1){
          ctx.save();
