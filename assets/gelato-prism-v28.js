@@ -1,4 +1,4 @@
-/* GELATO PRISM v46 - six-row animated payout and crystal reach effects */
+/* GELATO PRISM v47 - per-number reach, 0-to-count animated payouts, luxury logo */
 (()=>{
 'use strict';
 try{
@@ -303,7 +303,7 @@ try{
  const gpTabLogo=gpTabName.querySelector('.gp-tab-logo-img');
  gpTabLogo.onload=()=>{gpTabLogo.hidden=false;gpTabName.classList.add('gp-has-tab-art');};
  gpTabLogo.onerror=()=>{gpTabLogo.hidden=true;gpTabName.classList.remove('gp-has-tab-art');};
- gpTabLogo.src='assets/gelato-prism-tab-logo-v45.svg?v=45';
+ gpTabLogo.src='assets/gelato-prism-tab-logo-v47.svg?v=47';
  slots[1].holder.style.order='0';slots[2].holder.style.order='1';slot.holder.style.order='2';
  const scene=document.createElement('div');scene.className='gp-scene';
  scene.innerHTML='<div class="gp-land" aria-hidden="true"></div>'+
@@ -340,53 +340,78 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
- // Reach status on the actual star, matching the other games' four tiers.
- const gpReachStage=document.createElement('div');
- gpReachStage.className='gp-reach-stage';
- gpReachStage.hidden=true;
- gpReachStage.innerHTML='<span class="gp-reach-spark" aria-hidden="true">✦</span>'+
-   '<strong class="gp-reach-name"></strong>'+
-   '<small class="gp-reach-hint"></small>';
- rasterMold.appendChild(gpReachStage);
- let gpReachKey='';
- function updateReachBanner(engine){
-   if(!engine||engine.kind!=='gelato')return;
-   const key=[engine.cycle,engine.phase,engine.processed,engine.accepted,
-     engine.filled.size,engine.totalHundredths,engine.running,
-     engine.allComplete,[...engine.pendingDraws].join(',')].join('/');
-   if(key===gpReachKey)return;
-   gpReachKey=key;
-   if(engine.allComplete&&engine.processed>=8){
-     gpReachStage.hidden=false;gpReachStage.dataset.tier='3';
-     gpReachStage.querySelector('.gp-reach-name').textContent='全獲り！';
-     gpReachStage.querySelector('.gp-reach-hint').textContent='24パネル完成';
-     return;
+ // Reach uses the exact numbered sockets (same four-tier language as Candy),
+ // never an overlay banner. Each number predicts the next ball independently.
+ const REACH_NAMES=['リーチ','高額','超高額','全獲り'];
+ const REACH_COLORS=['#4dd5ff','#ffe077','#ff70c9','#e8faff'];
+ const REACH_RAINBOW=['#ff6ca5','#ffd66f','#83f79b','#61dfff','#a982ff'];
+ let nodeReachCacheKey='',nodeReachCache=new Map();
+ function getNodeReachTiers(engine){
+   if(!engine||engine.kind!=='gelato')return new Map();
+   const key=[engine.cycle,engine.version,engine.phase,engine.processed,
+     engine.accepted,engine.busy,engine.running,engine.filled.size,
+     engine.totalHundredths,engine.hits.size,engine.seen.size,
+     engine.pendingDraws.size].join('/');
+   if(key===nodeReachCacheKey)return nodeReachCache;
+   nodeReachCacheKey=key;
+   const result=new Map();
+   if(engine.running&&engine.processed>=1&&engine.processed<8&&
+      engine.accepted===engine.processed&&!engine.busy){
+     for(let i=0;i<engine.nodeNumbers.length;i++){
+       if(engine.hits.has(i))continue;
+       const number=engine.nodeNumbers[i];
+       if(engine.seen.has(number)||engine.pendingDraws.has(number))continue;
+       const p=engine.predict(number);
+       if(!(p.gain>0))continue;
+       const tier=p.gain>=10000?3:p.gain>=1000?2:p.gain>=300?1:0;
+       result.set(i,{tier,number,gain:p.gain,name:REACH_NAMES[tier]});
+     }
    }
-   if(!engine.running||engine.processed<1||engine.processed>=8||
-     engine.accepted!==engine.processed||engine.busy){
-     gpReachStage.hidden=true;return;
-   }
-   let best=-1,numberCount=0;
-   for(const number of engine.nodeNumbers){
-     if(engine.seen.has(number)||engine.pendingDraws.has(number))continue;
-     const pred=engine.predict(number);
-     if(pred.gain<=0)continue;
-     // ALL CLEAR is the 24-panel tier. Other reaches are classified by the
-     // incremental prize available on exactly one further drawn ball.
-     let tier=pred.gain>=10000?3:pred.gain>=1000?2:pred.gain>=300?1:0;
-     if(tier>best){best=tier;numberCount=1}
-     else if(tier===best)numberCount++;
-   }
-   if(best<0){gpReachStage.hidden=true;return;}
-   gpReachStage.dataset.tier=String(best);
-   gpReachStage.hidden=false;
-   gpReachStage.querySelector('.gp-reach-name').textContent=
-     ['リーチ','高額','超高額','全獲り'][best];
-   gpReachStage.querySelector('.gp-reach-hint').textContent=
-     'チャンス番号 '+numberCount+'個';
+   nodeReachCache=result;
+   return result;
  }
-
-
+ function drawReachOnNodes(ctx,e,small){
+   const tiers=getNodeReachTiers(e);
+   if(!tiers.size)return;
+   const time=(typeof performance!=='undefined'?performance.now():Date.now());
+   const phase=time/750;
+   ctx.save();
+   ctx.setTransform((small?MINI_PX:MAIN_PX)/500,0,0,
+       (small?MINI_PX:MAIN_PX)/500,0,0);
+   ctx.textAlign='center';ctx.textBaseline='middle';
+   for(const [index,reach] of tiers){
+     const p=rasterCoords[index],tier=reach.tier;
+     const hue=REACH_RAINBOW[(Math.floor(phase*2)+index)%REACH_RAINBOW.length];
+     const tint=tier===3?hue:REACH_COLORS[tier];
+     const bob=.5+.5*Math.sin(phase*3+index);
+     ctx.globalAlpha=.84+.16*bob;
+     ctx.shadowColor=tint;ctx.shadowBlur=small?4:(9+tier*3);
+     ctx.lineWidth=tier===3?3.6:2.9;ctx.strokeStyle=tint;
+     ctx.beginPath();ctx.arc(p.x,p.y,19.8+bob*1.4,0,Math.PI*2);
+     ctx.stroke();
+     if(tier>=2){
+       ctx.lineWidth=1.4;
+       ctx.beginPath();ctx.arc(p.x,p.y,23.5,.35+phase,Math.PI*1.32+phase);
+       ctx.stroke();
+     }
+     ctx.shadowBlur=0;
+     if(small)continue;
+     // Floating individual badge above each numbered circle, not global text.
+     const badgeWidth=tier===0?35:tier===1?31:45;
+     const labelY=p.y-32;
+     ctx.fillStyle=tier===3?'#6f36ab':tier===2?'#9e2679':tier===1?'#9d5826':'#226daa';
+     ctx.beginPath();
+     const rx=p.x-badgeWidth/2,ry=labelY-8;
+     ctx.roundRect(rx,ry,badgeWidth,16,4);
+     ctx.fill();
+     ctx.lineWidth=1.4;ctx.strokeStyle=tint;ctx.stroke();
+     ctx.font=(tier===2||tier===3?'900 10px ':'900 11px ')+'system-ui,sans-serif';
+     ctx.lineWidth=2.2;ctx.strokeStyle='#59367a';ctx.fillStyle='#fff9df';
+     ctx.strokeText(reach.name,p.x,labelY+.6);
+     ctx.fillText(reach.name,p.x,labelY+.6);
+   }
+   ctx.restore();
+ }
  // Four 4-piece diamond collectors, plus the single final count payout.
  // This UI is outside the PNG mould so it never obscures the star's digits.
  const collectorPanel=document.createElement('div');
@@ -662,11 +687,12 @@ try{
      ctx.setTransform(MAIN_SCALE,0,0,MAIN_SCALE,0,0);
      ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
      ctx.strokeStyle='#fff1c8';ctx.fillStyle='#65328a';ctx.lineWidth=4.3;
-     ctx.font='700 21px ArcadePayout,Georgia,serif';
+     // Same Anima-style numerical face as the other Sweets Link games.
+     ctx.font='400 23px ElixirNumbers,system-ui,sans-serif';
      for(let idx=0;idx<rasterCoords.length;idx++){
        const p=rasterCoords[idx],n=String(e.nodeNumbers[idx]);
        // Enlarge the original circles slightly, without moving the exact nodes.
-       ctx.beginPath();ctx.arc(p.x,p.y,14.6,0,Math.PI*2);
+       ctx.beginPath();ctx.arc(p.x,p.y,16.3,0,Math.PI*2);
        ctx.fillStyle='#d8edffa8';ctx.strokeStyle='#edfdff';ctx.lineWidth=2.1;
        ctx.fill();ctx.stroke();
        ctx.fillStyle='#56317f';ctx.strokeStyle='#fff6da';ctx.lineWidth=3.8;
@@ -795,11 +821,13 @@ try{
    }
    ctx.restore();
    if(!small)ctx.drawImage(rasterImages.numbers,0,0);
+   drawReachOnNodes(ctx,e,small);
  }
  function drawRaster(e,bet){
    if(!rasterImages.ready)return;
    const key=[e.cycle,e.version,e.hits.size,e.links.size,e.filled.size,
-     e.pattern?.id,e.lastNode,[...e.pendingDraws].join(','),e.sugarAwarded,bet,
+     e.processed,e.accepted,e.busy,e.phase,e.pattern?.id,e.lastNode,
+     [...e.pendingDraws].join(','),e.sugarAwarded,bet,
      e.pouring?Math.floor(e.pouring.progress*50):-1].join('/');
    if(key===rasterKey)return;
    rasterKey=key;
@@ -814,6 +842,10 @@ try{
      if(label&&label.textContent!==String(v))label.textContent=String(v);
      el.classList.toggle('is-hit',e.hits.has(i));
      el.classList.toggle('is-pending',e.pendingDraws.has(v));
+     const reach=getNodeReachTiers(e).get(i);
+     el.classList.toggle('is-reach',!!reach);
+     if(reach)el.dataset.reachTier=String(reach.tier);
+     else delete el.dataset.reachTier;
    }
    for(const el of svg.querySelectorAll('[data-edge]'))el.classList.toggle('is-lit',e.links.has(+el.dataset.edge));
    for(const el of svg.querySelectorAll('[data-face]')){
@@ -851,7 +883,6 @@ try{
    }
    drawRaster(e,bet);
    updateCollectorHUD(e,bet);
-   updateReachBanner(e);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
  let flashTimer=null;
@@ -995,7 +1026,7 @@ try{
    patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,grades:p.grades.slice()})),
    prizes:{countMultiplier:COUNT_MULT.slice(),colorMultipliers:COLLECTOR_MULT.slice()},
    payoutWindowFor,
-   get reach(){return {tier:gpReachStage.dataset.tier,label:gpReachStage.querySelector('.gp-reach-name').textContent,hidden:gpReachStage.hidden};},
+   get reach(){return [...getNodeReachTiers(e)].map(([index,r])=>({index,...r}));},
    engine:e,faces:FACES
  };
  console.info('[GelatoPrism] ready: 19 nodes / 24 faces / 8 draws');
