@@ -224,7 +224,7 @@ try{
    // Only ongoing refill, falling or clearing animation spends frames.
    if(!changed&&!animation)return true;
    const costPenalty=Math.min(300,Math.max(0,(view.paintCost||0)-8)*12);
-   const cadence=app.paused?650:(activeGroup?100:220)+costPenalty;
+   const cadence=app.paused?650:(activeGroup?70:130)+costPenalty;
    if(!changed&&now-view.stamp<cadence)return true;
    view.stamp=now;view.lastKey=key;view.lastPaintEvent=data.event;
    view.lastPaintFx=e.fx;
