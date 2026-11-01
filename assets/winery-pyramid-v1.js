@@ -1,4 +1,4 @@
-/* Winery Pyramid v59: premium SVG river, separate glass/juice canvases, preserved 8-ball game logic. */
+/* Winery Pyramid v60: photo-quality raster sweet-juice scene + separate liquid, crystal, payout layers. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -42,6 +42,10 @@ S.panel.appendChild(scene);
  '<strong class="wp-hud-main wp-hud-volume">1杯</strong>'+
  '<div class="wp-hud-flavor"><i class="wp-hud-swatch"></i><span class="wp-hud-flavor-name">りんご</span></div></div>'
  );
+const rasterLogo=document.createElement('div');
+rasterLogo.className='wp-raster-logo';
+rasterLogo.innerHTML='<b>ワイナリー<br>ピラミッド</b>';
+scene.appendChild(rasterLogo);
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
  // The background is an independent SVG behind both transparent canvases.
  // Liquids/flows go into the lower canvas; gold-rimmed faceted glasses, badge
@@ -318,13 +322,24 @@ function bottle(x,p,flavor,volume,t){
    3) separate ornate SVG crystal-glass artwork, hit numbers and sparkles
    4) native live HUD/payout DOM. No baked screenshot numbers or white wipes. */
 const DRAW_W=1672,DRAW_H=941;
-const premiumPos=i=>{const {r,c}=K.CELLS[i];return {x:790+(c-r/2)*142,y:170+r*120};};
+const premiumPos=i=>{const {r,c}=K.CELLS[i];return rasterReady?{x:817+(c-r/2)*141,y:188+r*106}:{x:790+(c-r/2)*142,y:170+r*120};};
 const worldArt=new Image();
 let worldReady=false;
 worldArt.decoding='async';
 worldArt.onload=()=>{worldReady=true;miniKey='';lastPaint=0;queueFrame();};
 worldArt.onerror=()=>console.warn('[Winery] juice river background image could not be decoded');
 worldArt.src='assets/winery-juice-river-luxury-v59.svg?v=59';
+let rasterReady=false,rasterCupReady=false;
+const rasterBackground=new Image();
+rasterBackground.decoding='async';
+rasterBackground.onload=()=>{rasterReady=true;scene.classList.add('wp-raster-ready');miniKey='';uiKey='';lastPaint=0;queueFrame();};
+rasterBackground.onerror=()=>console.info('[Winery v60] Photo stage awaiting assets/winery-juice-world-v60.webp. v59 art remains usable.');
+rasterBackground.src='assets/winery-juice-world-v60.webp?v=60';
+const rasterCup=new Image();
+rasterCup.decoding='async';
+rasterCup.onload=()=>{rasterCupReady=true;scene.classList.add('wp-raster-cup-ready');miniKey='';lastPaint=0;queueFrame();};
+rasterCup.onerror=()=>console.info('[Winery v60] Crystal coupe photo not uploaded yet; retaining vector glass.');
+rasterCup.src='assets/winery-crystal-coupe-v60.png?v=60';
  // The already-published v56 artwork is a gold-reflection texture source,
  // not the scene background. It never controls numbers or actual liquid fills.
  const photoHighlights=new Image();
@@ -341,8 +356,18 @@ function premiumClip(x,cx,cy){
  x.closePath();
 }
 function premiumJuice(x,i,g,t){
- if(!(g?.volume>0))return;
  const {x:cx,y:cy}=premiumPos(i);
+ if(rasterReady){
+  // Make the baked example liquid visually disappear even for an empty cup.
+  // Real liquid, its meniscus and bubbles are rendered into this same clip.
+  x.save();premiumClip(x,cx,cy);x.clip();
+  const clearGlass=x.createLinearGradient(cx-55,cy,cx+55,cy+82);
+  clearGlass.addColorStop(0,'#fffaf2');clearGlass.addColorStop(.5,'#fff0f5');
+  clearGlass.addColorStop(1,'#ffe8d2');
+  x.fillStyle=clearGlass;x.globalAlpha=.91;x.fillRect(cx-60,cy,120,95);
+  x.restore();
+ }
+ if(!(g?.volume>0))return;
  x.save();premiumClip(x,cx,cy);x.clip();
  let filled=0;
  for(let k=0;k<g.layers.length;k++){
@@ -439,7 +464,10 @@ function premiumGlass(x,i,g,t){
  }
  // The full transparent SVG includes gold crown/rim, facets, ruby jewel, stem
  // and ornate gold foot. Painting it over the fluid preserves those details.
- if(glassArt.complete&&glassArt.naturalWidth){
+ if(rasterCupReady&&rasterCup.naturalWidth){
+  x.save();x.shadowColor='#fff0bc';x.shadowBlur=full?12:7;
+  x.drawImage(rasterCup,cx-73,cy-10,146,130);x.restore();
+ }else if(glassArt.complete&&glassArt.naturalWidth){
   x.save();x.shadowColor='#fff0bc';x.shadowBlur=full?10:5;
   x.drawImage(glassArt,cx-70,cy-16,140,158);x.restore();
  }else{
@@ -457,7 +485,7 @@ function premiumGlass(x,i,g,t){
  // The photo is clipped to the silhouette of the coupe, stem and foot. Its
  // backdrop, adjacent glasses, printed numbers and scenery are excluded.
  // Screen blending removes dark photographic tones and reveals live juice below.
- if(photoReady){
+ if(photoReady&&!rasterCupReady){
   const {r,c}=K.CELLS[i],oldX=692+(c-r/2)*150,oldY=38+r*133;
   x.save();x.beginPath();
   x.moveTo(cx-65,cy+4);
@@ -536,7 +564,8 @@ function paint(target,time,small=false){
  const xx=target.getContext('2d'),W=target.width,H=target.height;
  xx.setTransform(1,0,0,1,0,0);xx.clearRect(0,0,W,H);
  if(small){
-  if(worldReady)xx.drawImage(worldArt,0,0,W,H);
+  if(rasterReady)xx.drawImage(rasterBackground,0,0,W,H);
+  else if(worldReady)xx.drawImage(worldArt,0,0,W,H);
   else xx.drawImage(bg,0,0,W,H);
  }
  const fx=engine.fx;
@@ -677,7 +706,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:59,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:60,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
-console.info('[Winery Pyramid v59] 21 premium crystal glasses, animated juice on separate layer, bundled fruit-river SVG, live HUD and payout');
+console.info('[Winery Pyramid v60] layered high-resolution candy river, independent live juice, transparent photo coupe and gilded payout frame');
 })();
