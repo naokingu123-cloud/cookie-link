@@ -1,4 +1,4 @@
-/* Winery Pyramid integration v1; evaluated in the original Sweets Link scope. */
+/* Winery Pyramid v2: juice river illustrations, crystal glasses, boost HUD and MIX multiplier. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,17 +9,24 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=1';document.head.appendChild(style);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=2';document.head.appendChild(style);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<aside class="wp-sidebar"><div class="wp-title">ワイナリー<br>ピラミッド</div>'+
- '<div class="wp-power"><small>次の注入量</small><b>1杯</b></div>'+
+ '<div class="wp-power">'+
+   '<div class="wp-boost-heading">✦ 注入量UP ✦</div>'+
+   '<div class="wp-power-next"><small>次の注入量</small><b>1杯</b></div>'+
+   '<div class="wp-boost-ladder">'+[1,2,4,8,16].map(n=>
+     '<span class="wp-boost-stage" data-power="'+n+'">'+n+'杯</span>').join('')+'</div>'+
+   '<div class="wp-boost-caption">HITで次から2倍に！</div>'+
+   '<div class="wp-boost-numbers">'+Array.from({length:4},(_,i)=>
+     '<span class="wp-boost-number" data-index="'+i+'">?</span>').join('')+'</div></div>'+
  '<div class="wp-score"><span>満タン</span><strong>0 / 21</strong></div>'+
  '<div class="wp-pay-fixed"><span>21杯 全満</span><b>0WIN</b></div>'+
  '<div class="wp-pay-window"><div class="wp-pay-track">'+Array.from({length:21},(_,i)=>20-i).map(n=>'<div class="wp-pay-row" data-full="'+n+'"><span>'+n+'杯</span><b>0WIN</b></div>').join('')+'</div></div>'+
- '<div class="wp-mix"><span>ミックス <i>0</i>杯</span><b>0</b><small>WIN</small></div>'+
+ '<div class="wp-mix"><span>MIX <i>0</i>杯</span><b>×1.0倍</b></div>'+
  '<div class="wp-total"><span>TOTAL</span><b>0</b><small>WIN</small></div>'+
- '<div class="wp-guide">満タンから左右へ分配<br>2層以上の満タンで<br>1杯ごとに＋0.1倍</div></aside>'+
+ '</aside>'+
  '<div class="wp-message" hidden></div>';
 S.panel.appendChild(scene);
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
@@ -97,6 +104,16 @@ function background(x){
  }
 }
 const bg=document.createElement('canvas');bg.width=780;bg.height=900;const bx=bg.getContext('2d');bx.scale(1.5,1.5);background(bx);
+ const stageArt=new Image(),glassArt=new Image();
+ stageArt.onload=()=>{
+  bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bg.width,bg.height);
+  bx.drawImage(stageArt,0,0,bg.width,bg.height);miniKey='';queueFrame();
+ };
+ stageArt.onerror=()=>console.warn('[Winery] board art unavailable; fallback retained');
+ stageArt.src='assets/winery-juice-river-stage-v2.svg?v=2';
+ glassArt.onload=()=>{miniKey='';queueFrame();};
+ glassArt.onerror=()=>console.warn('[Winery] glass art unavailable; fallback retained');
+ glassArt.src='assets/winery-royal-crystal-goblet-v2.svg?v=2';
 function text(x,s,px,py,size=16,color='#fff3c9',font='system-ui'){
  x.save();x.textAlign='center';x.textBaseline='middle';x.font='900 '+size+'px '+font;x.lineJoin='round';x.strokeStyle='#432c55';x.lineWidth=3;x.strokeText(s,px,py);x.fillStyle=color;x.fillText(s,px,py);x.restore();
 }
@@ -120,12 +137,18 @@ function glass(x,i,g,t,activePour){
  }
  x.restore();
  x.globalAlpha=1;
+ if(glassArt.complete&&glassArt.naturalWidth){
+   if(full){x.shadowColor='#fff1b3';x.shadowBlur=10;}
+   x.drawImage(glassArt,cx-35,cy-7,70,85);x.shadowBlur=0;
+   if(full){x.strokeStyle='#fff0b4';x.lineWidth=2;x.beginPath();x.ellipse(cx,cy,29.4,5.2,0,0,Math.PI*2);x.stroke();}
+ }else{
  if(full){x.shadowColor='#ffe5a2';x.shadowBlur=10;}
  bowl(x,cx,cy);x.strokeStyle=full?'#fff2ad':'#e8faffbb';x.lineWidth=full?2.3:1.5;x.stroke();x.shadowBlur=0;
  x.beginPath();x.ellipse(cx,cy,29,5,0,0,Math.PI*2);x.strokeStyle='#efffffdf';x.lineWidth=1.8;x.stroke();
  x.strokeStyle='#e7faffb9';x.lineWidth=3;x.beginPath();x.moveTo(cx,cy+47);x.lineTo(cx,cy+63);x.stroke();
  x.fillStyle='#d9f4ff38';x.strokeStyle='#e9faffc9';x.lineWidth=1.2;x.beginPath();x.ellipse(cx,cy+65,19,4,0,0,Math.PI*2);x.fill();x.stroke();
  x.strokeStyle='#ffffff9c';x.lineWidth=2.3;x.beginPath();x.moveTo(cx-22,cy+8);x.quadraticCurveTo(cx-22,cy+28,cx-12,cy+37);x.stroke();
+ }
  if(typeof drawElixirNumber==='function')drawElixirNumber(x,engine.nodeNumbers[i],cx,cy+22,24,'#fff8d9','#543161',3.3);
  else text(x,String(engine.nodeNumbers[i]),cx,cy+23,22,'#fff8d9','ElixirNumbers,system-ui');
  if(full){text(x,'FULL',cx,cy+43,9,'#fff0a3');if(new Set(g.layers.map(l=>l.flavor)).size>1)text(x,'MIX',cx,cy+55,7,'#eeffc2');}
@@ -168,27 +191,29 @@ function paint(target,time,small=false){
   x.strokeStyle=color;x.lineWidth=1.8;x.beginPath();x.ellipse(a.x,a.y+22,32,26,0,0,7);x.stroke();
   text(x,['リーチ','高額','超高額','全満'][p.tier],a.x,a.y-12,8,color);
  }
- // The four unused numbers all advance the global amount one step.
- const start=151;
- for(let j=0;j<4;j++){
-  const n=engine.boostNumbers[j],cx=start+j*73,hit=engine.seen.has(n);
-  x.fillStyle=hit?'#b6e29f':'#58336d';x.strokeStyle='#ffe1ac';x.lineWidth=1.5;x.beginPath();x.roundRect(cx-30,561,60,30,9);x.fill();x.stroke();
-  if(typeof drawElixirNumber==='function')drawElixirNumber(x,n,cx-7,574,18,hit?'#30584c':'#fff4cf','#573564',2);
-  else text(x,String(n),cx-7,574,16);
-  text(x,'↑',cx+17,574,12,hit?'#497444':'#ffe3a7');
- }
- text(x,'注入量UP',78,575,12,'#fff1c6');
+ // BOOST numbers now appear in the upper payout cabinet.
  if(!app.bet(1)){x.fillStyle='#201d40aa';x.fillRect(30,60,460,490);text(x,'BETしてください',260,300,30);}
 }
 function updateHUD(){
  const bet=app.bet(1),key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,engine.fullCount,engine.mixCount,bet].join('/');
  if(key===uiKey)return;uiKey=key;
- scene.querySelector('.wp-power b').textContent=engine.power+'杯';scene.querySelector('.wp-score strong').textContent=engine.fullCount+' / 21';
+ scene.querySelector('.wp-power-next b').textContent=engine.power+'杯';
+ scene.querySelector('.wp-score strong').textContent=engine.fullCount+' / 21';
+ for(const node of scene.querySelectorAll('.wp-boost-stage')){
+   const level=+node.dataset.power;
+   node.classList.toggle('current',level===engine.power);
+   node.classList.toggle('earned',level<=engine.power);
+ }
+ [...scene.querySelectorAll('.wp-boost-number')].forEach((node,i)=>{
+   const n=engine.boostNumbers[i];
+   node.textContent=String(n);node.classList.toggle('hit',engine.seen.has(n));
+   node.setAttribute('aria-label',n+'番：'+(engine.seen.has(n)?'獲得':'注入量UP待機'));
+ });
  scene.querySelector('.wp-pay-fixed b').textContent=money(bet,100)+'WIN';
  for(const row of scene.querySelectorAll('[data-full]')){const n=+row.dataset.full;row.querySelector('b').textContent=money(bet,K.PAY[n])+'WIN';row.classList.toggle('current',n===engine.fullCount);}
  scene.querySelector('.wp-pay-fixed').classList.toggle('current',engine.fullCount===21);
  const top=Math.max(5,Math.min(20,engine.fullCount+3));scene.querySelector('.wp-pay-track').style.setProperty('--offset',20-top);
- scene.querySelector('.wp-mix i').textContent=engine.mixCount;scene.querySelector('.wp-mix b').textContent=money(bet,engine.mixMultiplier);
+ scene.querySelector('.wp-mix i').textContent=engine.mixCount;scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
 }
 function paintMini(){
@@ -239,7 +264,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
  const winery=rows.find(r=>r.dataset.winery==='1'||r.querySelector('.result-game-name')?.textContent.includes('チョコレート'));
  if(winery){
   winery.dataset.winery='1';const title=winery.querySelector('.result-game-name');if(title)title.innerHTML='ワイナリーピラミッド <small>'+num(a.locked[1])+' BET</small>';
-  const detail=winery.querySelector('.result-game-details');if(detail)detail.innerHTML='<span>満タン '+engine.fullCount+'/21</span><span>MIX '+engine.mixCount+'杯 ＋'+money(a.locked[1],engine.mixMultiplier)+'WIN</span>';
+  const detail=winery.querySelector('.result-game-details');if(detail)detail.innerHTML='<span>満タン '+engine.fullCount+'/21</span><span>MIX '+engine.mixCount+'杯 ×'+engine.mixMultiplier.toFixed(1)+'倍</span>';
  }
  const candy=rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes('シックス'));
  const gelato=rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes('ジェラート'));
@@ -247,7 +272,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:1,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:2,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid] 21 glasses / 4 boosts / 8 draws; Six Drop + Gelato + Winery installed');
 })();
