@@ -24,7 +24,12 @@ scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="
 S.panel.appendChild(scene);
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
 const header=S.tab.querySelector('.tab-game-name');
-header.innerHTML='<span class="wp-tab-logo"><span class="wp-logo-fruit">✦</span><b>ワイナリー<br>ピラミッド</b><small>WINERY PYRAMID</small></span>';
+header.innerHTML='<span class="wp-tab-logo"><img class="wp-tab-logo-img" src="assets/winery-pyramid-tab-art-v51.webp?v=52" alt="ワイナリーピラミッド" decoding="async"><b class="wp-fallback">ワイナリー<br>ピラミッド</b></span>';
+const wineryLogo=header.querySelector('.wp-tab-logo');
+const wineryImage=wineryLogo.querySelector('.wp-tab-logo-img');
+wineryImage.onload=()=>wineryLogo.classList.add('is-art-ready');
+wineryImage.onerror=()=>{wineryImage.hidden=true;wineryLogo.classList.remove('is-art-ready');};
+if(wineryImage.complete&&wineryImage.naturalWidth)wineryLogo.classList.add('is-art-ready');
 header.setAttribute('aria-label','ワイナリーピラミッド');S.tab.setAttribute('aria-label','ワイナリーピラミッド');
 S.panel.classList.add('wp-panel');S.holder.classList.add('wp-slot');S.tab.classList.add('wp-tab');
 S.holder.classList.remove('choco-slot');S.tab.classList.remove('choco-tab');S.panel.classList.remove('choco-panel');
