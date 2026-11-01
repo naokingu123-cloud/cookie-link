@@ -322,3 +322,26 @@ body.gelato-active .gp-board-svg .gp-face-border{
  body.gelato-active #panel0 .gp-head{width:29%!important}
  body.gelato-active #panel0 .gp-bonus-crest{width:29%!important}
 }
+
+/* v33 — exact-diagram mould clearance: move up without clipping vertices. */
+body.gelato-active #panel0 .gp-mold{
+ top:-5px!important;
+ right:2%!important;
+ bottom:18px!important;
+ left:2%!important;
+ width:96%!important;
+ height:auto!important;
+ min-height:0!important;
+ transform:none!important;
+ display:grid!important;
+ place-items:center!important;
+}
+body.gelato-active #panel0 .gp-board-svg{
+ display:block!important;
+ width:100%!important;
+ height:100%!important;
+ max-width:100%!important;
+ max-height:100%!important;
+ overflow:visible!important;
+ object-fit:contain!important;
+}
