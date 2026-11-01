@@ -1574,3 +1574,16 @@ body.gelato-active #panel0 .gp-reach-stage[data-tier="3"]{
  body.gelato-active #panel0 .gp-payout-track{transition:none!important}
  body.gelato-active #panel0 .gp-mold .gp-reach-stage{animation:none!important}
 }
+
+/* v46 parity: numbers on the canvas and vector fallback use the same font. */
+body.gelato-active #panel0 .gp-board-svg .gp-node .gp-digit,
+body.gelato-enabled .gp-tab .gp-board-svg .gp-node .gp-digit{
+ font-family:ArcadePayout,Georgia,serif!important;
+ font-weight:700!important;
+ paint-order:stroke fill!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-meta small,
+body.gelato-active #panel0 .gp-pay-panel-n{
+ font-family:ArcadePayout,system-ui,sans-serif!important;
+ font-variant-numeric:tabular-nums!important;
+}
