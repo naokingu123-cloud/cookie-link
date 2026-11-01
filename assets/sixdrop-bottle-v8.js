@@ -49,3 +49,28 @@
   console.info('[SixDropV11] native 1.2x geometry and board cache refreshed',sixLayout(SIX_ROWS));
  }catch(error){console.error('[SixDropV8]',error);}
 })();
+
+/* Winery v1 boot: direct eval intentionally retains the shared game scope.
+ * Never replace a game during an active round. All assets are fetched first.
+ */
+(()=>{
+ 'use strict';
+ if(window.__wineryBootV1)return;
+ window.__wineryBootV1=true;
+ Promise.resolve().then(async()=>{
+  const read=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.text();};
+  const [core,ui]=await Promise.all([
+   read('assets/winery-pyramid-core-v1.js?v=1'),
+   read('assets/winery-pyramid-v1.js?v=1')
+  ]);
+  const install=()=>{
+   if(window.WineryPyramid?.installed)return;
+   if(app.phase!=='ready'){setTimeout(install,500);return;}
+   try{
+    eval(core+'\n//# sourceURL=winery-pyramid-core-v1.js');
+    eval(ui+'\n//# sourceURL=winery-pyramid-v1.js');
+   }catch(error){console.error('[WineryPyramid] install failed',error);window.__wineryInstallError=String(error);}
+  };
+  install();
+ }).catch(error=>{console.error('[WineryPyramid] load failed',error);window.__wineryInstallError=String(error);});
+})();
