@@ -254,7 +254,7 @@ try{
    return new Promise((resolve,reject)=>{
      img.onload=()=>img.naturalWidth>0?resolve():reject(new Error(name));
      img.onerror=()=>reject(new Error(name));
-     img.src='assets/'+name+'?v=36';
+     img.src='assets/'+name+'?v=36-'+Date.now();
    });
  }
  Promise.all([
