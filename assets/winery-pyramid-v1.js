@@ -325,6 +325,14 @@ worldArt.decoding='async';
 worldArt.onload=()=>{worldReady=true;miniKey='';lastPaint=0;queueFrame();};
 worldArt.onerror=()=>console.warn('[Winery] juice river background image could not be decoded');
 worldArt.src='assets/winery-juice-river-luxury-v59.svg?v=59';
+ // The already-published v56 artwork is a gold-reflection texture source,
+ // not the scene background. It never controls numbers or actual liquid fills.
+ const photoHighlights=new Image();
+ let photoReady=false;
+ photoHighlights.decoding='async';
+ photoHighlights.onload=()=>{photoReady=true;miniKey='';lastPaint=0;queueFrame();};
+ photoHighlights.onerror=()=>{photoReady=false;};
+ photoHighlights.src='assets/winery-luxury-screen-v56.webp?v=56';
 function premiumClip(x,cx,cy){
  x.beginPath();
  x.moveTo(cx-54,cy+8);
@@ -444,6 +452,25 @@ function premiumGlass(x,i,g,t){
   x.strokeStyle='#ffe5a0';x.lineWidth=4;x.stroke();
   x.strokeStyle='#fff4cf';x.lineWidth=5;x.beginPath();x.moveTo(cx,cy+80);x.lineTo(cx,cy+120);x.stroke();
   x.beginPath();x.ellipse(cx,cy+126,42,6,0,0,7);x.strokeStyle='#ffeab8';x.lineWidth=4;x.stroke();
+ }
+ // Bring back the SPECULAR highlights of the beloved original deluxe glasses.
+ // The photo is clipped to the silhouette of the coupe, stem and foot. Its
+ // backdrop, adjacent glasses, printed numbers and scenery are excluded.
+ // Screen blending removes dark photographic tones and reveals live juice below.
+ if(photoReady){
+  const {r,c}=K.CELLS[i],oldX=692+(c-r/2)*150,oldY=38+r*133;
+  x.save();x.beginPath();
+  x.moveTo(cx-65,cy+4);
+  x.bezierCurveTo(cx-62,cy+46,cx-31,cy+79,cx,cy+91);
+  x.bezierCurveTo(cx+31,cy+79,cx+62,cy+46,cx+65,cy+4);
+  x.closePath();
+  x.moveTo(cx+8,cy+78);x.lineTo(cx+8,cy+117);
+  x.lineTo(cx-8,cy+117);x.lineTo(cx-8,cy+78);x.closePath();
+  x.moveTo(cx+43,cy+125);
+  x.ellipse(cx,cy+125,43,7,0,0,Math.PI*2);x.closePath();
+  x.clip();x.globalAlpha=.44;x.globalCompositeOperation='screen';
+  x.drawImage(photoHighlights,oldX-70,oldY-12,140,158,cx-70,cy-16,140,158);
+  x.restore();
  }
  // Live number displayed on an enamel medallion, never taken from the artwork.
  const badge=x.createRadialGradient(cx-7,cy+27,1,cx,cy+39,27);
