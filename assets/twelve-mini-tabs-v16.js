@@ -135,7 +135,7 @@ try{
     sugar.title='シュガー未獲得';
     head.append(badge,phase,sugar);
     const canvas=document.createElement('canvas');
-    canvas.width=game===2?112:48;canvas.height=game===2?112:48;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
+    canvas.width=game===2?80:40;canvas.height=game===2?80:40;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
     const chosenLabel=makeEl('span','mini-four-selected-label','選択中');
     chosenLabel.setAttribute('aria-hidden','true');
     const reach=makeEl('span','mini-four-reach');
@@ -237,6 +237,11 @@ try{
   const exactDrawn=!skipCanvas&&
     window.sweets12ThumbnailRenderer?.(item,data)===true;
   if(!skipCanvas&&!exactDrawn){
+   // All legacy fallback paint coordinates use 48x48 logical units.
+   // Scale them into the selected 40px/80px physical backing store.
+   ctx.save();
+   const sx=ctx.canvas.width/48,sy=ctx.canvas.height/48;
+   ctx.setTransform(sx,0,0,sy,0,0);
    const w=48,h=48;
    ctx.clearRect(0,0,w,h);
    ctx.fillStyle=game===0?'#372a2c':game===1?'#34252e':'#d8b8ee';
@@ -313,6 +318,7 @@ try{
     }
     ctx.restore();
    }
+   ctx.restore();
   }
   item.phase.textContent=String(data.status||'準備').slice(0,5);
   item.cell.classList.toggle('is-disabled-mini',!enabled);
