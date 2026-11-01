@@ -1,4 +1,4 @@
-/* GELATO PRISM v41 - round reset, calibrated payout, cached text and gelato pour */
+/* GELATO PRISM v42 - 16 symmetric board patterns, color quartets, final panel-count payouts */
 (()=>{
 'use strict';
 try{
@@ -58,8 +58,30 @@ try{
  // ≈2.63 rare and ≈5.05 common face hits per round.
  // Face awards ≈88% of BET; full-clear bonus adds ≈0.5%
  // leaving limited room for Wonder Sugar-related value.
- ranked.forEach((f,i)=>{f.tier=Math.min(3,Math.floor(i/6));f.reward=[19,17,9,7][f.tier];});
- const BONUS=3500,flavors=['#ff3b82','#ffc224','#38db80','#00bfe9','#536cf7','#bb55f7'];
+ ranked.forEach((f,i)=>{f.tier=Math.min(3,Math.floor(i/6));f.reward=0;});
+ // Colors: 0=水色, 1=緑, 2=黄色, 3=赤, 4=紫.  All patterns are mirror-symmetric.
+ const GRADE_COLORS=['#36d6fc','#34d77b','#ffd63c','#f64a6d','#ac66f2'];
+ const GRADE_NAMES=['水色','緑','黄色','赤','紫'];
+ const COLLECTOR_MULT=[0,1,3,5,10];
+ const COUNT_MULT=[0,0,0,0,0,0,0,0,0,0,0.2,0.4,0.6,0.8,1,1.5,2,2.5,3,4,5,7.5,10,20,100];
+ const PATTERNS=[{"id":"A","name":"氷晶の王冠","weight":5,"grades":[3,3,4,2,1,0,1,4,0,2,0,0,0,2,0,0,0,1,1,2,4,4,3,3]},{"id":"B","name":"ミントの花飾り","weight":5,"grades":[4,4,4,3,2,0,2,4,0,3,0,0,1,1,1,0,0,0,0,1,3,3,2,2]},{"id":"C","name":"双翼のソルベ","weight":6,"grades":[4,4,2,4,0,0,0,2,0,4,0,0,1,3,1,1,1,2,2,3,0,0,3,3]},{"id":"D","name":"スノーリボン","weight":6,"grades":[2,2,2,4,0,3,0,2,3,4,0,0,0,3,0,0,0,1,1,3,4,4,1,1]},{"id":"E","name":"フロストの花輪","weight":6,"grades":[1,1,3,4,1,0,1,3,0,4,0,0,0,4,0,0,0,3,3,4,2,2,2,2]},{"id":"F","name":"アクア・プリズム","weight":6,"grades":[3,3,1,2,0,1,0,1,1,2,2,2,0,4,0,0,0,0,0,4,3,3,4,4]},{"id":"G","name":"彩氷のしずく","weight":7,"grades":[0,0,3,1,2,0,2,3,0,1,1,1,0,4,0,3,3,0,0,4,2,2,4,4]},{"id":"H","name":"六花のオーロラ","weight":7,"grades":[3,3,4,0,0,2,0,4,2,0,0,0,1,4,1,1,1,0,0,4,2,2,3,3]},{"id":"I","name":"レインボーの羽","weight":9,"grades":[0,0,2,3,0,0,0,2,0,3,0,0,1,1,1,2,2,3,3,1,4,4,4,4]},{"id":"J","name":"ミント・クラウン","weight":9,"grades":[4,4,1,4,3,0,3,1,0,4,1,1,2,2,2,0,0,0,0,2,3,3,0,0]},{"id":"K","name":"雪花のガーデン","weight":9,"grades":[4,4,4,3,0,1,0,4,1,3,1,1,0,2,0,0,0,3,3,2,0,0,2,2]},{"id":"L","name":"ダブルジュエル","weight":9,"grades":[4,4,3,4,0,2,0,3,2,4,0,0,0,1,0,3,3,0,0,1,1,1,2,2]},{"id":"M","name":"クリスタル・ローズ","weight":8,"grades":[2,2,2,3,1,0,1,2,0,3,3,3,0,0,0,1,1,0,0,0,4,4,4,4]},{"id":"N","name":"ルビーフローラ","weight":5,"grades":[2,2,4,1,0,0,0,4,0,1,1,1,0,3,0,0,0,4,4,3,2,2,3,3]},{"id":"O","name":"アメジストの宝冠","weight":2,"grades":[4,4,0,2,3,1,3,0,1,2,1,1,0,3,0,2,2,0,0,3,0,0,4,4]},{"id":"P","name":"虹色の流星","weight":1,"grades":[4,4,0,3,0,0,0,0,0,3,3,3,1,2,1,0,0,1,1,2,2,2,4,4]}];
+ const BONUS=10000,flavors=['#ff3b82','#ffc224','#38db80','#00bfe9','#536cf7','#bb55f7'];
+ function selectPattern(random){
+   const roll=random()*100;let total=0;
+   for(const pattern of PATTERNS){total+=pattern.weight;if(roll<total)return pattern;}
+   return PATTERNS[PATTERNS.length-1];
+ }
+ function evaluatePrize(filled,grades){
+   const counts=[0,0,0,0,0];
+   for(const id of filled)counts[grades[id]]++;
+   const collectorMult=counts.reduce((sum,n,color)=>sum+(color>0&&n===4?COLLECTOR_MULT[color]:0),0);
+   const countMult=COUNT_MULT[filled.size]||0;
+   return {counts,collectorMult,countMult,hundredths:Math.round((collectorMult+countMult)*100)};
+ }
+ // Sanity: 24/24 pays the final count tier only, plus each of four collectors.
+ const testFull=evaluatePrize(new Set(Array.from({length:24},(_,i)=>i)),PATTERNS[0].grades);
+ if(testFull.hundredths!==11900||testFull.counts.join(',')!=='8,4,4,4,4')
+   throw Error('Gelato full-clear/collector payout table invalid');
  function link(hits){
    const result=new Set();
    for(const line of LINES){
@@ -114,6 +136,10 @@ try{
      let nums=Array.from({length:25},(_,i)=>i+1);
      for(let i=24;i>0;i--){const j=Math.floor(this.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
      this.nodeNumbers=nums.slice(0,19);this.hits=new Set();this.links=new Set();
+     this.pattern=selectPattern(this.random);
+     this.faceGrades=this.pattern.grades.slice();
+     this.collectorCounts=[0,0,0,0,0];
+     this.collectorMult=0;this.countMult=0;
      this.filled=new Set();this.sugarFace=Math.floor(this.random()*24);
      this.sugarAwarded=false;this.allComplete=false;
    }
@@ -154,10 +180,11 @@ try{
      const pos=this.nodeNumbers.indexOf(number);
      if(pos<0||this.hits.has(pos))return {number,gain:0,total:this.totalHundredths,tier:0};
      const next=new Set(this.hits);next.add(pos);
-     const state=this.stateFor(next),fresh=[...state.faces].filter(i=>!this.filled.has(i));
-     let gain=fresh.reduce((n,i)=>n+FACES[i].reward,0);
-     if(this.filled.size+fresh.length===24&&!this.allComplete)gain+=BONUS;
-     return {number,gain,total:this.totalHundredths+gain,tier:gain>=BONUS?3:gain>=170?2:gain>=85?1:0};
+     const state=this.stateFor(next),prospective=new Set(this.filled);
+     for(const id of state.faces)prospective.add(id);
+     const prize=evaluatePrize(prospective,this.faceGrades);
+     const gain=Math.max(0,prize.hundredths-this.totalHundredths);
+     return {number,gain,total:prize.hundredths,tier:gain>=10000?3:gain>=500?2:gain>=100?1:0};
    }
    async drain(){
      if(this.busy)return;
@@ -175,21 +202,29 @@ try{
            const next=this.stateFor(this.hits);
            const newFaces=[...next.faces].filter(i=>!this.filled.has(i));
            this.links=next.edges;
-           // Awards apply only to the current eight-ball round.
+           // Only acquired triangles count; cumulative bonus is recalculated,
+           // never stacked at each milestone.  The award is settled at round end.
+           const previousTotal=this.totalHundredths;
            for(const id of newFaces)this.filled.add(id);
            this.lastFilled=newFaces;
            if(newFaces.length){
-             let gain=newFaces.reduce((n,i)=>n+FACES[i].reward,0);
              this.roundCleared+=newFaces.length;
              if(newFaces.includes(this.sugarFace)&&!this.sugarAwarded){
                this.sugarAwarded=true;this.wonderCollected=true;this.roundSteps++;
                const step={id:this.version*100+this.processed+1,value:Math.max(1,this.roundBet),tier:wonderTier(this.roundBet)};
                this.wonderToken=step;this.emit('stepcollect',{steps:[step]});this.emit('sugaraward',{steps:[step]});
              }
-             if(this.filled.size===24&&!this.allComplete){this.allComplete=true;this.allClears++;gain+=BONUS;}
-             this.totalHundredths+=gain;this.lastGain=gain;
+             if(this.filled.size===24&&!this.allComplete){this.allComplete=true;this.allClears++;}
+             const prize=evaluatePrize(this.filled,this.faceGrades);
+             this.collectorCounts=prize.counts;
+             this.collectorMult=prize.collectorMult;
+             this.countMult=prize.countMult;
+             this.totalHundredths=prize.hundredths;
+             const gain=this.totalHundredths-previousTotal;
+             this.lastGain=gain;
              this.maxLink=Math.max(this.maxLink,this.filled.size);
-             this.emit('gelatoFill',{number,newFaces,gain,full:this.allComplete});
+             this.emit('gelatoFill',{number,newFaces,gain,full:this.allComplete,
+               collectors:prize.counts.slice(),countMultiplier:prize.countMult});
              if(!await this.wait(660,token))return;
            }
          }
