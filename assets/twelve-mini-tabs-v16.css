@@ -766,3 +766,27 @@ body.twelve-mini-tabs-v16 #tabs .mini-four-pay-unit{
   font-size:5.3px!important;
   line-height:12px!important;
 }
+
+/* v27: ten-board mode uses four cookies + three Canyon + three Drop.
+   In each three-game tab the third board sits centered on row two.
+   Keep the previous mini tile size, reach alignment and WIN bubble. */
+body.twelve-live-active #tabs .mini-four-grid.three-mini{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
+  gap:2px!important;
+}
+body.twelve-live-active #tabs .mini-four-grid.three-mini .mini-four-cell:last-child{
+  grid-column:1 / -1!important;
+  grid-row:2!important;
+  justify-self:center!important;
+  width:calc(50% - 1px)!important;
+  max-width:calc(50% - 1px)!important;
+}
+body.twelve-live-active #tabs .mini-four-grid.three-mini .mini-four-cell:nth-child(1){
+  grid-column:1!important;
+  grid-row:1!important;
+}
+body.twelve-live-active #tabs .mini-four-grid.three-mini .mini-four-cell:nth-child(2){
+  grid-column:2!important;
+  grid-row:1!important;
+}
