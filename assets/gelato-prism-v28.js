@@ -337,16 +337,46 @@ try{
  }
  const rasterMold=scene.querySelector('.gp-mold');
  rasterMold.appendChild(rasterMain);mini.appendChild(rasterMini);
+
+ // Four 4-piece diamond collectors, plus the single final count payout.
+ // This UI is outside the PNG mould so it never obscures the star's digits.
+ const collectorPanel=document.createElement('div');
+ collectorPanel.className='gp-collector-panel';
+ collectorPanel.innerHTML='<div class="gp-collector-title">ジェラート収集</div>'+
+   [1,2,3,4].map(g=>'<div class="gp-collector-row" data-grade="'+g+'">'+
+     '<span class="gp-diamond-wrap"><span class="gp-diamond"></span></span>'+
+     '<span class="gp-collector-meta"><b>'+GRADE_NAMES[g]+'</b><small class="gp-collected-n">0 / 4</small></span>'+
+     '<strong>'+COLLECTOR_MULT[g].toFixed(1)+'倍</strong></div>').join('')+
+   '<div class="gp-total-tally"><b>獲得 <span class="gp-tally-n">0</span> / 24</b>'+
+   '<small>最終枚数 <span class="gp-tally-m">0.0倍</span></small></div>'+
+   '<div class="gp-pattern-label"></div>';
+ scene.appendChild(collectorPanel);
+ let collectorKey='';
+ function updateCollectorHUD(e){
+   if(!e?.faceGrades)return;
+   const key=[e.cycle,e.filled.size,e.totalHundredths,e.pattern?.id].join('/');
+   if(key===collectorKey)return;
+   collectorKey=key;
+   const counts=e.collectorCounts||evaluatePrize(e.filled,e.faceGrades).counts;
+   for(const row of collectorPanel.querySelectorAll('[data-grade]')){
+     const grade=+row.dataset.grade,count=counts[grade],color=GRADE_COLORS[grade];
+     row.querySelector('.gp-collected-n').textContent=count+' / 4';
+     const diamond=row.querySelector('.gp-diamond');
+     diamond.style.background='conic-gradient(from -45deg,'+
+       Array.from({length:4},(_,k)=>(k<count?color:'#dbe9f2')+' '+(k*90)+'deg '+((k+1)*90)+'deg').join(',')+')';
+     row.classList.toggle('gp-complete',count===4);
+   }
+   collectorPanel.querySelector('.gp-tally-n').textContent=e.filled.size;
+   collectorPanel.querySelector('.gp-tally-m').textContent=(e.countMult||0).toFixed(1)+'倍';
+   collectorPanel.querySelector('.gp-pattern-label').textContent=
+     (e.pattern?.id||'')+' '+(e.pattern?.name||'');
+ }
+
  // Bonus emblem is now layered over the playable board, not a cropped header.
  const gpBoardBonus=document.createElement('div');
  gpBoardBonus.className='gp-board-bonus';
- gpBoardBonus.innerHTML='<img class="gp-board-bonus-art" alt="RAINBOW GELATO BONUS" hidden>'+
-  '<span class="gp-board-bonus-fallback">✦ RAINBOW<br>GELATO BONUS ✦<small>全埋めボーナス</small></span>';
+ gpBoardBonus.innerHTML='<span class="gp-board-bonus-fallback">✦ 全獲り ✦<small>24枚で100倍</small></span>';
  rasterMold.appendChild(gpBoardBonus);
- const gpBonusArt=gpBoardBonus.querySelector('.gp-board-bonus-art');
- gpBonusArt.onload=()=>{gpBonusArt.hidden=false;gpBoardBonus.classList.add('gp-has-art');};
- gpBonusArt.onerror=()=>{gpBonusArt.hidden=true;gpBoardBonus.classList.remove('gp-has-art');};
- gpBonusArt.src='assets/gelato-prism-bonus-v39.png?v=39-'+Date.now();
  const rasterImages={
    board:new Image(),fill:new Image(),trim:new Image(),ice:new Image(),ready:false,iceReady:false,iceCache:null,exactV40:false,
    base:null,trimCache:null,faceTiles:[],labels:null,numbers:null,
@@ -374,6 +404,8 @@ try{
    rasterImages.base=scaledAsset(rasterImages.board);
    rasterImages.trimCache=scaledAsset(rasterImages.trim);
    const fillSheet=scaledAsset(rasterImages.fill);
+   // Cache all five tinted liquid textures once per face.  The source PNG
+   // supplies highlights/gelato texture; CSS/SVG are not used to fake it.
    rasterImages.faceTiles=FACES.map(f=>{
      const verts=f.nodes.map(i=>rasterCoords[i]);
      const px=verts.map(p=>p.x*MAIN_SCALE),py=verts.map(p=>p.y*MAIN_SCALE);
@@ -381,12 +413,24 @@ try{
      const top=Math.max(0,Math.floor(Math.min(...py))-2);
      const right=Math.min(MAIN_PX,Math.ceil(Math.max(...px))+2);
      const bottom=Math.min(MAIN_PX,Math.ceil(Math.max(...py))+2);
-     const tile=offscreen(right-left,bottom-top),ctx=tile.getContext('2d');
-     ctx.beginPath();ctx.moveTo(px[0]-left,py[0]-top);
-     for(let k=1;k<3;k++)ctx.lineTo(px[k]-left,py[k]-top);
-     ctx.closePath();ctx.clip();
-     ctx.drawImage(fillSheet,-left,-top);
-     return {image:tile,x:left,y:top,width:right-left,height:bottom-top};
+     const images=GRADE_COLORS.map((color,grade)=>{
+       const tile=offscreen(right-left,bottom-top),ctx=tile.getContext('2d');
+       ctx.beginPath();ctx.moveTo(px[0]-left,py[0]-top);
+       for(let k=1;k<3;k++)ctx.lineTo(px[k]-left,py[k]-top);
+       ctx.closePath();ctx.clip();
+       ctx.drawImage(fillSheet,-left,-top);
+       // Re-hue the generated gelato photo while keeping its glossy lighting.
+       ctx.globalCompositeOperation='color';
+       ctx.fillStyle=color;ctx.fillRect(0,0,tile.width,tile.height);
+       ctx.globalCompositeOperation='source-over';
+       const light=ctx.createLinearGradient(0,0,tile.width,tile.height);
+       light.addColorStop(0,'rgba(255,255,255,.34)');
+       light.addColorStop(.48,'rgba(255,255,255,0)');
+       light.addColorStop(1,'rgba(30,15,70,.23)');
+       ctx.fillStyle=light;ctx.fillRect(0,0,tile.width,tile.height);
+       return tile;
+     });
+     return {images,x:left,y:top,width:right-left,height:bottom-top};
    });
    // Cache node and WIN labels independent of hit animations and filled state.
    rasterImages.labels=offscreen(MAIN_PX);
@@ -438,22 +482,11 @@ try{
    console.info('[GelatoPrism] v40 snowflake PNG assets pending; preserving v37 renderer');
  });
  function updateStaticLabels(e,bet){
+   // Individual triangles do not pay.  No per-cell "0WIN" labels.
    if(rasterImages.labelsBet!==bet){
      rasterImages.labelsBet=bet;
      const c=rasterImages.labels,ctx=c.getContext('2d');
      ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);
-     ctx.setTransform(MAIN_SCALE,0,0,MAIN_SCALE,0,0);
-     ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
-     for(const f of FACES){
-       const x=f.nodes.reduce((n,i)=>n+rasterCoords[i].x,0)/3;
-       const y=f.nodes.reduce((n,i)=>n+rasterCoords[i].y,0)/3;
-       const payout=num(medalWin(bet,f.reward));
-       ctx.strokeStyle='#fff9e9';ctx.fillStyle='#6d2d60';ctx.lineWidth=2.8;
-       ctx.font='1000 13px system-ui,sans-serif';
-       ctx.strokeText(payout,x,y-4,41);ctx.fillText(payout,x,y-4,41);
-       ctx.font='1000 9px system-ui,sans-serif';
-       ctx.strokeText('WIN',x,y+10,32);ctx.fillText('WIN',x,y+10,32);
-     }
    }
    const key=e.nodeNumbers.join(',');
    if(rasterImages.numbersKey!==key){
@@ -513,28 +546,35 @@ try{
    ctx.setTransform(1,0,0,1,0,0);
    ctx.clearRect(0,0,size,size);
    ctx.drawImage(rasterImages.base,0,0,size,size);
+   // All 24 colors are visible from the start.  Captured cells glow
+   // brighter; during the bucket pour they progressively brighten upward.
    for(const f of FACES){
-     if(!e.filled.has(f.id))continue;
      const t=rasterImages.faceTiles[f.id];
-     // Newly awarded gelato rises from the bottom of its crystal cavity.
+     const texture=t.images[e.faceGrades[f.id]];
+     ctx.globalAlpha=.64;
+     ctx.drawImage(texture,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+     if(!e.filled.has(f.id))continue;
      const pour=e.pouring,order=pour?.faces.indexOf(f.id)??-1;
+     let amount=1;
      if(pour&&order>=0){
        const n=pour.faces.length;
        const phaseWidth=n===1?.6:Math.min(.55,Math.max(.14,1.8/n));
        const startAt=n===1?0:order/(n-1)*(1-phaseWidth);
-       const amount=Math.max(0,Math.min(1,(pour.progress-startAt)/phaseWidth));
-       if(amount<=0)continue;
-       if(amount<1){
-         ctx.save();
-         ctx.beginPath();
-         ctx.rect(t.x*scale,t.y*scale+t.height*scale*(1-amount),
-           t.width*scale,t.height*scale*amount);
-         ctx.clip();
-       }
-       ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
-       if(amount<1)ctx.restore();
-     }else ctx.drawImage(t.image,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+       amount=Math.max(0,Math.min(1,(pour.progress-startAt)/phaseWidth));
+     }
+     if(amount<=0)continue;
+     ctx.save();
+     if(amount<1){
+       ctx.beginPath();
+       ctx.rect(t.x*scale,t.y*scale+t.height*scale*(1-amount),
+         t.width*scale,t.height*scale*amount);
+       ctx.clip();
+     }
+     ctx.globalAlpha=1;
+     ctx.drawImage(texture,t.x*scale,t.y*scale,t.width*scale,t.height*scale);
+     ctx.restore();
    }
+   ctx.globalAlpha=1;
    ctx.drawImage(rasterImages.trimCache,0,0,size,size);
    if(rasterImages.iceReady&&!rasterImages.exactV40)ctx.drawImage(rasterImages.iceCache,0,0,size,size);
    if(!small&&e.pouring&&e.pouring.progress<1)drawIceBucket(ctx,e.pouring);
@@ -574,7 +614,7 @@ try{
  function drawRaster(e,bet){
    if(!rasterImages.ready)return;
    const key=[e.cycle,e.version,e.hits.size,e.links.size,e.filled.size,
-     e.lastNode,[...e.pendingDraws].join(','),e.sugarAwarded,bet,
+     e.pattern?.id,e.lastNode,[...e.pendingDraws].join(','),e.sugarAwarded,bet,
      e.pouring?Math.floor(e.pouring.progress*50):-1].join('/');
    if(key===rasterKey)return;
    rasterKey=key;
@@ -596,6 +636,13 @@ try{
      el.classList.toggle('is-filled',e.filled.has(id));
      el.classList.toggle('is-new',e.lastFilled.includes(id));
      el.classList.toggle('is-sugar',id===e.sugarFace&&!e.sugarAwarded);
+     const faceColor=GRADE_COLORS[e.faceGrades[id]];
+     const blank=el.querySelector('.gp-blank');
+     if(blank)blank.setAttribute('fill',faceColor);
+     const gelato=el.querySelector('.gp-ice polygon');
+     if(gelato)gelato.setAttribute('fill',faceColor);
+     const valueLabel=el.querySelector('.gp-face-value');
+     if(valueLabel)valueLabel.textContent='';
    }
  }
  let lastGeometryKey='';
@@ -604,7 +651,7 @@ try{
    // Cache DOM changes during the 3D roulette's continuous render loop.
    // Repaint node/edge/triangle classes only on actual gameplay changes.
    const geometryKey=[e.cycle,e.version,e.phase,e.hits.size,e.links.size,
-     e.filled.size,e.lastNode,e.pendingDraws.size,e.sugarAwarded].join('/');
+     e.filled.size,e.lastNode,e.pendingDraws.size,e.sugarAwarded,e.pattern?.id].join('/');
    if(!rasterImages.ready&&geometryKey!==lastGeometryKey){
      lastGeometryKey=geometryKey;
      updateDraw(scene,e);updateDraw(mini,e);
@@ -618,6 +665,7 @@ try{
          el.textContent=num(medalWin(bet,+el.dataset.reward))+'WIN';
    }
    drawRaster(e,bet);
+   updateCollectorHUD(e);
    gpBoardBonus.classList.toggle('gp-bonus-complete',e.allComplete);
    slot.miniCanvas.hidden=true;slot.miniLogo.hidden=true;
  }
@@ -726,7 +774,7 @@ try{
    active=1;
    try{nativeHud(a);}finally{active=0;}
    document.body.classList.remove('choco-active','carnival-active');document.body.classList.add('gelato-active');
-   put('best','PRISM '+e.filled.size+' / 24 · BONUS '+(BONUS/100)+'×');
+   put('best','PRISM '+e.filled.size+' / 24 · '+(e.pattern?.name||''));
    put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');
    fitGoldenNumber($('credit'),num(a.displayCredit),17,68);
    fitGoldenNumber($('win'),num(a.totalWin),17,54);
@@ -746,7 +794,7 @@ try{
    row.dataset.gelato='yes';
    row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+num(a.locked[0])+' BET</small>';
    const details=row.querySelector('.result-game-details');
-   if(details)details.innerHTML='<span>'+e.filled.size+' / 24 FILL</span><span>'+e.roundCleared+' GELATO GET!</span>';
+   if(details)details.innerHTML='<span>'+e.filled.size+' / 24パネル</span><span>枚数 '+e.countMult.toFixed(1)+'倍＋4色 '+e.collectorMult.toFixed(1)+'倍</span>';
    // Visually follow the three-tab order without changing app.engine indices.
    const panel=$('result-games'),cards=[...panel.querySelectorAll('.result-game')];
    if(cards.length===3)panel.append(cards[1],cards[2],cards[0]);
@@ -756,7 +804,11 @@ try{
  window.GelatoPrism={
    get imageVersion(){return rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
-   get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,bonus:e.allComplete};},
+   get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,
+     pattern:e.pattern?.id,counts:e.collectorCounts.slice(),countMult:e.countMult,
+     collectorMult:e.collectorMult,totalHundredths:e.totalHundredths,bonus:e.allComplete};},
+   patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,grades:p.grades.slice()})),
+   prizes:{countMultiplier:COUNT_MULT.slice(),colorMultipliers:COLLECTOR_MULT.slice()},
    engine:e,faces:FACES
  };
  console.info('[GelatoPrism] ready: 19 nodes / 24 faces / 8 draws');
