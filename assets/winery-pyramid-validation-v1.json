@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "method": "Stratified Monte Carlo of 1,200,000 games (200,000 per symmetric starting pattern), independent validation seed 992173",
+  "games": 1200000,
+  "seed": 992173,
+  "weights_percent": [16,16,16,17,19,16],
+  "payout_multiplier_full_0_to_21": [0,0,0,0,0,0,0,0.1,0.3,0.4,0.5,0.7,1,1.5,2,3,4,6,10,15,30,100],
+  "mix_per_full_multiflavor_glass": 0.1,
+  "per_pattern_rtp_percent": [80.8199,90.4568,93.49305,90.4728,94.7322,89.7455],
+  "rtp_percent": 90.101934,
+  "ci95_percent": [89.86034738914935,90.34352061085063],
+  "mix_contribution_percent": 39.993649,
+  "full21_probability": 0.0000623,
+  "mean_full": 8.74378975,
+  "actual_javascript_model_crosscheck": {"games":120000,"seed":"0x63ab91","rtp_percent":90.33058333333248,"ci95_percent":[89.53140149741074,91.12976516925423]},
+  "tests": ["21 cells and 25 unique numbers","six mirror-symmetric initial patterns","half-half overflow","two full parents produce quarter-half-quarter (1:2:1)","fill remaining capacity before overflow","bottom discard","no added layer in full glass","same flavor merges; distinct layers retained","full 21 count tier plus mix = maximum 102.1x","4000 random pours conserve mass","ordered eight-ball engine, future-only boosts, settlement, reset","local Chromium integration harness: bottle, overflow, layered surfaces, 8-ball payout and visual tab order; no uncaught errors"],
+  "assumptions": ["8 ordered distinct uniform draws from 25", "21 glass numbers and 4 boost-only numbers", "1 -> 2 -> 4 -> 8 -> 16 cups for subsequent glass hits", "starting liquid is apple juice", "flavor follows ball ordinal including boost balls", "final count tier plus 0.1x for each full glass with at least two flavors", "21 full pays the 100x final tier, without an additional duplicate 100x", "No additional Sugar/JPC award from Winery in this first version", "Physical roulette deviations from uniform sampling and device frame rates are not calibrated"]
+}
