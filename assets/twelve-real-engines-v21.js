@@ -50,12 +50,22 @@ function install(){
   const reachJobs=[];
   let reachTimer=null;
   let reachCalculations=0,reachCacheHits=0;
-  function pumpReachJobs(){
+  function scheduleReachPump(){
+    if(reachTimer!==null)return;
+    // Forecast calculations yield to the roulette's animation frames.
+    if(typeof requestIdleCallback==='function')
+      reachTimer=requestIdleCallback(pumpReachJobs,{timeout:350});
+    else reachTimer=setTimeout(()=>pumpReachJobs(null),35);
+  }
+  function pumpReachJobs(deadline){
     reachTimer=null;
+    if(deadline&&!deadline.didTimeout&&deadline.timeRemaining()<3){
+      scheduleReachPump();return;
+    }
     if(currentMode!=='12'||app.phase==='ready'){
       reachJobs.length=0;return;
     }
-    const deadline=performance.now()+5;
+    const finishBy=performance.now()+3;
     let processed=0;
     while(reachJobs.length){
       const job=reachJobs.shift(),{id,cache,e,numbers,group,bet,snapshot}=job;
@@ -88,19 +98,21 @@ function install(){
         }else{
           cache.busy=false;
           cache.values.sort((a,b)=>Number(a.value)-Number(b.value));
+          // Only the affected board needs its new prediction page painted.
+          window.sweets12FrameScheduler?.markBoard(id);
         }
       }catch(error){
         cache.busy=false;cache.error=true;
         console.warn('[Sweets12] reach prediction board '+id,error);
       }
       processed++;
-      if(processed>=2||performance.now()>deadline)break;
+      if(processed>=1||performance.now()>finishBy)break;
     }
-    if(reachJobs.length)reachTimer=setTimeout(pumpReachJobs,16);
+    if(reachJobs.length)scheduleReachPump();
   }
   function queueReach(job){
     reachJobs.push(job);
-    if(reachTimer===null)reachTimer=setTimeout(pumpReachJobs,8);
+    scheduleReachPump();
   }
   const lastEvents=new Map();
   let pane=null,modeInfo=null,modeButtons=[],configsHolder=null;
