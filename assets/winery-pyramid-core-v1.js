@@ -24,29 +24,13 @@ const CELLS=[];
 for(let r=0;r<ROWS;r++)for(let c=0;c<=r;c++)CELLS.push({r,c,id:r*(r+1)/2+c});
 const flavorFor=ball=>ball<=3?0:ball<=5?1:ball===6?2:ball===7?3:4;
 const clone=glasses=>glasses.map(g=>({volume:g.volume,layers:g.layers.map(x=>({...x}))}));
-// Rates measured from 250,000 seeded 8-ball games per initial fill scale.
- // A 50–150% request interpolates between two *complete symmetric boards*;
- // individual left/right glass volumes are never independently randomized.
- const RATE_ANCHORS=[
-  [0,45.188, .0954,.0636,.0393,.0231],
-  [.10,63.206,.0955,.0637,.0396,.0233],
-  [.25,65.837,.0994,.0661,.0420,.0251],
-  [.50,72.056,.1129,.0738,.0473,.0284],
-  [.75,78.061,.1253,.0818,.0533,.0327],
-  [.85,84.885,.1418,.0918,.0588,.0358],
-  [.95,87.067,.1465,.0957,.0612,.0376],
-  [1,96.127,.1731,.1106,.0694,.0420],
-  [1.10,98.407,.1772,.1132,.0713,.0434],
-  [1.20,103.934,.1866,.1210,.0773,.0479],
-  [1.35,117.037,.2210,.1440,.0906,.0554],
-  [1.45,119.346,.2256,.1476,.0934,.0572],
-  [1.55,125.337,.2358,.1558,.1001,.0618],
-  [1.65,135.684,.2520,.1663,.1069,.0660],
-  [1.75,142.288,.2660,.1783,.1157,.0721],
-  [1.85,149.495,.2803,.1890,.1236,.0767],
-  [1.95,152.959,.2873,.1943,.1278,.0796]
- ];
- function rateAnchor(rate,random=Math.random){
+// v72 calibration: 250,000-game legacy means corrected with paired
+// 32,000-game estimates of the 7-11 FULL award differences. Additional
+// 2.05-2.25 scales use paired 70,000-game estimates to cover MENU 150%.
+// Physical FULL-count tail probabilities are unchanged for old scales.
+// These values describe expected RTP, not guaranteed game outcomes.
+const RATE_ANCHORS=[[0,21.411,0.0954,0.0636,0.0393,0.0231],[0.1,30.869,0.0955,0.0637,0.0396,0.0233],[0.25,33.289,0.0994,0.0661,0.042,0.0251],[0.5,38.092,0.1129,0.0738,0.0473,0.0284],[0.75,43.352,0.1253,0.0818,0.0533,0.0327],[0.85,48.492,0.1418,0.0918,0.0588,0.0358],[0.95,50.592,0.1465,0.0957,0.0612,0.0376],[1,58.258,0.1731,0.1106,0.0694,0.042],[1.1,60.54,0.1772,0.1132,0.0713,0.0434],[1.2,66.221,0.1866,0.121,0.0773,0.0479],[1.35,78.295,0.221,0.144,0.0906,0.0554],[1.45,80.843,0.2256,0.1476,0.0934,0.0572],[1.55,86.743,0.2358,0.1558,0.1001,0.0618],[1.65,94.921,0.252,0.1663,0.1069,0.066],[1.75,102.365,0.266,0.1783,0.1157,0.0721],[1.85,109.856,0.2803,0.189,0.1236,0.0767],[1.95,113.693,0.2873,0.1943,0.1278,0.0796],[2.05,140.732,0.34837,0.24381,0.16367,0.1021],[2.15,151.282,0.37931,0.26063,0.17266,0.10676],[2.25,160.887,0.39056,0.27186,0.18326,0.11496]];
+function rateAnchor(rate,random=Math.random){
    const target=Math.max(50,Math.min(150,Number(rate)||90));
    let j=1;while(j<RATE_ANCHORS.length-1&&RATE_ANCHORS[j][1]<target)j++;
    const a=RATE_ANCHORS[j-1],b=RATE_ANCHORS[j];
