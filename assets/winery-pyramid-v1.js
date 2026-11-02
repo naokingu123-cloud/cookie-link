@@ -1,4 +1,4 @@
-/* Winery Pyramid v66: larger power cabinet with achieved HIT tags and left-aligned tea-glass pyramid. */
+/* Winery Pyramid v67: shared MENU payout controls and cups-only enlarged mini thumbnail. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -12,10 +12,6 @@ let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
 const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);const polishStyle=document.createElement('link');polishStyle.rel='stylesheet';polishStyle.href='assets/winery-pyramid-polish-v64.css?v=64';document.head.appendChild(polishStyle);const liquidStyle=document.createElement('link');liquidStyle.rel='stylesheet';liquidStyle.href='assets/winery-pyramid-liquid-v65.css?v=65';document.head.appendChild(liquidStyle);const adjustStyle=document.createElement('link');adjustStyle.rel='stylesheet';adjustStyle.href='assets/winery-pyramid-adjust-v66.css?v=66';document.head.appendChild(adjustStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
- '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
- '<input class="wp-rate-range" type="range" min="50" max="150" value="90" step="1" aria-label="ワイナリー初期盤面配当率50から150パーセント">'+
- '<div class="wp-rate-ends"><span>50%</span><span>100%</span><span>150%</span></div>'+
- '<small>白ジュース・左右対称</small></div>'+
  '<aside class="wp-sidebar">'+
  '<div class="wp-power">'+
    '<div class="wp-boost-heading">✦ 注入量UP ✦</div>'+
@@ -68,19 +64,15 @@ const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
  scene.insertBefore(liquidCanvas,canvas);
  const liquidCtx=liquidCanvas.getContext('2d');
  scene.classList.add('wp-premium-ready');
-const ratePanel=scene.querySelector('.wp-rate-panel');
-const rateRange=ratePanel.querySelector('.wp-rate-range');
-const rateOutput=ratePanel.querySelector('.wp-rate-output');
+// The ordinary MENU debug payout rate is the single authority for all games.
+// Winery no longer places a duplicate slider on the live 21-glass board.
+const menuPayoutInput=document.getElementById('debug-payout-rate');
+const menuPayoutApply=document.getElementById('debug-payout-apply');
+const readMenuPayout=()=>{
+ const n=Number(menuPayoutInput?.value);
+ return Number.isInteger(n)&&n>=50&&n<=150?n:90;
+};
 const fullFx=new Map();
-function refreshRateDisplay(){
- rateOutput.textContent=rateRange.value+'%';
- ratePanel.hidden=app.phase!=='ready';rateRange.disabled=app.phase!=='ready';
-}
-try{
- const stored=Number(localStorage.getItem('winery-pyramid-target-rate-v1'));
- if(Number.isInteger(stored)&&stored>=50&&stored<=150)rateRange.value=String(stored);
-}catch{}
-refreshRateDisplay();
 const header=S.tab.querySelector('.tab-game-name');
 header.innerHTML='<span class="wp-tab-logo"><img class="wp-tab-logo-img" src="assets/winery-pyramid-tab-art-v51.webp?v=52" alt="ワイナリーピラミッド" decoding="async"><b class="wp-fallback">ワイナリー<br>ピラミッド</b></span>';
 const wineryLogo=header.querySelector('.wp-tab-logo');
@@ -112,7 +104,6 @@ function event(ev,e){
    signal('✦ WONDER SUGAR GET!');
    if(typeof showSugarAward==='function')showSugarAward(S,ev.steps);
  }
- refreshRateDisplay();
  if(ev.phase==='ready'){
   fullFx.clear();
   S.reachEpoch=(S.reachEpoch||0)+1;S.reachBoardKey=null;S.reachStatus='inactive';S.reachResults=[];S.tabReachResults=[];
@@ -137,17 +128,21 @@ function event(ev,e){
 }
 engine=new K.WineryEngine({random:app.random,sleep:app.sleep,speed:app.speed,onEvent:event});
 app.engines[1]=engine;S.engine=engine;
-engine.setPayoutTarget(Number(rateRange.value));
-rateRange.addEventListener('input',refreshRateDisplay);
-rateRange.addEventListener('change',()=>{
- if(app.phase!=='ready'){refreshRateDisplay();return;}
- const target=Math.round(Number(rateRange.value));
- if(!engine.setPayoutTarget(target))return;
- try{localStorage.setItem('winery-pyramid-target-rate-v1',String(target));}catch{}
- uiKey='';miniKey='';S.dirtyMain=S.dirtyMini=true;
- signal('白ジュースの初期盤面を再生成 · '+target+'%');
- refreshRateDisplay();queueFrame();scheduleUI(app);
-});
+engine.setPayoutTarget(readMenuPayout());
+function syncMenuPayout(){
+ const target=readMenuPayout();
+ if(engine.payoutTarget===target)return;
+ if(!engine.running&&app.phase==='ready'){
+  engine.setPayoutTarget(target);
+  miniKey='';uiKey='';S.dirtyMain=S.dirtyMini=true;
+  signal('ワイナリー配当率 '+target+'%・初期盤面を更新');
+ }else{
+  // A current 8-ball draw must never change probability or displayed rewards
+  // mid-round. The engine's configured target takes effect on its next reset.
+  engine.payoutTarget=target;
+ }
+}
+menuPayoutApply?.addEventListener('click',syncMenuPayout);
 engine.beforeComplete=token=>engine.wait(300,token);
 const emptySugar=S.tabSugar;if(emptySugar)emptySugar.hidden=false;
 function stable(e){return e.processed>0&&e.processed<8&&e.running&&!e.queue.length&&e.accepted===e.processed&&['waiting','settled'].includes(e.phase);}
@@ -865,9 +860,24 @@ function updateHUD(){
  scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
 }
+// Only the grape-juice GLASS PYRAMID appears in the small tab.
+// Offscreen draw is cropped to the 21 live cups and their price-tag numbers.
+// No right payout column, no RATE settings and no large game header.
+const miniOnlyCanvas=document.createElement('canvas');
+miniOnlyCanvas.width=1130;miniOnlyCanvas.height=636;
 function paintMini(){
- const k=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,app.bet(1)].join('/');if(k===miniKey)return;miniKey=k;
- paint(S.miniCanvas,clock,true);S.miniCanvas.hidden=false;S.miniLogo.hidden=true;
+ const k=[engine.version,engine.phase,engine.processed,engine.power,
+          engine.totalHundredths,app.bet(1),Math.floor((engine.fx?.elapsed||0)/110)].join('/');
+ if(k===miniKey)return;miniKey=k;
+ paint(miniOnlyCanvas,clock,true);
+ const thumb=S.miniCanvas,context=thumb.getContext('2d');
+ context.setTransform(1,0,0,1,0,0);
+ context.clearRect(0,0,thumb.width,thumb.height);
+ // Crop the original 1672x941 stage to x~320..1200, y~70..941;
+ // use equivalent pixels in its 1130x636 miniature render.
+ const sx=215,sy=44,sw=600,sh=588;
+ context.drawImage(miniOnlyCanvas,sx,sy,sw,sh,0,0,thumb.width,thumb.height);
+ thumb.hidden=false;S.miniLogo.hidden=true;
 }
 function queueFrame(){if(frame||document.hidden)return;frame=requestAnimationFrame(tick);}
 function tick(now){
@@ -923,7 +933,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:66,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:67,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
