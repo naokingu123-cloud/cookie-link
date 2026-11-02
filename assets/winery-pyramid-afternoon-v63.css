@@ -1,0 +1,209 @@
+/* Winery Pyramid v63 — layered afternoon-tea stand, power/juice gauge and fixed payout steps.
+   Only winery selectors; other two games and core payout rules are unchanged. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-tea-stand{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ object-fit:fill!important;display:none!important;pointer-events:none!important;z-index:2!important;
+ filter:drop-shadow(0 2px 3px rgba(75,23,58,.25))!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-tea-loaded .wp-tea-stand{display:block!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-liquid-layer{z-index:3!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-canvas{z-index:4!important}
+/* Upper-left power cabinet has the same jewellery language as the right-side payout. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left{
+ position:absolute!important;top:20.5%!important;left:1%!important;width:24%!important;
+ box-sizing:border-box!important;z-index:9!important;display:flex!important;visibility:visible!important;
+ flex-direction:column!important;justify-content:center!important;align-items:stretch!important;
+ gap:3px!important;margin:0!important;padding:6px 4px!important;
+ min-height:0!important;max-height:none!important;overflow:visible!important;
+ border:2px solid #fff1b7!important;border-radius:12px!important;
+ background:radial-gradient(ellipse at 50% 0%,#ffe7d16e,transparent 70%),
+   linear-gradient(145deg,#d05d9af6,#803374f8 68%,#702d70f9)!important;
+ box-shadow:inset 0 0 0 1px #ffdca88a,0 3px 10px #632a6b87!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-heading{
+ font-size:clamp(10px,1.55vw,14px)!important;color:#fff5c3!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-number{
+ width:80%!important;max-width:28px!important;min-width:12px!important;
+ aspect-ratio:1/1!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-numbers{gap:3px!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63:has(.wp-rate-panel[hidden]) .wp-power-left{
+ top:1.1%!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-sidebar{
+ --wp-row-height:17px!important;
+ display:grid!important;grid-template-rows:55px minmax(15px,auto) 18px minmax(0,1fr) 42px 29px!important;
+ align-items:stretch!important;align-content:stretch!important;
+ gap:3px!important;padding:5px 4px 5px!important;overflow:hidden!important;
+}
+/* Compact live 1/2/4/8/16 cups tube. The old power ladder has moved left. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gauge{
+ position:relative;display:flex;flex-direction:column;justify-content:center;
+ min-width:0;min-height:0;gap:3px;padding:3px 5px 4px;
+ box-sizing:border-box;border:1px solid #ffe1a6;border-radius:9px;
+ background:linear-gradient(135deg,#f8c1d6ef,#a94789df 55%,#6d3171ec);
+ box-shadow:inset 0 1px #fff3e0,0 1px 4px #491f67a0;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gauge-header{
+ display:flex;justify-content:space-between;align-items:center;gap:2px;
+ white-space:nowrap;color:#fff7d2;font:900 clamp(7px,1.12vw,11px)/1.05 system-ui,sans-serif;
+ text-shadow:0 1px #732d68;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gauge-header strong{
+ font:900 clamp(13px,2.1vw,22px)/1 ArcadePayout,Georgia,serif;
+ color:#fff1a4;white-space:nowrap;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-tube{
+ position:relative;overflow:hidden;flex:0 0 12px;
+ border:1.5px solid #fff4c5;border-radius:10px;
+ background:linear-gradient(#3c174d,#6a326c);
+ box-shadow:inset 0 1px 4px #240a31,0 0 5px #ffdfb37a;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-fill{
+ position:absolute;inset:0 auto 0 0;
+ width:var(--wp-amount-percent,12%);height:100%;
+ border-radius:9px;transition:width .65s cubic-bezier(.24,.73,.25,1);
+ background:linear-gradient(0deg,#bb2668,#f17c9d 43%,#ffcc7d 76%,#fff7d1);
+ box-shadow:inset 0 0 4px #fff7d9,0 0 9px #ffc0a4;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gloss{
+ position:absolute;inset:1px 3px 45% 3px;border-radius:20px;
+ background:linear-gradient(#ffffff8f,#ffffff00);pointer-events:none;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-markers{
+ display:flex;align-items:center;justify-content:space-between;gap:0;
+ line-height:1;font:800 clamp(7px,.95vw,9px)/1 system-ui;color:#fff2d2;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-markers small{
+ display:grid;place-items:center;width:17%;border-radius:3px;
+ opacity:.74;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-markers small.is-current{
+ color:#572251;background:#fff2ba;opacity:1;box-shadow:0 0 4px #fff2a1;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-score{
+ min-height:0!important;max-height:none!important;white-space:nowrap!important;
+ padding:1px 1px!important;font-size:8px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-fixed{
+ box-sizing:border-box!important;display:flex!important;align-items:center!important;
+ justify-content:space-between!important;height:18px!important;min-height:0!important;
+ border-radius:6px 6px 0 0!important;
+ padding:0 4px!important;line-height:1!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-fixed .wp-score-mini{
+ font-size:clamp(8px,1.1vw,11px)!important;white-space:nowrap;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window{
+ position:relative!important;overflow:hidden!important;min-height:0!important;
+ width:100%!important;height:100%!important;flex:1 1 auto!important;
+ border:1px solid #ffdda3!important;
+ background:linear-gradient(180deg,#492555ed,#622b67ed)!important;
+ isolation:isolate!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-reservoir{
+ position:absolute!important;inset:0!important;z-index:0;pointer-events:none;
+ background:linear-gradient(180deg,#3d1745a8,#47234c52);
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level{
+ position:absolute!important;left:0;bottom:0;width:100%;height:var(--wp-payout-fill,0%);
+ min-height:0;transition:height .75s cubic-bezier(.19,.73,.28,1);
+ border-top:2px solid #fff1bd;
+ background:linear-gradient(135deg,#ff9aacc9,#f84d81cc 32%,#d7366bdc 64%,#a84997be);
+ box-shadow:inset 0 6px 9px #fff2c049,0 -4px 9px #ffedd77d;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-pour-stream{
+ position:absolute;left:48%;top:-7%;height:110%;width:5px;
+ pointer-events:none;z-index:2;opacity:0;transform:scaleY(0);
+ transform-origin:top;background:linear-gradient(#fff1c2,#ff93ad 18%,#d83879 75%,transparent);
+ box-shadow:0 0 7px #ffdb99;transition:opacity .15s;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window.is-pouring .wp-pay-pour-stream{
+ opacity:.78;animation:wp-payout-stream-v63 .72s ease-in-out infinite;
+}
+@keyframes wp-payout-stream-v63{
+ 0%{transform:scaleY(.05);opacity:.1}
+ 45%{transform:scaleY(.9);opacity:.82}
+ 100%{transform:scaleY(1);opacity:.48}
+}
+/* Unlike the old sliding strip, 10–21 all fit in a fixed 12-row glass gauge. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-track{
+ position:relative!important;z-index:3;transform:none!important;transition:none!important;
+ height:100%!important;min-height:0!important;
+ display:grid!important;grid-template-rows:repeat(12,minmax(0,1fr))!important;
+ margin:0!important;padding:0!important;gap:0!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row{
+ box-sizing:border-box!important;display:grid!important;
+ grid-template-columns:minmax(0,.82fr) 10px minmax(0,1.24fr)!important;
+ height:100%!important;min-height:0!important;align-items:center!important;
+ padding:0 3px!important;font:900 clamp(7px,.97vw,10px)/1 system-ui,sans-serif!important;
+ border-bottom:1px solid #e7b1c06b!important;background:#64296135!important;
+ text-shadow:0 1px #49254c!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row:last-child{border-bottom:0!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row.is-reached{
+ background:#fff3cb35!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row.current{
+ background:linear-gradient(90deg,#fff0bfb8,#ffa7b0a6,#ffeb9da0)!important;
+ border:1px solid #fff5d2!important;
+ box-shadow:inset 0 0 6px #fff8c6aa,0 0 4px #ffe5aa6a!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row b{
+ font:750 clamp(8px,1.18vw,12px)/1 ArcadePayout,Georgia,serif!important;
+ color:#fff1b7!important;white-space:nowrap;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row.current b{
+ color:#66294d!important;text-shadow:0 1px #fff6ca!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix{
+ flex:none!important;height:42px!important;max-height:none!important;
+ border:2px solid #ffe2aa!important;border-radius:8px!important;
+ padding:2px!important;
+ background:linear-gradient(130deg,#a5498df3,#642d77f2)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix b{
+ font-size:clamp(16px,2.6vw,25px)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-total{
+ flex:none!important;height:29px!important;min-height:0!important;max-height:none!important;
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left{
+  width:24.5%!important;left:.6%!important;top:21%!important;
+  padding:2px!important;gap:1px!important;border-width:1px!important;border-radius:8px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63:has(.wp-rate-panel[hidden]) .wp-power-left{top:1%!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-heading{font-size:8px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-caption{font-size:6px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-number{
+  width:75%!important;min-width:10px!important;max-width:19px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-sidebar{
+  --wp-row-height:15px!important;
+  grid-template-rows:48px 14px 16px minmax(0,1fr) 37px 26px!important;
+  gap:1px!important;padding:2px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gauge{
+  padding:2px!important;gap:1px!important;border-radius:6px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gauge-header{font-size:7px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-gauge-header strong{font-size:12px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-tube{flex-basis:9px}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-markers{font-size:6px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row{
+  grid-template-columns:minmax(0,.85fr) 8px minmax(0,1.2fr)!important;
+  padding:0 2px!important;font-size:7px!important;
+ }
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-row b{font-size:8px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix{height:37px!important;padding:1px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix b{font-size:16px!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-total{height:26px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-pour-stream{animation:none!important}
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level,
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-amount-fill{transition:none!important}
+}
