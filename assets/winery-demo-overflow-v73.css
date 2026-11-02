@@ -1,0 +1,38 @@
+/* Winery demo v73: both outputs of one overflow have identical flavor.
+   The next scene visibly adds a new orange injection before MIX. */
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-orange-cap{
+ fill:url(#rg69-juice-orange)!important;
+ opacity:0;
+ transition:opacity .18s linear;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-orange-cap.is-visible{
+ opacity:.97;
+ filter:saturate(1.45) brightness(1.06);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-new-orange{
+ opacity:0;
+ transition:opacity .18s ease;
+ pointer-events:none;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-new-orange.is-visible{
+ opacity:1;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-orange-flow{
+ fill:none;stroke:#ff9c22;stroke-width:7;
+ stroke-linecap:round;stroke-dasharray:10 9;
+ animation:rg69-flow .7s linear infinite;
+ filter:drop-shadow(0 0 6px #ffd077);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-new-orange rect{
+ fill:#ffad40;stroke:#fff2cb;stroke-width:2.5;
+ filter:drop-shadow(0 0 5px #ffca64);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg73-new-orange text{
+ fill:#762c54;stroke:#fff6d8;stroke-width:2;paint-order:stroke fill;
+ text-anchor:middle;font:1000 12px system-ui,sans-serif;
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled #panel1 .rg69-winery-demo .rg73-orange-flow{
+  animation:none!important;
+ }
+}
