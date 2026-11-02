@@ -1,4 +1,4 @@
-/* Winery Pyramid v61: expanded stage, real juice in all 21 glasses, clean visual hierarchy. */
+/* Winery Pyramid v62: the user's sharp strawberry-orange fantasy juice-river painting. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -323,6 +323,16 @@ rasterBackground.decoding='async';
 rasterBackground.onload=()=>{rasterReady=true;scene.classList.add('wp-raster-ready','wp-clean-ready');miniKey='';uiKey='';lastPaint=0;queueFrame();};
 rasterBackground.onerror=()=>console.info('[Winery v61] Clean photo scenery is not uploaded; bundled fruit river scene stays usable.');
 rasterBackground.src='assets/winery-juice-world-clean-v61.webp?v=61';
+let riverPhotoReady=false;
+const riverPhoto=new Image();
+riverPhoto.decoding='async';
+riverPhoto.onload=()=>{
+ riverPhotoReady=true;
+ scene.classList.add('wp-river-v62-ready');
+ miniKey='';lastPaint=0;queueFrame();
+};
+riverPhoto.onerror=()=>console.info('[Winery v62] New strawberry-orange background is awaiting upload: assets/winery-juice-river-v62.webp');
+riverPhoto.src='assets/winery-juice-river-v62.webp?v=62';
 const rasterCup=new Image();
 rasterCup.decoding='async';
 rasterCup.onload=()=>{rasterCupReady=true;miniKey='';lastPaint=0;queueFrame();};
@@ -607,7 +617,8 @@ function paint(target,time,small=false){
  const xx=target.getContext('2d'),W=target.width,H=target.height;
  xx.setTransform(1,0,0,1,0,0);xx.clearRect(0,0,W,H);
  if(small){
-  if(rasterReady)xx.drawImage(rasterBackground,0,0,W,H);
+  if(riverPhotoReady)xx.drawImage(riverPhoto,0,0,W,H);
+  else if(rasterReady)xx.drawImage(rasterBackground,0,0,W,H);
   else if(worldReady)xx.drawImage(worldArt,0,0,W,H);
   else xx.drawImage(bg,0,0,W,H);
  }
@@ -743,7 +754,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:61,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:62,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
-console.info('[Winery Pyramid v60] layered high-resolution candy river, independent live juice, transparent photo coupe and gilded payout frame');
+console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
