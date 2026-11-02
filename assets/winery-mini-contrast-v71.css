@@ -1,0 +1,76 @@
+/* Winery Pyramid v71 — restore the tab's inner gold frame and use a dark
+ * contrast backdrop ONLY behind the 21 real miniature glasses.
+ * Main #panel1 scenery, tea rack, payout and simulation stay unchanged. */
+body.winery-enabled .wp-tab .mini-wrap{
+ position:relative!important;
+ box-sizing:border-box!important;
+ isolation:isolate!important;
+ overflow:hidden!important;
+ border:2.5px solid #ffe0a3!important;
+ border-radius:11px!important;
+ background:
+  radial-gradient(ellipse at 52% 28%,rgba(111,75,122,.45),transparent 67%),
+  radial-gradient(ellipse at 45% 112%,rgba(139,45,96,.33),transparent 63%),
+  linear-gradient(155deg,#241530 0%,#372244 43%,#1b122d 100%)!important;
+ background-color:#22162d!important;
+ background-image:
+  radial-gradient(ellipse at 52% 28%,rgba(111,75,122,.45),transparent 67%),
+  radial-gradient(ellipse at 45% 112%,rgba(139,45,96,.33),transparent 63%),
+  linear-gradient(155deg,#241530 0%,#372244 43%,#1b122d 100%)!important;
+ box-shadow:inset 0 0 0 2px #67476e,inset 0 0 11px #100922,0 1px 5px #572e65aa!important;
+ outline:1px solid #af7392!important;
+ outline-offset:-5px!important;
+}
+body.winery-enabled .wp-tab .mini-wrap::before{
+ content:""!important;
+ position:absolute!important;
+ inset:0!important;
+ display:block!important;
+ opacity:1!important;
+ pointer-events:none!important;
+ z-index:0!important;
+ border-radius:8px!important;
+ background:
+  radial-gradient(circle at 17% 18%,#ffe8a634 0 1px,transparent 3px),
+  radial-gradient(circle at 85% 36%,#ffbbdd3b 0 1px,transparent 3px),
+  radial-gradient(circle at 28% 87%,#fff2ba37 0 1px,transparent 3px)!important;
+ box-shadow:none!important;
+}
+body.winery-enabled .wp-tab .mini-wrap::after{
+ content:""!important;
+ position:absolute!important;
+ inset:2.5px!important;
+ display:block!important;
+ opacity:1!important;
+ z-index:5!important;
+ pointer-events:none!important;
+ border:1.5px solid #f6ca8ccf!important;
+ border-radius:7px!important;
+ background:none!important;
+ background-image:none!important;
+ box-shadow:inset 0 0 0 1px #fff3ce3e,0 0 4px #e7ad9860!important;
+}
+body.winery-enabled .wp-tab .mini-wrap canvas{
+ position:relative!important;
+ z-index:2!important;
+ display:block!important;
+ max-width:100%!important;
+ max-height:100%!important;
+ object-fit:contain!important;
+ background:transparent!important;
+ background-color:transparent!important;
+ background-image:none!important;
+ filter:drop-shadow(0 0 2px #fff1c36e)!important;
+}
+@media(max-width:480px){
+ body.winery-enabled .wp-tab .mini-wrap{
+  border-width:1.5px!important;
+  border-radius:8px!important;
+  outline-offset:-3px!important;
+ }
+ body.winery-enabled .wp-tab .mini-wrap::after{
+  inset:1.5px!important;
+  border-width:1px!important;
+  border-radius:6px!important;
+ }
+}
