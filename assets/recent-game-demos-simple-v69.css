@@ -277,3 +277,28 @@ body.winery-enabled #panel1 .rg69-winery-demo .rg69-glass-base{
  body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel b{font-size:7px}
  body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel small{font-size:6px}
 }
+
+
+/* Gelato also has an independent 24%-wide right collector/payout column.
+   Never cover it: the demo is local to the left main board, just like Winery. */
+body.gelato-active #panel0 .rg69-gelato-demo{
+  top:1%!important;bottom:1%!important;left:.65%!important;
+  right:auto!important;width:72.5%!important;max-width:72.5%!important;
+  background:linear-gradient(115deg,#43357bdc,#34467ce6)!important;
+  align-items:stretch!important;justify-content:stretch!important;
+}
+body.gelato-active #panel0 .rg69-gelato-demo:not(.rg69-show){display:none!important}
+body.gelato-active #panel0 .rg69-gelato-demo.rg69-show{display:flex!important}
+body.gelato-active #panel0 .rg69-gelato-demo .rg69-card{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  box-sizing:border-box!important;margin:0!important;
+}
+@media(max-width:480px){
+ body.gelato-active #panel0 .rg69-gelato-demo{
+  top:.5%!important;bottom:.5%!important;left:.35%!important;
+  width:72.8%!important;max-width:72.8%!important;
+ }
+ body.gelato-active #panel0 .rg69-gelato-demo .rg69-card{
+  padding:3px!important;gap:2px!important;
+ }
+}
