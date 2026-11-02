@@ -1,0 +1,30 @@
+/* Winery Pyramid v68 — ONLY the little tab board is transparent.
+   This stylesheet never touches #panel1's luxurious full board background. */
+body.winery-enabled .wp-tab .mini-wrap,
+body.winery-enabled .wp-tab .mini-wrap .mini-board,
+body.winery-enabled .wp-tab .mini-wrap .mini-image{
+  background:none!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+body.winery-enabled .wp-tab .mini-wrap::before,
+body.winery-enabled .wp-tab .mini-wrap::after{
+  background:none!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  opacity:0!important;
+  content:none!important;
+}
+body.winery-enabled .wp-tab .mini-wrap canvas,
+body.winery-enabled .wp-tab canvas.mini-canvas,
+body.winery-enabled .wp-tab .mini-wrap img{
+  background:none!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  filter:none!important;
+}
+body.winery-enabled .wp-tab .mini-wrap canvas{
+  display:block!important;
+  object-fit:contain!important;
+}
