@@ -1,0 +1,39 @@
+/* Winery v62 — the user-selected 1672x941 strawberry & orange river painting.
+ * No blur, inpaint, grey haze, text, HUD, baked glasses or unnecessary masks.
+ * All glass numbers, fluid surfaces, bets and rewards remain actual game data. */
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready.wp-river-v62-ready{
+  background-image:url('winery-juice-river-v62.webp?v=62')!important;
+  background-size:100% 100%!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  background-color:#f3679a!important;
+  border:3px solid #ffe4a9!important;
+  box-shadow:inset 0 0 0 2px #fff1ce,0 0 10px #ec7ba3a0!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready.wp-river-v62-ready::before,
+body.winery-enabled #panel1 .wp-scene.wp-premium-ready.wp-river-v62-ready::after{
+  display:none!important;
+  content:none!important;
+  filter:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-river-v62-ready .wp-liquid-layer,
+body.winery-enabled #panel1 .wp-scene.wp-river-v62-ready .wp-canvas{
+  filter:none!important;
+  image-rendering:auto!important;
+  background:transparent!important;
+}
+body.winery-active:has(#panel1 .wp-river-v62-ready) #screen,
+body.winery-active:has(#panel1 .wp-river-v62-ready) .game{
+  background-image:
+    linear-gradient(170deg,#fff0cf16,#f9a5c216),
+    url('winery-juice-river-v62.webp?v=62')!important;
+  background-position:center!important;
+  background-size:cover!important;
+}
+/* The photo is only scenery. Ensure that the player's filled coupe glasses,
+   the current payout and its gold frame stay crisp above it. */
+body.winery-enabled #panel1 .wp-scene.wp-river-v62-ready .wp-sidebar{
+  z-index:10!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-river-v62-ready .wp-liquid-layer{z-index:3!important}
+body.winery-enabled #panel1 .wp-scene.wp-river-v62-ready .wp-canvas{z-index:4!important}
