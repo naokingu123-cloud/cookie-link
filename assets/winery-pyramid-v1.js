@@ -1,4 +1,4 @@
-/* Winery Pyramid v68: true transparent 21-glass mini, no mini scenery; main scenery unchanged. */
+/* Winery Pyramid v71: restored framed dark thumbnail, dimmed main tea stand backdrop and full-color live cups. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -62,6 +62,12 @@ const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
  liquidCanvas.width=1130;liquidCanvas.height=636;
  canvas.width=1130;canvas.height=636;
  scene.insertBefore(liquidCanvas,canvas);
+ // Decorative darkness stays BEHIND the live juice canvas. The fruit
+ // waterfalls, live liquids, crystal glass and number badges remain sharp.
+ const standContrast=document.createElement('div');
+ standContrast.className='wp-stand-contrast-v71';
+ standContrast.setAttribute('aria-hidden','true');
+ scene.insertBefore(standContrast,liquidCanvas);
  const liquidCtx=liquidCanvas.getContext('2d');
  scene.classList.add('wp-premium-ready');
 // The ordinary MENU debug payout rate is the single authority for all games.
@@ -870,6 +876,14 @@ const miniClearStyle=document.createElement('link');
 miniClearStyle.rel='stylesheet';
 miniClearStyle.href='assets/winery-mini-transparent-v68.css?v=68';
 document.head.appendChild(miniClearStyle);
+const miniContrastStyle=document.createElement('link');
+miniContrastStyle.rel='stylesheet';
+miniContrastStyle.href='assets/winery-mini-contrast-v71.css?v=71';
+document.head.appendChild(miniContrastStyle);
+const standContrastStyle=document.createElement('link');
+standContrastStyle.rel='stylesheet';
+standContrastStyle.href='assets/winery-stand-contrast-v71.css?v=71';
+document.head.appendChild(standContrastStyle);
 function paintMini(){
  const progress=engine.fx?.type==='pour'?
   Math.floor(engine.fx.elapsed/100):0;
@@ -957,7 +971,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:68,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:71,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
