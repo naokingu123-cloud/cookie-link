@@ -1,4 +1,4 @@
-/* Winery Pyramid v64: one upper-left injection cabinet, glossy numbered price tags, shining FULL glass straws and slow payout pour. */
+/* Winery Pyramid v65: exact payout tier brims with live waves during and after juice pouring. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);const polishStyle=document.createElement('link');polishStyle.rel='stylesheet';polishStyle.href='assets/winery-pyramid-polish-v64.css?v=64';document.head.appendChild(polishStyle);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);const polishStyle=document.createElement('link');polishStyle.rel='stylesheet';polishStyle.href='assets/winery-pyramid-polish-v64.css?v=64';document.head.appendChild(polishStyle);const liquidStyle=document.createElement('link');liquidStyle.rel='stylesheet';liquidStyle.href='assets/winery-pyramid-liquid-v65.css?v=65';document.head.appendChild(liquidStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -376,7 +376,7 @@ function premiumClip(x,cx,cy){
  x.bezierCurveTo(cx+31,cy+70,cx+51,cy+36,cx+54,cy+8);
  x.closePath();
 }
-function premiumJuice(x,i,g,t){
+function premiumJuice(x,i,g,t,activePour=false){
  const {x:cx,y:cy}=premiumPos(i);
  x.save();premiumClip(x,cx,cy);x.clip();
  // A clean transparent glass, with no baked red liquid or white opaque wipe.
@@ -406,22 +406,34 @@ function premiumJuice(x,i,g,t){
    }
    x.globalAlpha=l.flavor===5?.94:.99;
    x.fillStyle=liquid;x.beginPath();x.moveTo(cx-60,lower+3);x.lineTo(cx-60,top);
-   const amp=1.6+(k===g.layers.length-1?.8:.25);
+   // Active pour: visible ripples; waiting/settled: slower perpetual waves.
+   // Both fill polygon and meniscus use the SAME height profile.
+   const amp=(activePour?5.6:2.8)+(k===g.layers.length-1?1.5:.35);
+   const waveAt=dx=>
+     amp*Math.sin(t*(activePour?.0061:.0024)+i*.49+k*.37+dx*.112)
+     +(activePour?1.35:.6)*Math.sin(t*(activePour?.0043:.0014)-dx*.22+i*.17);
    for(let dx=-60;dx<=60;dx+=3){
-    const wave=amp*Math.sin(t*.0041+i*.49+k*.37+dx*.133)
-       +.4*Math.sin(t*.0072-dx*.23);
-    x.lineTo(cx+dx,top+wave);
+    x.lineTo(cx+dx,top+waveAt(dx));
    }
    x.lineTo(cx+60,lower+3);x.closePath();x.fill();
    // Crisp meniscus even at 1/4 cup.
    x.globalAlpha=1;x.strokeStyle=l.flavor===5?'#f7ffff':f.light;
-   x.lineWidth=2.9;x.shadowColor=l.flavor===5?'#b7e8ff':f.light;x.shadowBlur=5;
+   x.lineWidth=activePour?3.5:2.7;
+   x.shadowColor=l.flavor===5?'#b7e8ff':f.light;x.shadowBlur=activePour?9:4;
    x.beginPath();
    for(let dx=-54;dx<=54;dx+=3){
-    const yy=top+amp*Math.sin(t*.0041+i*.49+k*.37+dx*.133);
+    const yy=top+waveAt(dx);
     dx===-54?x.moveTo(cx+dx,yy):x.lineTo(cx+dx,yy);
    }
    x.stroke();x.shadowBlur=0;
+   // A travelling surface highlight makes even the idle liquid visibly alive.
+   x.strokeStyle=l.flavor===5?'#aee3f3':'#fff8e0';
+   x.globalAlpha=activePour?.7:.43;x.lineWidth=1.25;x.beginPath();
+   for(let dx=-48;dx<=48;dx+=4){
+    const yy=top+waveAt(dx)+6+Math.sin(t*.003+dx*.17+i)*1.3;
+    dx===-48?x.moveTo(cx+dx,yy):x.lineTo(cx+dx,yy);
+   }
+   x.stroke();x.globalAlpha=1;
    // Refraction strip.
    const stripeX=cx-55+((t*.022+i*18+k*31)%110);
    const stripe=x.createLinearGradient(stripeX-12,top,stripeX+12,top);
@@ -751,7 +763,11 @@ function paint(target,time,small=false){
    lx.ellipse(sx,sy,13+(k%5)*4,2.1,0,0,Math.PI*2);lx.stroke();lx.restore();
   }
  }
- for(let i=0;i<21;i++)premiumJuice(lx,i,display[i],time);
+ for(let i=0;i<21;i++){
+   const touched=fx?.type==='pour' &&
+     (fx.source===i||flows.some(flow=>flow.from===i||flow.to===i));
+   premiumJuice(lx,i,display[i],time,touched);
+ }
  premiumStreams(lx,fx,flows,time);
  // For tab thumbnails, both paint passes share one small canvas.
  xx.setTransform(W/DRAW_W,0,0,H/DRAW_H,0,0);
@@ -772,10 +788,11 @@ const PAYOUT_FILL_MS=3000;
 const payoutVisual={cycle:null,from:0,target:0,startedAt:0,shown:0};
 function updatePayoutVisual(windowEl,pouring){
  const full=Math.max(0,Math.min(21,engine.fullCount));
- const stored=engine.glasses.reduce((sum,g)=>sum+Math.max(0,Math.min(1,g.volume)),0);
- const partial=full>=21?0:Math.min(.94,Math.max(0,stored-full)/Math.max(1,21-full));
- const tiers=full<10?Math.min(.96,stored/10):(full-9)+partial;
- const target=100*Math.max(0,Math.min(12,tiers))/12;
+ // The condition for row n is n FULL glasses. Each earned tier is filled
+ // exactly to the top border of that row; there is NO partial spill into
+ // an unearned tier. Bottom = 10 full, top = 21 full (12 equal rows).
+ const completedTiers=Math.max(0,Math.min(12,full-9));
+ const target=100*completedTiers/12;
  const anim=payoutVisual;
  const amount=(now)=>{
   if(anim.target===anim.from)return anim.target;
@@ -790,7 +807,10 @@ function updatePayoutVisual(windowEl,pouring){
   anim.from=amount(clock);anim.target=target;anim.startedAt=clock;
  }
  anim.shown=amount(clock);
- windowEl.style.setProperty('--wp-payout-fill',anim.shown.toFixed(2)+'%');
+ windowEl.style.setProperty('--wp-payout-fill',anim.shown.toFixed(6)+'%');
+ // Hide the waterline when no payout tier has been earned.
+ windowEl.querySelector('.wp-pay-juice-level')
+   ?.classList.toggle('has-juice',anim.shown>.015);
  const stillAnimating=Math.abs(anim.from-anim.target)>.02 &&
     clock-anim.startedAt<PAYOUT_FILL_MS;
  windowEl.classList.toggle('is-pouring',pouring||stillAnimating);
@@ -901,7 +921,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:64,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:65,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
