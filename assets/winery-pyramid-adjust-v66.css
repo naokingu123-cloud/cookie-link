@@ -1,0 +1,104 @@
+/* Winery Pyramid v66 — slightly larger upper-left injection cabinet, readable
+   HIT! on each achieved boost number, and tea stand shifted with all 21 cups.
+   Layout only; no changes to payout, drawing odds or gameplay timing. */
+
+/* Enlarge the left amount/boost cabinet without covering the cup pyramid. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left{
+  top:.75%!important;left:.7%!important;width:28%!important;
+  padding:8px 6px 7px!important;gap:5px!important;
+  border-width:2.5px!important;border-radius:13px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63:has(.wp-rate-panel[hidden]) .wp-power-left{
+  top:.75%!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-heading{
+  font-size:clamp(10px,1.85vw,17px)!important;
+  line-height:1.15!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge{
+  gap:4px!important;padding:5px 5px 6px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-tube{
+  height:15px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-stage{
+  min-height:19px!important;font-size:clamp(6px,1.04vw,10px)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-caption{
+  font-size:clamp(7px,1.09vw,10px)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-numbers{
+  gap:5px!important;padding:3px 1px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-number{
+  display:grid!important;place-items:center!important;
+  align-content:center!important;justify-items:center!important;
+  box-sizing:border-box!important;
+  width:90%!important;max-width:39px!important;min-width:18px!important;
+  height:auto!important;aspect-ratio:1 / 1!important;
+  line-height:1!important;overflow:visible!important;
+  position:relative!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number .wp-boost-numeral{
+  display:block!important;line-height:1!important;
+  font:400 clamp(11px,1.8vw,18px)/1 ElixirNumbers,system-ui,sans-serif!important;
+  color:inherit!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number.hit{
+  color:#24513f!important;
+  background:radial-gradient(circle at 30% 24%,#faffd9 5%,#cff6a7 42%,#58b88d)!important;
+  border:2px solid #fff9c1!important;
+  box-shadow:0 0 8px #d6ffe0,inset 0 0 4px #ffffff!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number.hit .wp-boost-numeral{
+  font:400 clamp(9px,1.32vw,13px)/1 ElixirNumbers,system-ui,sans-serif!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number .wp-boost-hit-word{
+  display:block!important;line-height:1!important;white-space:nowrap!important;
+  font:1000 clamp(6px,.95vw,9px)/1 system-ui,Arial,sans-serif!important;
+  letter-spacing:-.05em!important;
+  color:#126c3e!important;text-shadow:0 1px #fffbe1!important;
+}
+/* The transparent stand artwork must stay registered beneath the moved cups. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-tea-loaded .wp-tea-stand{
+  transform:translateX(-2.632%)!important;
+  transform-origin:center center!important;
+}
+@media(max-width:480px){
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left{
+    top:.65%!important;left:.55%!important;width:28.2%!important;
+    padding:3px 3px 4px!important;gap:2px!important;
+    border-width:1.5px!important;border-radius:9px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63:has(.wp-rate-panel[hidden]) .wp-power-left{
+    top:.65%!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-heading{
+    font-size:9px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge{
+    padding:3px 3px 4px!important;gap:2px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-tube{
+    height:11px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-stage{
+    min-height:13px!important;font-size:6px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-numbers{
+    gap:2px!important;padding:2px 1px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-number{
+    width:93%!important;max-width:26px!important;min-width:17px!important;
+    border-width:1.5px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number .wp-boost-numeral{
+    font-size:12px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number.hit .wp-boost-numeral{
+    font-size:9px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-boost-number .wp-boost-hit-word{
+    font-size:6.5px!important;
+  }
+}
