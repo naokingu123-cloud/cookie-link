@@ -728,8 +728,14 @@ function updateHUD(){
  scene.querySelector('.wp-total-poured').textContent='注 '+Number(engine.totalPoured||0).toLocaleString('ja-JP',{maximumFractionDigits:1})+'杯';
  // The reservoir rises through the earned payout tiers, while the central
  // game shows actual individual liquid volumes. It must never imply unearned WIN.
- const level=full<10?0:100*(full-9)/12;
- windowEl.style.setProperty('--wp-payout-fill',Math.max(0,Math.min(100,level)).toFixed(2)+'%');
+ const stored=engine.glasses.reduce((sum,g)=>sum+Math.max(0,Math.min(1,g.volume)),0);
+ // The bottom row holds a little visible juice even before 10 FULL glasses.
+ // After that, genuine retained juice gives fractional progress toward the
+ // next prize, without marking the next tier awarded prematurely.
+ const partial=full>=21?0:Math.min(.94,Math.max(0,stored-full)/Math.max(1,21-full));
+ const tiers=full<10?Math.min(.96,stored/10):(full-9)+partial;
+ const level=100*Math.max(0,Math.min(12,tiers))/12;
+ windowEl.style.setProperty('--wp-payout-fill',level.toFixed(2)+'%');
  scene.querySelector('.wp-mix i').textContent=engine.mixCount;
  scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
