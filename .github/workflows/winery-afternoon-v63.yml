@@ -1,0 +1,42 @@
+name: Winery v63 afternoon-tea stand artwork
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/maintenance/winery_afternoon_v63.py'
+      - '.github/workflows/winery-afternoon-v63.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-tea-stand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare photo-compositing
+        run: python -m pip install --disable-pip-version-check pillow numpy
+      - name: Build afternoon-tea stand only (no glasses or UI)
+        run: python .github/maintenance/winery_afternoon_v63.py
+      - name: Verify image and commit transparent WebP
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          p=Path('assets/winery-afternoon-stand-v63.webp')
+          im=Image.open(p)
+          assert im.size==(1672,941),im.size
+          assert 'A' in im.getbands(),im.getbands()
+          assert p.stat().st_size>50000,p.stat().st_size
+          print('WINERY_V63_STAND_OK',p.stat().st_size)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/winery-afternoon-stand-v63.webp
+          if ! git diff --cached --quiet; then
+            git commit -m 'art(winery): build transparent six-tier jeweled afternoon-tea stand [skip ci]'
+            git push origin HEAD:main
+          fi
