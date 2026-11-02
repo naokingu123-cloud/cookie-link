@@ -1,4 +1,4 @@
-/* Winery Pyramid v62: the user's sharp strawberry-orange fantasy juice-river painting. */
+/* Winery Pyramid v63: jeweled afternoon-tea racks, live pour gauge and 10–21 fixed prize levels. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -26,13 +26,35 @@ scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="
    '<div class="wp-boost-numbers">'+Array.from({length:4},(_,i)=>
      '<span class="wp-boost-number" data-index="'+i+'">?</span>').join('')+'</div></div>'+
  '<div class="wp-score"><span>満タン</span><strong>0 / 21</strong><small class="wp-sugar-summary">✦12杯</small></div>'+
- '<div class="wp-pay-fixed"><span>21杯 全満</span><small class="wp-sugar-mark"></small><b>0WIN</b></div>'+
- '<div class="wp-pay-window"><div class="wp-pay-track">'+Array.from({length:21},(_,i)=>20-i).map(n=>'<div class="wp-pay-row" data-full="'+n+'"><span>'+n+'杯</span><small class="wp-sugar-mark"></small><b>0WIN</b></div>').join('')+'</div></div>'+
+ '<div class="wp-pay-fixed"><span>配当</span><small class="wp-total-poured">注 0杯</small><b class="wp-score-mini">0/21</b></div>'+
+ '<div class="wp-pay-window"><div class="wp-pay-juice-reservoir" aria-hidden="true"><div class="wp-pay-juice-level"></div></div><div class="wp-pay-pour-stream" aria-hidden="true"></div><div class="wp-pay-track">'+Array.from({length:12},(_,i)=>21-i).map(n=>'<div class="wp-pay-row" data-full="'+n+'"><span>'+n+'杯</span><small class="wp-sugar-mark"></small><b>0WIN</b></div>').join('')+'</div></div>'+
  '<div class="wp-mix"><span>MIX <i>0</i>杯</span><b>×1.0倍</b></div>'+
  '<div class="wp-total"><span>TOTAL</span><b>0</b><small>WIN</small></div>'+
  '</aside>'+
  '<div class="wp-message" hidden></div>';
 S.panel.appendChild(scene);
+// Decoration only — no game quantities, numbers, or glasses are baked into the tray.
+scene.classList.add('wp-afternoon-v63');
+const teaStand=new Image();
+teaStand.className='wp-tea-stand';teaStand.decoding='async';teaStand.alt='';
+teaStand.onload=()=>{scene.classList.add('wp-tea-loaded');miniKey='';lastPaint=0;queueFrame();};
+teaStand.onerror=()=>{scene.classList.remove('wp-tea-loaded');console.warn('[Winery] Afternoon-tea stand not loaded; game remains playable.');};
+teaStand.src='assets/winery-afternoon-stand-v63.webp?v=63';
+scene.insertBefore(teaStand,scene.querySelector('.wp-canvas'));
+// Move the 1/2/4/8/16 boost cabinet into the free upper-left region.
+const boostPanel=scene.querySelector('.wp-power');
+boostPanel.classList.add('wp-power-left');
+scene.appendChild(boostPanel);
+// Right-side single amount indicator; leaves room for the full fixed payout chart.
+const payoutSidebar=scene.querySelector('.wp-sidebar');
+const amountGauge=document.createElement('div');
+amountGauge.className='wp-amount-gauge';
+amountGauge.setAttribute('role','status');
+amountGauge.setAttribute('aria-label','次に注ぐジュースの量');
+amountGauge.innerHTML='<div class="wp-amount-gauge-header"><span>注入量</span><strong class="wp-volume-number">1杯</strong></div>'+
+ '<div class="wp-amount-tube"><div class="wp-amount-fill"></div><div class="wp-amount-gloss"></div></div>'+
+ '<div class="wp-amount-markers">'+[1,2,4,8,16].map(n=>'<small data-amount="'+n+'">'+n+'</small>').join('')+'</div>';
+payoutSidebar.prepend(amountGauge);
 // No redundant Winery / Juice Round / Next Juice headers inside the board.
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
  // The background is an independent SVG behind both transparent canvases.
@@ -662,9 +684,19 @@ function paint(target,time,small=false){
 }
 
 function updateHUD(){
- const bet=app.bet(1),key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,engine.fullCount,engine.mixCount,engine.sugarTarget,engine.sugarAwarded,bet].join('/');
+ const bet=app.bet(1),pouring=engine.fx?.type==='pour';
+ const windowEl=scene.querySelector('.wp-pay-window');
+ windowEl.classList.toggle('is-pouring',pouring);
+ const key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalPoured,
+            engine.totalHundredths,engine.fullCount,engine.mixCount,engine.sugarTarget,
+            engine.sugarAwarded,bet].join('/');
  if(key===uiKey)return;uiKey=key;
+ // The left cabinet owns boost numbers; the right gauge mirrors actual pour amount.
  scene.querySelector('.wp-power-next b').textContent=engine.power+'杯';
+ scene.querySelector('.wp-volume-number').textContent=engine.power+'杯';
+ const fraction=Math.log2(Math.max(1,Math.min(16,engine.power)))/4;
+ scene.querySelector('.wp-amount-tube').style.setProperty('--wp-amount-percent',(12+88*fraction).toFixed(1)+'%');
+ scene.querySelectorAll('[data-amount]').forEach(el=>el.classList.toggle('is-current',Number(el.dataset.amount)===engine.power));
  scene.querySelector('.wp-score strong').textContent=engine.fullCount+' / 21';
  const summary=scene.querySelector('.wp-sugar-summary');
  summary.textContent=engine.sugarAwarded?'✦GET!':'✦'+engine.sugarTarget+'杯';
@@ -675,26 +707,32 @@ function updateHUD(){
    node.classList.toggle('earned',level<=engine.power);
  }
  [...scene.querySelectorAll('.wp-boost-number')].forEach((node,i)=>{
-   const n=engine.boostNumbers[i];
-   node.textContent=String(n);node.classList.toggle('hit',engine.seen.has(n));
-   node.setAttribute('aria-label',n+'番：'+(engine.seen.has(n)?'獲得':'注入量UP待機'));
+  const n=engine.boostNumbers[i];
+  node.textContent=String(n);
+  node.classList.toggle('hit',engine.seen.has(n));
+  node.setAttribute('aria-label',n+'番：'+(engine.seen.has(n)?'獲得':'注入量UP待機'));
  });
- scene.querySelector('.wp-pay-fixed b').textContent=money(bet,100)+'WIN';
+ // Only payable full-glass counts 10..21 are shown. Their values still come
+ // from K.PAY, not from the total amount poured, preserving the original rules.
  for(const row of scene.querySelectorAll('[data-full]')){
-  const n=+row.dataset.full;
+  const n=Number(row.dataset.full);
   row.querySelector('b').textContent=money(bet,K.PAY[n])+'WIN';
   row.classList.toggle('current',n===engine.fullCount);
+  row.classList.toggle('is-reached',n<=engine.fullCount);
   const marker=row.querySelector('.wp-sugar-mark');
   marker.textContent=n===engine.sugarTarget?(engine.sugarAwarded?'✦GET!':'✦'):'';
   marker.classList.toggle('is-get',n===engine.sugarTarget&&engine.sugarAwarded);
  }
- scene.querySelector('.wp-pay-fixed').classList.toggle('current',engine.fullCount===21);
- scene.querySelector('.wp-pay-fixed .wp-sugar-mark').textContent=
-   engine.sugarTarget===21?(engine.sugarAwarded?'✦GET!':'✦'):'';
- const top=Math.max(5,Math.min(20,engine.fullCount+3));scene.querySelector('.wp-pay-track').style.setProperty('--offset',20-top);
- scene.querySelector('.wp-mix i').textContent=engine.mixCount;scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
+ const full=Math.max(0,Math.min(21,engine.fullCount));
+ scene.querySelector('.wp-score-mini').textContent=full+'/21';
+ scene.querySelector('.wp-total-poured').textContent='注 '+Number(engine.totalPoured||0).toLocaleString('ja-JP',{maximumFractionDigits:1})+'杯';
+ // The reservoir rises through the earned payout tiers, while the central
+ // game shows actual individual liquid volumes. It must never imply unearned WIN.
+ const level=full<10?0:100*(full-9)/12;
+ windowEl.style.setProperty('--wp-payout-fill',Math.max(0,Math.min(100,level)).toFixed(2)+'%');
+ scene.querySelector('.wp-mix i').textContent=engine.mixCount;
+ scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
-
 }
 function paintMini(){
  const k=[engine.version,engine.phase,engine.processed,engine.power,engine.totalHundredths,app.bet(1)].join('/');if(k===miniKey)return;miniKey=k;
@@ -754,7 +792,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:62,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:63,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
