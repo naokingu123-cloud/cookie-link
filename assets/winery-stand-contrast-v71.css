@@ -1,0 +1,48 @@
+/* Winery Pyramid v71 — subtle stand-area contrast dimmer.
+ * Only the illustration BEHIND the 21 active glasses is darkened.
+ * Live juice (z=3), crystal cups (z=4), HUD and payment panels remain bright.
+ * No blur, so the detailed fruit kingdom is not degraded.
+ */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-stand-contrast-v71{
+ position:absolute!important;
+ inset:0!important;
+ display:block!important;
+ z-index:2!important;
+ pointer-events:none!important;
+ border:0!important;
+ border-radius:inherit!important;
+ background:
+  radial-gradient(ellipse 43% 72% at 45% 54%,
+    rgba(28,13,51,.36) 0%,
+    rgba(32,16,53,.31) 42%,
+    rgba(36,16,55,.22) 71%,
+    rgba(39,19,63,0) 100%),
+  linear-gradient(90deg,
+    transparent 18%,
+    rgba(33,14,53,.08) 30%,
+    rgba(24,9,43,.14) 49%,
+    rgba(33,14,55,.08) 67%,
+    transparent 75%)!important;
+ filter:none!important;
+ opacity:1!important;
+ box-shadow:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-tea-loaded>.wp-tea-stand{
+ /* Darken the stand's fixed decorative relief, not the live glass/liquid. */
+ filter:brightness(.82) contrast(1.12) saturate(.97)
+        drop-shadow(0 3px 5px rgba(45,18,52,.42))!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-liquid-layer{
+ z-index:3!important;
+ filter:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-canvas{
+ z-index:4!important;
+ filter:none!important;
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-stand-contrast-v71{
+  background:radial-gradient(ellipse 45% 74% at 45% 55%,
+    rgba(27,12,47,.38),rgba(28,12,48,.25) 65%,transparent 100%)!important;
+ }
+}
