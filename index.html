@@ -373,10 +373,10 @@ Copyright 2016 The Rounded M+ Project Authors.
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
  try{
-  const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title12','assets/six-drop-simple-glass.js?v=2','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=11','assets/sixdrop-hud-v14.js?v=3','assets/highest-role-reach-v18.js?v=1','assets/gelato-prism-v28.js?v=52','assets/winery-pyramid-core-v1.js?v=53','assets/winery-pyramid-v1.js?v=68','assets/recent-game-demos-simple-v68.js?v=68'];
+  const paths=['optimized/app-01.js?v=title4','optimized/achievements-v3.js?v=title12','assets/six-drop-simple-glass.js?v=2','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=11','assets/sixdrop-hud-v14.js?v=3','assets/highest-role-reach-v18.js?v=1','assets/gelato-prism-v28.js?v=52','assets/winery-pyramid-core-v1.js?v=53','assets/winery-pyramid-v1.js?v=68','assets/recent-game-demos-simple-v69.js?v=69'];
   const responses=await Promise.all(paths.map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
-  let [game,extension,sixGlassUI,sixBottleV6,sixBottleV8,sixHudV14,highestReachV18,gelatoPrismV28,wineryPyramidCore,wineryPyramidV1,recentGameDemosV68]=await Promise.all(responses.map(r=>r.text()));
+  let [game,extension,sixGlassUI,sixBottleV6,sixBottleV8,sixHudV14,highestReachV18,gelatoPrismV28,wineryPyramidCore,wineryPyramidV1,recentGameDemosV69]=await Promise.all(responses.map(r=>r.text()));
   // Visual-only: slightly steepen the amber platter's outer 0.26-unit rim.
   // Leave ball physics, pocket positions, and the central plateau unchanged.
   const originalAmberProfile="return hubHeight(r)*(1-blend)+deckHeight(r)*blend+.025+.012*Math.sin((r-.90)/1.83*Math.PI);";
@@ -397,7 +397,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   else console.warn('Cookie-only rainbow guard missing');
   const end=game.lastIndexOf('})();');
   if(end<0)throw new Error('ゲームスクリプト構造が不正です');
-  const merged=wineryPyramidCore+'\n'+game.slice(0,end)+'\n'+extension+'\n'+sixGlassUI+'\n'+sixBottleV6+'\n'+sixBottleV8+'\n'+sixHudV14+'\n'+highestReachV18+'\n'+gelatoPrismV28+'\n'+wineryPyramidV1+'\n'+recentGameDemosV68+'\n'+game.slice(end);
+  const merged=wineryPyramidCore+'\n'+game.slice(0,end)+'\n'+extension+'\n'+sixGlassUI+'\n'+sixBottleV6+'\n'+sixBottleV8+'\n'+sixHudV14+'\n'+highestReachV18+'\n'+gelatoPrismV28+'\n'+wineryPyramidV1+'\n'+recentGameDemosV69+'\n'+game.slice(end);
   const script=document.createElement('script');
   script.textContent=merged;
   document.body.appendChild(script);
