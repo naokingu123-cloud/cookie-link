@@ -1,0 +1,21 @@
+name: Verify Winery Payout v72
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/winery-pyramid-core-v1.js'
+      - '.github/tests/winery_payout_v72.cjs'
+      - '.github/workflows/verify-winery-v72.yml'
+permissions:
+  contents: read
+jobs:
+  payout-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify all 0–21 full-glass payouts, MIX and calibrated MENU targets
+        run: node .github/tests/winery_payout_v72.cjs
