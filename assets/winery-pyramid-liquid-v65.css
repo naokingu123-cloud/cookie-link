@@ -1,0 +1,78 @@
+/* Winery Pyramid v65 — exact tier-brim stops and continuous liquid surfaces.
+   With 12 equal payout rows, ten full glasses occupy exactly 1/12 of
+   the reservoir, 11 fill 2/12, ..., 21 fill all 12/12. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window{
+  isolation:isolate!important;
+  overflow:hidden!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level{
+  box-sizing:border-box!important;
+  bottom:0!important;
+  height:var(--wp-payout-fill,0%)!important;
+  min-height:0!important;
+  max-height:100%!important;
+  border-top:2px solid rgba(255,249,216,.96)!important;
+  transition:height .045s linear!important;
+  will-change:height;
+  overflow:visible!important;
+  background:linear-gradient(115deg,#ff9cb3da 0%,#f7548fe1 29%,#d9327bdc 58%,#bd469de1 84%,#ffb1c8cc 100%)!important;
+  box-shadow:inset 0 4px 11px #fff7ca50,0 -3px 8px #ffddbe5e!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level::before{
+  content:"";
+  position:absolute;
+  left:-8%;top:-5px;width:116%;height:10px;
+  pointer-events:none;
+  display:block;
+  border-radius:48% 52% 52% 45% / 85% 70% 65% 75%;
+  background:linear-gradient(180deg,rgba(255,254,224,.92),rgba(255,211,209,.72) 55%,rgba(255,145,185,.0));
+  border-top:1px solid rgba(255,252,229,.9);
+  box-shadow:0 -1px 5px rgba(255,240,190,.66);
+  animation:wp-tier-surface-idle-v65 3.5s ease-in-out infinite alternate;
+  transform-origin:center center;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level::after{
+  content:"";
+  position:absolute;
+  left:5%;right:5%;top:5px;height:14px;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 30%,rgba(255,250,239,.62) 0 2px,transparent 3px),
+    radial-gradient(ellipse at 67% 65%,rgba(255,250,239,.46) 0 1px,transparent 2px),
+    radial-gradient(ellipse at 80% 32%,rgba(255,235,224,.45) 0 1.5px,transparent 3px);
+  opacity:.72;
+  animation:wp-tier-bubbles-v65 4.6s ease-in-out infinite alternate;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level:not(.has-juice)::before,
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level:not(.has-juice)::after{
+  display:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window.is-pouring .wp-pay-juice-level::before{
+  animation:wp-tier-surface-pour-v65 .88s ease-in-out infinite alternate;
+  height:13px;top:-6px;opacity:1;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window.is-pouring .wp-pay-juice-level::after{
+  animation-duration:1.1s;opacity:1;
+}
+@keyframes wp-tier-surface-idle-v65{
+  0%{transform:translateX(-3%) translateY(-1px) rotate(-1.4deg) scaleY(.78)}
+  50%{transform:translateX(0) translateY(1px) rotate(1deg) scaleY(1)}
+  100%{transform:translateX(3%) translateY(-1px) rotate(-.8deg) scaleY(.84)}
+}
+@keyframes wp-tier-surface-pour-v65{
+  0%{transform:translateX(-5%) translateY(-3px) rotate(-2.3deg) scaleY(1.1)}
+  50%{transform:translateX(1%) translateY(3px) rotate(1.5deg) scaleY(.85)}
+  100%{transform:translateX(5%) translateY(-3px) rotate(-1.8deg) scaleY(1.12)}
+}
+@keyframes wp-tier-bubbles-v65{
+  from{transform:translateY(3px) translateX(-2%);opacity:.48}
+  to{transform:translateY(-3px) translateX(2%);opacity:.94}
+}
+@media(prefers-reduced-motion:reduce){
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level::before,
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level::after{
+    animation:none!important;transform:none!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level{
+    transition:none!important;will-change:auto;
+  }
+}
