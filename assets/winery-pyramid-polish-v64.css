@@ -1,0 +1,189 @@
+/* Winery Pyramid v64 — all injection controls in one left cabinet,
+   12 fixed payout levels / larger MIX box / 3-second visible payout pouring.
+   Reuses the existing v63 tea stand and live game engine. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left{
+  position:absolute!important;
+  top:1%!important;left:.85%!important;width:24.5%!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:stretch!important;justify-content:flex-start!important;
+  z-index:12!important;gap:3px!important;
+  padding:6px 4px 5px!important;margin:0!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:hidden!important;
+  border:2px solid #ffe6b0!important;border-radius:12px!important;
+  background:
+    radial-gradient(ellipse at 44% -5%,rgba(255,249,213,.24),transparent 65%),
+    linear-gradient(148deg,#d775a7fa,#9f4889f9 60%,#6a2e70f9)!important;
+  box-shadow:inset 0 0 0 1px #ffebc892,0 2px 10px #5b25617d!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63:has(.wp-rate-panel[hidden]) .wp-power-left{
+  top:1%!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-heading{
+  font-size:clamp(9px,1.7vw,15px)!important;line-height:1.05!important;
+  text-align:center!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-power-next{
+  display:none!important;
+}
+/* The 1–16-cup amount display and its actual visual tube now live inside
+   the same boost cabinet, rather than stealing a row from the payouts. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge{
+  width:100%!important;height:auto!important;min-height:0!important;
+  display:flex!important;flex:none!important;
+  flex-direction:column!important;align-items:stretch!important;
+  gap:3px!important;margin:0!important;
+  padding:4px 4px 5px!important;
+  border:1px solid #ffe5b7!important;border-radius:8px!important;
+  background:
+    radial-gradient(ellipse at 30% 0%,#fff4cc77,transparent 65%),
+    linear-gradient(130deg,#ad4277f7,#722d77fa)!important;
+  box-shadow:inset 0 1px #fff1d08b,0 1px 5px #6724517a!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge-header{
+  font:900 clamp(7px,1.15vw,11px)/1 system-ui,sans-serif!important;
+  gap:3px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge-header strong{
+  font:900 clamp(14px,2.3vw,23px)/1 ArcadePayout,Georgia,serif!important;
+  color:#fff0a8!important;
+  text-shadow:0 0 6px #ffebb9a3,0 1px #7d345c!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-tube{
+  display:block!important;flex:none!important;
+  width:100%!important;height:13px!important;
+  border:1.4px solid #ffe6b1!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-markers{
+  font:850 clamp(7px,1.08vw,10px)/1 system-ui,sans-serif!important;
+  width:100%!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-ladder{
+  width:100%!important;gap:2px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-stage{
+  min-height:15px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-numbers{
+  gap:2px!important;padding:1px 1px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-number{
+  min-width:12px!important;max-width:28px!important;width:76%!important;
+}
+/* Initial RTP setup still exists, but is placed BELOW the injection cabinet
+   and is hidden automatically when the game starts. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-rate-panel{
+  top:39.5%!important;left:1%!important;
+  width:24%!important;max-width:none!important;
+  z-index:11!important;
+}
+/* Sidebar now has FIVE children: score, header, 12-row reservoir, MIX, TOTAL.
+   No injection readout on the right. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-sidebar{
+  grid-template-rows:minmax(16px,auto) 20px minmax(0,1fr) 53px 31px!important;
+  gap:3px!important;padding:5px 4px!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-sidebar>.wp-amount-gauge{
+  display:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window{
+  width:100%!important;height:100%!important;min-height:0!important;
+  flex:none!important;overflow:hidden!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-track{
+  height:100%!important;display:grid!important;
+  grid-template-rows:repeat(12,minmax(0,1fr))!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix{
+  height:53px!important;min-height:0!important;max-height:none!important;
+  padding:3px 1px!important;flex:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix span{
+  font-size:clamp(9px,1.3vw,12px)!important;line-height:1.05!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix b{
+  font-size:clamp(18px,3vw,29px)!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-total{
+  height:31px!important;min-height:0!important;max-height:none!important;
+  flex:none!important;
+}
+/* Game-time-controlled reservoir animation: the JS interpolates 3000 ms,
+   so a second CSS 750-ms animation would distort the actual progression. */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level{
+  transition:height .08s linear!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-pour-stream{
+  left:49%!important;top:-5%!important;height:105%!important;width:6px!important;
+  background:linear-gradient(#fff8db,#ffcbac 13%,#ff76a2 47%,#d12c77 82%,transparent)!important;
+  box-shadow:0 0 9px #ffe9be,0 0 4px #ff78ac!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window.is-pouring .wp-pay-pour-stream{
+  opacity:.88!important;
+  animation:wp-pay-pour-v64 3s cubic-bezier(.2,.55,.3,.96) infinite!important;
+}
+@keyframes wp-pay-pour-v64{
+  0%{transform:scaleY(.015);opacity:.18}
+  17%{transform:scaleY(.35);opacity:.92}
+  70%{transform:scaleY(.86);opacity:.96}
+  100%{transform:scaleY(1);opacity:.66}
+}
+@media(max-width:480px){
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left{
+    top:.65%!important;left:.6%!important;width:24.5%!important;
+    padding:2px 2px 3px!important;gap:1px!important;
+    border-width:1px!important;border-radius:8px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-heading{
+    font-size:8px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge{
+    padding:2px 2px 3px!important;gap:1px!important;
+    border-radius:5px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge-header{
+    font-size:6px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-gauge-header strong{
+    font-size:13px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-tube{
+    height:9px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-amount-markers{
+    font-size:6px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-stage{
+    min-height:11px!important;font-size:5px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-caption{
+    font-size:6px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-power-left .wp-boost-number{
+    min-width:10px!important;max-width:20px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-rate-panel{
+    top:40%!important;left:.7%!important;width:24%!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-sidebar{
+    grid-template-rows:14px 17px minmax(0,1fr) 43px 27px!important;
+    gap:1px!important;padding:2px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix{
+    height:43px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-mix b{
+    font-size:18px!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-total{
+    height:27px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-window.is-pouring .wp-pay-pour-stream{
+    animation:none!important;transform:scaleY(.8)!important;opacity:.65!important;
+  }
+  body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63 .wp-pay-juice-level{
+    transition:none!important;
+  }
+}
