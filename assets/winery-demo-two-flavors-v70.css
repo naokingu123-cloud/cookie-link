@@ -1,0 +1,67 @@
+/* Winery DEMO ③ color correction v70.
+ * The v69 stylesheet painted every .rg69-liquid pink regardless of the
+ * flavor-specific SVG fill attribute. These selectors preserve each flavor
+ * and show orange and strawberry-pink simultaneously pouring into MIX.
+ * AFFECTS DEMO ONLY — real 21-glass game is unchanged.
+ */
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-liquid[data-flavor="orange"]{
+ fill:url(#rg69-juice-orange)!important;
+ filter:saturate(1.5) brightness(1.07)!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-liquid[data-flavor="berry"]{
+ fill:url(#rg69-juice-grad)!important;
+ filter:saturate(1.4) brightness(1.05)!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-liquid[data-flavor="mix"]{
+ fill:url(#rg69-juice-mix)!important;
+ filter:saturate(1.3) brightness(1.08)!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-flow[data-stream-flavor="orange"]{
+ stroke:#ff921e!important;
+ filter:drop-shadow(0 0 7px #ffbc4d)!important;
+ stroke-width:8.5!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-flow[data-stream-flavor="berry"]{
+ stroke:#f22b88!important;
+ filter:drop-shadow(0 0 7px #ff82bd)!important;
+ stroke-width:8.5!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-part{
+ opacity:0;
+ transition:opacity .20s ease;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-part[data-mix-part="orange"]{
+ fill:url(#rg69-juice-orange)!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-part[data-mix-part="berry"]{
+ fill:url(#rg69-juice-grad)!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-labels{
+ opacity:0;
+ transition:opacity .25s ease;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-labels.on{
+ opacity:1;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-labels rect{
+ stroke:#fffbe0;
+ stroke-width:2.2;
+ filter:drop-shadow(0 1px 3px #6b2d4f);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-labels text{
+ font:1000 13px/1 system-ui,sans-serif;
+ text-anchor:middle;
+ fill:#fffbe9;
+ stroke:#6d2e58;
+ stroke-width:2.2;
+ paint-order:stroke fill;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mixhint.on{
+ filter:drop-shadow(0 0 8px #ffe9a2)!important;
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-part,
+ body.winery-enabled #panel1 .rg69-winery-demo .rg70-mix-labels{
+  transition:none!important;
+ }
+}
