@@ -1,0 +1,279 @@
+/* v69 explanatory boards: simple 4-point Gelato / 6-cup Winery examples.
+   These appear only during the pre-game ready period. */
+body .rg69-demo{
+ position:absolute!important;inset:0!important;z-index:90!important;
+ display:none!important;align-items:center!important;justify-content:center!important;
+ pointer-events:none!important;box-sizing:border-box!important;
+ background:linear-gradient(140deg,rgba(48,21,67,.83),rgba(66,29,85,.74),rgba(44,23,65,.87))!important;
+}
+body .rg69-demo.rg69-show{display:flex!important}
+body .rg69-card{
+ display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ box-sizing:border-box;position:relative;overflow:hidden;
+ width:min(83%,650px);height:94%;max-height:620px;min-height:0;
+ border:3px solid #fff5c7;border-radius:19px;
+ background:linear-gradient(160deg,#fff4de 0%,#ffe7ee 38%,#fff5dd 72%,#f5dcec);
+ box-shadow:inset 0 0 0 2px #e5a1c8,0 0 30px #fff5c899,0 5px 25px #2a123da3;
+ padding:7px 9px 6px;gap:5px;
+ font-family:system-ui,'Hiragino Kaku Gothic ProN',sans-serif;
+}
+body .rg69-heading{
+ width:100%;flex:0 0 auto;
+ display:flex;align-items:center;justify-content:space-between;gap:5px;
+ border:2px solid #ffd99b;border-radius:12px;padding:5px 8px;
+ background:linear-gradient(110deg,#903579,#ca629c,#8b3b8c);
+ color:#fff5c9;text-shadow:0 1px #612354;
+ box-sizing:border-box;
+ font:900 clamp(9px,1.5vw,15px)/1.05 system-ui,sans-serif;
+}
+body .rg69-heading strong{
+ white-space:nowrap;font:1000 clamp(9px,1.55vw,15px)/1 system-ui,sans-serif;
+}
+body .rg69-heading em{
+ font:1000 clamp(8px,1.28vw,13px)/1 system-ui,sans-serif;
+ color:#fffce9;font-style:normal;white-space:nowrap;
+}
+body .rg69-board{
+ position:relative;display:flex;align-items:center;justify-content:center;
+ flex:1 1 auto;width:100%;min-height:0;overflow:hidden;
+ border:2px solid #d994ad;border-radius:14px;
+ background:
+  radial-gradient(ellipse at 50% 44%,#fffef9 0%,#fff8ed 45%,#f6ddf0 100%);
+ box-shadow:inset 0 1px 11px rgba(134,56,121,.12);
+}
+body .rg69-board svg{
+ display:block;width:100%;height:100%;max-width:500px;max-height:440px;
+ overflow:visible;filter:drop-shadow(0 2px 2px #783c6262);
+}
+body .rg69-instructions{
+ display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+ width:100%;min-height:31px;box-sizing:border-box;
+ border:2px solid #ffdba9;border-radius:11px;padding:4px 7px;
+ background:linear-gradient(120deg,#ec8bb2,#b458a7,#a34898);
+ color:#fffef2;text-shadow:0 1px #722957;
+ box-shadow:0 2px 5px #9a517c4a;
+ text-align:center;font:1000 clamp(10px,1.7vw,16px)/1.16 system-ui,sans-serif;
+}
+body .rg69-progress{width:100%;height:5px;overflow:hidden;border-radius:8px;
+ background:#6b366f;flex:0 0 5px}
+body .rg69-progress i{height:100%;width:0;display:block;
+ background:linear-gradient(90deg,#fd78a4,#ffd77a,#fffbce);
+ box-shadow:0 0 8px #ffdeba}
+body .rg69-note{
+ display:block;color:#965977;
+ text-align:center;font:750 clamp(6px,1vw,9px)/1.15 system-ui,sans-serif;
+}
+body .rg69-gelato-demo .rg69-edge{
+ stroke:#b26b8f;stroke-width:5;opacity:.45;
+ transition:stroke .3s,stroke-width .3s,opacity .3s;
+}
+body .rg69-gelato-demo .rg69-edge.on{
+ stroke:#ffcb67;stroke-width:10;opacity:1;
+ filter:drop-shadow(0 0 6px #ffb84b);
+}
+body .rg69-gelato-demo .rg69-triangle{
+ opacity:.07;stroke:#d89aad;stroke-width:2;
+ transition:opacity .4s,filter .4s;
+}
+body .rg69-gelato-demo .rg69-triangle.on{
+ opacity:.93;stroke:#fff4c6;stroke-width:5;
+ filter:drop-shadow(0 0 9px #ffd9a3);
+ animation:rg69-face-glow 1.1s ease-in-out infinite alternate;
+}
+body .rg69-node{
+ transition:filter .28s,transform .28s;
+ transform-box:fill-box;transform-origin:center;
+}
+body .rg69-gelato-demo .rg69-node circle{
+ fill:#f4dbe9;stroke:#aa6c93;stroke-width:4;
+}
+body .rg69-gelato-demo .rg69-node text:first-of-type{
+ fill:#71375e;font:900 24px/1 system-ui,sans-serif;
+ text-anchor:middle;paint-order:stroke;stroke:#fff6dc;stroke-width:1.8;
+}
+body .rg69-gelato-demo .rg69-node.on circle{
+ fill:#fff2b8;stroke:#ffc369;stroke-width:6;
+ filter:drop-shadow(0 0 8px #ffb85c);
+}
+body .rg69-gelato-demo .rg69-node .rg69-hit{
+ font:1000 16px/1 system-ui,sans-serif;
+ text-anchor:middle;fill:#c03975;stroke:#fffcea;stroke-width:2;
+ paint-order:stroke;opacity:0;
+}
+body .rg69-gelato-demo .rg69-node.on .rg69-hit{opacity:1}
+body .rg69-gelato-demo .rg69-win{
+ opacity:0;transition:opacity .25s;
+ fill:#a82f7b;font:1000 20px/1 system-ui,sans-serif;
+ text-anchor:middle;stroke:#fff8d3;stroke-width:3;paint-order:stroke;
+}
+body .rg69-gelato-demo .rg69-win.on{opacity:1}
+@keyframes rg69-face-glow{
+ from{filter:drop-shadow(0 0 3px #ffecc7);opacity:.82}
+ to{filter:drop-shadow(0 0 10px #fff6b0);opacity:.99}
+}
+body .rg69-winery-demo .rg69-liquid{
+ fill:url(#rg69-juice-grad);opacity:.94;
+}
+body .rg69-winery-demo .rg69-surface{
+ stroke:#fff7e4;stroke-width:3;fill:none;
+ filter:drop-shadow(0 0 3px #fff5db);
+}
+body .rg69-winery-demo .rg69-glass-shape{
+ fill:rgba(218,241,255,.20);stroke:#dda34c;stroke-width:4;
+}
+body .rg69-winery-demo .rg69-glass-rim{
+ fill:none;stroke:#ffebaf;stroke-width:4;
+}
+body .rg69-winery-demo .rg69-glass-stem{
+ fill:none;stroke:#b57965;stroke-width:5;stroke-linecap:round;
+}
+body .rg69-winery-demo .rg69-glass-base{
+ fill:#ffd999;stroke:#e2ad67;stroke-width:2;
+}
+body .rg69-winery-demo .rg69-glass-number{
+ font:1000 15px/1 system-ui,sans-serif;
+ fill:#7e3a66;text-anchor:middle;stroke:#fff4dc;stroke-width:2;
+ paint-order:stroke;
+}
+body .rg69-winery-demo .rg69-flow{
+ fill:none;stroke:#fa4d99;stroke-width:7;stroke-linecap:round;
+ stroke-dasharray:12 8;filter:drop-shadow(0 0 6px #ffabbd);
+ opacity:0;transition:opacity .2s;
+ animation:rg69-flow 1s linear infinite;
+}
+body .rg69-winery-demo .rg69-flow.on{opacity:1}
+body .rg69-winery-demo .rg69-boost,
+body .rg69-winery-demo .rg69-payhint{
+ opacity:0;transition:opacity .25s;transform-box:fill-box;
+}
+body .rg69-winery-demo .rg69-boost.on,
+body .rg69-winery-demo .rg69-payhint.on{opacity:1}
+body .rg69-winery-demo .rg69-boost text,
+body .rg69-winery-demo .rg69-payhint text{
+ font:1000 19px/1 system-ui,sans-serif;
+ fill:#853568;paint-order:stroke;stroke:#fffaf0;stroke-width:3;
+ text-anchor:middle;
+}
+@keyframes rg69-flow{to{stroke-dashoffset:-40}}
+@media(max-width:480px){
+ body .rg69-card{
+  width:88%;height:95%;padding:3px 4px;gap:3px;border-width:2px;border-radius:10px;
+ }
+ body .rg69-heading{
+  padding:2px 4px;border-width:1px;border-radius:6px;font-size:8px;
+ }
+ body .rg69-heading strong,body .rg69-heading em{font-size:8px}
+ body .rg69-instructions{
+  padding:2px 3px;min-height:24px;border-width:1px;border-radius:6px;
+  font-size:10px;
+ }
+ body .rg69-board{border-width:1px;border-radius:7px}
+ body .rg69-progress{height:3px;flex-basis:3px}
+ body .rg69-note{font-size:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ body .rg69-demo *,body .rg69-demo{
+  animation:none!important;transition:none!important;
+ }
+}
+
+/* v69: Winery example uses ONLY the left game stage, never the right payout cabinet. */
+body.winery-enabled #panel1 .rg69-winery-demo{
+  top:1%!important;bottom:1%!important;left:.65%!important;
+  right:auto!important;width:72.5%!important;max-width:72.5%!important;
+  background:linear-gradient(120deg,#602b78e8,#492053e8)!important;
+  align-items:stretch!important;justify-content:stretch!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo:not(.rg69-show){display:none!important}
+body.winery-enabled #panel1 .rg69-winery-demo.rg69-show{display:flex!important}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-card{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  box-sizing:border-box!important;margin:0!important;
+}
+body.gelato-active #panel0 .rg69-gelato-demo .rg69-board{
+  background:
+    linear-gradient(160deg,#fff9eac9,#fff1dfca 52%,#f7e5f5dd),
+    url('gelato-ice-candy-kingdom-v41.webp?v=41') center/cover no-repeat!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-board{
+  background:
+    linear-gradient(160deg,#fff5e9ca,#ffedf0d8 50%,#fff5d8cf),
+    url('winery-juice-river-v62.webp?v=62') center/cover no-repeat!important;
+}
+/* Increase the perceived finish of the existing interactive gem/coupe art. */
+body.gelato-active #panel0 .rg69-node circle{
+  filter:drop-shadow(0 1px 4px #ffdeb0);
+}
+body.gelato-active #panel0 .rg69-triangle.on{
+  filter:drop-shadow(0 0 9px #fff4c9) brightness(1.08);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-glass-shape{
+  fill:#d4f2ff25!important;
+  stroke:#e6ac4f!important;stroke-width:4.5!important;
+  filter:drop-shadow(0 0 4px #ffe9a9ad);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-glass-rim{
+  stroke:#fff2c5!important;stroke-width:5!important;
+  filter:drop-shadow(0 0 5px #fbc77b);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-glass-number{
+  stroke:#fff9dd!important;stroke-width:2.4!important;
+  fill:#733463!important;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-liquid{
+  opacity:.95;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-liquid[data-flavor="orange"]{
+  filter:brightness(1.13);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-liquid[data-flavor="mix"]{
+  filter:brightness(1.22) drop-shadow(0 0 2px #ffe2c4);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mixhint{
+  opacity:0;transform:scale(.75);transform-origin:345px 120px;
+  transition:opacity .3s,transform .35s;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mixhint.on{
+  opacity:1;transform:scale(1);
+  filter:drop-shadow(0 0 6px #fcbf7d);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mixhint text{
+  fill:#953468;font:1000 18px/1 system-ui,sans-serif;
+  text-anchor:middle;paint-order:stroke;stroke:#fff9dc;stroke-width:2.4;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel{
+  position:absolute;top:4px;right:4px;z-index:3;
+  display:none;flex-direction:column;gap:1px;
+  align-items:center;border:1px solid #fff2b7;border-radius:9px;
+  padding:3px 5px;max-width:35%;
+  background:linear-gradient(120deg,#743478ef,#bc609adf);
+  color:#fff8d9;text-shadow:0 1px #582660;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel.on{display:flex}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel b{
+  font:1000 clamp(8px,1.3vw,13px)/1.05 system-ui,sans-serif;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel small{
+  font:900 clamp(6px,1vw,10px)/1 system-ui,sans-serif;color:#fff0b2;
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-stand-ornament{
+  stroke:#ffc875;stroke-width:7;fill:none;
+  filter:drop-shadow(0 0 5px #eab8798c);
+}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-glass-base{
+  filter:drop-shadow(0 0 2px #fbd78b);
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .rg69-winery-demo{
+  left:.35%!important;width:72.8%!important;max-width:72.8%!important;
+  top:.5%!important;bottom:.5%!important;
+ }
+ body.winery-enabled #panel1 .rg69-winery-demo .rg69-card{
+  padding:3px!important;gap:2px!important;
+ }
+ body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel{
+  padding:1px 2px;max-width:31%;
+ }
+ body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel b{font-size:7px}
+ body.winery-enabled #panel1 .rg69-winery-demo .rg69-mix-panel small{font-size:6px}
+}
