@@ -1,0 +1,174 @@
+/* SWEETS LINK v67 — 20-second pre-BET tutorials for Gelato Prism and
+   Winery Pyramid. Overlays are presentation-only and cannot change rules. */
+
+/* Common theatrical captions, designed to be readable over bright candy art. */
+body .rg67-demo{
+  pointer-events:none!important;
+  position:absolute!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  transition:opacity .26s ease,visibility .26s!important;
+  overflow:hidden!important;
+}
+body .rg67-demo.rg67-active{
+  visibility:visible!important;
+  opacity:1!important;
+}
+body .rg67-demo-head{
+  position:absolute;left:9%;right:9%;top:1.3%;z-index:2;
+  display:flex;align-items:center;justify-content:space-between;gap:5px;
+  padding:5px 8px;border:2px solid #ffedb3;border-radius:10px;
+  background:linear-gradient(115deg,#823a81ed,#b15b93e8,#9f477ddf);
+  box-shadow:0 2px 9px #421638bd,inset 0 1px #fff9d69e;
+  color:#fff5d4;font:900 clamp(8px,1.45vw,12px)/1.1 system-ui,sans-serif;
+  text-shadow:0 1px #5c255c;white-space:nowrap;
+}
+body .rg67-demo-head .rg67-demo-label{
+  color:#ffec9e;letter-spacing:.05em;
+}
+body .rg67-demo-head .rg67-demo-ball{
+  font-size:clamp(8px,1.3vw,11px)!important;
+  color:#fff8dd;
+}
+body .rg67-demo-caption{
+  position:absolute;left:9%;right:9%;bottom:1.5%;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:4px 6px;border:2px solid #fff0b0;border-radius:10px;
+  background:linear-gradient(115deg,#74317ad9,#bb508be6,#82307cd9);
+  color:#fffbdc;box-shadow:0 0 11px #f8b8c697;
+  text-align:center;text-shadow:0 1px #602852;
+}
+body .rg67-demo-caption b{
+  font:950 clamp(10px,1.8vw,17px)/1.2 system-ui,sans-serif;
+}
+body .rg67-demo-caption small{
+  font:800 clamp(7px,1vw,10px)/1.05 system-ui,sans-serif;
+  color:#ffefb2!important;letter-spacing:.05em;
+}
+body .rg67-demo-progress{
+  position:absolute;left:10%;right:10%;bottom:0%;z-index:4;
+  height:3px;overflow:hidden;border-radius:5px;
+  background:#3d154d;
+}
+body .rg67-demo-progress>i{
+  display:block;height:100%;width:0;
+  background:linear-gradient(90deg,#ff8bb5,#ffe39d,#fff9c8);
+  box-shadow:0 0 7px #ffe5be;
+  transition:width .09s linear;
+}
+
+/* GELATO: the original 19-node/42-edge graph is the coordinate system.
+   The translucent overlay preserves visibility of the actual gelato art. */
+body.gelato-active #panel0 .gp-mold>.rg67-gelato-demo{
+  inset:0!important;z-index:30!important;width:100%!important;height:100%!important;
+  border-radius:12px!important;
+  background:radial-gradient(ellipse at 48% 52%,#2514471a 5%,#692a7754 98%);
+}
+body.gelato-active #panel0 .rg67-gelato-demo>svg{
+  display:block!important;position:absolute;inset:0;
+  width:100%!important;height:100%!important;
+  filter:drop-shadow(0 0 3px #f7d9f195);
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-face{
+  opacity:0;transition:opacity .45s ease;
+  stroke:#fff6c8;stroke-width:2;
+  filter:drop-shadow(0 0 5px #fff1bd);
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-face.rg67-filled{
+  opacity:.84;
+  animation:rg67-face-shine 1.6s ease-in-out infinite alternate;
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-edge{
+  opacity:.18;stroke:#fbe3b2;stroke-width:2.4;
+  transition:stroke-width .24s,opacity .24s,stroke .24s;
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-edge.rg67-lit{
+  stroke:#fff9d5;stroke-width:5.2;opacity:1;
+  filter:drop-shadow(0 0 6px #ffedc3);
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-dot{
+  fill:#f9d3ec;stroke:#ffefbd;stroke-width:2.5;
+  opacity:.66;transition:fill .2s,stroke .2s,opacity .2s;
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-dot.rg67-hit{
+  fill:#fff5ad;stroke:#fffcf1;stroke-width:4;
+  opacity:1;filter:drop-shadow(0 0 6px #fff9cc);
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-number{
+  fill:#81345b;stroke:#fff9d6;stroke-width:.7;
+  paint-order:stroke;
+  font:900 12px/1 system-ui,sans-serif;text-anchor:middle;
+}
+body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-full{
+  position:absolute;top:41%;left:13%;right:13%;text-align:center;z-index:2;
+  color:#fff6bf;font:1000 clamp(17px,3.8vw,34px)/1.15 system-ui,sans-serif;
+  text-shadow:0 0 6px #ff97b8,0 2px 3px #a62e76;
+  opacity:0;transform:scale(.68);transition:opacity .3s,transform .4s;
+}
+body.gelato-active #panel0 .rg67-gelato-demo.rg67-allfaces .rg67-demo-full{
+  opacity:1;transform:scale(1);
+  animation:rg67-bonus-pulse 1.3s ease-in-out infinite alternate;
+}
+@keyframes rg67-face-shine{
+  from{filter:brightness(.95) drop-shadow(0 0 2px #fff3ce)}
+  to{filter:brightness(1.22) drop-shadow(0 0 9px #fff1c0)}
+}
+@keyframes rg67-bonus-pulse{
+  from{filter:brightness(1);transform:scale(.97)}
+  to{filter:brightness(1.28);transform:scale(1.05)}
+}
+
+/* WINERY: the demonstration is rendered into a transparent separate canvas.
+   It uses the exact 1672x941 stage positions; left MENU/boost and right
+   payment columns remain above it and interactive. */
+body.winery-enabled #panel1 .wp-scene>.rg67-winery-demo{
+  inset:0!important;z-index:6!important;width:100%!important;height:100%!important;
+  border-radius:10px!important;
+  background:linear-gradient(120deg,#50204222,#fff1ca00 38%,#e64e8a09 75%,#401d4a22);
+}
+body.winery-enabled #panel1 .rg67-winery-demo .rg67-winery-canvas{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  pointer-events:none;object-fit:fill;
+}
+body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-head{
+  left:32%;right:27%;top:1%;border-radius:9px;
+  padding:5px 5px;
+}
+body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-caption{
+  left:29%;right:27%;bottom:1%;border-radius:8px;
+}
+body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-progress{
+  left:30%;right:28%;
+}
+body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-ball{
+  font-size:9px!important;
+}
+@media(max-width:480px){
+  body .rg67-demo-head{
+    padding:2px 4px!important;border-width:1px!important;border-radius:6px!important;
+    font-size:6px!important;
+  }
+  body .rg67-demo-head .rg67-demo-ball{font-size:6px!important}
+  body .rg67-demo-caption{
+    padding:2px 3px!important;border-width:1px!important;border-radius:6px!important;
+  }
+  body .rg67-demo-caption b{font-size:7px!important;line-height:1.1!important}
+  body .rg67-demo-caption small{font-size:5px!important}
+  body.gelato-active #panel0 .rg67-gelato-demo .rg67-demo-full{
+    font-size:14px!important;
+  }
+  body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-head{
+    left:32%;right:26%;padding:2px!important;
+  }
+  body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-caption{
+    left:29%;right:26%;padding:2px!important;
+  }
+  body.winery-enabled #panel1 .rg67-winery-demo .rg67-demo-ball{
+    font-size:6px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body .rg67-demo *,body .rg67-demo{
+    animation:none!important;transition:none!important;
+  }
+}
