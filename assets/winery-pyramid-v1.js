@@ -1,4 +1,4 @@
-/* Winery Pyramid v67: shared MENU payout controls and cups-only enlarged mini thumbnail. */
+/* Winery Pyramid v68: true transparent 21-glass mini, no mini scenery; main scenery unchanged. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -864,19 +864,43 @@ function updateHUD(){
 // Offscreen draw is cropped to the 21 live cups and their price-tag numbers.
 // No right payout column, no RATE settings and no large game header.
 const miniOnlyCanvas=document.createElement('canvas');
-miniOnlyCanvas.width=1130;miniOnlyCanvas.height=636;
+miniOnlyCanvas.width=930;miniOnlyCanvas.height=930;
+const miniOnlyCtx=miniOnlyCanvas.getContext('2d');
+const miniClearStyle=document.createElement('link');
+miniClearStyle.rel='stylesheet';
+miniClearStyle.href='assets/winery-mini-transparent-v68.css?v=68';
+document.head.appendChild(miniClearStyle);
 function paintMini(){
+ const progress=engine.fx?.type==='pour'?
+  Math.floor(engine.fx.elapsed/100):0;
  const k=[engine.version,engine.phase,engine.processed,engine.power,
-          engine.totalHundredths,app.bet(1),Math.floor((engine.fx?.elapsed||0)/110)].join('/');
+          engine.totalHundredths,app.bet(1),progress].join('/');
  if(k===miniKey)return;miniKey=k;
- paint(miniOnlyCanvas,clock,true);
+ // Render JUST the dynamic cups and their live numbers. No fruit kingdom,
+ // no static afternoon-tea image, no 21-frame background screenshot,
+ // no MENU, payout cabinet, nozzle, labels or glow from the main frame.
+ miniOnlyCtx.setTransform(1,0,0,1,0,0);
+ miniOnlyCtx.clearRect(0,0,930,930);
+ miniOnlyCtx.save();
+ miniOnlyCtx.translate(-292,-44);
+ const fx=engine.fx;
+ let current=engine.glasses,flows=[];
+ if(fx?.type==='pour'){
+  const t=Math.max(0,Math.min(1,fx.elapsed/Math.max(1,fx.duration)));
+  const interim=K.pour(fx.before,fx.source,fx.volume*t,fx.flavor);
+  current=interim.glasses;flows=interim.flows;
+ }
+ for(let i=0;i<21;i++){
+  const touching=fx?.type==='pour'&&(fx.source===i||
+     flows.some(flow=>flow.from===i||flow.to===i));
+  premiumJuice(miniOnlyCtx,i,current[i],clock,touching);
+ }
+ for(let i=0;i<21;i++)premiumGlass(miniOnlyCtx,i,current[i],clock);
+ miniOnlyCtx.restore();
  const thumb=S.miniCanvas,context=thumb.getContext('2d');
  context.setTransform(1,0,0,1,0,0);
  context.clearRect(0,0,thumb.width,thumb.height);
- // Crop the original 1672x941 stage to x~320..1200, y~70..941;
- // use equivalent pixels in its 1130x636 miniature render.
- const sx=215,sy=44,sw=600,sh=588;
- context.drawImage(miniOnlyCanvas,sx,sy,sw,sh,0,0,thumb.width,thumb.height);
+ context.drawImage(miniOnlyCanvas,0,0,930,930,0,0,thumb.width,thumb.height);
  thumb.hidden=false;S.miniLogo.hidden=true;
 }
 function queueFrame(){if(frame||document.hidden)return;frame=requestAnimationFrame(tick);}
@@ -933,7 +957,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:67,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:68,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
