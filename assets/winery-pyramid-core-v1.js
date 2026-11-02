@@ -1,8 +1,9 @@
-/* Winery Pyramid v54. Symmetric white initial juices, calibrated RTP 50–150, random sugar ~10%. */
+/* Winery Pyramid v72. Ten or more full cups required for a payout; MIX is a multiplier only. */
 (function(root){
 'use strict';
 const EPS=1e-9, ROWS=6, SIZE=21;
-const PAY=[0,0,0,0,0,0,0,.1,.4,.5,.6,.7,1,1.5,2,3,4,6,10,15,30,100];
+// Full-glass payout: 0–9 = 0, 10 = 0.3x, 11 = 0.6x; 12–21 unchanged.
+const PAY=[0,0,0,0,0,0,0,0,0,0,.3,.6,1,1.5,2,3,4,6,10,15,30,100];
 const WEIGHTS=[16,16,16,17,19,16];
 const NAMES=['りんごの雫','双翼の果樹園','中央の泉','ジュースの花冠','果実のリボン','夕映えの王冠'];
 const PREFILLS=[
@@ -200,6 +201,6 @@ class WineryEngine{
   }catch(error){if(token===this.version){this.fx=null;this.queue=[];this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
-const api={version:54,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
+const api={version:72,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.WineryPyramidCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
