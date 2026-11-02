@@ -1,4 +1,4 @@
-/* Winery Pyramid v63: jeweled afternoon-tea racks, live pour gauge and 10–21 fixed prize levels. */
+/* Winery Pyramid v64: one upper-left injection cabinet, glossy numbered price tags, shining FULL glass straws and slow payout pour. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -9,7 +9,7 @@ const S=slots[1],oldEngine=app.engines[1];
 const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
-const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);
+const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);const polishStyle=document.createElement('link');polishStyle.rel='stylesheet';polishStyle.href='assets/winery-pyramid-polish-v64.css?v=64';document.head.appendChild(polishStyle);
 const scene=document.createElement('div');scene.className='wp-scene';
 scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="6段21個のワイングラス"></canvas>'+
  '<div class="wp-rate-panel"><strong>初期盤面 配当率</strong><output class="wp-rate-output">90%</output>'+
@@ -51,10 +51,11 @@ const amountGauge=document.createElement('div');
 amountGauge.className='wp-amount-gauge';
 amountGauge.setAttribute('role','status');
 amountGauge.setAttribute('aria-label','次に注ぐジュースの量');
-amountGauge.innerHTML='<div class="wp-amount-gauge-header"><span>注入量</span><strong class="wp-volume-number">1杯</strong></div>'+
+amountGauge.innerHTML='<div class="wp-amount-gauge-header"><span>次の注入量</span><strong class="wp-volume-number">1杯</strong></div>'+
  '<div class="wp-amount-tube"><div class="wp-amount-fill"></div><div class="wp-amount-gloss"></div></div>'+
  '<div class="wp-amount-markers">'+[1,2,4,8,16].map(n=>'<small data-amount="'+n+'">'+n+'</small>').join('')+'</div>';
-payoutSidebar.prepend(amountGauge);
+boostPanel.querySelector('.wp-power-next')?.remove();
+boostPanel.insertBefore(amountGauge,boostPanel.querySelector('.wp-boost-ladder'));
 // No redundant Winery / Juice Round / Next Juice headers inside the board.
 const canvas=scene.querySelector('canvas'),ctx=canvas.getContext('2d');
  // The background is an independent SVG behind both transparent canvases.
@@ -477,6 +478,55 @@ function premiumStreams(x,fx,flows,t){
  x.fillStyle='#fff2c2';x.shadowColor='#7c2f6a';x.shadowBlur=6;
  x.fillText(fx.volume+'杯',bx+30,by-40);x.restore();
 }
+function paintFullGlassStraw(x,cx,cy,t,fresh){
+ // Luminous outer rim ONLY for genuinely full cups.
+ x.save();
+ const pulse=.5+.5*Math.sin(t*.0062+cx*.013);
+ x.shadowColor=fresh?'#fffdd8':'#ffe1a6';
+ x.shadowBlur=(fresh?21:12)+7*pulse;
+ x.lineWidth=fresh?6:4.6;
+ x.strokeStyle=fresh?'#fffde5':'#ffefb2';
+ premiumClip(x,cx,cy);x.stroke();
+ x.beginPath();x.ellipse(cx,cy+8,55,8,0,0,Math.PI*2);
+ x.lineWidth=4;x.stroke();
+ x.shadowBlur=0;
+ x.globalAlpha=.45+.35*pulse;
+ x.lineWidth=1.9;x.strokeStyle='#fff';
+ premiumClip(x,cx,cy);x.stroke();
+ x.restore();
+ // A candy-striped bent straw enters the bowl without obstructing the number.
+ x.save();x.lineCap='round';x.lineJoin='round';
+ const strawPath=()=>{
+  x.beginPath();
+  x.moveTo(cx+29,cy+44);
+  x.lineTo(cx+47,cy-30);
+  x.quadraticCurveTo(cx+50,cy-39,cx+60,cy-39);
+ };
+ strawPath();x.shadowColor='#fff6d5';x.shadowBlur=fresh?12:7;
+ x.strokeStyle='#e8ad55';x.lineWidth=11;x.stroke();
+ strawPath();x.shadowBlur=0;
+ x.strokeStyle='#fff7df';x.lineWidth=8;x.stroke();
+ strawPath();x.strokeStyle='#ec659e';x.lineWidth=5;x.stroke();
+ // Pastel white diagonal stripes down the translucent raspberry straw.
+ x.strokeStyle='#fff7ee';x.lineWidth=2.6;
+ for(let j=0;j<5;j++){
+  const y=cy-22+j*13;
+  const sx=cx+47-(y-(cy-30))*.245;
+  x.beginPath();x.moveTo(sx-3,y-3);x.lineTo(sx+3,y+1);x.stroke();
+ }
+ x.save();x.fillStyle='#fffbe5';x.shadowColor='#fff9d3';x.shadowBlur=8;
+ for(let j=0;j<3;j++){
+  const phase=t*.0018+j*2.09+cx*.005;
+  const px=cx+Math.cos(phase)*57,py=cy+25+Math.sin(phase)*36;
+  const sz=2.7+j*.5;
+  x.beginPath();x.moveTo(px,py-sz*2);x.lineTo(px+sz*.32,py-sz*.25);
+  x.lineTo(px+sz*2,py);x.lineTo(px+sz*.32,py+sz*.25);
+  x.lineTo(px,py+sz*2);x.lineTo(px-sz*.32,py+sz*.25);
+  x.lineTo(px-sz*2,py);x.lineTo(px-sz*.32,py-sz*.25);
+  x.closePath();x.fill();
+ }x.restore();x.restore();
+}
+
 function premiumGlass(x,i,g,t){
  const {x:cx,y:cy}=premiumPos(i);
  const full=g.volume>=1-K.EPS;
@@ -541,24 +591,58 @@ function premiumGlass(x,i,g,t){
   x.drawImage(photoHighlights,oldX-70,oldY-12,140,158,cx-70,cy-16,140,158);
   x.restore();
  }
- // Place the hit digit below the liquid bowl so 21 fill levels are visible.
- const badgeY=cy+97;
- const rim=x.createRadialGradient(cx-8,badgeY-10,1,cx,badgeY,26);
- rim.addColorStop(0,'#fffaf0');rim.addColorStop(.28,'#ffe7a4');
- rim.addColorStop(.61,'#b56a2a');rim.addColorStop(1,'#fff2b2');
- x.fillStyle=rim;x.shadowColor='#ffdfa1';x.shadowBlur=7;
- x.beginPath();x.ellipse(cx,badgeY,25,20,0,0,Math.PI*2);x.fill();
+ if(full)paintFullGlassStraw(x,cx,cy,t,fresh);
+ // A full-sized jewelled PRICE TAG hangs below the bowl and never hides juice.
+ const badgeY=cy+99;
+ x.save();
+ x.lineCap='round';
+ // Short silk/gold cord connecting the tag to the goblet's stem.
+ x.strokeStyle='#fce1a1';x.lineWidth=2.3;
+ x.shadowColor='#ffe7bb';x.shadowBlur=4;
+ x.beginPath();x.moveTo(cx+25,cy+76);x.quadraticCurveTo(cx+30,cy+84,cx+28,badgeY-11);x.stroke();
+ x.shadowBlur=6;
+ const tagFill=x.createLinearGradient(cx-39,badgeY-22,cx+42,badgeY+22);
+ tagFill.addColorStop(0,'#fff3c8');
+ tagFill.addColorStop(.28,'#fbdc91');
+ tagFill.addColorStop(.53,'#df9b4e');
+ tagFill.addColorStop(.77,'#ffefb9');
+ tagFill.addColorStop(1,'#a85057');
+ x.fillStyle=tagFill;x.strokeStyle='#fffae2';x.lineWidth=2.3;
+ x.beginPath();x.moveTo(cx-34,badgeY-21);
+ x.lineTo(cx+18,badgeY-21);
+ x.quadraticCurveTo(cx+23,badgeY-21,cx+27,badgeY-15);
+ x.lineTo(cx+41,badgeY);
+ x.lineTo(cx+27,badgeY+15);
+ x.quadraticCurveTo(cx+23,badgeY+21,cx+18,badgeY+21);
+ x.lineTo(cx-34,badgeY+21);
+ x.quadraticCurveTo(cx-40,badgeY+21,cx-40,badgeY+14);
+ x.lineTo(cx-40,badgeY-14);
+ x.quadraticCurveTo(cx-40,badgeY-21,cx-34,badgeY-21);
+ x.closePath();x.fill();x.stroke();
  x.shadowBlur=0;
- const core=x.createRadialGradient(cx-8,badgeY-8,1,cx,badgeY,20);
- core.addColorStop(0,'#74375d');core.addColorStop(.5,'#351d49');core.addColorStop(1,'#150d26');
- x.fillStyle=core;x.beginPath();x.ellipse(cx,badgeY,20,15,0,0,Math.PI*2);x.fill();
- x.strokeStyle='#fff4c2';x.lineWidth=1.5;x.stroke();
+ const tagCore=x.createLinearGradient(cx-30,badgeY-16,cx+28,badgeY+17);
+ tagCore.addColorStop(0,'#742d5e');tagCore.addColorStop(.56,'#391b49');
+ tagCore.addColorStop(1,'#170f2c');
+ x.fillStyle=tagCore;
+ x.beginPath();x.moveTo(cx-32,badgeY-15);
+ x.lineTo(cx+15,badgeY-15);x.lineTo(cx+28,badgeY);
+ x.lineTo(cx+15,badgeY+15);x.lineTo(cx-32,badgeY+15);
+ x.quadraticCurveTo(cx-35,badgeY+15,cx-35,badgeY+12);
+ x.lineTo(cx-35,badgeY-12);x.closePath();x.fill();
+ x.strokeStyle='#fff0b8';x.lineWidth=1.2;x.stroke();
+ // A perforated eyelet at the tag's pointed end.
+ x.fillStyle='#fff6d2';x.beginPath();x.arc(cx+29,badgeY,3.8,0,Math.PI*2);x.fill();
+ x.fillStyle='#903e61';x.beginPath();x.arc(cx+29,badgeY,1.9,0,Math.PI*2);x.fill();
  const number=String(engine.nodeNumbers[i]);
  x.textAlign='center';x.textBaseline='middle';
- x.font='900 27px ElixirNumbers,Georgia,serif';x.lineWidth=2;
- x.lineJoin='round';x.strokeStyle='#492444';
- x.strokeText(number,cx,badgeY+1);
- x.fillStyle='#fffbe8';x.fillText(number,cx,badgeY+1);
+ x.font='900 36px ElixirNumbers,Georgia,serif';
+ if(x.measureText(number).width>53)x.font='900 32px ElixirNumbers,Georgia,serif';
+ x.lineJoin='round';x.lineWidth=2.3;
+ x.strokeStyle='#4d204e';
+ x.strokeText(number,cx-5,badgeY+1.5);
+ x.fillStyle='#fffde4';x.shadowColor='#fff4be';x.shadowBlur=3;
+ x.fillText(number,cx-5,badgeY+1.5);
+ x.restore();
  // Crown jewel highlight + gently animated prismatic caustics.
  const pulse=.5+.5*Math.sin(t*.0031+i*.62);
  x.save();x.globalAlpha=.56+.35*pulse;
@@ -683,16 +767,44 @@ function paint(target,time,small=false){
  }
 }
 
+// A 3-second payout-pour animation independent from the underlying 8-ball pace.
+const PAYOUT_FILL_MS=3000;
+const payoutVisual={cycle:null,from:0,target:0,startedAt:0,shown:0};
+function updatePayoutVisual(windowEl,pouring){
+ const full=Math.max(0,Math.min(21,engine.fullCount));
+ const stored=engine.glasses.reduce((sum,g)=>sum+Math.max(0,Math.min(1,g.volume)),0);
+ const partial=full>=21?0:Math.min(.94,Math.max(0,stored-full)/Math.max(1,21-full));
+ const tiers=full<10?Math.min(.96,stored/10):(full-9)+partial;
+ const target=100*Math.max(0,Math.min(12,tiers))/12;
+ const anim=payoutVisual;
+ const amount=(now)=>{
+  if(anim.target===anim.from)return anim.target;
+  const ratio=Math.max(0,Math.min(1,(now-anim.startedAt)/PAYOUT_FILL_MS));
+  const ease=ratio*ratio*(3-2*ratio);
+  return anim.from+(anim.target-anim.from)*ease;
+ };
+ if(anim.cycle!==engine.cycle){
+  anim.cycle=engine.cycle;anim.from=target;anim.target=target;
+  anim.startedAt=clock;anim.shown=target;
+ }else if(Math.abs(target-anim.target)>.018){
+  anim.from=amount(clock);anim.target=target;anim.startedAt=clock;
+ }
+ anim.shown=amount(clock);
+ windowEl.style.setProperty('--wp-payout-fill',anim.shown.toFixed(2)+'%');
+ const stillAnimating=Math.abs(anim.from-anim.target)>.02 &&
+    clock-anim.startedAt<PAYOUT_FILL_MS;
+ windowEl.classList.toggle('is-pouring',pouring||stillAnimating);
+}
+
 function updateHUD(){
  const bet=app.bet(1),pouring=engine.fx?.type==='pour';
  const windowEl=scene.querySelector('.wp-pay-window');
- windowEl.classList.toggle('is-pouring',pouring);
+ updatePayoutVisual(windowEl,pouring);
  const key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalPoured,
             engine.totalHundredths,engine.fullCount,engine.mixCount,engine.sugarTarget,
             engine.sugarAwarded,bet].join('/');
  if(key===uiKey)return;uiKey=key;
  // The left cabinet owns boost numbers; the right gauge mirrors actual pour amount.
- scene.querySelector('.wp-power-next b').textContent=engine.power+'杯';
  scene.querySelector('.wp-volume-number').textContent=engine.power+'杯';
  const fraction=Math.log2(Math.max(1,Math.min(16,engine.power)))/4;
  scene.querySelector('.wp-amount-tube').style.setProperty('--wp-amount-percent',(12+88*fraction).toFixed(1)+'%');
@@ -726,16 +838,7 @@ function updateHUD(){
  const full=Math.max(0,Math.min(21,engine.fullCount));
  scene.querySelector('.wp-score-mini').textContent=full+'/21';
  scene.querySelector('.wp-total-poured').textContent='注 '+Number(engine.totalPoured||0).toLocaleString('ja-JP',{maximumFractionDigits:1})+'杯';
- // The reservoir rises through the earned payout tiers, while the central
- // game shows actual individual liquid volumes. It must never imply unearned WIN.
- const stored=engine.glasses.reduce((sum,g)=>sum+Math.max(0,Math.min(1,g.volume)),0);
- // The bottom row holds a little visible juice even before 10 FULL glasses.
- // After that, genuine retained juice gives fractional progress toward the
- // next prize, without marking the next tier awarded prematurely.
- const partial=full>=21?0:Math.min(.94,Math.max(0,stored-full)/Math.max(1,21-full));
- const tiers=full<10?Math.min(.96,stored/10):(full-9)+partial;
- const level=100*Math.max(0,Math.min(12,tiers))/12;
- windowEl.style.setProperty('--wp-payout-fill',level.toFixed(2)+'%');
+ // The liquid-level animation is driven by updatePayoutVisual every frame.
  scene.querySelector('.wp-mix i').textContent=engine.mixCount;
  scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
  scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
@@ -798,7 +901,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:63,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:64,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
