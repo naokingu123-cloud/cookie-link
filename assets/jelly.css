@@ -29,3 +29,13 @@ body.jb-active .board-area,body.jb-active #panels {width:100%!important;max-widt
 @media (max-width:700px){
   #screen #panels>.jb-panel .jb-scene {background-size:100% 100%,100% 100%}
 }
+
+.jb-slot .reach-badge[data-tier="3"] {width:42px;flex-basis:42px}
+.jb-slot .reach-badge[data-tier="3"]>.reach-badge-label,
+.jb-slot .reach-badge[data-tier="3"]>.reach-badge-role {grid-area:1/1;animation:reach-title-first 4s steps(1,end) infinite}
+.jb-slot .reach-badge[data-tier="3"]>.reach-badge-role {font-size:7px;letter-spacing:-.55px;animation-name:reach-title-second}
+body.paused .jb-slot .reach-badge>span {animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){
+ .jb-slot .reach-badge[data-tier="3"]>.reach-badge-label {display:none}
+ .jb-slot .reach-badge[data-tier="3"]>.reach-badge-role {animation:none}
+}

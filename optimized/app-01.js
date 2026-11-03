@@ -3591,6 +3591,7 @@ function reachCometMarkup(tier){
 
 const paidReachDrawAllowed=a=>[2,4,5,6,7,8].includes(a?.draws?.length);
 const REACH_WORDS=['リーチ','高額','超高額','全消し'];
+const reachWord=(s,tier)=>tier===3&&s.engine.allReachName?s.engine.allReachName:REACH_WORDS[tier];
 function invalidateReach(s,{preserveTab=false}={}){
  if(!preserveTab){s.tabReachResults=[];s.tabReachBase=0;s.tabReachVersion=null;}
  s.reachEpoch=(s.reachEpoch||0)+1;s.reachResults=[];s.reachStatus='busy';s.reachBoardKey=null;
@@ -3621,7 +3622,7 @@ function reachContext(e,a=app){
   else if(count>=3&&count<=8){if(e.processed!==count)return null;}
   else return null;
  }else if(e.reachMode==='single'||e.drawMode==='single'){
-  if(e.processed!==count||(!count&&(e.kind!=='popcorn'||!e.running)))return null;
+  if(e.processed!==count||(!count&&(!['popcorn','jelly'].includes(e.kind)||!e.running)))return null;
  }else{
   if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
   else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
@@ -3683,7 +3684,7 @@ const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
  if(s.engine?.kind==='choco')return chocoReachReady(s,a)?(s.tabReachResults||[]).filter(p=>medalWin(a.bet(s.i),p.total)>medalWin(a.bet(s.i),s.tabReachBase||0)):[];
- if((s.engine?.kind!=='popcorn'&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
+ if((!['popcorn','jelly'].includes(s.engine?.kind)&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
  const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
  return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
 }
@@ -3696,7 +3697,7 @@ function finishReachSlide(s){
 function paintReachPage(s,{slide=false}={}){
  finishReachSlide(s);
  const results=s.reachPageResults||[],start=(s.reachPage||0)*REACH_PAGE_SIZE,page=results.slice(start,start+REACH_PAGE_SIZE);
- const markup=page.map(p=>'<span class="reach-num" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+REACH_WORDS[p.tier]+'、HIT後 '+p.total/100+'倍">'+(p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number))+'</span>').join('');
+ const markup=page.map(p=>'<span class="reach-num" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+reachWord(s,p.tier)+'、HIT後 '+p.total/100+'倍">'+(p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number))+'</span>').join('');
  if(slide&&!motionReduced&&s.reachNumbers.children.length&&page.length){
   const incoming=document.createElement('div');incoming.className='reach-numbers reach-page-enter';incoming.innerHTML=markup;
   s.reachNumbers.classList.add('reach-page-leave');s.reachNumbers.setAttribute('aria-hidden','true');s.reachIncoming=incoming;s.reachClip.append(incoming);
@@ -3730,7 +3731,10 @@ function updateReachUI(a){
   const key=(results.length?s.tabReachVersion+'/':'')+results.map(p=>p.number+':'+p.tier+':'+p.total).join(',');
   if(s.reachUIKey!==key){
    s.reachUIKey=key;s.reachCaption.hidden=!results.length;s.reachCaption.innerHTML=results.length?'<span class="reach-badge-label">リーチ</span>':'';
-   const tier=Math.max(0,...results.map(p=>p.tier));s.reachCaption.dataset.tier=String(tier);s.reachCaption.setAttribute('aria-label',tier?REACH_WORDS[tier]+'リーチ':'リーチ');
+   const tier=Math.max(0,...results.map(p=>p.tier));s.reachCaption.dataset.tier=String(tier);s.reachCaption.setAttribute('aria-label',tier?reachWord(s,tier)+'リーチ':'リーチ');
+   if(tier===3&&s.engine.allReachName){
+    const name=document.createElement('span');name.className='reach-badge-role';name.textContent=s.engine.allReachName;s.reachCaption.append(name);
+   }
    s.reachPageResults=results;s.reachPage=0;s.reachPageDue=!hidden&&results.length>REACH_PAGE_SIZE?Date.now()+REACH_PAGE_MS:0;paintReachPage(s);
   }
  }

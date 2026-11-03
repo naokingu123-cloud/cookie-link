@@ -9,9 +9,9 @@ slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.class
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
 title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
 const ctx=canvas.getContext('2d'),sugarLines=6;
-let frame=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,paused=false;
+let frame=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,reachStarted=0,paused=false;
 const engine={
- kind:'jelly',gameName:game.name,recordGame:game.record,drawMode:'single',version:0,
+ kind:'jelly',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'オールライン',version:0,
  maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,
  get idle(){return !this.trace&&!this.queue.length;},get busy(){return !this.idle;},
  get paused(){return paused;},
@@ -29,7 +29,7 @@ const engine={
  setRainbowSugar(bet){this.wonderToken={id:this.version,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};},
  start(){
   this.running=true;this.wonderToken??={id:this.version,value:this.roundBet,tier:sugarVisualTier(this.roundBet),kind:'jelly'};
-  this.emit('waiting');
+  this.emit('waiting');slot.updateJellyReach(app);
  },
  previewDraw(n){this.drawn.add(n);},
  enqueueBatch(numbers){
@@ -45,17 +45,17 @@ const engine={
 app.engines[id]=slot.engine=engine;
 slot.updateJellyReach=function(a){
  const c=reachContext(engine,a);
- if(!c||a.bet(id)<=0||c.count>=8){if(slot.reachStatus!=='inactive'){invalidateReach(slot);slot.reachStatus='inactive';}return;}
+ if(!c||a.bet(id)<=0){if(slot.reachStatus!=='inactive'){invalidateReach(slot);slot.reachStatus='inactive';}return;}
  if(c.key===slot.reachBoardKey)return;
  const base=engine.totalHundredths,hits=[];
  for(let number=1;number<=25;number++){
   if(c.used.has(number))continue;
-  const {state}=K.draw(engine.state,number);const total=K.payout(state.lines.length),gain=total-base;
-  if(gain<=0)continue;
-  const allClear=state.lines.length===12,tier=reachTier(gain,allClear);
+  const lines=K.previewLines(engine.state,number),total=K.payout(lines),gain=total-base;
+  if(medalWin(a.bet(id),total)<=medalWin(a.bet(id),base))continue;
+  const allClear=lines===K.LINES.length,tier=reachTier(gain,allClear);
   hits.push({number,total,gain,allClear,tier,kind:['reach','high','super','all'][tier]});
  }
- slot.reachBoardKey=c.key;slot.tabReachResults=slot.reachResults=hits;slot.tabReachBase=base;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
+ reachStarted=clock;slot.reachBoardKey=c.key;slot.tabReachResults=slot.reachResults=hits;slot.tabReachBase=base;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
 };
 function collectSugar(){
  if(engine.wonderCollected||engine.state.lines.length<sugarLines)return;
@@ -78,9 +78,17 @@ function advance(dt){
   if(active===id)sceneSound(next.trace.ball<=5?'glass':'transfer',{volume:.52,rate:1+next.trace.ball*.025});
  }
  if(!engine.trace)return;
+ const previous=engine.elapsed;
  engine.elapsed+=dt*engine.presentationRate;
+ if(active===id&&engine.trace.newLines.length){
+  const reveal=V.lineRevealAt(engine.trace);
+  if(previous<reveal&&engine.elapsed>=reveal){
+   const count=engine.state.lines.length;
+   const cue=count===12?'allclear':count>=7?'big-bonus':count>=4?'bonus':'line';
+   sceneSound(cue,{volume:Math.min(.9,.55+count*.03),rate:count===12?1:1+count*.018});
+  }
+ }
  if(engine.elapsed<V.duration(engine.trace))return;
- if(active===id&&engine.trace.newLines.length)sceneSound(engine.allClears?'allclear':'role',{volume:.64,rate:1.05});
  engine.trace=null;engine.processed++;collectSugar();engine.emit('settled');slot.updateJellyReach(app);
  if(engine.processed===8)finish(engine.version);
 }
@@ -102,7 +110,7 @@ function paint(mini){
  if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
  const dest=mini?slot.miniCanvas:canvas;
  if(!mini){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;}
- const p=presentation();V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo:app.phase==='ready',time:clock,turn:p.turn,elapsed:p.elapsed,bet:app.bet(id),reach:engine.trace||app.phase==='ready'?[]:slot.reachResults});
+ const p=presentation();V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo:app.phase==='ready',time:clock,turn:p.turn,elapsed:p.elapsed,bet:app.bet(id),reachTime:clock-reachStarted,reach:engine.trace||app.phase==='ready'?[]:slot.reachResults});
 }
 slot.paintJelly=paint;
 function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}

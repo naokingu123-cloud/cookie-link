@@ -58,9 +58,9 @@
     return result;
   }
 
-  function draw(previous,number) {
-    const ball=previous.draws.length+1,index=previous.numbers.indexOf(number);
-    if(ball>8||index<0||previous.draws.includes(number))return null;
+  function project(previous,number,ball) {
+    const index=previous.numbers.indexOf(number);
+    if(index<0||previous.draws.includes(number))return null;
     const opened=[],opening=ball<=5;
     const open=opening?new Set(previous.open):previous.open;
     let color='blue',wave;
@@ -80,13 +80,27 @@
     }
     const colors=previous.colors.slice();
     for(const group of wave)for(const i of group)colors[i]=color;
-    const lines=completed(colors);
+    return {index,color,opened,wave,open,colors,lines:completed(colors)};
+  }
+
+  function previewLines(state,number) {
+    // The settled eighth board can still show what an unused pocket would fill.
+    // Project its final pour without adding a draw or changing the real state.
+    return project(state,number,Math.min(8,state.draws.length+1))?.lines.length??null;
+  }
+
+  function draw(previous,number) {
+    const ball=previous.draws.length+1;
+    if(ball>8)return null;
+    const projected=project(previous,number,ball);
+    if(!projected)return null;
+    const {index,color,opened,wave,open,colors,lines}=projected;
     const state={...previous,open,draws:[...previous.draws,number],colors,lines};
     const newLines=lines.filter(id=>!previous.lines.includes(id));
     return {state,trace:{before:previous,number,index,ball,color,opened,wave,newLines}};
   }
 
-  const api={create,draw,LINES,isOpen,payout};
+  const api={create,draw,previewLines,LINES,isOpen,payout};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.JellyRules=api;
 })(globalThis);

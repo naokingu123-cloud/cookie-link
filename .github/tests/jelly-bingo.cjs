@@ -63,6 +63,16 @@ assert(J.LINES.every(line=>line.length===5));
   assert.equal(state.lines.length,12);
   assert.equal(trace.newLines.length,12-a.lines.length);
   assert.equal(J.payout(state.lines.length),30000);
+  assert.equal(J.previewLines(a,13),12);
+  assert.equal(J.previewLines(a,1),null); // already drawn
+  const last=step(a,4).state;
+  const before=structuredClone(last);
+  assert.equal(J.previewLines(last,13),12); // projected on the settled eighth board
+  assert.deepEqual(last,before);
+  assert.equal(J.draw(last,13),null);
+
+  const ten=play(board([4,14,20,22,0]),[0,7,8,16,18,24,1]);
+  assert.equal(J.previewLines(ten,13),10); // 100× is not an all-line result
 }
 
 // Optional independent check using the shipped engine itself:
