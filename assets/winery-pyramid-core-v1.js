@@ -1,4 +1,4 @@
-/* Winery Pyramid v72. Ten or more full cups required for a payout; MIX is a multiplier only. */
+/* Winery Pyramid v78: MIX odds count-up occurs before the juice pour. */
 (function(root){
 'use strict';
 const EPS=1e-9, ROWS=6, SIZE=21;
@@ -112,7 +112,7 @@ class WineryEngine{
    this.initialVolume=this.glasses.reduce((s,g)=>s+g.volume,0);
    this.sugarTarget=sugarThreshold(calibrated.anchor,this.random);
    this.sugarAwarded=false;this.justFilled=[];
-  this.fullCount=0;this.mixCount=0;this.countMultiplier=0;this.mixMultiplier=1;
+  this.fullCount=0;this.mixCount=0;this.countMultiplier=0;this.mixMultiplier=1;this.presentedMixCount=0;
   this.emit('ready');
  }
  setPayoutTarget(rate){
@@ -155,12 +155,21 @@ class WineryEngine{
      }else{
       const before=clone(this.glasses),volume=this.power,flavor=flavorFor(ball),plan=pour(before,pos,volume,flavor),previous=this.totalHundredths;
       this.hits.add(pos);
+      // MIX odds are presented on the payout table before the juice starts.
+      // Real glass state and final WIN still settle only after pouring.
+      if(plan.mix>this.mixCount){
+       const fromMix=this.mixCount,toMix=plan.mix;
+       this.fx={type:'odds',fromMix,toMix,elapsed:0,duration:950};
+       this.emit('wineryOddsUp',{number:n,ball,fromMix,toMix});
+       if(!await this.wait(950,token))return;
+      }
+      this.presentedMixCount=plan.mix;
       const duration=1100+Math.min(850,plan.flows.length*22)+Math.log2(volume)*110;
       this.fx={type:'pour',source:pos,number:n,volume,flavor,before,elapsed:0,duration};
       this.emit('wineryPour',{number:n,ball,volume,flavor});
       if(!await this.wait(duration,token))return;
       this.glasses=plan.glasses;this.wasted+=plan.wasted;this.totalPoured+=volume;
-       this.refreshPrize();this.lastGain=this.totalHundredths-previous;
+       this.refreshPrize();this.presentedMixCount=this.mixCount;this.lastGain=this.totalHundredths-previous;
        this.justFilled=plan.glasses.map((g,i)=>g.volume>=1-EPS&&before[i].volume<1-EPS?i:-1).filter(i=>i>=0);
        this.fx=null;
        this.emit('wineryAward',{gain:this.lastGain,full:this.fullCount,mix:this.mixCount,justFilled:this.justFilled.slice()});
@@ -187,6 +196,6 @@ class WineryEngine{
   }catch(error){if(token===this.version){this.fx=null;this.queue=[];this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
-const api={version:75,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
+const api={version:78,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.WineryPyramidCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
