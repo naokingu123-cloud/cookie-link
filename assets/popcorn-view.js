@@ -177,7 +177,7 @@
     }
     ctx.restore();
   }
-  const LIGHT=625, FRONT_START=45, FRONT_TRAVEL=410, WAVE=480, BURST=455, CLEAR=480, SERVE_OPEN=196, SERVE_CLOSE=144;
+  const LIGHT=625, FRONT_START=45, FRONT_TRAVEL=410, WAVE=480, BURST=455, CLEAR=480, SERVE_OPEN=112, SERVE_CLOSE=96;
   const SNAP=62,RING_START=[0,SNAP,123,152],RING_HIT=[0,217,283,338];
   const hexDistance=(a,b)=>Math.max(Math.abs(a.q-b.q),Math.abs(a.r-b.r),Math.abs(a.q+a.r-b.q-b.r));
   // Jagged seams meet inside the generated kernel. Each lobe keeps its own
@@ -293,7 +293,7 @@
     const falls=tr.fallSteps.map(step=>frame(step,step.ms)),refill=cursor;
     const served=tr.refillSteps.length>0;
     if(served)cursor+=SERVE_OPEN;
-    const supply=tr.refillSteps.map((step,i)=>frame(step,.8*(step.kind==='spawn'?(i===0?170:119):Math.max(102,step.ms*.84))));
+    const supply=tr.refillSteps.map((step,i)=>frame(step,.52*(step.kind==='spawn'?(i===0?170:119):Math.max(102,step.ms*.84))));
     const end=cursor+(served?SERVE_CLOSE:tr.count?90:310);
     const rainbow=tr.waves.some(w=>w.some(i=>tr.before[i].power===5));
     a={waveOf,arrival,parent,trails,falls,supply,served,rest,fall,refill,end,rainbow};traces.set(tr,a);return a;
@@ -640,10 +640,10 @@
   }
   function serviceAt(seq,elapsed){
     if(!seq?.served||elapsed<seq.refill||elapsed>=seq.end)return null;
-    const enter=clamp((elapsed-seq.refill)/110.4),leave=clamp((seq.end-elapsed)/SERVE_CLOSE);
+    const enter=clamp((elapsed-seq.refill)/70),leave=clamp((seq.end-elapsed)/SERVE_CLOSE);
     const eased=n=>n*n*(3-2*n);
     const raised=eased(Math.min(enter,leave));
-    const open=eased(Math.min(clamp((elapsed-seq.refill-50.4)/132),clamp((seq.end-elapsed-24)/100.8)));
+    const open=eased(Math.min(clamp((elapsed-seq.refill-22)/72),clamp((seq.end-elapsed-16)/65)));
     return {raised,open,y:-5.77+.11*raised};
   }
   const awningW=6.88,awningH=1.43,restingStand={raised:0,open:0,y:-5.77};
@@ -695,7 +695,9 @@
     const seq=tr&&sequence(tr),active=!!tr&&elapsed<seq.end;
     const moving=active&&(tr.port>=0||seq.served),service=active?serviceAt(seq,elapsed):null;
     const stepFrame=moving&&elapsed>=seq.fall?(elapsed<seq.refill?seq.falls.find(f=>elapsed<f.end):seq.supply.find(f=>elapsed>=f.begin&&elapsed<f.end)):null;
-    const gaps=!moving?s.board:elapsed<seq.fall?tr.before:stepFrame?stepFrame.step.before:seq.served&&elapsed>=seq.end-SERVE_CLOSE?tr.after:tr.settled;
+    // Keep the empty-cup overlay fixed throughout falling and refilling.
+    // Per-step occupancy flickered whenever a piece vacated or entered a cell.
+    const gaps=!moving?s.board:elapsed<seq.fall?tr.before:tr.after;
     K.cells.forEach((p,i)=>{
       const w=seq?.waveOf[i]??-1;
       if(!gaps[i]||(moving&&elapsed<seq.fall&&w>=0&&elapsed>LIGHT+w*WAVE+SNAP))emptySocket(ctx,p);
