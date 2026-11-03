@@ -170,62 +170,69 @@
     port(line,0,-1);
   }
   for(let level=4;level>=0;level--) sidePort(level,true);
-  // At opening and each subsequent refill, these are conditional on a bomb.
-  // Existing kernels retain their original color and radius throughout a game.
-  const rainbowBombChance=1/4800; // conditional on a newly generated kernel being a bomb
-  const bombGrades=Array.from({length:9},(_,ball)=>{
-    const red=.045+.025*ball;
-    return {red,purple:.006+.012*ball,lightning:red,rainbow:rainbowBombChance};
-  });
-  const firstPopAward=80;
+  // Absolute per-kernel probabilities in power order. Saturation reserves
+  // the remaining probability for rare grades first; it never renormalizes.
+  const baseChances=[0,.15,.03,.02,.01,.001];
+  function probabilitiesForLevel(level){
+    const factor=1.5**(level-1),chances=Array(6).fill(0);
+    let left=1;
+    for(let power=5;power>=1;power--){
+      chances[power]=Math.min(left,baseChances[power]*factor);
+      left-=chances[power];
+    }
+    chances[0]=left;
+    return chances;
+  }
+  const firstPopAward=120;
   const levels=[];
   for(const [start,end,step] of [[.1,1,.1],[1.2,2,.2],[2.5,5,.5],[6,10,1],[12.5,30,2.5],[35,50,5]]){
     for(let value=start;value<=end+.00001;value+=step)levels.push(Math.round(value*10)/10);
   }
-  while(firstPopAward+10*(levels.length-1)<61*8)levels.push(levels[levels.length-1]+5);
-  const popPay=levels.map((level,i)=>[firstPopAward+10*i,level]);
+  function popOdds(step){
+    if(step<0)return 0;
+    if(step<levels.length)return levels[step];
+    return levels[levels.length-1]+5*(step-levels.length+1);
+  }
+  const popTables=new Map();
+  function popPayFor(first=firstPopAward){
+    if(!popTables.has(first)){
+      const size=Math.max(levels.length,Math.ceil((61*8-first)/10)+1);
+      popTables.set(first,Array.from({length:size},(_,i)=>[first+10*i,popOdds(i)]));
+    }
+    return popTables.get(first);
+  }
+  const popPay=popPayFor();
   // Per occurrence. Higher tiers follow the decreasing chance of reaching
   // that clear count, with a deliberately softer rise than inverse odds.
-  const clearPay=[[1,10],[2,80],[3,600],[4,4000],[5,30000],[6,200000],[7,1500000],[8,10000000]];
+  const clearPay=[[1,1],[2,3],[3,12],[4,50],[5,200],[6,500],[7,1000],[8,3000]];
   const clearTotals=[0];
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
-  // [bomb chance, RTP percent, lower sugar threshold, probability of lower].
-  // Rates use complete eight-ball rounds with the fixed visible prize table.
-  // The default uses exactly .1907. The sugar targets bracket the measured 90th
-  // percentile at each bomb chance; one target is drawn before the first ball.
-  const rateAnchors=[[.143,41.12,140,.53561],[.168,61.21,160,.35880],
-    [.1907,90,180,.38092],[.2035,117.49,190,.17609],[.2225,179.78,210,.30586]];
-  function multiplier(count,table){
-    let award = 0;
-    for (const [min,value] of table){
-      if (count<min) break;
-      award = value;
-    }
-    return award;
-  }
-  function payout(popped,clears,bet=100){
-    const [lastCount,lastMultiplier]=popPay[popPay.length-1];
-    const popWin=popped>lastCount?lastMultiplier+5*Math.floor((popped-lastCount)/10):multiplier(popped,popPay);
-    return Math.floor((popWin+clearTotals[Math.min(clears,clearPay.length)])*bet+1e-8);
-  }
-  function bombPower(roll,ball=0){
-    const {red,purple,lightning,rainbow}=bombGrades[ball];
-    if(roll>=1-rainbow)return 5;
-    if(roll<purple)return 3;
-    if(roll<purple+red)return 2;
-    if(roll<purple+red+lightning)return 4;
-    return 1;
-  }
-  function kernel(id,bomb,rng,ball=0){
-    const power=bomb?bombPower(rng(),ball):0;
-    return Object.freeze({id,bomb,power,color:power});
-  }
-  function anchorFor(target,rng){
+  // At all settings the board follows the same probability law. Only the
+  // first paying count changes, once per game and always in tens. RTP anchors
+  // use 180,000 complete rounds; the standard 90% setting is exactly 120.
+  const startRates=[[190,47.702],[180,51.034],[170,55.104],[160,60.002],
+    [150,65.834],[140,72.686],[130,80.674],[120,90],[110,100.509],
+    [100,112.630],[90,126.458],[80,142.239],[70,160.262]];
+  function firstForRate(target,roll){
     const rate=Math.max(50,Math.min(150,Number(target)||90));
-    let i=1;
-    while(i<rateAnchors.length-1 && rateAnchors[i][1]<rate) i++;
-    const lo=rateAnchors[i-1],hi=rateAnchors[i];
-    return rng()<(rate-lo[1])/(hi[1]-lo[1])?hi:lo;
+    if(rate===90)return firstPopAward;
+    const i=startRates.findIndex(([,rtp])=>rtp>=rate);
+    const [lo,a]=startRates[i-1],[hi,b]=startRates[i];
+    return roll<(rate-a)/(b-a)?hi:lo;
+  }
+  function payout(popped,clears,bet=100,first=firstPopAward){
+    return Math.floor((popOdds(Math.floor((popped-first)/10))+clearTotals[Math.min(clears,clearPay.length)])*bet+1e-8);
+  }
+  function powerForRoll(roll,chances){
+    for(let power=5;power>=1;power--){
+      if(roll<chances[power])return power;
+      roll-=chances[power];
+    }
+    return 0;
+  }
+  function kernel(id,chances,rng){
+    const power=powerForRoll(rng(),chances);
+    return Object.freeze({id,bomb:power>0,power,color:power});
   }
   function shuffle(values,rng){
     for(let i=values.length-1; i>0; i--){
@@ -235,28 +242,21 @@
     return values;
   }
   function create({rng=Math.random,bet=100,rate=90}={}){
-    const numbers=shuffle(Array.from({length:25},(_,i)=>i+1),rng).slice(0,ports.length+1);
-    const allIndex=ports.length;
-    const anchor=anchorFor(rate,rng);
-    const bombChance=anchor[0];
-    // A few opening batches are rich in ignition kernels, so natural clears
-    // can still occur before ordinary refills establish the target bomb rate.
-    const openingChance = rng()<.05 ? .5 : bombChance;
-    const board=cells.map((_,id)=>kernel(id,rng()<openingChance,rng));
-    if(!board.some(p=>p.bomb)||board.every(p=>p.bomb)){
-      const i=Math.floor(rng()*board.length);
-      board[i]=kernel(i,!board[i].bomb,rng);
-    }
-    const sugarTarget=anchor[2]+(rng()<anchor[3]?0:10);
-    return {board,numbers,drawn:[],allIndex,bombChance,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
+    const allIndex=ports.length,boostIndex=allIndex+1;
+    const numbers=shuffle(Array.from({length:25},(_,i)=>i+1),rng).slice(0,boostIndex+1);
+    const level=1,chances=probabilitiesForLevel(level);
+    const board=cells.map((_,id)=>kernel(id,chances,rng));
+    const sugarTarget=rng()<.18351?220:230;
+    const first=firstForRate(rate,rng());
+    return {board,numbers,drawn:[],allIndex,boostIndex,level,firstPopAward:first,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
   }
   function ignition(state,number){
     const port=state.numbers.indexOf(number);
-    const all=port!==-1 && port===state.allIndex;
+    const all=port===state.allIndex,boost=port===state.boostIndex;
     const first=all?state.board.reduce((seeds,piece,i)=>{
       if(piece?.bomb) seeds.push(i);
       return seeds;
-    },[]):port<0?[]:ports[port].line.filter(i=>state.board[i]);
+    },[]):port<0||boost?[]:ports[port].line.filter(i=>state.board[i]);
     const marked=new Set(first), waves=[];
     let frontier=first;
     while(frontier.length){
@@ -274,18 +274,18 @@
       frontier=next;
     }
     const count=marked.size, clear=count>0 && count===state.board.filter(Boolean).length;
-    return {port,all,waves,marked,count,clear,win:payout(state.popped+count,state.clears+Number(clear),state.bet)};
+    return {port,all,boost,waves,marked,count,clear,win:payout(state.popped+count,state.clears+Number(clear),state.bet,state.firstPopAward)};
   }
   function preview(state,number){
-    const {count,clear,win,waves}=ignition(state,number);
-    return {count,clear,win,waves};
+    const {count,clear,win,waves,boost}=ignition(state,number);
+    return {count,clear,win,waves,boost,oldLevel:state.level,newLevel:state.level+Number(boost)};
   }
   // The horizontal mouth has five entry sockets. The carton walls never
   // admit a kernel from the side. Inject a batch, let Six Drop settle it and
   // repeat until the mouth is blocked; a sealed pocket remains empty.
   function topUp(input,state,rng){
     let board=input;
-    const steps=[],added=[];
+    const steps=[],added=[],chances=probabilitiesForLevel(state.level);
     // On a clear the first center kernel settles on the floor before the
     // five-socket flow starts, so a freshly emptied carton can fill all 61.
     let firstEmpty=!board.some(Boolean);
@@ -297,7 +297,7 @@
       const before=board;
       board=board.slice();
       const moves=entries.map(to=>{
-        const piece=kernel(cells.length+state.refilled++,rng()<state.bombChance,rng,state.turn+1);
+        const piece=kernel(cells.length+state.refilled++,chances,rng);
         const entry={from:-1,to,x:cells[to].x,y:-5.0,piece};
         board[to]=piece;added.push(entry);
         return entry;
@@ -313,7 +313,9 @@
   }
   function draw(state,number,rng=Math.random){
     if(state.turn>=8 || !Number.isInteger(number) || number<1 || number>25 || state.drawn.includes(number)) return null;
-    const {port,all,waves,marked,count,clear,win}=ignition(state,number);
+    const {port,all,boost,waves,marked,count,clear,win}=ignition(state,number);
+    const oldLevel=state.level;
+    if(boost)state.level++;
     const before=state.board, oldWin=state.win;
     const fall=count?settle(before.map((p,i)=>marked.has(i)?null:p)):{board:before,steps:[]};
     const settled=fall.board, fallSteps=fall.steps;
@@ -336,9 +338,9 @@
     state.popped+=count;
     state.clears+=Number(clear);
     state.win=win;
-    return {before,after,port,all,sugarTarget:state.sugarTarget,sugarCrossed,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
+    return {before,after,port,all,boost,oldLevel,newLevel:state.level,firstPopAward:state.firstPopAward,sugarTarget:state.sugarTarget,sugarCrossed,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
   }
-  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,bombGrades,bombPower,rainbowBombChance,popPay,clearPay,payout,create,preview,draw};
+  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,probabilitiesForLevel,powerForRoll,popPay,popPayFor,clearPay,payout,create,preview,draw};
   root.PopcornEngine=api;
   if(typeof module!=='undefined' && module.exports) module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

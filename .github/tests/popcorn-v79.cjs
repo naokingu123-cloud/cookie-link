@@ -29,9 +29,9 @@ for(const [j,port] of ports.entries()){
 let seed=48271;
 const random=()=>((seed=Math.imul(1664525,seed)+1013904223|0)>>>0)/2**32;
 const s=E.create({rng:random});
-assert.equal(new Set(s.numbers).size,16);
+assert.equal(new Set(s.numbers).size,17);
 assert.ok(s.numbers.every(n=>Number.isInteger(n)&&n>=1&&n<=25));
-assert.equal(s.allIndex,15);
+assert.equal(s.allIndex,15);assert.equal(s.boostIndex,16);assert.equal(s.level,1);
 assert.ok(s.board.every(c=>Object.isFrozen(c)&&c.color===c.power&&c.bomb===(c.power>0)));
 assert.ok(s.board.some(c=>c.bomb)&&s.board.some(c=>!c.bomb));
 const misses=Array.from({length:25},(_,i)=>i+1).filter(n=>!s.numbers.includes(n));
@@ -108,7 +108,7 @@ function validateGravity(turn){
 validateGravity(result);
 function verifyNumbers(state,trace){
  assert.deepEqual(state.numbers,trace.afterNumbers);
- assert.equal(new Set(state.numbers).size,16);
+ assert.equal(new Set(state.numbers).size,17);
  assert.ok(state.numbers.every(n=>Number.isInteger(n)&&n>=1&&n<=25&&!state.drawn.includes(n)));
  const changes=trace.beforeNumbers.map((n,i)=>n!==trace.afterNumbers[i]?i:-1).filter(i=>i>=0);
  assert.deepEqual(changes,trace.port<0?[]:[trace.port]);
@@ -131,7 +131,8 @@ const dry=E.draw(s,master.newNumber,random);
 assert.equal(dry.port,s.allIndex);assert.ok(dry.all);assert.equal(dry.count,0);assert.deepEqual(dry.waves,[]);
 verifyNumbers(s,dry);
 assert.equal(E.draw(s,firstAll,random),null);assert.equal(s.turn,4);
-assert.equal(E.clearPay.length,8);
+assert.deepEqual(E.clearPay.map(([,award])=>award),[1,3,12,50,200,500,1000,3000]);
+assert.deepEqual(E.popPay[0],[120,.1]);
 let clearSum=0;
 for(const [n,award] of E.clearPay){
  clearSum+=award;
@@ -233,22 +234,55 @@ const kinds=E.create({rng:random});
 kinds.board=kinds.board.map((p,i)=>setPower(p,i<5?i+1:0));
 const allKinds=E.draw(kinds,kinds.numbers[15],random);
 assert.deepEqual(allKinds.waves[0],[0,1,2,3,4]);assert.equal(allKinds.count,61);assert.equal(kinds.clears,1);
-for(const [ball,g] of E.bombGrades.entries()){
- assert.equal(g.lightning,g.red);assert.equal(g.rainbow,1/4800);
- assert.equal(E.bombPower(g.purple+g.red+g.lightning/2,ball),4);
- assert.equal(E.bombPower(1-g.rainbow/2,ball),5);
- assert.equal(E.bombPower(1-g.rainbow*2,ball),1);
+// The specified values are percentages of ALL new kernels, not only bombs.
+const exactPercent=[
+ [78.9,15,3,2,1,.1],[68.35,22.5,4.5,3,1.5,.15],
+ [52.525,33.75,6.75,4.5,2.25,.225],[28.7875,50.625,10.125,6.75,3.375,.3375],
+ [0,69.11875,15.1875,10.125,5.0625,.50625],
+ [0,53.678125,22.78125,15.1875,7.59375,.759375],
+ [0,30.5171875,34.171875,22.78125,11.390625,1.1390625],
+ [0,0,47.03359375,34.171875,17.0859375,1.70859375],
+ [0,0,20.550390625,51.2578125,25.62890625,2.562890625]
+];
+exactPercent.forEach((row,index)=>{
+ const law=E.probabilitiesForLevel(index+1);close(law.reduce((sum,p)=>sum+p),1);
+ let cursor=0;
+ for(let power=5;power>=0;power--){
+   close(law[power]*100,row[power]);
+   if(law[power])assert.equal(E.powerForRoll(cursor+law[power]/2,law),power);
+   cursor+=law[power];
+ }
+});
+assert.ok(E.create({rng:()=>0}).board.every(p=>p.power===5));
+assert.ok(E.create({rng:()=>.99}).board.every(p=>p.power===0));
+const boosts=E.create({rng:random}),original=boosts.board.slice();
+for(let ball=1;ball<=8;ball++){
+ const hit=boosts.numbers[16],before=JSON.stringify(boosts),v=E.preview(boosts,hit);
+ assert.equal(JSON.stringify(boosts),before);assert.ok(v.boost);assert.deepEqual(v.waves,[]);
+ assert.deepEqual([v.oldLevel,v.newLevel,v.count,v.win,v.clear],[ball,ball+1,0,0,false]);
+ const candidates=Array.from({length:25},(_,i)=>i+1).filter(i=>!boosts.drawn.includes(i)&&!boosts.numbers.includes(i));
+ assert.equal(candidates.length,9-ball);
+ const trace=E.draw(boosts,hit,random);
+ assert.ok(trace.boost&&!trace.all&&!trace.clear&&!trace.sugarCrossed);
+ assert.deepEqual([trace.oldLevel,trace.newLevel,boosts.level,trace.count],[ball,ball+1,ball+1,0]);
+ assert.deepEqual(trace.waves,[]);assert.deepEqual(boosts.board,original);verifyNumbers(boosts,trace);
+ assert.ok(candidates.includes(trace.newNumber));
+ if(ball===8)assert.equal(trace.newNumber,candidates[0]);
 }
+const inlet=E.create({rng:random});inlet.board[2]=null;
+assert.equal(E.powerForRoll(.25,E.probabilitiesForLevel(1)),0);
+const raised=E.draw(inlet,inlet.numbers[16],()=>.25);
+assert.equal(raised.count,0);assert.equal(raised.oldLevel,1);assert.equal(raised.newLevel,2);
+assert.equal(raised.moves.length,1);assert.equal(raised.moves[0].piece.power,1);
+for(let i=0;i<61;i++)if(i!==2)assert.equal(raised.before[i],raised.after[i]);
 const stage=E.create({rng:random}),targetAtStart=stage.sugarTarget;
 assert.equal(targetAtStart%10,0);
 stage.board=stage.board.map(p=>setPower(p,1));
 let sugarCount=0;
 for(let ball=1;ball<=8;ball++){
- const oldPopped=stage.popped;
- let calls=0;const controlled=()=>calls++%2===0?0:.07;
- const t=E.draw(stage,stage.numbers[15],controlled),g=E.bombGrades[ball];
- assert.ok(g.red>E.bombGrades[ball-1].red&&g.purple>E.bombGrades[ball-1].purple);
- assert.ok(t.moves.every(m=>m.piece.power===(.07<g.purple?3:.07<g.red+g.purple?2:1)));
+ const oldPopped=stage.popped,t=E.draw(stage,stage.numbers[15],()=>.005);
+ assert.equal(stage.level,1);assert.equal(t.boost,false);
+ assert.ok(t.moves.every(m=>m.piece.power===4));
  assert.equal(t.sugarCrossed,oldPopped<targetAtStart&&stage.popped>=targetAtStart);
  assert.equal(stage.sugarTarget,targetAtStart);sugarCount+=Number(t.sugarCrossed);
 }
@@ -300,4 +334,30 @@ for(let game=0;game<25;game++){
  }
 }
 assert.ok(survivingHoles>0);
-console.log('Passed 16 igniters, sparse-board previews, sealed pockets, top-only entry and motion replay, occupied-only clears, no ghost hits, collision-safe gravity and eight-turn accounting.');
+// Changing the payout-rate setting cannot alter a single kernel or number,
+// even for matched seeds and multiple boosts. Only the pop threshold changes.
+const seeded=n=>()=>((n=Math.imul(n,1664525)+1013904223|0)>>>0)/2**32;
+const streams=[seeded(51821),seeded(51821),seeded(51821)];
+const settings=[50,90,150].map((rate,i)=>E.create({rate,rng:streams[i],bet:100}));
+assert.ok([180,190].includes(settings[0].firstPopAward));
+assert.equal(settings[1].firstPopAward,120);
+assert.ok([70,80].includes(settings[2].firstPopAward));
+const starts=settings.map(x=>x.firstPopAward);
+for(const mode of settings){
+ assert.deepEqual(mode.board,settings[1].board);assert.deepEqual(mode.numbers,settings[1].numbers);
+ const first=mode.firstPopAward,table=E.popPayFor(first);
+ assert.deepEqual(table[0],[first,.1]);assert.equal(E.payout(first-1,0,100,first),0);
+ assert.equal(E.payout(first,0,100,first),10);
+}
+for(let t=0;t<8;t++){
+ const n=settings[1].numbers[[16,6,15,0,11,16,4,15][t]];
+ const traces=settings.map((state,i)=>E.draw(state,n,streams[i]));
+ for(let i=0;i<3;i++){
+   const q=settings[i],tr=traces[i];assert.equal(q.firstPopAward,starts[i]);
+   assert.deepEqual(q.board,settings[1].board);assert.equal(q.level,settings[1].level);
+   assert.deepEqual(q.numbers,settings[1].numbers);assert.deepEqual(tr.waves,traces[1].waves);
+   assert.equal(q.sugarTarget,settings[1].sugarTarget);assert.equal(q.sugarAwarded,settings[1].sugarAwarded);
+   assert.equal(tr.firstPopAward,starts[i]);assert.equal(q.win,E.payout(q.popped,q.clears,100,starts[i]));
+ }
+}
+console.log('Passed 15 lanes, separate ALL and BOOST, priority-capped levels, sparse-board previews, sealed pockets, top-only entry and motion replay, occupied-only clears, no ghost hits, collision-safe gravity and eight-turn accounting.');

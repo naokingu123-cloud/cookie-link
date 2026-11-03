@@ -4,7 +4,7 @@
 const id=2, slot=slots[id], K=window.PopcornEngine, V=window.PopcornView;
 const canvas=document.createElement('canvas');
 canvas.className='pc-scene';
-const guideHint='ポップコーンスプラッシュの着火ガイド。番号をタップするか、左右キーで選択。Escで解除。';
+const guideHint='ポップコーンスプラッシュの着火ガイド。番号で着火範囲やボム率UPを確認。左右キーで選択。Escで解除。';
 canvas.tabIndex=0;
 canvas.setAttribute('aria-label',guideHint);
 slot.panel.append(canvas);
@@ -21,7 +21,7 @@ const engine={
  kind:'popcorn', recordGame:4, drawMode:'single', version:0,
  get idle(){return !this.trace&&!this.queue.length;},
  get busy(){return !this.idle;},
- get totalHundredths(){return K.payout(this.state.popped,this.state.clears,100);},
+ get totalHundredths(){return K.payout(this.state.popped,this.state.clears,100,this.state.firstPopAward);},
  get allClears(){return this.state.clears;},
  get roundCleared(){return this.state.popped;},
  maxLink:0,roundSteps:0,roundHammers:0,
@@ -65,7 +65,7 @@ function updateReach(a){
  for(const number of engine.state.numbers){
   if(context.used.has(number))continue;
   const p=K.preview(engine.state,number);
-  const total=K.payout(engine.state.popped+p.count,engine.allClears+Number(p.clear),100);
+  const total=K.payout(engine.state.popped+p.count,engine.allClears+Number(p.clear),100,engine.state.firstPopAward);
   if(total>current)options.push({number,total,tier:reachTier(total-current,p.clear)});
  }
  options.sort((a,b)=>a.number-b.number);
@@ -98,6 +98,7 @@ function step(dt){
   engine.state=state;engine.trace=trace;engine.elapsed=0;
   engine.soundWave=-1;engine.maxChain=Math.max(engine.maxChain,engine.trace.waves.length);
   invalidateReach(slot);reach=[];engine.emit('popcornDraw',{number});
+  if(trace.boost&&active===id)sceneSound('level',{volume:.55});
  }
  if(!engine.trace)return;
  engine.elapsed+=dt*(engine.presentationRate||1);
@@ -124,7 +125,8 @@ function demoFrame(){
  if(!demo){
   let n=2425;
   const rng=()=>((n=(Math.imul(n,1664525)+1013904223)>>>0)/4294967296);
-  demo={state:K.create({rng,bet:app.bet(id),rate:90}),rng,at:clock,trace:null};
+  demo={state:K.create({rng,bet:app.bet(id),rate:debugPayoutTarget}),rng,at:clock,trace:null};
+  demo.state.firstPopAward=engine.state.firstPopAward;
  }
  demo.state.bet=app.bet(id);
  // Hold a settled sample board while the player inspects its numbered lanes.
@@ -132,8 +134,8 @@ function demoFrame(){
  const age=clock-demo.at, hold=demo.trace?V.duration(demo.trace)+1000:1300;
  if(age>=hold){
   if(demo.state.turn>=3){demo=null;return demoFrame();}
-  const d=demo.state;const fire=d.turn===2?d.allIndex:[6,1,12].find(i=>i!==d.allIndex&&i!==(demo.lastPort??-1));
-  demo.lastPort=fire;demo.trace=K.draw(d,d.numbers[fire],demo.rng);demo.at=clock;
+  const d=demo.state, fire=[6,d.boostIndex,d.allIndex][d.turn];
+  demo.trace=K.draw(d,d.numbers[fire],demo.rng);demo.at=clock;
  }
  return {state:demo.state,turn:demo.trace,elapsed:clock-demo.at};
 }
@@ -158,7 +160,12 @@ function badgeAt(event){
 function refreshGuide(){
  const port=hoverPort>=0?hoverPort:pinnedPort;
  const s=app.phase==='ready'&&demo?demo.state:engine.state;
- canvas.setAttribute('aria-label',port<0?guideHint:(port===s.allIndex?'ALL ':'')+s.numbers[port]+'番の着火ガイド。左右キーで選択、Escで解除。');
+ let label=guideHint;
+ if(port>=0){
+  const action=port===s.boostIndex?'ボム率UP。次の補充はLv.'+(s.level+1):port===s.allIndex?'ALL。盤上の全ボムに着火':'着火ガイド';
+  label=s.numbers[port]+'番、'+action+'。左右キーで選択、Escで解除。';
+ }
+ canvas.setAttribute('aria-label',label);
  canvas.style.cursor=hoverPort>=0?'pointer':'';
  paint(false);
 }
@@ -175,7 +182,7 @@ canvas.addEventListener('click',ev=>{
  hoverPort=-1;refreshGuide();
 });
 canvas.addEventListener('keydown',ev=>{
- const current=hoverPort>=0?hoverPort:pinnedPort, n=K.ports.length+1;
+ const current=hoverPort>=0?hoverPort:pinnedPort, n=engine.state.numbers.length;
  switch(ev.key){
   case 'ArrowRight': pinnedPort=(current+1)%n;break;
   case 'ArrowLeft': pinnedPort=current<0?n-1:(current+n-1)%n;break;
@@ -212,7 +219,7 @@ const oldHud=hud;
 hud=function(a){
  oldHud(a);
  if(active===id){
-  put('best',engine.state.popped+' POP ／ 全消し '+engine.allClears+'回');
+  put('best',engine.state.popped+' POP ／ 全消し '+engine.allClears+'回 ／ 補充Lv.'+engine.state.level);
   put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');requestFrame();
  }
 };
@@ -224,7 +231,7 @@ renderRoundResult=function(a){
  if(row.dataset.popcorn!==String(a.token)){
   row.dataset.popcorn=String(a.token);
   row.querySelector('.result-game-name').innerHTML='ポップコーンスプラッシュ <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
-  row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.popped+'粒 ／ 全消し '+engine.allClears+'回'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+  row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.popped+'粒 ／ 全消し '+engine.allClears+'回 ／ 補充Lv.'+engine.state.level+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
   row.querySelector('.result-game-emblem').outerHTML='<img class="result-game-emblem" src="assets/popcorn-art/popcorn-normal.webp?v=81" alt="">';
  }
 };
@@ -234,7 +241,7 @@ function refreshArt(){lastMini=lastMain=-1e4;requestFrame();}
 V.assetsReady.then(refreshArt);
 if(document.fonts)document.fonts.load('700 16px ArcadePayout','0123456789WIN').then(refreshArt);
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:85};
+window.PopcornSplash={engine,core:K,version:86};
 engine.reset();
 select(id);
 })();
