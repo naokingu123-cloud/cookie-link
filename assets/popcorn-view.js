@@ -695,9 +695,10 @@
     const seq=tr&&sequence(tr),active=!!tr&&elapsed<seq.end;
     const moving=active&&(tr.port>=0||seq.served),service=active?serviceAt(seq,elapsed):null;
     const stepFrame=moving&&elapsed>=seq.fall?(elapsed<seq.refill?seq.falls.find(f=>elapsed<f.end):seq.supply.find(f=>elapsed>=f.begin&&elapsed<f.end)):null;
-    // Keep the empty-cup overlay fixed throughout falling and refilling.
-    // Per-step occupancy flickered whenever a piece vacated or entered a cell.
-    const gaps=!moving?s.board:elapsed<seq.fall?tr.before:tr.after;
+    // Never preview the refill destination with an empty-cup overlay.
+    // Retain the pre-animation cup state until all kernels have landed;
+    // switching per motion frame causes flicker and using tr.after previews holes.
+    const gaps=active?tr.before:s.board;
     K.cells.forEach((p,i)=>{
       const w=seq?.waveOf[i]??-1;
       if(!gaps[i]||(moving&&elapsed<seq.fall&&w>=0&&elapsed>LIGHT+w*WAVE+SNAP))emptySocket(ctx,p);
