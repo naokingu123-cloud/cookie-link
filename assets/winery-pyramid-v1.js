@@ -1,4 +1,4 @@
-/* Winery Pyramid v71: restored framed dark thumbnail, dimmed main tea stand backdrop and full-color live cups. */
+/* Winery Pyramid v75: final 8-ball reach and selected tab highlighting. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -149,9 +149,16 @@ function syncMenuPayout(){
  }
 }
 menuPayoutApply?.addEventListener('click',syncMenuPayout);
-engine.beforeComplete=token=>engine.wait(300,token);
+// Settle the final 21-glass board, calculate eighth-ball reach options,
+ // and display the same standard 600ms post-game preview as other tabs.
+ engine.beforeComplete=token=>finishGamePresentation(S,engine,app,token);
 const emptySugar=S.tabSugar;if(emptySugar)emptySugar.hidden=false;
-function stable(e){return e.processed>0&&e.processed<8&&e.running&&!e.queue.length&&e.accepted===e.processed&&['waiting','settled'].includes(e.phase);}
+function stable(e){
+ const final=e.processed===8&&['settled','complete'].includes(e.phase);
+ const live=e.processed>0&&e.processed<8&&e.running;
+ return (live||final)&&!e.queue.length&&e.accepted===e.processed&&
+        ['waiting','settled','complete'].includes(e.phase);
+}
 function wineryReach(s,e,a){
  const context=typeof reachContext==='function'?reachContext(e,a):null;
  if(!context||!stable(e)||a.bet(1)<=0){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
@@ -971,7 +978,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:71,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:75,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
