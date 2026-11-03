@@ -703,7 +703,8 @@
     });
     const showRails=!active||elapsed<LIGHT;
     if(showRails&&guide?.port<K.ports.length)lane(ctx,guide.port,true);
-    hangSigns(ctx);foodStand(ctx,service||restingStand,false);
+    // The mini renders only the actual board, rim, and integrated numbered reach plaques.
+    if(!mini){hangSigns(ctx);foodStand(ctx,service||restingStand,false);}
     if(!moving)K.cells.forEach((p,i)=>drawPiece(ctx,s.board[i],p.x,p.y,time,mini));
     else if (elapsed<seq.fall) {
       const wave=waveAt(tr,elapsed);
@@ -775,13 +776,13 @@
       }
       ctx.restore();
     }
-    foodStand(ctx,service||restingStand,true);
-    if(showRails){
-      ctx.save();ctx.globalAlpha=guide?.30:(mini?.36:.82);railMap(ctx);ctx.restore();
-      guideCells(ctx,guide,mini,time);
+    if(!mini)foodStand(ctx,service||restingStand,true);
+    if(showRails && !mini){
+      ctx.save();ctx.globalAlpha=guide?.30:.82;railMap(ctx);ctx.restore();
+      guideCells(ctx,guide,false,time);
     }
     portArt(ctx,s,tr,elapsed,time,mini,reach,guide);
-    if(moving && tr.clear && elapsed>=seq.rest && elapsed<seq.fall){
+    if(!mini && moving && tr.clear && elapsed>=seq.rest && elapsed<seq.fall){
       const a=clamp((elapsed-seq.rest)/120),pulse=Math.sin(a*Math.PI/2);
       ctx.save();ctx.globalAlpha*=pulse;rounded(ctx,-2.7,-.59,5.4,1.18,.46,'#7c263ce8','#ffc85d',.072);
       if(seq.rainbow){
@@ -1128,8 +1129,10 @@
     // Fixed logical height preserves type sizes and line weights at either host pixel ratio.
     const {H,W,b,left,field,sidebar}=layout(width,height,mini);
     const guide=guideFor(s,tr,elapsed,opt.focusPort);
-    ctx.scale(height/H,height/H);background(ctx,W,H,mini);
-    if(opt.lesson){bombLesson(ctx,W,H,s,opt.lesson,mini);ctx.restore();return;}
+    if(mini)ctx.clearRect(0,0,width,height);
+    ctx.scale(height/H,height/H);
+    if(!mini)background(ctx,W,H,mini);
+    if(!mini && opt.lesson){bombLesson(ctx,W,H,s,opt.lesson,false);ctx.restore();return;}
     if(!mini){
       drawRound(ctx,s,opt,left,2,field);
       if(!sidebar){

@@ -166,7 +166,7 @@ function paint(mini){
    visibleLesson=next;canvas.setAttribute('aria-label',next?'遊び方 '+next+'/8 '+lessonNames[next-1]+'。番号ガイドボタン・矢印キーで番号ガイドを開きます。':guideHint);
   }
  }
- V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,lesson:d.lesson,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:(mini?slot.tabReachResults:slot.reachResults)});
+ V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,lesson:mini?null:d.lesson,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:(mini?slot.tabReachResults:slot.reachResults)});
 }
 slot.paintPopcorn=paint;
 function badgeAt(event){
@@ -277,7 +277,7 @@ function refreshArt(){lastMini=lastMain=-1e4;requestFrame();}
 V.assetsReady.then(refreshArt);
 if(document.fonts)document.fonts.load('700 16px ArcadePayout','0123456789WIN').then(refreshArt);
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:89};
+window.PopcornSplash={engine,core:K,version:90};
 engine.reset();
 select(id);
 })();
