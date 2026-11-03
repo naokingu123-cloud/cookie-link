@@ -10,7 +10,8 @@ const catalog={
  popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/popcorn-art/popcorn-logo-v88.webp',home:2,record:4},
  jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7}
 };
-const classic=['cookie','choco','candy'],festival=['gelato','winery','popcorn'];
+const classic=['cookie','choco','candy'],festival=['winery','popcorn','jelly'];
+const legacyMounts=['gelato','winery','popcorn'];
 const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',')||[];
 const valid=custom.length>=1&&custom.length<=3&&new Set(custom).size===custom.length&&custom.every(id=>Object.hasOwn(catalog,id));
 const mode=valid?'custom':params.get('set')==='classic'?'classic':'festival';
@@ -19,7 +20,7 @@ const ids=[null,null,null];
 // The original cabinet mounts use a baking tray, mine and jar in fixed slots.
 // Newer cabinets can fill any remaining mount. Tab order follows the player's picks.
 for(const id of classic.filter(g=>chosen.includes(g)))ids[catalog[id].home]=id;
-for(const id of festival.filter(g=>chosen.includes(g)&&!ids[catalog[g].home]))ids[catalog[id].home]=id;
+for(const id of legacyMounts.filter(g=>chosen.includes(g)&&!ids[catalog[g].home]))ids[catalog[id].home]=id;
 for(const id of chosen.filter(g=>!ids.includes(g)))ids[ids.indexOf(null)]=id;
 document.documentElement.dataset.lineup=mode;
 document.documentElement.toggleAttribute('data-has-classic',chosen.some(id=>classic.includes(id)));
@@ -28,7 +29,7 @@ if(mode!=='festival')document.title='SWEETS LINK｜'+chosen.map(id=>catalog[id].
 
 // Remount only game-specific legacy ID selectors, retaining each stylesheet's
 // relative artwork URLs, cascade order and breakpoint rules.
-const moved=festival.filter(id=>ids.includes(id)&&ids.indexOf(id)!==catalog[id].home);
+const moved=legacyMounts.filter(id=>ids.includes(id)&&ids.indexOf(id)!==catalog[id].home);
 if(!moved.length)return;
 const done=new WeakSet();
 function remap(sheet){

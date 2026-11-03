@@ -9,7 +9,7 @@ for(const s of slots){
  s.holder.style.setProperty('order',String(chosen.indexOf(key)),'important');
 }
 $('tabs').style.setProperty('grid-template-columns','repeat('+chosen.length+', minmax(0,1fr))','important');
-if(mode==='custom')select(ids.indexOf(chosen[0]));
+select(ids.indexOf(chosen[0]));
 
 const pick=document.createElement('dialog');pick.className='lineup-picker';pick.setAttribute('aria-labelledby','lineup-heading');
 pick.innerHTML='<div class="lineup-paper"><header><span>SWEETS LINK</span><button type="button" class="lineup-close" aria-label="閉じる">×</button></header>'+
