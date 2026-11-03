@@ -872,40 +872,63 @@ try{
        }
      }
    }
-   // Same 42 exact segments are used for both geometry and visible lines.
-   // Three layered paths make each connected edge readable against ice artwork.
-   // A moving white/cyan dash and traveling pearls circulate on live links.
+   // v76: classify the 42 exact rail segments using actual filled areas.
+   // HIT-connected = near white; enclosed internal = electric cyan;
+   // not yet connected/filled = muted slate violet.
+   const innerSegments=new Set();
+   for(let id=0;id<EDGES.length;id++){
+     const neighbors=faceAtEdge[id]||[];
+     if(!e.links.has(id)&&neighbors.length===2&&
+        neighbors.every(face=>e.filled.has(face)))innerSegments.add(id);
+   }
    const motion=typeof performance!=='undefined'?performance.now():Date.now();
-   const phase=motion*.033;
-   const flowing=!app.paused&&!document.hidden;
-   ctx.save();
-   ctx.setTransform(size/500,0,0,size/500,0,0);
+   const phase=motion*.056,flowing=!app.paused&&!document.hidden;
+   ctx.save();ctx.setTransform(size/500,0,0,size/500,0,0);
    ctx.lineCap='round';ctx.lineJoin='round';
-   for(const edgeIndex of e.links){
-     const ed=EDGES[edgeIndex],a=rasterCoords[ed.a],b=rasterCoords[ed.b];
-     const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+   const rail=(id,color,width,blur=0,alpha=1)=>{
+     const e0=EDGES[id],a=rasterCoords[e0.a],b=rasterCoords[e0.b];
+     ctx.save();ctx.globalAlpha=alpha;
      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-     ctx.save();
-     ctx.shadowColor='#52e9ff';ctx.shadowBlur=small?4:9;
-     ctx.globalAlpha=.65;ctx.strokeStyle='#38dbff';
-     ctx.lineWidth=small?8:10.5;ctx.stroke();
-     ctx.restore();
-     ctx.lineWidth=small?5.3:6.3;ctx.strokeStyle='#fff5b7';ctx.stroke();
-     ctx.lineWidth=small?2.5:3.1;ctx.strokeStyle='#f8ffff';ctx.stroke();
+     ctx.strokeStyle=color;ctx.lineWidth=width;
+     ctx.shadowColor=color;ctx.shadowBlur=blur;ctx.stroke();ctx.restore();
+   };
+   // Strong dark strokes suppress the bright lines baked into artwork.
+   for(let id=0;id<EDGES.length;id++){
+     if(e.links.has(id)||innerSegments.has(id))continue;
+     rail(id,'#303454',small?6.5:8,0,.94);
+     rail(id,'#647099',small?2:2.7,0,.48);
+   }
+   for(const id of innerSegments){
+     const pulse=.84+.16*Math.sin(motion*.006+id*.49);
+     rail(id,'#38dbff',small?6:8.2,small?4:11,pulse);
+     rail(id,'#8decff',small?3.2:4.1,small?0:4,pulse);
+     if(flowing){
+       const ed=EDGES[id],a=rasterCoords[ed.a],b=rasterCoords[ed.b];
+       ctx.save();ctx.setLineDash([7,15]);ctx.lineDashOffset=-(phase*.45+id*3);
+       ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+       ctx.strokeStyle='#d8ffff';ctx.lineWidth=1.4;ctx.stroke();ctx.restore();
+     }
+   }
+   for(const id of e.links){
+     const ed=EDGES[id],a=rasterCoords[ed.a],b=rasterCoords[ed.b];
+     const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+     const pulse=.75+.25*Math.sin(motion*.008+id*.63);
+     rail(id,'#83e9ff',small?10.2:13.8,small?6:17,.76+.21*pulse);
+     rail(id,'#d7faff',small?6.5:8.3,small?2:9);
+     rail(id,'#fffefa',small?3.5:4.8,small?0:4);
      if(flowing&&length>1){
-       ctx.save();
-       ctx.setLineDash([8,13]);
-       ctx.lineDashOffset=-(phase+edgeIndex*5.2);
-       ctx.lineWidth=small?2.8:3.6;
-       ctx.strokeStyle='#8cf8ff';
-       ctx.shadowColor='#eaffff';ctx.shadowBlur=small?0:6;
-       ctx.stroke();
+       ctx.save();ctx.setLineDash([9,12]);ctx.lineDashOffset=-(phase+id*5.2);
+       ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+       ctx.lineWidth=small?3.1:4.1;ctx.strokeStyle='#75edff';
+       ctx.shadowColor='#d3ffff';ctx.shadowBlur=small?1:7;ctx.stroke();
        ctx.restore();
-       const t=((motion*.00042+edgeIndex*.113)%1);
-       const x=a.x+dx*t,y=a.y+dy*t;
-       ctx.beginPath();ctx.arc(x,y,small?2.7:3.5,0,Math.PI*2);
-       ctx.fillStyle='#ffffff';ctx.shadowColor='#65efff';
-       ctx.shadowBlur=small?3:9;ctx.fill();ctx.shadowBlur=0;
+       for(let k=0;k<2;k++){
+         const t=(motion*.00072+id*.113+k*.5)%1;
+         ctx.save();ctx.beginPath();
+         ctx.arc(a.x+dx*t,a.y+dy*t,small?3.1:4.2,0,Math.PI*2);
+         ctx.fillStyle='#ffffff';ctx.shadowColor='#e4ffff';
+         ctx.shadowBlur=small?6:14;ctx.fill();ctx.restore();
+       }
      }
    }
    for(let k=0;k<rasterCoords.length;k++){
