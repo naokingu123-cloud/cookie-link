@@ -1,0 +1,127 @@
+/* Jelly Bingo shares the cabinet's roulette, unpaused presentation clock and settlement. */
+(()=>{
+'use strict';
+const id=window.SweetsLineup.ids.indexOf('jelly'),slot=slots[id];
+const K=window.JellyRules,V=window.JellyView,game=window.SweetsLineup.catalog.jelly;
+const canvas=document.createElement('canvas');canvas.className='jb-scene';canvas.setAttribute('role','img');
+canvas.setAttribute('aria-label','ジェリービンゴ。前半5球で仕切りを開き、後半3球で赤・黄・緑のゼリーを流します');
+slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.classList.add('jb-slot');
+const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
+title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
+const ctx=canvas.getContext('2d'),sugarLines=6;
+let frame=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,paused=false;
+const engine={
+ kind:'jelly',gameName:game.name,recordGame:game.record,drawMode:'single',version:0,
+ maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,
+ get idle(){return !this.trace&&!this.queue.length;},get busy(){return !this.idle;},
+ get paused(){return paused;},
+ set paused(value){
+  if(value===paused)return;
+  paused=value;stamp=0;if(!value&&(active===id||this.running))wake();
+ },
+ get totalHundredths(){return K.payout(this.state.lines.length);},get allClears(){return Number(this.state.lines.length===12);},
+ reset(){
+  this.version++;this.state=K.create({rng:app.random,rate:debugPayoutTarget});this.queue=[];this.drawn=new Set();this.trace=null;
+  this.processed=this.accepted=this.elapsed=this.roundSteps=0;this.running=false;this.paused=false;this.presentationRate=1;
+  this.wonderCollected=false;this.wonderToken=null;stopSugarAward(slot);invalidateReach(slot);
+  demoTime=0;lastMain=lastMini=-1000;this.emit('ready');
+ },
+ setRainbowSugar(bet){this.wonderToken={id:this.version,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};},
+ start(){
+  this.running=true;this.wonderToken??={id:this.version,value:this.roundBet,tier:sugarVisualTier(this.roundBet),kind:'jelly'};
+  this.emit('waiting');
+ },
+ previewDraw(n){this.drawn.add(n);},
+ enqueueBatch(numbers){
+  for(const n of numbers){
+   if(!this.running||this.accepted>=8)break;
+   const next=K.draw(this.queue.at(-1)?.state||this.state,n);
+   if(next){this.queue.push(next);this.accepted++;}
+  }
+  wake();
+ },
+ emit(phase){this.phase=phase;slot.event={phase};slot.dirtyMini=slot.dirtyMain=true;wake();scheduleUI(app);}
+};
+app.engines[id]=slot.engine=engine;
+slot.updateJellyReach=function(a){
+ const c=reachContext(engine,a);
+ if(!c||a.bet(id)<=0||c.count>=8){if(slot.reachStatus!=='inactive'){invalidateReach(slot);slot.reachStatus='inactive';}return;}
+ if(c.key===slot.reachBoardKey)return;
+ const base=engine.totalHundredths,hits=[];
+ for(let number=1;number<=25;number++){
+  if(c.used.has(number))continue;
+  const {state}=K.draw(engine.state,number);const total=K.payout(state.lines.length),gain=total-base;
+  if(gain<=0)continue;
+  const allClear=state.lines.length===12,tier=reachTier(gain,allClear);
+  hits.push({number,total,gain,allClear,tier,kind:['reach','high','super','all'][tier]});
+ }
+ slot.reachBoardKey=c.key;slot.tabReachResults=slot.reachResults=hits;slot.tabReachBase=base;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
+};
+function collectSugar(){
+ if(engine.wonderCollected||engine.state.lines.length<sugarLines)return;
+ const token=engine.wonderToken;engine.wonderCollected=true;engine.roundSteps=1;
+ app.wonderBank.push({...token,game:id});app.wonderValue+=token.value;app.wonderSteps=app.wonderBank.length;
+ if(isDirectJpcSugar(token)){select(id);showSugarCutin('虹色シュガー獲得!!','次ゲームは直接JPCへ！',true);}
+ showSugarAward(slot,[token]);announceAchievement('ジェリービンゴ　ワンダーシュガーGET！');
+}
+async function finish(version){
+ await finishGamePresentation(slot,engine,app,version);
+ if(version!==engine.version||app.phase!=='playing'||app.paid[id])return;
+ engine.running=false;engine.emit('complete');app.paid[id]=true;app.roundWins[id]=medalWin(app.locked[id],engine.totalHundredths);
+ if(app.enabled.every((enabled,i)=>!enabled||app.paid[i]))app.finishRound();recordChanged(app);
+}
+function advance(dt){
+ if(!engine.running)return;
+ if(!engine.trace&&engine.queue.length){
+  const next=engine.queue.shift();engine.state=next.state;engine.trace=next.trace;engine.elapsed=0;
+  invalidateReach(slot);engine.emit('jellyPour');
+  if(active===id)sceneSound(next.trace.ball<=5?'glass':'transfer',{volume:.52,rate:1+next.trace.ball*.025});
+ }
+ if(!engine.trace)return;
+ engine.elapsed+=dt*engine.presentationRate;
+ if(engine.elapsed<V.duration(engine.trace))return;
+ if(active===id&&engine.trace.newLines.length)sceneSound(engine.allClears?'allclear':'role',{volume:.64,rate:1.05});
+ engine.trace=null;engine.processed++;collectSugar();engine.emit('settled');slot.updateJellyReach(app);
+ if(engine.processed===8)finish(engine.version);
+}
+const demo=(()=>{
+ let seed=1894;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+ const initial=K.create({rng,rate:90}),steps=[];let state=initial;
+ // Chosen intersections illustrate distinct pours on a separate exhibition board.
+ for(const index of [10,4,6,22,15,21,1,14]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
+ return {initial,steps};
+})();
+function presentation(){
+ if(app.phase!=='ready')return {state:engine.state,turn:engine.trace,elapsed:engine.elapsed};
+ const time=demoTime%20000;
+ if(time<1200)return {state:demo.initial,turn:null,elapsed:0};
+ const n=Math.min(7,Math.floor((time-1200)/2150)),s=demo.steps[n],elapsed=time-1200-n*2150;
+ return {state:s.state,turn:elapsed<V.duration(s.trace)?s.trace:null,elapsed};
+}
+function paint(mini){
+ if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
+ const dest=mini?slot.miniCanvas:canvas;
+ if(!mini){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;}
+ const p=presentation();V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo:app.phase==='ready',time:clock,turn:p.turn,elapsed:p.elapsed,bet:app.bet(id),reach:engine.trace||app.phase==='ready'?[]:slot.reachResults});
+}
+slot.paintJelly=paint;
+function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
+function tick(now){
+ frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
+ const dt=moving&&stamp?Math.min(100,Math.max(0,now-stamp)):0;stamp=moving?now:0;
+ if(moving){clock+=dt;if(active===id&&app.phase==='ready')demoTime+=dt;advance(dt);}
+ if(active===id&&clock-lastMain>=32){paint(false);lastMain=clock;}
+ if(engine.trace&&clock-lastMini>=150){paint(true);lastMini=clock;}
+ if(moving&&(active===id||engine.trace||engine.queue.length))wake();
+}
+const select0=select;select=function(i){const result=select0(i);document.body.classList.toggle('jb-active',active===id);lastMain=-1000;wake();return result;};
+const hud0=hud;hud=function(a){hud0(a);if(active===id){put('best',engine.state.lines.length+' BINGO ／ 6ラインでシュガー');put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');wake();}};
+const result0=renderRoundResult;renderRoundResult=function(a){
+ result0(a);if(!a.result)return;
+ const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.jelly===String(a.token))return;
+ row.dataset.jelly=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.lines.length+' BINGO ／ '+engine.state.colors.filter(Boolean).length+'マス HIT'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+};
+new ResizeObserver(()=>{lastMain=-1000;wake();}).observe(slot.panel);document.addEventListener('visibilitychange',()=>{stamp=0;wake();});
+window.JellyBingo={engine,core:K};engine.reset();select(active);
+})();

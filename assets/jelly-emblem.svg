@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 142" role="img" aria-label="ジェリービンゴ">
+ <defs>
+  <linearGradient id="panel" x2=".25" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#244b61"/><stop offset=".5" stop-color="#10465a"/><stop offset="1" stop-color="#12273c"/></linearGradient>
+  <linearGradient id="brass" x2=".2" y2="1"><stop stop-color="#ffeed0"/><stop offset=".25" stop-color="#d49b59"/><stop offset=".49" stop-color="#fff4ba"/><stop offset=".72" stop-color="#ac6232"/><stop offset="1" stop-color="#f6c581"/></linearGradient>
+  <linearGradient id="rose" x2=".27" y2="1"><stop stop-color="#ffdae4"/><stop offset=".18" stop-color="#ff819c"/><stop offset=".48" stop-color="#fb335f"/><stop offset=".8" stop-color="#c81951"/><stop offset="1" stop-color="#7c1846"/></linearGradient>
+  <linearGradient id="lemon" x2="0" y2="1"><stop stop-color="#fffbda"/><stop offset=".39" stop-color="#ffdc74"/><stop offset=".83" stop-color="#ffae40"/><stop offset="1" stop-color="#c97939"/></linearGradient>
+ </defs>
+ <path d="M22 17q0 8-11 11v70q10 2 11 11l74 4 18 14h184l15-12 20-1 11-13V38l-10-13-25-2-17-11H113L97 22z" fill="url(#panel)" stroke="#513144" stroke-width="8" stroke-linejoin="round"/>
+ <path d="M22 17q0 8-11 11v70q10 2 11 11l74 4 18 14h184l15-12 20-1 11-13V38l-10-13-25-2-17-11H113L97 22z" fill="none" stroke="url(#brass)" stroke-width="5" stroke-linejoin="round"/>
+ <path d="M121 21h57m-57 1-8 4m183 83-8 7H131" fill="none" stroke="#f7d994" stroke-width="1.5"/>
+ <g stroke-linejoin="round">
+  <path d="M7 94q45 24 98-2-1 13-45 20l5 8 14 4q1 6-26 6t-23-6l16-4 4-8Q8 107 7 94" fill="#5aa8af" stroke="#413650" stroke-width="3"/>
+  <ellipse cx="56" cy="94" rx="50" ry="11" fill="#a6ede7" stroke="#ffe0a2" stroke-width="3"/>
+  <path d="M15 87l11-42q0-7 9-10 20-8 41-2 8 2 11 8l10 42q3 11-9 14-6 3-12 0-9 7-19 3-12 5-20-1-10 3-16-4-10 0-6-8" fill="url(#rose)" stroke="#7a3048" stroke-width="2.5"/>
+  <path d="M20 89l11-46q2-5 6-5l-8 47q-1 8-5 8t-4-4m16 2 8-49q2-6 9-6l-5 49q-1 7-6 9t-6-3m23-54 5 1 4 49q0 7-5 9l-2-1z" fill="#ffb1ba" opacity=".53"/>
+  <path d="M75 39q7 3 8 7l9 38q2 10-3 11l-3-3-9-48z" fill="#ff7f85"/>
+  <ellipse cx="56" cy="38" rx="26" ry="7" fill="#ff97aa" stroke="#ef6784"/>
+  <path d="M29 43q3-5 11-6m9-1 7-1" fill="none" stroke="#fff1d0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M56 31c-8-3-11-11-7-16 4-5 8-3 10-2 8-4 16 2 13 10q-4 12-16 8z" fill="#d62351" stroke="#86254b" stroke-width="1.8"/>
+  <path d="M58 15q2-12 14-13" fill="none" stroke="#9c7840" stroke-width="3" stroke-linecap="round"/>
+  <path d="M52 17q3-3 6-2" fill="none" stroke="#ffe9cd" stroke-width="2.5" stroke-linecap="round"/>
+ </g>
+ <g font-family="Georgia,serif" font-weight="bold" font-style="italic" text-anchor="middle">
+  <text x="212" y="69" font-size="43" textLength="215" lengthAdjust="spacingAndGlyphs" fill="#361e33" stroke="#361e33" stroke-width="4" paint-order="stroke">Jelly Bingo</text>
+  <text x="211" y="66" font-size="43" textLength="215" lengthAdjust="spacingAndGlyphs" fill="url(#lemon)" stroke="#673946" stroke-width="2" paint-order="stroke">Jelly Bingo</text>
+ </g>
+ <text x="213" y="96" text-anchor="middle" font-size="20" fill="#fff2cd" letter-spacing="2" font-weight="900" font-family="system-ui,sans-serif">ジェリービンゴ</text>
+ <path d="m322 39 2 6 5 2-5 2-2 6-2-6-5-2 5-2zm-210 37 1.5 4.5 4.5 1.5-4.5 1.5L112 88l-1.5-4.5L106 82l4.5-1.5z" fill="#ffecab"/>
+</svg>

@@ -20,7 +20,8 @@ const games={
   ['交点にHIT','抽選された番号が点灯'],['ライン成立','HITした点を盤面の線で結ぶ'],['三角形GET','線で囲んだ小さな三角形を獲得'],['全埋め','本盤は三角形24枚で全埋め']]},
  winery:{name:'ワイナリーピラミッド',accent:'#ffcb9d',ink:'#65364b',steps:[
   ['ジュースを注ぐ','HITした番号のグラスへ注入'],['あふれて分配','余った量を下の2杯へ半分ずつ'],['MIXでODDS UP','異なる色が入ったグラスで倍率UP'],['注入量アップ','特別番号で次から注ぐ量が2倍'],['満タンで配当','本盤は満タン10杯から配当']]},
- popcorn:{name:'ポップコーンスプラッシュ',accent:'#ffe093'}
+ popcorn:{name:'ポップコーンスプラッシュ',accent:'#ffe093'},
+ jelly:{name:'ジェリービンゴ',accent:'#adf2e1'}
 };
 const alias={canyon:'choco',chocolate:'choco',six:'candy',sixdrop:'candy',drop:'candy',prism:'gelato',pyramid:'winery'};
 function kindOf(s){
@@ -31,7 +32,7 @@ const art={},images={
  cakes:['cake-white','cake-strawberry','cake-milk','cake-bitter'].map(k=>'assets/canyon-geology/'+k+'.webp'),
  ore:['assets/canyon-geology/ore-diamond.webp'],
  prism:['assets/gelato-prism-gelato-v37.png'],glass:['assets/winery-crystal-coupe-v60.png'],
- popcorn:['assets/popcorn-art/popcorn-normal.webp']
+ popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:['assets/jelly-emblem.svg']
 };
 for(const [key,urls] of Object.entries(images))art[key]=urls.map(src=>{const im=new Image();im.decoding='async';im.src=src;return im;});
 const loaded=im=>im&&(im.naturalWidth||im.width)>0&&im.complete!==false;
@@ -59,7 +60,7 @@ function emblem(c,kind,x,y,size){
  else if(kind==='candy')candy(c,0,x,y,size);
  else if(kind==='gelato')picture(c,art.prism[0],x,y,size*1.18);
  else if(kind==='winery')picture(c,art.glass[0],x,y,size);
- else picture(c,art.popcorn[0],x,y,size);
+ else picture(c,art[kind][0],x,y,size);
 }
 function tag(c,s,x,y,max=130,accent='#ffe69b'){const w=Math.min(max,Math.max(42,s.length*13+22));rect(c,x-w/2,y-11,w,22,7,'#6b3349',accent,1.4);text(c,s,x,y,15,accent,w-6);}
 function burst(c,x,y,p){if(p<=0||p>=1)return;c.save();c.globalAlpha=1-p;for(let i=0;i<6;i++){const a=i*Math.PI/3,d=6+19*p;dot(c,x+Math.cos(a)*d,y+Math.sin(a)*d,2.3,'#ffe5a8');}c.restore();}

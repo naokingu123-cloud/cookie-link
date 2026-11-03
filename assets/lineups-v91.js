@@ -7,7 +7,8 @@ const catalog={
  candy:{name:'シックスドロップ',logo:'assets/six-drop-title-v2.webp',home:2,record:3},
  gelato:{name:'ジェラートプリズム',logo:'assets/gelato-prism-tab-art-v51.webp',home:0,record:1},
  winery:{name:'ワイナリーピラミッド',logo:'assets/winery-pyramid-tab-art-v51.webp',home:1,record:2},
- popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/popcorn-art/popcorn-logo-v88.webp',home:2,record:4}
+ popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/popcorn-art/popcorn-logo-v88.webp',home:2,record:4},
+ jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7}
 };
 const classic=['cookie','choco','candy'],festival=['gelato','winery','popcorn'];
 const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',')||[];

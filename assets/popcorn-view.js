@@ -90,17 +90,25 @@
       const w=2*radius*1.09,h=2*halfHeight*1.09;
       ctx.drawImage(art.carton,-w/2,-h/2,w,h);
     }
-    // Per-cell popcorn containers intentionally removed; keep only the board art.
+    // The paper liners are printed onto the cached board, even while kernels fall.
+    for(const {x,y} of K.cells)drawPaperLiner(ctx,x,y);
   }
-  function cupPath(ctx,x,y) {
-    ctx.beginPath();ctx.moveTo(x-.447,y-.21);ctx.quadraticCurveTo(x,y-.35,x+.447,y-.21);
-    ctx.lineTo(x+.337,y+.37);ctx.quadraticCurveTo(x,y+.49,x-.337,y+.37);ctx.closePath();
-  }
-  function drawCup(ctx,x,y) {
-    cupPath(ctx,x,y);ctx.fillStyle='#e8a98b';ctx.fill();ctx.strokeStyle='#4d2737';ctx.lineWidth=.045;ctx.stroke();
-    ctx.save();ctx.clip();ctx.fillStyle='#c94e51';
-    for (let j=-2;j<=2;j++) {const a=j*.21;ctx.beginPath();ctx.moveTo(x+a-.066,y-.32);ctx.lineTo(x+a+.055,y-.32);ctx.lineTo(x+a*.72+.045,y+.47);ctx.lineTo(x+a*.72-.045,y+.47);ctx.fill();}
-    ctx.restore();ctx.beginPath();ctx.ellipse(x,y-.205,.427,.096,0,0,TAU);ctx.fillStyle='#703844';ctx.fill();ctx.lineWidth=.037;ctx.strokeStyle='#ffdfae';ctx.stroke();
+  function drawPaperLiner(ctx,x,y) {
+    ctx.save();ctx.translate(x,y+.055);ctx.lineJoin='round';
+    const paper=ctx.createLinearGradient(0,-.27,0,.28);
+    paper.addColorStop(0,'#e8c6a4');paper.addColorStop(.43,'#c39379');paper.addColorStop(1,'#e2b594');
+    ctx.globalAlpha=.68;ctx.beginPath();
+    ctx.moveTo(-.42,-.12);ctx.lineTo(-.34,-.24);ctx.quadraticCurveTo(0,-.28,.34,-.24);
+    ctx.lineTo(.42,-.12);ctx.lineTo(.36,.17);ctx.lineTo(.28,.24);
+    ctx.quadraticCurveTo(0,.29,-.28,.24);ctx.lineTo(-.36,.17);ctx.closePath();
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle='#ffe2ad';ctx.lineWidth=.021;ctx.stroke();
+    ctx.strokeStyle='#a26e65';ctx.lineWidth=.017;
+    for(const side of [-1,1]){
+      ctx.beginPath();ctx.moveTo(side*.34,-.23);ctx.lineTo(side*.28,-.145);
+      ctx.lineTo(side*.26,.14);ctx.lineTo(side*.34,.185);ctx.stroke();
+    }
+    ctx.beginPath();ctx.moveTo(-.26,.14);ctx.quadraticCurveTo(0,.18,.26,.14);ctx.stroke();
+    ctx.restore();
   }
   function drawCachedPlate(ctx) {
     if (!plate || plate.version!==artVersion) {
@@ -675,27 +683,11 @@
       const pt=K.motionPoint(m,a);drawPiece(ctx,m.piece,pt.x,pt.y,time,mini);
     }
   }
-  let socketImage;
-  function emptySocket(ctx,p){
-    if(!socketImage){
-      const c=document.createElement('canvas');c.width=c.height=82;
-      const g=c.getContext('2d');g.translate(41,41);g.scale(76,76);
-      g.beginPath();g.ellipse(0,.007,.443,.359,0,0,TAU);g.fillStyle='#48303c';g.fill();
-      g.lineWidth=.042;g.strokeStyle='#c09178';g.stroke();
-      g.beginPath();g.ellipse(0,.005,.365,.277,0,0,TAU);
-      const shade=g.createLinearGradient(0,-.27,0,.28);shade.addColorStop(0,'#211e2d');shade.addColorStop(1,'#49333f');g.fillStyle=shade;g.fill();
-      g.lineCap='round';g.strokeStyle='#8a6d72';g.lineWidth=.025;g.beginPath();
-      for(let j=-1;j<=1;j++){g.moveTo(j*.115-.042,.061);g.lineTo(j*.115+.042,-.061);}g.stroke();
-      socketImage=c;
-    }
-    ctx.drawImage(socketImage,p.x-.54,p.y-.54,1.08,1.08);
-  }
   function liveBoard(ctx,s,tr,elapsed,time,mini,reach,guide) {
     drawCachedPlate(ctx);
     const seq=tr&&sequence(tr),active=!!tr&&elapsed<seq.end;
     const moving=active&&(tr.port>=0||seq.served),service=active?serviceAt(seq,elapsed):null;
     const stepFrame=moving&&elapsed>=seq.fall?(elapsed<seq.refill?seq.falls.find(f=>elapsed<f.end):seq.supply.find(f=>elapsed>=f.begin&&elapsed<f.end)):null;
-    // Empty cell overlays are disabled for all phases, including idle and refill.
     const showRails=!active||elapsed<LIGHT;
     if(showRails&&guide?.port<K.ports.length)lane(ctx,guide.port,true);
     // The mini renders only the actual board, rim, and integrated numbered reach plaques.

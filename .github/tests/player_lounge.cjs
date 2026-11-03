@@ -19,7 +19,8 @@ now=Date.parse('2026-11-01T00:00:00Z');assert.equal(restored.rows('month',0).len
 assert.equal(month(Date.parse('2026-10-31T15:01:00Z')),'2026-11');
 app.token++;app.roundWins=[500,100,200];restored.capture(app);assert.equal(uniqueBest(restored.rows('month',0))[0].win,500);assert.equal(uniqueBest(restored.rows('all',0)).length,1);
 const mixed=uniqueBest([...demoRows(now,0),...restored.rows('all',0),...restored.rows('all',0)]);assert.equal(mixed.length,11);assert.equal(mixed.filter(r=>r.self).length,1);assert.deepEqual(mixed.filter(r=>r.win===165600).map(r=>r.rank),[8,8]);
-const before=JSON.stringify(restored.data.bests);restored.record({win:Infinity,at:now,game:1});restored.record({win:999,at:now,game:7});assert.equal(JSON.stringify(restored.data.bests),before);
+const before=JSON.stringify(restored.data.bests);restored.record({win:Infinity,at:now,game:1});restored.record({win:999,at:now,game:8});assert.equal(JSON.stringify(restored.data.bests),before);
+assert(restored.record({win:999,at:now,game:7}));assert.equal(restored.rows('all',7)[0].win,999);
 const broken=new PlayerStore({getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}},()=>now,()=> 'memory-only');assert(!broken.saved);assert(broken.rename('安全'));broken.record({win:1,game:1,at:now});assert.equal(broken.rows('all',1)[0].win,1);
 const corrupt=new PlayerStore({getItem(){return '{broken'},setItem(){}},()=>now,()=> 'recovered');assert.equal(corrupt.data.id,'recovered');
 const html=fs.readFileSync('index.html','utf8'),game=fs.readFileSync('optimized/app-01.js','utf8');

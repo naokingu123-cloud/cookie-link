@@ -5,7 +5,7 @@ function load(search){
  const root={dataset:{},toggleAttribute(){}},ctx={location:{search},URLSearchParams,document:{documentElement:root,addEventListener(){},head:{}},MutationObserver:class{observe(){}},window:{}};
  script.runInNewContext(ctx);const setup=ctx.window.SweetsLineup;return {chosen:Array.from(setup.chosen),ids:Array.from(setup.ids),mode:setup.mode};
 }
-const classic=['cookie','choco','candy'],festival=['gelato','winery','popcorn'],kinds=[...classic,...festival];
+const classic=['cookie','choco','candy'],festival=['gelato','winery','popcorn'],kinds=[...classic,...festival,'jelly'];
 assert.deepEqual(load('').ids,festival);assert.deepEqual(load('?set=classic').ids,classic);
 for(const bad of ['cookie,cookie','winery,unknown','cookie,choco,candy,popcorn',''])assert.equal(load('?games='+bad).mode,'festival');
 let tested=0;

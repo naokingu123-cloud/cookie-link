@@ -1,0 +1,31 @@
+body.jb-active #screen>.game {
+  background:linear-gradient(125deg,#07324238,#19415008),url('jelly-backdrop.webp') center/cover,#195663!important;
+}
+body.jb-active #screen>.game>.festival-top,body.jb-active #screen>.game>.statusline,
+body.jb-active #odds-panel,body.jb-active #allclear-award,body.jb-active #carnival-heading,
+body.jb-active #choco-heading,body.jb-active #carnival-odds {display:none!important}
+body.jb-active #screen>.game>.field {
+  flex:1 1 auto!important;width:100%!important;height:auto!important;min-height:0!important;
+  grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;gap:0!important;background:transparent!important;
+}
+body.jb-active .board-area,body.jb-active #panels {width:100%!important;max-width:none!important}
+#screen #panels>.jb-panel {position:relative!important;background:transparent!important;width:100%!important;height:100%!important;overflow:hidden!important;isolation:isolate}
+#screen #panels>.jb-panel>:not(.jb-scene),#screen #panels>.jb-panel::before,#screen #panels>.jb-panel::after {display:none!important}
+#screen #panels>.jb-panel .jb-scene {
+  display:block;position:absolute;inset:0;width:100%;height:100%;border-radius:10px;
+  background:linear-gradient(180deg,#002f3824,#17223c32),url('jelly-backdrop.webp') center/cover,#174856;
+}
+#screen #tabs .jb-slot .tab .tab-game-name {background:none!important;display:grid!important;place-items:center;transform:none!important;max-width:100%;width:100%;height:40px}
+#screen #tabs .jb-slot .tab-game-name img {width:100%;height:100%;max-height:40px;object-fit:contain}
+#screen #tabs .jb-slot .mini-wrap {background:#144554!important;border-radius:7px;overflow:hidden}
+#screen #tabs .jb-slot .mini-wrap canvas {width:100%;height:100%;object-fit:contain}
+#screen #tabs .jb-slot .tab[aria-selected=true] .mini-wrap::after {
+  display:grid;content:'選択中';position:absolute;inset:1px;place-items:center;z-index:20;
+  background:#1e4850;color:#fff2bf;border:1px solid #e5b57a;border-radius:6px;font:900 12px system-ui;
+}
+:is(#round-result-layer,.result-game)[data-game-kind="jelly"] {
+  --v91-gold:#ffe1a0;--v91-halo:#85efe1;--v91-floor:#153d4a;--v91-bg:url('jelly-backdrop.webp');
+}
+@media (max-width:700px){
+  #screen #panels>.jb-panel .jb-scene {background-size:100% 100%,100% 100%}
+}
