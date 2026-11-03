@@ -1,0 +1,35 @@
+/* Winery v75: native "選択中" overlay, identical interaction to the
+ * other game tabs. The dark-framed miniature remains visible when unselected.
+ * Overrides only the v71 inner-gold-frame pseudo element when selected. */
+body.winery-enabled .wp-tab[aria-selected="true"] .mini-wrap::after{
+ content:"選択中"!important;
+ position:absolute!important;inset:3px!important;
+ display:grid!important;place-items:center!important;
+ z-index:30!important;opacity:1!important;
+ border:1px solid rgba(255,229,160,.77)!important;
+ border-radius:5px!important;
+ background:#40291ef5!important;
+ background-image:none!important;
+ color:#fff2c5!important;
+ font:900 13px/1 system-ui,sans-serif!important;
+ text-shadow:0 1px 2px #210f09!important;
+ box-shadow:inset 0 0 6px #ffe7ae77!important;
+ pointer-events:none!important;
+}
+body.winery-enabled .wp-tab[aria-selected="true"]{
+ animation:selected-tab-breathe 1.8s ease-in-out infinite!important;
+}
+.paused body.winery-enabled .wp-tab[aria-selected="true"],
+body.winery-enabled.paused .wp-tab[aria-selected="true"]{
+ animation-play-state:paused!important;
+}
+@media(max-width:480px){
+ body.winery-enabled .wp-tab[aria-selected="true"] .mini-wrap::after{
+  inset:2px!important;border-radius:5px!important;font-size:11px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.winery-enabled .wp-tab[aria-selected="true"]{
+  animation:none!important;
+ }
+}
