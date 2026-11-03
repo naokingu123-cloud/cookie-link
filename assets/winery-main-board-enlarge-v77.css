@@ -1,0 +1,9 @@
+/* Winery Pyramid v77: coordinate-register the afternoon-tea stand
+ * with the 5% horizontal spread of the 21 living glasses.
+ * Only the transparent rack artwork changes; the colorful river, contrast
+ * vignette, menu, right payout sidebar and tab thumbnail stay unmodified.
+ */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-tea-loaded>.wp-tea-stand{
+ transform-origin:44.74% 50%!important;
+ transform:translateX(-2.632%) scaleX(1.05)!important;
+}
