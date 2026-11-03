@@ -1,4 +1,4 @@
-/* Winery Pyramid v76: four-tier glowing reach tags and local stand contrast. */
+/* Winery Pyramid v77: slightly larger 21-glass main board; original tab miniature retained. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -346,6 +346,17 @@ function bottle(x,p,flavor,volume,t){
    4) native live HUD/payout DOM. No baked screenshot numbers or white wipes. */
 const DRAW_W=1672,DRAW_H=941;
 const premiumPos=i=>{const {r,c}=K.CELLS[i];return {x:748+(c-r/2)*141,y:110+r*136+[0,0,1,1,2,2][r]};};
+// v77 applies ONLY to the main drawing (not the thumbnail or payout).
+// The x-spread keeps the six cups in the bottom row from overlapping.
+const WP_MAIN_CUP_ZOOM=1.07,WP_MAIN_X_SPREAD=1.05;
+function spreadMainGlasses(x){
+ x.translate(748,0);x.scale(WP_MAIN_X_SPREAD,1);x.translate(-748,0);
+}
+function zoomMainGlass(x,i){
+ const p=premiumPos(i);
+ x.save();x.translate(p.x,p.y);x.scale(WP_MAIN_CUP_ZOOM,WP_MAIN_CUP_ZOOM);
+ x.translate(-p.x,-p.y);
+}
 const worldArt=new Image();
 let worldReady=false;
 worldArt.decoding='async';
@@ -718,6 +729,7 @@ function premiumReach(x,time){
   const i=engine.nodeNumbers.indexOf(p.number);
   if(i<0)continue;
   const {x:cx,y:cy}=premiumPos(i),y=cy+99;
+  zoomMainGlass(x,i); // Exact price-tag reach follows enlarged price tag.
   const tier=Math.max(0,Math.min(3,p.tier|0));
   const pulse=.5+.5*Math.sin(time*(tier?.0075:.0052)+i*.65);
   const color=WP_REACH_COLORS[tier];
@@ -760,6 +772,7 @@ function premiumReach(x,time){
   x.fillStyle=tier===0?'#007f94':tier===1?'#ba204c':
     tier===2?'#852bb5':'#b26918';
   x.fillText(name,cx,y+30);x.restore();
+  x.restore(); // zoomMainGlass for this reach
  }
 }
 function premiumSpout(x,t){
@@ -818,6 +831,7 @@ function paint(target,time,small=false){
  }
  lx.setTransform((small?W:liquidCanvas.width)/DRAW_W,0,0,
                  (small?H:liquidCanvas.height)/DRAW_H,0,0);
+ if(!small){lx.save();spreadMainGlasses(lx);}
  // Ambient moving light on the river; unobtrusive, no opacity fill.
  if(!small){
   for(let k=0;k<18;k++){
@@ -830,15 +844,24 @@ function paint(target,time,small=false){
  for(let i=0;i<21;i++){
    const touched=fx?.type==='pour' &&
      (fx.source===i||flows.some(flow=>flow.from===i||flow.to===i));
+   if(!small)zoomMainGlass(lx,i);
    premiumJuice(lx,i,display[i],time,touched);
+   if(!small)lx.restore();
  }
  premiumStreams(lx,fx,flows,time);
+ if(!small)lx.restore(); // finish main juice x-spread
  // For tab thumbnails, both paint passes share one small canvas.
  xx.setTransform(W/DRAW_W,0,0,H/DRAW_H,0,0);
  premiumSpout(xx,time);
- for(let i=0;i<21;i++)premiumGlass(xx,i,display[i],time);
+ if(!small){xx.save();spreadMainGlasses(xx);}
+ for(let i=0;i<21;i++){
+  if(!small)zoomMainGlass(xx,i);
+  premiumGlass(xx,i,display[i],time);
+  if(!small)xx.restore();
+ }
  if(!small){
   premiumReach(xx,time);
+  xx.restore(); // normal coordinates for the HUD
   if(!app.bet(1)){
    xx.save();xx.textAlign='center';xx.font='900 25px system-ui';
    xx.shadowColor='#67345d';xx.shadowBlur=7;xx.fillStyle='#fff0c6';
@@ -1042,7 +1065,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:76,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:77,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
