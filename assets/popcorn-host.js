@@ -13,7 +13,7 @@ slot.holder.classList.add('pc-slot');
 const title=slot.tab.querySelector('.tab-game-name');
 title.setAttribute('aria-label','ポップコーンスプラッシュ');
 title.innerHTML='<img src="assets/popcorn-art/popcorn-logo.webp" alt="ポップコーンスプラッシュ">';
-slot.tabSugar.hidden=true;
+slot.tabSugar.hidden=false;
 
 let frame=0, stamp=0, clock=0, lastMain=-1e4, lastMini=-1e4, demo=null;
 let reach=[],hoverPort=-1,pinnedPort=-1;
@@ -28,10 +28,15 @@ const engine={
  reset(){
   this.version++;this.phase='ready';this.running=false;this.paused=false;this.presentationRate=1;
   this.state=K.create({bet:app.bet(id)||0,rate:debugPayoutTarget,rng:app.random});
+  this.wonderToken=null;this.wonderCollected=false;this.roundSteps=0;stopSugarAward(slot);
   this.accepted=0;this.processed=0;this.drawn=new Set();this.queue=[];this.trace=null;this.elapsed=0;this.maxChain=0;this.soundWave=-1;
   demo=null;reach=[];hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);invalidateReach(slot);this.emit('ready');lastMain=lastMini=-1e4;
  },
+ setRainbowSugar(bet){
+  this.wonderToken={id:this.version*100+1,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};
+ },
  start(){
+  this.wonderToken??={id:this.version*100+1,value:this.roundBet,tier:sugarVisualTier(this.roundBet),kind:'popcorn',source:'popped'};
   this.state.bet=this.roundBet;this.running=true;this.emit('waiting');demo=null;hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);
  },
  previewDraw(n){this.drawn.add(n);},
@@ -77,6 +82,15 @@ async function finish(token){
  if(app.enabled.every((yes,i)=>!yes||app.paid[i]))app.finishRound();
  recordChanged(app);
 }
+function collectSugar(){
+ const step=engine.wonderToken;
+ if(!step||engine.wonderCollected||app.phase!=='playing'||!app.enabled[id])return;
+ engine.wonderCollected=true;engine.roundSteps=1;
+ app.wonderBank.push({...step,game:id});app.wonderValue+=step.value;app.wonderSteps=app.wonderBank.length;
+ if(isDirectJpcSugar(step)){select(id);showSugarCutin('虹色シュガー獲得!!','次ゲームは直接JPCへ！',true);}
+ showSugarAward(slot,[step]);announceAchievement('ポップコーンスプラッシュ　ワンダーシュガーGET！');
+ scheduleUI(app);
+}
 function step(dt){
  if(!engine.running)return;
  if(!engine.trace&&engine.queue.length){
@@ -92,12 +106,13 @@ function step(dt){
   const wave=V.waveAt(trace,engine.elapsed);
   if(wave>engine.soundWave&&wave<trace.waves.length){
    engine.soundWave=wave;
-   const strong=trace.waves[wave].some(i=>trace.before[i].power===2);
+   const strong=trace.waves[wave].some(i=>trace.before[i].power>=2);
    sceneSound(strong?'color-burst':'pop',{volume:strong?.72:Math.min(.72,.42+wave*.05),rate:1+Math.min(wave,7)*.075});
    if(wave>=2)sceneSound('chain',{volume:.35,rate:1+Math.min(wave,6)*.09});
    if(trace.clear&&wave===trace.waves.length-1)sceneSound('allclear',{volume:.76});
   }
  }
+ if(trace.sugarCrossed&&!engine.wonderCollected&&V.shownPopped(engine.state,trace,engine.elapsed)>=engine.state.sugarTarget)collectSugar();
  if(engine.elapsed<V.duration(trace))return;
  engine.trace=null;engine.processed++;
  if(trace.clear)announceAchievement('ポップコーンスプラッシュ　全消し '+engine.allClears+'回！');
@@ -132,7 +147,7 @@ function paint(mini){
  const displayDemo=app.phase==='ready'&&!jpcSession.active;
  const d=displayDemo?demoFrame():{state:engine.state,turn:engine.trace,elapsed:engine.elapsed};
  const focusPort=mini?-1:(hoverPort>=0?hoverPort:pinnedPort);
- V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,reach:displayDemo?[]:reach});
+ V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:reach});
 }
 slot.paintPopcorn=paint;
 function badgeAt(event){
@@ -207,7 +222,7 @@ renderRoundResult=function(a){
  if(row.dataset.popcorn!==String(a.token)){
   row.dataset.popcorn=String(a.token);
   row.querySelector('.result-game-name').innerHTML='ポップコーンスプラッシュ <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
-  row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.popped+'粒 ／ 全消し '+engine.allClears+'回':'参加なし';
+  row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.popped+'粒 ／ 全消し '+engine.allClears+'回'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
   row.querySelector('.result-game-emblem').outerHTML='<img class="result-game-emblem" src="assets/popcorn-art/popcorn-normal.webp?v=81" alt="">';
  }
 };
@@ -215,7 +230,7 @@ document.addEventListener('visibilitychange',()=>{stamp=0;requestFrame();});
 new ResizeObserver(()=>{lastMain=-1e4;requestFrame();}).observe(slot.panel);
 if(V.assetsReady)V.assetsReady.then(()=>{lastMini=lastMain=-1e4;requestFrame();});
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:83};
+window.PopcornSplash={engine,core:K,version:84};
 engine.reset();
 select(id);
 })();

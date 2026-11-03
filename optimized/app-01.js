@@ -2464,6 +2464,10 @@ class Arcade{
     this.debugRainbowIssued=true;rainbowBoard=0;
    }
   }
+  if(rainbow&&rainbowBoard<0){
+   rainbowBoard=this.engines.findIndex((e,i)=>this.enabled[i]&&typeof e.setRainbowSugar==='function');
+   if(rainbowBoard>=0){this.engines[rainbowBoard].setRainbowSugar(this.locked[rainbowBoard]);this.debugRainbowIssued=true;}
+  }
   this.engines.forEach((e,i)=>{e.roundBet=this.locked[i];if(this.enabled[i])e.start();});
   this.onChange(this);
   if(rainbowBoard>=0)this.onEvent(rainbowBoard,{phase:'rainbowappear'},this.engines[rainbowBoard],this);
@@ -3112,6 +3116,9 @@ function tabs(a){
   const state=b===0?'参加なし':e.phase==='complete'?(a.phase==='playing'?'終了・集計待ち':a.phase==='paying'?'払い出し中':'払い出し済'):e.phase==='allclear'?'全消し！':a.phase==='ready'?'準備OK':e.phase==='link'?(s.event.newRecord?'最大LINK更新！':s.event.depth+'連鎖'):e.busy?'進行中 · 待ち'+e.queue.length:'次の球を待機';
   if(e.kind==='popcorn'){
    fitGoldenNumber(s.tabBet,num(b),14,76);s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);
+   const tier=sugarVisualTier(e.wonderToken||b);applySugarTier(s.tabSugar.querySelector('.sugar-gem'),tier);
+   s.tabSugar.hidden=b<=0;s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.classList.toggle('collected',e.wonderCollected);
+   s.tabSugar.setAttribute('aria-label',e.wonderCollected?'シュガー獲得済み':e.state.sugarTarget+'個でシュガー獲得');
    s.tab.setAttribute('aria-label','ポップコーンスプラッシュ・'+state);s.tab.classList.toggle('off',b===0);continue;
   }
   const key=[b,win,state,e.phase,s.event.newRecord,e.wonderCollected,e.wonderToken?.value,projectedSugarValue(e,b),isDirectJpcSugar(e.wonderToken)].join('/');if(s.tabKey===key)continue;s.tabKey=key;

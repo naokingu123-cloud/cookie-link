@@ -32,7 +32,7 @@ const s=E.create({rng:random});
 assert.equal(new Set(s.numbers).size,16);
 assert.ok(s.numbers.every(n=>Number.isInteger(n)&&n>=1&&n<=25));
 assert.equal(s.allIndex,15);
-assert.ok(s.board.every(c=>Object.isFrozen(c)&&c.color===Number(c.bomb)&&c.bomb===(c.power>0)));
+assert.ok(s.board.every(c=>Object.isFrozen(c)&&c.color===c.power&&c.bomb===(c.power>0)));
 assert.ok(s.board.some(c=>c.bomb)&&s.board.some(c=>!c.bomb));
 const misses=Array.from({length:25},(_,i)=>i+1).filter(n=>!s.numbers.includes(n));
 const initialNumbers=s.numbers.slice();
@@ -40,7 +40,7 @@ const miss=E.draw(s,misses[0],random);
 assert.deepEqual(s.numbers,initialNumbers);assert.equal(miss.newNumber,null);assert.deepEqual(s.drawn,[misses[0]]);
 assert.equal(s.turn,1); assert.equal(miss.count,0); assert.deepEqual(miss.before,miss.after);
 const lineIndex=4, number=s.numbers[lineIndex];
-const setPower=(piece,power)=>Object.freeze({id:piece.id,bomb:power>0,power,color:Number(power>0)});
+const setPower=(piece,power)=>Object.freeze({id:piece.id,bomb:power>0,power,color:power});
 s.board=s.board.map(c=>setPower(c,0));
 const clean=E.preview(s,number);
 assert.equal(clean.count,ports[lineIndex].line.length);
@@ -102,7 +102,7 @@ function validateGravity(turn){
  assert.deepEqual(added,turn.moves.map(m=>m.piece));
  for(const m of turn.moves)assert.equal(board[m.to],m.piece);
  assert.equal(live.length,turn.before.filter(Boolean).length-turn.count+added.length);
- assert.ok(live.every(p=>Object.isFrozen(p)&&p.color===Number(p.bomb)&&p.bomb===(p.power>0)));
+ assert.ok(live.every(p=>Object.isFrozen(p)&&p.color===p.power&&p.bomb===(p.power>0)));
  assert.equal(E.settle(board).steps.length,0);
 }
 validateGravity(result);
@@ -131,8 +131,18 @@ const dry=E.draw(s,master.newNumber,random);
 assert.equal(dry.port,s.allIndex);assert.ok(dry.all);assert.equal(dry.count,0);assert.deepEqual(dry.waves,[]);
 verifyNumbers(s,dry);
 assert.equal(E.draw(s,firstAll,random),null);assert.equal(s.turn,4);
-assert.deepEqual(E.clearPay.map(a=>a[1]),[5,20,50,100,200,300,500,1000]);
-assert.deepEqual(Array.from({length:9},(_,n)=>E.payout(0,n,1)),[0,5,25,75,175,375,675,1175,2175]);
+assert.equal(E.clearPay.length,8);
+let clearSum=0;
+for(const [n,award] of E.clearPay){
+ clearSum+=award;
+ assert.equal(E.payout(0,n,1),clearSum);
+}
+const first=E.popPay[0][0], levels=[.1,.2,.3,.4,.5,.6,.7,.8,.9,1,1.2,1.4,1.6,1.8,2,2.5,3,3.5,4,4.5,5,6,7,8,9,10,12.5,15,17.5,20,22.5,25,27.5,30,35,40,45,50,55,60,65,70];
+assert.equal(E.payout(first-1,0),0);
+for(const [i,odds] of levels.entries()){
+ assert.equal(E.payout(first+10*i,0),Math.round(odds*100));
+ assert.equal(E.payout(first+10*i+9,0),Math.round(odds*100));
+}
 while(s.turn<8){
  const cycle=E.draw(s,s.numbers[lineIndex],random);
  validateGravity(cycle);verifyNumbers(s,cycle);
@@ -167,11 +177,32 @@ const remote=E.radiusTwo[center].find(i=>!side.line.includes(i)&&!neighbors[cent
 relay.board=relay.board.map((c,i)=>setPower(c,i===center?2:i===remote?1:0));
 const chain=E.draw(relay,relay.numbers[4],random);
 assert.ok(chain.waves[0].includes(center)&&chain.waves[1].includes(remote)&&chain.waves[2].length>0);
-let bombs=0,enhanced=0;
-for(let i=0;i<400;i++) for(const c of E.create({rng:random}).board){
- if(c.bomb){bombs++;if(c.power===2)enhanced++;}
+// A radius-three blast crosses three real hex rings and clips cleanly to an edge.
+for(const [i,a] of cells.entries()){
+ const bubble=cells.flatMap((b,j)=>{
+   const q=b.q-a.q,r=b.r-a.r,d=Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r));
+   return d>=1&&d<=3?[j]:[];
+ });
+ assert.deepEqual(new Set(E.radiusThree[i]),new Set(bubble));
 }
-assert.ok(enhanced/bombs>.02&&enhanced/bombs<.045);
+const purple=E.create({rng:random});
+purple.board=purple.board.map((p,i)=>setPower(p,Number(i===center)*3));
+const big=E.draw(purple,purple.numbers[15],random);
+assert.equal(big.count,37);assert.deepEqual(new Set(big.waves[1]),new Set(E.radiusThree[center]));
+const stage=E.create({rng:random}),targetAtStart=stage.sugarTarget;
+assert.equal(targetAtStart%10,0);
+stage.board=stage.board.map(p=>setPower(p,1));
+let sugarCount=0;
+for(let ball=1;ball<=8;ball++){
+ const oldPopped=stage.popped;
+ let calls=0;const controlled=()=>calls++%2===0?0:.07;
+ const t=E.draw(stage,stage.numbers[15],controlled),g=E.bombGrades[ball];
+ assert.ok(g.red>E.bombGrades[ball-1].red&&g.purple>E.bombGrades[ball-1].purple);
+ assert.ok(t.moves.every(m=>m.piece.power===(.07<g.purple?3:.07<g.red+g.purple?2:1)));
+ assert.equal(t.sugarCrossed,oldPopped<targetAtStart&&stage.popped>=targetAtStart);
+ assert.equal(stage.sugarTarget,targetAtStart);sugarCount+=Number(t.sugarCrossed);
+}
+assert.equal(sugarCount,1);assert.ok(stage.sugarAwarded);
 // A lone support makes the kernel roll around it; two supports hold it in
 // place. Empty tracks permit the same vertical two-row drop as Six Drop.
 const idx=(q,r)=>cells.findIndex(c=>c.q===q&&c.r===r);

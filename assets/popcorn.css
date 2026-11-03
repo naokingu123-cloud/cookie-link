@@ -1,7 +1,6 @@
 body.pc-enabled #tabs{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 body.pc-enabled #tabs>.tab-slot{order:0!important}
 body.pc-enabled #tabs .tab-slot,body.pc-enabled #tabs .tab{min-width:0}
-body.pc-enabled .pc-slot .tab-sugar{display:none!important}
 body.pc-enabled #tabs .tab{grid-template-columns:minmax(0,1fr)}
 body.pc-enabled #tabs .tab-game-name{max-width:100%;box-sizing:border-box}
 body.pc-enabled #tabs .mini-wrap{max-width:100%;min-width:0}

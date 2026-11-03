@@ -24,11 +24,14 @@
     [[1,0],[0,1],[-1,1],[-1,0],[0,-1],[1,-1]]
       .map(([dq,dr])=>indices.get([q+dq,r+dr].join(','))).filter(i=>i!==undefined)
   );
-  const radiusTwo=neighbors.map((first,i)=>{
-    const area=new Set(first);
-    for(const j of first) for(const k of neighbors[j]) if(k!==i) area.add(k);
-    return Array.from(area);
-  });
+  const blastAreas=[[],neighbors];
+  for(let radius=2;radius<=3;radius++){
+    blastAreas.push(cells.map((a,i)=>cells.flatMap((b,j)=>{
+      const dq=b.q-a.q,dr=b.r-a.r;
+      return i!==j&&Math.max(Math.abs(dq),Math.abs(dr),Math.abs(dq+dr))<=radius?[j]:[];
+    })));
+  }
+  const radiusTwo=blastAreas[2],radiusThree=blastAreas[3];
   // Six Drop's synchronized support/pivot/gap rule adapted to these nine rows.
   // Only the board silhouette changes. Paths and collision pairs are static,
   // so repeated draws can reuse their 16-sample clearance checks.
@@ -158,16 +161,27 @@
     port(line,0,-1);
   }
   for(let level=4;level>=0;level--) sidePort(level,true);
-  const strongBombChance = 1/32;
-  const popPay = [[40,.1],[65,.2],[85,.4],[105,.7],[125,1],[150,1.5],[180,2.5],[220,5],[260,10],[320,25]];
-  const clearPay = [[1,5],[2,20],[3,50],[4,100],[5,200],[6,300],[7,500],[8,1000]];
+  // At opening and each subsequent refill, these are conditional on a bomb.
+  // Existing kernels retain their original color and radius throughout a game.
+  const bombGrades=Array.from({length:9},(_,ball)=>({red:.045+.025*ball,purple:.006+.012*ball}));
+  const firstPopAward=80;
+  const levels=[];
+  for(const [start,end,step] of [[.1,1,.1],[1.2,2,.2],[2.5,5,.5],[6,10,1],[12.5,30,2.5],[35,50,5]]){
+    for(let value=start;value<=end+.00001;value+=step)levels.push(Math.round(value*10)/10);
+  }
+  while(firstPopAward+10*(levels.length-1)<61*8)levels.push(levels[levels.length-1]+5);
+  const popPay=levels.map((level,i)=>[firstPopAward+10*i,level]);
+  // Per occurrence. Higher tiers follow the decreasing chance of reaching
+  // that clear count, with a deliberately softer rise than inverse odds.
+  const clearPay=[[1,10],[2,80],[3,600],[4,4000],[5,30000],[6,200000],[7,1500000],[8,10000000]];
   const clearTotals=[0];
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
-  // 26,000 rounds per fixed bomb chance with top-fed supply and sparse occupancy,
-  // rolling gravity, and the separate ALL igniter. Eight balls
-  // without replacement at 100 BET. Interpolate by mixing complete rounds so
-  // the published payout table stays fixed across the 50–150% debug range.
-  const rateAnchors = [[.16,36.524],[.215,59.975],[.256,86.820],[.295,127.296],[.335,195.853]];
+  // [bomb chance, RTP percent, lower sugar threshold, probability of lower].
+  // Rates use complete eight-ball rounds with the fixed visible prize table.
+  // The default uses exactly .24. The sugar targets bracket the measured 90th
+  // percentile at each bomb chance; one target is drawn before the first ball.
+  const rateAnchors=[[.185,41.25,150,.73484],[.215,62.93,170,.54803],
+    [.24,90,190,.79765],[.255,116.85,200,.62819],[.275,161.92,210,.05730]];
   function multiplier(count,table){
     let award = 0;
     for (const [min,value] of table){
@@ -177,18 +191,24 @@
     return award;
   }
   function payout(popped,clears,bet=100){
-    return Math.floor((multiplier(popped,popPay)+clearTotals[Math.min(clears,clearPay.length)])*bet+1e-8);
+    const [lastCount,lastMultiplier]=popPay[popPay.length-1];
+    const popWin=popped>lastCount?lastMultiplier+5*Math.floor((popped-lastCount)/10):multiplier(popped,popPay);
+    return Math.floor((popWin+clearTotals[Math.min(clears,clearPay.length)])*bet+1e-8);
   }
-  function kernel(id,bomb,rng){
-    const power=bomb?(rng()<strongBombChance?2:1):0;
-    return Object.freeze({id,bomb,power,color:bomb?1:0});
+  function kernel(id,bomb,rng,ball=0){
+    let power=0;
+    if(bomb){
+      const {red,purple}=bombGrades[ball],roll=rng();
+      power=roll<purple?3:roll<purple+red?2:1;
+    }
+    return Object.freeze({id,bomb,power,color:power});
   }
-  function chanceFor(target,rng){
+  function anchorFor(target,rng){
     const rate=Math.max(50,Math.min(150,Number(target)||90));
     let i=1;
     while(i<rateAnchors.length-1 && rateAnchors[i][1]<rate) i++;
-    const [lo,a]=rateAnchors[i-1], [hi,b]=rateAnchors[i];
-    return rng()<(rate-a)/(b-a)?hi:lo;
+    const lo=rateAnchors[i-1],hi=rateAnchors[i];
+    return rng()<(rate-lo[1])/(hi[1]-lo[1])?hi:lo;
   }
   function shuffle(values,rng){
     for(let i=values.length-1; i>0; i--){
@@ -200,7 +220,8 @@
   function create({rng=Math.random,bet=100,rate=90}={}){
     const numbers=shuffle(Array.from({length:25},(_,i)=>i+1),rng).slice(0,ports.length+1);
     const allIndex=ports.length;
-    const bombChance=chanceFor(rate,rng);
+    const anchor=anchorFor(rate,rng);
+    const bombChance=anchor[0];
     // A few opening batches are rich in ignition kernels, so natural clears
     // can still occur before ordinary refills establish the target bomb rate.
     const openingChance = rng()<.05 ? .5 : bombChance;
@@ -209,7 +230,8 @@
       const i=Math.floor(rng()*board.length);
       board[i]=kernel(i,!board[i].bomb,rng);
     }
-    return {board,numbers,drawn:[],allIndex,bombChance,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
+    const sugarTarget=anchor[2]+(rng()<anchor[3]?0:10);
+    return {board,numbers,drawn:[],allIndex,bombChance,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
   }
   function ignition(state,number){
     const port=state.numbers.indexOf(number);
@@ -225,7 +247,7 @@
       const next=[];
       for(const index of frontier){
         if(!state.board[index].bomb) continue;
-        for(const adjacent of (state.board[index].power===2?radiusTwo:neighbors)[index]){
+        for(const adjacent of blastAreas[state.board[index].power][index]){
           if(state.board[adjacent] && !marked.has(adjacent)){
             marked.add(adjacent);
             next.push(adjacent);
@@ -258,7 +280,7 @@
       const before=board;
       board=board.slice();
       const moves=entries.map(to=>{
-        const piece=kernel(cells.length+state.refilled++,rng()<state.bombChance,rng);
+        const piece=kernel(cells.length+state.refilled++,rng()<state.bombChance,rng,state.turn+1);
         const entry={from:-1,to,x:cells[to].x,y:-5.0,piece};
         board[to]=piece;added.push(entry);
         return entry;
@@ -292,12 +314,14 @@
     }
     state.board=after;
     state.turn++;
+    const sugarCrossed=!state.sugarAwarded&&state.popped<state.sugarTarget&&state.popped+count>=state.sugarTarget;
+    if(sugarCrossed)state.sugarAwarded=true;
     state.popped+=count;
     state.clears+=Number(clear);
     state.win=win;
-    return {before,after,port,all,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
+    return {before,after,port,all,sugarTarget:state.sugarTarget,sugarCrossed,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
   }
-  const api={cells,ports,outline,columns,neighbors,radiusTwo,settle,motionPoint,strongBombChance,popPay,clearPay,payout,create,preview,draw};
+  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,settle,motionPoint,bombGrades,popPay,clearPay,payout,create,preview,draw};
   root.PopcornEngine=api;
   if(typeof module!=='undefined' && module.exports) module.exports=api;
 })(typeof window==='undefined'?globalThis:window);
