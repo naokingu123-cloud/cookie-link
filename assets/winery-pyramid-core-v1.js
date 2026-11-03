@@ -134,7 +134,9 @@ class WineryEngine{
  refreshPrize(){const p=prize(this.glasses);this.fullCount=p.full;this.mixCount=p.mix;this.countMultiplier=p.countMultiplier;this.mixMultiplier=p.mixMultiplier;this.totalHundredths=p.hundredths;this.maxLink=p.full;this.roundCleared=p.full;this.allClears=p.allFull?1:0;return p;}
  predict(number){
   const pos=this.nodeNumbers.indexOf(number);
-  if(pos<0||this.seen.has(number)||this.processed>=8)return {number,gain:0,total:this.totalHundredths,tier:0};
+  // Reach preview after 8 balls is read-only: a hypothetical extra glass hit
+   // can be evaluated, but enqueueBatch still forbids any ninth real draw.
+   if(pos<0||this.seen.has(number))return {number,gain:0,total:this.totalHundredths,tier:0};
   const p=pour(this.glasses,pos,this.power,flavorFor(this.processed+1));
   return {number,gain:p.hundredths-this.totalHundredths,total:p.hundredths,full:p.full,mix:p.mix,allClear:p.allFull,tier:p.allFull?3:p.hundredths>=1000?2:p.hundredths>=300?1:0};
  }
@@ -185,6 +187,6 @@ class WineryEngine{
   }catch(error){if(token===this.version){this.fx=null;this.queue=[];this.busy=false;this.running=false;this.emit('error',{message:error.message});}}
  }
 }
-const api={version:72,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
+const api={version:75,EPS,ROWS,SIZE,PAY,WEIGHTS,NAMES,PREFILLS,FLAVORS,CELLS,RATE_ANCHORS,rateAnchor,sugarThreshold,flavorFor,clone,initial,choose,prize,pour,WineryEngine};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.WineryPyramidCore=api;
 })(typeof globalThis!=='undefined'?globalThis:this);
