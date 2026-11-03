@@ -131,7 +131,7 @@ const dry=E.draw(s,master.newNumber,random);
 assert.equal(dry.port,s.allIndex);assert.ok(dry.all);assert.equal(dry.count,0);assert.deepEqual(dry.waves,[]);
 verifyNumbers(s,dry);
 assert.equal(E.draw(s,firstAll,random),null);assert.equal(s.turn,4);
-assert.deepEqual(E.clearPay.map(([,award])=>award),[1,3,12,50,200,500,1000,3000]);
+assert.deepEqual(E.clearPay.map(([,award])=>award),[1,3,20,50,200,500,1000,2000]);
 assert.deepEqual(E.popPay[0],[120,.1]);
 let clearSum=0;
 for(const [n,award] of E.clearPay){
@@ -339,8 +339,8 @@ assert.ok(survivingHoles>0);
 const seeded=n=>()=>((n=Math.imul(n,1664525)+1013904223|0)>>>0)/2**32;
 const streams=[seeded(51821),seeded(51821),seeded(51821)];
 const settings=[50,90,150].map((rate,i)=>E.create({rate,rng:streams[i],bet:100}));
-assert.ok([180,190].includes(settings[0].firstPopAward));
-assert.equal(settings[1].firstPopAward,120);
+assert.ok([190,200].includes(settings[0].firstPopAward));
+assert.ok([120,130].includes(settings[1].firstPopAward));
 assert.ok([70,80].includes(settings[2].firstPopAward));
 const starts=settings.map(x=>x.firstPopAward);
 for(const mode of settings){
@@ -358,6 +358,22 @@ for(let t=0;t<8;t++){
    assert.deepEqual(q.numbers,settings[1].numbers);assert.deepEqual(tr.waves,traces[1].waves);
    assert.equal(q.sugarTarget,settings[1].sugarTarget);assert.equal(q.sugarAwarded,settings[1].sugarAwarded);
    assert.equal(tr.firstPopAward,starts[i]);assert.equal(q.win,E.payout(q.popped,q.clears,100,starts[i]));
+ }
+}
+// The 90% calibration crosses between these two thresholds. Exercise both
+// sides and compare each of eight actual awards against its displayed table.
+for(const [roll,firstPay] of [[.716,120],[.717,130]]){
+ const mode=E.create({rng:()=>roll,rate:90,bet:37});
+ assert.equal(mode.firstPopAward,firstPay);
+ mode.board=mode.board.map(p=>setPower(p,5));
+ const cumulative=[1,4,24,74,274,774,1774,3774];
+ for(let i=0;i<8;i++){
+   const number=mode.numbers[mode.allIndex],preview=E.preview(mode,number);
+   const trace=E.draw(mode,number,()=>0);
+   const displayed=E.popPayFor(firstPay).filter(([min])=>min<=mode.popped).at(-1)?.[1]||0;
+   const expected=Math.floor(37*(displayed+cumulative[i])+1e-8);
+   assert.ok(trace.clear&&preview.clear);assert.equal(trace.firstPopAward,firstPay);
+   assert.equal(preview.win,expected);assert.equal(trace.win,expected);assert.equal(mode.win,expected);
  }
 }
 console.log('Passed 15 lanes, separate ALL and BOOST, priority-capped levels, sparse-board previews, sealed pockets, top-only entry and motion replay, occupied-only clears, no ghost hits, collision-safe gravity and eight-turn accounting.');

@@ -204,18 +204,17 @@
   const popPay=popPayFor();
   // Per occurrence. Higher tiers follow the decreasing chance of reaching
   // that clear count, with a deliberately softer rise than inverse odds.
-  const clearPay=[[1,1],[2,3],[3,12],[4,50],[5,200],[6,500],[7,1000],[8,3000]];
+  const clearPay=[[1,1],[2,3],[3,20],[4,50],[5,200],[6,500],[7,1000],[8,2000]];
   const clearTotals=[0];
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
   // At all settings the board follows the same probability law. Only the
   // first paying count changes, once per game and always in tens. RTP anchors
-  // use 180,000 complete rounds; the standard 90% setting is exactly 120.
-  const startRates=[[190,47.702],[180,51.034],[170,55.104],[160,60.002],
-    [150,65.834],[140,72.686],[130,80.674],[120,90],[110,100.509],
-    [100,112.630],[90,126.458],[80,142.239],[70,160.262]];
+  // use the joint pop/clear distribution of 180,000 complete eight-ball rounds.
+  const startRates=[[200,47.735],[190,50.413],[180,53.745],[170,57.815],
+    [160,62.713],[150,68.545],[140,75.397],[130,83.385],[120,92.620],
+    [110,103.220],[100,115.341],[90,129.169],[80,144.950],[70,162.973]];
   function firstForRate(target,roll){
     const rate=Math.max(50,Math.min(150,Number(target)||90));
-    if(rate===90)return firstPopAward;
     const i=startRates.findIndex(([,rtp])=>rtp>=rate);
     const [lo,a]=startRates[i-1],[hi,b]=startRates[i];
     return roll<(rate-a)/(b-a)?hi:lo;
