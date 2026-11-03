@@ -1,0 +1,66 @@
+/* Gelato Prism v76 — SVG fallback uses the same three line classes
+ * as the live raster renderer. Changes only visible borders, not geometry. */
+body.gelato-active #panel0 .gp-board-svg .gp-edge:not(.is-lit):not(.is-inner) path:first-child,
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge:not(.is-lit):not(.is-inner) path:first-child{
+ stroke:#283253!important;stroke-width:10!important;
+ filter:none!important;opacity:1!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-edge:not(.is-lit):not(.is-inner) path:nth-child(2),
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge:not(.is-lit):not(.is-inner) path:nth-child(2){
+ stroke:#4a5579!important;stroke-width:5.6!important;
+ filter:none!important;opacity:.75!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-edge.is-inner path:first-child,
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge.is-inner path:first-child{
+ stroke:#106993!important;stroke-width:11!important;
+ filter:drop-shadow(0 0 4px #59deff)!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-edge.is-inner path:nth-child(2),
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge.is-inner path:nth-child(2){
+ stroke:#38dbff!important;stroke-width:7!important;
+ filter:drop-shadow(0 0 6px #68f0ff)!important;
+ animation:gp76-inner-glow 1.8s ease-in-out infinite alternate;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-edge.is-lit path:first-child,
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge.is-lit path:first-child{
+ stroke:#72e9ff!important;stroke-width:13!important;
+ filter:drop-shadow(0 0 10px #b0f8ff)!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-edge.is-lit path:nth-child(2),
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge.is-lit path:nth-child(2){
+ stroke:#f5ffff!important;stroke-width:8.2!important;
+ filter:drop-shadow(0 0 8px #efffff)!important;
+ animation:gp76-connected-glow .95s ease-in-out infinite alternate;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-edge.is-lit .gp-glowing-line,
+body.gelato-enabled .gp-mini .gp-board-svg .gp-edge.is-lit .gp-glowing-line{
+ opacity:1!important;
+ stroke:#f9ffff!important;
+ filter:drop-shadow(0 0 7px #d1ffff)!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-node.is-reach[data-reach-tier="0"]{
+ filter:drop-shadow(0 0 7px #63ecff)!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-node.is-reach[data-reach-tier="1"]{
+ filter:drop-shadow(0 0 9px #ff4c77)!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-node.is-reach[data-reach-tier="2"]{
+ filter:drop-shadow(0 0 10px #ce73ff)!important;
+}
+body.gelato-active #panel0 .gp-board-svg .gp-node.is-reach[data-reach-tier="3"]{
+ filter:drop-shadow(0 0 9px #fff69c) drop-shadow(0 0 6px #c27aff)!important;
+}
+@keyframes gp76-inner-glow{
+ from{filter:drop-shadow(0 0 3px #53d8ff);opacity:.86}
+ to{filter:drop-shadow(0 0 8px #a0f6ff);opacity:1}
+}
+@keyframes gp76-connected-glow{
+ from{filter:drop-shadow(0 0 5px #c8ffff);opacity:.86}
+ to{filter:drop-shadow(0 0 12px #ffffff);opacity:1}
+}
+@media(prefers-reduced-motion:reduce){
+ body.gelato-active #panel0 .gp-board-svg .gp-edge path,
+ body.gelato-enabled .gp-mini .gp-board-svg .gp-edge path{
+  animation:none!important;
+ }
+}
