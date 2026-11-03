@@ -406,7 +406,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   extras.push('assets/highest-role-reach-v18.js?v=1');
   if(has('gelato'))extras.push('assets/gelato-prism-v28.js?v=91');
   if(has('winery'))extras.push('assets/winery-pyramid-core-v1.js?v=78','assets/winery-pyramid-v1.js?v=91');
-  if(has('popcorn'))extras.push('assets/popcorn-engine.js?v=91','assets/popcorn-view.js?v=92','assets/popcorn-host.js?v=91');
+  if(has('popcorn'))extras.push('assets/popcorn-engine.js?v=91','assets/popcorn-view.js?v=93','assets/popcorn-host.js?v=91');
   if(chosen.some(id=>['cookie','choco','candy'].includes(id)))extras.push('assets/classic-game-polish-v89.js?v=91');
   extras.push('assets/game-menu-v91.js?v=91','assets/demo-suite-v91.js?v=91','assets/arcade-show-v91.js?v=91','assets/game-titles-v91.js?v=91');
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
