@@ -1,0 +1,62 @@
+/* The fixtures sit around the existing playfields and leave all live HUD geometry intact. */
+body.gelato-active #panel0 .gp-scene .gp-collector-panel{
+ background: url('gelato-cabinet-v89.webp') center/100% 100% no-repeat!important;
+ padding:clamp(17px,4.7vw,31px) clamp(5px,1.5vw,11px) 6px!important;
+ border:0!important;border-radius:6px!important;box-shadow:none!important;
+}
+body.gelato-active #panel0 .gp-scene .gp-collector-grid .gp-collector-row{
+ background:linear-gradient(150deg,#3e7778,#185255 58%,#143f44)!important;
+ border:1px solid #c4c89e!important;box-shadow:inset 0 1px #e0fcef73!important;
+}
+body.gelato-active #panel0 .gp-scene .gp-collector-row[data-grade="2"]{background:linear-gradient(145deg,#ae6960,#72353f)!important}
+body.gelato-active #panel0 .gp-scene .gp-collector-row[data-grade="3"]{background:linear-gradient(145deg,#977638,#694627)!important}
+body.gelato-active #panel0 .gp-scene .gp-collector-row[data-grade="4"]{background:linear-gradient(145deg,#8b688f,#463952)!important}
+body.gelato-active #panel0 .gp-scene .gp-pay-row.gp-pay-fixed,
+body.gelato-active #panel0 .gp-scene .gp-pay-row.gp-current{
+ background:linear-gradient(110deg,#7b411d,#ae713e 53%,#884d24)!important;border-color:#ffe0a2!important;
+}
+body.gelato-active #panel0 .gp-scene .gp-payout-window{background:#123e43!important;border-color:#c5dcb6!important}
+body.gelato-active #panel0 .gp-scene .gp-pay-row:not(.gp-current):not(.gp-pay-fixed){
+ background:linear-gradient(90deg,#1b5559,#15434a)!important;border-color:#77a19a!important;
+}
+body.gelato-active #panel0 .gp-scene .gp-pay-row .gp-pay-win,
+body.gelato-active #panel0 .gp-scene .gp-collector-grid .gp-collector-win .gp-win-number,
+body.gelato-active #panel0 .gp-scene .gp-highest-win{
+ color:#ffdfa1!important;-webkit-text-fill-color:#ffdfa1!important;text-shadow:0 1px 1px #2d2534!important;filter:none!important;
+}
+body.gelato-active #panel0 .gp-scene .gp-highest-frame{
+ background:radial-gradient(ellipse at 50% 15%,#895879,#64384d 68%,#482a3d)!important;
+ border:1px solid #f2c681!important;box-shadow:inset 0 1px #ffe7c882!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sidebar{
+ background:url('winery-cabinet-v89.webp') center/100% 100% no-repeat!important;
+ padding:clamp(13px,3.8vw,23px) clamp(5px,1.4vw,10px) clamp(7px,2vw,14px)!important;
+ border:0!important;border-radius:4px!important;box-shadow:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-score,
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed{
+ background:linear-gradient(130deg,#573828,#96562e)!important;color:#ffefca!important;border-color:#e4ba72!important;text-shadow:0 1px 1px #512d31!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed :is(span,small,b){color:#fff0cd!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-window{background:linear-gradient(100deg,#3b1829,#48172c)!important;border-color:#c29358!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row{border-color:rgba(240,194,127,.35)!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row b{color:#ffdf9f!important;-webkit-text-fill-color:#ffdf9f!important;text-shadow:0 1px #352232!important;filter:none!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row.current{background:linear-gradient(90deg,#3b6a53,#204b3e)!important;box-shadow:inset 2px 0 #fff1ad!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix{
+ background:radial-gradient(ellipse at 60% 0,#48725c,#254c3d 58%,#193a30)!important;border-color:#e3bb76!important;
+ box-shadow:inset 0 1px #f5edc78c!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left{
+ background:linear-gradient(140deg,#784247f5,#592d39f7 64%,#422333f9)!important;border-color:#e9c27b!important;
+ box-shadow:inset 0 1px #ffe7aaa6,0 2px 3px #54263a61!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-amount-gauge{background:#47333bf5!important;border-color:#c99968!important}
+/* The diagrams keep their original stages and timing. Two different shop counters
+   frame them, with enough contrast for the lines and juice levels to stay visible. */
+body.gelato-active #panel0 .rg69-gelato-demo .rg69-card{background:linear-gradient(155deg,#fff0cf,#d7eee0 44%,#fcebd3)!important;border-color:#c49158!important;box-shadow:inset 0 0 0 2px #fff2c8!important}
+body.gelato-active #panel0 .rg69-gelato-demo :is(.rg69-heading,.rg69-instructions){background:linear-gradient(115deg,#1b696c,#377d79,#24535e)!important;border-color:#dec585!important;color:#fff7d5!important;text-shadow:0 1px #163e45!important}
+body.gelato-active #panel0 .rg69-gelato-demo .rg69-board{background:linear-gradient(150deg,#ecfff2a6,#eaf6ffa9 55%,#f3e4f9b5),url('gelato-ice-candy-kingdom-v41.webp') center/cover!important;border-color:#86b7ad!important}
+body.gelato-active #panel0 .rg69-gelato-demo .rg69-node:not(.on) circle{fill:#e8faf0;stroke:#318588}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-card{background:linear-gradient(155deg,#ffefd3,#dcc48a 44%,#fae9bd)!important;border-color:#ad7e48!important;box-shadow:inset 0 0 0 2px #fff2d2!important}
+body.winery-enabled #panel1 .rg69-winery-demo :is(.rg69-heading,.rg69-instructions){background:linear-gradient(110deg,#5b2639,#874049,#582e3b)!important;border-color:#e9c382!important;color:#fff1d1!important;text-shadow:0 1px #482130!important}
+body.winery-enabled #panel1 .rg69-winery-demo .rg69-board{background:linear-gradient(160deg,#f9e3c0a5,#fff2d2ab 48%,#efc5afa3),url('winery-juice-river-v62.webp') center/cover!important;border-color:#bb945b!important}

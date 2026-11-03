@@ -605,6 +605,9 @@ try{
  frozenFruitBackdrop.width=1024;frozenFruitBackdrop.height=640;
  scene.insertBefore(frozenFruitBackdrop,scene.firstChild);
  let rasterKey='';
+ const socketArt=new Image();
+ socketArt.onload=()=>{rasterImages.numbersKey=null;rasterKey='';if(rasterImages.ready)drawGelato()};
+ socketArt.src='assets/gelato-sockets-v89.webp';
  // The v45 ice-candy kingdom is a full-resolution illustrated image, not
  // a generative procedural canvas.  The inert fallback canvas stays hidden.
  function paintFrozenFruitBackdrop(){/* v45 background is the SVG asset */}
@@ -613,7 +616,7 @@ try{
    return new Promise((resolve,reject)=>{
      img.onload=()=>img.naturalWidth>0?resolve():reject(new Error(name+' was empty'));
      img.onerror=()=>reject(new Error(name+' missing'));
-     img.src='assets/'+name+'?v=37-'+Date.now();
+     img.src='assets/'+name;
    });
  }
  function offscreen(w,h=w){
@@ -748,7 +751,7 @@ try{
      const c=rasterImages.labels,ctx=c.getContext('2d');
      ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);
    }
-   const key=e.nodeNumbers.join(',');
+   const key=e.nodeNumbers.join(',')+'/'+[...e.hits].join(',');
    if(rasterImages.numbersKey!==key){
      rasterImages.numbersKey=key;
      const c=rasterImages.numbers,ctx=c.getContext('2d');
@@ -757,14 +760,18 @@ try{
      ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
      ctx.strokeStyle='#fff1c8';ctx.fillStyle='#65328a';ctx.lineWidth=4.3;
      // Same Anima-style numerical face as the other Sweets Link games.
-     ctx.font='400 23px ElixirNumbers,system-ui,sans-serif';
+     ctx.font='400 26px ElixirNumbers,system-ui,sans-serif';
      for(let idx=0;idx<rasterCoords.length;idx++){
        const p=rasterCoords[idx],n=String(e.nodeNumbers[idx]);
-       // Enlarge the original circles slightly, without moving the exact nodes.
-       ctx.beginPath();ctx.arc(p.x,p.y,16.3,0,Math.PI*2);
-       ctx.fillStyle='#d8edffa8';ctx.strokeStyle='#edfdff';ctx.lineWidth=2.1;
-       ctx.fill();ctx.stroke();
-       ctx.fillStyle='#56317f';ctx.strokeStyle='#fff6da';ctx.lineWidth=3.8;
+       const hit=e.hits.has(idx);
+       if(socketArt.naturalWidth){
+         ctx.drawImage(socketArt,hit?144:0,0,144,144,p.x-19,p.y-19,38,38);
+       }else{
+         ctx.beginPath();ctx.arc(p.x,p.y,16.3,0,Math.PI*2);
+         ctx.fillStyle='#d8edff';ctx.strokeStyle='#edfdff';ctx.lineWidth=2.1;
+         ctx.fill();ctx.stroke();
+       }
+       ctx.fillStyle=hit?'#702a4f':'#183957';ctx.strokeStyle='#fff8db';ctx.lineWidth=2.65;
        ctx.strokeText(n,p.x,p.y+.5);ctx.fillText(n,p.x,p.y+.5);
      }
    }

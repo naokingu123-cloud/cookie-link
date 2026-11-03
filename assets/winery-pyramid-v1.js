@@ -592,6 +592,9 @@ function paintFullGlassStraw(x,cx,cy,t,fresh){
  }x.restore();x.restore();
 }
 
+const priceTagArt=new Image();
+priceTagArt.onload=()=>{miniKey='';lastPaint=0;queueFrame();};
+priceTagArt.src='assets/winery-tags-v89.webp';
 function premiumGlass(x,i,g,t){
  const {x:cx,y:cy}=premiumPos(i);
  const full=g.volume>=1-K.EPS;
@@ -665,39 +668,14 @@ function premiumGlass(x,i,g,t){
  x.strokeStyle='#fce1a1';x.lineWidth=2.3;
  x.shadowColor='#ffe7bb';x.shadowBlur=4;
  x.beginPath();x.moveTo(cx+25,cy+76);x.quadraticCurveTo(cx+30,cy+84,cx+28,badgeY-11);x.stroke();
- x.shadowBlur=6;
- const tagFill=x.createLinearGradient(cx-39,badgeY-22,cx+42,badgeY+22);
- tagFill.addColorStop(0,'#fff3c8');
- tagFill.addColorStop(.28,'#fbdc91');
- tagFill.addColorStop(.53,'#df9b4e');
- tagFill.addColorStop(.77,'#ffefb9');
- tagFill.addColorStop(1,'#a85057');
- x.fillStyle=tagFill;x.strokeStyle='#fffae2';x.lineWidth=2.3;
- x.beginPath();x.moveTo(cx-34,badgeY-21);
- x.lineTo(cx+18,badgeY-21);
- x.quadraticCurveTo(cx+23,badgeY-21,cx+27,badgeY-15);
- x.lineTo(cx+41,badgeY);
- x.lineTo(cx+27,badgeY+15);
- x.quadraticCurveTo(cx+23,badgeY+21,cx+18,badgeY+21);
- x.lineTo(cx-34,badgeY+21);
- x.quadraticCurveTo(cx-40,badgeY+21,cx-40,badgeY+14);
- x.lineTo(cx-40,badgeY-14);
- x.quadraticCurveTo(cx-40,badgeY-21,cx-34,badgeY-21);
- x.closePath();x.fill();x.stroke();
  x.shadowBlur=0;
- const tagCore=x.createLinearGradient(cx-30,badgeY-16,cx+28,badgeY+17);
- tagCore.addColorStop(0,'#742d5e');tagCore.addColorStop(.56,'#391b49');
- tagCore.addColorStop(1,'#170f2c');
- x.fillStyle=tagCore;
- x.beginPath();x.moveTo(cx-32,badgeY-15);
- x.lineTo(cx+15,badgeY-15);x.lineTo(cx+28,badgeY);
- x.lineTo(cx+15,badgeY+15);x.lineTo(cx-32,badgeY+15);
- x.quadraticCurveTo(cx-35,badgeY+15,cx-35,badgeY+12);
- x.lineTo(cx-35,badgeY-12);x.closePath();x.fill();
- x.strokeStyle='#fff0b8';x.lineWidth=1.2;x.stroke();
- // A perforated eyelet at the tag's pointed end.
- x.fillStyle='#fff6d2';x.beginPath();x.arc(cx+29,badgeY,3.8,0,Math.PI*2);x.fill();
- x.fillStyle='#903e61';x.beginPath();x.arc(cx+29,badgeY,1.9,0,Math.PI*2);x.fill();
+ if(priceTagArt.naturalWidth){
+  x.drawImage(priceTagArt,full?200:0,0,200,100,cx-42,badgeY-22,84,44);
+ }else{
+  wineryTagReachPath(x,cx,badgeY);
+  x.fillStyle=full?'#174f3c':'#541e3a';x.fill();
+  x.strokeStyle='#ffe6a4';x.lineWidth=3.5;x.stroke();
+ }
  const number=String(engine.nodeNumbers[i]);
  x.textAlign='center';x.textBaseline='middle';
  x.font='900 36px ElixirNumbers,Georgia,serif';
@@ -705,7 +683,7 @@ function premiumGlass(x,i,g,t){
  x.lineJoin='round';x.lineWidth=2.3;
  x.strokeStyle='#4d204e';
  x.strokeText(number,cx-5,badgeY+1.5);
- x.fillStyle='#fffde4';x.shadowColor='#fff4be';x.shadowBlur=3;
+ x.fillStyle=full?'#fff0aa':'#fffbe4';x.shadowBlur=0;
  x.fillText(number,cx-5,badgeY+1.5);
  x.restore();
  // Crown jewel highlight + gently animated prismatic caustics.

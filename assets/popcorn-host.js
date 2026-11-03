@@ -15,8 +15,11 @@ title.setAttribute('aria-label','ポップコーンスプラッシュ');
 title.innerHTML='<img src="assets/popcorn-art/popcorn-logo-v88.webp" alt="ポップコーンスプラッシュ">';
 slot.tabSugar.hidden=false;
 
-let frame=0, stamp=0, clock=0, lastMain=-1e4, lastMini=-1e4, demo=null;
-let hoverPort=-1,pinnedPort=-1;
+let frame=0, stamp=0, clock=0, demoClock=0, lastMain=-1e4, lastMini=-1e4, demo=null;
+let hoverPort=-1,pinnedPort=-1,visibleLesson=0;
+const lessonDurations=[2050,2050,2050,2050,2050,3300,2500,3750];
+const demoPeriod=lessonDurations.reduce((a,b)=>a+b,0);
+const lessonNames=['黄ボム','赤ボム','紫ボム','稲妻ボム','虹ボム','着火ライン','ボム率UP','ALL着火'];
 const engine={
  kind:'popcorn', recordGame:4, drawMode:'single', version:0,
  get idle(){return !this.trace&&!this.queue.length;},
@@ -30,14 +33,14 @@ const engine={
   this.state=K.create({bet:app.bet(id)||0,rate:debugPayoutTarget,rng:app.random});
   this.wonderToken=null;this.wonderCollected=false;this.roundSteps=0;stopSugarAward(slot);
   this.accepted=0;this.processed=0;this.drawn=new Set();this.queue=[];this.trace=null;this.elapsed=0;this.maxChain=0;this.soundWave=-1;
-  demo=null;hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);invalidateReach(slot);this.emit('ready');lastMain=lastMini=-1e4;
+  demo=null;visibleLesson=0;hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);invalidateReach(slot);this.emit('ready');lastMain=lastMini=-1e4;
  },
  setRainbowSugar(bet){
   this.wonderToken={id:this.version*100+1,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};
  },
  start(){
   this.wonderToken??={id:this.version*100+1,value:this.roundBet,tier:sugarVisualTier(this.roundBet),kind:'popcorn',source:'popped'};
-  this.state.bet=this.roundBet;this.running=true;this.emit('waiting');demo=null;hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);
+  this.state.bet=this.roundBet;this.running=true;this.emit('waiting');updateReach(app);demo=null;visibleLesson=0;hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);
  },
  previewDraw(n){this.drawn.add(n);},
  enqueueBatch(values){
@@ -111,8 +114,10 @@ function step(dt){
   if(trace.boost&&active===id)sceneSound('level',{volume:.55});
  }
  if(!engine.trace)return;
+ const trace=engine.trace,visibleBefore=V.shownPopped(engine.state,trace,engine.elapsed);
  engine.elapsed+=dt*(engine.presentationRate||1);
- const trace=engine.trace;
+ const visible=V.shownPopped(engine.state,trace,engine.elapsed);
+ if(visible!==visibleBefore)scheduleUI(app);
  if(active===id&&trace.count){
   const wave=V.waveAt(trace,engine.elapsed);
   if(wave>engine.soundWave&&wave<trace.waves.length){
@@ -124,7 +129,7 @@ function step(dt){
    if(trace.clear&&wave===trace.waves.length-1)sceneSound('allclear',{volume:.76});
   }
  }
- if(trace.sugarCrossed&&!engine.wonderCollected&&V.shownPopped(engine.state,trace,engine.elapsed)>=engine.state.sugarTarget)collectSugar();
+ if(trace.sugarCrossed&&!engine.wonderCollected&&visible>=engine.state.sugarTarget)collectSugar();
  if(engine.elapsed<V.duration(trace))return;
  engine.trace=null;engine.processed++;
  if(trace.clear)announceAchievement('ポップコーンスプラッシュ　全消し '+engine.allClears+'回！');
@@ -135,19 +140,14 @@ function demoFrame(){
  if(!demo){
   let n=2425;
   const rng=()=>((n=(Math.imul(n,1664525)+1013904223)>>>0)/4294967296);
-  demo={state:K.create({rng,bet:app.bet(id),rate:debugPayoutTarget}),rng,at:clock,trace:null};
+  demo={state:K.create({rng,bet:app.bet(id)||100,rate:debugPayoutTarget}),started:demoClock,inspectUntil:0};
   demo.state.firstPopAward=engine.state.firstPopAward;
  }
- demo.state.bet=app.bet(id);
- // Hold a settled sample board while the player inspects its numbered lanes.
- if(hoverPort>=0||pinnedPort>=0){demo.trace=null;demo.at=clock;}
- const age=clock-demo.at, hold=demo.trace?V.duration(demo.trace)+1000:1300;
- if(age>=hold){
-  if(demo.state.turn>=3){demo=null;return demoFrame();}
-  const d=demo.state, fire=[6,d.boostIndex,d.allIndex][d.turn];
-  demo.trace=K.draw(d,d.numbers[fire],demo.rng);demo.at=clock;
- }
- return {state:demo.state,turn:demo.trace,elapsed:clock-demo.at};
+ const d=demo.state;d.bet=app.bet(id);
+ if(hoverPort>=0||pinnedPort>=0||clock<demo.inspectUntil)return {state:d,turn:null,elapsed:0};
+ let age=(demoClock-demo.started)%demoPeriod,power=1;
+ while(power<lessonDurations.length&&age>=lessonDurations[power-1]){age-=lessonDurations[power-1];power++;}
+ return {state:d,turn:null,elapsed:0,lesson:{power,progress:age/lessonDurations[power-1]}};
 }
 function paint(mini){
  if(mini?active===id:active!==id||slot.panel.hidden)return;
@@ -160,7 +160,13 @@ function paint(mini){
  const displayDemo=app.phase==='ready'&&!jpcSession.active;
  const d=displayDemo?demoFrame():{state:engine.state,turn:engine.trace,elapsed:engine.elapsed};
  const focusPort=mini?-1:(hoverPort>=0?hoverPort:pinnedPort);
- V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:(mini?slot.tabReachResults:slot.reachResults)});
+ if(!mini){
+  const next=d.lesson?.power||0;
+  if(next!==visibleLesson){
+   visibleLesson=next;canvas.setAttribute('aria-label',next?'遊び方 '+next+'/8 '+lessonNames[next-1]+'。番号ガイドボタン・矢印キーで番号ガイドを開きます。':guideHint);
+  }
+ }
+ V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,lesson:d.lesson,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:(mini?slot.tabReachResults:slot.reachResults)});
 }
 slot.paintPopcorn=paint;
 function badgeAt(event){
@@ -179,8 +185,16 @@ function refreshGuide(){
  canvas.style.cursor=hoverPort>=0?'pointer':'';
  paint(false);
 }
+function openLessonGuide(){
+ if(!visibleLesson||!demo)return false;
+ demo.inspectUntil=clock+4500;
+ visibleLesson=0;canvas.setAttribute('aria-label',guideHint);paint(false);return true;
+}
 canvas.addEventListener('pointermove',ev=>{
  if(ev.pointerType==='touch')return;
+ if(visibleLesson){
+  const r=canvas.getBoundingClientRect();canvas.style.cursor=V.lessonGuideHit(r.width,r.height,ev.clientX-r.left,ev.clientY-r.top)?'pointer':'default';return;
+ }
  const p=badgeAt(ev);if(p===hoverPort)return;
  hoverPort=p;refreshGuide();
 });
@@ -188,17 +202,26 @@ canvas.addEventListener('pointerleave',()=>{
  if(hoverPort>=0){hoverPort=-1;refreshGuide();}
 });
 canvas.addEventListener('click',ev=>{
+ if(visibleLesson){
+  const r=canvas.getBoundingClientRect();
+  if(V.lessonGuideHit(r.width,r.height,ev.clientX-r.left,ev.clientY-r.top))openLessonGuide();
+  return;
+ }
  const p=badgeAt(ev);pinnedPort=p===pinnedPort?-1:p;
  hoverPort=-1;refreshGuide();
 });
 canvas.addEventListener('keydown',ev=>{
+ if(visibleLesson && ['ArrowRight','ArrowLeft','Home','End','Enter',' '].includes(ev.key)){
+  openLessonGuide();
+  if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();return;}
+ }
  const current=hoverPort>=0?hoverPort:pinnedPort, n=engine.state.numbers.length;
  switch(ev.key){
   case 'ArrowRight': pinnedPort=(current+1)%n;break;
   case 'ArrowLeft': pinnedPort=current<0?n-1:(current+n-1)%n;break;
   case 'Home': pinnedPort=0;break;
   case 'End': pinnedPort=n-1;break;
-  case 'Escape': pinnedPort=-1;break;
+  case 'Escape': pinnedPort=-1;if(demo)demo.inspectUntil=0;break;
   default:return;
  }
  ev.preventDefault();ev.stopPropagation();hoverPort=-1;refreshGuide();
@@ -209,9 +232,10 @@ function requestFrame(){
 function tick(now){
  frame=0;
  const advancing=!app.paused&&inView&&!document.hidden&&!jpcSession.active;
- const dt=advancing&&stamp?Math.min(now-stamp,100):0;
+ const elapsed=advancing&&stamp?Math.max(0,now-stamp):0;
+ const dt=Math.min(elapsed,100);
  stamp=now;
- if(advancing){clock+=dt;step(dt);}
+ if(advancing){clock+=dt;if(app.phase==='ready')demoClock+=elapsed;step(dt);}
  const selected=active===id;
  const fastSupply=advancing&&selected&&engine.presentationRate>1&&engine.trace&&V.refilling(engine.trace,engine.elapsed);
  if(selected&&(fastSupply||clock-lastMain>=33)){paint(false);lastMain=clock;}
@@ -231,7 +255,7 @@ const oldHud=hud;
 hud=function(a){
  oldHud(a);
  if(active===id){
-  put('best',engine.state.popped+' POP ／ 全消し '+engine.allClears+'回 ／ 補充Lv.'+engine.state.level);
+  put('best',V.shownPopped(engine.state,engine.trace,engine.elapsed)+' POP ／ 全消し '+engine.allClears+'回 ／ 補充Lv.'+engine.state.level);
   put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');requestFrame();
  }
 };
@@ -253,7 +277,7 @@ function refreshArt(){lastMini=lastMain=-1e4;requestFrame();}
 V.assetsReady.then(refreshArt);
 if(document.fonts)document.fonts.load('700 16px ArcadePayout','0123456789WIN').then(refreshArt);
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:88};
+window.PopcornSplash={engine,core:K,version:89};
 engine.reset();
 select(id);
 })();

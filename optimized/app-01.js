@@ -2578,7 +2578,7 @@ function sanitizeRecords(from){
  const to=emptyRecords();if(!from||typeof from!=='object')return to;
  for(const key of [...RECORD_SUMS,...RECORD_MAXIMA])to[key]=recordCount(from[key]);
  for(const def of TITLE_DEFS)if(recordCount(from.titles?.[def.id])&&to[def.metric]>=def.target)to.titles[def.id]=from.titles[def.id];
- for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(4,recordCount(r.game)))}));
+ for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(6,recordCount(r.game)))}));
  to.best=to.best.filter(r=>r.win>0).sort((a,b)=>b.win-a.win||b.at-a.at);to.clears=to.clears.filter(r=>r.clears>0).sort((a,b)=>b.at-a.at);
  return to;
 }
@@ -3118,7 +3118,7 @@ function tabs(a){
    fitGoldenNumber(s.tabBet,num(b),14,76);s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);
    const tier=sugarVisualTier(e.wonderToken||b);applySugarTier(s.tabSugar.querySelector('.sugar-gem'),tier);
    s.tabSugar.hidden=b<=0;s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.classList.toggle('collected',e.wonderCollected);
-   s.tabSugar.setAttribute('aria-label',e.wonderCollected?'シュガー獲得済み':e.state.sugarTarget+'個でシュガー獲得');
+   s.tabSugar.setAttribute('aria-label',e.wonderCollected?'シュガー獲得済み':'シュガー未獲得');
    s.tab.setAttribute('aria-label','ポップコーンスプラッシュ・'+state);s.tab.classList.toggle('off',b===0);continue;
   }
   const key=[b,win,state,e.phase,s.event.newRecord,e.wonderCollected,e.wonderToken?.value,projectedSugarValue(e,b),isDirectJpcSugar(e.wonderToken)].join('/');if(s.tabKey===key)continue;s.tabKey=key;
@@ -3617,7 +3617,7 @@ function reachContext(e,a=app){
   else if(count>=3&&count<=8){if(e.processed!==count)return null;}
   else return null;
  }else if(e.reachMode==='single'||e.drawMode==='single'){
-  if(count<1||e.processed!==count)return null;
+  if(e.processed!==count||(!count&&(e.kind!=='popcorn'||!e.running)))return null;
  }else{
   if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
   else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
@@ -3678,7 +3678,7 @@ const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
  if(s.engine?.kind==='choco')return chocoReachReady(s,a)?(s.tabReachResults||[]).filter(p=>medalWin(a.bet(s.i),p.total)>medalWin(a.bet(s.i),s.tabReachBase||0)):[];
- if(!paidReachDrawAllowed(a)||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
+ if((s.engine?.kind!=='popcorn'&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
  const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
  return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
 }
@@ -3771,6 +3771,10 @@ function event(i,ev,e,a){
 }
 let recordStorage;try{recordStorage=localStorage;}catch{}
 const recordBook=new RecordBook(recordStorage);
+addEventListener('storage',event=>{
+ if(event.key!==recordBook.key||!event.newValue)return;
+ try{recordBook.load(JSON.parse(event.newValue));}catch{}
+});
 let playerLounge=null;
 let menuOpen=false,recordPage='ranking',recordOffset=0,recordPeriod='all',selectedTitle='hello',recordInert=[],titlePending=[],titleToastTimer=null;
 const recordDate=at=>new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
@@ -5397,7 +5401,7 @@ function rouletteReachTiers(){
  return out;
 }
 function rouletteAllClearNumbers(){return new Set([...rouletteReachTiers()].filter(([,tier])=>tier===3).map(([n])=>n));}
-function rouletteSelectedBoard(){return {index:active,name:['ジェラートプリズム','ワイナリーピラミッド','ポップコーンスプラッシュ'][active]};}
+function rouletteSelectedBoard(){const names=document.documentElement.dataset.lineup==='classic'?['クッキーリンク','チョコレートキャニオン','シックスドロップ']:['ジェラートプリズム','ワイナリーピラミッド','ポップコーンスプラッシュ'];return {index:active,name:names[active]};}
 // Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
 function setupManualNumbers(){
  const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
@@ -5798,7 +5802,9 @@ function wakeAudioFromGesture(event){
  activateGameAudio({gesture:true});
 }
 
-app=new Arcade({onEvent:recordEvent,onChange:recordChanged,initialEngines:[Engine,ChocoDigEngine]});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);setupManualNumbers();
+app=new Arcade({onEvent:recordEvent,onChange:recordChanged,initialEngines:document.documentElement.dataset.lineup==='classic'?[Engine,ChocoDigEngine,CandyCarnivalEngine]:[Engine,ChocoDigEngine]});
+if(document.documentElement.dataset.lineup==='classic'){app.engines[0].recordGame=5;app.engines[1].recordGame=6;}
+app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);setupManualNumbers();
 app.engines.forEach((e,i)=>{e.beforeComplete=token=>finishGamePresentation(slots[i],e,app,token);});
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;

@@ -30,7 +30,7 @@ function board(clears,popped=0,power=5,balls=2){
    const v=K.cells[i].q===0&&K.cells[i].r===0?power:0;
    return {...p,power:v,bomb:v>0,color:v};
  });
- const engine={state:s,kind:'popcorn',drawMode:'single',queue:[],phase:'settled',version:1,
+ const engine={state:s,kind:'popcorn',drawMode:'single',queue:[],phase:'settled',running:true,version:1,
    processed:balls,accepted:balls,allClears:clears,totalHundredths:K.payout(popped,clears,100,120)};
  const app={phase:'playing',bet:()=>1,token:1,draws:Array.from({length:25},(_,i)=>i+1).filter(v=>!s.numbers.includes(v)).slice(0,balls)};
  const slot={i:2,engine};
@@ -60,11 +60,17 @@ for(const [popped,power,want] of [[119,0,'reach'],[425,4,'high'],[425,3,'super']
  const m=f.match(s.reachResults,4),b=f.match(s.tabReachResults,4);
  assert.ok(!m.allClear);assert.equal(m.kind,want);assert.equal(b.kind,want);
 }
-// Shared strip timing remains intact (four numbers per page, after the same balls as Winery).
-for(const balls of [1,2,3,4,5,6,7,8]){
+// Popcorn shows paid reaches before the first ball and after every settled ball.
+for(const balls of [0,1,2,3,4,5,6,7,8]){
  const f=board(0,0,5,balls);f.run();assert.ok(f.slot.reachResults.length);
- assert.equal(!!f.strip().length,[2,4,5,6,7,8].includes(balls));
+ assert.ok(f.strip().length);
+ const other=board(0,0,5,balls);other.engine.kind='gelato';other.run();
+ assert.equal(!!other.strip().length,[2,4,5,6,7,8].includes(balls));
 }
+const prebet=board(0,0,5,0);prebet.app.phase='ready';prebet.run();assert.equal(prebet.strip().length,0);
+const noBet=board(0,0,5,0);noBet.app.bet=()=>0;noBet.run();assert.equal(noBet.slot.reachResults.length,0);
+const animation=board(0,0,5,1);animation.engine.phase='popcornDraw';animation.run();assert.equal(animation.strip().length,0);
+const lag=board(0,0,5,2);lag.engine.processed=1;lag.run();assert.equal(lag.strip().length,0);
 const busy=board(0);busy.run();busy.engine.queue.push(7);busy.run();
 assert.equal(busy.slot.reachResults.length,0);assert.equal(busy.slot.tabReachResults.length,0);
 const used=board(0);used.app.draws[0]=used.s.numbers[4];used.run();assert.ok(!used.match(used.slot.reachResults,4));

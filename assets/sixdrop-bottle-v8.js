@@ -55,7 +55,7 @@
  */
 (()=>{
  'use strict';
- if(window.__wineryBootV1)return;
+ if(document.documentElement.dataset.lineup==='classic'||window.__wineryBootV1)return;
  window.__wineryBootV1=true;
  Promise.resolve().then(async()=>{
   const read=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.text();};
