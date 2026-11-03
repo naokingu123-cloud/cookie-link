@@ -189,6 +189,56 @@ const purple=E.create({rng:random});
 purple.board=purple.board.map((p,i)=>setPower(p,Number(i===center)*3));
 const big=E.draw(purple,purple.numbers[15],random);
 assert.equal(big.count,37);assert.deepEqual(new Set(big.waves[1]),new Set(E.radiusThree[center]));
+// Lightning uses the three visible inlet directions in both senses. Vertical
+// targets share the exact x coordinate, skipping the staggered alternate row.
+for(const [i,a] of cells.entries()){
+ const axes=E.lightningAxes[i];
+ assert.ok(axes.every(line=>line.includes(i)));
+ for(const [axis,line] of axes.entries()){
+   const match=[b=>b.q===a.q,b=>b.x===a.x,b=>b.q+b.r===a.q+a.r][axis];
+   assert.deepEqual(line,cells.flatMap((b,j)=>match(b)?[j]:[]));
+ }
+ const combined=[...new Set(axes.flat())].filter(j=>j!==i);
+ assert.deepEqual(new Set(E.blastAreas[4][i]),new Set(combined));
+ assert.equal(E.blastAreas[5][i].length,60);
+ assert.ok(!E.blastAreas[5][i].includes(i));
+}
+const lightning=E.create({rng:random});
+const cellAt=(q,r)=>cells.findIndex(c=>c.q===q&&c.r===r);
+const receiver=cellAt(2,-4),gap=cellAt(1,-2),horizontal=cellAt(1,0);
+assert.ok(E.blastAreas[4][center].includes(receiver)&&!E.blastAreas[4][center].includes(horizontal));
+lightning.board=lightning.board.map((p,i)=>i===gap?null:setPower(p,i===center?4:i===receiver?2:0));
+const arc=E.draw(lightning,lightning.numbers[4],random);
+assert.ok(arc.waves[0].includes(center)&&arc.waves[1].includes(receiver));
+assert.ok(!arc.waves.flat().includes(gap)&&arc.waves.length>=3);
+assert.ok(arc.waves[2].some(j=>E.radiusTwo[receiver].includes(j)&&!E.blastAreas[4][center].includes(j)));
+assert.equal(new Set(arc.waves.flat()).size,arc.count);
+const rainbow=E.create({rng:random});
+rainbow.board=rainbow.board.map((p,i)=>i===gap?null:setPower(p,i===center?4:i===receiver?5:0));
+const savedRainbow=JSON.stringify(rainbow),futureRainbow=E.preview(rainbow,rainbow.numbers[4]);
+assert.equal(JSON.stringify(rainbow),savedRainbow);
+const jackpot=E.draw(rainbow,rainbow.numbers[4],random);
+assert.deepEqual(jackpot.waves,futureRainbow.waves);
+assert.ok(jackpot.clear&&jackpot.count===60&&rainbow.clears===1);
+assert.ok(jackpot.waves[1].includes(receiver)&&jackpot.waves.length===3);
+const untouched=E.create({rng:random});
+untouched.board=untouched.board.map((p,i)=>setPower(p,i===receiver?5:0));
+assert.equal(E.preview(untouched,untouched.numbers[4]).count,ports[4].line.length);
+assert.equal(E.preview(untouched,untouched.numbers[15]).count,61);
+untouched.board=untouched.board.map((p,i)=>setPower(p,i===center?5:0));
+const directRainbow=E.draw(untouched,untouched.numbers[4],random);
+assert.ok(directRainbow.clear&&!directRainbow.all&&directRainbow.waves[0].includes(center));
+assert.equal(directRainbow.count,61);assert.equal(untouched.clears,1);
+const kinds=E.create({rng:random});
+kinds.board=kinds.board.map((p,i)=>setPower(p,i<5?i+1:0));
+const allKinds=E.draw(kinds,kinds.numbers[15],random);
+assert.deepEqual(allKinds.waves[0],[0,1,2,3,4]);assert.equal(allKinds.count,61);assert.equal(kinds.clears,1);
+for(const [ball,g] of E.bombGrades.entries()){
+ assert.equal(g.lightning,g.red);assert.equal(g.rainbow,1/4800);
+ assert.equal(E.bombPower(g.purple+g.red+g.lightning/2,ball),4);
+ assert.equal(E.bombPower(1-g.rainbow/2,ball),5);
+ assert.equal(E.bombPower(1-g.rainbow*2,ball),1);
+}
 const stage=E.create({rng:random}),targetAtStart=stage.sugarTarget;
 assert.equal(targetAtStart%10,0);
 stage.board=stage.board.map(p=>setPower(p,1));

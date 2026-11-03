@@ -32,6 +32,15 @@
     })));
   }
   const radiusTwo=blastAreas[2],radiusThree=blastAreas[3];
+  // Each through-line is ordered end to end and includes the center. Gaps in
+  // the popcorn cannot block electricity on these fixed board coordinates.
+  const lightningAxes=cells.map(a=>[
+    cells.flatMap((b,j)=>b.q===a.q?[j]:[]),
+    cells.flatMap((b,j)=>2*b.q+b.r===2*a.q+a.r?[j]:[]),
+    cells.flatMap((b,j)=>b.q+b.r===a.q+a.r?[j]:[])
+  ]);
+  blastAreas[4]=lightningAxes.map((axes,i)=>[...new Set(axes.flat())].filter(j=>j!==i));
+  blastAreas[5]=cells.map((_,i)=>cells.flatMap((cell,j)=>j===i?[]:[j]));
   // Six Drop's synchronized support/pivot/gap rule adapted to these nine rows.
   // Only the board silhouette changes. Paths and collision pairs are static,
   // so repeated draws can reuse their 16-sample clearance checks.
@@ -163,7 +172,11 @@
   for(let level=4;level>=0;level--) sidePort(level,true);
   // At opening and each subsequent refill, these are conditional on a bomb.
   // Existing kernels retain their original color and radius throughout a game.
-  const bombGrades=Array.from({length:9},(_,ball)=>({red:.045+.025*ball,purple:.006+.012*ball}));
+  const rainbowBombChance=1/4800; // conditional on a newly generated kernel being a bomb
+  const bombGrades=Array.from({length:9},(_,ball)=>{
+    const red=.045+.025*ball;
+    return {red,purple:.006+.012*ball,lightning:red,rainbow:rainbowBombChance};
+  });
   const firstPopAward=80;
   const levels=[];
   for(const [start,end,step] of [[.1,1,.1],[1.2,2,.2],[2.5,5,.5],[6,10,1],[12.5,30,2.5],[35,50,5]]){
@@ -178,10 +191,10 @@
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
   // [bomb chance, RTP percent, lower sugar threshold, probability of lower].
   // Rates use complete eight-ball rounds with the fixed visible prize table.
-  // The default uses exactly .24. The sugar targets bracket the measured 90th
+  // The default uses exactly .1907. The sugar targets bracket the measured 90th
   // percentile at each bomb chance; one target is drawn before the first ball.
-  const rateAnchors=[[.185,41.25,150,.73484],[.215,62.93,170,.54803],
-    [.24,90,190,.79765],[.255,116.85,200,.62819],[.275,161.92,210,.05730]];
+  const rateAnchors=[[.143,41.12,140,.53561],[.168,61.21,160,.35880],
+    [.1907,90,180,.38092],[.2035,117.49,190,.17609],[.2225,179.78,210,.30586]];
   function multiplier(count,table){
     let award = 0;
     for (const [min,value] of table){
@@ -195,12 +208,16 @@
     const popWin=popped>lastCount?lastMultiplier+5*Math.floor((popped-lastCount)/10):multiplier(popped,popPay);
     return Math.floor((popWin+clearTotals[Math.min(clears,clearPay.length)])*bet+1e-8);
   }
+  function bombPower(roll,ball=0){
+    const {red,purple,lightning,rainbow}=bombGrades[ball];
+    if(roll>=1-rainbow)return 5;
+    if(roll<purple)return 3;
+    if(roll<purple+red)return 2;
+    if(roll<purple+red+lightning)return 4;
+    return 1;
+  }
   function kernel(id,bomb,rng,ball=0){
-    let power=0;
-    if(bomb){
-      const {red,purple}=bombGrades[ball],roll=rng();
-      power=roll<purple?3:roll<purple+red?2:1;
-    }
+    const power=bomb?bombPower(rng(),ball):0;
     return Object.freeze({id,bomb,power,color:power});
   }
   function anchorFor(target,rng){
@@ -321,7 +338,7 @@
     state.win=win;
     return {before,after,port,all,sugarTarget:state.sugarTarget,sugarCrossed,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
   }
-  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,settle,motionPoint,bombGrades,popPay,clearPay,payout,create,preview,draw};
+  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,bombGrades,bombPower,rainbowBombChance,popPay,clearPay,payout,create,preview,draw};
   root.PopcornEngine=api;
   if(typeof module!=='undefined' && module.exports) module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

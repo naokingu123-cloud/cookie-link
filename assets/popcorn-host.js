@@ -106,8 +106,9 @@ function step(dt){
   const wave=V.waveAt(trace,engine.elapsed);
   if(wave>engine.soundWave&&wave<trace.waves.length){
    engine.soundWave=wave;
-   const strong=trace.waves[wave].some(i=>trace.before[i].power>=2);
-   sceneSound(strong?'color-burst':'pop',{volume:strong?.72:Math.min(.72,.42+wave*.05),rate:1+Math.min(wave,7)*.075});
+   const power=trace.waves[wave].reduce((max,i)=>Math.max(max,trace.before[i].power),0);
+   const effect=power===5?'transform':power===4?'sweep':power>=2?'color-burst':'pop';
+   sceneSound(effect,{volume:power>=2?.72:Math.min(.72,.42+wave*.05),rate:1+Math.min(wave,7)*.075});
    if(wave>=2)sceneSound('chain',{volume:.35,rate:1+Math.min(wave,6)*.09});
    if(trace.clear&&wave===trace.waves.length-1)sceneSound('allclear',{volume:.76});
   }
@@ -195,7 +196,8 @@ function tick(now){
  stamp=now;
  if(advancing){clock+=dt;step(dt);}
  const selected=active===id;
- if(selected&&clock-lastMain>=33){paint(false);lastMain=clock;}
+ const fastSupply=advancing&&selected&&engine.presentationRate>1&&engine.trace&&V.refilling(engine.trace,engine.elapsed);
+ if(selected&&(fastSupply||clock-lastMain>=33)){paint(false);lastMain=clock;}
  if((app.phase==='ready'||engine.trace)&&clock-lastMini>=150){paint(true);lastMini=clock;}
  if(advancing&&(selected||app.phase==='ready'||engine.trace||engine.queue.length))requestFrame();
 }
@@ -228,9 +230,11 @@ renderRoundResult=function(a){
 };
 document.addEventListener('visibilitychange',()=>{stamp=0;requestFrame();});
 new ResizeObserver(()=>{lastMain=-1e4;requestFrame();}).observe(slot.panel);
-if(V.assetsReady)V.assetsReady.then(()=>{lastMini=lastMain=-1e4;requestFrame();});
+function refreshArt(){lastMini=lastMain=-1e4;requestFrame();}
+V.assetsReady.then(refreshArt);
+if(document.fonts)document.fonts.load('700 16px ArcadePayout','0123456789WIN').then(refreshArt);
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:84};
+window.PopcornSplash={engine,core:K,version:85};
 engine.reset();
 select(id);
 })();
