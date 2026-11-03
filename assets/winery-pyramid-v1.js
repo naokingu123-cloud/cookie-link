@@ -1,4 +1,4 @@
-/* Winery Pyramid v77: slightly larger 21-glass main board; original tab miniature retained. */
+/* Winery Pyramid v78: animated MIX ODDS UP precedes payout filling. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -6,7 +6,7 @@ const K=window.WineryPyramidCore;
 if(!K||typeof app==='undefined'||!app||!slots?.[1])throw Error('Winery host is not ready');
 if(app.phase!=='ready')throw Error('Install Winery only between games');
 const S=slots[1],oldEngine=app.engines[1];
-const money=(bet,mult)=>num(medalWin(bet,Math.round(mult*100)));
+const rowWin=(bet,n,mix)=>medalWin(bet,Math.round(Math.round(K.PAY[n]*100)*(10+mix)/10));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
 const style=document.createElement('link');style.rel='stylesheet';style.href='assets/winery-pyramid-v1.css?v=56';document.head.appendChild(style);const luxuryStyle=document.createElement('link');luxuryStyle.rel='stylesheet';luxuryStyle.href='assets/winery-pyramid-luxury-v56.css?v=56';document.head.appendChild(luxuryStyle);const sweetsStyle=document.createElement('link');sweetsStyle.rel='stylesheet';sweetsStyle.href='assets/winery-pyramid-sweets-v57.css?v=57';document.head.appendChild(sweetsStyle);const riverStyle=document.createElement('link');riverStyle.rel='stylesheet';riverStyle.href='assets/winery-pyramid-juice-river-v58.css?v=58';document.head.appendChild(riverStyle);const premiumStyle=document.createElement('link');premiumStyle.rel='stylesheet';premiumStyle.href='assets/winery-pyramid-premium-v59.css?v=59';document.head.appendChild(premiumStyle);const rasterStyle=document.createElement('link');rasterStyle.rel='stylesheet';rasterStyle.href='assets/winery-pyramid-raster-v60.css?v=60';document.head.appendChild(rasterStyle);const refineStyle=document.createElement('link');refineStyle.rel='stylesheet';refineStyle.href='assets/winery-pyramid-refine-v61.css?v=61';document.head.appendChild(refineStyle);const riverStyle62=document.createElement('link');riverStyle62.rel='stylesheet';riverStyle62.href='assets/winery-pyramid-river-v62.css?v=62';document.head.appendChild(riverStyle62);const teaStyle=document.createElement('link');teaStyle.rel='stylesheet';teaStyle.href='assets/winery-pyramid-afternoon-v63.css?v=63';document.head.appendChild(teaStyle);const polishStyle=document.createElement('link');polishStyle.rel='stylesheet';polishStyle.href='assets/winery-pyramid-polish-v64.css?v=64';document.head.appendChild(polishStyle);const liquidStyle=document.createElement('link');liquidStyle.rel='stylesheet';liquidStyle.href='assets/winery-pyramid-liquid-v65.css?v=65';document.head.appendChild(liquidStyle);const adjustStyle=document.createElement('link');adjustStyle.rel='stylesheet';adjustStyle.href='assets/winery-pyramid-adjust-v66.css?v=66';document.head.appendChild(adjustStyle);
@@ -24,13 +24,44 @@ scene.innerHTML='<canvas class="wp-canvas" width="780" height="900" aria-label="
  '<div class="wp-score"><span>満タン</span><strong>0 / 21</strong><small class="wp-sugar-summary">✦12杯</small></div>'+
  '<div class="wp-pay-fixed"><span>配当</span><small class="wp-total-poured">注 0杯</small><b class="wp-score-mini">0/21</b></div>'+
  '<div class="wp-pay-window"><div class="wp-pay-juice-reservoir" aria-hidden="true"><div class="wp-pay-juice-level"></div></div><div class="wp-pay-pour-stream" aria-hidden="true"></div><div class="wp-pay-track">'+Array.from({length:12},(_,i)=>21-i).map(n=>'<div class="wp-pay-row" data-full="'+n+'"><span>'+n+'杯</span><small class="wp-sugar-mark"></small><b>0WIN</b></div>').join('')+'</div></div>'+
- '<div class="wp-mix"><span>MIX <i>0</i>杯</span><b>×1.0倍</b></div>'+
- '<div class="wp-total"><span>TOTAL</span><b>0</b><small>WIN</small></div>'+
+ '<div class="wp-mix"><span>MIX <i>0</i>杯</span><small class="wp-odds-up-label">ODDS UP</small><b>×1.0</b></div>'+
  '</aside>'+
  '<div class="wp-message" hidden></div>';
 S.panel.appendChild(scene);
 // Decoration only — no game quantities, numbers, or glasses are baked into the tray.
 scene.classList.add('wp-afternoon-v63');
+scene.classList.add('wp-odds-v78');
+const oddsStyle=document.createElement('style');
+oddsStyle.textContent=`
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sidebar{
+grid-template-rows:minmax(16px,auto) 20px minmax(0,1fr) 74px!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix{
+display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+height:74px!important;min-height:0!important;max-height:none!important;flex:none!important;gap:2px!important;padding:4px 2px!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix .wp-odds-up-label{
+display:block!important;font:1000 clamp(9px,1.55vw,14px)/1.06 system-ui,sans-serif!important;
+letter-spacing:.1em!important;color:#fff5bc!important;text-shadow:0 0 5px #ffdaac,0 1px 1px #63274d!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix b{
+font-size:clamp(19px,3.3vw,30px)!important;line-height:1.02!important}
+body.winery-enabled #panel1 .wp-scene.wp-odds-v78.wp-odds-animating .wp-mix{
+box-shadow:inset 0 0 10px #fff4c49a,0 0 11px #ffcf9cbd!important}
+body.winery-enabled #panel1 .wp-scene.wp-odds-v78.wp-odds-animating .wp-odds-up-label,
+body.winery-enabled #panel1 .wp-scene.wp-odds-v78.wp-odds-animating .wp-pay-row b{
+animation:wp-odds-up-glow-v78 .42s ease-in-out infinite alternate!important}
+@keyframes wp-odds-up-glow-v78{from{filter:brightness(1)}to{filter:brightness(1.65)}}
+@media(max-width:480px){
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sidebar{
+grid-template-rows:14px 17px minmax(0,1fr) 55px!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix{
+height:55px!important;gap:1px!important;padding:2px 1px!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix .wp-odds-up-label{
+font-size:9px!important;letter-spacing:.05em!important}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix b{font-size:19px!important}}
+@media(prefers-reduced-motion:reduce){
+body.winery-enabled #panel1 .wp-scene.wp-odds-v78.wp-odds-animating .wp-odds-up-label,
+body.winery-enabled #panel1 .wp-scene.wp-odds-v78.wp-odds-animating .wp-pay-row b{animation:none!important}}`;
+document.head.appendChild(oddsStyle);
+
 const teaStand=new Image();
 teaStand.className='wp-tea-stand';teaStand.decoding='async';teaStand.alt='';
 teaStand.onload=()=>{scene.classList.add('wp-tea-loaded');miniKey='';lastPaint=0;queueFrame();};
@@ -907,8 +938,15 @@ function updateHUD(){
  const bet=app.bet(1),pouring=engine.fx?.type==='pour';
  const windowEl=scene.querySelector('.wp-pay-window');
  updatePayoutVisual(windowEl,pouring);
+ const oddsFx=engine.fx?.type==='odds'?engine.fx:null;
+ const presentedMix=engine.presentedMixCount??engine.mixCount;
+ const fromMix=oddsFx?oddsFx.fromMix:presentedMix,toMix=oddsFx?oddsFx.toMix:presentedMix;
+ const oddsRatio=oddsFx?Math.max(0,Math.min(1,oddsFx.elapsed/Math.max(1,oddsFx.duration))):1;
+ const oddsEase=oddsRatio*oddsRatio*(3-2*oddsRatio);
+ scene.classList.toggle('wp-odds-animating',!!oddsFx);
  const key=[engine.version,engine.phase,engine.processed,engine.power,engine.totalPoured,
-            engine.totalHundredths,engine.fullCount,engine.mixCount,engine.sugarTarget,
+            engine.totalHundredths,engine.fullCount,engine.mixCount,engine.presentedMixCount,
+            oddsFx?Math.round(oddsRatio*100):'',engine.sugarTarget,
             engine.sugarAwarded,bet].join('/');
  if(key===uiKey)return;uiKey=key;
  // The left cabinet owns boost numbers; the right gauge mirrors actual pour amount.
@@ -933,11 +971,11 @@ function updateHUD(){
   node.classList.toggle('hit',hit);
   node.setAttribute('aria-label',n+'番：'+(hit?'HIT! 注入量UP獲得':'注入量UP待機'));
  });
- // Only payable full-glass counts 10..21 are shown. Their values still come
- // from K.PAY, not from the total amount poured, preserving the original rules.
+ // MIX-adjusted prize credits animate before the liquid level rises.
  for(const row of scene.querySelectorAll('[data-full]')){
   const n=Number(row.dataset.full);
-  row.querySelector('b').textContent=money(bet,K.PAY[n])+'WIN';
+  const oldCredits=rowWin(bet,n,fromMix),newCredits=rowWin(bet,n,toMix);
+  row.querySelector('b').textContent=num(Math.round(oldCredits+(newCredits-oldCredits)*oddsEase))+'WIN';
   row.classList.toggle('current',n===engine.fullCount);
   row.classList.toggle('is-reached',n<=engine.fullCount);
   const marker=row.querySelector('.wp-sugar-mark');
@@ -948,9 +986,8 @@ function updateHUD(){
  scene.querySelector('.wp-score-mini').textContent=full+'/21';
  scene.querySelector('.wp-total-poured').textContent='注 '+Number(engine.totalPoured||0).toLocaleString('ja-JP',{maximumFractionDigits:1})+'杯';
  // The liquid-level animation is driven by updatePayoutVisual every frame.
- scene.querySelector('.wp-mix i').textContent=engine.mixCount;
- scene.querySelector('.wp-mix b').textContent='×'+engine.mixMultiplier.toFixed(1)+'倍';
- scene.querySelector('.wp-total b').textContent=num(medalWin(bet,engine.totalHundredths));
+ scene.querySelector('.wp-mix i').textContent=toMix;
+ scene.querySelector('.wp-mix b').textContent='×'+(1+(fromMix+(toMix-fromMix)*oddsEase)/10).toFixed(1);
 }
 // Only the grape-juice GLASS PYRAMID appears in the small tab.
 // Offscreen draw is cropped to the 21 live cups and their price-tag numbers.
@@ -1069,7 +1106,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:77,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:78,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
