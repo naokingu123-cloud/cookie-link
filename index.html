@@ -403,7 +403,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   ]:[
    'assets/popcorn-engine.js?v=87','assets/popcorn-view.js?v=89','assets/winery-pyramid-core-v1.js?v=78',
    'assets/highest-role-reach-v18.js?v=1','assets/gelato-prism-v28.js?v=89','assets/winery-pyramid-v1.js?v=89',
-   'assets/recent-game-demos-simple-v74.js?v=74','assets/popcorn-host.js?v=89'
+   'assets/recent-game-demos-simple-v74.js?v=74','assets/popcorn-host.js?v=89.1'
   ];
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');

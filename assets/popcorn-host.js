@@ -234,7 +234,7 @@ function tick(now){
  const advancing=!app.paused&&inView&&!document.hidden&&!jpcSession.active;
  const elapsed=advancing&&stamp?Math.max(0,now-stamp):0;
  const dt=Math.min(elapsed,100);
- stamp=now;
+ stamp=advancing?now:0;
  if(advancing){clock+=dt;if(app.phase==='ready')demoClock+=elapsed;step(dt);}
  const selected=active===id;
  const fastSupply=advancing&&selected&&engine.presentationRate>1&&engine.trace&&V.refilling(engine.trace,engine.elapsed);
