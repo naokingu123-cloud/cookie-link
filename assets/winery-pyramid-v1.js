@@ -978,6 +978,10 @@ const focusedStandStyle=document.createElement('link');
 focusedStandStyle.rel='stylesheet';
 focusedStandStyle.href='assets/winery-stand-focus-v76.css?v=76';
 document.head.appendChild(focusedStandStyle);
+const boardZoomStyle=document.createElement('link');
+boardZoomStyle.rel='stylesheet';
+boardZoomStyle.href='assets/winery-main-board-enlarge-v77.css?v=77';
+document.head.appendChild(boardZoomStyle);
 function paintMini(){
  const progress=engine.fx?.type==='pour'?
   Math.floor(engine.fx.elapsed/100):0;
