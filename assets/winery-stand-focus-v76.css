@@ -1,0 +1,36 @@
+/* Winery Pyramid v76 — narrow the contrast vignette to the central
+ * six-tier stand only. The surrounding strawberry/orange fantasy river
+ * remains at original brightness. No blur or color filter touches live juice.
+ */
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-stand-contrast-v71{
+ inset:7% 28% 1% 18%!important;
+ width:auto!important;height:auto!important;
+ border:0!important;opacity:1!important;
+ z-index:2!important;pointer-events:none!important;
+ mix-blend-mode:normal!important;filter:none!important;
+ border-radius:45% 45% 24% 24% / 26% 26% 12% 12%!important;
+ background:
+  radial-gradient(ellipse 88% 100% at 50% 52%,
+    rgba(20,8,40,.58) 0%,
+    rgba(24,10,46,.50) 43%,
+    rgba(23,12,44,.25) 73%,
+    rgba(28,13,48,0) 100%)!important;
+ box-shadow:none!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63.wp-tea-loaded>.wp-tea-stand{
+ /* v71 used brightness .82 for the entire transparent stand texture;
+    restore it almost fully and let the localized vignette do the work. */
+ filter:brightness(.98) contrast(1.09) saturate(1.04)
+   drop-shadow(0 2px 3px rgba(45,18,52,.24))!important;
+}
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-liquid-layer,
+body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-canvas{
+ filter:none!important;
+}
+@media(max-width:480px){
+ body.winery-enabled #panel1 .wp-scene.wp-afternoon-v63>.wp-stand-contrast-v71{
+  inset:7% 27% 1% 17%!important;
+  background:radial-gradient(ellipse 90% 100% at 50% 52%,
+   rgba(20,8,40,.60),rgba(23,11,42,.40) 52%,rgba(28,13,48,0) 100%)!important;
+ }
+}
