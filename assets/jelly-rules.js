@@ -30,6 +30,12 @@
   // Gross line return (%) at 3–8 uniformly placed blue seeds, from 15M boards
   // with eight distinct draws. Interpolate by mixing adjacent initial seed counts.
   const seedRates=[40.0772,52.8314,70.3233,94.8536,129.5476,178.7747];
+  // For each blue seed count (3–8), choose one of three consecutive line goals.
+  // The cutoffs fit a 10% sugar win rate to the same 15M eight-ball boards.
+  const sugarGoals=[
+    [3,.100,.600], [4,.433,.850], [4,.104,.900],
+    [5,.611,.950], [5,.276,.850], [5,.100,.616]
+  ];
   function create({rng=Math.random,rate=90}={}) {
     const target=Math.min(150,Math.max(50,Number(rate)||90));
     const high=seedRates.findIndex(value=>value>=target);
@@ -38,7 +44,10 @@
     const seeds=shuffled(rng).slice(0,count);
     const colors=Array(25).fill(null);
     for(const i of seeds)colors[i]='blue';
-    return {numbers:shuffled(rng).map(i=>i+1),seeds,colors,draws:[],open:new Set(),lines:completed(colors)};
+    const numbers=shuffled(rng).map(i=>i+1);
+    const [first,lowCut,midCut]=sugarGoals[count-3],roll=rng();
+    const sugarLines=first+(roll<lowCut?0:roll<midCut?1:2);
+    return {numbers,seeds,sugarLines,colors,draws:[],open:new Set(),lines:completed(colors)};
   }
 
   // Return distance layers through the open partitions. Walls between two

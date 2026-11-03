@@ -75,24 +75,44 @@ assert(J.LINES.every(line=>line.length===5));
   assert.equal(J.previewLines(ten,13),10); // 100× is not an all-line result
 }
 
+// Different sugar rolls may mark different rows on exactly the same ready board.
+{
+  const sample=rng(913),tape=[];
+  J.create({rng:()=>{const r=sample();tape.push(r);return r;}});
+  const replay=goalRoll=>{
+    const values=tape.slice();values[values.length-1]=goalRoll;
+    return J.create({rng:()=>values.shift()});
+  };
+  const easy=replay(0),hard=replay(.999);
+  assert.deepEqual(easy.numbers,hard.numbers);assert.deepEqual(easy.seeds,hard.seeds);
+  assert.equal(hard.sugarLines,easy.sugarLines+2);
+}
+
 // Optional independent check using the shipped engine itself:
 // node .github/tests/jelly-bingo.cjs [rounds] [rng seed] [target %].
 const rounds=Number(process.argv[2]||100),random=rng(Number(process.argv[3]||39507));
-const target=Number(process.argv[4]||90),counts=Array(13).fill(0);
+const target=Number(process.argv[4]||90),counts=Array(13).fill(0),sugarGoals=Array(8).fill(0);
+let sugarWins=0;
 for(let t=0;t<rounds;t++){
   // A uniform number permutation on the initial board makes a fixed sequence
   // of eight distinct roulette numbers an independent uniform cell sample.
   let s=J.create({rng:random,rate:target}),total=J.payout(s.lines.length);
+  const sugarLines=s.sugarLines;
+  assert(Number.isInteger(sugarLines)&&sugarLines>=3&&sugarLines<=7);
+  if(target===90)assert(sugarLines>=4);
+  sugarGoals[sugarLines]++;
   assert.equal(new Set(s.numbers).size,25);
   for(let n=1;n<=8;n++){
     const {state:next,trace}=J.draw(s,n);
     const win=J.payout(next.lines.length);
+    assert.equal(next.sugarLines,sugarLines);
     assert.equal(trace.newLines.length,next.lines.length-s.lines.length);
     assert(win>=total);
     if(!trace.newLines.length)assert.equal(win,total);
     total=win;s=next;
   }
   assert.notEqual(s.lines.length,11);counts[s.lines.length]++;
+  if(s.lines.length>=sugarLines)sugarWins++;
 }
 const rate=counts.reduce((sum,n,i)=>sum+n*J.payout(i),0)/rounds;
-console.log('Jelly Bingo rules OK',JSON.stringify({rounds,counts,returnPercent:rate}));
+console.log('Jelly Bingo rules OK',JSON.stringify({rounds,counts,returnPercent:rate,sugarGoals,sugarWins,sugarPercent:100*sugarWins/rounds}));

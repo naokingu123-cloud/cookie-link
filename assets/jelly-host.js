@@ -8,7 +8,7 @@ canvas.setAttribute('aria-label','ジェリービンゴ。前半5球で仕切り
 slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.classList.add('jb-slot');
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
 title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
-const ctx=canvas.getContext('2d'),sugarLines=6;
+const ctx=canvas.getContext('2d');
 let frame=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,reachStarted=0,paused=false;
 const engine={
  kind:'jelly',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'オールライン',version:0,
@@ -58,7 +58,7 @@ slot.updateJellyReach=function(a){
  reachStarted=clock;slot.reachBoardKey=c.key;slot.tabReachResults=slot.reachResults=hits;slot.tabReachBase=base;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
 };
 function collectSugar(){
- if(engine.wonderCollected||engine.state.lines.length<sugarLines)return;
+ if(engine.wonderCollected||engine.state.lines.length<engine.state.sugarLines)return;
  const token=engine.wonderToken;engine.wonderCollected=true;engine.roundSteps=1;
  app.wonderBank.push({...token,game:id});app.wonderValue+=token.value;app.wonderSteps=app.wonderBank.length;
  if(isDirectJpcSugar(token)){select(id);showSugarCutin('虹色シュガー獲得!!','次ゲームは直接JPCへ！',true);}
@@ -110,7 +110,11 @@ function paint(mini){
  if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
  const dest=mini?slot.miniCanvas:canvas;
  if(!mini){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;}
- const p=presentation();V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo:app.phase==='ready',time:clock,turn:p.turn,elapsed:p.elapsed,bet:app.bet(id),reachTime:clock-reachStarted,reach:engine.trace||app.phase==='ready'?[]:slot.reachResults});
+ const p=presentation(),demo=app.phase==='ready',bet=app.bet(id);
+ V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo,time:clock,turn:p.turn,elapsed:p.elapsed,bet,
+  sugarLines:engine.state.sugarLines,sugarCollected:!demo&&engine.wonderCollected,
+  sugarIcon:!mini&&bet>0?getSugarSprite(sugarVisualTier(engine.wonderToken||bet)):null,
+  reachTime:clock-reachStarted,reach:engine.trace||demo?[]:slot.reachResults});
 }
 slot.paintJelly=paint;
 function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
@@ -123,7 +127,7 @@ function tick(now){
  if(moving&&(active===id||engine.trace||engine.queue.length))wake();
 }
 const select0=select;select=function(i){const result=select0(i);document.body.classList.toggle('jb-active',active===id);lastMain=-1000;wake();return result;};
-const hud0=hud;hud=function(a){hud0(a);if(active===id){put('best',engine.state.lines.length+' BINGO ／ 6ラインでシュガー');put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');wake();}};
+const hud0=hud;hud=function(a){hud0(a);if(active===id){put('best',engine.state.lines.length+' BINGO ／ '+engine.state.sugarLines+'ラインでシュガー');put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');wake();}};
 const result0=renderRoundResult;renderRoundResult=function(a){
  result0(a);if(!a.result)return;
  const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.jelly===String(a.token))return;
