@@ -35,7 +35,14 @@ const engine={
  },
  previewDraw(n){this.drawn.add(n);},
  enqueueBatch(values){
-  for(const n of values){if(!this.running||this.accepted>=8)break;this.queue.push(n);this.accepted++;}
+  // Resolve numbers in arrival order, even while an earlier explosion is animating.
+  for(const number of values){
+   if(!this.running||this.accepted>=8)break;
+   const previous=this.queue.at(-1)?.state||this.state;
+   const state={...previous,drawn:previous.drawn.slice()};
+   const trace=K.draw(state,number,app.random);
+   if(trace){this.queue.push({number,state,trace});this.accepted++;}
+  }
   requestFrame();
  },
  emit(phase,extra={}){
@@ -72,9 +79,10 @@ async function finish(token){
 function step(dt){
  if(!engine.running)return;
  if(!engine.trace&&engine.queue.length){
-  const n=engine.queue.shift();engine.trace=K.draw(engine.state,n,app.random);engine.elapsed=0;
+  const {number,state,trace}=engine.queue.shift();
+  engine.state=state;engine.trace=trace;engine.elapsed=0;
   engine.soundWave=-1;engine.maxChain=Math.max(engine.maxChain,engine.trace.waves.length);
-  invalidateReach(slot);reach=[];engine.emit('popcornDraw',{number:n});
+  invalidateReach(slot);reach=[];engine.emit('popcornDraw',{number});
   if(active===id&&engine.trace.clear)sceneSound('allclear',{volume:.65});
  }
  if(!engine.trace)return;
@@ -102,7 +110,7 @@ function demoFrame(){
  const age=clock-demo.at, hold=demo.trace?V.duration(demo.trace)+1000:1300;
  if(age>=hold){
   if(demo.state.turn>=3){demo=null;return demoFrame();}
-  const d=demo.state;const fire=d.turn===2?d.allIndex:[1,12,5].find(i=>i!==d.allIndex&&i!==(demo.lastPort??-1));
+  const d=demo.state;const fire=d.turn===2?d.allIndex:[6,1,12].find(i=>i!==d.allIndex&&i!==(demo.lastPort??-1));
   demo.lastPort=fire;demo.trace=K.draw(d,d.numbers[fire],demo.rng);demo.at=clock;
  }
  return {state:demo.state,turn:demo.trace,elapsed:clock-demo.at};
@@ -158,7 +166,7 @@ renderRoundResult=function(a){
   row.dataset.popcorn=String(a.token);
   row.querySelector('.result-game-name').innerHTML='ポップコーンスプラッシュ <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
   row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.popped+'粒 ／ 全消し '+engine.allClears+'回':'参加なし';
-  row.querySelector('.result-game-emblem').outerHTML='<img class="result-game-emblem" src="assets/popcorn-art/popcorn-normal.webp" alt="">';
+  row.querySelector('.result-game-emblem').outerHTML='<img class="result-game-emblem" src="assets/popcorn-art/popcorn-normal.webp?v=80" alt="">';
  }
  if(panel.lastElementChild!==row)panel.append(row);
 };
@@ -166,7 +174,7 @@ document.addEventListener('visibilitychange',()=>{stamp=0;requestFrame();});
 new ResizeObserver(()=>{lastMain=-1e4;requestFrame();}).observe(slot.panel);
 if(V.assetsReady)V.assetsReady.then(()=>{lastMini=lastMain=-1e4;requestFrame();});
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:79};
+window.PopcornSplash={engine,core:K,version:80};
 engine.reset();
 select(id);
 })();

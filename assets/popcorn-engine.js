@@ -24,28 +24,34 @@
     [[1,0],[0,1],[-1,1],[-1,0],[0,-1],[1,-1]]
       .map(([dq,dr])=>indices.get([q+dq,r+dr].join(','))).filter(i=>i!==undefined)
   );
-  function port(q,r,dq,dr){
-    const line=[], dx=dq+dr/2, dy=dr*S;
-    const start=cells[indices.get(q+','+r)];
-    while(indices.has(q+','+r)){
-      line.push(indices.get(q+','+r)); q+=dq; r+=dr;
-    }
+  function port(line,dx,dy){
+    const start=cells[line[0]];
     ports.push({x:start.x-1.12*dx,y:start.y-1.12*dy,dx,dy,line});
   }
-  // Each bank lights one family of contiguous axial lines. Normal numbers use
-  // their own line; the master igniter lights every kernel in the entire dish.
-  for(let r=0;r<=4;r++) port(-4,r,1,0);
-  for(let q=-4;q<=0;q++) port(q,4,1,-1);
-  for(let q=0;q<=4;q++) port(q,4-q,0,-1);
-  const allCells=cells.map((_,i)=>i);
+  // The inward normal of a sloping bank passes between two equidistant
+  // centers in alternate layers. Take the upper cell of each tie, mirrored
+  // on the right. The beam touches every selected cell and never double-hits.
+  function sidePort(level,mirror){
+    const line=[];
+    for(let k=0;k<5+level;k++){
+      const q=-4+k, r=level-Math.ceil(k/2);
+      line.push(indices.get((mirror?-q-r:q)+','+r));
+    }
+    port(line,mirror?-S:S,-.5);
+  }
+  for(let level=0;level<=4;level++) sidePort(level,false);
+  for(let q=-4;q<=0;q++){
+    const line=Array.from({length:5},(_,k)=>indices.get((q+k)+','+(4-2*k)));
+    port(line,0,-1);
+  }
+  for(let level=4;level>=0;level--) sidePort(level,true);
   const colorStarts = [0,1,26,51,76,101,126];
   const popPay = [[40,.1],[65,.2],[85,.4],[105,.7],[125,1],[150,1.5],[180,2.5],[220,5],[260,10],[320,25]];
   const clearPay = [[1,1],[2,3],[3,8],[4,20],[5,50],[6,100],[7,200],[8,400]];
-  // Independent 90,000-round simulations at each fixed bomb chance; eight balls
+  // 65,000 rounds per fixed bomb chance (285,000 at .30 and .34); eight balls
   // without replacement at 100 BET. Interpolate by mixing complete rounds so
   // the published payout table stays fixed across the 50–150% debug range.
-  const rateAnchors = [[.02,48.418],[.05,51.012],[.10,56.314],[.18,69.853],
-    [.24,87.472],[.29,112.249],[.35,163.398]];
+  const rateAnchors = [[.17,35.564],[.22,56.523],[.26,81.248],[.30,118.570],[.34,178.309]];
   function multiplier(count,table){
     let award = 0;
     for (const [min,value] of table){
@@ -81,17 +87,20 @@
     const allIndex=Math.floor(rng()*ports.length);
     const bombChance=chanceFor(rate,rng);
     // A few opening batches are rich in ignition kernels, so natural clears
-    // can combine with the master ignition even with distinct drawn balls.
+    // can still occur before ordinary refills establish the target bomb rate.
     const openingChance = rng()<.05 ? .5 : bombChance;
     const board=cells.map((_,id)=>({id,color:0,bomb:rng()<openingChance}));
     if (!board.some(piece=>piece.bomb)) board[Math.floor(rng()*board.length)].bomb=true;
     if (board.every(piece=>piece.bomb)) board[Math.floor(rng()*board.length)].bomb=false;
-    return {board,numbers,allIndex,bombChance,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
+    return {board,numbers,drawn:[],allIndex,bombChance,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
   }
   function ignition(state,number){
     const port=state.numbers.indexOf(number);
     const all=port!==-1 && port===state.allIndex;
-    const first=all?allCells:port<0?[]:ports[port].line;
+    const first=all?state.board.reduce((seeds,piece,i)=>{
+      if(piece.bomb) seeds.push(i);
+      return seeds;
+    },[]):port<0?[]:ports[port].line;
     const marked=new Set(first), waves=[];
     let frontier=first;
     while(frontier.length){
@@ -116,7 +125,7 @@
     return {count,clear,win};
   }
   function draw(state,number,rng=Math.random){
-    if(state.turn>=8) return null;
+    if(state.turn>=8 || !Number.isInteger(number) || number<1 || number>25 || state.drawn.includes(number)) return null;
     const {port,all,waves,marked,count,clear,win}=ignition(state,number);
     const before=state.board, after=before.slice(), moves=[], oldWin=state.win;
     if(count){
@@ -135,12 +144,23 @@
         }
       }
     }
+    const beforeNumbers=state.numbers;
+    let afterNumbers=beforeNumbers, newNumber=null;
+    state.drawn.push(number);
+    if(port>=0){
+      const pool=[];
+      for(let n=1;n<=25;n++) if(!state.drawn.includes(n) && !beforeNumbers.includes(n)) pool.push(n);
+      newNumber=pool[Math.floor(rng()*pool.length)];
+      afterNumbers=beforeNumbers.slice();
+      afterNumbers[port]=newNumber;
+      state.numbers=afterNumbers;
+    }
     state.board=after;
     state.turn++;
     state.popped+=count;
     state.clears+=Number(clear);
     state.win=win;
-    return {before,after,port,all,waves,moves,count,clear,oldWin,win};
+    return {before,after,port,all,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,moves,count,clear,oldWin,win};
   }
   const api={cells,ports,outline,columns,neighbors,colorStarts,popPay,clearPay,payout,colorFor,create,preview,draw};
   root.PopcornEngine=api;

@@ -24,7 +24,8 @@
   // Generated raster artwork; the live cells, badge digits and scores are independent.
   loadAsset('back', 'popcorn-fair.webp');
   loadAsset('carton', 'popcorn-carton.webp');
-  loadAsset('pieces', 'popcorn-pieces.webp');
+  loadAsset('pieces', 'popcorn-pieces.webp?v=80');
+  loadAsset('payout', 'popcorn-payout-frame.webp');
   function rounded(ctx, x, y, w, h, r, fill, stroke, lw = 1) {
     ctx.beginPath(); ctx.roundRect(x, y, w, h, Math.min(r, w / 2, h / 2));
     if (fill) { ctx.fillStyle = fill; ctx.fill(); }
@@ -84,10 +85,11 @@
     }
     ctx.drawImage(plate,-5.5,-5.5,11,11);
   }
-  const points = [...K.outline.map(p=>({x:1.055*p.x,y:1.055*p.y})), ...K.ports];
   const bounds = {
-    left:Math.min(...points.map(p=>p.x))-.47,right:Math.max(...points.map(p=>p.x))+.47,
-    top:Math.min(...K.outline.map(p=>p.y*1.055))-.06,bottom:Math.max(...points.map(p=>p.y))+.49
+    left:Math.min(...K.ports.map(p=>p.x-.42),...K.outline.map(p=>p.x*1.09)),
+    right:Math.max(...K.ports.map(p=>p.x+.42),...K.outline.map(p=>p.x*1.09)),
+    top:Math.min(...K.outline.map(p=>p.y*1.09))-.008,
+    bottom:Math.max(...K.ports.map(p=>p.y+.34),...K.outline.map(p=>p.y*1.09))
   };
   function boardFit(x,y,w,h) {
     const k=Math.min(w/(bounds.right-bounds.left),h/(bounds.bottom-bounds.top));
@@ -134,6 +136,7 @@
   function sequence(tr) {
     let a=traces.get(tr);if(a)return a;
     if (tr.port<0) {a={end:470};traces.set(tr,a);return a;}
+    if(!tr.count){a={rest:460,fall:460,refill:460,end:770};traces.set(tr,a);return a;}
     const waveOf=new Int16Array(K.cells.length);waveOf.fill(-1);
     tr.waves.forEach((wave,n)=>wave.forEach(i=>{waveOf[i]=n;}));
     const rest=LIGHT+Math.max(0,tr.waves.length-1)*WAVE+BURST;
@@ -149,10 +152,11 @@
     if (!trace || trace.port<0 || elapsed<LIGHT) return -1;
     return Math.min(trace.waves.length-1, Math.floor((elapsed-LIGHT)/WAVE));
   }
-  function shot(ctx,index,progress,full) {
+  function shot(ctx,index,progress) {
     const p=K.ports[index],seq=p.line;if(!seq.length)return;
-    const end=K.cells[seq[seq.length-1]],a=clamp(progress*1.24),fade=1-clamp((progress-.64)/.55);
-    ctx.save();ctx.globalAlpha*=fade*(full?.76:1);ctx.lineCap='round';
+    const last=K.cells[seq[seq.length-1]], length=(last.x-p.x)*p.dx+(last.y-p.y)*p.dy;
+    const end={x:p.x+length*p.dx,y:p.y+length*p.dy},a=clamp(progress*1.24),fade=1-clamp((progress-.64)/.55);
+    ctx.save();ctx.globalAlpha*=fade;ctx.lineCap='round';
     for(const [s,color] of [[.22,'#ff6f1f'],[.107,'#ffcc48'],[.032,'#fffcdd']]) {
       ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mix(p.x,end.x,a),mix(p.y,end.y,a));ctx.strokeStyle=color;ctx.lineWidth=s;ctx.stroke();
     }
@@ -170,15 +174,24 @@
     ctx.restore();
   }
   function portArt(ctx,s,tr,elapsed,time,mini,reach) {
-    const hit=tr && tr.port>=0 && elapsed<LIGHT+380;
+    const hit=tr && tr.port>=0, change=hit?sequence(tr).rest:0;
+    const hitNumbers=hit && elapsed<change?tr.beforeNumbers:s.numbers;
     K.ports.forEach((p,i)=>{
-      const all=i===s.allIndex,lit=hit&&(tr.all||tr.port===i),num=s.numbers[i];
+      const all=i===s.allIndex,fired=hit&&tr.port===i,lit=fired&&elapsed<change;
+      const flipped=fired&&elapsed>=change&&elapsed<change+260,num=hitNumbers[i];
       const re=reach?.find?.(v=>Number(v.number??v.n??v)===num),type=re?.kind??re?.level??'reach';
       const edge=lit?'#fffcdb':re?({all:'#ff94d6',super:'#ff73a0',high:'#ffb839'}[type]||'#6cf6ec'):(all?'#ffe095':'#f7bc71');
       ctx.save();ctx.translate(p.x,p.y);
-      if(!mini && (lit||re)) {const s=(1+Math.sin(time*.009+i*.34))/2;rounded(ctx,-.413-s*.025,-.319-s*.025,.826+s*.05,.638+s*.05,.225,null,edge,.035);}
+      if(!mini && !all) {
+        // The arrow and laser point along this side's inward normal.
+        ctx.save();ctx.rotate(Math.atan2(p.dy,p.dx));ctx.beginPath();
+        ctx.moveTo(.43,-.107);ctx.lineTo(.635,0);ctx.lineTo(.43,.107);ctx.closePath();
+        ctx.fillStyle=lit?'#fff9bd':'#ffe3a6';ctx.fill();ctx.strokeStyle='#793e37';ctx.lineWidth=.029;ctx.stroke();ctx.restore();
+      }
+      if(flipped){const phase=clamp((elapsed-change)/260);ctx.scale(1+.17*Math.sin(Math.PI*phase),1+.17*Math.sin(Math.PI*phase));}
+      if(!mini && (lit||flipped||re)) {const s=(1+Math.sin(time*.009+i*.34))/2;rounded(ctx,-.413-s*.025,-.319-s*.025,.826+s*.05,.638+s*.05,.225,null,edge,.035);}
       rounded(ctx,-.382,-.307,.764,.614,.205,all?'#a84422':lit?'#ed9042':'#204c59',edge,.048);
-      if(all){ctx.save();ctx.translate(0,-.235);rounded(ctx,-.25,-.14,.5,.25,.08,'#ffd16b','#98472b',.021);label(ctx,'ALL',0,0,.201,'#632c26');ctx.restore();}
+      if(all){ctx.save();ctx.translate(0,-.236);rounded(ctx,-.348,-.151,.696,.275,.08,'#ffd16b','#98472b',.024);label(ctx,'ALL',0,-.004,.212,'#632c26',{max:.63});ctx.restore();}
       label(ctx,num??'?',0,all?.065:.012,.454,lit?'#572839':'#fff7d7',{max:.69,outline:lit?'#ffe9aa':'#332d38',stroke:.043});
       ctx.restore();
     });
@@ -186,7 +199,7 @@
   const easeFall=t=>{t=clamp(t);return t<.84?(t/.84)**1.75:1-.048*Math.sin((t-.84)/.16*Math.PI);};
   function liveBoard(ctx,s,tr,elapsed,time,mini,reach) {
     drawCachedPlate(ctx);
-    const seq = tr && sequence(tr), moving=tr && tr.port>=0 && elapsed<seq.end;
+    const seq = tr && sequence(tr), moving=tr && tr.count>0 && elapsed<seq.end;
     if(!moving) K.cells.forEach((p,i)=>drawPiece(ctx,s.board[i],p.x,p.y,time,mini));
     else if (elapsed<seq.fall) {
       K.cells.forEach((p,i)=>{
@@ -210,7 +223,18 @@
           }
         }
       }
-      if(elapsed<LIGHT+105){const a=elapsed/(LIGHT+75);if(tr.all)K.ports.forEach((p,i)=>shot(ctx,i,a,true));else shot(ctx,tr.port,a,false);}
+      if(elapsed<LIGHT+105){
+        const a=elapsed/(LIGHT+75);
+        if(!tr.all) shot(ctx,tr.port,a);
+        else if(elapsed<LIGHT) {
+          // Master ignition charges every live fuse at once. No straight lanes fire.
+          for(const i of tr.waves[0]){
+            const p=K.cells[i];
+            circle(ctx,p.x,p.y,.53-.29*a,null,'#ffdf7e',.045+.04*a);
+            star(ctx,p.x+.25,p.y-.36,.11+.13*a,'#fffde3');
+          }
+        }
+      }
     } else {
       ctx.save();polygon(ctx,K.outline,.975);ctx.clip();
       seq.still.forEach(i=>drawPiece(ctx,tr.after[i],K.cells[i].x,K.cells[i].y,time,mini));
@@ -244,43 +268,78 @@
     return {popped,clears,win:K.payout(popped,clears,s.bet),filled:s.refilled-tr.count+Math.round(tr.count*clamp((elapsed-seq.refill)/FILL))};
   }
   function drawTop(ctx,s,opt,x,y,w) {
-    const title=Math.min(348,w-104);
-    rounded(ctx,x,y,title,40,15,'#813c32','#ffdda2',2.5);
-    rounded(ctx,x+3,y+3,title-6,34,13,'#aa343e','#f89a6a',1.1);
-    star(ctx,x+14,y+20,5.3,'#ffde83');star(ctx,x+title-14,y+20,5.3,'#ffde83');
-    label(ctx,'ポップコーンスプラッシュ',x+title/2,y+20,25,cream,{max:title-42,outline:'#78322e',stroke:3});
-    const bw=94,bx=x+w-bw;
-    rounded(ctx,bx,y+2,bw,36,15,'#204d50',gold,2);
-    label(ctx,opt.demo?'デモ':(s.turn+' / 8 球'),bx+bw/2,y+19,21,cream,{max:bw-14});
+    const title=Math.min(302,w-73);
+    rounded(ctx,x,y,title,31,12,'#a33c3d','#ffdda2',1.8);
+    label(ctx,'ポップコーンスプラッシュ',x+title/2,y+15,20,cream,{max:title-12,outline:'#78322e',stroke:2.2});
+    const bw=68,bx=x+w-bw;
+    rounded(ctx,bx,y,bw,29,12,'#204d50',gold,1.5);
+    label(ctx,opt.demo?'デモ':(s.turn+'/8 球'),bx+bw/2,y+14.5,17,cream,{max:bw-8});
   }
-  function side(ctx,s,state,x,y,w,h) {
-    ctx.save();ctx.translate(x,y);ctx.scale(w/239,h/475);
-    const sw=239;
-    rounded(ctx,2,4,sw-4,469,19,'#643a36ab');rounded(ctx,1,1,sw-4,469,19,'#fff0cd','#b75d49',3);
-    rounded(ctx,5,5,sw-12,461,15,null,'#e2ae79',1.5);
-    rounded(ctx,10,10,sw-22,106,14,'#24696b','#663e36',1.5);
-    label(ctx,'はじけた数',sw/2,34,23,'#fff4cd',{max:sw-42});
-    label(ctx,state.popped,sw/2-6,79,53,'#fff0ac',{max:119,outline:'#275054',stroke:4});
-    label(ctx,'個',sw-45,85,23,'#e5f4ce');
-    label(ctx,'個数配当',18,136,21,ink,{align:'left'});label(ctx,'WIN',sw-18,138,18,teal,{align:'right'});
-    const active=K.popPay.findIndex(([n],i,a)=>state.popped>=n&&(i===a.length-1||state.popped<a[i+1][0]));
-    const first=Math.max(0,Math.min(Math.max(0,K.popPay.length-4),active));
-    K.popPay.slice(first,first+4).forEach(([n,v],i)=>{
-      const yy=153+i*32,unlocked=active===i+first;
-      rounded(ctx,14,yy,sw-28,28,8,unlocked?'#efce84':i%2?'#efd7b4':'#f7e5c6');
-      label(ctx,String(n)+' 個',23,yy+14.5,20,unlocked?'#76361e':'#634346',{align:'left',max:93});
-      const val=Math.floor(s.bet*v+1e-8);label(ctx,val,sw-24,yy+14.5,23,'#603541',{align:'right',max:92});
+  function payoutFrame(ctx,x,y,w,h){
+    const img=art.payout;
+    if(!img){rounded(ctx,x,y,w,h,12,'#fff1d2','#b95b46',2);return;}
+    // Preserve the printed corner ornaments when the narrow mobile tray grows taller.
+    const a=Math.round(img.height*.15),b=Math.round(img.height*.12),k=w/img.width;
+    ctx.drawImage(img,0,0,img.width,a,x,y,w,a*k);
+    ctx.drawImage(img,0,a,img.width,img.height-a-b,x,y+a*k,w,h-(a+b)*k);
+    ctx.drawImage(img,0,img.height-b,img.width,b,x,y+h-b*k,w,b*k);
+  }
+  function payoutScroll(s,tr,elapsed){
+    const firstRow=count=>Math.max(0,Math.min(K.popPay.length-7,K.popPay.findLastIndex(([n])=>count>=n)-1));
+    if(!tr?.count || elapsed>=duration(tr))return firstRow(s.popped);
+    let count=s.popped-tr.count,position=firstRow(count);
+    tr.waves.forEach((wave,i)=>{
+      const after=count+wave.length;
+      for(let row=firstRow(count)+1;row<=firstRow(after);row++){
+        const threshold=K.popPay[row+1][0];
+        // Use the same 145 ms tally as the visible count; each newly reached tier
+        // adds one smooth row of travel, including several tiers in one blast.
+        const crossed=LIGHT+i*WAVE+145*(threshold-count-.5)/wave.length;
+        const t=clamp((elapsed-crossed)/235);
+        position+=t*t*(3-2*t);
+      }
+      count=after;
     });
+    return position;
+  }
+  function side(ctx,s,state,x,y,w,h,scroll){
+    payoutFrame(ctx,x,y,w,h);
+    // A fixed highest award and a descending payout ladder follow Gelato's cabinet.
+    const pad=w*.099,top=w*.255,bottom=w*.185,iw=w-2*pad;
+    const sx=iw/150,sy=(h-top-bottom)/410,uniform=Math.sqrt(sx*sy);
+    ctx.save();ctx.translate(x+pad,y+top);ctx.scale(sx,sy);
+    // Keep small ledger digits square even when the cabinet has to be tall and narrow.
+    function type(text,xx,yy,size,color,opts={}){
+      ctx.save();ctx.translate(xx,yy);ctx.scale(uniform/sx,uniform/sy);
+      label(ctx,text,0,0,size,color,{...opts,max:opts.max===undefined?undefined:opts.max*sx/uniform});ctx.restore();
+    }
+    const mid=75,wide=146, red='#863942';
+    rounded(ctx,0,0,150,62,9,'#723344',gold,1.5);
+    type('はじけた数',mid,14,15,cream,{max:132});type(state.popped+' 個',mid,41,27,'#ffedb2',{max:129});
+    type('個数配当',4,76,15,ink,{align:'left'});type('WIN',146,76,14,teal,{align:'right'});
+    const active=K.popPay.findIndex(([n],i,a)=>state.popped>=n&&(i===a.length-1||state.popped<a[i+1][0]));
+    const highest=K.popPay.length-1;
+    function payRow(i,yy,fixed){
+      const [n,m]=K.popPay[i],selected=active===i, cx=2;
+      const flag=selected?'#c85d43':fixed?'#a14948':i%2?'#fae9bf':'#f7dcad';
+      rounded(ctx,cx,yy,wide,23.2,4.5,flag,selected?'#ffd76b':null,1.2);
+      type(n+'個',7,yy+11.8,15,selected||fixed?cream:ink,{align:'left',max:62});
+      type(Math.floor(s.bet*m+1e-8),143,yy+11.8,16.2,selected||fixed?'#ffefa8':red,{align:'right',max:72});
+    }
+    payRow(highest,89,true);
+    ctx.save();ctx.beginPath();ctx.rect(0,121,150,144);ctx.clip();
+    for(let i=Math.min(highest-1,Math.ceil(scroll)+5);i>=Math.floor(scroll);i--)
+      payRow(i,121+(scroll+5-i)*24,false);
+    ctx.restore();
+    rounded(ctx,1,274,148,44,8,'#f9e1b6','#c88c56',1);
+    type('全消し '+state.clears+'回',mid,286,15,red,{max:135});
     const next=K.clearPay.find(([n])=>n>state.clears);
-    rounded(ctx,12,288,sw-24,60,11,'#f3d9ab','#dca36c',1.4);
-    label(ctx,'全消し '+state.clears+' 回',sw/2,306,21,'#853e3a',{max:sw-42});
-    label(ctx,next?(next[0]+'回時　'+Math.floor(s.bet*next[1]+1e-8)+' WIN'):'全消しボーナス達成',sw/2,333,17,'#673e38',{max:sw-41});
+    type(next?(next[0]+'回 '+Math.floor(s.bet*next[1]+1e-8)+' WIN'):'最高ボーナス',mid,306,13,ink,{max:132});
     const col=K.colorFor(state.filled);
-    label(ctx,'補充の色',19,365,16,teal,{align:'left'});
-    for(let i=0;i<7;i++)circle(ctx,112+i*17,365,i===col?7.4:5.6,palette[i],i===col?'#634348':'#d2af8c',i===col?2.4:1.25);
-    rounded(ctx,11,386,sw-22,72,13,'#6f3040',gold,2.2);
-    label(ctx,'WIN',24,421,22,'#ffcf8a',{align:'left'});
-    label(ctx,state.win,sw-26,422,39,cream,{align:'right',max:126,outline:'#592b36',stroke:2.5});
+    type('補充色',4,336,12,teal,{align:'left'});
+    for(let i=0;i<7;i++)circle(ctx,52+i*15,336,i===col?6.4:4.6,palette[i],i===col?ink:'#cba97f',i===col?1.7:.7);
+    rounded(ctx,0,354,150,48,9,'#723344',gold,1.4);
+    type('WIN',7,378,14,'#ffd98a',{align:'left'});type(state.win,142,378,27,cream,{align:'right',max:96});
     ctx.restore();
   }
   function footer(ctx,s,tr,elapsed,time,demo,x,y,w) {
@@ -288,17 +347,18 @@
     if(tr && elapsed<duration(tr)){
       const seq=sequence(tr);
       if(tr.port<0) txt='着火番号なし';
-      else if(elapsed<LIGHT)txt=tr.all?'全着火！':'着火！';
-      else if(elapsed<seq.rest){const n=Math.min(tr.waves.length,Math.floor((elapsed-LIGHT)/WAVE)+1);txt=(tr.all?'全着火　':'')+(n>1?n+'連鎖！':'ポップ！');accent='#ffdd71';}
+      else if(!tr.count)txt='起爆粒なし';
+      else if(elapsed<LIGHT)txt=tr.all?'すべての起爆粒に着火！':'着火！';
+      else if(elapsed<seq.rest){const n=Math.min(tr.waves.length,Math.floor((elapsed-LIGHT)/WAVE)+1);txt=(tr.all?'全起爆　':'')+(n>1?n+'連鎖！':'ポップ！');accent='#ffdd71';}
       else if(elapsed<seq.fall && tr.clear)txt='全消し！';
       else if(elapsed<seq.refill)txt='残った粒が落下！';
       else txt='ポップコーン補充中';
-    } else if(demo){txt=['番号HITで一直線に着火！','火花の粒はまわりに誘爆！','全着火で'+K.cells.length+'個すべてがPOP！'][Math.floor(time/3700)%3];}
+    } else if(demo){txt=['番号HITで一直線に着火！','火花の粒はまわりに誘爆！','ALLで起爆粒に一斉着火！'][Math.floor(time/3700)%3];}
     else if(s.turn>=8) txt='8球終了';
     else if(tr&&tr.count) txt='この球で '+tr.count+' 個 POP！';
-    const tw=Math.min(w,390);
-    rounded(ctx,x+(w-tw)/2,y,tw,30,12,'rgba(72,37,43,.9)','#edbc75',1.5);
-    label(ctx,txt,x+w/2,y+15,19,accent,{max:tw-18});
+    const tw=Math.min(w,336);
+    rounded(ctx,x+(w-tw)/2,y,tw,24,10,'rgba(72,37,43,.9)','#edbc75',1.5);
+    label(ctx,txt,x+w/2,y+12,16,accent,{max:tw-18});
   }
   function draw(ctx,s,opt={}) {
     if(!ctx||!s?.board?.length)return;
@@ -310,20 +370,20 @@
     // Fixed logical height preserves type sizes and line weights at either host pixel ratio.
     const H=540,W=H*width/height;ctx.scale(height/H,height/H);background(ctx,W,H,mini);
     let b,sidebar=null;
-    if(mini) b=boardFit(1,2,W-2,H-5);
-    else if(W>=550){
-      const gap=8,sw=Math.min(265,Math.max(172,W*.252)),sx=W-sw-gap;
-      drawTop(ctx,s,opt,10,7,sx-20);b=boardFit(7,52,sx-14,H-91);
-      sidebar=[sx,8,sw,H-16];footer(ctx,s,tr,elapsed,t,opt.demo,9,H-34,sx-18);
+    if(mini) b=boardFit(1,1,W-2,H-2);
+    else if(W>=419){
+      const sw=Math.min(185,Math.max(108,W*.212)),sx=W-sw-1;
+      drawTop(ctx,s,opt,3,3,sx-6);b=boardFit(1,35,sx-3,H-63);
+      sidebar=[sx,1,sw,H-2];footer(ctx,s,tr,elapsed,t,opt.demo,3,H-26,sx-6);
     } else {
-      drawTop(ctx,s,opt,6,6,W-12);b=boardFit(4,55,W-8,H-158);
-      rounded(ctx,8,H-94,W-16,48,14,'#20545b',gold,1.8);
-      label(ctx,sv.popped+' 個　／　全消し '+sv.clears+' 回',17,H-70,19,cream,{align:'left',max:W*.55});
-      label(ctx,sv.win+' WIN',W-18,H-70,23,'#ffdc86',{align:'right',max:W*.35});
-      footer(ctx,s,tr,elapsed,t,opt.demo,7,H-37,W-14);
+      drawTop(ctx,s,opt,4,4,W-8);b=boardFit(2,39,W-4,H-122);
+      rounded(ctx,5,H-80,W-10,42,12,'#20545b',gold,1.5);
+      label(ctx,sv.popped+' 個　／　全消し '+sv.clears+' 回',12,H-59,17,cream,{align:'left',max:W*.55});
+      label(ctx,sv.win+' WIN',W-14,H-59,22,'#ffdc86',{align:'right',max:W*.35});
+      footer(ctx,s,tr,elapsed,t,opt.demo,5,H-28,W-10);
     }
     ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.k,b.k);liveBoard(ctx,s,tr,elapsed,t,mini,opt.reach);ctx.restore();
-    if(sidebar)side(ctx,s,sv,...sidebar);
+    if(sidebar)side(ctx,s,sv,...sidebar,payoutScroll(s,tr,elapsed));
     ctx.restore();
   }
   window.PopcornView={draw,duration,waveAt,assetsReady:Promise.all(loading),get artVersion(){return artVersion;}};
