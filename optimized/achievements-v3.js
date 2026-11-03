@@ -36,7 +36,7 @@ recordBook.capture=function(a){
   if(seen.paid[i]||!a.paid?.[i]||!a.enabled?.[i]||engine?.processed!==8)continue;
   seen.paid[i]=true;
   const amount=Math.max(0,Number(a.roundWins?.[i])||0);
-  bump(['cookieWinTotal','chocoWinTotal','dropWinTotal'][i],amount);
+  if(engine.kind!=='popcorn')bump(['cookieWinTotal','chocoWinTotal','dropWinTotal'][i],amount);
   if(i===1){
    bump('gamesChoco');
    peak('bestDepth',engine.depth||0);

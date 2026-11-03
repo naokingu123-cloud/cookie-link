@@ -1,13 +1,12 @@
-/* Fourth SWEETS LINK game. Uses the normal roulette, pause clock and credit settlement. */
+/* Popcorn Splash. Uses the normal roulette, pause clock and credit settlement. */
 (()=>{
 'use strict';
-const id=3, slot=slots[id], K=window.PopcornEngine, V=window.PopcornView;
+const id=2, slot=slots[id], K=window.PopcornEngine, V=window.PopcornView;
 const canvas=document.createElement('canvas');
 canvas.className='pc-scene';
 canvas.setAttribute('aria-label','ポップコーンスプラッシュの六角盤面と配当');
 slot.panel.append(canvas);
 const ctx=canvas.getContext('2d');
-slot.holder.style.order='3';
 slot.holder.classList.add('pc-slot');
 const title=slot.tab.querySelector('.tab-game-name');
 title.setAttribute('aria-label','ポップコーンスプラッシュ');
@@ -17,7 +16,7 @@ slot.tabSugar.hidden=true;
 let frame=0, stamp=0, clock=0, lastMain=-1e4, lastMini=-1e4, demo=null;
 let reach=[];
 const engine={
- kind:'popcorn', drawMode:'single', version:0,
+ kind:'popcorn', recordGame:4, drawMode:'single', version:0,
  get idle(){return !this.trace&&!this.queue.length;},
  get busy(){return !this.idle;},
  get totalHundredths(){return K.payout(this.state.popped,this.state.clears,100);},
@@ -83,7 +82,6 @@ function step(dt){
   engine.state=state;engine.trace=trace;engine.elapsed=0;
   engine.soundWave=-1;engine.maxChain=Math.max(engine.maxChain,engine.trace.waves.length);
   invalidateReach(slot);reach=[];engine.emit('popcornDraw',{number});
-  if(active===id&&engine.trace.clear)sceneSound('allclear',{volume:.65});
  }
  if(!engine.trace)return;
  engine.elapsed+=dt*(engine.presentationRate||1);
@@ -91,7 +89,11 @@ function step(dt){
  if(active===id&&trace.count){
   const wave=V.waveAt(trace,engine.elapsed);
   if(wave>engine.soundWave&&wave<trace.waves.length){
-   engine.soundWave=wave;sceneSound('pop',{volume:.4,rate:1+Math.min(wave,7)*.08});
+   engine.soundWave=wave;
+   const strong=trace.waves[wave].some(i=>trace.before[i].power===2);
+   sceneSound(strong?'color-burst':'pop',{volume:strong?.72:Math.min(.72,.42+wave*.05),rate:1+Math.min(wave,7)*.075});
+   if(wave>=2)sceneSound('chain',{volume:.35,rate:1+Math.min(wave,6)*.09});
+   if(trace.clear&&wave===trace.waves.length-1)sceneSound('allclear',{volume:.76});
   }
  }
  if(engine.elapsed<V.duration(trace))return;
@@ -160,21 +162,20 @@ hud=function(a){
 const oldResult=renderRoundResult;
 renderRoundResult=function(a){
  oldResult(a);
- const panel=$('result-games'),row=panel.querySelector('[data-game-index="3"]');
+ const panel=$('result-games'),row=panel.querySelector('[data-game-index="2"]');
  if(!row||!a.result)return;
  if(row.dataset.popcorn!==String(a.token)){
   row.dataset.popcorn=String(a.token);
   row.querySelector('.result-game-name').innerHTML='ポップコーンスプラッシュ <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
   row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.popped+'粒 ／ 全消し '+engine.allClears+'回':'参加なし';
-  row.querySelector('.result-game-emblem').outerHTML='<img class="result-game-emblem" src="assets/popcorn-art/popcorn-normal.webp?v=80" alt="">';
+  row.querySelector('.result-game-emblem').outerHTML='<img class="result-game-emblem" src="assets/popcorn-art/popcorn-normal.webp?v=81" alt="">';
  }
- if(panel.lastElementChild!==row)panel.append(row);
 };
 document.addEventListener('visibilitychange',()=>{stamp=0;requestFrame();});
 new ResizeObserver(()=>{lastMain=-1e4;requestFrame();}).observe(slot.panel);
 if(V.assetsReady)V.assetsReady.then(()=>{lastMini=lastMain=-1e4;requestFrame();});
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:80};
+window.PopcornSplash={engine,core:K,version:81};
 engine.reset();
 select(id);
 })();

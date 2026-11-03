@@ -124,7 +124,6 @@ if(S.chocoFrame)cancelAnimationFrame(S.chocoFrame);S.chocoFrame=0;
 S.tabDepth?.remove();
 oldEngine.running=false;oldEngine.version++;oldEngine.queue=[];
 // Preserve engine indices used by shared credit, draws, JPC and input controls.
-slots[2].holder.style.order='0';slots[0].holder.style.order='1';S.holder.style.order='2';
 document.body.classList.add('winery-enabled');
 for(const id of ['canyon-debug-depth','canyon-depth-apply']){const x=document.getElementById(id);if(x){x.disabled=true;x.title='ワイナリーピラミッドでは使用しません';}}
 const depthStatus=document.getElementById('canyon-depth-status');if(depthStatus)depthStatus.textContent='ワイナリーピラミッドに切替済み';
@@ -1078,7 +1077,7 @@ const tabs0=tabs;tabs=function(a){
 };
 const hud0=hud;hud=function(a){
  if(active!==1){document.body.classList.remove('winery-active');return hud0(a);}
- active=2;try{hud0(a);}finally{active=1;}
+ hud0(a);
  document.body.classList.remove('gelato-active','choco-active','carnival-active');document.body.classList.add('winery-active');
  put('best','満タン '+engine.fullCount+'/21 ・ MIX '+engine.mixCount);put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');
  updateHUD();updateReachUI(a);queueFrame();
@@ -1087,15 +1086,11 @@ const select0=select;select=function(i){const result=select0(i);if(i===1){uiKey=
 const result0=renderRoundResult;renderRoundResult=function(a){
  result0(a);
  const panel=document.getElementById('result-games');if(!panel)return;
- const rows=[...panel.querySelectorAll('.result-game')];
  const winery=panel.querySelector('[data-game-index="1"]');
  if(winery){
   winery.dataset.winery='1';const title=winery.querySelector('.result-game-name');if(title)title.innerHTML='ワイナリーピラミッド <small>'+(a.enabled[1]?num(a.locked[1])+' BET':'NO BET')+'</small>';
   const detail=winery.querySelector('.result-game-details');if(detail)detail.innerHTML='<span>満タン '+engine.fullCount+'/21</span><span>MIX '+engine.mixCount+'杯 ×'+engine.mixMultiplier.toFixed(1)+'倍</span>';
  }
- const candy=rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes('シックス'));
- const gelato=rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes('ジェラート'));
- if(candy&&gelato&&winery&&rows[0]!==candy)panel.prepend(candy,gelato,winery);
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});

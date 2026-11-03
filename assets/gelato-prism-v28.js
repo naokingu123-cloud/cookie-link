@@ -303,11 +303,11 @@ try{
  const gpTabName=slot.tab.querySelector('.tab-game-name');
  gpTabName.innerHTML='<span class="gp-logo"><img class="gp-tab-logo-img" alt="GELATO PRISM" hidden>'+
    '<span class="gp-logo-text"><b>ジェラート<br>プリズム</b><small>GELATO PRISM ✦</small></span></span>';
+ gpTabName.setAttribute('aria-label','ジェラートプリズム');slot.tab.setAttribute('aria-label','ジェラートプリズム');
  const gpTabLogo=gpTabName.querySelector('.gp-tab-logo-img');
  gpTabLogo.onload=()=>{gpTabLogo.hidden=false;gpTabName.classList.add('gp-has-tab-art');};
  gpTabLogo.onerror=()=>{gpTabLogo.hidden=true;gpTabName.classList.remove('gp-has-tab-art');};
  gpTabLogo.src='assets/gelato-prism-tab-art-v51.webp?v=52';
- slots[1].holder.style.order='0';slots[2].holder.style.order='1';slot.holder.style.order='2';
  const scene=document.createElement('div');scene.className='gp-scene';
  scene.innerHTML='<div class="gp-land" aria-hidden="true"></div>'+
   '<div class="gp-head"><b>GELATO PRISM</b><small>ジェラートプリズム</small></div>'+
@@ -1162,8 +1162,7 @@ try{
  const nativeHud=hud;
  hud=function(a){
    if(active!==0){syncGelatoOdds();return nativeHud(a);}
-   active=1;
-   try{nativeHud(a);}finally{active=0;}
+   nativeHud(a);
    document.body.classList.remove('choco-active','carnival-active');document.body.classList.add('gelato-active');
    syncGelatoOdds();
    put('best','PRISM '+e.filled.size+' / 24 · '+(e.pattern?.name||''));
@@ -1187,9 +1186,6 @@ try{
    row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+(a.enabled[0]?num(a.locked[0])+' BET':'NO BET')+'</small>';
    const details=row.querySelector('.result-game-details');
    if(details)details.innerHTML='<span>'+e.filled.size+' / 24パネル</span><span>枚数 '+e.countMult.toFixed(1)+'倍＋4色 '+e.collectorMult.toFixed(1)+'倍</span>';
-   // Visually follow the three-tab order without changing app.engine indices.
-   const panel=$('result-games'),cards=[...panel.querySelectorAll('.result-game')];
-   if(cards.length===3)panel.append(cards[1],cards[2],cards[0]);
  };
  document.body.classList.add('gelato-enabled');
  syncGelatoOdds();drawGelato();select(1);scheduleUI(app);

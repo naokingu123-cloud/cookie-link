@@ -1902,7 +1902,7 @@ function carnivalEvent(s,ev,e,a){
  if(['waiting','settled'].includes(ev.phase))requestSixSparkles(s,e,a);
  if(['waiting','settled','complete'].includes(ev.phase))requestReach(s,e,a);s.message=e.candyMessage;carnivalQueueFrame(s);scheduleUI(a);
 }
-function carnivalQueueFrame(s){if(s.candyFrame||document.hidden||!inView)return;const version=s.engine.version;s.candyFrame=requestAnimationFrame(now=>{s.candyFrame=0;if(s.engine.version!==version)return;if(s.candyLastDraw&&now-s.candyLastDraw<32){carnivalQueueFrame(s);return;}s.candyLastDraw=now;drawCarnival(s,now);});}
+function carnivalQueueFrame(s){if(s.engine?.kind!=='candy'||s.candyFrame||document.hidden||!inView)return;const version=s.engine.version;s.candyFrame=requestAnimationFrame(now=>{s.candyFrame=0;if(s.engine.version!==version)return;if(s.candyLastDraw&&now-s.candyLastDraw<32){carnivalQueueFrame(s);return;}s.candyLastDraw=now;drawCarnival(s,now);});}
 const sixDemoCache=new Map();
 function sixDemo(rows,round=1){const key=rows+'/'+round;if(!sixDemoCache.has(key)){const holes=new Set(SIX_START_GAP_TEMPLATES[0].map(p=>sixKey(...p))),colors=sixRoundColorCount(round);sixDemoCache.set(key,sixEmpty(rows).map((row,r)=>row.map((_,c)=>holes.has(sixKey(r,c))?null:{id:sixKey(r,c),number:null,color:(r+c+Math.floor((r+rows%2)/2))%colors})));}return sixDemoCache.get(key);}
 function sixFallFrame(fx,progress){
@@ -2409,10 +2409,10 @@ sixStageEffects=function(x,fx,p,round,rows,reduced){
 };
 
 class Arcade{
- constructor({random=Math.random,sleep=ms=>new Promise(r=>setTimeout(r,ms)),onEvent=()=>{},onChange=()=>{},speed=1.4,colorCount=5}={}){
-  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000,3000],locked:[0,0,0,0],paid:[false,false,false,false],enabled:[true,true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
+ constructor({random=Math.random,sleep=ms=>new Promise(r=>setTimeout(r,ms)),onEvent=()=>{},onChange=()=>{},speed=1.4,colorCount=5,initialEngines=[Engine,ChocoDigEngine,CandyCarnivalEngine]}={}){
+  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
-  for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:i===2?CandyCarnivalEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
+  for(let i=0;i<initialEngines.length;i++)this.engines.push(new initialEngines[i]({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
    if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>{return {...step,game:i};}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
    if(ev.phase==='complete'&&!this.paid[i]&&this.enabled[i]&&this.phase==='playing'){
     this.paid[i]=true;this.roundWins[i]=medalWin(this.locked[i],e.totalHundredths);
@@ -2430,7 +2430,7 @@ class Arcade{
   this.onChange(this);return true;
  }
  get wonderReady(){return this.wonderBank.length>=5;}
- setBet(i,n){if(this.phase!=='ready'||!Number.isSafeInteger(n)||n<0)return false;this.bets[i]=n;this.onChange(this);return true;}
+ setBet(i,n){if(this.phase!=='ready'||!Number.isInteger(i)||i<0||i>=this.bets.length||!Number.isSafeInteger(n)||n<0)return false;this.bets[i]=n;this.onChange(this);return true;}
  start(){
   if(this.phase!=='ready'||!this.bets.some(n=>n>0)||this.drawSource?.ready===false)return false;
   this.debugRainbowIssued=false;this.enabled=this.bets.map(n=>n>0);this.locked=[...this.bets];this.paid=this.bets.map(()=>false);this.roundWins=this.bets.map(()=>0);this.totalWin=0;this.payout=null;this.result=null;this.fastForward=false;this.engines.forEach(e=>e.presentationRate=1);this.displayCredit=this.credit;this.draws=[];this.phase='playing';this.dealing=true;
@@ -2574,7 +2574,7 @@ function sanitizeRecords(from){
  const to=emptyRecords();if(!from||typeof from!=='object')return to;
  for(const key of [...RECORD_SUMS,...RECORD_MAXIMA])to[key]=recordCount(from[key]);
  for(const def of TITLE_DEFS)if(recordCount(from.titles?.[def.id])&&to[def.metric]>=def.target)to.titles[def.id]=from.titles[def.id];
- for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(3,recordCount(r.game)))}));
+ for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(4,recordCount(r.game)))}));
  to.best=to.best.filter(r=>r.win>0).sort((a,b)=>b.win-a.win||b.at-a.at);to.clears=to.clears.filter(r=>r.clears>0).sort((a,b)=>b.at-a.at);
  return to;
 }
@@ -2613,7 +2613,7 @@ class RecordBook{
    const e=a.engines[i];if(run.done[i]||!a.enabled[i]||!a.paid[i]||e.processed!==8)continue;
    run.done[i]=true;const win=recordCount(a.roundWins[i]);record.games++;record.totalWin+=win;record.maxWin=Math.max(record.maxWin,win);record.maxLink=Math.max(record.maxLink,e.maxLink);record.maxChain=Math.max(record.maxChain,e.maxChain);record.maxOdds=Math.max(record.maxOdds,e.totalHundredths);
    record.allClears+=recordCount(e.allClears);record.sugars+=recordCount(e.roundSteps);record.hammers+=recordCount(e.roundHammers);record.cookies+=recordCount(e.roundCleared);
-   const row={at,win,bet:recordCount(a.locked[i]),link:e.maxLink,chain:e.maxChain,clears:e.allClears,sugars:e.roundSteps,game:i+1};
+   const row={at,win,bet:recordCount(a.locked[i]),link:e.maxLink,chain:e.maxChain,clears:e.allClears,sugars:e.roundSteps,game:e.recordGame||i+1};
    if(win>0){record.best.push(row);record.best.sort((a,b)=>b.win-a.win||b.at-a.at);record.best=record.best.slice(0,50);}if(e.allClears){record.clears.unshift(row);record.clears=record.clears.slice(0,50);}
    result.changed=true;
   }
@@ -2627,7 +2627,7 @@ class RecordBook{
 
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',inks=['#f3348e','#f8be19','#65cc46','#35ace9','#ac50df'];
 const num=n=>n.toLocaleString('ja-JP',{maximumFractionDigits:2,useGrouping:false}),units=[5,10,20,50,100,500];
-let app,active=0,unit=[4,4,4,4],userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
+let app,active=0,unit=[4,4,4],userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
 const motionReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function put(id,value){const el=$(id),text=String(value);if(el.textContent!==text)el.textContent=text;}
 function scheduleUI(a){if(a)uiApp=a;if(uiPending||document.hidden||!inView)return;uiPending=true;requestAnimationFrame(flushUI);}
@@ -2671,7 +2671,7 @@ function traySeams(){
  return '<svg class="tray-seams" viewBox="0 0 298 298" aria-hidden="true"><path class="seam-rim" d="'+d+'"/><path class="seam-shadow" d="'+d+'"/></svg>';
 }
 
-const slots=Array.from({length:4},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
+const slots=Array.from({length:3},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
 for(const s of slots){
  const i=s.i,b=document.createElement('button');b.className='tab';b.id='tab'+i;b.setAttribute('role','tab');b.setAttribute('aria-label','クッキーリンク・ゲーム'+(i+1));b.setAttribute('aria-controls','panel'+i);
  b.innerHTML=`<span class="tab-game-name" role="img" aria-label="クッキーリンク"><span class="art-alt">クッキーリンク</span></span><span class="mini-wrap"><canvas width="160" height="160" aria-label="ゲーム${i+1}のミニ盤面"></canvas><span class="mini-logo" hidden><span class="selected-label">選択中</span></span></span><span class="tab-win-bubble" hidden><strong class="tabwin"><span class="gold-number">0</span></strong><em class="win-word">WIN</em></span><span class="tab-sugar" aria-label="ワンダーシュガー未獲得" hidden><i class="sugar-gem" aria-hidden="true"></i><b class="sugar-get" hidden>GET!</b></span>`;
@@ -3154,7 +3154,7 @@ function syncPayClimb(){
 
 const PAY_ROW_HEIGHT=19,PAY_TOP=67;
 function updatePayTable(e,bet){
- if(e.kind==='popcorn')return;
+ if(['gelato','winery','popcorn'].includes(e.kind))return;
  const shown=slots[active].payDisplayedLink??e.maxLink,track=$('pay'),top=linkRows(shown)[0],key=active+'/'+bet+'/'+shown;
  if(payKey===key)return;payKey=key;track.dataset.hasWin=String(shown>=MIN_PAID_LINK);
  const switched=track.dataset.game!==String(active),first=!track.children.length;
@@ -3285,7 +3285,7 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),sugarVisualTier(token));slot.setAttribute('aria-label',token?WONDER_NAMES[sugarVisualTier(token)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- if(e.kind==='choco'||e.kind==='candy'||e.kind==='popcorn')return;
+ if(['choco','candy','gelato','winery','popcorn'].includes(e.kind))return;
  const concealed=a.phase==='ready';
   const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
@@ -3850,7 +3850,7 @@ function renderRecordList(mode){
  if(recordPeriod==='month')rows=rows.filter(r=>recordMonth(r.at)===month);
  recordOffset=Math.min(recordOffset,Math.max(0,Math.ceil(rows.length/5)-1));
  const shown=rows.slice(recordOffset*5,recordOffset*5+5);
- $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>ゲーム'+r.game+' · '+r.link+' LINK · '+r.chain+'連鎖'+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
+ $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+' · '+r.chain+'連鎖'+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
  $('record-period-all').onclick=()=>{recordPeriod='all';recordOffset=0;renderRecordMenu();};$('record-period-month').onclick=()=>{recordPeriod='month';recordOffset=0;renderRecordMenu();};attachRecordPager(rows.length,5);
 }
 function renderRecordMenu(){
@@ -5390,7 +5390,7 @@ function rouletteReachTiers(){
  return out;
 }
 function rouletteAllClearNumbers(){return new Set([...rouletteReachTiers()].filter(([,tier])=>tier===3).map(([n])=>n));}
-function rouletteSelectedBoard(){return {index:active,name:['ジェラートプリズム','ワイナリーピラミッド','シックスドロップ','ポップコーンスプラッシュ'][active]};}
+function rouletteSelectedBoard(){return {index:active,name:['ジェラートプリズム','ワイナリーピラミッド','ポップコーンスプラッシュ'][active]};}
 // Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
 function setupManualNumbers(){
  const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
@@ -5791,7 +5791,7 @@ function wakeAudioFromGesture(event){
  activateGameAudio({gesture:true});
 }
 
-app=new Arcade({onEvent:recordEvent,onChange:recordChanged});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);setupManualNumbers();
+app=new Arcade({onEvent:recordEvent,onChange:recordChanged,initialEngines:[Engine,ChocoDigEngine]});app.drawSource=rouletteDrawSource;try{app.engines[1].enablePersistence(localStorage);}catch{}select(2);setupManualNumbers();
 app.engines.forEach((e,i)=>{e.beforeComplete=token=>finishGamePresentation(slots[i],e,app,token);});
 $('roulette-retry').onclick=()=>{if(app.phase==='error'){userPaused=false;app.prepare();syncPause();}loadCookieRoulette();};loadCookieRoulette();
 $('result-next').onclick=nextFromResult;
@@ -5821,7 +5821,7 @@ function setDebugPayoutRate(){
   debugPayoutTarget=value;try{localStorage.setItem('cookie-link-debug-payout-v1',String(value));}catch{}
   for(const e of app.engines){if(e.kind==='choco'){e.checkpoint=null;e.freshBoard();}e.reset({keepWonder:true,keepHammers:true});}
  }
- $('debug-payout-status').textContent='全4ゲーム：目標 '+value+'%・次ゲームから適用（通常5色基準／配当表固定／JPC除外）';syncPause();scheduleUI(app);return true;
+ $('debug-payout-status').textContent='全3ゲーム：目標 '+value+'%・次ゲームから適用（通常5色基準／配当表固定／JPC除外）';syncPause();scheduleUI(app);return true;
 }
 $('debug-rainbow-force').checked=false;
 $('debug-rainbow-force').onchange=()=>{

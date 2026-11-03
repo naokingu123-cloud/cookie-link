@@ -22,8 +22,9 @@ const mixed=uniqueBest([...demoRows(now,0),...restored.rows('all',0),...restored
 const before=JSON.stringify(restored.data.bests);restored.record({win:Infinity,at:now,game:1});restored.record({win:999,at:now,game:7});assert.equal(JSON.stringify(restored.data.bests),before);
 const broken=new PlayerStore({getItem(){throw Error('blocked')},setItem(){throw Error('blocked')}},()=>now,()=> 'memory-only');assert(!broken.saved);assert(broken.rename('安全'));broken.record({win:1,game:1,at:now});assert.equal(broken.rows('all',1)[0].win,1);
 const corrupt=new PlayerStore({getItem(){return '{broken'},setItem(){}},()=>now,()=> 'recovered');assert.equal(corrupt.data.id,'recovered');
-const html=fs.readFileSync('index.html','utf8'),start=html.indexOf('const THREE=(()=>{'),end=html.indexOf('const SPECIAL_RATE',start);
-const bundled=vm.runInNewContext(html.slice(start,end)+';THREE;',{console});
+const html=fs.readFileSync('index.html','utf8'),game=fs.readFileSync('optimized/app-01.js','utf8');
+const start=game.indexOf('const THREE=(()=>{'),end=game.indexOf('const SPECIAL_RATE',start);
+const bundled=vm.runInNewContext(game.slice(start,end)+';THREE;',{console});
 let meshes=0,triangles=0,renders=0;
 const T={...bundled,WebGLRenderer:class {constructor() {this.info={render:{}};}setPixelRatio(){}setSize(){}setClearColor(){}render(scene,camera){scene.updateMatrixWorld(true);camera.updateMatrixWorld(true);meshes=0;triangles=0;scene.traverse(m=>{if(m.isMesh){meshes++;triangles+=m.geometry.index.count/3;assert(m.position.toArray().every(Number.isFinite));assert(m.scale.toArray().every(n=>Number.isFinite(n)&&n>0));}});renders++;}}};
 // Build real Three.js geometry with only the GPU renderer stubbed; the test does not control a browser.
