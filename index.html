@@ -395,6 +395,19 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(game.includes(cookieRainbowGuard))
     game=game.replace(cookieRainbowGuard,"if(rainbow&&this.enabled[0]&&this.engines[0]?.kind!=='gelato'){");
   else console.warn('Cookie-only rainbow guard missing');
+  // Six Drop: an ordinary HIT can remove the visible topmost candy row
+  // even when it is not a MISS. Restore the original ten-row height by
+  // running the existing safe refill when that top row is underfilled.
+  // The existing drop/shape/payment rules and no-next-round guard stay intact.
+  const sixOldTopGuard='if(missed.length&&!plan.advance){';
+  const sixNewTopGuard='const topRowNeedsRefill=!!this.initialPyramid&&this.pyramid[0].filter(Boolean).length<this.initialPyramid[0].filter(Boolean).length;'+
+    'if((missed.length||topRowNeedsRefill)&&!plan.advance){';
+  if(game.split(sixOldTopGuard).length!==2)throw new Error('Six Drop refill patch target missing');
+  game=game.replace(sixOldTopGuard,sixNewTopGuard);
+  const sixTopMessage="this.candyMessage='盤面の番号にHITしなければ、未抽選番号付きドロップも上から補充！';this.emit('pyramidTopUp'";
+  if(game.split(sixTopMessage).length!==2)throw new Error('Six Drop refill caption patch target missing');
+  game=game.replace(sixTopMessage,
+    "this.candyMessage=missed.length?'未抽選ドロップを補充！':'上段のドロップを補充！';this.emit('pyramidTopUp'");
   const end=game.lastIndexOf('})();');
   if(end<0)throw new Error('ゲームスクリプト構造が不正です');
   const merged=wineryPyramidCore+'\n'+game.slice(0,end)+'\n'+extension+'\n'+sixGlassUI+'\n'+sixBottleV6+'\n'+sixBottleV8+'\n'+sixHudV14+'\n'+highestReachV18+'\n'+gelatoPrismV28+'\n'+wineryPyramidV1+'\n'+recentGameDemosV74+'\n'+game.slice(end);
