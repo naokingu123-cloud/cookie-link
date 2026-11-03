@@ -98,8 +98,8 @@ function advance(dt){
 const demo=(()=>{
  let seed=1894;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
  const initial=K.create({rng,rate:90}),steps=[];let state=initial;
- // Chosen intersections illustrate distinct pours on a separate exhibition board.
- for(const index of [10,4,6,22,15,21,1,14]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
+ // In the demo, lemon follows strawberry through the same open section.
+ for(const index of [10,4,6,22,15,21,17,14]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
  return {initial,steps};
 })();
 function presentation(){

@@ -8,7 +8,19 @@ const syrup={
  blue:['#85faff','#12accf','#1476ac','#204976'],
  red:['#ffb0af','#f6506b','#bf335a','#6f264a'],
  yellow:['#ffeda0','#ffc34e','#e6943d','#935128'],
- green:['#c0ffd2','#60de9e','#21a584','#246c69']
+ green:['#c0ffd2','#60de9e','#21a584','#246c69'],
+ // Pigment blends retain a bright translucent body and a deeper pool at the base.
+ 'blue+red':['#ecc4ff','#b477eb','#8151bc','#503477'],
+ 'blue+yellow':['#ddff9c','#99da55','#5ba63d','#3d7031'],
+ 'blue+green':['#b3fff5','#47d8cb','#199d9c','#17666f'],
+ 'red+yellow':['#ffdf9a','#ff9850','#e26632','#9a4325'],
+ 'red+green':['#f9c7ad','#ca866c','#a15e54','#713d40'],
+ 'yellow+green':['#f1ffac','#c4e654','#98b938','#637e2d'],
+ 'blue+red+yellow':['#f3c7d6','#be809a','#955d79','#693c58'],
+ 'blue+red+green':['#dbccf6','#9582bc','#6d6098','#4a4272'],
+ 'blue+yellow+green':['#c7f8ad','#80c97c','#4c9f69','#336b53'],
+ 'red+yellow+green':['#ffe1a1','#e5ac67','#bb813f','#855829'],
+ 'blue+red+yellow+green':['#ebd5c4','#b99788','#8c6e68','#60494c']
 };
 const laneColors=['#ffbc7c','#ffda97','#ffb1ba','#a4ffeb','#a9dfff','#c7b3ff'];
 const tiers=[1,2,3,4,5,6,7,8,9,10,12];
@@ -105,9 +117,13 @@ function fillCells(c,state,turn,elapsed,time,mini){
   const t=clamp((elapsed-entry.start)/fillTime);if(!t)continue;
   const [x,y]=center(i),radius=(1-Math.pow(1-t,1.3))*122;
   c.save();c.beginPath();c.rect(x-50.1,y-50.1,100.2,100.2);c.clip();
-  c.beginPath();for(const [a,b] of entry.origins){c.moveTo(a+radius,b);c.arc(a,b,radius,0,tau);}
-  c.save();c.clip();cell(c,i,current,time,mini,paints);c.restore();
-  c.strokeStyle='#f1fff8b3';c.lineWidth=3*(1-t*.6);c.stroke();c.restore();
+  const front=new Path2D();for(const [a,b] of entry.origins){front.moveTo(a+radius,b);front.arc(a,b,radius,0,tau);}
+  c.save();c.clip(front);cell(c,i,current,time,mini,paints);
+  if(previous&&current!==previous&&turn.ball>5){
+   // The incoming syrup tints the leading edge, leaving the blended color in its wake.
+   c.globalAlpha=.65*(1-t);c.strokeStyle=syrup[turn.color][1];c.lineWidth=18;c.stroke(front);
+  }
+  c.restore();c.strokeStyle='#f1fff8b3';c.lineWidth=3*(1-t*.6);c.stroke(front);c.restore();
  }
 }
 let lastGlazedState,glaze;
@@ -148,7 +164,8 @@ function glazeCells(c,state,turn,elapsed){
  for(let i=0;i<25;i++){
   if(!state.colors[i])continue;
   const x=i%5*100,y=Math.floor(i/5)*100,entry=paths.get(i);
-  const t=entry?clamp((elapsed-entry.start-fillTime*.66)/(fillTime*.34)):1;
+  const wetPour=entry&&turn.ball>5&&turn.before.colors[i];
+  const t=entry&&!wetPour?clamp((elapsed-entry.start-fillTime*.66)/(fillTime*.34)):1;
   if(t>0){c.globalAlpha=t;c.drawImage(current,x,y,100,100,x,y,100,100);}
  }
  c.globalAlpha=1;

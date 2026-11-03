@@ -32,14 +32,28 @@ assert(J.LINES.every(line=>line.length===5));
   const {state:e,trace:yellow}=step(d,5);
   assert.equal(yellow.color,'yellow');
   assert.deepEqual(yellow.wave,[[5],[0],[1],[2],[3,7]]);
-  assert.equal(e.colors[3],'yellow');
+  assert.equal(e.colors[3],'blue+yellow');
   const {state:f,trace:green}=step(e,7);
   assert.equal(green.color,'green');
   assert.deepEqual(covered(e),covered(f));
-  assert.equal(f.colors[3],'green');assert.equal(f.colors[6],'red');
+  assert.equal(f.colors[3],'blue+yellow+green');assert.equal(f.colors[6],'red');
   assert.equal(f.open,c.open);
   assert.equal(J.draw(f,9),null);assert.equal(J.draw(a,1),null);
   assert.equal(J.draw(a,26),null);
+}
+
+// All 15 nonempty recipes can occur in legal eight-ball play. The same
+// section can be filled repeatedly while other pours land behind closed walls.
+{
+  const pigments=['blue','red','yellow','green'];
+  for(let mask=0;mask<16;mask++){
+    const start=play(board(mask&1?[0]:[19]),[0,2,4,21,23]);
+    const saved=structuredClone(start);
+    const result=play(start,[mask&2?5:10,mask&4?7:11,mask&8?9:13]);
+    const expected=pigments.filter((_,i)=>mask&(1<<i)).join('+')||null;
+    for(const cell of [0,1,2,3,4,5,7,9])assert.equal(result.colors[cell],expected);
+    assert.deepEqual(start,saved);
+  }
 }
 
 {

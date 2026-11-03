@@ -88,7 +88,12 @@
       wave=layers(open,[index]);
     }
     const colors=previous.colors.slice();
-    for(const group of wave)for(const i of group)colors[i]=color;
+    // The four ingredients enter in a fixed order; e.g. a purple section is 'blue+red'.
+    for(const group of wave)for(const i of group){
+      const recipe=colors[i];
+      if(!recipe)colors[i]=color;
+      else if(!recipe.includes(color))colors[i]=recipe+'+'+color;
+    }
     return {index,color,opened,wave,open,colors,lines:completed(colors)};
   }
 
