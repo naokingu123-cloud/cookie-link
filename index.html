@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f2a8bd"><meta name="apple-mobile-web-app-capable" content="yes"><title>SWEETS LINK｜ポップコーンスプラッシュ</title><link rel="stylesheet" href="optimized/style-01.css?v=title5"><link rel="stylesheet" href="optimized/style-02.css?v=title5"><link rel="stylesheet" href="optimized/style-03.css?v=title5"><link rel="stylesheet" href="optimized/style-04.css?v=title5"><link rel="stylesheet" href="assets/player-lounge.css?v=1"><link rel="stylesheet" href="optimized/achievements-v3.css?v=title12">
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f2a8bd"><meta name="apple-mobile-web-app-capable" content="yes"><title>SWEETS LINK｜ポップコーンスプラッシュ</title><link rel="stylesheet" href="optimized/style-01.css?v=91"><link rel="stylesheet" href="optimized/style-02.css?v=title5"><link rel="stylesheet" href="optimized/style-03.css?v=title5"><link rel="stylesheet" href="optimized/style-04.css?v=91"><link rel="stylesheet" href="assets/player-lounge.css?v=1"><link rel="stylesheet" href="optimized/achievements-v3.css?v=title12">
 <script>
 /* Check the published version when the home-screen app opens or resumes. */
 (function(){
@@ -26,17 +26,20 @@
 .record-bottom .lineup-actions{display:flex;gap:10px;align-items:center;justify-content:center}
 .lineup-actions a,.lineup-actions button{display:inline-grid;place-items:center;box-sizing:border-box;min-height:29px;padding:3px 12px;border-radius:12px;border:1px solid #aa7151;background:linear-gradient(#fff4c8,#ffd58c);color:#633626;font:800 13px/1.2 system-ui;text-decoration:none}
 </style>
+<script src="assets/lineups-v91.js?v=91"></script>
+<link rel="stylesheet" href="assets/arcade-show-v91.css?v=91">
+<link rel="stylesheet" href="assets/game-menu-v91.css?v=91">
 <script>
 (()=>{
- const classic=new URLSearchParams(location.search).get('set')==='classic';
- document.documentElement.dataset.lineup=classic?'classic':'festival';
- if(classic)document.title='SWEETS LINK｜クッキーリンク・チョコレートキャニオン・シックスドロップ';
- const styles=classic?[
-  'six-drop-glass-theme.css?v=2','six-drop-simple-glass.css?v=1','sixdrop-generated-png-skin.css?v=3',
+ const {chosen}=window.SweetsLineup,has=id=>chosen.includes(id);
+ const styles=[];
+ if(has('candy'))styles.push('six-drop-glass-theme.css?v=2','six-drop-simple-glass.css?v=1','sixdrop-generated-png-skin.css?v=3',
   'sixdrop-candy-kingdom-bottle.css?v=1','sixdrop-kingdom-fullframe-20261031.css?v=2','sixdrop-bottle-layout-v6.css?v=2',
-  'sixdrop-bottle-v8.css?v=2','sixdrop-thinframe-v11.css?v=1','sixdrop-cap-join-v12.css?v=1',
-  'sixdrop-cap-join-v13.css?v=1','sixdrop-hud-v14.css?v=2','classic-game-polish-v89.css?v=89'
- ]:['gelato-prism-v28.css?v=52','gelato-prism-rail-v76.css?v=76','popcorn.css?v=88','prism-winery-polish-v89.css?v=89'];
+  'sixdrop-bottle-v8.css?v=2','sixdrop-thinframe-v11.css?v=1','sixdrop-cap-join-v12.css?v=1','sixdrop-cap-join-v13.css?v=1','sixdrop-hud-v14.css?v=2');
+ if(chosen.some(id=>['cookie','choco','candy'].includes(id)))styles.push('classic-game-polish-v89.css?v=91');
+ if(has('gelato'))styles.push('gelato-prism-v28.css?v=52','gelato-prism-rail-v76.css?v=76');
+ if(has('popcorn'))styles.push('popcorn.css?v=91');
+ if(has('gelato')||has('winery'))styles.push('prism-winery-polish-v89.css?v=89');
  for(const file of styles){const link=document.createElement('link');link.rel='stylesheet';link.href='assets/'+file;document.head.append(link);}
 })();
 </script></head><body><template id="mobile-third-party-notices">three-0.160.0
@@ -379,32 +382,33 @@ Copyright 2016 The Rounded M+ Project Authors.
  <nav class="record-nav" aria-label="マイページの表示"><button type="button" id="menu-page-ranking" aria-pressed="false">ランキング</button><button type="button" id="menu-page-player" aria-pressed="false">プレイヤー設定</button><button type="button" id="menu-page-wardrobe" aria-pressed="false">きせかえ</button><button type="button" id="menu-page-records" aria-pressed="true">レコード</button><button type="button" id="menu-page-titles" aria-pressed="false">称号</button><button type="button" id="menu-page-best" aria-pressed="false">高配当</button><button type="button" id="menu-page-clears" aria-pressed="false">全消し</button><button type="button" id="menu-page-debug" aria-pressed="false">デバッグ</button></nav>
  <div class="debug-colors" role="group" aria-label="デバッグ設定"><small>デバッグ</small><div class="debug-settings-row"><div class="debug-setting"><label class="debug-depth">目標配当率 <input id="debug-payout-rate" type="number" min="50" max="150" step="1" value="90" aria-label="目標ペイアウト率（50から150パーセント）"> %</label><button type="button" id="debug-payout-apply">設定</button></div><div class="debug-setting debug-rainbow-setting"><label for="debug-rainbow-force">🌈 虹シュガー確定</label><input type="checkbox" id="debug-rainbow-force" aria-label="虹色シュガー確定出現モード"><span id="debug-rainbow-state" aria-live="polite">OFF</span></div><div class="debug-setting"><span>色数</span><button type="button" id="colors-3" aria-pressed="false">3色</button><button type="button" id="colors-4" aria-pressed="false">4色</button><button type="button" id="colors-5" aria-pressed="true">5色</button></div><div class="debug-setting"><label class="debug-depth">キャニオン <input id="canyon-debug-depth" type="number" min="0" max="999999" step="1" value="0" aria-label="キャニオン開始深度"> m</label><button type="button" id="canyon-depth-apply">深度設定</button></div></div><small id="debug-payout-status" aria-live="polite">全3ゲーム共通・通常5色基準／次ゲームから適用（JPC除外）</small><small id="canyon-depth-status" aria-live="polite"></small></div><div class="record-scope"><span>SWEETS LINK</span></div>
  <div id="record-page" class="record-page"></div>
- <div class="record-bottom"><small id="record-storage"></small><div class="lineup-actions"><button type="button" id="record-close">ゲームへ戻る</button><a id="lineup-link" href="?set=classic" target="_blank" rel="noopener" tabindex="0">クラシック3面を開く ↗</a></div></div>
+ <div class="record-bottom"><small id="record-storage"></small><div class="lineup-actions"><button type="button" id="record-close">ゲームへ戻る</button><button type="button" id="open-lineup-picker">ゲーム自由選択</button><a id="lineup-link" href="?set=classic" target="_blank" rel="noopener" tabindex="0">クラシック3面を開く ↗</a></div></div>
 </section></div>
 <div id="title-toast" class="title-toast" role="status" aria-live="polite" hidden><span class="menu-art medal-art" aria-hidden="true"></span><div><small>称号 GET!</small><strong id="title-toast-name"></strong></div></div>
 </main></div><dialog id="wardrobe"><h2>ゼリーペット</h2><div class="row"><label>ゼリー</label><div class="swatches" id="jelly-colors"></div></div><div class="row"><label>リボン</label><div class="swatches" id="ribbon-colors"></div></div><div class="row"><label>かざりの色</label><div class="swatches" id="charm-colors"></div></div><div class="row"><label>かざり</label><button type="button" data-pet-top="cookie">クッキー</button><button type="button" data-pet-top="drop">しずく</button></div><div class="row"><label>おめかし</label><button type="button" data-pet-outfit="bow">リボン</button><button type="button" data-pet-outfit="plain">なし</button></div><button id="close-dress">閉じる</button></dialog>
-<script src="assets/player-lounge.js?v=89"></script>
+<script src="assets/player-lounge.js?v=91"></script>
 <script src="assets/bgm-player.js"></script>
 <script src="assets/cookie-upgrade-patches.js?v=8"></script>
 <script>
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
  try{
-  const classic=document.documentElement.dataset.lineup==='classic';
+  const {mode,chosen}=window.SweetsLineup,classic=mode==='classic',has=id=>chosen.includes(id);
   const switcher=document.getElementById('lineup-link'),other=new URL(location.href);
+  other.searchParams.delete('games');
   if(classic)other.searchParams.delete('set');else other.searchParams.set('set','classic');
   switcher.href=other.href;
   switcher.textContent=classic?'ポップコーンの3面を開く ↗':'クラシック3面を開く ↗';
   switcher.title=(classic?'ジェラート・ワイナリー・ポップコーン':'クッキー・キャニオン・シックスドロップ')+'を別タブで開く';
-  const common=['optimized/app-01.js?v=lineups89','optimized/achievements-v3.js?v=popcorn81'];
-  const extras=classic?[
-   'assets/six-drop-simple-glass.js?v=2','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=89',
-   'assets/sixdrop-hud-v14.js?v=3','assets/highest-role-reach-v18.js?v=1','assets/classic-game-polish-v89.js?v=89'
-  ]:[
-   'assets/popcorn-engine.js?v=87','assets/popcorn-view.js?v=90','assets/winery-pyramid-core-v1.js?v=78',
-   'assets/highest-role-reach-v18.js?v=1','assets/gelato-prism-v28.js?v=89','assets/winery-pyramid-v1.js?v=89',
-   'assets/recent-game-demos-simple-v74.js?v=74','assets/popcorn-host.js?v=90'
-  ];
+  const common=['optimized/app-01.js?v=free91','optimized/achievements-v3.js?v=91'];
+  const extras=[];
+  if(has('candy'))extras.push('assets/six-drop-simple-glass.js?v=2','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=91','assets/sixdrop-hud-v14.js?v=3');
+  extras.push('assets/highest-role-reach-v18.js?v=1');
+  if(has('gelato'))extras.push('assets/gelato-prism-v28.js?v=91');
+  if(has('winery'))extras.push('assets/winery-pyramid-core-v1.js?v=78','assets/winery-pyramid-v1.js?v=91');
+  if(has('popcorn'))extras.push('assets/popcorn-engine.js?v=91','assets/popcorn-view.js?v=91','assets/popcorn-host.js?v=91');
+  if(chosen.some(id=>['cookie','choco','candy'].includes(id)))extras.push('assets/classic-game-polish-v89.js?v=91');
+  extras.push('assets/game-menu-v91.js?v=91','assets/demo-suite-v91.js?v=91','assets/arcade-show-v91.js?v=91','assets/game-titles-v91.js?v=91');
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
   let [game,...extensions]=await Promise.all(responses.map(r=>r.text()));
@@ -419,13 +423,6 @@ Copyright 2016 The Rounded M+ Project Authors.
   // Pocket balls keep a static collision sphere in the rotor frame.
   // Their visual positions follow the rotor quaternion, with no individual
   // post-capture rigid-body simulation. This prevents later balls passing through.
-  // The original rare rainbow cookie placement assumes Engine.board[8][8].
-  // Gelato uses a 19-point constellation instead; keep the standard
-  // rainbow behavior off that slot without touching the 8-ball draw.
-  const cookieRainbowGuard='if(rainbow&&this.enabled[0]){';
-  if(game.includes(cookieRainbowGuard))
-    game=game.replace(cookieRainbowGuard,"if(rainbow&&this.enabled[0]&&this.engines[0]?.kind!=='gelato'){");
-  else console.warn('Cookie-only rainbow guard missing');
   // Six Drop: an ordinary HIT can remove the visible topmost candy row
   // even when it is not a MISS. Restore the original ten-row height by
   // running the existing safe refill when that top row is underfilled.

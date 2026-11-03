@@ -1,29 +1,29 @@
 /* A piped biscuit tin, a riveted cacao mine and a blown-sugar jar. */
-html[data-lineup=classic] .classic-cookie .biscuit-frame {
+html[data-has-classic] .classic-cookie .biscuit-frame {
  border-radius:13px;
  background:linear-gradient(145deg,#fff1ad,#dfa358 17%,#a45e37 46%,#ffe2a0 67%,#a95c36);
  box-shadow:inset 0 0 0 1px #7e4329,inset 0 0 0 3px #ffda8c,0 2px 5px #511d2666;
 }
-html[data-lineup=classic] .classic-cookie .board{
+html[data-has-classic] .classic-cookie .board{
  border-color:#875133!important;
  box-shadow:inset 0 0 0 1px #fff3ce,0 0 0 1px #fff0a2,0 0 0 3px #af724b!important;
 }
-html[data-lineup=classic] .classic-cookie .classic-cookie-icing{
+html[data-has-classic] .classic-cookie .classic-cookie-icing{
  position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:6;opacity:0;
 }
-html[data-lineup=classic] .classic-cookie .basket-count:not(:empty){
+html[data-has-classic] .classic-cookie .basket-count:not(:empty){
  border-radius:8px;color:#fff4cb;background:#633424e8;padding:0 2px;text-shadow:0 1px #321818;
 }
-html[data-lineup=classic] .classic-cookie .tile.pending-hit .sweet{
+html[data-has-classic] .classic-cookie .tile.pending-hit .sweet{
  outline:2px solid #ffed9c;outline-offset:-2px;
 }
-html[data-lineup=classic] .classic-cookie-tab .mini-wrap{
+html[data-has-classic] .classic-cookie-tab .mini-wrap{
  box-shadow:inset 0 0 0 2px #bc815b,0 0 0 1px #74402c!important;
 }
-html[data-lineup=classic] .classic-canyon .choco-surface{
+html[data-has-classic] .classic-canyon .choco-surface{
  box-shadow:inset 0 0 0 2px #6d452e;border-radius:8px;
 }
-html[data-lineup=classic] .classic-canyon .choco-surface::after{
+html[data-has-classic] .classic-canyon .choco-surface::after{
  content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
  background:
   radial-gradient(circle at 5px 5px,#fff1bd 0 1px,#c88c49 1.3px 2px,#412d28 2.6px,transparent 3px),
@@ -33,23 +33,23 @@ html[data-lineup=classic] .classic-canyon .choco-surface::after{
   repeating-linear-gradient(135deg,#684535 0 4px,#e1aa62 4px 8px) bottom center/42% 2px no-repeat;
  box-shadow:inset 0 0 0 1px #492c23,inset 0 0 0 2px #d7aa6d9c;
 }
-html[data-lineup=classic] .choco-tab .mini-wrap{outline:1px solid #b48c62;outline-offset:-2px}
-html[data-lineup=classic] body.carnival-active #carnival-odds .six-glass-role{
+html[data-has-classic] .choco-tab .mini-wrap{outline:1px solid #b48c62;outline-offset:-2px}
+html[data-has-classic] body.carnival-active #carnival-odds .six-glass-role{
  --classic-role:#58cee6;border-left:3px solid var(--classic-role)!important;
 }
-html[data-lineup=classic] #carnival-odds [data-simple-role=triangle]{--classic-role:#6ac680}
-html[data-lineup=classic] #carnival-odds [data-simple-role=hexagon]{--classic-role:#a78df9}
-html[data-lineup=classic] #carnival-odds .classic-winning-role{
+html[data-has-classic] #carnival-odds [data-simple-role=triangle]{--classic-role:#6ac680}
+html[data-has-classic] #carnival-odds [data-simple-role=hexagon]{--classic-role:#a78df9}
+html[data-has-classic] #carnival-odds .classic-winning-role{
  outline:2px solid var(--classic-role);outline-offset:-2px;
  box-shadow:inset 0 0 8px #fff4c3,0 0 6px var(--classic-role)!important;
 }
-html[data-lineup=classic] .classic-six .six-board-viewport{
+html[data-has-classic] .classic-six .six-board-viewport{
  border-radius:7px;box-shadow:inset 0 0 0 1px #fff5df9c;
 }
 
 /* Bakery stamps in the corners of the existing glazed biscuits. The printed
    numeral, hammer, WILD and crack art keep their own shapes and faces. */
-html[data-lineup=classic] .classic-cookie .tile:not(.special):not(.cookie-wild):not(.cracking) .sweet::after{
+html[data-has-classic] .classic-cookie .tile:not(.special):not(.cookie-wild):not(.cracking) .sweet::after{
  content:'';display:block;position:absolute;inset:14%;width:auto;height:auto;transform:none;
  pointer-events:none;border-radius:14%;background:var(--classic-stamp) no-repeat;
  box-shadow:inset 0 0 0 .6px #fff4d780;
@@ -59,18 +59,18 @@ html[data-lineup=classic] .classic-cookie .tile:not(.special):not(.cookie-wild):
 .classic-cookie .c2{--classic-stamp:linear-gradient(130deg,transparent 32%,#dfefa8 33% 57%,transparent 59%) 7% 9%/22% 17% no-repeat,linear-gradient(130deg,transparent 32%,#456335aa 33% 57%,transparent 59%) 92% 87%/20% 16% no-repeat}
 .classic-cookie .c3{--classic-stamp:conic-gradient(from 45deg,#fff1bd 0 25%,transparent 0 50%,#fff1bd 0 75%,transparent 0) 8% 10%/15% 15% no-repeat,conic-gradient(from 45deg,#d7fafe 0 25%,transparent 0 50%,#d7fafe 0 75%,transparent 0) 90% 90%/13% 13% no-repeat}
 .classic-cookie .c4{--classic-stamp:radial-gradient(ellipse at 11% 16%,#ffdae4 0 4%,transparent 6%),radial-gradient(ellipse at 18% 10%,#ffe7d7 0 3%,transparent 5%),radial-gradient(ellipse at 20% 22%,#7b384f9c 0 4%,transparent 6%),radial-gradient(ellipse at 83% 84%,#ffdedc 0 4%,transparent 6%)}
-html[data-lineup=classic] .classic-six .classic-bottle-shine{
+html[data-has-classic] .classic-six .classic-bottle-shine{
  display:block;position:absolute;inset:13% 2.5% 8%;z-index:4;pointer-events:none;overflow:hidden;
  background:
   linear-gradient(120deg,transparent 26%,#ffefbfad 28% 32%,transparent 34%) left 1% top 8%/5% 18% no-repeat,
   linear-gradient(120deg,transparent 30%,#f0ffffb0 32% 39%,transparent 41%) right 1% bottom 10%/4% 15% no-repeat;
 }
-html[data-lineup=classic] .classic-bottle-shine::before,
-html[data-lineup=classic] .classic-bottle-shine::after{
+html[data-has-classic] .classic-bottle-shine::before,
+html[data-has-classic] .classic-bottle-shine::after{
  content:'';position:absolute;top:9%;height:73%;width:3%;
  border-radius:65%;border:0 solid transparent;border-left:1.5px solid #e5ffffb5;
  box-shadow:-1px 0 0 #a3e9f263;left:1.4%;
 }
-html[data-lineup=classic] .classic-bottle-shine::after{left:auto;right:1.4%;top:20%;height:65%;transform:scaleX(-1)}
-html[data-lineup=classic] .classic-form-lit .classic-bottle-shine{filter:drop-shadow(0 0 3px #f1e4ff)}
-html[data-lineup=classic] #tabs .tab[aria-selected=true] .mini-wrap>*{visibility:hidden!important}
+html[data-has-classic] .classic-bottle-shine::after{left:auto;right:1.4%;top:20%;height:65%;transform:scaleX(-1)}
+html[data-has-classic] .classic-form-lit .classic-bottle-shine{filter:drop-shadow(0 0 3px #f1e4ff)}
+html[data-has-classic] #tabs .tab[aria-selected=true] .mini-wrap>*{visibility:hidden!important}

@@ -1,13 +1,13 @@
 /* Classic boards share their original render clocks, coordinates and event payloads. */
 (()=>{
  'use strict';
- if(document.documentElement.dataset.lineup!=='classic')return;
+ const present=id=>window.SweetsLineup.chosen.includes(id);
  const [cookie,canyon,six]=slots;
- cookie.panel.classList.add('classic-cookie');cookie.holder.classList.add('classic-cookie-tab');
- canyon.panel.classList.add('classic-canyon');six.panel.classList.add('classic-six');
- canyon.tab.querySelector('.tab-game-name').setAttribute('aria-label','チョコレートキャニオン');
+ if(present('cookie')){cookie.panel.classList.add('classic-cookie');cookie.holder.classList.add('classic-cookie-tab');}
+ if(present('choco'))canyon.panel.classList.add('classic-canyon');if(present('candy'))six.panel.classList.add('classic-six');
+ if(present('choco'))canyon.tab.querySelector('.tab-game-name').setAttribute('aria-label','チョコレートキャニオン');
  const ink=document.createElement('canvas');ink.width=ink.height=384;ink.className='classic-cookie-icing';
- ink.setAttribute('aria-hidden','true');cookie.board.append(ink);
+ ink.setAttribute('aria-hidden','true');if(present('cookie'))cookie.board.append(ink);
  const icing=ink.getContext('2d');let icingEffect;
  function stamp(cells,linked){
   icingEffect?.cancel();icing.clearRect(0,0,384,384);
@@ -114,7 +114,7 @@
  const originalEvent=event;
  event=function(i,ev,e,a){
   const result=originalEvent(i,ev,e,a);
-  if(i===cookie.i&&active===i){
+  if(present('cookie')&&i===cookie.i&&active===i){
    if(ev.phase==='hit')stamp(ev.primaryCells,false);
    else if(ev.phase==='link')stamp(ev.primaryCells,true);
    else if(ev.phase==='ready'||ev.phase==='vanish'||ev.phase==='complete')icingEffect?.cancel();

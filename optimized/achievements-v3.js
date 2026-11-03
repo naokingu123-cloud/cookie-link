@@ -7,23 +7,83 @@ const defs=[{"id":"v4-001","name":"はじめの習慣","category":"全般","metr
 defs.forEach((d,index)=>{d.icon=index;});
 const KEY='cookie-link-achievements-v4';
 const fresh=()=>({titles:{},equipped:null,stats:{},version:4});
-let store=fresh();try{const data=JSON.parse(localStorage.getItem(KEY)||'null');if(data?.version===4)store={...fresh(),...data,stats:data.stats||{},titles:data.titles||{}};}catch{}
+const batch=()=>({adds:{},peaks:{},titles:{}});
+const pendingKey=KEY+'-pending-',writer=globalThis.crypto?.randomUUID?.()||Math.random().toString(36).slice(2);
+let seq=0,queued=false,changed=false,draft=batch();
+const read=()=>{try{const d=JSON.parse(localStorage.getItem(KEY));if(d?.version===4)return {...fresh(),...d,titles:d.titles||{},stats:d.stats||{}};}catch{}return fresh();};
+let store=read();
 const valid=new Set(defs.map(x=>x.id));
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(store));}catch{}};
-// Existing records are preserved; previous title IDs are no longer valid.
 TITLE_DEFS.splice(0,TITLE_DEFS.length,...defs);
-const records=recordBook.data.records;
-records.titles={...store.titles};
-recordBook.data.equipped=store.equipped&&valid.has(store.equipped.id)&&store.titles[store.equipped.id]?store.equipped:null;
-let changed=false;
-const bump=(key,delta=1)=>{if(!Number.isFinite(delta)||delta<=0)return;store.stats[key]=(store.stats[key]||0)+delta;changed=true;};
-const peak=(key,value)=>{if(!Number.isFinite(value)||value<=(store.stats[key]||0))return;store.stats[key]=value;changed=true;};
-const flush=()=>{
- if(!changed)return;
- changed=false;const now=Date.now(),unlocked=[];
- for(const d of defs)if(!store.titles[d.id]&&(store.stats[d.metric]||0)>=d.target){store.titles[d.id]=now;unlocked.push({id:d.id});}
- records.titles={...store.titles};save();
+function apply(data,change){
+ for(const [k,n] of Object.entries(change.adds))data.stats[k]=(data.stats[k]||0)+n;
+ for(const [k,n] of Object.entries(change.peaks))data.stats[k]=Math.max(data.stats[k]||0,n);
+ for(const [id,at] of Object.entries(change.titles))data.titles[id]=Math.min(at,data.titles[id]||at);
+ if('equipped' in change)data.equipped=change.equipped;
+}
+function reflect(){
+ recordBook.data.records.titles={...store.titles};
+ recordBook.data.equipped=store.equipped&&valid.has(store.equipped.id)&&store.titles[store.equipped.id]?store.equipped:null;
+}
+// Keep only uncommitted transactions in separate keys, so closing a tab while
+// another one holds the lock cannot lose its round. The shared v4 format stays
+// readable by old clients; applied IDs cover a crash between writing and cleanup.
+function snapshot(){
+ const data=read(),keys=[];
+ try{
+  for(let i=0;i<localStorage.length;i++){
+   const k=localStorage.key(i);if(k?.startsWith(pendingKey))keys.push(k);
+  }
+  for(const k of keys.sort())if(!data.applied?.includes(k)){
+   const delta=JSON.parse(localStorage.getItem(k));if(delta)apply(data,delta);
+  }
+ }catch{}
+ return {data,keys};
+}
+function refresh(){
+ store=snapshot().data;apply(store,draft);reflect();
+}
+function commit(){
+ const {data,keys}=snapshot(),unlocked=[];
+ if(keys.length){
+  for(const d of defs)if(!data.titles[d.id]&&(data.stats[d.metric]||0)>=d.target){data.titles[d.id]=Date.now();unlocked.push({id:d.id});}
+  data.applied=keys;
+  try{localStorage.setItem(KEY,JSON.stringify(data));for(const k of keys)localStorage.removeItem(k);}catch{}
+ }
+ refresh();
  if(unlocked.length){showTitleToast(unlocked);if(menuOpen)renderRecordMenu();}
+ updateEquippedTitle();
+}
+function requestCommit(){
+ if(queued)return;
+ if(!globalThis.navigator?.locks){commit();return;}
+ queued=true;
+ navigator.locks.request(KEY,()=>{queued=false;commit();}).catch(()=>{queued=false;commit();});
+}
+function save(){
+ const delta=draft;draft=batch();changed=false;
+ try{
+  const id=pendingKey+Date.now().toString(36)+'-'+writer+'-'+String(++seq).padStart(6,'0');
+  localStorage.setItem(id,JSON.stringify(delta));
+  refresh();requestCommit();
+ }catch{
+  // Stats and equipment already changed in memory; retain them when this
+  // browser has disabled storage or reached its quota.
+  Object.assign(store.titles,delta.titles);
+  for(const d of defs)if(!store.titles[d.id]&&(store.stats[d.metric]||0)>=d.target)store.titles[d.id]=Date.now();
+  reflect();updateEquippedTitle();
+ }
+}
+reflect();
+const bump=(k,n=1)=>{if(!Number.isFinite(n)||n<=0)return;draft.adds[k]=(draft.adds[k]||0)+n;store.stats[k]=(store.stats[k]||0)+n;changed=true;};
+const peak=(k,n)=>{if(!Number.isFinite(n)||n<=(store.stats[k]||0))return;draft.peaks[k]=n;store.stats[k]=n;changed=true;};
+const flush=()=>{if(changed)save();};
+let gameTracker;
+recordBook.registerGameTitles=(catalog,tracker)=>{
+ if(gameTracker)return;
+ gameTracker=tracker;tracker.attach(app);
+ for(const d of catalog){defs.push(d);TITLE_DEFS.push(d);valid.add(d.id);}
+ refresh();
+ if(snapshot().keys.length)requestCommit();
  updateEquippedTitle();
 };
 const originalCapture=recordBook.capture.bind(recordBook),track=new WeakMap();
@@ -31,13 +91,15 @@ recordBook.capture=function(a){
  const result=originalCapture(a);
  if(!a?.engines)return result;
  let seen=track.get(a);if(!seen||seen.token!==a.token){seen={token:a.token,paid:[false,false,false]};track.set(a,seen);}
- for(let i=0;i<3;i++){
+ for(let i=0;i<a.engines.length;i++){
   const engine=a.engines[i];
-  if(seen.paid[i]||!a.paid?.[i]||!a.enabled?.[i]||engine?.processed!==8)continue;
+  if(seen.paid[i]||!a.paid?.[i]||!a.enabled?.[i]||!(a.locked?.[i]>0)||engine?.processed!==8)continue;
   seen.paid[i]=true;
   const amount=Math.max(0,Number(a.roundWins?.[i])||0);
-  if(engine.kind!=='popcorn')bump(['cookieWinTotal','chocoWinTotal','dropWinTotal'][i],amount);
-  if(i===1){
+  gameTracker?.capture(a,i,peak,bump);
+  const metric={cookie:'cookieWinTotal',choco:'chocoWinTotal',candy:'dropWinTotal'}[engine.kind||'cookie'];
+  if(metric)bump(metric,amount);
+  if(engine.kind==='choco'){
    bump('gamesChoco');
    peak('bestDepth',engine.depth||0);
    peak('bestAdvance',Math.max(0,(engine.depth||0)-(engine.startDepth||0)));
@@ -52,7 +114,7 @@ recordBook.capture=function(a){
 };
 const originalEvent=recordEvent;
 recordEvent=function(i,ev,e,a){
- if(i===1&&ev){
+ if(e?.kind==='choco'&&ev&&a.enabled?.[i]&&a.locked?.[i]>0){
   if(ev.phase==='canyonCollect'&&Array.isArray(ev.items))for(const item of ev.items){
     const tile=item.tile||{};if(tile.item!=='ore')continue;
     const label=String(tile.kind||tile.ore||tile.type||tile.grade||'').toLowerCase();
@@ -80,11 +142,21 @@ updateEquippedTitle=function(){
 const originalEquip=recordBook.equip.bind(recordBook);
 recordBook.equip=function(id){
  if(id!==null&&(!valid.has(id)||!store.titles[id]))return false;
- store.equipped=id?{id}:null;records.titles={...store.titles};
+ draft.equipped=store.equipped=id?{id}:null;reflect();
  const ok=originalEquip(id);save();return ok;
 };
 const rarity=['','★ かんたん','★★ やさしい','★★★ ふつう','★★★★ むずかしい','★★★★★ 伝説'];
-const icon=(d,locked=false)=>'<i class="v3-icon'+(locked?' v3-locked':'')+'" style="background-position:'+(d.icon%5*25)+'% '+(Math.floor(d.icon/5)*5)+'%" aria-hidden="true"></i>';
+const icon=(d,locked=false)=>{
+ const classes='v3-icon'+(locked?' v3-locked':'');
+ if(d.game)return '<i class="'+classes+' v91-title-icon" aria-hidden="true" data-game="'+d.game+'" data-title-icon="'+d.id+'" style="--title-x:'+(d.atlas%8*100/7)+'%;--title-y:'+(Math.floor(d.atlas/8)*100/9)+'%"></i>';
+ return '<i class="'+classes+'" style="background-position:'+(d.icon%5*25)+'% '+(Math.floor(d.icon/5)*5)+'%" aria-hidden="true"></i>';
+};
+const baseToast=showTitleToast;
+showTitleToast=function(items){
+ baseToast(items);
+ const art=document.querySelector('#title-toast .menu-art'),d=defs.find(x=>x.id===items[0]?.id);
+ if(art){art.classList.toggle('medal-art',!d?.game);art.innerHTML=d?.game?icon(d):'';}
+};
 renderTitles=function(){
  const eq=recordBook.data.equipped, perPage=20;
  recordOffset=Math.min(recordOffset,Math.ceil(defs.length/perPage)-1);
@@ -126,12 +198,12 @@ function showV4Debug(){
  let tools=page.querySelector('.v4-debug-achievements');
  if(!tools){
   tools=document.createElement('section');tools.className='v4-debug-achievements';
-  tools.innerHTML='<h3>称号デバッグ</h3><button type="button" id="v4-debug-unlock">全103称号を開放</button><small>デバッグ操作で獲得扱いにします。プレイ記録は変更しません。</small>';
+  tools.innerHTML='<h3>称号デバッグ</h3><button type="button" id="v4-debug-unlock">全'+defs.length+'称号を開放</button><small>デバッグ操作で獲得扱いにします。プレイ記録は変更しません。</small>';
   page.appendChild(tools);
   tools.querySelector('button').onclick=()=>{
-   if(!confirm('全103称号をデバッグ開放しますか？'))return;
-   const now=Date.now();for(const d of defs)if(!store.titles[d.id])store.titles[d.id]=now;
-   records.titles={...store.titles};save();updateEquippedTitle();
+   if(!confirm('全'+defs.length+'称号をデバッグ開放しますか？'))return;
+   const now=Date.now();for(const d of defs)if(!store.titles[d.id])draft.titles[d.id]=now;
+   save();updateEquippedTitle();
    tools.querySelector('small').textContent='全称号を開放しました';
   };
  }
@@ -157,5 +229,11 @@ try {
  if(prev!==today){let streak=1;if(prev){const delta=(new Date(today+'T12:00:00')-new Date(prev+'T12:00:00'))/86400000;if(delta===1)streak=(Number(localStorage.getItem('cl-v4-streak'))||0)+1;}localStorage.setItem('cl-v4-last-day',today);localStorage.setItem('cl-v4-streak',String(streak));peak('loginStreak',streak);flush();}
  let last=Date.now();setInterval(()=>{const now=Date.now();if(!document.hidden){bump('playHours',Math.min(20,(now-last)/1000)/3600);flush();}last=now;},15000);
 }catch(err){console.warn('Title v4 clock',err)}
+window.addEventListener('storage',event=>{
+ if(event.key!==KEY&&event.key!==recordBook.key&&!event.key?.startsWith(pendingKey))return;
+ refresh();
+ if(event.key?.startsWith(pendingKey)&&event.newValue)requestCommit();
+ updateEquippedTitle();if(menuOpen&&recordPage==='titles')renderRecordMenu();
+});
 updateEquippedTitle();
 })();

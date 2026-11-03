@@ -1,0 +1,20 @@
+.lineup-picker{width:min(420px,calc(100vw - 28px));box-sizing:border-box;max-height:90dvh;overflow:auto;padding:0;border:3px solid #edc67b;border-radius:20px;color:#572b3c;background:#fff5db;box-shadow:0 14px 45px #331c3899;font:700 14px/1.4 system-ui,sans-serif}
+.lineup-picker::backdrop{background:#321d3b9c}
+.lineup-paper{padding:14px 16px 16px;background:radial-gradient(ellipse at top right,#ffdad6,transparent 70%),#fff6e1}
+.lineup-paper header,.lineup-paper footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lineup-paper header span{font:900 10px/1.6 system-ui;letter-spacing:.16em;color:#97526a}
+.lineup-close{border:0;background:#f8d9cc;color:#742f45;border-radius:50%;width:29px;height:29px;font-size:20px;line-height:1}
+.lineup-paper h2{margin:0;font-size:24px;color:#81304a}.lineup-paper p{margin:2px 0 12px;font-size:13px}
+.lineup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:12px}
+.lineup-grid button{position:relative;text-align:center;min-width:0;min-height:70px;padding:5px 7px;border-radius:10px;border:2px solid #d8b68f;background:linear-gradient(#fffdf4,#f4dfc9);color:#653543;font:800 11px/1.2 system-ui}
+.lineup-grid img{display:block;width:100%;height:40px;object-fit:contain;margin-bottom:3px}
+.lineup-grid [aria-pressed=true]{border-color:#a34460;background:linear-gradient(#fff8d9,#ffd5b3);box-shadow:inset 0 0 0 1px #fff0bd}
+.lineup-grid [aria-pressed=true]::after{content:attr(data-order);position:absolute;right:3px;top:3px;border-radius:50%;width:17px;height:17px;background:#87364d;color:white;font:800 12px/17px system-ui}
+.lineup-grid button:disabled{opacity:.55}.lineup-play{border-radius:22px;background:#8f3455;color:#fff3c9;padding:8px 13px;font-size:13px;text-decoration:none}.lineup-play[aria-disabled=true]{opacity:.5}
+.lineup-paper small{display:block;text-align:right;margin-top:5px;font-size:10px;color:#805968}
+#tabs .tab-slot[hidden]{display:none!important}.result-game:not(.is-selected) .result-chosen-mark{display:none}.result-chosen-mark{font:800 9px system-ui;color:#903752}
+
+#result-games .result-game img.result-game-emblem{width:90%;max-width:145px;height:39px;object-fit:contain}
+#result-games .result-game-name{white-space:normal;line-height:1.12;overflow-wrap:anywhere}
+#result-games .result-chosen-mark{padding:1px 9px;border:1px solid #f4c86f;border-radius:9px;background:#5b263b;color:#ffeb9e;line-height:1.3}
+.round-result .result-subtitle{color:#fff1c9;text-shadow:0 1px 2px #4c1937}

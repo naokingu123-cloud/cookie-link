@@ -75,3 +75,29 @@ const busy=board(0);busy.run();busy.engine.queue.push(7);busy.run();
 assert.equal(busy.slot.reachResults.length,0);assert.equal(busy.slot.tabReachResults.length,0);
 const used=board(0);used.app.draws[0]=used.s.numbers[4];used.run();assert.ok(!used.match(used.slot.reachResults,4));
 console.log('Popcorn main and mini reach tiers, actual one-credit results, shared timing, stale results and pending/used numbers passed.');
+// The selected cabinet alone controls the actual roulette's 25 pocket LEDs
+// and the same derived tier-3 set controls its highest-role illumination.
+const roulette=new Function('slots','active','app','jpcSession','reachAvailable','chocoReachReady',
+ section(shared,'function rouletteReachTiers()','function rouletteSelectedBoard()')+
+ 'return {leds:rouletteReachTiers(),rainbow:rouletteAllClearNumbers()};');
+for(const count of [0,1,2,3,4,5,6,7]){
+ const f=board(count);f.run();f.engine.drawn=new Set();const n=f.s.numbers[4];
+ const current=roulette([f.slot],0,f.app,{active:false},()=>true,()=>true);
+ assert.equal(current.leds.get(n)||0,count===0?0:count===1?1:3);
+ assert.equal(current.rainbow.has(n),count>=2);
+ assert.equal(f.match(f.slot.reachResults,4).tier,3);
+}
+const cabinets=[undefined,'choco','candy','gelato','winery','popcorn'].map(kind=>({
+ engine:{kind,drawn:new Set([10])},
+ reachResults:[{number:7,tier:3},{number:8,tier:2},{number:10,tier:1}],
+ tabReachResults:[{number:7,tier:1},{number:8,tier:2},{number:10,tier:1}]
+}));
+for(let i=0;i<cabinets.length;i++){
+ const flags=[cabinets,i,{phase:'playing',draws:[8]}];
+ const result=roulette(...flags,{active:false},()=>true,()=>true);
+ assert.deepEqual([...result.leds],[[7,i===5?1:3]]);
+ assert.equal(result.rainbow.has(7),i!==5);
+ assert.equal(roulette(...flags,{active:true},()=>true,()=>true).leds.size,0);
+ assert.equal(roulette(...flags,{active:false},()=>false,()=>false).leds.size,0);
+}
+console.log('Selected roulette pockets and highest-role set use compact popcorn tiers and native results for the other five games.');

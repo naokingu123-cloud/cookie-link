@@ -26,7 +26,7 @@
 @keyframes tab-reward-breathe{0%,100%{opacity:.25}25%,65%{opacity:1}85%{opacity:.35}}
 
 /* Five existing hexagon wells nest in the generated confectionery flowers. */
-.arena #sugar-collection{width:200px;height:82px;background:url('assets/wonder-sugar-vine-v23.webp') left 14px / 200px 66px no-repeat!important}
+.arena #sugar-collection{width:200px;height:82px;background:url('../assets/wonder-sugar-vine-v23.webp') left 14px / 200px 66px no-repeat!important}
 .arena #sugar-collection .sugar-caption{width:200px;text-align:center;padding-left:0}
 .arena #sugar-collection .sugar-caption em{right:-20px;top:28px}
 .arena #sugar-slots{inset:14px auto auto 0;width:200px;height:66px;display:block}

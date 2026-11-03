@@ -1,0 +1,11 @@
+.ds91-field{position:relative!important}
+.ds91-field>.ds91-lesson{position:absolute!important;inset:0!important;z-index:45!important;display:block;width:100%!important;height:100%!important;padding:0!important;border:0;border-radius:12px;pointer-events:none}
+.ds91-field>.ds91-lesson[hidden]{display:none!important}
+#tabs .mini-wrap>.ds91-ready-mark{display:none!important}
+body.ds91-ready #screen #tabs .tab-slot .tab .mini-wrap{isolation:isolate;background:linear-gradient(140deg,#67434a,#362538)!important;overflow:hidden!important}
+body.ds91-ready #screen #tabs .tab-slot .tab .mini-wrap>:not(.ds91-ready-mark){visibility:hidden!important}
+body.ds91-ready #screen #tabs .tab-slot .tab:not([aria-selected=true]) .mini-wrap::after{display:none!important;content:none!important}
+body.ds91-ready #screen #tabs .tab-slot .tab:not([aria-selected=true]) .mini-wrap>.ds91-ready-mark{display:flex!important;visibility:visible!important;position:absolute;inset:0;z-index:25;align-items:center;justify-content:center;gap:2px;background:radial-gradient(ellipse at 35% 40%,#684753,#342831);color:var(--ds-accent,#ffdc96);pointer-events:none}
+body.ds91-ready #screen #tabs .ds91-ready-mark canvas{width:39%!important;height:82%!important;position:static!important;max-width:52px;object-fit:contain;visibility:visible!important;background:none!important;border:0!important}
+body.ds91-ready #screen #tabs .ds91-ready-mark b{font:900 clamp(7px,1.2vw,11px)/1.02 system-ui,sans-serif;white-space:nowrap;color:#fff1cb;text-shadow:0 1px 2px #321f30}
+body.ds91-ready #screen #tabs .tab-slot .tab[aria-selected=true] .mini-wrap::after{display:grid!important;content:'選択中'!important;position:absolute!important;inset:1px!important;place-items:center;z-index:30!important;background:#563748!important;border:1px solid #f3c688;border-radius:6px;color:#fff0bf;font:900 clamp(9px,1.5vw,14px)/1 system-ui,sans-serif}

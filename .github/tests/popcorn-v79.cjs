@@ -190,13 +190,12 @@ const purple=E.create({rng:random});
 purple.board=purple.board.map((p,i)=>setPower(p,Number(i===center)*3));
 const big=E.draw(purple,purple.numbers[15],random);
 assert.equal(big.count,37);assert.deepEqual(new Set(big.waves[1]),new Set(E.radiusThree[center]));
-// Lightning uses the three visible inlet directions in both senses. Vertical
-// targets share the exact x coordinate, skipping the staggered alternate row.
+// The two diagonal axes and the horizontal row all reach their board edges.
 for(const [i,a] of cells.entries()){
  const axes=E.lightningAxes[i];
  assert.ok(axes.every(line=>line.includes(i)));
  for(const [axis,line] of axes.entries()){
-   const match=[b=>b.q===a.q,b=>b.x===a.x,b=>b.q+b.r===a.q+a.r][axis];
+   const match=[b=>b.q===a.q,b=>b.r===a.r,b=>b.q+b.r===a.q+a.r][axis];
    assert.deepEqual(line,cells.flatMap((b,j)=>match(b)?[j]:[]));
  }
  const combined=[...new Set(axes.flat())].filter(j=>j!==i);
@@ -206,8 +205,10 @@ for(const [i,a] of cells.entries()){
 }
 const lightning=E.create({rng:random});
 const cellAt=(q,r)=>cells.findIndex(c=>c.q===q&&c.r===r);
-const receiver=cellAt(2,-4),gap=cellAt(1,-2),horizontal=cellAt(1,0);
-assert.ok(E.blastAreas[4][center].includes(receiver)&&!E.blastAreas[4][center].includes(horizontal));
+const receiver=cellAt(4,0),gap=cellAt(2,0),verticalOnly=cellAt(2,-4);
+assert.deepEqual(E.lightningAxes[center].map(axis=>axis.length),[9,9,9]);
+assert.equal(E.blastAreas[4][center].length,24);
+assert.ok(E.blastAreas[4][center].includes(receiver)&&!E.blastAreas[4][center].includes(verticalOnly));
 lightning.board=lightning.board.map((p,i)=>i===gap?null:setPower(p,i===center?4:i===receiver?2:0));
 const arc=E.draw(lightning,lightning.numbers[4],random);
 assert.ok(arc.waves[0].includes(center)&&arc.waves[1].includes(receiver));
@@ -339,9 +340,9 @@ assert.ok(survivingHoles>0);
 const seeded=n=>()=>((n=Math.imul(n,1664525)+1013904223|0)>>>0)/2**32;
 const streams=[seeded(51821),seeded(51821),seeded(51821)];
 const settings=[50,90,150].map((rate,i)=>E.create({rate,rng:streams[i],bet:100}));
-assert.ok([190,200].includes(settings[0].firstPopAward));
-assert.ok([120,130].includes(settings[1].firstPopAward));
-assert.ok([70,80].includes(settings[2].firstPopAward));
+assert.ok([220,230].includes(settings[0].firstPopAward));
+assert.ok([130,140].includes(settings[1].firstPopAward));
+assert.ok([80,90].includes(settings[2].firstPopAward));
 const starts=settings.map(x=>x.firstPopAward);
 for(const mode of settings){
  assert.deepEqual(mode.board,settings[1].board);assert.deepEqual(mode.numbers,settings[1].numbers);
@@ -362,7 +363,7 @@ for(let t=0;t<8;t++){
 }
 // The 90% calibration crosses between these two thresholds. Exercise both
 // sides and compare each of eight actual awards against its displayed table.
-for(const [roll,firstPay] of [[.716,120],[.717,130]]){
+for(const [roll,firstPay] of [[.688,130],[.690,140]]){
  const mode=E.create({rng:()=>roll,rate:90,bet:37});
  assert.equal(mode.firstPopAward,firstPay);
  mode.board=mode.board.map(p=>setPower(p,5));

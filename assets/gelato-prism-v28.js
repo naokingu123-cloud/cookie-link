@@ -298,7 +298,7 @@ try{
       '<polygon points="'+outline+'" fill="url(#'+prefix+'-crumb)" stroke="#fff3c9" stroke-width="2.1" opacity=".8" stroke-linejoin="round"/>'+
       faces+lines+nodes+'</svg>';
  }
- const slot=slots[0],originalEvent=app.onEvent;
+ const mount=window.SweetsLineup.ids.indexOf('gelato'),slot=slots[mount];
  slot.holder.classList.add('gp-slot');slot.panel.classList.add('gp-panel');slot.tab.classList.add('gp-tab');
  const gpTabName=slot.tab.querySelector('.tab-game-name');
  gpTabName.innerHTML='<span class="gp-logo"><img class="gp-tab-logo-img" alt="GELATO PRISM" hidden>'+
@@ -1021,7 +1021,7 @@ try{
  }
  let lastGeometryKey='';
  function drawGelato(){
-   const e=app.engines[0];if(e?.kind!=='gelato')return;
+   const e=app.engines[mount];if(e?.kind!=='gelato')return;
    // Cache DOM changes during the 3D roulette's continuous render loop.
    // Repaint node/edge/triangle classes only on actual gameplay changes.
    const geometryKey=[e.cycle,e.version,e.phase,e.hits.size,e.links.size,
@@ -1031,7 +1031,7 @@ try{
      updateDraw(scene,e);updateDraw(mini,e);
    }
    // The visible value is a real WIN amount derived from the current BET.
-   const bet=app.bet(0);
+   const bet=app.bet(mount);
    if(scene.dataset.gpBet!==String(bet)){
      scene.dataset.gpBet=String(bet);
      for(const root of [scene,mini])
@@ -1085,18 +1085,18 @@ try{
    drawGelato();scheduleUI(app);
  }
  const e=new GelatoEngine(app.random,(ev,engine)=>{
-   if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[0]){
-     app.wonderBank.push(...ev.steps.map(t=>({...t,game:0})));
+   if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[mount]){
+     app.wonderBank.push(...ev.steps.map(t=>({...t,game:mount})));
      app.wonderSteps=app.wonderBank.length;app.wonderValue+=ev.steps.reduce((n,t)=>n+t.value,0);
    }
-   if(ev.phase==='complete'&&app.phase==='playing'&&!app.paid[0]&&app.enabled[0]){
-     app.paid[0]=true;app.roundWins[0]=medalWin(app.locked[0],engine.totalHundredths);
+   if(ev.phase==='complete'&&app.phase==='playing'&&!app.paid[mount]&&app.enabled[mount]){
+     app.paid[mount]=true;app.roundWins[mount]=medalWin(app.locked[mount],engine.totalHundredths);
      if(app.enabled.every((yes,i)=>!yes||app.paid[i]))app.finishRound();
    }
    onGelatoEvent(ev,engine);
    if(ev.phase==='complete')recordChanged(app);
  },app.sleep);
- app.engines[0]=e;slot.engine=e;
+ app.engines[mount]=e;slot.engine=e;
  // Animate active photon streams on existing links without touching
  // gameplay RNG or other games' renderers. Six Drop reach uses native CSS.
  setInterval(()=>{
@@ -1105,7 +1105,7 @@ try{
    const recentHit=e.hitVisualTime&&[...e.hitVisualTime.values()].some(t=>performance.now()-t<1000);
    if(!e.links.size&&!recentHit&&!hasReach)return;
    rasterKey='';
-   drawRaster(e,app.bet(0));
+   drawRaster(e,app.bet(mount));
  },90);
  // Run the standard post-eight-ball reach presentation before payout.
  e.beforeComplete=token=>finishGamePresentation(slot,e,app,token);
@@ -1118,7 +1118,7 @@ try{
  requestReach=function(s,engine,a=app){
    if(engine?.kind!=='gelato')return nativeReach(s,engine,a);
    const ctx=reachContext(engine,a);
-   if(!ctx||a.bet(0)<=0||engine.processed>8){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
+   if(!ctx||a.bet(mount)<=0||engine.processed>8){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
    if(s.reachBoardKey===ctx.key)return;
    const epoch=(s.reachEpoch||0)+1;s.reachEpoch=epoch;
    s.reachBoardKey=ctx.key;s.reachStatus='pending';
@@ -1145,7 +1145,7 @@ try{
    if(slot.engine?.kind!=='gelato')return nativeTabs(a);
    const saved=slot.engine;slot.engine=null;
    try{nativeTabs(a);}finally{slot.engine=saved;}
-   const bet=a.bet(0),win=medalWin(bet,saved.totalHundredths);
+   const bet=a.bet(mount),win=medalWin(bet,saved.totalHundredths);
    fitGoldenNumber(slot.tabBet,num(bet),14,76);
    slot.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(slot.tabWin,num(win),17,50);
    slot.tabSugar.hidden=false;slot.tabSugar.classList.toggle('collected',saved.wonderCollected);
@@ -1156,7 +1156,7 @@ try{
  // 24-panel payout window. Restore it on every other game, including Winery.
  const cookieOddsCabinet=document.getElementById('odds-panel');
  function syncGelatoOdds(){
-   const selected=active===0;
+   const selected=active===mount;
    document.body.classList.toggle('gelato-active',selected);
    if(cookieOddsCabinet){
      if(selected)cookieOddsCabinet.style.setProperty('display','none','important');
@@ -1168,7 +1168,7 @@ try{
  select=function(i){const result=nativeSelect(i);syncGelatoOdds();return result;};
  const nativeHud=hud;
  hud=function(a){
-   if(active!==0){syncGelatoOdds();return nativeHud(a);}
+   if(active!==mount){syncGelatoOdds();return nativeHud(a);}
    nativeHud(a);
    document.body.classList.remove('choco-active','carnival-active');document.body.classList.add('gelato-active');
    syncGelatoOdds();
@@ -1180,17 +1180,17 @@ try{
  };
  const nativePreview=syncBetPreview;
  syncBetPreview=function(a){
-   if(a?.engines[0]?.kind==='gelato'){if(betPreview)stopBetPreview();return;}
+   if(a?.engines[mount]?.kind==='gelato'){if(betPreview)stopBetPreview();return;}
    return nativePreview(a);
  };
  const nativeResult=renderRoundResult;
  renderRoundResult=function(a){
    nativeResult(a);
-   if(a.engines[0]?.kind!=='gelato')return;
-   const row=$('result-games')?.querySelector('[data-game-index="0"]');
+   if(a.engines[mount]?.kind!=='gelato')return;
+   const row=$('result-games')?.querySelector('[data-game-index="'+mount+'"]');
    if(!row||row.dataset.gelato)return;
    row.dataset.gelato='yes';
-   row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+(a.enabled[0]?num(a.locked[0])+' BET':'NO BET')+'</small>';
+   row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+(a.enabled[mount]?num(a.locked[mount])+' BET':'NO BET')+'</small>';
    const details=row.querySelector('.result-game-details');
    if(details)details.innerHTML='<span>'+e.filled.size+' / 24パネル</span><span>枚数 '+e.countMult.toFixed(1)+'倍＋4色 '+e.collectorMult.toFixed(1)+'倍</span>';
  };

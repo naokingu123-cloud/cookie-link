@@ -3,9 +3,10 @@
 'use strict';
 if(window.WineryPyramid?.installed)return;
 const K=window.WineryPyramidCore;
-if(!K||typeof app==='undefined'||!app||!slots?.[1])throw Error('Winery host is not ready');
+const mount=window.SweetsLineup.ids.indexOf('winery');
+if(!K||typeof app==='undefined'||!app||!slots?.[mount])throw Error('Winery host is not ready');
 if(app.phase!=='ready')throw Error('Install Winery only between games');
-const S=slots[1],oldEngine=app.engines[1];
+const S=slots[mount],oldEngine=app.engines[mount];
 const rowWin=(bet,n,mix)=>medalWin(bet,Math.round(Math.round(K.PAY[n]*100)*(10+mix)/10));
 const pos=i=>{const p=K.CELLS[i];return {x:260+(p.c-p.r/2)*76,y:100+p.r*78};};
 let engine,frame=0,clock=0,stamp=0,miniKey='',uiKey='',lastPaint=0;
@@ -131,8 +132,8 @@ function signal(text){const el=scene.querySelector('.wp-message');el.textContent
 function event(ev,e){
  S.engine=e;S.event=ev;S.dirtyMain=true;S.dirtyMini=true;
  if(ev.phase==='wineryAward')for(const index of ev.justFilled||[])fullFx.set(index,clock);
- if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[1]){
-   app.wonderBank.push(...ev.steps.map(step=>({...step,game:1})));
+ if(ev.phase==='stepcollect'&&app.phase==='playing'&&app.enabled[mount]){
+   app.wonderBank.push(...ev.steps.map(step=>({...step,game:mount})));
    app.wonderSteps=app.wonderBank.length;
    app.wonderValue+=ev.steps.reduce((sum,step)=>sum+step.value,0);
  }
@@ -149,10 +150,10 @@ function event(ev,e){
  if(ev.phase==='wineryAllFull'){
   signal('全満！ 21 / 21');
   if(typeof announceAchievement==='function')announceAchievement('ワイナリーピラミッド　全満達成！');
-  if(active===1&&typeof sceneSound==='function')sceneSound('allclear',{volume:.8});
+  if(active===mount&&typeof sceneSound==='function')sceneSound('allclear',{volume:.8});
  }
- if(ev.phase==='complete'&&app.phase==='playing'&&!app.paid[1]&&app.enabled[1]){
-  app.paid[1]=true;app.roundWins[1]=medalWin(app.locked[1],e.totalHundredths);
+ if(ev.phase==='complete'&&app.phase==='playing'&&!app.paid[mount]&&app.enabled[mount]){
+  app.paid[mount]=true;app.roundWins[mount]=medalWin(app.locked[mount],e.totalHundredths);
   if(app.enabled.every((enabled,i)=>!enabled||app.paid[i]))app.finishRound();
  }
  if(ev.phase==='error'){
@@ -163,7 +164,7 @@ function event(ev,e){
  if(ev.phase==='complete'&&typeof recordChanged==='function')recordChanged(app);
 }
 engine=new K.WineryEngine({random:app.random,sleep:app.sleep,speed:app.speed,onEvent:event});
-app.engines[1]=engine;S.engine=engine;
+app.engines[mount]=engine;S.engine=engine;
 engine.setPayoutTarget(readMenuPayout());
 function syncMenuPayout(){
  const target=readMenuPayout();
@@ -191,7 +192,7 @@ function stable(e){
 }
 function wineryReach(s,e,a){
  const context=typeof reachContext==='function'?reachContext(e,a):null;
- if(!context||!stable(e)||a.bet(1)<=0){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
+ if(!context||!stable(e)||a.bet(mount)<=0){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
  if(s.reachBoardKey===context.key&&s.reachStatus==='ready')return;
  s.reachEpoch=(s.reachEpoch||0)+1;s.reachBoardKey=context.key;
  // Rank by prospective additional payout, with 21 FULL as a special top tier.
@@ -870,7 +871,7 @@ function paint(target,time,small=false){
  if(!small){
   premiumReach(xx,time);
   xx.restore(); // normal coordinates for the HUD
-  if(!app.bet(1)){
+  if(!app.bet(mount)){
    xx.save();xx.textAlign='center';xx.font='900 25px system-ui';
    xx.shadowColor='#67345d';xx.shadowBlur=7;xx.fillStyle='#fff0c6';
    xx.fillText('BETしてください',205,245);xx.restore();
@@ -912,7 +913,7 @@ function updatePayoutVisual(windowEl,pouring){
 }
 
 function updateHUD(){
- const bet=app.bet(1),pouring=engine.fx?.type==='pour';
+ const bet=app.bet(mount),pouring=engine.fx?.type==='pour';
  const windowEl=scene.querySelector('.wp-pay-window');
  updatePayoutVisual(windowEl,pouring);
  const oddsFx=engine.fx?.type==='odds'?engine.fx:null;
@@ -1000,7 +1001,7 @@ function paintMini(){
  const progress=engine.fx?.type==='pour'?
   Math.floor(engine.fx.elapsed/100):0;
  const k=[engine.version,engine.phase,engine.processed,engine.power,
-          engine.totalHundredths,app.bet(1),progress].join('/');
+          engine.totalHundredths,app.bet(mount),progress].join('/');
  if(k===miniKey)return;miniKey=k;
  // Render JUST the dynamic cups and their live numbers. No fruit kingdom,
  // no static afternoon-tea image, no 21-frame background screenshot,
@@ -1035,7 +1036,7 @@ function tick(now){
  const advancing=!app.paused&&!document.hidden;
  if(advancing&&stamp)clock+=Math.min(100,now-stamp);stamp=now;
  updateHUD();paintMini();
- if(active===1&&!S.panel.hidden){
+ if(active===mount&&!S.panel.hidden){
   if(now-lastPaint>=33){paint(canvas,clock);lastPaint=now;}
   if(advancing)queueFrame();
  }
@@ -1047,32 +1048,32 @@ const request0=requestReach;requestReach=function(s,e,a=app){if(e?.kind==='winer
 const boardReach0=updateReachBoard;updateReachBoard=function(s,a){if(s.engine?.kind==='winery')return;return boardReach0(s,a);};
 const tabs0=tabs;tabs=function(a){
  const saved=S.engine;S.engine=null;try{tabs0(a);}finally{S.engine=saved;}
- const bet=a.bet(1),win=medalWin(bet,engine.totalHundredths);
+ const bet=a.bet(mount),win=medalWin(bet,engine.totalHundredths);
  fitGoldenNumber(S.tabBet,num(bet),14,76);S.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(S.tabWin,num(win),17,50);
  S.tabSugar.hidden=false;S.tabSugar.classList.toggle('collected',engine.sugarAwarded);
  if(typeof applySugarTier==='function')applySugarTier(S.tabSugar.querySelector('.sugar-gem'),wonderTier(bet));
  S.sugarGet.hidden=!engine.sugarAwarded;S.tab.classList.toggle('off',bet<=0);
 };
 const hud0=hud;hud=function(a){
- if(active!==1){document.body.classList.remove('winery-active');return hud0(a);}
+ if(active!==mount){document.body.classList.remove('winery-active');return hud0(a);}
  hud0(a);
  document.body.classList.remove('gelato-active','choco-active','carnival-active');document.body.classList.add('winery-active');
  put('best','満タン '+engine.fullCount+'/21 ・ MIX '+engine.mixCount);put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');
  updateHUD();updateReachUI(a);queueFrame();
 };
-const select0=select;select=function(i){const result=select0(i);if(i===1){uiKey='';queueFrame();}return result;};
+const select0=select;select=function(i){const result=select0(i);if(i===mount){uiKey='';queueFrame();}return result;};
 const result0=renderRoundResult;renderRoundResult=function(a){
  result0(a);
  const panel=document.getElementById('result-games');if(!panel)return;
- const winery=panel.querySelector('[data-game-index="1"]');
+ const winery=panel.querySelector('[data-game-index="'+mount+'"]');
  if(winery){
-  winery.dataset.winery='1';const title=winery.querySelector('.result-game-name');if(title)title.innerHTML='ワイナリーピラミッド <small>'+(a.enabled[1]?num(a.locked[1])+' BET':'NO BET')+'</small>';
+  winery.dataset.winery='1';const title=winery.querySelector('.result-game-name');if(title)title.innerHTML='ワイナリーピラミッド <small>'+(a.enabled[mount]?num(a.locked[mount])+' BET':'NO BET')+'</small>';
   const detail=winery.querySelector('.result-game-details');if(detail)detail.innerHTML='<span>満タン '+engine.fullCount+'/21</span><span>MIX '+engine.mixCount+'杯 ×'+engine.mixMultiplier.toFixed(1)+'倍</span>';
  }
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
 window.WineryPyramid={installed:true,version:78,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
-select(1);queueFrame();scheduleUI(app);
+select(mount);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();

@@ -224,12 +224,11 @@
   function domain(i){
     if(domains[i])return domains[i];
     const p=K.cells[i],rays=[];
-    K.lightningAxes[i].forEach((axis,j)=>{
-      // Engine directions are q constant, x constant, then q+r constant.
+    K.lightningAxes[i].forEach(axis=>{
+      // Use the same two diagonals and horizontal row as the live blast and guide.
       const first=K.cells[axis[0]],last=K.cells[axis.at(-1)];
-      let dx=last.x-first.x,dy=last.y-first.y,l=Math.hypot(dx,dy);
-      if(!l){[dx,dy]=[[.5,Math.sqrt(3)/2],[0,1],[-.5,Math.sqrt(3)/2]][j];l=1;}
-      dx/=l;dy/=l;
+      const vx=last.x-first.x,vy=last.y-first.y,length=Math.hypot(vx,vy);
+      const dx=vx/length,dy=vy/length;
       for(const sign of [-1,1]){
         const u=dx*sign,v=dy*sign;let edge=Infinity;
         for(let k=0;k<K.outline.length;k++){
@@ -972,7 +971,7 @@
     ['黄ボム','となりの1周','まわりの6マス','#ffe078',2],
     ['赤ボム','まわりの2周','2周ぶんの18マス','#ff977a',3],
     ['紫ボム','まわりの3周','3周ぶんの36マス','#e9aaff',3],
-    ['稲妻ボム','3本のライン','縦と斜めを端まで','#82e7ff',3],
+    ['稲妻ボム','3本のライン','横と斜めを端まで','#82e7ff',3],
     ['虹ボム','盤面全体','すべての粒に着火','#ffda9e',2],
     ['着火ライン','番号にHIT','一直線に着火！','#ffc772',2],
     ['ボム率UP','補充Lvが上昇','新しい粒に適用','#bded91',2],
@@ -1065,7 +1064,7 @@
     else {
     const pass=clamp((t-.24)/.45),color=blastPaint[power];
     const maxDistance=power<=3?power:radius;
-    // All six directions are represented for lightning, including its vertical track.
+    // All six directions are represented for lightning, including its horizontal track.
     if(power===4&&pass>0){
       ctx.save();ctx.lineWidth=.095;ctx.strokeStyle='#8beaff';ctx.lineCap='round';ctx.beginPath();
       for(const axis of K.lightningAxes[lessonCenter]){

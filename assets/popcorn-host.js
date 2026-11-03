@@ -1,7 +1,7 @@
 /* Popcorn Splash. Uses the normal roulette, pause clock and credit settlement. */
 (()=>{
 'use strict';
-const id=2, slot=slots[id], K=window.PopcornEngine, V=window.PopcornView;
+const id=window.SweetsLineup.ids.indexOf('popcorn'), slot=slots[id], K=window.PopcornEngine, V=window.PopcornView;
 const canvas=document.createElement('canvas');
 canvas.className='pc-scene';
 const guideHint='ポップコーンスプラッシュの着火ガイド。番号で着火範囲やボム率UPを確認。左右キーで選択。Escで解除。';
@@ -123,6 +123,7 @@ function step(dt){
   if(wave>engine.soundWave&&wave<trace.waves.length){
    engine.soundWave=wave;
    const power=trace.waves[wave].reduce((max,i)=>Math.max(max,trace.before[i].power),0);
+   window.SweetsArcadeShow?.popcornWave(engine,trace,wave,power);
    const effect=power===5?'transform':power===4?'sweep':power>=2?'color-burst':'pop';
    sceneSound(effect,{volume:power>=2?.72:Math.min(.72,.42+wave*.05),rate:1+Math.min(wave,7)*.075});
    if(wave>=2)sceneSound('chain',{volume:.35,rate:1+Math.min(wave,6)*.09});
@@ -150,7 +151,7 @@ function demoFrame(){
  return {state:d,turn:null,elapsed:0,lesson:{power,progress:age/lessonDurations[power-1]}};
 }
 function paint(mini){
- if(mini?active===id:active!==id||slot.panel.hidden)return;
+ if(mini?active===id||app.phase==='ready':active!==id||slot.panel.hidden)return;
  const dest=mini?slot.miniCanvas:canvas;
  const dpr=Math.min(2,window.devicePixelRatio||1);
  if(!mini){
@@ -235,11 +236,11 @@ function tick(now){
  const elapsed=advancing&&stamp?Math.max(0,now-stamp):0;
  const dt=Math.min(elapsed,100);
  stamp=advancing?now:0;
- if(advancing){clock+=dt;if(app.phase==='ready')demoClock+=elapsed;step(dt);}
+ if(advancing){clock+=dt;if(app.phase==='ready'&&active===id)demoClock+=elapsed;step(dt);}
  const selected=active===id;
  const fastSupply=advancing&&selected&&engine.presentationRate>1&&engine.trace&&V.refilling(engine.trace,engine.elapsed);
  if(selected&&(fastSupply||clock-lastMain>=33)){paint(false);lastMain=clock;}
- if((app.phase==='ready'||engine.trace)&&clock-lastMini>=150){paint(true);lastMini=clock;}
+ if(app.phase!=='ready'&&engine.trace&&clock-lastMini>=150){paint(true);lastMini=clock;}
  if(advancing&&(selected||app.phase==='ready'||engine.trace||engine.queue.length))requestFrame();
 }
 const oldSelect=select;
@@ -262,7 +263,7 @@ hud=function(a){
 const oldResult=renderRoundResult;
 renderRoundResult=function(a){
  oldResult(a);
- const panel=$('result-games'),row=panel.querySelector('[data-game-index="2"]');
+ const panel=$('result-games'),row=panel.querySelector('[data-game-index="'+id+'"]');
  if(!row||!a.result)return;
  if(row.dataset.popcorn!==String(a.token)){
   row.dataset.popcorn=String(a.token);

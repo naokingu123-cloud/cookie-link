@@ -36,7 +36,7 @@
   // the popcorn cannot block electricity on these fixed board coordinates.
   const lightningAxes=cells.map(a=>[
     cells.flatMap((b,j)=>b.q===a.q?[j]:[]),
-    cells.flatMap((b,j)=>2*b.q+b.r===2*a.q+a.r?[j]:[]),
+    cells.flatMap((b,j)=>b.r===a.r?[j]:[]),
     cells.flatMap((b,j)=>b.q+b.r===a.q+a.r?[j]:[])
   ]);
   blastAreas[4]=lightningAxes.map((axes,i)=>[...new Set(axes.flat())].filter(j=>j!==i));
@@ -209,10 +209,11 @@
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
   // At all settings the board follows the same probability law. Only the
   // first paying count changes, once per game and always in tens. RTP anchors
-  // use the joint pop/clear distribution of 180,000 complete eight-ball rounds.
-  const startRates=[[200,47.735],[190,50.413],[180,53.745],[170,57.815],
-    [160,62.713],[150,68.545],[140,75.397],[130,83.385],[120,92.620],
-    [110,103.220],[100,115.341],[90,129.169],[80,144.950],[70,162.973]];
+  // use the joint pop/clear distribution of 225,000 complete eight-ball rounds.
+  const startRates=[[230,48.541],[220,50.003],[210,51.881],[200,54.251],
+    [190,57.213],[180,60.863],[170,65.284],[160,70.572],[150,76.808],
+    [140,84.128],[130,92.652],[120,102.484],[110,113.750],[100,126.584],
+    [90,141.248],[80,158.012]];
   function firstForRate(target,roll){
     const rate=Math.max(50,Math.min(150,Number(target)||90));
     const i=startRates.findIndex(([,rtp])=>rtp>=rate);
@@ -245,7 +246,7 @@
     const numbers=shuffle(Array.from({length:25},(_,i)=>i+1),rng).slice(0,boostIndex+1);
     const level=1,chances=probabilitiesForLevel(level);
     const board=cells.map((_,id)=>kernel(id,chances,rng));
-    const sugarTarget=rng()<.18351?220:230;
+    const sugarTarget=rng()<.67448?230:240;
     const first=firstForRate(rate,rng());
     return {board,numbers,drawn:[],allIndex,boostIndex,level,firstPopAward:first,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
   }
