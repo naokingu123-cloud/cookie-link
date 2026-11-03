@@ -12,11 +12,11 @@ const ctx=canvas.getContext('2d');
 slot.holder.classList.add('pc-slot');
 const title=slot.tab.querySelector('.tab-game-name');
 title.setAttribute('aria-label','ポップコーンスプラッシュ');
-title.innerHTML='<img src="assets/popcorn-art/popcorn-logo.webp" alt="ポップコーンスプラッシュ">';
+title.innerHTML='<img src="assets/popcorn-art/popcorn-logo-v88.webp" alt="ポップコーンスプラッシュ">';
 slot.tabSugar.hidden=false;
 
 let frame=0, stamp=0, clock=0, lastMain=-1e4, lastMini=-1e4, demo=null;
-let reach=[],hoverPort=-1,pinnedPort=-1;
+let hoverPort=-1,pinnedPort=-1;
 const engine={
  kind:'popcorn', recordGame:4, drawMode:'single', version:0,
  get idle(){return !this.trace&&!this.queue.length;},
@@ -30,7 +30,7 @@ const engine={
   this.state=K.create({bet:app.bet(id)||0,rate:debugPayoutTarget,rng:app.random});
   this.wonderToken=null;this.wonderCollected=false;this.roundSteps=0;stopSugarAward(slot);
   this.accepted=0;this.processed=0;this.drawn=new Set();this.queue=[];this.trace=null;this.elapsed=0;this.maxChain=0;this.soundWave=-1;
-  demo=null;reach=[];hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);invalidateReach(slot);this.emit('ready');lastMain=lastMini=-1e4;
+  demo=null;hoverPort=pinnedPort=-1;canvas.setAttribute('aria-label',guideHint);invalidateReach(slot);this.emit('ready');lastMain=lastMini=-1e4;
  },
  setRainbowSugar(bet){
   this.wonderToken={id:this.version*100+1,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};
@@ -57,21 +57,31 @@ const engine={
  }
 };
 app.engines[id]=slot.engine=engine;
+const reachKinds=['reach','high','super','all'];
 function updateReach(a){
  const context=reachContext(engine,a);
- if(!context||a.bet(id)<=0){reach=[];invalidateReach(slot);return;}
+ if(!context||a.bet(id)<=0){invalidateReach(slot);return;}
  if(slot.reachBoardKey===context.key)return;
  const current=engine.totalHundredths, options=[];
  for(const number of engine.state.numbers){
   if(context.used.has(number))continue;
   const p=K.preview(engine.state,number);
   const total=K.payout(engine.state.popped+p.count,engine.allClears+Number(p.clear),100,engine.state.firstPopAward);
-  if(total>current)options.push({number,total,tier:reachTier(total-current,p.clear)});
+  const gain=total-current;
+  if(!p.clear&&gain<=0)continue;
+  const tier=reachTier(gain,p.clear);
+  options.push({number,total,gain,allClear:p.clear,tier,kind:reachKinds[tier]});
  }
  options.sort((a,b)=>a.number-b.number);
- slot.reachBoardKey=context.key;slot.reachResults=slot.tabReachResults=options;
+ slot.reachBoardKey=context.key;slot.reachResults=options;
+ // Main-board clear badges always say 全消し. The small-board numbers reserve
+ // the rainbow tier for the prospective third clear and later in this game.
+ slot.tabReachResults=options.map(hit=>{
+  if(!hit.allClear||engine.allClears>=2)return hit;
+  const tier=reachTier(hit.gain,false);
+  return {...hit,tier,kind:reachKinds[tier]};
+ });
  slot.tabReachBase=current;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=engine.processed;
- reach=options.map(o=>({number:o.number,kind:['reach','high','super','all'][o.tier]}));
 }
 slot.updatePopcornReach=updateReach;
 async function finish(token){
@@ -97,7 +107,7 @@ function step(dt){
   const {number,state,trace}=engine.queue.shift();
   engine.state=state;engine.trace=trace;engine.elapsed=0;
   engine.soundWave=-1;engine.maxChain=Math.max(engine.maxChain,engine.trace.waves.length);
-  invalidateReach(slot);reach=[];engine.emit('popcornDraw',{number});
+  invalidateReach(slot);engine.emit('popcornDraw',{number});
   if(trace.boost&&active===id)sceneSound('level',{volume:.55});
  }
  if(!engine.trace)return;
@@ -140,7 +150,7 @@ function demoFrame(){
  return {state:demo.state,turn:demo.trace,elapsed:clock-demo.at};
 }
 function paint(mini){
- if(!mini&&(active!==id||slot.panel.hidden))return;
+ if(mini?active===id:active!==id||slot.panel.hidden)return;
  const dest=mini?slot.miniCanvas:canvas;
  const dpr=Math.min(2,window.devicePixelRatio||1);
  if(!mini){
@@ -150,7 +160,7 @@ function paint(mini){
  const displayDemo=app.phase==='ready'&&!jpcSession.active;
  const d=displayDemo?demoFrame():{state:engine.state,turn:engine.trace,elapsed:engine.elapsed};
  const focusPort=mini?-1:(hoverPort>=0?hoverPort:pinnedPort);
- V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:reach});
+ V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:(mini?slot.tabReachResults:slot.reachResults)});
 }
 slot.paintPopcorn=paint;
 function badgeAt(event){
@@ -210,9 +220,11 @@ function tick(now){
 }
 const oldSelect=select;
 select=function(i){
+ const wasSelected=active===id;
  const result=oldSelect(i);
  document.body.classList.toggle('pc-active',i===id);
  if(i===id){lastMain=-1e4;requestFrame();}
+ else if(wasSelected)paint(true);
  return result;
 };
 const oldHud=hud;
@@ -241,7 +253,7 @@ function refreshArt(){lastMini=lastMain=-1e4;requestFrame();}
 V.assetsReady.then(refreshArt);
 if(document.fonts)document.fonts.load('700 16px ArcadePayout','0123456789WIN').then(refreshArt);
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:87};
+window.PopcornSplash={engine,core:K,version:88};
 engine.reset();
 select(id);
 })();

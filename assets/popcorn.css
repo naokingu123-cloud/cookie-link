@@ -10,8 +10,8 @@ body.pc-enabled #tab2 .tab-game-name{background:none!important;display:flex!impo
 body.pc-enabled #tab2 .tab-game-name b:last-child{color:#fff7cb}
 body.pc-enabled #tab2 .mini-wrap{background:linear-gradient(150deg,#fec368,#932c42 68%,#53253d)!important;border-radius:9px;overflow:hidden}
 body.pc-enabled #tab2 canvas{width:100%;height:100%;object-fit:contain}
-body.pc-enabled #tab2[aria-selected=true] .mini-wrap:after{content:'選択中';position:absolute;inset:0;display:grid;place-items:center;background:#57203a83;color:#fff4b4;font:bold 15px system-ui;text-shadow:0 1px 3px #6f263d;animation:pc-selected 1.8s ease-in-out infinite}
-@keyframes pc-selected{50%{opacity:.55}}
+body.pc-enabled #tabs .tab[aria-selected=true] .mini-wrap>*{visibility:hidden!important}
+body.pc-enabled #tab2[aria-selected=true] .mini-wrap:after{content:'選択中';position:absolute;inset:2px;display:grid;place-items:center;background:#61353b;color:#fff4b4;border:1px solid #f5cd87;border-radius:6px;font:bold 13px system-ui;text-shadow:0 1px 2px #592b32}
 body.pc-active #odds-panel,body.pc-active #allclear-award,body.pc-active #carnival-heading,body.pc-active #choco-heading,body.pc-active #carnival-odds{display:none!important}
 body.pc-active .game .festival-top{visibility:hidden!important}
 body.pc-active .game .field{grid-template-columns:minmax(0,1fr)!important;width:100%!important;gap:0!important}
@@ -19,7 +19,6 @@ body.pc-active .board-area,body.pc-active #panels{width:100%!important;max-width
 #panel2{position:relative!important;background:transparent!important;width:100%!important;height:100%!important;overflow:hidden}
 #panel2>:not(.pc-scene){display:none!important}
 #panel2 .pc-scene{display:block;width:100%;height:100%;position:absolute;inset:0;border-radius:12px;background:#843b46}
-@media(prefers-reduced-motion:reduce){body.pc-enabled #tab2[aria-selected=true] .mini-wrap:after{animation:none}}
 body.pc-active #screen>.game{background:linear-gradient(#ffedd331,#ffe9b524),url('popcorn-art/popcorn-fair.webp') center/cover!important}
 body.pc-active #screen>.game>.festival-top,body.pc-active #screen>.game>.statusline{display:none!important}
 body.pc-active #screen>.game>.field{flex:1 1 auto!important;height:auto!important;min-height:0!important;grid-template-rows:minmax(0,1fr)!important;background:transparent!important}

@@ -22,7 +22,7 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
 })();
-</script><link rel="stylesheet" href="optimized/cookie-20261031.css?v=3"><link rel="stylesheet" href="assets/highest-role-reach-v18.css?v=1"><link rel="stylesheet" href="assets/gelato-prism-v28.css?v=52"><link rel="stylesheet" href="assets/gelato-prism-rail-v76.css?v=76"><link rel="stylesheet" href="assets/popcorn.css?v=84"></head><body><template id="mobile-third-party-notices">three-0.160.0
+</script><link rel="stylesheet" href="optimized/cookie-20261031.css?v=3"><link rel="stylesheet" href="assets/highest-role-reach-v18.css?v=1"><link rel="stylesheet" href="assets/gelato-prism-v28.css?v=52"><link rel="stylesheet" href="assets/gelato-prism-rail-v76.css?v=76"><link rel="stylesheet" href="assets/popcorn.css?v=88"></head><body><template id="mobile-third-party-notices">three-0.160.0
 The MIT License
 
 Copyright © 2010-2023 three.js authors
@@ -367,7 +367,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <div id="title-toast" class="title-toast" role="status" aria-live="polite" hidden><span class="menu-art medal-art" aria-hidden="true"></span><div><small>称号 GET!</small><strong id="title-toast-name"></strong></div></div>
 </main></div><dialog id="wardrobe"><h2>ゼリーペット</h2><div class="row"><label>ゼリー</label><div class="swatches" id="jelly-colors"></div></div><div class="row"><label>リボン</label><div class="swatches" id="ribbon-colors"></div></div><div class="row"><label>かざりの色</label><div class="swatches" id="charm-colors"></div></div><div class="row"><label>かざり</label><button type="button" data-pet-top="cookie">クッキー</button><button type="button" data-pet-top="drop">しずく</button></div><div class="row"><label>おめかし</label><button type="button" data-pet-outfit="bow">リボン</button><button type="button" data-pet-outfit="plain">なし</button></div><button id="close-dress">閉じる</button></dialog>
 <script src="assets/popcorn-engine.js?v=87"></script>
-<script src="assets/popcorn-view.js?v=86"></script>
+<script src="assets/popcorn-view.js?v=88"></script>
 <script src="assets/player-lounge.js?v=81"></script>
 <script src="assets/bgm-player.js"></script>
 <script src="assets/cookie-upgrade-patches.js?v=8"></script>
@@ -375,7 +375,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
  try{
-  const paths=['optimized/app-01.js?v=popcorn84','optimized/achievements-v3.js?v=popcorn81','assets/highest-role-reach-v18.js?v=1','assets/gelato-prism-v28.js?v=81','assets/winery-pyramid-core-v1.js?v=78','assets/winery-pyramid-v1.js?v=81','assets/recent-game-demos-simple-v74.js?v=74','assets/popcorn-host.js?v=87'];
+  const paths=['optimized/app-01.js?v=popcorn84','optimized/achievements-v3.js?v=popcorn81','assets/highest-role-reach-v18.js?v=1','assets/gelato-prism-v28.js?v=81','assets/winery-pyramid-core-v1.js?v=78','assets/winery-pyramid-v1.js?v=81','assets/recent-game-demos-simple-v74.js?v=74','assets/popcorn-host.js?v=88'];
   const responses=await Promise.all(paths.map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
   let [game,extension,highestReachV18,gelatoPrismV28,wineryPyramidCore,wineryPyramidV1,recentGameDemosV74,popcornHost]=await Promise.all(responses.map(r=>r.text()));
