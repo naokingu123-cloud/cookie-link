@@ -38,6 +38,10 @@
   }));
   const paths=[];
   function motionPoint(move,t){
+    if(move.from<0){
+      const b=cells[move.to],u=Math.max(0,Math.min(t,1));
+      return {x:move.x+(b.x-move.x)*u,y:move.y+(b.y-move.y)*u};
+    }
     const {from,to,pivot,gap,gapPivot,turn}=move.path||move, a=cells[from],b=cells[to];
     if(t<=0)return a;if(t>=1)return b;
     const sign=Math.sign(b.x-a.x);
@@ -59,6 +63,11 @@
     if(to<0)return null;
     const p={from,to,pivot,turn,gap,gapPivot,id:paths.length};
     p.samples=Array.from({length:17},(_,k)=>motionPoint(p,k/16));
+    // At the angled carton walls a gap escape around a support can leave the
+    // hexagon mid-path despite both endpoints being valid. Keep the whole
+    // kernel inside the brass edge throughout its roll.
+    const innerWall=radius*1.045*S-.5; // outer carton lip, minus one kernel radius
+    if(p.samples.some(({x,y})=>Math.max(Math.abs(y),Math.abs(x)*S+Math.abs(y)/2)>innerWall+1e-8))return null;
     const tooNear=(a,b)=>(a.x-b.x)**2+(a.y-b.y)**2<.999999;
     p.blockers=cells.flatMap((cell,i)=>from!==i&&p.samples.some((a,k)=>k>0&&tooNear(a,cell))?[i]:[]);
     paths.push(p);
@@ -154,11 +163,11 @@
   const clearPay = [[1,5],[2,20],[3,50],[4,100],[5,200],[6,300],[7,500],[8,1000]];
   const clearTotals=[0];
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
-  // 24,000 rounds per fixed bomb chance with enhanced bombs, sloping lanes,
+  // 26,000 rounds per fixed bomb chance with top-fed supply and sparse occupancy,
   // rolling gravity, and the separate ALL igniter. Eight balls
   // without replacement at 100 BET. Interpolate by mixing complete rounds so
   // the published payout table stays fixed across the 50–150% debug range.
-  const rateAnchors = [[.155,38.433],[.21,64.175],[.255,97.785],[.285,131.361],[.325,203.287]];
+  const rateAnchors = [[.16,36.524],[.215,59.975],[.256,86.820],[.295,127.296],[.335,195.853]];
   function multiplier(count,table){
     let award = 0;
     for (const [min,value] of table){
@@ -206,9 +215,9 @@
     const port=state.numbers.indexOf(number);
     const all=port!==-1 && port===state.allIndex;
     const first=all?state.board.reduce((seeds,piece,i)=>{
-      if(piece.bomb) seeds.push(i);
+      if(piece?.bomb) seeds.push(i);
       return seeds;
-    },[]):port<0?[]:ports[port].line;
+    },[]):port<0?[]:ports[port].line.filter(i=>state.board[i]);
     const marked=new Set(first), waves=[];
     let frontier=first;
     while(frontier.length){
@@ -217,7 +226,7 @@
       for(const index of frontier){
         if(!state.board[index].bomb) continue;
         for(const adjacent of (state.board[index].power===2?radiusTwo:neighbors)[index]){
-          if(!marked.has(adjacent)){
+          if(state.board[adjacent] && !marked.has(adjacent)){
             marked.add(adjacent);
             next.push(adjacent);
           }
@@ -225,32 +234,51 @@
       }
       frontier=next;
     }
-    const count=marked.size, clear=count===cells.length;
+    const count=marked.size, clear=count>0 && count===state.board.filter(Boolean).length;
     return {port,all,waves,marked,count,clear,win:payout(state.popped+count,state.clears+Number(clear),state.bet)};
   }
   function preview(state,number){
-    const {count,clear,win}=ignition(state,number);
-    return {count,clear,win};
+    const {count,clear,win,waves}=ignition(state,number);
+    return {count,clear,win,waves};
+  }
+  // The horizontal mouth has five entry sockets. The carton walls never
+  // admit a kernel from the side. Inject a batch, let Six Drop settle it and
+  // repeat until the mouth is blocked; a sealed pocket remains empty.
+  function topUp(input,state,rng){
+    let board=input;
+    const steps=[],added=[];
+    // On a clear the first center kernel settles on the floor before the
+    // five-socket flow starts, so a freshly emptied carton can fill all 61.
+    let firstEmpty=!board.some(Boolean);
+    for(;;){
+      const inlets=firstEmpty?[rowIndices[0][2]]:rowIndices[0];
+      firstEmpty=false;
+      const entries=inlets.filter(i=>!board[i]);
+      if(!entries.length)break;
+      const before=board;
+      board=board.slice();
+      const moves=entries.map(to=>{
+        const piece=kernel(cells.length+state.refilled++,rng()<state.bombChance,rng);
+        const entry={from:-1,to,x:cells[to].x,y:-5.0,piece};
+        board[to]=piece;added.push(entry);
+        return entry;
+      });
+      steps.push({kind:'spawn',before,after:board,moves,ms:110});
+      const fall=settle(board);
+      board=fall.board;
+      for(const frame of fall.steps)steps.push({kind:'fall',...frame});
+    }
+    if(!added.length)return {board,steps,moves:[]};
+    const landings=new Map(board.flatMap((p,i)=>p?[[p.id,i]]:[]));
+    return {board,steps,moves:added.map(m=>({...m,to:landings.get(m.piece.id)}))};
   }
   function draw(state,number,rng=Math.random){
     if(state.turn>=8 || !Number.isInteger(number) || number<1 || number>25 || state.drawn.includes(number)) return null;
     const {port,all,waves,marked,count,clear,win}=ignition(state,number);
-    const before=state.board, moves=[], oldWin=state.win;
+    const before=state.board, oldWin=state.win;
     const fall=count?settle(before.map((p,i)=>marked.has(i)?null:p)):{board:before,steps:[]};
-    const settled=fall.board, after=settled.slice(), fallSteps=fall.steps;
-    if(count){
-      for(const column of columns){
-        let supplyY=-4.9;
-        for(let row=column.length-1;row>=0;row--){
-          const to=column[row];
-          if(settled[to])continue;
-          const piece=kernel(cells.length+state.refilled++,rng()<state.bombChance,rng);
-          after[to]=piece;
-          moves.push({from:-1,to,x:cells[to].x,y:supplyY,piece});
-          supplyY-=2*S;
-        }
-      }
-    }
+    const settled=fall.board, fallSteps=fall.steps;
+    const {board:after,steps:refillSteps,moves}=topUp(settled,state,rng);
     const beforeNumbers=state.numbers;
     let afterNumbers=beforeNumbers, newNumber=null;
     state.drawn.push(number);
@@ -267,7 +295,7 @@
     state.popped+=count;
     state.clears+=Number(clear);
     state.win=win;
-    return {before,after,port,all,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,moves,count,clear,oldWin,win};
+    return {before,after,port,all,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
   }
   const api={cells,ports,outline,columns,neighbors,radiusTwo,settle,motionPoint,strongBombChance,popPay,clearPay,payout,create,preview,draw};
   root.PopcornEngine=api;

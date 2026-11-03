@@ -58,34 +58,52 @@ for(const i of new Set([...ports[lineIndex].line,...neighbors[bomb],...neighbors
 assert.equal(new Set(result.waves.flat()).size,result.waves.flat().length);
 function validateGravity(turn){
  const gone=new Set(turn.waves.flat());
- let board=turn.before.map((p,i)=>gone.has(i)?null:p);
- for(const step of turn.fallSteps){
+ assert.ok([...gone].every(i=>turn.before[i]));
+ assert.equal(gone.size,turn.count);
+ assert.equal(turn.clear,turn.count>0&&turn.count===turn.before.filter(Boolean).length);
+ let board=turn.before.map((p,i)=>gone.has(i)?null:p), added=[];
+ function replay(step,feed){
    assert.deepEqual(step.before,board);
    const moving=new Set(step.moves.map(m=>m.from));
    const stationary=board.flatMap((p,i)=>p&&!moving.has(i)?[cells[i]]:[]);
-   for(let k=0;k<=16;k++){
-     const points=stationary.concat(step.moves.map(m=>E.motionPoint(m,k/16)));
+   for(let k=0;k<=48;k++){
+     const movingPoints=step.moves.map(m=>E.motionPoint(m,k/48));
+     if(!feed)for(const {x,y} of movingPoints){
+       const wall=Math.max(Math.abs(y),Math.abs(x)*S+Math.abs(y)/2);
+       assert.ok(wall+.5<=1.045*4.6*S+1e-8);
+     }
+     const points=stationary.concat(movingPoints);
      for(let a=0;a<points.length;a++)for(let b=0;b<a;b++)
        assert.ok(Math.hypot(points[a].x-points[b].x,points[a].y-points[b].y)>=.99999);
    }
    for(const m of step.moves){
-     assert.equal(board[m.from],m.piece);assert.ok(cells[m.to].y>cells[m.from].y);
-     assert.equal(E.motionPoint(m,0),cells[m.from]);assert.equal(E.motionPoint(m,1),cells[m.to]);
+     if(feed){
+       assert.equal(m.from,-1);assert.equal(cells[m.to].r,-4);
+       assert.equal(m.x,cells[m.to].x);assert.ok(m.y<-4.6);
+       assert.deepEqual(E.motionPoint(m,0),{x:m.x,y:m.y});
+       const end=E.motionPoint(m,1);close(end.x,cells[m.to].x);close(end.y,cells[m.to].y);
+       added.push(m.piece);
+     }else{
+       assert.equal(board[m.from],m.piece);assert.ok(cells[m.to].y>cells[m.from].y);
+       assert.equal(E.motionPoint(m,0),cells[m.from]);assert.equal(E.motionPoint(m,1),cells[m.to]);
+     }
    }
    board=board.slice();
-   for(const m of step.moves)board[m.from]=null;
+   if(!feed)for(const m of step.moves)board[m.from]=null;
    for(const m of step.moves){assert.equal(board[m.to],null);board[m.to]=m.piece;}
    assert.deepEqual(board,step.after);
  }
+ for(const step of turn.fallSteps)replay(step,false);
  assert.deepEqual(board,turn.settled);assert.equal(E.settle(board).steps.length,0);
- board=board.slice();
- for(const m of turn.moves){
-   assert.equal(m.from,-1);assert.equal(board[m.to],null);assert.ok(m.y<-4.6);
-   assert.equal(m.x,cells[m.to].x);board[m.to]=m.piece;
- }
+ for(const step of turn.refillSteps)replay(step,step.kind==='spawn');
  assert.deepEqual(board,turn.after);
- assert.equal(new Set(turn.after.map(p=>p.id)).size,61);
- assert.ok(turn.after.every(p=>Object.isFrozen(p)&&p.color===Number(p.bomb)&&p.bomb===(p.power>0)));
+ const live=board.filter(Boolean);
+ assert.equal(new Set(live.map(p=>p.id)).size,live.length);
+ assert.deepEqual(added,turn.moves.map(m=>m.piece));
+ for(const m of turn.moves)assert.equal(board[m.to],m.piece);
+ assert.equal(live.length,turn.before.filter(Boolean).length-turn.count+added.length);
+ assert.ok(live.every(p=>Object.isFrozen(p)&&p.color===Number(p.bomb)&&p.bomb===(p.power>0)));
+ assert.equal(E.settle(board).steps.length,0);
 }
 validateGravity(result);
 function verifyNumbers(state,trace){
@@ -101,13 +119,13 @@ function verifyNumbers(state,trace){
 }
 verifyNumbers(s,result);
 const center=cells.findIndex(p=>p.q===0&&p.r===0);
-s.board=s.board.map((piece,i)=>setPower(piece,Number(i===center)));
+s.board=E.create({rng:random}).board.map((piece,i)=>setPower(piece,Number(i===center)));
 const firstAll=s.numbers[s.allIndex], master=E.draw(s,firstAll,random);
 verifyNumbers(s,master);validateGravity(master);
 assert.equal(master.clear,false);assert.equal(master.count,7);assert.equal(s.clears,0);
 assert.deepEqual(master.waves[0],[center]);
 assert.deepEqual(new Set(master.waves[1]),new Set(neighbors[center]));
-s.board=s.board.map(piece=>setPower(piece,0));
+s.board=s.board.map(piece=>piece?setPower(piece,0):null);
 assert.equal(E.preview(s,master.newNumber).count,0);
 const dry=E.draw(s,master.newNumber,random);
 assert.equal(dry.port,s.allIndex);assert.ok(dry.all);assert.equal(dry.count,0);assert.deepEqual(dry.waves,[]);
@@ -119,7 +137,7 @@ while(s.turn<8){
  const cycle=E.draw(s,s.numbers[lineIndex],random);
  validateGravity(cycle);verifyNumbers(s,cycle);
 }
-assert.equal(s.turn,8);assert.equal(s.popped,s.refilled);assert.equal(s.drawn.length,8);
+assert.equal(s.turn,8);assert.equal(s.drawn.length,8);
 const ended=JSON.stringify(s), next=s.numbers[s.allIndex];
 const future=E.preview(s,next);
 assert.ok(future.count>=0&&future.count<=61);
@@ -164,4 +182,41 @@ assert.ok(roll.steps[0].moves.some(m=>m.from===upper&&m.to===idx(-1,4)&&m.path.p
 single[idx(-1,4)]=setPower({id:102},0);assert.equal(E.settle(single).steps.length,0);
 const empty=Array(61).fill(null);empty[center]=setPower({id:300},2);
 assert.equal(E.settle(empty).steps[0].moves[0].to,idx(-1,2));
-console.log('Passed mirrored diagonal and vertical lanes, independent 16th ALL, regular/enhanced cascades, two-color pieces, successive clear prizes, number rerolls, Six Drop motion and staged refill, previews and eight-turn stop.');
+// A stable occupied roof cannot spawn replacement kernels into the void below.
+const roof=E.create({rng:random});roof.board=roof.board.map(c=>setPower(c,0));
+roof.board[center]=null;
+const missNumber=state=>Array.from({length:25},(_,i)=>i+1).find(i=>!state.numbers.includes(i)&&!state.drawn.includes(i));
+const roofTurn=E.draw(roof,missNumber(roof),random);
+assert.equal(roofTurn.after[center],null);assert.equal(roofTurn.moves.length,0);
+const ghost=E.draw(roof,roof.numbers[15],random);
+assert.deepEqual(ghost.waves,[]);assert.equal(ghost.count,0);assert.equal(ghost.clear,false);
+const sparse=E.create({rng:random});
+const bottom=cells.findIndex(p=>p.r===4&&p.q===-2);
+sparse.board=sparse.board.map((p,i)=>i===bottom?setPower(p,1):null);
+assert.deepEqual(E.preview(sparse,sparse.numbers[15]).waves,[[bottom]]);
+const sparseClear=E.draw(sparse,sparse.numbers[15],random);
+assert.equal(sparseClear.clear,true);assert.equal(sparseClear.count,1);
+assert.equal(sparseClear.after.filter(Boolean).length,61);validateGravity(sparseClear);
+const vacantLane=E.create({rng:random}),lane=E.ports[1].line;
+vacantLane.board=vacantLane.board.map((p,i)=>lane.includes(i)?null:p);
+assert.deepEqual(E.preview(vacantLane,vacantLane.numbers[1]).waves,[]);
+assert.equal(E.draw(vacantLane,vacantLane.numbers[1],random).count,0);
+const open=E.create({rng:random});open.board[2]=null;
+const topMiss=E.draw(open,missNumber(open),random);
+assert.equal(topMiss.port,-1);assert.equal(topMiss.count,0);assert.equal(topMiss.moves.length,1);validateGravity(topMiss);
+let survivingHoles=0;
+for(let game=0;game<25;game++){
+ const state=E.create({rng:random});
+ for(let draw=0;draw<8;draw++){
+   const number=draw%4===0?state.numbers[15]:state.numbers[(game+draw)%15];
+   const prediction=E.preview(state,number),t=E.draw(state,number,random);
+   assert.deepEqual(prediction.waves,t.waves);assert.equal(t.clear,prediction.clear);
+   const occupied=state.board.filter(Boolean).length;
+   if(occupied<61)survivingHoles++;
+   assert.equal(occupied,61+state.refilled-state.popped);
+   assert.ok(t.waves.flat().every(i=>t.before[i]));
+   if(game<2)validateGravity(t);
+ }
+}
+assert.ok(survivingHoles>0);
+console.log('Passed 16 igniters, sparse-board previews, sealed pockets, top-only entry and motion replay, occupied-only clears, no ghost hits, collision-safe gravity and eight-turn accounting.');

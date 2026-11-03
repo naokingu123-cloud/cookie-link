@@ -25,6 +25,8 @@
   loadAsset('back', 'popcorn-fair.webp');
   loadAsset('carton', 'popcorn-carton.webp');
   loadAsset('stage', 'popcorn-stage-v81.webp');
+  loadAsset('stall', 'popcorn-stall-v83.webp');
+  loadAsset('hatch', 'popcorn-hatch-v83.webp');
   loadAsset('pieces', 'popcorn-kernels-v81.webp');
   loadAsset('payout', 'popcorn-payout-v81.webp');
   function rounded(ctx, x, y, w, h, r, fill, stroke, lw = 1) {
@@ -108,6 +110,15 @@
     const k=Math.min(w/(bounds.right-bounds.left),h/(bounds.bottom-bounds.top));
     return {k,x:x+w/2-k*(bounds.right+bounds.left)/2,y:y+h/2-k*(bounds.bottom+bounds.top)/2};
   }
+  function layout(width,height,mini=false){
+    const H=540,W=H*width/height;
+    if(mini)return {H,W,b:boardFit(1,1,W-2,H-2)};
+    if(W>=419){
+      const sw=Math.min(185,Math.max(108,W*.212)),left=sw+3,field=W-left;
+      return {H,W,b:boardFit(left,35,field-2,H-63),left:left+1,field:field-3,sidebar:[1,1,sw,H-2]};
+    }
+    return {H,W,b:boardFit(2,39,W-4,H-122),left:4,field:W-8};
+  }
   function star(ctx,x,y,r,fill) {
     ctx.beginPath();for(let j=0;j<8;j++){const a=j*Math.PI/4;const d=r*(j%2?.24:1);const xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d;if(j)ctx.lineTo(xx,yy);else ctx.moveTo(xx,yy);}ctx.closePath();ctx.fillStyle=fill;ctx.fill();
   }
@@ -150,7 +161,7 @@
     }
     ctx.restore();
   }
-  const LIGHT=290, WARN=195, WAVE=480, BURST=455, CLEAR=480, FILL=535;
+  const LIGHT=290, WARN=195, WAVE=480, BURST=455, CLEAR=480, SERVE_OPEN=310, SERVE_CLOSE=235;
   const SNAP=62, NEAR_HIT=226, OUTER_START=134, FAR_HIT=308;
   // Jagged seams meet inside the generated kernel. Each lobe keeps its own
   // original frosting, outline and highlights as it peels away from the center.
@@ -194,8 +205,6 @@
   let flashTexture;
   function sequence(tr) {
     let a=traces.get(tr);if(a)return a;
-    if (tr.port<0) {a={end:470};traces.set(tr,a);return a;}
-    if(!tr.count){a={rest:460,fall:460,refill:460,end:770};traces.set(tr,a);return a;}
     const waveOf=new Int16Array(K.cells.length);waveOf.fill(-1);
     tr.waves.forEach((wave,n)=>wave.forEach(i=>{waveOf[i]=n;}));
     // Link each newly ignited cell to the first real parent front that reaches it.
@@ -203,7 +212,7 @@
     const arrival=new Float32Array(K.cells.length);arrival.fill(Infinity);
     const parent=new Int16Array(K.cells.length);parent.fill(-1);
     const trails=tr.waves.map(()=>[]);
-    tr.waves[0].forEach(i=>{arrival[i]=LIGHT-WARN;});
+    tr.waves[0]?.forEach(i=>{arrival[i]=LIGHT-WARN;});
     tr.waves.forEach((wave,n)=>{
       const start=LIGHT+n*WAVE;
       for(const i of wave){
@@ -218,16 +227,21 @@
       }
     });
     parent.forEach((i,j)=>{if(i>=0){const w=waveOf[i];trails[w].push({from:i,to:j,hit:arrival[j]-LIGHT-w*WAVE});}});
-    const rest=LIGHT+Math.max(0,tr.waves.length-1)*WAVE+BURST;
-    const fall=rest+(tr.clear?CLEAR:90);
-    let refill=fall;
-    const falls=tr.fallSteps.map(step=>{
-      const begin=refill;refill+=step.ms;
+    const rest=tr.count?LIGHT+(tr.waves.length-1)*WAVE+BURST:(tr.port>=0?460:390);
+    const fall=rest+(tr.clear?CLEAR:tr.count?90:0);
+    let cursor=fall;
+    function frame(step,ms){
+      const begin=cursor;cursor+=ms;
       const moving=new Set(step.moves.map(m=>m.from));
       const stationary=step.before.map((p,i)=>p&&!moving.has(i)?i:-1).filter(i=>i>=0);
-      return {step,begin,end:refill,stationary};
-    });
-    a={waveOf,arrival,trails,falls,rest,fall,refill,end:refill+FILL};traces.set(tr,a);return a;
+      return {step,begin,end:cursor,stationary};
+    }
+    const falls=tr.fallSteps.map(step=>frame(step,step.ms)),refill=cursor;
+    const served=tr.refillSteps.length>0;
+    if(served)cursor+=SERVE_OPEN;
+    const supply=tr.refillSteps.map((step,i)=>frame(step,step.kind==='spawn'?(i===0?210:145):step.ms));
+    const end=cursor+(served?SERVE_CLOSE:tr.count?90:310);
+    a={waveOf,arrival,trails,falls,supply,served,rest,fall,refill,end};traces.set(tr,a);return a;
   }
   function duration(trace) {return trace?sequence(trace).end:0;}
   function waveAt(trace, elapsed) {
@@ -302,14 +316,82 @@
     ctx.restore();
   }
   const master={x:-3.83,y:-3.48};
-  function portArt(ctx,s,tr,elapsed,time,mini,reach) {
+  function pickPort(width,height,localX,localY){
+    if(!(width>0&&height>0&&localX>=0&&localX<=width&&localY>=0&&localY<=height))return -1;
+    const {H,b}=layout(width,height),x=(localX*H/height-b.x)/b.k,y=(localY*H/height-b.y)/b.k;
+    let chosen=-1,best=1;
+    for(let i=0;i<=badges.length;i++){
+      const all=i===badges.length,p=all?master:badges[i];
+      const dx=(x-p.x)/(all?.88:.67),dy=(y-p.y+(all?.065:0))/(all?.76:.60);
+      const d=dx*dx+dy*dy;if(d<best){best=d;chosen=i;}
+    }
+    return chosen;
+  }
+  const projections=new WeakMap();
+  function guideFor(s,tr,elapsed,focus){
+    if(tr&&elapsed<duration(tr)){
+      return tr.port>=0&&elapsed<LIGHT?{port:tr.port,num:tr.oldNumber,waves:tr.waves}:null;
+    }
+    if(!Number.isInteger(focus)||focus<0||focus>=s.numbers.length)return null;
+    let rows=projections.get(s.board);if(!rows){rows=[];projections.set(s.board,rows);}
+    const num=s.numbers[focus];
+    if(!rows[focus]||rows[focus].num!==num)rows[focus]={port:focus,num,waves:K.preview(s,num).waves};
+    return rows[focus];
+  }
+  const railColors=['#ffd492','#9cf0eb','#ffbdd5'];
+  function lane(ctx,i,selected){
+    const p=K.ports[i],cells=p.line.map(j=>K.cells[j]),first=cells[0],end=cells.at(-1);
+    const color=selected?'#ffde71':railColors[Math.floor(i/5)],bottom=i>=5&&i<10;
+    ctx.save();ctx.lineCap='round';ctx.strokeStyle=color;
+    if(selected){
+      ctx.beginPath();ctx.moveTo(first.x-.67*p.dx,first.y-.67*p.dy);ctx.lineTo(end.x+.36*p.dx,end.y+.36*p.dy);
+      ctx.setLineDash(bottom?[.21,.10]:[]);ctx.lineWidth=.105;ctx.stroke();ctx.setLineDash([]);
+    }
+    // Draw route segments between kernels, leaving their faces unobscured.
+    ctx.beginPath();
+    for(let j=1;j<cells.length;j++){
+      const a=cells[j-1],b=cells[j],d=.32;
+      ctx.moveTo(a.x+d*p.dx,a.y+d*p.dy);ctx.lineTo(b.x-d*p.dx,b.y-d*p.dy);
+    }
+    ctx.moveTo(first.x-.68*p.dx,first.y-.68*p.dy);ctx.lineTo(first.x-.37*p.dx,first.y-.37*p.dy);
+    ctx.moveTo(end.x+.30*p.dx,end.y+.30*p.dy);ctx.lineTo(end.x+.48*p.dx,end.y+.48*p.dy);
+    ctx.setLineDash(bottom?[.09,.105]:[]);ctx.lineWidth=selected?.094:.058;ctx.stroke();ctx.restore();
+  }
+  let railSheet;
+  function railMap(ctx){
+    if(!railSheet){
+      railSheet=document.createElement('canvas');railSheet.width=railSheet.height=880;
+      const c=railSheet.getContext('2d');c.translate(440,440);c.scale(80,80);
+      for(let i=0;i<K.ports.length;i++)lane(c,i,false);
+    }
+    ctx.drawImage(railSheet,-5.5,-5.5,11,11);
+  }
+  function guideCells(ctx,guide,mini,time){
+    if(!guide)return;
+    const pulse=mini?.5:(.5+.5*Math.sin(time*.006));
+    ctx.save();
+    guide.waves.forEach((wave,n)=>{
+      const direct=n===0;
+      for(const i of wave){
+        const p=K.cells[i];
+        ctx.beginPath();ctx.ellipse(p.x,p.y,.448,.42,0,0,TAU);
+        ctx.lineWidth=direct?.117:.095;ctx.strokeStyle=direct?'#914a20':'#165366';ctx.stroke();
+        ctx.lineWidth=direct?.077:.056;
+        ctx.strokeStyle=direct?'#ffe483':'#91f4ef';ctx.stroke();
+        if(!mini&&direct)star(ctx,p.x+.33,p.y-.30,.066+.034*pulse,'#fff8bd');
+      }
+    });
+    ctx.restore();
+  }
+  function portArt(ctx,s,tr,elapsed,time,mini,reach,guide) {
     const hit=tr && tr.port>=0, change=hit?sequence(tr).rest:0;
     const numbers=hit && elapsed<change?tr.beforeNumbers:s.numbers;
     numbers.forEach((num,i)=>{
       const all=i===s.allIndex,p=all?master:badges[i];
       const fired=hit&&tr.port===i,lit=fired&&elapsed<change,flipped=fired&&elapsed>=change&&elapsed<change+260;
       const re=reach?.find?.(v=>Number(v.number??v.n??v)===num),type=re?.kind??re?.level??'reach';
-      const edge=lit?'#fffce2':re?({all:'#ff94d6',super:'#ff73a0',high:'#ffb839'}[type]||'#6cf6ec'):(all?'#ffd878':'#f7bc71');
+      const inspected=guide?.port===i;
+      const edge=lit||inspected?'#fff2a7':re?({all:'#ff94d6',super:'#ff73a0',high:'#ffb839'}[type]||'#6cf6ec'):(all?'#ffd878':'#f7bc71');
       ctx.save();ctx.translate(p.x,p.y);
       if(!mini && !all){
         const gate=K.ports[i],first=K.cells[gate.line[0]],gx=first.x-.69*gate.dx-p.x,gy=first.y-.69*gate.dy-p.y;
@@ -320,8 +402,8 @@
       }
       if(flipped){const f=clamp((elapsed-change)/260),k=1+.16*Math.sin(Math.PI*f);ctx.scale(k,k);}
       const half=all?.685:.376,high=all?.415:.292;
-      if(!mini && (lit||flipped||re)){const extra=.034+.027*Math.sin(time*.009+i*.34);rounded(ctx,-half-extra,-high-extra,2*(half+extra),2*(high+extra),.205,null,edge,.037);}
-      rounded(ctx,-half,-high,half*2,high*2,all?.26:.185,all?'#993740':lit?'#fbab51':'#204c59',edge,all?.077:.046);
+      if(!mini && (lit||flipped||re||inspected)){const extra=.034+.027*Math.sin(time*.009+i*.34);rounded(ctx,-half-extra,-high-extra,2*(half+extra),2*(high+extra),.205,null,edge,.037);}
+      rounded(ctx,-half,-high,half*2,high*2,all?.26:.185,all?'#993740':lit?'#fbab51':inspected?'#925327':'#204c59',edge,all?.077:.046);
       if(all){
         rounded(ctx,-.50,-.59,1,.365,.14,'#ffda7d','#853e22',.033);label(ctx,'ALL',0,-.398,.29,'#662c21',{max:.9});
         if(!mini){star(ctx,-.49,.045,.080,'#ffcf66');star(ctx,.49,.045,.080,'#ffcf66');}
@@ -330,11 +412,51 @@
       ctx.restore();
     });
   }
-  const easeFall=t=>{t=clamp(t);return t<.84?(t/.84)**1.75:1-.048*Math.sin((t-.84)/.16*Math.PI);};
-  function liveBoard(ctx,s,tr,elapsed,time,mini,reach) {
+  function serviceAt(seq,elapsed){
+    if(!seq?.served||elapsed<seq.refill||elapsed>=seq.end)return null;
+    const enter=clamp((elapsed-seq.refill)/180),leave=clamp((seq.end-elapsed)/SERVE_CLOSE);
+    const eased=n=>n*n*(3-2*n);
+    const raised=eased(Math.min(enter,leave));
+    const open=eased(Math.min(clamp((elapsed-seq.refill-88)/205),clamp((seq.end-elapsed-42)/165)));
+    return {raised,open,y:-5.82-.67*(1-raised)};
+  }
+  const awningW=6.88,awningH=1.43;
+  function foodStand(ctx,stage,front){
+    const img=art.stall;
+    if(!stage||!img||stage.raised<=0)return;
+    const x=-awningW/2,y=stage.y,w=awningW,h=awningH;
+    // Stretch the serving window, preserving both decorated end caps. All five
+    // physical inlets (-2..2) sit inside the dark opening of the raster stand.
+    const edges=[0,.239,.764,1],cuts=[0,.143,.857,1];
+    ctx.save();ctx.globalAlpha*=stage.raised;
+    if(!front){
+      for(let n=0;n<3;n++){
+        const x0=Math.round(img.width*edges[n]),x1=Math.round(img.width*edges[n+1]);
+        ctx.drawImage(img,x0,0,x1-x0,img.height,x+w*cuts[n],y,w*(cuts[n+1]-cuts[n]),h);
+      }
+    } else if(art.hatch){
+      const yy=y+h*.687,sh=h*.255;
+      ctx.save();ctx.beginPath();ctx.rect(x+w*.140,yy,w*.720,sh*1.02);ctx.clip();
+      ctx.drawImage(art.hatch,x+w*.140,yy-sh*stage.open,w*.720,sh);ctx.restore();
+    }
+    ctx.restore();
+  }
+  function movingFrame(ctx,f,time,mini){
+    const {step,stationary,progress}=f;
+    for(const i of stationary)drawPiece(ctx,step.before[i],K.cells[i].x,K.cells[i].y,time,mini);
+    for(const m of step.moves){
+      const a=step.kind==='spawn'?progress*(.5+.5*progress):progress;
+      const pt=K.motionPoint(m,a);drawPiece(ctx,m.piece,pt.x,pt.y,time,mini);
+    }
+  }
+  function liveBoard(ctx,s,tr,elapsed,time,mini,reach,guide) {
     drawCachedPlate(ctx);
-    const seq = tr && sequence(tr), moving=tr && tr.count>0 && elapsed<seq.end;
-    if(!moving) K.cells.forEach((p,i)=>drawPiece(ctx,s.board[i],p.x,p.y,time,mini));
+    const seq=tr&&sequence(tr),active=!!tr&&elapsed<seq.end;
+    const moving=active&&(tr.count>0||seq.served),service=active?serviceAt(seq,elapsed):null;
+    const showRails=!active||elapsed<LIGHT;
+    if(showRails&&guide?.port<K.ports.length)lane(ctx,guide.port,true);
+    foodStand(ctx,service,false);
+    if(!moving)K.cells.forEach((p,i)=>drawPiece(ctx,s.board[i],p.x,p.y,time,mini));
     else if (elapsed<seq.fall) {
       const wave=waveAt(tr,elapsed);
       K.cells.forEach((p,i)=>{
@@ -376,7 +498,7 @@
           }
         }
       }
-      if(elapsed<LIGHT+105){
+      if(tr.count&&elapsed<LIGHT+105){
         const a=elapsed/(LIGHT+75);
         if(!tr.all) shot(ctx,tr.port,a);
         else if(elapsed<LIGHT) {
@@ -389,22 +511,27 @@
         }
       }
     } else {
-      ctx.save();polygon(ctx,K.outline,.975);ctx.clip();
-      const frame=seq.falls.find(f=>elapsed<f.end);
+      ctx.save();polygon(ctx,K.outline,.975);
+      // During supply the texture's open mouth and the top row form one visible
+      // passage; internal movements remain inside the board after admission.
+      if(service)ctx.rect(-2.51,service.y+awningH*.69,5.02,-3.18-(service.y+awningH*.69));
+      ctx.clip();
+      const frame=elapsed<seq.refill?seq.falls.find(f=>elapsed<f.end):seq.supply.find(f=>elapsed>=f.begin&&elapsed<f.end);
       if(frame){
-        const {step,stationary}=frame,progress=clamp((elapsed-frame.begin)/step.ms);
-        for(const i of stationary)drawPiece(ctx,step.before[i],K.cells[i].x,K.cells[i].y,time,mini);
-        for(const move of step.moves){const p=K.motionPoint(move,progress);drawPiece(ctx,move.piece,p.x,p.y,time,mini);}
+        const progress=clamp((elapsed-frame.begin)/(frame.end-frame.begin));
+        movingFrame(ctx,{...frame,progress},time,mini);
       } else {
-        tr.moves.forEach(m=>{
-          const p=K.cells[m.to],stagger=Math.abs(m.to%5)*13,t=clamp((elapsed-seq.refill-stagger)/(FILL-55)),e=easeFall(t);
-          drawPiece(ctx,m.piece,mix(m.x,p.x,e),mix(m.y,p.y,e),time,mini);
-        });
-        tr.settled.forEach((piece,i)=>{if(piece)drawPiece(ctx,piece,K.cells[i].x,K.cells[i].y,time,mini);});
+        const board=seq.served&&elapsed>=seq.end-SERVE_CLOSE?tr.after:tr.settled;
+        board.forEach((piece,i)=>{if(piece)drawPiece(ctx,piece,K.cells[i].x,K.cells[i].y,time,mini);});
       }
       ctx.restore();
     }
-    portArt(ctx,s,tr,elapsed,time,mini,reach);
+    foodStand(ctx,service,true);
+    if(showRails){
+      ctx.save();ctx.globalAlpha=guide?.30:(mini?.36:.82);railMap(ctx);ctx.restore();
+      guideCells(ctx,guide,mini,time);
+    }
+    portArt(ctx,s,tr,elapsed,time,mini,reach,guide);
     if(moving && tr.clear && elapsed>=seq.rest && elapsed<seq.fall){
       const a=clamp((elapsed-seq.rest)/120),pulse=Math.sin(a*Math.PI/2);
       ctx.save();ctx.globalAlpha*=pulse;rounded(ctx,-2.7,-.59,5.4,1.18,.46,'#7c263ce8','#ffc85d',.072);
@@ -425,11 +552,11 @@
     const popped=s.popped-tr.count+added, clears=s.clears-(tr.clear&&elapsed<seq.rest?1:0);
     return {popped,clears};
   }
-  function drawTop(ctx,s,opt,x,y,w) {
-    const title=Math.min(302,w-73);
+  function drawTop(ctx,s,opt,x,y,w,raised=0) {
+    const title=Math.min(302,w-73);ctx.save();ctx.globalAlpha*=1-raised;
     rounded(ctx,x,y,title,31,12,'#a33c3d','#ffdda2',1.8);
     label(ctx,'ポップコーンスプラッシュ',x+title/2,y+15,20,cream,{max:title-12,outline:'#78322e',stroke:2.2});
-    const bw=68,bx=x+w-bw;
+    ctx.restore();const bw=68,bx=x+w-bw;
     rounded(ctx,bx,y,bw,29,12,'#204d50',gold,1.5);
     label(ctx,opt.demo?'デモ':(s.turn+'/8 球'),bx+bw/2,y+14.5,17,cream,{max:bw-8});
   }
@@ -490,18 +617,22 @@
     type(state.popped+'個',142,470,25,'#fff2af',{align:'right',max:89});
     ctx.restore();
   }
-  function footer(ctx,s,tr,elapsed,time,demo,x,y,w) {
-    let txt='番号HITで一直線に着火！',accent='#fff0bd',tint='rgba(72,37,43,.9)';
+  function footer(ctx,s,tr,elapsed,time,demo,x,y,w,guide) {
+    let txt='番号をタップで着火範囲',accent='#fff0bd',tint='rgba(72,37,43,.9)';
     if(tr && elapsed<duration(tr)){
       const seq=sequence(tr);
-      if(tr.port<0) txt='着火番号なし';
-      else if(!tr.count)txt='起爆粒なし';
+      if(seq.served&&elapsed>=seq.refill)txt=elapsed<seq.refill+SERVE_OPEN?'売店のシャッターが開く！':'ポップコーンを補充中！';
+      else if(tr.port<0) txt='着火番号なし';
+      else if(!tr.count)txt=tr.all?'起爆粒なし':'このラインは空です';
       else if(elapsed<LIGHT)txt=tr.all?'すべての起爆粒に着火！':'着火！';
       else if(elapsed<seq.rest){const n=Math.min(tr.waves.length,Math.floor((elapsed-LIGHT)/WAVE)+1);txt=(tr.all?'全起爆　':'')+(n>1?n+'連鎖！':'ポップ！');accent='#ffefae';tint=['#80392b','#a9432c','#ae3150','#922b77'][Math.min(3,n-1)];}
       else if(elapsed<seq.fall && tr.clear)txt='全消し！';
       else if(elapsed<seq.refill)txt='残った粒が落下！';
-      else txt='ポップコーン補充中';
-    } else if(demo){txt=['番号HITで一直線に着火！','起爆粒は周囲へ、強起爆は2マス先まで！','ALLで起爆粒に一斉着火！'][Math.floor(time/3700)%3];}
+      else txt='着火終了';
+    } else if(guide){
+      const direct=guide.waves[0]?.length||0,all=guide.waves.reduce((n,w)=>n+w.length,0);
+      txt=guide.num+'番　'+(guide.port===s.allIndex?'起爆':'直撃')+direct+'粒・誘爆'+(all-direct)+'粒';accent='#fff0ad';
+    } else if(demo){txt=['番号をタップで着火範囲','起爆粒は周囲へ、強起爆は2マス先まで！','ALLで起爆粒に一斉着火！'][Math.floor(time/3700)%3];}
     else if(s.turn>=8) txt='8球終了';
     else if(tr&&tr.count) txt='この球で '+tr.count+' 個 POP！';
     const tw=Math.min(w,336);
@@ -516,22 +647,20 @@
     const tr=opt.turn,elapsed=Math.max(0,opt.elapsed??Infinity),sv=progress(s,tr,elapsed);
     ctx.save();ctx.translate(opt.x||0,opt.y||0);ctx.beginPath();ctx.rect(0,0,width,height);ctx.clip();
     // Fixed logical height preserves type sizes and line weights at either host pixel ratio.
-    const H=540,W=H*width/height;ctx.scale(height/H,height/H);background(ctx,W,H,mini);
-    let b,sidebar=null;
-    if(mini) b=boardFit(1,1,W-2,H-2);
-    else if(W>=419){
-      const sw=Math.min(185,Math.max(108,W*.212)),left=sw+3,field=W-left;
-      drawTop(ctx,s,opt,left+1,3,field-3);b=boardFit(left,35,field-2,H-63);
-      sidebar=[1,1,sw,H-2];footer(ctx,s,tr,elapsed,t,opt.demo,left+1,H-26,field-3);
-    } else {
-      drawTop(ctx,s,opt,4,4,W-8);b=boardFit(2,39,W-4,H-122);
-      rounded(ctx,5,H-80,W-10,42,12,'#20545b',gold,1.5);
-      label(ctx,'合計 '+sv.popped+' 個　／　全消し '+sv.clears+' 回',W/2,H-59,19,cream,{max:W-22});
-      footer(ctx,s,tr,elapsed,t,opt.demo,5,H-28,W-10);
+    const {H,W,b,left,field,sidebar}=layout(width,height,mini);
+    const guide=guideFor(s,tr,elapsed,opt.focusPort),service=tr?serviceAt(sequence(tr),elapsed):null;
+    ctx.scale(height/H,height/H);background(ctx,W,H,mini);
+    if(!mini){
+      drawTop(ctx,s,opt,left,sidebar?3:4,field,service?.raised||0);
+      if(!sidebar){
+        rounded(ctx,5,H-80,W-10,42,12,'#20545b',gold,1.5);
+        label(ctx,'合計 '+sv.popped+' 個　／　全消し '+sv.clears+' 回',W/2,H-59,19,cream,{max:W-22});
+      }
+      footer(ctx,s,tr,elapsed,t,opt.demo,left,sidebar?H-26:H-28,field,guide);
     }
-    ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.k,b.k);liveBoard(ctx,s,tr,elapsed,t,mini,opt.reach);ctx.restore();
+    ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.k,b.k);liveBoard(ctx,s,tr,elapsed,t,mini,opt.reach,guide);ctx.restore();
     if(sidebar)side(ctx,s,sv,...sidebar);
     ctx.restore();
   }
-  window.PopcornView={draw,duration,waveAt,assetsReady:Promise.all(loading),get artVersion(){return artVersion;}};
+  window.PopcornView={draw,duration,waveAt,pickPort,assetsReady:Promise.all(loading),get artVersion(){return artVersion;}};
 })();
