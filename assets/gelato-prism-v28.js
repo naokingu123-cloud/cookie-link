@@ -1,4 +1,4 @@
-/* GELATO PRISM v49 - reach anchored to exact numbered circles on the Canvas */
+/* GELATO PRISM v76 - animated white live rails, cyan inner rails, dark idle rails and four-tier reach. */
 (()=>{
 'use strict';
 try{
@@ -346,7 +346,7 @@ try{
  // Reach is rendered on the same Canvas coordinates as the numbered sockets.
  // Reach uses the exact numbered sockets (same four-tier language as Candy),
  // never an overlay banner. Each number predicts the next ball independently.
- const REACH_NAMES=['リーチ','高額','超高額','全獲り'];
+ const REACH_NAMES=['リーチ','高額','超高額','全埋め'];
  const REACH_COLORS=['#4dd5ff','#ffe077','#ff70c9','#e8faff'];
  const REACH_RAINBOW=['#ff6ca5','#ffd66f','#83f79b','#61dfff','#a982ff'];
  let nodeReachCacheKey='',nodeReachCache=new Map();
@@ -372,8 +372,11 @@ try{
        if(engine.seen.has(number)||engine.pendingDraws.has(number))continue;
        const p=engine.predict(number);
        if(!(p.gain>0))continue;
-       const tier=p.gain>=10000?3:p.gain>=1000?2:p.gain>=300?1:0;
-       result.set(i,{tier,number,gain:p.gain,name:REACH_NAMES[tier]});
+       // The rare ALL FILL tier requires closing all 24 real triangles.
+       const next=engine.stateFor(new Set([...engine.hits,i]));
+       const allFill=engine.filled.size<24&&next.faces.size===24;
+       const tier=allFill?3:p.gain>=1000?2:p.gain>=300?1:0;
+       result.set(i,{tier,number,gain:p.gain,allFill,name:REACH_NAMES[tier]});
      }
    }
    nodeReachCache=result;
@@ -391,15 +394,19 @@ try{
    ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineCap='round';
    for(const [index,reach] of tiers){
      const p=rasterCoords[index];if(!p)continue;
-     const tier=reach.tier,angle=seconds*(tier===2?3.05:2.55)+index*.22;
-     const radius=20.5;
+     const tier=reach.tier,angle=seconds*(tier===2?4.1:tier===3?3.1:2.75)+index*.22;
+     const radius=20.5,pulse=.5+.5*Math.sin(seconds*(tier>0?6:4)+index*.7);
      ctx.save();ctx.translate(p.x,p.y);
      if(tier===0){
-       // Three sparkles like Six Drop's .reach-glints layer.
-       for(let k=0;k<3;k++){
-         const a=angle*.35+k*Math.PI*2/3;
+       // Aqua ordinary reach: brighter ring and four travelling glints.
+       ctx.save();ctx.beginPath();ctx.arc(0,0,radius,0,Math.PI*2);
+       ctx.lineWidth=1.8+1.2*pulse;ctx.strokeStyle='#70efff';
+       ctx.shadowColor='#56ebff';ctx.shadowBlur=small?4:9;
+       ctx.globalAlpha=.62+.32*pulse;ctx.stroke();ctx.restore();
+       for(let k=0;k<4;k++){
+         const a=angle*.56+k*Math.PI/2;
          const x=Math.cos(a)*21,y=Math.sin(a)*21;
-         ctx.globalAlpha=.55+.4*Math.sin(seconds*3+k)**2;
+         ctx.globalAlpha=.63+.35*Math.sin(seconds*4+k)**2;
          ctx.beginPath();ctx.arc(x,y,small?1.7:2.4,0,Math.PI*2);
          ctx.fillStyle='#eefffc';ctx.shadowColor='#6bfff2';
          ctx.shadowBlur=small?3:7;ctx.fill();
@@ -409,12 +416,12 @@ try{
        const color=tier===1?'#ff365c':'#c04fff';
        for(let k=0;k<2;k++){
          const a=angle+k*Math.PI;
-         ctx.beginPath();ctx.arc(0,0,radius,a-1.12,a);
-         ctx.lineWidth=small?2.1:3.2;ctx.strokeStyle=color;
-         ctx.shadowColor=color;ctx.shadowBlur=small?4:8;
+         ctx.beginPath();ctx.arc(0,0,radius,a-1.36,a);
+         ctx.lineWidth=small?2.8:4.1;ctx.strokeStyle=color;
+         ctx.shadowColor=color;ctx.shadowBlur=small?5:12;
          ctx.globalAlpha=.77;ctx.stroke();
          ctx.beginPath();ctx.arc(0,0,radius,a-.42,a);
-         ctx.strokeStyle='#fff8e7';ctx.lineWidth=small?1.4:2.4;
+         ctx.strokeStyle='#fff8f1';ctx.lineWidth=small?1.8:2.9;
          ctx.globalAlpha=1;ctx.stroke();
          ctx.beginPath();
          ctx.arc(Math.cos(a)*radius,Math.sin(a)*radius,small?1.9:2.7,0,Math.PI*2);
@@ -425,8 +432,8 @@ try{
        const colors=['#ff6bad','#ffe882','#92ffe0','#89dfff','#c9a0ff','#ff6bad'];
        for(let k=0;k<6;k++){
          ctx.beginPath();ctx.arc(0,0,radius,angle+k*Math.PI/3,angle+(k+1)*Math.PI/3);
-         ctx.strokeStyle=colors[k];ctx.lineWidth=small?2.3:3.7;
-         ctx.shadowColor=colors[k];ctx.shadowBlur=small?4:10;
+         ctx.strokeStyle=colors[k];ctx.lineWidth=small?3.2:5.2;
+         ctx.shadowColor=colors[k];ctx.shadowBlur=small?5:15;
          ctx.globalAlpha=.95;ctx.stroke();
        }
        ctx.beginPath();ctx.arc(0,0,radius+2,0,Math.PI*2);
@@ -440,8 +447,8 @@ try{
      ctx.restore();
      if(small)continue;
      // Alternate REACH / prize just below this socket, never over a triangle.
-     const alternate=tier>0&&Math.floor(seconds/1.2)%2===1;
-     const title=alternate?REACH_NAMES[tier]:'リーチ';
+     const alternate=tier>0&&Math.floor(seconds/1.35)%2===1;
+     const title=tier===3?'全埋め':alternate?REACH_NAMES[tier]:'リーチ';
      const color=['#008b8d','#df254b','#9226be','#a62a7e'][tier];
      ctx.save();ctx.font='900 10px SweetReachRounded,system-ui,sans-serif';
      ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
@@ -962,7 +969,12 @@ try{
      if(reach)el.dataset.reachTier=String(reach.tier);
      else delete el.dataset.reachTier;
    }
-   for(const el of svg.querySelectorAll('[data-edge]'))el.classList.toggle('is-lit',e.links.has(+el.dataset.edge));
+   for(const el of svg.querySelectorAll('[data-edge]')){
+     const id=+el.dataset.edge,adjacent=faceAtEdge[id]||[];
+     const interior=!e.links.has(id)&&adjacent.length===2&&adjacent.every(face=>e.filled.has(face));
+     el.classList.toggle('is-lit',e.links.has(id));
+     el.classList.toggle('is-inner',interior);
+   }
    for(const el of svg.querySelectorAll('[data-face]')){
      const id=+el.dataset.face;
      el.classList.toggle('is-filled',e.filled.has(id));
