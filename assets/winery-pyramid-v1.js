@@ -951,6 +951,10 @@ const standContrastStyle=document.createElement('link');
 standContrastStyle.rel='stylesheet';
 standContrastStyle.href='assets/winery-stand-contrast-v71.css?v=71';
 document.head.appendChild(standContrastStyle);
+const focusedStandStyle=document.createElement('link');
+focusedStandStyle.rel='stylesheet';
+focusedStandStyle.href='assets/winery-stand-focus-v76.css?v=76';
+document.head.appendChild(focusedStandStyle);
 function paintMini(){
  const progress=engine.fx?.type==='pour'?
   Math.floor(engine.fx.elapsed/100):0;
@@ -1038,7 +1042,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:75,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+window.WineryPyramid={installed:true,version:76,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(1);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();
