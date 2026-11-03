@@ -1,4 +1,4 @@
-/* Winery Pyramid v75: final 8-ball reach and selected tab highlighting. */
+/* Winery Pyramid v76: four-tier glowing reach tags and local stand contrast. */
 (()=>{
 'use strict';
 if(window.WineryPyramid?.installed)return;
@@ -164,7 +164,11 @@ function wineryReach(s,e,a){
  if(!context||!stable(e)||a.bet(1)<=0){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
  if(s.reachBoardKey===context.key&&s.reachStatus==='ready')return;
  s.reachEpoch=(s.reachEpoch||0)+1;s.reachBoardKey=context.key;
- const results=e.nodeNumbers.filter(n=>!e.seen.has(n)).map(n=>e.predict(n)).filter(p=>p.gain>0);
+ // Rank by prospective additional payout, with 21 FULL as a special top tier.
+ const reachTier=p=>p.allClear||p.full===21?3:p.gain>=1000?2:p.gain>=300?1:0;
+ const results=e.nodeNumbers.filter(n=>!e.seen.has(n))
+  .map(n=>e.predict(n)).filter(p=>p.gain>0)
+  .map(p=>({...p,tier:reachTier(p)}));
  results.sort((a,b)=>a.number-b.number);s.reachResults=results;s.tabReachResults=results;
  s.tabReachBase=e.totalHundredths;s.tabReachVersion=e.version;s.reachStatus='ready';s.reachAfterBall=e.processed;
 }
@@ -694,16 +698,68 @@ function premiumGlass(x,i,g,t){
  }
  x.restore();
 }
-function premiumReach(x){
- if(!stable(engine))return;
- for(const p of S.reachResults||[]){
+// Same pointed jewellery silhouette as the number tag in premiumGlass().
+function wineryTagReachPath(x,cx,y){
+ x.beginPath();x.moveTo(cx-34,y-21);x.lineTo(cx+18,y-21);
+ x.quadraticCurveTo(cx+23,y-21,cx+27,y-15);
+ x.lineTo(cx+41,y);x.lineTo(cx+27,y+15);
+ x.quadraticCurveTo(cx+23,y+21,cx+18,y+21);
+ x.lineTo(cx-34,y+21);
+ x.quadraticCurveTo(cx-40,y+21,cx-40,y+14);
+ x.lineTo(cx-40,y-14);
+ x.quadraticCurveTo(cx-40,y-21,cx-34,y-21);x.closePath();
+}
+const WP_REACH_WORDS=['リーチ','高額','超高額','全満'];
+const WP_REACH_COLORS=['#63eefa','#ff486d','#ce65ff','#ffeaa8'];
+function premiumReach(x,time){
+ if(!stable(engine)||!S.reachResults?.length)return;
+ const seconds=time/1000;
+ for(const p of S.reachResults){
   const i=engine.nodeNumbers.indexOf(p.number);
   if(i<0)continue;
-  const a=premiumPos(i);
-  const color=['#90ffe3','#ffe9a7','#f0b4ff','#fff0b3'][p.tier]||'#ffeeb9';
-  x.save();x.shadowBlur=9;x.shadowColor=color;x.strokeStyle=color;
-  x.lineWidth=2.5;x.beginPath();x.ellipse(a.x,a.y+39,59,44,0,0,Math.PI*2);x.stroke();
-  x.restore();
+  const {x:cx,y:cy}=premiumPos(i),y=cy+99;
+  const tier=Math.max(0,Math.min(3,p.tier|0));
+  const pulse=.5+.5*Math.sin(time*(tier?.0075:.0052)+i*.65);
+  const color=WP_REACH_COLORS[tier];
+  x.save();x.lineJoin='round';x.lineCap='round';
+  wineryTagReachPath(x,cx,y);
+  const rainbow=tier===3?x.createLinearGradient(cx-43,y-22,cx+43,y+22):null;
+  if(rainbow){
+   [['#ff70af',0],['#ffe992',.20],['#93ffd5',.45],
+    ['#7fdaff',.70],['#d1a1ff',1]].forEach(([c,p])=>rainbow.addColorStop(p,c));
+  }
+  // Bright color follows the exact tag outer perimeter.
+  x.strokeStyle=rainbow||color;
+  x.lineWidth=3.8+1.5*pulse;x.shadowColor=color;
+  x.shadowBlur=(tier===0?10:15)+9*pulse;x.stroke();
+  // A travelling white highlight circumnavigates the tag.
+  x.save();x.setLineDash(tier===0?[7,13]:[13,15]);
+  x.lineDashOffset=-(seconds*(tier>=2?42:29)+i*4);
+  x.strokeStyle='#fffef1';x.globalAlpha=.64+.35*pulse;
+  x.lineWidth=tier>=2?3:2.2;x.shadowColor='#ffffff';
+  x.shadowBlur=tier>=2?8:4;x.stroke();x.restore();
+  // Sparkles outside the price number, never covering the number itself.
+  const count=tier===3?6:tier===2?4:tier===1?3:2;
+  for(let k=0;k<count;k++){
+   const a=seconds*(tier===3?3.3:tier===2?2.6:1.8)+
+      k*Math.PI*2/count+i*.36;
+   const px=cx+Math.cos(a)*47,py=y+Math.sin(a)*27;
+   const radius=(tier===3?3:2.1)+.65*Math.sin(seconds*4+k)**2;
+   x.beginPath();x.moveTo(px-radius*1.9,py);x.lineTo(px+radius*1.9,py);
+   x.moveTo(px,py-radius*1.9);x.lineTo(px,py+radius*1.9);
+   x.strokeStyle=tier===3?
+    ['#ffadcd','#ffed91','#8cefff','#b7a1ff'][k%4]:color;
+   x.lineWidth=1.7;x.shadowColor=color;x.shadowBlur=6;x.stroke();
+  }
+  const name=tier===3?'全満':
+    tier>0&&Math.floor(seconds/1.3)%2===0?'リーチ':WP_REACH_WORDS[tier];
+  x.textAlign='center';x.textBaseline='middle';
+  x.font='1000 12px SweetReachRounded,system-ui,sans-serif';
+  x.lineWidth=3.4;x.strokeStyle='#fff8db';x.shadowBlur=4;
+  x.shadowColor=color;x.strokeText(name,cx,y+30);
+  x.fillStyle=tier===0?'#007f94':tier===1?'#ba204c':
+    tier===2?'#852bb5':'#b26918';
+  x.fillText(name,cx,y+30);x.restore();
  }
 }
 function premiumSpout(x,t){
@@ -782,7 +838,7 @@ function paint(target,time,small=false){
  premiumSpout(xx,time);
  for(let i=0;i<21;i++)premiumGlass(xx,i,display[i],time);
  if(!small){
-  premiumReach(xx);
+  premiumReach(xx,time);
   if(!app.bet(1)){
    xx.save();xx.textAlign='center';xx.font='900 25px system-ui';
    xx.shadowColor='#67345d';xx.shadowBlur=7;xx.fillStyle='#fff0c6';
