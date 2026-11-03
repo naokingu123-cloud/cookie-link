@@ -1,0 +1,25 @@
+name: Verify Gelato and Winery visuals v76
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/gelato-prism-v28.js'
+      - 'assets/gelato-prism-rail-v76.css'
+      - 'assets/winery-pyramid-v1.js'
+      - 'assets/winery-stand-focus-v76.css'
+      - '.github/tests/visual_reach_v76.cjs'
+      - '.github/workflows/verify-visual-reach-v76.yml'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test rail geometry, four reach tiers and local stand shading
+        run: node .github/tests/visual_reach_v76.cjs
