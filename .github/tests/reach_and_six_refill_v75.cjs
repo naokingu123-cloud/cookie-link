@@ -70,4 +70,31 @@ for(let seed=1;seed<=140;seed++){
  restored++;
 }
 assert(restored>20,'many HIT-caused missing rows must be corrected');
+// Verify real post-8 counterfactual predictions, not just code markers.
+const wine=new core.WineryEngine({random:rng(123),onEvent:()=>{}});
+wine.glasses=Array.from({length:21},(_,i)=>i<9?
+ {volume:1,layers:[{flavor:0,amount:1}]}:{volume:0,layers:[]});
+wine.processed=8;wine.accepted=8;wine.power=1;
+wine.seen=new Set(wine.nodeNumbers.slice(0,20));
+wine.refreshPrize();
+const nextWine=wine.nodeNumbers[20],winePrediction=wine.predict(nextWine);
+assert(winePrediction.gain>0&&winePrediction.total>=30,
+ 'final Winery reach predicts one additional full cup after the eighth draw');
+wine.running=true;
+assert.equal(wine.enqueueBatch([nextWine]),false,
+ 'final reach must not allow ninth real Winery draw');
+const gStart=gelato.indexOf(' const H=106,HW=Math.sqrt(3)*H/2,X=250,Y=250;');
+const gEnd=gelato.indexOf(' const path=nodes=>',gStart);
+assert(gStart>=0&&gEnd>gStart,'Gelato rules can be inspected');
+const {GelatoEngine}=new Function(gelato.slice(gStart,gEnd)+
+ '\nreturn {GelatoEngine};')();
+const ge=new GelatoEngine(()=>.5,()=>{},()=>Promise.resolve());
+ge.hits=new Set([0,1,5,13,17]);
+ge.filled=ge.stateFor(ge.hits).faces;
+ge.processed=8;ge.accepted=8;ge.phase='complete';
+const gNumber=ge.nodeNumbers[18],gp=ge.predict(gNumber);
+assert(gp.gain>0,'Gelato final hypothetical hit can make a payout');
+ge.running=true;
+assert.equal(ge.enqueueBatch([gNumber]),false,
+ 'final reach must not allow ninth real Gelato draw');
 console.log('V75_PASS',JSON.stringify({sixRows:10,hitTopRowsRestored:restored,missingTop,post8Reach:'enabled',selectedWinery:'overlay active'}));
