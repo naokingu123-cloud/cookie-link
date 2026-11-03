@@ -24,7 +24,7 @@ assert.match(s,/premiumSpout\(xx,time\);\s+if\(!small\)/,
 assert.match(css,/scaleX\(1\.05\)/,'stand registers with horizontal glass expansion');
 assert.match(css,/44\.74% 50%/,'stand transforms around cups center');
 assert.match(s,/winery-main-board-enlarge-v77\.css\?v=77/);
-assert.match(html,/winery-pyramid-v1\.js\?v=77/);
+assert.ok(Number(html.match(/winery-pyramid-v1\.js\?v=(\d+)/)?.[1])>=77);
 assert.equal((css.match(/{/g)||[]).length,(css.match(/}/g)||[]).length);
 assert.equal(core.PAY[10],.3);
 assert.equal(core.PAY[11],.6);

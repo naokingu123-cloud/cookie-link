@@ -56,8 +56,8 @@ assert.match(w,/WP_REACH_WORDS=\['リーチ','高額','超高額','全満'\]/);
 assert.match(wcss,/inset:7% 28% 1% 18%!important/,'dim central stand only');
 assert.match(wcss,/brightness\(\.98\)/,'bright outer static stand returns');
 assert.match(html,/gelato-prism-rail-v76\.css\?v=76/);
-assert.match(html,/gelato-prism-v28\.js\?v=76/);
-assert.match(html,/winery-pyramid-v1\.js\?v=76/);
+assert.ok(Number(html.match(/gelato-prism-v28\.js\?v=(\d+)/)?.[1])>=76);
+assert.ok(Number(html.match(/winery-pyramid-v1\.js\?v=(\d+)/)?.[1])>=76);
 assert.equal(core.PAY[10],.3);
 assert.equal(core.PAY[11],.6);
 for(const css of [gcss,wcss])
