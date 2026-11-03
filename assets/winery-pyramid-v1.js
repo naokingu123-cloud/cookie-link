@@ -1085,24 +1085,17 @@ const hud0=hud;hud=function(a){
 };
 const select0=select;select=function(i){const result=select0(i);if(i===1){uiKey='';queueFrame();}return result;};
 const result0=renderRoundResult;renderRoundResult=function(a){
- // Restore engine order before older render wrappers inspect the first row.
- const existing=document.getElementById('result-games');
- if(existing){const rows=[...existing.querySelectorAll('.result-game')];
-  const get=t=>rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes(t));
-  const g=get('ジェラート'),w=get('ワイナリー')||get('チョコレート'),c=get('シックス');
-  if(g&&w&&c)existing.append(g,w,c);
- }
  result0(a);
  const panel=document.getElementById('result-games');if(!panel)return;
  const rows=[...panel.querySelectorAll('.result-game')];
- const winery=rows.find(r=>r.dataset.winery==='1'||r.querySelector('.result-game-name')?.textContent.includes('チョコレート'));
+ const winery=panel.querySelector('[data-game-index="1"]');
  if(winery){
-  winery.dataset.winery='1';const title=winery.querySelector('.result-game-name');if(title)title.innerHTML='ワイナリーピラミッド <small>'+num(a.locked[1])+' BET</small>';
+  winery.dataset.winery='1';const title=winery.querySelector('.result-game-name');if(title)title.innerHTML='ワイナリーピラミッド <small>'+(a.enabled[1]?num(a.locked[1])+' BET':'NO BET')+'</small>';
   const detail=winery.querySelector('.result-game-details');if(detail)detail.innerHTML='<span>満タン '+engine.fullCount+'/21</span><span>MIX '+engine.mixCount+'杯 ×'+engine.mixMultiplier.toFixed(1)+'倍</span>';
  }
  const candy=rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes('シックス'));
  const gelato=rows.find(r=>r.querySelector('.result-game-name')?.textContent.includes('ジェラート'));
- if(candy&&gelato&&winery)panel.append(candy,gelato,winery);
+ if(candy&&gelato&&winery&&rows[0]!==candy)panel.prepend(candy,gelato,winery);
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});

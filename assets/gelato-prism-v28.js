@@ -1181,10 +1181,10 @@ try{
  renderRoundResult=function(a){
    nativeResult(a);
    if(a.engines[0]?.kind!=='gelato')return;
-   const row=$('result-games')?.querySelector('.result-game');
+   const row=$('result-games')?.querySelector('[data-game-index="0"]');
    if(!row||row.dataset.gelato)return;
    row.dataset.gelato='yes';
-   row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+num(a.locked[0])+' BET</small>';
+   row.querySelector('.result-game-name').innerHTML='ジェラートプリズム <small>'+(a.enabled[0]?num(a.locked[0])+' BET':'NO BET')+'</small>';
    const details=row.querySelector('.result-game-details');
    if(details)details.innerHTML='<span>'+e.filled.size+' / 24パネル</span><span>枚数 '+e.countMult.toFixed(1)+'倍＋4色 '+e.collectorMult.toFixed(1)+'倍</span>';
    // Visually follow the three-tab order without changing app.engine indices.

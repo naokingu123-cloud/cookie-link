@@ -1,0 +1,27 @@
+body.pc-enabled #tabs{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+body.pc-enabled #tabs .tab-slot,body.pc-enabled #tabs .tab{min-width:0}
+body.pc-enabled #tabs .tab{grid-template-columns:minmax(0,1fr)}
+body.pc-enabled #tabs .tab-game-name{max-width:100%;box-sizing:border-box}
+body.pc-enabled #tabs .mini-wrap{max-width:100%;min-width:0}
+body.pc-enabled #tabs .tab-bets{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,.76fr);gap:1px}
+body.pc-enabled #tabs .tab-bets button{min-width:0;max-width:100%;padding-inline:0}
+body.pc-enabled #tab3 .tab-game-name{background:none!important;display:flex!important;flex-direction:column;justify-content:center;align-items:center;line-height:.92;width:100%;height:40px;color:#ffef9a;font:1000 16px/.96 system-ui,sans-serif;letter-spacing:-.06em;text-shadow:1px 2px #9e3023,-1px -1px #86313b,2px 3px #77263c;transform:rotate(-3deg)}
+body.pc-enabled #tab3 .tab-game-name b:last-child{color:#fff7cb}
+body.pc-enabled #tab3 .mini-wrap{background:linear-gradient(150deg,#fec368,#932c42 68%,#53253d)!important;border-radius:9px;overflow:hidden}
+body.pc-enabled #tab3 canvas{width:100%;height:100%;object-fit:contain}
+body.pc-enabled #tab3[aria-selected=true] .mini-wrap:after{content:'選択中';position:absolute;inset:0;display:grid;place-items:center;background:#57203a83;color:#fff4b4;font:bold 15px system-ui;text-shadow:0 1px 3px #6f263d;animation:pc-selected 1.8s ease-in-out infinite}
+@keyframes pc-selected{50%{opacity:.55}}
+body.pc-active #odds-panel,body.pc-active #allclear-award,body.pc-active #carnival-heading,body.pc-active #choco-heading,body.pc-active #carnival-odds{display:none!important}
+body.pc-active .game .festival-top{visibility:hidden!important}
+body.pc-active .game .field{grid-template-columns:minmax(0,1fr)!important;width:100%!important;gap:0!important}
+body.pc-active .board-area,body.pc-active #panels{width:100%!important;max-width:none!important}
+#panel3{position:relative!important;background:transparent!important;width:100%!important;height:100%!important;overflow:hidden}
+#panel3>:not(.pc-scene){display:none!important}
+#panel3 .pc-scene{display:block;width:100%;height:100%;position:absolute;inset:0;border-radius:12px;background:#843b46}
+body.pc-enabled #result-games{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(prefers-reduced-motion:reduce){body.pc-enabled #tab3[aria-selected=true] .mini-wrap:after{animation:none}}
+body.pc-active #screen>.game{background:linear-gradient(#ffedd331,#ffe9b524),url('popcorn-art/popcorn-fair.webp') center/cover!important}
+body.pc-active #screen>.game>.festival-top,body.pc-active #screen>.game>.statusline{display:none!important}
+body.pc-active #screen>.game>.field{flex:1 1 auto!important;height:auto!important;min-height:0!important;grid-template-rows:minmax(0,1fr)!important;background:transparent!important}
+body.pc-enabled #tab3 .tab-game-name{transform:none}
+#tab3 .tab-game-name img{width:100%;height:100%;object-fit:contain}

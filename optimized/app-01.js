@@ -2410,7 +2410,7 @@ sixStageEffects=function(x,fx,p,round,rows,reduced){
 
 class Arcade{
  constructor({random=Math.random,sleep=ms=>new Promise(r=>setTimeout(r,ms)),onEvent=()=>{},onChange=()=>{},speed=1.4,colorCount=5}={}){
-  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
+  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000,3000],locked:[0,0,0,0],paid:[false,false,false,false],enabled:[true,true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
   for(let i=0;i<3;i++)this.engines.push(new (i===1?ChocoDigEngine:i===2?CandyCarnivalEngine:Engine)({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
    if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>{return {...step,game:i};}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
@@ -2433,7 +2433,7 @@ class Arcade{
  setBet(i,n){if(this.phase!=='ready'||!Number.isSafeInteger(n)||n<0)return false;this.bets[i]=n;this.onChange(this);return true;}
  start(){
   if(this.phase!=='ready'||!this.bets.some(n=>n>0)||this.drawSource?.ready===false)return false;
-  this.debugRainbowIssued=false;this.enabled=this.bets.map(n=>n>0);this.locked=[...this.bets];this.paid=[false,false,false];this.roundWins=[0,0,0];this.totalWin=0;this.payout=null;this.result=null;this.fastForward=false;this.engines.forEach(e=>e.presentationRate=1);this.displayCredit=this.credit;this.draws=[];this.phase='playing';this.dealing=true;
+  this.debugRainbowIssued=false;this.enabled=this.bets.map(n=>n>0);this.locked=[...this.bets];this.paid=this.bets.map(()=>false);this.roundWins=this.bets.map(()=>0);this.totalWin=0;this.payout=null;this.result=null;this.fastForward=false;this.engines.forEach(e=>e.presentationRate=1);this.displayCredit=this.credit;this.draws=[];this.phase='playing';this.dealing=true;
   const token=++this.token;
   // Rainbow is decided at round start, and replaces the on-board sugar rather
   // than being awarded automatically when a normal sugar is collected.
@@ -2525,8 +2525,8 @@ class Arcade{
   this.onChange(this);return true;
  }
  pause(value){this.paused=value;for(const e of this.engines)e.paused=value;this.drawSource?.pause(value);}
- prepare(){this.token++;this.drawSource?.reset();this.drawError=null;this.dealing=false;this.displayCredit=this.credit;this.totalWin=0;this.roundWins=[0,0,0];this.payout=null;this.result=null;this.fastForward=false;this.phase='ready';this.paused=false;this.draws=[];this.paid=[false,false,false];this.locked=[0,0,0];this.enabled=this.bets.map(n=>n>0);for(const e of this.engines)e.reset({keepWonder:!this.clearingWonder});this.onChange(this);}
- resetDebug(){this.credit=1000;this.bets=[3000,3000,3000];this.wonderSteps=0;this.wonderValue=0;this.wonderBank=[];this.clearingWonder=true;this.prepare();this.clearingWonder=false;}
+ prepare(){this.token++;this.drawSource?.reset();this.drawError=null;this.dealing=false;this.displayCredit=this.credit;this.totalWin=0;this.roundWins=this.bets.map(()=>0);this.payout=null;this.result=null;this.fastForward=false;this.phase='ready';this.paused=false;this.draws=[];this.paid=this.bets.map(()=>false);this.locked=this.bets.map(()=>0);this.enabled=this.bets.map(n=>n>0);for(const e of this.engines)e.reset({keepWonder:!this.clearingWonder});this.onChange(this);}
+ resetDebug(){this.credit=1000;this.bets.fill(3000);this.wonderSteps=0;this.wonderValue=0;this.wonderBank=[];this.clearingWonder=true;this.prepare();this.clearingWonder=false;}
  bet(i){return this.phase==='ready'?this.bets[i]:this.locked[i];}
 }
 // Only the next HIT is simulated. Refill cannot create a link, so no RNG is used.
@@ -2627,7 +2627,7 @@ class RecordBook{
 
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',inks=['#f3348e','#f8be19','#65cc46','#35ace9','#ac50df'];
 const num=n=>n.toLocaleString('ja-JP',{maximumFractionDigits:2,useGrouping:false}),units=[5,10,20,50,100,500];
-let app,active=0,unit=[4,4,4],userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
+let app,active=0,unit=[4,4,4,4],userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
 const motionReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function put(id,value){const el=$(id),text=String(value);if(el.textContent!==text)el.textContent=text;}
 function scheduleUI(a){if(a)uiApp=a;if(uiPending||document.hidden||!inView)return;uiPending=true;requestAnimationFrame(flushUI);}
@@ -2671,11 +2671,11 @@ function traySeams(){
  return '<svg class="tray-seams" viewBox="0 0 298 298" aria-hidden="true"><path class="seam-rim" d="'+d+'"/><path class="seam-shadow" d="'+d+'"/></svg>';
 }
 
-const slots=Array.from({length:3},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
+const slots=Array.from({length:4},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
 for(const s of slots){
  const i=s.i,b=document.createElement('button');b.className='tab';b.id='tab'+i;b.setAttribute('role','tab');b.setAttribute('aria-label','クッキーリンク・ゲーム'+(i+1));b.setAttribute('aria-controls','panel'+i);
  b.innerHTML=`<span class="tab-game-name" role="img" aria-label="クッキーリンク"><span class="art-alt">クッキーリンク</span></span><span class="mini-wrap"><canvas width="160" height="160" aria-label="ゲーム${i+1}のミニ盤面"></canvas><span class="mini-logo" hidden><span class="selected-label">選択中</span></span></span><span class="tab-win-bubble" hidden><strong class="tabwin"><span class="gold-number">0</span></strong><em class="win-word">WIN</em></span><span class="tab-sugar" aria-label="ワンダーシュガー未獲得" hidden><i class="sugar-gem" aria-hidden="true"></i><b class="sugar-get" hidden>GET!</b></span>`;
- b.onclick=()=>select(i);b.onkeydown=ev=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(ev.key)){ev.preventDefault();const n=ev.key==='Home'?0:ev.key==='End'?2:(i+(ev.key==='ArrowRight'?1:2))%3;select(n);slots[n].tab.focus();}};
+ b.onclick=()=>select(i);b.onkeydown=ev=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(ev.key)){ev.preventDefault();const order=[...slots].sort((a,b)=>Number(a.holder.style.order)-Number(b.holder.style.order));const pos=order.indexOf(s),next=ev.key==='Home'?order[0]:ev.key==='End'?order.at(-1):order[(pos+(ev.key==='ArrowRight'?1:-1)+order.length)%order.length];select(next.i);next.tab.focus();}};
  const holder=document.createElement('div');holder.className='tab-slot';
  const controls=document.createElement('div');controls.className='tab-bets';controls.setAttribute('role','group');controls.setAttribute('aria-label','ゲーム'+(i+1)+'のBET操作');
  controls.innerHTML=`<button id="cycle${i}" class="bet-cycle" aria-label="ゲーム${i+1}のBET追加数を切り替え">BET切替</button><button id="addbet${i}" class="bet-unit" aria-label="ゲーム${i+1}に100 BET追加">100 BET</button><button id="onebet${i}" aria-label="ゲーム${i+1}に1 BET追加">1 BET</button>`;
@@ -3032,6 +3032,7 @@ function drawBetPreview(d){
 
 function pendingCellNumbers(e){return e&&['waiting','settled','ready'].includes(e.phase)?e.pendingDraws:new Set();}
 function syncPendingHitTiles(s){
+ if(s.engine?.kind==='popcorn')return;
  const pending=app?.phase==='playing'&&app.enabled[s.i]?pendingCellNumbers(s.engine):new Set();
  const ids=new Set();if(pending?.size)for(const row of s.engine.board)for(const t of row)if(t&&pending.has(t.number))ids.add(t.id);
  for(const [id,el] of s.tiles)el.classList.toggle('pending-hit',ids.has(id));
@@ -3077,6 +3078,7 @@ function cookieMiniEvent(s,ev,e){
  if(ev.phase==='vanish')fx.shatter=makeShatterFx(ev,grid,e.speed,e.version);s.cookieMiniState=fx;
 }
 function miniature(s){
+ if(s.engine?.kind==='popcorn'){s.paintPopcorn(true);return;}
  if(s.engine?.kind==='choco'){chocoQueueFrame(s);return;}
  if(s.engine?.kind==='candy'){carnivalQueueFrame(s);return;}
  if(app?.phase==='ready')return;
@@ -3108,6 +3110,10 @@ function tabs(a){
  for(const s of slots){
   if(!s.engine)continue;const e=s.engine,b=a.bet(s.i),win=medalWin(b,e.totalHundredths);
   const state=b===0?'参加なし':e.phase==='complete'?(a.phase==='playing'?'終了・集計待ち':a.phase==='paying'?'払い出し中':'払い出し済'):e.phase==='allclear'?'全消し！':a.phase==='ready'?'準備OK':e.phase==='link'?(s.event.newRecord?'最大LINK更新！':s.event.depth+'連鎖'):e.busy?'進行中 · 待ち'+e.queue.length:'次の球を待機';
+  if(e.kind==='popcorn'){
+   fitGoldenNumber(s.tabBet,num(b),14,76);s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);
+   s.tab.setAttribute('aria-label','ポップコーンスプラッシュ・'+state);s.tab.classList.toggle('off',b===0);continue;
+  }
   const key=[b,win,state,e.phase,s.event.newRecord,e.wonderCollected,e.wonderToken?.value,projectedSugarValue(e,b),isDirectJpcSugar(e.wonderToken)].join('/');if(s.tabKey===key)continue;s.tabKey=key;
   fitGoldenNumber(s.tabBet,num(b),14,76);s.lockedBet.setAttribute('aria-label','BET '+num(b));s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);s.tab.setAttribute('aria-label','クッキーリンク・ゲーム'+(s.i+1)+' '+state);
   const sugar=sugarStatus(e,b),enabled=b>0;
@@ -3148,6 +3154,7 @@ function syncPayClimb(){
 
 const PAY_ROW_HEIGHT=19,PAY_TOP=67;
 function updatePayTable(e,bet){
+ if(e.kind==='popcorn')return;
  const shown=slots[active].payDisplayedLink??e.maxLink,track=$('pay'),top=linkRows(shown)[0],key=active+'/'+bet+'/'+shown;
  if(payKey===key)return;payKey=key;track.dataset.hasWin=String(shown>=MIN_PAID_LINK);
  const switched=track.dataset.game!==String(active),first=!track.children.length;
@@ -3278,7 +3285,7 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),sugarVisualTier(token));slot.setAttribute('aria-label',token?WONDER_NAMES[sugarVisualTier(token)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- if(e.kind==='choco'||e.kind==='candy')return;
+ if(e.kind==='choco'||e.kind==='candy'||e.kind==='popcorn')return;
  const concealed=a.phase==='ready';
   const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
@@ -3530,6 +3537,7 @@ function startHammerTransfer(s,ev,e){
 }
 
 function render(s,ev,e,animate=true){
+ if(e?.kind==='popcorn'){s.paintPopcorn(false);return;}
  if(e?.kind==='choco'){chocoQueueFrame(s);return;}
  if(e?.kind==='candy'){carnivalQueueFrame(s);return;}
  if(ev.phase==='queued')return;
@@ -3614,6 +3622,7 @@ function reachContext(e,a=app){
 function reachContextKey(e,a=app){return reachContext(e,a)?.key||null;}
 function failReachPreview(s,epoch,error){if(s.reachEpoch!==epoch)return;s.reachStatus='error';s.reachResults=[];s.tabReachResults=[];s.reachError=String(error?.message||error);console.warn('Reach preview skipped:',s.reachError);scheduleUI(app);}
 function requestReach(s,e,a=app){
+ if(e?.kind==='popcorn')return s.updatePopcornReach(a);
  if(e?.kind==='choco')return chocoRequestReach(s,e,a);
  const context=reachContext(e,a);
  if(!context||a.bet(s.i)<=0){if(s.reachStatus!=='inactive'){invalidateReach(s);s.reachStatus='inactive';}return;}
@@ -3637,6 +3646,7 @@ function requestReach(s,e,a=app){
 function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
 function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return paidReachDrawAllowed(a)&&reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
 function updateReachBoard(s,a){
+ if(s.engine?.kind==='popcorn')return;
  if(!s.engine)return;
  const results=visibleReachResults(s,a),byNumber=new Map(results.map(p=>[p.number,p])),tilesById=new Map(s.engine.board.flat().filter(Boolean).map(t=>[t.id,t]));
  for(const [id,el] of s.tiles){
@@ -3914,7 +3924,7 @@ function renderRoundResult(a){
  }
  if(layer.dataset.round!==String(a.token)){
   layer.dataset.round=String(a.token);
-  $('result-games').innerHTML=a.engines.map((e,i)=>'<div class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4][i]+'"/></svg><strong class="result-game-name">'+(e.kind==='choco'?'チョコレートキャニオン':e.kind==='candy'?'シックスキャンディ':'クッキーリンク')+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?(e.kind==='choco'?e.depth+' m / ＋'+e.roundDepth+' m':e.kind==='candy'?'Round '+e.roundIndex+' / '+e.roundsCleared+' CLEAR':e.maxLink+' LINK'):'—')+'</span><span>'+(a.enabled[i]?(e.kind==='choco'?e.roundBlocks+'マス掘削 · 配当チョコ'+e.roundChests+'個':e.kind==='candy'?e.hexagons+' HEX / '+e.triangles+' TRI / '+e.lines+' LINE':e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-direct-jpc="'+isDirectJpcSugar(e.wonderToken)+'" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
+  $('result-games').innerHTML=a.engines.map((e,i)=>'<div data-game-index="'+i+'" class="result-game'+(a.enabled[i]?'':' no-bet')+'"><svg class="result-game-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#candy'+[0,2,4,1][i]+'"/></svg><strong class="result-game-name">'+(e.kind==='choco'?'チョコレートキャニオン':e.kind==='candy'?'シックスドロップ':'クッキーリンク')+' <small>'+(a.enabled[i]?num(a.locked[i])+' BET':'NO BET')+'</small></strong><div class="result-game-award"><b class="result-value" data-value="'+(a.enabled[i]?a.roundWins[i]:0)+'"></b><em class="win-word">WIN</em></div><div class="result-game-details"><span>'+(a.enabled[i]?(e.kind==='choco'?e.depth+' m / ＋'+e.roundDepth+' m':e.kind==='candy'?'Round '+e.roundIndex+' / '+e.roundsCleared+' CLEAR':e.maxLink+' LINK'):'—')+'</span><span>'+(a.enabled[i]?(e.kind==='choco'?e.roundBlocks+'マス掘削 · 配当チョコ'+e.roundChests+'個':e.kind==='candy'?e.hexagons+' HEX / '+e.triangles+' TRI / '+e.lines+' LINE':e.maxChain+'連鎖'+(e.allClears?' · 全消し'+e.allClears+'回':'')):'参加なし')+'</span>'+(a.enabled[i]&&e.wonderCollected?'<span><i class="sugar-gem" data-direct-jpc="'+isDirectJpcSugar(e.wonderToken)+'" data-value="'+(e.wonderToken?.value||a.locked[i])+'"></i> GET!</span>':'')+'</div></div>').join('');
   for(const el of $('result-games').querySelectorAll('.result-value'))fitGoldenNumber(el,num(Number(el.dataset.value)),26,94);
   for(const el of $('result-games').querySelectorAll('.sugar-gem'))applySugarTier(el,sugarVisualTier({value:Number(el.dataset.value),directJpc:el.dataset.directJpc==='true'}));
   fitResultTotal(a);
@@ -5380,7 +5390,7 @@ function rouletteReachTiers(){
  return out;
 }
 function rouletteAllClearNumbers(){return new Set([...rouletteReachTiers()].filter(([,tier])=>tier===3).map(([n])=>n));}
-function rouletteSelectedBoard(){return {index:active,name:['クッキーリンク','チョコレートキャニオン','シックスドロップ'][active]};}
+function rouletteSelectedBoard(){return {index:active,name:['ジェラートプリズム','ワイナリーピラミッド','シックスドロップ','ポップコーンスプラッシュ'][active]};}
 // Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
 function setupManualNumbers(){
  const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
@@ -5811,7 +5821,7 @@ function setDebugPayoutRate(){
   debugPayoutTarget=value;try{localStorage.setItem('cookie-link-debug-payout-v1',String(value));}catch{}
   for(const e of app.engines){if(e.kind==='choco'){e.checkpoint=null;e.freshBoard();}e.reset({keepWonder:true,keepHammers:true});}
  }
- $('debug-payout-status').textContent='全3ゲーム：目標 '+value+'%・次ゲームから適用（通常5色基準／配当表固定／JPC除外）';syncPause();scheduleUI(app);return true;
+ $('debug-payout-status').textContent='全4ゲーム：目標 '+value+'%・次ゲームから適用（通常5色基準／配当表固定／JPC除外）';syncPause();scheduleUI(app);return true;
 }
 $('debug-rainbow-force').checked=false;
 $('debug-rainbow-force').onchange=()=>{
