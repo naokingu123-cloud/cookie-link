@@ -699,10 +699,14 @@
     // Retain the pre-animation cup state until all kernels have landed;
     // switching per motion frame causes flicker and using tr.after previews holes.
     const gaps=active?tr.before:s.board;
-    K.cells.forEach((p,i)=>{
-      const w=seq?.waveOf[i]??-1;
-      if(!gaps[i]||(moving&&elapsed<seq.fall&&w>=0&&elapsed>LIGHT+w*WAVE+SNAP))emptySocket(ctx,p);
-    });
+    // No empty-container overlay while kernels are falling or being refilled.
+    // Reveal settled empty containers only after the full animation finishes.
+    if(!active||elapsed<seq.fall){
+      K.cells.forEach((p,i)=>{
+        const w=seq?.waveOf[i]??-1;
+        if(!gaps[i]||(moving&&elapsed<seq.fall&&w>=0&&elapsed>LIGHT+w*WAVE+SNAP))emptySocket(ctx,p);
+      });
+    }
     const showRails=!active||elapsed<LIGHT;
     if(showRails&&guide?.port<K.ports.length)lane(ctx,guide.port,true);
     // The mini renders only the actual board, rim, and integrated numbered reach plaques.
