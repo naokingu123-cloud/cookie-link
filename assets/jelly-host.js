@@ -9,7 +9,7 @@ slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.class
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
 title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
 const ctx=canvas.getContext('2d');
-let frame=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,reachStarted=0,paused=false;
+let frame=0,miniTimer=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,reachStarted=0,paused=false;
 const engine={
  kind:'jelly',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'オールライン',version:0,
  maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,
@@ -75,11 +75,14 @@ function advance(dt){
  if(!engine.trace&&engine.queue.length){
   const next=engine.queue.shift();engine.state=next.state;engine.trace=next.trace;engine.elapsed=0;
   invalidateReach(slot);engine.emit('jellyPour');
-  if(active===id)sceneSound(next.trace.ball<=5?'glass':'transfer',{volume:.52,rate:1+next.trace.ball*.025});
+  if(active===id&&next.trace.ball>5)sceneSound('transfer',{volume:.52,rate:1+next.trace.ball*.025});
  }
  if(!engine.trace)return;
  const previous=engine.elapsed;
  engine.elapsed+=dt*engine.presentationRate;
+ if(active===id&&engine.trace.opened.length&&previous<V.partitionBreakAt&&engine.elapsed>=V.partitionBreakAt){
+  sceneSound('glass',{volume:.52,rate:1+engine.trace.ball*.025});
+ }
  if(active===id&&engine.trace.newLines.length){
   const reveal=V.lineRevealAt(engine.trace);
   if(previous<reveal&&engine.elapsed>=reveal){
@@ -117,14 +120,19 @@ function paint(mini){
   reachTime:clock-reachStarted,reach:engine.trace||demo?[]:slot.reachResults});
 }
 slot.paintJelly=paint;
-function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
+function wake(){
+ clearTimeout(miniTimer);miniTimer=0;
+ if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);
+}
 function tick(now){
  frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
- const dt=moving&&stamp?Math.min(100,Math.max(0,now-stamp)):0;stamp=moving?now:0;
- if(moving){clock+=dt;if(active===id&&app.phase==='ready')demoTime+=dt;advance(dt);}
+ const elapsed=moving&&stamp?Math.max(0,now-stamp):0;stamp=moving?now:0;
+ if(moving){const dt=Math.min(100,elapsed);clock+=elapsed;if(active===id&&app.phase==='ready')demoTime+=dt;advance(dt);}
  if(active===id&&clock-lastMain>=32){paint(false);lastMain=clock;}
- if(engine.trace&&clock-lastMini>=150){paint(true);lastMini=clock;}
+ const miniReach=active!==id&&app.phase==='playing'&&!motionReduced&&slot.reachResults.length>0;
+ if(active!==id&&(engine.trace||miniReach)&&clock-lastMini>=150){paint(true);lastMini=clock;}
  if(moving&&(active===id||engine.trace||engine.queue.length))wake();
+ else if(moving&&miniReach)miniTimer=setTimeout(wake,150);
 }
 const select0=select;select=function(i){const result=select0(i);document.body.classList.toggle('jb-active',active===id);lastMain=-1000;wake();return result;};
 const hud0=hud;hud=function(a){hud0(a);if(active===id){put('best',engine.state.lines.length+' BINGO ／ '+engine.state.sugarLines+'ラインでシュガー');put('ballinfo','あと'+Math.max(0,8-a.draws.length)+'球');wake();}};
