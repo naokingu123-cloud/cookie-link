@@ -359,8 +359,13 @@ try{
    if(key===nodeReachCacheKey)return nodeReachCache;
    nodeReachCacheKey=key;
    const result=new Map();
-   if(engine.running&&engine.processed>=1&&engine.processed<8&&
-      engine.accepted===engine.processed&&!engine.busy){
+   // After the eighth ball, show counterfactual reaches without
+   // accepting a ninth ball; all predictions remain read-only.
+   const lastBallSettled=engine.processed===8 &&
+      ['settled','complete'].includes(engine.phase)&&!engine.queue.length;
+   const inRound=engine.running&&engine.processed>=1&&
+      engine.processed<8&&!engine.busy;
+   if((inRound||lastBallSettled)&&engine.accepted===engine.processed){
      for(let i=0;i<engine.nodeNumbers.length;i++){
        if(engine.hits.has(i))continue;
        const number=engine.nodeNumbers[i];
@@ -1060,7 +1065,8 @@ try{
    rasterKey='';
    drawRaster(e,app.bet(0));
  },90);
- e.beforeComplete=async token=>{if(token===e.version)await e.wait(280,token);};
+ // Run the standard post-eight-ball reach presentation before payout.
+ e.beforeComplete=token=>finishGamePresentation(slot,e,app,token);
  // Keep the other two original game engines and all common accounting.
  const nativeRender=render;
  render=function(s,ev,engine,...rest){if(engine?.kind==='gelato'){drawGelato();return;}return nativeRender(s,ev,engine,...rest);};
@@ -1070,7 +1076,7 @@ try{
  requestReach=function(s,engine,a=app){
    if(engine?.kind!=='gelato')return nativeReach(s,engine,a);
    const ctx=reachContext(engine,a);
-   if(!ctx||a.bet(0)<=0||engine.processed>=8){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
+   if(!ctx||a.bet(0)<=0||engine.processed>8){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
    if(s.reachBoardKey===ctx.key)return;
    const epoch=(s.reachEpoch||0)+1;s.reachEpoch=epoch;
    s.reachBoardKey=ctx.key;s.reachStatus='pending';
