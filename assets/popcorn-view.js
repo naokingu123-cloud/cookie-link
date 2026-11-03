@@ -90,7 +90,7 @@
       const w=2*radius*1.09,h=2*halfHeight*1.09;
       ctx.drawImage(art.carton,-w/2,-h/2,w,h);
     }
-    ctx.save();ctx.globalAlpha=.82;K.cells.forEach(p=>drawCup(ctx,p.x,p.y));ctx.restore();
+    // Per-cell popcorn containers intentionally removed; keep only the board art.
   }
   function cupPath(ctx,x,y) {
     ctx.beginPath();ctx.moveTo(x-.447,y-.21);ctx.quadraticCurveTo(x,y-.35,x+.447,y-.21);
@@ -695,18 +695,7 @@
     const seq=tr&&sequence(tr),active=!!tr&&elapsed<seq.end;
     const moving=active&&(tr.port>=0||seq.served),service=active?serviceAt(seq,elapsed):null;
     const stepFrame=moving&&elapsed>=seq.fall?(elapsed<seq.refill?seq.falls.find(f=>elapsed<f.end):seq.supply.find(f=>elapsed>=f.begin&&elapsed<f.end)):null;
-    // Never preview the refill destination with an empty-cup overlay.
-    // Retain the pre-animation cup state until all kernels have landed;
-    // switching per motion frame causes flicker and using tr.after previews holes.
-    const gaps=active?tr.before:s.board;
-    // No empty-container overlay while kernels are falling or being refilled.
-    // Reveal settled empty containers only after the full animation finishes.
-    if(!active||elapsed<seq.fall){
-      K.cells.forEach((p,i)=>{
-        const w=seq?.waveOf[i]??-1;
-        if(!gaps[i]||(moving&&elapsed<seq.fall&&w>=0&&elapsed>LIGHT+w*WAVE+SNAP))emptySocket(ctx,p);
-      });
-    }
+    // Empty cell overlays are disabled for all phases, including idle and refill.
     const showRails=!active||elapsed<LIGHT;
     if(showRails&&guide?.port<K.ports.length)lane(ctx,guide.port,true);
     // The mini renders only the actual board, rim, and integrated numbered reach plaques.
