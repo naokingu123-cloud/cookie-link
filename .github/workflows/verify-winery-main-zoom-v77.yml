@@ -1,0 +1,23 @@
+name: Verify Winery main board zoom v77
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/winery-pyramid-v1.js'
+      - 'assets/winery-main-board-enlarge-v77.css'
+      - '.github/tests/winery_main_zoom_v77.cjs'
+      - '.github/workflows/verify-winery-main-zoom-v77.yml'
+permissions:
+  contents: read
+jobs:
+  main-glass-fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test 21 enlarged glasses, unchanged miniature and safe sidebar
+        run: node .github/tests/winery_main_zoom_v77.cjs
