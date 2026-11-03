@@ -1,0 +1,25 @@
+name: Verify final reaches and Six Drop refill v75
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/gelato-prism-v28.js'
+      - 'assets/winery-pyramid-v1.js'
+      - 'assets/winery-pyramid-core-v1.js'
+      - 'assets/winery-tab-selected-v75.css'
+      - '.github/tests/reach_and_six_refill_v75.cjs'
+      - '.github/workflows/verify-final-reach-six-v75.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify 8-ball final reach, top-row refill and selected Winery tab
+        run: node .github/tests/reach_and_six_refill_v75.cjs
