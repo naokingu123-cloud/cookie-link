@@ -175,7 +175,7 @@ document.addEventListener('visibilitychange',()=>{stamp=0;requestFrame();});
 new ResizeObserver(()=>{lastMain=-1e4;requestFrame();}).observe(slot.panel);
 if(V.assetsReady)V.assetsReady.then(()=>{lastMini=lastMain=-1e4;requestFrame();});
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:81};
+window.PopcornSplash={engine,core:K,version:82};
 engine.reset();
 select(id);
 })();
