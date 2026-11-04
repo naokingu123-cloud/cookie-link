@@ -1,4 +1,4 @@
-/* Bingo Stick. Cell indices are row-major, and state snapshots can be reused by previews. */
+/* Bingo Waffle. Cell indices are row-major, and state snapshots can be reused by previews. */
 (function(root){
  'use strict';
  const cells=Array.from({length:64},(_,i)=>i);
@@ -10,7 +10,7 @@
   {name:'段ちがい',cells:[18,29]}
  ];
  const axes=[],through=cells.map(()=>[]);
- for(const [dx,dy] of [[1,0],[0,1],[1,1],[-1,1]]){
+ for(const [dx,dy] of [[1,0],[0,1]]){
   for(const i of cells){
    const x=i%8,y=i>>3,px=x-dx,py=y-dy;
    if(px>=0&&px<8&&py>=0&&py<8)continue;
@@ -57,9 +57,9 @@
     start=i+1;
    }
   }
-  let totalHundredths=0;
-  for(let k=5;k<=8;k++)totalHundredths+=award(k,counts[k]);
-  return {...s,lines,counts,longest,totalHundredths};
+  let baseHundredths=0;
+  for(let k=5;k<=8;k++)baseHundredths+=award(k,counts[k]);
+  return {...s,lines,counts,longest,baseHundredths,totalHundredths:Math.round(baseHundredths*s.oddsMultiplier)};
  }
  function create({rng=Math.random}={}){
   const triples=shuffle(numbers.slice(),rng).slice(0,14);
@@ -69,14 +69,16 @@
    let x=i%8,y=i>>3;if(sym&1)[x,y]=[y,x];if(sym&2)x=7-x;if(sym&4)y=7-y;
    return 8*y+x;
   });
-  return evaluate({numbers:board,initialFree,patternName:pattern.name,placedFree:[],hits:[],draws:[],freeBudget:0,phase:'first'});
+  return evaluate({numbers:board,initialFree,patternName:pattern.name,placedFree:[],hits:[],draws:[],freeBudget:0,oddsMultiplier:1,oddsUpCells:[],phase:'first'});
  }
  function draw(s,n){
   if((s.phase!=='first'&&s.phase!=='last')||!Number.isInteger(n)||n<1||n>25||s.draws.includes(n))return null;
-  const draws=[...s.draws,n],hits=[...s.hits,...cells.filter(i=>s.numbers[i]===n)];
-  const next=evaluate({...s,draws,hits});
-  if(draws.length===5){next.phase='thinking';next.freeBudget=next.longest;}
-  if(draws.length===8)next.phase='done';
+  const newHits=cells.filter(i=>s.numbers[i]===n);
+  const oddsUpCells=newHits.filter(i=>s.initialFree.includes(i)||s.placedFree.includes(i));
+  const oddsMultiplier=s.oddsMultiplier+oddsUpCells.length/2;
+  const next=evaluate({...s,draws:[...s.draws,n],hits:[...s.hits,...newHits],oddsUpCells,oddsMultiplier});
+  if(next.draws.length===5){next.phase='thinking';next.freeBudget=next.longest;}
+  if(next.draws.length===8)next.phase='done';
   return next;
  }
  function place(s,cell){
@@ -99,7 +101,7 @@
     if(left>=5)gain-=award(left,s.counts[left])-award(left,s.counts[left]-1);
     if(right>=5)gain-=award(right,s.counts[right])-award(right,s.counts[right]-1);
     if(length>=5)gain+=award(length,s.counts[length]+1)-award(length,s.counts[length]);
-    if(axis.length>=5)shape+=length*length*length;
+    shape+=length*length*length;
    }
    const score=gain*10000+shape;
    if(score>bestScore){best=cell;bestScore=score;}

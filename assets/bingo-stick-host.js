@@ -1,8 +1,8 @@
-/* Bingo Stick uses the shared eight draws. The placement clock runs on active play time. */
+/* Bingo Waffle uses the shared eight draws. The placement clock runs on active play time. */
 (()=>{
 'use strict';
 const id=SweetsLineup.ids.indexOf('stick'),slot=slots[id],game=SweetsLineup.catalog.stick,R=window.BingoStickRules;
-const thinkingMs=15000,noReach=[];
+const thinkingMs=15000,oddsPopupMs=1600,noReach=[];
 let clock=0,deadline=null,timeLeft=0,paused=false,lastHit=-Infinity,lastMain=-Infinity,lastMini=-Infinity,frame=0,miniTimer=0,stamp=null;
 const engine={
  kind:'stick',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'8マスライン',version:0,
@@ -83,9 +83,10 @@ function projectReaches(s,bet){
   // Every newly formed or extended maximal line contains a fresh, non-FREE hit.
   const fresh=next.hits.slice(s.hits.length).filter(i=>!free.has(i));
   const lines=next.lines.filter(line=>fresh.some(i=>line.cells.includes(i)));
-  const cells=fresh.filter(i=>lines.some(line=>line.cells.includes(i)));
+  const oddsCells=next.oddsUpCells,oddsUp=oddsCells.length>0&&!lines.length;
+  const cells=oddsUp?oddsCells:fresh.filter(i=>lines.some(line=>line.cells.includes(i)));
   const longest=next.counts[8]>s.counts[8],tier=reachTier(gain,longest);
-  hits.push({number,total,gain,tier,lines,cells,allClear:longest,kind:['reach','high','super','all'][tier]});
+  hits.push({number,total,gain,tier,lines,cells,oddsUp,oddsCells,oddsDelta:oddsCells.length/2,allClear:longest,kind:['reach','high','super','all'][tier]});
  }
  return hits;
 }
@@ -113,15 +114,15 @@ async function finish(version){
 }
 // One reproducible sample board shows the same placements, rules and scores used in play.
 const lesson=(()=>{
- let seed=9121;
+ let seed=228; // Ball seven hits two FREE cells of the same number on a paying board.
  let state=R.create({rng:()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32)});
- const stages=[];const add=(at,remainingMs=0)=>stages.push({at,state,remainingMs,reach:state.phase==='last'?projectReaches(state,100):noReach});
+ const stages=[];const add=(at,remainingMs=0,isDraw=false)=>stages.push({at,state,remainingMs,isDraw,reach:state.phase==='last'?projectReaches(state,100):noReach});
  add(0);
- for(let n=1;n<=5;n++){state=R.draw(state,n);add(1200+n*1000,n===5?15000:0);}
+ for(let n=1;n<=5;n++){state=R.draw(state,n);add(1200+n*1000,n===5?15000:0,true);}
  const locked=R.confirm(state);
  locked.placedFree.forEach((cell,i)=>{state=R.place(state,cell);add(7400+i*670,14000-i*1800);});
  state=locked;add(13000);
- for(let n=6;n<=8;n++){state=R.draw(state,n);add(14100+(n-6)*1700);}
+ for(let n=6;n<=8;n++){state=R.draw(state,n);add(14100+(n-6)*1700,0,true);}
  return stages;
 })();
 function paint(mini){
@@ -129,7 +130,9 @@ function paint(mini){
  const demo=app.phase==='ready',stage=demo?lesson.findLast(e=>e.at<=clock%20000):null;
  const s=stage?stage.state:engine.state,age=stage?clock%20000-stage.at:clock-lastHit;
  const opts={time:clock,bet:app.bet(id),demo,paused:app.paused,remainingMs:stage?stage.remainingMs:engine.remainingMs,
-  latestNumber:s.draws.at(-1),age,reach:stage?stage.reach:slot.reachResults,sugarCollected:stage?!!s.counts[8]:engine.wonderCollected,
+  latestNumber:s.draws.at(-1),age,oddsMultiplier:s.oddsMultiplier,oddsUpCells:s.oddsUpCells,
+  oddsPopupTime:s.oddsUpCells.length&&(!stage||stage.isDraw)&&age<oddsPopupMs?age:null,
+  reach:stage?stage.reach:slot.reachResults,sugarCollected:stage?!!s.counts[8]:engine.wonderCollected,
   sugarIcon:mini||!app.bet(id)?null:getSugarSprite(sugarVisualTier(engine.wonderToken||app.bet(id)))};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
@@ -142,19 +145,19 @@ function tick(now){
  if(moving&&engine.holdDraws&&engine.remainingMs<=0)confirm();
  if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
  if(active!==id&&clock-lastMini>=150){paint(true);lastMini=clock;}
- if(moving&&(active===id||engine.holdDraws||clock-lastHit<1200))wake();
+ if(moving&&(active===id||engine.holdDraws||clock-lastHit<=oddsPopupMs+200))wake();
  else if(moving&&app.phase==='playing'&&!motionReduced&&slot.reachResults.length)miniTimer=setTimeout(wake,150);
  else stamp=null;
 }
 const oldSelect=select;select=function(i){const result=oldSelect(i);document.body.classList.toggle('bs-active',active===id);lastMain=lastMini=-Infinity;wake();return result;};
-const oldHud=hud;hud=function(a){oldHud(a);if(active===id){put('best','最長 '+engine.state.longest+'マス');put('ballinfo',engine.holdDraws?'FREE 配置中':'あと'+Math.max(0,8-a.draws.length)+'球');}};
+const oldHud=hud;hud=function(a){oldHud(a);if(active===id){put('best','最長 '+engine.state.longest+'マス ／ オッズ×'+engine.state.oddsMultiplier.toFixed(1));put('ballinfo',engine.holdDraws?'FREE 配置中':'あと'+Math.max(0,8-a.draws.length)+'球');}};
 const oldResult=renderRoundResult;renderRoundResult=function(a){
  oldResult(a);if(!a.result)return;
  const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.stick===String(a.token))return;
  row.dataset.stick=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state,breakdown=[8,7,6,5].filter(n=>s.counts[n]).map(n=>n+'マス×'+s.counts[n]+'本').join('・');
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'最長 '+s.longest+'マス ／ '+(breakdown||'成立ラインなし')+' ／ 配置FREE '+s.placedFree.length+'個'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'最長 '+s.longest+'マス ／ '+(breakdown||'成立ラインなし')+' ／ ライン配当 '+(s.baseHundredths/100).toFixed(2)+'倍 × オッズ '+s.oddsMultiplier.toFixed(1)+' ／ 配置FREE '+s.placedFree.length+'個'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});

@@ -3703,7 +3703,8 @@ function paintReachPage(s,{slide=false}={}){
  const results=s.reachPageResults||[],start=(s.reachPage||0)*REACH_PAGE_SIZE,page=results.slice(start,start+REACH_PAGE_SIZE);
  const markup=page.map(p=>{
   const label=p.oddsUp?'オッズアップ':reachWord(s,p.tier);
-  const digits=p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number);
+  let digits=String(p.number);
+  if(s.engine?.kind!=='stick')digits=p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number);
   return '<span class="reach-num'+(p.oddsUp?' odds-up':'')+'" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+label+'、HIT後 '+p.total/100+'倍">'+digits+'</span>';
  }).join('');
  if(slide&&!motionReduced&&s.reachNumbers.children.length&&page.length){
@@ -3880,7 +3881,7 @@ function renderRecordList(mode){
  if(recordPeriod==='month')rows=rows.filter(r=>recordMonth(r.at)===month);
  recordOffset=Math.min(recordOffset,Math.max(0,Math.ceil(rows.length/5)-1));
  const shown=rows.slice(recordOffset*5,recordOffset*5+5);
- $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===8?'ビンゴスティック':r.game===7?'ジェリービンゴ':r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+(r.game===7?'':' · '+r.chain+'連鎖')+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
+ $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===8?'ビンゴワッフル':r.game===7?'ジェリービンゴ':r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+(r.game===7?'':' · '+r.chain+'連鎖')+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
  $('record-period-all').onclick=()=>{recordPeriod='all';recordOffset=0;renderRecordMenu();};$('record-period-month').onclick=()=>{recordPeriod='month';recordOffset=0;renderRecordMenu();};attachRecordPager(rows.length,5);
 }
 function renderRecordMenu(){

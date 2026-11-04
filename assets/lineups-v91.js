@@ -9,11 +9,11 @@ const catalog={
  winery:{name:'ワイナリーピラミッド',logo:'assets/winery-pyramid-tab-art-v51.webp',home:1,record:2},
  popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/popcorn-art/popcorn-logo-v88.webp',home:2,record:4},
  jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7},
- stick:{name:'ビンゴスティック',logo:'assets/bingo-stick-emblem.svg',home:0,record:8}
+ stick:{name:'ビンゴワッフル',logo:'assets/waffle-logo.webp',home:0,record:8}
 };
 const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'];
 const legacyMounts=['gelato','winery','popcorn'];
-const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',')||[];
+const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',').map(id=>id==='waffle'?'stick':id)||[];
 const valid=custom.length>=1&&custom.length<=3&&new Set(custom).size===custom.length&&custom.every(id=>Object.hasOwn(catalog,id));
 const mode=valid?'custom':params.get('set')==='classic'?'classic':'festival';
 const chosen=valid?custom:mode==='classic'?classic:festival;
