@@ -24,6 +24,7 @@ const syrup={
 };
 const laneColors=['#ffbc7c','#ffda97','#ffb1ba','#a4ffeb','#a9dfff','#c7b3ff'];
 const tiers=[1,2,3,4,5,6,7,8,9,10,12];
+const oddsPopupMs=1600;
 const emblem=new Image();emblem.src='assets/jelly-emblem.svg';
 const center=i=>[50+i%5*100,50+Math.floor(i/5)*100];
 function gradient(c,x,y,x2,y2,stops){
@@ -61,7 +62,7 @@ function duration(t){
  if(!t)return 0;
  const count=t.before.lines.length+t.newLines.length;
  const finish=t.newLines.length?(count===12?1750:count>=6?1100:850):170;
- return waveEnd(t)+finish;
+ return Math.max(waveEnd(t)+finish,t.oddsReason?oddsPopupMs:0);
 }
 let lastTurn,paths=new Map();
 function getPaths(turn,state){
@@ -523,7 +524,34 @@ function sugarMarker(c,x,y,size,sprite){
  rect(c,-size*.33,-size*.33,size*.66,size*.66,1.2,'#f3c9ee','#fff2db',1.1);
  line(c,-size*.19,-size*.19,size*.16,-size*.19,'#fff9fd',1.3);c.restore();
 }
-function panel(c,state,o,x,y,w,h){
+function oddsLabel(n){return '×'+n.toFixed(1);}
+function oddsPopup(c,state,turn,age,x,y,w,h){
+ const wide=w>h*2.6;
+ c.save();c.translate(x,y);
+ if(!reducedReachMotion){
+  const enter=clamp(age/130),leave=clamp((oddsPopupMs-age)/160);
+  c.translate(0,(1-enter)*h*.13);c.globalAlpha=.25+.75*Math.min(enter,leave);
+ }
+ const glaze=gradient(c,0,0,w*.25,h,[[0,'#88304f'],[.34,'#853757'],[1,'#422542']]);
+ rect(c,1,1,w-2,h-2,Math.min(h*.22,10),glaze,'#ffdc88',2);
+ rect(c,4,4,w-8,h-8,Math.min(h*.18,8),'','#f09c9f',.9);
+ const reason=turn.oddsReason==='blue'?'青FREE重ね！':'同一区画にHIT！';
+ const change=oddsLabel(turn.before.oddsMultiplier)+' → '+oddsLabel(state.oddsMultiplier);
+ if(wide){
+  lettering(c,reason,w*.31,h*.32,h*.26,'#ffefdb',{max:w*.53});
+  lettering(c,'＋0.5倍',w*.77,h*.32,h*.30,'#ffe58f',{max:w*.38,weight:950});
+  lettering(c,'ODDS UP!',w*.27,h*.70,h*.25,'#ffd59c',{max:w*.40,weight:950});
+  lettering(c,change,w*.70,h*.69,h*.37,'#fff5b0',{max:w*.51,face:'Georgia,serif',weight:950});
+ }else{
+  lettering(c,(turn.ball<=5?'前半':'後半')+'・第'+turn.ball+'球',w*.26,h*.18,h*.13,'#fff1dc',{max:w*.40});
+  lettering(c,'ODDS UP!',w*.71,h*.18,h*.19,'#ffdc8b',{max:w*.46,weight:950,face:'Georgia,serif'});
+  lettering(c,reason,w*.5,h*.42,h*.18,'#fff3df',{max:w*.86});
+  lettering(c,'＋0.5倍',w*.5,h*.64,h*.23,'#ffde78',{max:w*.80,weight:950});
+  lettering(c,change,w*.5,h*.85,h*.20,'#fff6c5',{max:w*.82,weight:950,face:'Georgia,serif'});
+ }
+ c.restore();
+}
+function panel(c,state,o,x,y,w,h,popupInHeader){
  c.save();c.translate(x,y);
  const unit=w/160;c.scale(unit,unit);w/=unit;h/=unit;
  const turns=state.draws.length,count=visibleCount(state,o.turn,o.elapsed||0),bet=Math.max(0,o.bet||0);
@@ -534,8 +562,14 @@ function panel(c,state,o,x,y,w,h){
  let y0=6+head;
  const phaseH=Math.min(75,h*.195);
  phaseGuide(c,11,y0,w-22,phaseH,turns,o);y0+=phaseH+2;
- const titleH=Math.min(20,h*.055),headH=Math.min(17,h*.048),footH=Math.min(20,h*.052);
- lettering(c,'ライン配当',w/2,y0+titleH*.51,titleH*.76,'#ffe5ab');y0+=titleH;
+ if(popupInHeader)oddsPopup(c,state,o.turn,o.oddsPopupTime??o.elapsed,8,4,w-16,y0-5);
+ const oddsH=Math.min(39,h*.104);
+ rect(c,11,y0+1,w-22,oddsH-3,5,'#62334c','#edc37b',1.2);
+ lettering(c,'配当オッズ',16,y0+oddsH*.34,oddsH*.33,'#fff4d2',{align:'left',max:72});
+ lettering(c,oddsLabel(state.oddsMultiplier),w-17,y0+oddsH*.32,oddsH*.49,'#ffde83',{align:'right',max:58,face:'Georgia,serif',weight:950});
+ lettering(c,'重ねHITごとに＋0.5倍',w/2,y0+oddsH*.75,oddsH*.27,'#ffe4be',{max:w-30});
+ y0+=oddsH;
+ const headH=Math.min(17,h*.048),footH=Math.min(20,h*.052);
  const right=w-15;
  lettering(c,'本数',17,y0+headH*.51,headH*.77,'#ffdde3',{align:'left'});
  lettering(c,'WIN',right,y0+headH*.51,headH*.83,'#ffe78a',{align:'right'});
@@ -551,7 +585,7 @@ function panel(c,state,o,x,y,w,h){
   }
   if(sugar)sugarMarker(c,20,cy,Math.min(16,rowH*.97),o.sugarIcon);
   lettering(c,n+'本',sugar?29:16,cy,size,active||top?'#ffe3a1':'#fff3e7',{align:'left',max:38});
-  const win=Math.floor(bet*K.payout(n)/100);
+  const win=Math.floor(bet*K.payout(n,state.oddsMultiplier)/100);
   lettering(c,win.toLocaleString('en-US'),right,cy,size,'#ffe38e',{align:'right',max:right-67,face:'ArcadePayout,Georgia,serif'});
   y0+=ht;
  }
@@ -564,6 +598,8 @@ function panel(c,state,o,x,y,w,h){
 function draw(c,state,options){
  if(!c||!state)return;
  const o=options,w=o.width,h=o.height;if(w<=0||h<=0)return;
+ const popupAge=o.oddsPopupTime??o.elapsed??0;
+ const popup=o.turn?.oddsReason&&popupAge<oddsPopupMs;
  c.save();c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,w,h);
  if(o.mini){
   c.fillStyle='#163e4b';c.fillRect(0,0,w,h);
@@ -574,14 +610,25 @@ function draw(c,state,options){
    lettering(c,visibleCount(state,o.turn,o.elapsed||0),cx,h*.43,h*.44,'#ffe3a1',{face:'Georgia,serif'});
    lettering(c,'LINE',cx,h*.75,h*.17,'#a7e5d9');
   }else board(c,state,o,(w-side)*.5,(h-side)*.5,side);
+  if(popup){
+   const bw=side*.40,bh=side*.115,xx=(w-bw)/2;
+   rect(c,xx,0,bw,bh,3,'#67304d','#ffdc88',1.7);
+   lettering(c,'＋0.5',w/2,bh*.55,bh*.95,'#ffea91',{max:bw-3,weight:950});
+  }
  }else{
   const pad=Math.max(2,Math.min(w,h)*.018),gap=Math.max(4,Math.min(w,h)*.023);
   const side=Math.min(h-pad*2,(w-gap-pad*2)*.669),pw=Math.min(w-side-gap-2*pad,side*.66);
   const ph=Math.min(h-pad*2,pw*2.82),left=(w-side-pw-gap)/2;
-  panel(c,state,o,left,(h-ph)/2,pw,ph);
-  board(c,state,o,left+pw+gap,(h-side)/2,side);
+  const boardX=left+pw+gap,top=(h-side)/2;
+  const upperRibbon=top>=side*.16;
+  panel(c,state,o,left,(h-ph)/2,pw,ph,popup&&!upperRibbon);
+  board(c,state,o,boardX,top,side);
+  if(popup&&upperRibbon){
+   const bh=Math.min(top*.92,side*.25),bw=side*.96;
+   oddsPopup(c,state,o.turn,popupAge,boardX+(side-bw)/2,top-bh-1,bw,bh);
+  }
  }
  c.restore();
 }
-window.JellyView=Object.freeze({draw,duration,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
+window.JellyView=Object.freeze({draw,duration,oddsPopupMs,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
 })();

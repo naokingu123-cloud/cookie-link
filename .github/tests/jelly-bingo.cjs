@@ -5,7 +5,7 @@ const rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
 const cells=Array.from({length:25},(_,i)=>i);
 const board=(seeds=[])=>({
   numbers:cells.map(i=>i+1),seeds,colors:cells.map(i=>seeds.includes(i)?'blue':null),
-  draws:[],open:new Set(),lines:[]
+  draws:[],open:new Set(),lines:[],oddsMultiplier:1
 });
 const step=(state,cell)=>J.draw(state,state.numbers[cell]);
 const play=(state,path)=>path.reduce((s,i)=>step(s,i).state,state);
@@ -42,6 +42,33 @@ assert(J.LINES.every(line=>line.length===5));
   assert.equal(J.draw(a,26),null);
 }
 
+// Overlaps use pre-draw section boundaries, including blue FREE + blue FREE.
+{
+  const a=step(board([0]),1);                    // one blue spreads into dry neighbors
+  assert.equal(a.trace.oddsReason,null);assert.equal(a.state.oddsMultiplier,1);
+  const b=step(a.state,2);                        // previously covered by blue
+  assert.equal(b.trace.oddsReason,'blue');assert.equal(b.state.oddsMultiplier,1.5);
+  const c=step(board([0,2]),1);                 // a dry landing joins two blue FREE cells
+  assert.equal(c.trace.oddsReason,'blue');assert.equal(c.state.oddsMultiplier,1.5);
+  const d=step(board([0,1,2]),1);               // direct blue + merge on one ball
+  assert.equal(d.state.oddsMultiplier,1.5);
+  const e=step(step(board([0]),1).state,7);      // neighbors 2 and 6 already share the blue section
+  assert.equal(e.trace.oddsReason,null);assert.equal(e.state.oddsMultiplier,1);
+  const f=step(step(board([]),0).state,1);       // another number in a previously opened dry section
+  assert.equal(f.trace.oddsReason,'section');assert.equal(f.state.oddsMultiplier,1.5);
+}
+{
+  // Three successive colored pours on an already blue component each advance the odds once.
+  let a=play(board([0]),[0,2,4,21,23]);let odds=a.oddsMultiplier;
+  for(const i of [5,7,9]){
+    const seen=structuredClone(a),n=a.numbers[i],p=J.preview(a,n),{state:b,trace}=J.draw(a,n);
+    odds+=.5;assert.equal(b.oddsMultiplier,odds);assert(trace.oddsReason);
+    assert.equal(p.oddsMultiplier,odds);assert.equal(p.totalHundredths,J.payout(b.lines.length,odds));
+    assert.equal(p.oddsReason,trace.oddsReason);assert.deepEqual(a,seen);a=b;
+  }
+  assert.equal(J.draw(a,25),null);assert.equal(J.preview(a,a.draws[0]),null);
+}
+
 // All 15 nonempty recipes can occur in legal eight-ball play. The same
 // section can be filled repeatedly while other pours land behind closed walls.
 {
@@ -57,7 +84,7 @@ assert(J.LINES.every(line=>line.length===5));
 }
 
 {
-  // The fifth opening, then a later refill of the same row, must pay only once.
+  // The same completed row is counted once; a re-hit can still increase its WIN.
   const s=board([0]);
   const a=play(s,[0,21,23,2]);
   assert.deepEqual(a.lines,[]);
@@ -65,6 +92,8 @@ assert(J.LINES.every(line=>line.length===5));
   assert.deepEqual(r.newLines,[0]);assert.equal(J.payout(b.lines.length),20);
   const {state:c,trace:red}=step(b,3);
   assert.deepEqual(red.newLines,[]);assert.equal(J.payout(c.lines.length),20);
+  const before=J.payout(b.lines.length,b.oddsMultiplier),after=J.payout(c.lines.length,c.oddsMultiplier);
+  assert.equal(after-before,10);assert.equal(J.preview(b,4).totalHundredths,after);
   assert.equal(J.payout(12),30000);
 }
 
@@ -89,6 +118,30 @@ assert(J.LINES.every(line=>line.length===5));
   assert.equal(J.previewLines(ten,13),10); // 100× is not an all-line result
 }
 
+// A real standard-rate lucky board can still collect all 25 cells in eight distinct draws.
+{
+  let s=J.create({rng:rng(1972),rate:90});
+  assert.equal(s.seeds.length,5);
+  for(const n of [15,17,9,2,11,16,24])s=J.draw(s,n).state;
+  assert(s.lines.length<12);assert.equal(J.preview(s,21).lines,12);
+  s=J.draw(s,21).state;
+  assert.equal(s.colors.filter(Boolean).length,25);assert.equal(s.lines.length,12);
+}
+// The seed-count roll uses a fixed lucky tail while the ordinary counts respond to the rate.
+{
+  function seedCount(rate,roll){
+    const random=rng(11);
+    let first=true;
+    return J.create({rate,rng:()=>{if(first){first=false;return roll;}return random();}}).seeds.length;
+  }
+  for(const target of [50,90,150]){
+    assert.equal(seedCount(target,.005),5);assert.equal(seedCount(target,.025),6);
+  }
+  assert.equal(seedCount(50,.999),0);assert.equal(seedCount(50,.04),1);
+  assert.equal(seedCount(90,.999),2);assert.equal(seedCount(90,.04),3);
+  assert.equal(seedCount(150,.999),3);assert.equal(seedCount(150,.04),4);
+}
+
 // Different sugar rolls may mark different rows on exactly the same ready board.
 {
   const sample=rng(913),tape=[];
@@ -99,21 +152,23 @@ assert(J.LINES.every(line=>line.length===5));
   };
   const easy=replay(0),hard=replay(.999);
   assert.deepEqual(easy.numbers,hard.numbers);assert.deepEqual(easy.seeds,hard.seeds);
-  assert.equal(hard.sugarLines,easy.sugarLines+2);
+  assert.equal(hard.sugarLines,easy.sugarLines+1);
 }
 
 // Optional independent check using the shipped engine itself:
 // node .github/tests/jelly-bingo.cjs [rounds] [rng seed] [target %].
 const rounds=Number(process.argv[2]||100),random=rng(Number(process.argv[3]||39507));
 const target=Number(process.argv[4]||90),counts=Array(13).fill(0),sugarGoals=Array(8).fill(0);
-let sugarWins=0;
+const seedCounts=Array(7).fill(0);
+let sugarWins=0,stackedTotal=0,oddsTotal=0;
 for(let t=0;t<rounds;t++){
   // A uniform number permutation on the initial board makes a fixed sequence
   // of eight distinct roulette numbers an independent uniform cell sample.
   let s=J.create({rng:random,rate:target}),total=J.payout(s.lines.length);
   const sugarLines=s.sugarLines;
-  assert(Number.isInteger(sugarLines)&&sugarLines>=3&&sugarLines<=7);
-  if(target===90)assert(sugarLines>=4);
+  assert(Number.isInteger(sugarLines)&&sugarLines>=2&&sugarLines<=6);
+  if(target===90)assert([2,3,5,6].includes(s.seeds.length)&&sugarLines>=3);
+  seedCounts[s.seeds.length]++;
   sugarGoals[sugarLines]++;
   assert.equal(new Set(s.numbers).size,25);
   for(let n=1;n<=8;n++){
@@ -126,7 +181,8 @@ for(let t=0;t<rounds;t++){
     total=win;s=next;
   }
   assert.notEqual(s.lines.length,11);counts[s.lines.length]++;
+  stackedTotal+=J.payout(s.lines.length,s.oddsMultiplier);oddsTotal+=s.oddsMultiplier;
   if(s.lines.length>=sugarLines)sugarWins++;
 }
 const rate=counts.reduce((sum,n,i)=>sum+n*J.payout(i),0)/rounds;
-console.log('Jelly Bingo rules OK',JSON.stringify({rounds,counts,returnPercent:rate,sugarGoals,sugarWins,sugarPercent:100*sugarWins/rounds}));
+console.log('Jelly Bingo rules OK',JSON.stringify({rounds,counts,returnPercent:stackedTotal/rounds,baseReturnPercent:rate,meanOdds:oddsTotal/rounds,seedCounts,sugarGoals,sugarWins,sugarPercent:100*sugarWins/rounds}));

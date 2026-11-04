@@ -13,7 +13,7 @@
   ];
   const awards=[0,20,30,50,100,200,500,1000,2000,5000,10000,null,30000];
   // A missing cell always breaks both a row and a column, so 11 lines cannot occur.
-  const payout=lineCount=>awards[lineCount]??0;
+  const payout=(lineCount,oddsMultiplier=1)=>(awards[lineCount]??0)*oddsMultiplier;
   const completed=colors=>LINES.flatMap((line,id)=>line.every(i=>colors[i])?[id]:[]);
   const key=(a,b)=>a<b?a+'-'+b:b+'-'+a;
   const isOpen=(state,a,b)=>state.open.has(key(a,b));
@@ -27,27 +27,36 @@
     return result;
   }
 
-  // Gross line return (%) at 3–8 uniformly placed blue seeds, from 15M boards
-  // with eight distinct draws. Interpolate by mixing adjacent initial seed counts.
-  const seedRates=[40.0772,52.8314,70.3233,94.8536,129.5476,178.7747];
-  // For each blue seed count (3–8), choose one of three consecutive line goals.
-  // The cutoffs fit a 10% sugar win rate to the same 15M eight-ball boards.
+  // Measured gross line returns (%), including all overlap awards, for 0–6 FREE.
+  // Each count uses the same 30M sets of eight distinct draws and uniform seed placements.
+  const seedRates=[40.789206,57.984954,80.129459,109.722155,150.716547,209.028764,293.549000];
+  const luckyFive=.01,luckySix=.02,ordinaryShare=1-luckyFive-luckySix;
+  function freeCount(target,roll){
+    // Five- and six-FREE boards keep ALL LINE reachable. The remaining board
+    // mix must account for those awards to meet the overall payout target.
+    if(roll<luckyFive)return 5;
+    if(roll<luckyFive+luckySix)return 6;
+    const ordinaryTarget=(target-luckyFive*seedRates[5]-luckySix*seedRates[6])/ordinaryShare;
+    const high=seedRates.findIndex(rate=>rate>=ordinaryTarget),low=high-1;
+    const highShare=(ordinaryTarget-seedRates[low])/(seedRates[high]-seedRates[low]);
+    return roll<luckyFive+luckySix+ordinaryShare*highShare?high:low;
+  }
+  // [lower line goal, probability of placing sugar there]; otherwise one line higher.
+  // For each seed count, the two measured tail probabilities interpolate to 10%.
   const sugarGoals=[
-    [3,.100,.600], [4,.433,.850], [4,.104,.900],
-    [5,.611,.950], [5,.276,.850], [5,.100,.616]
+    [2,.12706287],[3,.61542494],[3,.20887231],[4,.82364984],
+    [4,.37861622],[4,.06031110],[5,.59236717]
   ];
   function create({rng=Math.random,rate=90}={}) {
     const target=Math.min(150,Math.max(50,Number(rate)||90));
-    const high=seedRates.findIndex(value=>value>=target);
-    const fraction=(target-seedRates[high-1])/(seedRates[high]-seedRates[high-1]);
-    const count=3+high-1+Number(rng()<fraction);
+    const count=freeCount(target,rng());
     const seeds=shuffled(rng).slice(0,count);
     const colors=Array(25).fill(null);
     for(const i of seeds)colors[i]='blue';
     const numbers=shuffled(rng).map(i=>i+1);
-    const [first,lowCut,midCut]=sugarGoals[count-3],roll=rng();
-    const sugarLines=first+(roll<lowCut?0:roll<midCut?1:2);
-    return {numbers,seeds,sugarLines,colors,draws:[],open:new Set(),lines:completed(colors)};
+    const [first,lowChance]=sugarGoals[count];
+    const sugarLines=first+Number(rng()>=lowChance);
+    return {numbers,seeds,sugarLines,colors,draws:[],open:new Set(),lines:completed(colors),oddsMultiplier:1};
   }
 
   // Return distance layers through the open partitions. Walls between two
@@ -65,6 +74,23 @@
       layer=next;
     }
     return result;
+  }
+
+  // Score the landing against the sections that existed before this draw.
+  function overlapReason(state,index,opening) {
+    const color=state.colors[index],adjacent=neighbors[index];
+    if(color==='blue'||state.seeds.includes(index))return 'blue';
+    if(opening){
+      // Two blue neighbors may already share one section via another path.
+      const blue=adjacent.filter(i=>state.colors[i]==='blue');
+      if(blue.length>=2){
+        const firstSection=new Set(layers(state.open,[blue[0]]).flat());
+        if(blue.some(i=>!firstSection.has(i)))return 'blue';
+      }
+    }
+    // A dry section can also have been hit: its open edges came from an
+    // earlier numbered landing, even when no jelly flowed there at the time.
+    return color||adjacent.some(i=>isOpen(state,index,i))?'section':null;
   }
 
   function project(previous,number,ball) {
@@ -94,27 +120,32 @@
       if(!recipe)colors[i]=color;
       else if(!recipe.includes(color))colors[i]=recipe+'+'+color;
     }
-    return {index,color,opened,wave,open,colors,lines:completed(colors)};
+    const oddsReason=overlapReason(previous,index,opening);
+    const oddsMultiplier=previous.oddsMultiplier+(oddsReason ? .5 : 0);
+    return {index,color,opened,wave,open,colors,lines:completed(colors),oddsReason,oddsMultiplier};
   }
 
-  function previewLines(state,number) {
-    // The settled eighth board can still show what an unused pocket would fill.
-    // Project its final pour without adding a draw or changing the real state.
-    return project(state,number,Math.min(8,state.draws.length+1))?.lines.length??null;
+  function preview(state,number) {
+    // Show hypothetical reaches on the eighth settled board without accepting a ninth ball.
+    const hit=project(state,number,Math.min(8,state.draws.length+1));
+    if(!hit)return null;
+    const lines=hit.lines.length;
+    return {lines,oddsReason:hit.oddsReason,oddsMultiplier:hit.oddsMultiplier,totalHundredths:payout(lines,hit.oddsMultiplier)};
   }
+  const previewLines=(state,number)=>preview(state,number)?.lines??null;
 
   function draw(previous,number) {
     const ball=previous.draws.length+1;
     if(ball>8)return null;
     const projected=project(previous,number,ball);
     if(!projected)return null;
-    const {index,color,opened,wave,open,colors,lines}=projected;
-    const state={...previous,open,draws:[...previous.draws,number],colors,lines};
+    const {index,color,opened,wave,open,colors,lines,oddsReason,oddsMultiplier}=projected;
+    const state={...previous,open,draws:[...previous.draws,number],colors,lines,oddsMultiplier};
     const newLines=lines.filter(id=>!previous.lines.includes(id));
-    return {state,trace:{before:previous,number,index,ball,color,opened,wave,newLines}};
+    return {state,trace:{before:previous,number,index,ball,color,opened,wave,newLines,oddsReason}};
   }
 
-  const api={create,draw,previewLines,LINES,isOpen,payout};
+  const api={create,draw,preview,previewLines,LINES,isOpen,payout};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.JellyRules=api;
 })(globalThis);
