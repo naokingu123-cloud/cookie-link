@@ -62,7 +62,7 @@ function duration(t){
  if(!t)return 0;
  const count=t.before.lines.length+t.newLines.length;
  const finish=t.newLines.length?(count===12?1750:count>=6?1100:850):170;
- return Math.max(waveEnd(t)+finish,t.oddsReason?oddsPopupMs:0);
+ return Math.max(waveEnd(t)+finish,t.oddsReason?waveStart(t)+oddsPopupMs:0);
 }
 let lastTurn,paths=new Map();
 function getPaths(turn,state){
@@ -525,6 +525,14 @@ function sugarMarker(c,x,y,size,sprite){
  line(c,-size*.19,-size*.19,size*.16,-size*.19,'#fff9fd',1.3);c.restore();
 }
 function oddsLabel(n){return '×'+n.toFixed(1);}
+function mixSwatches(c,x,y,r,before,after){
+ for(const [cx,recipe] of [[x-r*2,before],[x+r*2,after]]){
+  const colors=syrup[recipe];
+  const gel=gradient(c,cx-r,y-r,cx+r,y+r,[[0,colors[0]],[.42,colors[1]],[1,colors[3]]]);
+  oval(c,cx,y,r,r,gel,'#fff1ce',r*.18);oval(c,cx-r*.22,y-r*.38,r*.45,r*.19,'#ffffffcc');
+ }
+ lettering(c,'→',x,y,r*1.9,'#fff2c9');
+}
 function oddsPopup(c,state,turn,age,x,y,w,h){
  const wide=w>h*2.6;
  c.save();c.translate(x,y);
@@ -535,23 +543,24 @@ function oddsPopup(c,state,turn,age,x,y,w,h){
  const glaze=gradient(c,0,0,w*.25,h,[[0,'#88304f'],[.34,'#853757'],[1,'#422542']]);
  rect(c,1,1,w-2,h-2,Math.min(h*.22,10),glaze,'#ffdc88',2);
  rect(c,4,4,w-8,h-8,Math.min(h*.18,8),'','#f09c9f',.9);
- const reason=turn.oddsReason==='blue'?'青FREE重ね！':'同一区画にHIT！';
+ const before=turn.before.colors[turn.index],after=state.colors[turn.index];
  const change=oddsLabel(turn.before.oddsMultiplier)+' → '+oddsLabel(state.oddsMultiplier);
  if(wide){
-  lettering(c,reason,w*.31,h*.32,h*.26,'#ffefdb',{max:w*.53});
+  lettering(c,'ゼリー色変化！',w*.28,h*.32,h*.26,'#ffefdb',{max:w*.50});
   lettering(c,'＋0.5倍',w*.77,h*.32,h*.30,'#ffe58f',{max:w*.38,weight:950});
-  lettering(c,'ODDS UP!',w*.27,h*.70,h*.25,'#ffd59c',{max:w*.40,weight:950});
+  mixSwatches(c,w*.28,h*.70,Math.min(h*.15,w*.038),before,after);
   lettering(c,change,w*.70,h*.69,h*.37,'#fff5b0',{max:w*.51,face:'Georgia,serif',weight:950});
  }else{
   lettering(c,(turn.ball<=5?'前半':'後半')+'・第'+turn.ball+'球',w*.26,h*.18,h*.13,'#fff1dc',{max:w*.40});
   lettering(c,'ODDS UP!',w*.71,h*.18,h*.19,'#ffdc8b',{max:w*.46,weight:950,face:'Georgia,serif'});
-  lettering(c,reason,w*.5,h*.42,h*.18,'#fff3df',{max:w*.86});
+  lettering(c,'色変化！',w*.28,h*.42,h*.18,'#fff3df',{max:w*.40});
+  mixSwatches(c,w*.70,h*.42,Math.min(h*.095,w*.053),before,after);
   lettering(c,'＋0.5倍',w*.5,h*.64,h*.23,'#ffde78',{max:w*.80,weight:950});
   lettering(c,change,w*.5,h*.85,h*.20,'#fff6c5',{max:w*.82,weight:950,face:'Georgia,serif'});
  }
  c.restore();
 }
-function panel(c,state,o,x,y,w,h,popupInHeader){
+function panel(c,state,o,x,y,w,h,popupAge,shownOdds){
  c.save();c.translate(x,y);
  const unit=w/160;c.scale(unit,unit);w/=unit;h/=unit;
  const turns=state.draws.length,count=visibleCount(state,o.turn,o.elapsed||0),bet=Math.max(0,o.bet||0);
@@ -562,12 +571,12 @@ function panel(c,state,o,x,y,w,h,popupInHeader){
  let y0=6+head;
  const phaseH=Math.min(75,h*.195);
  phaseGuide(c,11,y0,w-22,phaseH,turns,o);y0+=phaseH+2;
- if(popupInHeader)oddsPopup(c,state,o.turn,o.oddsPopupTime??o.elapsed,8,4,w-16,y0-5);
+ if(popupAge!==null)oddsPopup(c,state,o.turn,popupAge,8,4,w-16,y0-5);
  const oddsH=Math.min(39,h*.104);
  rect(c,11,y0+1,w-22,oddsH-3,5,'#62334c','#edc37b',1.2);
  lettering(c,'配当オッズ',16,y0+oddsH*.34,oddsH*.33,'#fff4d2',{align:'left',max:72});
- lettering(c,oddsLabel(state.oddsMultiplier),w-17,y0+oddsH*.32,oddsH*.49,'#ffde83',{align:'right',max:58,face:'Georgia,serif',weight:950});
- lettering(c,'重ねHITごとに＋0.5倍',w/2,y0+oddsH*.75,oddsH*.27,'#ffe4be',{max:w-30});
+ lettering(c,oddsLabel(shownOdds),w-17,y0+oddsH*.32,oddsH*.49,'#ffde83',{align:'right',max:58,face:'Georgia,serif',weight:950});
+ lettering(c,'色変化1回で＋0.5倍',w/2,y0+oddsH*.75,oddsH*.27,'#ffe4be',{max:w-30});
  y0+=oddsH;
  const headH=Math.min(17,h*.048),footH=Math.min(20,h*.052);
  const right=w-15;
@@ -585,7 +594,7 @@ function panel(c,state,o,x,y,w,h,popupInHeader){
   }
   if(sugar)sugarMarker(c,20,cy,Math.min(16,rowH*.97),o.sugarIcon);
   lettering(c,n+'本',sugar?29:16,cy,size,active||top?'#ffe3a1':'#fff3e7',{align:'left',max:38});
-  const win=Math.floor(bet*K.payout(n,state.oddsMultiplier)/100);
+  const win=Math.floor(bet*K.payout(n,shownOdds)/100);
   lettering(c,win.toLocaleString('en-US'),right,cy,size,'#ffe38e',{align:'right',max:right-67,face:'ArcadePayout,Georgia,serif'});
   y0+=ht;
  }
@@ -598,8 +607,10 @@ function panel(c,state,o,x,y,w,h,popupInHeader){
 function draw(c,state,options){
  if(!c||!state)return;
  const o=options,w=o.width,h=o.height;if(w<=0||h<=0)return;
- const popupAge=o.oddsPopupTime??o.elapsed??0;
- const popup=o.turn?.oddsReason&&popupAge<oddsPopupMs;
+ const colorChange=o.turn?.oddsReason;
+ const popupAge=colorChange?(o.oddsPopupTime??((o.elapsed||0)-waveStart(o.turn))):-1;
+ const popup=popupAge>=0&&popupAge<oddsPopupMs;
+ const shownOdds=colorChange&&popupAge<0?o.turn.before.oddsMultiplier:state.oddsMultiplier;
  c.save();c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,w,h);
  if(o.mini){
   c.fillStyle='#163e4b';c.fillRect(0,0,w,h);
@@ -621,7 +632,7 @@ function draw(c,state,options){
   const ph=Math.min(h-pad*2,pw*2.82),left=(w-side-pw-gap)/2;
   const boardX=left+pw+gap,top=(h-side)/2;
   const upperRibbon=top>=side*.16;
-  panel(c,state,o,left,(h-ph)/2,pw,ph,popup&&!upperRibbon);
+  panel(c,state,o,left,(h-ph)/2,pw,ph,popup&&!upperRibbon?popupAge:null,shownOdds);
   board(c,state,o,boardX,top,side);
   if(popup&&upperRibbon){
    const bh=Math.min(top*.92,side*.25),bw=side*.96;
@@ -630,5 +641,5 @@ function draw(c,state,options){
  }
  c.restore();
 }
-window.JellyView=Object.freeze({draw,duration,oddsPopupMs,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
+window.JellyView=Object.freeze({draw,duration,oddsPopupMs,oddsRevealAt:waveStart,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
 })();

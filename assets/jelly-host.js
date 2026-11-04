@@ -19,10 +19,14 @@ const engine={
   if(value===paused)return;
   paused=value;stamp=0;if(!value&&(active===id||this.running))wake();
  },
- get totalHundredths(){return K.payout(this.state.lines.length,this.state.oddsMultiplier);},get allClears(){return Number(this.state.lines.length===12);},
+ get totalHundredths(){
+  const shown=this.trace?.oddsReason&&this.oddsStart==null?this.trace.before:this.state;
+  return K.payout(shown.lines.length,shown.oddsMultiplier);
+ },
+ get allClears(){return Number(this.state.lines.length===12);},
  reset(){
   this.version++;this.state=K.create({rng:app.random,rate:debugPayoutTarget});this.queue=[];this.drawn=new Set();this.trace=null;
-  this.traceStart=clock;this.processed=this.accepted=this.elapsed=this.roundSteps=0;this.running=false;this.paused=false;this.presentationRate=1;
+  this.oddsStart=null;this.processed=this.accepted=this.elapsed=this.roundSteps=0;this.running=false;this.paused=false;this.presentationRate=1;
   this.wonderCollected=false;this.wonderToken=null;stopSugarAward(slot);invalidateReach(slot);
   demoTime=0;lastMain=lastMini=-1000;this.emit('ready');
  },
@@ -73,14 +77,18 @@ async function finish(version){
 function advance(dt){
  if(!engine.running)return;
  if(!engine.trace&&engine.queue.length){
-  const next=engine.queue.shift();engine.state=next.state;engine.trace=next.trace;engine.elapsed=0;engine.traceStart=clock;
+  const next=engine.queue.shift();engine.state=next.state;engine.trace=next.trace;engine.elapsed=0;engine.oddsStart=null;
   invalidateReach(slot);engine.emit('jellyPour');
-  if(active===id&&next.trace.oddsReason)sceneSound('rank',{volume:.65,rate:1+(next.state.oddsMultiplier-1)*.05});
   if(active===id&&next.trace.ball>5)sceneSound('transfer',{volume:.52,rate:1+next.trace.ball*.025});
  }
  if(!engine.trace)return;
  const previous=engine.elapsed;
  engine.elapsed+=dt*engine.presentationRate;
+ if(engine.trace.oddsReason&&engine.oddsStart==null&&engine.elapsed>=V.oddsRevealAt(engine.trace)){
+  engine.oddsStart=clock;
+  if(active===id)sceneSound('rank',{volume:.65,rate:1+(engine.state.oddsMultiplier-1)*.05});
+  scheduleUI(app);
+ }
  if(active===id&&engine.trace.opened.length&&previous<V.partitionBreakAt&&engine.elapsed>=V.partitionBreakAt){
   sceneSound('glass',{volume:.52,rate:1+engine.trace.ball*.025});
  }
@@ -92,19 +100,19 @@ function advance(dt){
    sceneSound(cue,{volume:Math.min(.9,.55+count*.03),rate:count===12?1:1+count*.018});
   }
  }
- if(engine.elapsed<V.duration(engine.trace)||(engine.trace.oddsReason&&clock-engine.traceStart<1100))return;
+ if(engine.elapsed<V.duration(engine.trace)||(engine.oddsStart!=null&&clock-engine.oddsStart<1100))return;
  engine.trace=null;engine.processed++;collectSugar();engine.emit('settled');slot.updateJellyReach(app);
  if(engine.processed===8)finish(engine.version);
 }
 const demo=(()=>{
  let seed=1894;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
  const initial=K.create({rng,rate:90}),steps=[];let state=initial;
- // In the demo, lemon follows strawberry through the same open section.
- for(const index of [10,4,6,22,15,21,17,14]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
+ // Show an empty pour, then two successive color changes in that same section.
+ for(const index of [10,4,6,22,15,21,17,23]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
  return {initial,steps};
 })();
 function presentation(){
- if(app.phase!=='ready')return {state:engine.state,turn:engine.trace,elapsed:engine.elapsed,oddsPopupTime:clock-engine.traceStart};
+ if(app.phase!=='ready')return {state:engine.state,turn:engine.trace,elapsed:engine.elapsed,oddsPopupTime:engine.oddsStart==null?-1:clock-engine.oddsStart};
  const time=demoTime%20000;
  if(time<1200)return {state:demo.initial,turn:null,elapsed:0};
  const n=Math.min(7,Math.floor((time-1200)/2150)),s=demo.steps[n],elapsed=time-1200-n*2150;
@@ -115,7 +123,7 @@ function paint(mini){
  const dest=mini?slot.miniCanvas:canvas;
  if(!mini){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;}
  const p=presentation(),demo=app.phase==='ready',bet=app.bet(id);
- V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo,time:clock,turn:p.turn,elapsed:p.elapsed,oddsPopupTime:p.oddsPopupTime??p.elapsed,bet,
+ V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo,time:clock,turn:p.turn,elapsed:p.elapsed,oddsPopupTime:p.oddsPopupTime,bet,
   sugarLines:engine.state.sugarLines,sugarCollected:!demo&&engine.wonderCollected,
   sugarIcon:!mini&&bet>0?getSugarSprite(sugarVisualTier(engine.wonderToken||bet)):null,
   reachTime:clock-reachStarted,reach:engine.trace||demo?[]:slot.reachResults});

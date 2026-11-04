@@ -27,10 +27,10 @@
     return result;
   }
 
-  // Measured gross line returns (%), including all overlap awards, for 0–6 FREE.
+  // Measured gross line returns (%), including color-change awards, for 0–6 FREE.
   // Each count uses the same 30M sets of eight distinct draws and uniform seed placements.
-  const seedRates=[40.789206,57.984954,80.129459,109.722155,150.716547,209.028764,293.549000];
-  const luckyFive=.01,luckySix=.02,ordinaryShare=1-luckyFive-luckySix;
+  const seedRates=[19.510013,32.002347,46.471689,64.412045,88.035295,120.609027,166.752240];
+  const luckyFive=.05,luckySix=.05,ordinaryShare=1-luckyFive-luckySix;
   function freeCount(target,roll){
     // Five- and six-FREE boards keep ALL LINE reachable. The remaining board
     // mix must account for those awards to meet the overall payout target.
@@ -76,23 +76,6 @@
     return result;
   }
 
-  // Score the landing against the sections that existed before this draw.
-  function overlapReason(state,index,opening) {
-    const color=state.colors[index],adjacent=neighbors[index];
-    if(color==='blue'||state.seeds.includes(index))return 'blue';
-    if(opening){
-      // Two blue neighbors may already share one section via another path.
-      const blue=adjacent.filter(i=>state.colors[i]==='blue');
-      if(blue.length>=2){
-        const firstSection=new Set(layers(state.open,[blue[0]]).flat());
-        if(blue.some(i=>!firstSection.has(i)))return 'blue';
-      }
-    }
-    // A dry section can also have been hit: its open edges came from an
-    // earlier numbered landing, even when no jelly flowed there at the time.
-    return color||adjacent.some(i=>isOpen(state,index,i))?'section':null;
-  }
-
   function project(previous,number,ball) {
     const index=previous.numbers.indexOf(number);
     if(index<0||previous.draws.includes(number))return null;
@@ -114,13 +97,16 @@
       wave=layers(open,[index]);
     }
     const colors=previous.colors.slice();
+    let oddsReason=null;
     // The four ingredients enter in a fixed order; e.g. a purple section is 'blue+red'.
     for(const group of wave)for(const i of group){
       const recipe=colors[i];
       if(!recipe)colors[i]=color;
-      else if(!recipe.includes(color))colors[i]=recipe+'+'+color;
+      else if(!recipe.includes(color)){
+        colors[i]=recipe+'+'+color;
+        oddsReason='color'; // Any number of recolored cells makes one color change for this pour.
+      }
     }
-    const oddsReason=overlapReason(previous,index,opening);
     const oddsMultiplier=previous.oddsMultiplier+(oddsReason ? .5 : 0);
     return {index,color,opened,wave,open,colors,lines:completed(colors),oddsReason,oddsMultiplier};
   }

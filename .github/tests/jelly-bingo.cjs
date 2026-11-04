@@ -42,31 +42,39 @@ assert(J.LINES.every(line=>line.length===5));
   assert.equal(J.draw(a,26),null);
 }
 
-// Overlaps use pre-draw section boundaries, including blue FREE + blue FREE.
+// Opening a blue FREE, spreading blue into empty cells, joining blue regions and
+// hitting another number in a previously opened dry section all leave the odds unchanged.
 {
-  const a=step(board([0]),1);                    // one blue spreads into dry neighbors
-  assert.equal(a.trace.oddsReason,null);assert.equal(a.state.oddsMultiplier,1);
-  const b=step(a.state,2);                        // previously covered by blue
-  assert.equal(b.trace.oddsReason,'blue');assert.equal(b.state.oddsMultiplier,1.5);
-  const c=step(board([0,2]),1);                 // a dry landing joins two blue FREE cells
-  assert.equal(c.trace.oddsReason,'blue');assert.equal(c.state.oddsMultiplier,1.5);
-  const d=step(board([0,1,2]),1);               // direct blue + merge on one ball
-  assert.equal(d.state.oddsMultiplier,1.5);
-  const e=step(step(board([0]),1).state,7);      // neighbors 2 and 6 already share the blue section
-  assert.equal(e.trace.oddsReason,null);assert.equal(e.state.oddsMultiplier,1);
-  const f=step(step(board([]),0).state,1);       // another number in a previously opened dry section
-  assert.equal(f.trace.oddsReason,'section');assert.equal(f.state.oddsMultiplier,1.5);
+  const spread=step(board([0]),1);
+  for(const t of [spread,step(spread.state,2),step(board([0,2]),1),
+         step(board([0,1,2]),1),step(board([0]),0),step(step(board([]),0).state,1)]){
+    assert.equal(t.trace.oddsReason,null);assert.equal(t.state.oddsMultiplier,1);
+  }
 }
 {
-  // Three successive colored pours on an already blue component each advance the odds once.
+  // All cells in this connected section change together. Three separate color changes
+  // earn three increments, no matter how many cells are recolored by each pour.
   let a=play(board([0]),[0,2,4,21,23]);let odds=a.oddsMultiplier;
+  assert.equal(odds,1);
   for(const i of [5,7,9]){
     const seen=structuredClone(a),n=a.numbers[i],p=J.preview(a,n),{state:b,trace}=J.draw(a,n);
-    odds+=.5;assert.equal(b.oddsMultiplier,odds);assert(trace.oddsReason);
+    assert(trace.wave.flat().length>1);
+    odds+=.5;assert.equal(b.oddsMultiplier,odds);assert.equal(trace.oddsReason,'color');
     assert.equal(p.oddsMultiplier,odds);assert.equal(p.totalHundredths,J.payout(b.lines.length,odds));
     assert.equal(p.oddsReason,trace.oddsReason);assert.deepEqual(a,seen);a=b;
   }
+  assert.equal(odds,2.5);
+  // A hypothetical same-green re-entry after the final ball cannot increase the odds.
+  const again=J.preview(a,a.numbers[1]);
+  assert.equal(again.oddsMultiplier,2.5);assert.equal(again.oddsReason,null);
   assert.equal(J.draw(a,25),null);assert.equal(J.preview(a,a.draws[0]),null);
+}
+{
+  // A first pour into a dry section is not a color change, even if a wall was opened there.
+  const a=play(board([]),[0,2,4,21,23]),b=step(a,5);
+  assert(b.trace.wave.flat().length>1);assert.equal(b.state.colors[5],'red');
+  assert.equal(J.preview(a,a.numbers[5]).oddsReason,null);
+  assert.equal(b.trace.oddsReason,null);assert.equal(b.state.oddsMultiplier,1);
 }
 
 // All 15 nonempty recipes can occur in legal eight-ball play. The same
@@ -135,11 +143,11 @@ assert(J.LINES.every(line=>line.length===5));
     return J.create({rate,rng:()=>{if(first){first=false;return roll;}return random();}}).seeds.length;
   }
   for(const target of [50,90,150]){
-    assert.equal(seedCount(target,.005),5);assert.equal(seedCount(target,.025),6);
+    assert.equal(seedCount(target,.025),5);assert.equal(seedCount(target,.075),6);
   }
-  assert.equal(seedCount(50,.999),0);assert.equal(seedCount(50,.04),1);
-  assert.equal(seedCount(90,.999),2);assert.equal(seedCount(90,.04),3);
-  assert.equal(seedCount(150,.999),3);assert.equal(seedCount(150,.04),4);
+  assert.equal(seedCount(50,.999),1);assert.equal(seedCount(50,.101),2);
+  assert.equal(seedCount(90,.999),3);assert.equal(seedCount(90,.101),4);
+  assert.equal(seedCount(150,.999),5);assert.equal(seedCount(150,.101),6);
 }
 
 // Different sugar rolls may mark different rows on exactly the same ready board.
@@ -167,13 +175,16 @@ for(let t=0;t<rounds;t++){
   let s=J.create({rng:random,rate:target}),total=J.payout(s.lines.length);
   const sugarLines=s.sugarLines;
   assert(Number.isInteger(sugarLines)&&sugarLines>=2&&sugarLines<=6);
-  if(target===90)assert([2,3,5,6].includes(s.seeds.length)&&sugarLines>=3);
+  if(target===90)assert([3,4,5,6].includes(s.seeds.length)&&sugarLines>=4);
   seedCounts[s.seeds.length]++;
   sugarGoals[sugarLines]++;
   assert.equal(new Set(s.numbers).size,25);
   for(let n=1;n<=8;n++){
     const {state:next,trace}=J.draw(s,n);
     const win=J.payout(next.lines.length);
+    const recolored=s.colors.some((color,i)=>color&&next.colors[i]!==color);
+    assert.equal(next.oddsMultiplier,s.oddsMultiplier+(recolored ? .5 : 0));
+    assert.equal(trace.oddsReason,recolored?'color':null);
     assert.equal(next.sugarLines,sugarLines);
     assert.equal(trace.newLines.length,next.lines.length-s.lines.length);
     assert(win>=total);
