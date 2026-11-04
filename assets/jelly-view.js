@@ -452,11 +452,16 @@ function board(c,state,o,x,y,side){
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
  source(c,turn,elapsed,mini);
  const markers=new Map((o.reach||[]).map(item=>[item.number,item.tier]));
+ const wetPaths=turn?getPaths(turn,state):null;
  for(let i=0;i<25;i++){
   const [x,y]=center(i),n=state.numbers[i],tier=markers.get(n);
   const wet=state.colors[i],ink=wet?'#203349':'#193643';
   if(tier!=null)reachMarker(c,x,y,tier,o.reachTime??time,mini);
   lettering(c,n,x,tier!=null&&!mini?y-8:y+1,mini?52:42,'#fff9dd',{weight:900,outline:ink,width:mini?9:6.2});
+  // HIT is shown only after the filling front actually reaches a newly wet cell.
+  const arrival=wetPaths?.get(i);
+  const hitVisible=wet&&(!turn||turn.before.colors[i]||!arrival||elapsed>=arrival.start+fillTime*.28);
+  if(hitVisible&&!mini)lettering(c,'HIT!',x,y+34,18,'#fff7c7',{weight:950,outline:'#23435b',width:4});
  }
  c.restore();c.restore();
 }
