@@ -2429,6 +2429,7 @@ class Arcade{
   for(const e of this.engines){e.colorCount=count;e.reset({keepWonder:true,keepHammers:false});}
   this.onChange(this);return true;
  }
+ get drawHeld(){return this.phase==='playing'&&this.engines.some((e,i)=>this.enabled[i]&&e.holdDraws);}
  get wonderReady(){return this.wonderBank.length>=5;}
  setBet(i,n){if(this.phase!=='ready'||!Number.isInteger(i)||i<0||i>=this.bets.length||!Number.isSafeInteger(n)||n<0)return false;this.bets[i]=n;this.onChange(this);return true;}
  start(){
@@ -2476,7 +2477,7 @@ class Arcade{
  }
  async wait(ms,token){let remaining=ms;while(remaining>0&&token===this.token){const slice=Math.min(40,remaining);await this.sleep(slice);if(!this.paused)remaining-=slice;}return token===this.token;}
  acceptNumber(n,token){
-  if(token!==this.token||this.phase!=='playing'||this.paused||this.draws.length>=8||!Number.isInteger(n)||n<1||n>25||this.draws.includes(n))return false;
+  if(token!==this.token||this.phase!=='playing'||this.paused||this.drawHeld||this.draws.length>=8||!Number.isInteger(n)||n<1||n>25||this.draws.includes(n))return false;
   this.draws.push(n);this.engines.forEach((e,i)=>{if(this.enabled[i])e.previewDraw(n);});
   // Submit one atomic batch after ball 3 / 5; previewed cells never resolve early.
   const count=this.draws.length,release=count===3?this.draws.slice(0,3):count===5?this.draws.slice(3,5):count>5?[n]:[];
@@ -2579,7 +2580,7 @@ function sanitizeRecords(from){
  const to=emptyRecords();if(!from||typeof from!=='object')return to;
  for(const key of [...RECORD_SUMS,...RECORD_MAXIMA])to[key]=recordCount(from[key]);
  for(const def of TITLE_DEFS)if(recordCount(from.titles?.[def.id])&&to[def.metric]>=def.target)to.titles[def.id]=from.titles[def.id];
- for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(7,recordCount(r.game)))}));
+ for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(8,recordCount(r.game)))}));
  to.best=to.best.filter(r=>r.win>0).sort((a,b)=>b.win-a.win||b.at-a.at);to.clears=to.clears.filter(r=>r.clears>0).sort((a,b)=>b.at-a.at);
  return to;
 }
@@ -3038,7 +3039,7 @@ function drawBetPreview(d){
 
 function pendingCellNumbers(e){return e&&['waiting','settled','ready'].includes(e.phase)?e.pendingDraws:new Set();}
 function syncPendingHitTiles(s){
- if(s.engine?.kind==='popcorn'||s.engine?.kind==='jelly')return;
+ if(['popcorn','jelly','stick'].includes(s.engine?.kind))return;
  const pending=app?.phase==='playing'&&app.enabled[s.i]?pendingCellNumbers(s.engine):new Set();
  const ids=new Set();if(pending?.size)for(const row of s.engine.board)for(const t of row)if(t&&pending.has(t.number))ids.add(t.id);
  for(const [id,el] of s.tiles)el.classList.toggle('pending-hit',ids.has(id));
@@ -3084,6 +3085,7 @@ function cookieMiniEvent(s,ev,e){
  if(ev.phase==='vanish')fx.shatter=makeShatterFx(ev,grid,e.speed,e.version);s.cookieMiniState=fx;
 }
 function miniature(s){
+ if(s.engine?.kind==='stick'){s.paintStick(true);return;}
  if(s.engine?.kind==='jelly'){s.paintJelly(true);return;}
  if(s.engine?.kind==='popcorn'){s.paintPopcorn(true);return;}
  if(s.engine?.kind==='choco'){chocoQueueFrame(s);return;}
@@ -3117,7 +3119,7 @@ function tabs(a){
  for(const s of slots){
   if(!s.engine)continue;const e=s.engine,b=a.bet(s.i),win=medalWin(b,e.totalHundredths);
   const state=b===0?'参加なし':e.phase==='complete'?(a.phase==='playing'?'終了・集計待ち':a.phase==='paying'?'払い出し中':'払い出し済'):e.phase==='allclear'?'全消し！':a.phase==='ready'?'準備OK':e.phase==='link'?(s.event.newRecord?'最大LINK更新！':s.event.depth+'連鎖'):e.busy?'進行中 · 待ち'+e.queue.length:'次の球を待機';
-  if(e.kind==='popcorn'||e.kind==='jelly'){
+  if(['popcorn','jelly','stick'].includes(e.kind)){
    fitGoldenNumber(s.tabBet,num(b),14,76);s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);
    const tier=sugarVisualTier(e.wonderToken||b);applySugarTier(s.tabSugar.querySelector('.sugar-gem'),tier);
    s.tabSugar.hidden=b<=0;s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.classList.toggle('collected',e.wonderCollected);
@@ -3164,7 +3166,7 @@ function syncPayClimb(){
 
 const PAY_ROW_HEIGHT=19,PAY_TOP=67;
 function updatePayTable(e,bet){
- if(['gelato','winery','popcorn','jelly'].includes(e.kind))return;
+ if(['gelato','winery','popcorn','jelly','stick'].includes(e.kind))return;
  const shown=slots[active].payDisplayedLink??e.maxLink,track=$('pay'),top=linkRows(shown)[0],key=active+'/'+bet+'/'+shown;
  if(payKey===key)return;payKey=key;track.dataset.hasWin=String(shown>=MIN_PAID_LINK);
  const switched=track.dataset.game!==String(active),first=!track.children.length;
@@ -3295,7 +3297,7 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),sugarVisualTier(token));slot.setAttribute('aria-label',token?WONDER_NAMES[sugarVisualTier(token)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- if(['choco','candy','gelato','winery','popcorn','jelly'].includes(e.kind))return;
+ if(['choco','candy','gelato','winery','popcorn','jelly','stick'].includes(e.kind))return;
  const concealed=a.phase==='ready';
   const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
@@ -3547,6 +3549,7 @@ function startHammerTransfer(s,ev,e){
 }
 
 function render(s,ev,e,animate=true){
+ if(e?.kind==='stick'){s.paintStick(false);return;}
  if(e?.kind==='jelly'){s.paintJelly(false);return;}
  if(e?.kind==='popcorn'){s.paintPopcorn(false);return;}
  if(e?.kind==='choco'){chocoQueueFrame(s);return;}
@@ -3622,7 +3625,7 @@ function reachContext(e,a=app){
   else if(count>=3&&count<=8){if(e.processed!==count)return null;}
   else return null;
  }else if(e.reachMode==='single'||e.drawMode==='single'){
-  if(e.processed!==count||(!count&&(!['popcorn','jelly'].includes(e.kind)||!e.running)))return null;
+  if(e.processed!==count||(!count&&(!['popcorn','jelly','stick'].includes(e.kind)||!e.running)))return null;
  }else{
   if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
   else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
@@ -3634,6 +3637,7 @@ function reachContext(e,a=app){
 function reachContextKey(e,a=app){return reachContext(e,a)?.key||null;}
 function failReachPreview(s,epoch,error){if(s.reachEpoch!==epoch)return;s.reachStatus='error';s.reachResults=[];s.tabReachResults=[];s.reachError=String(error?.message||error);console.warn('Reach preview skipped:',s.reachError);scheduleUI(app);}
 function requestReach(s,e,a=app){
+ if(e?.kind==='stick')return s.updateStickReach(a);
  if(e?.kind==='jelly')return s.updateJellyReach(a);
  if(e?.kind==='popcorn')return s.updatePopcornReach(a);
  if(e?.kind==='choco')return chocoRequestReach(s,e,a);
@@ -3659,7 +3663,7 @@ function requestReach(s,e,a=app){
 function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
 function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return paidReachDrawAllowed(a)&&reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
 function updateReachBoard(s,a){
- if(s.engine?.kind==='popcorn'||s.engine?.kind==='jelly')return;
+ if(['popcorn','jelly','stick'].includes(s.engine?.kind))return;
  if(!s.engine)return;
  const results=visibleReachResults(s,a),byNumber=new Map(results.map(p=>[p.number,p])),tilesById=new Map(s.engine.board.flat().filter(Boolean).map(t=>[t.id,t]));
  for(const [id,el] of s.tiles){
@@ -3684,7 +3688,7 @@ const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
  if(s.engine?.kind==='choco')return chocoReachReady(s,a)?(s.tabReachResults||[]).filter(p=>medalWin(a.bet(s.i),p.total)>medalWin(a.bet(s.i),s.tabReachBase||0)):[];
- if((!['popcorn','jelly'].includes(s.engine?.kind)&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
+ if((!['popcorn','jelly','stick'].includes(s.engine?.kind)&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
  const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
  return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
 }
@@ -3876,7 +3880,7 @@ function renderRecordList(mode){
  if(recordPeriod==='month')rows=rows.filter(r=>recordMonth(r.at)===month);
  recordOffset=Math.min(recordOffset,Math.max(0,Math.ceil(rows.length/5)-1));
  const shown=rows.slice(recordOffset*5,recordOffset*5+5);
- $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===7?'ジェリービンゴ':r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+(r.game===7?'':' · '+r.chain+'連鎖')+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
+ $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===8?'ビンゴスティック':r.game===7?'ジェリービンゴ':r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+(r.game===7?'':' · '+r.chain+'連鎖')+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
  $('record-period-all').onclick=()=>{recordPeriod='all';recordOffset=0;renderRecordMenu();};$('record-period-month').onclick=()=>{recordPeriod='month';recordOffset=0;renderRecordMenu();};attachRecordPager(rows.length,5);
 }
 function renderRecordMenu(){
@@ -4394,7 +4398,7 @@ class DrawController{
    }
    return;
   }
-  if(p.time>=this.next){this.displayGroup=this.group;if(this.launch()){this.sent++;this.waiting=this.sent===groups[this.group];this.next=p.time+2;}}
+  if(p.time>=this.next&&(!this.canAdvance||this.canAdvance())){this.displayGroup=this.group;if(this.launch()){this.sent++;this.waiting=this.sent===groups[this.group];this.next=p.time+2;}}
  }
 }
 
@@ -5280,7 +5284,7 @@ function startAnima8(){
   if(draw.state==='complete')status.textContent=eight&&physics.hits.length<8?'未入賞の球を再発射します':jpc?(jackpotPocket>=0?'JACKPOT！ 全25ポケット入賞':jpcReachPocket()>=0?`JPC終了 · ${jpcReachPocket()+1}番リーチ（24 / 25）`:`70球JPC終了 · ${jpcFilledCount()} / 25 ポケット入賞`):eight?'8球の抽選が終了しました':'連続抽選を停止しました';
   if(draw.state==='draining')status.textContent='投入停止 · 残りのボールを抽選中';
  }
- draw.canAdvance=()=>true; // Normal launch timing never waits for a board.
+ draw.canAdvance=()=>!app?.drawHeld;
  // Missing-ball recovery is handled inside the current physical group.
  draw.canLaunchJpc=spec=>launchPlanner.ready(draw.next,spec);
  physics.onBallCollision=hit=>{launchPlanner.recordCollision(hit.a);launchPlanner.recordCollision(hit.b);};
@@ -5421,7 +5425,7 @@ function rouletteSelectedBoard(){const setup=window.SweetsLineup;return {index:a
 // Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
 function setupManualNumbers(){
  const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
- for(let n=1;n<=25;n++){const b=document.createElement('button');b.type='button';b.textContent=n;b.dataset.number=n;b.setAttribute('aria-label',n+'番を入賞');b.onclick=()=>{if(!manualNumbers||app.phase!=='playing'||app.paused||app.draws.includes(n)||app.draws.length>=8)return;rouletteDrawSource.callbacks?.onNumber(n);syncManualNumbers();};panel.querySelector('#manual-number-grid').append(b);}root.append(panel);
+ for(let n=1;n<=25;n++){const b=document.createElement('button');b.type='button';b.textContent=n;b.dataset.number=n;b.setAttribute('aria-label',n+'番を入賞');b.onclick=()=>{if(!manualNumbers||app.phase!=='playing'||app.paused||app.drawHeld||app.draws.includes(n)||app.draws.length>=8)return;rouletteDrawSource.callbacks?.onNumber(n);syncManualNumbers();};panel.querySelector('#manual-number-grid').append(b);}root.append(panel);
  const toggle=document.createElement('button');toggle.id='manual-number-toggle';toggle.type='button';toggle.title='番号指定／ルーレットを切替。進行中の場合は現在のゲームをリセット';toggle.onclick=()=>{if(jpcSession.active)return;manualNumbers=!manualNumbers;if(app.phase!=='ready')debugResetRound();else{rouletteDrawSource.reset();stopAutoRound();}syncPause();syncManualNumbers();scheduleAutoRound();scheduleUI(app);};root.append(toggle);
  $('manual-start').onclick=()=>{activateGameAudio({gesture:true});startReadyRound();syncManualNumbers();};syncManualNumbers();
 }
@@ -5429,7 +5433,7 @@ function syncManualNumbers(){
  const panel=$('manual-number-panel'),toggle=$('manual-number-toggle');if(!panel||!app)return;
  panel.hidden=!manualNumbers;toggle.textContent=manualNumbers?'ルーレットに戻す':'番号指定モード';toggle.setAttribute('aria-pressed',String(manualNumbers));toggle.disabled=jpcSession.active;document.body.classList.toggle('manual-number-mode',manualNumbers);
  $('manual-count').textContent=app.draws.length+' / 8球';$('manual-start').disabled=app.phase!=='ready'||!app.bets.some(n=>n>0)||menuOpen;
- for(const b of $('manual-number-grid').children){const hit=app.draws.includes(Number(b.dataset.number));b.disabled=!manualNumbers||app.phase!=='playing'||app.paused||hit||app.draws.length>=8;b.classList.toggle('selected',hit);b.setAttribute('aria-pressed',String(hit));}
+ for(const b of $('manual-number-grid').children){const hit=app.draws.includes(Number(b.dataset.number));b.disabled=!manualNumbers||app.phase!=='playing'||app.paused||app.drawHeld||hit||app.draws.length>=8;b.classList.toggle('selected',hit);b.setAttribute('aria-pressed',String(hit));}
  $('manual-history').textContent=app.draws.length?app.draws.join(' → ')+(app.draws.length===8?' ／ 抽選終了':''):app.phase==='ready'?'開始後、番号をタップ':'1球目の番号を選択';
  $('roulette-speed').disabled=manualNumbers;
 }

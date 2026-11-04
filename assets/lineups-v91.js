@@ -8,7 +8,8 @@ const catalog={
  gelato:{name:'ジェラートプリズム',logo:'assets/gelato-prism-tab-art-v51.webp',home:0,record:1},
  winery:{name:'ワイナリーピラミッド',logo:'assets/winery-pyramid-tab-art-v51.webp',home:1,record:2},
  popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/popcorn-art/popcorn-logo-v88.webp',home:2,record:4},
- jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7}
+ jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7},
+ stick:{name:'ビンゴスティック',logo:'assets/bingo-stick-emblem.svg',home:0,record:8}
 };
 const classic=['cookie','choco','candy'],festival=['winery','popcorn','jelly'];
 const legacyMounts=['gelato','winery','popcorn'];
