@@ -59,7 +59,7 @@
   }
   let baseHundredths=0;
   for(let k=5;k<=8;k++)baseHundredths+=award(k,counts[k]);
-  return {...s,lines,counts,longest,baseHundredths,totalHundredths:Math.round(baseHundredths*s.oddsMultiplier)};
+  return {...s,lines,counts,longest,highestRole:counts[8]>=2,baseHundredths,totalHundredths:Math.round(baseHundredths*s.oddsMultiplier)};
  }
  function create({rng=Math.random}={}){
   const triples=shuffle(numbers.slice(),rng).slice(0,14);

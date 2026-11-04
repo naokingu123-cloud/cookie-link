@@ -12,6 +12,8 @@ assert.equal(withHits([6,7,8,9,10]).longest,3);
 assert.equal(withHits([0,9,18,27,36,45]).longest,1);
 assert.equal(withHits([7,14,21,28,35,42,49]).longest,1);
 assert.equal(withHits([0,1,2,3,4,8,16,24,32]).counts[5],2);
+assert.equal(horizontal.highestRole,false);
+for(const numberOfRows of [2,3])assert(withHits(cells.slice(0,8*numberOfRows)).highestRole);
 for(const [i,k] of lengths.entries()){
  assert.equal(R.award(k,1),[20,100,500,1000][i]);assert.equal(R.award(k,0),0);
  for(let n=1;n<18;n++){
@@ -23,6 +25,21 @@ function beforeSix(s){
  for(let n=1;n<=5;n++)s=R.draw(s,n);
  assert.equal(s.phase,'thinking');assert.equal(s.freeBudget,s.longest);
  return s;
+}
+// A legal board from the attract demo: the first eight-cell row comes from FREE placement;
+// ball 6 increases its odds, and only ball 7 makes the second eight-cell line.
+{
+ let s=beforeSix(R.create({rng:rng(7464)}));
+ assert.equal(s.longest,5);assert.equal(s.highestRole,false);
+ const fixed=R.confirm(s);
+ for(const [i,length] of [6,7,8].entries()){
+  s=R.place(s,fixed.placedFree[i]);assert.equal(s.longest,length);assert.equal(s.highestRole,false);
+ }
+ assert.equal(fixed.counts[8],1);assert.equal(fixed.highestRole,false);
+ const six=R.draw(fixed,6),seven=R.draw(six,7),eight=R.draw(seven,8);
+ assert.equal(six.oddsMultiplier,1.5);assert.equal(six.highestRole,false);
+ assert.deepEqual(six.oddsUpCells,[50]);assert.equal(seven.counts[8],2);assert(seven.highestRole);
+ assert(eight.highestRole);assert.equal(eight.totalHundredths,6000);
 }
 {
  const s=beforeSix(start),open=cells.filter(i=>!s.hits.includes(i)&&!s.initialFree.includes(i));

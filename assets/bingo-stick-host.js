@@ -2,10 +2,10 @@
 (()=>{
 'use strict';
 const id=SweetsLineup.ids.indexOf('stick'),slot=slots[id],game=SweetsLineup.catalog.stick,R=window.BingoStickRules;
-const thinkingMs=15000,oddsPopupMs=1600,noReach=[];
+const thinkingMs=15000,oddsPopupMs=2400,noReach=[];
 let clock=0,deadline=null,timeLeft=0,paused=false,lastHit=-Infinity,lastMain=-Infinity,lastMini=-Infinity,frame=0,miniTimer=0,stamp=null;
 const engine={
- kind:'stick',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'8マスライン',version:0,
+ kind:'stick',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'最高役',version:0,
  maxChain:0,roundCleared:0,roundHammers:0,allClears:0,
  get maxLink(){return this.state.longest;},
  get holdDraws(){return this.running&&this.state.phase==='thinking';},
@@ -20,7 +20,7 @@ const engine={
  },
  reset(){
   this.version++;this.state=R.create({rng:app.random});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.thinkingBase=null;this.presentationRate=1;
+  this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.thinkingBase=null;this.oddsEvent=null;this.presentationRate=1;
   paused=false;clock=timeLeft=0;deadline=stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
  },
@@ -35,6 +35,7 @@ const engine={
    if(!this.running)break;
    const before=this.state,next=R.draw(before,n);
    if(!next)continue;
+   this.oddsEvent=overlapEvent(before,next);
    this.state=next;this.processed=this.accepted=next.draws.length;lastHit=clock;invalidateReach(slot);
    if(next.phase==='thinking'){
     // Set the draw hold synchronously in Arcade.acceptNumber, before another input or physics tick.
@@ -42,7 +43,7 @@ const engine={
     if(active!==id)select(id);
     this.emit('thinking');syncManualNumbers();
    }else this.emit('settled');
-   soundGain(before,next);
+   presentGain(before,next);
    collectSugar();
    if(next.phase==='done')finish(this.version);
    else if(next.phase!=='thinking')slot.updateStickReach(app);
@@ -55,9 +56,16 @@ slot.panel.classList.add('bs-panel');slot.holder.classList.add('bs-slot');
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();
 emblem.src=game.logo;emblem.alt=game.name;title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
 
-function soundGain(before,after){
+function overlapEvent(before,after){
+ if(!after.oddsUpCells.length)return null;
+ return {number:after.draws.at(-1),cells:after.oddsUpCells,fromOdds:before.oddsMultiplier,toOdds:after.oddsMultiplier,
+  fromTotalHundredths:before.totalHundredths,toTotalHundredths:after.totalHundredths};
+}
+function presentGain(before,after){
+ const highest=after.highestRole&&!before.highestRole;
+ if(highest)announceAchievement(game.name+'　最高役達成！ 8個ライン'+after.counts[8]+'本');
  if(active!==id||medalWin(app.bet(id),after.totalHundredths)<=medalWin(app.bet(id),before.totalHundredths))return;
- const tier=reachTier(after.totalHundredths-before.totalHundredths,after.counts[8]>before.counts[8]);
+ const tier=reachTier(after.totalHundredths-before.totalHundredths,highest);
  sceneSound(['line','bonus','big-bonus','allclear'][tier],{volume:.62+tier*.06});
 }
 function toggle(cell){
@@ -69,7 +77,7 @@ function toggle(cell){
 function confirm(){
  if(!engine.holdDraws||app.phase!=='playing'||app.paused)return false;
  engine.state=R.confirm(engine.state);deadline=null;timeLeft=0;
- soundGain(engine.thinkingBase,engine.state);engine.thinkingBase=null;
+ presentGain(engine.thinkingBase,engine.state);engine.thinkingBase=null;
  engine.emit('settled');collectSugar();slot.updateStickReach(app);syncManualNumbers();return true;
 }
 const view=window.BingoStickView.mount(slot.panel,{toggle,confirm});
@@ -85,8 +93,8 @@ function projectReaches(s,bet){
   const lines=next.lines.filter(line=>fresh.some(i=>line.cells.includes(i)));
   const oddsCells=next.oddsUpCells,oddsUp=oddsCells.length>0&&!lines.length;
   const cells=oddsUp?oddsCells:fresh.filter(i=>lines.some(line=>line.cells.includes(i)));
-  const longest=next.counts[8]>s.counts[8],tier=reachTier(gain,longest);
-  hits.push({number,total,gain,tier,lines,cells,oddsUp,oddsCells,oddsDelta:oddsCells.length/2,allClear:longest,kind:['reach','high','super','all'][tier]});
+  const highest=next.highestRole&&!s.highestRole,tier=reachTier(gain,highest);
+  hits.push({number,total,gain,tier,lines,cells,counts:next.counts,oddsUp,oddsCells,oddsDelta:oddsCells.length/2,allClear:highest,kind:['reach','high','super','all'][tier]});
  }
  return hits;
 }
@@ -114,24 +122,26 @@ async function finish(version){
 }
 // One reproducible sample board shows the same placements, rules and scores used in play.
 const lesson=(()=>{
- let seed=228; // Ball seven hits two FREE cells of the same number on a paying board.
+ let seed=7464; // The first row grows from five to eight. Ball six hits FREE; ball seven completes the second eight.
  let state=R.create({rng:()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32)});
- const stages=[];const add=(at,remainingMs=0,isDraw=false)=>stages.push({at,state,remainingMs,isDraw,reach:state.phase==='last'?projectReaches(state,100):noReach});
+ const stages=[];const add=(at,remainingMs=0,oddsEvent=null)=>stages.push({at,state,remainingMs,oddsEvent,reach:state.phase==='last'?projectReaches(state,100):noReach});
+ function drawBall(n,at){const before=state;state=R.draw(state,n);add(at,n===5?thinkingMs:0,overlapEvent(before,state));}
  add(0);
- for(let n=1;n<=5;n++){state=R.draw(state,n);add(1200+n*1000,n===5?15000:0,true);}
+ for(let n=1;n<=5;n++)drawBall(n,1200+n*1000);
  const locked=R.confirm(state);
  locked.placedFree.forEach((cell,i)=>{state=R.place(state,cell);add(7400+i*670,14000-i*1800);});
  state=locked;add(13000);
- for(let n=6;n<=8;n++){state=R.draw(state,n);add(14100+(n-6)*1700,0,true);}
+ for(let n=6;n<=8;n++)drawBall(n,14100+(n-6)*1700);
  return stages;
 })();
 function paint(mini){
  if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
  const demo=app.phase==='ready',stage=demo?lesson.findLast(e=>e.at<=clock%20000):null;
  const s=stage?stage.state:engine.state,age=stage?clock%20000-stage.at:clock-lastHit;
+ const oddsEvent=age<oddsPopupMs?(stage?stage.oddsEvent:engine.oddsEvent):null;
  const opts={time:clock,bet:app.bet(id),demo,paused:app.paused,remainingMs:stage?stage.remainingMs:engine.remainingMs,
   latestNumber:s.draws.at(-1),age,oddsMultiplier:s.oddsMultiplier,oddsUpCells:s.oddsUpCells,
-  oddsPopupTime:s.oddsUpCells.length&&(!stage||stage.isDraw)&&age<oddsPopupMs?age:null,
+  oddsEvent,oddsPopupTime:oddsEvent?age:null,
   reach:stage?stage.reach:slot.reachResults,sugarCollected:stage?!!s.counts[8]:engine.wonderCollected,
   sugarIcon:mini||!app.bet(id)?null:getSugarSprite(sugarVisualTier(engine.wonderToken||app.bet(id)))};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
@@ -157,7 +167,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.stick=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state,breakdown=[8,7,6,5].filter(n=>s.counts[n]).map(n=>n+'マス×'+s.counts[n]+'本').join('・');
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'最長 '+s.longest+'マス ／ '+(breakdown||'成立ラインなし')+' ／ ライン配当 '+(s.baseHundredths/100).toFixed(2)+'倍 × オッズ '+s.oddsMultiplier.toFixed(1)+' ／ 配置FREE '+s.placedFree.length+'個'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?(s.highestRole?'最高役達成 ／ ':'')+'最長 '+s.longest+'マス ／ '+(breakdown||'成立ラインなし')+' ／ ライン配当 '+(s.baseHundredths/100).toFixed(2)+'倍 × オッズ '+s.oddsMultiplier.toFixed(1)+' ／ 配置FREE '+s.placedFree.length+'個'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});
