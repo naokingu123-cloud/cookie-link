@@ -11,7 +11,7 @@ const catalog={
  jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7},
  stick:{name:'ビンゴスティック',logo:'assets/bingo-stick-emblem.svg',home:0,record:8}
 };
-const classic=['cookie','choco','candy'],festival=['winery','popcorn','jelly'];
+const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'];
 const legacyMounts=['gelato','winery','popcorn'];
 const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',')||[];
 const valid=custom.length>=1&&custom.length<=3&&new Set(custom).size===custom.length&&custom.every(id=>Object.hasOwn(catalog,id));
