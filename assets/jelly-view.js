@@ -126,6 +126,47 @@ function fillCells(c,state,turn,elapsed,time,mini){
   c.restore();c.strokeStyle='#f1fff8b3';c.lineWidth=3*(1-t*.6);c.stroke(front);c.restore();
  }
 }
+// Sections are connected components, not simply the directly opened edges.
+// Once two cells belong to the same section, never paint a divider between them.
+const visualGroupCache=new WeakMap();
+function sectionIds(state){
+ let cached=visualGroupCache.get(state.open);if(cached)return cached;
+ const groups=new Int8Array(25);groups.fill(-1);let section=0;
+ for(let origin=0;origin<25;origin++){
+  if(groups[origin]>=0)continue;
+  const queue=[origin];groups[origin]=section;
+  for(let k=0;k<queue.length;k++){
+   const i=queue[k];
+   for(const j of [i%5?i-1:-1,i%5<4?i+1:-1,i>=5?i-5:-1,i<20?i+5:-1]){
+    if(j<0||groups[j]>=0||!K.isOpen(state,i,j))continue;
+    groups[j]=section;queue.push(j);
+   }
+  }
+  section++;
+ }
+ visualGroupCache.set(state.open,groups);
+ return groups;
+}
+let floorSprite;
+function cleanMoldFloor(){
+ if(floorSprite)return floorSprite;
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=500;
+ const g=canvas.getContext('2d');
+ const fill=gradient(g,0,0,500,500,[[0,'#315a65'],[.42,'#214857'],[1,'#173d50']]);
+ rect(g,0,0,500,500,8,fill);
+ // A single uninterrupted glass well; no permanent grid is baked into it.
+ for(let k=0;k<8;k++){
+  const y=35+k*68;
+  g.beginPath();g.moveTo(-40,y+28);
+  g.bezierCurveTo(105,y-29,197,y+61,325,y+6);
+  g.bezierCurveTo(398,y-22,476,y-8,540,y-32);
+  g.strokeStyle=k%2?'#91e9e30a':'#d3fcf118';g.lineWidth=8+k%3*3;g.stroke();
+ }
+ const light=g.createRadialGradient(95,38,0,95,38,400);
+ light.addColorStop(0,'#b5fff21a');light.addColorStop(1,'#4ef5d000');
+ g.fillStyle=light;g.fillRect(0,0,500,500);
+ floorSprite=canvas;return canvas;
+}
 let lastGlazedState,glaze;
 function glazeArt(state){
  if(state===lastGlazedState)return glaze;
@@ -135,7 +176,8 @@ function glazeArt(state){
  for(let i=0;i<25;i++){
   const color=state.colors[i];if(!color)continue;
   const x=i%5*100,y=Math.floor(i/5)*100;
-  const lip=j=>j<0||j>=25||state.colors[j]!==color||!K.isOpen(state,i,j);
+  const connected=sectionIds(state);
+  const lip=j=>j<0||j>=25||connected[i]!==connected[j];
   const top=lip(i-5),bottom=lip(i+5),left=i%5===0||lip(i-1),right=i%5===4||lip(i+1);
   c.save();c.beginPath();c.rect(x,y,100,100);c.clip();c.translate(x,y);
   for(const [edge,angle] of [[top,0],[right,Math.PI/2],[bottom,Math.PI],[left,Math.PI*1.5]]){
@@ -223,16 +265,21 @@ function breakingRib(c,elapsed,seed,mini){
  }
 }
 function partitions(c,state,turn,elapsed,mini){
+ const currentGroups=sectionIds(state);
+ const priorGroups=turn?.ball<=5?sectionIds(turn.before):null;
  for(let i=0;i<25;i++){
   for(const j of [i%5<4?i+1:-1,i<20?i+5:-1]){
    if(j<0)continue;
-   const open=K.isOpen(state,i,j);
-   if(open&&(elapsed>=wallClear||!turn?.opened.some(([a,b])=>a===i&&b===j||a===j&&b===i)))continue;
+   const joined=currentGroups[i]===currentGroups[j];
+   // If this ball merges two regions, every newly internal seam cracks away.
+   // Previously merged seams stay absent, even while later colors pour in.
+   const justJoined=joined&&priorGroups&&priorGroups[i]!==priorGroups[j];
+   if(joined&&(!justJoined||elapsed>=wallClear))continue;
    const vertical=j===i+1,x=(i%5+Number(vertical))*100,y=(Math.floor(i/5)+Number(!vertical))*100;
-   if(!open&&!vertical){c.drawImage(ribArt(),x-2,y-7,104,16);continue;}
    c.save();
    if(vertical)c.transform(0,1,1,0,x,y);else c.translate(x,y);
-   if(open)breakingRib(c,elapsed,i+j,mini);else c.drawImage(ribArt(),-2,-7,104,16);
+   if(justJoined)breakingRib(c,elapsed,i+j,mini);
+   else c.drawImage(ribArt(),-2,-7,104,16);
    c.restore();
   }
  }
@@ -396,6 +443,7 @@ function board(c,state,o,x,y,side){
  if(mold.complete&&mold.naturalWidth)c.drawImage(mold,-moldRim,-moldRim,moldSize,moldSize);
  else rect(c,0,0,500,500,9,'#244b54','#9ae3da',5);
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
+ c.drawImage(cleanMoldFloor(),0,0);
  fillCells(c,state,turn,elapsed,time,mini);if(!mini)glazeCells(c,state,turn,elapsed);partitions(c,state,turn,elapsed,mini);
  c.restore();
  rect(c,-1.4,-1.4,502.8,502.8,10,'','#f4e8b9',3.8);
