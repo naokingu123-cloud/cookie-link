@@ -4,7 +4,7 @@
 const id=window.SweetsLineup.ids.indexOf('jelly'),slot=slots[id];
 const K=window.JellyRules,V=window.JellyView,game=window.SweetsLineup.catalog.jelly;
 const canvas=document.createElement('canvas');canvas.className='jb-scene';canvas.setAttribute('role','img');
-canvas.setAttribute('aria-label','ジェリービンゴ。前半5球で仕切りを開き、後半3球で赤・黄・緑のゼリーを流します');
+canvas.setAttribute('aria-label','ジェリービンゴ。全8球、入った番号の仕切りを割り、赤・黄・緑・青・紫のゼリーを順に注ぎます。白はFREE。ゼリーの5マスでビンゴ、HIT!は入賞番号です。');
 slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.classList.add('jb-slot');
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
 title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
@@ -75,13 +75,16 @@ function advance(dt){
  if(!engine.trace&&engine.queue.length){
   const next=engine.queue.shift();engine.state=next.state;engine.trace=next.trace;engine.elapsed=0;
   invalidateReach(slot);engine.emit('jellyPour');
-  if(active===id&&next.trace.ball>5)sceneSound('transfer',{volume:.52,rate:1+next.trace.ball*.025});
  }
  if(!engine.trace)return;
  const previous=engine.elapsed;
  engine.elapsed+=dt*engine.presentationRate;
  if(active===id&&engine.trace.opened.length&&previous<V.partitionBreakAt&&engine.elapsed>=V.partitionBreakAt){
   sceneSound('glass',{volume:.52,rate:1+engine.trace.ball*.025});
+ }
+ if(active===id){
+  const pour=V.pourAt(engine.trace);
+  if(previous<pour&&engine.elapsed>=pour)sceneSound('transfer',{volume:.52,rate:1+engine.trace.ball*.025});
  }
  if(active===id&&engine.trace.newLines.length){
   const reveal=V.lineRevealAt(engine.trace);
@@ -98,16 +101,17 @@ function advance(dt){
 const demo=(()=>{
  let seed=1894;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
  const initial=K.create({rng,rate:90}),steps=[];let state=initial;
- // In the demo, lemon follows strawberry through the same open section.
- for(const index of [10,4,6,22,15,21,17,14]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
+ // A separate exhibition board shows newly opened sections and overlapping pours.
+ for(const index of [14,22,15,23,0,10,2,5]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
  return {initial,steps};
 })();
 function presentation(){
  if(app.phase!=='ready')return {state:engine.state,turn:engine.trace,elapsed:engine.elapsed};
  const time=demoTime%20000;
  if(time<1200)return {state:demo.initial,turn:null,elapsed:0};
- const n=Math.min(7,Math.floor((time-1200)/2150)),s=demo.steps[n],elapsed=time-1200-n*2150;
- return {state:s.state,turn:elapsed<V.duration(s.trace)?s.trace:null,elapsed};
+ const n=Math.min(7,Math.floor((time-1200)/2150)),s=demo.steps[n],duration=V.duration(s.trace);
+ const elapsed=(time-1200-n*2150)*Math.max(1,duration/2020);
+ return {state:s.state,turn:elapsed<duration?s.trace:null,elapsed};
 }
 function paint(mini){
  if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
@@ -140,7 +144,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
  result0(a);if(!a.result)return;
  const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.jelly===String(a.token))return;
  row.dataset.jelly=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
- row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.lines.length+' BINGO ／ '+engine.state.colors.filter(Boolean).length+'マス HIT'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.lines.length+' BINGO ／ 番号HIT '+engine.state.draws.length+'個 ／ FREE '+engine.state.seeds.length+'マス'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-1000;wake();}).observe(slot.panel);document.addEventListener('visibilitychange',()=>{stamp=0;wake();});
 window.JellyBingo={engine,core:K};engine.reset();select(active);

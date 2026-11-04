@@ -5,6 +5,8 @@ const K=window.JellyRules;
 const font='"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif';
 const tau=2*Math.PI,clamp=(n,max=1)=>Math.max(0,Math.min(max,n));
 const syrup={
+ white:['#ffffff','#fff9eb','#d7e3e6','#a4bdc7'],
+ purple:['#fac7ff','#ca5be7','#8d30bc','#5b227e'],
  blue:['#85faff','#12accf','#1476ac','#204976'],
  red:['#ffb0af','#f6506b','#bf335a','#6f264a'],
  yellow:['#ffeda0','#ffc34e','#e6943d','#935128'],
@@ -22,8 +24,21 @@ const syrup={
  'red+yellow+green':['#ffe1a1','#e5ac67','#bb813f','#855829'],
  'blue+red+yellow+green':['#ebd5c4','#b99788','#8c6e68','#60494c']
 };
+// Preserve the established candy hues, then tint new grape/cream blends once per recipe.
+function syrupFor(recipe){
+ if(syrup[recipe])return syrup[recipe];
+ const parts=recipe.split('+'),base=['blue','red','yellow','green'].filter(k=>parts.includes(k));
+ const pigments=[];
+ if(base.length)pigments.push([syrup[base.join('+')],base.length]);
+ for(const k of ['purple','white'])if(parts.includes(k))pigments.push([syrup[k],1]);
+ return syrup[recipe]=[0,1,2,3].map(stop=>{
+  const rgb=[1,3,5].map(start=>Math.round(pigments.reduce((sum,[palette,n])=>
+   sum+parseInt(palette[stop].slice(start,start+2),16)*n,0)/parts.length));
+  return 'rgb('+rgb.join(',')+')';
+ });
+}
 const laneColors=['#ffbc7c','#ffda97','#ffb1ba','#a4ffeb','#a9dfff','#c7b3ff'];
-const tiers=[1,2,3,4,5,6,7,8,9,10,12];
+const tiers=K.paidLines;
 const emblem=new Image();emblem.src='assets/jelly-emblem.svg';
 const center=i=>[50+i%5*100,50+Math.floor(i/5)*100];
 function gradient(c,x,y,x2,y2,stops){
@@ -54,9 +69,9 @@ function star(c,x,y,r,color){
 const mold=new Image();mold.src='assets/jelly-crystal-mold.webp';
 const moldRim=42,moldSize=500+2*moldRim;
 const wallSplit=190,wallClear=500;
-const waveStart=t=>t?.ball<=5?wallClear:130;
+const waveStart=t=>t.opened.length?wallClear:210;
 const waveStep=92,fillTime=400;
-function waveEnd(t){return t.wave.length?waveStart(t)+(t.wave.length-1)*waveStep+fillTime:t.ball<=5?520:470;}
+function waveEnd(t){return waveStart(t)+Math.max(0,t.wave.length-1)*waveStep+fillTime;}
 function duration(t){
  if(!t)return 0;
  const count=t.before.lines.length+t.newLines.length;
@@ -72,7 +87,7 @@ function getPaths(turn,state){
  for(const [i,d] of dist){
   const adjacent=[i-5,i+5,i%5?i-1:-1,i%5!==4?i+1:-1];
   const sources=adjacent.filter(j=>j>=0&&j<25&&K.isOpen(state,i,j)&&
-    (d>0?dist.get(j)===d-1:turn.ball<=5&&turn.before.colors[j]==='blue'&&!dist.has(j)));
+    d>0&&dist.get(j)===d-1);
   const [x,y]=center(i);
   const origins=sources.map(j=>{const [a,b]=center(j);return [(x+a)/2,(y+b)/2];});
   paths.set(i,{start:waveStart(turn)+d*waveStep,origins:origins.length?origins:[[x,y]]});
@@ -95,7 +110,7 @@ function refractionArt(){
  return caustics;
 }
 function cell(c,i,color,time,mini,paints){
- const [cx,cy]=center(i),x=cx-50,y=cy-50,p=syrup[color];
+ const [cx,cy]=center(i),x=cx-50,y=cy-50,p=syrupFor(color);
  // Use one continuous hue across adjoining compartments. The open seams have no tile edges.
  const g=paints[color]??=gradient(c,0,0,160,510,[[0,p[0]],[.2,p[1]],[.62,p[2]],[1,p[3]]]);
  c.fillStyle=g;c.fillRect(x-.12,y-.12,100.24,100.24);
@@ -119,7 +134,7 @@ function fillCells(c,state,turn,elapsed,time,mini){
   c.save();c.beginPath();c.rect(x-50.1,y-50.1,100.2,100.2);c.clip();
   const front=new Path2D();for(const [a,b] of entry.origins){front.moveTo(a+radius,b);front.arc(a,b,radius,0,tau);}
   c.save();c.clip(front);cell(c,i,current,time,mini,paints);
-  if(previous&&current!==previous&&turn.ball>5){
+  if(previous&&current!==previous){
    // The incoming syrup tints the leading edge, leaving the blended color in its wake.
    c.globalAlpha=.65*(1-t);c.strokeStyle=syrup[turn.color][1];c.lineWidth=18;c.stroke(front);
   }
@@ -167,16 +182,14 @@ function cleanMoldFloor(){
  g.fillStyle=light;g.fillRect(0,0,500,500);
  floorSprite=canvas;return canvas;
 }
-let lastGlazedState,glaze;
+const glazeCache=new WeakMap();
 function glazeArt(state){
- if(state===lastGlazedState)return glaze;
- lastGlazedState=state;
- glaze=document.createElement('canvas');glaze.width=glaze.height=500;
- const c=glaze.getContext('2d');
+ if(glazeCache.has(state))return glazeCache.get(state);
+ const glaze=document.createElement('canvas');glaze.width=glaze.height=500;
+ const c=glaze.getContext('2d'),connected=sectionIds(state);
  for(let i=0;i<25;i++){
   const color=state.colors[i];if(!color)continue;
   const x=i%5*100,y=Math.floor(i/5)*100;
-  const connected=sectionIds(state);
   const lip=j=>j<0||j>=25||connected[i]!==connected[j];
   const top=lip(i-5),bottom=lip(i+5),left=i%5===0||lip(i-1),right=i%5===4||lip(i+1);
   c.save();c.beginPath();c.rect(x,y,100,100);c.clip();c.translate(x,y);
@@ -199,15 +212,15 @@ function glazeArt(state){
   }
   c.restore();
  }
- return glaze;
+ glazeCache.set(state,glaze);return glaze;
 }
 function glazeCells(c,state,turn,elapsed){
- const current=glazeArt(state),paths=getPaths(turn,state);
+ const current=glazeArt(state),prior=turn&&glazeArt(turn.before),paths=getPaths(turn,state);
  for(let i=0;i<25;i++){
   if(!state.colors[i])continue;
   const x=i%5*100,y=Math.floor(i/5)*100,entry=paths.get(i);
-  const wetPour=entry&&turn.ball>5&&turn.before.colors[i];
-  const t=entry&&!wetPour?clamp((elapsed-entry.start-fillTime*.66)/(fillTime*.34)):1;
+  const t=entry?clamp((elapsed-entry.start)/fillTime):1;
+  if(t<1&&turn.before.colors[i]){c.globalAlpha=1-t;c.drawImage(prior,x,y,100,100,x,y,100,100);}
   if(t>0){c.globalAlpha=t;c.drawImage(current,x,y,100,100,x,y,100,100);}
  }
  c.globalAlpha=1;
@@ -266,7 +279,7 @@ function breakingRib(c,elapsed,seed,mini){
 }
 function partitions(c,state,turn,elapsed,mini){
  const currentGroups=sectionIds(state);
- const priorGroups=turn?.ball<=5?sectionIds(turn.before):null;
+ const priorGroups=turn?sectionIds(turn.before):null;
  for(let i=0;i<25;i++){
   for(const j of [i%5<4?i+1:-1,i<20?i+5:-1]){
    if(j<0)continue;
@@ -388,11 +401,13 @@ function bingoRails(c,state,turn,elapsed,time,mini){
  c.restore();
 }
 function source(c,turn,elapsed,mini){
- if(!turn||elapsed>690)return;
- const [x,y]=center(turn.index),p=clamp(elapsed/680),color=syrup[turn.ball<=5?'blue':turn.color][0];
+ if(!turn)return;
+ const jetTime=elapsed-waveStart(turn)+210;
+ if(jetTime<0||jetTime>690)return;
+ const [x,y]=center(turn.index),p=clamp(jetTime/680),color=syrup[turn.color][0];
  c.save();c.globalAlpha=1-p;
- if(turn.ball>5&&!mini&&elapsed<650){
-  const head=clamp(elapsed/210),tail=clamp((elapsed-400)/250),sx=x+(turn.index%5>=3?-36:36),sy=y-122;
+ if(!mini&&jetTime<650){
+  const head=clamp(jetTime/210),tail=clamp((jetTime-400)/250),sx=x+(turn.index%5>=3?-36:36),sy=y-122;
   function spout(t){return [sx+(x-sx)*t+Math.sin(t*Math.PI)*10,sy+(y-sy)*t*t];}
   const jet=new Path2D();
   for(let j=0;j<=17;j++){const [px,py]=spout(tail+(head-tail)*j/17);if(!j)jet.moveTo(px,py);else jet.lineTo(px,py);}
@@ -401,7 +416,7 @@ function source(c,turn,elapsed,mini){
   c.strokeStyle=palette[0];c.lineWidth=8;c.stroke(jet);
   c.save();c.translate(-2,0);c.strokeStyle='#fffdefc9';c.lineWidth=2.4;c.stroke(jet);c.restore();
   oval(c,px,py,6.8,8,palette[0],'#fff1c7',1.8);
-  if(head===1){const splash=clamp((elapsed-190)/430);
+  if(head===1){const splash=clamp((jetTime-190)/430);
    for(let k=0;k<5;k++){const ang=Math.PI*(1.08+k*.21),r=14+41*splash;
     oval(c,x+r*Math.cos(ang),y+r*Math.sin(ang)+18*splash*splash,3.3-splash,4.5-splash,palette[0],'#fff3d8',1.2);}
   }
@@ -423,7 +438,7 @@ function reachMarker(c,x,y,tier,elapsed,mini){
  // The same 48–84% brightness dip as the shared reach-title animation.
  const phase=(t/(tier?1:1.4))%1;
  const dip=clamp(1-Math.abs(phase-.66)/.18),pulse=1-.7*dip*dip*(3-2*dip);
- c.save();c.globalAlpha*=pulse;
+ c.save();c.globalAlpha*=pulse;c.setLineDash([20,6]);
  // Inset both edges of neighbouring markers so the actual glass seam stays readable.
  rect(c,x-44,y-44,88,88,11,'','#162e46',mini?9:7);
  rect(c,x-44,y-44,88,88,11,'',ink,mini?6:4.8);
@@ -452,16 +467,17 @@ function board(c,state,o,x,y,side){
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
  source(c,turn,elapsed,mini);
  const markers=new Map((o.reach||[]).map(item=>[item.number,item.tier]));
- const wetPaths=turn?getPaths(turn,state):null;
  for(let i=0;i<25;i++){
-  const [x,y]=center(i),n=state.numbers[i],tier=markers.get(n);
-  const wet=state.colors[i],ink=wet?'#203349':'#193643';
+  const [x,y]=center(i),n=state.numbers[i],tier=markers.get(n),direct=state.draws.includes(n),free=state.seeds.includes(i);
+  const ink=state.colors[i]?'#203349':'#193643';
   if(tier!=null)reachMarker(c,x,y,tier,o.reachTime??time,mini);
-  lettering(c,n,x,tier!=null&&!mini?y-8:y+1,mini?52:42,'#fff9dd',{weight:900,outline:ink,width:mini?9:6.2});
-  // HIT is shown only after the filling front actually reaches a newly wet cell.
-  const arrival=wetPaths?.get(i);
-  const hitVisible=wet&&(!turn||turn.before.colors[i]||!arrival||elapsed>=arrival.start+fillTime*.28);
-  if(hitVisible&&!mini)lettering(c,'HIT!',x,y+34,18,'#fff7c7',{weight:950,outline:'#23435b',width:4});
+  const hasCaption=direct||tier!=null;
+  lettering(c,n,x,y+(hasCaption?-8:free?5:1),mini?49:42,'#fff9dd',{weight:900,outline:ink,width:mini?9:6.2});
+  if(free){
+   rect(c,x-24,y-43,48,17,6,'#f9fcf0e8','#61798a',1.8);
+   lettering(c,'FREE',x,y-34,mini?17:15,'#385668',{weight:950,max:43});
+  }
+  if(direct)lettering(c,'HIT!',x,y+24,mini?22:23,'#fff5b9',{weight:1000,outline:'#85364a',width:mini?5:4});
  }
  c.restore();c.restore();
 }
@@ -496,23 +512,23 @@ function logo(c,x,y,w,h){
  }else lettering(c,'Jelly Bingo',x+w/2,y+h/2,Math.min(w*.16,h*.7),'#ffe39a',{face:'Georgia,serif',weight:'italic 900'});
 }
 function phaseGuide(c,x,y,w,h,draws,o){
- const finished=draws===8&&!o.turn,ball=Math.min(8,draws+(o.turn?0:1)),first=ball<=5;
- const colors=[syrup.red[0],syrup.yellow[0],syrup.green[0]];
- const accent=finished?'#ffe296':first?'#90ecff':colors[ball-6];
- const phase=finished?'結果':first?'前半':'後半';
+ const finished=draws===8&&!o.turn,ball=Math.min(8,draws+(o.turn?0:1));
+ const colors=K.BALL_COLORS,key=colors[ball-1];
+ const names={red:'赤',yellow:'黄',green:'緑',blue:'青',purple:'紫'};
+ const accent=finished?'#ffe296':syrup[key][0],phase=finished?'結果':'抽選';
  const progress=finished?'全8球終了':(o.turn?'第':'次は第')+ball+'球';
- const action=finished?'ライン判定完了':first?'仕切りを割る':['赤','黄','緑'][ball-6]+'ゼリーを注ぐ';
- const detail=finished?'成立したラインが点灯':first?'青ゼリーが広がる':'つながった区画がHIT';
- rect(c,x,y,w,h,8,first?'#184b5a':'#5b2c4a',accent,1.5);
+ const action=finished?'ライン判定完了':'割って'+names[key]+'ゼリー注入';
+ const detail=finished?'成立したラインが点灯':'ゼリー5マスで1ライン';
+ rect(c,x,y,w,h,8,'#214b59',accent,1.5);
  const tagH=Math.min(h*.28,21),tagW=w*.34;
  rect(c,x+5,y+4,tagW,tagH,5,accent);
  lettering(c,phase,x+5+tagW/2,y+4+tagH*.53,tagH*.84,'#263346',{weight:950});
  lettering(c,(o.demo?'デモ・':'')+progress,x+w-6,y+4+tagH*.53,tagH*.66,'#fff0e2',{align:'right',max:w-tagW-17});
  lettering(c,action,x+w/2,y+h*.47,h*.245,'#fff5d9',{weight:950,max:w-12});
  lettering(c,detail,x+w/2,y+h*.70,h*.172,'#e1eff0',{max:w-12});
- const dx=(w-21)/8,cy=y+h*.89;
+ const dx=(w-16)/8,cy=y+h*.89;
  for(let i=1;i<=8;i++){
-  const cx=x+8+dx*(i-.5)+(i>5?5:0),color=i<=5?syrup.blue[0]:colors[i-6];
+  const cx=x+8+dx*(i-.5),color=syrup[colors[i-1]][1];
   oval(c,cx,cy,dx*.30,Math.min(dx*.30,h*.056),i<=draws?color:'#213443',color,.9);
   if(i===ball&&!finished)oval(c,cx,cy,dx*.45,h*.085,'','#fff1b3',1.2);
  }
@@ -535,7 +551,7 @@ function panel(c,state,o,x,y,w,h){
  const phaseH=Math.min(75,h*.195);
  phaseGuide(c,11,y0,w-22,phaseH,turns,o);y0+=phaseH+2;
  const titleH=Math.min(20,h*.055),headH=Math.min(17,h*.048),footH=Math.min(20,h*.052);
- lettering(c,'ライン配当',w/2,y0+titleH*.51,titleH*.76,'#ffe5ab');y0+=titleH;
+ lettering(c,'ライン配当　'+tiers[0]+'本から',w/2,y0+titleH*.51,titleH*.72,'#ffe5ab',{max:w-23});y0+=titleH;
  const right=w-15;
  lettering(c,'本数',17,y0+headH*.51,headH*.77,'#ffdde3',{align:'left'});
  lettering(c,'WIN',right,y0+headH*.51,headH*.83,'#ffe78a',{align:'right'});
@@ -583,5 +599,5 @@ function draw(c,state,options){
  }
  c.restore();
 }
-window.JellyView=Object.freeze({draw,duration,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
+window.JellyView=Object.freeze({draw,duration,lineRevealAt:waveEnd,partitionBreakAt:wallSplit,pourAt:waveStart});
 })();
