@@ -31,6 +31,12 @@ body.jb-active .board-area,body.jb-active #panels {width:100%!important;max-widt
 }
 
 .jb-slot .reach-badge[data-tier="3"] {width:42px;flex-basis:42px}
+.jb-slot .reach-caption.odds-up {width:45px;flex-basis:45px;font-size:7.5px}
+@media(forced-colors:none){
+ .jb-slot .reach-num.odds-up {color:#168a45;-webkit-text-fill-color:#168a45}
+ .jb-slot .reach-caption.odds-up {background:linear-gradient(#357653,#175139);box-shadow:0 0 0 1px #328051}
+ .jb-slot .reach-caption.odds-up .reach-badge-label {color:#93ffab;-webkit-text-fill-color:#93ffab}
+}
 .jb-slot .reach-badge[data-tier="3"]>.reach-badge-label,
 .jb-slot .reach-badge[data-tier="3"]>.reach-badge-role {grid-area:1/1;animation:reach-title-first 4s steps(1,end) infinite}
 .jb-slot .reach-badge[data-tier="3"]>.reach-badge-role {font-size:7px;letter-spacing:-.55px;animation-name:reach-title-second}

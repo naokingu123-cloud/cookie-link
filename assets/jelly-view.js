@@ -25,6 +25,7 @@ const syrup={
 const laneColors=['#ffbc7c','#ffda97','#ffb1ba','#a4ffeb','#a9dfff','#c7b3ff'];
 const tiers=[1,2,3,4,5,6,7,8,9,10,12];
 const oddsPopupMs=1600;
+const oddsText='#93ffab';
 const emblem=new Image();emblem.src='assets/jelly-emblem.svg';
 const center=i=>[50+i%5*100,50+Math.floor(i/5)*100];
 function gradient(c,x,y,x2,y2,stops){
@@ -453,16 +454,48 @@ const reachPaint=['#84f8fa','#ff637d','#d78aff'];
 const reachLabels=['リーチ','高額','超高額','オールライン'];
 const reachSpectrum=[[0,'#ff7499'],[.21,'#ffce71'],[.44,'#c0ff9a'],[.64,'#66f0ff'],[.83,'#c493ff'],[1,'#ff99cb']];
 const reducedReachMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-// The comet path is inset from the actual glass dividers. Its straight runs are
-// 60 units long, joined by four 12-unit quarter circles.
-const reachQuarter=60+6*Math.PI,reachLap=4*reachQuarter;
-const reachRail=new Path2D();
-reachRail.moveTo(-30,-42);reachRail.arcTo(42,-42,42,42,12);
-reachRail.arcTo(42,42,-42,42,12);reachRail.arcTo(-42,42,-42,-42,12);
-reachRail.arcTo(-42,-42,42,-42,12);reachRail.closePath();
-function reachStreak(c,head,length,ink,width){
- c.setLineDash([length,reachLap-length]);c.lineDashOffset=length-head;
- c.strokeStyle=ink;c.lineWidth=width;c.stroke(reachRail);
+// Trace the exposed sides clockwise with the section on the right. Each loop
+// is drawn a little inside the glass so neighboring sections stay distinct.
+const sectionRails=new WeakMap(),reachOddsInk='#73ff98';
+function reachLoops(groups,id){
+ let cache=sectionRails.get(groups);if(!cache){cache=new Map();sectionRails.set(groups,cache);}
+ if(cache.has(id))return cache.get(id);
+ const edges=new Set(),step=[1,6,-1,-6],dx=[1,0,-1,0],dy=[0,1,0,-1],loops=[];
+ for(let i=0;i<25;i++)if(groups[i]===id){
+  const x=i%5,y=Math.floor(i/5),v=y*6+x;
+  if(!y||groups[i-5]!==id)edges.add(v*4);
+  if(x===4||groups[i+1]!==id)edges.add((v+1)*4+1);
+  if(y===4||groups[i+5]!==id)edges.add((v+7)*4+2);
+  if(!x||groups[i-1]!==id)edges.add((v+6)*4+3);
+ }
+ while(edges.size){
+  const start=edges.values().next().value,corners=[];let edge=start;
+  do{
+   edges.delete(edge);
+   const dir=edge%4,v=Math.floor(edge/4)+step[dir];
+   // A diagonal touch has two exits. Turn right first to keep each boundary intact.
+   const next=[(dir+1)%4,dir,(dir+3)%4].find(d=>v*4+d===start||edges.has(v*4+d));
+   if(next!==dir){
+    const x=(v%6)*100-8*(dy[dir]+dy[next]),y=Math.floor(v/6)*100+8*(dx[dir]+dx[next]);
+    corners.push([x-6*dx[dir],y-6*dy[dir]],[x+6*dx[next],y+6*dy[next]]);
+   }
+   edge=v*4+next;
+  }while(edge!==start);
+  const path=new Path2D(),segments=[];let lap=0;
+  const xs=corners.map(p=>p[0]),ys=corners.map(p=>p[1]);
+  path.moveTo(...corners[0]);
+  for(let i=0;i<corners.length;i++){
+   const [x,y]=corners[i],[ex,ey]=corners[(i+1)%corners.length],len=Math.hypot(ex-x,ey-y);
+   segments.push({x,y,dx:(ex-x)/len,dy:(ey-y)/len,end:lap+len,start:lap});lap+=len;
+   path.lineTo(ex,ey);
+  }
+  path.closePath();loops.push({path,lap,segments,bounds:[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)]});
+ }
+ cache.set(id,loops);return loops;
+}
+function reachStreak(c,loop,head,length,ink,width){
+ c.setLineDash([length,loop.lap-length]);c.lineDashOffset=length-head;
+ c.strokeStyle=ink;c.lineWidth=width;c.stroke(loop.path);
 }
 const reachPeriods=[1.85,1.6,1.45,1.75],reachLamps=new Map();
 function reachLamp(ink){
@@ -474,39 +507,31 @@ function reachLamp(ink){
  g.fillStyle=halo;g.fillRect(0,0,48,48);star(g,24,24,17,'#ffffe8');
  reachLamps.set(ink,lamp);return lamp;
 }
-function reachComet(c,phase,ink,tier,mini){
- const head=phase*reachLap,quarter=Math.floor(head/reachQuarter),run=head-quarter*reachQuarter;
- const tail=42+tier*7;
- c.globalAlpha=.50;reachStreak(c,head,tail,ink,mini?10:9);
- c.globalAlpha=.95;reachStreak(c,head,tail*.58,ink,mini?6:5.5);
- reachStreak(c,head,tail*.26,'#fff7cf',mini?4:3.6);
- // Orient the top-side calculation onto the appropriate quarter of the rail.
- c.save();c.rotate(quarter*Math.PI/2);
- if(run<=60)c.translate(-30+run,-42);
- else {const a=(run-60)/12;c.translate(30+12*Math.sin(a),-30-12*Math.cos(a));}
- const diameter=mini?19:21+2*tier;
- c.globalAlpha=1;c.drawImage(reachLamp(ink),-diameter/2,-diameter/2,diameter,diameter);
- c.restore();
+function reachComet(c,loop,phase,ink,tier,mini){
+ const head=phase*loop.lap,tail=42+tier*7;
+ c.globalAlpha=.50;reachStreak(c,loop,head,tail,ink,mini?10:9);
+ c.globalAlpha=.95;reachStreak(c,loop,head,tail*.58,ink,mini?6:5.5);
+ reachStreak(c,loop,head,tail*.26,'#fff7cf',mini?4:3.6);
+ const seg=loop.segments.find(s=>head<s.end)||loop.segments[0],run=head-seg.start;
+ const x=seg.x+seg.dx*run,y=seg.y+seg.dy*run,diameter=mini?19:21+2*tier;
+ c.globalAlpha=1;c.drawImage(reachLamp(ink),x-diameter/2,y-diameter/2,diameter,diameter);
 }
-function reachMarker(c,x,y,tier,elapsed,mini){
- const t=reducedReachMotion?0:elapsed/1000,all=tier===3;
+function reachFrame(c,loops,id,item,t,mini){
+ const {tier,oddsUp}=item,all=tier===3&&!oddsUp;
  const phase=(t/(tier?1:1.4))%1;
  const dip=clamp(1-Math.abs(phase-.66)/.18),pulse=1-.7*dip*dip*(3-2*dip);
- c.save();c.translate(x,y);c.lineCap='round';
- const ink=all?gradient(c,-42,-42,42,42,reachSpectrum):reachPaint[tier];
- c.globalAlpha=.82;c.lineWidth=mini?9:8;c.strokeStyle='#173146';c.stroke(reachRail);
- c.globalAlpha=.35+.65*pulse;c.lineWidth=mini?5:4.3;c.strokeStyle=ink;c.stroke(reachRail);
+ c.save();c.lineCap='round';c.lineJoin='round';
  const heads=mini?1:tier===3?3:tier===2?2:1;
- const spin=t/reachPeriods[tier]+(x*3+y*7)*.0026;
- for(let i=0;i<heads;i++){
-  const pos=(spin+i/heads)%1;
-  const light=all?spectrum[Math.floor(pos*spectrum.length)]:ink;
-  reachComet(c,pos,light,tier,mini);
- }
- if(!mini){
-  const label=tier&&(reducedReachMotion||Math.floor(t/2)%2)?reachLabels[tier]:reachLabels[0];
-  c.globalAlpha=pulse;c.setLineDash([]);
-  lettering(c,label,0,26,24,ink,{weight:950,face:'SweetReachRounded,'+font,max:83,outline:'#14263d',width:5.2});
+ for(const loop of loops){
+  const ink=oddsUp?reachOddsInk:all?gradient(c,...loop.bounds,reachSpectrum):reachPaint[tier];
+  c.setLineDash([]);
+  c.globalAlpha=.82;c.lineWidth=mini?9:8;c.strokeStyle='#173146';c.stroke(loop.path);
+  c.globalAlpha=.35+.65*pulse;c.lineWidth=mini?5:4.3;c.strokeStyle=ink;c.stroke(loop.path);
+  const spin=t/reachPeriods[tier]*(336/loop.lap)+id*.13;
+  for(let i=0;i<heads;i++){
+   const pos=(spin+i/heads)%1,light=all?spectrum[Math.floor(pos*spectrum.length)]:ink;
+   reachComet(c,loop,pos,light,tier,mini);
+  }
  }
  c.restore();
 }
@@ -525,11 +550,24 @@ function board(c,state,o,x,y,side){
  bingoRails(c,state,turn,elapsed,time,mini);
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
  source(c,turn,elapsed,mini);
- const markers=new Map((o.reach||[]).map(item=>[item.number,item.tier]));
+ const markers=new Map((o.reach||[]).map(item=>[item.number,item])),groups=sectionIds(state),frames=new Map();
+ const reachT=reducedReachMotion?0:(o.reachTime??time)/1000;
  for(let i=0;i<25;i++){
-  const [x,y]=center(i),n=state.numbers[i],tier=markers.get(n);
-  if(tier!=null)reachMarker(c,x,y,tier,o.reachTime??time,mini);
-  const digitY=tier!=null&&!mini?y-8:y;
+  const item=markers.get(state.numbers[i]);if(!item)continue;
+  const id=groups[i],prev=frames.get(id);
+  // A section can have several candidate numbers. Prefer a line-producing
+  // reach for its shared frame and show the exact outcome beside each number.
+  if(!prev||(prev.oddsUp&&!item.oddsUp)||(!!prev.oddsUp===!!item.oddsUp&&item.tier>prev.tier))frames.set(id,item);
+ }
+ for(const [id,item] of frames)reachFrame(c,reachLoops(groups,id),id,item,reachT,mini);
+ for(let i=0;i<25;i++){
+  const [x,y]=center(i),n=state.numbers[i],item=markers.get(n);
+  if(item&&!mini){
+   const label=item.oddsUp?'オッズアップ':item.tier&&(reducedReachMotion||Math.floor(reachT/2)%2)?reachLabels[item.tier]:reachLabels[0];
+   const ink=item.oddsUp?reachOddsInk:item.tier===3?gradient(c,x-42,y,x+42,y,reachSpectrum):reachPaint[item.tier];
+   lettering(c,label,x,y+26,24,ink,{weight:950,face:'SweetReachRounded,'+font,max:83,outline:'#14263d',width:5.2});
+  }
+  const digitY=item&&!mini?y-8:y;
   boardNumber(c,n,x,digitY,mini,state.colors[i]?'#203349':'#193643');
   if(state.draws.includes(n))hitStamp(c,x,digitY,mini);
  }
@@ -609,19 +647,19 @@ function oddsPopup(c,state,turn,age,x,y,w,h){
   const enter=clamp(age/130),leave=clamp((oddsPopupMs-age)/160);
   c.translate(0,(1-enter)*h*.13);c.globalAlpha=.25+.75*Math.min(enter,leave);
  }
- const glaze=gradient(c,0,0,w*.25,h,[[0,'#88304f'],[.34,'#853757'],[1,'#422542']]);
- rect(c,1,1,w-2,h-2,Math.min(h*.22,10),glaze,'#ffdc88',2);
- rect(c,4,4,w-8,h-8,Math.min(h*.18,8),'','#f09c9f',.9);
+ const glaze=gradient(c,0,0,w*.25,h,[[0,'#235747'],[.34,'#15573c'],[1,'#123a36']]);
+ rect(c,1,1,w-2,h-2,Math.min(h*.22,10),glaze,'#95f5ab',2);
+ rect(c,4,4,w-8,h-8,Math.min(h*.18,8),'','#47b885',.9);
  const before=turn.before.colors[turn.index],after=state.colors[turn.index];
  const change=oddsLabel(turn.before.oddsMultiplier)+' → '+oddsLabel(state.oddsMultiplier);
  if(wide){
-  lettering(c,'ゼリー色変化！',w*.28,h*.32,h*.26,'#ffefdb',{max:w*.50});
+  lettering(c,'オッズアップ',w*.28,h*.32,h*.31,oddsText,{max:w*.50,weight:950});
   lettering(c,'＋0.5倍',w*.77,h*.32,h*.30,'#ffe58f',{max:w*.38,weight:950});
   mixSwatches(c,w*.28,h*.70,Math.min(h*.15,w*.038),before,after);
   lettering(c,change,w*.70,h*.69,h*.37,'#fff5b0',{max:w*.51,face:'Georgia,serif',weight:950});
  }else{
   lettering(c,(turn.ball<=5?'前半':'後半')+'・第'+turn.ball+'球',w*.26,h*.18,h*.13,'#fff1dc',{max:w*.40});
-  lettering(c,'ODDS UP!',w*.71,h*.18,h*.19,'#ffdc8b',{max:w*.46,weight:950,face:'Georgia,serif'});
+  lettering(c,'オッズアップ',w*.71,h*.18,h*.18,oddsText,{max:w*.52,weight:950});
   lettering(c,'色変化！',w*.28,h*.42,h*.18,'#fff3df',{max:w*.40});
   mixSwatches(c,w*.70,h*.42,Math.min(h*.095,w*.053),before,after);
   lettering(c,'＋0.5倍',w*.5,h*.64,h*.23,'#ffde78',{max:w*.80,weight:950});
@@ -691,9 +729,10 @@ function draw(c,state,options){
    lettering(c,'LINE',cx,h*.75,h*.17,'#a7e5d9');
   }else board(c,state,o,(w-side)*.5,(h-side)*.5,side);
   if(popup){
-   const bw=side*.40,bh=side*.115,xx=(w-bw)/2;
-   rect(c,xx,0,bw,bh,3,'#67304d','#ffdc88',1.7);
-   lettering(c,'＋0.5',w/2,bh*.55,bh*.95,'#ffea91',{max:bw-3,weight:950});
+   const bw=side*.92,bh=side*.14,xx=(w-bw)/2;
+   rect(c,xx,0,bw,bh,3,'#164b38','#95f5ab',1.7);
+   lettering(c,'オッズアップ',xx+bw*.34,bh*.52,bh*.78,oddsText,{max:bw*.63,weight:950});
+   lettering(c,'＋0.5',xx+bw*.82,bh*.52,bh*.85,'#e3ffe8',{max:bw*.32,weight:950});
   }
  }else{
   const pad=Math.max(2,Math.min(w,h)*.018),gap=Math.max(4,Math.min(w,h)*.023);

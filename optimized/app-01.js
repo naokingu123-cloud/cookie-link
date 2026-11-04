@@ -3697,7 +3697,11 @@ function finishReachSlide(s){
 function paintReachPage(s,{slide=false}={}){
  finishReachSlide(s);
  const results=s.reachPageResults||[],start=(s.reachPage||0)*REACH_PAGE_SIZE,page=results.slice(start,start+REACH_PAGE_SIZE);
- const markup=page.map(p=>'<span class="reach-num" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+reachWord(s,p.tier)+'、HIT後 '+p.total/100+'倍">'+(p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number))+'</span>').join('');
+ const markup=page.map(p=>{
+  const label=p.oddsUp?'オッズアップ':reachWord(s,p.tier);
+  const digits=p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number);
+  return '<span class="reach-num'+(p.oddsUp?' odds-up':'')+'" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+label+'、HIT後 '+p.total/100+'倍">'+digits+'</span>';
+ }).join('');
  if(slide&&!motionReduced&&s.reachNumbers.children.length&&page.length){
   const incoming=document.createElement('div');incoming.className='reach-numbers reach-page-enter';incoming.innerHTML=markup;
   s.reachNumbers.classList.add('reach-page-leave');s.reachNumbers.setAttribute('aria-hidden','true');s.reachIncoming=incoming;s.reachClip.append(incoming);
@@ -3728,10 +3732,12 @@ function updateReachUI(a){
  for(const s of slots){
   if(!s.engine)continue;const results=visibleTabReachResults(s,a),hidden=a.phase==='ready',visibilityChanged=s.reachStrip.hidden!==hidden;
   s.reachStrip.hidden=hidden;if(hidden)s.reachPageDue=0;else if(visibilityChanged&&(s.reachPageResults?.length||0)>REACH_PAGE_SIZE)s.reachPageDue=Date.now()+REACH_PAGE_MS;
-  const key=(results.length?s.tabReachVersion+'/':'')+results.map(p=>p.number+':'+p.tier+':'+p.total).join(',');
+  const key=(results.length?s.tabReachVersion+'/':'')+results.map(p=>p.number+':'+p.tier+':'+p.total+(p.oddsUp?'u':'')).join(',');
   if(s.reachUIKey!==key){
-   s.reachUIKey=key;s.reachCaption.hidden=!results.length;s.reachCaption.innerHTML=results.length?'<span class="reach-badge-label">リーチ</span>':'';
-   const tier=Math.max(0,...results.map(p=>p.tier));s.reachCaption.dataset.tier=String(tier);s.reachCaption.setAttribute('aria-label',tier?reachWord(s,tier)+'リーチ':'リーチ');
+   const oddsOnly=results.length>0&&results.every(p=>p.oddsUp),caption=oddsOnly?'オッズアップ':'リーチ';
+   s.reachUIKey=key;s.reachCaption.hidden=!results.length;s.reachCaption.classList.toggle('odds-up',oddsOnly);
+   s.reachCaption.innerHTML=results.length?'<span class="reach-badge-label">'+caption+'</span>':'';
+   const tier=Math.max(0,...results.map(p=>p.tier));s.reachCaption.dataset.tier=String(tier);s.reachCaption.setAttribute('aria-label',!oddsOnly&&tier?reachWord(s,tier)+'リーチ':caption);
    if(tier===3&&s.engine.allReachName){
     const name=document.createElement('span');name.className='reach-badge-role';name.textContent=s.engine.allReachName;s.reachCaption.append(name);
    }
