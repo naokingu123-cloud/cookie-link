@@ -6,7 +6,7 @@ const colors=['#87f7ff','#ff7288','#dba0ff','#ffeaa2'],labels=['リーチ','高�
 const rainbow=['#ff879e','#ffd56d','#bffd92','#72eeff','#d09cff','#ffa6d7'];
 const empty=[],plans=new WeakMap(),reduce=matchMedia('(prefers-reduced-motion: reduce)');
 function art(name){const image=new Image();image.src='assets/waffle-'+name+'.webp';return image;}
-const tileArt=art('cell'),effectArt=art('effect');
+const tileArt=art('cell'),butterArt=art('butter'),effectArt=art('effect');
 const loaded=image=>image.complete&&image.naturalWidth>0;
 const number=n=>Number.isInteger(n/100)?(n/100).toFixed(1):String(Math.round(n)/100);
 const multiple=n=>number(n)+'倍';
@@ -52,9 +52,9 @@ function drawMini(ctx,s,o={}){
  ctx.save();ctx.clearRect(0,0,w,h);ctx.fillStyle='#572c1a';ctx.fillRect(0,0,w,h);
  for(let i=0;i<64;i++){
   const left=x+i%8*u,top=y+(i>>3)*u;
-  ctx.fillStyle='#edc383';ctx.fillRect(left+.035*u,top+.035*u,.93*u,.93*u);
-  if(loaded(tileArt))ctx.drawImage(tileArt,left+.04*u,top+.04*u,.92*u,.92*u);
-  if(free.has(i)||hits.has(i)){ctx.fillStyle=free.has(i)?'#8fe6bdbc':'#ff7c9baa';ctx.fillRect(left+.04*u,top+.04*u,.92*u,.92*u);}
+  const buttered=free.has(i)||hits.has(i),sprite=buttered?butterArt:tileArt;
+  ctx.fillStyle=buttered?'#fff9eb':'#edc383';ctx.fillRect(left+.035*u,top+.035*u,.93*u,.93*u);
+  if(loaded(sprite))ctx.drawImage(sprite,left+.04*u,top+.04*u,.92*u,.92*u);
   if(u<7)continue;
   if(typeof drawElixirNumber==='function')drawElixirNumber(ctx,s.numbers[i],left+u*.5,top+u*.5,u*.8,'#452719','#fff0c8',u*.065);
   else{ctx.font=`900 ${u*.66}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#372015';ctx.fillText(s.numbers[i],left+.5*u,top+.5*u);}
