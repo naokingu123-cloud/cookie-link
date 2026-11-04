@@ -110,7 +110,7 @@ function mount(panel,actions){
   const items=o.reach||noReach,p=reachPlan(items);
   drawReach(p,reduced.matches?0:o.time||0,items!==lastReach);
   if(s===lastState&&items===lastReach&&lastDemo===!!o.demo&&lastNumber===o.latestNumber&&lastTime===ms&&lastBet===o.bet&&lastSugar===o.sugarCollected)return;
-  if(thinking&&lastState?.phase!=='thinking'&&!full.hidden)closeOverview();
+  if(interactive&&(lastDemo||lastState?.phase!=='thinking')&&!full.hidden)closeOverview();
   if(!full.hidden&&s!==lastState)fillOverview(s);
   if(s.lines!==lastState?.lines)drawSticks(s.lines);
   if(guide.hidden===thinking){guide.hidden=!thinking;fit();}
