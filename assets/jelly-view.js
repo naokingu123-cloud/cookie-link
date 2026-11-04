@@ -46,6 +46,19 @@ function lettering(c,text,x,y,size,fill,opts={}){
  if(opts.outline){c.strokeStyle=opts.outline;c.lineWidth=opts.width||size*.13;c.strokeText(String(text),x,y,opts.max);}
  c.fillStyle=fill;c.fillText(String(text),x,y,opts.max);c.restore();
 }
+function boardNumber(c,n,x,y,mini,ink){
+ const size=mini?65:54,stroke=mini?8:5;
+ if(typeof drawElixirNumber==='function')drawElixirNumber(c,n,x,y,size,'#fffae8',ink,stroke);
+ else lettering(c,n,x,y,size,'#fffae8',{face:'ElixirNumbers,system-ui,sans-serif',weight:400,outline:ink,width:stroke});
+}
+function hitStamp(c,x,y,mini){
+ // Cross the lower half of the numeral, leaving its top and silhouette visible.
+ c.save();c.translate(x+9,y+16);c.rotate(-.18);
+ c.font='italic 1000 '+(mini?29:24)+'px '+font;c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
+ c.strokeStyle='#592235';c.lineWidth=mini?9:7;c.strokeText('HIT!',0,0);
+ c.strokeStyle='#fff4ce';c.lineWidth=mini?5:4;c.strokeText('HIT!',0,0);
+ c.fillStyle='#c63348';c.fillText('HIT!',0,0);c.restore();
+}
 function star(c,x,y,r,color){
  c.save();c.translate(x,y);c.beginPath();c.moveTo(0,-r);
  for(let k=1;k<=8;k++){const ang=k*Math.PI/4-Math.PI/2,rad=k%2?r*.21:r;c.lineTo(rad*Math.cos(ang),rad*Math.sin(ang));}
@@ -293,6 +306,28 @@ const railGeometry=K.LINES.map(cells=>{
  return {x:a-68*sx,y:b-68*sy,length:Math.hypot(dx,dy),angle:Math.atan2(dy,dx)};
 });
 const spectrum=['#ff779b','#ffbc70','#ffeb7c','#8df7ab','#6be7fa','#b99aff'];
+// A pair of engraved pointers lines up with each of the twelve win paths.
+let guides;
+function rimGuides(){
+ if(guides)return guides;
+ guides=document.createElement('canvas');guides.width=guides.height=moldSize;
+ const g=guides.getContext('2d');g.translate(moldRim,moldRim);
+ g.lineCap='round';g.lineJoin='round';
+ railGeometry.forEach(({x,y,length,angle},id)=>{
+  const accent=id<5?'#a3f3ea':id<10?'#ffc6d4':'#ffdf92';
+  for(const end of [0,1]){
+   g.save();g.translate(x+end*length*Math.cos(angle),y+end*length*Math.sin(angle));
+   g.rotate(angle+end*Math.PI);
+   // In local coordinates the board starts 18 units past the terminal (more on diagonals).
+   line(g,-18,0,8,0,'#203d4b',6);line(g,-18,0,8,0,accent,2.6);
+   g.beginPath();g.moveTo(11,0);g.lineTo(-4,-8);g.lineTo(-9,0);g.lineTo(-4,8);g.closePath();
+   g.fillStyle=accent;g.fill();g.lineWidth=2.5;g.strokeStyle='#2d4351';g.stroke();
+   line(g,-4,-4.8,5,-.6,'#fff7d6',1.8);
+   g.restore();
+  }
+ });
+ return guides;
+}
 // One sugar jewel lights on the outer mould for each visible completed line.
 const rimJewels=Array.from({length:12},(_,i)=>{
  const along=99+(i%3)*151;
@@ -418,23 +453,60 @@ const reachPaint=['#84f8fa','#ff637d','#d78aff'];
 const reachLabels=['リーチ','高額','超高額','オールライン'];
 const reachSpectrum=[[0,'#ff7499'],[.21,'#ffce71'],[.44,'#c0ff9a'],[.64,'#66f0ff'],[.83,'#c493ff'],[1,'#ff99cb']];
 const reducedReachMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+// The comet path is inset from the actual glass dividers. Its straight runs are
+// 60 units long, joined by four 12-unit quarter circles.
+const reachQuarter=60+6*Math.PI,reachLap=4*reachQuarter;
+const reachRail=new Path2D();
+reachRail.moveTo(-30,-42);reachRail.arcTo(42,-42,42,42,12);
+reachRail.arcTo(42,42,-42,42,12);reachRail.arcTo(-42,42,-42,-42,12);
+reachRail.arcTo(-42,-42,42,-42,12);reachRail.closePath();
+function reachStreak(c,head,length,ink,width){
+ c.setLineDash([length,reachLap-length]);c.lineDashOffset=length-head;
+ c.strokeStyle=ink;c.lineWidth=width;c.stroke(reachRail);
+}
+const reachPeriods=[1.85,1.6,1.45,1.75],reachLamps=new Map();
+function reachLamp(ink){
+ if(reachLamps.has(ink))return reachLamps.get(ink);
+ const lamp=document.createElement('canvas');lamp.width=lamp.height=48;
+ const g=lamp.getContext('2d'),halo=g.createRadialGradient(24,24,0,24,24,24);
+ halo.addColorStop(0,'#ffffe8');halo.addColorStop(.23,'#fffbeefd');
+ halo.addColorStop(.48,ink+'c9');halo.addColorStop(1,ink+'00');
+ g.fillStyle=halo;g.fillRect(0,0,48,48);star(g,24,24,17,'#ffffe8');
+ reachLamps.set(ink,lamp);return lamp;
+}
+function reachComet(c,phase,ink,tier,mini){
+ const head=phase*reachLap,quarter=Math.floor(head/reachQuarter),run=head-quarter*reachQuarter;
+ const tail=42+tier*7;
+ c.globalAlpha=.50;reachStreak(c,head,tail,ink,mini?10:9);
+ c.globalAlpha=.95;reachStreak(c,head,tail*.58,ink,mini?6:5.5);
+ reachStreak(c,head,tail*.26,'#fff7cf',mini?4:3.6);
+ // Orient the top-side calculation onto the appropriate quarter of the rail.
+ c.save();c.rotate(quarter*Math.PI/2);
+ if(run<=60)c.translate(-30+run,-42);
+ else {const a=(run-60)/12;c.translate(30+12*Math.sin(a),-30-12*Math.cos(a));}
+ const diameter=mini?19:21+2*tier;
+ c.globalAlpha=1;c.drawImage(reachLamp(ink),-diameter/2,-diameter/2,diameter,diameter);
+ c.restore();
+}
 function reachMarker(c,x,y,tier,elapsed,mini){
  const t=reducedReachMotion?0:elapsed/1000,all=tier===3;
- const ink=all?gradient(c,x-44,y-40,x+44,y+40,reachSpectrum):reachPaint[tier];
- // The same 48–84% brightness dip as the shared reach-title animation.
  const phase=(t/(tier?1:1.4))%1;
  const dip=clamp(1-Math.abs(phase-.66)/.18),pulse=1-.7*dip*dip*(3-2*dip);
- c.save();c.globalAlpha*=pulse;
- // Inset both edges of neighbouring markers so the actual glass seam stays readable.
- rect(c,x-44,y-44,88,88,11,'','#162e46',mini?9:7);
- rect(c,x-44,y-44,88,88,11,'',ink,mini?6:4.8);
+ c.save();c.translate(x,y);c.lineCap='round';
+ const ink=all?gradient(c,-42,-42,42,42,reachSpectrum):reachPaint[tier];
+ c.globalAlpha=.82;c.lineWidth=mini?9:8;c.strokeStyle='#173146';c.stroke(reachRail);
+ c.globalAlpha=.35+.65*pulse;c.lineWidth=mini?5:4.3;c.strokeStyle=ink;c.stroke(reachRail);
+ const heads=mini?1:tier===3?3:tier===2?2:1;
+ const spin=t/reachPeriods[tier]+(x*3+y*7)*.0026;
+ for(let i=0;i<heads;i++){
+  const pos=(spin+i/heads)%1;
+  const light=all?spectrum[Math.floor(pos*spectrum.length)]:ink;
+  reachComet(c,pos,light,tier,mini);
+ }
  if(!mini){
-  c.save();c.lineCap='round';
-  c.setLineDash(tier>=2?[18,62]:[9,86]);
-  c.lineDashOffset=-t*(all?130:tier?104:76)-(x+y)*.12;
-  rect(c,x-44,y-44,88,88,11,'','#fffbe0',2.2);c.restore();
   const label=tier&&(reducedReachMotion||Math.floor(t/2)%2)?reachLabels[tier]:reachLabels[0];
-  lettering(c,label,x,y+26,24,ink,{weight:950,face:'SweetReachRounded,'+font,max:83,outline:'#14263d',width:5.2});
+  c.globalAlpha=pulse;c.setLineDash([]);
+  lettering(c,label,0,26,24,ink,{weight:950,face:'SweetReachRounded,'+font,max:83,outline:'#14263d',width:5.2});
  }
  c.restore();
 }
@@ -449,20 +521,17 @@ function board(c,state,o,x,y,side){
  c.restore();
  rect(c,-1.4,-1.4,502.8,502.8,10,'','#f4e8b9',3.8);
  // Only syrup and partitions are confined to the cells. Light crosses the lip and the gold bezel.
+ c.drawImage(rimGuides(),-moldRim,-moldRim);
  bingoRails(c,state,turn,elapsed,time,mini);
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
  source(c,turn,elapsed,mini);
  const markers=new Map((o.reach||[]).map(item=>[item.number,item.tier]));
- const wetPaths=turn?getPaths(turn,state):null;
  for(let i=0;i<25;i++){
   const [x,y]=center(i),n=state.numbers[i],tier=markers.get(n);
-  const wet=state.colors[i],ink=wet?'#203349':'#193643';
   if(tier!=null)reachMarker(c,x,y,tier,o.reachTime??time,mini);
-  lettering(c,n,x,tier!=null&&!mini?y-8:y+1,mini?52:42,'#fff9dd',{weight:900,outline:ink,width:mini?9:6.2});
-  // HIT is shown only after the filling front actually reaches a newly wet cell.
-  const arrival=wetPaths?.get(i);
-  const hitVisible=wet&&(!turn||turn.before.colors[i]||!arrival||elapsed>=arrival.start+fillTime*.28);
-  if(hitVisible&&!mini)lettering(c,'HIT!',x,y+34,18,'#fff7c7',{weight:950,outline:'#23435b',width:4});
+  const digitY=tier!=null&&!mini?y-8:y;
+  boardNumber(c,n,x,digitY,mini,state.colors[i]?'#203349':'#193643');
+  if(state.draws.includes(n))hitStamp(c,x,digitY,mini);
  }
  c.restore();c.restore();
 }
@@ -503,7 +572,7 @@ function phaseGuide(c,x,y,w,h,draws,o){
  const phase=finished?'結果':first?'前半':'後半';
  const progress=finished?'全8球終了':(o.turn?'第':'次は第')+ball+'球';
  const action=finished?'ライン判定完了':first?'仕切りを割る':['赤','黄','緑'][ball-6]+'ゼリーを注ぐ';
- const detail=finished?'成立したラインが点灯':first?'青ゼリーが広がる':'つながった区画がHIT';
+ const detail=finished?'成立したラインが点灯':first?'青ゼリーが広がる':'つながった区画を満たす';
  rect(c,x,y,w,h,8,first?'#184b5a':'#5b2c4a',accent,1.5);
  const tagH=Math.min(h*.28,21),tagW=w*.34;
  rect(c,x+5,y+4,tagW,tagH,5,accent);

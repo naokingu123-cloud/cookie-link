@@ -4,7 +4,7 @@
 const id=window.SweetsLineup.ids.indexOf('jelly'),slot=slots[id];
 const K=window.JellyRules,V=window.JellyView,game=window.SweetsLineup.catalog.jelly;
 const canvas=document.createElement('canvas');canvas.className='jb-scene';canvas.setAttribute('role','img');
-canvas.setAttribute('aria-label','ジェリービンゴ。前半5球で仕切りを開き、後半3球で赤・黄・緑のゼリーを流します');
+canvas.setAttribute('aria-label','ジェリービンゴ。前半5球で仕切りを開き、後半3球で赤・黄・緑のゼリーを流します。HIT!は入賞した番号に表示します');
 slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.classList.add('jb-slot');
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
 title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
@@ -149,7 +149,7 @@ const result0=renderRoundResult;renderRoundResult=function(a){
  result0(a);if(!a.result)return;
  const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.jelly===String(a.token))return;
  row.dataset.jelly=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
- row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.lines.length+' BINGO ／ '+engine.state.colors.filter(Boolean).length+'マス HIT ／ 配当×'+engine.state.oddsMultiplier.toFixed(1)+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?engine.state.lines.length+' BINGO ／ 番号HIT '+engine.state.draws.length+'個 ／ ゼリー '+engine.state.colors.filter(Boolean).length+'マス ／ 配当×'+engine.state.oddsMultiplier.toFixed(1)+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-1000;wake();}).observe(slot.panel);document.addEventListener('visibilitychange',()=>{stamp=0;wake();});
 window.JellyBingo={engine,core:K};engine.reset();select(active);
