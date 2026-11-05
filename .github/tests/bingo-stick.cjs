@@ -2,94 +2,79 @@
 const assert=require('node:assert/strict');
 const R=require('../../assets/bingo-stick-rules.js');
 const rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
-const cells=Array.from({length:64},(_,i)=>i),base=R.create({rng:rng(302)});
-const other=c=>c==='black'?'white':'black';
-function fixture(direct,black){
- const colors=cells.map(i=>black.includes(i)?'black':'white');
- return {...base,numbers:cells.map(i=>direct.includes(i)?1:2),colors,counts:{black:black.length,white:64-black.length},firstColor:'black'};
+const cells=Array.from({length:64},(_,i)=>i);
+function fixture(origin,black,white,otherNumber){
+ const s=R.create({rng:rng(17)}),colors=Array(64).fill(null),numbers=Array(64).fill(null);
+ for(const i of black)colors[i]='black';for(const i of white)colors[i]='white';
+ numbers[origin]=1;if(otherNumber!==undefined)numbers[otherNumber]=2;
+ return {...s,numbers,colors,counts:{black:black.length,white:white.length}};
 }
-function take(s,first,last){
- for(let n=first;n<=last;n++)s=R.draw(s,n);
- return s;
-}
-assert.equal(R.award(43),0);
-assert.deepEqual([44,48,52,56,58,60,62,63,64].map(R.award),[10,20,30,50,100,200,500,1000,5000]);
-assert.equal(R.award(64),R.payRows.at(-1).hundredths+R.sweepBonusHundredths);
+const odds=[0,0,20,50,100,200,400,600,1000,1500,2000,3000,4000,5000,5000];
+assert.deepEqual(odds.map((_,n)=>R.award(n)),odds);
 assert.equal(R.sweepBonusHundredths,3000);
-for(let n=1;n<=64;n++)assert(R.award(n)>=R.award(n-1));
-
-// Each of the eight rays is bracketed, including the two diagonals.
+// Eight bounded rays. Flips are ordered by distance, then by stable direction.
 {
- const dirs=[-9,-8,-7,-1,1,7,8,9],s=fixture([27],dirs.map(d=>27+2*d)),before=structuredClone(s);
- const next=R.draw(s,1);
- assert.deepEqual(next.placed,[27]);assert.deepEqual(new Set(next.flipped),new Set(dirs.map(d=>27+d)));
- assert.equal(next.counts.black,17);assert.equal(next.lastColor,'black');assert.deepEqual(s,before);
+ const vectors=[-9,-8,-7,-1,1,7,8,9],black=vectors.map(d=>27+3*d),white=vectors.flatMap(d=>[27+d,27+2*d]);
+ const start=fixture(27,black,white),before=structuredClone(start),s=R.draw(start,1);
+ assert.deepEqual(s.placed,[27]);assert.deepEqual(s.flipped,[...vectors.map(d=>27+d),...vectors.map(d=>27+2*d)]);
+ for(const step of s.flipSteps)assert.equal(step.id,27+step.distance*(step.dx+step.dy*8));
+ assert.equal(s.maxFlips,16);assert.equal(s.baseHundredths,5000);assert.equal(s.bonusHundredths,3000);assert.deepEqual(start,before);
 }
-// Two direct matching squares bracket one another. Reverse-direction captures count once.
-// 0 is black before the draw but is still a placement origin.
-{
- const s=fixture([0,4],[0]),next=R.draw(s,1);
- assert.deepEqual(next.placed,[0,4]);assert.deepEqual(new Set(next.flipped),new Set([1,2,3]));
- assert.equal(next.counts.black,5);assert(!R.draw(next,1));assert(!R.draw(s,26));
+// Empty squares of either kind block, a neighboring own stone captures nothing,
+// the right edge cannot wrap, and a capture cannot launch a perpendicular ray.
+for(const s of [fixture(0,[3],[2]),fixture(0,[3],[2],1),fixture(7,[9],[8]),fixture(0,[1],[])]){
+ const d=R.draw(s,1);assert.deepEqual(d.flipped,[]);assert.equal(d.colors[s.numbers.indexOf(1)],'black');
+ assert.equal(d.reversalCount,0);
 }
-// No row wrap, no cascade through a newly flipped square, and a non-capturing placement is accepted.
-assert.deepEqual(R.draw(fixture([7],[9]),1).flipped,[]);
-assert.deepEqual(R.draw(fixture([9],[11,26]),1).flipped,[10]);
-assert.deepEqual(R.draw(fixture([3],[3]),1).placed,[3]);
-
-// A real board sweeps only on the eighth draw. Recommendation and forecasts do not consume a draw.
+assert.deepEqual(R.draw(fixture(9,[11,26],[10,18]),1).flipped,[10]);
+// An opponent returns on ball two. Capturing that new stone awards a second event.
 {
- let s=R.create({rng:rng(3671)});assert.deepEqual(s.counts,{black:32,white:32});assert(!R.choose(s,'black'));
- for(let n=1;n<=5;n++){
-  const expected=n%2?s.firstColor:other(s.firstColor);s=R.draw(s,n);
-  assert.equal(s.lastColor,expected);assert.equal(s.totalHundredths,0);assert(!s.chosen);
+ let s=fixture(0,[2,6],[1],5);s.numbers[4]=3;
+ s=R.draw(s,1);assert.equal(s.reversalCount,1);
+ s=R.draw(s,2);assert.equal(s.reversalCount,1);assert.equal(s.reversalThisMove,false);
+ s=R.draw(s,3);assert.deepEqual(s.bonusEvents.map(e=>e.ball),[1,3]);assert.equal(s.bonusHundredths,6000);
+}
+const patterns=new Set();
+for(let seed=0;seed<300;seed++){
+ let s=R.create({rng:rng(Math.imul(seed+1,2654435761)),target:seed%2?50:150});patterns.add(s.patternName);
+ assert.equal(s.colors.filter(Boolean).length,36);assert.equal(s.numbers.filter(Boolean).length,25);
+ assert.deepEqual(s.numbers.filter(Boolean).sort((a,b)=>a-b),Array.from({length:25},(_,i)=>i+1));
+ for(const i of cells){assert.equal(s.colors[i],s.colors[63-i]);assert.equal(s.colors[i],s.colors[(i&56)+7-i%8]);if(s.numbers[i])assert(!s.colors[i]);}
+ for(let n=1;n<=8;n++){
+  const last=s;s=R.draw(s,n);assert.equal(s.lastColor,n%2?'black':'white');assert.equal(s.lastFlips,s.flipped.length);
+  assert.equal(s.maxFlips,Math.max(last.maxFlips,s.lastFlips));assert.equal(s.previousMaxFlips,last.maxFlips);
+  assert.equal(s.totalHundredths,R.award(s.maxFlips)+s.reversalCount*R.sweepBonusHundredths);
+  assert.equal(s.phase,n===8?'done':'playing');assert.equal(s.counts.black+s.counts.white,36+n);
+  for(const c of ['black','white'])assert.equal(s.counts[c],s.colors.filter(v=>v===c).length);
+  assert.equal(s.colors[s.placed[0]],s.lastColor);assert.equal(s.numbers[s.placed[0]],n);assert.equal(R.draw(s,n),null);
  }
- assert.equal(s.phase,'thinking');assert.deepEqual(s.counts,{black:20,white:44});assert.equal(R.recommend(s),'white');
- assert(!R.draw(s,6));assert(!R.choose(s,'red'));
- const saved=structuredClone(s),black=R.choose(s,'black'),white=R.choose(s,'white');
- assert.equal(black.countChosen,20);assert(!R.choose(white,'black'));assert.deepEqual(s,saved);s=white;
- for(const [n,count] of [[6,52],[7,60],[8,64]]){
-  s=R.draw(s,n);assert.equal(s.countChosen,count);assert.equal(s.lastColor,'white');assert.equal(s.highestRole,count===64);
- }
- assert.equal(s.phase,'done');assert.equal(s.totalHundredths,5000);assert(!R.draw(s,9));
+ assert.equal(R.draw(s,9),null);
 }
-
-// Symmetry, shuffled label multiplicities, and starting color are independent of the future roulette.
-{
- const used=new Set(),opening=new Set(),random=rng(884);
- for(let t=0;t<500;t++){
-  const s=R.create({rng:random});const freq=Array(26).fill(0);
-  for(const n of s.numbers){assert(n>=1&&n<=25);freq[n]++;}
-  assert.equal(freq.filter(n=>n===3).length,14);assert.equal(freq.filter(n=>n===2).length,11);
-  assert.equal(s.counts.black+s.counts.white,64);assert(s.counts.black&&s.counts.white);
-  assert(s.colors.every((c,i)=>c===s.colors[63-i]));used.add(s.patternName);opening.add(s.firstColor);
- }
- assert.equal(used.size,10);assert.equal(opening.size,2);
-}
-
-// Sample the production rules with independent uniformly shuffled number positions, so draws 1..8
-// are exchangeable with a random order of eight distinct numbers. Optional: compare a player who
-// also surveys the projected territory from all 20 possible sixth balls before choosing a color.
-// node .github/tests/bingo-stick.cjs [rounds=100] [seed=720411] [target=90] [--lookahead|--fit]
-// --fit samples both pattern families equally and reports their independent gross-return anchors.
-const rounds=Number(process.argv[2]||100),seed=Number(process.argv[3]||720411),target=Number(process.argv[4]||90);
-const ahead=process.argv.includes('--lookahead'),fit=process.argv.includes('--fit'),random=rng(seed),choiceRand=rng(seed+1);
-function group(){return {n:0,sum:0,sq:0,sweeps:0};}
-function tally(g,s){const v=s.totalHundredths;g.n++;g.sum+=v;g.sq+=v*v;g.sweeps+=Number(s.highestRole);}
-const metrics={majority:group(),random:group(),...(ahead?{lookahead:group()}:{}),...(fit?{fine:group(),bold:group()}:{})};
-for(let t=0;t<rounds;t++){
- let initialRoll=false;
- const generate=fit?()=>{const r=random();if(initialRoll)return r;initialRoll=true;return t%2===0?1-Number.EPSILON:0;}:random;
- const s=take(R.create({rng:generate,target}),1,5),major=R.recommend(s),minor=other(major);
- const majorEnd=take(R.choose(s,major),6,8),minorEnd=take(R.choose(s,minor),6,8);
- tally(metrics.majority,majorEnd);tally(metrics.random,choiceRand()<.5?majorEnd:minorEnd);
- if(fit)tally(t%2===0?metrics.fine:metrics.bold,majorEnd);
- if(ahead){
-  const expected=color=>{const pick=R.choose(s,color);let sum=0;for(let n=6;n<=25;n++)sum+=R.draw(pick,n).countChosen;return sum;};
-  tally(metrics.lookahead,expected(major)>=expected(minor)?majorEnd:minorEnd);
+assert.equal(patterns.size,3);
+// Every mold admits a real monochrome transition for either color. Record it on the
+// triggering ball, preserve it through the next opponent placement, and finish all eight.
+for(const [seed,target,ball,color] of [[417,50,4,'white'],[4971,50,3,'black'],[10939,90,5,'black'],[33028,90,6,'white'],[13973,150,4,'white'],[17945,150,3,'black']]){
+ let s=R.create({rng:rng(seed),target});for(let n=1;n<=8;n++){
+  s=R.draw(s,n);if(n===ball){assert.deepEqual(s.lastReversal,{ball,number:n,color});assert.equal(s.counts[color],36+n);}
+  if(n>ball){assert(s.highestRole);assert(s.bonusEvents.some(e=>e.ball===ball));}
+  if(n===ball+1){assert(s.counts.black&&s.counts.white);assert.equal(s.reversalThisMove,false);}
  }
 }
-for(const [name,g] of Object.entries(metrics)){
- const mean=g.sum/g.n,se=Math.sqrt((g.sq/g.n-mean*mean)/g.n);
- console.log(name,JSON.stringify({rounds:g.n,seed,target,returnPercent:mean,standardErrorPP:se,sweeps:g.sweeps,sweepPercent:100*g.sweeps/g.n}));
+{
+ let {state,draws}=R.createDemo();const flips=[];for(const v of draws){state=R.draw(state,v);flips.push(state.lastFlips);}
+ assert.deepEqual(flips,[3,0,6,0,0,6,2,3]);assert.equal(state.bonusEvents[0].ball,3);
 }
+// Independent production-engine holdout. Number assignment is exchangeable so fixed
+// labels 1–8 are a uniform eight-draw sequence. A single stream covers all game actions.
+if(process.argv.includes('--balance')){
+ for(const target of [50,90,150]){
+  const random=rng(955712+target),games=100000;let total=0,squares=0,reversals=0;
+  for(let g=0;g<games;g++){
+   let s=R.create({rng:random,target});for(let i=1;i<=8;i++)s=R.draw(s,i);
+   total+=s.totalHundredths;squares+=s.totalHundredths**2;reversals+=s.reversalCount;
+  }
+  const mean=total/games,se=Math.sqrt((squares/games-mean**2)/games);
+  console.log({target,games,mean,standardError:se,reversals});assert(Math.abs(mean-target)<5*se+0.4);
+ }
+}
+console.log('Waffle Reversi rules passed');
