@@ -135,8 +135,29 @@ function paint(ctx,s,opts={},mini=false){
   ctx.save();hull(ctx,zoneAngles.map(a=>xy(3.85,a)));ctx.clip();
   ctx.drawImage(panArt,-3.85,-3.35,7.7,6.7);ctx.restore();
  }else{
-  hull(ctx,corners);ctx.fillStyle='#5e3f32';ctx.fill();ctx.strokeStyle='#d4a456';ctx.lineWidth=.12;ctx.stroke();
+  hull(ctx,corners);ctx.fillStyle='#67442e';ctx.fill();ctx.strokeStyle='#d4a456';ctx.lineWidth=.12;ctx.stroke();
  }
+ // The bronze artwork is retained as a rim; its teal center becomes cast iron.
+ ctx.save();
+ hull(ctx,zoneAngles.map(a=>xy(3.51,a)));
+ ctx.save();ctx.clip();
+ const iron=ctx.createRadialGradient(-.65,-1.4,.3,0,.1,4.7);
+ iron.addColorStop(0,'#64544b');iron.addColorStop(.52,'#3b322c');iron.addColorStop(1,'#201e1d');
+ ctx.fillStyle=iron;ctx.fillRect(-4,-4,8,8);
+ ctx.restore();ctx.lineWidth=.085;ctx.strokeStyle='#bd8952';ctx.stroke();
+ hull(ctx,zoneAngles.map(a=>xy(3.72,a)));ctx.lineWidth=.085;ctx.strokeStyle='#ffe6a1';ctx.stroke();
+ for(const sign of [-1,1]){
+  const x=sign*3.70;ctx.beginPath();ctx.roundRect(x-.12,-.46,.24,.92,.09);
+  const wood=ctx.createLinearGradient(x-.14,0,x+.14,0);
+  wood.addColorStop(0,'#6b2c13');wood.addColorStop(.38,'#cb7132');
+  wood.addColorStop(.75,'#8a3d1a');wood.addColorStop(1,'#452014');
+  ctx.fillStyle=wood;ctx.fill();ctx.strokeStyle='#f2c37c';ctx.lineWidth=.038;ctx.stroke();
+  for(const y of [-.38,.38]){ctx.beginPath();ctx.arc(x,y,.045,0,tau);ctx.fillStyle='#f6d17c';ctx.fill();}
+ }
+ for(const a of zoneAngles){const [x,y]=xy(3.64,a);
+  circle(ctx,x,y,.079,'#f4c56e');circle(ctx,x,y,.036,'#745034');
+ }
+ ctx.restore();
  const bakedZone=zone?s.zones[zone-1]:null;
  if(bakedZone){
   const m=mask(bakedZone,s.cells);ctx.fillStyle=zoneColors[zone-1];ctx.globalAlpha=opts.previewZone?.47:play?.39:.24;
@@ -145,7 +166,8 @@ function paint(ctx,s,opts={},mini=false){
  ctx.restore();
  for(const [a,b] of s.edges){
   const A=s.cells[a],B=s.cells[b],x=X(A.x),y=Y(A.y),bx=X(B.x),by=Y(B.y);
-  line(ctx,x,y,bx,by,'#b29670',unit*.155);line(ctx,x,y,bx,by,'#312d25',unit*.088);
+  // All passages follow legal hexagonal directions and stay behind the moulds.
+  line(ctx,x,y,bx,by,'#75624d',unit*.095);line(ctx,x,y,bx,by,'#2a211e',unit*.045);
   if(play&&!bake)for(const depth of depths){
    if(!depth||Math.max(depth[a],depth[b])>2||depth[a]===depth[b])continue;
    const from=depth[a]<depth[b],u=clamp((age-140-Math.min(depth[a],depth[b])*210)/180);
@@ -174,10 +196,14 @@ function paint(ctx,s,opts={},mini=false){
   }
   if(opts.previewZone&&bakedZone.cells.includes(id))outline(ctx,x,y,rr*1.09,zoneColors[zone-1],unit*.1);
   if(n){
+   if(!oven&&stage===0){
+    // A small wafer-coloured number marker is not an already-baked cake.
+    circle(ctx,x,y,rr*.71,'#9e6339');circle(ctx,x,y,rr*.64,'#f6dca6');
+   }
    if(ticket&&!mini){ctx.beginPath();ctx.arc(x,y,rr*.94,Math.PI*.58,Math.PI*.95);ctx.strokeStyle=zoneColors[ticket.zone-1];ctx.lineWidth=unit*.079;ctx.stroke();}
    ctx.save();
    if(ticket&&s.draws.slice(5).includes(n))ctx.globalAlpha=.55;
-   number(ctx,n,x,y+(unit*.012),unit*.585,progress>.5?stage>0:before>0);ctx.restore();
+   number(ctx,n,x,y+(unit*.012),unit*.585,progress>.5?(stage>0||!oven):(before>0||!oven));ctx.restore();
    if(ticket&&n===s.lastNumber)outline(ctx,x,y,rr*.98,'#fff5ab',unit*.062);
   }
   if(!mini&&play&&bake&&newCount&&wave[id]>=0&&progress>.15&&progress<.98){
@@ -210,13 +236,20 @@ function paint(ctx,s,opts={},mini=false){
 function mount(panel){
  panel.classList.add('pct-panel');
  const root=document.createElement('section');root.className='pct-scene';root.setAttribute('aria-label','パーティカステラ');
- root.innerHTML=`<aside class="pct-side"><div class="pct-stats"><div class="pct-phase"></div><div class="pct-counter"><div><i aria-hidden="true"></i><span>生地</span><b data-count="wet">0</b></div><div><i aria-hidden="true"></i><span>焼成</span><b data-count="baked">0</b></div></div></div>
- <div class="pct-pay"><table aria-label="焼けた個数と配当倍率"><thead><tr><th scope="col">個数</th><th scope="col">配当</th></tr></thead><tbody></tbody></table></div></aside>
+ root.innerHTML=`<img class="pct-land" src="assets/party-castella-bg.webp?v=117" alt="" aria-hidden="true">
+ <div class="pct-main-logo"><img src="assets/party-castella-logo.webp" alt="パーティカステラ"></div>
+ <aside class="pct-side">
+ <div class="pct-phase" role="group" aria-label="前半・後半">
+  <div class="pct-phase-first"><strong>前半</strong><span>1〜5球</span><i aria-hidden="true"></i></div>
+  <div class="pct-phase-second"><strong>後半</strong><span>6〜8球</span><i aria-hidden="true"></i></div>
+ </div>
+ <div class="pct-pay"><div class="pct-pay-label">配当表</div><table aria-label="焼けた個数と配当倍率"><thead><tr><th scope="col">焼け数</th><th scope="col">配当</th></tr></thead><tbody></tbody></table></div></aside>
  <div class="pct-tray"><div class="pct-pan"><canvas role="img"></canvas></div><div class="pct-key" role="group" aria-label="焼き範囲を確認" hidden></div>
- <div class="pct-caption"><img class="pct-feast" src="assets/party-castella-feast.webp" alt=""><strong></strong><span></span></div></div>`;
+ <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true">
+ <div class="pct-caption" role="status" aria-live="polite"><strong></strong><span></span></div></div>`;
  panel.append(root);const q=k=>root.querySelector(k);
  const phase=q('.pct-phase'),canvas=q('canvas'),ctx=canvas.getContext('2d'),pan=q('.pct-pan'),caption=q('.pct-caption strong'),detail=q('.pct-caption span');
- const legend=q('.pct-key'),table=q('tbody'),wet=q('[data-count="wet"]'),baked=q('[data-count="baked"]');
+ const legend=q('.pct-key'),table=q('tbody');
  const zoneTags=[];
  function toggleZone(id){previewZone=previewZone===id?null:id;draw(shown,lastOpts);}
  function makeKeys(zones){
@@ -272,11 +305,11 @@ function mount(panel){
    const delta=s.wave.reduce((sum,arr)=>sum+arr.length,0);
    delete detail.dataset.tier;
    root.dataset.stage=s.phase;root.toggleAttribute('data-preview',!!previewZone);root.classList.toggle('pct-sweep',!!s.highestRole);
-   wet.textContent=s.wetCount;baked.textContent=s.bakedCount;
-   phase.textContent=(o.demo?'デモ · ':'')+(oven?'焼く '+(turn-5)+'/3':'注ぐ '+turn+'/5');
+   phase.classList.toggle('pct-after',oven);
+   phase.setAttribute('aria-label',oven?'後半 6〜8球':'前半 1〜5球');
    const idx=bands.findLastIndex(row=>row.count<=s.bakedCount);
    rows.forEach((row,i)=>row.classList.toggle('current',isBake&&idx===i));
-   legend.hidden=!oven&&!noBet;
+   legend.hidden=!oven;
    if(!legend.hidden){
     if(!zoneTags.length)makeKeys(s.zones);
     for(const z of s.zones){

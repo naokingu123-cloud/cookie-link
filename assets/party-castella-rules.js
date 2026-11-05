@@ -5,6 +5,14 @@
   const h=Math.sqrt(3)/2,corners=[[-.5,-h],[-1,0],[-.5,h],[.5,h],[1,0],[.5,-h]];
   const cells=[{id:0,x:0,y:0,ring:0}],rings=[[0]],originalEdges=[],spokes=[0];
   const numbers=Array.from({length:25},(_,i)=>i+1);
+  // The six legal lattice directions run parallel to the hexagon's sides / diagonals.
+  // A pour moves at most two adjacent wells along these directions: no crossing,
+  // floating shortcuts, or jumps between non-neighbouring wells.
+  const directions=[[1,0],[-1,0],[.5,h],[-.5,h],[.5,-h],[-.5,-h]];
+  function validChannel(a,b){
+    const x=cells[b].x-cells[a].x,y=cells[b].y-cells[a].y;
+    return directions.some(([dx,dy])=>Math.abs(x-dx)<1e-8&&Math.abs(y-dy)<1e-8);
+  }
   for(let r=1;r<=3;r++){
     const first=cells.length,ring=[];
     for(let k=0;k<6*r;k++){
@@ -36,6 +44,7 @@
         places.push(kind==='petal'?outerA:outerB);
       }
     }
+    if(edges.some(([a,b])=>!validChannel(a,b)))throw new Error('Disallowed Castella flow direction');
     const adjacent=cells.map(()=>[]);
     for(const [a,b] of edges){adjacent[a].push(b);adjacent[b].push(a);}
     const layers=cells.map(({id})=>{
