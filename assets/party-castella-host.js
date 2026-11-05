@@ -16,7 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  payoutNote.textContent='パーティカステラ　6個固定／10種類／火力Lv.1〜3。後半は前半の番号位置を維持します。設定ごとの理論配当率は新しい焼き位置規則で再計算しています。';
+  payoutNote.textContent='パーティカステラ：設定 '+percent.format(debugPayoutTarget)+'% → 新ルールでの理論配当率 '+percent.format(this.state.target)+'%（50〜150%の実効調整は未達。現在の10型は '+percent.format(R.minReturn)+'〜'+percent.format(R.maxReturn)+'%）。初期生地は6個固定。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
