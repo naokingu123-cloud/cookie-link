@@ -7,7 +7,7 @@ panArt.src='assets/party-castella-griddle.webp';
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const tau=Math.PI*2,clamp=v=>Math.max(0,Math.min(1,v));
 const panW=7.34,panH=6.32;
-const fillStart=[0,270,565],pourDuration=320,ovenSwitch=1080;
+const fillStart=[0,270,730],pourDuration=320,ovenSwitch=1080;
 const history=new WeakMap(),maskCache=new WeakMap();
 const times=x=>(x/100).toFixed(1)+'倍';
 const showOven=(s,age)=>s.draws.length>5||s.draws.length===5&&(reduced.matches||age>=ovenSwitch);
@@ -68,22 +68,29 @@ function hitLabel(ctx,x,y,unit){
  ctx.lineWidth=unit*.034;ctx.strokeStyle='#fff3be';ctx.strokeText('HIT!',0,0);
  ctx.fillStyle='#b43117';ctx.fillText('HIT!',0,0);ctx.restore();
 }
-// Batter enters the mouth from the upstream side, puddles, then rounds out against the rim.
-function pool(ctx,x,y,r,u,inlet,cell,stamp){
+// Fronts arriving from different passages meet inside the same well.
+function pool(ctx,x,y,r,u,inlets,cell,stamp){
  if(u<=0)return;
- const eased=u*(2-u),dx=inlet?inlet.x-cell.x:0,dy=inlet?inlet.y-cell.y:0;
- const cx=x+dx*r*.90*(1-eased),cy=y+dy*r*.90*(1-eased),radius=r*eased;
- ctx.save();
- ctx.beginPath();ctx.arc(x,y,r,0,tau);ctx.clip();ctx.beginPath();
- for(let j=0;j<40;j++){
-  const a=tau*j/40,rad=radius*(1+(1-u)*.08*Math.sin(3*a+u*6)+(1-u)*.045*Math.sin(5*a-u*4));
-  const px=cx+rad*Math.cos(a),py=cy+rad*Math.sin(a);
-  if(j===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+ const eased=u*(2-u),radius=r*eased;
+ ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,tau);ctx.clip();
+ if(stamp){
+  ctx.beginPath();
+  for(const inlet of inlets){
+   const cx=x+(inlet.x-cell.x)*r*.90*(1-eased),cy=y+(inlet.y-cell.y)*r*.90*(1-eased);
+   for(let j=0;j<32;j++){
+    const a=tau*j/32,rad=radius*(1+(1-u)*.08*Math.sin(3*a+u*6)+(1-u)*.045*Math.sin(5*a-u*4));
+    const px=cx+rad*Math.cos(a),py=cy+rad*Math.sin(a);
+    if(j===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+   }
+   ctx.closePath();
+  }
+  ctx.clip();stamp(1);
  }
- ctx.closePath();ctx.clip();stamp(1);
- if(u<.94){
-  ctx.globalAlpha=.55*(1-u);ctx.beginPath();
-  ctx.arc(cx,cy,radius*.91,3.6,5.2);ctx.strokeStyle='#fff8cd';ctx.lineWidth=r*.075;ctx.stroke();
+ // An already-filled junction still ripples on each side where batter arrives.
+ ctx.globalAlpha=Math.sin(Math.PI*u)*.9;ctx.strokeStyle='#fff4bd';ctx.lineWidth=r*.09;
+ for(const inlet of inlets){
+  const dx=inlet.x-cell.x,dy=inlet.y-cell.y,angle=Math.atan2(-dy,-dx);
+  ctx.beginPath();ctx.arc(x+dx*r*.84,y+dy*r*.84,radius*.97,angle-.96,angle+.96);ctx.stroke();
  }
  ctx.restore();
 }
@@ -97,11 +104,12 @@ function paint(ctx,s,opts={},mini=false){
  if(last?.s===s&&last.key===key)return;
  let frame=last?.frame;
  if(last?.s!==s){
-  const wave=s.cells.map(()=>-1),inlets=[],labels=[];
+  const wave=s.cells.map(()=>-1),arrival=[],inlets=s.cells.map(()=>[]),labels=[];
   s.wave.forEach((group,t)=>group.forEach(i=>{wave[i]=t;}));
-  for(const [from,to] of s.flow)inlets[to]=s.cells[from];
+  if(!bake)for(const id of s.sources){inlets[id].push(s.cells[id]);arrival[id]=0;}
+  for(const [from,to,depth] of s.flow){inlets[to].push(s.cells[from]);arrival[to]=depth;}
   for(const z of s.zones)if(z.numbers.length)labels[z.anchor]=z.numbers[0];
-  frame={wave,inlets,labels};
+  frame={wave,arrival,inlets,labels};
  }
  history.set(ctx,{s,key,frame});
  const unit=Math.min(w/panW,h/panH),X=x=>w/2+x*unit,Y=y=>h/2+y*unit,rr=unit*.405,mats=makeMaterials();
@@ -140,7 +148,8 @@ function paint(ctx,s,opts={},mini=false){
  for(const cell of s.cells){
   const {id}=cell,n=oven?frame.labels[id]:cell.number,x=X(cell.x),y=Y(cell.y);
   const stage=s.baked[id]?2:s.wet[id]?1:0,depth=frame.wave[id];
-  const u=play&&depth>=0?clamp((age-(bake?depth*120:fillStart[depth]))/(bake?440:pourDuration)):1;
+  const step=bake?depth:frame.arrival[id];
+  const u=play&&step>=0?clamp((age-(bake?step*120:fillStart[step]))/(bake?440:pourDuration)):1;
   const stamp=k=>{
    if(mats)ctx.drawImage(mats[k],x-rr,y-rr,rr*2,rr*2);
    else circle(ctx,x,y,rr,['#28231e','#f5ca75','#b77130'][k]);
@@ -148,7 +157,10 @@ function paint(ctx,s,opts={},mini=false){
   circle(ctx,x,y+unit*.025,rr*1.045,'#1b1816');
   if(u>=1)stamp(stage);
   else if(bake){stamp(1);ctx.globalAlpha=u;stamp(2);ctx.globalAlpha=1;}
-  else{stamp(0);pool(ctx,x,y,rr,u,frame.inlets[id],cell,stamp);}
+  else{
+   const newWell=depth>=0;stamp(newWell?0:stage);
+   pool(ctx,x,y,rr,u,frame.inlets[id],cell,newWell?stamp:null);
+  }
   if(!bake&&play&&s.sources.includes(id)&&age<725){
    const t=age/725;ctx.globalAlpha=.84*(1-t);
    for(let j=0;j<2;j++){
@@ -161,7 +173,7 @@ function paint(ctx,s,opts={},mini=false){
   if(n){
    const hit=s.draws.includes(n),active=hit&&n===s.lastNumber;
    if(hit)outline(ctx,x,y,rr*(active?1.035:.96),active?'#fff2a0':'#efb162',unit*(active?.060:.035));
-   number(ctx,n,x,y+(hit?unit*.105:0),unit*(hit?.50:.575),stage>0&&u>.5||bake&&s.wet[id]);
+   number(ctx,n,x,y+(hit?unit*.105:0),unit*(hit?.50:.575),stage>0&&(depth<0||u>.5)||bake&&s.wet[id]);
    if(hit)hitLabel(ctx,x,y-unit*.18,unit);
   }
   if(!mini&&bake&&play&&depth>=0&&u>.05&&u<.98){

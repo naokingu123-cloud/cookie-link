@@ -10,16 +10,16 @@ function board(target,first,seed){
   return R.create({target,rng:()=>{if(used)return rest();used=true;return first;}});
 }
 const names=['花びら仕込み','花冠仕込み','輪飾り仕込み'];
-const expectedRates=[49.811577032172,84.934404522505,150.627908044155];
+const expectedRates=[49.3022457329,104.650139842360,201.535355516591];
 function hexDistance(a,b){
   return Math.max(Math.abs(a.q-b.q),Math.abs(a.r-b.r),Math.abs(a.q+a.r-b.q-b.r));
 }
-function symmetric(s,ids,sixfold){
+function symmetric(s,ids,rotation){
   const positions=new Set(ids.map(i=>[s.cells[i].q,s.cells[i].r].join(',')));
   for(const i of ids){
     const {q,r}=s.cells[i];
     assert(positions.has([-q-r,r].join(','))); // left-right reflection
-    assert(positions.has((sixfold?[-r,q+r]:[-q,-r]).join(',')));
+    if(rotation)assert(positions.has((rotation===60?[-r,q+r]:[-q,-r]).join(',')));
   }
 }
 function assertDeal(s){
@@ -29,7 +29,7 @@ function assertDeal(s){
   for(const n of remaining)assert(s.zones[R.zoneFor(n,s)-1].numbers.includes(n));
   for(const n of opening)assert.equal(s.zoneByNumber[n],null);
   assert.equal(new Set(s.zones.map(z=>z.anchor)).size,20);
-  symmetric(s,s.zones.map(z=>z.anchor),false);
+  symmetric(s,s.zones.map(z=>z.anchor),s.moldIndex===0?0:180);
   for(const z of s.zones){
     const area=ids.filter(id=>hexDistance(s.cells[z.anchor],s.cells[id])<=2);
     assert.deepEqual(sorted(z.cells),area);
@@ -49,8 +49,8 @@ for(const [k,s] of examples.entries()){
   assert.deepEqual(s.edges,R.originalEdges);
   const edgeSet=new Set(s.edges.map(([a,b])=>sorted([a,b]).join(',')));
   assert.equal(edgeSet.size,54);
-  assert.equal(s.wetCount,[12,18,24][k]);
-  symmetric(s,ids.filter(i=>s.wet[i]),true);symmetric(s,ids.filter(i=>s.cells[i].number),true);
+  assert.equal(s.wetCount,[4,6,12][k]);
+  symmetric(s,ids.filter(i=>s.wet[i]),k===0?180:60);symmetric(s,ids.filter(i=>s.cells[i].number),60);
   const neighbors=ids.map(()=>[]);
   for(const [a,b] of s.edges){
     neighbors[a].push(b);neighbors[b].push(a);
@@ -59,14 +59,20 @@ for(const [k,s] of examples.entries()){
   }
   for(const n of numbers){
     const id=s.cells.find(c=>c.number===n).id;
-    const expected=new Set([id,...neighbors[id]]),first=R.draw(s,n);
-    for(const a of neighbors[id])for(const b of neighbors[a]){
-      if(2*s.cells[a].q===s.cells[id].q+s.cells[b].q&&2*s.cells[a].r===s.cells[id].r+s.cells[b].r)expected.add(b);
+    // Compute graph distances independently, including bends at any junction.
+    const depth=ids.map(()=>Infinity),queue=[id];depth[id]=0;
+    for(let j=0;j<queue.length;j++){
+      const a=queue[j];if(depth[a]===2)continue;
+      for(const b of neighbors[a])if(depth[b]===Infinity){depth[b]=depth[a]+1;queue.push(b);}
     }
+    const first=R.draw(s,n);
     assert.deepEqual(first.sources,[id]);
-    assert.deepEqual(sorted(first.wave.flat()),sorted([...expected].filter(i=>!s.wet[i])));
-    assert.deepEqual(sorted(first.flow.map(step=>step[1])),sorted([...expected].filter(i=>i!==id)));
-    for(const [a,b] of first.flow)assert(edgeSet.has(sorted([a,b]).join(',')));
+    for(let t=0;t<=2;t++)assert.deepEqual(sorted(first.wave[t]),ids.filter(i=>depth[i]===t&&!s.wet[i]));
+    const expectedFlow=s.edges.flatMap(([a,b])=>{
+      if(depth[a]>depth[b])[a,b]=[b,a];
+      return depth[b]===depth[a]+1&&depth[b]<=2?[[a,b,depth[b]].join(',')]:[];
+    });
+    assert.deepEqual(first.flow.map(edge=>edge.join(',')).sort(),expectedFlow.sort());
     assert.equal(R.draw(first,n),null);
   }
   assert(s.zones.every(z=>z.numbers.length===0));assert(s.zoneByNumber.every(z=>z===null));
@@ -103,12 +109,13 @@ for(const [k,n] of lesson.draws.entries()){
   assert.equal(state.totalHundredths,k===7?5000:0);
   assert.equal(state.highestRole,k===7);
   assert.equal(state.sources.length,1);
+  if(k<5)assert.equal(state.wave.flat().length,[7,4,7,7,6][k]);
 }
 assert.deepEqual(lesson,R.createDemo());assert.equal(R.draw(state,25),null);
 const table=[20,40,60,80,100,120,140,160,180,200,250,300,400,500,750,1000,2000,5000];
 assert.deepEqual(R.payRows.map(r=>[r.count,r.hundredths]),table.map((mult,i)=>[20+i,mult]));
 for(let i=0;i<=37;i++)assert.equal(R.payout(i),table[i-20]||0);
-console.log('Party Castella: symmetric starts, ring/spoke flow, radius-two heat, 20 unique oven numbers, exact payout table and target mix passed.');
+console.log('Party Castella: symmetric starts, all two-hop branches, radius-two heat, 20 unique oven numbers, exact payout table and target mix passed.');
 
 // Enumerate all opening sets and all oven triples. The five used labels are excluded
 // from the oven deal, so each opening set always has exactly the same 1,140 heat masks
@@ -118,7 +125,13 @@ if(process.argv.includes('--balance')){
   const lo=m=>m%base,hi=m=>Math.floor(m/base);
   const bits=v=>{v-=(v>>>1)&0x55555555;v=(v&0x33333333)+((v>>>2)&0x33333333);return (((v+(v>>>4))&0x0f0f0f0f)*0x01010101)>>>24;};
   const union=(a,b)=>(lo(a)|lo(b))+(hi(a)|hi(b))*base;
-  for(const [k,s] of examples.entries()){
+  let flipped;
+  for(let seed=1;!flipped;seed++){
+    const s=board(50,.999,seed);
+    if(s.zones.some(z=>!examples[0].zones.some(a=>a.anchor===z.anchor)))flipped=s;
+  }
+  for(const s of [...examples,flipped]){
+    const k=s.moldIndex;
     const inlet=numbers.map(n=>{const {wet}=R.draw(s,n);return mask(ids.filter(i=>wet[i]));});
     const wlo=inlet.map(lo),whi=inlet.map(hi);
     const dealt=[1,2,3,4,5].reduce(R.draw,s),oven=dealt.zones.flatMap(z=>z.numbers.map(()=>mask(z.cells)));
@@ -127,7 +140,7 @@ if(process.argv.includes('--balance')){
       const area=union(union(oven[a],oven[b]),oven[c]);
       frequency.set(area,(frequency.get(area)||0)+1);
     }
-    assert.equal(frequency.get(2**37-1),2);
+    assert.equal(frequency.get(2**37-1),k===0?1:2);
     const shots=Array.from(frequency,([m,f])=>[lo(m),hi(m),f]);
     const histogram=Array(38).fill(0);let fullFill=0;
     for(let a=0;a<25;a++)for(let b=0;b<a;b++)for(let c=0;c<b;c++)for(let d=0;d<c;d++)for(let e=0;e<d;e++){
@@ -136,8 +149,8 @@ if(process.argv.includes('--balance')){
       for(const [l,h,count] of shots)histogram[bits(L&l)+bits(H&h)]+=count;
     }
     const cases=histogram.reduce((a,b)=>a+b),rtp=histogram.reduce((sum,n,i)=>sum+n*R.payout(i),0)/cases;
-    assert.equal(cases,60568200);assert.equal(fullFill,[45,81,912][k]);
-    assert.equal(histogram[37],2*fullFill);
+    assert.equal(cases,60568200);assert.equal(fullFill,[32,129,2856][k]);
+    assert.equal(histogram[37],(k===0?1:2)*fullFill);
     assert(Math.abs(rtp-expectedRates[k])<1e-8);
     console.log(JSON.stringify({board:s.boardName,cases,fullFill,sweeps:histogram[37],boardRtpPercent:rtp}));
   }
