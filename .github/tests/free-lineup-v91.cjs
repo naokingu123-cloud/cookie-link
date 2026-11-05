@@ -8,7 +8,7 @@ function load(search){
 const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'],kinds=[...classic,'gelato','winery',...festival];
 assert.deepEqual(load('').chosen,festival);assert.deepEqual(load('').ids,['jelly','stick','popcorn']);assert.deepEqual(load('?set=classic').ids,classic);
 for(const bad of ['cookie,cookie','winery,unknown','cookie,choco,candy,popcorn',''])assert.equal(load('?games='+bad).mode,'festival');
-assert.deepEqual(load('?games=waffle').chosen,['stick']);
+for(const alias of ['waffle','reversi'])assert.deepEqual(load('?games='+alias).chosen,['stick']);
 let tested=0;
 function check(picks){
  if(picks.length){

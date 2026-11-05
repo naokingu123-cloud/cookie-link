@@ -1,120 +1,92 @@
-/* Bingo Waffle. Cell indices are row-major, and state snapshots can be reused by previews. */
+/* Waffle Reversi. A numbered draw places every matching piece on the same board. */
 (function(root){
  'use strict';
  const cells=Array.from({length:64},(_,i)=>i);
- const numbers=Array.from({length:25},(_,i)=>i+1);
- const patterns=[
-  {name:'対角の端',cells:[0,63]},
-  {name:'向かい合わせ',cells:[10,53]},
-  {name:'平行スティック',cells:[11,43]},
-  {name:'段ちがい',cells:[18,29]}
+ const labels=Array.from({length:25},(_,i)=>i+1);
+ const opposite=color=>color==='black'?'white':'black';
+ const payRows=[[44,10],[48,20],[52,30],[56,50],[58,100],[60,200],[62,500],[63,1000],[64,2000]]
+  .map(([count,hundredths])=>({count,hundredths}));
+ const sweepBonusHundredths=3000;
+ function award(count){
+  const row=payRows.findLast(r=>r.count<=count);
+  return (row?.hundredths||0)+(count===64?sweepBonusHundredths:0);
+ }
+
+ // A quarter is mirrored across both center lines, or repeated in both directions.
+ // Each tile also admits axis swaps, reflections and interchange of the ingredients.
+ const fine=[
+  {name:'市松',repeat:true,tile:['1010','0101','1010','0101']},
+  {name:'大市松',repeat:true,tile:['1100','1100','0011','0011']},
+  {name:'折り市松',tile:['1010','0101','1010','0101']},
+  {name:'籠目',repeat:true,tile:['1010','1010','0101','0101']}
  ];
- const axes=[],through=cells.map(()=>[]);
- for(const [dx,dy] of [[1,0],[0,1]]){
-  for(const i of cells){
-   const x=i%8,y=i>>3,px=x-dx,py=y-dy;
-   if(px>=0&&px<8&&py>=0&&py<8)continue;
-   const axis=[];
-   for(let u=x,v=y;u>=0&&u<8&&v<8;u+=dx,v+=dy)axis.push(v*8+u);
-   if(axis.length<2)continue;
-   axes.push(axis);
-   axis.forEach((cell,at)=>through[cell].push({axis,at}));
-  }
+ const bold=[
+  {name:'双縞',tile:['1010','1010','1010','1010']},
+  {name:'斜め十字',tile:['1000','0100','0010','0001']},
+  {name:'十字格子',tile:['0001','0001','0001','1111']},
+  {name:'大菱',tile:['0001','0011','0111','1111']},
+  {name:'菱格子',tile:['0100','1001','0010','0100']},
+  {name:'重ね升',tile:['1111','1000','1011','1010']}
+ ];
+ // Mean gross RTP (%) of each equally weighted family under the majority choice.
+ // Reproduction and independent holdout measurements: .github/tests/bingo-stick.cjs.
+ const fineReturn=43.91,boldReturn=188.40;
+ function shuffled(values,rng){
+  for(let i=values.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
+  return values;
  }
- // Marginals below length 8 never exceed the base of the next category.
- // Extending a winning run must never reduce the player's displayed award.
- const marginal={
-  5:[20,40,60,80,100],
-  6:[100,200,300,400,500],
-  7:[500,700,800,1000],
-  8:[1000,3000,6000,15000,25000,50000,100000,200000]
- };
- const award=(length,count)=>{
-  const row=marginal[length];if(!row||count<=0)return 0;
-  let sum=0;for(let n=0;n<count;n++)sum+=row[Math.min(n,row.length-1)];
-  return sum;
- };
- function shuffle(a,rng){
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-  return a;
- }
- function filled(s){
-  const mask=new Uint8Array(64);
-  for(const i of s.initialFree)mask[i]=1;
-  for(const i of s.hits)mask[i]=1;
-  for(const i of s.placedFree)mask[i]=1;
-  return mask;
- }
- function evaluate(s){
-  const mask=filled(s),lines=[],counts={5:0,6:0,7:0,8:0};let longest=0;
-  for(const axis of axes){
-   let start=0;
-   for(let i=0;i<=axis.length;i++){
-    if(i<axis.length&&mask[axis[i]])continue;
-    const length=i-start;
-    if(length>longest)longest=length;
-    if(length>=5){lines.push({length,cells:axis.slice(start,i)});counts[length]++;}
-    start=i+1;
-   }
-  }
-  let baseHundredths=0;
-  for(let k=5;k<=8;k++)baseHundredths+=award(k,counts[k]);
-  return {...s,lines,counts,longest,highestRole:counts[8]>=2,baseHundredths,totalHundredths:Math.round(baseHundredths*s.oddsMultiplier)};
- }
- function create({rng=Math.random}={}){
-  const triples=shuffle(numbers.slice(),rng).slice(0,14);
-  const board=shuffle([...numbers,...numbers,...triples],rng);
-  const pattern=patterns[Math.floor(rng()*patterns.length)],sym=Math.floor(rng()*8);
-  const initialFree=pattern.cells.map(i=>{
+ function create({rng=Math.random,target=90}={}){
+  const rate=Math.max(50,Math.min(150,Number.isFinite(target)?target:90));
+  const family=rng()<(rate-fineReturn)/(boldReturn-fineReturn)?bold:fine;
+  const pattern=family[Math.floor(rng()*family.length)],sym=Math.floor(rng()*8),invert=rng()<.5;
+  const colors=cells.map(i=>{
    let x=i%8,y=i>>3;if(sym&1)[x,y]=[y,x];if(sym&2)x=7-x;if(sym&4)y=7-y;
-   return 8*y+x;
+   x=pattern.repeat?x%4:Math.min(x,7-x);y=pattern.repeat?y%4:Math.min(y,7-y);
+   return (pattern.tile[y][x]==='1')!==invert?'black':'white';
   });
-  return evaluate({numbers:board,initialFree,patternName:pattern.name,placedFree:[],hits:[],draws:[],freeBudget:0,oddsMultiplier:1,oddsUpCells:[],phase:'first'});
+  const triples=shuffled(labels.slice(),rng).slice(0,14),numbers=shuffled([...labels,...labels,...triples],rng);
+  const black=colors.filter(c=>c==='black').length;
+  return {numbers,colors,counts:{black,white:64-black},draws:[],phase:'first',firstColor:rng()<.5?'black':'white',
+   chosen:null,countChosen:0,patternName:pattern.name,lastColor:null,placed:[],flipped:[],totalHundredths:0,highestRole:false};
  }
- function draw(s,n){
-  if((s.phase!=='first'&&s.phase!=='last')||!Number.isInteger(n)||n<1||n>25||s.draws.includes(n))return null;
-  const newHits=cells.filter(i=>s.numbers[i]===n);
-  const oddsUpCells=newHits.filter(i=>s.initialFree.includes(i)||s.placedFree.includes(i));
-  const oddsMultiplier=s.oddsMultiplier+oddsUpCells.length/2;
-  const next=evaluate({...s,draws:[...s.draws,n],hits:[...s.hits,...newHits],oddsUpCells,oddsMultiplier});
-  if(next.draws.length===5){next.phase='thinking';next.freeBudget=next.longest;}
-  if(next.draws.length===8)next.phase='done';
-  return next;
- }
- function place(s,cell){
-  if(s.phase!=='thinking'||!Number.isInteger(cell)||cell<0||cell>=64||s.hits.includes(cell)||s.initialFree.includes(cell))return null;
-  if(s.placedFree.includes(cell))return evaluate({...s,placedFree:s.placedFree.filter(i=>i!==cell)});
-  if(s.placedFree.length>=s.freeBudget)return null;
-  return evaluate({...s,placedFree:[...s.placedFree,cell]});
- }
- // Greedy fallback for timeouts. Rank only visible runs; later roulette draws are unknown.
- function suggest(s){
-  const mask=filled(s);let best=-1,bestScore=-1;
-  for(const cell of cells){
-   if(mask[cell])continue;
-   let gain=0,shape=0;
-   for(const {axis,at} of through[cell]){
-    let lo=at,hi=at;
-    while(lo>0&&mask[axis[lo-1]])lo--;
-    while(hi+1<axis.length&&mask[axis[hi+1]])hi++;
-    const left=at-lo,right=hi-at,length=left+right+1;
-    if(left>=5)gain-=award(left,s.counts[left])-award(left,s.counts[left]-1);
-    if(right>=5)gain-=award(right,s.counts[right])-award(right,s.counts[right]-1);
-    if(length>=5)gain+=award(length,s.counts[length]+1)-award(length,s.counts[length]);
-    shape+=length*length*length;
-   }
-   const score=gain*10000+shape;
-   if(score>bestScore){best=cell;bestScore=score;}
+
+ const rays=cells.map(i=>{
+  const dirs=[];
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+   if(!dx&&!dy)continue;
+   const line=[];
+   for(let x=i%8+dx,y=(i>>3)+dy;x>=0&&x<8&&y>=0&&y<8;x+=dx,y+=dy)line.push(y*8+x);
+   if(line.length>=2)dirs.push(line);
   }
-  return best;
+  return dirs;
+ });
+ function draw(s,number){
+  if((s.phase!=='first'&&s.phase!=='last')||!Number.isInteger(number)||number<1||number>25||s.draws.includes(number))return null;
+  const color=s.chosen||(s.draws.length%2===0?s.firstColor:opposite(s.firstColor));
+  const placed=cells.filter(i=>s.numbers[i]===number),colors=s.colors.slice();
+  for(const i of placed)colors[i]=color;
+  // Collect captures from the post-placement snapshot. One capture cannot start another.
+  const captures=new Set();
+  for(const i of placed)for(const ray of rays[i]){
+   let end=0;while(end<ray.length&&colors[ray[end]]!==color)end++;
+   if(end<ray.length)for(let n=0;n<end;n++)captures.add(ray[n]);
+  }
+  const flipped=[...captures];for(const i of flipped)colors[i]=color;
+  const black=colors.filter(c=>c==='black').length,counts={black,white:64-black};
+  const draws=[...s.draws,number],countChosen=s.chosen?counts[s.chosen]:0;
+  return {...s,colors,counts,draws,lastColor:color,placed,flipped,countChosen,totalHundredths:award(countChosen),
+   highestRole:countChosen===64,phase:draws.length===8?'done':draws.length===5?'thinking':s.phase};
  }
- function confirm(s){
-  if(s.phase!=='thinking')return null;
-  let next=s;
-  while(next.placedFree.length<next.freeBudget)next=place(next,suggest(next));
-  return {...next,phase:'last'};
+ function recommend(s){
+  if(s.counts.black===s.counts.white)return s.firstColor;
+  return s.counts.black>s.counts.white?'black':'white';
  }
- const api={create,draw,place,confirm,award,evaluate};
+ function choose(s,color){
+  if(s.phase!=='thinking'||(color!=='black'&&color!=='white'))return null;
+  const countChosen=s.counts[color];
+  return {...s,phase:'last',chosen:color,countChosen,totalHundredths:award(countChosen),highestRole:countChosen===64};
+ }
+ const api={create,draw,choose,recommend,award,payRows,sweepBonusHundredths};
  if(typeof module==='object'&&module.exports)module.exports=api;
  else root.BingoStickRules=api;
 })(globalThis);
