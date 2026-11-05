@@ -16,7 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  payoutNote.textContent='パーティカステラ　目標 '+percent.format(debugPayoutTarget)+'% → 実効 '+percent.format(this.state.target)+'%（6個固定・火力UPルールでの最小値 '+percent.format(R.molds[0].returnPercent)+'%）。全10型で37個全焼可能。';
+  payoutNote.textContent='パーティカステラ　6個固定／10種類／火力Lv.1〜3。後半は前半の番号位置を維持します。設定ごとの理論配当率は新しい焼き位置規則で再計算しています。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
@@ -114,7 +114,8 @@ function tick(now){
  if(moving&&stamp!==null)clock+=Math.max(0,now-stamp);stamp=moving?now:null;
  if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
  if(active!==id&&clock-lastMini>=120){paint(true);lastMini=clock;}
- if(moving&&(active===id&&app.phase==='ready'||clock-lastHit<=animationMs))wake();
+ const reachAnimation=active===id&&engine.state.phase==='bake'&&slot.reachStatus==='ready'&&slot.reachResults?.length>0;
+ if(moving&&(active===id&&app.phase==='ready'||clock-lastHit<=animationMs||reachAnimation))wake();
  else stamp=null;
 }
 const oldSelect=select;select=function(i){
@@ -131,7 +132,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.castella=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state;
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個 ／ 火力 Lv.'+s.fireLevel+' ／ ODDS ×'+(s.oddsMultiplier/100).toFixed(1)+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個 ／ 火力 Lv.'+s.fireLevel+' ／ ODDS +'+(s.oddsHits*.5).toFixed(1)+'倍'+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});
