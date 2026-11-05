@@ -135,7 +135,7 @@
         oddsMultiplier:100+ODDS_STEP*oddsHits,
         sources:[id],flow,wave,wet,wetCount:wet.filter(Boolean).length};
     }
-    const lastZone=zoneFor(number,state),zone=state.zones[lastZone-1],baked=state.baked.slice(),wave=[[],[],[]];
+    const lastZone=zoneFor(number,state),zone=state.zones[lastZone-1],baked=state.baked.slice(),wave=[[],[],[],[]];
     for(const id of zone.cells){
       if(!state.wet[id]||baked[id])continue;
       baked[id]=true;wave[distance(cells[id],cells[zone.anchor])].push(id);
