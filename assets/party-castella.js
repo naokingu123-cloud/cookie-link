@@ -1,24 +1,58 @@
 /* The large griddle and tab preview share the same 37 wells and drawn channels. */
 (()=>{
 'use strict';
-const R=window.PartyCastellaRules,tiles=new Image(),reduced=matchMedia('(prefers-reduced-motion: reduce)');
-tiles.src='assets/party-castella-tiles.webp';
-const sides=['①','②','③','④','⑤','⑥'];
-const zoneColors=['#f08d80','#f3b45d','#b2cb77','#70cdc1','#82b9ef','#c3a6e3'];
+const R=window.PartyCastellaRules,tiles=new Image(),panArt=new Image(),reduced=matchMedia('(prefers-reduced-motion: reduce)');
+tiles.src='assets/party-castella-tiles.webp?v=116';
+panArt.src='assets/party-castella-pan.webp?v=116';
+const sides=['①','②','③','④','⑤','⑥','朱','藍'];
+const zoneColors=['#f08d80','#f3b45d','#b2cb77','#70cdc1','#82b9ef','#c3a6e3','#fa8073','#9badec'];
 const zoneAngles=[-120,180,120,60,0,-60].map(v=>v*Math.PI/180);
 const tau=Math.PI*2,clamp=v=>Math.max(0,Math.min(1,v));
 const history=new WeakMap();
 const times=x=>(x/100).toLocaleString('ja-JP',{maximumFractionDigits:2})+'倍';
-const neighbours=R.cells.map(()=>[]);
-for(const [a,b] of R.edges){neighbours[a].push(b);neighbours[b].push(a);}
-const depthByCell=R.cells.map(c=>{
- const depth=R.cells.map(()=>Infinity),queue=[c.id];depth[c.id]=0;
- for(let k=0;k<queue.length;k++){
-  const i=queue[k];if(depth[i]>=2)continue;
-  for(const j of neighbours[i])if(depth[j]===Infinity){depth[j]=depth[i]+1;queue.push(j);}
+const geometryCache=new WeakMap(),maskCache=new WeakMap();
+function geometry(s){
+ const cached=geometryCache.get(s.edges);
+ if(cached)return cached;
+ const neighbours=s.cells.map(()=>[]),spokes=Array.from({length:6},()=>[]);
+ for(const [a,b] of s.edges){neighbours[a].push(b);neighbours[b].push(a);}
+ for(const c of s.cells){
+  if(!c.ring)continue;
+  for(let k=0;k<6;k++){
+   const angle=zoneAngles[k];
+   if(Math.hypot(c.x-c.ring*Math.cos(angle),c.y-c.ring*Math.sin(angle))<.01){spokes[k][c.ring-1]=c.id;break;}
+  }
  }
- return depth;
-});
+ const depths=s.cells.map(c=>{
+  const row=s.cells.map(()=>Infinity),queue=[c.id];row[c.id]=0;
+  for(let i=0;i<queue.length;i++){
+   const a=queue[i];if(row[a]>=2)continue;
+   for(const b of neighbours[a])if(row[b]===Infinity){row[b]=row[a]+1;queue.push(b);}
+  }
+  return row;
+ });
+ const geom={depths,spokes};geometryCache.set(s.edges,geom);return geom;
+}
+// The actual occupied hexes define the glow, including asymmetric boundary wells.
+function mask(zone,cells){
+ const cached=maskCache.get(zone);
+ if(cached)return cached;
+ const surface=new Path2D(),rim=new Path2D(),boundary=new Map();
+ for(const id of zone.cells){
+  const {x,y}=cells[id],points=[];
+  for(let i=0;i<6;i++){
+   const a=(i*60-90)*Math.PI/180;points.push([x+Math.cos(a)/Math.sqrt(3),y+Math.sin(a)/Math.sqrt(3)]);
+  }
+  surface.moveTo(...points[0]);for(const p of points.slice(1))surface.lineTo(...p);surface.closePath();
+  for(let i=0;i<6;i++){
+   const a=points[i],b=points[(i+1)%6];
+   const key=[a,b].map(p=>p.map(n=>Math.round(n*1000)).join(',')).sort().join(':');
+   if(boundary.has(key))boundary.delete(key);else boundary.set(key,[a,b]);
+  }
+ }
+ for(const [a,b] of boundary.values()){rim.moveTo(...a);rim.lineTo(...b);}
+ const result={surface,rim};maskCache.set(zone,result);return result;
+}
 function circle(ctx,x,y,r,fill){
  ctx.beginPath();ctx.arc(x,y,r,0,tau);ctx.fillStyle=fill;ctx.fill();
 }
@@ -56,9 +90,13 @@ function makeMaterials(){
  });
  return materials;
 }
-function pattern(ctx,z){
- const i=z-1;
- hull(ctx,[[0,0],corners[(i+5)%6],corners[i],corners[(i+1)%6]]);
+// Place the three regular oven numbers on that oven's spoke during baking.
+const labelCache=new WeakMap();
+function ovenLabels(s){
+ let labels=labelCache.get(s.zones);if(labels)return labels;
+ const {spokes}=geometry(s);labels=new Map();
+ for(const z of s.zones.slice(0,6))z.numbers.forEach((number,i)=>labels.set(spokes[z.id-1][i],{number,zone:z.id}));
+ labelCache.set(s.zones,labels);return labels;
 }
 function number(ctx,n,x,y,size,filled){
  const ink=filled?'#402116':'#fff9e9',rim=filled?'#ffe9aa':'#242422';
@@ -73,34 +111,40 @@ function number(ctx,n,x,y,size,filled){
 function paint(ctx,s,opts={},mini=false){
  const w=ctx.canvas.width,h=ctx.canvas.height;
  if(!w||!h)return;
- const bake=!!s.lastZone,age=reduced.matches?Infinity:Math.max(0,opts.age??Infinity);
+ const bake=s.draws.length>=6,oven=s.draws.length>=5,age=reduced.matches?Infinity:Math.max(0,opts.age??Infinity);
  const play=s.draws.length>0&&age<1500;
  const zone=opts.previewZone||s.lastZone;
- const key=[w,h,play?Math.floor(age/34):-1,tiles.naturalWidth,zone].join('/');
+ const key=[w,h,play?Math.floor(age/34):-1,tiles.naturalWidth,panArt.naturalWidth,zone].join('/');
  const last=history.get(ctx);
  if(last?.s===s&&last.key===key)return;
  let wave=last?.wave;
  if(last?.s!==s){
-  wave=R.cells.map(()=>-1);
+  wave=s.cells.map(()=>-1);
   s.wave.forEach((group,t)=>group.forEach(i=>{wave[i]=t;}));
  }
  history.set(ctx,{s,key,wave});
  const scale=Math.min(w/7.75,h/6.76),X=x=>w/2+x*scale,Y=y=>h/2+y*scale;
  const unit=scale,rr=unit*.413,mats=makeMaterials();
- const sources=s.sources||[],depths=sources.map(id=>depthByCell[id]);
+ const sources=s.sources,geom=geometry(s),depths=sources.map(id=>geom.depths[id]);
+ const tickets=oven?ovenLabels(s):null;
  ctx.save();ctx.clearRect(0,0,w,h);
  if(mini){ctx.fillStyle='#283734';ctx.fillRect(0,0,w,h);}
  ctx.lineJoin=ctx.lineCap='round';
  ctx.save();ctx.translate(w/2,h/2);ctx.scale(scale,scale);
- hull(ctx,corners);
- const iron=ctx.createLinearGradient(-1,-3,1,3);iron.addColorStop(0,'#58605b');iron.addColorStop(.38,'#394440');iron.addColorStop(.78,'#293531');iron.addColorStop(1,'#424c44');
- ctx.fillStyle=iron;ctx.fill();ctx.strokeStyle='#6c452a';ctx.lineWidth=.17;ctx.stroke();ctx.strokeStyle='#eac48b';ctx.lineWidth=.07;ctx.stroke();
- if(zone){
-  pattern(ctx,zone);ctx.fillStyle=zoneColors[zone-1];ctx.globalAlpha=opts.previewZone?.47:play?.32:.21;ctx.fill();ctx.globalAlpha=.92;ctx.lineWidth=.063;ctx.strokeStyle=zoneColors[zone-1];ctx.stroke();ctx.globalAlpha=1;
+ if(panArt.complete&&panArt.naturalWidth){
+  ctx.save();hull(ctx,zoneAngles.map(a=>xy(3.85,a)));ctx.clip();
+  ctx.drawImage(panArt,-3.85,-3.35,7.7,6.7);ctx.restore();
+ }else{
+  hull(ctx,corners);ctx.fillStyle='#5e3f32';ctx.fill();ctx.strokeStyle='#d4a456';ctx.lineWidth=.12;ctx.stroke();
+ }
+ const bakedZone=zone?s.zones[zone-1]:null;
+ if(bakedZone){
+  const m=mask(bakedZone,s.cells);ctx.fillStyle=zoneColors[zone-1];ctx.globalAlpha=opts.previewZone?.47:play?.39:.24;
+  ctx.fill(m.surface);ctx.globalAlpha=.95;ctx.lineWidth=.065;ctx.strokeStyle=zoneColors[zone-1];ctx.stroke(m.rim);ctx.globalAlpha=1;
  }
  ctx.restore();
- for(const [a,b] of R.edges){
-  const A=R.cells[a],B=R.cells[b],x=X(A.x),y=Y(A.y),bx=X(B.x),by=Y(B.y);
+ for(const [a,b] of s.edges){
+  const A=s.cells[a],B=s.cells[b],x=X(A.x),y=Y(A.y),bx=X(B.x),by=Y(B.y);
   line(ctx,x,y,bx,by,'#b29670',unit*.155);line(ctx,x,y,bx,by,'#312d25',unit*.088);
   if(play&&!bake)for(const depth of depths){
    if(!depth||Math.max(depth[a],depth[b])>2||depth[a]===depth[b])continue;
@@ -111,8 +155,8 @@ function paint(ctx,s,opts={},mini=false){
   }
  }
  const newCount=s.wave.reduce((sum,ids)=>sum+ids.length,0);
- for(const cell of R.cells){
-  const {id,number:n}=cell,x=X(cell.x),y=Y(cell.y),stage=s.baked[id]?2:s.wet[id]?1:0;
+ for(const cell of s.cells){
+  const {id}=cell,ticket=tickets?.get(id),n=oven?ticket?.number:cell.number,x=X(cell.x),y=Y(cell.y),stage=s.baked[id]?2:s.wet[id]?1:0;
   let progress=1;
   if(play&&wave[id]>=0){progress=clamp((age-wave[id]*(bake?105:205))/(bake?360:320));}
   const before=stage===2?1:0;
@@ -128,8 +172,14 @@ function paint(ctx,s,opts={},mini=false){
    const glow=bake?Math.sin(progress*Math.PI):1-clamp(age/1250);
    if(glow>.01){ctx.globalAlpha=glow;outline(ctx,x,y,rr*1.09,'#ffdc6c',unit*.075);ctx.globalAlpha=1;}
   }
-  if(opts.previewZone&&R.zones[zone-1].cells.includes(id))outline(ctx,x,y,rr*1.09,zoneColors[zone-1],unit*.1);
-  if(n)number(ctx,n,x,y+(unit*.012),unit*.57,progress>.5?stage>0:before>0);
+  if(opts.previewZone&&bakedZone.cells.includes(id))outline(ctx,x,y,rr*1.09,zoneColors[zone-1],unit*.1);
+  if(n){
+   if(ticket&&!mini){ctx.beginPath();ctx.arc(x,y,rr*.94,Math.PI*.58,Math.PI*.95);ctx.strokeStyle=zoneColors[ticket.zone-1];ctx.lineWidth=unit*.079;ctx.stroke();}
+   ctx.save();
+   if(ticket&&s.draws.slice(5).includes(n))ctx.globalAlpha=.55;
+   number(ctx,n,x,y+(unit*.012),unit*.585,progress>.5?stage>0:before>0);ctx.restore();
+   if(ticket&&n===s.lastNumber)outline(ctx,x,y,rr*.98,'#fff5ab',unit*.062);
+  }
   if(!mini&&play&&bake&&newCount&&wave[id]>=0&&progress>.15&&progress<.98){
    ctx.globalAlpha=Math.sin(progress*Math.PI)*.9;
    for(let j=0;j<2;j++)circle(ctx,x+(j?1:-1)*rr*(.25+.27*progress),y-rr*(.58+progress*(.6+j*.2)),rr*.09,'#fff2b7');
@@ -148,7 +198,7 @@ function paint(ctx,s,opts={},mini=false){
   }
   ctx.restore();
  }
- if(!mini){
+ if(!mini&&oven){
   for(let i=0;i<6;i++){
    const a=zoneAngles[i],[dx,dy]=xy(3.55,a),x=X(dx),y=Y(dy),side=unit*.34;
    circle(ctx,x,y,side,zone===i+1?'#fff1be':'#263831');circle(ctx,x,y,side*.79,zoneColors[i]);
@@ -160,20 +210,38 @@ function paint(ctx,s,opts={},mini=false){
 function mount(panel){
  panel.classList.add('pct-panel');
  const root=document.createElement('section');root.className='pct-scene';root.setAttribute('aria-label','パーティカステラ');
- root.innerHTML=`<aside class="pct-side"><div class="pct-counter"><div><span>生地</span><b data-count="wet">0</b></div><div><span>焼けた数</span><b data-count="baked">0</b></div></div>
- <div class="pct-pay"><table aria-label="焼けた個数と配当倍率"><thead><tr><th scope="col">焼けた数</th><th scope="col">配当</th></tr></thead><tbody></tbody></table></div></aside>
- <div class="pct-tray"><div class="pct-phase"></div><div class="pct-pan"><canvas role="img"></canvas></div><div class="pct-zonelist"><b class="pct-key-title">焼き型をタップして範囲を確認</b><div class="pct-key"></div></div></div>
- <footer class="pct-caption"><img class="pct-feast" src="assets/party-castella-feast.webp" alt=""><strong></strong><span></span></footer>`;
+ root.innerHTML=`<aside class="pct-side"><div class="pct-stats"><div class="pct-phase"></div><div class="pct-counter"><div><i aria-hidden="true"></i><span>生地</span><b data-count="wet">0</b></div><div><i aria-hidden="true"></i><span>焼成</span><b data-count="baked">0</b></div></div></div>
+ <div class="pct-pay"><table aria-label="焼けた個数と配当倍率"><thead><tr><th scope="col">個数</th><th scope="col">配当</th></tr></thead><tbody></tbody></table></div></aside>
+ <div class="pct-tray"><div class="pct-pan"><canvas role="img"></canvas></div><div class="pct-key" role="group" aria-label="焼き範囲を確認" hidden></div>
+ <div class="pct-caption"><img class="pct-feast" src="assets/party-castella-feast.webp" alt=""><strong></strong><span></span></div></div>`;
  panel.append(root);const q=k=>root.querySelector(k);
  const phase=q('.pct-phase'),canvas=q('canvas'),ctx=canvas.getContext('2d'),pan=q('.pct-pan'),caption=q('.pct-caption strong'),detail=q('.pct-caption span');
  const legend=q('.pct-key'),table=q('tbody'),wet=q('[data-count="wet"]'),baked=q('[data-count="baked"]');
- const zoneTags=R.zones.map(zone=>{
-  const e=document.createElement('button'),tag=document.createElement('b');e.type='button';e.setAttribute('aria-pressed','false');
-  tag.textContent=sides[zone.id-1];e.append(tag);
-  e.style.setProperty('--zone-color',zoneColors[zone.id-1]);
-  const nums=Array.from({length:25},(_,i)=>i+1).filter(n=>R.zoneFor(n)===zone.id);
-  e.append(document.createTextNode(nums.join('･')));e.title=zone.name+'　'+nums.join('、')+'番';e.setAttribute('aria-label',e.title+'の焼き範囲を表示');
-  e.onclick=()=>{previewZone=previewZone===zone.id?null:zone.id;draw(shown,lastOpts);};legend.append(e);return e;
+ const zoneTags=[];
+ function toggleZone(id){previewZone=previewZone===id?null:id;draw(shown,lastOpts);}
+ function makeKeys(zones){
+  for(const zone of zones){
+   const e=document.createElement('button'),tag=document.createElement('b'),list=document.createElement('span');
+   e.type='button';e.style.setProperty('--zone-color',zoneColors[zone.id-1]);
+   if(zone.id<=6)tag.textContent=sides[zone.id-1];
+   else{
+    tag.classList.add('pct-flower');tag.setAttribute('aria-hidden','true');
+    for(let i=0;i<3;i++)tag.append(document.createElement('i'));
+   }
+   e.append(tag,list);
+   e.onclick=()=>toggleZone(zone.id);legend.append(e);zoneTags.push(e);
+  }
+ }
+ canvas.addEventListener('click',event=>{
+  if(!shown||shown.draws.length<5)return;
+  const rect=canvas.getBoundingClientRect(),scale=Math.min(rect.width/7.75,rect.height/6.76);
+  const x=(event.clientX-rect.left-rect.width/2)/scale,y=(event.clientY-rect.top-rect.height/2)/scale;
+  for(const [id,ticket] of ovenLabels(shown)){
+   const c=shown.cells[id];if(Math.hypot(x-c.x,y-c.y)<.48){toggleZone(ticket.zone);return;}
+  }
+  for(let i=0;i<6;i++){
+   const [cx,cy]=xy(3.55,zoneAngles[i]);if(Math.hypot(x-cx,y-cy)<.43){toggleZone(i+1);return;}
+  }
  });
  const bands=R.payRows.slice().sort((a,b)=>a.count-b.count);
  if(bands[0].count)bands.unshift({count:0,hundredths:0});
@@ -182,7 +250,7 @@ function mount(panel){
   th.scope='row';th.textContent=count===37?'全焼き':count===max?count:count+'～'+max;
   row.append(th);row.insertCell().textContent=times(hundredths);return row;
  });
- let shown=null,reachKey=null,previewZone=null,shownZone=null,lastOpts={};
+ let shown=null,reachKey=null,previewZone=null,shownZone=null,lastOpts={},wasNoBet=false;
  function fit(){
   const w=root.clientWidth,h=root.clientHeight;
   if(!w||!h)return;
@@ -191,42 +259,54 @@ function mount(panel){
   if(cw&&ch&&(canvas.width!==cw||canvas.height!==ch)){canvas.width=cw;canvas.height=ch;repaint();}
  }
  function repaint(){if(shown)paint(ctx,shown,previewZone?{...lastOpts,previewZone}:lastOpts);}
- tiles.addEventListener('load',repaint,{once:true});
+ for(const img of [tiles,panArt])img.addEventListener('load',repaint,{once:true});
  const resize=new ResizeObserver(fit);resize.observe(root);resize.observe(pan);
  fit();
  function draw(s,o={}){
   if(!s)return;
   if(s!==shown)previewZone=null;
   lastOpts=o;
-  if(s!==shown||reachKey!==o.reach||shownZone!==previewZone){
-   const turn=s.draws.length,last=s.lastNumber,isBake=turn>=6,done=turn===8;
+  const noBet=o.bet===0;
+  if(s!==shown||reachKey!==o.reach||shownZone!==previewZone||wasNoBet!==noBet){
+   const turn=s.draws.length,last=s.lastNumber,oven=turn>=5,isBake=turn>=6,done=turn===8;
    const delta=s.wave.reduce((sum,arr)=>sum+arr.length,0);
    delete detail.dataset.tier;
-   root.dataset.stage=s.phase;root.classList.toggle('pct-sweep',!!s.highestRole);
+   root.dataset.stage=s.phase;root.toggleAttribute('data-preview',!!previewZone);root.classList.toggle('pct-sweep',!!s.highestRole);
    wet.textContent=s.wetCount;baked.textContent=s.bakedCount;
-   phase.textContent=(o.demo?'デモ　':'')+(done?(s.highestRole?'全焼き達成！':'焼き上がり'):turn>=5?'後半　焼き上げ　'+(turn-5)+'/3':'前半　生地を流す　'+turn+'/5');
+   phase.textContent=(o.demo?'デモ · ':'')+(oven?'焼く '+(turn-5)+'/3':'注ぐ '+turn+'/5');
    const idx=bands.findLastIndex(row=>row.count<=s.bakedCount);
    rows.forEach((row,i)=>row.classList.toggle('current',isBake&&idx===i));
-   zoneTags.forEach((el,i)=>{el.classList.toggle('selected',s.lastZone===i+1);el.setAttribute('aria-pressed',String(previewZone===i+1));});
-   if(previewZone){caption.textContent=sides[previewZone-1]+'の焼き範囲';detail.textContent='色のついた型を一度に加熱';}
-   else if(!turn){caption.textContent='入賞番号に生地を注ぐ';detail.textContent='同じ番号の型から通路を2マス先まで浸透';}
-   else if(done){
-    caption.textContent=s.highestRole?'大成功！　全焼きボーナス':s.bakedCount+'個 焼き上がり';
-    detail.textContent=s.highestRole?'37個すべて完成　'+times(s.totalHundredths):'最終配当　'+times(s.totalHundredths);
+   legend.hidden=!oven&&!noBet;
+   if(!legend.hidden){
+    if(!zoneTags.length)makeKeys(s.zones);
+    for(const z of s.zones){
+     const el=zoneTags[z.id-1],numbers=z.numbers.join('･');
+     el.lastChild.textContent=z.id>6?(numbers||sides[z.id-1]):'';
+     el.title=z.name+'　'+numbers;
+     el.classList.toggle('spent',z.id>6&&s.draws.slice(5).includes(z.numbers[0]));
+     el.classList.toggle('selected',s.lastZone===z.id);
+     el.setAttribute('aria-pressed',String(previewZone===z.id));
+     el.setAttribute('aria-label',z.name+'の焼き範囲'+(numbers?'　'+z.numbers.join('、')+'番':''));
+    }
+   }
+   detail.textContent='';
+   if(previewZone){
+    const z=s.zones[previewZone-1];caption.textContent=z.id<=6?sides[z.id-1]+' '+z.name:z.name;
+    detail.textContent=z.numbers.join('・');
+   }else if(done){
+    caption.textContent=s.highestRole?'全焼きボーナス':'焼成 '+s.bakedCount+'個';
+    detail.textContent=times(s.totalHundredths);
    }else if(turn===5){
-    caption.textContent='生地 '+s.wetCount+'個　準備完了';detail.textContent='残り3球は扇形を焼く';
+    caption.textContent='焼き型 オープン';detail.textContent='残り3球';
    }else if(isBake){
-    caption.textContent=last+'番　'+sides[s.lastZone-1]+'の型で ＋'+delta+'個';
+    caption.textContent=last+'番　'+sides[s.lastZone-1]+'　＋'+delta+'個';
     const top=(o.reach||[]).reduce((best,a)=>!best||a.tier>best.tier||a.tier===best.tier&&a.gain>best.gain?a:best,null);
-    if(top){
-     detail.dataset.tier=top.tier;
-     detail.textContent=top.allClear?'最高役リーチ　'+top.number+'番で全焼き':['リーチ','高額','超高額','最高役'][top.tier]+'　'+top.number+'番で'+times(top.total);
-    }else detail.textContent='焼けた数 '+s.bakedCount+'個　あと'+(8-turn)+'球';
+    if(top){detail.dataset.tier=top.tier;detail.textContent=['リーチ','高額','超高額','全焼き'][top.tier]+' '+top.number+'番';}
    }else{
-    caption.textContent=last+'番から生地 ＋'+delta+'個';detail.textContent=s.sources.length>1?'同じ番号の'+s.sources.length+'か所から同時に浸透':'通路を伝い、2マス先まで広がる';
+    caption.textContent=turn?last+'番　＋'+delta+'個':'生地は通路を2マス浸透';
    }
    canvas.setAttribute('aria-label','37個の焼き型。生地 '+s.wetCount+'個、焼き上がり '+s.bakedCount+'個。'+caption.textContent);
-   shown=s;reachKey=o.reach;shownZone=previewZone;
+   shown=s;reachKey=o.reach;shownZone=previewZone;wasNoBet=noBet;
   }
   paint(ctx,s,previewZone?{...o,previewZone}:o);
  }

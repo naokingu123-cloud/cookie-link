@@ -13,7 +13,7 @@ const engine={
  get paused(){return paused;},
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
-  this.version++;this.state=R.create();this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
+  this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
@@ -57,7 +57,7 @@ function projectReaches(s,bet){
   const next=R.draw(s,number);if(!next)continue;
   const total=R.payout(next.bakedCount);
   if(medalWin(bet,total)<=currentWin)continue;
-  const gain=total-base,allClear=next.highestRole,tier=reachTier(gain,allClear);
+  const gain=total-base,allClear=next.bakedCount===37,tier=reachTier(gain,allClear);
   hits.push({number,total,gain,tier,allClear,zone:next.lastZone,kind:['reach','high','super','all'][tier]});
  }
  return hits;
@@ -85,8 +85,9 @@ async function finish(version){
  if(app.enabled.every((on,i)=>!on||app.paid[i]))app.finishRound();recordChanged(app);
 }
 const lesson=(()=>{
- let state=R.create();const stages=[{at:0,state,reach:[]}];
- for(const [i,n] of R.fullBakeDraws.entries()){
+ const demo=R.createDemo();let state=demo.state;
+ const stages=[{at:0,state,reach:[]}];
+ for(const [i,n] of demo.draws.entries()){
   state=R.draw(state,n);
   stages.push({at:[1300,2850,4400,5950,7500,10500,12800,15100][i],state,reach:projectReaches(state,100)});
  }

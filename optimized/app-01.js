@@ -5858,7 +5858,7 @@ function setDebugPayoutRate(){
   debugPayoutTarget=value;try{localStorage.setItem('cookie-link-debug-payout-v1',String(value));}catch{}
   for(const e of app.engines){if(e.kind==='choco'){e.checkpoint=null;e.freshBoard();}e.reset({keepWonder:true,keepHammers:true});}
  }
- $('debug-payout-status').textContent='全3ゲーム：目標 '+value+'%・次ゲームから適用（通常5色基準／配当表固定／JPC除外）';syncPause();scheduleUI(app);return true;
+ $('debug-payout-status').textContent='目標 '+value+'%・次ゲームから適用（配当表固定・JPC除外）';syncPause();scheduleUI(app);return true;
 }
 $('debug-rainbow-force').checked=false;
 $('debug-rainbow-force').onchange=()=>{

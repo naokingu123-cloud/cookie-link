@@ -12,7 +12,7 @@ const catalog={
  stick:{name:'ワッフルリバーシ',logo:'assets/waffle-reversi-logo.webp',home:0,record:8},
  castella:{name:'パーティカステラ',logo:'assets/party-castella-logo.webp',home:0,record:9}
 };
-const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'];
+const classic=['cookie','choco','candy'],festival=['jelly','stick','castella'];
 const legacyMounts=['gelato','winery','popcorn'];
 const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',').map(id=>['waffle','reversi'].includes(id)?'stick':id)||[];
 const valid=custom.length>=1&&custom.length<=3&&new Set(custom).size===custom.length&&custom.every(id=>Object.hasOwn(catalog,id));
