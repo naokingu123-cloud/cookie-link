@@ -20,12 +20,16 @@ body.pct-active .board-area,body.pct-active #panels{width:100%!important;max-wid
 .pct-pay-label span::before,.pct-pay-label span::after{content:'';width:.27em;height:.27em;transform:rotate(45deg);background:#ffdc76}
 .pct-pay table{display:table;width:100%;height:0;flex:1 1 auto;min-height:0;table-layout:fixed;border-collapse:collapse;border:0;color:#492713;background:transparent;text-align:center;white-space:nowrap;font:bold calc(var(--pct-unit)*10.25)/1 system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .pct-pay table th,.pct-pay table td{padding:0;vertical-align:middle;border:0}
+.pct-pay thead th:first-child{width:39%}
+.pct-pay td{position:relative;font-size:calc(1em * var(--digits,1))}
+.pct-pay td small{font-family:Arial,sans-serif;font-size:.56em;letter-spacing:-.03em}
+.pct-pay tbody th small{display:inline-block;font-size:.56em;letter-spacing:-.08em}
 .pct-pay thead th{color:#704822;box-shadow:inset 0 -1px #af8247;font-size:.86em;font-weight:850}
 .pct-pay tbody tr{box-shadow:inset 0 -1px #8d693029}
 .pct-pay tbody th{font-weight:720;border-inline-start:2px solid var(--tier-edge)}
 .pct-pay tbody td{font-weight:900;text-shadow:0 1px #ffffff64}
 .pct-pay tbody tr:last-child{box-shadow:none}
-.pct-pay tbody small{margin-inline-start:.08em;font-size:.65em;font-weight:1000}
+.pct-pay tbody small{margin-inline-start:.035em;font-weight:1000}
 .pct-pay [data-prize=vanilla]{--tier-edge:#ac7d47;background:#fcf1cb77;color:#51351e}
 .pct-pay [data-prize=mint]{--tier-edge:#427f63;background:linear-gradient(100deg,#c4e4c2f0,#ecf7d6d9 68%,#b7ddc1dc);color:#234d38}
 .pct-pay [data-prize=honey]{--tier-edge:#b77712;background:linear-gradient(100deg,#f3be5bd9,#ffec9ced 66%,#edba5ddc);color:#623919}
@@ -46,7 +50,7 @@ body.pct-active .board-area,body.pct-active #panels{width:100%!important;max-wid
 .pct-sweep .pct-sweep-art{display:block}
 #screen #tabs .pct-slot .tab .tab-game-name{display:grid!important;place-items:center;transform:none!important;background:none!important;width:100%;height:40px}
 #screen #tabs .pct-slot .tab-game-name img{width:100%;height:100%;object-fit:contain}
-#screen #tabs .pct-slot .mini-wrap{background:#30251d;border-radius:7px;overflow:hidden}
+#screen #tabs .pct-slot .mini-wrap{background:#f3cf91 url('party-castella-bg.webp?v=117') center/cover;border-radius:7px;overflow:hidden}
 #screen #tabs .pct-slot .mini-wrap canvas{width:100%;height:100%;object-fit:contain}
 #screen #tabs .pct-slot .reach-num{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif}
 :is(#round-result-layer,.result-game)[data-game-kind="castella"]{--v91-gold:#ffe69b;--v91-halo:#f5b576;--v91-floor:#5e372a;--v91-bg:url('party-castella-bg.webp?v=117')}

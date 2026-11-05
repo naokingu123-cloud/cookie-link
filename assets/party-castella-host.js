@@ -16,7 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  payoutNote.textContent='パーティカステラの実効配当率 '+percent.format(this.state.target)+'%（番号配置による上限 '+percent.format(R.effectiveTarget(150))+'%）。生地0個での最高配当は35個・10倍。';
+  payoutNote.textContent='パーティカステラの理論配当率 '+percent.format(this.state.target)+'%（設定範囲 50〜150%）。全盤面で37個全焼が可能。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
@@ -34,7 +34,7 @@ const engine={
    const next=R.draw(this.state,n);if(!next)continue;
    this.state=next;this.processed=this.accepted=next.draws.length;lastHit=clock;
    invalidateReach(slot);this.emit('settled');
-   if(next.highestRole)announceAchievement(game.name+'　37個すべて焼き上がり！ 全焼きボーナス');
+   if(next.highestRole)announceAchievement(game.name+'　37個全焼！ '+num(medalWin(app.locked[id],next.totalHundredths))+'WIN');
    if(active===id)sceneSound(next.draws.length<=5?'cookie-hit':'line',{volume:.3});
    if(next.phase==='done')finish(this.version);
    else slot.updateCastellaReach(app);
@@ -131,7 +131,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.castella=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state;
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個'+(s.highestRole?' ／ 全焼きボーナス':'')+' ／ '+s.totalHundredths/100+'倍'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個'+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});

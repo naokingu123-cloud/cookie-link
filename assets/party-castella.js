@@ -3,7 +3,7 @@
 'use strict';
 const R=window.PartyCastellaRules,tiles=new Image(),panArt=new Image(),bottle=new Image();
 tiles.src='assets/party-castella-tiles.webp?v=116';
-panArt.src='assets/party-castella-griddle.webp';
+panArt.src='assets/party-castella-honey-griddle.webp';
 bottle.src='assets/party-castella-dispenser.webp';
 const bottleTip=[.954,.971];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -11,7 +11,7 @@ const tau=Math.PI*2,clamp=v=>Math.max(0,Math.min(1,v));
 const panW=7.34,panH=6.32;
 const fillStart=[165,435,895],pourDuration=320,ovenSwitch=1340;
 const history=new WeakMap(),maskCache=new WeakMap();
-const times=x=>(x/100).toFixed(1)+'倍';
+const winFor=typeof medalWin==='function'?medalWin:(bet,rate)=>Math.floor(bet*rate/100);
 const showOven=(s,age)=>s.draws.length>5||s.draws.length===5&&(reduced.matches||age>=ovenSwitch);
 
 // Outline the actual heated hexes, including the clipped regions at the edge.
@@ -200,7 +200,6 @@ function paint(ctx,s,opts={},mini=false){
  history.set(ctx,{s,key,frame});
  const unit=Math.min(w/panW,h/panH),X=x=>w/2+x*unit,Y=y=>h/2+y*unit,rr=unit*.405,mats=makeMaterials();
  ctx.save();ctx.clearRect(0,0,w,h);
- if(mini){ctx.fillStyle='#2c221a';ctx.fillRect(0,0,w,h);}
  ctx.lineJoin=ctx.lineCap='round';
  const px=X(-panW/2),py=Y(-panH/2);
  if(panArt.naturalWidth)ctx.drawImage(panArt,px,py,panW*unit,panH*unit);
@@ -297,7 +296,7 @@ function mount(panel){
  <div class="pct-phase-first"><strong>前半</strong><span>1〜5球</span></div>
  <div class="pct-phase-second"><strong>後半</strong><span>6〜8球</span></div></div>
  <div class="pct-pay"><div class="pct-pay-label"><span>配当表</span></div>
- <table aria-label="焼けた個数と配当倍率"><thead><tr><th scope="col">焼け数</th><th scope="col">倍率</th></tr></thead><tbody></tbody></table></div></aside>
+ <table aria-label="焼けた個数と現在のBETでの獲得WIN"><thead><tr><th scope="col">個数</th><th scope="col">WIN</th></tr></thead><tbody></tbody></table></div></aside>
  <div class="pct-tray"><div class="pct-pan"><canvas role="img"></canvas>
  <div class="pct-anchors" role="group" aria-label="番号を選ぶと焼き範囲を表示"></div></div>
  <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true"></div>
@@ -310,10 +309,30 @@ function mount(panel){
   row.dataset.prize=count===37?'feast':count>=35?'ruby':count>=30?'honey':count>=25?'mint':'vanilla';
   th.scope='row';th.textContent=count+'';
   if(count===37){const mark=document.createElement('small');mark.textContent='全焼';th.append(mark);}
-  row.append(th);row.insertCell().textContent=times(hundredths);
-  return {count,row};
+  row.append(th);const cell=row.insertCell(),value=document.createElement('span'),unit=document.createElement('small');
+  value.className='pct-win-value';unit.textContent='WIN';cell.append(value,unit);
+  return {count,hundredths,row,cell,value};
  });
- let shown=null,shownOven=false,previewZone=null,lastOpts={};
+ let shown=null,shownOven=false,previewZone=null,lastOpts={},shownBet=null;
+ function updateWins(bet){
+  if(shownBet===bet)return;
+  shownBet=bet;
+  for(const {count,hundredths,row,cell,value} of rows){
+   const win=winFor(bet,hundredths);
+   let label=String(win);
+   // Keep the amount exact. Multiples of a large Japanese unit fit the narrow plaque.
+   if(label.length>6){
+    for(const [factor,suffix] of [[1e12,'兆'],[1e8,'億'],[1e4,'万']]){
+     if(win%factor===0){label=String(win/factor)+suffix;break;}
+    }
+   }
+   value.textContent=label;
+   const glyphs=label.length+(/[^0-9]$/.test(label)?.7:0);
+   cell.style.setProperty('--digits',glyphs<=4?1:4.6/(glyphs+.9));
+   row.title=count+'個　'+(hundredths/100).toFixed(1)+'倍　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
+   cell.setAttribute('aria-label',win.toLocaleString('ja-JP')+' WIN');
+  }
+ }
  function repaint(){if(shown)paint(ctx,shown,previewZone?{...lastOpts,previewZone}:lastOpts);}
  function placeButtons(){
   if(!shown||!shownOven)return;
@@ -352,7 +371,7 @@ function mount(panel){
   if(!s)return;
   const oven=showOven(s,o.age??Infinity),last=shown;
   if(s!==last)previewZone=null;
-  lastOpts=o;
+  lastOpts=o;updateWins(o.bet??0);
   if(s!==last||oven!==shownOven){
    const turn=s.draws.length;
    shown=s;shownOven=oven;root.dataset.stage=oven?'bake':'pour';
