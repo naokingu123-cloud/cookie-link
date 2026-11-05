@@ -94,8 +94,8 @@ function specialMarker(ctx,x,y,rr,kind,on,age,unit){
  ctx.restore();
 }
 function reachEffect(ctx,x,y,r,hit,time,mini){
- const tier=hit.tier||0,colors=['#ffec8f','#ffb64d','#ff7892','#ffd86a'];
- const all=hit.allClear||tier===3;
+ const tier=hit.allClear?3:Math.min(2,hit.tier||0),colors=['#ffec8f','#ffb64d','#ff7892','#ffd86a'];
+ const all=!!hit.allClear;
  const t=Number.isFinite(time)?time:0,phase=reduced.matches?0:t/600;
  ctx.save();
  const glow=.72+.28*Math.cos(t/220)**2;
