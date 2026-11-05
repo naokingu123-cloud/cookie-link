@@ -35,32 +35,26 @@
     return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r));
   }
   // Heat travels in every direction irrespective of the pouring channels.
-  const heat=cells.map(a=>cells.filter(b=>distance(a,b)<=2).map(b=>b.id));
   // The opening grid retains 19 fixed diagonal locations. Six extra number sites,
   // six initially filled wells and every special tile are chosen before drawing.
   // The number sites and starter wells are both reflection- and rotation-symmetric.
   const EX0=[8,10,12,14,16,18],EX2=[12,18,21,23,30,32],EX3=[12,18,26,27,35,36];
-  const O265=[12,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36];
-  const O260=[8,10,12,14,16,18,19,21,22,23,25,26,27,28,30,31,32,34,35,36];
-  const O255=[8,9,10,14,15,16,19,20,22,24,25,26,27,28,29,31,33,34,35,36];
-  const O245=[7,11,12,13,17,18,19,20,21,22,23,24,25,28,29,30,31,32,33,34];
-  const O205=[2,5,8,10,14,16,19,20,22,24,25,26,27,28,29,31,33,34,35,36];
   const G1=[20,24,29,33],G2=[21,23,30,32],G3=[26,27,35,36];
   // Exact return percent: all 53,130 opening combinations × 1,140 baking triples.
   const molds=[
-    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,ovens:O265,flames:[21,30],odds:G3,returnPercent:100.329207274},
-    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,ovens:O265,flames:[26,35],odds:G1,returnPercent:106.956627207},
-    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,ovens:O265,flames:[26,35],odds:G2,returnPercent:111.914012832},
-    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,ovens:O265,flames:[27,36],odds:G1,returnPercent:112.097422872},
-    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,ovens:O265,flames:[23,32],odds:G1,returnPercent:116.196845671},
-    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,ovens:O260,flames:[27,36],odds:G2,returnPercent:131.510620292},
-    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,ovens:O255,flames:[23,32],odds:G1,returnPercent:133.323314214},
-    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,ovens:O245,flames:[21,30],odds:G1,returnPercent:134.965883748},
-    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,ovens:O245,flames:[26,35],odds:G1,returnPercent:148.456562222},
-    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,ovens:O205,flames:[20,29],odds:G2,returnPercent:160.042278423}
+    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,flames:[21,30],odds:G3,returnPercent:100.329207274},
+    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,flames:[26,35],odds:G1,returnPercent:106.956627207},
+    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,flames:[26,35],odds:G2,returnPercent:111.914012832},
+    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,flames:[27,36],odds:G1,returnPercent:112.097422872},
+    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:116.196845671},
+    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,flames:[27,36],odds:G2,returnPercent:131.510620292},
+    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:133.323314214},
+    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,flames:[21,30],odds:G1,returnPercent:134.965883748},
+    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,flames:[26,35],odds:G1,returnPercent:148.456562222},
+    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,flames:[20,29],odds:G2,returnPercent:160.042278423}
   ];
   const heatRadii=[null,1,2,3].map(r=>r?cells.map(a=>cells.filter(b=>distance(a,b)<=r).map(b=>b.id)):null);
-  const ODDS_STEP=20; // Each activated honey tile increases all final odds by +0.2x.
+  const ODDS_STEP=50; // Each activated honey tile adds +0.5x to the final base odds.
   function effectiveTarget(requested){
     return Math.max(molds[0].returnPercent,Math.min(molds[molds.length-1].returnPercent,
       Number.isFinite(requested)?requested:90));
@@ -75,17 +69,17 @@
   function verifyMolds(){
     for(const board of molds){
       const markers=[...board.flames,...board.odds],numbered=new Set([...spokes,...board.extras]);
-      if(board.starter.length!==6||board.extras.length!==6||board.ovens.length!==20||
+      if(board.starter.length!==6||board.extras.length!==6||
          board.flames.length!==2||board.odds.length!==4||new Set(markers).size!==6||
          markers.some(i=>numbered.has(i)||board.starter.includes(i))||
-         !isSymmetric(board.starter)||!isSymmetric([...numbered])||!isSymmetric(board.ovens))
+         !isSymmetric(board.starter)||!isSymmetric([...numbered]))
         throw new Error('Invalid Party Castella layout: '+board.name);
     }
   }
   verifyMolds();
   const rates=[20,40,60,80,100,120,140,160,180,200,250,300,400,500,750,1000,2000,5000];
   const payRows=rates.map((hundredths,i)=>({count:20+i,hundredths}));
-  function payout(count,oddsHits=0){return Math.round((rates[count-20]||0)*(100+ODDS_STEP*oddsHits)/100);}
+  function payout(count,oddsHits=0){return count<20?0:(rates[count-20]||0)+ODDS_STEP*oddsHits;}
   function shuffled(rng){
     const list=numbers.slice();
     for(let i=list.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[list[i],list[j]]=[list[j],list[i]];}
@@ -101,22 +95,24 @@
   function createBoard(moldIndex,target,rng,requestedTarget=target){
     const board=molds[moldIndex],labels=Array(37).fill(null),deck=shuffled(rng);
     [...spokes,...board.extras].forEach((id,i)=>{labels[id]=deck[i];});
-    const zones=board.ovens.map((anchor,i)=>({id:i+1,name:'焼き型',anchor,
-      cells:heatRadii[1][anchor],numbers:[],radius:1}));
     return {draws:[],phase:'pour',cells:cells.map(c=>({...c,number:labels[c.id]})),
       edges:originalEdges,boardName:board.name,moldIndex,target,requestedTarget,
-      ovenDeck:shuffled(rng),zones,zoneByNumber:Array(26).fill(null),
+      zones:[],zoneByNumber:Array(26).fill(null),
       specials:{fire:board.flames.slice(),odds:board.odds.slice()},
       wet:cells.map(c=>board.starter.includes(c.id)),baked:Array(37).fill(false),
-      wetCount:6,bakedCount:0,fireLevel:1,oddsHits:0,oddsMultiplier:100,
+      wetCount:6,bakedCount:0,fireLevel:1,oddsHits:0,oddsBonus:0,
       lastNumber:null,lastZone:null,sources:[],flow:[],wave:[],
       totalHundredths:0,highestRole:false};
   }
   function deal(state,draws,fireLevel){
-    const remaining=state.ovenDeck.filter(n=>!draws.includes(n)),zoneByNumber=Array(26).fill(null);
-    const zones=state.zones.map((zone,i)=>{
-      const n=remaining[i];zoneByNumber[n]=zone.id;
-      return {...zone,numbers:[n],radius:fireLevel,cells:heatRadii[fireLevel][zone.anchor]};
+    // Reuse the ORIGINAL numbered wells: five pouring hits vanish, twenty keep positions.
+    const remaining=state.cells.filter(c=>c.number!==null&&!draws.includes(c.number));
+    const zoneByNumber=Array(26).fill(null);
+    const zones=remaining.map((cell,i)=>{
+      const zone={id:i+1,name:'焼き型',anchor:cell.id,numbers:[cell.number],
+        radius:fireLevel,cells:heatRadii[fireLevel][cell.id]};
+      zoneByNumber[cell.number]=zone.id;
+      return zone;
     });
     return {zones,zoneByNumber};
   }
@@ -132,7 +128,7 @@
       const oddsHits=state.specials.odds.filter(i=>wet[i]).length;
       return {...state,...(ball===5?deal(state,draws,fireLevel):{}),draws,
         phase:ball===5?'bake':'pour',lastNumber:number,fireLevel,oddsHits,
-        oddsMultiplier:100+ODDS_STEP*oddsHits,
+        oddsBonus:ODDS_STEP*oddsHits,
         sources:[id],flow,wave,wet,wetCount:wet.filter(Boolean).length};
     }
     const lastZone=zoneFor(number,state),zone=state.zones[lastZone-1],baked=state.baked.slice(),wave=[[],[],[],[]];
