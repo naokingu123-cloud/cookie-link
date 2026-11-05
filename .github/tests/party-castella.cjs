@@ -9,8 +9,8 @@ function board(target,first,seed){
   const rest=rng(seed);let used=false;
   return R.create({target,rng:()=>{if(used)return rest();used=true;return first;}});
 }
-const names=['花びら仕込み','花冠仕込み','輪飾り仕込み'];
-const expectedRates=[49.3022457329,104.650139842360,201.535355516591];
+const names=['花びら型','花冠型','輪飾り型'];
+const expectedRates=[3007002940,5515915680,5852976590].map(v=>v/60568200);
 function hexDistance(a,b){
   return Math.max(Math.abs(a.q-b.q),Math.abs(a.r-b.r),Math.abs(a.q+a.r-b.q-b.r));
 }
@@ -19,7 +19,8 @@ function symmetric(s,ids,rotation){
   for(const i of ids){
     const {q,r}=s.cells[i];
     assert(positions.has([-q-r,r].join(','))); // left-right reflection
-    if(rotation)assert(positions.has((rotation===60?[-r,q+r]:[-q,-r]).join(',')));
+    const turned=rotation===60?[-r,q+r]:rotation===120?[-q-r,q]:[-q,-r];
+    assert(positions.has(turned.join(',')));
   }
 }
 function assertDeal(s){
@@ -29,7 +30,7 @@ function assertDeal(s){
   for(const n of remaining)assert(s.zones[R.zoneFor(n,s)-1].numbers.includes(n));
   for(const n of opening)assert.equal(s.zoneByNumber[n],null);
   assert.equal(new Set(s.zones.map(z=>z.anchor)).size,20);
-  symmetric(s,s.zones.map(z=>z.anchor),s.moldIndex===0?0:180);
+  symmetric(s,s.zones.map(z=>z.anchor),180);
   for(const z of s.zones){
     const area=ids.filter(id=>hexDistance(s.cells[z.anchor],s.cells[id])<=2);
     assert.deepEqual(sorted(z.cells),area);
@@ -41,7 +42,7 @@ function assertDeal(s){
 const examples=[board(50,.999,7),board(50,0,33),board(150,0,100)];
 assert.deepEqual(examples.map(s=>s.boardName),names);
 for(const [k,s] of examples.entries()){
-  assert.equal(s.target,k===2?150:50);
+  assert.equal(s.target,R.effectiveTarget(k===2?150:50));
   assert.equal(s.cells.filter(c=>c.number===null).length,12);
   assert.deepEqual(sorted(s.cells.map(c=>c.number).filter(Boolean)),numbers);
   assert(diameters.every(id=>s.cells[id].number));
@@ -49,8 +50,8 @@ for(const [k,s] of examples.entries()){
   assert.deepEqual(s.edges,R.originalEdges);
   const edgeSet=new Set(s.edges.map(([a,b])=>sorted([a,b]).join(',')));
   assert.equal(edgeSet.size,54);
-  assert.equal(s.wetCount,[4,6,12][k]);
-  symmetric(s,ids.filter(i=>s.wet[i]),k===0?180:60);symmetric(s,ids.filter(i=>s.cells[i].number),60);
+  assert.equal(s.wetCount,0);assert(s.wet.every(v=>v===false));assert(s.baked.every(v=>v===false));
+  symmetric(s,ids.filter(i=>s.cells[i].number),[60,180,120][k]);
   const neighbors=ids.map(()=>[]);
   for(const [a,b] of s.edges){
     neighbors[a].push(b);neighbors[b].push(a);
@@ -94,11 +95,12 @@ function boundary(rate,from){
   }
   return (low+high)/2;
 }
-for(const rate of [50,65,85,90,100,125,150]){
+for(const rate of [50,65,85,90,92,95,96,100,125,150]){
   const crown=boundary(rate,2),petalOrCrown=boundary(rate,1);
   const mix=[1-petalOrCrown,petalOrCrown-crown,crown];
   const mean=mix.reduce((sum,p,k)=>sum+p*expectedRates[k],0);
-  assert(Math.abs(mean-rate)<1e-7);
+  assert(Math.abs(mean-Math.min(rate,expectedRates[2]))<1e-7);
+  assert.equal(R.effectiveTarget(rate),Math.min(rate,expectedRates[2]));
 }
 for(const n of [0,26,1.5,NaN,'1'])assert.equal(R.draw(examples[0],n),null);
 const lesson=R.createDemo();let state=lesson.state;
@@ -106,10 +108,10 @@ for(const [k,n] of lesson.draws.entries()){
   const prev=state;state=R.draw(state,n);
   assert(state.baked.every((b,i)=>!b||state.wet[i]));
   assert.deepEqual(sorted(state.wave.flat()),ids.filter(i=>k<5?state.wet[i]&&!prev.wet[i]:state.baked[i]&&!prev.baked[i]));
-  assert.equal(state.totalHundredths,k===7?5000:0);
-  assert.equal(state.highestRole,k===7);
+  assert.equal(state.totalHundredths,k===7?1000:0);
+  assert.equal(state.highestRole,false);
   assert.equal(state.sources.length,1);
-  if(k<5)assert.equal(state.wave.flat().length,[7,4,7,7,6][k]);
+  if(k<5)assert.equal(state.wave.flat().length,[6,8,6,8,7][k]);
 }
 assert.deepEqual(lesson,R.createDemo());assert.equal(R.draw(state,25),null);
 const table=[20,40,60,80,100,120,140,160,180,200,250,300,400,500,750,1000,2000,5000];
@@ -125,11 +127,20 @@ if(process.argv.includes('--balance')){
   const lo=m=>m%base,hi=m=>Math.floor(m/base);
   const bits=v=>{v-=(v>>>1)&0x55555555;v=(v&0x33333333)+((v>>>2)&0x33333333);return (((v+(v>>>4))&0x0f0f0f0f)*0x01010101)>>>24;};
   const union=(a,b)=>(lo(a)|lo(b))+(hi(a)|hi(b))*base;
-  let flipped;
-  for(let seed=1;!flipped;seed++){
-    const s=board(50,.999,seed);
-    if(s.zones.some(z=>!examples[0].zones.some(a=>a.anchor===z.anchor)))flipped=s;
+  // Even if every well were numbered, enumerate all C(37,5) opening sets.
+  const neighbors=ids.map(i=>R.originalEdges.filter(edge=>edge.includes(i)).map(edge=>edge.find(j=>j!==i)));
+  const reach=ids.map(i=>mask([...new Set([i,...neighbors[i],...neighbors[i].flatMap(j=>neighbors[j])])]));
+  const lower=reach.map(lo),upper=reach.map(hi);
+  let wetLimit=0;
+  for(let a=0;a<37;a++)for(let b=0;b<a;b++)for(let c=0;c<b;c++)for(let d=0;d<c;d++)for(let e=0;e<d;e++){
+    const count=bits(lower[a]|lower[b]|lower[c]|lower[d]|lower[e])+bits(upper[a]|upper[b]|upper[c]|upper[d]|upper[e]);
+    wetLimit=Math.max(wetLimit,count);
   }
+  assert.equal(wetLimit,35);
+  const flipped=board(150,0,1),front=examples[2].cells.filter(c=>c.number).map(c=>c.id);
+  const opposite=front.map(i=>ids.find(j=>R.cells[j].q===-R.cells[i].q&&R.cells[j].r===-R.cells[i].r));
+  assert.notDeepEqual(sorted(front),sorted(opposite));
+  assert.deepEqual(sorted(flipped.cells.filter(c=>c.number).map(c=>c.id)),sorted(opposite));
   for(const s of [...examples,flipped]){
     const k=s.moldIndex;
     const inlet=numbers.map(n=>{const {wet}=R.draw(s,n);return mask(ids.filter(i=>wet[i]));});
@@ -140,18 +151,17 @@ if(process.argv.includes('--balance')){
       const area=union(union(oven[a],oven[b]),oven[c]);
       frequency.set(area,(frequency.get(area)||0)+1);
     }
-    assert.equal(frequency.get(2**37-1),k===0?1:2);
     const shots=Array.from(frequency,([m,f])=>[lo(m),hi(m),f]);
-    const histogram=Array(38).fill(0);let fullFill=0;
+    const histogram=Array(38).fill(0);let maxWet=0;
     for(let a=0;a<25;a++)for(let b=0;b<a;b++)for(let c=0;c<b;c++)for(let d=0;d<c;d++)for(let e=0;e<d;e++){
       const L=wlo[a]|wlo[b]|wlo[c]|wlo[d]|wlo[e],H=whi[a]|whi[b]|whi[c]|whi[d]|whi[e];
-      if(bits(L)+bits(H)===37)fullFill++;
+      maxWet=Math.max(maxWet,bits(L)+bits(H));
       for(const [l,h,count] of shots)histogram[bits(L&l)+bits(H&h)]+=count;
     }
     const cases=histogram.reduce((a,b)=>a+b),rtp=histogram.reduce((sum,n,i)=>sum+n*R.payout(i),0)/cases;
-    assert.equal(cases,60568200);assert.equal(fullFill,[32,129,2856][k]);
-    assert.equal(histogram[37],(k===0?1:2)*fullFill);
+    assert.equal(cases,60568200);assert.equal(maxWet,35);
+    assert(histogram[35]>0);assert.equal(histogram[36]+histogram[37],0);
     assert(Math.abs(rtp-expectedRates[k])<1e-8);
-    console.log(JSON.stringify({board:s.boardName,cases,fullFill,sweeps:histogram[37],boardRtpPercent:rtp}));
+    console.log(JSON.stringify({board:s.boardName,cases,maxWet,baked35:histogram[35],boardRtpPercent:rtp}));
   }
 }

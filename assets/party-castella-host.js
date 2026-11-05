@@ -4,6 +4,8 @@
 const id=SweetsLineup.ids.indexOf('castella'),slot=slots[id],game=SweetsLineup.catalog.castella;
 const R=window.PartyCastellaRules,view=window.PartyCastellaView.mount(slot.panel);
 const sugarCount=30,animationMs=1500;
+const payoutNote=document.createElement('small'),percent=new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2});
+payoutNote.id='castella-payout-status';$('debug-payout-status').after(payoutNote);
 let clock=0,lastHit=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,paused=false;
 const engine={
  kind:'castella',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'全焼き',version:0,
@@ -14,6 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
+  payoutNote.textContent='パーティカステラの実効配当率 '+percent.format(this.state.target)+'%（番号配置による上限 '+percent.format(R.effectiveTarget(150))+'%）。生地0個での最高配当は35個・10倍。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
@@ -32,13 +35,8 @@ const engine={
    this.state=next;this.processed=this.accepted=next.draws.length;lastHit=clock;
    invalidateReach(slot);this.emit('settled');
    if(next.highestRole)announceAchievement(game.name+'　37個すべて焼き上がり！ 全焼きボーナス');
-   if(active===id){
-    if(next.phase==='done'&&next.totalHundredths){
-     const tier=reachTier(next.totalHundredths,next.highestRole);
-     sceneSound(['line','bonus','big-bonus','allclear'][tier],{volume:.62+tier*.06});
-    }else sceneSound(next.draws.length<=5?'cookie-hit':'line',{volume:.3});
-   }
-   if(next.phase==='done'){collectSugar();finish(this.version);}
+   if(active===id)sceneSound(next.draws.length<=5?'cookie-hit':'line',{volume:.3});
+   if(next.phase==='done')finish(this.version);
    else slot.updateCastellaReach(app);
   }
  },
@@ -79,6 +77,13 @@ function collectSugar(){
  showSugarAward(slot,[token]);announceAchievement(game.name+'　ワンダーシュガーGET！');
 }
 async function finish(version){
+ // Let the last batch of cakes brown before the sugar cut-in or result covers the pan.
+ if(!await app.wait(animationMs,app.token)||engine.version!==version||app.phase!=='playing')return;
+ if(active===id&&engine.totalHundredths){
+  const tier=reachTier(engine.totalHundredths,engine.state.highestRole);
+  sceneSound(['line','bonus','big-bonus','allclear'][tier],{volume:.62+tier*.06});
+ }
+ collectSugar();
  await finishGamePresentation(slot,engine,app,version);
  if(engine.version!==version||app.phase!=='playing'||app.paid[id])return;
  engine.running=false;engine.emit('complete');app.paid[id]=true;app.roundWins[id]=medalWin(app.locked[id],engine.totalHundredths);

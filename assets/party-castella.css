@@ -14,18 +14,26 @@ body.pct-active .board-area,body.pct-active #panels{width:100%!important;max-wid
 .pct-phase strong{font-weight:950;letter-spacing:.01em}
 .pct-phase span{font-weight:750;font-size:.9em;font-variant-numeric:tabular-nums}
 .pct-phase:not(.pct-after) .pct-phase-first,.pct-phase.pct-after .pct-phase-second{color:#572c17;background:#ffdf8d;box-shadow:inset 0 0 0 1px #d49e4f}
-.pct-pay{position:relative;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;padding:.86em .45em 1.14em;border:1px solid transparent;border-image:url('party-castella-plaque.webp') 100 85 fill / 1.08em 1em stretch;overflow:hidden;box-shadow:0 2px 5px #482515a6;background:#f4d79c}
-.pct-pay-label{display:grid;flex:0 0 7.5%;min-height:0;align-items:center;text-align:center;color:#6e331d;font-weight:1000;font-size:1.12em;letter-spacing:.08em;text-shadow:0 1px #fff4d4}
-.pct-pay table{display:table;width:100%;height:0;flex:1 1 auto;min-height:0;table-layout:fixed;border-collapse:collapse;border:0;color:#492713;background:transparent;text-align:center;white-space:nowrap;font:bold calc(var(--pct-unit)*10.5)/1 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.pct-pay{position:relative;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;padding:0 6.5% .75em;overflow:hidden;border-radius:.55em;box-shadow:0 2px 5px #482515b8;background:transparent url('party-castella-bakery-menu.webp') center/100% 100% no-repeat}
+.pct-pay-label{display:flex;flex:0 0 16.3%;align-items:flex-end;justify-content:center;min-height:0;padding-bottom:.1em}
+.pct-pay-label span{display:flex;align-items:center;justify-content:center;gap:.15em;min-width:80%;padding:.09em .16em .13em;border:1px solid #ffda8a;border-radius:1em;color:#fff5cb;background:linear-gradient(125deg,#793a25,#b4342c 47%,#743322);box-shadow:0 1px 2px #4f220c;font:1000 1.03em/1 system-ui,sans-serif;text-shadow:0 1px #693325}
+.pct-pay-label span::before,.pct-pay-label span::after{content:'';width:.27em;height:.27em;transform:rotate(45deg);background:#ffdc76}
+.pct-pay table{display:table;width:100%;height:0;flex:1 1 auto;min-height:0;table-layout:fixed;border-collapse:collapse;border:0;color:#492713;background:transparent;text-align:center;white-space:nowrap;font:bold calc(var(--pct-unit)*10.25)/1 system-ui,sans-serif;font-variant-numeric:tabular-nums}
 .pct-pay table th,.pct-pay table td{padding:0;vertical-align:middle;border:0}
-.pct-pay thead th{color:#844626;box-shadow:inset 0 -1px #a46c40;font-size:.87em;font-weight:800}
-.pct-pay tbody tr{box-shadow:inset 0 -1px #a56c332c}
-.pct-pay tbody th{font-weight:700}
-.pct-pay tbody td{font-weight:850}
+.pct-pay thead th{color:#704822;box-shadow:inset 0 -1px #af8247;font-size:.86em;font-weight:850}
+.pct-pay tbody tr{box-shadow:inset 0 -1px #8d693029}
+.pct-pay tbody th{font-weight:720;border-inline-start:2px solid var(--tier-edge)}
+.pct-pay tbody td{font-weight:900;text-shadow:0 1px #ffffff64}
 .pct-pay tbody tr:last-child{box-shadow:none}
-.pct-pay tbody tr:first-child{color:#83220f;background:#d58b403b}
 .pct-pay tbody small{margin-inline-start:.08em;font-size:.65em;font-weight:1000}
-.pct-pay tbody tr.current{color:#591c0d;background:#ffb341cf;box-shadow:inset 0 1px #b86c29,inset 0 -1px #b86c29}
+.pct-pay [data-prize=vanilla]{--tier-edge:#ac7d47;background:#fcf1cb77;color:#51351e}
+.pct-pay [data-prize=mint]{--tier-edge:#427f63;background:linear-gradient(100deg,#c4e4c2f0,#ecf7d6d9 68%,#b7ddc1dc);color:#234d38}
+.pct-pay [data-prize=honey]{--tier-edge:#b77712;background:linear-gradient(100deg,#f3be5bd9,#ffec9ced 66%,#edba5ddc);color:#623919}
+.pct-pay [data-prize=ruby]{--tier-edge:#ae4a3c;background:linear-gradient(100deg,#df9982,#ffe0b9 55%,#eeac87);color:#6e241d}
+.pct-pay [data-prize=feast]{--tier-edge:#ebba51;background:linear-gradient(115deg,#992725,#b53b46 44%,#95435b 74%,#9b4332);color:#fff7d8;box-shadow:inset 0 -1px #e2b455,inset 0 1px #ffe492}
+.pct-pay [data-prize=feast] td{text-shadow:0 1px #71221a}
+.pct-pay tbody tr.current{--tier-edge:#ffe9a9;color:#fff5c7;background:linear-gradient(100deg,#954526,#af5128);box-shadow:inset 0 1px #ffd36f,inset 0 -1px #edbb4e}
+.pct-pay tbody tr.current td{text-shadow:0 1px #743019}
 .pct-tray{display:flex;align-items:stretch}
 .pct-pan{flex:1 1 0}
 .pct-pan canvas,.pct-anchors{position:absolute;inset:0;display:block;width:100%;height:100%}

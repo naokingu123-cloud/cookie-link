@@ -36,23 +36,23 @@
   }
   // Heat travels in every direction irrespective of the pouring channels.
   const heat=cells.map(a=>cells.filter(b=>distance(a,b)<=2).map(b=>b.id));
-  const sideMids=rings[2].filter((_,i)=>i%2===1),outerTips=rings[3].filter((_,i)=>i%3===0);
-  const outerSides=rings[3].filter((_,i)=>i%3!==0),horizontalTips=[rings[3][3],rings[3][12]];
-  const places=[...spokes,...sideMids];  // 19 diagonal sites + 6 middle-ring sites.
-  // Both cold layouts have 16 perimeter anchors and four middle-ring anchors.
-  // Each is left-right symmetric; an up-front coin flip swaps the top and bottom.
-  const outerOvens=[1,-1].map(facing=>[
-    ...sideMids.filter(i=>cells[i].x===0||cells[i].r*facing<0),
-    ...rings[3].filter(i=>cells[i].r*facing!==3||Math.abs(cells[i].x)>1)
-  ]);
-  const innerOvens=[[...rings[1],...rings[2],...horizontalTips]];
-  // Numerators sum the payout in hundredths over C(25,5) × C(20,3) equiprobable outcomes.
+  const sideMids=rings[2].filter((_,i)=>i%2===1);
+  const outerAxis=rings[3].filter(i=>cells[i].r===0);
+  const outerQuartet=rings[3].filter(i=>Math.abs(cells[i].x)===2.5);
+  // The 19 diagonal number sites are common to every board. Each opening pattern adds six.
+  const polarSix=[...sideMids.filter(i=>cells[i].x===0),...rings[3].filter(i=>Math.abs(cells[i].x)===.5)];
+  const alternateSides=[0,1].map(side=>rings[3].filter((_,i)=>i%3!==0&&Math.floor(i/3)%2===side));
+  // Each sum is the total payout in hundredths over C(25,5) × C(20,3) equiprobable outcomes.
+  // Both number-site patterns are selected before the first draw.
   const outcomes=53130*1140;
   const molds=[
-    {name:'花びら仕込み',starter:outerTips.filter(i=>!horizontalTips.includes(i)),ovens:outerOvens,returnPercent:2986148280/outcomes},
-    {name:'花冠仕込み',starter:outerTips,ovens:innerOvens,returnPercent:6338470600/outcomes},
-    {name:'輪飾り仕込み',starter:outerSides,ovens:innerOvens,returnPercent:12206633720/outcomes}
+    {name:'花びら型',extras:[sideMids],ovens:[...sideMids,...rings[3].filter(i=>!outerQuartet.includes(i))],returnPercent:3007002940/outcomes},
+    {name:'花冠型',extras:[polarSix],ovens:[...rings[1],...rings[2],...outerAxis],returnPercent:5515915680/outcomes},
+    {name:'輪飾り型',extras:alternateSides,ovens:[...rings[1],...rings[2].filter(i=>cells[i].r!==0),...outerQuartet],returnPercent:5852976590/outcomes}
   ];
+  function effectiveTarget(requested){
+    return Math.max(50,Math.min(molds[2].returnPercent,Number.isFinite(requested)?requested:90));
+  }
   const rates=[20,40,60,80,100,120,140,160,180,200,250,300,400,500,750,1000,2000,5000];
   const payRows=rates.map((hundredths,i)=>({count:20+i,hundredths}));
   function payout(count){return rates[count-20]||0;}
@@ -62,19 +62,18 @@
     return list;
   }
   function create({rng=Math.random,target=90}={}){
-    const rate=Math.max(50,Math.min(150,Number.isFinite(target)?target:90));
+    const rate=effectiveTarget(target);
     const i=rate<molds[1].returnPercent?0:1,lo=molds[i].returnPercent,hi=molds[i+1].returnPercent;
     return createBoard(i+Number(rng()<(rate-lo)/(hi-lo)),rate,rng);
   }
   function createBoard(moldIndex,target,rng){
     const board=molds[moldIndex],labels=Array(37).fill(null),deck=shuffled(rng);
-    places.forEach((id,i)=>{labels[id]=deck[i];});
-    const wet=cells.map(c=>board.starter.includes(c.id));
-    const anchors=board.ovens.length===1?board.ovens[0]:board.ovens[Math.floor(rng()*board.ovens.length)];
-    const zones=anchors.map((anchor,i)=>({id:i+1,name:'焼き型',anchor,cells:heat[anchor],numbers:[]}));
+    const extras=board.extras.length===1?board.extras[0]:board.extras[Math.floor(rng()*board.extras.length)];
+    [...spokes,...extras].forEach((id,i)=>{labels[id]=deck[i];});
+    const zones=board.ovens.map((anchor,i)=>({id:i+1,name:'焼き型',anchor,cells:heat[anchor],numbers:[]}));
     return {draws:[],phase:'pour',cells:cells.map(c=>({...c,number:labels[c.id]})),edges:originalEdges,
       boardName:board.name,moldIndex,target,ovenDeck:shuffled(rng),zones,zoneByNumber:Array(26).fill(null),
-      wet,baked:Array(37).fill(false),wetCount:board.starter.length,bakedCount:0,lastNumber:null,lastZone:null,
+      wet:Array(37).fill(false),baked:Array(37).fill(false),wetCount:0,bakedCount:0,lastNumber:null,lastZone:null,
       sources:[],flow:[],wave:[],totalHundredths:0,highestRole:false};
   }
   function deal(state,draws){
@@ -108,12 +107,12 @@
   function createDemo(){
     let seed=1015568748;
     const state=createBoard(1,90,()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32));
-    const opening=[18,34,22,0,28].map(id=>state.cells[id].number);
+    const opening=[26,22,19,0,31].map(id=>state.cells[id].number);
     const bakedBoard=opening.reduce(draw,state);
     const closing=[8,12,16].map(id=>bakedBoard.zones.find(z=>z.anchor===id).numbers[0]);
     return {state,draws:[...opening,...closing]};
   }
-  const api={cells,originalEdges,zoneFor,create,createDemo,draw,payRows,payout};
+  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createDemo,draw,payRows,payout};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.PartyCastellaRules=api;
 })(globalThis);
