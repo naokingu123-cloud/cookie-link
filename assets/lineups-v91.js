@@ -9,7 +9,8 @@ const catalog={
  winery:{name:'ワイナリーピラミッド',logo:'assets/winery-pyramid-tab-art-v51.webp',home:1,record:2},
  popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/popcorn-art/popcorn-logo-v88.webp',home:2,record:4},
  jelly:{name:'ジェリービンゴ',logo:'assets/jelly-emblem.svg',home:0,record:7},
- stick:{name:'ワッフルリバーシ',logo:'assets/waffle-reversi-logo.webp',home:0,record:8}
+ stick:{name:'ワッフルリバーシ',logo:'assets/waffle-reversi-logo.webp',home:0,record:8},
+ castella:{name:'パーティカステラ',logo:'assets/party-castella-logo.webp',home:0,record:9}
 };
 const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'];
 const legacyMounts=['gelato','winery','popcorn'];

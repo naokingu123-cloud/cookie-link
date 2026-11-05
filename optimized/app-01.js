@@ -2580,7 +2580,7 @@ function sanitizeRecords(from){
  const to=emptyRecords();if(!from||typeof from!=='object')return to;
  for(const key of [...RECORD_SUMS,...RECORD_MAXIMA])to[key]=recordCount(from[key]);
  for(const def of TITLE_DEFS)if(recordCount(from.titles?.[def.id])&&to[def.metric]>=def.target)to.titles[def.id]=from.titles[def.id];
- for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(8,recordCount(r.game)))}));
+ for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(9,recordCount(r.game)))}));
  to.best=to.best.filter(r=>r.win>0).sort((a,b)=>b.win-a.win||b.at-a.at);to.clears=to.clears.filter(r=>r.clears>0).sort((a,b)=>b.at-a.at);
  return to;
 }
@@ -3039,7 +3039,7 @@ function drawBetPreview(d){
 
 function pendingCellNumbers(e){return e&&['waiting','settled','ready'].includes(e.phase)?e.pendingDraws:new Set();}
 function syncPendingHitTiles(s){
- if(['popcorn','jelly','stick'].includes(s.engine?.kind))return;
+ if(['popcorn','jelly','stick','castella'].includes(s.engine?.kind))return;
  const pending=app?.phase==='playing'&&app.enabled[s.i]?pendingCellNumbers(s.engine):new Set();
  const ids=new Set();if(pending?.size)for(const row of s.engine.board)for(const t of row)if(t&&pending.has(t.number))ids.add(t.id);
  for(const [id,el] of s.tiles)el.classList.toggle('pending-hit',ids.has(id));
@@ -3085,6 +3085,7 @@ function cookieMiniEvent(s,ev,e){
  if(ev.phase==='vanish')fx.shatter=makeShatterFx(ev,grid,e.speed,e.version);s.cookieMiniState=fx;
 }
 function miniature(s){
+ if(s.engine?.kind==='castella'){s.paintCastella(true);return;}
  if(s.engine?.kind==='stick'){s.paintStick(true);return;}
  if(s.engine?.kind==='jelly'){s.paintJelly(true);return;}
  if(s.engine?.kind==='popcorn'){s.paintPopcorn(true);return;}
@@ -3119,7 +3120,7 @@ function tabs(a){
  for(const s of slots){
   if(!s.engine)continue;const e=s.engine,b=a.bet(s.i),win=medalWin(b,e.totalHundredths);
   const state=b===0?'参加なし':e.phase==='complete'?(a.phase==='playing'?'終了・集計待ち':a.phase==='paying'?'払い出し中':'払い出し済'):e.phase==='allclear'?'全消し！':a.phase==='ready'?'準備OK':e.phase==='link'?(s.event.newRecord?'最大LINK更新！':s.event.depth+'連鎖'):e.busy?'進行中 · 待ち'+e.queue.length:'次の球を待機';
-  if(['popcorn','jelly','stick'].includes(e.kind)){
+  if(['popcorn','jelly','stick','castella'].includes(e.kind)){
    fitGoldenNumber(s.tabBet,num(b),14,76);s.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(s.tabWin,num(win),17,50);
    const tier=sugarVisualTier(e.wonderToken||b);applySugarTier(s.tabSugar.querySelector('.sugar-gem'),tier);
    s.tabSugar.hidden=b<=0;s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.classList.toggle('collected',e.wonderCollected);
@@ -3166,7 +3167,7 @@ function syncPayClimb(){
 
 const PAY_ROW_HEIGHT=19,PAY_TOP=67;
 function updatePayTable(e,bet){
- if(['gelato','winery','popcorn','jelly','stick'].includes(e.kind))return;
+ if(['gelato','winery','popcorn','jelly','stick','castella'].includes(e.kind))return;
  const shown=slots[active].payDisplayedLink??e.maxLink,track=$('pay'),top=linkRows(shown)[0],key=active+'/'+bet+'/'+shown;
  if(payKey===key)return;payKey=key;track.dataset.hasWin=String(shown>=MIN_PAID_LINK);
  const switched=track.dataset.game!==String(active),first=!track.children.length;
@@ -3297,7 +3298,7 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),sugarVisualTier(token));slot.setAttribute('aria-label',token?WONDER_NAMES[sugarVisualTier(token)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- if(['choco','candy','gelato','winery','popcorn','jelly','stick'].includes(e.kind))return;
+ if(['choco','candy','gelato','winery','popcorn','jelly','stick','castella'].includes(e.kind))return;
  const concealed=a.phase==='ready';
   const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
@@ -3549,6 +3550,7 @@ function startHammerTransfer(s,ev,e){
 }
 
 function render(s,ev,e,animate=true){
+ if(e?.kind==='castella'){s.paintCastella(false);return;}
  if(e?.kind==='stick'){s.paintStick(false);return;}
  if(e?.kind==='jelly'){s.paintJelly(false);return;}
  if(e?.kind==='popcorn'){s.paintPopcorn(false);return;}
@@ -3625,7 +3627,7 @@ function reachContext(e,a=app){
   else if(count>=3&&count<=8){if(e.processed!==count)return null;}
   else return null;
  }else if(e.reachMode==='single'||e.drawMode==='single'){
-  if(e.processed!==count||(!count&&(!['popcorn','jelly','stick'].includes(e.kind)||!e.running)))return null;
+  if(e.processed!==count||(!count&&(!['popcorn','jelly','stick','castella'].includes(e.kind)||!e.running)))return null;
  }else{
   if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
   else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
@@ -3637,6 +3639,7 @@ function reachContext(e,a=app){
 function reachContextKey(e,a=app){return reachContext(e,a)?.key||null;}
 function failReachPreview(s,epoch,error){if(s.reachEpoch!==epoch)return;s.reachStatus='error';s.reachResults=[];s.tabReachResults=[];s.reachError=String(error?.message||error);console.warn('Reach preview skipped:',s.reachError);scheduleUI(app);}
 function requestReach(s,e,a=app){
+ if(e?.kind==='castella')return s.updateCastellaReach(a);
  if(e?.kind==='stick')return s.updateStickReach(a);
  if(e?.kind==='jelly')return s.updateJellyReach(a);
  if(e?.kind==='popcorn')return s.updatePopcornReach(a);
@@ -3663,7 +3666,7 @@ function requestReach(s,e,a=app){
 function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
 function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return paidReachDrawAllowed(a)&&reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
 function updateReachBoard(s,a){
- if(['popcorn','jelly','stick'].includes(s.engine?.kind))return;
+ if(['popcorn','jelly','stick','castella'].includes(s.engine?.kind))return;
  if(!s.engine)return;
  const results=visibleReachResults(s,a),byNumber=new Map(results.map(p=>[p.number,p])),tilesById=new Map(s.engine.board.flat().filter(Boolean).map(t=>[t.id,t]));
  for(const [id,el] of s.tiles){
@@ -3688,7 +3691,7 @@ const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
  if(s.engine?.kind==='choco')return chocoReachReady(s,a)?(s.tabReachResults||[]).filter(p=>medalWin(a.bet(s.i),p.total)>medalWin(a.bet(s.i),s.tabReachBase||0)):[];
- if((!['popcorn','jelly','stick'].includes(s.engine?.kind)&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
+ if((!['popcorn','jelly','stick','castella'].includes(s.engine?.kind)&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
  const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
  return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
 }
@@ -3704,7 +3707,7 @@ function paintReachPage(s,{slide=false}={}){
  const markup=page.map(p=>{
   const label=p.oddsUp?'オッズアップ':reachWord(s,p.tier);
   let digits=String(p.number);
-  if(s.engine?.kind!=='stick')digits=p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number);
+  if(!['stick','castella'].includes(s.engine?.kind))digits=p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number);
   return '<span class="reach-num'+(p.oddsUp?' odds-up':'')+'" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+label+'、HIT後 '+p.total/100+'倍">'+digits+'</span>';
  }).join('');
  if(slide&&!motionReduced&&s.reachNumbers.children.length&&page.length){
@@ -3881,7 +3884,7 @@ function renderRecordList(mode){
  if(recordPeriod==='month')rows=rows.filter(r=>recordMonth(r.at)===month);
  recordOffset=Math.min(recordOffset,Math.max(0,Math.ceil(rows.length/5)-1));
  const shown=rows.slice(recordOffset*5,recordOffset*5+5);
- $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===8?'ワッフルリバーシ':r.game===7?'ジェリービンゴ':r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+(r.game===7?'':' · '+r.chain+'連鎖')+(clear?' · 全消し'+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
+ $('record-page').innerHTML='<div class="record-list-heading"><h3>'+(clear?'全消し達成履歴':'自分の高配当')+'</h3><div><button type="button" id="record-period-all" aria-pressed="'+(recordPeriod==='all')+'">すべて</button><button type="button" id="record-period-month" aria-pressed="'+(recordPeriod==='month')+'">今月</button></div></div>'+(shown.length?'<ol class="record-score-list">'+shown.map((r,i)=>{const rank=recordOffset*5+i+1;return '<li class="record-score-row" data-rank="'+(clear?0:rank)+'"><span class="score-rank">'+(clear?recordIcon('candy4'):rank)+'</span><div class="score-main"><strong>'+recordNumber(r.win,24,176)+'<em class="win-word">WIN</em></strong><span>'+(r.game===9?'パーティカステラ':r.game===8?'ワッフルリバーシ':r.game===7?'ジェリービンゴ':r.game===4?'ポップコーンスプラッシュ':'ゲーム'+r.game+' · '+r.link+' LINK')+(r.game===7||r.game===9?'':' · '+r.chain+'連鎖')+(clear?(r.game===9?' · 全焼き':' · 全消し')+r.clears+'回':'')+'</span></div><time>'+recordDate(r.at)+'</time></li>';}).join('')+'</ol>':'<div class="record-empty"><span class="menu-art '+(clear?'medal-art':'trophy-art')+'" aria-hidden="true"></span><p>まだ記録がありません</p></div>')+recordPager(rows.length,5);
  $('record-period-all').onclick=()=>{recordPeriod='all';recordOffset=0;renderRecordMenu();};$('record-period-month').onclick=()=>{recordPeriod='month';recordOffset=0;renderRecordMenu();};attachRecordPager(rows.length,5);
 }
 function renderRecordMenu(){

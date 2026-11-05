@@ -1,0 +1,133 @@
+/* Party Castella follows the shared lottery, with its own board and final payout. */
+(()=>{
+'use strict';
+const id=SweetsLineup.ids.indexOf('castella'),slot=slots[id],game=SweetsLineup.catalog.castella;
+const R=window.PartyCastellaRules,view=window.PartyCastellaView.mount(slot.panel);
+const sugarCount=30,animationMs=1500;
+let clock=0,lastHit=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,paused=false;
+const engine={
+ kind:'castella',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'全焼き',version:0,
+ maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,idle:true,busy:false,
+ get allClears(){return Number(this.state.highestRole);},
+ get totalHundredths(){return this.state.phase==='done'?this.state.totalHundredths:0;},
+ get paused(){return paused;},
+ set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
+ reset(){
+  this.version++;this.state=R.create();this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
+  this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
+  paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
+  stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
+ },
+ setRainbowSugar(bet){this.wonderToken={id:this.version,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};},
+ start(){
+  this.running=true;
+  this.wonderToken??={id:this.version,value:this.roundBet,tier:sugarVisualTier(this.roundBet),kind:'castella'};
+  this.emit('waiting');
+ },
+ previewDraw(n){this.drawn.add(n);},
+ enqueueBatch(numbers){
+  for(const n of numbers){
+   if(!this.running)break;
+   const next=R.draw(this.state,n);if(!next)continue;
+   this.state=next;this.processed=this.accepted=next.draws.length;lastHit=clock;
+   invalidateReach(slot);this.emit('settled');
+   if(next.highestRole)announceAchievement(game.name+'　37個すべて焼き上がり！ 全焼きボーナス');
+   if(active===id){
+    if(next.phase==='done'&&next.totalHundredths){
+     const tier=reachTier(next.totalHundredths,next.highestRole);
+     sceneSound(['line','bonus','big-bonus','allclear'][tier],{volume:.62+tier*.06});
+    }else sceneSound(next.draws.length<=5?'cookie-hit':'line',{volume:.3});
+   }
+   if(next.phase==='done'){collectSugar();finish(this.version);}
+   else slot.updateCastellaReach(app);
+  }
+ },
+ emit(phase){this.phase=phase;slot.event={phase};slot.dirtyMain=slot.dirtyMini=true;lastMain=lastMini=-Infinity;wake();scheduleUI(app);}
+};
+
+app.engines[id]=slot.engine=engine;
+slot.holder.classList.add('pct-slot');slot.panel.classList.add('pct-panel');
+const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();
+emblem.src=game.logo;emblem.alt=game.name;title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
+
+function projectReaches(s,bet){
+ if(s.phase!=='bake')return [];
+ const base=R.payout(s.bakedCount),currentWin=medalWin(bet,base),hits=[];
+ for(let number=1;number<=25;number++){
+  const next=R.draw(s,number);if(!next)continue;
+  const total=R.payout(next.bakedCount);
+  if(medalWin(bet,total)<=currentWin)continue;
+  const gain=total-base,allClear=next.highestRole,tier=reachTier(gain,allClear);
+  hits.push({number,total,gain,tier,allClear,zone:next.lastZone,kind:['reach','high','super','all'][tier]});
+ }
+ return hits;
+}
+slot.updateCastellaReach=function(a){
+ const s=engine.state,c=reachContext(engine,a);
+ if(!c||a.bet(id)<=0||s.phase!=='bake'){
+  if(slot.reachStatus!=='inactive'){invalidateReach(slot);slot.reachStatus='inactive';}return;
+ }
+ if(slot.reachBoardKey===c.key)return;
+ slot.tabReachResults=slot.reachResults=projectReaches(s,a.bet(id));slot.reachBoardKey=c.key;
+ slot.tabReachBase=R.payout(s.bakedCount);slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
+};
+function collectSugar(){
+ if(engine.wonderCollected||engine.state.bakedCount<sugarCount)return;
+ engine.wonderCollected=true;engine.roundSteps=1;const token=engine.wonderToken;
+ app.wonderBank.push({...token,game:id});app.wonderValue+=token.value;app.wonderSteps=app.wonderBank.length;
+ if(isDirectJpcSugar(token)){select(id);showSugarCutin('虹色シュガー獲得!!','次ゲームは直接JPCへ！',true);}
+ showSugarAward(slot,[token]);announceAchievement(game.name+'　ワンダーシュガーGET！');
+}
+async function finish(version){
+ await finishGamePresentation(slot,engine,app,version);
+ if(engine.version!==version||app.phase!=='playing'||app.paid[id])return;
+ engine.running=false;engine.emit('complete');app.paid[id]=true;app.roundWins[id]=medalWin(app.locked[id],engine.totalHundredths);
+ if(app.enabled.every((on,i)=>!on||app.paid[i]))app.finishRound();recordChanged(app);
+}
+const lesson=(()=>{
+ let state=R.create();const stages=[{at:0,state,reach:[]}];
+ for(const [i,n] of R.fullBakeDraws.entries()){
+  state=R.draw(state,n);
+  stages.push({at:[1300,2850,4400,5950,7500,10500,12800,15100][i],state,reach:projectReaches(state,100)});
+ }
+ return stages;
+})();
+function paint(mini){
+ if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
+ const demo=app.phase==='ready',stage=demo?lesson.findLast(e=>e.at<=clock%20000):null;
+ const s=stage?stage.state:engine.state,age=stage?clock%20000-stage.at:clock-lastHit;
+ const opts={time:clock,bet:app.bet(id),demo,paused:app.paused,age,reach:stage?stage.reach:slot.reachResults,
+  sugarCount,sugarCollected:stage?s.phase==='done'&&s.bakedCount>=sugarCount:engine.wonderCollected,
+  sugarIcon:mini||!app.bet(id)?null:getSugarSprite(sugarVisualTier(engine.wonderToken||app.bet(id)))};
+ if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
+}
+slot.paintCastella=paint;
+function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
+function tick(now){
+ frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
+ if(moving&&stamp!==null)clock+=Math.max(0,now-stamp);stamp=moving?now:null;
+ if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
+ if(active!==id&&clock-lastMini>=120){paint(true);lastMini=clock;}
+ if(moving&&(active===id&&app.phase==='ready'||clock-lastHit<=animationMs))wake();
+ else stamp=null;
+}
+const oldSelect=select;select=function(i){
+ const result=oldSelect(i);document.body.classList.toggle('pct-active',active===id);
+ lastMain=lastMini=-Infinity;wake();return result;
+};
+const oldHud=hud;hud=function(a){oldHud(a);if(active===id){
+ const s=engine.state;put('best','生地 '+s.wetCount+' ／ 焼き上がり '+s.bakedCount+'個');
+ put('ballinfo',s.phase==='pour'?'生地を注ぐ ／ あと'+(5-s.draws.length)+'球':s.phase==='bake'?'焼き上げ ／ あと'+(8-s.draws.length)+'球':'焼き上がり');
+}};
+const oldResult=renderRoundResult;renderRoundResult=function(a){
+ oldResult(a);if(!a.result)return;
+ const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.castella===String(a.token))return;
+ row.dataset.castella=String(a.token);
+ row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
+ const s=engine.state;
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個'+(s.highestRole?' ／ 全焼きボーナス':'')+' ／ '+s.totalHundredths/100+'倍'+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+};
+new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
+document.addEventListener('visibilitychange',()=>{stamp=null;wake();});
+window.PartyCastella={engine,core:R};engine.reset();select(active);
+})();

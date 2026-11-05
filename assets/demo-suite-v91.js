@@ -22,7 +22,8 @@ const games={
   ['ジュースを注ぐ','HITした番号のグラスへ注入'],['あふれて分配','余った量を下の2杯へ半分ずつ'],['MIXでODDS UP','異なる色が入ったグラスで倍率UP'],['注入量アップ','特別番号で次から注ぐ量が2倍'],['満タンで配当','本盤は満タン10杯から配当']]},
  popcorn:{name:'ポップコーンスプラッシュ',accent:'#ffe093'},
  jelly:{name:'ジェリービンゴ',accent:'#adf2e1'},
- stick:{name:'ワッフルリバーシ',accent:'#ffd994'}
+ stick:{name:'ワッフルリバーシ',accent:'#ffd994'},
+ castella:{name:'パーティカステラ',accent:'#ffcc81'}
 };
 const alias={canyon:'choco',chocolate:'choco',six:'candy',sixdrop:'candy',drop:'candy',prism:'gelato',pyramid:'winery'};
 function kindOf(s){
@@ -33,7 +34,7 @@ const art={},images={
  cakes:['cake-white','cake-strawberry','cake-milk','cake-bitter'].map(k=>'assets/canyon-geology/'+k+'.webp'),
  ore:['assets/canyon-geology/ore-diamond.webp'],
  prism:['assets/gelato-prism-gelato-v37.png'],glass:['assets/winery-crystal-coupe-v60.png'],
- popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:['assets/jelly-emblem.svg'],stick:['assets/waffle-reversi-logo.webp']
+ popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:['assets/jelly-emblem.svg'],stick:['assets/waffle-reversi-logo.webp'],castella:[SweetsLineup.catalog.castella.logo]
 };
 for(const [key,urls] of Object.entries(images))art[key]=urls.map(src=>{const im=new Image();im.decoding='async';im.src=src;return im;});
 const loaded=im=>im&&(im.naturalWidth||im.width)>0&&im.complete!==false;

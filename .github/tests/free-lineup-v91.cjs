@@ -5,7 +5,7 @@ function load(search){
  const root={dataset:{},toggleAttribute(){}},ctx={location:{search},URLSearchParams,document:{documentElement:root,addEventListener(){},head:{}},MutationObserver:class{observe(){}},window:{}};
  script.runInNewContext(ctx);const setup=ctx.window.SweetsLineup;return {chosen:Array.from(setup.chosen),ids:Array.from(setup.ids),mode:setup.mode};
 }
-const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'],kinds=[...classic,'gelato','winery',...festival];
+const classic=['cookie','choco','candy'],festival=['popcorn','jelly','stick'],kinds=[...classic,'gelato','winery',...festival,'castella'];
 assert.deepEqual(load('').chosen,festival);assert.deepEqual(load('').ids,['jelly','stick','popcorn']);assert.deepEqual(load('?set=classic').ids,classic);
 for(const bad of ['cookie,cookie','winery,unknown','cookie,choco,candy,popcorn',''])assert.equal(load('?games='+bad).mode,'festival');
 for(const alias of ['waffle','reversi'])assert.deepEqual(load('?games='+alias).chosen,['stick']);
