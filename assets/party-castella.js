@@ -63,6 +63,7 @@ function number(ctx,n,x,y,size,filled){
  }
  ctx.restore();
 }
+function idless(kind){return kind==='fire'?.6:1.8;}
 function specialMarker(ctx,x,y,rr,kind,on,age,unit){
  ctx.save();
  const g=ctx.createRadialGradient(x,y,unit*.04,x,y,rr*1.1);
@@ -75,11 +76,51 @@ function specialMarker(ctx,x,y,rr,kind,on,age,unit){
  }
  circle(ctx,x,y,rr*.93,g);
  outline(ctx,x,y,rr*.94,on?'#fff6c0':'#e1bc75',unit*.039);
- if(on){ctx.globalAlpha=.5+.5*Math.sin(age*.006);outline(ctx,x,y,rr*1.04,kind==='fire'?'#ffb85f':'#fff3bd',unit*.06);}
+ const tick=Number.isFinite(age)?age:0,glow=(Math.sin(tick*.007+idless(kind))*.5+.5);
+ ctx.shadowColor=kind==='fire'?'#ff873e':'#ffda65';
+ ctx.shadowBlur=unit*(on?.28:.14)*(0.7+glow*.5);
+ ctx.globalAlpha=on?.84+.16*glow:.58+.22*glow;
+ outline(ctx,x,y,rr*(on?1.13:1.08),kind==='fire'?'#ffb768':'#fff0a1',unit*(on?.075:.060));
+ ctx.setLineDash([unit*.16,unit*.08]);ctx.lineDashOffset=-(tick/75)*unit*.015;
+ ctx.globalAlpha=on?1:.78;
+ outline(ctx,x,y,rr*.985,on?'#fff9d0':'#ffe8a0',unit*.038);
+ ctx.setLineDash([]);ctx.shadowBlur=0;
  ctx.globalAlpha=1;
  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 '+unit*.40+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
  ctx.fillText(kind==='fire'?'🔥':'🍯',x,y+unit*.014);
- if(on){ctx.fillStyle='#fff4c8';ctx.font='900 '+unit*.18+'px system-ui';ctx.fillText('UP!',x,y+unit*.28);}
+ ctx.font='1000 '+unit*.14+'px system-ui,sans-serif';
+ ctx.fillStyle=on?'#fff9cc':'#ffdfa5';
+ ctx.fillText(on?'UP!':kind==='fire'?'FIRE':'ODDS',x,y+unit*.29);
+ ctx.restore();
+}
+function reachEffect(ctx,x,y,r,hit,time,mini){
+ const tier=hit.tier||0,colors=['#ffec8f','#ffb64d','#ff7892','#ffd86a'];
+ const all=hit.allClear||tier===3;
+ const t=Number.isFinite(time)?time:0,phase=reduced.matches?0:t/600;
+ ctx.save();
+ const glow=.72+.28*Math.cos(t/220)**2;
+ const color=all?['#ff7f9c','#fff08e','#7af8dd','#6abaff','#e497ff'][Math.floor(t/150)%5]:colors[Math.min(tier,3)];
+ ctx.strokeStyle=color;ctx.lineWidth=r*(all?.155:.10);ctx.globalAlpha=glow;
+ ctx.shadowColor=color;ctx.shadowBlur=r*(all?.62:.37);
+ ctx.beginPath();ctx.arc(x,y,r*1.09,0,tau);ctx.stroke();
+ ctx.shadowBlur=0;ctx.globalAlpha=.75;
+ for(let k=0;k<(all?5:3);k++){
+   const angle=(all?1:-1)*phase+(k/(all?5:3))*tau;
+   const sx=x+Math.cos(angle)*r*1.22,sy=y+Math.sin(angle)*r*1.22;
+   ctx.fillStyle=all?['#ff7f9c','#ffe776','#88f2b1','#75dfff','#e69aff'][k]:colors[Math.min(tier,3)];
+   circle(ctx,sx,sy,r*(all?.115:.083),ctx.fillStyle);
+ }
+ ctx.globalAlpha=1;
+ if(!mini){
+   const alternate=all?Math.floor(t/850)%2===0:false;
+   const caption=all?(alternate?'リーチ':'全焼き'):tier===2?'超高額':tier===1?'高額':'リーチ';
+   const fontSize=r*(all?.62:.59);
+   ctx.font='1000 '+fontSize+'px "Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif';
+   ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.lineWidth=r*.16;ctx.strokeStyle='#582d25';ctx.strokeText(caption,x,y-r*.82);
+   ctx.fillStyle=all?'#fff9d9':tier===2?'#ffe6b3':'#fff8c8';
+   ctx.fillText(caption,x,y-r*.82);
+ }
  ctx.restore();
 }
 function hitLabel(ctx,x,y,unit){
@@ -204,7 +245,9 @@ function paint(ctx,s,opts={},mini=false){
  if(!w||!h)return;
  const age=reduced.matches?Infinity:Math.max(0,opts.age??Infinity),oven=showOven(s,age);
  const bake=s.draws.length>=6,play=s.draws.length>0&&age<1500,zoneId=opts.previewZone||s.lastZone;
- const key=[w,h,oven,play?Math.floor(age/30):-1,tiles.naturalWidth,panArt.naturalWidth,bottle.naturalWidth,zoneId].join('/');
+ const reachShown=oven&&s.phase==='bake'&&Array.isArray(opts.reach)&&opts.reach.length>0;
+ const key=[w,h,oven,play?Math.floor(age/30):-1,tiles.naturalWidth,panArt.naturalWidth,bottle.naturalWidth,zoneId,
+   reachShown?Math.floor((opts.time||0)/80):-1,reachShown?opts.reach.map(v=>v.number+':'+v.tier).join(','):''].join('/');
  const last=history.get(ctx);
  if(last?.s===s&&last.key===key)return;
  let frame=last?.frame;
@@ -306,6 +349,16 @@ function paint(ctx,s,opts={},mini=false){
    if(hit)hitLabel(ctx,x,y-unit*.18,unit);
   }
  }
+ if(reachShown){
+  // Reach is judged only after five pouring balls, using the twenty original number positions.
+  for(const hit of opts.reach){
+   if(s.draws.includes(hit.number))continue;
+   const z=s.zones.find(z=>z.numbers[0]===hit.number);
+   if(!z)continue;
+   const c=s.cells[z.anchor];
+   reachEffect(ctx,X(c.x),Y(c.y),rr,hit,opts.time,mini);
+  }
+ }
  if(!bake&&play&&s.sources.length){
   const c=s.cells[s.sources[0]];dispenser(ctx,X(c.x),Y(c.y),unit,age);
  }
@@ -324,7 +377,7 @@ function mount(panel){
  <div class="pct-anchors" role="group" aria-label="番号を選ぶと焼き範囲を表示"></div></div>
  <div class="pct-status" role="status" aria-label="火力・オッズアップ状況" aria-live="polite">
    <div class="pct-status-fire"><div class="pct-icon-fire" aria-hidden="true"></div><div class="pct-stat-line"><small>火力 LEVEL</small><strong class="pct-fire-value">Lv.1</strong><span class="pct-fire-radius">周囲1マス</span></div></div>
-   <div class="pct-status-odds"><div class="pct-icon-odds" aria-hidden="true"></div><div class="pct-stat-line"><small>ODDS UP</small><strong class="pct-odds-value">×1.0</strong><span class="pct-odds-hit">0/4</span></div></div>
+   <div class="pct-status-odds"><div class="pct-icon-odds" aria-hidden="true"></div><div class="pct-stat-line"><small>ODDS UP</small><strong class="pct-odds-value">+0.0倍</strong><span class="pct-odds-hit">0/4</span></div></div>
  </div>
  <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true"></div>
  <div class="pct-caption" role="status" aria-live="polite"></div>`;
@@ -354,9 +407,8 @@ function mount(panel){
     }
    }
    value.textContent=label;
-   const glyphs=label.length+(/[^0-9]$/.test(label)?.7:0);
-   cell.style.setProperty('--digits',glyphs<=4?1:4.6/(glyphs+.9));
-   row.title=count+'個　基本'+(hundredths/100).toFixed(1)+'倍 × ODDS UP '+(1+oddsHits*.2).toFixed(1)+'　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
+   // All ODDS figures retain the same font size, even when the amount is long.
+   row.title=count+'個　基本'+(hundredths/100).toFixed(1)+'倍 ＋ ODDS UP '+(oddsHits*.5).toFixed(1)+'倍　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
    cell.setAttribute('aria-label',win.toLocaleString('ja-JP')+' WIN');
   }
  }
@@ -401,7 +453,7 @@ function mount(panel){
   lastOpts=o;updateWins(o.bet??0,s.oddsHits||0);
   q('.pct-fire-value').textContent='Lv.'+(s.fireLevel||1);
   q('.pct-fire-radius').textContent='周囲'+(s.fireLevel||1)+'マス';
-  q('.pct-odds-value').textContent='×'+(1+.2*(s.oddsHits||0)).toFixed(1);
+  q('.pct-odds-value').textContent='+'+((s.oddsHits||0)*.5).toFixed(1)+'倍';
   q('.pct-odds-hit').textContent=(s.oddsHits||0)+'/4';
   root.dataset.flame=String(s.fireLevel||1);
   root.dataset.odds=String(s.oddsHits||0);
