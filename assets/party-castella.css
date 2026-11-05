@@ -1,105 +1,44 @@
-body.pct-active #screen>.game{background:#b87449 url('party-castella-bg.webp?v=116') center/cover!important}
+body.pct-active #screen>.game{background:#edc588 url('party-castella-bg.webp?v=117') center/cover no-repeat!important}
 body.pct-active #screen>.game>.festival-top,body.pct-active #screen>.game>.statusline,body.pct-active :is(#odds-panel,#allclear-award,#carnival-heading,#choco-heading,#carnival-odds){display:none!important}
 body.pct-active #screen>.game>.field{flex:1 1 auto!important;width:100%!important;height:auto!important;min-height:0!important;grid-template:minmax(0,1fr)/minmax(0,1fr)!important;gap:0!important;background:transparent!important}
 body.pct-active .board-area,body.pct-active #panels{width:100%!important;max-width:none!important}
 #screen #panels>.pct-panel{position:relative!important;width:100%!important;height:100%!important;overflow:hidden!important;isolation:isolate;background:transparent!important}
 #screen #panels>.pct-panel>:not(.pct-scene),#screen #panels>.pct-panel::before,#screen #panels>.pct-panel::after{display:none!important}
 .pct-scene,.pct-scene *{box-sizing:border-box}
-.pct-scene [hidden]{display:none!important}
-.pct-scene{--pct-unit:1px;position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,27fr) minmax(0,73fr);gap:.7%;padding:1.7% 1.3% 1.5%;overflow:hidden;border:1px solid #bd8657;border-radius:10px;background:#eac594 url('party-castella-bg.webp?v=116') center/cover;color:#382316;font:800 calc(var(--pct-unit)*12)/1.12 'Hiragino Maru Gothic ProN','Yu Gothic',system-ui,sans-serif;text-shadow:none;isolation:isolate}
-.pct-side,.pct-tray{min-width:0;min-height:0}
-.pct-side{display:flex;flex-direction:column;justify-content:space-between;gap:2%;padding:.25em 0 .12em .15em}
-.pct-stats{display:grid;align-content:start;gap:.35em}
-.pct-phase{justify-self:start;white-space:nowrap;padding:.24em .5em;color:#ffefc3;background:#913e31ed;border:1px solid #e6ae6d;border-radius:2em;box-shadow:0 1px 2px #4d291e60;font-size:.92em;letter-spacing:.035em}
-.pct-counter{display:grid;gap:.13em}
-.pct-counter>div{display:grid;grid-template-columns:1.2em 1fr auto;gap:.18em;align-items:center;padding:.17em .32em .17em .2em;color:#72461d;white-space:nowrap;border-radius:.35em;border:1px solid #c19a5f;background:#fff2ccf5;box-shadow:0 1px 2px #4d291e55}
-.pct-counter>div+div{color:#fff2ce;background:#803e2bea;border-color:#d3a971}
-.pct-counter i{display:block;width:1.15em;aspect-ratio:1;border:1px solid #aa7436;border-radius:50%;background-image:url('party-castella-tiles.webp?v=116');background-size:300% 100%;background-position:50% center}
-.pct-counter>div+div i{background-position:100% center}
-.pct-counter span{font-size:.96em;letter-spacing:.02em}
-.pct-counter b{font:950 1.54em/.99 system-ui;font-variant-numeric:tabular-nums}
-.pct-pay{min-height:0;flex:0 1 68%;display:flex;align-items:stretch;padding:calc(var(--pct-unit)*4);border:0;border-radius:6px;overflow:hidden;box-shadow:0 2px 5px #49311c8c;background:#986635 url('party-castella-pay.webp') center/100% 100% no-repeat;color:#fff4ce}
-.pct-pay table{width:100%;height:100%;table-layout:fixed;border-spacing:0;border-collapse:separate;background:#244034f7;color:inherit;text-align:center;white-space:nowrap;font:750 calc(var(--pct-unit)*10.8)/1 system-ui;font-variant-numeric:tabular-nums}
-.pct-pay th,.pct-pay td{padding:0 1%;border-bottom:1px solid #80957666}
-.pct-pay tr:last-child :is(th,td){border-bottom:0}
-.pct-pay :is(th,td)+:is(th,td){border-left:1px solid #7892797a}
-.pct-pay thead th{color:#fff6d4;background:#485741}
-.pct-pay tbody tr:first-child{color:#ffe5a3;background:#70412a}
+#screen #panels>.pct-panel .pct-scene{--pct-unit:1px;position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,21fr) minmax(0,79fr);gap:.65%;padding:1.4% 1%;overflow:hidden;isolation:isolate;border:2px solid #e3af68;border-radius:9px;background:#e9c48d;box-shadow:inset 0 0 0 1px #7d482d;color:#492a1d;font:800 calc(var(--pct-unit)*11)/1.05 'Hiragino Maru Gothic ProN','Yu Gothic',system-ui,sans-serif;text-shadow:none}
+.pct-land{position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.pct-side,.pct-tray,.pct-pan{position:relative;min-width:0;min-height:0}
+.pct-side{display:flex;flex-direction:column;gap:1.2%;padding:.04em 0 .1em}
+.pct-phase{display:grid;flex:0 0 auto;gap:.18em;border-radius:.38em;padding:.24em;background:#773e28;box-shadow:0 1px 3px #42201bb3,inset 0 0 0 1px #d8a261;color:#fff1d6}
+.pct-phase>div{display:flex;align-items:center;justify-content:center;gap:.28em;min-width:0;min-height:1.57em;border-radius:.22em;background:#6a4432;color:#ffe7c0;white-space:nowrap;font-size:.93em}
+.pct-phase strong{font-weight:950;letter-spacing:.01em}
+.pct-phase span{font-weight:750;font-size:.9em;font-variant-numeric:tabular-nums}
+.pct-phase:not(.pct-after) .pct-phase-first,.pct-phase.pct-after .pct-phase-second{color:#572c17;background:#ffdf8d;box-shadow:inset 0 0 0 1px #d49e4f}
+.pct-pay{position:relative;display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;padding:.86em .45em 1.14em;border:1px solid transparent;border-image:url('party-castella-plaque.webp') 100 85 fill / 1.08em 1em stretch;overflow:hidden;box-shadow:0 2px 5px #482515a6;background:#f4d79c}
+.pct-pay-label{display:grid;flex:0 0 7.5%;min-height:0;align-items:center;text-align:center;color:#6e331d;font-weight:1000;font-size:1.12em;letter-spacing:.08em;text-shadow:0 1px #fff4d4}
+.pct-pay table{display:table;width:100%;height:0;flex:1 1 auto;min-height:0;table-layout:fixed;border-collapse:collapse;border:0;color:#492713;background:transparent;text-align:center;white-space:nowrap;font:bold calc(var(--pct-unit)*10.5)/1 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.pct-pay table th,.pct-pay table td{padding:0;vertical-align:middle;border:0}
+.pct-pay thead th{color:#844626;box-shadow:inset 0 -1px #a46c40;font-size:.87em;font-weight:800}
+.pct-pay tbody tr{box-shadow:inset 0 -1px #a56c332c}
 .pct-pay tbody th{font-weight:700}
-.pct-pay tbody tr.current{color:#382816;background:#ffe6a1}
-.pct-tray{display:flex;flex-direction:column;gap:1%;padding-top:.1em;align-items:stretch;justify-content:flex-start}
-.pct-pan{position:relative;flex:1 1 0;min-height:0;min-width:0}
-.pct-pan canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
-.pct-scene:not([data-stage=pour]) canvas{cursor:pointer}
-.pct-key{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) repeat(2,minmax(0,1.30fr));gap:.12em;min-width:0}
-.pct-key button{display:flex;align-items:center;justify-content:center;gap:.2em;min-width:0;min-height:max(25px,2.45em);margin:0;padding:.1em 0;color:#493023;background:#fff3d7f7;border:1px solid #c5a774;border-radius:.46em;box-shadow:0 1px 2px #5c422956;font:850 calc(var(--pct-unit)*10)/1 system-ui;font-variant-numeric:tabular-nums;white-space:nowrap;cursor:pointer}
-.pct-key b{flex:none;display:grid;place-items:center;min-width:1.26em;height:1.26em;border-radius:50%;color:#3c2822;background:var(--zone-color);font-size:1.08em;line-height:1}
-.pct-key .selected{background:#ffdea0;border-color:#9e683c}
-.pct-key [aria-pressed=true],.pct-key button:focus-visible{outline:2px solid #316756;outline-offset:-2px}
-.pct-caption{min-height:1.75em;align-self:center;display:flex;align-items:center;justify-content:center;gap:.38em;max-width:100%;padding:.22em .7em;border:1px solid #d8a56e;border-radius:1em;background:#733b2df5;box-shadow:0 1px 2px #49311a60;color:#fff8e9;white-space:nowrap;text-align:center}
-.pct-caption strong{font-size:.98em;color:#fff3c5}
-.pct-caption span{font-size:.9em}
-.pct-caption span:empty{display:none}
-.pct-sweep .pct-caption{background:linear-gradient(100deg,#7c332d,#9a442a 55%,#75392c);box-shadow:0 0 0 1px #ffd47c}
-.pct-sweep .pct-caption strong{color:#ffedac}
-.pct-feast{display:none}
-.pct-sweep .pct-feast{display:block;flex:none;width:2.6em;height:1.95em;object-fit:contain;margin:-.08em 0}
+.pct-pay tbody td{font-weight:850}
+.pct-pay tbody tr:last-child{box-shadow:none}
+.pct-pay tbody tr:first-child{color:#83220f;background:#d58b403b}
+.pct-pay tbody small{margin-inline-start:.08em;font-size:.65em;font-weight:1000}
+.pct-pay tbody tr.current{color:#591c0d;background:#ffb341cf;box-shadow:inset 0 1px #b86c29,inset 0 -1px #b86c29}
+.pct-tray{display:flex;align-items:stretch}
+.pct-pan{flex:1 1 0}
+.pct-pan canvas,.pct-anchors{position:absolute;inset:0;display:block;width:100%;height:100%}
+.pct-pan canvas{filter:drop-shadow(0 2px 2px #492b208c)}
+.pct-anchors{pointer-events:none}
+.pct-anchors button{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;touch-action:manipulation;cursor:pointer;appearance:none;display:block;min-width:0;min-height:0;margin:0;padding:0;border:0;border-radius:50%;background:transparent;box-shadow:none;-webkit-tap-highlight-color:transparent}
+.pct-anchors button:focus-visible{outline:2px dashed white;outline-offset:2px}
+.pct-caption{position:absolute;overflow:hidden;width:1px;height:1px;padding:0;margin:-1px;border:0;clip-path:inset(50%);white-space:nowrap;pointer-events:none}
+.pct-sweep-art{display:none;position:absolute;right:1%;bottom:0;width:20%;height:20%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 1px 4px #f4ca5b)}
+.pct-sweep .pct-sweep-art{display:block}
 #screen #tabs .pct-slot .tab .tab-game-name{display:grid!important;place-items:center;transform:none!important;background:none!important;width:100%;height:40px}
 #screen #tabs .pct-slot .tab-game-name img{width:100%;height:100%;object-fit:contain}
-#screen #tabs .pct-slot .mini-wrap{background:#35433b;border-radius:7px;overflow:hidden}
+#screen #tabs .pct-slot .mini-wrap{background:#30251d;border-radius:7px;overflow:hidden}
 #screen #tabs .pct-slot .mini-wrap canvas{width:100%;height:100%;object-fit:contain}
 #screen #tabs .pct-slot .reach-num{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif}
-:is(#round-result-layer,.result-game)[data-game-kind="castella"]{--v91-gold:#ffe69b;--v91-halo:#f5b576;--v91-floor:#5e372a;--v91-bg:url('party-castella-bg.webp?v=116')}
-
-.pct-caption [data-tier]{padding:.13em .32em;border:1px solid currentColor;border-radius:.3em}
-.pct-caption [data-tier="0"]{color:#adf3f3}.pct-caption [data-tier="1"]{color:#ffbeb0}.pct-caption [data-tier="2"]{color:#f2cdff}.pct-caption [data-tier="3"]{color:#ffec99}
-
-.pct-key .pct-flower{position:relative;border-radius:0;background:none;height:1.5em;width:1.5em}
-.pct-flower i{position:absolute;left:50%;top:50%;width:.62em;height:.9em;transform-origin:50% 100%;transform:translate(-50%,-100%) rotate(-30deg);border-radius:75% 70% 55% 55%;background:var(--zone-color);border:1px solid #7d5a49}
-.pct-flower i:nth-child(2){transform:translate(-50%,-100%) rotate(90deg)}.pct-flower i:nth-child(3){transform:translate(-50%,-100%) rotate(210deg)}
-.pct-key button:last-child .pct-flower{transform:rotate(60deg)}.pct-key button.spent span{opacity:.62;text-decoration:line-through}
-
-.pct-scene[data-preview] .pct-feast{display:none}
-
-/* v117: a real image-backed candy-land cabinet, baby-castella griddle and simple phase display. */
-body.pct-active #screen>.game{background:#edc588 url('party-castella-bg.webp?v=117') center/cover no-repeat!important}
-#screen #panels>.pct-panel .pct-scene{grid-template-columns:minmax(0,31.5fr) minmax(0,68.5fr);gap:1%;padding:12.5% 2% 1.5%;border:3px ridge #f9db8b;background:#edc588 url('party-castella-bg.webp?v=117') center/cover no-repeat!important;box-shadow:inset 0 0 0 3px #ab5e24,inset 0 0 0 7px #f4be64,inset 0 0 24px #7f3a2f55}
-.pct-scene::after{content:'';position:absolute;inset:1.2%;z-index:4;pointer-events:none;border:1px solid #fce4a7;border-radius:8px;box-shadow:0 0 0 2px #8b482b66,inset 0 0 0 1px #cf823f}
-.pct-scene .pct-land{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0;pointer-events:none;user-select:none}
-.pct-scene .pct-main-logo{position:absolute;left:34%;top:.5%;width:41%;height:12%;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 3px 3px #74392090)}
-.pct-main-logo img{width:100%;height:100%;object-fit:contain}
-.pct-scene .pct-side,.pct-scene .pct-tray{position:relative;z-index:1}
-.pct-scene .pct-side{gap:2%;padding:.1em .05em .2em;justify-content:flex-start}
-.pct-scene .pct-phase{flex:0 0 24%;min-height:0;display:grid;grid-template-rows:1fr 1fr;gap:.35em;padding:.45em;border:3px solid #e8ad49;border-radius:.9em;background:linear-gradient(145deg,#723114ef,#ab5d25f5,#532211ec);box-shadow:inset 0 0 0 2px #ffe0a0,0 4px 9px #4b2a2377,0 0 0 2px #7b3c1d;color:#4d2715;white-space:nowrap}
-.pct-phase>div{min-height:0;min-width:0;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.24em;padding:.13em .37em;border-radius:100px;border:2px solid #f1c16c;background:linear-gradient(120deg,#ffedb5,#ffd47e 60%,#d89a4a);box-shadow:inset 0 1px 2px #fff8dc,0 2px 3px #4b2017aa;opacity:.63;transition:opacity .35s,box-shadow .35s,filter .35s}
-.pct-phase strong{font:900 1.15em/1 'Hiragino Maru Gothic ProN','Yu Gothic',system-ui;color:#a34515;background:linear-gradient(#fffab5,#f8c946);border-radius:2em;border:1px solid #e7a942;padding:.20em .32em}
-.pct-phase span{font:900 1.23em/1 'Hiragino Maru Gothic ProN','Yu Gothic',system-ui;text-align:center;letter-spacing:-.015em}
-.pct-phase i{width:1.75em;aspect-ratio:1;display:block;border-radius:50%;background-image:url('party-castella-tiles.webp?v=116');background-size:300% 100%;background-position:50% center;filter:drop-shadow(0 1px 1px #95562b)}
-.pct-phase-second i{background-position:100% center}
-.pct-phase .pct-phase-second{background:linear-gradient(120deg,#ffe5a4,#f3ab65,#d87c36)}
-.pct-phase:not(.pct-after) .pct-phase-first,.pct-phase.pct-after .pct-phase-second{opacity:1;filter:saturate(1.13);box-shadow:inset 0 1px 2px #fff6dc,0 0 0 2px #fff0af,0 0 14px 4px #ffe18d9e}
-.pct-phase.pct-after .pct-phase-second strong{color:#fff1d5;background:linear-gradient(#f88156,#d53b28);border-color:#ffba80}
-.pct-scene .pct-pay{flex:1 1 0;min-height:0;min-width:0;position:relative;display:flex;flex-direction:column;gap:1%;padding:.55em .48em .46em;border:3px ridge #e9b65c;border-radius:.75em;overflow:hidden;box-shadow:0 5px 10px #452b1d80,inset 0 0 0 2px #ffe3a3;background:#9b622c url('party-castella-pay.webp') center/100% 100% no-repeat}
-.pct-pay-label{flex:0 0 9%;min-height:0;display:grid;place-items:center;border:2px ridge #e0a94f;border-radius:2em;background:linear-gradient(#fff9d6,#ffd888,#ffedae);box-shadow:inset 0 1px 2px #fff,0 2px 4px #593718;color:#75351d;font:950 1.5em/1.15 'Hiragino Maru Gothic ProN','Yu Gothic',system-ui;text-shadow:0 1px #fff9dd}
-.pct-scene .pct-pay table{flex:1 1 auto;min-height:0;height:auto;display:table;width:100%;border:2px ridge #b57c44;border-collapse:separate;border-spacing:0;background:#fff0ccee;color:#663b24;font:850 calc(var(--pct-unit)*11)/1.05 'Hiragino Maru Gothic ProN',system-ui;font-variant-numeric:tabular-nums}
-.pct-pay thead th{background:#9c502e;color:#fff6df!important;font-weight:850}
-.pct-pay tbody tr:first-child{background:#ffe6ad;color:#663c26}
-.pct-pay tbody tr:nth-child(even){background:#fff8e7}
-.pct-pay tbody tr:nth-child(odd):not(:first-child){background:#fbe7c0}
-.pct-pay tbody :is(th,td){border-bottom:1px solid #c4935855}
-.pct-pay tbody th{color:#713f27}
-.pct-pay tbody td{color:#be631a;font-size:1.07em;font-weight:1000;text-shadow:0 1px #fff3be}
-.pct-pay tbody tr.current{background:#ffcd6d;box-shadow:inset 0 0 0 1px #b96d27}
-.pct-pay tbody tr.current td{color:#9a3219}
-.pct-scene .pct-tray{gap:.3%;padding-top:0;overflow:visible}
-.pct-scene .pct-pan{flex:1 1 0;min-height:0}
-.pct-scene .pct-key{flex:0 0 auto;height:calc(var(--pct-unit)*19);grid-template-columns:repeat(8,minmax(0,1fr));gap:.28em;max-width:75%;margin:0 auto;align-self:center}
-.pct-scene .pct-key button{min-width:0;min-height:0;padding:0;font-size:calc(var(--pct-unit)*10);border-radius:1em;border:1px solid #d7a866;background:#fff0cdbb}
-.pct-scene .pct-key button span{display:none}
-.pct-scene .pct-key b{font-size:.9em;min-width:1.36em;height:1.36em}
-.pct-scene .pct-caption{position:absolute!important;overflow:hidden!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;border:0!important;clip-path:inset(50%);white-space:nowrap;pointer-events:none}
-.pct-scene .pct-sweep-art{display:none;position:absolute;right:1%;bottom:5%;width:23%;height:30%;z-index:3;object-fit:contain;pointer-events:none;filter:drop-shadow(0 1px 4px #f4ca5b);animation:pct-feast-bounce 1.4s ease-in-out infinite alternate}
-.pct-scene.pct-sweep .pct-sweep-art{display:block}
-@keyframes pct-feast-bounce{from{transform:translateY(2%) scale(.96)}to{transform:translateY(-2%) scale(1.04)}}
-@media(max-width:480px){#screen #panels>.pct-panel .pct-scene{grid-template-columns:minmax(0,33fr) minmax(0,67fr);padding:13.5% 1.7% 2%}.pct-scene .pct-main-logo{width:50%;left:29%;height:12.5%}.pct-scene .pct-phase{padding:.25em;gap:.2em;border-width:1px}.pct-phase>div{padding:.04em .12em;border-width:1px;gap:.07em}.pct-phase strong{padding:.10em .15em;font-size:.98em}.pct-phase span{font-size:1.05em}.pct-phase i{width:1.35em}.pct-scene .pct-pay{padding:.29em .18em;border-width:1px}.pct-pay-label{font-size:1.12em}.pct-scene .pct-pay table{font-size:calc(var(--pct-unit)*9.5);border-width:1px}.pct-scene .pct-key{height:calc(var(--pct-unit)*15)}}
-@media(prefers-reduced-motion:reduce){.pct-scene .pct-sweep-art{animation:none}.pct-phase>div{transition:none}}
+:is(#round-result-layer,.result-game)[data-game-kind="castella"]{--v91-gold:#ffe69b;--v91-halo:#f5b576;--v91-floor:#5e372a;--v91-bg:url('party-castella-bg.webp?v=117')}
