@@ -55,7 +55,7 @@ function projectReaches(s,bet){
   const next=R.draw(s,number);if(!next)continue;
   const total=R.payout(next.bakedCount,next.oddsHits);
   if(medalWin(bet,total)<=currentWin)continue;
-  const gain=total-base,allClear=next.bakedCount===37,tier=reachTier(gain,allClear);
+  const gain=total-base,allClear=next.bakedCount===37,tier=allClear?3:Math.min(2,reachTier(gain,false));
   hits.push({number,total,gain,tier,allClear,zone:next.lastZone,kind:['reach','high','super','all'][tier]});
  }
  return hits;
