@@ -16,7 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  payoutNote.textContent='パーティカステラの理論配当率 '+percent.format(this.state.target)+'%（設定範囲 50〜150%）。全盤面で37個全焼が可能。';
+  payoutNote.textContent='パーティカステラ　目標 '+percent.format(debugPayoutTarget)+'% → 実効 '+percent.format(this.state.target)+'%（6個固定・火力UPルールでの最小値 '+percent.format(R.molds[0].returnPercent)+'%）。全10型で37個全焼可能。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
@@ -50,10 +50,10 @@ emblem.src=game.logo;emblem.alt=game.name;title.replaceChildren(emblem);title.se
 
 function projectReaches(s,bet){
  if(s.phase!=='bake')return [];
- const base=R.payout(s.bakedCount),currentWin=medalWin(bet,base),hits=[];
+ const base=R.payout(s.bakedCount,s.oddsHits),currentWin=medalWin(bet,base),hits=[];
  for(let number=1;number<=25;number++){
   const next=R.draw(s,number);if(!next)continue;
-  const total=R.payout(next.bakedCount);
+  const total=R.payout(next.bakedCount,next.oddsHits);
   if(medalWin(bet,total)<=currentWin)continue;
   const gain=total-base,allClear=next.bakedCount===37,tier=reachTier(gain,allClear);
   hits.push({number,total,gain,tier,allClear,zone:next.lastZone,kind:['reach','high','super','all'][tier]});
@@ -67,7 +67,7 @@ slot.updateCastellaReach=function(a){
  }
  if(slot.reachBoardKey===c.key)return;
  slot.tabReachResults=slot.reachResults=projectReaches(s,a.bet(id));slot.reachBoardKey=c.key;
- slot.tabReachBase=R.payout(s.bakedCount);slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
+ slot.tabReachBase=R.payout(s.bakedCount,s.oddsHits);slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
 };
 function collectSugar(){
  if(engine.wonderCollected||engine.state.bakedCount<sugarCount)return;
@@ -131,7 +131,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.castella=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state;
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個'+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個 ／ 火力 Lv.'+s.fireLevel+' ／ ODDS ×'+(s.oddsMultiplier/100).toFixed(1)+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});
