@@ -63,6 +63,25 @@ function number(ctx,n,x,y,size,filled){
  }
  ctx.restore();
 }
+function specialMarker(ctx,x,y,rr,kind,on,age,unit){
+ ctx.save();
+ const g=ctx.createRadialGradient(x,y,unit*.04,x,y,rr*1.1);
+ if(kind==='fire'){
+   g.addColorStop(0,on?'#fff0a8':'#ffe39b');g.addColorStop(.52,on?'#ff974c':'#d9823c');
+   g.addColorStop(1,'#802a16');
+ }else{
+   g.addColorStop(0,'#fff5b7');g.addColorStop(.53,on?'#fbd05f':'#bd9441');
+   g.addColorStop(1,'#87532c');
+ }
+ circle(ctx,x,y,rr*.93,g);
+ outline(ctx,x,y,rr*.94,on?'#fff6c0':'#e1bc75',unit*.039);
+ if(on){ctx.globalAlpha=.5+.5*Math.sin(age*.006);outline(ctx,x,y,rr*1.04,kind==='fire'?'#ffb85f':'#fff3bd',unit*.06);}
+ ctx.globalAlpha=1;
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 '+unit*.40+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
+ ctx.fillText(kind==='fire'?'🔥':'🍯',x,y+unit*.014);
+ if(on){ctx.fillStyle='#fff4c8';ctx.font='900 '+unit*.18+'px system-ui';ctx.fillText('UP!',x,y+unit*.28);}
+ ctx.restore();
+}
 function hitLabel(ctx,x,y,unit){
  ctx.save();ctx.translate(x,y);ctx.rotate(-.12);
  ctx.font='italic 1000 '+unit*.292+'px Arial, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
@@ -276,6 +295,10 @@ function paint(ctx,s,opts={},mini=false){
     outline(ctx,x,y,rr*1.03,'#ff9340',rr*.105);ctx.globalAlpha=1;
    }
   }
+  if(!n&&s.specials){
+   const kind=s.specials.fire.includes(id)?'fire':s.specials.odds.includes(id)?'odds':null;
+   if(kind)specialMarker(ctx,x,y,rr,kind,!!s.wet[id],age,unit);
+  }
   if(n){
    const hit=s.draws.includes(n),active=hit&&n===s.lastNumber;
    if(hit)outline(ctx,x,y,rr*(active?1.035:.96),active?'#fff2a0':'#efb162',unit*(active?.060:.035));
@@ -295,10 +318,14 @@ function mount(panel){
  <aside class="pct-side"><div class="pct-phase" role="group" aria-label="前半・後半">
  <div class="pct-phase-first"><strong>前半</strong><span>1〜5球</span></div>
  <div class="pct-phase-second"><strong>後半</strong><span>6〜8球</span></div></div>
- <div class="pct-pay"><div class="pct-pay-label"><span>配当表</span></div>
+ <div class="pct-pay"><div class="pct-pay-label"><span>ODDS</span></div>
  <table aria-label="焼けた個数と現在のBETでの獲得WIN"><thead><tr><th scope="col">個数</th><th scope="col">WIN</th></tr></thead><tbody></tbody></table></div></aside>
  <div class="pct-tray"><div class="pct-pan"><canvas role="img"></canvas>
  <div class="pct-anchors" role="group" aria-label="番号を選ぶと焼き範囲を表示"></div></div>
+ <div class="pct-status" role="status" aria-label="火力・オッズアップ状況" aria-live="polite">
+   <div class="pct-status-fire"><div class="pct-icon-fire" aria-hidden="true"></div><div class="pct-stat-line"><small>火力 LEVEL</small><strong class="pct-fire-value">Lv.1</strong><span class="pct-fire-radius">周囲1マス</span></div></div>
+   <div class="pct-status-odds"><div class="pct-icon-odds" aria-hidden="true"></div><div class="pct-stat-line"><small>ODDS UP</small><strong class="pct-odds-value">×1.0</strong><span class="pct-odds-hit">0/4</span></div></div>
+ </div>
  <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true"></div>
  <div class="pct-caption" role="status" aria-live="polite"></div>`;
  panel.append(root);
@@ -313,12 +340,12 @@ function mount(panel){
   value.className='pct-win-value';unit.textContent='WIN';cell.append(value,unit);
   return {count,hundredths,row,cell,value};
  });
- let shown=null,shownOven=false,previewZone=null,lastOpts={},shownBet=null;
- function updateWins(bet){
-  if(shownBet===bet)return;
-  shownBet=bet;
+ let shown=null,shownOven=false,previewZone=null,lastOpts={},shownBet=null,shownBoost=null;
+ function updateWins(bet,oddsHits=0){
+  if(shownBet===bet&&shownBoost===oddsHits)return;
+  shownBet=bet;shownBoost=oddsHits;
   for(const {count,hundredths,row,cell,value} of rows){
-   const win=winFor(bet,hundredths);
+   const win=winFor(bet,R.payout(count,oddsHits));
    let label=String(win);
    // Keep the amount exact. Multiples of a large Japanese unit fit the narrow plaque.
    if(label.length>6){
@@ -329,7 +356,7 @@ function mount(panel){
    value.textContent=label;
    const glyphs=label.length+(/[^0-9]$/.test(label)?.7:0);
    cell.style.setProperty('--digits',glyphs<=4?1:4.6/(glyphs+.9));
-   row.title=count+'個　'+(hundredths/100).toFixed(1)+'倍　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
+   row.title=count+'個　基本'+(hundredths/100).toFixed(1)+'倍 × ODDS UP '+(1+oddsHits*.2).toFixed(1)+'　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
    cell.setAttribute('aria-label',win.toLocaleString('ja-JP')+' WIN');
   }
  }
@@ -371,7 +398,13 @@ function mount(panel){
   if(!s)return;
   const oven=showOven(s,o.age??Infinity),last=shown;
   if(s!==last)previewZone=null;
-  lastOpts=o;updateWins(o.bet??0);
+  lastOpts=o;updateWins(o.bet??0,s.oddsHits||0);
+  q('.pct-fire-value').textContent='Lv.'+(s.fireLevel||1);
+  q('.pct-fire-radius').textContent='周囲'+(s.fireLevel||1)+'マス';
+  q('.pct-odds-value').textContent='×'+(1+.2*(s.oddsHits||0)).toFixed(1);
+  q('.pct-odds-hit').textContent=(s.oddsHits||0)+'/4';
+  root.dataset.flame=String(s.fireLevel||1);
+  root.dataset.odds=String(s.oddsHits||0);
   if(s!==last||oven!==shownOven){
    const turn=s.draws.length;
    shown=s;shownOven=oven;root.dataset.stage=oven?'bake':'pour';
