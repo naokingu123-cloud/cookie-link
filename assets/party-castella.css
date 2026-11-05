@@ -54,3 +54,25 @@ body.pct-active .board-area,body.pct-active #panels{width:100%!important;max-wid
 #screen #tabs .pct-slot .mini-wrap canvas{width:100%;height:100%;object-fit:contain}
 #screen #tabs .pct-slot .reach-num{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif}
 :is(#round-result-layer,.result-game)[data-game-kind="castella"]{--v91-gold:#ffe69b;--v91-halo:#f5b576;--v91-floor:#5e372a;--v91-bg:url('party-castella-bg.webp?v=117')}
+
+/* v122 — dynamically heated castella: generated decoration and gold arcade lettering. */
+.pct-pay-label span{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif;font-size:1.45em;letter-spacing:.035em;color:#fff0b7;text-shadow:0 1px 0 #69351a,0 0 5px #ffe39c9c}
+.pct-pay tbody th,.pct-pay tbody td{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.pct-pay tbody td,.pct-pay tbody td small{color:#ffd473!important;-webkit-text-stroke:.13px #814516;text-shadow:0 1px 0 #4f2b14,0 0 4px #fff8c04d!important}
+.pct-pay tbody td{font-size:calc(1em * var(--digits,1));letter-spacing:-.045em}
+.pct-pay td small{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif;font-size:.56em;letter-spacing:0}
+.pct-pay tbody tr[data-prize=feast] td,.pct-pay tbody tr.current td{color:#fff1b8!important;text-shadow:0 1px 0 #482015,0 0 6px #ffeebc!important}
+.pct-tray{display:grid;grid-template-rows:minmax(0,1fr) auto;gap:1.2%;align-items:stretch}
+.pct-pan{min-width:0;min-height:0}
+.pct-status{position:relative;z-index:3;display:grid;grid-template-columns:1fr 1fr;gap:1%;min-width:0;min-height:calc(var(--pct-unit)*35);height:calc(var(--pct-unit)*44);pointer-events:none}
+.pct-status>div{display:flex;align-items:center;gap:1%;min-width:0;min-height:0;position:relative;padding:0 3%;border:1.5px solid #f9c45f;border-radius:.58em;background:linear-gradient(130deg,#713122ed,#a3432ced 48%,#60271eef);box-shadow:inset 0 0 0 1px #efb35f,0 2px 3px #482713b0;overflow:hidden}
+.pct-status>div::before{content:'';position:absolute;inset:2px;border-radius:.4em;box-shadow:inset 0 0 0 1px #ffe5a050;pointer-events:none}
+.pct-status .pct-icon-fire,.pct-status .pct-icon-odds{width:37%;height:91%;flex:0 0 37%;background-position:center;background-size:contain;background-repeat:no-repeat;filter:drop-shadow(0 1px 2px #361504)}
+.pct-status .pct-stat-line{position:relative;display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff6d3;text-shadow:0 1px #552018}
+.pct-status small{font:900 calc(var(--pct-unit)*8)/1.05 'Hiragino Maru Gothic ProN','Yu Gothic',sans-serif;white-space:nowrap;color:#f9cb83;letter-spacing:.04em}
+.pct-status strong{font:1000 calc(var(--pct-unit)*16)/1 ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif;color:#ffe38b;white-space:nowrap;text-shadow:0 1px #7c3220,0 0 5px #ffdb6e}
+.pct-status span{font:900 calc(var(--pct-unit)*8.5)/1.1 'Hiragino Maru Gothic ProN','Yu Gothic',sans-serif;white-space:nowrap;color:#fff0ca}
+.pct-scene[data-flame="2"] .pct-status-fire{background:linear-gradient(120deg,#863822,#c34a22,#973820)}
+.pct-scene[data-flame="3"] .pct-status-fire{background:linear-gradient(120deg,#972a18,#e55e18,#952c19);box-shadow:inset 0 0 0 2px #ffdb77,0 0 9px #ff873199}
+.pct-scene[data-odds="4"] .pct-status-odds{box-shadow:inset 0 0 0 2px #ffedaf,0 0 10px #ffe9a9a8}
+@media(max-width:420px){.pct-status strong{font-size:calc(var(--pct-unit)*14)}.pct-status span{font-size:calc(var(--pct-unit)*7.5)}.pct-status .pct-icon-fire,.pct-status .pct-icon-odds{width:34%;flex-basis:34%}}
