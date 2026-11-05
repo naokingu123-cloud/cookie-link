@@ -42,22 +42,29 @@
   const G1=[20,24,29,33],G2=[21,23,30,32],G3=[26,27,35,36];
   // Exact return percent: all 53,130 opening combinations × 1,140 baking triples.
   const molds=[
-    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,flames:[21,30],odds:G3,returnPercent:100.329207274},
-    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,flames:[26,35],odds:G1,returnPercent:106.956627207},
-    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,flames:[26,35],odds:G2,returnPercent:111.914012832},
-    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,flames:[27,36],odds:G1,returnPercent:112.097422872},
-    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:116.196845671},
-    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,flames:[27,36],odds:G2,returnPercent:131.510620292},
-    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:133.323314214},
-    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,flames:[21,30],odds:G1,returnPercent:134.965883748},
-    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,flames:[26,35],odds:G1,returnPercent:148.456562222},
-    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,flames:[20,29],odds:G2,returnPercent:160.042278423}
+    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,flames:[21,30],odds:G3,returnPercent:184.01580136},
+    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,flames:[26,35],odds:G1,returnPercent:194.00156353},
+    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,flames:[26,35],odds:G2,returnPercent:196.25516459},
+    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,flames:[27,36],odds:G1,returnPercent:197.20979293},
+    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:202.30057093},
+    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,flames:[27,36],odds:G2,returnPercent:194.75615752},
+    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:199.66070512},
+    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,flames:[21,30],odds:G1,returnPercent:205.07326155},
+    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,flames:[26,35],odds:G1,returnPercent:217.32889305},
+    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,flames:[20,29],odds:G2,returnPercent:217.23334126}
   ];
   const heatRadii=[null,1,2,3].map(r=>r?cells.map(a=>cells.filter(b=>distance(a,b)<=r).map(b=>b.id)):null);
   const ODDS_STEP=50; // Each activated honey tile adds +0.5x to the final base odds.
+  // The previous payout-calibration samples assumed separate oven sites. Under the
+  // corrected rule (20 original numbered sites), exhaustively recomputed returns
+  // range from 184% to 217% for these six-batter symmetry-preserving layouts.
+  // Map the 50–150 selection to progressively richer layouts while exposing the
+  // ACTUAL theoretical return; never mislabel it as an achieved 50–150% RTP.
+  const minReturn=Math.min(...molds.map(x=>x.returnPercent));
+  const maxReturn=Math.max(...molds.map(x=>x.returnPercent));
   function effectiveTarget(requested){
-    return Math.max(molds[0].returnPercent,Math.min(molds[molds.length-1].returnPercent,
-      Number.isFinite(requested)?requested:90));
+    const input=Math.max(50,Math.min(150,Number.isFinite(requested)?requested:90));
+    return minReturn+(input-50)*(maxReturn-minReturn)/100;
   }
   function isSymmetric(ids){
     const set=new Set(ids),lookup=new Map(cells.map(c=>[c.q+','+c.r,c.id]));
@@ -87,10 +94,14 @@
   }
   function create({rng=Math.random,target=90}={}){
     const rate=effectiveTarget(target);
-    let index=0;
-    while(index<molds.length-2&&molds[index+1].returnPercent<rate)index++;
-    const lo=molds[index].returnPercent,hi=molds[index+1].returnPercent;
-    return createBoard(index+Number(rng()<(rate-lo)/(hi-lo)),rate,rng,target);
+    const lower=molds.map((m,i)=>({m,i})).filter(x=>x.m.returnPercent<=rate+1e-8);
+    const upper=molds.map((m,i)=>({m,i})).filter(x=>x.m.returnPercent>=rate-1e-8);
+    // Pick a random bracketing PAIR rather than adjacent tiers so more than two
+    // symmetric designs can appear at a given middle setting without changing
+    // the expected return of that setting.
+    const lo=lower[Math.floor(rng()*lower.length)],hi=upper[Math.floor(rng()*upper.length)];
+    const weight=lo.i===hi.i?0:(rate-lo.m.returnPercent)/(hi.m.returnPercent-lo.m.returnPercent);
+    return createBoard(rng()<weight?hi.i:lo.i,rate,rng,target);
   }
   function createBoard(moldIndex,target,rng,requestedTarget=target){
     const board=molds[moldIndex],labels=Array(37).fill(null),deck=shuffled(rng);
@@ -155,7 +166,7 @@
     }
     return {state,draws:[...opening,...(closing||bakedBoard.zones.slice(0,3).map(z=>z.numbers[0]))]};
   }
-  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createDemo,draw,payRows,payout,molds,ODDS_STEP};
+  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createBoard,createDemo,draw,payRows,payout,molds,ODDS_STEP,minReturn,maxReturn};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.PartyCastellaRules=api;
 })(globalThis);
