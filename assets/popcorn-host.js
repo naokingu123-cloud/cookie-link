@@ -235,8 +235,8 @@ function tick(now){
  const selected=active===id;
  const fastSupply=advancing&&selected&&engine.presentationRate>1&&engine.trace&&V.refilling(engine.trace,engine.elapsed);
  if(selected&&(fastSupply||clock-lastMain>=33)){paint(false);lastMain=clock;}
- if(app.phase!=='ready'&&engine.trace&&clock-lastMini>=150){paint(true);lastMini=clock;}
- if(advancing&&(selected||app.phase==='ready'||engine.trace||engine.queue.length))requestFrame();
+ if(app.phase!=='ready'&&engine.trace&&(!allNineMode||selected)&&clock-lastMini>=150){paint(true);lastMini=clock;}
+ if(advancing&&(selected||(!allNineMode&&app.phase==='ready')||engine.trace||engine.queue.length))requestFrame();
 }
 const oldSelect=select;
 select=function(i){
