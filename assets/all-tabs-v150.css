@@ -590,3 +590,62 @@ html[data-lineup="all"] #tabs .reach-num{
   padding:0!important;
   place-items:center!important;
 }
+
+
+/* v154: keep decorative frame visible without covering BET/reach content. */
+html[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-overlay{
+  z-index:20!important;
+}
+
+/* All live tab content is rendered above the generated frame.
+   The content blocks are inset, so the ornamental border remains visible. */
+html[data-lineup="all"] #tabs>.tab-slot>.tab{
+  z-index:30!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot>.tab-bets,
+html[data-lineup="all"] #tabs>.tab-slot>.reach-strip,
+html[data-lineup="all"] #tabs>.tab-slot>.tab-locked-bet{
+  z-index:40!important;
+}
+html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble,
+html[data-lineup="all"] #tabs .tab-slot .tab-sugar{
+  z-index:45!important;
+}
+
+/* BET amount must stay above the opaque bottom plaque in the frame artwork. */
+html[data-lineup="all"] #tabs .tab-locked-bet,
+html[data-lineup="all"] #tabs .tab-locked-bet>*,
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet,
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet .gold-number{
+  opacity:1!important;
+  visibility:visible!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
+  position:relative!important;
+  z-index:2!important;
+  color:#fff2a8!important;
+}
+
+/* Reach digits: move the number viewport clearly upward.
+   Shift the whole row, not individual glyphs, to avoid iOS/Safari baseline drift. */
+html[data-lineup="all"] #tabs .reach-clip{
+  top:-6px!important;
+  height:20px!important;
+}
+html[data-lineup="all"] #tabs .reach-numbers,
+html[data-lineup="all"] #tabs .reach-page-enter,
+html[data-lineup="all"] #tabs .reach-page-leave{
+  top:0!important;
+  bottom:auto!important;
+  height:20px!important;
+  align-items:start!important;
+}
+html[data-lineup="all"] #tabs .reach-num{
+  height:16px!important;
+  min-height:16px!important;
+  line-height:10px!important;
+  padding:0!important;
+  align-items:start!important;
+  justify-items:center!important;
+  transform:none!important;
+}
