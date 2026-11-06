@@ -9,7 +9,7 @@
 (()=>{
 'use strict';
 try{
- const NUM_PIXELS=80;
+ const NUM_PIXELS=64;
  const views=new Map();
  const imageCache=new Map();
  const cheapCanvas=(width,height,cssWidth,cssHeight,modelScale)=>{
@@ -83,7 +83,7 @@ try{
      // Helpers query this canvas for the mini's own 7-segment display.
      return {base,mode:'canyon',stamp:0,failed:false,phase:''};
    }
-   const size=80;
+   const size=64;
    const surface=cheapCanvas(size,size,0,0,(size/320)/2);
    base.candyCanvas=surface.canvas;
    base.candyCtx=surface.context;
@@ -285,7 +285,7 @@ try{
          // Exact mini board crop from the full Canyon renderer:
          // no left/right wall scenery, payouts, scale or side meters.
          g.imageSmoothingEnabled=true;
-         g.imageSmoothingQuality='high';
+         g.imageSmoothingQuality='medium';
          g.drawImage(v.miniCanvas,0,0,48,48);
          g.restore();
        }
@@ -297,7 +297,7 @@ try{
        g.setTransform(1,0,0,1,0,0);
        g.clearRect(0,0,res,res);
        g.imageSmoothingEnabled=true;
-       g.imageSmoothingQuality='high';
+       g.imageSmoothingQuality='medium';
        g.drawImage(v.candyCanvas,0,0,res,res);
        // Same crown/rails artwork as the full-size jar, but overlay
        // at native mini resolution for polished candy detail.
