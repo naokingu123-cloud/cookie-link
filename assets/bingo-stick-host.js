@@ -14,7 +14,7 @@ const engine={
  get totalHundredths(){
   const s=this.state;
   if(!animating)return s.totalHundredths;
-  return R.award(Math.max(s.previousMaxFlips,lastBeat))+s.bonusHundredths-(s.reversalThisMove&&!reversalShown?R.sweepBonusHundredths:0);
+  return s.totalHundredths-s.lastBaseHundredths+R.award(lastBeat)-(s.reversalThisMove&&!reversalShown?R.sweepBonusHundredths:0);
  },
  get paused(){return paused;},
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
@@ -50,7 +50,7 @@ function startMove(){
  engine.state=next;engine.processed=next.draws.length;
  startTime=clock;lastBeat=0;animating=true;reversalShown=false;
  invalidateReach(slot);engine.emit('flipping');
- if(active===id)sceneSound('landing',{volume:.38});
+ if(active===id)sceneSound(next.placed.length?'landing':'six-miss',{volume:.38});
 }
 function advanceMove(){
  const s=engine.state,m=V.motion(s,clock-startTime);
@@ -145,7 +145,7 @@ function tick(now){
 }
 const oldSelect=select;select=function(i){const result=oldSelect(i);document.body.classList.toggle('bs-active',active===id);lastMain=lastMini=-Infinity;wake();return result;};
 const oldHud=hud;hud=function(a){oldHud(a);if(active===id){
- const s=engine.state;put('best','最大反転 '+(animating?Math.max(s.previousMaxFlips,lastBeat):s.maxFlips)+'枚');
+ const s=engine.state;put('best','累計 '+num(medalWin(a.bet(id),engine.totalHundredths))+' WIN');
  put('ballinfo',s.phase==='done'?'8球終了':(s.draws.length%2?'次は白バター':'次は黒小倉あん')+' ／ 残り'+(8-s.draws.length)+'球');
 }};
 const oldResult=renderRoundResult;renderRoundResult=function(a){
@@ -154,7 +154,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.stick=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?(num(a.locked[id])+' BET'):'NO BET')+'</small>';
  const s=engine.state;
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'1手の最大反転 '+s.maxFlips+'枚'+(s.reversalCount?' ／ リバーサルボーナス '+s.reversalCount+'回':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'反転配当 '+num(medalWin(a.locked[id],s.baseHundredths))+' WIN'+(s.reversalCount?' ／ リバーサル '+s.reversalCount+'回 ＋'+num(medalWin(a.locked[id],s.bonusHundredths))+' WIN':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});
