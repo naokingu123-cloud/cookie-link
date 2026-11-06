@@ -40,26 +40,26 @@
   // The number sites and starter wells are both reflection- and rotation-symmetric.
   const EX0=[8,10,12,14,16,18],EX2=[12,18,21,23,30,32],EX3=[12,18,26,27,35,36];
   const G1=[20,24,29,33],G2=[21,23,30,32],G3=[26,27,35,36];
-  // Exact return percent: all 53,130 opening combinations × 1,140 baking triples.
+  // Exact RTP (%) per mold: all C(25,5)=53,130 pouring combinations times
+  // C(20,3)=1,140 baking combinations, with ODDS-UP multiplying base awards.
   const molds=[
-    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,flames:[21,30],odds:G3,returnPercent:184.01580136},
-    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,flames:[26,35],odds:G1,returnPercent:194.00156353},
-    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,flames:[26,35],odds:G2,returnPercent:196.25516459},
-    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,flames:[27,36],odds:G1,returnPercent:197.20979293},
-    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:202.30057093},
-    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,flames:[27,36],odds:G2,returnPercent:194.75615752},
-    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:199.66070512},
-    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,flames:[21,30],odds:G1,returnPercent:205.07326155},
-    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,flames:[26,35],odds:G1,returnPercent:217.32889305},
-    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,flames:[20,29],odds:G2,returnPercent:217.23334126}
+    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,flames:[21,30],odds:G3,returnPercent:259.74898230425},
+    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,flames:[26,35],odds:G1,returnPercent:277.05386522961},
+    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,flames:[26,35],odds:G2,returnPercent:284.05237880604},
+    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,flames:[27,36],odds:G1,returnPercent:283.83253638048},
+    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:289.45312094465},
+    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,flames:[27,36],odds:G2,returnPercent:279.3882794932},
+    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:286.34481444058},
+    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,flames:[21,30],odds:G1,returnPercent:291.21287754961},
+    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,flames:[26,35],odds:G1,returnPercent:322.66830812208},
+    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,flames:[20,29],odds:G2,returnPercent:333.06314171463}
   ];
   const heatRadii=[null,1,2,3].map(r=>r?cells.map(a=>cells.filter(b=>distance(a,b)<=r).map(b=>b.id)):null);
-  const ODDS_STEP=50; // Each activated honey tile adds +0.5x to the final base odds.
-  // The previous payout-calibration samples assumed separate oven sites. Under the
-  // corrected rule (20 original numbered sites), exhaustively recomputed returns
-  // range from 184% to 217% for these six-batter symmetry-preserving layouts.
-  // Map the 50–150 selection to progressively richer layouts while exposing the
-  // ACTUAL theoretical return; never mislabel it as an achieved 50–150% RTP.
+  const ODDS_STEP=50; // Each honey tile adds 50% of the BASE payout: ×(1+0.5*n).
+  // Exact enumeration with the current fixed-number bake rules AND proportional
+  // +0.5x ODDS-UP produces a 259.75–333.06% theoretical RTP range.
+  // Map the nominal 50–150 control across the feasible patterns but report the
+  // actual RTP. Meeting 50–150 requires separate future odds/board calibration.
   const minReturn=Math.min(...molds.map(x=>x.returnPercent));
   const maxReturn=Math.max(...molds.map(x=>x.returnPercent));
   function effectiveTarget(requested){
@@ -86,7 +86,10 @@
   verifyMolds();
   const rates=[20,40,60,80,100,120,140,160,180,200,250,300,400,500,750,1000,2000,5000];
   const payRows=rates.map((hundredths,i)=>({count:20+i,hundredths}));
-  function payout(count,oddsHits=0){return count<20?0:(rates[count-20]||0)+ODDS_STEP*oddsHits;}
+  function payout(count,oddsHits=0){
+    const base=count>=20&&count<=37?rates[count-20]:0;
+    return Math.round(base*(100+ODDS_STEP*oddsHits)/100);
+  }
   function shuffled(rng){
     const list=numbers.slice();
     for(let i=list.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[list[i],list[j]]=[list[j],list[i]];}
@@ -111,7 +114,7 @@
       zones:[],zoneByNumber:Array(26).fill(null),
       specials:{fire:board.flames.slice(),odds:board.odds.slice()},
       wet:cells.map(c=>board.starter.includes(c.id)),baked:Array(37).fill(false),
-      wetCount:6,bakedCount:0,fireLevel:1,oddsHits:0,oddsBonus:0,
+      wetCount:6,bakedCount:0,fireLevel:1,oddsHits:0,oddsBonus:0,oddsMultiplier:100,
       lastNumber:null,lastZone:null,sources:[],flow:[],wave:[],
       totalHundredths:0,highestRole:false};
   }
@@ -139,7 +142,7 @@
       const oddsHits=state.specials.odds.filter(i=>wet[i]).length;
       return {...state,...(ball===5?deal(state,draws,fireLevel):{}),draws,
         phase:ball===5?'bake':'pour',lastNumber:number,fireLevel,oddsHits,
-        oddsBonus:ODDS_STEP*oddsHits,
+        oddsBonus:ODDS_STEP*oddsHits,oddsMultiplier:100+ODDS_STEP*oddsHits,
         sources:[id],flow,wave,wet,wetCount:wet.filter(Boolean).length};
     }
     const lastZone=zoneFor(number,state),zone=state.zones[lastZone-1],baked=state.baked.slice(),wave=[[],[],[],[]];
