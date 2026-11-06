@@ -629,7 +629,7 @@ html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
 /* Reach digits: move the number viewport clearly upward.
    Shift the whole row, not individual glyphs, to avoid iOS/Safari baseline drift. */
 html[data-lineup="all"] #tabs .reach-clip{
-  top:-6px!important;
+  top:-5px!important;
   height:20px!important;
 }
 html[data-lineup="all"] #tabs .reach-numbers,
