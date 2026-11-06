@@ -115,21 +115,11 @@ async function finish(version){
  engine.running=false;engine.emit('complete');app.paid[id]=true;app.roundWins[id]=medalWin(app.locked[id],engine.totalHundredths);
  if(app.enabled.every((on,i)=>!on||app.paid[i]))app.finishRound();recordChanged(app);
 }
-const demo=R.createDemo(),lesson=[{at:0,state:demo.state}];
-let nextDemoAt=1100;
-for(const n of demo.draws){
- const s=R.draw(lesson.at(-1).state,n);lesson.push({at:nextDemoAt,state:s});
- nextDemoAt+=Math.max(1750,V.motion(s,Infinity).duration+250);
-}
-const demoPeriod=Math.max(20000,nextDemoAt+1400);
 function paint(mini){
- if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
- const demoing=app.phase==='ready',t=clock%demoPeriod,stage=demoing?lesson.findLast(e=>e.at<=t):null;
- const s=stage?stage.state:engine.state,age=stage?t-stage.at:animating?clock-startTime:Infinity,bet=app.bet(id);
- if(stage&&stage.reachBet!==bet){stage.reachBet=bet;stage.reach=bet>0?projectReaches(s):[];}
- const reach=stage?(age>=V.motion(s,Infinity).duration?stage.reach:[]):slot.reachResults;
- const opts={time:clock,bet,demo:demoing,paused:app.paused,age,reach,
-  latestNumber:s.draws.at(-1),sugarCollected:stage?s.phase==='done'&&earnsSugar(s):engine.wonderCollected,
+ if(app.phase==='ready'||(mini?active===id:active!==id||slot.panel.hidden))return;
+ const s=engine.state,bet=app.bet(id);
+ const opts={time:clock,bet,paused:app.paused,age:animating?clock-startTime:Infinity,reach:slot.reachResults,
+  latestNumber:s.draws.at(-1),sugarCollected:engine.wonderCollected,
   sugarIcon:mini||!app.bet(id)?null:getSugarSprite(sugarVisualTier(engine.wonderToken||app.bet(id)))};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
@@ -149,7 +139,7 @@ function tick(now){
  if(active===id&&(animating||clock-lastMain>=32)){paint(false);lastMain=clock;}
  if(active!==id&&clock-lastMini>=(animating?32:140)){paint(true);lastMini=clock;}
  const reaching=app.phase==='playing'&&slot.reachResults.length&&!motionReduced;
- if(moving&&(animating||active===id&&(app.phase==='ready'||reaching)))wake();
+ if(moving&&(animating||active===id&&reaching))wake();
  else if(moving&&active!==id&&reaching)miniTimer=setTimeout(wake,145);
  else stamp=null;
 }

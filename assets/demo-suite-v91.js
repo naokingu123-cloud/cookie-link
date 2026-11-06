@@ -4,7 +4,7 @@
 if(window.SweetsDemoSuite?.installed)return;
 const field=document.querySelector('#panels')?.closest('.field');
 if(!field)return;
-const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href='assets/demo-suite-v91.css?v=91';document.head.append(stylesheet);
+const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href='assets/demo-suite-v91.css?v=139';document.head.append(stylesheet);
 field.classList.add('ds91-field');
 const canvas=document.createElement('canvas');canvas.className='ds91-lesson';canvas.hidden=true;
 canvas.setAttribute('role','img');field.append(canvas);
@@ -156,6 +156,33 @@ function wineryDiagram(c,stage,t){
  tag(c,['1杯注入','半分ずつ','MIX','次は ×2'][stage],110,206,130);
 }
 const diagrams={cookie:cookieDiagram,choco:canyonDiagram,candy:sixDiagram,gelato:gelatoDiagram,winery:wineryDiagram};
+const stories=window.SweetsAttractLessons||{},period=19800;
+const story=document.createElement('section');story.className='ds139-story';story.hidden=true;
+story.innerHTML='<div class="ds139-byline"><span class="ds139-eyebrow">遊び方</span><b class="ds139-name"></b><small class="ds139-count"></small></div><h2></h2><div class="ds139-stage"><canvas aria-hidden="true"></canvas></div><p></p><nav aria-label="説明する場面を選択"></nav>';
+field.append(story);
+const heading=story.querySelector('h2'),caption=story.querySelector('p'),nameTag=story.querySelector('.ds139-name'),sceneCount=story.querySelector('.ds139-count');
+const diagram=story.querySelector('canvas'),diagramCtx=diagram.getContext('2d'),nav=story.querySelector('nav');
+let storyStep=-1;
+function drawStory(kind){
+ const lesson=stories[kind],n=lesson.steps.length,segment=period/n,at=elapsed%period,idx=Math.floor(at/segment);
+ if(story.dataset.game!==kind){
+  story.dataset.game=kind;storyStep=-1;nameTag.textContent=games[kind].name;story.setAttribute('aria-label',games[kind].name+'の遊び方');
+  nav.replaceChildren(...lesson.steps.map((step,i)=>{
+   const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',(i+1)+'場面目　'+step.title);
+   button.onclick=()=>{elapsed=i*segment;stamp=0;drawStory(kind);};return button;
+  }));
+ }
+ if(storyStep!==idx){
+  storyStep=idx;story.dataset.scene=String(idx+1);heading.textContent=lesson.steps[idx].title;caption.textContent=lesson.steps[idx].caption;sceneCount.textContent=(idx+1)+' / '+n;
+  [...nav.children].forEach((b,i)=>b.setAttribute('aria-current',i===idx?'step':'false'));
+ }
+ const ratio=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(diagram.clientWidth*ratio)),h=Math.max(1,Math.round(diagram.clientHeight*ratio));
+ if(diagram.width!==w||diagram.height!==h){diagram.width=w;diagram.height=h;}
+ const scale=Math.min(w/520,h/240);
+ diagramCtx.setTransform(1,0,0,1,0,0);diagramCtx.clearRect(0,0,w,h);
+ diagramCtx.save();diagramCtx.setTransform(scale,0,0,scale,(w-520*scale)/2,(h-240*scale)/2);
+ lesson.draw(diagramCtx,idx,motionReduced ? .88 : (at%segment)/segment);diagramCtx.restore();
+}
 let lastMode='',lastToken=null,lastReady=false,elapsed=0,stamp=0,frame=0,lastPaint=0;
 const miniData=new WeakMap();
 function staticMini(slot,kind){
@@ -194,13 +221,13 @@ function draw(kind){
 }
 function sync(){
  const ready=app.phase==='ready'&&!jpcSession.active,slot=slots[active],kind=kindOf(slot);
- const main=ready&&kind!=='popcorn'&&!!diagrams[kind];
+ const detailed=ready&&!!stories[kind],main=ready&&(detailed||!!diagrams[kind]);
  document.body.classList.toggle('ds91-ready',ready);field.classList.toggle('ds91-has-lesson',main);
  if(ready)for(const s of slots)if(!s.holder.hidden)staticMini(s,kindOf(s));
  if(lastReady!==ready){lastReady=ready;if(!ready)for(const s of slots){s.dirtyMini=true;s.dirtyMain=true;}}
  if(kind!==lastMode||app.token!==lastToken||!ready){lastMode=kind;lastToken=app.token;elapsed=0;stamp=0;lastPaint=0;}
- canvas.hidden=!main;
- if(main&&(!lastPaint||canvas.dataset.game!==kind)){draw(kind);lastPaint=performance.now();}
+ canvas.hidden=!main||detailed;story.hidden=!detailed;
+ if(main&&!lastPaint){(detailed?drawStory:draw)(kind);lastPaint=performance.now();}
  if(!main||app.paused||!inView||document.hidden){stamp=0;if(frame)cancelAnimationFrame(frame);frame=0;return;}
  if(!frame)frame=requestAnimationFrame(tick);
 }
@@ -208,7 +235,7 @@ function tick(now){
  frame=0;
  if(app.phase!=='ready'||jpcSession.active||kindOf(slots[active])!==lastMode||app.paused||!inView||document.hidden){sync();return;}
  if(stamp)elapsed+=Math.max(0,now-stamp);stamp=now;
- if(!lastPaint||now-lastPaint>=40){draw(lastMode);lastPaint=now;}
+ if(!lastPaint||now-lastPaint>=40){(stories[lastMode]?drawStory:draw)(lastMode);lastPaint=now;}
  frame=requestAnimationFrame(tick);
 }
 // Don't paint a hidden cookie / drill / bottle lesson beneath the shared board.
@@ -220,6 +247,6 @@ window.RecentGameDemosV74?.stop?.();
 const select0=select;select=function(i,...a){const result=select0(i,...a);sync();return result;};
 const hud0=hud;hud=function(a,...rest){const result=hud0(a,...rest);sync();return result;};
 document.addEventListener('visibilitychange',sync);new ResizeObserver(sync).observe(field);
-window.SweetsDemoSuite={version:91,installed:true,sync,get status(){return {ready:lastReady,kind:lastMode,active:!canvas.hidden,scene:Number(canvas.dataset.scene)||0};}};
+window.SweetsDemoSuite={version:139,installed:true,sync,get status(){const layer=story.hidden?canvas:story;return {ready:lastReady,kind:lastMode,active:!layer.hidden,scene:layer.hidden?0:Number(layer.dataset.scene)||0};}};
 sync();
 })();

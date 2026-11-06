@@ -9,7 +9,7 @@ slot.panel.append(canvas);slot.panel.classList.add('jb-panel');slot.holder.class
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();emblem.src=game.logo;emblem.alt=game.name;
 title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
 const ctx=canvas.getContext('2d');
-let frame=0,miniTimer=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,demoTime=0,reachStarted=0,paused=false;
+let frame=0,miniTimer=0,stamp=0,clock=0,lastMain=-1000,lastMini=-1000,reachStarted=0,paused=false;
 const engine={
  kind:'jelly',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'オールライン',version:0,
  maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,
@@ -28,7 +28,7 @@ const engine={
   this.version++;this.state=K.create({rng:app.random,rate:debugPayoutTarget});this.queue=[];this.drawn=new Set();this.trace=null;
   this.oddsStart=null;this.processed=this.accepted=this.elapsed=this.roundSteps=0;this.running=false;this.paused=false;this.presentationRate=1;
   this.wonderCollected=false;this.wonderToken=null;stopSugarAward(slot);invalidateReach(slot);
-  demoTime=0;lastMain=lastMini=-1000;this.emit('ready');
+  lastMain=lastMini=-1000;this.emit('ready');
  },
  setRainbowSugar(bet){this.wonderToken={id:this.version,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};},
  start(){
@@ -106,29 +106,15 @@ function advance(dt){
  engine.trace=null;engine.processed++;collectSugar();engine.emit('settled');slot.updateJellyReach(app);
  if(engine.processed===8)finish(engine.version);
 }
-const demo=(()=>{
- let seed=1894;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
- const initial=K.create({rng,rate:90}),steps=[];let state=initial;
- // Show an empty pour, then two successive color changes in that same section.
- for(const index of [10,4,6,22,15,21,17,23]){const next=K.draw(state,initial.numbers[index]);steps.push(next);state=next.state;}
- return {initial,steps};
-})();
-function presentation(){
- if(app.phase!=='ready')return {state:engine.state,turn:engine.trace,elapsed:engine.elapsed,oddsPopupTime:engine.oddsStart==null?-1:clock-engine.oddsStart};
- const time=demoTime%20000;
- if(time<1200)return {state:demo.initial,turn:null,elapsed:0};
- const n=Math.min(7,Math.floor((time-1200)/2150)),s=demo.steps[n],elapsed=time-1200-n*2150;
- return {state:s.state,turn:elapsed<V.duration(s.trace)?s.trace:null,elapsed};
-}
 function paint(mini){
- if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
+ if(app.phase==='ready'||(mini?active===id:active!==id||slot.panel.hidden))return;
  const dest=mini?slot.miniCanvas:canvas;
  if(!mini){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;}
- const p=presentation(),demo=app.phase==='ready',bet=app.bet(id);
- V.draw(mini?slot.mini:ctx,p.state,{width:dest.width,height:dest.height,mini,demo,time:clock,turn:p.turn,elapsed:p.elapsed,oddsPopupTime:p.oddsPopupTime,bet,
-  sugarLines:engine.state.sugarLines,sugarCollected:!demo&&engine.wonderCollected,
+ const bet=app.bet(id);
+ V.draw(mini?slot.mini:ctx,engine.state,{width:dest.width,height:dest.height,mini,time:clock,turn:engine.trace,elapsed:engine.elapsed,oddsPopupTime:engine.oddsStart==null?-1:clock-engine.oddsStart,bet,
+  sugarLines:engine.state.sugarLines,sugarCollected:engine.wonderCollected,
   sugarIcon:!mini&&bet>0?getSugarSprite(sugarVisualTier(engine.wonderToken||bet)):null,
-  reachTime:clock-reachStarted,reach:engine.trace||demo?[]:slot.reachResults});
+  reachTime:clock-reachStarted,reach:engine.trace?[]:slot.reachResults});
 }
 slot.paintJelly=paint;
 function wake(){
@@ -138,11 +124,11 @@ function wake(){
 function tick(now){
  frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
  const elapsed=moving&&stamp?Math.max(0,now-stamp):0;stamp=moving?now:0;
- if(moving){const dt=Math.min(100,elapsed);clock+=elapsed;if(active===id&&app.phase==='ready')demoTime+=dt;advance(dt);}
+ if(moving){const dt=Math.min(100,elapsed);clock+=elapsed;advance(dt);}
  if(active===id&&clock-lastMain>=32){paint(false);lastMain=clock;}
  const miniReach=active!==id&&app.phase==='playing'&&!motionReduced&&slot.reachResults.length>0;
  if(active!==id&&(engine.trace||miniReach)&&clock-lastMini>=150){paint(true);lastMini=clock;}
- if(moving&&(active===id||engine.trace||engine.queue.length))wake();
+ if(moving&&app.phase!=='ready'&&(active===id||engine.trace||engine.queue.length))wake();
  else if(moving&&miniReach)miniTimer=setTimeout(wake,150);
 }
 const select0=select;select=function(i){const result=select0(i);document.body.classList.toggle('jb-active',active===id);lastMain=-1000;wake();return result;};

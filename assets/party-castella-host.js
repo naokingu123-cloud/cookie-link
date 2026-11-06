@@ -83,21 +83,11 @@ async function finish(version){
  engine.running=false;engine.emit('complete');app.paid[id]=true;app.roundWins[id]=medalWin(app.locked[id],engine.totalHundredths);
  if(app.enabled.every((on,i)=>!on||app.paid[i]))app.finishRound();recordChanged(app);
 }
-const lesson=(()=>{
- const demo=R.createDemo();let state=demo.state;
- const stages=[{at:0,state,reach:projectReaches(state)}];
- for(const [i,n] of demo.draws.entries()){
-  state=R.draw(state,n);
-  stages.push({at:[1300,2850,4400,5950,7500,10500,12800,15100][i],state,reach:projectReaches(state)});
- }
- return stages;
-})();
 function paint(mini){
- if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
- const demo=app.phase==='ready',stage=demo?lesson.findLast(e=>e.at<=clock%20000):null;
- const s=stage?stage.state:engine.state,age=stage?clock%20000-stage.at:clock-lastHit;
- const opts={time:clock,bet:app.bet(id),demo,paused:app.paused,age,reach:stage?stage.reach:slot.reachResults,
-  sugarCount,sugarCollected:stage?s.phase==='done'&&s.bakedCount>=sugarCount:engine.wonderCollected,
+ if(app.phase==='ready'||(mini?active===id:active!==id||slot.panel.hidden))return;
+ const s=engine.state;
+ const opts={time:clock,bet:app.bet(id),paused:app.paused,age:clock-lastHit,reach:slot.reachResults,
+  sugarCount,sugarCollected:engine.wonderCollected,
   sugarIcon:mini||!app.bet(id)?null:getSugarSprite(sugarVisualTier(engine.wonderToken||app.bet(id)))};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
@@ -112,7 +102,7 @@ function tick(now){
  if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
  if(active!==id&&clock-lastMini>=120){paint(true);lastMini=clock;}
  const reachAnimation=app.phase==='playing'&&!motionReduced&&slot.reachStatus==='ready'&&slot.reachResults?.length>0;
- if(moving&&(active===id&&app.phase==='ready'||clock-lastHit<=animationMs))wake();
+ if(moving&&app.phase!=='ready'&&clock-lastHit<=animationMs)wake();
  else if(moving&&reachAnimation)reachTimer=setTimeout(wake,active===id?80:125);
  else stamp=null;
 }

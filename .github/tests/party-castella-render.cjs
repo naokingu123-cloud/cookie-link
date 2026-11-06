@@ -12,7 +12,7 @@ const root=path.join(__dirname,'../..'),origin='http://castella.test';
    if(!fs.existsSync(file))return r.fulfill({status:404,body:''});
    if(file.endsWith('/party-castella-host.js')){
     const src=fs.readFileSync(file,'utf8').replace('window.PartyCastella={',
-     'window.castellaTest={view,lesson,slot,projectReaches,prepare(){app.setBet(id,1);engine.state=R.createDemo().state;}};window.PartyCastella={');
+     'window.castellaTest={view,slot,projectReaches,prepare(){app.setBet(id,1);engine.state=R.createDemo().state;}};window.PartyCastella={');
     return r.fulfill({contentType:'application/javascript',body:src});
    }
    return r.fulfill({path:file});
@@ -23,10 +23,12 @@ const root=path.join(__dirname,'../..'),origin='http://castella.test';
    await p.evaluate(()=>document.fonts.ready);
    await p.waitForFunction(()=>['honey-griddle','tiles','dispenser'].every(k=>performance.getEntriesByType('resource').some(r=>r.name.includes('party-castella-'+k)&&r.responseEnd)));
    console.log(await p.evaluate(()=>{
-    const {view,lesson,projectReaches}=castellaTest,ctx=document.querySelector('.pct-pan canvas').getContext('2d');
+    const {view,projectReaches}=castellaTest,d=PartyCastellaRules.createDemo(),states=[d.state];
+    for(const n of d.draws)states.push(PartyCastellaRules.draw(states.at(-1),n));
+    const ctx=document.querySelector('.pct-pan canvas').getContext('2d');
     const result={canvas:[ctx.canvas.width,ctx.canvas.height]};
     for(const [scene,n] of [['pour',3],['bake',7],['reach',7]]){
-     const {state,reach}=lesson[n],samples=[];
+     const state=states[n],reach=projectReaches(state),samples=[];
      for(let i=0;i<52;i++){
       const t=performance.now();view.draw(state,{age:scene==='reach'?3000:(i%31)*46,time:i*95,bet:100,reach});
       ctx.getImageData(0,0,1,1);if(i>=4)samples.push(performance.now()-t);
