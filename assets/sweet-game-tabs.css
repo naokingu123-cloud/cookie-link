@@ -253,3 +253,53 @@ html[data-lineup="all"] body.mobile-landscape #tabs.tabs{
  width:100%!important;min-width:0!important;max-width:none!important;
  grid-template-columns:repeat(5,minmax(0,1fr))!important
 }
+
+
+/* v147 overlap guard: every ALL-mode cabinet is a hard isolated cell.
+   Nothing may paint into its neighbour, even if a game stylesheet adds large frames/badges. */
+html[data-lineup="all"] #tabs>.tab-slot{
+ overflow:hidden!important;
+ isolation:isolate!important;
+ clip-path:inset(0 round 5px)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot::before{
+ inset:1px!important;
+ border-width:4px!important;
+ border-image-width:4px!important;
+ border-radius:5px!important;
+ overflow:hidden!important;
+ pointer-events:none!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot>.tab{
+ overflow:hidden!important;
+ border-radius:4px!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot>.tab::before,
+html[data-lineup="all"] #tabs>.tab-slot>.tab::after{
+ max-width:100%!important;
+ overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble,
+html[data-lineup="all"] #tabs .tab-sugar,
+html[data-lineup="all"] #tabs .reach-strip,
+html[data-lineup="all"] #tabs .tab-bets,
+html[data-lineup="all"] #tabs .tab-locked-bet{
+ box-sizing:border-box!important;
+ max-width:100%!important;
+ overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble{
+ z-index:4!important;
+}
+html[data-lineup="all"] #tabs .tab-sugar{
+ z-index:5!important;
+}
+html[data-lineup="all"] #tabs .reach-numbers{
+ transform:none!important;
+ animation:none!important;
+}
+html[data-lineup="all"] #tabs .reach-page-enter,
+html[data-lineup="all"] #tabs .reach-page-leave{
+ animation:none!important;
+ transform:none!important;
+}
