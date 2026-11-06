@@ -1051,6 +1051,7 @@ try{
    if(!faces.length)return;
    const state={faces,progress:0};
    e.pouring=state;
+   if(allNineMode&&mount!==active){state.progress=1;drawGelato();e.pouring=null;return;}
    let started=null,lastUpdate=0;
    const duration=Math.min(2000,950+faces.length*50);
    function frame(now){
