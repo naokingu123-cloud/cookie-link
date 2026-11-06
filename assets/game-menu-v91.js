@@ -8,7 +8,7 @@ for(const s of slots){
  s.holder.dataset.gameKind=s.tab.dataset.gameKind=s.panel.dataset.gameKind=key;
  s.holder.style.setProperty('order',String(chosen.indexOf(key)),'important');
 }
-$('tabs').style.setProperty('grid-template-columns','repeat('+chosen.length+', minmax(0,1fr))','important');
+$('tabs').style.setProperty('grid-template-columns',mode==='all'?'repeat(5,minmax(0,1fr))':'repeat('+chosen.length+',minmax(0,1fr))','important');
 select(ids.indexOf(chosen[0]));
 
 const pick=document.createElement('dialog');pick.className='lineup-picker';pick.setAttribute('aria-labelledby','lineup-heading');
@@ -44,7 +44,7 @@ pick.addEventListener('click',e=>{if(e.target===pick)pick.close();});
 play.addEventListener('click',e=>{if(!draft.length){e.preventDefault();return;}try{localStorage.setItem('sweets-lineup-v91',JSON.stringify(draft));}catch{}pick.close();});
 
 const layer=$('round-result-layer'),logo=layer.querySelector('.result-logo'),rows=$('result-games');
-rows.style.gridTemplateColumns='repeat('+chosen.length+',minmax(0,1fr))';
+rows.style.gridTemplateColumns=mode==='all'?'repeat(5,minmax(0,1fr))':'repeat('+chosen.length+',minmax(0,1fr))';
 let resultToken=-1;
 function highlight(i){
  const key=ids[i];if(!key)return;
