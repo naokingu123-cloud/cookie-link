@@ -154,6 +154,26 @@
     return {...state,draws,phase:done?'done':'bake',lastNumber:number,lastZone,sources:[zone.anchor],flow:[],wave,
       baked,bakedCount,totalHundredths:done?payout(bakedCount,state.oddsHits):0,highestRole:done&&bakedCount===37};
   }
+  // Read-only prediction. A completed game uses the same oven zones as its eighth ball.
+  function reaches(s){
+    const base=payout(s.bakedCount,s.oddsHits),hits=[];
+    for(const cell of s.cells){
+      const number=cell.number;
+      if(number===null||s.draws.includes(number))continue;
+      if(s.phase==='pour'){
+        const {layers}=pours[cell.id];
+        const oddsUp=s.specials.odds.some(id=>!s.wet[id]&&layers.some(layer=>layer.includes(id)));
+        if(oddsUp)hits.push({number,anchor:cell.id,total:base,gain:0,allClear:false,oddsUp});
+      }else{
+        const zone=s.zones[s.zoneByNumber[number]-1];let count=s.bakedCount;
+        for(const id of zone.cells)if(s.wet[id]&&!s.baked[id])count++;
+        const total=payout(count,s.oddsHits);
+        if(total>base)hits.push({number,anchor:cell.id,zone:zone.id,total,gain:total-base,
+          allClear:count===37&&s.bakedCount<37,oddsUp:false});
+      }
+    }
+    return hits.sort((a,b)=>a.number-b.number);
+  }
   function createDemo(){
     let seed=1015568748;
     const state=createBoard(0,90,()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32));
@@ -169,7 +189,7 @@
     }
     return {state,draws:[...opening,...(closing||bakedBoard.zones.slice(0,3).map(z=>z.numbers[0]))]};
   }
-  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createBoard,createDemo,draw,payRows,payout,molds,ODDS_STEP,minReturn,maxReturn};
+  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createBoard,createDemo,draw,reaches,payRows,payout,molds,ODDS_STEP,minReturn,maxReturn};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.PartyCastellaRules=api;
 })(globalThis);

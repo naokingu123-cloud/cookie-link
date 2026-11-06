@@ -487,7 +487,7 @@ function chocoDrillPose(index,L){
 function chocoNumberHit(e,n){return e.seen.has(n)||e.fx?.number===n;}
 function chocoReachLabel(x,s,n,cx,cy,time,size=6.5){
  const result=(s.reachResults||[]).find(r=>r.number===n);if(!result)return;
- const color=['#ffe867','#ff686a','#df90ff','#fff3b6'][result.tier],word=result.tier&&(motionReduced||Math.floor(time/2000)%2)?REACH_WORDS[result.tier]:'リーチ';
+ const color=['#ffe867','#ff686a','#df90ff','#fff3b6'][result.tier],word=result.oddsUp?'オッズアップ':result.tier&&(motionReduced||Math.floor(time/2000)%2)?REACH_WORDS[result.tier]:'リーチ';
  const phase=(time%1000)/1000,alpha=motionReduced?1:phase<.48||phase>.84?1:1-.7*Math.sin((phase-.48)/.36*Math.PI)**2;x.save();x.globalAlpha=alpha;x.translate(cx,cy);x.shadowColor=color;x.shadowBlur=4;chocoText(x,word,0,0,size,color);x.restore();
  // Match the other games' glints and orbiting high-payout light around each number.
  if(!motionReduced)for(let i=0;i<(result.tier?3:1);i++){const a=time/600+i*Math.PI*2/3,px=cx+Math.cos(a)*10,py=cy-5+Math.sin(a)*8;x.save();x.strokeStyle=color;x.globalAlpha=.55+.4*Math.sin(time/240+i)**2;x.lineWidth=.7;x.beginPath();x.moveTo(px-1.8,py);x.lineTo(px+1.8,py);x.moveTo(px,py-1.8);x.lineTo(px,py+1.8);x.stroke();x.restore();}

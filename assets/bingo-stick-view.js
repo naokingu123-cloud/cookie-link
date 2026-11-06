@@ -6,7 +6,7 @@ const names={black:'黒・小倉あん',white:'白・バター'},opposite=c=>c==
 const clamp=x=>Math.max(0,Math.min(1,x));
 function motion(s,age=Infinity){
  const count=s.flipped.length,end=180+count*110,rankStart=end+390,dropStart=rankStart+190,land=dropStart+310;
- const duration=s.draws.length?land+210:0,t=Math.min(duration,Math.max(0,age));
+ const duration=s.lastKnockRow!=null?land+210:s.placed.length?420:0,t=Math.min(duration,Math.max(0,age));
  const index=Math.floor((t-180)/110),progress=clamp((t-180-index*110)/110);
  const rankStep=t<rankStart?0:t<dropStart?1:t<land?2:3;
  const kick=clamp((t-rankStart)/(dropStart-rankStart)),fall=clamp((t-dropStart)/(land-dropStart));
@@ -42,7 +42,7 @@ function waffle(ctx,size,rim,u){
 }
 const reachInks=['#84f8fa','#ff637d','#d78aff'],reachNames=['リーチ','高額','超高額','リバーサル'];
 const spectrum=['#ff7499','#ffce71','#c0ff9a','#66f0ff','#c493ff','#ff99cb'];
-function reachFrame(c,u,tier,time,id,main){
+function reachFrame(c,u,tier,time,id,main,oddsUp){
  const rainbow=tier===3,pulse=reduce.matches?.84:.74+.26*Math.cos(time/210+id),half=u*.423;
  let ink=reachInks[tier];
  if(rainbow){
@@ -59,7 +59,7 @@ function reachFrame(c,u,tier,time,id,main){
  }
  c.restore();
  if(main){
-  const title=tier&&(reduce.matches||Math.floor(time/1400)%2)?reachNames[tier]:reachNames[0],y=u*.26;
+  const title=oddsUp?'オッズUP':tier&&(reduce.matches||Math.floor(time/1400)%2)?reachNames[tier]:reachNames[0],y=u*.26;
   c.save();c.fillStyle='#3a2939';c.beginPath();c.roundRect(-u*.405,y-u*.125,u*.81,u*.25,u*.075);c.fill();
   c.font='950 '+u*.235+'px SweetReachRounded,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';
   c.fillStyle=ink;c.fillText(title,0,y,u*.77);c.restore();
@@ -69,13 +69,13 @@ function drawBoard(ctx,s,o,main){
  const w=ctx.canvas.width,h=ctx.canvas.height;if(!w||!h)return;
  const t=o.age??Infinity,m=motion(s,t),size=Math.min(w,h),rim=size*(main?.064:.035),u=(size-2*rim)/8;
  const reach=new Map();
- if(!m.active&&s.phase!=='done')for(const hit of o.reach||[]){
+ if(!m.active)for(const hit of o.reach||[]){
   const id=hit.cells?.[0];
-  if(id!=null&&!s.colors[id]&&s.numbers[id]===hit.number&&!s.draws.includes(hit.number))reach.set(id,hit.allClear?3:hit.tier);
+  if(id!=null&&!s.colors[id]&&s.numbers[id]===hit.number&&!s.draws.includes(hit.number))reach.set(id,hit);
  }
  const reachTime=reduce.matches?0:(o.reachTime??o.time??0);
  const key=[w,h,m.active?Math.floor(t/16):-1,art.black.naturalWidth,art.white.naturalWidth,art.board.naturalWidth,main,
-  reach.size?Math.floor(reachTime/75):-1,[...reach].join('|')].join('/');
+  reach.size?Math.floor(reachTime/75):-1,[...reach].map(([id,hit])=>id+'-'+hit.tier+'-'+Number(!!hit.oddsUp)).join('|')].join('/');
  const frame=frames.get(ctx);if(frame?.state===s&&frame.key===key)return;
  frames.set(ctx,{state:s,key});ctx.save();ctx.clearRect(0,0,w,h);ctx.translate((w-size)/2,(h-size)/2);
  ctx.drawImage(waffle(ctx,size,rim,u),0,0);
@@ -99,8 +99,8 @@ function drawBoard(ctx,s,o,main){
    else{ctx.fillStyle=color==='black'?'#512a38':'#fff2ae';ctx.beginPath();ctx.ellipse(0,0,dim*.46,dim*.44,0,0,Math.PI*2);ctx.fill();}
    ctx.restore();
   }else if(number!=null){
-   const tier=reach.get(i),tag=main&&tier!==undefined,font=u*(tag?.55:.63),baseline=tag?-u*.095:0;
-   if(tier!==undefined)reachFrame(ctx,u,tier,reachTime,i,main);
+   const hit=reach.get(i),tag=main&&hit,font=u*(tag?.55:.63),baseline=tag?-u*.095:0;
+   if(hit)reachFrame(ctx,u,hit.allClear?3:hit.tier,reachTime,i,main,hit.oddsUp&&!hit.gain&&!hit.allClear);
    if(typeof drawElixirNumber==='function')drawElixirNumber(ctx,number,0,baseline,font,'#593015','#ffe7ab',u*.048);
    else{ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 '+font+'px system-ui';ctx.lineWidth=u*.065;ctx.strokeStyle='#ffedb9';ctx.strokeText(number,0,baseline);ctx.fillStyle='#542715';ctx.fillText(number,0,baseline);}
   }
@@ -119,19 +119,27 @@ function mount(panel){
  const root=document.createElement('section');root.className='bs-scene';root.setAttribute('aria-label','ワッフルリバーシ');
  root.innerHTML=`<div class="bs-left"><div class="bs-pay">
   <div class="bs-pay-title"><i aria-hidden="true"></i><span><strong class="bs-ladder-name">反転配当</strong><b class="bs-grade"></b></span></div>
-  <table><thead><tr><th>枚数</th><th>配当</th></tr></thead><tbody></tbody></table>
-  <div class="bs-bonus">リバーサルボーナス<small></small><strong></strong></div></div></div>
+  <div class="bs-bonus"><img src="assets/waffle-reversal-logo.webp" alt="リバーサルボーナス"><strong></strong></div>
+  <table><thead><tr><th>枚数</th><th>配当</th></tr></thead><tbody></tbody></table></div></div>
   <div class="bs-tray"><div class="bs-tools">
-   <div class="bs-status"><img class="bs-turn-piece" alt=""><div class="bs-turn-copy"><small></small><strong></strong></div><span class="bs-next"></span></div>
-   <div class="bs-info"><span class="bs-specials"></span><span class="bs-guide"><span class="bs-guide-text"></span><b class="bs-hand">0</b>枚反転</span></div>
-  </div><div class="bs-board"><div class="bs-grid" role="img"><canvas></canvas></div><div class="bs-burst" hidden><b>REVERSAL BONUS!</b><span></span></div></div>
-  <div class="bs-counts"><div>今回 <b class="bs-gain">+0</b><small> WIN</small></div><div>累計 <b class="bs-total">0</b><small> WIN</small></div></div></div>`;
+   <div class="bs-status"><ol class="bs-turns" aria-label="8球の手番と獲得WIN"></ol>
+    <div class="bs-info"><span class="bs-guide" hidden><span class="bs-guide-text"></span><b class="bs-hand">0</b>枚反転</span>
+     <span class="bs-earned">獲得 <b class="bs-total">0</b> WIN</span></div></div>
+  </div><div class="bs-board"><div class="bs-grid" role="img"><canvas></canvas></div><div class="bs-burst" hidden><img src="assets/waffle-reversal-logo.webp" alt="リバーサルボーナス"><span></span></div></div></div>`;
  panel.append(root);const q=k=>root.querySelector(k),canvas=q('canvas'),ctx=canvas.getContext('2d'),grid=q('.bs-grid'),tray=q('.bs-tray');
- const status=q('.bs-status'),piece=q('.bs-turn-piece'),ball=q('.bs-turn-copy small'),player=q('.bs-turn-copy strong'),nextLabel=q('.bs-next');
- const guide=q('.bs-guide-text'),flips=q('.bs-hand'),gain=q('.bs-gain'),total=q('.bs-total'),ladder=q('.bs-pay'),gradeTag=q('.bs-grade');
+ const status=q('.bs-status'),sequence=q('.bs-turns');
+ const turns=Array.from({length:8},(_,i)=>{
+  const row=document.createElement('li'),piece=document.createElement('span'),icon=document.createElement('img'),win=document.createElement('b');
+  const color=i%2?'white':'black';
+  row.className='bs-turn';row.dataset.turn=i+1;row.dataset.color=color;
+  piece.className='bs-medallion';icon.className='bs-turn-piece';icon.src=art[color].src;icon.alt='';
+  win.className='bs-turn-win';piece.append(icon);row.append(piece,win);sequence.append(row);
+  return {row,win,color};
+ });
+ const guide=q('.bs-guide'),guideText=q('.bs-guide-text'),flips=q('.bs-hand'),total=q('.bs-total'),ladder=q('.bs-pay'),gradeTag=q('.bs-grade');
  const prize=q('.bs-bonus'),bonusLabel=(R.sweepBonusHundredths/100).toFixed(1)+'倍';
- prize.dataset.material=materialFor(R.sweepBonusHundredths);prize.querySelector('small').textContent='共通 '+bonusLabel;
- const rows=[...R.payRows].sort((a,b)=>a.count-b.count);if(rows[0]?.count!==0)rows.unshift({count:0});
+ prize.dataset.material=materialFor(R.sweepBonusHundredths);prize.title='リバーサルボーナス　'+bonusLabel;
+ const rows=R.payRows.filter(row=>row.count>0).sort((a,b)=>a.count-b.count);
  const table=q('tbody');
  function block(cell,extra=false){
   const tile=document.createElement('div'),value=document.createElement('span'),unit=document.createElement('small');
@@ -145,7 +153,7 @@ function mount(panel){
  });
  function fit(){const w=root.clientWidth,h=root.clientHeight;if(!w||!h)return;
   root.style.setProperty('--bs-w',w+'px');root.style.setProperty('--bs-h',h+'px');
-  root.style.setProperty('--bs-board',Math.max(1,Math.min(tray.clientWidth,tray.clientHeight-q('.bs-tools').offsetHeight-q('.bs-counts').offsetHeight-4))+'px');
+  root.style.setProperty('--bs-board',Math.max(1,Math.min(tray.clientWidth,tray.clientHeight-q('.bs-tools').offsetHeight-3))+'px');
   const resolution=Math.max(1,Math.round(grid.clientWidth*Math.min(devicePixelRatio||1,2)));if(canvas.width!==resolution||canvas.height!==resolution)canvas.width=canvas.height=resolution;
  }
  const observer=new ResizeObserver(fit);observer.observe(root);observer.observe(grid);observer.observe(q('.bs-tools'));fit();
@@ -156,7 +164,7 @@ function mount(panel){
   value.setAttribute('aria-label',amount+' WIN');
   tile.dataset.material=materialFor(odds);
  }
- let lastBet,lastBaseline,lastRack,lastState,lastKey,lastSpecialKey;
+ let lastBet,lastBaseline,lastRack,lastState,lastKey;
  function draw(s,o={}){
   const bet=o.bet||0,m=motion(s,o.age??Infinity),hand=m.active?m.beat:s.lastFlips,turn=s.draws.length;
   const bonus=s.reversalThisMove?R.sweepBonusHundredths:0,before=s.totalHundredths-s.lastBaseHundredths-bonus;
@@ -164,7 +172,7 @@ function mount(panel){
   const shown=before+R.award(hand,s.lastRack)+(revealed?bonus:0);
   const totalWin=won(bet,shown),handWin=totalWin-won(bet,before);
   const settled=!m.active||m.rankStep===3,grade=settled?s.grade:s.lastGrade,baseline=settled?s.totalHundredths:before;
-  const rack=settled?s.rack:s.lastRack,live=m.active&&m.rankStep===0&&turn>0;
+  const rack=settled?s.rack:s.lastRack,live=m.active&&m.rankStep===0&&s.lastKnockRow!=null;
   const knock=turn?s.lastKnockRow:null;
   if(lastState!==s){
    ladder.dataset.knockRow=knock??'';
@@ -176,37 +184,38 @@ function mount(panel){
     const odds=R.award(count,rack);
     quote(block,odds,bet,baseline);
     if(incoming)quote(incoming,R.award(count,s.rack),bet,s.totalHundredths);
-    row.title=count+(count===tiers.length-1?'枚以上':'枚')+'・'+(odds/100).toFixed(1)+'倍';
+    row.title=count+(count===rows.at(-1).count?'枚以上':'枚')+'・'+(odds/100).toFixed(1)+'倍';
     row.dataset.zero=String(!odds);
    }
    gradeTag.textContent='G'+grade;gradeTag.title='グレード '+grade;ladder.dataset.grade=grade;
    lastBet=bet;lastBaseline=baseline;lastRack=rack;lastState=s;
   }
-  const specials=s.offBoardNumbers||[],specialKey=specials.join(',')+'/'+s.draws.join(',');
-  if(lastSpecialKey!==specialKey){
-   const band=q('.bs-specials');band.textContent='特殊↑';
-   for(const n of specials){const badge=document.createElement('b');badge.textContent=n;badge.className=s.draws.at(-1)===n?'last':s.draws.includes(n)?'used':'';band.append(badge);}
-   band.title='特殊番号 '+specials.join('・')+'。0WINでグレードが1段アップ';band.setAttribute('aria-label',band.title);lastSpecialKey=specialKey;
-  }
   const earnedBonuses=s.reversalCount-Number(!!bonus&&!revealed);
   const burstAt=180+Math.max(0,s.lastFlips-1)*110+55,burst=!!bonus&&m.active&&(o.age??Infinity)>=burstAt&&m.rankStep===0;
-  const key=[burst,turn,hand,handWin,totalWin,m.active,live,m.rankStep,earnedBonuses,s.lastColor,s.draws.at(-1),bet,o.demo,s.phase].join('/');
+  const key=[burst,turn,hand,handWin,totalWin,m.active,live,m.rankStep,earnedBonuses,s.lastColor,s.draws,bet,s.phase,s.turnTotals].join('/');
   if(key!==lastKey){lastKey=key;
    const done=s.phase==='done'&&!m.active,current=m.active||done?turn:turn+1,color=current%2?'black':'white';
-   if(status.dataset.color!==color){status.dataset.color=color;piece.src=art[color].src;}
-   ball.textContent=(o.demo?'デモ　':'')+'第'+current+'球'+(m.active||done?'　'+s.draws.at(-1)+'番':'');
-   player.textContent=done?'抽選終了':names[color]+'の番';
-   nextLabel.textContent=current<8?'次 '+(color==='white'?'黒':'白'):'';
-   const miss=turn>0&&!s.placed.length;
-   guide.textContent=miss?(m.active?'特殊 HIT!　':'特殊 '+s.draws.at(-1)+'番　'):turn?(m.active?'HIT!　':'前球　'):'';
-   flips.textContent=hand;gain.textContent='+'+handWin;total.textContent=totalWin;
+   status.dataset.color=color;ladder.dataset.color=color;
+   for(let i=0;i<turns.length;i++){
+    const target=turns[i],n=i+1,active=n===current;
+    target.row.dataset.state=active?(done?'done':'current'):n<current?'past':'future';
+    if(active&&!done)target.row.setAttribute('aria-current','step');else target.row.removeAttribute('aria-current');
+    const accrued=n===turn?shown:s.turnTotals[i],previous=i?s.turnTotals[i-1]:0;
+    const gain=n<=turn?won(bet,accrued)-won(bet,previous):0;
+    target.win.textContent=gain>0?(gain>=100000&&gain%10000===0?gain/10000+'万':String(gain)):'';
+    target.win.style.fontSize=target.win.textContent.length>4?Math.min(.75,4/target.win.textContent.length)+'em':'';
+    const description='第'+n+'球　'+names[target.color]+(s.draws[i]?'　'+s.draws[i]+'番':'')+(gain?'　'+gain+' WIN':'');
+    target.row.title=description;target.row.setAttribute('aria-label',description);
+   }
+   guide.hidden=!m.active||!s.placed.length;guideText.textContent='HIT!　';
+   flips.textContent=hand;total.textContent=totalWin;
    const focusTier=live?tiers.findLast(t=>t.count<=hand):null;
    for(const item of tiers)item.row.classList.toggle('current',item===focusTier);
    ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';ladder.dataset.rankStep=m.rankStep;
    q('.bs-ladder-name').textContent=m.active&&m.rankStep===1?(knock===13?'13+':knock)+'枚枠 HIT!':m.active&&m.rankStep===2?'GRADE UP!':'反転配当';
    const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent=bonusLabel+'！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
    prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
-   grid.setAttribute('aria-label','8行8列のワッフル盤。'+q('.bs-status').textContent+'。今回'+hand+'枚反転、'+handWin+' WIN。累計'+totalWin+' WIN');
+   grid.setAttribute('aria-label','8行8列のワッフル盤。'+(done?'8球終了':'第'+current+'球 '+names[color])+'。獲得'+totalWin+' WIN');
   }
   const pulse=live&&hand>0?Math.max(0,1-((o.age??0)-(180+(hand-1)*110+55))/110):0;
   root.style.setProperty('--bs-pulse',reduce.matches?'0':pulse.toFixed(2));

@@ -138,7 +138,9 @@ class WineryEngine{
    // can be evaluated, but enqueueBatch still forbids any ninth real draw.
    if(pos<0||this.seen.has(number))return {number,gain:0,total:this.totalHundredths,tier:0};
   const p=pour(this.glasses,pos,this.power,flavorFor(this.processed+1));
-  return {number,gain:p.hundredths-this.totalHundredths,total:p.hundredths,full:p.full,mix:p.mix,allClear:p.allFull,tier:p.allFull?3:p.hundredths>=1000?2:p.hundredths>=300?1:0};
+  const gain=p.hundredths-this.totalHundredths,allClear=p.allFull&&this.fullCount<SIZE;
+  const tier=allClear?3:p.hundredths>=1000?2:p.hundredths>=300?1:0;
+  return {number,gain,total:p.hundredths,full:p.full,mix:p.mix,allClear,tier,oddsUp:p.mix>this.mixCount&&(!gain||!tier)};
  }
  async drain(){
   if(this.busy)return;this.busy=true;const token=this.version;

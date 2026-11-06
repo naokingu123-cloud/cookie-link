@@ -188,7 +188,8 @@ try{
      for(const id of state.faces)prospective.add(id);
      const prize=evaluatePrize(prospective,this.faceGrades);
      const gain=Math.max(0,prize.hundredths-this.totalHundredths);
-     return {number,gain,total:prize.hundredths,tier:gain>=10000?3:gain>=500?2:gain>=100?1:0};
+     const allClear=this.filled.size<24&&prospective.size===24;
+     return {number,gain,total:prize.hundredths,allClear,tier:allClear?3:prize.hundredths>=1000?2:prize.hundredths>=300?1:0};
    }
    async drain(){
      if(this.busy)return;
@@ -372,11 +373,7 @@ try{
        if(engine.seen.has(number)||engine.pendingDraws.has(number))continue;
        const p=engine.predict(number);
        if(!(p.gain>0))continue;
-       // The rare ALL FILL tier requires closing all 24 real triangles.
-       const next=engine.stateFor(new Set([...engine.hits,i]));
-       const allFill=engine.filled.size<24&&next.faces.size===24;
-       const tier=allFill?3:p.gain>=1000?2:p.gain>=300?1:0;
-       result.set(i,{tier,number,gain:p.gain,allFill,name:REACH_NAMES[tier]});
+       result.set(i,{...p,allFill:p.allClear,name:REACH_NAMES[p.tier]});
      }
    }
    nodeReachCache=result;

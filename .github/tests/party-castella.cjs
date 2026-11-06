@@ -36,4 +36,35 @@ for(let i=0;i<10;i++){
 const demo=R.createDemo();let d=demo.state;for(const n of demo.draws)d=R.draw(d,n);
 assert.equal(d.bakedCount,37);assert.equal(d.oddsHits,4);
 assert.equal(d.totalHundredths,15000);
+// Project every unused number without spending a ball. Give an eighth-ball
+// snapshot a ninth oven action only in the oracle by freeing an old bake draw.
+let sawZeroOdds=false,sawFinal=false,sawSmallGain=false;
+for(let seed=1;seed<=48;seed++){
+ let x=seed;const rng=()=>((x=(Math.imul(x,1664525)+1013904223)>>>0)/2**32);
+ let s=R.create({rng}),deck=Array.from({length:25},(_,i)=>i+1);
+ for(let i=24;i>0;i--){const j=Math.floor(rng()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+ for(let count=0;count<=8;count++){
+  const base=R.payout(s.bakedCount,s.oddsHits),saved=JSON.stringify(s),hits=R.reaches(s);
+  assert.equal(JSON.stringify(s),saved);
+  for(const n of Array.from({length:25},(_,i)=>i+1)){
+   const hit=hits.find(h=>h.number===n);
+   if(s.draws.includes(n)){assert(!hit);continue;}
+   const next=R.draw(count===8?{...s,draws:s.draws.slice(0,7)}:s,n);
+   const pay=R.payout(next.bakedCount,next.oddsHits),oddsUp=next.oddsHits>s.oddsHits;
+   assert.equal(Boolean(hit),pay>base||oddsUp);
+   if(hit){
+    assert.equal(hit.total,pay);assert.equal(hit.gain,pay-base);assert.equal(hit.oddsUp,oddsUp);
+    assert.equal(hit.allClear,s.bakedCount<37&&next.bakedCount===37);
+    assert.equal(s.cells[hit.anchor].number,n);
+    sawZeroOdds ||= !base&&!pay&&oddsUp;sawFinal ||= count===8;
+    sawSmallGain ||= pay>base&&pay<100;
+   }
+  }
+  if(count<8)s=R.draw(s,deck[count]);
+ }
+ assert.equal(R.draw(s,deck[8]),null);
+}
+const almost=demo.draws.slice(0,7).reduce(R.draw,demo.state);
+const sawSweep=R.reaches(almost).some(h=>h.number===demo.draws[7]&&h.allClear);
+assert(sawZeroOdds&&sawFinal&&sawSweep&&sawSmallGain);assert.deepEqual(R.reaches(d),[]);
 console.log('Castella: 0–4 honey spots multiply the ORIGINAL base odds by 1.0–3.0; board RTP and payouts verified.');

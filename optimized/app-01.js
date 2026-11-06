@@ -910,7 +910,7 @@ function chocoDrillPose(index,L){
 function chocoNumberHit(e,n){return e.seen.has(n)||e.fx?.number===n;}
 function chocoReachLabel(x,s,n,cx,cy,time,size=6.5){
  const result=(s.reachResults||[]).find(r=>r.number===n);if(!result)return;
- const color=['#ffe867','#ff686a','#df90ff','#fff3b6'][result.tier],word=result.tier&&(motionReduced||Math.floor(time/2000)%2)?REACH_WORDS[result.tier]:'リーチ';
+ const color=['#ffe867','#ff686a','#df90ff','#fff3b6'][result.tier],word=result.oddsUp?'オッズアップ':result.tier&&(motionReduced||Math.floor(time/2000)%2)?REACH_WORDS[result.tier]:'リーチ';
  const phase=(time%1000)/1000,alpha=motionReduced?1:phase<.48||phase>.84?1:1-.7*Math.sin((phase-.48)/.36*Math.PI)**2;x.save();x.globalAlpha=alpha;x.translate(cx,cy);x.shadowColor=color;x.shadowBlur=4;chocoText(x,word,0,0,size,color);x.restore();
  // Match the other games' glints and orbiting high-payout light around each number.
  if(!motionReduced)for(let i=0;i<(result.tier?3:1);i++){const a=time/600+i*Math.PI*2/3,px=cx+Math.cos(a)*10,py=cy-5+Math.sin(a)*8;x.save();x.strokeStyle=color;x.globalAlpha=.55+.4*Math.sin(time/240+i)**2;x.lineWidth=.7;x.beginPath();x.moveTo(px-1.8,py);x.lineTo(px+1.8,py);x.moveTo(px,py-1.8);x.lineTo(px,py+1.8);x.stroke();x.restore();}
@@ -2544,7 +2544,7 @@ function copyReachState(e){
 const reachTier=(total,allClear)=>allClear?3:total>=1000?2:total>=300?1:0;
 function predictNextHit(e,number,pending=[]){
  const q=copyReachState(e),hit=[],numbers=new Set([...pending,number]);let depth=0;
- for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(q.board[r][c]&&numbers.has(q.board[r][c].number))hit.push([r,c]);
+ for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(q.board[r][c]&&(numbers.has(q.board[r][c].number)||q.board[r][c].wild))hit.push([r,c]);
  if(!hit.length)return null;
  q.remove(q.resolveLinks([{cells:hit}]).cells);depth=1;q.maxChain=Math.max(q.maxChain,depth);q.gravity();let linked=groups(q.board);
  while(linked.length){
@@ -3656,15 +3656,15 @@ function requestReach(s,e,a=app){
   if(s.engine!==e||reachContextKey(e,a)!==key){s.reachStatus='inactive';s.reachBoardKey=null;return;}
   try{
   const end=Math.min(numbers.length,index+3);
-  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index],context.pending):predictNextHit(snapshot,numbers[index],context.pending);if((paidReachDrawAllowed(a)&&result?.gain>0)||(e.kind==='candy'&&result?.chain>0&&result.gain<=0))results.push(result);}
+  for(;index<end;index++){const result=e.kind==='candy'?snapshot.predict(numbers[index],context.pending):predictNextHit(snapshot,numbers[index],context.pending);if(paidReachDrawAllowed(a)&&result?.gain>0)results.push(result);}
   if(index<numbers.length){setTimeout(chunk,0);return;}
-  s.reachResults=results;s.reachStatus='ready';s.tabReachResults=paidReachDrawAllowed(a)?results.filter(p=>p.gain>0):[];s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;if(paidReachDrawAllowed(a)){s.reachCalculations=(s.reachCalculations||0)+1;s.reachAfterBall=context.count;}scheduleUI(app);
+  s.reachResults=results;s.reachStatus='ready';s.tabReachResults=results;s.tabReachBase=snapshot.totalHundredths;s.tabReachVersion=e.version;if(paidReachDrawAllowed(a)){s.reachCalculations=(s.reachCalculations||0)+1;s.reachAfterBall=context.count;}scheduleUI(app);
   }catch(error){failReachPreview(s,epoch,error);}
  }
  setTimeout(chunk,0);
 }
 function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
-function visibleReachResults(s,a){const bet=a.bet(s.i),current=medalWin(bet,s.engine.totalHundredths);return paidReachDrawAllowed(a)&&reachAvailable(s,a)?s.reachResults.filter(p=>medalWin(bet,p.total)>current):[];}
+function visibleReachResults(s,a){return reachAvailable(s,a)?s.reachResults:[];}
 function updateReachBoard(s,a){
  if(['popcorn','jelly','stick','castella'].includes(s.engine?.kind))return;
  if(!s.engine)return;
@@ -3690,10 +3690,9 @@ function updateReachBoard(s,a){
 const REACH_PAGE_SIZE=4,REACH_PAGE_MS=2000;
 let reachPageTimer=null;
 function visibleTabReachResults(s,a){
- if(s.engine?.kind==='choco')return chocoReachReady(s,a)?(s.tabReachResults||[]).filter(p=>medalWin(a.bet(s.i),p.total)>medalWin(a.bet(s.i),s.tabReachBase||0)):[];
- if((!['popcorn','jelly','stick','castella'].includes(s.engine?.kind)&&!paidReachDrawAllowed(a))||!reachAvailable(s,a)||s.tabReachVersion!==s.engine.version)return [];
- const bet=a.bet(s.i),base=medalWin(bet,s.tabReachBase||0);
- return (s.tabReachResults||[]).filter(p=>medalWin(bet,p.total)>base);
+ const ready=s.engine?.kind==='choco'?chocoReachReady(s,a):reachAvailable(s,a);
+ if(!ready||s.tabReachVersion!==s.engine.version)return [];
+ return (s.tabReachResults||[]).filter(p=>p.gain>0||p.oddsUp);
 }
 function finishReachSlide(s){
  if(s.reachIncoming){
@@ -3705,10 +3704,10 @@ function paintReachPage(s,{slide=false}={}){
  finishReachSlide(s);
  const results=s.reachPageResults||[],start=(s.reachPage||0)*REACH_PAGE_SIZE,page=results.slice(start,start+REACH_PAGE_SIZE);
  const markup=page.map(p=>{
-  const label=p.oddsUp?'オッズアップ':reachWord(s,p.tier);
+  const label=p.oddsUp&&(!p.gain||!p.tier)?'オッズアップ':reachWord(s,p.tier);
   let digits=String(p.number);
   if(!['stick','castella'].includes(s.engine?.kind))digits=p.tier===3?elixirNumber(p.number).replaceAll('<path ', '<path style="fill:url(#cl-rainbow-'+p.number+')" '):elixirNumber(p.number);
-  return '<span class="reach-num'+(p.oddsUp?' odds-up':'')+'" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+label+'、HIT後 '+p.total/100+'倍">'+digits+'</span>';
+  return '<span class="reach-num'+(p.oddsUp&&(!p.gain||!p.tier)?' odds-up':'')+'" data-reach-tier="'+p.tier+'" aria-label="'+p.number+'番 '+label+'、HIT後 '+p.total/100+'倍">'+digits+'</span>';
  }).join('');
  if(slide&&!motionReduced&&s.reachNumbers.children.length&&page.length){
   const incoming=document.createElement('div');incoming.className='reach-numbers reach-page-enter';incoming.innerHTML=markup;
@@ -3742,7 +3741,7 @@ function updateReachUI(a){
   s.reachStrip.hidden=hidden;if(hidden)s.reachPageDue=0;else if(visibilityChanged&&(s.reachPageResults?.length||0)>REACH_PAGE_SIZE)s.reachPageDue=Date.now()+REACH_PAGE_MS;
   const key=(results.length?s.tabReachVersion+'/':'')+results.map(p=>p.number+':'+p.tier+':'+p.total+(p.oddsUp?'u':'')).join(',');
   if(s.reachUIKey!==key){
-   const oddsOnly=results.length>0&&results.every(p=>p.oddsUp),caption=oddsOnly?'オッズアップ':'リーチ';
+   const oddsOnly=results.length>0&&results.every(p=>p.oddsUp&&(!p.gain||!p.tier)),caption=oddsOnly?'オッズアップ':'リーチ';
    s.reachUIKey=key;s.reachCaption.hidden=!results.length;s.reachCaption.classList.toggle('odds-up',oddsOnly);
    s.reachCaption.innerHTML=results.length?'<span class="reach-badge-label">'+caption+'</span>':'';
    const tier=Math.max(0,...results.map(p=>p.tier));s.reachCaption.dataset.tier=String(tier);s.reachCaption.setAttribute('aria-label',!oddsOnly&&tier?reachWord(s,tier)+'リーチ':caption);

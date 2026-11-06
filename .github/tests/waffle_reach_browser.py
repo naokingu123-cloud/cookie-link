@@ -38,7 +38,7 @@ trace = """(() => {
     return clear.apply(this,args);
   };
   p.fillText=function(label,...args){
-    if(this.canvas.closest('.bs-grid') && ['リーチ','高額','超高額','リバーサル'].includes(label)){
+    if(this.canvas.closest('.bs-grid') && ['リーチ','高額','超高額','リバーサル','オッズUP'].includes(label)){
       const t=this.getTransform(),size=this.canvas.width,unit=size*(1-.064*2)/8;
       window.waffleLabels.push(8*Math.floor((t.f-size*.064)/unit)+Math.floor((t.e-size*.064)/unit));
     }
@@ -46,28 +46,25 @@ trace = """(() => {
   };
   window.startLadderTrace=()=>{
     const ladder=document.querySelector('.bs-pay'),byCount=n=>ladder.querySelector('tr[data-count="'+n+'"] .bs-block');
-    const blocks=Array.from({length:14},(_,i)=>byCount(i)),incoming=ladder.querySelector('.bs-incoming'),zero=ladder.querySelector('tr[data-count="0"]'),bonus=document.querySelector('.bs-bonus');
-    const zeroBefore=zero.getBoundingClientRect().top,bonusBefore=bonus.getBoundingClientRect().top;
-    window.dropTrace={x:Array(14).fill(0),y:Array(14).fill(0),incomingY:0,zeroShift:0,bonusShift:0,phases:[],live:[],hit:false,special:false};let stopped=false;
+    const blocks=Array.from({length:14},(_,i)=>i?byCount(i):null),incoming=ladder.querySelector('.bs-incoming'),bonus=document.querySelector('.bs-bonus');
+    const bonusBefore=bonus.getBoundingClientRect().top;
+    window.dropTrace={x:Array(14).fill(0),y:Array(14).fill(0),incomingY:0,bonusShift:0,phases:[],live:[],hit:false,special:false};let stopped=false;
     window.stopLadderTrace=()=>{stopped=true;return dropTrace;};
     function sample(){
       if(stopped)return;
       const phase=ladder.dataset.rankStep||'0',t=window.dropTrace,e=BingoStick.engine;
       if(t.phases.at(-1)!==phase)t.phases.push(phase);
-      if(ladder.classList.contains('live')){
-        const guide=document.querySelector('.bs-guide').textContent;
-        t.hit||=guide.includes('HIT!');t.special||=guide.includes('特殊');
-      }
+      const guide=document.querySelector('.bs-guide');
+      if(e.busy&&!guide.hidden){t.hit||=guide.textContent.includes('HIT!');}
       if(phase==='1'||phase==='2'){
         blocks.forEach((block,row)=>{
-          const transform=getComputedStyle(block).transform,matrix=transform==='none'?new DOMMatrix():new DOMMatrix(transform);
+          if(!block)return;const transform=getComputedStyle(block).transform,matrix=transform==='none'?new DOMMatrix():new DOMMatrix(transform);
           t.x[row]=Math.max(t.x[row],Math.abs(matrix.m41));t.y[row]=Math.max(t.y[row],Math.abs(matrix.m42));
         });
         const bounds=incoming.getBoundingClientRect(),offset=bounds.top-incoming.parentElement.getBoundingClientRect().top;
         if(t.incomingStart===undefined)t.incomingStart=offset;
         t.incomingY=Math.max(t.incomingY,Math.abs(offset-t.incomingStart));
       }
-      t.zeroShift=Math.max(t.zeroShift,Math.abs(zeroBefore-zero.getBoundingClientRect().top));
       t.bonusShift=Math.max(t.bonusShift,Math.abs(bonusBefore-bonus.getBoundingClientRect().top));
       if(e.busy&&ladder.classList.contains('live'))t.live.push([Number(document.querySelector('.bs-hand').textContent),e.totalHundredths,Number(document.querySelector('.bs-total').textContent.replaceAll(',',''))]);
       requestAnimationFrame(sample);
@@ -77,10 +74,11 @@ trace = """(() => {
 })()"""
 
 reach_matches = """() => {
-  const e=BingoStick.engine,s=e.state,win=Math.floor(e.roundBet*s.totalHundredths/100);
-  const ids=Array.from({length:25},(_,i)=>BingoStickRules.draw(s,i+1))
-    .filter(v=>v&&v.placed.length&&Math.floor(e.roundBet*v.totalHundredths/100)>win).map(v=>v.placed[0]).sort((a,b)=>a-b);
-  return document.querySelector('.bs-status').dataset.color===(s.draws.length%2?'white':'black') &&
+  const s=BingoStick.engine.state;
+  const ids=Array.from({length:25},(_,i)=>BingoStickRules.project(s,i+1))
+    .filter(v=>v&&v.lastFlips>0).map(v=>v.placed[0]).sort((a,b)=>a-b);
+  const color=Math.min(8,s.draws.length+1)%2?'black':'white';
+  return document.querySelector('.bs-status').dataset.color===color && document.querySelector('.bs-pay').dataset.color===color &&
     JSON.stringify([...new Set(waffleLabels)].sort((a,b)=>a-b))===JSON.stringify(ids);
 }"""
 
@@ -95,9 +93,9 @@ def settled_table(page, grade, total, bet, rack):
         ])};
     }""")
     assert grade_info["resting"] and grade_info["grade"] == grade and f"G{grade}" in grade_info["badge"], grade_info
-    assert "50" in grade_info["bonus"] and f"{bet*50} WIN" in grade_info["bonus"].replace(",", ""), grade_info
+    assert f"{bet*50} WIN" in grade_info["bonus"].replace(",", ""), grade_info
     rows = grade_info["rows"]
-    assert [n for n, _, _ in rows] == list(range(13, -1, -1)), rows
+    assert [n for n, _, _ in rows] == list(range(13, 0, -1)), rows
     for flips, material, win in rows:
         odds = rack[flips]
         assert material == ("gold" if odds >= 5000 else "silver" if odds >= 1000 else "waffle"), (flips, odds, material)
@@ -123,9 +121,9 @@ def check_upper_tiers(page):
         const materials=[9,10,11,12].map(n=>primary(n).dataset.material);
         const names=[9,10,12].map(n=>getComputedStyle(primary(n),'::before').backgroundImage.match(/url\(["']?([^"')]+)/)[1]);
         for(const url of names){const img=new Image();img.src=url;await img.decode();if(img.naturalWidth<16)throw Error('Empty waffle image');}
-        const x=Array.from({length:14},(_,i)=>matrix(primary(i)).m41);
+        const x=Array.from({length:14},(_,i)=>i?matrix(primary(i)).m41:0);
         v.draw(s,{bet:1,age:m.dropStart+210});
-        const y=Array.from({length:14},(_,i)=>matrix(primary(i)).m42);
+        const y=Array.from({length:14},(_,i)=>i?matrix(primary(i)).m42:0);
         const incoming=panel.querySelector('.bs-incoming'),incomingPrize=parseInt(incoming.querySelector('[aria-label]').getAttribute('aria-label'));
         v.draw(s,{bet:1,age:Infinity});
         results.push({flips:s.lastFlips,x,y,materials,images:new Set(names).size,incomingPrize,top:s.rack[13],bonus:s.bonusHundredths,
@@ -165,7 +163,7 @@ with sync_playwright() as pw:
         }""", [bet, demo])
         page.wait_for_function("() => BingoStick.engine.running && document.querySelector('.bs-pay').dataset.grade==='0'")
         opening = page.evaluate("""() => {
-          const e=BingoStick.engine,s=e.state,R=BingoStickRules,numbered=s.numbers.map(Boolean),shown=document.querySelector('.bs-specials');
+          const e=BingoStick.engine,s=e.state,R=BingoStickRules,numbered=s.numbers.map(Boolean),icons=[...document.querySelectorAll('.bs-turn')];
           const r=s=>document.querySelector(s).getBoundingClientRect();
           const cells=[...document.querySelectorAll('.bs-pay tbody tr[data-count] td')];
           const right=cells.map(c=>c.querySelector('[aria-label$=" WIN"]').getBoundingClientRect().right);
@@ -173,7 +171,8 @@ with sync_playwright() as pw:
             base:s.rack,top:R.topRefills,
             covered:numbered.every((v,i)=>v!==Boolean(s.colors[i])),
             symmetric:s.colors.every((v,i)=>v===s.colors[63-i]&&v===s.colors[(i&56)+7-i%8]),
-            missing:s.offBoardNumbers,shown:[...shown.querySelectorAll('b')].map(b=>Number(b.textContent)),
+            missing:s.offBoardNumbers,icons:icons.map(i=>i.dataset.color),
+            modern:!document.querySelector('.bs-counts,.bs-specials,.bs-gain,[data-count="0"] .bs-block')&&r('.bs-total').bottom<=r('.bs-board').top+1&&r('.bs-bonus img').bottom<=r('[data-count="13"]').top+1,
             aligned:Math.max(...right)-Math.min(...right)<1.1,
             above:r('.bs-status').bottom<=r('.bs-grid').top+1,
             fits:r('.bs-pay').right<r('.bs-grid').left+2 && r('.bs-grid').right<=innerWidth+1};
@@ -181,9 +180,11 @@ with sync_playwright() as pw:
         assert opening["covered"] and opening["symmetric"] and opening["stones"] == 44 and opening["numbered"] == 20
         assert opening["bet"] == bet and opening["aligned"] and opening["fits"] and opening["above"], opening
         assert len(opening["missing"]) == 5
-        assert opening["shown"] == opening["missing"], opening
+        assert opening["modern"] and opening["icons"] == ["black","white"]*4, opening
         base = opening["base"]
-        page.wait_for_function("() => document.querySelector('.bs-turn-piece').naturalWidth>0")
+        page.wait_for_function("() => [...document.querySelectorAll('.bs-turn-piece,.bs-bonus img')].every(i=>i.naturalWidth>0)")
+        assert page.evaluate("""async () => {const css=getComputedStyle(document.querySelector('.bs-turns'),'::before').backgroundImage;
+          const im=new Image;im.src=css.split('url("')[1].split('")')[0];await im.decode();return im.naturalWidth>200;}""")
         page.wait_for_function(reach_matches)
         settled_table(page, 0, 0, bet, base)
 
@@ -194,16 +195,16 @@ with sync_playwright() as pw:
           let seed=82753;const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
           for(let trial=0;trial<5000;trial++){
             const pool=Array.from({length:25},(_,i)=>i+1),turns=[];
-            let s=e.state,rack=base.slice(),total=0,extraCarry=false,subrecord=false;
+            let s=e.state,rack=base.slice(),total=0,grade=0,extraCarry=false,subrecord=false;
             for(let i=0;i<8;i++){
               const n=recommended?recommended[i]:pool.splice(Math.floor(random()*pool.length),1)[0],d=R.draw(s,n);
               const row=Math.min(13,d.lastFlips),award=rack[row]+(d.reversalThisMove?5000:0);
-              const pre=rack.slice();rack.splice(Math.max(row,1),1);rack.push(top[i]);
+              const pre=rack.slice();if(row){rack.splice(row,1);rack.push(top[grade++]);}
               const win=Math.floor(bet*(total+award)/100),gain=win-Math.floor(bet*total/100);
               if(d.lastFlips>0&&d.lastFlips<=s.maxFlips&&gain>0)subrecord=true;
               if(gain>Math.floor(bet*award/100))extraCarry=true;
               total+=award;
-              turns.push({n,win,gain,total,pre,rack:rack.slice(),placed:d.placed.length,flips:d.lastFlips,max:d.maxFlips,bonus:d.reversalCount});
+              turns.push({n,win,gain,total,pre,grade,rack:rack.slice(),placed:d.placed.length,flips:d.lastFlips,max:d.maxFlips,bonus:d.reversalCount});
               s=d;
             }
             if(recommended||subrecord&&extraCarry&&turns.some(t=>!t.placed)&&turns.some(t=>t.placed&&!t.flips))return turns;
@@ -213,34 +214,38 @@ with sync_playwright() as pw:
         before = 0
         for i, turn in enumerate(plan, 1):
             page.evaluate("""n=>{startLadderTrace();document.querySelector('#manual-number-grid [data-number="'+n+'"]').click();}""", turn["n"])
-            page.wait_for_function("(i)=>BingoStick.engine.processed===i&&!BingoStick.engine.busy && +document.querySelector('.bs-pay').dataset.grade===i", arg=i)
+            page.wait_for_function("([i,g])=>BingoStick.engine.processed===i&&!BingoStick.engine.busy && +document.querySelector('.bs-pay').dataset.grade===g", arg=[i,turn["grade"]])
             samples = page.evaluate("stopLadderTrace()")
             phases = samples["phases"]
-            assert "1" in phases and "2" in phases and phases.index("1") < phases.index("2"), (i, samples)
             knocked = min(13, turn["flips"])
-            assert samples["x"][knocked] > 1, (i, knocked, samples)
-            assert samples["incomingY"] > 1, (i, samples)
-            for row in range(14):
-                if row != knocked:
-                    assert samples["x"][row] < .5, (i, knocked, row, samples)
-                if row > knocked:
-                    assert samples["y"][row] > 1, (i, knocked, row, samples)
-                elif row < knocked:
-                    assert samples["y"][row] < .5, (i, knocked, row, samples)
-            assert samples["hit"] and samples["special"] == (not turn["placed"]), (i, samples)
-            assert "3" in phases and phases.index("3", phases.index("2")) > phases.index("2"), (i, phases)
-            assert samples["zeroShift"] <= 1.1 and samples["bonusShift"] <= 1.1, (i, samples)
+            if knocked:
+                assert "1" in phases and "2" in phases and phases.index("1") < phases.index("2"), (i,samples)
+                assert "3" in phases and phases.index("3",phases.index("2")) > phases.index("2"), (i,phases)
+                assert samples["x"][knocked]>1 and samples["incomingY"]>1, (i,samples)
+                for row in range(1,14):
+                    if row!=knocked:
+                        assert samples["x"][row]<.5, (i,knocked,row,samples)
+                    if row>knocked:
+                        assert samples["y"][row]>1, (i,knocked,row,samples)
+                    elif row<knocked:
+                        assert samples["y"][row]<.5, (i,knocked,row,samples)
+            else:
+                assert "1" not in phases and "2" not in phases and not any(samples["x"]+samples["y"]), (i,samples)
+            assert samples["hit"]==bool(turn["placed"]) and samples["bonusShift"]<=1.1, (i,samples)
             revealed = [v for v in samples["live"] if v[0] > 0]
             if turn["flips"] >= 2:
                 assert set(range(1, turn["flips"]+1)).issubset(v[0] for v in revealed), (i, samples)
             metrics = page.evaluate("""() => {
               const e=BingoStick.engine,s=e.state,amount=sel=>Number(document.querySelector(sel).textContent.replace(/[^0-9]/g,''));
-              return {gain:amount('.bs-gain'),win:amount('.bs-total'),flips:s.lastFlips,placed:s.placed.length,
+              const tiles=[...document.querySelectorAll('.bs-turn')],k=s.draws.length,active=tiles.find(i=>i.getAttribute('aria-current')==='step');
+              if(k<8?active?.dataset.turn!==String(k+1):tiles[7].dataset.state!=='done')throw Error('Incorrect active turn');
+              return {history:tiles.map(i=>+i.querySelector('.bs-turn-win').textContent),win:amount('.bs-total'),flips:s.lastFlips,placed:s.placed.length,
                 grade:s.grade,applied:s.lastGrade,color:s.lastColor,max:s.maxFlips,total:e.totalHundredths,bonus:s.reversalCount,
                 earned:document.querySelector('.bs-bonus').classList.contains('earned')};
             }""")
-            assert metrics == {**{k: turn[k] for k in ("win","gain","flips","placed","max","total","bonus")},
-                               "grade": i, "applied": i-1, "earned": turn["bonus"]>0, "color": "black" if i%2 else "white"}, (i, metrics, turn)
+            assert metrics == {**{k: turn[k] for k in ("win","flips","placed","max","total","bonus")},
+                               "history":[t["gain"] for t in plan[:i]]+[0]*(8-i),
+                               "grade":turn["grade"], "applied":turn["grade"]-int(bool(turn["flips"])), "earned": turn["bonus"]>0, "color": "black" if i%2 else "white"}, (i, metrics, turn)
             assert turn["placed"] == (turn["n"] not in opening["missing"])
             for hand, hundredths, win in revealed:
                 # On a new reversal the bonus appears only when the last disc flips.
@@ -248,8 +253,8 @@ with sync_playwright() as pw:
                 if turn["bonus"] > (plan[i-2]["bonus"] if i>1 else 0) and hand == turn["flips"]:
                     award += 5000
                 assert [hundredths, win] == [before+award, bet*(before+award)//100], (i, hand, hundredths, win, award)
-            settled_table(page, i, turn["total"], bet, turn["rack"])
-            if i in (1, 4, 7):
+            settled_table(page, turn["grade"], turn["total"], bet, turn["rack"])
+            if i in (1, 4, 7, 8):
                 page.wait_for_function(reach_matches)
             before = turn["total"]
         page.wait_for_function("w=>Number(document.querySelector('.result-game .result-value')?.dataset.value)===w", arg=plan[-1]["win"])
@@ -259,7 +264,7 @@ with sync_playwright() as pw:
         if demo:
             check_upper_tiers(page)
         assert not errors, errors
-        print(f"{width}px / {bet} BET: G0–G8, off-board {opening['missing']}, "
+        print(f"{width}px / {bet} BET: through eight turns, off-board {opening['missing']}, "
               f"{[t['gain'] for t in plan]} -> {plan[-1]['win']} WIN", flush=True)
         page.close()
     browser.close()

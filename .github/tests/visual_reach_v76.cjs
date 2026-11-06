@@ -42,13 +42,16 @@ e.processed=8;e.accepted=8;e.phase='complete';e.running=false;
 const reach=[...getReach(e).values()];
 assert(reach.some(p=>p.tier===3&&p.name==='全埋め'&&p.allFill),
  'All-fill tier based on actual 24 captured regions');
-const match=w.match(/const reachTier=p=>([^;]+);/);
-assert(match,'Winery independent four-tier classifier');
-const tier=new Function('p','return '+match[1]+';');
-assert.equal(tier({gain:100,full:9,allClear:false}),0);
-assert.equal(tier({gain:500,full:12,allClear:false}),1);
-assert.equal(tier({gain:1200,full:17,allClear:false}),2);
-assert.equal(tier({gain:100,full:21,allClear:true}),3);
+// A single selected receiving glass is the only change in every projection.
+const wine=new core.WineryEngine({random:()=>.5});
+for(const [before,expectedTier] of [[9,0],[14,1],[17,2],[20,3],[21,2]]){
+ wine.glasses=wine.glasses.map((_,i)=>({volume:Number(i<before),layers:i<before?[{flavor:0,amount:1}]:[]}));
+ wine.refreshPrize();const p=wine.predict(wine.nodeNumbers[20]);assert.equal(p.tier,expectedTier);
+ assert.equal(p.allClear,before===20);assert.equal(p.total,100*core.PAY[Math.min(21,before+1)]);
+}
+wine.glasses=wine.glasses.map((_,i)=>({volume:i===20?.5:0,layers:i===20?[{flavor:1,amount:.5}]:[]}));
+wine.refreshPrize();
+const mix=wine.predict(wine.nodeNumbers[20]);assert.equal(mix.gain,0);assert.equal(mix.oddsUp,true);
 assert.match(w,/function wineryTagReachPath/);
 assert.match(w,/x\.lineDashOffset=-\(seconds\*/,'animated tag perimeter');
 assert.match(w,/premiumReach\(xx,time\)/,'live game render');

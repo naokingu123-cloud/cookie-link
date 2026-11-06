@@ -71,19 +71,14 @@ function updateReach(a){
   const p=K.preview(engine.state,number);
   const total=K.payout(engine.state.popped+p.count,engine.allClears+Number(p.clear),100,engine.state.firstPopAward);
   const gain=total-current;
-  if(!p.clear&&gain<=0)continue;
-  const tier=reachTier(gain,p.clear);
-  options.push({number,total,gain,allClear:p.clear,tier,kind:reachKinds[tier]});
+  if(gain<=0)continue;
+  const allClear=p.clear&&engine.allClears>=2,tier=reachTier(total,allClear);
+  options.push({number,total,gain,allClear,tier,kind:reachKinds[tier]});
  }
  options.sort((a,b)=>a.number-b.number);
  slot.reachBoardKey=context.key;slot.reachResults=options;
- // Main-board clear badges always say 全消し. The small-board numbers reserve
- // the rainbow tier for the prospective third clear and later in this game.
- slot.tabReachResults=options.map(hit=>{
-  if(!hit.allClear||engine.allClears>=2)return hit;
-  const tier=reachTier(hit.gain,false);
-  return {...hit,tier,kind:reachKinds[tier]};
- });
+ // Each third or later clear is another top-role event.
+ slot.tabReachResults=options;
  slot.tabReachBase=current;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=engine.processed;
 }
 slot.updatePopcornReach=updateReach;

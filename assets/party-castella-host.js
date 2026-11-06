@@ -6,7 +6,7 @@ const R=window.PartyCastellaRules,view=window.PartyCastellaView.mount(slot.panel
 const sugarCount=30,animationMs=1500;
 const payoutNote=document.createElement('small'),percent=new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2});
 payoutNote.id='castella-payout-status';$('debug-payout-status').after(payoutNote);
-let clock=0,lastHit=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,paused=false;
+let clock=0,lastHit=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,reachTimer=0,paused=false;
 const engine={
  kind:'castella',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'全焼き',version:0,
  maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,idle:true,busy:false,
@@ -25,7 +25,7 @@ const engine={
  start(){
   this.running=true;
   this.wonderToken??={id:this.version,value:this.roundBet,tier:sugarVisualTier(this.roundBet),kind:'castella'};
-  this.emit('waiting');
+  this.emit('waiting');slot.updateCastellaReach(app);
  },
  previewDraw(n){this.drawn.add(n);},
  enqueueBatch(numbers){
@@ -36,8 +36,8 @@ const engine={
    invalidateReach(slot);this.emit('settled');
    if(next.highestRole)announceAchievement(game.name+'　37個全焼！ '+num(medalWin(app.locked[id],next.totalHundredths))+'WIN');
    if(active===id)sceneSound(next.draws.length<=5?'cookie-hit':'line',{volume:.3});
+   slot.updateCastellaReach(app);
    if(next.phase==='done')finish(this.version);
-   else slot.updateCastellaReach(app);
   }
  },
  emit(phase){this.phase=phase;slot.event={phase};slot.dirtyMain=slot.dirtyMini=true;lastMain=lastMini=-Infinity;wake();scheduleUI(app);}
@@ -48,25 +48,19 @@ slot.holder.classList.add('pct-slot');slot.panel.classList.add('pct-panel');
 const title=slot.tab.querySelector('.tab-game-name'),emblem=new Image();
 emblem.src=game.logo;emblem.alt=game.name;title.replaceChildren(emblem);title.setAttribute('aria-label',game.name);
 
-function projectReaches(s,bet){
- if(s.phase!=='bake')return [];
- const base=R.payout(s.bakedCount,s.oddsHits),currentWin=medalWin(bet,base),hits=[];
- for(let number=1;number<=25;number++){
-  const next=R.draw(s,number);if(!next)continue;
-  const total=R.payout(next.bakedCount,next.oddsHits);
-  if(medalWin(bet,total)<=currentWin)continue;
-  const gain=total-base,allClear=next.bakedCount===37,tier=allClear?3:Math.min(2,reachTier(gain,false));
-  hits.push({number,total,gain,tier,allClear,zone:next.lastZone,kind:['reach','high','super','all'][tier]});
- }
- return hits;
+function projectReaches(s){
+ return R.reaches(s).map(hit=>{
+  const tier=reachTier(hit.total,hit.allClear);
+  return {...hit,tier,kind:['reach','high','super','all'][tier]};
+ });
 }
 slot.updateCastellaReach=function(a){
  const s=engine.state,c=reachContext(engine,a);
- if(!c||a.bet(id)<=0||s.phase!=='bake'){
+ if(!c||a.bet(id)<=0){
   if(slot.reachStatus!=='inactive'){invalidateReach(slot);slot.reachStatus='inactive';}return;
  }
  if(slot.reachBoardKey===c.key)return;
- slot.tabReachResults=slot.reachResults=projectReaches(s,a.bet(id));slot.reachBoardKey=c.key;
+ slot.tabReachResults=slot.reachResults=projectReaches(s);slot.reachBoardKey=c.key;
  slot.tabReachBase=R.payout(s.bakedCount,s.oddsHits);slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
 };
 function collectSugar(){
@@ -91,10 +85,10 @@ async function finish(version){
 }
 const lesson=(()=>{
  const demo=R.createDemo();let state=demo.state;
- const stages=[{at:0,state,reach:[]}];
+ const stages=[{at:0,state,reach:projectReaches(state)}];
  for(const [i,n] of demo.draws.entries()){
   state=R.draw(state,n);
-  stages.push({at:[1300,2850,4400,5950,7500,10500,12800,15100][i],state,reach:projectReaches(state,100)});
+  stages.push({at:[1300,2850,4400,5950,7500,10500,12800,15100][i],state,reach:projectReaches(state)});
  }
  return stages;
 })();
@@ -108,14 +102,18 @@ function paint(mini){
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
 slot.paintCastella=paint;
-function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
+function wake(){
+ if(reachTimer){clearTimeout(reachTimer);reachTimer=0;}
+ if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);
+}
 function tick(now){
  frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
  if(moving&&stamp!==null)clock+=Math.max(0,now-stamp);stamp=moving?now:null;
  if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
  if(active!==id&&clock-lastMini>=120){paint(true);lastMini=clock;}
- const reachAnimation=active===id&&engine.state.phase==='bake'&&slot.reachStatus==='ready'&&slot.reachResults?.length>0;
- if(moving&&(active===id&&app.phase==='ready'||clock-lastHit<=animationMs||reachAnimation))wake();
+ const reachAnimation=app.phase==='playing'&&!motionReduced&&slot.reachStatus==='ready'&&slot.reachResults?.length>0;
+ if(moving&&(active===id&&app.phase==='ready'||clock-lastHit<=animationMs))wake();
+ else if(moving&&reachAnimation)reachTimer=setTimeout(wake,active===id?80:125);
  else stamp=null;
 }
 const oldSelect=select;select=function(i){

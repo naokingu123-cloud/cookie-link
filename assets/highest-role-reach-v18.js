@@ -34,12 +34,12 @@ try{
     for(;index<end;index++){
       const number=numbers[index];
       const p=chocoPlan(snapshot.strata,[number],snapshot);
-      if(!(p.gain>0))continue;
+      if(p.gain<=0&&!p.oddsCount)continue;
       const reached=Number(p.bonusResolvedDepth)||0;
       const highest=reached>=500&&reached>resolved&&reached%100===0;
       const tier=highest?3:reachTier(base+p.gain,false);
       results.push({
-        number,gain:p.gain,total:base+p.gain,tier,
+        number,gain:p.gain,total:base+p.gain,tier,oddsUp:p.oddsCount>0&&(!p.gain||!tier),
         ...(highest?{highestRole:'canyonBonus',bonusDepth:reached}:{})
       });
     }

@@ -195,11 +195,8 @@ function wineryReach(s,e,a){
  if(!context||!stable(e)||a.bet(mount)<=0){s.reachStatus='inactive';s.reachResults=[];s.tabReachResults=[];s.reachBoardKey=null;return;}
  if(s.reachBoardKey===context.key&&s.reachStatus==='ready')return;
  s.reachEpoch=(s.reachEpoch||0)+1;s.reachBoardKey=context.key;
- // Rank by prospective additional payout, with 21 FULL as a special top tier.
- const reachTier=p=>p.allClear||p.full===21?3:p.gain>=1000?2:p.gain>=300?1:0;
  const results=e.nodeNumbers.filter(n=>!e.seen.has(n))
-  .map(n=>e.predict(n)).filter(p=>p.gain>0)
-  .map(p=>({...p,tier:reachTier(p)}));
+  .map(n=>e.predict(n)).filter(p=>p.gain>0||p.oddsUp);
  results.sort((a,b)=>a.number-b.number);s.reachResults=results;s.tabReachResults=results;
  s.tabReachBase=e.totalHundredths;s.tabReachVersion=e.version;s.reachStatus='ready';s.reachAfterBall=e.processed;
 }
@@ -772,7 +769,7 @@ function premiumReach(x,time){
     ['#ffadcd','#ffed91','#8cefff','#b7a1ff'][k%4]:color;
    x.lineWidth=1.7;x.shadowColor=color;x.shadowBlur=6;x.stroke();
   }
-  const name=tier===3?'全満':
+  const name=p.oddsUp?'オッズアップ':tier===3?'全満':
     tier>0&&Math.floor(seconds/1.3)%2===0?'リーチ':WP_REACH_WORDS[tier];
   x.textAlign='center';x.textBaseline='middle';
   x.font='1000 12px SweetReachRounded,system-ui,sans-serif';

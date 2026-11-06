@@ -55,9 +55,10 @@ slot.updateJellyReach=function(a){
  for(let number=1;number<=25;number++){
   if(c.used.has(number))continue;
   const {lines,oddsReason,totalHundredths:total}=K.preview(engine.state,number),gain=total-base;
-  if(medalWin(a.bet(id),total)<=medalWin(a.bet(id),base))continue;
-  const allClear=lines===K.LINES.length&&engine.state.lines.length<lines,tier=reachTier(gain,allClear);
-  const oddsUp=oddsReason==='color'&&lines===engine.state.lines.length;
+  const allClear=lines===K.LINES.length&&engine.state.lines.length<lines;
+  const tier=reachTier(total,allClear);
+  const oddsUp=oddsReason==='color'&&lines===engine.state.lines.length&&(!gain||!tier);
+  if(gain<=0&&!oddsUp)continue;
   hits.push({number,total,gain,allClear,tier,oddsUp,kind:['reach','high','super','all'][tier]});
  }
  reachStarted=clock;slot.reachBoardKey=c.key;slot.tabReachResults=slot.reachResults=hits;slot.tabReachBase=base;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
