@@ -204,3 +204,192 @@ html[data-lineup="all"] body.mobile-landscape #tabs.tabs{
   width:100%!important;min-width:0!important;max-width:none!important;
   grid-template-columns:repeat(5,minmax(0,1fr))!important
 }
+
+/* v151: theme-colour cards, Safari reach baseline fix, selected preview label,
+   smaller BET/WIN, and slightly smaller roulette in ALL mode. */
+
+/* Use the complete 178px tab area: 88px + 2px gap + 88px. */
+html[data-lineup="all"] #tabs.tabs,
+html[data-lineup="all"] body.pc-enabled #tabs{
+  grid-template-rows:repeat(2,88px)!important;
+  grid-auto-rows:88px!important;
+  row-gap:2px!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot{
+  height:88px!important;min-height:88px!important;max-height:88px!important;
+  padding:0!important;
+  grid-template-rows:52px 20px 16px!important;
+}
+
+/* Keep the generated game-specific artwork as the outer frame,
+   but tint the inner card with each game's own identity colour. */
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="cookie"]>.tab{
+  background:linear-gradient(160deg,#fff1c9,#e7ae68 72%,#bb7740)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="choco"]>.tab{
+  background:linear-gradient(160deg,#e7bea0,#a56a4c 70%,#70402f)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="candy"]>.tab{
+  background:linear-gradient(160deg,#ffe1f0,#ef8fc0 70%,#b64c81)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="gelato"]>.tab{
+  background:linear-gradient(160deg,#e7fbff,#8bd5f2 69%,#588fc3)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="winery"]>.tab{
+  background:linear-gradient(160deg,#f1e1ff,#b98bd8 70%,#814f91)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="popcorn"]>.tab{
+  background:linear-gradient(160deg,#fff7b8,#efcb55 68%,#c17b30)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="jelly"]>.tab{
+  background:linear-gradient(160deg,#dcfff5,#78dcc8 70%,#419c94)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="stick"]>.tab{
+  background:linear-gradient(160deg,#ffe5c0,#d69a63 69%,#9e5d46)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot[data-game-kind="castella"]>.tab{
+  background:linear-gradient(160deg,#ffe8ba,#f4b260 69%,#b66b32)!important;
+}
+
+/* Main preview gets the extra vertical room. */
+html[data-lineup="all"] #tabs>.tab-slot>.tab,
+html[data-lineup="all"] #tabs>.tab-slot>.tab[aria-selected="true"]{
+  width:92.8px!important;min-width:92.8px!important;max-width:92.8px!important;
+  height:52px!important;min-height:52px!important;max-height:52px!important;
+  padding:1px 3px!important;
+  grid-template-columns:39px minmax(0,1fr)!important;
+  grid-template-rows:13px 37px!important;
+  gap:0 3px!important;
+}
+html[data-lineup="all"] #tabs .tab-game-name{
+  height:13px!important;min-height:13px!important;line-height:13px!important;
+  font-size:6.7px!important;
+}
+html[data-lineup="all"] #tabs .tab-game-name img,
+html[data-lineup="all"] #tabs .tab-game-name svg{
+  height:13px!important;max-height:13px!important;
+}
+html[data-lineup="all"] #tabs .mini-wrap,
+html[data-lineup="all"] #tabs .tab[aria-selected="true"] .mini-wrap{
+  width:38px!important;height:37px!important;min-width:38px!important;min-height:37px!important;
+}
+html[data-lineup="all"] #tabs .mini-wrap canvas,
+html[data-lineup="all"] #tabs .mini-wrap .gp-mini,
+html[data-lineup="all"] #tabs .mini-logo{
+  width:37px!important;height:37px!important;
+}
+
+/* Selected tab: replace the preview with the familiar selected label. */
+html[data-lineup="all"] #tabs>.tab-slot.selected .mini-wrap>*{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot.selected .mini-wrap::after{
+  content:"選択中"!important;
+  display:grid!important;
+  position:absolute!important;
+  inset:1px!important;
+  z-index:30!important;
+  place-items:center!important;
+  border:1px solid #ffe5a4!important;
+  border-radius:5px!important;
+  background:linear-gradient(180deg,#694457f2,#3c263ff2)!important;
+  color:#fff5c9!important;
+  font:900 8px/1 system-ui,sans-serif!important;
+  letter-spacing:-.2px!important;
+  text-shadow:0 1px #3e2434,0 0 3px #ffd87b!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+/* Reach row: taller and move the numerals upward to correct Safari's low baseline. */
+html[data-lineup="all"] #tabs .tab-slot .reach-strip{
+  width:92.8px!important;min-width:92.8px!important;max-width:92.8px!important;
+  height:20px!important;min-height:20px!important;max-height:20px!important;
+  padding:1px 3px!important;
+  align-items:center!important;
+  overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-slot .reach-caption{
+  height:16px!important;
+  line-height:14px!important;
+  align-self:center!important;
+}
+html[data-lineup="all"] #tabs .reach-clip{
+  height:18px!important;
+  align-self:center!important;
+  overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .reach-numbers,
+html[data-lineup="all"] #tabs .reach-page-enter,
+html[data-lineup="all"] #tabs .reach-page-leave{
+  height:18px!important;
+  align-items:center!important;
+  overflow:visible!important;
+}
+html[data-lineup="all"] #tabs .reach-num{
+  height:17px!important;min-height:17px!important;
+  padding:0!important;
+  font-size:10.9px!important;
+  line-height:11px!important;
+  place-items:center!important;
+  transform:translateY(-2px)!important;
+  -webkit-text-stroke:.42px #1d1527!important;
+  text-shadow:0 0 1.5px currentColor!important;
+}
+
+/* BET plaque: a little smaller than v150 and centered safely. */
+html[data-lineup="all"] #tabs .tab-locked-bet{
+  width:92.8px!important;min-width:92.8px!important;max-width:92.8px!important;
+  height:16px!important;min-height:16px!important;max-height:16px!important;
+  padding:1px 6px!important;
+  overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet>.gold-word{
+  height:12px!important;
+  font-size:5.9px!important;
+  line-height:12px!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
+  height:12px!important;
+  font-size:9px!important;
+  line-height:11px!important;
+  padding:0!important;
+  transform:translateY(-1px)!important;
+  overflow:visible!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet .gold-number{
+  line-height:11px!important;
+}
+
+/* Earned payout: smaller numerals and label, centered in the larger preview bay. */
+html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble{
+  height:29px!important;min-height:29px!important;max-height:29px!important;
+  padding:1px!important;
+  grid-template-rows:18px 7px!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin{
+  height:18px!important;
+  line-height:18px!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin .gold-number{
+  font-size:13.5px!important;
+  line-height:15px!important;
+  padding:0!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .win-word,
+html[data-lineup="all"] #tabs .tab-win-bubble .win-word>.gold-word{
+  height:7px!important;
+  font-size:5.3px!important;
+  line-height:7px!important;
+}
+
+/* Slightly reduce the roulette only in the non-three-game ALL cabinet.
+   Game logic and physical wheel dimensions are untouched; only its viewport is inset. */
+html[data-lineup="all"] #cookie-roulette .a8-stage{
+  inset:8px 13px 38px!important;
+}
+html[data-lineup="all"] .arena .avatar-box{
+  transform:scale(.92)!important;
+  transform-origin:right bottom!important;
+}
