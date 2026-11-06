@@ -12,7 +12,7 @@
 try{
  const oldPaint=window.sweets12ThumbnailRenderer;
  if(typeof oldPaint!=='function')throw Error('v22 mini renderer not loaded');
- const SIZE=80,SPRITE_SIZE=48,CACHE_LIMIT=288;
+ const SIZE=64,SPRITE_SIZE=40,CACHE_LIMIT=240;
  const views=new Map(),candyTiles=new Map(),backdrops=new Map();
  let assetEpoch=0,painted=0,skipped=0,failed=0;
  let originalPngReady=!!sixCandyPngState.loaded;
@@ -54,7 +54,7 @@ try{
   // One pre-scaled 48px sprite for all twelve boards; the original
   // 128px image remains in the shared main-game cache.
   const c=cv(SPRITE_SIZE),ctx=c.getContext('2d');
-  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='medium';
   ctx.drawImage(src,0,0,SPRITE_SIZE,SPRITE_SIZE);
   if(tile.sugar){
    const sugar=getSugarSprite(level);
@@ -140,7 +140,7 @@ try{
   g.save();
   g.setTransform(factor,0,0,factor,0,0);
   g.clearRect(0,0,48,48);
-  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='medium';
   g.fillStyle='#31212b';g.fillRect(0,0,48,48);
   g.beginPath();g.rect(left,top,cw*7,ch*12);g.clip();
   const paint=(t,r,c,grid,row,alpha=1)=>{
@@ -196,7 +196,7 @@ try{
   g.save();
   g.setTransform(1,0,0,1,0,0);
   g.clearRect(0,0,dim,dim);
-  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  g.imageSmoothingEnabled=true;g.imageSmoothingQuality='medium';
   g.drawImage(bg,0,0,dim,dim);
   g.scale(k,k);
   for(let r=0;r<grid.length;r++)for(let c=0;c<(grid[r]?.length||0);c++){
