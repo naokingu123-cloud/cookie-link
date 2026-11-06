@@ -137,10 +137,10 @@ function tick(now){
  stamp=moving?now:null;
  if(moving&&animating)advanceMove();
  if(active===id&&(animating||clock-lastMain>=32)){paint(false);lastMain=clock;}
- if(app.phase!=='ready'&&clock-lastMini>=(animating?100:140)){paint(true);lastMini=clock;}
+ if(app.phase!=='ready'&&(!allNineMode||active===id)&&clock-lastMini>=(animating?100:140)){paint(true);lastMini=clock;}
  const reaching=app.phase==='playing'&&slot.reachResults.length&&!motionReduced;
  if(moving&&(animating||active===id&&reaching))wake();
- else if(moving&&active!==id&&reaching)miniTimer=setTimeout(wake,145);
+ else if(moving&&!allNineMode&&active!==id&&reaching)miniTimer=setTimeout(wake,145);
  else stamp=null;
 }
 const oldSelect=select;select=function(i){const result=oldSelect(i);document.body.classList.toggle('bs-active',active===id);lastMain=lastMini=-Infinity;wake();return result;};
