@@ -1,0 +1,9 @@
+Instrument timbres: FluidR3 GM by Frank Wen and contributors. The recordings use the FluidR3 GM samples pre-rendered for MIDI.js by Benjamin Gleitzman (gleitz/midi-js-soundfonts). The project lists FluidR3 GM under Creative Commons Attribution 3.0 US.
+Sound source: https://github.com/gleitz/midi-js-soundfonts/tree/gh-pages/FluidR3_GM
+Attribution/license information: https://github.com/gleitz/midi-js-soundfonts#soundfonts-available
+License: https://creativecommons.org/licenses/by/3.0/us/
+These instrument notes were resampled, layered with custom synthesis, articulated, processed and mixed for this original score. No audio from Anima Lotta was sampled.
+
+Recorded orchestral bass drum, snare, tenor drums and cymbals: VS Chamber Orchestra Community Edition, Sam Gossner and Simon Dalzell, edited by Elan Hickler/Soundemote. Source under CC0 1.0 Universal. These hits were trimmed, pitched, layered and mixed with a custom drum synthesizer.
+https://github.com/sgossner/VSCO-2-CE
+https://creativecommons.org/publicdomain/zero/1.0/

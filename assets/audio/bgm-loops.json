@@ -47,42 +47,42 @@
   "assets/audio/jpc-1.mp3": {
     "title": "星砂のからくり時計",
     "start": 0.1,
-    "end": 39.018888889,
+    "end": 37.994761905,
     "crossfade": 0.025,
     "method": "authored-loop",
-    "duration": 39.058888889
+    "duration": 38.034761905
   },
   "assets/audio/jpc-2.mp3": {
     "title": "キャンディ工房の輪舞",
     "start": 0.1,
-    "end": 37.74707483,
+    "end": 37.994761905,
     "crossfade": 0.025,
     "method": "authored-loop",
-    "duration": 37.78707483
+    "duration": 38.034761905
   },
   "assets/audio/jpc-3.mp3": {
     "title": "星窯を飛ぶ帆船",
     "start": 0.1,
-    "end": 36.555714286,
+    "end": 36.1,
     "crossfade": 0.025,
     "method": "authored-loop",
-    "duration": 36.595714286
+    "duration": 36.14
   },
   "assets/audio/jpc-4.mp3": {
     "title": "虹の戴冠パレード",
     "start": 0.1,
-    "end": 35.437414966,
+    "end": 34.385736961,
     "crossfade": 0.025,
     "method": "authored-loop",
-    "duration": 35.477414966
+    "duration": 34.425736961
   },
   "assets/audio/jpc-reach.mp3": {
     "title": "あとひと粒の星",
-    "start": 0.1,
-    "end": 19.691814059,
+    "start": 4.997959184,
+    "end": 44.181564626,
     "crossfade": 0.025,
     "method": "authored-loop",
-    "duration": 19.731814059
+    "duration": 44.221564626
   },
   "assets/audio/vocal-4-1.mp3": {
     "title": "アニマロッタ4ワンダー1ボーカル",

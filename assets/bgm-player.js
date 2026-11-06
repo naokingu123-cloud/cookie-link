@@ -1,6 +1,7 @@
 /* A single music transport. Managed tracks loop on the AudioContext sample clock;
    the existing BET track keeps its HTML media transport. No timeupdate seeking. */
-const jpcScoreRevision = '20261106-jpc1';
+const jpcScoreRevision = '20261106-jpc2';
+const jpcReachTrack = 'assets/audio/jpc-reach.mp3';
 class LoopingBgmPlayer {
  constructor(){this.media=new Audio();this._src='';this._loop=true;this._rate=1;this._offset=0;this._serial=0;this._paused=true;this._source=null;this._buffer=null;this._cache=new Map();this._loads=new Map();this._metadata=fetch('assets/audio/bgm-loops.json?v='+jpcScoreRevision).then(r=>{if(!r.ok)throw Error('BGM loop metadata unavailable');return r.json();});this._metadata.catch(()=>{});}
  managed(src=this._src){return /assets\/audio\/(vocal-\d-\d|jpc-(?:[1-4]|reach))\.mp3$/.test(src);}
@@ -36,8 +37,15 @@ class LoopingBgmPlayer {
    const n=Math.min(Math.round(m.crossfade*sr),Math.floor(start*sr)),e=Math.round(end*sr),s=Math.round(start*sr);
    // Blend into the pre-roll immediately before loopStart, preserving loop length/beat.
    for(let c=0;c<buffer.numberOfChannels;c++){const d=buffer.getChannelData(c);for(let k=0;k<n;k++){const w=(k+1)/n;d[e-n+k]=d[e-n+k]*(1-w)+d[s-n+k]*w;}}
-   const value={buffer,points:{start,end}};this._cache.set(src,value);
-   while(this._cache.size>2){const key=[...this._cache.keys()].find(k=>k!==this._src&&k!==src);if(!key)break;this._cache.delete(key);}
+   const value={buffer,points:{start,end}},jpcActive=this._src.startsWith('assets/audio/jpc-');
+   // A stale preload must not evict the active JPC round or its fanfare.
+   if(jpcActive&&src!==this._src&&src!==jpcReachTrack)return value;
+   if(!jpcActive&&src===jpcReachTrack)return value;
+   this._cache.set(src,value);
+   while(this._cache.size>2){
+    const key=[...this._cache.keys()].find(k=>k!==this._src&&k!==src&&(!jpcActive||k!==jpcReachTrack));
+    if(!key)break;this._cache.delete(key);
+   }
    return value;
   }).finally(()=>this._loads.delete(src));this._loads.set(src,task);return task;
  }
@@ -53,6 +61,8 @@ class LoopingBgmPlayer {
    let offset=this._offset;if(source.loop&&offset>=source.loopEnd)offset=source.loopStart+(offset-source.loopEnd)%(source.loopEnd-source.loopStart);
    this._offset=offset;this._started=this.context.currentTime;this._source=source;
    source.onended=()=>{source.disconnect();if(this._source===source){this._source=null;this._paused=true;}};source.start(0,offset);
+   // Prepare the one-away fanfare after the active round has started.
+   if(src.startsWith('assets/audio/jpc-')&&src!==jpcReachTrack)this.prepare(jpcReachTrack).catch(()=>{});
   }catch(error){if(serial===this._serial){this._paused=true;this.error=error;}throw error;}
  }
  pause(){
