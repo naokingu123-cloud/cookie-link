@@ -9,8 +9,9 @@ function fixture(origin,black,white,otherNumber){
  numbers[origin]=1;if(otherNumber!==undefined)numbers[otherNumber]=2;
  return {...s,numbers,colors,counts:{black:black.length,white:white.length}};
 }
-const odds=[0,5,10,20,50,100,200,500,1000,1500,2000,3000,4000,5000,5000];
+const odds=[0,10,10,20,50,100,200,500,1000,1500,2000,3000,4000,5000,5000];
 assert.deepEqual(odds.map((_,n)=>R.award(n)),odds);
+assert(R.payRows.every(({hundredths})=>hundredths>=10&&Number.isInteger(hundredths/10)));
 assert.equal(R.sweepBonusHundredths,3000);
 // Eight bounded rays. Flips are ordered by distance, then by stable direction.
 {
@@ -58,6 +59,7 @@ for(let seed=0;seed<300;seed++){
   assert.equal(s.lastBaseHundredths,R.award(s.lastFlips));
   assert.equal(s.baseHundredths,last.baseHundredths+s.lastBaseHundredths);
   assert.equal(s.totalHundredths,s.baseHundredths+s.reversalCount*R.sweepBonusHundredths);
+  for(const value of [s.lastBaseHundredths,s.baseHundredths,s.bonusHundredths,s.totalHundredths])assert(Number.isInteger(value/10));
   assert.equal(s.phase,n===8?'done':'playing');assert.equal(s.counts.black+s.counts.white,40+n-Number(s.draws.includes(s.missingNumber)));
   assert(s.colors.every((color,i)=>color||s.numbers[i]));
   for(const c of ['black','white'])assert.equal(s.counts[c],s.colors.filter(v=>v===c).length);
@@ -67,10 +69,11 @@ for(let seed=0;seed<300;seed++){
  }
  assert.equal(R.draw(s,9),null);
 }
-assert.equal(patterns.size,4);
+assert.equal(patterns.size,5);
 // Every production mold has a legal eight-number game that earns the reversal bonus.
 const reversals=[
- [2654435761,50,'格子',[8,4,25,6,23,17,1,22],7,'black'],
+ [2654435761,50,'小格子',[6,22,17,23,10,1,18,3],7,'black'],
+ [2710938419,50,'格子',[2,20,9,5,8,1,17,4],7,'black'],
  [2654435761,90,'双菱',[7,1,24,6,25,17,13,22],7,'black'],
  [3668339987,90,'市松',[5,7,11,16,14,13,24,25],8,'white'],
  [2654435761,150,'花窓',[18,1,16,9,6,22,19,2],7,'black']
@@ -86,8 +89,8 @@ for(const [seed,target,name,draws,ball,color] of reversals){
 {
  let {state,draws}=R.createDemo();const flips=[],paid=[];
  for(const v of draws){state=R.draw(state,v);flips.push(state.lastFlips);paid.push(state.lastBaseHundredths);}
- assert.deepEqual(paid,[10,5,200,5,200,0,20,0]); // repeat 6 and smaller 1 or 3 are paid again.
- assert.equal(state.missingNumber,draws[7]);assert.equal(state.baseHundredths,440);assert.equal(state.totalHundredths,3440);
+ assert.deepEqual(paid,[10,10,200,10,200,0,20,0]); // repeat 6 and smaller 1 or 3 are paid again.
+ assert.equal(state.missingNumber,draws[7]);assert.equal(state.baseHundredths,450);assert.equal(state.totalHundredths,3450);
  assert.deepEqual(flips,[2,1,6,1,6,0,3,0]);assert.equal(state.bonusEvents[0].ball,7);
 }
 // Independent production-engine holdout. Number assignment is exchangeable so fixed

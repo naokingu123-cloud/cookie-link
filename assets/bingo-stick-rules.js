@@ -2,17 +2,18 @@
 (function(root){
  'use strict';
  const cells=Array.from({length:64},(_,i)=>i);
- const payRows=[[1,5],[2,10],[3,20],[4,50],[5,100],[6,200],[7,500],[8,1000],[9,1500],[10,2000],[11,3000],[12,4000],[13,5000]]
+ const payRows=[[1,10],[2,10],[3,20],[4,50],[5,100],[6,200],[7,500],[8,1000],[9,1500],[10,2000],[11,3000],[12,4000],[13,5000]]
   .map(([count,hundredths])=>({count,hundredths}));
  const sweepBonusHundredths=3000,sugarFlips=8;
  function award(count){return payRows.findLast(row=>row.count<=count)?.hundredths||0;}
  // Each 4×4 quarter contains ten stones. The other 24 mirrored squares all carry numbers.
  // Every open square brackets at least one white stone on black's first move.
- // Keep the color orientation fixed. Each rate is a gross return estimate from uniform draws.
+ // Keep the color orientation fixed. Rates are gross return estimates from 6 million uniform games per pattern.
  const molds=[
-  {rate:48.199033,patterns:[{name:'格子',quarter:'BBB.BW.W.B.BB.W.'}]},
-  {rate:86.004445,patterns:[{name:'双菱',quarter:'B.B..BW..WBBB.BW'},{name:'市松',quarter:'W.W.BWW.BBB..WW.'}]},
-  {rate:157.934716,patterns:[{name:'花窓',quarter:'..B.BWW..BBW.WBB'}]}
+  {rate:46.931260,patterns:[{name:'小格子',quarter:'BB.BBW.BB..WBB..'}]},
+  {rate:68.373732,patterns:[{name:'格子',quarter:'BBB.BW.W.B.BB.W.'}]},
+  {rate:104.1186375,patterns:[{name:'双菱',quarter:'B.B..BW..WBBB.BW'},{name:'市松',quarter:'W.W.BWW.BBB..WW.'}]},
+  {rate:168.373700,patterns:[{name:'花窓',quarter:'..B.BWW..BBW.WBB'}]}
  ];
  function shuffle(values,rng){
   for(let i=values.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
@@ -20,7 +21,7 @@
  }
  function create({rng=Math.random,target=90}={}){
   const rate=Math.max(50,Math.min(150,Number.isFinite(target)?target:90));
-  const high=rate<=molds[1].rate?1:2,lo=molds[high-1],hi=molds[high];
+  const high=molds.findIndex(group=>group.rate>=rate),lo=molds[high-1],hi=molds[high];
   const group=rng()<(rate-lo.rate)/(hi.rate-lo.rate)?hi:lo;
   const mold=group.patterns[Math.floor(rng()*group.patterns.length)],transpose=rng()<.5;
   const colors=cells.map(i=>{
