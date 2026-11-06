@@ -418,3 +418,111 @@ html[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab[aria-selected="tru
   visibility:visible!important;
   pointer-events:none!important;
 }
+
+
+/* v152: reveal the generated confectionery outer frames again.
+   The frame owns the full 92.8x88 cell; all live UI is inset inside it. */
+html[data-lineup="all"] #tabs>.tab-slot{
+  overflow:hidden!important;
+  position:relative!important;
+  padding:0!important;
+  clip-path:inset(0 round 6px)!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:0!important;
+  background:var(--all-tab-frame) center/100% 100% no-repeat!important;
+  border:0!important;
+  border-image:none!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot.selected::before{
+  filter:brightness(1.08) drop-shadow(0 0 2px #fff3a8)!important;
+}
+
+/* Main coloured game card sits inside the illustrated frame instead of covering it. */
+html[data-lineup="all"] #tabs>.tab-slot>.tab,
+html[data-lineup="all"] #tabs>.tab-slot>.tab[aria-selected="true"]{
+  width:84.8px!important;
+  min-width:84.8px!important;
+  max-width:84.8px!important;
+  height:47px!important;
+  min-height:47px!important;
+  max-height:47px!important;
+  margin:4px 4px 0!important;
+  padding:1px 2px!important;
+  grid-template-columns:36px minmax(0,1fr)!important;
+  grid-template-rows:12px 33px!important;
+  gap:0 2px!important;
+  border-radius:5px!important;
+  overflow:hidden!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 1px 2px rgba(60,30,30,.18)!important;
+}
+html[data-lineup="all"] #tabs .tab-game-name{
+  height:12px!important;
+  min-height:12px!important;
+  line-height:12px!important;
+  font-size:6.4px!important;
+}
+html[data-lineup="all"] #tabs .tab-game-name img,
+html[data-lineup="all"] #tabs .tab-game-name svg{
+  height:12px!important;
+  max-height:12px!important;
+}
+html[data-lineup="all"] #tabs .mini-wrap,
+html[data-lineup="all"] #tabs .tab[aria-selected="true"] .mini-wrap{
+  width:34px!important;
+  height:33px!important;
+  min-width:34px!important;
+  min-height:33px!important;
+}
+html[data-lineup="all"] #tabs .mini-wrap canvas,
+html[data-lineup="all"] #tabs .mini-wrap .gp-mini,
+html[data-lineup="all"] #tabs .mini-logo{
+  width:33px!important;
+  height:33px!important;
+}
+
+/* Middle and lower rows are also inset so the generated frame remains visible. */
+html[data-lineup="all"] #tabs .tab-slot .tab-bets,
+html[data-lineup="all"] #tabs .tab-slot .reach-strip{
+  width:84.8px!important;
+  min-width:84.8px!important;
+  max-width:84.8px!important;
+  margin-left:4px!important;
+  margin-right:4px!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet{
+  width:84.8px!important;
+  min-width:84.8px!important;
+  max-width:84.8px!important;
+  margin-left:4px!important;
+  margin-right:4px!important;
+}
+
+/* Keep earned WIN inside the inset coloured card. */
+html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble{
+  width:100%!important;
+  max-width:100%!important;
+  height:27px!important;
+  min-height:27px!important;
+  max-height:27px!important;
+  padding:1px!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin{
+  height:17px!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin .gold-number{
+  font-size:12.8px!important;
+  line-height:14px!important;
+}
+
+/* Re-center the selected label inside the smaller preview opening. */
+html[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab[aria-selected="true"] .mini-wrap::after{
+  inset:1px!important;
+  font-size:7.5px!important;
+}
