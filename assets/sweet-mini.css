@@ -1,0 +1,38 @@
+/* The tab keeps its game colour. Only the playable board occupies the thumbnail. */
+#screen #tabs .tab-slot .tab .mini-wrap {
+  display: block;
+  position: relative;
+  padding: 0 !important;
+  box-sizing: border-box;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+#screen #tabs .tab-slot .tab .mini-wrap::before,
+#screen #tabs .tab-slot .tab[aria-selected] .mini-wrap::after,
+#screen #tabs .tab-slot .tab .mini-wrap .mini-logo,
+#screen #tabs .tab-slot .tab .mini-wrap .mini-result-label {
+  display: none !important;
+}
+#screen #tabs .tab-slot .tab .mini-wrap canvas,
+#screen #tabs .tab-slot .tab .mini-wrap .gp-mini {
+  position: absolute !important;
+  inset: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: none !important;
+  filter: none !important;
+  background: transparent !important;
+  visibility: visible !important;
+}
+/* Gelato owns the nested raster/safe fallback; its original slot canvas stays hidden. */
+#screen #tabs .tab-slot .tab .mini-wrap .gp-mini { display: grid !important; }

@@ -628,7 +628,6 @@ try{
  function createRasterCache(){
    rasterImages.base=scaledAsset(rasterImages.board);
    rasterImages.trimCache=scaledAsset(rasterImages.trim);
-   const fillSheet=scaledAsset(rasterImages.fill);
    // Cache all five tinted liquid textures once per face.  The source PNG
    // supplies highlights/gelato texture; CSS/SVG are not used to fake it.
    rasterImages.faceTiles=FACES.map(f=>{
@@ -646,14 +645,13 @@ try{
        for(let k=1;k<3;k++)ctx.lineTo(px[k]-left,py[k]-top);
        ctx.closePath();ctx.clip();
        if(rasterImages.crystalTilesReady){
-         const source=rasterImages.crystalTiles;
-         const sy=Math.min(...verts.map(p=>p.y)),sameTop=verts.filter(p=>Math.abs(p.y-sy)<.01).length;
-         ctx.save();
-         if(sameTop===2){ctx.translate(0,height);ctx.scale(1,-1);}
-         ctx.drawImage(source,grade*256,0,256,256,0,0,width,height);
-         ctx.restore();
+         // The generated mint gelato supplies the spoon marks; the live grade supplies its pigment.
+         ctx.drawImage(rasterImages.crystalTiles,0,0,width,height);
+         ctx.globalCompositeOperation='color';ctx.fillStyle=GRADE_COLORS[grade];ctx.fillRect(0,0,width,height);
+         ctx.globalCompositeOperation='multiply';ctx.globalAlpha=.35;ctx.fillRect(0,0,width,height);
+         ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
        }else{
-         // Gentle color-only fallback while the external SVG image loads.
+         // Color fallback until the gelato surface has decoded.
          const ice=ctx.createLinearGradient(0,0,width,height);
          ice.addColorStop(0,'#f0ffff');
          ice.addColorStop(.28,GRADE_COLORS[grade]);
@@ -694,7 +692,7 @@ try{
  }
  // Crystal sprite atlas: loading is optional so the game remains functional
  // on a slow connection; once ready all 24 cached triangle tiles are rebuilt.
- loadRasterAsset(rasterImages.crystalTiles,'gelato-prism-crystal-tiles-v45.svg')
+ loadRasterAsset(rasterImages.crystalTiles,'sweet-skins/gelato.webp')
  .then(()=>{
    rasterImages.crystalTilesReady=true;
    if(rasterImages.ready){createRasterCache();rasterKey='';drawGelato();}
@@ -1144,7 +1142,7 @@ try{
    try{nativeTabs(a);}finally{slot.engine=saved;}
    const bet=a.bet(mount),win=medalWin(bet,saved.totalHundredths);
    fitGoldenNumber(slot.tabBet,num(bet),14,76);
-   slot.tabWin.parentNode.hidden=win<=0;fitGoldenNumber(slot.tabWin,num(win),17,50);
+   paintTabWin(slot,win);
    slot.tabSugar.hidden=false;slot.tabSugar.classList.toggle('collected',saved.wonderCollected);
    applySugarTier(slot.tabSugar.querySelector('.sugar-gem'),wonderTier(bet));
    slot.sugarGet.hidden=!saved.wonderCollected;slot.tab.classList.toggle('off',bet<=0);

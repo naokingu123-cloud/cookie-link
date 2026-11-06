@@ -39,6 +39,7 @@
   loadAsset('upSign', 'popcorn-up-sign-v88.webp');
   loadAsset('pieces', 'popcorn-kernels-v85.webp');
   loadAsset('payout', 'popcorn-payout-v81.webp');
+  loadAsset('praline', '../sweet-skins/popcorn.webp');
   function rounded(ctx, x, y, w, h, r, fill, stroke, lw = 1) {
     ctx.beginPath(); ctx.roundRect(x, y, w, h, Math.min(r, w / 2, h / 2));
     if (fill) { ctx.fillStyle = fill; ctx.fill(); }
@@ -101,7 +102,11 @@
     ctx.moveTo(-.42,-.12);ctx.lineTo(-.34,-.24);ctx.quadraticCurveTo(0,-.28,.34,-.24);
     ctx.lineTo(.42,-.12);ctx.lineTo(.36,.17);ctx.lineTo(.28,.24);
     ctx.quadraticCurveTo(0,.29,-.28,.24);ctx.lineTo(-.36,.17);ctx.closePath();
-    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle='#ffe2ad';ctx.lineWidth=.021;ctx.stroke();
+    ctx.fillStyle=paper;ctx.fill();
+    if(art.praline){
+      ctx.save();ctx.clip();ctx.globalAlpha=.74;ctx.drawImage(art.praline,-.43,-.27,.86,.56);ctx.restore();
+    }
+    ctx.strokeStyle='#ffe2ad';ctx.lineWidth=.021;ctx.stroke();
     ctx.strokeStyle='#a26e65';ctx.lineWidth=.017;
     for(const side of [-1,1]){
       ctx.beginPath();ctx.moveTo(side*.34,-.23);ctx.lineTo(side*.28,-.145);
@@ -130,13 +135,13 @@
     top:-5.82,
     bottom:Math.max(...badges.map(p=>p.y+.64),...K.outline.map(p=>p.y*1.09))
   };
-  function boardFit(x,y,w,h) {
-    const k=Math.min(w/(bounds.right-bounds.left),h/(bounds.bottom-bounds.top));
-    return {k,x:x+w/2-k*(bounds.right+bounds.left)/2,y:y+h/2-k*(bounds.bottom+bounds.top)/2};
+  function boardFit(x,y,w,h,top=bounds.top,bottom=bounds.bottom) {
+    const k=Math.min(w/(bounds.right-bounds.left),h/(bottom-top));
+    return {k,x:x+w/2-k*(bounds.right+bounds.left)/2,y:y+h/2-k*(bottom+top)/2};
   }
   function layout(width,height,mini=false){
     const H=540,W=H*width/height;
-    if(mini)return {H,W,b:boardFit(1,1,W-2,H-2)};
+    if(mini)return {H,W,b:boardFit(2,2,W-4,H-4,miniTop,miniBottom)};
     if(W>=419){
       const sw=Math.min(185,Math.max(108,W*.212)),left=sw+3,field=W-left;
       return {H,W,b:boardFit(left,2,field-2,H-31),left:left+1,field:field-3,sidebar:[1,1,sw,H-2]};
@@ -441,6 +446,9 @@
   }
   const master={x:-3.83,y:-3.48},boostBadge={x:4.04,y:-3.62};
   const badgePositions=[...badges,master,boostBadge];
+  // The miniature includes the two illustrated special signs and the lower numbered plaques.
+  const miniTop=Math.min(master.y-.84,boostBadge.y-.84,...K.outline.map(p=>p.y*1.09));
+  const miniBottom=Math.max(...badges.map(p=>p.y+.32),...K.outline.map(p=>p.y*1.09));
   function pickPort(width,height,localX,localY){
     if(!(width>0&&height>0&&localX>=0&&localX<=width&&localY>=0&&localY<=height))return -1;
     const {H,b}=layout(width,height),x=(localX*H/height-b.x)/b.k,y=(localY*H/height-b.y)/b.k;
@@ -825,6 +833,7 @@
   }
   function side(ctx,s,state,x,y,w,h,tr,elapsed,sugarIcon){
     payoutFrame(ctx,x,y,w,h);
+    drawSweetFrame(ctx,'popcorn',x,y,w,h,w*.10);
     const pad=w*.105,top=w*.165,bottom=w*.137,iw=w-2*pad;
     const sx=iw/150,sy=(h-top-bottom)/490,uniform=Math.sqrt(sx*sy);
     ctx.save();ctx.translate(x+pad,y+top);ctx.scale(sx,sy);
@@ -834,6 +843,11 @@
     }
     function heading(text,y,accent){
       rounded(ctx,0,y,150,25,3.5,'#a12131','#ffca64',1.3);
+      if(art.praline){
+        ctx.save();ctx.beginPath();ctx.roundRect(1,y+1,148,23,3);ctx.clip();
+        ctx.drawImage(art.praline,1,y+1,148,23);
+        ctx.fillStyle='#60192db0';ctx.fillRect(1,y+1,148,23);ctx.restore();
+      }
       rounded(ctx,3,y+2,144,6,2,'#d74a42');
       star(ctx,7,y+13,3.3,gold);star(ctx,143,y+13,3.3,gold);
       type(text,75,y+12.8,18.8,accent,{max:131,outline:'#642434',stroke:2});

@@ -1,0 +1,39 @@
+/* Photograph-like confection surfaces stay underneath the existing game digits, payout
+   highlights and juice gauges. Panel classes follow the game through custom lineups. */
+#screen #panels .gp-panel .gp-scene .gp-pay-row:not(.gp-pay-fixed):not(.gp-current){
+ background:linear-gradient(95deg,#103f59bd,#174554da),url('sweet-skins/gelato.webp') 50% 44%/100% auto!important
+}
+#screen #panels .gp-panel .gp-scene .gp-pay-row:is(.gp-pay-fixed,.gp-current){
+ background:linear-gradient(100deg,#704015b3,#5a2a1fcd),url('sweet-skins/gelato.webp') center/100% auto!important
+}
+#screen #panels .wp-panel .wp-scene .wp-pay-window{
+ background:linear-gradient(105deg,#37142caf,#3f1429cf),url('sweet-skins/winery.webp') center/cover!important
+}
+#screen #panels .bs-scene .bs-pay-title{
+ background:linear-gradient(100deg,#522233b0,#54252aa1,#391725d1),url('sweet-skins/stick.webp') center/100% auto;
+ border-radius:.4em
+}
+#screen #panels .pct-panel .pct-pay tbody tr{
+ background-image:linear-gradient(110deg,#fff0bf9e,#ffe6b9bd),url('sweet-skins/castella.webp');
+ background-size:100% 100%,100% auto;background-position:center
+}
+#screen #panels .pct-panel .pct-pay tbody tr[data-prize=feast]{
+ background-image:linear-gradient(105deg,#7c2338ed,#6a2447cf),url('sweet-skins/castella.webp');
+ color:#fff3c8
+}
+#screen #panels .pct-panel .pct-pay tbody tr.current{
+ background-image:linear-gradient(100deg,#863a18dc,#7b3521d1),url('sweet-skins/castella.webp')
+}
+
+/* Each corner keeps its shape while the left and right rails repeat to fit the table. */
+#screen #panels .gp-collector-panel{--pay-trim:url('sweet-skins/gelato-frame.webp')}
+#screen #panels .wp-sidebar{--pay-trim:url('sweet-skins/winery-frame.webp')}
+#screen #panels .bs-pay{--pay-trim:url('sweet-skins/stick-frame.webp')}
+#screen #panels .pct-pay{--pay-trim:url('sweet-skins/castella-frame.webp')}
+#screen #odds-panel{--pay-trim:url('sweet-skins/cookie-frame.webp')}
+#screen #carnival-odds{--pay-trim:url('sweet-skins/candy-frame.webp')}
+#screen #panels :is(.gp-collector-panel,.wp-sidebar,.bs-pay,.pct-pay),
+body:not(.carnival-active) #screen #odds-panel,
+body.carnival-active #screen #carnival-odds{
+ border-image:var(--pay-trim) 30% / clamp(7px,2vw,13px) / 0 round!important
+}

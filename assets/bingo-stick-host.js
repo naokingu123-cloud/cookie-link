@@ -116,7 +116,7 @@ async function finish(version){
  if(app.enabled.every((on,i)=>!on||app.paid[i]))app.finishRound();recordChanged(app);
 }
 function paint(mini){
- if(app.phase==='ready'||(mini?active===id:active!==id||slot.panel.hidden))return;
+ if(!mini&&(app.phase==='ready'||active!==id||slot.panel.hidden))return;
  const s=engine.state,bet=app.bet(id);
  const opts={time:clock,bet,paused:app.paused,age:animating?clock-startTime:Infinity,reach:slot.reachResults,
   latestNumber:s.draws.at(-1),sugarCollected:engine.wonderCollected,
@@ -137,7 +137,7 @@ function tick(now){
  stamp=moving?now:null;
  if(moving&&animating)advanceMove();
  if(active===id&&(animating||clock-lastMain>=32)){paint(false);lastMain=clock;}
- if(active!==id&&clock-lastMini>=(animating?32:140)){paint(true);lastMini=clock;}
+ if(app.phase!=='ready'&&clock-lastMini>=(animating?100:140)){paint(true);lastMini=clock;}
  const reaching=app.phase==='playing'&&slot.reachResults.length&&!motionReduced;
  if(moving&&(animating||active===id&&reaching))wake();
  else if(moving&&active!==id&&reaching)miniTimer=setTimeout(wake,145);

@@ -107,7 +107,7 @@ function advance(dt){
  if(engine.processed===8)finish(engine.version);
 }
 function paint(mini){
- if(app.phase==='ready'||(mini?active===id:active!==id||slot.panel.hidden))return;
+ if(!mini&&(app.phase==='ready'||active!==id||slot.panel.hidden))return;
  const dest=mini?slot.miniCanvas:canvas;
  if(!mini){const dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));if(canvas.width!==w)canvas.width=w;if(canvas.height!==h)canvas.height=h;}
  const bet=app.bet(id);
@@ -127,7 +127,7 @@ function tick(now){
  if(moving){const dt=Math.min(100,elapsed);clock+=elapsed;advance(dt);}
  if(active===id&&clock-lastMain>=32){paint(false);lastMain=clock;}
  const miniReach=active!==id&&app.phase==='playing'&&!motionReduced&&slot.reachResults.length>0;
- if(active!==id&&(engine.trace||miniReach)&&clock-lastMini>=150){paint(true);lastMini=clock;}
+ if((engine.trace||miniReach)&&clock-lastMini>=150){paint(true);lastMini=clock;}
  if(moving&&app.phase!=='ready'&&(active===id||engine.trace||engine.queue.length))wake();
  else if(moving&&miniReach)miniTimer=setTimeout(wake,150);
 }

@@ -10,7 +10,7 @@ body.gelato-enabled #panel0>:not(.gp-scene){display:none!important;visibility:hi
 body.gelato-enabled #panel0 .gp-scene{
  position:absolute;inset:0;overflow:hidden;isolation:isolate;
  border-radius:15px;border:2px solid #fdf7d9;
- background:linear-gradient(#fff3fd5c,#e8ffef38),url('../assets/gelato-prism-kingdom-v28.svg') center/cover no-repeat;
+ background:linear-gradient(#fff3fd5c,#e8ffef38),url('sweet-skins/gelato-kingdom.webp') center/cover no-repeat;
  box-shadow:inset 0 0 0 3px #fff8d5c9,inset 0 0 20px #c171c088,0 2px 7px #80426b6b;
  color:#6a315c;
 }
@@ -149,7 +149,7 @@ body.gelato-active .game .festival-top{visibility:hidden!important}
 body.gelato-active .gp-bonus-sign{display:none!important}
 body.gelato-active #panel0{width:100%!important;max-width:none!important}
 body.gelato-active #panel0 .gp-scene{
- background:linear-gradient(180deg,#fff7e710,#ffebfa12),url('../assets/gelato-prism-kingdom-v28.svg') center 57%/cover no-repeat!important;
+ background:linear-gradient(180deg,#fff7e710,#ffebfa12),url('sweet-skins/gelato-kingdom.webp') center 57%/cover no-repeat!important;
  border:3px solid #fff3d4!important;border-radius:18px!important;
  box-shadow:inset 0 0 12px #ffffff9c,0 3px 12px #8b539450!important;
 }
@@ -1085,7 +1085,7 @@ body.gelato-active #panel0 .gp-mold .gp-board-bonus.gp-bonus-complete{
 body.gelato-active #panel0 .gp-scene{
  background:
  linear-gradient(180deg,rgba(229,247,255,.04),rgba(226,248,255,.1)),
- url('../assets/gelato-prism-ice-kingdom-v45.svg') center/cover no-repeat!important;
+ url('sweet-skins/gelato-kingdom.webp') center/cover no-repeat!important;
 }
 body.gelato-active #panel0 .gp-frozen-fruit-backdrop{
  display:none!important;
@@ -1147,10 +1147,11 @@ body.gelato-active #panel0 .gp-collector-grid .gp-diamond-piece{
  background:linear-gradient(150deg,#a4d6ff38,#1c3764c9 50%,#041d48ce)!important;
 }
 body.gelato-active #panel0 .gp-collector-grid .gp-diamond-piece.is-filled{
- background-image:url('../assets/gelato-prism-crystal-tiles-v45.svg'),
- linear-gradient(150deg,#f4ffff,var(--gp-gem-color),#2f56a0)!important;
- background-position:var(--gp-crystal-pos) center,center!important;
- background-size:500% 100%,100% 100%!important;
+ background-color:var(--gp-gem-color)!important;
+ background-image:url('sweet-skins/gelato.webp')!important;
+ background-blend-mode:luminosity!important;
+ background-position:center!important;
+ background-size:cover!important;
  background-repeat:no-repeat!important;
  filter:brightness(1.23) saturate(1.45) drop-shadow(0 0 2px #fff)!important;
 }
@@ -1294,8 +1295,7 @@ body.gelato-active #panel0 .gp-payout-nav{
 body.gelato-active #panel0 .gp-scene{
  background:
    linear-gradient(180deg,rgba(231,249,255,.12),rgba(246,250,255,.02) 48%,rgba(125,191,243,.1)),
-   url('../assets/gelato-prism-ice-candy-sparkle-v46.svg') center center/cover no-repeat,
-   url('../assets/gelato-ice-candy-kingdom-v41.webp') center center/cover no-repeat!important;
+   url('sweet-skins/gelato-kingdom.webp') center center/cover no-repeat!important;
  background-color:#b9e3fa!important;
 }
 body.gelato-active #panel0 .gp-scene::after{

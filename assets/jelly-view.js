@@ -26,7 +26,8 @@ const laneColors=['#ffbc7c','#ffda97','#ffb1ba','#a4ffeb','#a9dfff','#c7b3ff'];
 const tiers=[1,2,3,4,5,6,7,8,9,10,12];
 const oddsPopupMs=1600;
 const oddsText='#93ffab';
-const emblem=new Image();emblem.src='assets/jelly-emblem.svg';
+const emblem=new Image();emblem.src='assets/sweet-skins/jelly-emblem.webp';
+const jellySkin=new Image();jellySkin.src='assets/sweet-skins/jelly.webp';
 const center=i=>[50+i%5*100,50+Math.floor(i/5)*100];
 function gradient(c,x,y,x2,y2,stops){
  const g=c.createLinearGradient(x,y,x2,y2);for(const [at,color] of stops)g.addColorStop(at,color);return g;
@@ -163,13 +164,18 @@ function sectionIds(state){
  return groups;
 }
 let floorSprite;
+jellySkin.addEventListener('load',()=>{floorSprite=null;});
 function cleanMoldFloor(){
  if(floorSprite)return floorSprite;
  const canvas=document.createElement('canvas');canvas.width=canvas.height=500;
  const g=canvas.getContext('2d');
  const fill=gradient(g,0,0,500,500,[[0,'#315a65'],[.42,'#214857'],[1,'#173d50']]);
  rect(g,0,0,500,500,8,fill);
- // A single uninterrupted glass well; no permanent grid is baked into it.
+ // The sugar-glass facets run unbroken beneath the openable partitions.
+ if(jellySkin.naturalWidth){
+  g.save();g.globalAlpha=.34;g.globalCompositeOperation='luminosity';
+  g.drawImage(jellySkin,0,0,500,500);g.restore();
+ }
  for(let k=0;k<8;k++){
   const y=35+k*68;
   g.beginPath();g.moveTo(-40,y+28);
@@ -583,6 +589,11 @@ function ticket(c,w,h){
  rect(c,0,0,w,h-3,14,shell,'#693e50',1.3);
  const glaze=gradient(c,0,0,w,h,[[0,'#b5547f'],[.16,'#78385c'],[.43,'#502645'],[.77,'#452540'],[1,'#763452']]);
  rect(c,3,3,w-6,h-9,11,glaze,'#ffd6c9',1);
+ if(jellySkin.naturalWidth){
+  c.save();c.beginPath();c.roundRect(3,3,w-6,h-9,11);c.clip();
+  c.globalAlpha=.60;c.drawImage(jellySkin,3,3,w-6,h-9);
+  c.fillStyle='#3b1748';c.globalAlpha=.26;c.fillRect(3,3,w-6,h-9);c.restore();
+ }
  rect(c,6,6,w-12,h-15,9,'','#efafba77',1);
  // Reflections follow the fluted rim, leaving the printed odds unobstructed.
  const shine=gradient(c,0,5,0,Math.max(18,h*.16),[[0,'#ffdde6c7'],[.26,'#ffafc375'],[1,'#ffbbd000']]);
@@ -600,7 +611,9 @@ function ticket(c,w,h){
 }
 function logo(c,x,y,w,h){
  if(emblem.complete&&emblem.naturalWidth){
-  const s=Math.min(w/352,h/142);c.drawImage(emblem,x+(w-352*s)/2,y+(h-142*s)/2,352*s,142*s);
+  const scale=Math.min(w/emblem.naturalWidth,h/emblem.naturalHeight);
+  const dw=emblem.naturalWidth*scale,dh=emblem.naturalHeight*scale;
+  c.drawImage(emblem,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
  }else lettering(c,'Jelly Bingo',x+w/2,y+h/2,Math.min(w*.16,h*.7),'#ffe39a',{face:'Georgia,serif',weight:'italic 900'});
 }
 function phaseGuide(c,x,y,w,h,draws,o){
@@ -673,6 +686,7 @@ function panel(c,state,o,x,y,w,h,popupAge,shownOdds){
  const turns=state.draws.length,count=visibleCount(state,o.turn,o.elapsed||0),bet=Math.max(0,o.bet||0);
  const target=o.sugarLines??state.sugarLines,got=o.sugarCollected??(!o.demo&&bet>0&&count>=target);
  ticket(c,w,h);
+ drawSweetFrame(c,'jelly',0,0,w,h,10);
  const head=Math.min(39,h*.095);
  logo(c,11,5,w-22,head);
  let y0=6+head;
@@ -720,20 +734,8 @@ function draw(c,state,options){
  const shownOdds=colorChange&&popupAge<0?o.turn.before.oddsMultiplier:state.oddsMultiplier;
  c.save();c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,w,h);
  if(o.mini){
-  c.fillStyle='#163e4b';c.fillRect(0,0,w,h);
   const side=Math.min(w,h);
-  if(w>h*1.55){
-   board(c,state,o,(w-side)*.22,(h-side)/2,side);
-   const cx=side+(w-side)*.5;
-   lettering(c,visibleCount(state,o.turn,o.elapsed||0),cx,h*.43,h*.44,'#ffe3a1',{face:'Georgia,serif'});
-   lettering(c,'LINE',cx,h*.75,h*.17,'#a7e5d9');
-  }else board(c,state,o,(w-side)*.5,(h-side)*.5,side);
-  if(popup){
-   const bw=side*.92,bh=side*.14,xx=(w-bw)/2;
-   rect(c,xx,0,bw,bh,3,'#164b38','#95f5ab',1.7);
-   lettering(c,'オッズアップ',xx+bw*.34,bh*.52,bh*.78,oddsText,{max:bw*.63,weight:950});
-   lettering(c,'＋0.5',xx+bw*.82,bh*.52,bh*.85,'#e3ffe8',{max:bw*.32,weight:950});
-  }
+  board(c,state,o,(w-side)/2,(h-side)/2,side);
  }else{
   const pad=Math.max(2,Math.min(w,h)*.018),gap=Math.max(4,Math.min(w,h)*.023);
   const side=Math.min(h-pad*2,(w-gap-pad*2)*.669),pw=Math.min(w-side-gap-2*pad,side*.66);

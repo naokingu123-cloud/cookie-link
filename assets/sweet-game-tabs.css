@@ -1,0 +1,67 @@
+/* Match each cabinet's confection, including when the player reorders games. */
+.tab-slot[data-game-kind="cookie"]  {--game-pale:#fff0c9;--game-mid:#e1ab67;--game-edge:#a26b37;--game-ink:#55341f}
+.tab-slot[data-game-kind="choco"]   {--game-pale:#e8c3a6;--game-mid:#9b644d;--game-edge:#754734;--game-ink:#46251f}
+.tab-slot[data-game-kind="candy"]   {--game-pale:#ffdeec;--game-mid:#ef83b4;--game-edge:#a74375;--game-ink:#5e2342}
+.tab-slot[data-game-kind="gelato"]  {--game-pale:#dcf9ff;--game-mid:#7fcbed;--game-edge:#4189ac;--game-ink:#194764}
+.tab-slot[data-game-kind="winery"]  {--game-pale:#edddff;--game-mid:#b08ad2;--game-edge:#7e508b;--game-ink:#45264f}
+.tab-slot[data-game-kind="popcorn"] {--game-pale:#fff7ab;--game-mid:#efc640;--game-edge:#ad7f28;--game-ink:#654021}
+.tab-slot[data-game-kind="jelly"]   {--game-pale:#d5ffef;--game-mid:#72d8bc;--game-edge:#408e80;--game-ink:#174f4b}
+.tab-slot[data-game-kind="stick"]   {--game-pale:#f8d7ce;--game-mid:#c77f7a;--game-edge:#965658;--game-ink:#5d3038}
+.tab-slot[data-game-kind="castella"]{--game-pale:#ffe0ae;--game-mid:#f39951;--game-edge:#b36632;--game-ink:#63351e}
+
+#tabs .tab-slot[data-game-kind]>.tab{
+ background:linear-gradient(152deg,var(--game-pale),var(--game-mid) 84%)!important;
+ box-shadow:inset 0 1px 2px #fff9,inset 0 -1px 2px var(--game-edge)!important;
+}
+#tabs .tab-slot[data-game-kind] .reach-strip{background:transparent}
+#tabs .reach-strip::before{background:linear-gradient(#493147,#281f31);border-color:var(--game-edge)}
+#tabs .reach-num[data-reach-tier]{
+ font-family:ElixirNumbers,system-ui,sans-serif;font-weight:400;
+ color:var(--reach-ink,#8ff9f2);-webkit-text-fill-color:currentColor;
+ -webkit-text-stroke:.55px #23192f;text-shadow:0 1px #251626;
+}
+#tabs .reach-num[data-reach-tier="1"]{--reach-ink:#ff919c}
+#tabs .reach-num[data-reach-tier="2"]{--reach-ink:#e3aaff}
+#tabs .reach-num.odds-up{--reach-ink:#a6ffb4}
+#tabs .reach-num[data-reach-tier="3"]{
+ background-image:linear-gradient(100deg,#ff9daa,#ffda85,#a6ffb0,#90f6ff,#c4b8ff,#ffaddf,#ff9daa);
+ background-size:220% 100%;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+ -webkit-text-stroke:.25px #ffedcd;text-shadow:none;
+}
+/* The payout row appears only while a tab has earned medals. This leaves
+   both the game title and the roulette ticker visible at full width. */
+#screen>.games-deck:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])),
+#tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])),
+#tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot{height:216px}
+#tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot{padding-top:44px}
+body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
+ grid-template-rows:minmax(130px,1fr) 216px 72px;
+}
+body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:not([hidden])) #debug-tools{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:190px;
+}
+#tabs .tab-slot .tab-win-bubble{
+ top:-40px;left:1px;transform:none;height:34px;min-width:68px;max-width:100%;width:max-content;
+ padding:1px 6px;gap:3px;border:2px solid #ffdf86;border-radius:9px;
+ background:linear-gradient(#553046,#301c33 60%,#3b1e2c);
+ box-shadow:inset 0 0 0 1px #85556b,0 2px 3px #422130a3;
+ animation:sweet-tab-win-glint 2.2s ease-in-out infinite;
+}
+#tabs .tab-slot .tab-win-bubble::after{display:none}
+#tabs .tab-win-bubble .tabwin .gold-number{
+ color:#fff5bb;-webkit-text-fill-color:#fff5bb;background:none;-webkit-text-stroke:.45px #fff1ab;
+ line-height:1;filter:none;
+}
+#screen #tabs .tab-win-bubble .win-word,
+#screen #tabs .tab-win-bubble .win-word>.gold-word{
+ background:none;color:#ffd675!important;-webkit-text-fill-color:#ffd675!important;
+ -webkit-text-stroke:0;filter:none;font-size:10px;font-style:normal;
+}
+@keyframes sweet-tab-win-glint{
+ 50%{border-color:#fff7db;box-shadow:inset 0 0 0 1px #ba836f,0 0 5px #ffd474,0 2px 3px #422130a3}
+}
+@media(prefers-reduced-motion:reduce){#tabs .tab-slot .tab-win-bubble{animation:none}}
+@media(forced-colors:active){
+ #tabs .tab-slot[data-game-kind]>.tab,#tabs .reach-strip::before,#tabs .tab-slot .tab-win-bubble{background:Canvas!important;border:1px solid CanvasText;box-shadow:none!important}
+ #tabs .reach-strip .reach-num[data-reach-tier],#tabs .tab-win-bubble .tabwin .gold-number,#screen #tabs .tab-win-bubble .win-word>.gold-word{background:none;color:CanvasText!important;-webkit-text-fill-color:CanvasText!important;-webkit-text-stroke:0}
+}

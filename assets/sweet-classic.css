@@ -1,0 +1,29 @@
+/* Keep the live numbers, hit glows and fracture animation above the baked face. */
+.tile .sweet > .cookie-face {
+ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; pointer-events:none;
+}
+.hammer-count-icon img, .hammer-flight img {
+ display:block; width:100%; height:100%; object-fit:contain; pointer-events:none;
+}
+.hammer-flight img { position:relative; z-index:1; }
+html[data-has-classic] .classic-cookie .tile:not(.special):not(.cookie-wild):not(.cracking) .sweet::after {
+ content:none;
+}
+html[data-has-classic] .classic-cookie .biscuit-frame {
+ background:linear-gradient(145deg,#fff3c150,transparent 35%,#772d1055),url('sweet-skins/cookie.webp') center/62% auto;
+}
+#screen .field:has(.classic-cookie:not([hidden])) #odds-panel .hammer-prize,
+#screen .field:has(.classic-cookie:not([hidden])) #odds-panel .link-pay-row {
+ border-image:none; border:1px solid #c88e4e; border-radius:4px;
+ background:linear-gradient(95deg,#fff0ceea,#fff4dddb),url('sweet-skins/cookie.webp') center/100% auto;
+}
+#screen .field:has(.classic-cookie:not([hidden])) #odds-panel .link-pay-row.chosen {
+ background-image:linear-gradient(95deg,#ffe1aeca,#ffedb0ce),url('sweet-skins/cookie.webp');
+}
+body.carnival-active #screen #carnival-odds.six-simple-glass-odds .six-glass-role,
+body.carnival-active #screen #carnival-odds.six-simple-glass-odds .six-glass-total {
+ background:linear-gradient(115deg,#fff4feec,#f3e8fdde 62%,#ffe7f9dd),url('sweet-skins/candy.webp') center/100% auto!important;
+}
+body.carnival-active #screen #carnival-odds.six-simple-glass-odds .six-glass-role.earned {
+ background:linear-gradient(115deg,#fff2bccf,#ffe8d8dd),url('sweet-skins/candy.webp') center/100% auto!important;
+}

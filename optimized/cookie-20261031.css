@@ -1,6 +1,6 @@
 /* Candy roulette / Wonder Sugar / progressive all-clear / WILD */
 #sugar-collection{overflow:visible!important;box-shadow:none!important;min-width:240px}
-#sugar-collection .sugar-slots{position:relative!important;display:flex!important;width:146px!important;height:39px!important;flex:0 0 146px!important;box-sizing:border-box!important;padding:8px 8px 9px!important;gap:5px!important;background:url("../assets/sugar-five-candy-frame.svg") center /100% 100% no-repeat!important;filter:drop-shadow(0 2px 2px #83492755)}
+#sugar-collection .sugar-slots{position:relative!important;display:flex!important;width:146px!important;height:39px!important;flex:0 0 146px!important;box-sizing:border-box!important;padding:8px 8px 9px!important;gap:5px!important;background:url("../assets/sweet-skins/sugar-tray.webp") center /100% 100% no-repeat!important;filter:drop-shadow(0 2px 2px #83492755)}
 #sugar-collection .sugar-slot{box-sizing:border-box;flex:0 0 22px!important;width:22px!important;height:22px!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important}
 #sugar-collection .sugar-step-frame{display:none!important}
 #sugar-collection .sugar-gem{position:relative;z-index:3}

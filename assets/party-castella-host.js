@@ -84,7 +84,7 @@ async function finish(version){
  if(app.enabled.every((on,i)=>!on||app.paid[i]))app.finishRound();recordChanged(app);
 }
 function paint(mini){
- if(app.phase==='ready'||(mini?active===id:active!==id||slot.panel.hidden))return;
+ if(!mini&&(app.phase==='ready'||active!==id||slot.panel.hidden))return;
  const s=engine.state;
  const opts={time:clock,bet:app.bet(id),paused:app.paused,age:clock-lastHit,reach:slot.reachResults,
   sugarCount,sugarCollected:engine.wonderCollected,
@@ -100,7 +100,7 @@ function tick(now){
  frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
  if(moving&&stamp!==null)clock+=Math.max(0,now-stamp);stamp=moving?now:null;
  if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
- if(active!==id&&clock-lastMini>=120){paint(true);lastMini=clock;}
+ if(app.phase!=='ready'&&clock-lastMini>=120){paint(true);lastMini=clock;}
  const reachAnimation=app.phase==='playing'&&!motionReduced&&slot.reachStatus==='ready'&&slot.reachResults?.length>0;
  if(moving&&app.phase!=='ready'&&clock-lastHit<=animationMs)wake();
  else if(moving&&reachAnimation)reachTimer=setTimeout(wake,active===id?80:125);

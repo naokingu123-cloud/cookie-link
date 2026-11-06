@@ -5,7 +5,7 @@ for(const s of slots){
  const key=ids[s.i];s.holder.hidden=!key;
  if(!key)continue;
  s.engine=app.engines[s.i];s.engine.recordGame=catalog[key].record;
- s.tab.dataset.gameKind=s.panel.dataset.gameKind=key;
+ s.holder.dataset.gameKind=s.tab.dataset.gameKind=s.panel.dataset.gameKind=key;
  s.holder.style.setProperty('order',String(chosen.indexOf(key)),'important');
 }
 $('tabs').style.setProperty('grid-template-columns','repeat('+chosen.length+', minmax(0,1fr))','important');

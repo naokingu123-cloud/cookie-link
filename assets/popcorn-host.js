@@ -146,14 +146,14 @@ function demoFrame(){
  return {state:d,turn:null,elapsed:0,lesson:{power,progress:age/lessonDurations[power-1]}};
 }
 function paint(mini){
- if(mini?active===id||app.phase==='ready':active!==id||slot.panel.hidden)return;
+ if(!mini&&(active!==id||slot.panel.hidden))return;
  const dest=mini?slot.miniCanvas:canvas;
  const dpr=Math.min(2,window.devicePixelRatio||1);
  if(!mini){
   const w=Math.max(1,Math.round(canvas.clientWidth*dpr)),h=Math.max(1,Math.round(canvas.clientHeight*dpr));
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
  }
- const displayDemo=app.phase==='ready'&&!jpcSession.active;
+ const displayDemo=!mini&&app.phase==='ready'&&!jpcSession.active;
  const d=displayDemo?demoFrame():{state:engine.state,turn:engine.trace,elapsed:engine.elapsed};
  const focusPort=mini?-1:(hoverPort>=0?hoverPort:pinnedPort);
  if(!mini){

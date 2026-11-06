@@ -4,7 +4,7 @@
 if(window.SweetsDemoSuite?.installed)return;
 const field=document.querySelector('#panels')?.closest('.field');
 if(!field)return;
-const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href='assets/demo-suite-v91.css?v=139';document.head.append(stylesheet);
+const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href='assets/demo-suite-v91.css?v=140';document.head.append(stylesheet);
 field.classList.add('ds91-field');
 const canvas=document.createElement('canvas');canvas.className='ds91-lesson';canvas.hidden=true;
 canvas.setAttribute('role','img');field.append(canvas);
@@ -34,7 +34,7 @@ const art={},images={
  cakes:['cake-white','cake-strawberry','cake-milk','cake-bitter'].map(k=>'assets/canyon-geology/'+k+'.webp'),
  ore:['assets/canyon-geology/ore-diamond.webp'],
  prism:['assets/gelato-prism-gelato-v37.png'],glass:['assets/winery-crystal-coupe-v60.png'],
- popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:['assets/jelly-emblem.svg'],stick:['assets/waffle-reversi-logo.webp'],castella:[SweetsLineup.catalog.castella.logo]
+ popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:[SweetsLineup.catalog.jelly.logo],stick:['assets/waffle-reversi-logo.webp'],castella:[SweetsLineup.catalog.castella.logo]
 };
 for(const [key,urls] of Object.entries(images))art[key]=urls.map(src=>{const im=new Image();im.decoding='async';im.src=src;return im;});
 const loaded=im=>im&&(im.naturalWidth||im.width)>0&&im.complete!==false;
@@ -184,20 +184,6 @@ function drawStory(kind){
  lesson.draw(diagramCtx,idx,motionReduced ? .88 : (at%segment)/segment);diagramCtx.restore();
 }
 let lastMode='',lastToken=null,lastReady=false,elapsed=0,stamp=0,frame=0,lastPaint=0;
-const miniData=new WeakMap();
-function staticMini(slot,kind){
- const wrap=slot.tab.querySelector('.mini-wrap');if(!wrap)return;
- let item=miniData.get(wrap);
- if(!item){const layer=document.createElement('span');layer.className='ds91-ready-mark';layer.setAttribute('aria-hidden','true');
-   const icon=document.createElement('canvas');icon.width=icon.height=84;const caption=document.createElement('b');caption.textContent='BET受付中';layer.append(icon,caption);wrap.append(layer);
-   item={icon,kind:'',done:false};miniData.set(wrap,item);
- }
- if(item.kind!==kind){item.kind=kind;item.done=false;wrap.style.setProperty('--ds-accent',games[kind].accent);}
- if(!item.done){
-   const g=item.icon.getContext('2d');g.clearRect(0,0,84,84);emblem(g,kind,42,42,72);
-   item.done=!!g.getImageData(0,0,84,84).data.some((v,i)=>i%4===3&&v>0);
- }
-}
 function draw(kind){
  const game=games[kind],r=field.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
  const w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(w<3||h<3)return;
@@ -223,7 +209,6 @@ function sync(){
  const ready=app.phase==='ready'&&!jpcSession.active,slot=slots[active],kind=kindOf(slot);
  const detailed=ready&&!!stories[kind],main=ready&&(detailed||!!diagrams[kind]);
  document.body.classList.toggle('ds91-ready',ready);field.classList.toggle('ds91-has-lesson',main);
- if(ready)for(const s of slots)if(!s.holder.hidden)staticMini(s,kindOf(s));
  if(lastReady!==ready){lastReady=ready;if(!ready)for(const s of slots){s.dirtyMini=true;s.dirtyMain=true;}}
  if(kind!==lastMode||app.token!==lastToken||!ready){lastMode=kind;lastToken=app.token;elapsed=0;stamp=0;lastPaint=0;}
  canvas.hidden=!main||detailed;story.hidden=!detailed;

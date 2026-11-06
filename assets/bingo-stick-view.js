@@ -16,16 +16,20 @@ function motion(s,age=Infinity){
   holding:t>=end&&t<rankStart,returning:t>=rankStart&&t<duration,rankStart,dropStart,land,rankStep,kick,drop};
 }
 function texture(file){const im=new Image();im.src='assets/'+file;return im;}
-const art={black:texture('waffle-reversi-ogura-v128.png'),white:texture('waffle-reversi-butter-v128.png'),board:texture('waffle-reversi-tray.webp')};
+const art={black:texture('waffle-reversi-ogura-v128.png'),white:texture('waffle-reversi-butter-v128.png'),board:texture('waffle-reversi-tray.webp'),wafer:texture('sweet-skins/stick.webp')};
 function usable(im){return im.complete&&im.naturalWidth;}
 const frames=new WeakMap(),waffles=new WeakMap();
 function waffle(ctx,size,rim,u){
- const cached=waffles.get(ctx),key=[size,rim,art.board.naturalWidth].join('/');
+ const cached=waffles.get(ctx),key=[size,rim,art.board.naturalWidth,art.wafer.naturalWidth].join('/');
  if(cached?.key===key)return cached.image;
  const image=document.createElement('canvas');image.width=image.height=size;
  const c=image.getContext('2d');
  if(usable(art.board))c.drawImage(art.board,0,0,size,size);else{c.fillStyle='#d6944d';c.fillRect(0,0,size,size);}
  c.translate(rim,rim);c.scale(u,u);
+ if(usable(art.wafer)){
+  c.save();c.globalAlpha=.50;
+  c.drawImage(art.wafer,0,0,8,8);c.restore();
+ }
  // Toast the recessed pockets. A single connected lattice sits above them and casts a shadow.
  for(let y=0;y<8;y++)for(let x=0;x<8;x++){
   const shade=c.createLinearGradient(x,y,x+.58,y+1);
@@ -67,7 +71,7 @@ function reachFrame(c,u,tier,time,id,main,oddsUp){
 }
 function drawBoard(ctx,s,o,main){
  const w=ctx.canvas.width,h=ctx.canvas.height;if(!w||!h)return;
- const t=o.age??Infinity,m=motion(s,t),size=Math.min(w,h),rim=size*(main?.064:.035),u=(size-2*rim)/8;
+ const t=o.age??Infinity,m=motion(s,t),size=Math.min(w,h),rim=size*.064,u=(size-2*rim)/8;
  const reach=new Map();
  if(!m.active)for(const hit of o.reach||[]){
   const id=hit.cells?.[0];

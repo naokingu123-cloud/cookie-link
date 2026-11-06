@@ -1,10 +1,11 @@
 /* The main griddle and the tab preview share one top-down view of the same draw. */
 (()=>{
 'use strict';
-const R=window.PartyCastellaRules,tiles=new Image(),panArt=new Image(),bottle=new Image();
+const R=window.PartyCastellaRules,tiles=new Image(),panArt=new Image(),bottle=new Image(),honeyCrumb=new Image();
 tiles.src='assets/party-castella-tiles.webp?v=116';
 panArt.src='assets/party-castella-honey-griddle.webp';
 bottle.src='assets/party-castella-dispenser.webp';
+honeyCrumb.src='assets/sweet-skins/castella.webp';
 const bottleTip=[.954,.971];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const tau=Math.PI*2,clamp=v=>Math.max(0,Math.min(1,v));
@@ -43,13 +44,19 @@ function outline(ctx,x,y,r,color,width){
  ctx.beginPath();ctx.arc(x,y,r,0,tau);ctx.lineWidth=width;ctx.strokeStyle=color;ctx.stroke();
 }
 let materials;
+honeyCrumb.addEventListener('load',()=>{materials=null;browning=null;});
 function makeMaterials(){
  if(materials||!tiles.naturalWidth)return materials;
  const sw=tiles.naturalWidth/3,sh=tiles.naturalHeight;
  materials=[0,1,2].map(i=>{
   const face=document.createElement('canvas');face.width=face.height=160;
   const g=face.getContext('2d');g.beginPath();g.arc(80,80,79.5,0,tau);g.clip();
-  g.drawImage(tiles,i*sw,0,sw,sh,0,0,160,160);return face;
+  g.drawImage(tiles,i*sw,0,sw,sh,0,0,160,160);
+  if(i===2&&honeyCrumb.naturalWidth){
+   g.save();g.beginPath();g.arc(80,80,65,0,tau);g.clip();
+   g.globalCompositeOperation='soft-light';g.drawImage(honeyCrumb,13,13,134,134);g.restore();
+  }
+  return face;
  });
  return materials;
 }
@@ -273,7 +280,7 @@ function paint(ctx,s,opts={},mini=false){
  const px=X(-panW/2),py=Y(-panH/2);
  const firing=bake?s.zones[s.lastZone-1]:null,zone=zoneId?s.zones[zoneId-1]:null;
  const bakeOverlay=bake&&play;
- const baseKey=[w,h,oven,play,opts.previewZone,zoneId,tiles.naturalWidth,panArt.naturalWidth].join('/');
+ const baseKey=[w,h,oven,play,opts.previewZone,zoneId,tiles.naturalWidth,panArt.naturalWidth,honeyCrumb.naturalWidth].join('/');
  if(frame.baseKey!==baseKey){
   const movingCell=c=>play&&(bake?firing.cells.includes(c.id):frame.arrival[c.id]!==undefined);
   frame.moving=s.cells.filter(movingCell);
@@ -318,8 +325,10 @@ function paint(ctx,s,opts={},mini=false){
   const g=image.getContext('2d');g.clearRect(0,0,w,h);g.lineJoin=g.lineCap='round';return g;
  }
  function drawGriddle(ctx){
-  if(panArt.naturalWidth)ctx.drawImage(panArt,px,py,panW*unit,panH*unit);
-  else{ctx.fillStyle='#39322e';ctx.fillRect(px,py,panW*unit,panH*unit);}
+  if(!mini){
+   if(panArt.naturalWidth)ctx.drawImage(panArt,px,py,panW*unit,panH*unit);
+   else{ctx.fillStyle='#39322e';ctx.fillRect(px,py,panW*unit,panH*unit);}
+  }
   if(zone){
    ctx.save();ctx.translate(w/2,h/2);ctx.scale(unit,unit);
    const m=mask(zone,s.cells);
@@ -467,7 +476,7 @@ function mount(panel){
   if(cw&&ch&&(canvas.width!==cw||canvas.height!==ch)){canvas.width=cw;canvas.height=ch;repaint();}
   placeButtons();
  }
- for(const img of [tiles,panArt,bottle])img.addEventListener('load',repaint,{once:true});
+ for(const img of [tiles,panArt,bottle,honeyCrumb])img.addEventListener('load',repaint,{once:true});
  const resize=new ResizeObserver(fit);resize.observe(root);resize.observe(pan);
  function makeButtons(s){
   legend.replaceChildren();

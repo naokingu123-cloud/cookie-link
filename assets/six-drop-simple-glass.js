@@ -31,20 +31,10 @@ try{
   x.beginPath();x.roundRect(5,5,310,310,24);x.stroke();
   clearPlateCache.set(key,cv);return cv;
  };
- // Icons use precisely one pink glass-candy color each.
- // Triangle middle row has no horizontal line.
- // Hexagon is deliberately rotated 30 degrees to match the tray orientation.
+ // Each payout diagram uses the same generated candy sprites as the playable board.
  function roleIcon(type){
-  const line=[[18,40],[54,40],[90,40],[126,40]];
-  const tri=[[72,9],[49,38],[95,38],[26,69],[72,69],[118,69]];
-  const hex=Array.from({length:6},(_,i)=>{const a=-Math.PI/2+i*Math.PI/3;return [72+37*Math.cos(a),42+34*Math.sin(a)];});
-  const gems=type==='line'?line:type==='triangle'?tri:hex;
-  const links=type==='line'?'<path d="M18 40H126"/>':
-       type==='triangle'?'<path d="M72 9L26 69H118Z"/>':
-       '<path d="'+hex.map((p,i)=>(i?'L':'M')+p.map(n=>n.toFixed(2)).join(' ')).join('')+'Z"/>';
-  const bulbs=gems.map(([x,y])=>'<circle cx="'+x.toFixed(2)+'" cy="'+y.toFixed(2)+'" r="'+(type==='line'?13:12)+'" fill="url(#glass-pink-'+type+')" stroke="#ffda72" stroke-width="4"/><ellipse cx="'+(x-3).toFixed(2)+'" cy="'+(y-4).toFixed(2)+'" rx="4" ry="2.5" fill="#fff" opacity=".68"/>').join('');
-  const group=type==='hexagon'?'<g transform="rotate(30 72 42)">'+links+bulbs+'</g>':links+bulbs;
-  return '<svg class="six-glass-role-icon" viewBox="0 0 144 84" role="img" aria-label="'+({line:'同色4個以上の直線',triangle:'同色6個の3段トライアングル・2段目横線なし',hexagon:'30度回転の同色6個ヘキサゴン'}[type])+'"><defs><radialGradient id="glass-pink-'+type+'" cx=".32" cy=".2" r=".86"><stop stop-color="#fffaf7"/><stop offset=".18" stop-color="#ffcce9"/><stop offset=".62" stop-color="#fa59af"/><stop offset="1" stop-color="#a72a9c"/></radialGradient></defs><g stroke="#ffc862" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">'+group+'</g></svg>';
+  const label={line:'同色4個以上の直線',triangle:'同色6個の3段トライアングル',hexagon:'同色6個のヘキサゴン'}[type];
+  return '<img class="six-glass-role-icon" src="assets/sweet-skins/six-'+type+'.webp" alt="'+label+'">';
  }
  const labels={line:'直線（同色4個以上）',triangle:'トライアングル（同色6個）',hexagon:'ヘキサゴン（同色6個）'};
  const kind=['line','triangle','hexagon'];
