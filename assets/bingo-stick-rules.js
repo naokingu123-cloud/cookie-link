@@ -6,19 +6,18 @@
   .map(([count,hundredths])=>({count,hundredths}));
  const sweepBonusHundredths=3000,sugarFlips=8;
  function award(count){return payRows.findLast(row=>row.count<=count)?.hundredths||0;}
- // Each quarter contains nine stones. Mirroring it horizontally and vertically leaves 28 open squares.
+ // Each 4×4 quarter contains ten stones. The other 24 mirrored squares all carry numbers.
  // Every open square brackets at least one white stone on black's first move.
  // Keep the color orientation fixed. Each rate is a gross return estimate from uniform draws.
  const molds=[
-  {rate:49.63956,patterns:[{name:'格子',quarter:'B.B.BWW..B.BB.W.'}]},
-  {rate:82.04833,patterns:[{name:'双菱',quarter:'B....BW..WBBB.BW'},{name:'市松',quarter:'W...BWW.BBB..WW.'}]},
-  {rate:153.19607,patterns:[{name:'花窓',quarter:'...BBWW...BW.WBB'}]}
+  {rate:48.199033,patterns:[{name:'格子',quarter:'BBB.BW.W.B.BB.W.'}]},
+  {rate:86.004445,patterns:[{name:'双菱',quarter:'B.B..BW..WBBB.BW'},{name:'市松',quarter:'W.W.BWW.BBB..WW.'}]},
+  {rate:157.934716,patterns:[{name:'花窓',quarter:'..B.BWW..BBW.WBB'}]}
  ];
  function shuffle(values,rng){
   for(let i=values.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
   return values;
  }
- function quadrant(i){return Math.min(i%8,7-i%8)+4*Math.min(i>>3,7-(i>>3));}
  function create({rng=Math.random,target=90}={}){
   const rate=Math.max(50,Math.min(150,Number.isFinite(target)?target:90));
   const high=rate<=molds[1].rate?1:2,lo=molds[high-1],hi=molds[high];
@@ -29,12 +28,10 @@
    const stone=mold.quarter[transpose?4*x+y:4*y+x];
    return stone==='.'?null:(stone==='B'?'black':'white');
   });
-  // Choose one entire four-cell orbit to remain neutral, then uniformly deal 24 labels.
-  const open=cells.filter(i=>!colors[i]),blank=quadrant(open[Math.floor(rng()*open.length)]);
   const numbers=Array(64).fill(null),deck=shuffle(Array.from({length:25},(_,i)=>i+1),rng);
-  for(const i of open)if(quadrant(i)!==blank)numbers[i]=deck.pop();
+  for(const i of cells)if(!colors[i])numbers[i]=deck.pop();
   const black=colors.filter(color=>color==='black').length;
-  return {colors,numbers,missingNumber:deck[0],counts:{black,white:36-black},phase:'playing',draws:[],target:rate,patternName:mold.name,
+  return {colors,numbers,missingNumber:deck[0],counts:{black,white:40-black},phase:'playing',draws:[],target:rate,patternName:mold.name,
    placed:[],flipped:[],flipSteps:[],lastColor:null,lastFlips:0,previousMaxFlips:0,maxFlips:0,
    bonusEvents:[],lastReversal:null,reversalCount:0,reversalThisMove:false,highestRole:false,
    lastBaseHundredths:0,baseHundredths:0,bonusHundredths:0,totalHundredths:0};
@@ -54,7 +51,7 @@
   const origin=s.numbers.indexOf(number);
   if(origin<0?number!==s.missingNumber:s.colors[origin])return null;
   const color=s.draws.length%2?'white':'black',other=color==='black'?'white':'black',flipSteps=[];
-  // Read the snapshot before all flips. Either kind of open square breaks the bracket.
+  // Read the snapshot before all flips. Unoccupied numbered squares break the bracket.
   for(const {dx,dy,ids} of rays[origin]||[]){
    let n=0;while(n<ids.length&&s.colors[ids[n]]===other)n++;
    if(n&&n<ids.length&&s.colors[ids[n]]===color){
@@ -75,10 +72,10 @@
    lastBaseHundredths,baseHundredths,bonusHundredths,totalHundredths:baseHundredths+bonusHundredths,phase:draws.length===8?'done':'playing'};
  }
  function createDemo(){
-  let seed=1013904226;
+  let seed=2654435761;
   const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
   const state=create({rng});
-  const draws=[6,25,4,18,9,13,22,8];return {state,draws,balls:draws};
+  const draws=[7,1,24,6,25,17,13,22];return {state,draws,balls:draws};
  }
  const api={create,draw,createDemo,award,payRows,sweepBonusHundredths,sugarFlips};
  if(typeof module==='object'&&module.exports)module.exports=api;

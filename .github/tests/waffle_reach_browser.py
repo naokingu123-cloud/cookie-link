@@ -51,11 +51,13 @@ with sync_playwright() as pw:
           const moves=Array.from({length:25},(_,i)=>R.draw(s,i+1));
           const hits=moves.filter(v=>Math.floor(e.roundBet*v.totalHundredths/100)>0);
           const numbered=s.numbers.map(Boolean),missing=Array.from({length:25},(_,i)=>i+1).find(n=>!s.numbers.includes(n));
-          return {numbered:numbered.filter(Boolean).length, miss:missing, bet:e.roundBet,
-            symmetric:numbered.every((v,i)=>v===numbered[63-i]&&v===numbered[(i&56)+7-i%8]),
+          return {numbered:numbered.filter(Boolean).length, stones:s.colors.filter(Boolean).length, miss:missing, bet:e.roundBet,
+            covered:numbered.every((v,i)=>v!==Boolean(s.colors[i])),
+            symmetric:s.colors.every((v,i)=>v===s.colors[63-i]&&v===s.colors[(i&56)+7-i%8]),
             legal:moves.filter(v=>v.flipped.length>0).length, ids:hits.map(v=>v.placed[0]).sort((a,b)=>a-b)};
         }""")
-        assert opening["symmetric"] and opening["numbered"] == opening["legal"] == 24
+        assert opening["covered"] and opening["symmetric"] and opening["stones"] == 40
+        assert opening["numbered"] == opening["legal"] == 24
         page.wait_for_function("(ids)=>JSON.stringify([...new Set(waffleLabels)].sort((a,b)=>a-b))===JSON.stringify(ids)",
                                arg=opening["ids"])
         def layout():
@@ -116,7 +118,7 @@ with sync_playwright() as pw:
         page.wait_for_function("w=>Number(document.querySelector('.result-game .result-value')?.dataset.value)===w", arg=plan[-1]["win"])
         assert sum(t["gain"] for t in plan) == plan[-1]["win"]
         assert not errors, errors
-        print(f"{width}px: 24 symmetric numbered sites, missing {opening['miss']}, {opening['bet']} BET, "
+        print(f"{width}px: 40 stones + 24 symmetric numbered sites, missing {opening['miss']}, {opening['bet']} BET, "
               f"{[t['gain'] for t in plan]} -> {plan[-1]['win']} WIN", flush=True)
         page.close()
     browser.close()

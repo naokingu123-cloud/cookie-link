@@ -37,14 +37,14 @@ assert.deepEqual(R.draw(fixture(9,[11,26],[10,18]),1).flipped,[10]);
 const patterns=new Set();
 for(let seed=0;seed<300;seed++){
  let s=R.create({rng:rng(Math.imul(seed+1,2654435761)),target:seed%2?50:150});patterns.add(s.patternName);
- assert.equal(s.colors.filter(Boolean).length,36);assert.equal(s.numbers.filter(Boolean).length,24);
+ assert.equal(s.colors.filter(Boolean).length,40);assert.equal(s.numbers.filter(Boolean).length,24);
  assert.deepEqual([...s.numbers.filter(Boolean),s.missingNumber].sort((a,b)=>a-b),Array.from({length:25},(_,i)=>i+1));
  for(const i of cells){
   for(const j of [63-i,(i&56)+7-i%8]){
    assert.equal(s.colors[i],s.colors[j]);
    assert.equal(Boolean(s.numbers[i]),Boolean(s.numbers[j]));
   }
-  if(s.numbers[i])assert(!s.colors[i]);
+  assert.notEqual(Boolean(s.numbers[i]),Boolean(s.colors[i])); // Every square starts as a stone or a number.
  }
  // All numbered openings capture. Exactly one roulette label is a pass.
  for(const n of s.numbers.filter(Boolean))assert(R.draw(s,n).lastFlips>0);
@@ -58,7 +58,8 @@ for(let seed=0;seed<300;seed++){
   assert.equal(s.lastBaseHundredths,R.award(s.lastFlips));
   assert.equal(s.baseHundredths,last.baseHundredths+s.lastBaseHundredths);
   assert.equal(s.totalHundredths,s.baseHundredths+s.reversalCount*R.sweepBonusHundredths);
-  assert.equal(s.phase,n===8?'done':'playing');assert.equal(s.counts.black+s.counts.white,36+n-Number(s.draws.includes(s.missingNumber)));
+  assert.equal(s.phase,n===8?'done':'playing');assert.equal(s.counts.black+s.counts.white,40+n-Number(s.draws.includes(s.missingNumber)));
+  assert(s.colors.every((color,i)=>color||s.numbers[i]));
   for(const c of ['black','white'])assert.equal(s.counts[c],s.colors.filter(v=>v===c).length);
   if(n!==s.missingNumber){assert.equal(s.colors[s.placed[0]],s.lastColor);assert.equal(s.numbers[s.placed[0]],n);}
   else{assert.deepEqual(s.placed,[]);assert.deepEqual(s.colors,last.colors);}
@@ -69,15 +70,15 @@ for(let seed=0;seed<300;seed++){
 assert.equal(patterns.size,4);
 // Every production mold has a legal eight-number game that earns the reversal bonus.
 const reversals=[
- [2654435761,50,'格子',[21,6,24,9,8,20,16,13],7,'black'],
- [1013904226,90,'双菱',[6,25,4,18,9,13,22,8],7,'black'],
- [3668339987,90,'市松',[23,25,16,11,12,15,24,22],8,'white'],
- [2654435761,150,'花窓',[12,6,17,15,8,22,25,13],7,'black']
+ [2654435761,50,'格子',[8,4,25,6,23,17,1,22],7,'black'],
+ [2654435761,90,'双菱',[7,1,24,6,25,17,13,22],7,'black'],
+ [3668339987,90,'市松',[5,7,11,16,14,13,24,25],8,'white'],
+ [2654435761,150,'花窓',[18,1,16,9,6,22,19,2],7,'black']
 ];
 for(const [seed,target,name,draws,ball,color] of reversals){
  let s=R.create({rng:rng(seed),target});assert.equal(s.patternName,name);
  for(const [i,n] of draws.entries()){
-  s=R.draw(s,n);if(i+1===ball){assert.deepEqual(s.lastReversal,{ball,number:n,color});assert.equal(s.counts[color],36+ball-Number(s.draws.includes(s.missingNumber)));}
+  s=R.draw(s,n);if(i+1===ball){assert.deepEqual(s.lastReversal,{ball,number:n,color});assert.equal(s.counts[color],40+ball-Number(s.draws.includes(s.missingNumber)));}
   if(i+1>ball){assert(s.highestRole);assert(s.bonusEvents.some(e=>e.ball===ball));}
  }
  assert.equal(s.phase,'done');
