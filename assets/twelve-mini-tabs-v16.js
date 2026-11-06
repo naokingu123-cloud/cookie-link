@@ -136,7 +136,7 @@ try{
     sugar.title='シュガー未獲得';
     head.append(badge,phase,sugar);
     const canvas=document.createElement('canvas');
-    canvas.width=game===2?80:40;canvas.height=game===2?80:40;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
+    canvas.width=game===2?64:40;canvas.height=game===2?64:40;canvas.className='mini-four-canvas';canvas.setAttribute('aria-hidden','true');
     const chosenLabel=makeEl('span','mini-four-selected-label','選択中');
     chosenLabel.setAttribute('aria-hidden','true');
     const reach=makeEl('span','mini-four-reach');
@@ -480,12 +480,15 @@ try{
    lastMiniPaint=performance.now();
    processedFrames++;
    const engine=data?.engine;
-   if(!selected&&(engine?.busy||engine?.opening||engine?.queue?.length||
+   const activeMini=item.game===active;
+   // Inactive-game thumbnails are event driven only: the engine still
+   // advances normally, but intermediate animation frames are not polled.
+   // The active game's unselected thumbnails keep a lightweight motion pass.
+   if(!selected&&activeMini&&(engine?.busy||engine?.opening||engine?.queue?.length||
        engine?.pendingDraws?.size)){
      movingBoards.add(id);
-     // The next render is based on the last actually painted frame,
-     // not on an accumulating timer that causes bursty redraws.
-     motionDue.set(id,performance.now()+(item.game===active?50:100));
+     // ~12.5fps is enough at thumbnail size while preserving roulette time.
+     motionDue.set(id,performance.now()+80);
      scheduleMotion();
    }else{
      movingBoards.delete(id);
@@ -499,39 +502,51 @@ try{
  }
  function scheduleMotion(){
    if(motionTimer||!movingBoards.size||!liveMode()||document.hidden)return;
-   // A menu or user pause must not cause an 8ms expired-timer loop.
+   // A menu or user pause must not cause an expired-timer loop.
    if(app?.paused){
      motionTimer=setTimeout(()=>{motionTimer=0;scheduleMotion();},240);
      return;
    }
    const now=performance.now();
    let earliest=Infinity;
-   for(const id of movingBoards){
+   // Keep motion polling only for the currently visible game. If the user
+   // changes tabs, stale motion jobs from the previous game are discarded.
+   for(const id of [...movingBoards]){
+     if(Math.floor(id/4)!==active){
+       movingBoards.delete(id);
+       motionDue.delete(id);
+       continue;
+     }
      // A queued thumbnail is already committed for a future idle slice.
      if(queuedBoards.has(id))continue;
      earliest=Math.min(earliest,motionDue.get(id)??now);
    }
-   if(!Number.isFinite(earliest))return; // drainBoards will re-arm it
+   if(!movingBoards.size||!Number.isFinite(earliest))return;
    motionTimer=setTimeout(()=>{
      motionTimer=0;
      if(!liveMode()||document.hidden)return;
      if(app?.paused){scheduleMotion();return;}
      const current=performance.now();
      const due=[];
-     for(const id of movingBoards){
+     for(const id of [...movingBoards]){
+       if(Math.floor(id/4)!==active){
+         movingBoards.delete(id);
+         motionDue.delete(id);
+         continue;
+       }
        if(queuedBoards.has(id))continue;
        const target=motionDue.get(id)??current;
-       if(current>=target)due.push({id,target,visible:Math.floor(id/4)===active});
+       if(current>=target)due.push({id,target});
      }
-     due.sort((a,b)=>Number(b.visible)-Number(a.visible)||a.target-b.target);
-     // At most two changes are queued in one pulse. Idle scheduler
-     // still draws only one mini per task, never two in one render call.
-     for(const {id} of due.slice(0,2)){
-       motionDue.set(id,current+(Math.floor(id/4)===active?50:100));
+     due.sort((a,b)=>a.target-b.target);
+     // One moving thumbnail per pulse. drainBoards still waits for an idle
+     // slice, so roulette/main-board rendering always has priority.
+     for(const {id} of due.slice(0,1)){
+       motionDue.set(id,current+80);
        enqueue(id);
      }
      if(movingBoards.size)scheduleMotion();
-   },Math.max(5,Math.min(55,earliest-now)));
+   },Math.max(8,Math.min(80,earliest-now)));
  }
  function scheduleReachPager(){
    if(reachTimer||!liveMode()||document.hidden)return;
@@ -575,7 +590,7 @@ try{
    if(reachTimer)clearTimeout(reachTimer);
  },{once:true});
  window.sweetsTab12Layout={get boards(){return ITEMS.length;},get trial(){return false;}};
- console.info('[SweetsMini] 10 live boards with 50ms/100ms event-paced drawing enabled');
+ console.info('[SweetsMini] 10 live boards: inactive tabs event-only, active mini motion ~12.5fps');
 
 }catch(error){console.error('[Sweets12Tab]',error);}
 })();
