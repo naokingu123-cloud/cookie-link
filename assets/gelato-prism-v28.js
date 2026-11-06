@@ -334,7 +334,7 @@ try{
  // Cached, low-resolution raster display.  Three PNGs are uploaded to assets/
  // by the user.  The backing image is composited once; dynamic controls are
  // only re-rendered when the round state or BET actually changes.
- const MAIN_PX=640,MINI_PX=192,MAIN_SCALE=MAIN_PX/500,MINI_SCALE=MINI_PX/500;
+ const MAIN_PX=640,MINI_PX=allNineMode?96:192,MAIN_SCALE=MAIN_PX/500,MINI_SCALE=MINI_PX/500;
  const rasterMain=document.createElement('canvas'),rasterMini=document.createElement('canvas');
  rasterMain.width=rasterMain.height=MAIN_PX;
  rasterMini.width=rasterMini.height=MINI_PX;
