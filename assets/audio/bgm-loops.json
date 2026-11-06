@@ -45,49 +45,44 @@
     "duration": 76.41125
   },
   "assets/audio/jpc-1.mp3": {
-    "title": "アニマロッタ4BIGJPC1",
-    "start": 93,
-    "end": 275.3155,
+    "title": "星砂のからくり時計",
+    "start": 0.1,
+    "end": 39.018888889,
     "crossfade": 0.025,
-    "method": "waveform-repeat",
-    "score": 0.9748,
-    "duration": 313.2355
+    "method": "authored-loop",
+    "duration": 39.058888889
   },
   "assets/audio/jpc-2.mp3": {
-    "title": "アニマロッタ4BIGJPC2",
-    "start": 108,
-    "end": 284.37625,
+    "title": "キャンディ工房の輪舞",
+    "start": 0.1,
+    "end": 37.74707483,
     "crossfade": 0.025,
-    "method": "waveform-repeat",
-    "score": 0.97209,
-    "duration": 361.62725
+    "method": "authored-loop",
+    "duration": 37.78707483
   },
   "assets/audio/jpc-3.mp3": {
-    "title": "アニマロッタ4BIGJPC3",
-    "start": 39.02925,
-    "end": 210,
+    "title": "星窯を飛ぶ帆船",
+    "start": 0.1,
+    "end": 36.555714286,
     "crossfade": 0.025,
-    "method": "waveform-repeat",
-    "score": 0.96399,
-    "duration": 350.1335
+    "method": "authored-loop",
+    "duration": 36.595714286
   },
   "assets/audio/jpc-4.mp3": {
-    "title": "アニマロッタ4BIGJPC4",
-    "start": 20,
-    "end": 268.7485,
+    "title": "虹の戴冠パレード",
+    "start": 0.1,
+    "end": 35.437414966,
     "crossfade": 0.025,
-    "method": "waveform-repeat",
-    "score": 0.98038,
-    "duration": 339.9195
+    "method": "authored-loop",
+    "duration": 35.477414966
   },
   "assets/audio/jpc-reach.mp3": {
-    "title": "アニマロッタ4BIGJPCリーチ",
-    "start": 10,
-    "end": 48.8055,
+    "title": "あとひと粒の星",
+    "start": 0.1,
+    "end": 19.691814059,
     "crossfade": 0.025,
-    "method": "waveform-repeat",
-    "score": 0.95642,
-    "duration": 116.8215
+    "method": "authored-loop",
+    "duration": 19.731814059
   },
   "assets/audio/vocal-4-1.mp3": {
     "title": "アニマロッタ4ワンダー1ボーカル",

@@ -1,7 +1,8 @@
 /* A single music transport. Managed tracks loop on the AudioContext sample clock;
    the existing BET track keeps its HTML media transport. No timeupdate seeking. */
+const jpcScoreRevision = '20261106-jpc1';
 class LoopingBgmPlayer {
- constructor(){this.media=new Audio();this._src='';this._loop=true;this._rate=1;this._offset=0;this._serial=0;this._paused=true;this._source=null;this._buffer=null;this._cache=new Map();this._loads=new Map();this._metadata=fetch('assets/audio/bgm-loops.json').then(r=>{if(!r.ok)throw Error('BGM loop metadata unavailable');return r.json();});this._metadata.catch(()=>{});}
+ constructor(){this.media=new Audio();this._src='';this._loop=true;this._rate=1;this._offset=0;this._serial=0;this._paused=true;this._source=null;this._buffer=null;this._cache=new Map();this._loads=new Map();this._metadata=fetch('assets/audio/bgm-loops.json?v='+jpcScoreRevision).then(r=>{if(!r.ok)throw Error('BGM loop metadata unavailable');return r.json();});this._metadata.catch(()=>{});}
  managed(src=this._src){return /assets\/audio\/(vocal-\d-\d|jpc-(?:[1-4]|reach))\.mp3$/.test(src);}
  connect(context,gain){this.context=context;this.gain=gain;if(!this.mediaSource){this.mediaSource=context.createMediaElementSource(this.media);this.mediaSource.connect(gain);}}
  set src(v){this.pause();this._src=v;this._offset=0;this._buffer=null;this._points=null;this.error=null;if(!this.managed())this.media.src=v;}
@@ -27,7 +28,8 @@ class LoopingBgmPlayer {
   if(!this.managed(src)||!this.context)return null;
   if(this._cache.has(src))return this._cache.get(src);
   if(this._loads.has(src))return this._loads.get(src);
-  const task=Promise.all([this._metadata,fetch(src).then(r=>{if(!r.ok)throw Error('BGM download failed: '+src);return r.arrayBuffer();})]).then(async([meta,bytes])=>{
+  const url=src.startsWith('assets/audio/jpc-')?src+'?v='+jpcScoreRevision:src;
+  const task=Promise.all([this._metadata,fetch(url).then(r=>{if(!r.ok)throw Error('BGM download failed: '+src);return r.arrayBuffer();})]).then(async([meta,bytes])=>{
    const buffer=await this.context.decodeAudioData(bytes),m=meta[src];if(!m)throw Error('Missing BGM loop: '+src);
    const sr=buffer.sampleRate,start=Math.max(0,Math.min(buffer.duration-.1,m.start)),end=Math.min(buffer.duration,m.end);
    if(end-start<1)throw Error('Invalid BGM loop: '+src);
