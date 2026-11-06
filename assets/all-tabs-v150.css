@@ -526,3 +526,67 @@ html[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab[aria-selected="tru
   inset:1px!important;
   font-size:7.5px!important;
 }
+
+
+/* v153 hard frame overlay + reach vertical correction. */
+
+/* Stop relying on a pseudo-element for the generated artwork. */
+html[data-lineup="all"] #tabs>.tab-slot::before{
+  display:none!important;
+}
+
+/* Real DOM frame layer, appended by game-menu-v91.js after all tab setup. */
+html[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-overlay{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:80!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--all-tab-frame) center/100% 100% no-repeat!important;
+  background-origin:border-box!important;
+  background-clip:border-box!important;
+  box-shadow:none!important;
+  filter:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+  transform:none!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot.selected>.all-tab-frame-overlay{
+  filter:brightness(1.08) drop-shadow(0 0 2px #fff3a8)!important;
+}
+
+/* Keep all interactive/content layers under the decorative frame. */
+html[data-lineup="all"] #tabs>.tab-slot>.tab,
+html[data-lineup="all"] #tabs>.tab-slot>.tab-bets,
+html[data-lineup="all"] #tabs>.tab-slot>.reach-strip,
+html[data-lineup="all"] #tabs>.tab-slot>.tab-locked-bet{
+  z-index:10!important;
+}
+
+/* Shift the whole reach-number viewport upward instead of moving glyphs individually.
+   This survives Safari's font metrics and child text styles. */
+html[data-lineup="all"] #tabs .tab-slot .reach-strip{
+  overflow:visible!important;
+}
+html[data-lineup="all"] #tabs .reach-clip{
+  position:relative!important;
+  top:-3px!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+html[data-lineup="all"] #tabs .reach-numbers,
+html[data-lineup="all"] #tabs .reach-page-enter,
+html[data-lineup="all"] #tabs .reach-page-leave{
+  transform:none!important;
+}
+html[data-lineup="all"] #tabs .reach-num{
+  transform:none!important;
+  padding:0!important;
+  place-items:center!important;
+}
