@@ -1266,7 +1266,20 @@ function drawChoco(s,now=performance.now()){
   }
   return;
  }
- if(ready){const guideTime=autoRoundStamp!==null&&autoRoundRemaining>=0&&autoRoundRemaining<=BET_DURATION_MS?Math.min(19999,BET_DURATION_MS-autoRoundRemaining):time%20000;chocoDrawTutorial(s,guideTime,bet,W,H);if(!paused&&!jpcSession.active&&(!allNineMode||s.i===active))chocoQueueFrame(s);return;}s.chocoCanvas.dataset.mode='playing';delete s.chocoCanvas.dataset.scene;
+ if(ready){const guideTime=autoRoundStamp!==null&&autoRoundRemaining>=0&&autoRoundRemaining<=BET_DURATION_MS?Math.min(19999,BET_DURATION_MS-autoRoundRemaining):time%20000;chocoDrawTutorial(s,guideTime,bet,W,H);if(!paused&&!jpcSession.active&&(!allNineMode||s.i===active))chocoQueueFrame(s);return;}
+ if(allNineMode&&s.i!==active){
+  const grid=e.strata,c=s.mini,d=Math.min(c.canvas.height/12,c.canvas.width/7),
+    left=(c.canvas.width-d*7)/2,top=(c.canvas.height-d*12)/2;
+  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,c.canvas.width,c.canvas.height);
+  for(let r=0;r<12;r++)for(let j=0;j<7;j++){
+   const tile=grid[r]?.[j];
+   if(tile)chocoPaintTile(c,tile,r,j,grid,left+j*d,top+r*d,d,d,time,bet);
+  }
+  s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
+  s.miniCanvas.dataset.renderer='board-only-static';
+  return;
+ }
+ s.chocoCanvas.dataset.mode='playing';delete s.chocoCanvas.dataset.scene;
  const L=chocoBoardLayout(W,H),{w,h,left,top}=L,p=fx?Math.min(1,fx.elapsed/fx.ms):0,q=motionReduced?1:p,fall=fx?.phase==='canyonFall',melt=fx?.phase==='canyonMelt',scroll=fx?.phase==='canyonScroll'?fx:fx?.scroll,grid=scroll?scroll.before:fall?fx.before:fx?.before&&melt?fx.before:e.strata,moves=new Map((fall?fx.moves:[]).map(m=>[m.id,m])),scrollQ=fall?q*q:q,camera=scroll?scroll.oldDepth+scroll.advanced*scrollQ:e.depth;
  const chainSections=chocoChainSections(grid);
  const finalPositions=new Map();if(scroll)e.strata.forEach((row,r)=>row.forEach((t,c)=>{if(t)finalPositions.set(t.id,[r,c]);}));
@@ -1938,9 +1951,10 @@ function sixFallFrame(fx,progress){
 function paintSixThumbnail(s,rows){
  const {step,radius}=sixLayout(rows),first=sixXY(0,0,rows),last=sixXY(rows-1,0,rows);
  const width=Math.max(sixRowWidth(0,rows),sixRowWidth(1,rows))*step,height=last.y-first.y+radius*2;
- const c=s.mini,d=Math.min(c.canvas.width/width,c.canvas.height/height);
+ const c=s.mini,d=Math.min(c.canvas.width/width,c.canvas.height/height),
+  pieceScale=s.candyPieceLayer.width/320;
  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,c.canvas.width,c.canvas.height);
- c.drawImage(s.candyPieceLayer,(160-width/2)*2,(first.y-radius)*2,width*2,height*2,
+ c.drawImage(s.candyPieceLayer,(160-width/2)*pieceScale,(first.y-radius)*pieceScale,width*pieceScale,height*pieceScale,
   (c.canvas.width-width*d)/2,(c.canvas.height-height*d)/2,width*d,height*d);
  s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
 }
@@ -1964,8 +1978,10 @@ function drawCarnival(s,now=performance.now()){
  }
  if((refill||fx?.phase==='pyramidTopUp')&&!paused&&s.i===active){const order=fx.rowOrder||sixGlassRows(fx.added,rows),elapsed=progress*fx.ms;if(s.sixRefillFx!==fx){s.sixRefillFx=fx;s.sixGlassSounds=new Set();}for(let i=0;i<order.length;i++)for(const [tap,delay] of [[0,0],[1,110]]){const key=i+'/'+tap;if(elapsed>=i*SIX_REFILL_ROW_MS+SIX_REFILL_FALL_MS+delay&&!s.sixGlassSounds.has(key)){s.sixGlassSounds.add(key);sixCandyAudio('glass',tap?0.35:1);}}}
  // One transparent layer supplies the exact animated drops to both boards.
- if(!s.candyPieceLayer){s.candyPieceLayer=document.createElement('canvas');s.candyPieceLayer.width=s.candyPieceLayer.height=640;}
- const x=s.candyPieceLayer.getContext('2d');x.setTransform(2,0,0,2,0,0);x.clearRect(0,0,320,320);
+ const pieceScale=allNineMode&&s.i!==active?1:2,piecePx=320*pieceScale;
+ if(!s.candyPieceLayer)s.candyPieceLayer=document.createElement('canvas');
+ if(s.candyPieceLayer.width!==piecePx){s.candyPieceLayer.width=piecePx;s.candyPieceLayer.height=piecePx;}
+ const x=s.candyPieceLayer.getContext('2d');x.setTransform(pieceScale,0,0,pieceScale,0,0);x.clearRect(0,0,320,320);
  const lit=new Set((fx?.phase==='pyramidHit'?fx.cells:[]).map(p=>sixKey(...p))),shaped=new Set((fx?.forms||[]).flatMap(f=>f.cells).map(p=>sixKey(...p))),byNumber=new Map((ready?[]:visibleReachResults(s,app)).map(p=>[p.number,p]));
  for(let r=0;r<grid.length;r++)for(let c=0;c<grid[r].length;c++){
   const t=grid[r][c];if(!t)continue;let pos=sixXY(r,c,rows);const m=moving.get(t.id);
@@ -1991,7 +2007,7 @@ function drawCarnival(s,now=performance.now()){
   if(shape||pending||reach){x.strokeStyle=shape?'#fff6b3':pending?'#fff9e7':reach.tier>=2?'#f0a2ff':'#fff3b6';x.lineWidth=shape?2.3:1.5;x.beginPath();x.arc(pos.x,pos.y,radius,0,Math.PI*2);x.stroke();}x.restore();
  }
  paintSixThumbnail(s,rows);
- if(readyMini)return;
+ if(readyMini||(allNineMode&&s.i!==active))return;
  main.drawImage(sixArtBackdrop(rows),0,0,320,320);main.drawImage(s.candyPieceLayer,0,0,320,320);
  sixStageEffects(main,fx,progress,e.roundIndex,rows,motionReduced);
  sixArcadeAccents(s,main,time);
@@ -3149,8 +3165,9 @@ function miniature(s){
  s.miniCanvas.hidden=false;s.miniLogo.hidden=true;const e=s.engine;
  if(!s.cookieMiniState||s.cookieMiniState.version!==e.version)cookieMiniEvent(s,s.event,e);
  const fx=s.cookieMiniState,now=performance.now(),paused=app.paused||document.hidden||!inView;if(!paused&&!fx.wasPaused&&fx.stamp!=null)fx.elapsed+=Math.max(0,now-fx.stamp)*(e.presentationRate||1);fx.stamp=now;fx.wasPaused=paused;
- if(!s.cookieMiniSurface){s.cookieMiniSurface=document.createElement('canvas');s.cookieMiniSurface.width=s.cookieMiniSurface.height=640;}
- const x=s.cookieMiniSurface.getContext('2d');x.setTransform(640/298,0,0,640/298,0,0);x.clearRect(0,0,298,298);
+ const cookieMiniPx=allNineMode?192:640;
+ if(!s.cookieMiniSurface||s.cookieMiniSurface.width!==cookieMiniPx){s.cookieMiniSurface=document.createElement('canvas');s.cookieMiniSurface.width=s.cookieMiniSurface.height=cookieMiniPx;}
+ const x=s.cookieMiniSurface.getContext('2d');x.setTransform(cookieMiniPx/298,0,0,cookieMiniPx/298,0,0);x.clearRect(0,0,298,298);
  const ev=fx.event,phase=fx.phase,age=fx.elapsed,marked=new Set((ev.cells||[]).map(([r,c])=>r*SIZE+c)),pending=pendingCellNumbers(e)||new Set(),speed=e.speed||1;
  let moving=false;
  for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
