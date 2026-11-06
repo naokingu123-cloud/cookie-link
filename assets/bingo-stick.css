@@ -44,3 +44,9 @@ body.bs-active .board-area,body.bs-active #panels{width:100%!important;max-width
 .bs-pay tbody :is(th,td),.bs-pay td small,.bs-counts b{font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif}.bs-pay td{color:#ffda8d}.bs-pay.live tr.current td span{display:inline-block;transform-origin:right center;transform:scaleY(calc(1 + .13 * var(--bs-pulse,0)))}
 .bs-bonus{font-size:clamp(7px,calc(var(--bs-w)*.021),14px);letter-spacing:-.025em}.bs-board{position:relative}
 .bs-burst{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);padding:.3em .9em .38em;text-align:center;border-radius:.7em;white-space:nowrap;background:linear-gradient(#8e1945,#611d40);border:2px solid #ffdf83;box-shadow:0 0 0 1px #6c3620,0 0 9px #ffd865b3;color:#fff4c0;line-height:1.06;pointer-events:none;font-size:clamp(8px,calc(var(--bs-w)*.026),16px)}.bs-burst b{display:block;font:1000 1.4em/1 ElixirNumbers,system-ui;color:#ffda69;letter-spacing:.04em}.bs-burst span{font-weight:900}
+
+/* v132: fixed-difficulty reversal bonus and explicit zero-return opening tiers. */
+.bs-pay tbody tr[data-zero="true"]:not(.current) td,.bs-pay tbody tr[data-zero="true"]:not(.current) th{color:#bfab93;opacity:.84}
+.bs-bonus small{display:block;font:950 .94em/1.08 'Hiragino Maru Gothic ProN','Yu Gothic',system-ui,sans-serif;color:#ffe19a;letter-spacing:-.02em;margin-top:.13em}
+.bs-bonus.earned small{color:#7c3f22}
+@media(max-width:390px){.bs-bonus small{font-size:.87em}.bs-bonus strong{font-size:.95em;letter-spacing:-.055em}}
