@@ -2,30 +2,32 @@
 (function(root){
  'use strict';
  const cells=Array.from({length:64},(_,i)=>i);
- const payouts=[0,0,0,10,10,10,20,20,30,50,100,200,400,800];
+ const payouts=[0,0,0,10,10,20,30,40,50,60,70,80,100,150];
+ const topRefills=[200,500,1000,2000,5000,7500,10000,15000];
  const payRows=payouts.slice(1).map((hundredths,i)=>({count:i+1,hundredths}));
  const sweepBonusHundredths=5000,sugarFlips=8;
- function award(count,grade=0){return count>0?payouts[Math.min(count+grade,payouts.length-1)]:0;}
- // Per-mold Monte Carlo calibration of ordinary return (%), reversal events and games
- // with at least one reversal. Multiple eliminations in a game each pay independently.
- // Holdout: 5M games at each 10-point setting, 50–150. 54,792 events in 53,854 games.
- // Replay all six sweep paths and sample live rules with node .github/tests/bingo-stick.cjs --balance.
- const samples=9500000;
+ function award(count,rack=payouts){return rack[Math.min(count,13)];}
+ function nextRack(rack,row,turn){
+  const next=rack.slice();
+  // Zero always pays zero. When it is hit, the positive prizes all descend one slot.
+  next.splice(Math.max(1,row),1);next.push(topRefills[turn]);return next;
+ }
+ // A quarter reflects into the other three, with optional transposition. Each
+ // board row and column has 2–4 labels. Only ordinary WIN enters the mold mix.
+ // Uniform 25P8 draw orders; event counts include repeat eliminations. The
+ // normal rates were measured on 9,500,000 independent games per mold.
+ const drawOrders=43609104000;
  const molds=[
-  {name:'小格子',quarter:'BBB.BBW.BB..BBW.',normal:43.45951,events:4261/samples,games:4174/samples},
-  {name:'格子',quarter:'BBB.BBW.BBW.BB..',normal:42.51666,events:10458/samples,games:10205/samples},
-  {name:'双菱',quarter:'B.BBB.WBB.WBB..B',normal:106.88139,events:19044/(2*samples),games:18928/(2*samples)},
-  {name:'市松',quarter:'..WWWW..WBBWW.WB',normal:144.39896,events:0,games:0},
-  {name:'花窓',quarter:'...BBWW.B.WWBWWB',normal:301.14573,events:1/samples,games:1/samples},
-  {name:'蜜格子',quarter:'B.BBBBBBBBW.B...',normal:37.93827,events:55847/samples,games:54812/samples}
+  {name:'千鳥',quarter:'BBB.BBB.BB.W..WW',normal:39.5815758,events:233424/drawOrders,games:233424/drawOrders},
+  {name:'小花',quarter:'W.WW.WWWB.WWBB..',normal:42.5302316,events:14512/drawOrders,games:14512/drawOrders},
+  {name:'飛石',quarter:'.WBBWW.BB.B.B.BB',normal:56.8625347,events:25920/drawOrders,games:25920/drawOrders},
+  {name:'小紋',quarter:'BBB.BBW..B.WB.WB',normal:74.1408474,events:979056/drawOrders,games:967464/drawOrders},
+  {name:'双葉',quarter:'.BWWBB.WBWW.B..W',normal:93.3620547,events:2880/drawOrders,games:2880/drawOrders},
+  {name:'花菱',quarter:'.BBBBW.B.WWWB.W.',normal:123.0206337,events:171720/drawOrders,games:171720/drawOrders},
+  {name:'風車',quarter:'WW...BWWBWW.B.BB',normal:134.7811853,events:8/drawOrders,games:8/drawOrders},
+  {name:'花窓',quarter:'.BBBBWW.B.BW.W.W',normal:158.1876653,events:720/drawOrders,games:720/drawOrders},
+  {name:'組市松',quarter:'WW..B.WWBWB..BWB',normal:163.3448326,events:4844/drawOrders,games:4844/drawOrders}
  ];
- // Each pair targets the same event frequency. The outer weights set ordinary RTP.
- // Selection is complete before numbering the board or drawing the first ball.
- const desiredEvents=.001;
- const pairs=[[0,1],[2,0],[3,5],[4,5]].map(([a,b])=>{
-  const share=(desiredEvents-molds[a].events)/(molds[b].events-molds[a].events);
-  return {a,b,share,normal:molds[a].normal*(1-share)+molds[b].normal*share};
- });
  function shuffle(values,rng){
   for(let i=values.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
   return values;
@@ -34,17 +36,13 @@
  function mixtureFor(target){
   let left=-1,right=1;
   for(let i=0;i<40;i++){
-   const t=(left+right)/2, weights=pairs.map(pair=>Math.exp((pair.normal-100)*t));
+   const t=(left+right)/2, weights=molds.map(m=>Math.exp((m.normal-90)*t));
    const total=weights.reduce((a,b)=>a+b,0);
-   const normal=weights.reduce((sum,w,j)=>sum+w*pairs[j].normal,0)/total;
+   const normal=weights.reduce((sum,w,j)=>sum+w*molds[j].normal,0)/total;
    if(normal<target-5)left=t;else right=t;
   }
-  const shares=pairs.map(pair=>Math.exp((pair.normal-100)*(left+right)/2));
-  const total=shares.reduce((a,b)=>a+b,0),weights=Array(molds.length).fill(0);
-  pairs.forEach(({a,b,share},i)=>{
-   weights[a]+=shares[i]*(1-share)/total;weights[b]+=shares[i]*share/total;
-  });
-  return weights;
+  const raw=molds.map(m=>Math.exp((m.normal-90)*(left+right)/2));
+  const total=raw.reduce((a,b)=>a+b,0);return raw.map(w=>w/total);
  }
  const mixtures=Array.from({length:101},(_,i)=>mixtureFor(i+50));
  function weightsFor(rate){return Number.isInteger(rate)?mixtures[rate-50]:mixtureFor(rate);}
@@ -53,7 +51,7 @@
   const mean=key=>molds.reduce((sum,m,i)=>sum+m[key]*weights[i],0);
   const normalPercent=mean('normal'),eventsPerGame=mean('events'),gameProbability=mean('games');
   const bonusPercent=eventsPerGame*sweepBonusHundredths;
-  return {normalPercent,bonusPercent,totalPercent:normalPercent+bonusPercent,eventsPerGame,gameProbability,fairMultiplier:.05/eventsPerGame};
+  return {normalPercent,bonusPercent,totalPercent:normalPercent+bonusPercent,eventsPerGame,gameProbability,fairMultiplier:eventsPerGame ? 0.05/eventsPerGame : null};
  }
  function create({rng=Math.random,target=90,patternName=null}={}){
   const rate=targetRate(target),weights=weightsFor(rate);
@@ -72,7 +70,7 @@
   for(const i of cells)if(!colors[i])numbers[i]=deck.pop();
   const black=colors.filter(color=>color==='black').length;
   return {colors,numbers,offBoardNumbers:deck.sort((a,b)=>a-b),counts:{black,white:44-black},phase:'playing',draws:[],target:rate,patternName:mold.name,
-   grade:0,lastGrade:0,placed:[],flipped:[],flipSteps:[],lastColor:null,lastFlips:0,previousMaxFlips:0,maxFlips:0,
+   rack:payouts.slice(),lastRack:payouts.slice(),lastKnockRow:null,grade:0,lastGrade:0,placed:[],flipped:[],flipSteps:[],lastColor:null,lastFlips:0,previousMaxFlips:0,maxFlips:0,
    bonusEvents:[],lastReversal:null,reversalCount:0,reversalThisMove:false,highestRole:false,
    lastBaseHundredths:0,baseHundredths:0,bonusHundredths:0,totalHundredths:0};
  }
@@ -104,20 +102,21 @@
   for(const i of flipped)colors[i]=color;
   const counts={...s.counts,[color]:s.counts[color]+Number(origin>=0)+lastFlips,[other]:s.counts[other]-lastFlips};
   const draws=[...s.draws,number],maxFlips=Math.max(s.maxFlips,lastFlips);
-  const lastGrade=s.grade,lastBaseHundredths=award(lastFlips,lastGrade),baseHundredths=s.baseHundredths+lastBaseHundredths;
+  const lastGrade=s.grade,lastRack=s.rack,lastKnockRow=Math.min(13,lastFlips),rack=nextRack(lastRack,lastKnockRow,lastGrade);
+  const lastBaseHundredths=award(lastFlips,lastRack),baseHundredths=s.baseHundredths+lastBaseHundredths;
   const lastReversal=counts[other]===0&&s.counts[other]>0?{ball:draws.length,number,color}:null;
   const bonusEvents=lastReversal?[...s.bonusEvents,lastReversal]:s.bonusEvents,bonusHundredths=bonusEvents.length*sweepBonusHundredths;
-  return {...s,colors,counts,draws,lastGrade,grade:lastGrade+1,lastColor:color,placed:origin>=0?[origin]:[],flipped,flipSteps,lastFlips,previousMaxFlips:s.maxFlips,maxFlips,
+  return {...s,colors,counts,draws,rack,lastRack,lastKnockRow,lastGrade,grade:lastGrade+1,lastColor:color,placed:origin>=0?[origin]:[],flipped,flipSteps,lastFlips,previousMaxFlips:s.maxFlips,maxFlips,
    bonusEvents,lastReversal,reversalCount:bonusEvents.length,reversalThisMove:!!lastReversal,highestRole:bonusEvents.length>0,
    lastBaseHundredths,baseHundredths,bonusHundredths,totalHundredths:baseHundredths+bonusHundredths,phase:draws.length===8?'done':'playing'};
  }
  function createDemo(){
   let seed=2654435761;
   const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
-  const state=create({rng,patternName:'花窓'});
-  const draws=[8,23,5,11,6,4,24,20];return {state,draws,balls:draws};
+  const state=create({rng,patternName:'風車'});
+  const draws=[8,7,22,5,6,3,19,15];return {state,draws,balls:draws};
  }
- const api={create,draw,createDemo,award,balance,payRows,sweepBonusHundredths,sugarFlips};
+ const api={create,draw,createDemo,award,balance,payRows,topRefills,sweepBonusHundredths,sugarFlips};
  if(typeof module==='object'&&module.exports)module.exports=api;
  else root.BingoStickRules=api;
 })(globalThis);

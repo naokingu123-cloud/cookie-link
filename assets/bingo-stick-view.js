@@ -4,7 +4,6 @@
 const R=window.BingoStickRules,reduce=matchMedia('(prefers-reduced-motion: reduce)');
 const names={black:'黒・小倉あん',white:'白・バター'},opposite=c=>c==='white'?'black':'white';
 const clamp=x=>Math.max(0,Math.min(1,x));
-const flavors=['#763924f5','#603126f5','#6a2d2bf5','#72401df5'];
 function motion(s,age=Infinity){
  const count=s.flipped.length,end=180+count*110,rankStart=end+390,dropStart=rankStart+190,land=dropStart+310;
  const duration=s.draws.length?land+210:0,t=Math.min(duration,Math.max(0,age));
@@ -115,6 +114,7 @@ function drawBoard(ctx,s,o,main){
 }
 function drawMini(ctx,s,o={}){drawBoard(ctx,s,o,false);}
 const won=(bet,odds)=>typeof medalWin==='function'?medalWin(bet,odds):Math.floor(bet*odds/100);
+const materialFor=odds=>odds>=5000?'gold':odds>=1000?'silver':'waffle';
 function mount(panel){
  const root=document.createElement('section');root.className='bs-scene';root.setAttribute('aria-label','ワッフルリバーシ');
  root.innerHTML=`<div class="bs-left"><div class="bs-pay">
@@ -130,18 +130,18 @@ function mount(panel){
  const status=q('.bs-status'),piece=q('.bs-turn-piece'),ball=q('.bs-turn-copy small'),player=q('.bs-turn-copy strong'),nextLabel=q('.bs-next');
  const guide=q('.bs-guide-text'),flips=q('.bs-hand'),gain=q('.bs-gain'),total=q('.bs-total'),ladder=q('.bs-pay'),gradeTag=q('.bs-grade');
  const prize=q('.bs-bonus'),bonusLabel=(R.sweepBonusHundredths/100).toFixed(1)+'倍';
- prize.querySelector('small').textContent='共通 '+bonusLabel;
+ prize.dataset.material=materialFor(R.sweepBonusHundredths);prize.querySelector('small').textContent='共通 '+bonusLabel;
  const rows=[...R.payRows].sort((a,b)=>a.count-b.count);if(rows[0]?.count!==0)rows.unshift({count:0});
  const table=q('tbody');
  function block(cell,extra=false){
   const tile=document.createElement('div'),value=document.createElement('span'),unit=document.createElement('small');
   tile.className='bs-block'+(extra?' bs-incoming':'');if(extra)tile.setAttribute('aria-hidden','true');
-  unit.textContent='WIN';tile.append(value,unit);cell.append(tile);return value;
+  unit.textContent='WIN';tile.append(value,unit);cell.append(tile);return {tile,value};
  }
  const tiers=rows.map(({count},i)=>{
   const row=table.insertRow(0),head=document.createElement('th');head.scope='row';row.dataset.count=count;
   head.textContent=i===rows.length-1?count+'+':String(count);row.append(head);const cell=row.insertCell();
-  return {row,value:block(cell),count,incoming:i===rows.length-1?block(cell,true):null};
+  return {row,block:block(cell),count,incoming:i===rows.length-1?block(cell,true):null};
  });
  function fit(){const w=root.clientWidth,h=root.clientHeight;if(!w||!h)return;
   root.style.setProperty('--bs-w',w+'px');root.style.setProperty('--bs-h',h+'px');
@@ -149,28 +149,38 @@ function mount(panel){
   const resolution=Math.max(1,Math.round(grid.clientWidth*Math.min(devicePixelRatio||1,2)));if(canvas.width!==resolution||canvas.height!==resolution)canvas.width=canvas.height=resolution;
  }
  const observer=new ResizeObserver(fit);observer.observe(root);observer.observe(grid);observer.observe(q('.bs-tools'));fit();
- let lastBet,lastBaseline,lastGrade,lastKey,lastSpecialKey;
+ function quote({tile,value},odds,bet,baseline){
+  const amount=won(bet,baseline+odds)-won(bet,baseline);
+  const label=amount>=1000000&&amount%10000===0?amount/10000+'万':String(amount);
+  value.textContent=label;value.style.fontSize=label.length>8?(8/label.length)+'em':'';
+  value.setAttribute('aria-label',amount+' WIN');
+  tile.dataset.material=materialFor(odds);
+ }
+ let lastBet,lastBaseline,lastRack,lastState,lastKey,lastSpecialKey;
  function draw(s,o={}){
   const bet=o.bet||0,m=motion(s,o.age??Infinity),hand=m.active?m.beat:s.lastFlips,turn=s.draws.length;
   const bonus=s.reversalThisMove?R.sweepBonusHundredths:0,before=s.totalHundredths-s.lastBaseHundredths-bonus;
   const revealed=!!bonus&&(!m.active||hand===s.lastFlips);
-  const shown=before+R.award(hand,s.lastGrade)+(revealed?bonus:0);
+  const shown=before+R.award(hand,s.lastRack)+(revealed?bonus:0);
   const totalWin=won(bet,shown),handWin=totalWin-won(bet,before);
   const settled=!m.active||m.rankStep===3,grade=settled?s.grade:s.lastGrade,baseline=settled?s.totalHundredths:before;
-  const live=m.active&&m.rankStep===0&&turn>0;
+  const rack=settled?s.rack:s.lastRack,live=m.active&&m.rankStep===0&&turn>0;
+  const knock=turn?s.lastKnockRow:null;
+  if(lastState!==s){
+   ladder.dataset.knockRow=knock??'';
+   for(const {row,count} of tiers)row.dataset.motion=knock===null||count<knock?'stay':count===knock?'kick':'fall';
+  }
   // Each tile previews whole medals after including the fraction carried from earlier balls.
-  if(lastBet!==bet||lastBaseline!==baseline||lastGrade!==grade){
-   const paid=won(bet,baseline);
-   for(const {row,value,count,incoming} of tiers){
-    const odds=R.award(count,grade),amount=won(bet,baseline+odds)-paid;
-    const label=amount>=1000000&&amount%10000===0?amount/10000+'万':String(amount);
-    value.textContent=label;value.setAttribute('aria-label',amount+' WIN');
-    if(incoming)incoming.textContent=label;
-    row.style.setProperty('--bs-jam',flavors[Math.min(rows.at(-1).count,count+grade)%flavors.length]);
-    row.title=grade+'段・'+(odds/100).toFixed(1)+'倍';row.dataset.zero=String(!odds);
+  if(lastBet!==bet||lastBaseline!==baseline||lastRack!==rack||lastState!==s){
+   for(const {row,block,count,incoming} of tiers){
+    const odds=R.award(count,rack);
+    quote(block,odds,bet,baseline);
+    if(incoming)quote(incoming,R.award(count,s.rack),bet,s.totalHundredths);
+    row.title=count+(count===tiers.length-1?'枚以上':'枚')+'・'+(odds/100).toFixed(1)+'倍';
+    row.dataset.zero=String(!odds);
    }
    gradeTag.textContent='G'+grade;gradeTag.title='グレード '+grade;ladder.dataset.grade=grade;
-   lastBet=bet;lastBaseline=baseline;lastGrade=grade;
+   lastBet=bet;lastBaseline=baseline;lastRack=rack;lastState=s;
   }
   const specials=s.offBoardNumbers||[],specialKey=specials.join(',')+'/'+s.draws.join(',');
   if(lastSpecialKey!==specialKey){
@@ -193,7 +203,7 @@ function mount(panel){
    const focusTier=live?tiers.findLast(t=>t.count<=hand):null;
    for(const item of tiers)item.row.classList.toggle('current',item===focusTier);
    ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';ladder.dataset.rankStep=m.rankStep;
-   q('.bs-ladder-name').textContent=m.active&&m.rankStep>0?'GRADE UP!':'反転配当';
+   q('.bs-ladder-name').textContent=m.active&&m.rankStep===1?(knock===13?'13+':knock)+'枚枠 HIT!':m.active&&m.rankStep===2?'GRADE UP!':'反転配当';
    const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent=bonusLabel+'！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
    prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
    grid.setAttribute('aria-label','8行8列のワッフル盤。'+q('.bs-status').textContent+'。今回'+hand+'枚反転、'+handWin+' WIN。累計'+totalWin+' WIN');

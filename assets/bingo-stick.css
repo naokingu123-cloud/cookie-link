@@ -21,26 +21,30 @@ body.bs-active .board-area,body.bs-active #panels{width:100%!important;max-width
 .bs-pay tbody td{position:relative;text-align:right}
 .bs-block{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding:0 .28em 0 0;isolation:isolate;text-align:right;line-height:1;color:#ffe198;font-weight:950;text-shadow:0 1px 1px #3e1408,1px 0 1px #3e1408,-1px 0 1px #3e1408}
 .bs-block::before,.bs-block::after{position:absolute;content:"";inset:.35px 0;pointer-events:none;border-radius:8% / 21%;z-index:-1}
-.bs-block::before{background:url('waffle-tier.webp') center/100% 100% no-repeat}
-.bs-block::after{inset:13% 1.2% 16% 4%;background:linear-gradient(90deg,transparent 0%,var(--bs-jam,#703317) 38%,#43180efc 100%);box-shadow:inset 0 -1px #d8894e68}
+.bs-block::before{background:var(--bs-wafer,url('waffle-tier.webp')) center/100% 100% no-repeat}
+.bs-block::after{inset:13% 1.2% 16% 4%;background:linear-gradient(90deg,transparent 0%,var(--bs-jam,#73351dea) 45%,var(--bs-edge,#43180efc));box-shadow:inset 0 -1px #d8894e68}
+.bs-pay [data-material="silver"]{--bs-wafer:url('waffle-tier-silver.webp');--bs-jam:#334c64a8;--bs-edge:#233746ed;color:#f1fbff;text-shadow:0 1px 1px #121e36,1px 0 1px #121e36,-1px 0 1px #121e36}
+.bs-pay [data-material="gold"]{--bs-wafer:url('waffle-tier-gold.webp');--bs-jam:#7e570caa;--bs-edge:#523507ec;color:#fff6b4;text-shadow:0 1px 1px #412507,1px 0 1px #412507,-1px 0 1px #412507}
 .bs-block small{display:inline-block;flex:none;margin-left:.1em;font:900 .56em/1 ElixirNumbers,system-ui;letter-spacing:-.025em}
 .bs-pay .bs-incoming{visibility:hidden}
 .bs-pay [data-count="0"]{position:relative;z-index:3;background:#431e1c;border-top:1px solid #d2925f}
-.bs-pay [data-count="0"] .bs-block::before{background:none}.bs-pay [data-count="0"] .bs-block::after{background:none;box-shadow:none}
-.bs-pay .current th{color:#5a2214;background:#ffe79b;text-shadow:none}.bs-pay .current .bs-block{color:#fff5b4}
-.bs-pay .current .bs-block::after{box-shadow:inset 0 0 0 1px #ffe4a1,0 0 3px #ffbf50;background:linear-gradient(90deg,#ebad5333,#8b401a 38%,#792c13)}
+.bs-pay [data-count="0"] .bs-block::before{filter:brightness(.7) saturate(.75)}
+.bs-pay .current th{color:#5a2214;background:#ffe79b;text-shadow:none}
+.bs-pay .current .bs-block::after{box-shadow:inset 0 0 0 1px #ffe4a1,0 0 3px #ffbf50}
 .bs-pay.live[data-beat="1"] .current .bs-block::after{box-shadow:inset 0 0 0 1px #ffefa8,0 0 4px #ffcb43}
 .bs-pay.live .current .bs-block span{transform-origin:right center;transform:scaleY(calc(1 + .13 * var(--bs-pulse,0)))}
-/* The numbered scale and the zero rule stay attached to the cabinet. Only the physical pieces move. */
-.bs-pay:is([data-rank-step="1"],[data-rank-step="2"]) [data-count="1"] .bs-block{transform:translateX(calc(122% * var(--bs-kick))) rotate(calc(8deg * var(--bs-kick)));transform-origin:100% 50%}
-.bs-pay[data-rank-step="2"] tbody tr:not([data-count="0"]):not([data-count="1"]) .bs-block{transform:translateY(calc(100% * var(--bs-drop)))}
-.bs-pay[data-rank-step="2"] tbody tr:first-child .bs-incoming{visibility:visible;transform:translateY(calc(-100% + 100% * var(--bs-drop)))!important}
-.bs-pay [data-count="1"] th::after{content:"";position:absolute;inset:19% 0 20% 1%;border-radius:40% 13% 13% 40%;background:linear-gradient(90deg,#a75622 44%,#ffe194 45%,#d27a26 57%,#f6c66a 78%,#874317);box-shadow:inset 0 -1px #6d3116;opacity:0}
-.bs-pay[data-rank-step="1"] [data-count="1"] th::after{opacity:1;transform:translateX(calc(-110% + 181% * var(--bs-kick)));z-index:2}
-.bs-pay[data-rank-step="1"] tbody::after{content:"";position:absolute;z-index:4;pointer-events:none;left:19%;bottom:8%;width:42%;height:10%;background:radial-gradient(ellipse .15em .1em at 18% 65%,#ffecac 65%,transparent 100%),radial-gradient(ellipse .12em .17em at 56% 32%,#ffbf63 60%,transparent 95%),radial-gradient(ellipse .18em .09em at 80% 61%,#ffe6a2 65%,transparent 100%);opacity:calc(1 - .55 * var(--bs-kick));transform:translate(calc(35% * var(--bs-kick)),calc(-22% * var(--bs-kick)))}
-.bs-pay[data-rank-step="2"] .bs-block::before{filter:brightness(1.15)}.bs-pay[data-rank-step="2"] .bs-pay-title i{transform:translateY(calc(-.14em + .14em * var(--bs-drop)))}
+/* Count labels stay on the cabinet; the struck wafer exits sideways and only those above it fall. */
+.bs-pay:is([data-rank-step="1"],[data-rank-step="2"]) [data-motion="kick"] .bs-block:not(.bs-incoming){transform:translateX(calc(122% * var(--bs-kick))) rotate(calc(8deg * var(--bs-kick)));transform-origin:100% 50%}
+.bs-pay[data-rank-step="2"] [data-motion="fall"] .bs-block:not(.bs-incoming){transform:translateY(calc(100% * var(--bs-drop)))}
+.bs-pay[data-rank-step="2"] .bs-incoming{visibility:visible;transform:translateY(calc(-100% + 100% * var(--bs-drop)))}
+.bs-pay[data-rank-step="1"] [data-motion="kick"] th::after{content:"";position:absolute;inset:19% 0 20% 1%;border-radius:40% 13% 13% 40%;background:linear-gradient(90deg,#a75622 44%,#ffe194 45%,#d27a26 57%,#f6c66a 78%,#874317);box-shadow:inset 0 -1px #6d3116;transform:translateX(calc(-110% + 181% * var(--bs-kick)));z-index:2}
+.bs-pay[data-rank-step="1"] [data-motion="kick"] td::after{content:"";position:absolute;z-index:4;pointer-events:none;left:-6%;top:-16%;width:52%;height:130%;background:radial-gradient(ellipse .15em .1em at 18% 65%,#ffecac 65%,transparent 100%),radial-gradient(ellipse .12em .17em at 56% 32%,#ffbf63 60%,transparent 95%),radial-gradient(ellipse .18em .09em at 80% 61%,#ffe6a2 65%,transparent 100%);opacity:calc(1 - .55 * var(--bs-kick));transform:translate(calc(35% * var(--bs-kick)),calc(-22% * var(--bs-kick)))}
+.bs-pay[data-rank-step="2"] .bs-pay-title i{transform:translateY(calc(-.14em + .14em * var(--bs-drop)))}
 .bs-bonus{text-align:center;flex:none;padding:.23em 0 .3em;background:linear-gradient(115deg,#73343c,#4b1e24 60%,#703629);border:1px solid #db9d59;box-shadow:inset 0 0 0 1px #af6a443f;border-radius:5px;color:#ffedc2;font:900 clamp(6px,calc(var(--bs-w)*.020),13px)/1.08 system-ui;white-space:nowrap}
 .bs-bonus small{display:block;font-size:.92em;color:#ffdb91;margin-top:.1em}.bs-bonus strong{display:block;color:#ffda87;font:950 1.18em/1.13 ElixirNumbers,system-ui}.bs-bonus.earned{color:#63283c;background:#ffe7a9}.bs-bonus.earned :is(small,strong){color:#743922}
+.bs-bonus:is([data-material="silver"],[data-material="gold"]){border-color:#f0df9d;background:linear-gradient(90deg,transparent,var(--bs-edge) 12%,var(--bs-edge) 88%,transparent),var(--bs-wafer) center/100% 100%;text-shadow:0 1px 1px #432905}
+.bs-bonus:is([data-material="silver"],[data-material="gold"]).earned{box-shadow:inset 0 0 0 1px #fff1ad,0 0 4px #ffdf73}
+.bs-bonus:is([data-material="silver"],[data-material="gold"]) :is(strong,small){color:inherit}
 .bs-tray{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .bs-board{width:min(100%,var(--bs-board));aspect-ratio:1;flex:none;padding:0;border-radius:3%;background:#d39a55;box-shadow:0 2px 4px #391b148c,inset 0 0 0 1px #ffe3a9}
 .bs-grid{width:100%;height:100%;position:relative}.bs-grid canvas{display:block;width:100%;height:100%;border-radius:2%}
@@ -67,4 +71,4 @@ body.bs-active .board-area,body.bs-active #panels{width:100%!important;max-width
 .bs-counts b,.bs-hand{font-family:ElixirNumbers,system-ui}.bs-board{position:relative}
 .bs-burst{position:absolute;bottom:3%;left:50%;transform:translateX(-50%);padding:.3em .9em .38em;text-align:center;border-radius:.7em;white-space:nowrap;background:linear-gradient(#8e1945,#611d40);border:2px solid #ffdf83;box-shadow:0 0 0 1px #6c3620,0 0 9px #ffd865b3;color:#fff4c0;line-height:1.06;pointer-events:none;font-size:clamp(8px,calc(var(--bs-w)*.026),16px)}.bs-burst b{display:block;font:1000 1.4em/1 ElixirNumbers,system-ui;color:#ffda69;letter-spacing:.04em}.bs-burst span{font-weight:900}
 
-@media(prefers-reduced-motion:reduce){.bs-pay[data-rank-step] tbody tr .bs-block,.bs-pay[data-rank-step] .bs-pay-title i{transform:none!important}.bs-pay[data-rank-step] .bs-incoming,.bs-pay[data-rank-step] [data-count="1"] th::after,.bs-pay[data-rank-step] tbody::after{visibility:hidden!important}}
+@media(prefers-reduced-motion:reduce){.bs-pay[data-rank-step] tbody tr .bs-block,.bs-pay[data-rank-step] .bs-pay-title i{transform:none!important}.bs-pay[data-rank-step] .bs-incoming,.bs-pay[data-rank-step] [data-motion="kick"] th::after,.bs-pay[data-rank-step] [data-motion="kick"] td::after{visibility:hidden!important}}

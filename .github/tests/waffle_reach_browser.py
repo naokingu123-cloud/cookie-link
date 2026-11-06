@@ -46,9 +46,9 @@ trace = """(() => {
   };
   window.startLadderTrace=()=>{
     const ladder=document.querySelector('.bs-pay'),byCount=n=>ladder.querySelector('tr[data-count="'+n+'"] .bs-block');
-    const bottom=byCount(1),second=byCount(2),zero=ladder.querySelector('tr[data-count="0"]'),bonus=document.querySelector('.bs-bonus');
+    const blocks=Array.from({length:14},(_,i)=>byCount(i)),incoming=ladder.querySelector('.bs-incoming'),zero=ladder.querySelector('tr[data-count="0"]'),bonus=document.querySelector('.bs-bonus');
     const zeroBefore=zero.getBoundingClientRect().top,bonusBefore=bonus.getBoundingClientRect().top;
-    window.dropTrace={kick:0,drop:0,zeroShift:0,bonusShift:0,phases:[],live:[],hit:false,special:false};let stopped=false;
+    window.dropTrace={x:Array(14).fill(0),y:Array(14).fill(0),incomingY:0,zeroShift:0,bonusShift:0,phases:[],live:[],hit:false,special:false};let stopped=false;
     window.stopLadderTrace=()=>{stopped=true;return dropTrace;};
     function sample(){
       if(stopped)return;
@@ -58,9 +58,14 @@ trace = """(() => {
         const guide=document.querySelector('.bs-guide').textContent;
         t.hit||=guide.includes('HIT!');t.special||=guide.includes('特殊');
       }
-      for(const [block,name,axis] of [[bottom,'kick','m41'],[second,'drop','m42']]){
-        const transform=getComputedStyle(block).transform;
-        if(transform!=='none')t[name]=Math.max(t[name],Math.abs(new DOMMatrix(transform)[axis]));
+      if(phase==='1'||phase==='2'){
+        blocks.forEach((block,row)=>{
+          const transform=getComputedStyle(block).transform,matrix=transform==='none'?new DOMMatrix():new DOMMatrix(transform);
+          t.x[row]=Math.max(t.x[row],Math.abs(matrix.m41));t.y[row]=Math.max(t.y[row],Math.abs(matrix.m42));
+        });
+        const bounds=incoming.getBoundingClientRect(),offset=bounds.top-incoming.parentElement.getBoundingClientRect().top;
+        if(t.incomingStart===undefined)t.incomingStart=offset;
+        t.incomingY=Math.max(t.incomingY,Math.abs(offset-t.incomingStart));
       }
       t.zeroShift=Math.max(t.zeroShift,Math.abs(zeroBefore-zero.getBoundingClientRect().top));
       t.bonusShift=Math.max(t.bonusShift,Math.abs(bonusBefore-bonus.getBoundingClientRect().top));
@@ -79,23 +84,65 @@ reach_matches = """() => {
     JSON.stringify([...new Set(waffleLabels)].sort((a,b)=>a-b))===JSON.stringify(ids);
 }"""
 
-def settled_table(page, grade, total, bet, base):
+def settled_table(page, grade, total, bet, rack):
     grade_info = page.evaluate("""() => {
       const ladder=document.querySelector('.bs-pay');
       return {grade:+ladder.dataset.grade,badge:ladder.querySelector('.bs-grade').textContent,
         bonus:document.querySelector('.bs-bonus').textContent,
         resting:[...ladder.querySelectorAll('tr[data-count] .bs-block:not(.bs-incoming)')].every(tile=>getComputedStyle(tile).transform==='none'),
         rows:[...ladder.querySelectorAll('tr[data-count]')].map(row=>[
-          +row.dataset.count,parseInt(row.querySelector('[aria-label$=" WIN"]').getAttribute('aria-label').replaceAll(',',''))
+          +row.dataset.count,row.querySelector('.bs-block').dataset.material,parseInt(row.querySelector('[aria-label$=" WIN"]').getAttribute('aria-label').replaceAll(',',''))
         ])};
     }""")
     assert grade_info["resting"] and grade_info["grade"] == grade and f"G{grade}" in grade_info["badge"], grade_info
     assert "50" in grade_info["bonus"] and f"{bet*50} WIN" in grade_info["bonus"].replace(",", ""), grade_info
     rows = grade_info["rows"]
-    assert [n for n, _ in rows] == list(range(13, -1, -1)), rows
-    for flips, win in rows:
-        odds = base[min(flips + grade, 13)] if flips else 0
+    assert [n for n, _, _ in rows] == list(range(13, -1, -1)), rows
+    for flips, material, win in rows:
+        odds = rack[flips]
+        assert material == ("gold" if odds >= 5000 else "silver" if odds >= 1000 else "waffle"), (flips, odds, material)
         assert win == (bet * (total + odds)) // 100 - (bet * total) // 100, (flips, grade, total, win)
+
+
+# Deterministic split/upper-edge probes, independent of the random or demo hands.
+def check_upper_tiers(page):
+    results = page.evaluate(r"""async () => {
+      const R=BingoStickRules,V=BingoStickView,steps=[-9,-8,-7,-1,1,7,8,9];
+      const results=[];
+      for(const depth of [1,2]){
+        const start=R.create(),panel=document.createElement('div');
+        panel.style.cssText='position:fixed;width:360px;height:360px;inset:0;opacity:0;pointer-events:none';document.body.append(panel);
+        start.colors=Array(64).fill(null);start.numbers=Array(64).fill(null);start.numbers[27]=1;
+        // Material boundaries are measured in odds, including when two payouts round to the same WIN.
+        start.rack=[0,0,10,20,30,40,50,100,200,990,1000,4990,5000,6000];
+        for(const d of steps){start.colors[27+(depth+1)*d]='black';for(let i=1;i<=depth;i++)start.colors[27+i*d]='white';}
+        start.counts={black:8,white:depth*8};const s=R.draw(start,1),v=V.mount(panel),m=V.motion(s,Infinity);
+        const primary=n=>panel.querySelector('[data-count="'+n+'"] .bs-block:not(.bs-incoming)');
+        const matrix=el=>{const t=getComputedStyle(el).transform;return t==='none'?new DOMMatrix():new DOMMatrix(t);};
+        v.draw(s,{bet:1,age:m.rankStart+125});
+        const materials=[9,10,11,12].map(n=>primary(n).dataset.material);
+        const names=[9,10,12].map(n=>getComputedStyle(primary(n),'::before').backgroundImage.match(/url\(["']?([^"')]+)/)[1]);
+        for(const url of names){const img=new Image();img.src=url;await img.decode();if(img.naturalWidth<16)throw Error('Empty waffle image');}
+        const x=Array.from({length:14},(_,i)=>matrix(primary(i)).m41);
+        v.draw(s,{bet:1,age:m.dropStart+210});
+        const y=Array.from({length:14},(_,i)=>matrix(primary(i)).m42);
+        const incoming=panel.querySelector('.bs-incoming'),incomingPrize=parseInt(incoming.querySelector('[aria-label]').getAttribute('aria-label'));
+        v.draw(s,{bet:1,age:Infinity});
+        results.push({flips:s.lastFlips,x,y,materials,images:new Set(names).size,incomingPrize,top:s.rack[13],bonus:s.bonusHundredths,
+          burst:panel.querySelector('.bs-bonus').classList.contains('earned')});
+        panel.remove();
+      }
+      return results;
+    }""")
+    for depth, result in enumerate(results, 1):
+        flips = depth*8
+        knocked = min(flips, 13)
+        assert result["flips"] == flips and result["bonus"] == 5000 and result["burst"]
+        assert result["images"] == 3
+        assert result["materials"] == ["waffle","silver","silver","gold"], result
+        assert [i for i, x in enumerate(result["x"]) if abs(x) > 1] == [knocked], result
+        assert [i for i, y in enumerate(result["y"]) if abs(y) > 1] == list(range(knocked + 1, 14)), result
+        assert result["incomingPrize"] == result["top"] // 100, result
 
 
 with sync_playwright() as pw:
@@ -123,7 +170,7 @@ with sync_playwright() as pw:
           const cells=[...document.querySelectorAll('.bs-pay tbody tr[data-count] td')];
           const right=cells.map(c=>c.querySelector('[aria-label$=" WIN"]').getBoundingClientRect().right);
           return {numbered:numbered.filter(Boolean).length,stones:s.colors.filter(Boolean).length,bet:e.roundBet,
-            base:[0,...R.payRows.filter(row=>row.count>0).map(row=>row.hundredths)],
+            base:s.rack,top:R.topRefills,
             covered:numbered.every((v,i)=>v!==Boolean(s.colors[i])),
             symmetric:s.colors.every((v,i)=>v===s.colors[63-i]&&v===s.colors[(i&56)+7-i%8]),
             missing:s.offBoardNumbers,shown:[...shown.querySelectorAll('b')].map(b=>Number(b.textContent)),
@@ -141,27 +188,28 @@ with sync_playwright() as pw:
         settled_table(page, 0, 0, bet, base)
 
         # One held-out deal exercises all three actions and fractional payout carry.
-        # The other replays the public demo for an actual reversal on a complete board.
-        plan = page.evaluate("""({recommended,base,bet})=>{
+        # The other replays the complete production demo.
+        plan = page.evaluate("""({recommended,base,top,bet})=>{
           const e=BingoStick.engine,R=BingoStickRules;
           let seed=82753;const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
           for(let trial=0;trial<5000;trial++){
             const pool=Array.from({length:25},(_,i)=>i+1),turns=[];
-            let s=e.state,total=0,extraCarry=false,subrecord=false;
+            let s=e.state,rack=base.slice(),total=0,extraCarry=false,subrecord=false;
             for(let i=0;i<8;i++){
               const n=recommended?recommended[i]:pool.splice(Math.floor(random()*pool.length),1)[0],d=R.draw(s,n);
-              const award=(d.lastFlips?base[Math.min(13,i+d.lastFlips)]:0)+(d.reversalThisMove?5000:0);
+              const row=Math.min(13,d.lastFlips),award=rack[row]+(d.reversalThisMove?5000:0);
+              const pre=rack.slice();rack.splice(Math.max(row,1),1);rack.push(top[i]);
               const win=Math.floor(bet*(total+award)/100),gain=win-Math.floor(bet*total/100);
               if(d.lastFlips>0&&d.lastFlips<=s.maxFlips&&gain>0)subrecord=true;
               if(gain>Math.floor(bet*award/100))extraCarry=true;
               total+=award;
-              turns.push({n,win,gain,total,placed:d.placed.length,flips:d.lastFlips,max:d.maxFlips,bonus:d.reversalCount});
+              turns.push({n,win,gain,total,pre,rack:rack.slice(),placed:d.placed.length,flips:d.lastFlips,max:d.maxFlips,bonus:d.reversalCount});
               s=d;
             }
             if(recommended||subrecord&&extraCarry&&turns.some(t=>!t.placed)&&turns.some(t=>t.placed&&!t.flips))return turns;
           }
           throw Error('No held-out game with a repaid subrecord, off-board, on-board zero and carry');
-        }""", {"recommended": recommended, "base": base, "bet": bet})
+        }""", {"recommended": recommended, "base": base, "top": opening["top"], "bet": bet})
         before = 0
         for i, turn in enumerate(plan, 1):
             page.evaluate("""n=>{startLadderTrace();document.querySelector('#manual-number-grid [data-number="'+n+'"]').click();}""", turn["n"])
@@ -169,7 +217,16 @@ with sync_playwright() as pw:
             samples = page.evaluate("stopLadderTrace()")
             phases = samples["phases"]
             assert "1" in phases and "2" in phases and phases.index("1") < phases.index("2"), (i, samples)
-            assert samples["kick"] > 1 and samples["drop"] > 1, (i, samples)
+            knocked = min(13, turn["flips"])
+            assert samples["x"][knocked] > 1, (i, knocked, samples)
+            assert samples["incomingY"] > 1, (i, samples)
+            for row in range(14):
+                if row != knocked:
+                    assert samples["x"][row] < .5, (i, knocked, row, samples)
+                if row > knocked:
+                    assert samples["y"][row] > 1, (i, knocked, row, samples)
+                elif row < knocked:
+                    assert samples["y"][row] < .5, (i, knocked, row, samples)
             assert samples["hit"] and samples["special"] == (not turn["placed"]), (i, samples)
             assert "3" in phases and phases.index("3", phases.index("2")) > phases.index("2"), (i, phases)
             assert samples["zeroShift"] <= 1.1 and samples["bonusShift"] <= 1.1, (i, samples)
@@ -187,19 +244,20 @@ with sync_playwright() as pw:
             assert turn["placed"] == (turn["n"] not in opening["missing"])
             for hand, hundredths, win in revealed:
                 # On a new reversal the bonus appears only when the last disc flips.
-                award = base[min(13, i-1+hand)]
+                award = turn["pre"][min(13, hand)]
                 if turn["bonus"] > (plan[i-2]["bonus"] if i>1 else 0) and hand == turn["flips"]:
                     award += 5000
                 assert [hundredths, win] == [before+award, bet*(before+award)//100], (i, hand, hundredths, win, award)
-            settled_table(page, i, turn["total"], bet, base)
+            settled_table(page, i, turn["total"], bet, turn["rack"])
             if i in (1, 4, 7):
                 page.wait_for_function(reach_matches)
             before = turn["total"]
         page.wait_for_function("w=>Number(document.querySelector('.result-game .result-value')?.dataset.value)===w", arg=plan[-1]["win"])
         assert sum(t["gain"] for t in plan) == plan[-1]["win"]
-        if demo:
-            assert plan[-1]["bonus"] > 0
+        if plan[-1]["bonus"]:
             assert "リバーサル" in page.locator(".result-game-details").first.text_content()
+        if demo:
+            check_upper_tiers(page)
         assert not errors, errors
         print(f"{width}px / {bet} BET: G0–G8, off-board {opening['missing']}, "
               f"{[t['gain'] for t in plan]} -> {plan[-1]['win']} WIN", flush=True)

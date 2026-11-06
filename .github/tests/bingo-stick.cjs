@@ -3,22 +3,33 @@ const assert=require('node:assert/strict');
 const R=require('../../assets/bingo-stick-rules.js');
 const rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
 const cells=Array.from({length:64},(_,i)=>i),labels=Array.from({length:25},(_,i)=>i+1);
-const base=[0,0,0,10,10,10,20,20,30,50,100,200,400,800];
-assert.deepEqual(R.payRows.filter(row=>row.count>0).map(row=>row.hundredths),base.slice(1));
-const expected=(flips,grade)=>flips?base[Math.min(flips+grade,base.length-1)]:0;
+const base=[0,...R.payRows.filter(row=>row.count>0).map(row=>row.hundredths)];
 assert.deepEqual(R.payRows.filter(row=>row.count>0).map(row=>row.count),Array.from({length:13},(_,i)=>i+1));
 assert.equal(R.sweepBonusHundredths,5000);
-for(let i=0;i<base.length;i++){
- assert(Number.isInteger(base[i]/10)&&base[i]>=0);
- if(i)assert(base[i]>=base[i-1]);
- assert.equal(R.award(i),base[i]);
+assert.equal(R.topRefills.length,8);
+for(const odds of [...base,...R.topRefills])assert(Number.isInteger(odds/10)&&odds>=0);
+assert(base.every((v,i)=>!i||v>=base[i-1]));
+assert(new Set(base.slice(1)).size>=10,'Most ordinary tiers should have distinct payouts');
+assert(R.topRefills.every((v,i)=>v>(i?R.topRefills[i-1]:base.at(-1))));
+assert(R.topRefills.some(v=>v>=5000));
+const expected=(flips,rack)=>rack[Math.min(flips,13)];
+
+function nextRack(rack,flips,turn){
+ const result=rack.slice();result.splice(Math.max(1,Math.min(13,flips)),1);
+ return [...result,R.topRefills[turn]];
 }
-for(let grade=0;grade<=8;grade++)for(let flips=0;flips<=18;flips++)assert.equal(R.award(flips,grade),expected(flips,grade));
+function checkKnock(prev,s){
+ const row=Math.min(s.lastFlips,13),rack=prev.rack;
+ assert.deepEqual(s.lastRack,rack);assert.equal(s.lastKnockRow,row);
+ assert.deepEqual(s.rack,nextRack(rack,row,prev.grade));assert.notEqual(s.rack,rack);
+ assert.equal(s.lastBaseHundredths,expected(s.lastFlips,rack));
+ for(let f=0;f<=17;f++)assert.equal(R.award(f,s.rack),expected(f,s.rack));
+}
 
 for(let target=50;target<=150;target++){
  const balance=R.balance(target);
  assert(Math.abs(balance.normalPercent-(target-5))<.5);
- assert(Number.isFinite(balance.bonusPercent)&&balance.bonusPercent>0);
+ assert(Number.isFinite(balance.bonusPercent)&&balance.bonusPercent>=0);
 }
 
 function fixture(origin,black,white,otherNumber){
@@ -33,11 +44,18 @@ function fixture(origin,black,white,otherNumber){
  const start=fixture(27,black,white),before=structuredClone(start),s=R.draw(start,1);
  assert.deepEqual(s.placed,[27]);assert.deepEqual(s.flipped,[...vectors.map(d=>27+d),...vectors.map(d=>27+2*d)]);
  for(const step of s.flipSteps)assert.equal(step.id,27+step.distance*(step.dx+step.dy*8));
- assert.equal(s.maxFlips,16);assert.equal(s.baseHundredths,base.at(-1));assert.equal(s.bonusHundredths,5000);assert.deepEqual(start,before);
+ checkKnock(start,s);assert.equal(s.maxFlips,16);assert.equal(s.baseHundredths,base.at(-1));assert.equal(s.bonusHundredths,5000);assert.deepEqual(start,before);
+}
+// Hitting 8 knocks that exact prize; 1–7 survive, 9–13 fall and a new top prize enters.
+{
+ const vectors=[-9,-8,-7,-1,1,7,8,9],start=fixture(27,vectors.map(d=>27+2*d),vectors.map(d=>27+d));
+ const s=R.draw(start,1);assert.equal(s.lastFlips,8);checkKnock(start,s);
+ assert.deepEqual(s.rack.slice(1,8),start.rack.slice(1,8));
+ assert.deepEqual(s.rack.slice(8,13),start.rack.slice(9,14));
 }
 // Gaps block, own stones capture nothing, no edge wrapping or branching rays.
 for(const s of [fixture(0,[3],[2]),fixture(0,[3],[2],1),fixture(7,[9],[8]),fixture(0,[1],[])]){
- const d=R.draw(s,1);assert.deepEqual(d.flipped,[]);assert.equal(d.colors[s.numbers.indexOf(1)],'black');
+ const d=R.draw(s,1);checkKnock(s,d);assert.deepEqual(d.flipped,[]);assert.equal(d.colors[s.numbers.indexOf(1)],'black');
  assert.equal(d.reversalCount,0);assert.equal(d.grade,1);assert.equal(d.lastBaseHundredths,0);
 }
 assert.deepEqual(R.draw(fixture(9,[11,26],[10,18]),1).flipped,[10]);
@@ -47,7 +65,7 @@ assert.deepEqual(R.draw(fixture(9,[11,26],[10,18]),1).flipped,[10]);
  s=R.draw(s,1);assert.equal(s.reversalCount,1);
  s=R.draw(s,2);assert.equal(s.reversalCount,1);assert.equal(s.reversalThisMove,false);
  s=R.draw(s,3);assert.deepEqual(s.bonusEvents.map(e=>e.ball),[1,3]);assert.equal(s.bonusHundredths,10000);
- assert.equal(s.grade,3);assert.equal(s.lastBaseHundredths,expected(1,2));
+ assert.equal(s.grade,3);assert.equal(s.lastBaseHundredths,s.lastRack[1]);
  for(const n of s.offBoardNumbers)s=R.draw(s,n);
  assert.equal(s.grade,8);assert.equal(s.phase,'done');assert.equal(s.reversalCount,2);
  assert.equal(s.bonusHundredths,10000);assert.equal(s.lastBaseHundredths,0);
@@ -56,7 +74,7 @@ assert.deepEqual(R.draw(fixture(9,[11,26],[10,18]),1).flipped,[10]);
 const patterns=new Set();
 for(let seed=0;seed<300;seed++){
  let s=R.create({rng:rng(Math.imul(seed+1,2654435761)),target:50+seed%101});patterns.add(s.patternName);
- assert.equal(s.colors.filter(Boolean).length,44);assert.equal(s.numbers.filter(Boolean).length,20);assert.equal(s.grade,0);
+ assert.equal(s.colors.filter(Boolean).length,44);assert.equal(s.numbers.filter(Boolean).length,20);assert.equal(s.grade,0);assert.deepEqual(s.rack,base);
  assert.deepEqual(s.offBoardNumbers,labels.filter(n=>!s.numbers.includes(n)));assert.equal(s.offBoardNumbers.length,5);
  for(const i of cells){
   for(const j of [63-i,(i&56)+7-i%8]){
@@ -64,8 +82,17 @@ for(let seed=0;seed<300;seed++){
   }
   assert.notEqual(Boolean(s.numbers[i]),Boolean(s.colors[i]));
  }
+ const numbered=i=>Number(s.numbers[i]!==null);
+ for(let i=0;i<8;i++){
+  const row=cells.filter(v=>(v>>3)===i).reduce((n,j)=>n+numbered(j),0);
+  const col=cells.filter(v=>v%8===i).reduce((n,j)=>n+numbered(j),0);
+  assert([2,4].includes(row)&&[2,4].includes(col));
+ }
+ const boxes=Array(16).fill(0),quarters=Array(4).fill(0);
+ for(const i of cells)if(numbered(i)){boxes[4*(i>>4)+((i%8)>>1)]++;quarters[2*(i>>5)+((i%8)>>2)]++;}
+ assert.deepEqual(quarters,[5,5,5,5]);assert(boxes.filter(Boolean).length>=12);
  for(const n of s.offBoardNumbers){
-  const miss=R.draw(s,n);assert.deepEqual(miss.placed,[]);assert.deepEqual(miss.colors,s.colors);assert.deepEqual(miss.counts,s.counts);
+  const miss=R.draw(s,n);checkKnock(s,miss);assert.deepEqual(miss.placed,[]);assert.deepEqual(miss.colors,s.colors);assert.deepEqual(miss.counts,s.counts);
   assert.equal(miss.lastBaseHundredths,0);assert.equal(miss.lastColor,'black');assert.equal(miss.grade,1);assert.equal(miss.lastGrade,0);
   assert.equal(R.draw(miss,s.numbers.find(Boolean)).lastColor,'white');assert.equal(R.draw(miss,n),null);
  }
@@ -73,7 +100,7 @@ for(let seed=0;seed<300;seed++){
  for(let n=1;n<=8;n++){
   const last=s;s=R.draw(s,n);assert.equal(s.lastColor,n%2?'black':'white');assert.equal(s.lastFlips,s.flipped.length);
   assert.equal(s.maxFlips,Math.max(last.maxFlips,s.lastFlips));assert.equal(s.previousMaxFlips,last.maxFlips);
-  assert.equal(s.grade,n);assert.equal(s.lastGrade,n-1);assert.equal(s.lastBaseHundredths,expected(s.lastFlips,n-1));
+  assert.equal(s.grade,n);assert.equal(s.lastGrade,n-1);checkKnock(last,s);
   assert.equal(s.baseHundredths,last.baseHundredths+s.lastBaseHundredths);
   assert.equal(s.totalHundredths,s.baseHundredths+s.reversalCount*5000);
   for(const value of [s.lastBaseHundredths,s.baseHundredths,s.bonusHundredths,s.totalHundredths])assert(Number.isInteger(value/10));
@@ -88,43 +115,34 @@ for(let seed=0;seed<300;seed++){
  assert.equal(R.draw(s,9),null);
 }
 
-// Coordinates refer to physical cells. 64 consumes one unused off-board label.
-// Fix the orientation and replay legal printed numbers from each production mold.
+// Replay an actual sequence of printed labels in every mold, with 64 as
+// the next unused off-board label. These are geometry witnesses, not random odds.
 const witnesses=[
- ['小格子',[20,44,19,52,43,64,45],20],
- ['格子',[34,64,29,64,37,64,26],20],
- ['双菱',[14,64,26,37,29,46,41],20],
- ['市松',[57,56,1,0,30,38,33,25],20],
- ['花窓',[11,51,58,12,52,64,5],20],
- ['蜜格子',[30,19,43,36,27],16]
+ ['千鳥',[42,18,21,33,45,64,25]],
+ ['小花',[55,15,22,29,8,48,64,26]],
+ ['飛石',[0,64,56,64,7,64,63]],
+ ['小紋',[51,21,45,42,18]],
+ ['双葉',[64,7,64,63,64,0,64,56]],
+ ['花菱',[30,25,16,64,38,64,33]],
+ ['風車',[8,48,55,15,30,25,33,38]],
+ ['花窓',[46,29,22,34,26,41,17]],
+ ['組市松',[31,39,32,24,43,19,64,44]]
 ];
 assert.deepEqual([...patterns].sort(),witnesses.map(([name])=>name).sort());
-for(const [name,positions,openings] of witnesses){
- let s=R.create({rng:()=>.9,target:90,patternName:name});
- assert.equal(s.patternName,name);
- assert.equal(s.numbers.filter(n=>n&&R.draw(s,n).lastFlips>0).length,openings);
- const extras=s.offBoardNumbers.slice();
- const path=positions.map(i=>i===64?extras.shift():s.numbers[i]);
- assert(path.every(n=>labels.includes(n)));assert.equal(new Set(path).size,path.length);
- const draws=[...path,...labels.filter(n=>!path.includes(n))].slice(0,8);
- for(const [i,n] of draws.entries()){
-  s=R.draw(s,n);
-  if(i+1===path.length){
-   const color=i%2?'white':'black';
-   assert.deepEqual(s.lastReversal,{ball:i+1,number:n,color});
-   assert.equal(s.counts[color==='black'?'white':'black'],0);
-   assert(s.reversalThisMove);assert.equal(s.bonusHundredths,5000*s.reversalCount);
-  }
- }
- assert.equal(s.phase,'done');assert(s.highestRole);assert(s.bonusEvents.some(e=>e.ball===path.length));
+for(const [name,positions] of witnesses){
+ let s=R.create({rng:()=>.9,patternName:name});assert.equal(s.patternName,name);
+ const extras=s.offBoardNumbers.slice(),path=positions.map(i=>i===64?extras.shift():s.numbers[i]);
+ assert.equal(new Set(path).size,path.length);
+ for(const n of path){const before=s;s=R.draw(s,n);checkKnock(before,s);}
+ assert(s.reversalThisMove);assert(s.bonusHundredths>=5000);
 }
 {
  const demo=R.createDemo();let s=demo.state;
  assert.equal(demo.draws.length,8);assert.equal(new Set(demo.draws).size,8);
- const flips=[],paid=[];
- for(const n of demo.draws){s=R.draw(s,n);flips.push(s.lastFlips);paid.push(s.lastBaseHundredths);}
- assert.deepEqual(flips,[8,0,9,2,4,0,7,0]);assert.deepEqual(paid,[30,0,200,10,30,0,800,0]);
- assert.equal(s.grade,8);assert.deepEqual(s.bonusEvents.map(e=>e.ball),[7]);assert.equal(s.totalHundredths,6070);
+ const demoFlips=[];
+ for(const n of demo.draws){const last=s;s=R.draw(s,n);checkKnock(last,s);demoFlips.push(s.lastFlips);}
+ assert.deepEqual(demoFlips,[2,0,2,7,8,6,5,0]);assert.equal(s.totalHundredths,290);
+ assert.equal(s.grade,8);assert.equal(s.phase,'done');assert.equal(s.totalHundredths,s.baseHundredths+s.bonusHundredths);
 }
 
 // Exercise production create/draw independently of the calibration model and seed.

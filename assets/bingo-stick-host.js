@@ -16,7 +16,7 @@ const engine={
  get totalHundredths(){
   const s=this.state;
   if(!animating)return s.totalHundredths;
-  return s.totalHundredths-s.lastBaseHundredths+R.award(lastBeat,s.lastGrade)-(s.reversalThisMove&&!reversalShown?R.sweepBonusHundredths:0);
+  return s.totalHundredths-s.lastBaseHundredths+R.award(lastBeat,s.lastRack)-(s.reversalThisMove&&!reversalShown?R.sweepBonusHundredths:0);
  },
  get paused(){return paused;},
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
@@ -25,7 +25,8 @@ const engine={
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=animating=reversalShown=false;clock=startTime=lastBeat=lastRankStep=0;stamp=null;lastMain=lastMini=-Infinity;
   const balance=R.balance(this.state.target);
-  payoutNote.textContent='ワッフルリバーシ　通常配当の推定 '+balance.normalPercent.toFixed(1)+'% ／ リバーサルは約＋'+balance.bonusPercent.toFixed(1)+'ポイント（全グレード共通・暫定'+(R.sweepBonusHundredths/100).toFixed(1)+'倍）';
+  const bonusEstimate=balance.bonusPercent>0?'推定 ＋'+balance.bonusPercent.toLocaleString('ja-JP',{maximumSignificantDigits:3})+'ポイント':'試行中の成立0回';
+  payoutNote.textContent='ワッフルリバーシ　通常配当の推定 '+balance.normalPercent.toFixed(1)+'% ／ リバーサル '+bonusEstimate+'（共通・暫定'+(R.sweepBonusHundredths/100).toFixed(1)+'倍）';
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
  },
  setRainbowSugar(bet){this.wonderToken={id:this.version,value:bet,tier:DIRECT_JPC_SUGAR_TIER,kind:'direct-jpc',directJpc:true};},
