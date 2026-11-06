@@ -1266,7 +1266,7 @@ function drawChoco(s,now=performance.now()){
   }
   return;
  }
- if(ready){const guideTime=autoRoundStamp!==null&&autoRoundRemaining>=0&&autoRoundRemaining<=BET_DURATION_MS?Math.min(19999,BET_DURATION_MS-autoRoundRemaining):time%20000;chocoDrawTutorial(s,guideTime,bet,W,H);if(!paused&&!jpcSession.active)chocoQueueFrame(s);return;}s.chocoCanvas.dataset.mode='playing';delete s.chocoCanvas.dataset.scene;
+ if(ready){const guideTime=autoRoundStamp!==null&&autoRoundRemaining>=0&&autoRoundRemaining<=BET_DURATION_MS?Math.min(19999,BET_DURATION_MS-autoRoundRemaining):time%20000;chocoDrawTutorial(s,guideTime,bet,W,H);if(!paused&&!jpcSession.active&&(!allNineMode||s.i===active))chocoQueueFrame(s);return;}s.chocoCanvas.dataset.mode='playing';delete s.chocoCanvas.dataset.scene;
  const L=chocoBoardLayout(W,H),{w,h,left,top}=L,p=fx?Math.min(1,fx.elapsed/fx.ms):0,q=motionReduced?1:p,fall=fx?.phase==='canyonFall',melt=fx?.phase==='canyonMelt',scroll=fx?.phase==='canyonScroll'?fx:fx?.scroll,grid=scroll?scroll.before:fall?fx.before:fx?.before&&melt?fx.before:e.strata,moves=new Map((fall?fx.moves:[]).map(m=>[m.id,m])),scrollQ=fall?q*q:q,camera=scroll?scroll.oldDepth+scroll.advanced*scrollQ:e.depth;
  const chainSections=chocoChainSections(grid);
  const finalPositions=new Map();if(scroll)e.strata.forEach((row,r)=>row.forEach((t,c)=>{if(t)finalPositions.set(t.id,[r,c]);}));
@@ -1999,7 +1999,7 @@ function drawCarnival(s,now=performance.now()){
  s.candyCanvas.setAttribute('aria-label','シックスドロップ・Round '+e.roundIndex+'、'+rows+'段、'+e.remainingCandies+'個、ヘキサゴン'+e.hexagons+'、トライアングル'+e.triangles+'、直線'+e.lines);
  sixReachPresentation(s,transition?[]:visibleReachResults(s,app),grid,transition);
  s.candyStatus.textContent=!bet?'0 BET・このゲームは参加しません':ready?'1〜25は各1個・空白も使って役を作ろう！':e.candyMessage;
- if((fx||e.pendingDraws.size||(!motionReduced&&bet))&&!paused&&!jpcSession.active)carnivalQueueFrame(s);
+ if((fx||e.pendingDraws.size||(!motionReduced&&bet&&(!allNineMode||s.i===active)))&&!paused&&!jpcSession.active)carnivalQueueFrame(s);
 }
 function carnivalHud(a){
  const s=slots[2],e=s.engine;if(e?.kind!=='candy')return;setupCarnivalSlot(s);document.body.classList.toggle('carnival-active',active===2);s.tab.setAttribute('aria-label','シックスドロップ・Round '+e.roundIndex+'・'+a.bet(2)+' BET');s.miniCanvas.hidden=false;s.miniLogo.hidden=true;
