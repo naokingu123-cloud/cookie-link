@@ -393,3 +393,28 @@ html[data-lineup="all"] .arena .avatar-box{
   transform:scale(.92)!important;
   transform-origin:right bottom!important;
 }
+
+
+/* v151 selected-label specificity override: beats sweet-mini.css's two-ID suppression. */
+html[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab[aria-selected="true"] .mini-wrap>*{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+html[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab[aria-selected="true"] .mini-wrap::after{
+  content:"選択中"!important;
+  display:grid!important;
+  position:absolute!important;
+  inset:1px!important;
+  z-index:30!important;
+  place-items:center!important;
+  border:1px solid #ffe5a4!important;
+  border-radius:5px!important;
+  background:linear-gradient(180deg,#694457f2,#3c263ff2)!important;
+  color:#fff5c9!important;
+  font:900 8px/1 system-ui,sans-serif!important;
+  letter-spacing:-.2px!important;
+  text-shadow:0 1px #3e2434,0 0 3px #ffd87b!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+}
