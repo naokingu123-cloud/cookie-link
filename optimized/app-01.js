@@ -2612,7 +2612,7 @@ function fitGoldenNumber(el,text,size,width){
 function paintTabWin(s,win){
  const badge=s.tabWin.parentNode,hidden=win<=0;
  if(badge.hidden!==hidden)badge.hidden=hidden;
- fitGoldenNumber(s.tabWin,num(win),26,84);
+ fitGoldenNumber(s.tabWin,num(win),allNineMode?18:26,allNineMode?48:84);
 }
 
 const TITLE_DEFS=[
