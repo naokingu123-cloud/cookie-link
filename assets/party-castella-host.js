@@ -16,7 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  payoutNote.textContent='パーティカステラ：設定 '+percent.format(debugPayoutTarget)+'% → 新ルールでの理論配当率 '+percent.format(this.state.target)+'%（50〜150%の実効調整は未達。現在の10型は '+percent.format(R.minReturn)+'〜'+percent.format(R.maxReturn)+'%）。初期生地は6個固定。';
+  payoutNote.textContent='パーティカステラ：設定 '+percent.format(debugPayoutTarget)+'% → 実際の理論配当率 '+percent.format(this.state.target)+'%（新ODDS倍率での全10型 '+percent.format(R.minReturn)+'〜'+percent.format(R.maxReturn)+'%。50〜150%設定への実効調整は未達）。ODDSは基本配当×(1+0.5×発動数)。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');
@@ -132,7 +132,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.castella=String(a.token);
  row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state;
- row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個 ／ 火力 Lv.'+s.fireLevel+' ／ ODDS +'+(s.oddsHits*.5).toFixed(1)+'倍'+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?'生地 '+s.wetCount+'個 ／ 焼き上がり '+s.bakedCount+'個 ／ 火力 Lv.'+s.fireLevel+' ／ ODDS ×'+(1+s.oddsHits*.5).toFixed(1)+(s.highestRole?' ／ 全焼きボーナス':'')+(engine.wonderCollected?' ／ シュガーGET！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;wake();});
