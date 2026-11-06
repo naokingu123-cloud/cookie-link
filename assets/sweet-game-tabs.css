@@ -258,10 +258,15 @@ html[data-lineup="all"] #tabs>.tab-slot:nth-child(9){
  grid-column:4;
  grid-row:2;
 }
-html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])),
-html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot,
+html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
+ height:192px!important;
+}
+html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot{
+ height:94px!important;
+ padding-top:3px!important;
+}
 html[data-lineup="all"] #screen>.games-deck:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
- height:revert-layer;
+ height:276px!important;
 }
 @media(forced-colors:active){
  html[data-lineup="all"] #tabs>.tab-slot{border:1px solid CanvasText}
