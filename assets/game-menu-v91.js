@@ -7,6 +7,12 @@ for(const s of slots){
  s.engine=app.engines[s.i];s.engine.recordGame=catalog[key].record;
  s.holder.dataset.gameKind=s.tab.dataset.gameKind=s.panel.dataset.gameKind=key;
  s.holder.style.setProperty('order',String(chosen.indexOf(key)),'important');
+ if(mode==='all'&&!s.holder.querySelector('.all-tab-frame-overlay')){
+  const frame=document.createElement('span');
+  frame.className='all-tab-frame-overlay';
+  frame.setAttribute('aria-hidden','true');
+  s.holder.append(frame);
+ }
 }
 $('tabs').style.setProperty('grid-template-columns',mode==='all'?'repeat(5,minmax(0,1fr))':'repeat('+chosen.length+',minmax(0,1fr))','important');
 select(ids.indexOf(chosen[0]));
