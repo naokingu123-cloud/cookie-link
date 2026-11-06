@@ -4,10 +4,17 @@
 const R=window.BingoStickRules,reduce=matchMedia('(prefers-reduced-motion: reduce)');
 const names={black:'黒・小倉あん',white:'白・バター'},opposite=c=>c==='white'?'black':'white';
 const clamp=x=>Math.max(0,Math.min(1,x));
+const flavors=['#763924f5','#603126f5','#6a2d2bf5','#72401df5'];
 function motion(s,age=Infinity){
- const count=s.flipped.length,end=180+count*110,duration=s.draws.length?end+560:0;
- const t=Math.min(duration,Math.max(0,age)),index=Math.floor((t-180)/110),progress=clamp((t-180-index*110)/110);
- return {index,progress,beat:Math.min(count,Math.max(0,index+Number(progress>=.5))),duration,active:t<duration,holding:t>=end&&t<end+400,returning:t>=end+400&&t<duration};
+ const count=s.flipped.length,end=180+count*110,rankStart=end+390,dropStart=rankStart+190,land=dropStart+310;
+ const duration=s.draws.length?land+210:0,t=Math.min(duration,Math.max(0,age));
+ const index=Math.floor((t-180)/110),progress=clamp((t-180-index*110)/110);
+ const rankStep=t<rankStart?0:t<dropStart?1:t<land?2:3;
+ const kick=clamp((t-rankStart)/(dropStart-rankStart)),fall=clamp((t-dropStart)/(land-dropStart));
+ // Accelerate into the landing and make one small rebound, measured in row heights.
+ const drop=fall<.72?(fall/.72)**2:1-.12*Math.sin((fall-.72)/.28*Math.PI);
+ return {index,progress,beat:Math.min(count,Math.max(0,index+Number(progress>=.5))),duration,active:t<duration,
+  holding:t>=end&&t<rankStart,returning:t>=rankStart&&t<duration,rankStart,dropStart,land,rankStep,kick,drop};
 }
 function texture(file){const im=new Image();im.src='assets/'+file;return im;}
 const art={black:texture('waffle-reversi-ogura-v128.png'),white:texture('waffle-reversi-butter-v128.png'),board:texture('waffle-reversi-tray.webp')};
@@ -110,15 +117,31 @@ function drawMini(ctx,s,o={}){drawBoard(ctx,s,o,false);}
 const won=(bet,odds)=>typeof medalWin==='function'?medalWin(bet,odds):Math.floor(bet*odds/100);
 function mount(panel){
  const root=document.createElement('section');root.className='bs-scene';root.setAttribute('aria-label','ワッフルリバーシ');
- root.innerHTML=`<div class="bs-left"><div class="bs-pay"><div class="bs-pay-title">1球の反転配当</div><table><thead><tr><th>反転</th><th>WIN</th></tr></thead><tbody></tbody></table><div class="bs-bonus">リバーサルボーナス<small>共通 3000倍</small><strong></strong></div></div></div><div class="bs-tray"><div class="bs-tools"><div class="bs-status"><img class="bs-turn-piece" alt=""><div class="bs-turn-copy"><small></small><strong></strong></div><span class="bs-next"></span></div><span class="bs-guide"><span class="bs-guide-text"></span><b class="bs-hand">0</b>枚反転</span></div><div class="bs-board"><div class="bs-grid" role="img"><canvas></canvas></div><div class="bs-burst" hidden><b>REVERSAL BONUS!</b><span></span></div></div><div class="bs-counts"><div>今回 <b class="bs-gain">+0</b><small> WIN</small></div><div>累計 <b class="bs-total">0</b><small> WIN</small></div></div></div>`;
+ root.innerHTML=`<div class="bs-left"><div class="bs-pay">
+  <div class="bs-pay-title"><i aria-hidden="true"></i><span><strong class="bs-ladder-name">反転配当</strong><b class="bs-grade"></b></span></div>
+  <table><thead><tr><th>枚数</th><th>配当</th></tr></thead><tbody></tbody></table>
+  <div class="bs-bonus">リバーサルボーナス<small></small><strong></strong></div></div></div>
+  <div class="bs-tray"><div class="bs-tools">
+   <div class="bs-status"><img class="bs-turn-piece" alt=""><div class="bs-turn-copy"><small></small><strong></strong></div><span class="bs-next"></span></div>
+   <div class="bs-info"><span class="bs-specials"></span><span class="bs-guide"><span class="bs-guide-text"></span><b class="bs-hand">0</b>枚反転</span></div>
+  </div><div class="bs-board"><div class="bs-grid" role="img"><canvas></canvas></div><div class="bs-burst" hidden><b>REVERSAL BONUS!</b><span></span></div></div>
+  <div class="bs-counts"><div>今回 <b class="bs-gain">+0</b><small> WIN</small></div><div>累計 <b class="bs-total">0</b><small> WIN</small></div></div></div>`;
  panel.append(root);const q=k=>root.querySelector(k),canvas=q('canvas'),ctx=canvas.getContext('2d'),grid=q('.bs-grid'),tray=q('.bs-tray');
  const status=q('.bs-status'),piece=q('.bs-turn-piece'),ball=q('.bs-turn-copy small'),player=q('.bs-turn-copy strong'),nextLabel=q('.bs-next');
- const guide=q('.bs-guide-text'),flips=q('.bs-hand'),gain=q('.bs-gain'),total=q('.bs-total');
- const rows=[...R.payRows].sort((a,b)=>a.count-b.count);if(rows[0]?.count!==0)rows.unshift({count:0,hundredths:0});
- const table=q('tbody'),tiers=rows.map(({count,hundredths},i)=>{
-  const row=table.insertRow(0),head=document.createElement('th');head.scope='row';
-  const next=rows[i+1]?.count;head.textContent=next===undefined?count+'+':next>count+1?count+'–'+(next-1):String(count);row.append(head);const cell=row.insertCell(),value=document.createElement('span'),unit=document.createElement('small');unit.textContent='WIN';cell.append(value,unit);
-  row.title=(hundredths/100).toFixed(1)+'倍';row.dataset.zero=String(hundredths===0);return {row,value,count,hundredths};
+ const guide=q('.bs-guide-text'),flips=q('.bs-hand'),gain=q('.bs-gain'),total=q('.bs-total'),ladder=q('.bs-pay'),gradeTag=q('.bs-grade');
+ const prize=q('.bs-bonus'),bonusLabel=(R.sweepBonusHundredths/100).toFixed(1)+'倍';
+ prize.querySelector('small').textContent='共通 '+bonusLabel;
+ const rows=[...R.payRows].sort((a,b)=>a.count-b.count);if(rows[0]?.count!==0)rows.unshift({count:0});
+ const table=q('tbody');
+ function block(cell,extra=false){
+  const tile=document.createElement('div'),value=document.createElement('span'),unit=document.createElement('small');
+  tile.className='bs-block'+(extra?' bs-incoming':'');if(extra)tile.setAttribute('aria-hidden','true');
+  unit.textContent='WIN';tile.append(value,unit);cell.append(tile);return value;
+ }
+ const tiers=rows.map(({count},i)=>{
+  const row=table.insertRow(0),head=document.createElement('th');head.scope='row';row.dataset.count=count;
+  head.textContent=i===rows.length-1?count+'+':String(count);row.append(head);const cell=row.insertCell();
+  return {row,value:block(cell),count,incoming:i===rows.length-1?block(cell,true):null};
  });
  function fit(){const w=root.clientWidth,h=root.clientHeight;if(!w||!h)return;
   root.style.setProperty('--bs-w',w+'px');root.style.setProperty('--bs-h',h+'px');
@@ -126,27 +149,38 @@ function mount(panel){
   const resolution=Math.max(1,Math.round(grid.clientWidth*Math.min(devicePixelRatio||1,2)));if(canvas.width!==resolution||canvas.height!==resolution)canvas.width=canvas.height=resolution;
  }
  const observer=new ResizeObserver(fit);observer.observe(root);observer.observe(grid);observer.observe(q('.bs-tools'));fit();
- let lastBet,lastBaseline,lastKey;
+ let lastBet,lastBaseline,lastGrade,lastKey,lastSpecialKey;
  function draw(s,o={}){
   const bet=o.bet||0,m=motion(s,o.age??Infinity),hand=m.active?m.beat:s.lastFlips,turn=s.draws.length;
   const bonus=s.reversalThisMove?R.sweepBonusHundredths:0,before=s.totalHundredths-s.lastBaseHundredths-bonus;
   const revealed=!!bonus&&(!m.active||hand===s.lastFlips);
-  const shown=before+R.award(hand)+(revealed?bonus:0);
+  const shown=before+R.award(hand,s.lastGrade)+(revealed?bonus:0);
   const totalWin=won(bet,shown),handWin=totalWin-won(bet,before);
-  const live=m.active&&!m.returning&&s.lastFlips>0,baseline=live?before:s.totalHundredths;
-  // Display the actual extra whole medals, including any fraction carried from prior balls.
-  if(lastBet!==bet||lastBaseline!==baseline){
+  const settled=!m.active||m.rankStep===3,grade=settled?s.grade:s.lastGrade,baseline=settled?s.totalHundredths:before;
+  const live=m.active&&m.rankStep===0&&turn>0;
+  // Each tile previews whole medals after including the fraction carried from earlier balls.
+  if(lastBet!==bet||lastBaseline!==baseline||lastGrade!==grade){
    const paid=won(bet,baseline);
-   for(const {value,hundredths} of tiers){
-    const amount=won(bet,baseline+hundredths)-paid;
+   for(const {row,value,count,incoming} of tiers){
+    const odds=R.award(count,grade),amount=won(bet,baseline+odds)-paid;
     const label=amount>=1000000&&amount%10000===0?amount/10000+'万':String(amount);
-    value.textContent=label;value.dataset.long=label.length>6;value.setAttribute('aria-label',amount+' WIN');
+    value.textContent=label;value.setAttribute('aria-label',amount+' WIN');
+    if(incoming)incoming.textContent=label;
+    row.style.setProperty('--bs-jam',flavors[Math.min(rows.at(-1).count,count+grade)%flavors.length]);
+    row.title=grade+'段・'+(odds/100).toFixed(1)+'倍';row.dataset.zero=String(!odds);
    }
-   lastBet=bet;lastBaseline=baseline;
+   gradeTag.textContent='G'+grade;gradeTag.title='グレード '+grade;ladder.dataset.grade=grade;
+   lastBet=bet;lastBaseline=baseline;lastGrade=grade;
+  }
+  const specials=s.offBoardNumbers||[],specialKey=specials.join(',')+'/'+s.draws.join(',');
+  if(lastSpecialKey!==specialKey){
+   const band=q('.bs-specials');band.textContent='特殊↑';
+   for(const n of specials){const badge=document.createElement('b');badge.textContent=n;badge.className=s.draws.at(-1)===n?'last':s.draws.includes(n)?'used':'';band.append(badge);}
+   band.title='特殊番号 '+specials.join('・')+'。0WINでグレードが1段アップ';band.setAttribute('aria-label',band.title);lastSpecialKey=specialKey;
   }
   const earnedBonuses=s.reversalCount-Number(!!bonus&&!revealed);
-  const burstAt=180+Math.max(0,s.lastFlips-1)*110+55,burst=!!bonus&&m.active&&(o.age??Infinity)>=burstAt&&!m.returning;
-  const key=[burst,turn,hand,handWin,totalWin,m.active,live,m.index,earnedBonuses,s.lastColor,s.draws.at(-1),s.missingNumber,bet,o.demo,s.phase].join('/');
+  const burstAt=180+Math.max(0,s.lastFlips-1)*110+55,burst=!!bonus&&m.active&&(o.age??Infinity)>=burstAt&&m.rankStep===0;
+  const key=[burst,turn,hand,handWin,totalWin,m.active,live,m.rankStep,earnedBonuses,s.lastColor,s.draws.at(-1),bet,o.demo,s.phase].join('/');
   if(key!==lastKey){lastKey=key;
    const done=s.phase==='done'&&!m.active,current=m.active||done?turn:turn+1,color=current%2?'black':'white';
    if(status.dataset.color!==color){status.dataset.color=color;piece.src=art[color].src;}
@@ -154,17 +188,21 @@ function mount(panel){
    player.textContent=done?'抽選終了':names[color]+'の番';
    nextLabel.textContent=current<8?'次 '+(color==='white'?'黒':'白'):'';
    const miss=turn>0&&!s.placed.length;
-   guide.textContent=miss?(m.active?'':'前球 ')+s.draws.at(-1)+'番は盤面外　':turn?(m.active?'今回　':'前球　'):'盤面外は'+s.missingNumber+'番　';
+   guide.textContent=miss?(m.active?'特殊 HIT!　':'特殊 '+s.draws.at(-1)+'番　'):turn?(m.active?'HIT!　':'前球　'):'';
    flips.textContent=hand;gain.textContent='+'+handWin;total.textContent=totalWin;
    const focusTier=live?tiers.findLast(t=>t.count<=hand):null;
    for(const item of tiers)item.row.classList.toggle('current',item===focusTier);
-   const ladder=q('.bs-pay');ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';
-   const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent='3000倍！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
-   const prize=q('.bs-bonus');prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
+   ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';ladder.dataset.rankStep=m.rankStep;
+   q('.bs-ladder-name').textContent=m.active&&m.rankStep>0?'GRADE UP!':'反転配当';
+   const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent=bonusLabel+'！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
+   prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
    grid.setAttribute('aria-label','8行8列のワッフル盤。'+q('.bs-status').textContent+'。今回'+hand+'枚反転、'+handWin+' WIN。累計'+totalWin+' WIN');
   }
   const pulse=live&&hand>0?Math.max(0,1-((o.age??0)-(180+(hand-1)*110+55))/110):0;
   root.style.setProperty('--bs-pulse',reduce.matches?'0':pulse.toFixed(2));
+  if(m.rankStep===1||m.rankStep===2){
+   ladder.style.setProperty('--bs-kick',m.kick.toFixed(3));ladder.style.setProperty('--bs-drop',m.drop.toFixed(3));
+  }
   drawBoard(ctx,s,o,true);
  }
  return {draw,drawMini};

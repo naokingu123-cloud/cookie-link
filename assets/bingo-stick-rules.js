@@ -2,50 +2,67 @@
 (function(root){
  'use strict';
  const cells=Array.from({length:64},(_,i)=>i);
- const payRows=[[1,0],[2,0],[3,20],[4,60],[5,120],[6,250],[7,600],[8,1200],[9,1800],[10,2400],[11,3600],[12,4800],[13,6000]]
-  .map(([count,hundredths])=>({count,hundredths}));
- const sweepBonusHundredths=300000,sugarFlips=8; // 3000x reversal prize, common to every mold.
- function award(count){return payRows.findLast(row=>row.count<=count)?.hundredths||0;}
- // Each 4×4 quarter contains ten stones. The other 24 mirrored squares all carry numbers.
- // Every open square brackets at least one white stone on black's first move.
- // Keep the color orientation fixed. Rates include the rarity-weighted 3000x reversal prize.
- // Small lattice: 18 reversals / 1.5m; remaining molds had none in 0.7m each.
+ const payouts=[0,0,0,10,10,10,20,20,30,50,100,200,400,800];
+ const payRows=payouts.slice(1).map((hundredths,i)=>({count:i+1,hundredths}));
+ const sweepBonusHundredths=5000,sugarFlips=8;
+ function award(count,grade=0){return count>0?payouts[Math.min(count+grade,payouts.length-1)]:0;}
+ // Per-mold Monte Carlo calibration of ordinary return (%), reversal events and games
+ // with at least one reversal. Multiple eliminations in a game each pay independently.
+ // Holdout: 5M games at each 10-point setting, 50–150. 54,792 events in 53,854 games.
+ // Replay all six sweep paths and sample live rules with node .github/tests/bingo-stick.cjs --balance.
+ const samples=9500000;
  const molds=[
-  {rate:11.01,patterns:[{name:'小格子',quarter:'BB.BBW.BB..WBB..'}]},
-  {rate:25.55,patterns:[{name:'格子',quarter:'BBB.BW.W.B.BB.W.'}]},
-  {rate:64.50,patterns:[{name:'双菱',quarter:'B.B..BW..WBBB.BW'},{name:'市松',quarter:'W.W.BWW.BBB..WW.'}]},
-  {rate:155.28,patterns:[{name:'花窓',quarter:'..B.BWW..BBW.WBB'}]}
+  {name:'小格子',quarter:'BBB.BBW.BB..BBW.',normal:43.45951,events:4261/samples,games:4174/samples},
+  {name:'格子',quarter:'BBB.BBW.BBW.BB..',normal:42.51666,events:10458/samples,games:10205/samples},
+  {name:'双菱',quarter:'B.BBB.WBB.WBB..B',normal:106.88139,events:19044/(2*samples),games:18928/(2*samples)},
+  {name:'市松',quarter:'..WWWW..WBBWW.WB',normal:144.39896,events:0,games:0},
+  {name:'花窓',quarter:'...BBWW.B.WWBWWB',normal:301.14573,events:1/samples,games:1/samples},
+  {name:'蜜格子',quarter:'B.BBBBBBBBW.B...',normal:37.93827,events:55847/samples,games:54812/samples}
  ];
+ // Each pair targets the same event frequency. The outer weights set ordinary RTP.
+ // Selection is complete before numbering the board or drawing the first ball.
+ const desiredEvents=.001;
+ const pairs=[[0,1],[2,0],[3,5],[4,5]].map(([a,b])=>{
+  const share=(desiredEvents-molds[a].events)/(molds[b].events-molds[a].events);
+  return {a,b,share,normal:molds[a].normal*(1-share)+molds[b].normal*share};
+ });
  function shuffle(values,rng){
   for(let i=values.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
   return values;
  }
- // Maximum-entropy mixing keeps all five visual patterns available at every RTP
- // setting while matching the target by an expected-value-weighted mold choice.
+ function targetRate(target){return Math.max(50,Math.min(150,Number.isFinite(target)?target:90));}
  function mixtureFor(target){
   let left=-1,right=1;
-  for(let i=0;i<38;i++){
-   const t=(left+right)/2, raw=molds.map(m=>Math.exp((m.rate-80)*t));
-   const total=raw.reduce((a,b)=>a+b,0);
-   const mean=raw.reduce((sum,p,j)=>sum+p*molds[j].rate,0)/total;
-   if(mean<target)left=t;else right=t;
+  for(let i=0;i<40;i++){
+   const t=(left+right)/2, weights=pairs.map(pair=>Math.exp((pair.normal-100)*t));
+   const total=weights.reduce((a,b)=>a+b,0);
+   const normal=weights.reduce((sum,w,j)=>sum+w*pairs[j].normal,0)/total;
+   if(normal<target-5)left=t;else right=t;
   }
-  const raw=molds.map(m=>Math.exp((m.rate-80)*(left+right)/2));
-  const total=raw.reduce((a,b)=>a+b,0);
-  return raw.map(w=>w/total);
+  const shares=pairs.map(pair=>Math.exp((pair.normal-100)*(left+right)/2));
+  const total=shares.reduce((a,b)=>a+b,0),weights=Array(molds.length).fill(0);
+  pairs.forEach(({a,b,share},i)=>{
+   weights[a]+=shares[i]*(1-share)/total;weights[b]+=shares[i]*share/total;
+  });
+  return weights;
  }
  const mixtures=Array.from({length:101},(_,i)=>mixtureFor(i+50));
+ function weightsFor(rate){return Number.isInteger(rate)?mixtures[rate-50]:mixtureFor(rate);}
+ function balance(target=90){
+  const weights=weightsFor(targetRate(target));
+  const mean=key=>molds.reduce((sum,m,i)=>sum+m[key]*weights[i],0);
+  const normalPercent=mean('normal'),eventsPerGame=mean('events'),gameProbability=mean('games');
+  const bonusPercent=eventsPerGame*sweepBonusHundredths;
+  return {normalPercent,bonusPercent,totalPercent:normalPercent+bonusPercent,eventsPerGame,gameProbability,fairMultiplier:.05/eventsPerGame};
+ }
  function create({rng=Math.random,target=90,patternName=null}={}){
-  const rate=Math.max(50,Math.min(150,Number.isFinite(target)?target:90));
-  const weights=Number.isInteger(rate)?mixtures[rate-50]:mixtureFor(rate);
-  let pick=rng(),selected=molds[molds.length-1];
+  const rate=targetRate(target),weights=weightsFor(rate);
+  let pick=rng(),mold=molds[molds.length-1];
   for(let i=0;i<molds.length;i++){
-   pick-=weights[i];if(pick<0){selected=molds[i];break;}
+   pick-=weights[i];if(pick<0){mold=molds[i];break;}
   }
-  // Debug/reproducibility-only override; regular play always uses weighted selection.
-  const group=patternName?molds.find(g=>g.patterns.some(p=>p.name===patternName))||selected:selected;
-  const picked=group.patterns[Math.floor(rng()*group.patterns.length)];
-  const mold=patternName?group.patterns.find(p=>p.name===patternName):picked,transpose=rng()<.5;
+  if(patternName)mold=molds.find(m=>m.name===patternName)||mold;
+  const transpose=rng()<.5;
   const colors=cells.map(i=>{
    const x=Math.min(i%8,7-i%8),y=Math.min(i>>3,7-(i>>3));
    const stone=mold.quarter[transpose?4*x+y:4*y+x];
@@ -54,8 +71,8 @@
   const numbers=Array(64).fill(null),deck=shuffle(Array.from({length:25},(_,i)=>i+1),rng);
   for(const i of cells)if(!colors[i])numbers[i]=deck.pop();
   const black=colors.filter(color=>color==='black').length;
-  return {colors,numbers,missingNumber:deck[0],counts:{black,white:40-black},phase:'playing',draws:[],target:rate,patternName:mold.name,
-   placed:[],flipped:[],flipSteps:[],lastColor:null,lastFlips:0,previousMaxFlips:0,maxFlips:0,
+  return {colors,numbers,offBoardNumbers:deck.sort((a,b)=>a-b),counts:{black,white:44-black},phase:'playing',draws:[],target:rate,patternName:mold.name,
+   grade:0,lastGrade:0,placed:[],flipped:[],flipSteps:[],lastColor:null,lastFlips:0,previousMaxFlips:0,maxFlips:0,
    bonusEvents:[],lastReversal:null,reversalCount:0,reversalThisMove:false,highestRole:false,
    lastBaseHundredths:0,baseHundredths:0,bonusHundredths:0,totalHundredths:0};
  }
@@ -72,7 +89,7 @@
  function draw(s,number){
   if(s.phase!=='playing'||!Number.isInteger(number)||number<1||number>25||s.draws.includes(number))return null;
   const origin=s.numbers.indexOf(number);
-  if(origin<0?number!==s.missingNumber:s.colors[origin])return null;
+  if(origin<0?!s.offBoardNumbers.includes(number):s.colors[origin])return null;
   const color=s.draws.length%2?'white':'black',other=color==='black'?'white':'black',flipSteps=[];
   // Read the snapshot before all flips. Unoccupied numbered squares break the bracket.
   for(const {dx,dy,ids} of rays[origin]||[]){
@@ -87,20 +104,20 @@
   for(const i of flipped)colors[i]=color;
   const counts={...s.counts,[color]:s.counts[color]+Number(origin>=0)+lastFlips,[other]:s.counts[other]-lastFlips};
   const draws=[...s.draws,number],maxFlips=Math.max(s.maxFlips,lastFlips);
-  const lastBaseHundredths=award(lastFlips),baseHundredths=s.baseHundredths+lastBaseHundredths;
+  const lastGrade=s.grade,lastBaseHundredths=award(lastFlips,lastGrade),baseHundredths=s.baseHundredths+lastBaseHundredths;
   const lastReversal=counts[other]===0&&s.counts[other]>0?{ball:draws.length,number,color}:null;
   const bonusEvents=lastReversal?[...s.bonusEvents,lastReversal]:s.bonusEvents,bonusHundredths=bonusEvents.length*sweepBonusHundredths;
-  return {...s,colors,counts,draws,lastColor:color,placed:origin>=0?[origin]:[],flipped,flipSteps,lastFlips,previousMaxFlips:s.maxFlips,maxFlips,
+  return {...s,colors,counts,draws,lastGrade,grade:lastGrade+1,lastColor:color,placed:origin>=0?[origin]:[],flipped,flipSteps,lastFlips,previousMaxFlips:s.maxFlips,maxFlips,
    bonusEvents,lastReversal,reversalCount:bonusEvents.length,reversalThisMove:!!lastReversal,highestRole:bonusEvents.length>0,
    lastBaseHundredths,baseHundredths,bonusHundredths,totalHundredths:baseHundredths+bonusHundredths,phase:draws.length===8?'done':'playing'};
  }
  function createDemo(){
   let seed=2654435761;
   const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
-  const state=create({rng,patternName:'双菱'});
-  const draws=[7,1,24,6,25,17,13,22];return {state,draws,balls:draws};
+  const state=create({rng,patternName:'花窓'});
+  const draws=[8,23,5,11,6,4,24,20];return {state,draws,balls:draws};
  }
- const api={create,draw,createDemo,award,payRows,sweepBonusHundredths,sugarFlips};
+ const api={create,draw,createDemo,award,balance,payRows,sweepBonusHundredths,sugarFlips};
  if(typeof module==='object'&&module.exports)module.exports=api;
  else root.BingoStickRules=api;
 })(globalThis);
