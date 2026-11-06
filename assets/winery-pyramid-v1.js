@@ -793,8 +793,9 @@ function updateHUD(){
 // Only the grape-juice GLASS PYRAMID appears in the small tab.
 // Offscreen draw is cropped to the 21 live cups and their price-tag numbers.
 // No right payout column, no RATE settings and no large game header.
+const MINI_ONLY_SIDE=allNineMode?192:930;
 const miniOnlyCanvas=document.createElement('canvas');
-miniOnlyCanvas.width=930;miniOnlyCanvas.height=930;
+miniOnlyCanvas.width=MINI_ONLY_SIDE;miniOnlyCanvas.height=MINI_ONLY_SIDE;
 const miniOnlyCtx=miniOnlyCanvas.getContext('2d');
 const miniClearStyle=document.createElement('link');
 miniClearStyle.rel='stylesheet';
@@ -829,7 +830,7 @@ function paintMini(){
  // Render JUST the dynamic cups and their live numbers. No fruit kingdom,
  // no static afternoon-tea image, no 21-frame background screenshot,
  // no MENU, payout cabinet, nozzle, labels or glow from the main frame.
- miniOnlyCtx.setTransform(1,0,0,1,0,0);
+ miniOnlyCtx.setTransform(MINI_ONLY_SIDE/930,0,0,MINI_ONLY_SIDE/930,0,0);
  miniOnlyCtx.clearRect(0,0,930,930);
  miniOnlyCtx.save();
  // Centre the six actual tiers, including the numbered tags below each bowl.
@@ -860,7 +861,7 @@ function paintMini(){
  const thumb=S.miniCanvas,context=thumb.getContext('2d');
  context.setTransform(1,0,0,1,0,0);
  context.clearRect(0,0,thumb.width,thumb.height);
- context.drawImage(miniOnlyCanvas,0,0,930,930,0,0,thumb.width,thumb.height);
+ context.drawImage(miniOnlyCanvas,0,0,MINI_ONLY_SIDE,MINI_ONLY_SIDE,0,0,thumb.width,thumb.height);
  thumb.hidden=false;S.miniLogo.hidden=true;
 }
 function queueFrame(){if(frame||document.hidden)return;frame=requestAnimationFrame(tick);}
