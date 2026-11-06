@@ -303,3 +303,138 @@ html[data-lineup="all"] #tabs .reach-page-leave{
  animation:none!important;
  transform:none!important;
 }
+
+
+/* v149 vertical-fit pass: reserve real baseline room for reach/BET/WIN on iOS Safari. */
+html[data-lineup="all"] #tabs>.tab-slot{
+ grid-template-rows:50px 18px 15px!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot>.tab,
+html[data-lineup="all"] #tabs>.tab-slot>.tab[aria-selected="true"]{
+ height:50px!important;
+ min-height:50px!important;
+ max-height:50px!important;
+ grid-template-columns:39px minmax(0,1fr)!important;
+ grid-template-rows:13px 35px!important;
+ padding:1px 2px!important;
+}
+html[data-lineup="all"] #tabs .tab-game-name{
+ height:13px!important;
+ min-height:13px!important;
+ line-height:13px!important;
+ font-size:6.9px!important;
+}
+html[data-lineup="all"] #tabs .tab-game-name img,
+html[data-lineup="all"] #tabs .tab-game-name svg{
+ height:13px!important;
+ max-height:13px!important;
+}
+html[data-lineup="all"] #tabs .mini-wrap,
+html[data-lineup="all"] #tabs .tab[aria-selected="true"] .mini-wrap{
+ width:37px!important;
+ height:35px!important;
+ min-width:37px!important;
+ min-height:35px!important;
+}
+html[data-lineup="all"] #tabs .mini-wrap canvas,
+html[data-lineup="all"] #tabs .mini-wrap .gp-mini,
+html[data-lineup="all"] #tabs .mini-logo{
+ left:1px!important;
+ width:35px!important;
+ height:35px!important;
+}
+
+/* Reach row gets enough descender/stroke room; clip only at the card boundary. */
+html[data-lineup="all"] #tabs .tab-slot .reach-strip{
+ height:18px!important;
+ min-height:18px!important;
+ max-height:18px!important;
+ padding:0 2px 1px!important;
+ align-items:flex-end!important;
+ overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-slot .reach-caption{
+ height:17px!important;
+ line-height:16px!important;
+ font-size:6.2px!important;
+ align-self:flex-end!important;
+}
+html[data-lineup="all"] #tabs .reach-clip{
+ height:17px!important;
+ overflow:hidden!important;
+ align-self:flex-end!important;
+}
+html[data-lineup="all"] #tabs .reach-numbers{
+ height:17px!important;
+ align-items:end!important;
+ overflow:visible!important;
+}
+html[data-lineup="all"] #tabs .reach-num{
+ height:16px!important;
+ min-height:16px!important;
+ padding:0 0 2px!important;
+ box-sizing:border-box!important;
+ font-size:11.6px!important;
+ line-height:13px!important;
+ place-items:end center!important;
+ text-shadow:0 .5px #251626,0 0 2px currentColor!important;
+}
+
+/* Locked BET row: keep the gold digits fully inside their plaque. */
+html[data-lineup="all"] #tabs .tab-locked-bet{
+ height:15px!important;
+ min-height:15px!important;
+ max-height:15px!important;
+ padding:0 5px 1px!important;
+ align-items:center!important;
+ overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet>.gold-word{
+ font-size:6.5px!important;
+ line-height:13px!important;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
+ height:14px!important;
+ line-height:13px!important;
+ font-size:11px!important;
+ padding-bottom:1px!important;
+ box-sizing:border-box!important;
+ overflow:visible!important;
+}
+
+/* Earned WIN plaque: center the amount vertically and leave room for the gold outline. */
+html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble{
+ height:33px!important;
+ min-height:33px!important;
+ max-height:33px!important;
+ padding:2px 2px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ overflow:hidden!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:0!important;
+ width:100%!important;
+ height:29px!important;
+ line-height:1!important;
+ overflow:visible!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin .gold-number{
+ display:block!important;
+ font-size:17px!important;
+ line-height:18px!important;
+ padding:1px 0!important;
+ box-sizing:border-box!important;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .win-word,
+html[data-lineup="all"] #tabs .tab-win-bubble .win-word>.gold-word{
+ display:block!important;
+ font-size:6.5px!important;
+ line-height:7px!important;
+ margin:0!important;
+}
