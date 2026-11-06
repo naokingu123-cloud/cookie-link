@@ -46,6 +46,14 @@ with sync_playwright() as pw:
           document.querySelector('#manual-start').click();
         }""")
         page.wait_for_function("() => BingoStick.engine.running && document.querySelector('.bs-status').dataset.color==='black'")
+        page.wait_for_function("""() => {
+          const R=window.BingoStickRules;
+          const bonus=document.querySelector('.bs-bonus small');
+          const empty=[...document.querySelectorAll('.bs-pay tbody tr[data-zero="true"]')];
+          return R.award(1)===0 && R.award(2)===0 && R.award(3)===20 &&
+            R.sweepBonusHundredths===300000 && bonus?.textContent.includes('3000') &&
+            empty.length>=2 && empty.every(row=>row.querySelector('td span')?.textContent==='0');
+        }""")
         opening = page.evaluate("""() => {
           const e=BingoStick.engine,s=e.state,R=BingoStickRules;
           const moves=Array.from({length:25},(_,i)=>R.draw(s,i+1));
