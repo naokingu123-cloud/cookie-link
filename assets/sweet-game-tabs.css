@@ -67,22 +67,28 @@ body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:
 }
 
 
-/* Nine-game ALL: the old three-tab footprint is divided into a strict 5 + 4 grid.
-   Explicit placement beats game-specific three-column CSS and prevents overlap. */
+/* Nine-game ALL: full-width 5 + 4 cabinet grid inside the original 178px tab area.
+   The deck goes full-bleed to the screen edges; each row uses the exact same five X columns. */
 html[data-lineup="all"] #screen>.games-deck{
- height:262px!important;flex:0 0 262px!important;position:relative!important;z-index:3!important;overflow:hidden!important
+ height:178px!important;flex:0 0 178px!important;
+ width:calc(100% + 24px)!important;max-width:none!important;
+ margin-left:-12px!important;margin-right:-12px!important;padding:0 3px!important;
+ position:relative!important;z-index:3!important;overflow:visible!important;box-sizing:border-box!important
 }
 html[data-lineup="all"] #tabs.tabs{
- height:178px!important;flex:0 0 178px!important;display:grid!important;
- grid-template-columns:repeat(5,minmax(0,1fr))!important;
+ width:100%!important;max-width:none!important;height:178px!important;flex:0 0 178px!important;
+ margin:0!important;padding:0!important;box-sizing:border-box!important;
+ display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
  grid-template-rows:repeat(2,87px)!important;grid-auto-flow:row!important;grid-auto-rows:87px!important;
- gap:4px!important;align-content:start!important;align-items:stretch!important;overflow:hidden!important
+ column-gap:2px!important;row-gap:4px!important;align-content:start!important;align-items:stretch!important;
+ overflow:visible!important
 }
 html[data-lineup="all"] #tabs>.tab-slot{
- position:relative!important;inset:auto!important;width:auto!important;min-width:0!important;max-width:none!important;
- height:87px!important;min-height:87px!important;max-height:87px!important;margin:0!important;padding:2px!important;
+ position:relative!important;inset:auto!important;width:100%!important;min-width:0!important;max-width:none!important;
+ height:87px!important;min-height:87px!important;max-height:87px!important;margin:0!important;padding:1px!important;
  display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:53px 14px 14px!important;
- gap:1px!important;align-content:start!important;overflow:hidden!important;transform:none!important;contain:layout paint style;box-sizing:border-box!important
+ gap:1px!important;align-content:start!important;overflow:visible!important;transform:none!important;
+ contain:layout style;box-sizing:border-box!important
 }
 html[data-lineup="all"] #tabs>.tab-slot:nth-child(1){grid-column:1!important;grid-row:1!important}
 html[data-lineup="all"] #tabs>.tab-slot:nth-child(2){grid-column:2!important;grid-row:1!important}
@@ -95,69 +101,117 @@ html[data-lineup="all"] #tabs>.tab-slot:nth-child(8){grid-column:3!important;gri
 html[data-lineup="all"] #tabs>.tab-slot:nth-child(9){grid-column:4!important;grid-row:2!important}
 html[data-lineup="all"] #tabs>.tab-slot>.tab,
 html[data-lineup="all"] #tabs>.tab-slot>.tab[aria-selected="true"]{
- position:relative!important;inset:auto!important;width:100%!important;height:53px!important;min-width:0!important;min-height:53px!important;max-height:53px!important;
- margin:0!important;padding:1px!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:13px 38px!important;
- gap:0!important;justify-items:center!important;align-items:center!important;overflow:hidden!important;transform:none!important;box-sizing:border-box!important
+ position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;
+ height:53px!important;min-width:0!important;min-height:53px!important;max-height:53px!important;
+ margin:0!important;padding:1px 2px!important;display:grid!important;
+ grid-template-columns:1fr!important;grid-template-rows:13px 38px!important;
+ gap:0!important;justify-items:stretch!important;align-items:center!important;
+ overflow:visible!important;transform:none!important;box-sizing:border-box!important
 }
 html[data-lineup="all"] #tabs .tab-game-name{
- grid-column:1!important;grid-row:1!important;position:relative!important;width:100%!important;max-width:80px!important;height:13px!important;min-height:13px!important;
- margin:0!important;align-self:center!important;font-size:6.2px!important;line-height:13px!important;letter-spacing:-.18px!important;transform:none!important;
+ grid-column:1!important;grid-row:1!important;position:relative!important;
+ width:100%!important;max-width:none!important;height:13px!important;min-height:13px!important;
+ margin:0!important;align-self:center!important;text-align:center!important;
+ font-size:6.5px!important;line-height:13px!important;letter-spacing:-.16px!important;transform:none!important;
  background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;overflow:hidden!important
 }
 html[data-lineup="all"] #tabs .tab-game-name img,
 html[data-lineup="all"] #tabs .tab-game-name svg{
- display:block!important;width:auto!important;max-width:100%!important;height:13px!important;max-height:13px!important;margin:auto!important;object-fit:contain!important;transform:none!important
+ display:block!important;width:auto!important;max-width:100%!important;height:13px!important;max-height:13px!important;
+ margin:auto!important;object-fit:contain!important;transform:none!important
 }
+/* The horizontal thumbnail bay is almost twice the former 38px width.
+   The actual board remains square and centred, so it never distorts. */
 html[data-lineup="all"] #tabs .mini-wrap,
 html[data-lineup="all"] #tabs .tab[aria-selected="true"] .mini-wrap{
- grid-column:1!important;grid-row:2!important;position:relative!important;inset:auto!important;width:38px!important;height:38px!important;
- min-width:38px!important;min-height:38px!important;margin:0!important;align-self:center!important;justify-self:center!important;overflow:hidden!important;border-radius:5px!important;transform:none!important
+ grid-column:1!important;grid-row:2!important;position:relative!important;
+ width:min(76px,100%)!important;height:38px!important;min-width:0!important;min-height:38px!important;
+ margin:0 auto!important;align-self:center!important;justify-self:center!important;
+ overflow:hidden!important;border-radius:5px!important;transform:none!important
 }
 html[data-lineup="all"] #tabs .mini-wrap canvas,
 html[data-lineup="all"] #tabs .mini-wrap .gp-mini,
-html[data-lineup="all"] #tabs .mini-logo{width:38px!important;height:38px!important;margin:0!important;inset:0!important;transform:none!important}
+html[data-lineup="all"] #tabs .mini-logo{
+ position:absolute!important;top:0!important;bottom:auto!important;left:50%!important;right:auto!important;
+ width:38px!important;height:38px!important;margin:0!important;
+ transform:translateX(-50%)!important
+}
 html[data-lineup="all"] #tabs .tab-slot .tab-bets,
 html[data-lineup="all"] #tabs .tab-slot .reach-strip{
- grid-row:2!important;grid-column:1!important;position:relative!important;inset:auto!important;width:100%!important;height:14px!important;min-height:14px!important;max-height:14px!important;
- margin:0!important;padding:0 1px!important;gap:1px!important;align-self:center!important;overflow:hidden!important;border-radius:4px!important;box-sizing:border-box!important
+ grid-row:2!important;grid-column:1!important;position:relative!important;inset:auto!important;
+ width:100%!important;max-width:100%!important;height:14px!important;min-height:14px!important;max-height:14px!important;
+ margin:0!important;padding:0 1px!important;gap:1px!important;align-self:center!important;
+ overflow:hidden!important;border-radius:4px!important;box-sizing:border-box!important
 }
-html[data-lineup="all"] #tabs .tab-slot .tab-bets{display:grid!important;grid-template-columns:20px minmax(0,1fr) 17px!important}
+html[data-lineup="all"] #tabs .tab-slot .tab-bets{
+ display:grid!important;grid-template-columns:22px minmax(0,1fr) 19px!important
+}
 html[data-lineup="all"] #tabs .tab-bets button{
- height:12px!important;min-height:12px!important;max-height:12px!important;min-width:0!important;padding:0!important;border-radius:3px!important;
- font-size:4.6px!important;line-height:11px!important;letter-spacing:-.38px!important;overflow:hidden!important
+ height:12px!important;min-height:12px!important;max-height:12px!important;min-width:0!important;max-width:100%!important;
+ padding:0!important;border-radius:3px!important;font-size:4.8px!important;line-height:11px!important;
+ letter-spacing:-.34px!important;overflow:hidden!important
 }
-html[data-lineup="all"] #tabs .tab-slot .reach-caption{font-size:5.5px!important;line-height:13px!important;letter-spacing:-.5px!important}
-html[data-lineup="all"] #tabs .reach-clip,
-html[data-lineup="all"] #tabs .reach-numbers{height:14px!important}
-html[data-lineup="all"] #tabs .reach-numbers{gap:1px!important}
+/* Reach always stays within its own tab column. */
+html[data-lineup="all"] #tabs .reach-strip{display:flex!important;align-items:center!important}
+html[data-lineup="all"] #tabs .reach-strip[hidden]{display:none!important}
+html[data-lineup="all"] #tabs .tab-slot .reach-caption{
+ flex:0 0 auto!important;max-width:28px!important;overflow:hidden!important;
+ font-size:5.6px!important;line-height:13px!important;letter-spacing:-.5px!important
+}
+html[data-lineup="all"] #tabs .reach-clip{
+ flex:1 1 auto!important;min-width:0!important;width:auto!important;height:14px!important;overflow:hidden!important
+}
+html[data-lineup="all"] #tabs .reach-numbers{
+ width:100%!important;height:14px!important;display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:1px!important;overflow:hidden!important
+}
 html[data-lineup="all"] #tabs .reach-num{
- flex:0 0 12px!important;width:12px!important;height:13px!important;font-size:9.8px!important;line-height:13px!important;
+ width:auto!important;min-width:0!important;max-width:100%!important;height:13px!important;
+ font-size:10px!important;line-height:13px!important;
  -webkit-text-stroke:.42px #1d1527!important;text-shadow:0 1px #251626,0 0 3px currentColor!important
 }
 html[data-lineup="all"] #tabs .tab-locked-bet{
- grid-row:3!important;grid-column:1!important;position:relative!important;inset:auto!important;width:100%!important;height:14px!important;min-height:14px!important;max-height:14px!important;
- margin:0!important;padding:0 3px!important;gap:2px!important;overflow:hidden!important;border-radius:4px!important;box-sizing:border-box!important
+ grid-row:3!important;grid-column:1!important;position:relative!important;inset:auto!important;
+ width:100%!important;max-width:100%!important;height:14px!important;min-height:14px!important;max-height:14px!important;
+ margin:0!important;padding:0 4px!important;gap:2px!important;overflow:hidden!important;border-radius:4px!important;box-sizing:border-box!important
 }
-html[data-lineup="all"] #tabs .tab-locked-bet>.gold-word{font-size:5.8px!important}
-html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{height:13px!important;max-width:52px!important;font-size:9.4px!important;line-height:13px!important}
+html[data-lineup="all"] #tabs .tab-locked-bet>.gold-word{font-size:6px!important}
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
+ height:13px!important;max-width:62px!important;font-size:9.8px!important;line-height:13px!important
+}
+/* WIN occupies the available width instead of using a fixed badge that can clip at the right edge. */
 html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble{
- top:13px!important;left:50%!important;right:auto!important;bottom:auto!important;width:max-content!important;min-width:54px!important;max-width:76px!important;
- height:22px!important;padding:1px 3px!important;transform:translateX(-50%)!important;border-radius:7px!important;z-index:25!important
+ top:14px!important;left:2px!important;right:2px!important;bottom:auto!important;
+ width:auto!important;min-width:0!important;max-width:none!important;height:22px!important;
+ padding:1px 3px!important;transform:none!important;border-radius:7px!important;z-index:25!important;
+ overflow:hidden!important;box-sizing:border-box!important
+}
+html[data-lineup="all"] #tabs .tab-slot:has(.tab-sugar:not([hidden])) .tab-win-bubble{right:20px!important}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin{
+ min-width:0!important;max-width:100%!important;overflow:hidden!important
 }
 html[data-lineup="all"] #tabs .tab-win-bubble .tabwin .gold-number{font-size:16px!important;line-height:19px!important}
 html[data-lineup="all"] #tabs .tab-win-bubble .win-word,
 html[data-lineup="all"] #tabs .tab-win-bubble .win-word>.gold-word{font-size:6.5px!important}
 html[data-lineup="all"] #tabs .tab-sugar{
- top:13px!important;right:1px!important;left:auto!important;min-width:18px!important;width:18px!important;height:21px!important;padding:0!important;transform:none!important;border-radius:6px!important
+ top:14px!important;right:2px!important;left:auto!important;min-width:17px!important;width:17px!important;height:21px!important;
+ padding:0!important;transform:none!important;border-radius:6px!important;z-index:27!important
 }
-html[data-lineup="all"] #tabs .tab-sugar .sugar-gem{width:12px!important;height:13px!important}
+html[data-lineup="all"] #tabs .tab-sugar .sugar-gem{width:11px!important;height:12px!important}
 html[data-lineup="all"] #tabs .tab-sugar .sugar-get{display:none!important}
 html[data-lineup="all"] #tabs>.tab-slot.selected:before{filter:drop-shadow(0 0 3px #fff0a7) brightness(1.1)}
 html[data-lineup="all"] #tabs>.tab-slot:not(.selected) *,
-html[data-lineup="all"] #tabs>.tab-slot:not(.selected)::before{animation-play-state:paused!important;transition-duration:0s!important;will-change:auto!important}
+html[data-lineup="all"] #tabs>.tab-slot:not(.selected)::before{
+ animation-play-state:paused!important;transition-duration:0s!important;will-change:auto!important
+}
+/* Reward appearance never changes the 178px footprint. */
 html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){height:178px!important}
-html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot{height:87px!important;padding-top:2px!important}
-html[data-lineup="all"] #screen>.games-deck:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){height:262px!important;flex-basis:262px!important}
-html[data-lineup="all"] #screen>.game{position:relative!important;z-index:2!important;flex:none!important}
-html[data-lineup="all"] body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){grid-template-rows:minmax(130px,1fr) 178px 72px!important}
+html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot{height:87px!important;padding-top:1px!important}
+html[data-lineup="all"] #screen>.games-deck:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
+ height:178px!important;flex-basis:178px!important
+}
+html[data-lineup="all"] #screen>.game{position:relative!important;z-index:2!important}
+html[data-lineup="all"] body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
+ grid-template-rows:minmax(130px,1fr) 178px 72px!important
+}
 @media(forced-colors:active){html[data-lineup="all"] #tabs>.tab-slot{border:1px solid CanvasText}}
