@@ -110,7 +110,7 @@ function drawMini(ctx,s,o={}){drawBoard(ctx,s,o,false);}
 const won=(bet,odds)=>typeof medalWin==='function'?medalWin(bet,odds):Math.floor(bet*odds/100);
 function mount(panel){
  const root=document.createElement('section');root.className='bs-scene';root.setAttribute('aria-label','ワッフルリバーシ');
- root.innerHTML=`<div class="bs-left"><div class="bs-pay"><div class="bs-pay-title">1球の反転配当</div><table><thead><tr><th>反転</th><th>WIN</th></tr></thead><tbody></tbody></table><div class="bs-bonus">リバーサルボーナス<strong></strong></div></div></div><div class="bs-tray"><div class="bs-tools"><div class="bs-status"><img class="bs-turn-piece" alt=""><div class="bs-turn-copy"><small></small><strong></strong></div><span class="bs-next"></span></div><span class="bs-guide"><span class="bs-guide-text"></span><b class="bs-hand">0</b>枚反転</span></div><div class="bs-board"><div class="bs-grid" role="img"><canvas></canvas></div><div class="bs-burst" hidden><b>REVERSAL BONUS!</b><span></span></div></div><div class="bs-counts"><div>今回 <b class="bs-gain">+0</b><small> WIN</small></div><div>累計 <b class="bs-total">0</b><small> WIN</small></div></div></div>`;
+ root.innerHTML=`<div class="bs-left"><div class="bs-pay"><div class="bs-pay-title">1球の反転配当</div><table><thead><tr><th>反転</th><th>WIN</th></tr></thead><tbody></tbody></table><div class="bs-bonus">リバーサルボーナス<small>共通 3000倍</small><strong></strong></div></div></div><div class="bs-tray"><div class="bs-tools"><div class="bs-status"><img class="bs-turn-piece" alt=""><div class="bs-turn-copy"><small></small><strong></strong></div><span class="bs-next"></span></div><span class="bs-guide"><span class="bs-guide-text"></span><b class="bs-hand">0</b>枚反転</span></div><div class="bs-board"><div class="bs-grid" role="img"><canvas></canvas></div><div class="bs-burst" hidden><b>REVERSAL BONUS!</b><span></span></div></div><div class="bs-counts"><div>今回 <b class="bs-gain">+0</b><small> WIN</small></div><div>累計 <b class="bs-total">0</b><small> WIN</small></div></div></div>`;
  panel.append(root);const q=k=>root.querySelector(k),canvas=q('canvas'),ctx=canvas.getContext('2d'),grid=q('.bs-grid'),tray=q('.bs-tray');
  const status=q('.bs-status'),piece=q('.bs-turn-piece'),ball=q('.bs-turn-copy small'),player=q('.bs-turn-copy strong'),nextLabel=q('.bs-next');
  const guide=q('.bs-guide-text'),flips=q('.bs-hand'),gain=q('.bs-gain'),total=q('.bs-total');
@@ -118,7 +118,7 @@ function mount(panel){
  const table=q('tbody'),tiers=rows.map(({count,hundredths},i)=>{
   const row=table.insertRow(0),head=document.createElement('th');head.scope='row';
   const next=rows[i+1]?.count;head.textContent=next===undefined?count+'+':next>count+1?count+'–'+(next-1):String(count);row.append(head);const cell=row.insertCell(),value=document.createElement('span'),unit=document.createElement('small');unit.textContent='WIN';cell.append(value,unit);
-  row.title=(hundredths/100)+'倍';return {row,value,count,hundredths};
+  row.title=(hundredths/100).toFixed(1)+'倍';row.dataset.zero=String(hundredths===0);return {row,value,count,hundredths};
  });
  function fit(){const w=root.clientWidth,h=root.clientHeight;if(!w||!h)return;
   root.style.setProperty('--bs-w',w+'px');root.style.setProperty('--bs-h',h+'px');
@@ -159,7 +159,7 @@ function mount(panel){
    const focusTier=live?tiers.findLast(t=>t.count<=hand):null;
    for(const item of tiers)item.row.classList.toggle('current',item===focusTier);
    const ladder=q('.bs-pay');ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';
-   const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent='リバーサルボーナス　＋'+won(bet,R.sweepBonusHundredths)+' WIN';
+   const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent='3000倍！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
    const prize=q('.bs-bonus');prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
    grid.setAttribute('aria-label','8行8列のワッフル盤。'+q('.bs-status').textContent+'。今回'+hand+'枚反転、'+handWin+' WIN。累計'+totalWin+' WIN');
   }
