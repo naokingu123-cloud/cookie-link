@@ -2454,7 +2454,7 @@ sixStageEffects=function(x,fx,p,round,rows,reduced){
 
 class Arcade{
  constructor({random=Math.random,sleep=ms=>new Promise(r=>setTimeout(r,ms)),onEvent=()=>{},onChange=()=>{},speed=1.4,colorCount=5,initialEngines=[Engine,ChocoDigEngine,CandyCarnivalEngine]}={}){
-  Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:[0,0,0],payout:null,result:null,fastForward:false,debug:true,bets:[3000,3000,3000],locked:[0,0,0],paid:[false,false,false],enabled:[true,true,true],draws:[],phase:'ready',paused:false,token:0,dealing:false});
+  const count=initialEngines.length;Object.assign(this,{random,sleep,onEvent,onChange,speed,credit:1000,displayCredit:1000,totalWin:0,wonderSteps:0,wonderValue:0,wonderBank:[],roundWins:Array(count).fill(0),payout:null,result:null,fastForward:false,debug:true,bets:Array(count).fill(3000),locked:Array(count).fill(0),paid:Array(count).fill(false),enabled:Array(count).fill(true),draws:[],phase:'ready',paused:false,token:0,dealing:false});
   this.colorCount=[3,4,5].includes(colorCount)?colorCount:5;this.engines=[];
   for(let i=0;i<initialEngines.length;i++)this.engines.push(new initialEngines[i]({random,sleep,speed,colorCount:this.colorCount,onEvent:(ev,e)=>{
    if(ev.phase==='stepcollect'&&this.phase==='playing'&&this.enabled[i]){this.wonderBank.push(...ev.steps.map(step=>{return {...step,game:i};}));this.wonderSteps=this.wonderBank.length;this.wonderValue+=ev.steps.reduce((n,step)=>n+step.value,0);}
@@ -2663,7 +2663,7 @@ class RecordBook{
  save(){try{if(!this.storage)throw Error('No storage');this.storage.setItem(this.key,JSON.stringify(this.data));this.saved=true;}catch{this.saved=false;}return this.saved;}
  capture(a){
   const result={changed:false,unlocked:[],round:false};if(!a?.engines)return result;
-  let run=this.session.get(a);if(!run||run.token!==a.token){run={token:a.token,done:[false,false,false],round:false};this.session.set(a,run);}
+  let run=this.session.get(a);if(!run||run.token!==a.token){run={token:a.token,done:Array(a.engines.length).fill(false),round:false};this.session.set(a,run);}
   const record=this.data.records,at=this.now();
   for(let i=0;i<a.engines.length;i++){
    const e=a.engines[i];if(run.done[i]||!a.enabled[i]||!a.paid[i]||e.processed!==8)continue;
@@ -2683,7 +2683,7 @@ class RecordBook{
 
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',inks=['#f3348e','#f8be19','#65cc46','#35ace9','#ac50df'];
 const num=n=>n.toLocaleString('ja-JP',{maximumFractionDigits:2,useGrouping:false}),units=[5,10,20,50,100,500];
-let app,active=0,unit=[4,4,4],userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
+let app,active=0,unit=Array.from({length:window.SweetsLineup?.ids?.length||3},()=>4),userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
 const motionReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function put(id,value){const el=$(id),text=String(value);if(el.textContent!==text)el.textContent=text;}
 function scheduleUI(a){if(a)uiApp=a;if(uiPending||document.hidden||!inView)return;uiPending=true;requestAnimationFrame(flushUI);}
@@ -2727,7 +2727,7 @@ function traySeams(){
  return '<svg class="tray-seams" viewBox="0 0 298 298" aria-hidden="true"><path class="seam-rim" d="'+d+'"/><path class="seam-shadow" d="'+d+'"/></svg>';
 }
 
-const slots=Array.from({length:3},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
+const slots=Array.from({length:window.SweetsLineup?.ids?.length||3},(_,i)=>({i,tiles:new Map(),event:{phase:'ready'},message:'同色を2つ以上つなげよう♪',miniLastResult:''}));
 for(const s of slots){
  const i=s.i,b=document.createElement('button');b.className='tab';b.id='tab'+i;b.setAttribute('role','tab');b.setAttribute('aria-label','クッキーリンク・ゲーム'+(i+1));b.setAttribute('aria-controls','panel'+i);
  b.innerHTML=`<span class="tab-game-name" role="img" aria-label="クッキーリンク"><span class="art-alt">クッキーリンク</span></span><span class="mini-wrap"><canvas width="160" height="160" aria-label="ゲーム${i+1}のミニ盤面"></canvas><span class="mini-logo" hidden><span class="selected-label">選択中</span></span></span><span class="tab-win-bubble" hidden><strong class="tabwin"><span class="gold-number">0</span></strong><em class="win-word">WIN</em></span><span class="tab-sugar" aria-label="ワンダーシュガー未獲得" hidden><i class="sugar-gem" aria-hidden="true"></i><b class="sugar-get" hidden>GET!</b></span>`;

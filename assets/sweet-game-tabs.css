@@ -65,3 +65,204 @@ body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:
  #tabs .tab-slot[data-game-kind]>.tab,#tabs .reach-strip::before,#tabs .tab-slot .tab-win-bubble{background:Canvas!important;border:1px solid CanvasText;box-shadow:none!important}
  #tabs .reach-strip .reach-num[data-reach-tier],#tabs .tab-win-bubble .tabwin .gold-number,#screen #tabs .tab-win-bubble .win-word>.gold-word{background:none;color:CanvasText!important;-webkit-text-fill-color:CanvasText!important;-webkit-text-stroke:0}
 }
+
+
+/* Nine-game ALL test: five cabinets on the first row, four on the second.
+   The tenth grid cell stays intentionally empty. Three-game lineups are unchanged. */
+html[data-lineup="all"] #screen>.games-deck{
+ height:276px;
+}
+html[data-lineup="all"] #tabs.tabs{
+ height:192px;
+ display:grid;
+ grid-template-columns:repeat(5,minmax(0,1fr));
+ grid-template-rows:repeat(2,94px);
+ grid-auto-flow:row;
+ gap:4px;
+ align-content:start;
+}
+html[data-lineup="all"] #tabs>.tab-slot{
+ width:auto;
+ min-width:0;
+ height:94px;
+ padding:3px;
+ grid-template-rows:58px 15px 15px;
+ gap:0;
+ align-content:start;
+}
+html[data-lineup="all"] #tabs>.tab-slot>.tab,
+html[data-lineup="all"] #tabs>.tab-slot>.tab[aria-selected="true"]{
+ width:100%;
+ height:58px;
+ min-width:0;
+ padding:2px;
+ grid-template-columns:1fr;
+ grid-template-rows:14px 42px;
+ gap:0;
+ justify-items:center;
+ overflow:hidden;
+}
+html[data-lineup="all"] #tabs .tab-game-name{
+ grid-column:1;
+ grid-row:1;
+ width:100%;
+ max-width:80px;
+ height:14px;
+ min-height:0;
+ align-self:center;
+ margin:0;
+ font-size:6.4px;
+ line-height:14px;
+ letter-spacing:-.15px;
+ background-size:contain!important;
+ background-position:center!important;
+ background-repeat:no-repeat!important;
+ overflow:hidden;
+}
+html[data-lineup="all"] #tabs .tab-game-name img,
+html[data-lineup="all"] #tabs .tab-game-name svg{
+ display:block;
+ width:auto;
+ max-width:100%;
+ height:14px;
+ max-height:14px;
+ margin:auto;
+ object-fit:contain;
+}
+html[data-lineup="all"] #tabs .mini-wrap,
+html[data-lineup="all"] #tabs .tab[aria-selected="true"] .mini-wrap{
+ grid-column:1;
+ grid-row:2;
+ width:42px!important;
+ height:42px!important;
+ min-width:42px;
+ min-height:42px;
+ align-self:center;
+ justify-self:center;
+ overflow:hidden!important;
+ border-radius:5px;
+}
+html[data-lineup="all"] #tabs .mini-wrap canvas,
+html[data-lineup="all"] #tabs .mini-wrap .gp-mini,
+html[data-lineup="all"] #tabs .mini-logo{
+ width:42px!important;
+ height:42px!important;
+ margin:0!important;
+ inset:0!important;
+}
+html[data-lineup="all"] #tabs .tab-slot .tab-bets,
+html[data-lineup="all"] #tabs .tab-slot .reach-strip{
+ grid-row:2;
+ grid-column:1;
+ width:100%;
+ height:15px;
+ min-height:15px;
+ padding:0 1px;
+ gap:1px;
+ align-self:center;
+ border-radius:4px;
+}
+html[data-lineup="all"] #tabs .tab-slot .tab-bets{
+ grid-template-columns:21px minmax(0,1fr) 18px;
+}
+html[data-lineup="all"] #tabs .tab-bets button{
+ height:13px;
+ min-height:13px;
+ padding:0;
+ border-radius:3px;
+ font-size:4.8px!important;
+ line-height:12px;
+ letter-spacing:-.35px;
+}
+html[data-lineup="all"] #tabs .tab-slot .reach-caption{
+ font-size:5.8px;
+ line-height:14px;
+ letter-spacing:-.45px;
+}
+html[data-lineup="all"] #tabs .reach-clip,
+html[data-lineup="all"] #tabs .reach-numbers{
+ height:15px;
+}
+html[data-lineup="all"] #tabs .reach-numbers{
+ gap:1px;
+}
+html[data-lineup="all"] #tabs .reach-num{
+ flex-basis:13px;
+ width:13px;
+ height:14px;
+ font-size:10.5px;
+ line-height:14px;
+ -webkit-text-stroke:.45px #1d1527;
+ text-shadow:0 1px #251626,0 0 3px currentColor;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet{
+ grid-row:3;
+ grid-column:1;
+ width:100%;
+ height:15px;
+ min-height:15px;
+ padding:0 3px;
+ gap:2px;
+ border-radius:4px;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet>.gold-word{
+ font-size:6px;
+}
+html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
+ height:14px;
+ max-width:54px;
+ font-size:10px;
+ line-height:14px;
+}
+html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble{
+ top:16px;
+ left:50%;
+ width:max-content;
+ min-width:58px;
+ max-width:78px;
+ height:23px;
+ padding:1px 4px;
+ transform:translateX(-50%);
+ border-radius:7px;
+ z-index:25;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .tabwin .gold-number{
+ font-size:17px;
+ line-height:20px;
+}
+html[data-lineup="all"] #tabs .tab-win-bubble .win-word,
+html[data-lineup="all"] #tabs .tab-win-bubble .win-word>.gold-word{
+ font-size:7px!important;
+}
+html[data-lineup="all"] #tabs .tab-sugar{
+ top:15px;
+ right:1px;
+ min-width:20px;
+ width:20px;
+ height:22px;
+ padding:0;
+ transform:none;
+ border-radius:7px;
+}
+html[data-lineup="all"] #tabs .tab-sugar .sugar-gem{
+ width:13px;
+ height:14px;
+}
+html[data-lineup="all"] #tabs .tab-sugar .sugar-get{
+ display:none!important;
+}
+html[data-lineup="all"] #tabs>.tab-slot.selected:before{
+ filter:drop-shadow(0 0 3px #fff0a7) brightness(1.1);
+}
+html[data-lineup="all"] #tabs>.tab-slot:nth-child(9){
+ grid-column:4;
+ grid-row:2;
+}
+html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])),
+html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot,
+html[data-lineup="all"] #screen>.games-deck:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
+ height:revert-layer;
+}
+@media(forced-colors:active){
+ html[data-lineup="all"] #tabs>.tab-slot{border:1px solid CanvasText}
+}

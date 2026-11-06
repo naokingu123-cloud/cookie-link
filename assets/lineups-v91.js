@@ -12,21 +12,28 @@ const catalog={
  stick:{name:'ワッフルリバーシ',logo:'assets/waffle-reversi-logo.webp',home:0,record:8},
  castella:{name:'パーティカステラ',logo:'assets/party-castella-logo.webp',home:0,record:9}
 };
-const classic=['cookie','choco','candy'],festival=['jelly','stick','castella'];
-const legacyMounts=['gelato','winery','popcorn'];
+const classic=['cookie','choco','candy'],legacyMounts=['gelato','winery','popcorn'],festival=['jelly','stick','castella'];
+const all=[...classic,...legacyMounts,...festival];
 const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',').map(id=>['waffle','reversi'].includes(id)?'stick':id)||[];
 const valid=custom.length>=1&&custom.length<=3&&new Set(custom).size===custom.length&&custom.every(id=>Object.hasOwn(catalog,id));
-const mode=valid?'custom':params.get('set')==='classic'?'classic':'festival';
-const chosen=valid?custom:mode==='classic'?classic:festival;
-const ids=[null,null,null];
-// The original cabinet mounts use a baking tray, mine and jar in fixed slots.
-// Newer cabinets can fill any remaining mount. Tab order follows the player's picks.
-for(const id of classic.filter(g=>chosen.includes(g)))ids[catalog[id].home]=id;
-for(const id of legacyMounts.filter(g=>chosen.includes(g)&&!ids[catalog[g].home]))ids[catalog[id].home]=id;
-for(const id of chosen.filter(g=>!ids.includes(g)))ids[ids.indexOf(null)]=id;
+const requested=params.get('set');
+const mode=valid?'custom':requested==='classic'?'classic':requested==='festival'?'festival':'all';
+const chosen=valid?custom:mode==='classic'?classic:mode==='festival'?festival:all;
+let ids;
+if(mode==='all'){
+ ids=[...all];
+}else{
+ ids=[null,null,null];
+ // The original cabinet mounts use a baking tray, mine and jar in fixed slots.
+ // Newer cabinets can fill any remaining mount. Tab order follows the player's picks.
+ for(const id of classic.filter(g=>chosen.includes(g)))ids[catalog[id].home]=id;
+ for(const id of legacyMounts.filter(g=>chosen.includes(g)&&!ids[catalog[g].home]))ids[catalog[id].home]=id;
+ for(const id of chosen.filter(g=>!ids.includes(g)))ids[ids.indexOf(null)]=id;
+}
 document.documentElement.dataset.lineup=mode;
+document.documentElement.dataset.gameCount=String(ids.filter(Boolean).length);
 document.documentElement.toggleAttribute('data-has-classic',chosen.some(id=>classic.includes(id)));
-window.SweetsLineup={catalog,chosen,ids,mode};
+window.SweetsLineup={catalog,chosen,ids,mode,all};
 if(mode!=='festival')document.title='SWEETS LINK｜'+chosen.map(id=>catalog[id].name).join('・');
 
 // Remount only game-specific legacy ID selectors, retaining each stylesheet's
