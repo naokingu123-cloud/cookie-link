@@ -40,6 +40,13 @@ for(let seed=0;seed<300;seed++){
  assert.equal(s.colors.filter(Boolean).length,36);assert.equal(s.numbers.filter(Boolean).length,25);
  assert.deepEqual(s.numbers.filter(Boolean).sort((a,b)=>a-b),Array.from({length:25},(_,i)=>i+1));
  for(const i of cells){assert.equal(s.colors[i],s.colors[63-i]);assert.equal(s.colors[i],s.colors[(i&56)+7-i%8]);if(s.numbers[i])assert(!s.colors[i]);}
+ // All 25 possible opening draws capture. Include the three neutral squares by temporarily
+ // moving label 1 to each one, so the guarantee is independent of the random blank allocation.
+ for(let n=1;n<=25;n++)assert(R.draw(s,n).lastFlips>0);
+ for(const i of cells.filter(i=>!s.colors[i]&&!s.numbers[i])){
+  const numbers=s.numbers.slice();numbers[numbers.indexOf(1)]=null;numbers[i]=1;
+  assert(R.draw({...s,numbers},1).lastFlips>0);
+ }
  for(let n=1;n<=8;n++){
   const last=s;s=R.draw(s,n);assert.equal(s.lastColor,n%2?'black':'white');assert.equal(s.lastFlips,s.flipped.length);
   assert.equal(s.maxFlips,Math.max(last.maxFlips,s.lastFlips));assert.equal(s.previousMaxFlips,last.maxFlips);
@@ -50,19 +57,25 @@ for(let seed=0;seed<300;seed++){
  }
  assert.equal(R.draw(s,9),null);
 }
-assert.equal(patterns.size,3);
-// Every mold admits a real monochrome transition for either color. Record it on the
-// triggering ball, preserve it through the next opponent placement, and finish all eight.
-for(const [seed,target,ball,color] of [[417,50,4,'white'],[4971,50,3,'black'],[10939,90,5,'black'],[33028,90,6,'white'],[13973,150,4,'white'],[17945,150,3,'black']]){
- let s=R.create({rng:rng(seed),target});for(let n=1;n<=8;n++){
-  s=R.draw(s,n);if(n===ball){assert.deepEqual(s.lastReversal,{ball,number:n,color});assert.equal(s.counts[color],36+n);}
-  if(n>ball){assert(s.highestRole);assert(s.bonusEvents.some(e=>e.ball===ball));}
-  if(n===ball+1){assert(s.counts.black&&s.counts.white);assert.equal(s.reversalThisMove,false);}
+assert.equal(patterns.size,4);
+// Every production mold has a legal eight-number game that earns the reversal bonus.
+const reversals=[
+ [2654435761,50,'格子',[4,3,5,7,2,15,8,11],7,'black'],
+ [1013904226,90,'双菱',[17,11,14,12,19,13,23,10],7,'black'],
+ [387276917,90,'市松',[8,6,13,3,2,17,11,12],8,'white'],
+ [3668339987,150,'花窓',[24,4,18,10,7,19,23,2],7,'black']
+];
+for(const [seed,target,name,draws,ball,color] of reversals){
+ let s=R.create({rng:rng(seed),target});assert.equal(s.patternName,name);
+ for(const [i,n] of draws.entries()){
+  s=R.draw(s,n);if(i+1===ball){assert.deepEqual(s.lastReversal,{ball,number:n,color});assert.equal(s.counts[color],36+ball);}
+  if(i+1>ball){assert(s.highestRole);assert(s.bonusEvents.some(e=>e.ball===ball));}
  }
+ assert.equal(s.phase,'done');
 }
 {
  let {state,draws}=R.createDemo();const flips=[];for(const v of draws){state=R.draw(state,v);flips.push(state.lastFlips);}
- assert.deepEqual(flips,[3,0,6,0,0,6,2,3]);assert.equal(state.bonusEvents[0].ball,3);
+ assert.deepEqual(flips,[2,1,6,1,6,0,3,0]);assert.equal(state.bonusEvents[0].ball,7);
 }
 // Independent production-engine holdout. Number assignment is exchangeable so fixed
 // labels 1–8 are a uniform eight-draw sequence. A single stream covers all game actions.

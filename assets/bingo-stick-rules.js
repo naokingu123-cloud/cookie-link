@@ -7,11 +7,12 @@
  const sweepBonusHundredths=3000,sugarFlips=8;
  function award(count){return payRows.findLast(row=>row.count<=count)?.hundredths||0;}
  // Each quarter contains nine stones. Mirroring it horizontally and vertically leaves 28 open squares.
- // Rates are measured with independent uniform draws, including both color orientations and reversal bonuses.
+ // Every open square brackets at least one white stone on black's first move.
+ // Keep the color orientation fixed. Each rate is a gross return estimate from uniform draws.
  const molds=[
-  {name:'格子',quarter:'.B.B.BBBBB.W.B..',rate:44.59602},
-  {name:'双菱',quarter:'B.BB.B.W.B...BBW',rate:94.78797},
-  {name:'花窓',quarter:'B....B.W.BBB.BBB',rate:167.72330}
+  {rate:46.78711,patterns:[{name:'格子',quarter:'B.B.BWW..B.BB.W.'}]},
+  {rate:86.72695,patterns:[{name:'双菱',quarter:'B....BW..WBBB.BW'},{name:'市松',quarter:'W...BWW.BBB..WW.'}]},
+  {rate:164.09503,patterns:[{name:'花窓',quarter:'...BBWW...BW.WBB'}]}
  ];
  function shuffle(values,rng){
   for(let i=values.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[values[i],values[j]]=[values[j],values[i]];}
@@ -20,12 +21,12 @@
  function create({rng=Math.random,target=90}={}){
   const rate=Math.max(50,Math.min(150,Number.isFinite(target)?target:90));
   const high=rate<=molds[1].rate?1:2,lo=molds[high-1],hi=molds[high];
-  const mold=rng()<(rate-lo.rate)/(hi.rate-lo.rate)?hi:lo;
-  const transpose=rng()<.5,invert=rng()<.5;
+  const group=rng()<(rate-lo.rate)/(hi.rate-lo.rate)?hi:lo;
+  const mold=group.patterns[Math.floor(rng()*group.patterns.length)],transpose=rng()<.5;
   const colors=cells.map(i=>{
    const x=Math.min(i%8,7-i%8),y=Math.min(i>>3,7-(i>>3));
    const stone=mold.quarter[transpose?4*x+y:4*y+x];
-   return stone==='.'?null:((stone==='B')!==invert?'black':'white');
+   return stone==='.'?null:(stone==='B'?'black':'white');
   });
   const numbers=Array(64).fill(null),open=shuffle(cells.filter(i=>!colors[i]),rng);
   for(let i=0;i<25;i++)numbers[open[i]]=i+1;
@@ -69,10 +70,10 @@
    baseHundredths,bonusHundredths,totalHundredths:baseHundredths+bonusHundredths,phase:draws.length===8?'done':'playing'};
  }
  function createDemo(){
-  let seed=98689;
+  let seed=1013904226;
   const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
   const state=create({rng});
-  const draws=[1,2,3,4,5,6,7,8];return {state,draws,balls:draws};
+  const draws=[17,11,14,12,19,13,23,10];return {state,draws,balls:draws};
  }
  const api={create,draw,createDemo,award,payRows,sweepBonusHundredths,sugarFlips};
  if(typeof module==='object'&&module.exports)module.exports=api;

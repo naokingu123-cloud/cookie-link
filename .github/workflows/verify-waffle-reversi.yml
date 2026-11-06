@@ -1,0 +1,29 @@
+name: Verify Waffle Reversi rules and board
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/bingo-stick*'
+      - 'assets/waffle-reversi-*'
+      - '.github/tests/bingo-stick.cjs'
+      - '.github/tests/waffle_reach_browser.py'
+      - '.github/workflows/verify-waffle-reversi.yml'
+permissions:
+  contents: read
+jobs:
+  waffle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check openings, flips and awards
+        run: node .github/tests/bingo-stick.cjs
+      - name: Check turns, reachable payouts and small-screen layout in Chrome
+        run: |
+          python3 -m pip install --disable-pip-version-check playwright
+          CHROME_PATH="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$CHROME_PATH" ]; then python3 -m playwright install chromium; fi
+          CHROME_PATH="$CHROME_PATH" python3 .github/tests/waffle_reach_browser.py

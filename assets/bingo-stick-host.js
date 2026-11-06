@@ -4,7 +4,7 @@
 const id=SweetsLineup.ids.indexOf('stick'),slot=slots[id],game=SweetsLineup.catalog.stick;
 const R=window.BingoStickRules,V=window.BingoStickView,view=V.mount(slot.panel);
 const noteSteps=[0,2,4,5,7,9,11];
-let clock=0,startTime=0,stamp=null,frame=0,lastMain=-Infinity,lastMini=-Infinity;
+let clock=0,startTime=0,stamp=null,frame=0,miniTimer=0,lastMain=-Infinity,lastMini=-Infinity;
 let paused=false,animating=false,lastBeat=0,reversalShown=false;
 const engine={
  kind:'stick',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'リバーサル',version:0,
@@ -115,23 +115,32 @@ const demoPeriod=Math.max(20000,nextDemoAt+1400);
 function paint(mini){
  if(mini?(active===id||app.phase==='ready'):(active!==id||slot.panel.hidden))return;
  const demoing=app.phase==='ready',t=clock%demoPeriod,stage=demoing?lesson.findLast(e=>e.at<=t):null;
- const s=stage?stage.state:engine.state,age=stage?t-stage.at:animating?clock-startTime:Infinity;
- const opts={time:clock,bet:app.bet(id),demo:demoing,paused:app.paused,age,reach:stage?[]:slot.reachResults,
+ const s=stage?stage.state:engine.state,age=stage?t-stage.at:animating?clock-startTime:Infinity,bet=app.bet(id);
+ if(stage&&stage.reachBet!==bet){stage.reachBet=bet;stage.reach=bet>0?projectReaches(s,bet):[];}
+ const reach=stage?(age>=V.motion(s,Infinity).duration?stage.reach:[]):slot.reachResults;
+ const opts={time:clock,bet,demo:demoing,paused:app.paused,age,reach,
   latestNumber:s.draws.at(-1),sugarCollected:stage?s.phase==='done'&&earnsSugar(s):engine.wonderCollected,
   sugarIcon:mini||!app.bet(id)?null:getSugarSprite(sugarVisualTier(engine.wonderToken||app.bet(id)))};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
 slot.paintStick=paint;
-function wake(){if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
+function wake(){
+ if(miniTimer){clearTimeout(miniTimer);miniTimer=0;}
+ if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);
+}
 function tick(now){
  frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
  // A slow frame or fast-forward must never jump over a stone's beat.
- if(moving&&stamp!==null)clock+=Math.min(90,Math.max(0,now-stamp)*(animating?engine.presentationRate:1));
+ if(moving&&stamp!==null){
+  const delta=Math.max(0,now-stamp);clock+=animating?Math.min(90,delta*engine.presentationRate):delta;
+ }
  stamp=moving?now:null;
  if(moving&&animating)advanceMove();
  if(active===id&&(animating||clock-lastMain>=32)){paint(false);lastMain=clock;}
  if(active!==id&&clock-lastMini>=(animating?32:140)){paint(true);lastMini=clock;}
- if(moving&&(animating||active===id&&(app.phase==='ready'||slot.reachResults.length)))wake();
+ const reaching=app.phase==='playing'&&slot.reachResults.length&&!motionReduced;
+ if(moving&&(animating||active===id&&(app.phase==='ready'||reaching)))wake();
+ else if(moving&&active!==id&&reaching)miniTimer=setTimeout(wake,145);
  else stamp=null;
 }
 const oldSelect=select;select=function(i){const result=oldSelect(i);document.body.classList.toggle('bs-active',active===id);lastMain=lastMini=-Infinity;wake();return result;};
