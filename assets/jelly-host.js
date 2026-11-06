@@ -126,8 +126,8 @@ function tick(now){
  const elapsed=moving&&stamp?Math.max(0,now-stamp):0;stamp=moving?now:0;
  if(moving){const dt=Math.min(100,elapsed);clock+=elapsed;advance(dt);}
  if(active===id&&clock-lastMain>=32){paint(false);lastMain=clock;}
- const miniReach=active!==id&&app.phase==='playing'&&!motionReduced&&slot.reachResults.length>0;
- if((engine.trace||miniReach)&&clock-lastMini>=150){paint(true);lastMini=clock;}
+ const miniReach=!allNineMode&&active!==id&&app.phase==='playing'&&!motionReduced&&slot.reachResults.length>0;
+ if((!allNineMode||active===id)&&(engine.trace||miniReach)&&clock-lastMini>=150){paint(true);lastMini=clock;}
  if(moving&&app.phase!=='ready'&&(active===id||engine.trace||engine.queue.length))wake();
  else if(moving&&miniReach)miniTimer=setTimeout(wake,150);
 }
