@@ -12,7 +12,7 @@
 try{
  const oldPaint=window.sweets12ThumbnailRenderer;
  if(typeof oldPaint!=='function')throw Error('v22 mini renderer not loaded');
- const SIZE=64,SPRITE_SIZE=40,CACHE_LIMIT=240;
+ const SIZE=64,SPRITE_SIZE=48,CACHE_LIMIT=240;
  const views=new Map(),candyTiles=new Map(),backdrops=new Map();
  let assetEpoch=0,painted=0,skipped=0,failed=0;
  let originalPngReady=!!sixCandyPngState.loaded;
