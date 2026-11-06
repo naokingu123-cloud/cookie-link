@@ -70,13 +70,13 @@ body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:
 /* Nine-game ALL test: five cabinets on the first row, four on the second.
    The tenth grid cell stays intentionally empty. Three-game lineups are unchanged. */
 html[data-lineup="all"] #screen>.games-deck{
- height:276px;
+ height:262px;
 }
 html[data-lineup="all"] #tabs.tabs{
  height:192px;
  display:grid;
  grid-template-columns:repeat(5,minmax(0,1fr));
- grid-template-rows:repeat(2,94px);
+ grid-template-rows:repeat(2,87px);
  grid-auto-flow:row;
  gap:4px;
  align-content:start;
@@ -97,7 +97,7 @@ html[data-lineup="all"] #tabs>.tab-slot>.tab[aria-selected="true"]{
  min-width:0;
  padding:2px;
  grid-template-columns:1fr;
- grid-template-rows:14px 42px;
+ grid-template-rows:13px 38px;
  gap:0;
  justify-items:center;
  overflow:hidden;
@@ -112,7 +112,7 @@ html[data-lineup="all"] #tabs .tab-game-name{
  align-self:center;
  margin:0;
  font-size:6.4px;
- line-height:14px;
+ line-height:13px;
  letter-spacing:-.15px;
  background-size:contain!important;
  background-position:center!important;
@@ -155,7 +155,7 @@ html[data-lineup="all"] #tabs .tab-slot .reach-strip{
  grid-row:2;
  grid-column:1;
  width:100%;
- height:15px;
+ height:14px;
  min-height:15px;
  padding:0 1px;
  gap:1px;
@@ -171,12 +171,12 @@ html[data-lineup="all"] #tabs .tab-bets button{
  padding:0;
  border-radius:3px;
  font-size:4.8px!important;
- line-height:12px;
+ line-height:11px;
  letter-spacing:-.35px;
 }
 html[data-lineup="all"] #tabs .tab-slot .reach-caption{
  font-size:5.8px;
- line-height:14px;
+ line-height:13px;
  letter-spacing:-.45px;
 }
 html[data-lineup="all"] #tabs .reach-clip,
@@ -215,7 +215,7 @@ html[data-lineup="all"] #tabs .tab-locked-bet .tabbet{
  line-height:14px;
 }
 html[data-lineup="all"] #tabs .tab-slot .tab-win-bubble{
- top:16px;
+ top:13px;
  left:50%;
  width:max-content;
  min-width:58px;
@@ -235,7 +235,7 @@ html[data-lineup="all"] #tabs .tab-win-bubble .win-word>.gold-word{
  font-size:7px!important;
 }
 html[data-lineup="all"] #tabs .tab-sugar{
- top:15px;
+ top:13px;
  right:1px;
  min-width:20px;
  width:20px;
@@ -259,15 +259,23 @@ html[data-lineup="all"] #tabs>.tab-slot:nth-child(9){
  grid-row:2;
 }
 html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
- height:192px!important;
+ height:178px!important;
 }
 html[data-lineup="all"] #tabs:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden]))>.tab-slot{
- height:94px!important;
+ height:87px!important;
  padding-top:3px!important;
 }
 html[data-lineup="all"] #screen>.games-deck:has(.tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
- height:276px!important;
+ height:262px!important;
 }
 @media(forced-colors:active){
  html[data-lineup="all"] #tabs>.tab-slot{border:1px solid CanvasText}
+}
+
+/* ALL mode consumes exactly the old three-tab footprint, so the main board
+   keeps the same vertical space as the classic/festival three-game cabinet. */
+html[data-lineup="all"] #screen>.games-deck{flex:0 0 262px!important}
+html[data-lineup="all"] #tabs.tabs{flex:0 0 178px!important}
+html[data-lineup="all"] body.mobile-landscape #screen:has(#tabs .tab-slot:not([hidden]) .tab-win-bubble:not([hidden])){
+ grid-template-rows:minmax(130px,1fr) 178px 72px!important;
 }
