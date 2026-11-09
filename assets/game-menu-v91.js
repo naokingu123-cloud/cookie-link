@@ -81,3 +81,24 @@ renderRoundResult=function(a){
  highlight(ids[active]?active:ids.indexOf(chosen[0]));
 };
 })();
+
+/* The reference-inspired cabinet is loaded as an additive shell after every
+   existing game skin. Original images and all gameplay renderers stay active. */
+(()=>{
+ 'use strict';
+ document.documentElement.classList.add('arcade-candy-world');
+ if(!document.getElementById('arcade-candy-world-v156-css')){
+  const link=document.createElement('link');
+  link.id='arcade-candy-world-v156-css';
+  link.rel='stylesheet';
+  link.href='assets/arcade-candy-world-v156.css?v=156';
+  document.head.append(link);
+ }
+ if(!document.getElementById('arcade-candy-world-v156-js')){
+  const script=document.createElement('script');
+  script.id='arcade-candy-world-v156-js';
+  script.src='assets/arcade-candy-world-v156.js?v=156';
+  script.async=false;
+  document.head.append(script);
+ }
+})();
