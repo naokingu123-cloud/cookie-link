@@ -1,0 +1,391 @@
+/* SWEETS LINK v156 — candy arcade cabinet world.
+   Visual shell only: every game engine, board renderer, payout table and existing
+   image remains untouched underneath these static cabinet layers. */
+
+html.arcade-candy-world{
+  --arcade-cyan:#55e8f6;
+  --arcade-cyan-deep:#17486a;
+  --arcade-pink:#f28ac0;
+  --arcade-pink-deep:#87355f;
+  --arcade-cream:#fff3ce;
+  --arcade-cookie:#d99b51;
+  --arcade-cookie-deep:#7a4529;
+  --arcade-gold:#ffd873;
+  --arcade-choco:#4e2b2b;
+  color-scheme:light;
+}
+
+html.arcade-candy-world body{
+  background-color:#151620!important;
+  background-image:
+    radial-gradient(circle at 17px 17px,#65677d 0 2px,transparent 2.8px),
+    radial-gradient(circle at 47px 43px,#333647 0 8px,transparent 8.8px),
+    linear-gradient(135deg,#101119 0%,#252737 49%,#11121a 100%)!important;
+  background-size:64px 64px,96px 96px,auto!important;
+}
+
+html.arcade-candy-world #viewport{
+  background:transparent!important;
+}
+
+html.arcade-candy-world #screen{
+  isolation:isolate;
+  background:transparent!important;
+  border-radius:14px;
+  box-shadow:
+    0 0 0 1px rgba(255,249,222,.78),
+    0 0 0 4px rgba(72,38,63,.76),
+    0 18px 48px rgba(0,0,0,.58)!important;
+}
+
+html.arcade-candy-world #screen>.arcade-world-backdrop{
+  position:absolute;
+  inset:0;
+  z-index:-2;
+  display:block;
+  pointer-events:none;
+  border-radius:14px;
+  overflow:hidden;
+  contain:strict;
+  background:
+    linear-gradient(180deg,rgba(235,253,255,.08) 0 45%,rgba(255,239,211,.13) 78%,rgba(255,187,220,.18) 100%),
+    url("candy-roulette-world.svg") center/cover no-repeat;
+}
+
+html.arcade-candy-world #screen>.arcade-world-backdrop::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 22% 9%,rgba(255,255,255,.62) 0 5%,transparent 18%),
+    radial-gradient(ellipse at 76% 17%,rgba(255,255,255,.34) 0 4%,transparent 17%),
+    linear-gradient(180deg,rgba(86,213,255,.08),transparent 38%,rgba(255,205,219,.12));
+}
+
+html.arcade-candy-world #screen>.arcade-world-backdrop::after{
+  content:"";
+  position:absolute;
+  left:-8%;
+  right:-8%;
+  bottom:-8%;
+  height:31%;
+  background:
+    radial-gradient(ellipse at 50% 100%,rgba(255,245,188,.68),transparent 58%),
+    linear-gradient(180deg,transparent,rgba(229,119,172,.16));
+}
+
+html.arcade-candy-world #screen>.arcade-world-glass{
+  position:absolute;
+  inset:0;
+  z-index:900;
+  display:block;
+  pointer-events:none;
+  border-radius:14px;
+  contain:paint;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.66),
+    inset 0 0 28px rgba(37,195,232,.18),
+    inset 0 -34px 54px rgba(255,145,195,.13);
+}
+
+html.arcade-candy-world #screen>.arcade-world-glass::before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:12px;
+  background:
+    linear-gradient(116deg,transparent 0 7%,rgba(255,255,255,.23) 9%,transparent 18%),
+    linear-gradient(180deg,rgba(255,255,255,.13),transparent 15%);
+}
+
+/* Large roulette window: dark outer cabinet, cyan illuminated rail and clear glass. */
+html.arcade-candy-world #screen .festival-top{
+  position:relative!important;
+  border-radius:13px!important;
+  background:
+    linear-gradient(180deg,rgba(248,254,255,.78),rgba(197,238,249,.26))!important;
+  box-shadow:
+    0 0 0 2px var(--arcade-cyan-deep),
+    0 0 0 5px var(--arcade-cyan),
+    0 0 0 7px rgba(238,255,255,.94),
+    inset 0 0 0 2px rgba(156,238,255,.55),
+    inset 0 -18px 36px rgba(35,147,193,.15),
+    0 8px 18px rgba(28,52,84,.35)!important;
+}
+
+html.arcade-candy-world #screen #cookie-roulette,
+html.arcade-candy-world #screen .arena{
+  border-radius:10px!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(228,255,255,.82),
+    inset 0 0 22px rgba(63,205,240,.18)!important;
+}
+
+html.arcade-candy-world #screen .festival-top>.arcade-world-roulette-glass{
+  position:absolute;
+  inset:4px;
+  z-index:80;
+  display:block;
+  pointer-events:none;
+  border:1px solid rgba(224,255,255,.72);
+  border-radius:9px;
+  contain:paint;
+  background:
+    linear-gradient(118deg,rgba(255,255,255,.31) 0 6%,transparent 17%),
+    linear-gradient(180deg,rgba(255,255,255,.10),transparent 24%);
+  box-shadow:
+    inset 0 0 16px rgba(255,255,255,.20),
+    0 0 8px rgba(68,228,255,.30);
+}
+
+/* The tab bank becomes the pink lace sub-monitor rack from the reference. */
+html.arcade-candy-world #screen>.games-deck{
+  position:relative!important;
+  border-radius:12px!important;
+  background:
+    linear-gradient(180deg,rgba(255,249,253,.72),rgba(238,104,170,.54)),
+    radial-gradient(circle at 8px 8px,rgba(255,255,255,.61) 0 1.5px,transparent 2px) 0 0/16px 16px,
+    linear-gradient(180deg,#ffcde6,#e56bac)!important;
+  box-shadow:
+    0 0 0 2px var(--arcade-pink-deep),
+    0 0 0 4px rgba(255,246,251,.96),
+    inset 0 0 0 3px rgba(255,190,220,.86),
+    inset 0 -14px 24px rgba(170,44,111,.24),
+    0 7px 17px rgba(78,33,72,.34)!important;
+}
+
+html.arcade-candy-world #screen>.games-deck>.arcade-world-tab-ribbon{
+  position:absolute;
+  left:8px;
+  right:8px;
+  top:-8px;
+  height:13px;
+  z-index:75;
+  display:block;
+  pointer-events:none;
+  border:1px solid #9a506f;
+  border-radius:999px 999px 7px 7px;
+  contain:paint;
+  background:
+    radial-gradient(circle at 10px 7px,#fff6c8 0 3px,#f6b9d8 3.5px 6px,transparent 6.5px) 0 0/31px 13px repeat-x,
+    linear-gradient(180deg,#fff4d7,#e7a665);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.88),
+    0 2px 4px rgba(103,45,73,.30);
+}
+
+html.arcade-candy-world #tabs>.tab-slot{
+  border-radius:8px;
+  box-shadow:
+    0 2px 5px rgba(96,39,75,.34),
+    inset 0 0 0 1px rgba(255,255,255,.22);
+}
+
+html.arcade-candy-world #tabs>.tab-slot.selected{
+  box-shadow:
+    0 0 0 1px rgba(255,247,191,.92),
+    0 0 7px rgba(255,221,112,.74),
+    0 3px 6px rgba(84,35,67,.36);
+}
+
+html.arcade-candy-world #tabs>.tab-slot>.tab{
+  outline:1px solid rgba(255,255,255,.40);
+  outline-offset:-1px;
+}
+
+/* Selected game cabinet: biscuit canopy, cream-and-gold rails, original board inside. */
+html.arcade-candy-world #screen>.game{
+  position:relative!important;
+  overflow:visible!important;
+  border-radius:14px!important;
+  box-shadow:
+    0 0 0 2px var(--arcade-cookie-deep),
+    0 0 0 5px var(--arcade-gold),
+    0 0 0 7px rgba(255,248,209,.95),
+    inset 0 0 0 2px rgba(255,255,255,.42),
+    0 10px 22px rgba(69,36,61,.42)!important;
+}
+
+html.arcade-candy-world #screen>.game>.arcade-world-game-canopy{
+  position:absolute;
+  left:3%;
+  right:3%;
+  top:-16px;
+  height:30px;
+  z-index:86;
+  display:block;
+  pointer-events:none;
+  border:2px solid #92542c;
+  border-radius:50% 50% 8px 8px / 82% 82% 8px 8px;
+  contain:paint;
+  background:
+    radial-gradient(circle at 8% 42%,#ffc1de 0 5px,#fff0ad 5.5px 8px,transparent 8.5px) 0 0/43px 25px repeat-x,
+    linear-gradient(180deg,rgba(255,248,211,.93) 0 38%,rgba(224,159,76,.90) 42% 100%),
+    url("sweet-skins/cookie.webp") center/cover no-repeat;
+  box-shadow:
+    inset 0 2px rgba(255,255,255,.92),
+    inset 0 -5px rgba(141,75,36,.20),
+    0 4px 6px rgba(89,42,38,.34);
+}
+
+html.arcade-candy-world #screen>.game>.arcade-world-game-canopy::before{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  top:4px;
+  height:8px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 12px 4px,#ff8ebc 0 2px,transparent 2.4px) 0 0/31px 8px repeat-x,
+    linear-gradient(90deg,rgba(255,255,255,.85),rgba(255,234,174,.86));
+  box-shadow:0 1px rgba(120,65,39,.18);
+}
+
+html.arcade-candy-world #screen>.game>.arcade-world-game-canopy::after{
+  content:"";
+  position:absolute;
+  left:4%;
+  right:4%;
+  bottom:-8px;
+  height:11px;
+  background:
+    radial-gradient(circle at 12px 0,#fff1bd 0 9px,transparent 9.8px) 0 0/24px 11px repeat-x;
+}
+
+html.arcade-candy-world #screen>.game>.arcade-world-game-rail{
+  position:absolute;
+  top:5%;
+  bottom:4%;
+  width:9px;
+  z-index:70;
+  display:block;
+  pointer-events:none;
+  border:1px solid #8c522d;
+  border-radius:999px;
+  contain:paint;
+  background:
+    linear-gradient(90deg,#9a5a2f 0 12%,#ffe9a5 18% 45%,#d79944 53% 76%,#734129 84% 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.45),
+    0 2px 5px rgba(62,29,40,.32);
+}
+
+html.arcade-candy-world #screen>.game>.arcade-world-game-rail-left{left:-7px}
+html.arcade-candy-world #screen>.game>.arcade-world-game-rail-right{right:-7px}
+
+html.arcade-candy-world #screen .main-frame{
+  border-radius:11px!important;
+  box-shadow:
+    0 0 0 1px rgba(64,31,42,.82),
+    0 0 0 3px rgba(255,220,126,.94),
+    inset 0 0 0 1px rgba(255,255,255,.42),
+    inset 0 -13px 24px rgba(102,47,60,.09)!important;
+}
+
+/* Ornate medal-console finish. Existing counters, buttons and controls stay in place. */
+html.arcade-candy-world #screen #console{
+  position:relative!important;
+  border-radius:12px 12px 7px 7px!important;
+  background:
+    linear-gradient(180deg,rgba(255,234,144,.95) 0 7%,rgba(163,93,43,.91) 8% 22%,rgba(78,39,33,.95) 24% 100%),
+    url("sweet-skins/cookie.webp") center/cover no-repeat!important;
+  box-shadow:
+    0 0 0 2px #472823,
+    0 0 0 5px #eebc5d,
+    inset 0 0 0 2px rgba(255,241,163,.78),
+    inset 0 -14px 28px rgba(35,16,33,.48),
+    0 -5px 16px rgba(58,37,73,.30)!important;
+}
+
+html.arcade-candy-world #screen #console>.arcade-world-console-trim{
+  position:absolute;
+  left:2%;
+  right:2%;
+  top:3px;
+  height:8px;
+  z-index:70;
+  display:block;
+  pointer-events:none;
+  border-radius:999px;
+  contain:paint;
+  background:
+    linear-gradient(180deg,#fff9c9,#ffc94c 42%,#a85b20 50%,#ffe480 78%,#754026);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.92),
+    0 1px 3px rgba(54,25,29,.42);
+}
+
+html.arcade-candy-world #screen #console button,
+html.arcade-candy-world #screen #console [role="button"]{
+  border-color:#ffe59a!important;
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.67),
+    inset 0 -2px rgba(72,31,33,.22),
+    0 2px 3px rgba(47,20,31,.44)!important;
+}
+
+html.arcade-candy-world #screen #console :is(#credit,#win,#total-bet){
+  text-shadow:
+    0 1px #3d211b,
+    0 0 4px rgba(255,220,111,.55);
+}
+
+/* Keep modal and result layers readable over the brighter world. */
+html.arcade-candy-world #screen :is(.round-result,.lineup-paper,.record-paper){
+  box-shadow:
+    0 0 0 2px rgba(255,231,154,.90),
+    0 10px 30px rgba(44,24,47,.48)!important;
+}
+
+/* In the nine-game cabinet the exact 5+4 geometry remains unchanged. */
+html.arcade-candy-world[data-lineup="all"] #screen>.games-deck{
+  border:0!important;
+  background:
+    linear-gradient(180deg,rgba(255,248,253,.58),rgba(230,91,159,.42)),
+    radial-gradient(circle at 7px 7px,rgba(255,255,255,.55) 0 1.4px,transparent 2px) 0 0/14px 14px,
+    linear-gradient(180deg,#fbbbd9,#d9579d)!important;
+}
+
+html.arcade-candy-world[data-lineup="all"] #tabs>.tab-slot{
+  box-shadow:0 2px 4px rgba(88,35,68,.27);
+}
+
+/* Landscape gets the reference's broad sky window and stronger right-hand rack. */
+html.arcade-candy-world body.mobile-landscape #screen>.arcade-world-backdrop{
+  background:
+    linear-gradient(180deg,rgba(235,253,255,.05) 0 44%,rgba(255,233,201,.10) 82%),
+    url("candy-roulette-world.svg") center 42%/cover no-repeat;
+}
+
+html.arcade-candy-world body.mobile-landscape #screen>.games-deck{
+  box-shadow:
+    0 0 0 2px var(--arcade-pink-deep),
+    0 0 0 5px rgba(255,244,250,.97),
+    inset 0 0 0 3px rgba(255,190,220,.90),
+    inset 0 -16px 26px rgba(169,43,111,.26),
+    0 8px 20px rgba(74,31,70,.42)!important;
+}
+
+html.arcade-candy-world body.mobile-landscape #screen>.game>.arcade-world-game-canopy{
+  top:-13px;
+  height:27px;
+}
+
+/* Static effects only; no new perpetual animation is introduced. */
+@media (prefers-reduced-motion:reduce){
+  html.arcade-candy-world #screen *{
+    scroll-behavior:auto!important;
+  }
+}
+
+@media (forced-colors:active){
+  html.arcade-candy-world #screen,
+  html.arcade-candy-world #screen :is(.festival-top,.games-deck,.game,#console){
+    background:Canvas!important;
+    box-shadow:0 0 0 1px CanvasText!important;
+  }
+  html.arcade-candy-world :is(.arcade-world-backdrop,.arcade-world-glass,.arcade-world-roulette-glass,.arcade-world-tab-ribbon,.arcade-world-game-canopy,.arcade-world-game-rail,.arcade-world-console-trim){
+    display:none!important;
+  }
+}
