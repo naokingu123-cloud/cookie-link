@@ -89,7 +89,8 @@ renderRoundResult=function(a){
  document.documentElement.classList.add('arcade-candy-world');
  const styles=[
   ['arcade-candy-world-v156-css','assets/arcade-candy-world-v156.css?v=156'],
-  ['arcade-candy-world-v157-css','assets/arcade-candy-world-v157.css?v=157']
+  ['arcade-candy-world-v157-css','assets/arcade-candy-world-v157.css?v=157'],
+  ['waffle-pow-v158-css','assets/waffle-pow-v158.css?v=158']
  ];
  for(const [id,href] of styles){
   if(document.getElementById(id))continue;
@@ -101,7 +102,8 @@ renderRoundResult=function(a){
  }
  const scripts=[
   ['arcade-candy-world-v156-js','assets/arcade-candy-world-v156.js?v=156'],
-  ['arcade-candy-world-v157-js','assets/arcade-candy-world-v157.js?v=157']
+  ['arcade-candy-world-v157-js','assets/arcade-candy-world-v157.js?v=157'],
+  ['waffle-pow-v158-js','assets/waffle-pow-v158.js?v=158']
  ];
  for(const [id,src] of scripts){
   if(document.getElementById(id))continue;
