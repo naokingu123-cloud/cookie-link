@@ -273,7 +273,7 @@ function refreshArt(){lastMini=lastMain=-1e4;requestFrame();}
 V.assetsReady.then(refreshArt);
 if(document.fonts)document.fonts.load('700 16px ArcadePayout','0123456789WIN').then(refreshArt);
 document.body.classList.add('pc-enabled');
-window.PopcornSplash={engine,core:K,version:90};
+window.PopcornSplash={engine,core:K,version:91};
 engine.reset();
 select(id);
 })();
