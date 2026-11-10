@@ -207,16 +207,37 @@
   const clearPay=[[1,1],[2,3],[3,20],[4,50],[5,200],[6,500],[7,1000],[8,2000]];
   const clearTotals=[0];
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
-  // At all settings the board follows the same probability law. Only the
-  // first paying count changes, once per game and always in tens. RTP anchors
-  // use the joint pop/clear distribution of 225,000 complete eight-ball rounds.
-  const startRates=[[230,48.541],[220,50.003],[210,51.881],[200,54.251],
-    [190,57.213],[180,60.863],[170,65.284],[160,70.572],[150,76.808],
-    [140,84.128],[130,92.652],[120,102.484],[110,113.750],[100,126.584],
-    [90,141.248],[80,158.012]];
+  // Symmetric opening boards. Every pattern has at least one ordinary fuse
+  // that can clear all 61 kernels immediately; ALL is not needed.
+  // "mirror" means left/right reflection, "rot180" means half-turn symmetry.
+  const initialPatterns=[
+    {name:'ミラーリボン',symmetry:'mirror',clearPorts:[7],powers:[0,0,0,0,0,0,2,3,3,2,0,0,1,0,1,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,3,2,0,0,2,3,0,1,0,1,1,1,0,1,0,1,0,0,1,0,0,0,0,0,0]},
+    {name:'ミラークラウン',symmetry:'mirror',clearPorts:[7],powers:[0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,0,3,1,1,1,1,3,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2,0,1,0,0,0,0,1,0,0,0,0,0]},
+    {name:'ミラースター',symmetry:'mirror',clearPorts:[7],powers:[0,0,0,0,0,1,0,1,1,0,1,0,2,4,0,4,2,0,4,0,0,0,0,0,0,4,0,0,0,0,4,0,0,0,0,1,0,1,0,0,1,0,1,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0]},
+    {name:'ターンフラワー',symmetry:'rot180',clearPorts:[10],powers:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,0,0,2,0,0,0,0,1,3,0,0,0,0,2,0,0,0,0,3,1,0,0,0,0,2,0,0,2,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1]},
+    {name:'ターンリング',symmetry:'rot180',clearPorts:[4],powers:[0,0,1,0,0,0,0,0,0,0,0,0,0,3,1,0,1,0,4,0,0,1,1,0,2,0,0,0,0,1,2,1,0,0,0,0,2,0,1,1,0,0,4,0,1,0,1,3,0,0,0,0,0,0,0,0,0,0,1,0,0]},
+    {name:'ターンクロス',symmetry:'rot180',clearPorts:[7],powers:[0,1,1,1,0,0,0,0,0,0,0,0,0,0,4,0,1,0,0,0,0,0,0,0,1,1,0,2,2,0,0,0,2,2,0,1,1,0,0,0,0,0,0,0,1,0,4,0,0,0,0,0,0,0,0,0,0,1,1,1,0]},
+    {name:'ミラーフィーバー',symmetry:'mirror',clearPorts:[2,7,12],high:true,powers:[1,0,4,0,1,0,0,0,0,0,0,2,0,0,0,0,0,2,0,0,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,2,2,1,2,2,0,0,0,1,1,0,0,0,2,0,2,0]},
+    {name:'ターンフィーバー',symmetry:'rot180',clearPorts:[0,5,9,10,11],high:true,powers:[5,0,0,0,0,5,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,2,0,0,0,2,0,0,0,2,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,5,0,0,0,0,5]}
+  ].map(pattern=>Object.freeze({...pattern,powers:Object.freeze(pattern.powers.slice()),clearPorts:Object.freeze(pattern.clearPorts.slice())}));
+  const normalPatterns=initialPatterns.filter(pattern=>!pattern.high),highPatterns=initialPatterns.filter(pattern=>pattern.high);
+  function patternForRate(target,rng){
+    const rate=Math.max(50,Math.min(150,Number(target)||90));
+    // High-clear variants are deliberately confined to upper settings.
+    const highChance=Math.max(0,Math.min(.28,(rate-110)/40*.28));
+    const pool=rng()<highChance?highPatterns:normalPatterns;
+    return pool[Math.floor(rng()*pool.length)];
+  }
+  function patternBoard(pattern){
+    return pattern.powers.map((power,id)=>Object.freeze({id,bomb:power>0,power,color:power}));
+  }
+  // The initial full-clear path raises volatility, so the first POP threshold
+  // is recalibrated upward at low settings. Adjacent anchors are mixed per game.
+  const startRates=[[250,45],[240,50],[220,58],[200,67],[180,77],[160,89],
+    [150,96],[140,105],[130,115],[120,126],[110,138],[100,150]];
   function firstForRate(target,roll){
     const rate=Math.max(50,Math.min(150,Number(target)||90));
-    const i=startRates.findIndex(([,rtp])=>rtp>=rate);
+    const i=Math.max(1,startRates.findIndex(([,rtp])=>rtp>=rate));
     const [lo,a]=startRates[i-1],[hi,b]=startRates[i];
     return roll<(rate-a)/(b-a)?hi:lo;
   }
@@ -244,11 +265,15 @@
   function create({rng=Math.random,bet=100,rate=90}={}){
     const allIndex=ports.length,boostIndex=allIndex+1;
     const numbers=shuffle(Array.from({length:25},(_,i)=>i+1),rng).slice(0,boostIndex+1);
-    const level=1,chances=probabilitiesForLevel(level);
-    const board=cells.map((_,id)=>kernel(id,chances,rng));
+    const level=1,pattern=patternForRate(rate,rng),board=patternBoard(pattern);
     const sugarTarget=rng()<.67448?230:240;
-    const first=firstForRate(rate,rng());
-    return {board,numbers,drawn:[],allIndex,boostIndex,level,firstPopAward:first,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet};
+    // Multiple opening-clear lanes are compensated by a quieter POP threshold.
+    const adjustedRate=Math.max(50,Number(rate||90)-18*Math.max(0,pattern.clearPorts.length-1));
+    const first=firstForRate(adjustedRate,rng());
+    const openingClearNumbers=pattern.clearPorts.map(port=>numbers[port]);
+    return {board,numbers,drawn:[],allIndex,boostIndex,level,firstPopAward:first,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet,
+      targetRate:Math.max(50,Math.min(150,Number(rate)||90)),initialPattern:pattern.name,initialSymmetry:pattern.symmetry,
+      openingClearPorts:pattern.clearPorts.slice(),openingClearNumbers};
   }
   function ignition(state,number){
     const port=state.numbers.indexOf(number);
@@ -340,7 +365,7 @@
     state.win=win;
     return {before,after,port,all,boost,oldLevel,newLevel:state.level,firstPopAward:state.firstPopAward,sugarTarget:state.sugarTarget,sugarCrossed,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
   }
-  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,probabilitiesForLevel,powerForRoll,popPay,popPayFor,clearPay,payout,create,preview,draw};
+  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,probabilitiesForLevel,powerForRoll,popPay,popPayFor,clearPay,payout,initialPatterns,patternForRate,firstForRate,create,preview,draw};
   root.PopcornEngine=api;
   if(typeof module!=='undefined' && module.exports) module.exports=api;
 })(typeof window==='undefined'?globalThis:window);
