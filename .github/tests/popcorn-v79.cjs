@@ -254,8 +254,21 @@ exactPercent.forEach((row,index)=>{
    cursor+=law[power];
  }
 });
-assert.ok(E.create({rng:()=>0}).board.every(p=>p.power===5));
-assert.ok(E.create({rng:()=>.99}).board.every(p=>p.power===0));
+// Opening boards are selected from authored symmetric, immediately-clearable templates.
+assert.equal(E.initialPatterns.length,8);
+const coord=new Map(cells.map((c,i)=>[c.q+','+c.r,i]));
+const reflect=i=>{const c=cells[i];return coord.get((-c.q-c.r)+','+c.r);};
+const rotate180=i=>{const c=cells[i];return coord.get((-c.q)+','+(-c.r));};
+for(const pattern of E.initialPatterns){
+ assert.equal(pattern.powers.length,61);
+ const transform=pattern.symmetry==='mirror'?reflect:rotate180;
+ for(let i=0;i<61;i++)assert.equal(pattern.powers[i],pattern.powers[transform(i)],pattern.name+' symmetry');
+ const state=E.create({rng:seededPattern(pattern.name.length),rate:90});
+ state.board=pattern.powers.map((power,i)=>setPower({id:i},power));
+ state.numbers=Array.from({length:17},(_,i)=>i+1);state.drawn=[];state.turn=0;state.popped=state.clears=state.win=0;
+ for(const port of pattern.clearPorts)assert.ok(E.preview(state,port+1).clear,pattern.name+' opening clear '+port);
+}
+function seededPattern(n){return()=>((n=Math.imul(n+17,1664525)+1013904223|0)>>>0)/2**32;}
 const boosts=E.create({rng:random}),original=boosts.board.slice();
 for(let ball=1;ball<=8;ball++){
  const hit=boosts.numbers[16],before=JSON.stringify(boosts),v=E.preview(boosts,hit);
@@ -335,38 +348,32 @@ for(let game=0;game<25;game++){
  }
 }
 assert.ok(survivingHoles>0);
-// Changing the payout-rate setting cannot alter a single kernel or number,
-// even for matched seeds and multiple boosts. Only the pop threshold changes.
+// PO 50–150 now changes both the symmetric opening-pattern mix and the
+// first POP threshold. Every generated opening remains full and has an
+// ordinary-number all-clear route.
 const seeded=n=>()=>((n=Math.imul(n,1664525)+1013904223|0)>>>0)/2**32;
-const streams=[seeded(51821),seeded(51821),seeded(51821)];
-const settings=[50,90,150].map((rate,i)=>E.create({rate,rng:streams[i],bet:100}));
-assert.ok([220,230].includes(settings[0].firstPopAward));
-assert.ok([130,140].includes(settings[1].firstPopAward));
-assert.ok([80,90].includes(settings[2].firstPopAward));
-const starts=settings.map(x=>x.firstPopAward);
-for(const mode of settings){
- assert.deepEqual(mode.board,settings[1].board);assert.deepEqual(mode.numbers,settings[1].numbers);
- const first=mode.firstPopAward,table=E.popPayFor(first);
- assert.deepEqual(table[0],[first,.1]);assert.equal(E.payout(first-1,0,100,first),0);
- assert.equal(E.payout(first,0,100,first),10);
+for(const rate of [50,75,90,110,130,150]){
+ const mode=E.create({rate,rng:seeded(51821+rate),bet:100});
+ assert.equal(mode.targetRate,rate);assert.equal(mode.board.length,61);assert.ok(mode.board.every(Boolean));
+ assert.ok(E.initialPatterns.some(p=>p.name===mode.initialPattern&&p.symmetry===mode.initialSymmetry));
+ assert.ok(mode.openingClearNumbers.length>=1);
+ for(const n of mode.openingClearNumbers)assert.ok(E.preview(mode,n).clear);
+ assert.ok(mode.firstPopAward>=100&&mode.firstPopAward<=250);
+ const table=E.popPayFor(mode.firstPopAward);
+ assert.deepEqual(table[0],[mode.firstPopAward,.1]);
+ assert.equal(E.payout(mode.firstPopAward-1,0,100,mode.firstPopAward),0);
+ assert.equal(E.payout(mode.firstPopAward,0,100,mode.firstPopAward),10);
 }
-for(let t=0;t<8;t++){
- const n=settings[1].numbers[[16,6,15,0,11,16,4,15][t]];
- const traces=settings.map((state,i)=>E.draw(state,n,streams[i]));
- for(let i=0;i<3;i++){
-   const q=settings[i],tr=traces[i];assert.equal(q.firstPopAward,starts[i]);
-   assert.deepEqual(q.board,settings[1].board);assert.equal(q.level,settings[1].level);
-   assert.deepEqual(q.numbers,settings[1].numbers);assert.deepEqual(tr.waves,traces[1].waves);
-   assert.equal(q.sugarTarget,settings[1].sugarTarget);assert.equal(q.sugarAwarded,settings[1].sugarAwarded);
-   assert.equal(tr.firstPopAward,starts[i]);assert.equal(q.win,E.payout(q.popped,q.clears,100,starts[i]));
- }
-}
-// The 90% calibration crosses between these two thresholds. Exercise both
-// sides and compare each of eight actual awards against its displayed table.
-for(const [roll,firstPay] of [[.688,130],[.690,140]]){
- const mode=E.create({rng:()=>roll,rate:90,bet:37});
- assert.equal(mode.firstPopAward,firstPay);
- mode.board=mode.board.map(p=>setPower(p,5));
+assert.equal(E.firstForRate(50,0),240);
+assert.equal(E.firstForRate(150,0),100);
+assert.ok([150,160].includes(E.firstForRate(90,.5)));
+
+// Exercise both sides of the 90% threshold interpolation and compare actual
+// eight-clear awards against the displayed POP table.
+for(const [roll,firstPay] of [[0,150],[.9,160]]){
+ assert.equal(E.firstForRate(90,roll),firstPay);
+ const mode=E.create({rng:seeded(7300+firstPay),rate:90,bet:37});
+ mode.firstPopAward=firstPay;mode.board=mode.board.map(p=>setPower(p,5));
  const cumulative=[1,4,24,74,274,774,1774,3774];
  for(let i=0;i<8;i++){
    const number=mode.numbers[mode.allIndex],preview=E.preview(mode,number);
