@@ -1,0 +1,344 @@
+/* SWEETS LINK v157 — exact-fit nine-game cabinet and scrolling event ticker.
+   Additive visual layer; no game metrics, odds or engine state are changed. */
+
+html.arcade-candy-world-v157{
+  --ticker-gold:#ffda70;
+  --ticker-dark:#210f21;
+  --ticker-cream:#fff3c5;
+}
+
+/* In all-game mode the grouping frame follows #tabs itself (472 x 178 logical px),
+   rather than the wider deck wrapper. This removes the size mismatch. */
+html.arcade-candy-world-v157[data-lineup="all"] #screen>.games-deck{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #screen #tabs{
+  position:relative!important;
+  z-index:1!important;
+  isolation:isolate!important;
+  overflow:visible!important;
+  border-radius:12px!important;
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #screen #tabs::before{
+  content:"";
+  position:absolute;
+  inset:0 -4px;
+  z-index:-2;
+  pointer-events:none;
+  box-sizing:border-box;
+  border:3px solid #9e3e70;
+  border-radius:13px;
+  background:
+    radial-gradient(circle at 8px 8px,rgba(255,255,255,.78) 0 1.5px,transparent 2px) 0 0/16px 16px,
+    linear-gradient(180deg,rgba(255,245,251,.88),rgba(245,105,174,.58)),
+    linear-gradient(180deg,#ffcde5,#df5fa5);
+  box-shadow:
+    inset 0 0 0 2px #fff7dd,
+    inset 0 0 0 5px rgba(255,183,218,.82),
+    inset 0 -12px 20px rgba(139,32,91,.28),
+    0 0 0 2px #ffe49a,
+    0 4px 8px rgba(83,30,68,.40)!important;
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #screen #tabs::after{
+  content:"♥";
+  position:absolute;
+  left:50%;
+  top:-8px;
+  z-index:70;
+  width:36px;
+  height:16px;
+  transform:translateX(-50%);
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  color:#fff5b2;
+  font:900 12px/1 system-ui,sans-serif;
+  -webkit-text-stroke:1px #c33b7b;
+  border:1px solid #9f3d70;
+  border-radius:50% 50% 8px 8px;
+  background:linear-gradient(#ffacd0,#ed529a 62%,#ba2e76);
+  box-shadow:inset 0 1px #fff8,0 1px 4px #7b315c80;
+}
+
+/* Strong, independent frame for every mini-game card. */
+html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot{
+  position:relative!important;
+  z-index:2!important;
+  isolation:isolate!important;
+  overflow:visible!important;
+  border-radius:10px!important;
+  background:linear-gradient(155deg,rgba(255,239,248,.54),rgba(224,80,151,.24))!important;
+  box-shadow:0 2px 4px rgba(93,30,67,.33)!important;
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-overlay{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:80!important;
+  pointer-events:none!important;
+  box-sizing:border-box!important;
+  border:2px solid transparent!important;
+  border-radius:10px!important;
+  background:
+    linear-gradient(transparent,transparent) padding-box,
+    conic-gradient(from 25deg,
+      #fff7c8 0 7%,#e99a34 8% 14%,#fff0a0 15% 24%,#c95190 25% 32%,
+      #fff8cb 33% 45%,#e29233 46% 55%,#fff1a6 56% 67%,#c74a88 68% 77%,
+      #fff6c3 78% 90%,#d87f2f 91% 100%) border-box!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.95),
+    inset 0 0 0 3px rgba(190,62,125,.76),
+    inset 0 0 8px rgba(255,226,126,.44),
+    0 0 0 1px #8a355f,
+    0 2px 5px rgba(73,24,55,.46)!important;
+  filter:none!important;
+  transform:none!important;
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-overlay::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:10px;
+  background:
+    radial-gradient(circle at 5px 5px,#fff7bf 0 2px,#dc6b9f 2.4px 3.7px,transparent 4.1px),
+    radial-gradient(circle at calc(100% - 5px) 5px,#fff7bf 0 2px,#dc6b9f 2.4px 3.7px,transparent 4.1px),
+    radial-gradient(circle at 5px calc(100% - 5px),#fff7bf 0 2px,#dc6b9f 2.4px 3.7px,transparent 4.1px),
+    radial-gradient(circle at calc(100% - 5px) calc(100% - 5px),#fff7bf 0 2px,#dc6b9f 2.4px 3.7px,transparent 4.1px);
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-overlay::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border:1px solid rgba(255,238,170,.82);
+  border-radius:6px;
+  box-shadow:inset 0 0 0 1px rgba(125,42,83,.28);
+}
+
+html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot.selected>.all-tab-frame-overlay,
+html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot:has(>.tab[aria-selected="true"])>.all-tab-frame-overlay{
+  box-shadow:
+    inset 0 0 0 1px #fff,
+    inset 0 0 0 3px #ef5ca4,
+    inset 0 0 10px #fff0a7aa,
+    0 0 0 2px #fff0a8,
+    0 0 9px 3px rgba(255,208,76,.82),
+    0 3px 6px rgba(84,27,62,.46)!important;
+}
+
+/* Keep the ribbon attached to the exact-fit frame rather than the former large wrapper. */
+html.arcade-candy-world-v157[data-lineup="all"] #screen>.games-deck>.arcade-world-tab-ribbon{
+  left:4px!important;
+  right:4px!important;
+  top:-5px!important;
+  height:10px!important;
+  opacity:.98!important;
+}
+
+/* Event ticker: placed over the existing black announcement bay at the bottom
+   of the roulette. The number-mode button remains above and clickable. */
+html.arcade-candy-world-v157 #screen .arcade-event-host{
+  position:relative!important;
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker{
+  position:absolute;
+  left:5px;
+  right:5px;
+  bottom:4px;
+  z-index:125;
+  height:43px;
+  box-sizing:border-box;
+  display:block;
+  overflow:hidden;
+  pointer-events:none;
+  border:2px solid #7d3f24;
+  border-radius:10px;
+  background:
+    linear-gradient(180deg,rgba(255,234,148,.22),transparent 22%),
+    linear-gradient(90deg,#180b18,#351224 48%,#160a18);
+  box-shadow:
+    inset 0 0 0 1px #ffd875,
+    inset 0 0 10px #7f234d88,
+    0 0 0 1px rgba(255,245,197,.76),
+    0 2px 5px rgba(49,15,36,.48);
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker::before,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker::after{
+  content:"";
+  position:absolute;
+  top:3px;
+  bottom:3px;
+  width:24px;
+  z-index:4;
+  pointer-events:none;
+}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker::before{
+  left:2px;
+  background:linear-gradient(90deg,#1b0b18 35%,transparent);
+}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker::after{
+  right:112px;
+  background:linear-gradient(270deg,#1b0b18 35%,transparent);
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__viewport{
+  position:absolute;
+  left:14px;
+  right:116px;
+  top:3px;
+  bottom:3px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message{
+  width:100%;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  opacity:0;
+  transform:translateX(26px) scale(.98);
+  transition:opacity .22s ease,transform .28s cubic-bezier(.2,.75,.2,1);
+  white-space:nowrap;
+}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message.is-visible{
+  opacity:1;
+  transform:translateX(0) scale(1);
+}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message.is-leaving{
+  opacity:0;
+  transform:translateX(-24px) scale(.98);
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__badge{
+  flex:none;
+  display:inline-grid;
+  place-items:center;
+  min-width:52px;
+  height:27px;
+  padding:0 7px;
+  border:1px solid currentColor;
+  border-radius:7px;
+  font:1000 13px/1 "Hiragino Maru Gothic ProN",system-ui,sans-serif;
+  letter-spacing:-.5px;
+  color:#ffe46b;
+  -webkit-text-stroke:.45px #693210;
+  text-shadow:0 1px #4b170b,0 0 5px currentColor;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(0,0,0,.22));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.24),0 0 5px currentColor;
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__text{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:clip;
+  color:#fff3bd;
+  font:1000 15px/1.1 "Hiragino Maru Gothic ProN",system-ui,sans-serif;
+  letter-spacing:-.45px;
+  -webkit-text-stroke:.5px #542114;
+  text-shadow:0 1px #2d0e14,0 0 5px currentColor;
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="hot"]{color:#ffe25f}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="hot"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="hot"] .sweets-event-ticker__text{color:#ffe25f}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="super"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="super"] .sweets-event-ticker__text{color:#ff5d61}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="extreme"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="extreme"] .sweets-event-ticker__text{color:#d38aff}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="reach"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="reach"] .sweets-event-ticker__text{color:#ff8fc9}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="rare"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="rare"] .sweets-event-ticker__text{color:#ffc55b}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="clear"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="clear"] .sweets-event-ticker__text,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="god"] .sweets-event-ticker__badge,
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="god"] .sweets-event-ticker__text{
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  background-image:linear-gradient(100deg,#ff6e8d,#ffd35b,#8cff8e,#6fe9ff,#a894ff,#ff85dc,#ff6e8d);
+  background-size:220% 100%;
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-stroke:.35px #fff4bf;
+  filter:drop-shadow(0 0 3px #ff79d5);
+  animation:sweets-ticker-rainbow 2.1s linear infinite;
+}
+
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__spark{
+  position:absolute;
+  top:50%;
+  z-index:7;
+  width:12px;
+  height:12px;
+  transform:translateY(-50%) rotate(45deg);
+  background:#fff7b0;
+  box-shadow:0 0 8px #ffd762,0 0 12px #ff87c7;
+  clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
+}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__spark--left{left:5px}
+html.arcade-candy-world-v157 #screen .sweets-event-ticker__spark--right{right:108px}
+
+html.arcade-candy-world-v157 #screen .arcade-number-mode-button{
+  position:relative!important;
+  z-index:140!important;
+}
+
+@keyframes sweets-ticker-rainbow{to{background-position:220% 0}}
+
+@media(max-width:760px){
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__badge{min-width:48px;font-size:12px}
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__text{font-size:14px}
+}
+
+html.arcade-candy-world-v157 body.mobile-landscape #screen .sweets-event-ticker{
+  height:39px;
+  bottom:3px;
+}
+html.arcade-candy-world-v157 body.mobile-landscape #screen .sweets-event-ticker__badge{height:24px;font-size:11px}
+html.arcade-candy-world-v157 body.mobile-landscape #screen .sweets-event-ticker__text{font-size:13px}
+
+@media(prefers-reduced-motion:reduce){
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__message{transition:none!important}
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="clear"] .sweets-event-ticker__badge,
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="clear"] .sweets-event-ticker__text,
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="god"] .sweets-event-ticker__badge,
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__message[data-level="god"] .sweets-event-ticker__text{animation:none!important}
+}
+
+@media(forced-colors:active){
+  html.arcade-candy-world-v157[data-lineup="all"] #screen #tabs::before,
+  html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-overlay,
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker,
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__badge{
+    background:Canvas!important;
+    border-color:CanvasText!important;
+    box-shadow:none!important;
+  }
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__badge,
+  html.arcade-candy-world-v157 #screen .sweets-event-ticker__text{
+    color:CanvasText!important;
+    -webkit-text-fill-color:CanvasText!important;
+    -webkit-text-stroke:0!important;
+    background:none!important;
+  }
+}
