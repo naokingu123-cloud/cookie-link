@@ -1,7 +1,7 @@
 /* SWEETS LINK v159 — Waffle Reversi POW gauge, unlimited top ladder and fixed 3000x reversal bonus. */
 (()=>{
 'use strict';
-const VERSION='v159';
+const VERSION='v160';
 if(window.SweetsLineup&&!window.SweetsLineup.chosen?.includes('stick'))return;
 if(window.WafflePowV159?.version===VERSION)return;
 window.WafflePowV159={version:VERSION};
@@ -152,12 +152,18 @@ function install(){
  function ensurePowPanel(root,status){
   root.querySelector('.bs-pow-meter')?.remove();
   let panel=root.querySelector('.bs-pow-panel');
-  if(panel||!status)return panel;
-  panel=document.createElement('section');panel.className='bs-pow-panel';panel.setAttribute('aria-label','ハンマーPOW');
-  panel.innerHTML='<div class="bs-pow-targets"><small>POW番号</small><span class="bs-pow-target-list"></span></div>'+ 
-   '<div class="bs-pow-gauge-row"><strong>HAMMER POW</strong><span class="bs-pow-gauge" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b class="bs-pow-count">0/5</b></div>'+ 
-   '<div class="bs-pow-next"><small>次回効果</small><span>最大1枠破壊</span></div>';
-  status.append(panel);return panel;
+  const board=root.querySelector('.bs-board');
+  if(!board)return panel;
+  if(!panel){
+   panel=document.createElement('section');panel.className='bs-pow-panel';panel.setAttribute('aria-label','ハンマーPOW');
+   panel.innerHTML='<div class="bs-pow-targets"><small>POW番号</small><span class="bs-pow-target-list"></span></div>'+
+    '<div class="bs-pow-gauge-row"><strong>HAMMER POW</strong><span class="bs-pow-gauge" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><b class="bs-pow-count">0/5</b></div>'+
+    '<div class="bs-pow-next"><small>次回効果</small><span>最大1枠破壊</span></div>';
+  }
+  // Keep POW UI out of .bs-tools/.bs-status. The view computes board size from
+  // the tool height, so placing it there can collapse the canvas on narrow phones.
+  if(panel.parentElement!==board)board.append(panel);
+  return panel;
  }
  function updatePowPanel(panel,state){
   if(!panel)return;
