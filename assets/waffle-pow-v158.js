@@ -2,6 +2,7 @@
 (()=>{
 'use strict';
 const VERSION='v158';
+if(window.SweetsLineup&&!window.SweetsLineup.chosen?.includes('stick'))return;
 if(window.WafflePowV158?.version===VERSION)return;
 window.WafflePowV158={version:VERSION};
 
@@ -24,8 +25,6 @@ function install(){
  const baseRack=[0,10,20,30,40,50,60,70,80,90,100,120,140,150];
  const topRefills=[200,500,1000,2000,5000,7500,10000,15000];
  const drawOrders=43609104000;
- // Monte-Carlo recalibration after the multi-row POW hammer was introduced.
- // Values are ordinary-payout percentage points for each symmetric mold.
  const molds=[
   {name:'千鳥',normal:26.0020,events:233424/drawOrders,games:233424/drawOrders},
   {name:'小花',normal:27.7750,events:14512/drawOrders,games:14512/drawOrders},
@@ -55,7 +54,6 @@ function install(){
   const rate=clampRate(target),weights=weightsFor(rate);
   const mean=key=>molds.reduce((sum,m,i)=>sum+m[key]*weights[i],0);
   const normalPercent=mean('normal'),eventsPerGame=mean('events'),gameProbability=mean('games');
-  // One reversal event contributes about five percentage points of EV by itself.
   const bonusHundredths=eventsPerGame>0?Math.max(10,Math.round((5/eventsPerGame)/10)*10):5000;
   const bonusPercent=eventsPerGame*bonusHundredths;
   return {rate,weights,normalPercent,eventsPerGame,gameProbability,bonusHundredths,
@@ -161,9 +159,7 @@ function install(){
    ladder.querySelectorAll('tbody tr[data-count]').forEach(tr=>{
     const count=Number(tr.dataset.count),hit=rankStep>0&&rows.includes(count);
     tr.classList.toggle('pow-knock',hit);
-    if(rankStep>0&&rows.length){
-     tr.dataset.motion=hit?'kick':count>Math.max(...rows)?'fall':'stay';
-    }
+    if(rankStep>0&&rows.length){tr.dataset.motion=hit?'kick':count>Math.max(...rows)?'fall':'stay';}
    });
    const name=ladder.querySelector('.bs-ladder-name');
    if(name&&rankStep===1&&rows.length)name.textContent='POW '+rows.length+'　'+Math.min(...rows)+'〜'+Math.max(...rows)+'枚枠 HIT!';
@@ -187,8 +183,10 @@ function install(){
   }
   if(state.draws.length>lastDrawCount){
    lastDrawCount=state.draws.length;
-   if(state.lastPowerGain&&typeof window.announceAchievement==='function'){
-    window.announceAchievement('ワッフルリバーシ　POW+1！ 次回は最大'+Math.min(5,1+(state.pow||0))+'枠を粉砕！');
+   if(state.lastPowerGain){
+    const text='ワッフルリバーシ　POW+1！ 次回は最大'+Math.min(5,1+(state.pow||0))+'枠を粉砕！';
+    if(window.SweetsEventTicker?.enqueue)window.SweetsEventTicker.enqueue(text,{key:'waffle-pow:'+engine.version+':'+state.draws.length,badge:'POW+1',level:'hot',priority:55,duration:3600,cooldown:0});
+    else if(typeof window.announceAchievement==='function')window.announceAchievement(text);
    }
   }
  }
