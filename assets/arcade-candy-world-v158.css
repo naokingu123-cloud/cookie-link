@@ -1,5 +1,6 @@
-/* SWEETS LINK v158 — event messages live inside the cabinet's existing
-   roulette information strip. The v157 main-board ticker is disabled. */
+/* SWEETS LINK v159 — reuse the cabinet's original black roulette ticker.
+   Only the new reach/high-payout/special messages are shown here; the older
+   ROUND-clear/achievement marquee is temporarily hidden. */
 
 html.arcade-candy-world-v158 #screen .sweets-event-ticker,
 html.arcade-candy-world-v157 #screen .sweets-event-ticker{
@@ -12,151 +13,69 @@ html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip{
   position:absolute!important;
   isolation:isolate!important;
   overflow:hidden!important;
-  color:#fff2bd!important;
 }
 
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip::before{
-  content:"";
-  position:absolute;
-  inset:1px;
-  z-index:0;
-  pointer-events:none;
-  border-radius:2px;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.08),transparent 38%),
-    linear-gradient(90deg,rgba(255,116,179,.06),transparent 24% 76%,rgba(255,214,101,.07));
-}
-
-html.arcade-candy-world-v158 .sweets-event-strip-message{
-  position:absolute;
-  inset:0 5px;
-  z-index:2;
-  min-width:0;
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:6px;
-  overflow:hidden;
-  white-space:nowrap;
-  opacity:0;
-  transform:translateX(18px) scale(.985);
-  transition:opacity .18s ease,transform .24s cubic-bezier(.2,.72,.22,1);
-  pointer-events:none;
-}
-
-html.arcade-candy-world-v158 .sweets-event-strip-message[hidden]{
+/* Do not show the previous "1ROUND突破!"-style ticker for now. */
+html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip >
+.achievement-viewport:not(.sweets-event-scroll-viewport){
   display:none!important;
 }
 
-html.arcade-candy-world-v158 .sweets-event-strip-message.is-visible{
-  opacity:1;
-  transform:translateX(0) scale(1);
+/* Same visual language as the former ticker: plain white text flowing across
+   the existing black strip. No coloured badge, rainbow text or event-colour frame. */
+html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip::before{
+  display:none!important;
 }
 
-html.arcade-candy-world-v158 .sweets-event-strip-message.is-leaving{
-  opacity:0;
-  transform:translateX(-14px) scale(.985);
+html.arcade-candy-world-v158 .sweets-event-scroll-viewport{
+  position:absolute!important;
+  left:5px!important;
+  right:5px!important;
+  top:0!important;
+  bottom:0!important;
+  z-index:3!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
 }
 
-html.arcade-candy-world-v158 .sweets-event-strip-badge{
-  flex:0 0 auto;
-  min-width:46px;
-  height:18px;
-  padding:0 5px;
-  display:grid;
-  place-items:center;
-  border:1px solid currentColor;
-  border-radius:4px;
-  color:#ffe06d;
-  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.02));
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 0 5px currentColor;
-  font:1000 8px/1 "Hiragino Maru Gothic ProN",system-ui,sans-serif;
-  letter-spacing:-.35px;
-  -webkit-text-stroke:.28px #32121d;
-  text-shadow:0 1px #18070d,0 0 3px currentColor;
+html.arcade-candy-world-v158 .sweets-event-scroll-viewport[hidden]{
+  display:none!important;
 }
 
-html.arcade-candy-world-v158 .sweets-event-strip-text{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  color:#fff2bd;
-  font:1000 10.5px/1.05 "Hiragino Maru Gothic ProN",system-ui,sans-serif;
-  letter-spacing:-.3px;
-  -webkit-text-stroke:.3px #1d0811;
-  text-shadow:0 1px #000,0 0 4px currentColor;
+html.arcade-candy-world-v158 .sweets-event-scroll-text{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  height:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  white-space:nowrap!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  filter:none!important;
+  text-shadow:none!important;
+  -webkit-text-stroke:0!important;
+  font:700 14px/1 system-ui,sans-serif!important;
+  letter-spacing:0!important;
+  will-change:transform;
 }
 
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="reach"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="reach"] .sweets-event-strip-text{
-  color:#ff91ce;
+html.arcade-candy-world-v158 .sweets-event-scroll-text.is-scrolling{
+  animation:sweets-original-ticker var(--ticker-duration,6000ms) linear both;
 }
 
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="hot"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="hot"] .sweets-event-strip-text{
-  color:#ffe05d;
-}
-
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="super"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="super"] .sweets-event-strip-text{
-  color:#ff705f;
-}
-
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="rare"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="rare"] .sweets-event-strip-text{
-  color:#ffc85c;
-}
-
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="extreme"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="extreme"] .sweets-event-strip-text{
-  color:#d993ff;
-}
-
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="clear"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="clear"] .sweets-event-strip-text,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="god"] .sweets-event-strip-badge,
-html.arcade-candy-world-v158 .sweets-event-strip-message[data-level="god"] .sweets-event-strip-text{
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-  background-image:linear-gradient(100deg,#ff7caa,#ffdc61,#9cff97,#72eaff,#b39aff,#ff8fde,#ff7caa);
-  background-size:230% 100%;
-  background-clip:text;
-  -webkit-background-clip:text;
-  -webkit-text-stroke:.28px #fff5c2;
-  filter:drop-shadow(0 0 2px #ff78cf);
-  animation:sweets-strip-rainbow 1.8s linear infinite;
-}
-
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip[data-event-level="super"],
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip[data-event-level="extreme"],
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip[data-event-level="rare"]{
-  box-shadow:inset 0 1px 0 #786b5e,inset 0 0 9px #a72b5a88,0 2px 4px #21151077!important;
-}
-
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip[data-event-level="clear"],
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip[data-event-level="god"]{
-  box-shadow:inset 0 1px 0 #8e8065,inset 0 0 10px #743b9f99,0 0 7px #ffcf69aa,0 2px 4px #21151077!important;
-}
-
-@keyframes sweets-strip-rainbow{to{background-position:230% 0}}
-
-@media(max-width:760px){
-  html.arcade-candy-world-v158 .sweets-event-strip-badge{
-    min-width:41px;
-    padding:0 4px;
-    font-size:7.4px;
-  }
-  html.arcade-candy-world-v158 .sweets-event-strip-text{
-    font-size:9.7px;
-  }
+@keyframes sweets-original-ticker{
+  from{transform:translateX(var(--ticker-from,460px))}
+  to{transform:translateX(var(--ticker-to,-240px))}
 }
 
 @media(prefers-reduced-motion:reduce){
-  html.arcade-candy-world-v158 .sweets-event-strip-message{
-    transition:none!important;
-  }
-  html.arcade-candy-world-v158 .sweets-event-strip-badge,
-  html.arcade-candy-world-v158 .sweets-event-strip-text{
+  html.arcade-candy-world-v158 .sweets-event-scroll-text{
+    position:static!important;
+    justify-content:center;
+    width:100%;
+    transform:none!important;
     animation:none!important;
   }
 }
