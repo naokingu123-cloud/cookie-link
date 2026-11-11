@@ -2,7 +2,11 @@
 (()=>{
  'use strict';
  const layers=new WeakMap(),observed=new WeakSet();
- const tones={cookie:[1.01,'cookie-hit','chain'],choco:[.91,'drill','melt'],candy:[1.10,'six-hit','triangle'],gelato:[1.20,'glass','hexagon'],winery:[.89,'glass','transfer'],popcorn:[1.07,'pop','chain']};
+ const tones={
+  cookie:[1.01,'cookie-hit','chain'],choco:[.91,'drill','melt'],candy:[1.10,'six-hit','triangle'],
+  gelato:[1.20,'glass','hexagon'],winery:[.89,'glass','transfer'],popcorn:[1.07,'pop','chain'],
+  jelly:[1.16,'glass','line'],stick:[.98,'landing','chain'],castella:[1.04,'cookie-hit','line']
+ };
  const rawSound=sceneSound;
  let source=null;
  function kindOf(e){return tones[e.kind]?e.kind:'cookie';}
@@ -29,7 +33,8 @@
    case 'hit':return ev.cells?.length?[1]:null;
    case 'link':return ev.groups?.length?[ev.depth>=5?3:2,ev.depth+' LINK!']:null;
    case 'allclear':case 'pyramidAllClear':return [4,'ALL CLEAR!','allclear'];
-   case 'canyonDrill':case 'pyramidHit':case 'wineryPour':return [1];
+   case 'sugaraward':return [3,'SUGAR GET!','bonus'];
+   case 'canyonDrill':case 'pyramidHit':case 'wineryPour':case 'jellyPour':case 'flipping':return [1];
    case 'canyonMelt':return [2];
    case 'canyonPower':return [ev.kind==='clear'?4:2,ev.kind==='clear'?'全層掘削！':'POWER!'];
    case 'canyonAll':return [3,'ALL DRILL!'];
@@ -43,16 +48,40 @@
    case 'wineryBoost':return [2,'注入量UP!','level'];
    case 'wineryAward':return ev.full<21&&ev.justFilled?.length?[high?3:2,ev.justFilled.length+'杯 FULL!']:null;
    case 'wineryAllFull':return [4,'ALL FULL!','allclear'];
+   case 'reversal':case 'reversalBonus':return [4,'REVERSAL!','allclear'];
+   case 'castellaBake':case 'castellaBaked':return [2,'BAKE!','line'];
    default:return null;
   }
  }
+ function extraCue(ev,cue){
+  switch(ev.phase){
+   case 'sugaraward':return 'sugar';
+   case 'allclear':case 'pyramidAllClear':case 'wineryAllFull':case 'reversal':case 'reversalBonus':return 'special';
+   case 'link':return ev.depth>=5?'high-win':'chain';
+   case 'canyonPower':case 'canyonAll':case 'wineryOddsUp':case 'wineryBoost':return 'level';
+   case 'canyonBonus':case 'canyonCollect':case 'pyramidAward':return +ev.gain>=1000||cue?.[0]>=3?'high-win':null;
+   case 'pyramidShape':return ev.hexagons?'high-win':'chain';
+   case 'gelatoFill':return ev.full?'special':ev.newFaces?.length>=6?'high-win':ev.newFaces?.length?'chain':null;
+   case 'castellaBake':case 'castellaBaked':return 'level';
+   default:return cue?.[0]>=4?'special':cue?.[0]>=3?'high-win':null;
+  }
+ }
+ const overlayBySound={
+  allclear:'special','big-bonus':'high-win',bonus:'high-win',rank:'level',level:'level',
+  transform:'level',chain:'chain',line:'chain',triangle:'chain',hexagon:'high-win'
+ };
+ function playRaw(key,options){
+  const result=rawSound(key,options),overlay=overlayBySound[key];
+  if(result!==false&&overlay)window.SweetsEventSound?.play(overlay);
+  return result;
+ }
  // Existing engine foley wins. Adjust that same sound's pitch instead of playing it twice.
  sceneSound=function(key,options={}){
-  if(!source)return rawSound(key,options);
+  if(!source)return playRaw(key,options);
   const {slot,kind,cue}=source;if(slot.i!==active)return false;
   source.played=true;
-  if(!cue)return rawSound(key,options);
-  return rawSound(key,{...options,rate:(options.rate||1)*tones[kind][0]*(1+.025*(cue[0]-1))});
+  if(!cue)return playRaw(key,options);
+  return playRaw(key,{...options,rate:(options.rate||1)*tones[kind][0]*(1+.025*(cue[0]-1))});
  };
  function observe(slot,e){
   if(!e||observed.has(e)||typeof e.onEvent!=='function')return;
@@ -66,6 +95,8 @@
      if(!ctx.played){const key=cue[2]||(cue[0]===4?'allclear':cue[0]===3?'big-bonus':tones[kind][cue[0]]);
       sceneSound(key,{volume:cue[0]>=3?.68:.49});}
     }
+    const added=extraCue(ev,cue);
+    if(added&&slot.i===active&&app.phase==='playing'&&!app.paused&&!document.hidden)window.SweetsEventSound?.play(added);
     return result;
    }finally{source=previous;}
   };
@@ -76,5 +107,6 @@
   const slot=slots.find(s=>s.engine===e);if(!slot)return;
   const clear=trace.clear&&wave===trace.waves.length-1;
   light(slot,'popcorn',clear?4:power>=4||wave>=4?3:wave>0?2:1,clear?'ALL CLEAR!':power===5?'RAINBOW!':power===4?'THUNDER!':(wave+1)+' CHAIN!');
+  window.SweetsEventSound?.play(clear||power===5?'special':power>=4||wave>=4?'high-win':wave>0?'chain':'notice');
  }};
 })();
