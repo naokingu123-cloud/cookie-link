@@ -97,3 +97,20 @@ html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot:has(>.tab[aria-s
 @media (prefers-reduced-motion:reduce){
   .bs-turn.pow-active .bs-turn-pow,.bs-pay[data-rank-step="1"] tbody tr.pow-knock{animation:none!important}
 }
+
+
+/* v163: tabular payout numerals. Equal digit counts occupy exactly the same width. */
+.bs-pay .bs-block>span{
+  display:inline-block!important;
+  width:7ch!important;
+  min-width:7ch!important;
+  max-width:7ch!important;
+  text-align:right!important;
+  font-variant-numeric:tabular-nums!important;
+  font-feature-settings:"tnum" 1!important;
+  letter-spacing:0!important;
+}
+.bs-pay .bs-block>small{
+  width:2.25em!important;
+  text-align:left!important;
+}
