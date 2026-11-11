@@ -4,7 +4,7 @@
 (()=>{
 'use strict';
 
-const VERSION='v158';
+const VERSION='v159';
 if(window.SweetsEventTicker?.version===VERSION){
   window.SweetsEventTicker.install?.();
   return;
@@ -15,6 +15,7 @@ const state={
   strip:null,
   message:null,
   badge:null,
+  animation:null,
   text:null,
   queue:[],
   seen:new Map(),
@@ -56,21 +57,25 @@ function ensureStrip(){
   strip.setAttribute('aria-live','polite');
   strip.setAttribute('aria-atomic','true');
   strip.setAttribute('aria-label','リーチ・高配当情報');
-  let message=strip.querySelector(':scope > .sweets-event-strip-message');
-  if(!message){
-    message=document.createElement('div');
-    message.className='sweets-event-strip-message';
-    message.hidden=true;
-    message.innerHTML='<strong class="sweets-event-strip-badge"></strong><span class="sweets-event-strip-text"></span>';
-    strip.append(message);
-  }
+
+  // The old ROUND-clear/achievement marquee is temporarily retired.
+  // Keep its producer intact for records, but never let its viewport share this black strip.
+  strip.querySelectorAll(':scope > .achievement-viewport,:scope > .sweets-event-strip-message').forEach(el=>el.remove());
+
+  const viewport=document.createElement('div');
+  viewport.className='achievement-viewport sweets-event-scroll-viewport';
+  viewport.hidden=true;
+  const text=document.createElement('div');
+  text.className='achievement-text sweets-event-scroll-text';
+  viewport.append(text);
+  strip.append(viewport);
+
   state.strip=strip;
-  state.message=message;
-  state.badge=message.querySelector('.sweets-event-strip-badge');
-  state.text=message.querySelector('.sweets-event-strip-text');
+  state.message=viewport;
+  state.badge=null;
+  state.text=text;
   return true;
 }
-
 function markNumberModeButton(screen){
   const buttons=[...screen.querySelectorAll('button,[role="button"]')];
   const target=buttons.find(el=>/番号指定モード/.test(el.textContent||''));
@@ -106,52 +111,64 @@ function queueMessage(message,{cooldown=15000}={}){
 
 function hideMessage(){
   if(!state.message)return;
-  state.message.classList.remove('is-visible');
-  state.message.classList.add('is-leaving');
-  clearTimeout(state.transitionTimer);
-  state.transitionTimer=setTimeout(()=>{
-    if(state.active||state.queue.length)return;
-    state.message.hidden=true;
-    state.message.classList.remove('is-leaving');
-    state.strip?.removeAttribute('data-event-level');
-  },230);
+  try{state.animation?.cancel();}catch{}
+  state.animation=null;
+  state.message.hidden=true;
+  state.text.textContent='';
+  state.strip?.removeAttribute('data-event-level');
 }
-
 function showMessage(item){
-  if(!state.message&&!ensureStrip())return;
-  clearTimeout(state.transitionTimer);
-  state.message.hidden=false;
-  state.message.classList.remove('is-visible');
-  state.message.classList.add('is-leaving');
-  const delay=state.message.dataset.ready==='1'?105:0;
-  state.transitionTimer=setTimeout(()=>{
-    state.message.dataset.ready='1';
-    state.message.dataset.level=item.level||'info';
-    state.strip.dataset.eventLevel=item.level||'info';
-    state.badge.textContent=item.badge||'INFO';
-    state.text.textContent=item.text;
-    state.message.title=item.source||item.text;
-    state.message.classList.remove('is-leaving');
-    void state.message.offsetWidth;
-    state.message.classList.add('is-visible');
-    window.SweetsEventSound?.play(item.cue||inferCue(item));
-  },delay);
-}
+  if(!state.message&&!ensureStrip())return 3900;
+  try{state.animation?.cancel();}catch{}
+  state.animation=null;
 
+  const label=item.badge&&item.badge!=='INFO'?String(item.badge).trim():'';
+  state.text.textContent=(label?label+'　':'')+item.text;
+  state.text.title=item.source||item.text;
+  state.message.hidden=false;
+  state.strip.removeAttribute('data-event-level');
+
+  // Match the cabinet's original white scrolling ticker: one line, right to left.
+  void state.message.offsetWidth;
+  const viewportWidth=Math.max(1,state.message.clientWidth||state.strip.clientWidth||440);
+  const textWidth=Math.max(1,state.text.scrollWidth||state.text.getBoundingClientRect().width||160);
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  let duration=Math.max(4300,Math.min(9000,Math.round((viewportWidth+textWidth+28)/72*1000)));
+
+  if(reduced){
+    state.text.style.transform='translateX(0)';
+    duration=Math.max(3000,Number(item.duration)||3600);
+  }else if(typeof state.text.animate==='function'){
+    const from=viewportWidth+8,to=-(textWidth+10);
+    state.animation=state.text.animate(
+      [{transform:`translateX(${from}px)`},{transform:`translateX(${to}px)`}],
+      {duration,easing:'linear',fill:'forwards'}
+    );
+  }else{
+    state.text.style.setProperty('--ticker-from',(viewportWidth+8)+'px');
+    state.text.style.setProperty('--ticker-to',-(textWidth+10)+'px');
+    state.text.style.setProperty('--ticker-duration',duration+'ms');
+    state.text.classList.remove('is-scrolling');
+    void state.text.offsetWidth;
+    state.text.classList.add('is-scrolling');
+  }
+
+  window.SweetsEventSound?.play(item.cue||inferCue(item));
+  return duration;
+}
 function pump(){
   if(state.active||!state.queue.length||document.hidden)return;
   if(!state.message&&!ensureStrip())return;
   state.active=true;
   const item=state.queue.shift();
-  showMessage(item);
+  const duration=showMessage(item);
   clearTimeout(state.timer);
   state.timer=setTimeout(()=>{
     state.active=false;
     if(state.queue.length)pump();
     else hideMessage();
-  },Math.max(1400,Number(item.duration)||3900));
+  },Math.max(1500,Number(duration)||3900)+100);
 }
-
 function gameNameFor(item){
   const key=window.SweetsLineup?.ids?.[item?.game];
   return window.SweetsLineup?.catalog?.[key]?.name||key||'';
@@ -311,5 +328,5 @@ window.SweetsEventTicker={
 };
 
 start();
-console.info('[SweetsWorldV158] existing roulette strip and scene-aware original cues enabled');
+console.info('[SweetsWorldV159] original white scrolling roulette ticker and scene-aware cues enabled');
 })();
