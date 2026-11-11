@@ -8,13 +8,13 @@ if(!document.getElementById('arcade-candy-world-v158-css')){
  const link=document.createElement('link');
  link.id='arcade-candy-world-v158-css';
  link.rel='stylesheet';
- link.href='assets/arcade-candy-world-v158.css?v=159';
+ link.href='assets/arcade-candy-world-v158.css?v=160';
  document.head.append(link);
 }
 
 const scripts=[
- ['arcade-candy-sfx-v158-js','assets/arcade-candy-sfx-v158.js?v=159'],
- ['arcade-candy-world-v158-js','assets/arcade-candy-world-v158.js?v=159']
+ ['arcade-candy-sfx-v158-js','assets/arcade-candy-sfx-v158.js?v=160'],
+ ['arcade-candy-world-v158-js','assets/arcade-candy-world-v158.js?v=160']
 ];
 function load(index){
  if(index>=scripts.length)return;
