@@ -1,4 +1,4 @@
-/* v159: transparent tab outline, Waffle POW number/gauge UI and transient hammer light. */
+/* v161: scheduled Waffle POW turns, restrained preview animation and flip-count popups. */
 
 /* Keep the v157 decorative frame outside the thumbnail; never paint across the mini-board. */
 html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot{
@@ -49,78 +49,51 @@ html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot:has(>.tab[aria-s
   box-shadow:inset 0 0 0 1px #fff,inset 0 0 0 4px #ef5ca499,0 0 0 2px #ffd95e,0 0 8px 2px #ffc928aa!important;
 }
 
-.bs-status{position:relative}
-.bs-pow-panel{
-  display:grid;gap:.2em;flex:0 0 auto;min-width:10.6em;max-width:42%;padding:.32em .48em;
-  border:2px solid #ffd36b;border-radius:.8em;color:#fff1b2;
-  background:linear-gradient(180deg,#7b2d43,#3b1825 70%,#28131c);
-  box-shadow:inset 0 1px rgba(255,255,255,.36),0 2px 5px rgba(38,12,24,.55);
-  font:900 clamp(7px,1.28cqw,13px)/1.05 "Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
-  white-space:nowrap;box-sizing:border-box
+/* The old cumulative/off-board POW panel is retired. */
+.bs-pow-panel,.bs-pow-meter{display:none!important}
+
+/* POW is assigned to particular balls before the game and shown directly on the 8-ball rail. */
+.bs-turn-pow{
+  position:absolute;z-index:8;left:50%;top:-.46em;transform:translateX(-50%);
+  min-width:3.55em;padding:.12em .27em .15em;border:1px solid #fff1a0;border-radius:.65em;
+  color:#4a201b;background:linear-gradient(#fff8ad,#ffc13d 64%,#ef7f2b);
+  box-shadow:0 1px 2px #34121caa,0 0 5px #ffcf55aa,inset 0 1px #fffde0;
+  font:1000 .51em/1 "Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-style:normal;letter-spacing:-.04em;white-space:nowrap;pointer-events:none
 }
-.bs-pow-targets,.bs-pow-gauge-row,.bs-pow-next{display:flex;align-items:center;gap:.32em;min-width:0}
-.bs-pow-targets small,.bs-pow-next small{flex:0 0 auto;color:#ffc76f;font-size:.72em}
-.bs-pow-target-list{display:flex;gap:.16em;min-width:0}
-.bs-pow-target-list b{
-  display:grid;place-items:center;min-width:1.42em;height:1.42em;padding:0 .1em;border:1px solid #d98b65;border-radius:50%;
-  color:#fff1b6;background:#5a2931;box-shadow:inset 0 1px rgba(255,255,255,.18);font-size:.88em
+.bs-turn-pow[hidden]{display:none!important}
+.bs-turn.pow-scheduled .bs-medallion{box-shadow:inset 0 0 0 1px #e2a944,0 1px 2px #23121a,0 0 .28em #ffc94d88}
+.bs-turn.pow-active .bs-turn-pow{
+  color:#fff8d0;background:linear-gradient(100deg,#387de9,#2ad6e8,#65d868,#ffe15a,#ff824a,#c95ce8);
+  text-shadow:0 1px #39172f;box-shadow:0 0 7px #fff07d,0 0 12px #e85fc0aa,inset 0 1px #fff;
+  animation:bsScheduledPow 920ms ease-in-out infinite alternate
 }
-.bs-pow-target-list b.is-hit{
-  color:#542019;background:linear-gradient(#fff6ad,#ffb43e);border-color:#fff0a0;
-  box-shadow:0 0 5px #ffbd43;text-decoration:line-through
+.bs-turn.pow-used .bs-turn-pow{opacity:.46;filter:saturate(.6);box-shadow:none}
+.bs-turn.pow-used .bs-turn-pow::after{content:" ✓"}
+@keyframes bsScheduledPow{from{transform:translateX(-50%) scale(.96);filter:brightness(1)}to{transform:translateX(-50%) scale(1.08);filter:brightness(1.22)}}
+
+/* Lightweight overlay: threatened stones breathe softly; the whole board receives one slow sheen. */
+.bs-grid>.bs-fx-overlay{
+  position:absolute!important;inset:0!important;z-index:7!important;width:100%!important;height:100%!important;
+  display:block!important;border-radius:2%!important;pointer-events:none!important;background:transparent!important
 }
-.bs-pow-gauge-row strong{color:#ffd478;font-size:.73em;letter-spacing:.01em}
-.bs-pow-gauge{display:grid;grid-template-columns:repeat(5,1fr);gap:.13em;flex:1;min-width:3.7em}
-.bs-pow-gauge i{
-  display:block;height:.72em;border:1px solid #a76772;border-radius:999px;background:#3b2631;
-  box-shadow:inset 0 1px 2px rgba(0,0,0,.55)
-}
-.bs-pow-gauge i.is-on{
-  border-color:#fff0a2;background:linear-gradient(180deg,#fff7a9,#ffb232 70%,#e36d28);
-  box-shadow:0 0 5px #ffbd3d,inset 0 1px rgba(255,255,255,.72)
-}
-.bs-pow-count{min-width:2.2em;text-align:right;color:#fff;font-size:.9em}
-.bs-pow-next span{overflow:hidden;text-overflow:ellipsis;color:#fff3bd;font-size:.78em}
-.bs-pow-panel[data-pow="5"]{
-  border-color:#fff7a3;background:linear-gradient(100deg,#9e304d,#d05c32,#b18a27,#38825c,#315d9d,#734396,#a83583);
-  text-shadow:0 1px 2px #3b1528;animation:bsPowMax 900ms ease-in-out infinite alternate
-}
-.bs-turn.pow-gain .bs-medallion{filter:drop-shadow(0 0 5px #ffcf45)}
-.bs-turn.pow-gain .bs-turn-win{display:block!important;color:#fff3a2!important;text-shadow:0 1px #7e2a1e,0 0 4px #ff962e;font-weight:950!important;letter-spacing:-.04em}
+
 .bs-top-rule{
   display:block;margin:.08em .22em .16em;padding:.16em .35em;border-radius:.45em;
-  color:#693020;background:rgba(255,231,165,.88);font:850 clamp(6px,1.05cqw,10px)/1.05 system-ui,sans-serif;
+  color:#693020;background:rgba(255,231,165,.88);font:850 clamp(5.6px,1.01cqw,9.5px)/1.05 system-ui,sans-serif;
   text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
 }
 
-/* The glow exists only while JS marks the actual impact step. Removing the class fully resets it. */
+/* On a scheduled POW ball, the hit row and its adjacent rows leave together. */
 .bs-pay tbody tr.pow-knock{position:relative;z-index:4;filter:brightness(1.18) saturate(1.25)}
 .bs-pay tbody tr.pow-knock th,.bs-pay tbody tr.pow-knock td{box-shadow:inset 0 0 0 2px #fff19b,0 0 8px #ff8b34!important}
 .bs-pay[data-rank-step="1"] tbody tr.pow-knock{animation:bsPowKick 430ms cubic-bezier(.2,.75,.2,1)}
 @keyframes bsPowKick{0%{transform:translateX(0) rotate(0);opacity:1}45%{transform:translateX(9%) rotate(-2deg);opacity:1}100%{transform:translateX(46%) rotate(5deg);opacity:0}}
-@keyframes bsPowMax{from{filter:brightness(1)}to{filter:brightness(1.26);box-shadow:inset 0 1px rgba(255,255,255,.55),0 0 8px #fff07e}}
-@media (max-width:520px){.bs-pow-panel{max-width:45%;min-width:9.7em;padding:.26em .38em}.bs-pow-target-list{gap:.1em}.bs-top-rule{font-size:6px}}
-@media (prefers-reduced-motion:reduce){.bs-pow-panel[data-pow="5"],.bs-pay[data-rank-step="1"] tbody tr.pow-knock{animation:none!important}}
 
-
-/* v160 phone fix: POW is an overlay, not part of the tool-height calculation. */
-.bs-board>.bs-pow-panel{
-  position:absolute!important;
-  top:1.8%!important;
-  left:1.8%!important;
-  z-index:24!important;
-  width:min(43%,12.6em)!important;
-  max-width:none!important;
-  min-width:0!important;
-  margin:0!important;
-  padding:.28em .42em!important;
-  pointer-events:none!important;
-  opacity:.94;
-  backdrop-filter:blur(1.5px);
-}
-.bs-board>.bs-pow-panel .bs-pow-target-list{flex-wrap:nowrap}
-.bs-board>.bs-pow-panel .bs-pow-target-list b{min-width:1.34em;height:1.34em}
-.bs-board>.bs-pow-panel .bs-pow-gauge i{height:.66em}
 @media (max-width:520px){
-  .bs-board>.bs-pow-panel{width:46%!important;font-size:clamp(7px,2.15vw,11px)!important}
+  .bs-turn-pow{font-size:.46em;min-width:3.25em;padding-inline:.18em;top:-.42em}
+  .bs-top-rule{font-size:5.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  .bs-turn.pow-active .bs-turn-pow,.bs-pay[data-rank-step="1"] tbody tr.pow-knock{animation:none!important}
 }
