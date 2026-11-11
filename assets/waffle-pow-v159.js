@@ -1,8 +1,8 @@
-/* SWEETS LINK v161 — scheduled Waffle POW turns, adjacent-rank strikes,
+/* SWEETS LINK v162 — scheduled Waffle POW turns, adjacent-rank strikes,
    exact payout ladder and restrained board animation. */
 (()=>{
 'use strict';
-const VERSION='v161';
+const VERSION='v162';
 if(window.SweetsLineup&&!window.SweetsLineup.chosen?.includes('stick'))return;
 if(window.WafflePowV159?.version===VERSION)return;
 window.WafflePowV159={version:VERSION};
@@ -11,7 +11,7 @@ function addStyle(){
  if(document.getElementById('waffle-pow-v159-css'))return;
  const link=document.createElement('link');
  link.id='waffle-pow-v159-css';link.rel='stylesheet';
- link.href='assets/waffle-pow-v159.css?v=161';
+ link.href='assets/waffle-pow-v159.css?v=162';
  document.head.append(link);
 }
 addStyle();
@@ -190,7 +190,7 @@ function install(){
   rows.forEach((row,i)=>{
    let mark=row.querySelector('.bs-turn-pow');
    if(!mark){mark=document.createElement('em');mark.className='bs-turn-pow';row.append(mark);}
-   const scheduled=!!state.powTurns?.[i],active=scheduled&&i===activeIndex&&state.phase==='playing';
+   const scheduled=!!state.powTurns?.[i],active=scheduled&&engine.running&&i===activeIndex&&state.phase==='playing';
    row.classList.toggle('pow-scheduled',scheduled);
    row.classList.toggle('pow-active',active);
    row.classList.toggle('pow-used',scheduled&&i<drawCount&&!active);
@@ -333,18 +333,18 @@ function install(){
   }
 
   // Base view may rewrite the turn result after this extension; restore raw digits and POW markers.
-  const gains=state.turnTotals||[];
   root.querySelectorAll('.bs-turn').forEach((row,i)=>{
    const win=row.querySelector('.bs-turn-win');if(!win||i>=state.draws.length)return;
    const gain=gainForTurn(state,i,bet);win.textContent=gain>0?String(gain):'';
   });
  }
  const lesson=window.SweetsAttractLessons?.stick;
+ if(lesson?.steps?.[2])lesson.steps[2].caption='3枚枠の40 WINを獲得。上の40 WINが3枚枠に落ちる。';
  if(lesson?.steps?.[3]){
-  lesson.steps[3].title='POW UP球は前後の枠も破壊';
-  lesson.steps[3].caption='8球の順番表でPOW UPと表示された球だけ、反転枚数の枠と上下1枠を破壊。盤面外番号ではPOWは増えない。';
+  lesson.steps[3].title='0枚・盤面外は配当表そのまま';
+  lesson.steps[3].caption='0枚反転は石を置いて終了。盤面外番号はPOWにならず手番だけ進む。POW UP球は8球の順番表に事前表示。';
  }
- decorate();setInterval(decorate,80);scheduleFx(20);
+ decorate();setInterval(decorate,100);scheduleFx(20);
  window.WafflePowV159={version:VERSION,topPrizeHundredths,expectedPowCount,refresh:decorate};
 }
 install();
