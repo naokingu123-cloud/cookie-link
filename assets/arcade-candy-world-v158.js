@@ -63,10 +63,10 @@ function ensureStrip(){
   strip.querySelectorAll(':scope > .achievement-viewport,:scope > .sweets-event-strip-message').forEach(el=>el.remove());
 
   const viewport=document.createElement('div');
-  viewport.className='achievement-viewport sweets-event-scroll-viewport';
+  viewport.className='sweets-event-scroll-viewport';
   viewport.hidden=true;
   const text=document.createElement('div');
-  text.className='achievement-text sweets-event-scroll-text';
+  text.className='sweets-event-scroll-text';
   viewport.append(text);
   strip.append(viewport);
 
