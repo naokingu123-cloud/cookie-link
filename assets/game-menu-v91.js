@@ -90,7 +90,7 @@ renderRoundResult=function(a){
  const styles=[
   ['arcade-candy-world-v156-css','assets/arcade-candy-world-v156.css?v=156'],
   ['arcade-candy-world-v157-css','assets/arcade-candy-world-v157.css?v=157'],
-  ['waffle-pow-v159-css','assets/waffle-pow-v159.css?v=162']
+  ['waffle-pow-v159-css','assets/waffle-pow-v159.css?v=163']
  ];
  for(const [id,href] of styles){
   if(document.getElementById(id))continue;
