@@ -16,8 +16,7 @@ html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip{
 }
 
 /* Do not show the previous "1ROUND突破!"-style ticker for now. */
-html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip >
-.achievement-viewport:not(.sweets-event-scroll-viewport){
+html.arcade-candy-world-v158 #cookie-roulette .roulette-info-strip > .achievement-viewport{
   display:none!important;
 }
 
