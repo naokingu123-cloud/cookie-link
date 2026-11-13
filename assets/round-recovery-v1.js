@@ -5,7 +5,7 @@ if(typeof app==='undefined'||typeof Arcade==='undefined'||!app||!Array.isArray(a
 const ROUND_KEY='sweets-link-pending-round-v1';
 const CREDIT_KEY='sweets-link-credit-v1';
 const BUILD='round-plan-v1';
-const OMIT=new Set(['random','sleep','onEvent','beforeComplete','storage','recordStorage','worker','abortController']);
+const OMIT=new Set(['random','sleep','onEvent','beforeComplete','storage','recordStorage','worker','abortController','version']);
 let active=null,simulationTask=null,recovering=false,bypassPrepare=false,lastCredit=null;
 
 function seed32(){
@@ -98,7 +98,7 @@ function saveRound(round){
  try{localStorage.setItem(ROUND_KEY,JSON.stringify(round));return true;}
  catch(error){console.error('[round-plan] save failed',error);notice('復旧データを保存できません（容量不足）');return false;}
 }
-function clearRound(){active=null;simulationTask=null;try{localStorage.removeItem(ROUND_KEY);}catch(_){}}
+function clearRound(){active=null;simulationTask=null;try{localStorage.removeItem(ROUND_KEY);}catch(_){} }
 function saveCredit(value){
  const n=Number(value);if(!Number.isFinite(n)||n===lastCredit)return;lastCredit=n;
  try{localStorage.setItem(CREDIT_KEY,String(n));}catch(_){ }
@@ -111,10 +111,15 @@ function notice(text){
  if(status)status.textContent=text;
 }
 function currentLineup(){return app.engines.map(e=>e.kind||e.constructor?.name||'engine');}
+function canShadow(){
+ return app.engines.every(engine=>{
+  const C=engine?.constructor;return typeof C==='function'&&C!==Object&&C.prototype&&typeof C.prototype.reset==='function'&&typeof C.prototype.start==='function';
+ });
+}
 function makeRound(){
  const drawSeed=seed32();
  return {
-  build:BUILD,id:id(),createdAt:Date.now(),status:'planned',lineup:currentLineup(),
+  build:BUILD,id:id(),createdAt:Date.now(),status:'planned',lineup:currentLineup(),shadow:canShadow(),
   appSeed:seed32(),engineSeeds:app.engines.map(()=>seed32()),drawSeed,draws:plannedDraws(drawSeed),
   start:arcadeSnapshot(app),final:null,settledCredit:null,error:null
  };
@@ -203,11 +208,41 @@ function applyFinalForFinish(final){
 function canonicalSettlement(round,final){
  const base=Number(final.credit)||0,total=Number(final.totalWin)||0;return base+total;
 }
+async function replayActual(round){
+ if(round.final)return round.final;
+ const savedSource=app.drawSource,sound=document.getElementById('sound'),soundWas=sound?.checked;
+ const source={ready:true,callbacks:null,start(callbacks){this.callbacks=callbacks;queueMicrotask(()=>{try{for(const n of round.draws)callbacks.onNumber(n);}catch(error){callbacks.onError?.(error.message);}});},pause(){},reset(){this.callbacks=null;}};
+ try{
+  savedSource?.pause?.(true);if(sound)sound.checked=false;document.body?.classList.add('round-recovery-replay');
+  bypassPrepare=true;originalPrepare();bypassPrepare=false;
+  restoreArcadeState(app,round.start,{engines:true,credit:true});
+  app.phase='ready';app.paused=false;app.dealing=false;app.draws=[];app.payout=null;app.result=null;app.fastForward=true;
+  installRng(app,round);app.drawSource=source;
+  if(!originalStart())throw new Error('中断結果の再計算を開始できませんでした');
+  app.engines.forEach(engine=>{engine.presentationRate=1000;try{engine.paused=false;}catch(_){ }});
+  const started=performance.now();
+  while(app.phase!=='result'&&app.phase!=='complete'&&app.phase!=='error'&&performance.now()-started<15000){
+   await new Promise(resolve=>setTimeout(resolve,0));
+  }
+  if(app.phase==='error')throw new Error(app.drawError||'中断結果の再計算でエラーが発生しました');
+  if(app.phase!=='result'&&app.phase!=='complete')throw new Error('中断結果の再計算が時間内に完了しませんでした');
+  app.paused=true;
+  if(!round.final){round.final=arcadeSnapshot(app);round.final.draws=[...round.draws];round.status='simulated';round.simulatedAt=Date.now();saveRound(round);}
+  return round.final;
+ }finally{
+  bypassPrepare=false;app.drawSource=savedSource;if(sound)sound.checked=!!soundWas;document.body?.classList.remove('round-recovery-replay');
+ }
+}
+async function recoveryFinal(round){
+ if(round.final)return round.final;
+ if(round.shadow){try{return await ensureSimulation(round);}catch(error){console.warn('[round-plan] shadow fallback',error);}}
+ return replayActual(round);
+}
 async function recover(round,reason='reload'){
  if(recovering||!round||round.status==='settled')return;recovering=true;
  notice('中断されたゲームの結果を復旧しています…');
  try{
-  const final=await ensureSimulation(round);
+  const final=await recoveryFinal(round);
   const settled=canonicalSettlement(round,final);
   // Commit the ledger first. A crash after this point restores this exact credit.
   round.status='settled';round.settledAt=Date.now();round.settledCredit=settled;round.recoveryReason=reason;saveRound(round);saveCredit(settled);
@@ -237,7 +272,7 @@ app.start=function(){
   if(active?.status==='settled')clearRound();
   const round=makeRound();active=round;
   if(saveRound(round)){
-   installRng(this,round);hookRoulette();ensureSimulation(round).catch(()=>{});
+   installRng(this,round);hookRoulette();if(round.shadow)ensureSimulation(round).catch(()=>{});
    notice('抽選結果を確定しました');
   }
  }
