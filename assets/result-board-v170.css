@@ -1,0 +1,315 @@
+/* SWEETS LINK v170 — arcade score-sheet result screen inspired by the supplied reference.
+   Visual-only: result values and settlement logic remain owned by the game engines. */
+
+.round-result-layer{
+  padding:14px 8px 8px!important;
+  background:
+    linear-gradient(#1279b4aa,#47b7e2a8),
+    radial-gradient(ellipse at 50% 35%,#dff8ff 0 34%,transparent 35%),
+    url('../assets/sixdrop-candy-kingdom-20261031.webp') center/cover!important;
+}
+.round-result{
+  width:456px!important;
+  max-width:calc(100% - 4px)!important;
+  max-height:100%!important;
+  padding:12px 14px 10px!important;
+  border:5px solid #d69a42!important;
+  border-radius:20px!important;
+  background:
+    linear-gradient(180deg,#dff8ff 0%,#f7fdff 16%,#e8faff 86%,#c7efff 100%)!important;
+  box-shadow:
+    inset 0 0 0 2px #fff7cc,
+    inset 0 0 0 5px #79cbea,
+    0 0 0 2px #925829,
+    0 7px 0 #75431f,
+    0 13px 25px #17395670!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  text-align:center!important;
+  overflow:hidden!important;
+}
+.round-result::before{
+  inset:7px!important;
+  border:1px solid #ffffffd6!important;
+  border-radius:13px!important;
+  box-shadow:inset 0 0 18px #5fc9ec38!important;
+}
+.result-pennants,.result-logo{display:none!important}
+.result-candy-corners{z-index:0!important;opacity:.86}
+.result-candy-corners svg{width:42px!important;height:42px!important;filter:drop-shadow(0 2px 2px #37637e42)!important}
+.result-candy-corners svg:nth-child(1){left:-11px!important;top:73px!important}
+.result-candy-corners svg:nth-child(2){right:-11px!important;top:73px!important}
+.result-candy-corners svg:nth-child(3){left:-8px!important;bottom:54px!important}
+.result-candy-corners svg:nth-child(4){right:-8px!important;bottom:54px!important}
+
+.round-result h2{
+  order:1!important;
+  width:min(250px,68%)!important;
+  margin:0 auto 2px!important;
+  padding:5px 18px 6px!important;
+  border:3px solid #fff4b9!important;
+  border-radius:9px 9px 18px 18px!important;
+  background:linear-gradient(180deg,#66d7ff,#25a9dc 57%,#157bb8)!important;
+  box-shadow:inset 0 0 0 2px #c9f7ff,0 3px 0 #47728a,0 5px 8px #275a7660!important;
+  color:#fff8a6!important;
+  -webkit-text-stroke:1px #db8a22!important;
+  text-shadow:0 2px #8f5a1b,0 0 5px #fff!important;
+  font:1000 30px/34px CookieLabels,system-ui,sans-serif!important;
+  letter-spacing:4px!important;
+}
+.result-subtitle{
+  order:2!important;
+  display:block!important;
+  margin:0 0 5px!important;
+  color:#3c82a6!important;
+  font:900 7px/10px system-ui,sans-serif!important;
+  letter-spacing:2.8px!important;
+}
+#result-games{
+  order:3!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+  padding:1px 5px 0!important;
+  min-height:0!important;
+}
+#result-games[data-columns="1"]{grid-template-columns:minmax(0,1fr)!important;max-width:270px;margin-inline:auto;width:100%}
+.result-side{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.result-side-head{
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  margin-bottom:1px;
+}
+.result-side-head b{
+  width:25px;height:21px;display:grid;place-items:center;
+  border:2px solid #fff7d7;border-radius:7px;
+  color:#fff8a5;-webkit-text-stroke:.5px #ad6a24;
+  background:linear-gradient(#64d8bb,#27aa8d);
+  box-shadow:0 1px 0 #6d6849,0 0 0 1px #377a6b;
+  font:1000 13px/1 ElixirNumbers,system-ui,sans-serif;
+}
+.result-side-b .result-side-head b{background:linear-gradient(#ff98d8,#e85db6);box-shadow:0 1px 0 #87605f,0 0 0 1px #a84482}
+.result-side-head span{
+  color:#fff9c6;-webkit-text-stroke:.55px #9b6b24;
+  text-shadow:0 1px #7d531a;font:1000 13px/1 CookieLabels,system-ui,sans-serif;
+  letter-spacing:.7px;
+}
+
+#result-games .result-game{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:29px minmax(0,1fr) 77px!important;
+  grid-template-rows:minmax(25px,auto) auto!important;
+  column-gap:4px!important;
+  row-gap:0!important;
+  align-items:center!important;
+  min-height:39px!important;
+  margin:0!important;
+  padding:3px 5px 3px 4px!important;
+  border:2px solid #70bca4!important;
+  border-radius:3px!important;
+  background:linear-gradient(180deg,#aaf4cb 0%,#75dfb0 48%,#b2f4cd 100%)!important;
+  box-shadow:inset 0 0 0 1px #edfff4,0 1px 1px #396b6b55!important;
+  text-align:left!important;
+  animation:none!important;
+}
+.result-side-b .result-game{
+  border-color:#dd83b9!important;
+  background:linear-gradient(180deg,#ffc0e6 0%,#f18aca 48%,#ffc4e7 100%)!important;
+  box-shadow:inset 0 0 0 1px #fff0fa,0 1px 1px #6e3b6255!important;
+}
+#result-games .result-game.is-selected{
+  outline:2px solid #ffe779!important;
+  outline-offset:-2px!important;
+  filter:brightness(1.05)!important;
+}
+#result-games .result-game.no-bet{
+  opacity:.78!important;
+  filter:saturate(.7)!important;
+}
+#result-games .result-game-emblem{
+  grid-column:1!important;
+  grid-row:1 / 3!important;
+  width:26px!important;height:26px!important;
+  object-fit:contain!important;
+  align-self:center!important;
+  filter:drop-shadow(0 1px 1px #35645c55)!important;
+}
+#result-games .result-game-name{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  color:#2a7161!important;
+  font:1000 9.7px/12px "Hiragino Maru Gothic ProN",CookieLabels,system-ui,sans-serif!important;
+  text-shadow:0 1px #eafff4!important;
+}
+.result-side-b .result-game-name{color:#a83f80!important;text-shadow:0 1px #fff1fa!important}
+#result-games .result-game-name small{
+  display:none!important;
+}
+#result-games .result-game-award{
+  grid-column:3!important;
+  grid-row:1 / 3!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:row!important;
+  justify-content:flex-end!important;
+  align-items:baseline!important;
+  gap:2px!important;
+  color:#ffd84f!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+}
+#result-games .result-game-award .result-value{
+  display:inline-block!important;
+  min-width:54px!important;
+  max-width:64px!important;
+  text-align:right!important;
+  filter:drop-shadow(0 1px #87481f)!important;
+}
+#result-games .result-game-award .win-word{
+  font:1000 6px/1 CookieLabels,system-ui,sans-serif!important;
+  color:#fff7b4!important;
+  -webkit-text-stroke:.2px #82531f!important;
+}
+#result-games .result-game-details{
+  grid-column:2!important;
+  grid-row:2!important;
+  min-width:0!important;
+  display:block!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  color:#3e746b!important;
+  font:800 6.5px/9px system-ui,sans-serif!important;
+  line-height:9px!important;
+}
+.result-side-b .result-game-details{color:#87466f!important}
+#result-games .result-game-details span{
+  display:inline!important;
+}
+#result-games .result-game-details span+span::before{content:" · "}
+#result-games .result-chosen-mark{display:none!important}
+
+.result-side-total{
+  height:27px;
+  margin-top:2px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  padding:1px 7px 0;
+  border-top:2px solid #7ccfb4;
+  color:#59a88f;
+}
+.result-side-b .result-side-total{border-color:#e792c3;color:#cb5a9d}
+.result-side-total span{
+  margin-right:auto;
+  font:1000 11px/1 CookieLabels,system-ui,sans-serif;
+  -webkit-text-stroke:.25px #fff;
+  text-shadow:0 1px #fff;
+}
+.result-side-total strong{
+  min-width:74px;
+  text-align:right;
+  color:#ffd43d;
+  -webkit-text-stroke:.7px #a8651d;
+  text-shadow:0 1px #6d4119,0 0 3px #fff9a8;
+  font:1000 22px/1 ElixirNumbers,ArcadePayout,system-ui,sans-serif;
+  font-variant-numeric:tabular-nums;
+}
+
+.round-result .result-total{
+  order:4!important;
+  min-height:51px!important;
+  margin:4px 25px 2px!important;
+  padding:1px 6px 2px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  display:flex!important;
+  flex-direction:row!important;
+  justify-content:center!important;
+  align-items:baseline!important;
+  gap:8px!important;
+}
+.round-result .result-total::before,.round-result .result-total::after{display:none!important}
+.result-total-label{
+  color:#f7a825!important;
+  -webkit-text-stroke:.6px #fff3be!important;
+  text-shadow:0 2px #98601c!important;
+  font:1000 18px/1 CookieLabels,system-ui,sans-serif!important;
+  letter-spacing:.4px!important;
+}
+.result-total-amount{
+  width:auto!important;
+  min-height:44px!important;
+  gap:5px!important;
+  justify-content:center!important;
+  align-items:baseline!important;
+}
+#result-total-win{
+  min-width:110px!important;
+  filter:drop-shadow(0 2px #92541a)!important;
+}
+.result-total-amount .win-word{
+  color:#f6a926!important;
+  -webkit-text-stroke:.45px #fff3b2!important;
+  text-shadow:0 1px #925117!important;
+  font:1000 16px/1 CookieLabels,system-ui,sans-serif!important;
+}
+
+.round-result .result-status{order:5!important;margin:0!important;min-height:12px!important;color:#477d99!important;font-size:8px!important;line-height:11px!important}
+.result-next-info{order:6!important;margin:0 0 2px!important;color:#55849b!important;font-size:8px!important;line-height:13px!important}
+.result-next-info strong{font-size:12px!important;color:#dd6597!important}
+.result-countdown-track{order:7!important;height:4px!important;margin:0 auto!important;max-width:155px!important}
+#result-next{order:8!important}
+
+/* Narrow screens keep the two-column reference layout, but reduce row copy first. */
+@media(max-width:430px){
+  .round-result{padding-inline:9px!important}
+  #result-games{gap:5px!important;padding-inline:2px!important}
+  #result-games .result-game{grid-template-columns:25px minmax(0,1fr) 66px!important;padding-inline:3px!important}
+  #result-games .result-game-emblem{width:22px!important;height:22px!important}
+  #result-games .result-game-name{font-size:8.6px!important}
+  #result-games .result-game-details{font-size:5.8px!important}
+  #result-games .result-game-award .result-value{min-width:47px!important;max-width:55px!important}
+  .result-side-total strong{font-size:19px!important;min-width:65px!important}
+  .round-result h2{font-size:27px!important;line-height:31px!important}
+}
+
+/* Landscape uses the same score sheet rather than the former logo/summary split. */
+body.mobile-landscape .round-result{
+  display:flex!important;
+  width:720px!important;
+  max-width:calc(100% - 36px)!important;
+  padding:10px 16px 8px!important;
+}
+body.mobile-landscape .round-result .result-logo,
+body.mobile-landscape .round-result h2,
+body.mobile-landscape .result-subtitle,
+body.mobile-landscape .result-total,
+body.mobile-landscape #result-games,
+body.mobile-landscape .result-status,
+body.mobile-landscape .result-next-info,
+body.mobile-landscape .result-countdown-track{
+  grid-column:auto!important;grid-row:auto!important;
+}
+body.mobile-landscape #result-games{width:100%!important}
+
+@media(prefers-reduced-motion:reduce){
+  .round-result-layer:not([hidden]) .round-result{animation:none!important}
+}
