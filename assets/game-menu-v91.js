@@ -50,15 +50,44 @@ pick.addEventListener('click',e=>{if(e.target===pick)pick.close();});
 play.addEventListener('click',e=>{if(!draft.length){e.preventDefault();return;}try{localStorage.setItem('sweets-lineup-v91',JSON.stringify(draft));}catch{}pick.close();});
 
 const layer=$('round-result-layer'),logo=layer.querySelector('.result-logo'),rows=$('result-games');
-rows.style.gridTemplateColumns=mode==='all'?'repeat(5,minmax(0,1fr))':'repeat('+chosen.length+',minmax(0,1fr))';
+rows.style.removeProperty('grid-template-columns');
 let resultToken=-1;
+const resultRows=()=>[...rows.querySelectorAll('.result-game[data-game-index]')];
 function highlight(i){
  const key=ids[i];if(!key)return;
  layer.dataset.gameKind=key;layer.querySelector('.round-result').dataset.gameKind=key;
  logo.style.setProperty('background','url("'+catalog[key].logo+'") center/contain no-repeat','important');
  logo.setAttribute('aria-label',catalog[key].name);
- layer.querySelector('.result-subtitle').textContent='選択中　'+catalog[key].name;
- for(const row of rows.children){const on=Number(row.dataset.gameIndex)===i;row.setAttribute('aria-pressed',String(on));row.classList.toggle('is-selected',on);}
+ for(const row of resultRows()){const on=Number(row.dataset.gameIndex)===i;row.setAttribute('aria-pressed',String(on));row.classList.toggle('is-selected',on);}
+}
+function resultColumnTotal(a,indexes){
+ return indexes.reduce((sum,i)=>sum+(a.enabled[i]?Number(a.roundWins[i]||0):0),0);
+}
+function layoutReferenceResult(a){
+ const gameRows=resultRows();
+ if(!gameRows.length)return;
+ const byIndex=new Map(gameRows.map(row=>[Number(row.dataset.gameIndex),row]));
+ const ordered=chosen.map(key=>ids.indexOf(key)).filter(i=>i>=0&&byIndex.has(i));
+ for(const row of gameRows)if(!ordered.includes(Number(row.dataset.gameIndex)))ordered.push(Number(row.dataset.gameIndex));
+ const cut=Math.ceil(ordered.length/2),groups=[ordered.slice(0,cut),ordered.slice(cut)];
+ rows.replaceChildren();
+ rows.dataset.columns=groups[1].length?'2':'1';
+ groups.forEach((indexes,column)=>{
+  if(!indexes.length)return;
+  const group=document.createElement('section');group.className='result-side result-side-'+(column?'b':'a');
+  group.dataset.side=column?'b':'a';
+  const head=document.createElement('header');head.className='result-side-head';
+  head.innerHTML='<b>'+(column+1)+'</b><span>RESULT</span>';
+  group.append(head);
+  for(const i of indexes){const row=byIndex.get(i);if(row){row.style.order='';group.append(row);}}
+  const total=document.createElement('div');total.className='result-side-total';
+  total.innerHTML='<span>TOTAL</span><strong>'+String(resultColumnTotal(a,indexes))+'</strong>';
+  group.append(total);rows.append(group);
+ });
+ const heading=layer.querySelector('#result-heading');if(heading)heading.textContent='RESULT';
+ const subtitle=layer.querySelector('.result-subtitle');if(subtitle)subtitle.textContent='SWEETS LINK';
+ const total=layer.querySelector('#result-total-win');
+ if(total&&typeof fitGoldenNumber==='function')fitGoldenNumber(total,String(Math.max(0,Math.round(Number(a.totalWin)||0))),52,250);
 }
 function selectResult(e){const row=e.target.closest('.result-game[data-game-index]');if(row&&rows.contains(row))highlight(Number(row.dataset.gameIndex));}
 rows.addEventListener('click',selectResult);
@@ -68,16 +97,19 @@ renderRoundResult=function(a){
  previousResult(a);
  if(layer.hidden||resultToken===a.token)return;
  resultToken=a.token;
- for(const row of [...rows.children]){
+ for(const row of resultRows()){
   const i=Number(row.dataset.gameIndex),key=ids[i];
   if(!key){row.remove();continue;}
   const game=catalog[key];
   row.dataset.gameKind=key;row.setAttribute('role','button');row.tabIndex=0;row.setAttribute('aria-label',game.name+'の結果');
-  row.style.order=String(chosen.indexOf(key));
-  const icon=new Image();icon.className='result-game-emblem';icon.src=game.logo;icon.alt='';
-  row.querySelector('.result-game-emblem')?.replaceWith(icon);
-  const badge=document.createElement('span');badge.className='result-chosen-mark';badge.textContent='選択中';row.append(badge);
+  const oldIcon=row.querySelector('.result-game-emblem');
+  if(!oldIcon||oldIcon.tagName!=='IMG'||oldIcon.getAttribute('src')!==game.logo){
+   const icon=new Image();icon.className='result-game-emblem';icon.src=game.logo;icon.alt='';
+   oldIcon?.replaceWith(icon);
+  }
+  if(!row.querySelector('.result-chosen-mark')){const badge=document.createElement('span');badge.className='result-chosen-mark';badge.textContent='選択中';row.append(badge);}
  }
+ layoutReferenceResult(a);
  highlight(ids[active]?active:ids.indexOf(chosen[0]));
 };
 })();
@@ -90,6 +122,7 @@ renderRoundResult=function(a){
  const styles=[
   ['arcade-candy-world-v156-css','assets/arcade-candy-world-v156.css?v=156'],
   ['arcade-candy-world-v157-css','assets/arcade-candy-world-v157.css?v=157'],
+  ['result-board-v170-css','assets/result-board-v170.css?v=170'],
   ['waffle-pow-v159-css','assets/waffle-pow-v159.css?v=163']
  ];
  for(const [id,href] of styles){
