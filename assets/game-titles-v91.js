@@ -120,3 +120,14 @@ if(typeof recordBook!=='undefined'){
  recordBook.registerGameTitles(defs,tracker(center));
 }
 })();
+
+/* Load round recovery synchronously so the first BET is protected too. */
+(()=>{
+ try{
+  const request=new XMLHttpRequest();
+  request.open('GET','assets/round-recovery-v1.js?v=1',false);
+  request.send(null);
+  if(!((request.status>=200&&request.status<300)||request.status===0))throw new Error('HTTP '+request.status);
+  eval(request.responseText);
+ }catch(error){console.error('[round-plan] module load failed',error);}
+})();
