@@ -125,7 +125,7 @@ if(typeof recordBook!=='undefined'){
 (()=>{
  try{
   const request=new XMLHttpRequest();
-  request.open('GET','assets/round-recovery-v1.js?v=1',false);
+  request.open('GET','assets/round-recovery-v1.js?v=2',false);
   request.send(null);
   if(!((request.status>=200&&request.status<300)||request.status===0))throw new Error('HTTP '+request.status);
   eval(request.responseText);
