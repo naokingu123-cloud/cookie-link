@@ -36,7 +36,7 @@ try{
  assert.equal(aSettle.payoutControlV3.currentRoundWin,120);assert.equal(aSettle.payoutControlV3.lifetimeWin,120);assert.equal(aSettle.payoutControlV3.lifetimeBet,100);
  assert.equal(aSettle.payoutControlV3.games.cookie.win,70);assert.equal(aSettle.payoutControlV3.games.choco.win,50);
  const low=await post('/api/machines/public-01/round/join','A',joinBody('r2-low',10,[{id:'cookie',bet:5},{id:'choco',bet:5}]));
- assert.equal(low.payoutControlV3.effectiveRate,50,'low BET may receive a bounded strong correction');
+ assert.equal(low.payoutControlV3.effectiveRate,55,'low BET must be bounded by the configured 35-point correction cap');
  const high=await post('/api/machines/public-01/round/join','A',joinBody('r2-high',1000,[{id:'cookie',bet:500},{id:'choco',bet:500}]));
  assert.ok(high.payoutControlV3.effectiveRate>85&&high.payoutControlV3.effectiveRate<95,'switching back to high BET must immediately reprice instead of retaining the low-BET extreme');
  assert.equal(high.payoutControlV3.effectiveRate,high.payoutControlV3.desiredRate);
