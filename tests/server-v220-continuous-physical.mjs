@@ -24,6 +24,7 @@ async function json(url,{method='GET',body,session}={}){
 }
 function openSocket(session){return new Promise((resolve,reject)=>{const ws=new WebSocket(`ws://127.0.0.1:${port}/ws?machineId=public-01&playerId=${encodeURIComponent(session.player.id)}&token=${encodeURIComponent(session.token)}`);ws.once('open',()=>resolve(ws));ws.once('error',reject);});}
 async function waitState(session,predicate,timeout=9000){const started=Date.now();let state;while(Date.now()-started<timeout){state=await json('/api/machines/public-01/state',{session});if(predicate(state))return state;await sleep(45);}throw Error('state timeout: '+JSON.stringify(state)+'\n'+stderr);}
+async function waitDrawStart(state){const delay=Math.max(0,Number(state?.round?.drawStartsAt||0)-Date.now()+45);if(delay)await sleep(delay);}
 async function reportEight(host,roundId,numbers){
  for(let index=1;index<=8;index++){
   const data=await json('/api/machines/public-01/round/ball',{method:'POST',session:host,body:{roundId,ballIndex:index,number:numbers[index-1],eventId:roundId+':physical:'+index}});
@@ -52,6 +53,7 @@ try{
  playerSocket=await openSocket(player);await sleep(620);
  let observed=await json('/api/machines/public-01/state',{session:player});
  assert.equal(observed.round.id,firstId);assert.equal(observed.round.phase,'PLAYING');assert.equal(observed.round.participant,null);
+ await waitDrawStart(observed);
  await reportEight(host,firstId,[1,4,7,10,13,16,19,22]);
  await waitState(host,s=>s.round?.id===firstId&&s.round.phase==='COMPLETE');
 
@@ -63,6 +65,7 @@ try{
  assert.equal(joined.round.id,secondId);assert.equal(joined.round.participant.playerId,player.player.id);
  const secondPlaying=await waitState(player,s=>s.round?.id===secondId&&s.round.phase==='PLAYING');
  assert.equal(secondPlaying.round.participant.playerId,player.player.id);assert.equal(secondPlaying.round.drawSource,'physical');
+ await waitDrawStart(secondPlaying);
  await reportEight(host,secondId,[2,5,8,11,14,17,20,23]);
  await waitState(player,s=>s.round?.id===secondId&&s.round.phase==='COMPLETE');
 
