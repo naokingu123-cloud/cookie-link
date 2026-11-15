@@ -248,14 +248,14 @@ class Client{
 
 let blockedRoundId=(()=>{
  try{
-  const saved=JSON.parse(sessionStorage.getItem(ABANDONED_ROUND_KEY)||'null');
+  const saved=JSON.parse(localStorage.getItem(ABANDONED_ROUND_KEY)||'null');
   if(saved?.roundId&&Date.now()-Number(saved.at||0)<21600000)return String(saved.roundId);
  }catch{}
  return null;
 })(),pendingStart=null;
 function rememberBlockedRound(roundId){
  blockedRoundId=roundId?String(roundId):null;
- try{if(blockedRoundId)sessionStorage.setItem(ABANDONED_ROUND_KEY,JSON.stringify({roundId:blockedRoundId,at:Date.now()}));else sessionStorage.removeItem(ABANDONED_ROUND_KEY);}catch{}
+ try{if(blockedRoundId)localStorage.setItem(ABANDONED_ROUND_KEY,JSON.stringify({roundId:blockedRoundId,at:Date.now()}));else localStorage.removeItem(ABANDONED_ROUND_KEY);}catch{}
 }
 const client=new Client();
 let current=null,resumeId=null,recoveryOpen=false;
@@ -320,7 +320,7 @@ async function startShared(callbacks,nativeReset){
   }else if((round.balls||[]).length){
    // A normal fresh start must never replay stale/cached server balls.
    // If this is an already-running round, wait for the next round instead of synthesizing a local-looking catch-up.
-   rememberBlockedRound(round.id);current.stopped=true;current=null;app.__sharedRound=null;
+   rememberBlockedRound(round.id);pendingStart={callbacks,nativeReset};current.stopped=true;current=null;app.__sharedRound=null;
    try{await client.leave({roundId:round.id});}catch{}
    status('既存ラウンド終了待ち','次ラウンド待機');client.syncReady();return;
   }
