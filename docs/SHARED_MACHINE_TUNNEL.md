@@ -162,3 +162,26 @@ start-shared-machine-tunnel.cmd -Machine room-02
 - Git clone / pushが利用できない場合、`shared-endpoint.json` の自動公開だけをスキップし、Nodeサーバー、Quick Tunnel、サーバー管理画面は起動を継続します。
 - Git公開できる環境では通常ゲームURLだけでの自動発見を使用します。
 - ZIP環境かつQuick Tunnelではホスト名が毎回変わるため、完全なゼロ設定自動発見には固定ホスト名（Named Tunnel等）または公開可能なランデブー先が必要です。
+
+
+## v187 Named Tunnel fixed-host mode
+
+Named Tunnel is now the default launcher mode.
+
+One-time Cloudflare setup:
+1. In Cloudflare Dashboard, go to Networking > Tunnels and create a remotely-managed tunnel.
+2. Add a Published application with a fixed public hostname such as `sweets.example.com`.
+3. Set its Service URL to `http://localhost:3000`.
+4. Copy the tunnel token from the cloudflared run/install command.
+5. Run `setup-named-tunnel.cmd` once and enter the fixed hostname and token.
+
+After that:
+- Run `start-shared-machine-tunnel.cmd`.
+- The launcher runs `cloudflared tunnel run --token-file ...` using the saved token.
+- Player URL is the fixed hostname itself, for example `https://sweets.example.com/`.
+- Player devices only open that game URL. No `sharedServer` parameter is needed.
+- Server management uses the same fixed hostname with an admin token in the query string and is opened automatically on the server PC.
+- The physical roulette remains server-authoritative and player devices never run a local 8-ball result source.
+
+The token and hostname are stored under `.runtime`, which is ignored by Git.
+Quick Tunnel remains available only as an explicit temporary fallback with `-QuickTunnel`.
