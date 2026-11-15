@@ -20,12 +20,14 @@ on:
       - 'assets/server-monitor-system-filter-v213.js'
       - 'assets/server-payout-control-v3.js'
       - 'assets/shared-core-patch-v221.js'
-      - 'assets/shared-client-controller-v219.js'
+      - 'assets/shared-core-patch-v222.js'
+      - 'assets/shared-client-controller-v222.js'
       - 'assets/server-offline-settlement-worker-v3.js'
       - 'assets/shared-machine-v176.js'
       - 'assets/shared-machine-core-v196.js'
       - 'assets/shared-roulette-webrtc-host-v217.js'
       - 'assets/shared-roulette-client-v219.js'
+      - 'assets/shared-roulette-client-hold-v222.js'
       - 'assets/shared-host-keepalive-v206.js'
       - 'assets/shared-host-speed-v219.js'
       - 'tests/shared-rtc-signaling.mjs'
@@ -35,6 +37,7 @@ on:
       - 'tests/shared-v219-continuous-rounds.mjs'
       - 'tests/shared-v219-three-live-cycles.mjs'
       - 'tests/shared-v221-host-draw-watchdog.mjs'
+      - 'tests/shared-v222-reconnect-catchup.mjs'
       - 'tests/payout-v3-runtime.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
       - 'scripts/start-shared-machine-v205.ps1'
@@ -102,6 +105,10 @@ jobs:
           grep -q "physical host must draw empty authoritative rounds" assets/shared-core-patch-v221.js
           grep -q "restart a stalled physical draw" assets/shared-core-patch-v221.js
           grep -q "physical result progress and retry" assets/shared-core-patch-v221.js
+          grep -q "authoritative catch-up helper" assets/shared-core-patch-v222.js
+          grep -q "legacy first-HIT JPEG mirror" assets/shared-core-patch-v222.js
+          grep -q "reconnect-safe authoritative rounds" assets/shared-client-controller-v222.js
+          grep -q "last-good remote frame continuity" assets/shared-roulette-client-hold-v222.js
           grep -q "CONTINUOUS_PHYSICAL_ROUNDS" server-core-loader-v220.mjs
           grep -q "SWEETS_CONTINUOUS_PHYSICAL_ROUNDS??='1'" server.mjs
           grep -q "smoothRoulette" assets/server-monitor-host-stability-v217.js
@@ -111,6 +118,7 @@ jobs:
           grep -q "three live join/start/result" tests/shared-v219-three-live-cycles.mjs
           grep -q "empty physical clock" tests/server-v220-continuous-physical.mjs
           grep -q "physical host start/progress/resume watchdog" tests/shared-v221-host-draw-watchdog.mjs
+          grep -q "v222 reconnect keeps PLAY alive" tests/shared-v222-reconnect-catchup.mjs
           grep -q "SWEETS_AUTONOMOUS_ROUNDS='0'" server.mjs
           if grep -q "server-autonomous-rounds-v213.mjs" server.mjs; then
             echo 'Legacy synthetic autonomous rounds must not be loaded.'
