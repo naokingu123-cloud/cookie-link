@@ -7,7 +7,8 @@ const loader=await readFile(new URL('../assets/shared-machine-v176.js',import.me
 const speed=await readFile(new URL('../assets/shared-host-speed-v219.js',import.meta.url),'utf8');
 const video=await readFile(new URL('../assets/shared-roulette-client-v219.js',import.meta.url),'utf8');
 
-assert.ok(loader.includes('shared-client-controller-v219.js?v=219'),'one v219 controller must own join/start/reset');
+assert.ok(loader.includes('shared-client-controller-v219.js?v=220'),'one v220 loader/controller stack must own join/start/reset');
+assert.ok(loader.includes('shared-core-patch-v220.js?v=220'),'v220 physical empty-round patch must load');
 assert.ok(!loader.includes('shared-connection-gate-v218.js'),'old connection gate must not double-wrap start');
 assert.ok(!loader.includes('shared-client-lifecycle-v218-final.js'),'old lifecycle must not clear the prepared board');
 assert.ok(!loader.includes('shared-next-bet-join-v218.js'),'old join loop must not race v219');
@@ -67,7 +68,7 @@ const context={
 };
 context.window=context;context.globalThis=context;
 vm.runInNewContext(controllerSource,context);
-assert.ok(context.SweetsSharedControllerV219,'v219 diagnostics must be exposed');
+assert.ok(context.SweetsSharedControllerV219,'v219 controller diagnostics must be exposed');
 assert.equal(app.start(),false,'initial BET or a fleeting connection must never start a local draw');
 assert.equal(startCount,0);
 
@@ -93,4 +94,4 @@ for(let roundIndex=1;roundIndex<=3;roundIndex++){
 assert.equal(settleCount,3,'each completed round must settle exactly once');
 assert.equal(drawResetCount,3,'each completed round must release the shared draw exactly once');
 assert.ok(prepareCount>=3,'three consecutive rounds must each construct a new board');
-console.log('v219 three-round fresh-board reset, initial local block, isolated 2x and continuous video guards passed');
+console.log('v220 three-round fresh-board reset, local block, isolated 2x and continuous video guards passed');
