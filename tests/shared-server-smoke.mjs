@@ -50,9 +50,16 @@ try{
  const authHost={token:sessionHost.token,playerId:sessionHost.player.id};
  const authA={token:sessionA.token,playerId:sessionA.player.id},authB={token:sessionB.token,playerId:sessionB.player.id},authC={token:sessionC.token,playerId:sessionC.player.id};
 
+ // A reset/leave from the only player must never abort the server-owned physical round.
+ const resetProbe=await json('/api/machines/public-01/round/join',{...authC,method:'POST',body:{clientRoundToken:'reset-probe',bets:[300],locked:[300],enabled:[true],totalBet:300,creditAfterBet:700,appVersion:'test'}});
+ const resetProbeId=resetProbe.round.id;
+ const resetProbeLeft=await json('/api/machines/public-01/round/leave',{...authC,method:'POST',body:{roundId:resetProbeId}});
+ assert.equal(resetProbeLeft.left,true);assert.equal(resetProbeLeft.phase,'PLAYING');assert.equal(resetProbeLeft.participantCount,0);
+
  // A player may enter PLAYING before the physical-host iframe finishes registering.
- // The round must be retained and start as soon as the host registers.
+ // The same round must be retained and start as soon as the host registers.
  const joinedA=await json('/api/machines/public-01/round/join',{...authA,method:'POST',body:{clientRoundToken:'a',bets:[100],locked:[100],enabled:[true],totalBet:100,creditAfterBet:900,appVersion:'test'}});
+ assert.equal(joinedA.round.id,resetProbeId);
  assert.equal(joinedA.round.phase,'PLAYING');
  assert.equal(joinedA.round.balls.length,0);
 
