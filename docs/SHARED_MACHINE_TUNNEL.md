@@ -143,3 +143,14 @@ start-shared-machine-tunnel.cmd -Machine room-02
 - この管理画面に現行3D物理抽選機、接続プレイヤー、BET、CREDIT、ROUND WIN、8球結果をまとめて表示します。
 - プレイヤー端末へ渡すのは GitHub Pages + `sharedServer=https://xxxxx.trycloudflare.com` のクライアントURLです。
 - ランチャーはサーバー管理URLを自動でサーバーPCに開き、クライアントURLをクリップボードへコピーします。
+
+
+## v185 クライアント自動接続
+
+- クライアント側は通常のゲームURL `https://naokingu123-cloud.github.io/cookie-link/` を開くだけで接続します。
+- `sharedServer=` パラメータは通常不要です。
+- サーバー起動時、ランチャーが現在の Quick Tunnel URL を `shared-endpoint.json` へ書き込み、`main` へ自動pushします。
+- ランチャーは GitHub Pages 上の `shared-endpoint.json` が現在のTunnel URLへ更新されたことを確認してからREADY表示します。
+- クライアントはゲーム起動時に `shared-endpoint.json` を読み、現在のサーバーURLを自動取得します。
+- サーバー側は従来どおり `trycloudflare.com/?machine=...&adminToken=...` の管理画面を使用します。
+- この自動公開には、サーバーPC上のリポジトリがGit cloneであり、`origin/main` へpushできるGit認証が必要です。
