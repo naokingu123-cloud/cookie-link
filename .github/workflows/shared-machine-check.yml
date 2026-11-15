@@ -6,14 +6,24 @@ on:
     paths:
       - 'package.json'
       - 'server.mjs'
+      - 'server-core.mjs'
+      - 'server-rtc-preload.mjs'
       - 'optimized/app-01.js'
       - 'monitor.html'
       - 'assets/shared-machine-v176.js'
+      - 'assets/shared-machine-core-v196.js'
+      - 'assets/shared-roulette-webrtc-host-v197.js'
+      - 'assets/shared-roulette-webrtc-client-v197.js'
+      - 'assets/shared-host-keepalive-v205.js'
+      - 'assets/shared-roulette-client-watchdog-v205.js'
       - 'assets/precomputed-round-v174.js'
       - 'tests/shared-server-smoke.mjs'
+      - 'tests/shared-rtc-signaling.mjs'
       - 'tests/client-no-local-eight.mjs'
       - 'tests/shared-client-delivery.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
+      - 'scripts/start-shared-machine-v205.ps1'
+      - 'scripts/launch-host-browser-v205.ps1'
       - 'scripts/setup-named-tunnel.ps1'
       - 'setup-named-tunnel.cmd'
       - 'start-shared-machine-tunnel.cmd'
@@ -37,7 +47,12 @@ jobs:
         run: |
           $tokens = $null
           $errors = $null
-          foreach ($file in @('scripts/start-shared-machine-tunnel.ps1','scripts/setup-named-tunnel.ps1')) {
+          foreach ($file in @(
+            'scripts/start-shared-machine-tunnel.ps1',
+            'scripts/start-shared-machine-v205.ps1',
+            'scripts/launch-host-browser-v205.ps1',
+            'scripts/setup-named-tunnel.ps1'
+          )) {
             $tokens = $null
             $errors = $null
             [System.Management.Automation.Language.Parser]::ParseFile(
@@ -53,7 +68,11 @@ jobs:
       - name: Windows PowerShell 5.1 encoding guard
         shell: bash
         run: |
-          if LC_ALL=C grep -nP '[^\x00-\x7F]' scripts/start-shared-machine-tunnel.ps1 scripts/setup-named-tunnel.ps1; then
+          if LC_ALL=C grep -nP '[^\x00-\x7F]' \
+            scripts/start-shared-machine-tunnel.ps1 \
+            scripts/start-shared-machine-v205.ps1 \
+            scripts/launch-host-browser-v205.ps1 \
+            scripts/setup-named-tunnel.ps1; then
             echo 'PowerShell scripts must remain ASCII-only for Windows PowerShell 5.1 compatibility.'
             exit 1
           fi
