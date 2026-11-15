@@ -33,7 +33,8 @@ assert.ok(wrapper.indexOf('shared-client-lifecycle-v217.js')<wrapper.indexOf('sh
 
 assert.ok(patch.includes('never convert a partially physical round into random fallback'));
 assert.ok(patch.includes('physical draw errors must stop instead of generating random balls'));
-assert.ok(!patch.includes("onError:message=>{client.send({type:'host_fallback_request'"));
+assert.ok(patch.includes("nativeStart({onNumber:reportPhysical,onError:message=>{stopHost(message||'抽選機エラー');}})"),'patched target must stop instead of requesting server fallback');
+assert.ok(patch.includes("hostRunning=false;stopHost('抽選機起動エラー')"),'host startup failure must stop the physical round');
 assert.ok(gate.includes('const STABLE_MS=2800'));
 assert.ok(gate.includes('const MIN_BET_REMAIN_MS=2600'));
 assert.ok(gate.includes('stable_connection_required'));
