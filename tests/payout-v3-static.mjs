@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 const server=await readFile(new URL('../server-payout-preload-v3.mjs',import.meta.url),'utf8');
 const client=await readFile(new URL('../assets/server-payout-control-v3.js',import.meta.url),'utf8');
 const flow=await readFile(new URL('../assets/shared-client-flow-v212.js',import.meta.url),'utf8');
+const lateJoin=await readFile(new URL('../assets/shared-next-bet-join-v214.js',import.meta.url),'utf8');
 const worker=await readFile(new URL('../assets/server-offline-settlement-worker-v3.js',import.meta.url),'utf8');
 const monitor=await readFile(new URL('../assets/server-monitor-payout-v3.js',import.meta.url),'utf8');
 const html=await readFile(new URL('../monitor.html',import.meta.url),'utf8');
@@ -42,14 +43,19 @@ assert.ok(flow.includes('applyCredit(machine,creditAfter)'),'CREDIT must be reta
 assert.ok(flow.includes('refreshServerState(shared)'),'the next authoritative BET state must be fetched after reset');
 assert.ok(!flow.includes("if(machine.phase!=='complete')return"),'a later phase overwrite must not cancel reset');
 
+assert.ok(lateJoin.includes('client.join(payload)'),'an eligible late client must explicitly reserve the next BET');
+assert.ok(lateJoin.includes("type:'round_started'"),'a missed start event must be retried authoritatively');
+assert.ok(lateJoin.includes('forceReadyForBet()'),'a stale result phase must not block next-game participation');
+
 assert.ok(worker.includes("serverSettlementWorker')!=='1'"),'offline calculator must run only in the dedicated server iframe');
 assert.ok(worker.includes('presentationRate=100'),'offline settlement must skip normal presentation timing');
 assert.ok(worker.includes('app.finishRound()'),'offline calculation must use the normal result calculation path');
 assert.ok(worker.includes('/offline-work/complete'),'calculated WIN must be returned to the server');
-assert.ok(wrapper.includes("server-offline-settlement-worker-v3.js?v=212"),'the dedicated worker must bypass the normal player client');
-assert.ok(wrapper.includes("server-payout-control-v3.js?v=212"),'normal players must load common payout v3');
-assert.ok(wrapper.includes("shared-client-flow-v212.js?v=212"),'normal players must load explicit next-game flow');
-assert.ok(entry.includes("process.env.SWEETS_BET_DURATION_MS??='3000'"),'shared BET time must default to three seconds');
+assert.ok(wrapper.includes("server-offline-settlement-worker-v3.js?v=214"),'the dedicated worker must bypass the normal player client');
+assert.ok(wrapper.includes("server-payout-control-v3.js?v=214"),'normal players must load common payout v3');
+assert.ok(wrapper.includes("shared-client-flow-v212.js?v=214"),'normal players must load explicit next-game flow');
+assert.ok(wrapper.includes("shared-next-bet-join-v214.js?v=214"),'normal players must load next-BET join retry');
+assert.ok(entry.includes("process.env.SWEETS_BET_DURATION_MS??='10000'"),'shared BET time must default to ten seconds');
 assert.ok(entry.includes("server-payout-preload-v3.mjs"),'server entry must load payout v3');
 
 assert.ok(monitor.includes('function rateBar'),'monitor must render horizontal payout bars');
@@ -60,4 +66,4 @@ assert.ok(html.includes('プレイヤー単位・全ゲーム共通設定'),'mon
 assert.ok(html.includes('settlement-worker'),'monitor must host the server-side settlement calculator');
 assert.ok(css.includes('.host-frame{display:block;width:100%;height:248px'),'roulette view must be compact enough for one-screen monitoring');
 assert.ok(css.includes('.rate-track'),'horizontal rate chart styles must exist');
-console.log('common payout, synchronous immediate telemetry, explicit shared reset, GAME0 mapping and 3-second BET guards passed');
+console.log('common payout, explicit shared reset, late-client next-BET join, GAME0 mapping and ten-second BET guards passed');
