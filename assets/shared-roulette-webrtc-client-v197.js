@@ -1,1 +1,225 @@
-(()=>{'use strict';if(window.__sweetsRouletteClientV203)return;window.__sweetsRouletteClientV203=true;const P=197,Q=new URLSearchParams(location.search),iid=(crypto.randomUUID?.()||Date.now()+''+Math.random()).replace(/\W/g,'').slice(0,24),cfg={iceServers:[{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}],iceCandidatePoolSize:3,bundlePolicy:'max-bundle'};function boot(){const shared=window.SweetsSharedMachine,client=shared?.client;if(!client){setTimeout(boot,80);return;}if(typeof RTCPeerConnection!=='function'){console.warn('[RouletteClient203] WebRTC unsupported');return;}let state,video,watch=0,health=0,lastFrame=0,generation=0,fallback,lastFallback=0,waiting=Date.now();const rid=()=>String(client.round?.id||''),send=m=>client.send({...m,protocol:P,instanceId:iid,roundId:rid()});function css(){if(document.getElementById('shared-roulette-webrtc-v197-css'))return;const s=document.createElement('style');s.id='shared-roulette-webrtc-v197-css';s.textContent='#cookie-roulette .a8-stage{position:relative!important;overflow:hidden!important;isolation:isolate}#cookie-roulette .shared-roulette-webrtc{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:50% 50%!important;background:#02070b!important;z-index:10010!important;pointer-events:none!important;opacity:0;transition:opacity .12s linear;transform:translateZ(0)}#cookie-roulette .shared-roulette-webrtc[data-live="1"]{opacity:1!important}body.shared-roulette-webrtc-live #cookie-roulette .a8-stage>canvas{visibility:hidden!important}body.shared-roulette-webrtc-live #cookie-roulette .shared-roulette-mirror{display:none!important}';document.head.append(s);}function view(){css();if(video?.isConnected)return video;const root=document.querySelector('#cookie-roulette .a8-stage');if(!root)return null;video=document.createElement('video');Object.assign(video,{className:'shared-roulette-webrtc',autoplay:true,muted:true,playsInline:true,disablePictureInPicture:true});video.dataset.live='0';video.setAttribute('aria-label','サーバー物理抽選機のライブ映像');video.addEventListener('playing',live);video.addEventListener('timeupdate',()=>lastFrame=Date.now());root.append(video);return video;}function frames(){const v=video;if(!v||typeof v.requestVideoFrameCallback!=='function')return;const g=++generation;const tick=()=>{if(v!==video||g!==generation)return;lastFrame=Date.now();if(v.dataset.live!=='1')live();v.requestVideoFrameCallback(tick);};v.requestVideoFrameCallback(tick);}function live(){if(!video)return;lastFrame=Date.now();video.dataset.live='1';document.body.classList.add('shared-roulette-webrtc-live');try{if(typeof rouletteDriver!=='undefined')rouletteDriver?.setPaused(true);}catch{}}function dark(){if(video)video.dataset.live='0';document.body.classList.remove('shared-roulette-webrtc-live');lastFrame=0;try{if(typeof rouletteDriver!=='undefined'&&!app?.paused)rouletteDriver?.setPaused(false);}catch{}}async function flush(s){if(!s.pc.remoteDescription)return;while(s.ice.length)try{await s.pc.addIceCandidate(s.ice.shift());}catch{}}function fallbackClear(){const f=fallback;fallback=null;if(!f)return;try{if(f.ms.readyState==='open')f.ms.endOfStream();}catch{}try{URL.revokeObjectURL(f.url);}catch{}}function close({retry=false,keepFallback=true}={}){const s=state;state=null;generation++;if(s){clearTimeout(s.timer);try{s.pc.close();}catch{}}if(!keepFallback){fallbackClear();if(video)try{video.srcObject=null;video.removeAttribute('src');video.load();}catch{}dark();}else if(!fallback){if(video)try{video.srcObject=null;}catch{}dark();}if(retry){waiting=Date.now();request(500);}}function bytes(data){const b=atob(data),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}function pump(f){if(fallback!==f||!f.sb||f.sb.updating||!f.q.length)return;try{f.sb.appendBuffer(f.q.shift());}catch{fallbackClear();request(250);}}function startMedia(m){const mime=String(m.mime||'video/webm;codecs=vp8');if(typeof MediaSource!=='function'||!MediaSource.isTypeSupported(mime))return;fallbackClear();const v=view();if(!v)return;const ms=new MediaSource(),url=URL.createObjectURL(ms),f={id:String(m.streamId||''),mime,ms,url,sb:null,q:[],seq:-1,ready:false};fallback=f;generation++;try{v.srcObject=null;}catch{}v.src=url;v.play().catch(()=>{});frames();ms.addEventListener('sourceopen',()=>{if(fallback!==f)return;try{f.sb=ms.addSourceBuffer(mime);try{f.sb.mode='sequence';}catch{}f.sb.addEventListener('updateend',()=>{if(fallback!==f)return;f.ready=true;try{const r=v.buffered;if(r.length){const end=r.end(r.length-1);if(end-v.currentTime>1.25)v.currentTime=Math.max(0,end-.12);}}catch{}pump(f);});pump(f);}catch{fallbackClear();}},{once:true});}function media(m){if(!m.streamId||!m.data)return;if(!fallback||fallback.id!==String(m.streamId))startMedia(m);const f=fallback;if(!f)return;const n=Number(m.sequence)||0;if(n<=f.seq)return;f.seq=n;try{f.q.push(bytes(m.data));}catch{return;}if(f.ready&&f.q.length>10)f.q.splice(0,f.q.length-5);lastFallback=0;waiting=Date.now();pump(f);}async function offer(m){const host=String(m.fromPlayerId||''),inst=String(m.fromInstanceId||'');if(!host||!m.description)return;close({keepFallback:true});const pc=new RTCPeerConnection(cfg),s={pc,host,inst,ice:[],timer:0};state=s;pc.onicecandidate=e=>{if(e.candidate)send({type:'rtc_ice',targetPlayerId:host,targetInstanceId:inst,candidate:e.candidate.toJSON?.()||e.candidate});};pc.ontrack=e=>{if(state!==s)return;try{if('playoutDelayHint'in e.receiver)e.receiver.playoutDelayHint=0;}catch{}const media=e.streams?.[0]||new MediaStream([e.track]);const attach=()=>{if(state!==s)return;const v=view();if(!v){setTimeout(attach,80);return;}if(fallback){fallbackClear();send({type:'rtc_fallback_stop',targetPlayerId:host,targetInstanceId:inst});}v.removeAttribute('src');v.srcObject=media;v.play().catch(()=>{});frames();};attach();};pc.onconnectionstatechange=()=>{if(state!==s)return;const x=pc.connectionState;if(x==='connected')clearTimeout(s.timer);else if(x==='failed'||x==='closed')close({retry:true});else if(x==='disconnected'){clearTimeout(s.timer);s.timer=setTimeout(()=>{if(state===s&&pc.connectionState==='disconnected')close({retry:true});},3500);}};try{await pc.setRemoteDescription(m.description);await pc.setLocalDescription(await pc.createAnswer());send({type:'rtc_answer',targetPlayerId:host,targetInstanceId:inst,description:pc.localDescription.toJSON?.()||pc.localDescription});await flush(s);}catch{close({retry:true});}}function request(delay=0){clearTimeout(watch);watch=setTimeout(()=>{if(!client.online)return;send({type:'rtc_watch'});if(state?.pc?.connectionState!=='connected'&&!fallback){lastFallback=Date.now();send({type:'rtc_fallback_request'});}},delay);}async function on(m){if(m.type==='rtc_host_ready'){request();return;}if(m.type==='rtc_host_offline'){close({retry:true,keepFallback:false});return;}if(m.targetInstanceId&&m.targetInstanceId!==iid)return;if(m.type==='rtc_offer'){await offer(m);return;}if(m.type==='rtc_ice'){const s=state;if(!s)return;if(s.pc.remoteDescription)try{await s.pc.addIceCandidate(m.candidate);}catch{}else s.ice.push(m.candidate);return;}if(m.type==='rtc_media'){media(m);return;}if(m.type==='rtc_media_stop'&&(!m.streamId||fallback?.id===m.streamId)){fallbackClear();if(!state)dark();request(300);}}client.on(m=>{on(m);if(['snapshot','host_changed','host_status','round_started','participant_joined','ball_result'].includes(m.type))request(80);});client.ready.then(ok=>{if(ok){view();request(100);}});health=setInterval(()=>{const fresh=lastFrame&&Date.now()-lastFrame<2500,noCallback=video&&!video.paused&&video.readyState>=2&&typeof video.requestVideoFrameCallback!=='function',ok=(state?.pc?.connectionState==='connected'||!!fallback)&&(fresh||noCallback);if(!ok)request(0);},1200);addEventListener('beforeunload',()=>{clearTimeout(watch);clearInterval(health);close({keepFallback:false});},{once:true});console.info('[RouletteClient203] low-latency physical roulette video enabled');}boot();})();
+(()=>{
+'use strict';
+if(window.__sweetsRouletteClientV216)return;
+window.__sweetsRouletteClientV216=true;
+const PROTOCOL=197;
+const query=new URLSearchParams(location.search);
+if(query.get('serverHost')==='1'||query.get('serverSettlementWorker')==='1')return;
+const instanceId=(crypto.randomUUID?.()||Date.now()+''+Math.random()).replace(/\W/g,'').slice(0,24);
+const rtcConfig={
+ iceServers:[{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}],
+ iceCandidatePoolSize:3,bundlePolicy:'max-bundle'
+};
+
+function boot(){
+ const shared=window.SweetsSharedMachine,client=shared?.client;
+ if(!client){setTimeout(boot,80);return;}
+ if(typeof RTCPeerConnection!=='function'){console.warn('[RouletteClient216] WebRTC unsupported; relay only');}
+ let peer=null,offerTimer=0,healthTimer=0,generation=0;
+ let p2pVideo=null,relayVideo=null,relay=null;
+ let p2pLastFrame=0,relayLastFrame=0,p2pStableSince=0,lastRelayChunk=0,lastRequest=0,activeSource='';
+ const roundId=()=>String(client.round?.id||'');
+ const send=message=>client.send({...message,protocol:PROTOCOL,instanceId,roundId:roundId()});
+
+ function css(){
+  if(document.getElementById('shared-roulette-webrtc-v216-css'))return;
+  const style=document.createElement('style');style.id='shared-roulette-webrtc-v216-css';style.textContent=`
+   #cookie-roulette .a8-stage{position:relative!important;overflow:hidden!important;isolation:isolate}
+   #cookie-roulette .shared-roulette-webrtc{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:50% 50%!important;background:#02070b!important;pointer-events:none!important;opacity:0;transition:opacity .09s linear;transform:translateZ(0)}
+   #cookie-roulette .shared-roulette-relay{z-index:10010!important}
+   #cookie-roulette .shared-roulette-p2p{z-index:10011!important}
+   #cookie-roulette .shared-roulette-webrtc[data-active="1"]{opacity:1!important}
+   body.shared-roulette-webrtc-live #cookie-roulette .a8-stage>canvas{visibility:hidden!important}
+   body.shared-roulette-webrtc-live #cookie-roulette .shared-roulette-mirror{display:none!important}
+   #cookie-roulette .shared-roulette-reconnecting{position:absolute;right:8px;bottom:8px;z-index:10012;padding:3px 7px;border-radius:8px;background:#06121dc9;color:#d8f4ff;font:800 9px/1.2 system-ui;opacity:0;pointer-events:none}
+   #cookie-roulette .shared-roulette-reconnecting[data-show="1"]{opacity:1}
+  `;document.head.append(style);
+ }
+ function root(){css();return document.querySelector('#cookie-roulette .a8-stage');}
+ function makeVideo(kind){
+  const stage=root();if(!stage)return null;
+  const video=document.createElement('video');
+  Object.assign(video,{autoplay:true,muted:true,playsInline:true,disablePictureInPicture:true});
+  video.className=`shared-roulette-webrtc shared-roulette-${kind}`;
+  video.dataset.active='0';video.setAttribute('aria-label',kind==='p2p'?'サーバー物理抽選機の低遅延映像':'サーバー物理抽選機の予備映像');
+  stage.append(video);return video;
+ }
+ function view(kind){
+  if(kind==='p2p'){
+   if(p2pVideo?.isConnected)return p2pVideo;p2pVideo=makeVideo('p2p');return p2pVideo;
+  }
+  if(relayVideo?.isConnected)return relayVideo;relayVideo=makeVideo('relay');return relayVideo;
+ }
+ function indicator(show){
+  const stage=root();if(!stage)return;let node=stage.querySelector('.shared-roulette-reconnecting');
+  if(!node){node=document.createElement('span');node.className='shared-roulette-reconnecting';node.textContent='映像再接続中';stage.append(node);}
+  node.dataset.show=show?'1':'0';
+ }
+ function setActive(kind){
+  const video=kind==='p2p'?p2pVideo:kind==='relay'?relayVideo:null;
+  if(!video)return showLocal(true);
+  activeSource=kind;
+  if(p2pVideo)p2pVideo.dataset.active=kind==='p2p'?'1':'0';
+  if(relayVideo)relayVideo.dataset.active=kind==='relay'?'1':'0';
+  document.body.classList.add('shared-roulette-webrtc-live');indicator(false);
+  try{if(typeof rouletteDriver!=='undefined')rouletteDriver?.setPaused(true);}catch{}
+ }
+ function showLocal(reconnecting=false){
+  activeSource='';if(p2pVideo)p2pVideo.dataset.active='0';if(relayVideo)relayVideo.dataset.active='0';
+  document.body.classList.remove('shared-roulette-webrtc-live');indicator(reconnecting);
+  try{if(typeof rouletteDriver!=='undefined'&&!app?.paused)rouletteDriver?.setPaused(false);}catch{}
+ }
+ function trackFrames(video,kind){
+  if(!video||video.dataset.frameWatch==='1')return;video.dataset.frameWatch='1';
+  const mark=()=>{
+   const now=Date.now();
+   if(kind==='p2p'){
+    if(!p2pLastFrame||now-p2pLastFrame>1400)p2pStableSince=now;
+    p2pLastFrame=now;if(!p2pStableSince)p2pStableSince=now;
+   }else relayLastFrame=now;
+  };
+  video.addEventListener('playing',mark);video.addEventListener('timeupdate',mark);
+  if(typeof video.requestVideoFrameCallback==='function'){
+   const localGeneration=++generation;
+   const tick=()=>{
+    if(!video.isConnected||localGeneration>generation+100000)return;
+    mark();video.requestVideoFrameCallback(tick);
+   };
+   video.requestVideoFrameCallback(tick);
+  }
+ }
+ function clearPeer({retry=false}={}){
+  const current=peer;peer=null;if(current){clearTimeout(current.timer);try{current.pc.close();}catch{}}
+  p2pStableSince=0;p2pLastFrame=0;
+  if(p2pVideo){try{p2pVideo.srcObject=null;p2pVideo.removeAttribute('src');p2pVideo.load();}catch{}}
+  if(retry)request(180);
+ }
+ function clearRelay(){
+  const current=relay;relay=null;if(!current)return;
+  try{if(current.mediaSource.readyState==='open')current.mediaSource.endOfStream();}catch{}
+  try{URL.revokeObjectURL(current.url);}catch{}
+  if(relayVideo){try{relayVideo.removeAttribute('src');relayVideo.load();}catch{}}
+  relayLastFrame=0;lastRelayChunk=0;
+ }
+ function decode(data){const binary=atob(data),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes;}
+ function pump(current){
+  if(relay!==current||!current.buffer||current.buffer.updating||!current.queue.length)return;
+  try{current.buffer.appendBuffer(current.queue.shift());}catch(error){console.warn('[RouletteClient216] relay append',error?.message||error);clearRelay();request(100);}
+ }
+ function startRelay(message){
+  const mime=String(message.mime||'video/webm;codecs=vp8');
+  if(typeof MediaSource!=='function'||!MediaSource.isTypeSupported(mime))return false;
+  clearRelay();const video=view('relay');if(!video)return false;
+  const mediaSource=new MediaSource(),url=URL.createObjectURL(mediaSource);
+  const current={id:String(message.streamId||''),mime,mediaSource,url,buffer:null,queue:[],sequence:-1,ready:false};relay=current;
+  try{video.srcObject=null;}catch{}video.src=url;video.play().catch(()=>{});trackFrames(video,'relay');
+  mediaSource.addEventListener('sourceopen',()=>{
+   if(relay!==current)return;
+   try{
+    current.buffer=mediaSource.addSourceBuffer(mime);try{current.buffer.mode='sequence';}catch{}
+    current.buffer.addEventListener('updateend',()=>{
+     if(relay!==current)return;current.ready=true;
+     try{const ranges=video.buffered;if(ranges.length){const end=ranges.end(ranges.length-1);if(end-video.currentTime>.9)video.currentTime=Math.max(0,end-.08);}}catch{}
+     pump(current);
+    });pump(current);
+   }catch(error){console.warn('[RouletteClient216] relay source',error?.message||error);clearRelay();}
+  },{once:true});
+  return true;
+ }
+ function relayChunk(message){
+  if(!message.streamId||!message.data)return;
+  if(!relay||relay.id!==String(message.streamId))startRelay(message);
+  const current=relay;if(!current)return;
+  const sequence=Number(message.sequence)||0;if(sequence<=current.sequence)return;current.sequence=sequence;
+  try{current.queue.push(decode(message.data));}catch{return;}
+  if(current.ready&&current.queue.length>12)current.queue.splice(0,current.queue.length-6);
+  lastRelayChunk=Date.now();pump(current);
+ }
+ async function flushIce(session){
+  if(!session.pc.remoteDescription)return;
+  while(session.ice.length)try{await session.pc.addIceCandidate(session.ice.shift());}catch{}
+ }
+ async function offer(message){
+  const host=String(message.fromPlayerId||''),hostInstance=String(message.fromInstanceId||'');
+  if(!host||!message.description||typeof RTCPeerConnection!=='function')return;
+  clearPeer();const pc=new RTCPeerConnection(rtcConfig),session={pc,host,hostInstance,ice:[],timer:0};peer=session;
+  pc.onicecandidate=event=>{if(event.candidate)send({type:'rtc_ice',targetPlayerId:host,targetInstanceId:hostInstance,candidate:event.candidate.toJSON?.()||event.candidate});};
+  pc.ontrack=event=>{
+   if(peer!==session)return;
+   try{if('playoutDelayHint'in event.receiver)event.receiver.playoutDelayHint=0;}catch{}
+   const stream=event.streams?.[0]||new MediaStream([event.track]);
+   const attach=()=>{
+    if(peer!==session)return;const video=view('p2p');if(!video){setTimeout(attach,80);return;}
+    try{video.removeAttribute('src');video.srcObject=stream;}catch{}video.play().catch(()=>{});trackFrames(video,'p2p');
+    // Do not stop the relay here. It remains warm until real decoded P2P frames
+    // have advanced continuously, avoiding the black gap seen on connection.
+   };attach();
+  };
+  pc.onconnectionstatechange=()=>{
+   if(peer!==session)return;const state=pc.connectionState;
+   if(state==='connected')clearTimeout(session.timer);
+   else if(state==='failed'||state==='closed')clearPeer({retry:true});
+   else if(state==='disconnected'){
+    clearTimeout(session.timer);session.timer=setTimeout(()=>{if(peer===session&&pc.connectionState==='disconnected')clearPeer({retry:true});},1800);
+   }
+  };
+  try{
+   await pc.setRemoteDescription(message.description);await pc.setLocalDescription(await pc.createAnswer());
+   send({type:'rtc_answer',targetPlayerId:host,targetInstanceId:hostInstance,description:pc.localDescription.toJSON?.()||pc.localDescription});await flushIce(session);
+  }catch(error){console.warn('[RouletteClient216] offer',error?.message||error);clearPeer({retry:true});}
+ }
+ function request(delay=0,{relayToo=true}={}){
+  clearTimeout(offerTimer);offerTimer=setTimeout(()=>{
+   if(!client.online)return;const now=Date.now();if(now-lastRequest<180&&delay===0)return;lastRequest=now;
+   send({type:'rtc_watch'});if(relayToo)send({type:'rtc_fallback_request'});
+  },delay);
+ }
+ async function onMessage(message){
+  if(message.type==='rtc_host_ready'){request(0);return;}
+  if(message.type==='rtc_host_offline'){clearPeer();clearRelay();showLocal(true);return;}
+  if(message.targetInstanceId&&message.targetInstanceId!==instanceId)return;
+  if(message.type==='rtc_offer'){await offer(message);return;}
+  if(message.type==='rtc_ice'){
+   const session=peer;if(!session)return;
+   if(session.pc.remoteDescription)try{await session.pc.addIceCandidate(message.candidate);}catch{}else session.ice.push(message.candidate);return;
+  }
+  if(message.type==='rtc_media'){relayChunk(message);return;}
+  if(message.type==='rtc_media_stop'&&(!message.streamId||relay?.id===message.streamId)){
+   const p2pFresh=Date.now()-p2pLastFrame<1000;
+   if(p2pFresh)clearRelay();else request(80);
+  }
+ }
+ function health(){
+  const now=Date.now(),round=client.round,playing=round?.phase==='PLAYING';
+  if(!playing){showLocal(false);return;}
+  const p2pFresh=!!p2pLastFrame&&now-p2pLastFrame<1100;
+  const relayFresh=!!relayLastFrame&&now-relayLastFrame<1500;
+  if(p2pFresh){
+   setActive('p2p');
+   if(relay&&p2pStableSince&&now-p2pStableSince>3200){
+    send({type:'rtc_fallback_stop',targetPlayerId:peer?.host,targetInstanceId:peer?.hostInstance});
+    // Keep the already buffered relay for a short overlap before releasing it.
+    setTimeout(()=>{if(Date.now()-p2pLastFrame<1000)clearRelay();},700);
+   }
+  }else if(relayFresh){setActive('relay');}
+  else{
+   showLocal(true);request(0);
+   if(peer?.pc?.connectionState==='connected'&&now-p2pLastFrame>2600)clearPeer({retry:true});
+  }
+  if(!relay||now-lastRelayChunk>1700){
+   if(!p2pFresh)request(0);
+  }
+  for(const video of [p2pVideo,relayVideo])if(video?.paused)video.play().catch(()=>{});
+ }
+ client.on(message=>{
+  onMessage(message);
+  if(['snapshot','host_changed','host_status','round_started','participant_joined','ball_result','server_fallback_started'].includes(message.type))request(50,{relayToo:true});
+ });
+ client.ready.then(ok=>{if(ok){view('p2p');view('relay');request(80);}});
+ healthTimer=setInterval(health,400);
+ addEventListener('beforeunload',()=>{clearTimeout(offerTimer);clearInterval(healthTimer);clearPeer();clearRelay();},{once:true});
+ window.SweetsRouletteClientV216={request,health,showLocal,get source(){return activeSource;}};
+ console.info('[RouletteClient216] dual-path seamless physical roulette video enabled');
+}
+boot();
+})();
