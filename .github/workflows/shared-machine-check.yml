@@ -19,7 +19,7 @@ on:
       - 'assets/server-monitor-host-stability-v217.js'
       - 'assets/server-monitor-system-filter-v213.js'
       - 'assets/server-payout-control-v3.js'
-      - 'assets/shared-core-patch-v220.js'
+      - 'assets/shared-core-patch-v221.js'
       - 'assets/shared-client-controller-v219.js'
       - 'assets/server-offline-settlement-worker-v3.js'
       - 'assets/shared-machine-v176.js'
@@ -34,6 +34,7 @@ on:
       - 'tests/server-v220-continuous-physical.mjs'
       - 'tests/shared-v219-continuous-rounds.mjs'
       - 'tests/shared-v219-three-live-cycles.mjs'
+      - 'tests/shared-v221-host-draw-watchdog.mjs'
       - 'tests/payout-v3-runtime.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
       - 'scripts/start-shared-machine-v205.ps1'
@@ -98,7 +99,9 @@ jobs:
           grep -q "rouletteTimeScale" optimized/app-01.js
           grep -q "rouletteTimeScale=2" assets/shared-host-speed-v219.js
           grep -q "browser clocks unchanged" assets/shared-host-speed-v219.js
-          grep -q "physical host must draw empty authoritative rounds" assets/shared-core-patch-v220.js
+          grep -q "physical host must draw empty authoritative rounds" assets/shared-core-patch-v221.js
+          grep -q "restart a stalled physical draw" assets/shared-core-patch-v221.js
+          grep -q "physical result progress and retry" assets/shared-core-patch-v221.js
           grep -q "CONTINUOUS_PHYSICAL_ROUNDS" server-core-loader-v220.mjs
           grep -q "SWEETS_CONTINUOUS_PHYSICAL_ROUNDS??='1'" server.mjs
           grep -q "smoothRoulette" assets/server-monitor-host-stability-v217.js
@@ -107,6 +110,7 @@ jobs:
           grep -q "three-round fresh-board" tests/shared-v219-continuous-rounds.mjs
           grep -q "three live join/start/result" tests/shared-v219-three-live-cycles.mjs
           grep -q "empty physical clock" tests/server-v220-continuous-physical.mjs
+          grep -q "physical host start/progress/resume watchdog" tests/shared-v221-host-draw-watchdog.mjs
           grep -q "SWEETS_AUTONOMOUS_ROUNDS='0'" server.mjs
           if grep -q "server-autonomous-rounds-v213.mjs" server.mjs; then
             echo 'Legacy synthetic autonomous rounds must not be loaded.'
