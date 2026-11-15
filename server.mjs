@@ -288,7 +288,7 @@ async function api(req,res,url){
 
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.mp3':'audio/mpeg','.wav':'audio/wav','.woff2':'font/woff2','.ico':'image/x-icon'};
 async function staticFile(req,res,url){
- let pathname=decodeURIComponent(url.pathname);if(pathname==='/'||pathname==='')pathname='/index.html';
+ let pathname=decodeURIComponent(url.pathname);if(pathname==='/'||pathname==='')pathname=url.searchParams.has('adminToken')?'/monitor.html':'/index.html';
  const relative=pathname.replace(/^\/+/,''),first=relative.split('/')[0];
  if(STATIC_DENY.has(relative)||first==='data'||first==='.git')return reply(res,404,{ok:false,error:'not_found'});
  const file=path.resolve(ROOT,relative);if(!file.startsWith(ROOT+path.sep))return reply(res,403,{ok:false,error:'forbidden'});
