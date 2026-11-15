@@ -194,31 +194,36 @@ try {
   $EncodedMachine = [Uri]::EscapeDataString($Machine)
   $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
   $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
-  $DirectUrl = "$TunnelBase/?machine=$EncodedMachine"
-  $PagesUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
-  $PublicUrl = $DirectUrl
-  $MonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  $ServerHostUrl = "$TunnelBase/?serverHost=1&machine=$EncodedMachine&adminToken=$AdminToken"
+  $ServerManageUrl = "$TunnelBase/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $PublicUrl = $ServerManageUrl
   Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
-  try { Set-Clipboard -Value $PublicUrl } catch {}
+  try { Set-Clipboard -Value $ClientUrl } catch {}
 
   Write-Host ''
   Write-Host '============================================================' -ForegroundColor Green
   Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
   Write-Host '============================================================' -ForegroundColor Green
-  Write-Host $PublicUrl -ForegroundColor Yellow
+  Write-Host 'SERVER MANAGEMENT (open on this PC):' -ForegroundColor White
+  Write-Host $ServerManageUrl -ForegroundColor Yellow
   Write-Host ''
-  Write-Host 'Open the yellow DIRECT TUNNEL URL on PLAYER devices.' -ForegroundColor White
-  Write-Host 'Game, API and WebSocket now use the same trycloudflare.com origin.' -ForegroundColor White
-  Write-Host 'The direct player URL was also copied to the clipboard.' -ForegroundColor White
-  Write-Host "GitHub Pages alternate: $PagesUrl" -ForegroundColor DarkYellow
+  Write-Host 'PLAYER URL (send to client devices):' -ForegroundColor White
+  Write-Host $ClientUrl -ForegroundColor Cyan
+  Write-Host ''
+  Write-Host 'The PLAYER URL was copied to the clipboard.' -ForegroundColor White
+  Write-Host "Physical host page: $ServerHostUrl" -ForegroundColor DarkYellow
+  Write-Host "Local monitor fallback: $LocalMonitorUrl" -ForegroundColor DarkGray
   Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
-  Write-Host "Monitor + physical roulette host: $MonitorUrl" -ForegroundColor Cyan
   Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
   Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
   Write-Host ''
 
   if (-not $NoBrowser) {
-    try { Start-Process $MonitorUrl | Out-Null } catch {}
+    try { Start-Process $ServerManageUrl | Out-Null } catch {
+      try { Start-Process $LocalMonitorUrl | Out-Null } catch {}
+    }
   }
 
   while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
