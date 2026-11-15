@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SWEETS LINK Server Monitor</title>
-<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=1">
+<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=209">
 </head>
 <body>
 <header>
- <div><h1>SWEETS LINK SERVER MONITOR</h1><div class="sub">Physical roulette host · player telemetry · payout control</div></div>
+ <div><h1>SWEETS LINK SERVER MONITOR</h1><div class="sub">Physical roulette host · player × game telemetry · payout control</div></div>
  <div class="status"><span id="dot" class="dot off"></span><span id="conn">connecting...</span></div>
 </header>
 <main>
@@ -17,20 +17,20 @@
   <iframe id="host-frame" class="host-frame" title="SWEETS LINK physical roulette host"></iframe>
  </section>
  <section class="card" id="payout-card">
-  <h2><span>PAYOUT CONTROL</span><span class="host-state">AUTO: 全体65% + 個人35%で補正 · 1球ごとに更新</span></h2>
+  <h2><span>PAYOUT CONTROL</span><span class="host-state">PLAYER × GAMEごとに独立補正 · 全体POは表示専用</span></h2>
   <div class="summary">
-   <div class="metric target"><small>TARGET PAYOUT</small><strong id="metric-target">-</strong></div>
-   <div class="metric actual"><small>ACTUAL CUMULATIVE PAYOUT</small><strong id="metric-actual">-</strong></div>
+   <div class="metric target"><small>DEFAULT TARGET PAYOUT</small><strong id="metric-target">-</strong></div>
+   <div class="metric actual"><small>DISPLAY-ONLY GLOBAL ACTUAL</small><strong id="metric-actual">-</strong></div>
    <div class="metric bet"><small>CUMULATIVE BET</small><strong id="metric-bet">-</strong></div>
    <div class="metric win"><small>CUMULATIVE WIN</small><strong id="metric-win">-</strong></div>
   </div>
   <div class="controls" id="global-controls" data-control>
-   <label class="field"><span>全体目標 PO (%)</span><input id="target-rate" type="number" min="50" max="150" step="0.1"></label>
-   <label class="field"><span>設定下限 (%)</span><input id="min-rate" type="number" min="50" max="150" step="0.1"></label>
-   <label class="field"><span>設定上限 (%)</span><input id="max-rate" type="number" min="50" max="150" step="0.1"></label>
+   <label class="field"><span>個別制御の標準目標 PO (%)</span><input id="target-rate" type="number" min="50" max="150" step="0.1"></label>
+   <label class="field"><span>設定下限 (%)</span><input id="min-rate" type="number" min="40" max="150" step="0.1"></label>
+   <label class="field"><span>設定上限 (%)</span><input id="max-rate" type="number" min="50" max="180" step="0.1"></label>
    <label class="field"><span>1球最大補正幅 (%)</span><input id="max-step" type="number" min="0.1" max="10" step="0.1"></label>
-   <label class="field"><span>信頼度100% BET量</span><input id="maturity-bet" type="number" min="1" step="1"></label>
-   <button id="save-global" class="primary" type="button">全体設定を保存</button>
+   <label class="field"><span>事前分布BET量</span><input id="maturity-bet" type="number" min="1" step="1"></label>
+   <button id="save-global" class="primary" type="button">標準設定を保存</button>
   </div>
   <div id="control-message" class="message">設定を読み込み中…</div>
   <div id="global-games" class="global-games"></div>
@@ -39,13 +39,13 @@
   <h2><span>PLAYERS</span><span id="round-state" class="host-state">ROUND - · 0 / 8</span></h2>
   <div class="players-wrap">
    <table class="players">
-    <thead><tr><th>PLAYER</th><th>ROUND BET</th><th>CREDIT</th><th>ROUND WIN</th><th>CUM BET</th><th>CUM WIN</th><th>ACTUAL PO</th><th>SET PO</th><th>CONTROL</th><th>BALL</th><th>STATUS</th><th>DETAIL</th></tr></thead>
+    <thead><tr><th>PLAYER</th><th>ROUND BET</th><th>CREDIT</th><th>ROUND WIN</th><th>CUM BET</th><th>CUM WIN</th><th>ACTUAL PO</th><th>AVG SET PO</th><th>CONTROL</th><th>BALL</th><th>STATUS</th><th>DETAIL</th></tr></thead>
     <tbody id="players"></tbody>
    </table>
    <div id="empty" class="empty-note">プレイヤー接続待ち</div>
   </div>
  </section>
 </main>
-<script src="/assets/server-monitor-payout-v1.js?v=1"></script>
+<script src="/assets/server-monitor-payout-v2.js?v=209"></script>
 </body>
 </html>
