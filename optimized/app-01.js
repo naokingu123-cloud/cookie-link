@@ -4105,6 +4105,7 @@ function buildFestivalSound(kind,sampleRate){
 }
 
 function createCookieRoulette(root,hooks,THREE,CANNON){
+ const localEightAllowed=new URLSearchParams(location.search).get('serverHost')==='1';
  const jpcAudio={launch(){},reset(){},start(){},complete(){},hit(){},pause(){},dispose(){}};
  const candyGame={idle:true,reset(){},start(){},hit:n=>hooks.onNumber(n),end(){},pause(){}};
 const PHYSICS=(()=>{
@@ -4444,11 +4445,20 @@ class DrawController{
  setState(state){this.state=state;this.onState?.(state);}
  select(mode){if(!['eight','continuous','jpc'].includes(mode))throw new Error('Invalid draw mode');this.mode=mode;this.reset();}
  reset(){this.physics.reset();this.physics.settings.retain=this.mode==='eight';this.group=0;this.sent=0;this.next=this.physics.time;this.waiting=false;this.displayGroup=0;this.retryDue=0;this.pendingLaunch=null;this.onReset?.();this.setState('ready');}
- start(){this.reset();if(this.mode==='jpc')this.physics.seed=Math.floor(Math.random()*4294967296)>>>0;this.setState('running');}
+ start(){
+  this.reset();
+  if(this.mode==='eight'&&!localEightAllowed){this.setState('external');return false;}
+  if(this.mode==='jpc')this.physics.seed=Math.floor(Math.random()*4294967296)>>>0;
+  this.setState('running');return true;
+ }
  stop(){if(this.mode==='continuous'&&this.state==='running')this.setState(this.physics.active?'draining':'complete');}
- launch(spec=null){const ball=this.physics.launch(spec);if(ball)this.onLaunch?.(ball);return ball;}
+ launch(spec=null){
+  if(this.mode==='eight'&&!localEightAllowed)return null;
+  const ball=this.physics.launch(spec);if(ball)this.onLaunch?.(ball);return ball;
+ }
  update(){
   const p=this.physics;
+  if(this.mode==='eight'&&!localEightAllowed){if(this.state!=='ready'&&this.state!=='external')this.setState('external');return;}
   if(this.state==='draining'){if(!p.active)this.setState('complete');return;}
   if(this.state!=='running')return;
   if(this.mode==='continuous'){if(p.time>=this.next){if(this.launch())this.next=p.time+p.settings.interval;}return;}
@@ -5461,7 +5471,7 @@ function startAnima8(){
  el('.a8-loading').hidden=true;updateDrawControls();wake();
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();setPaused(true);el('.a8-loading').hidden=false;el('.a8-loading').textContent='描画が中断しました。再読込してください。';hooks.onError?.('描画が中断しました。再読込してください。');});
  // Keep a read-only inspection handle for reproducible smoke tests and future edits.
- root.anima8={physics,draw,scene,setPaused,start:()=>{setPaused(false);draw.start();wake();},reset:()=>{draw.reset();setPaused(false);wake();},dispose,
+ root.anima8={physics,draw,scene,setPaused,start:()=>{if(draw.mode==='eight'&&!localEightAllowed){setPaused(true);draw.setState('external');return false;}setPaused(false);const started=draw.start();wake();return started!==false;},reset:()=>{draw.reset();setPaused(false);wake();},dispose,
   get ledState(){return {label:centerDisplay.userData.counter,board:centerDisplay.userData.board,reachTiers:panels.map(p=>p.normalReachTier||0),reachColors:panels.flatMap((p,i)=>p.normalReachTier?[{number:i+1,tier:p.normalReachTier,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[]),betLetters:panels.map(p=>p.betLetter||' '),betIcons:panels.map(p=>p.betIcon??null),highestSlope:root.dataset.highestReach==='true',stage:normalStage().name,rainbow:panels.flatMap((p,i)=>p.normalRainbow?[i+1]:[]),centerPosition:centerDisplay.position.toArray(),centerTilt:centerDisplay.rotation.x,centerBlend:ledTransitionProgress(centerTransitionStart),slopeBlend:ledTransitionProgress(slopeTransitionStart),rainbowColors:panels.flatMap((p,i)=>p.normalRainbow?[{number:i+1,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[])};},
   get jpcCounts(){return [...jpcCounts];},
   get status(){return status.textContent;}};
@@ -5473,15 +5483,22 @@ function startAnima8(){
  return startAnima8();
 }
 
+const LOCAL_EIGHT_DRAW_ALLOWED=new URLSearchParams(location.search).get('serverHost')==='1';
 let manualNumbers=false;
 let rouletteDriver=null,rouletteLoadEpoch=0,rouletteReady=false;
 const rouletteDrawSource={
  get ready(){return manualNumbers||rouletteReady;},
- start(callbacks){this.callbacks=callbacks;if(manualNumbers){rouletteDriver?.setPaused(true);syncManualNumbers();return;}if(!rouletteReady||!rouletteDriver)throw Error('抽選機を読み込み中です');rouletteDriver.start();rouletteDriver.setPaused(app.paused);},
- pause(value){rouletteDriver?.setPaused(manualNumbers||value);},
- reset(){this.callbacks=null;rouletteDriver?.reset();if(manualNumbers)rouletteDriver?.setPaused(true);},
- number(n){if(!manualNumbers)this.callbacks?.onNumber(n);},
- fail(message){if(!manualNumbers)this.callbacks?.onError(message);}
+ start(callbacks){
+  this.callbacks=callbacks;
+  if(manualNumbers){rouletteDriver?.setPaused(true);syncManualNumbers();return;}
+  if(!rouletteReady||!rouletteDriver)throw Error('抽選機を読み込み中です');
+  if(!LOCAL_EIGHT_DRAW_ALLOWED){rouletteDriver.setPaused(true);return false;}
+  rouletteDriver.start();rouletteDriver.setPaused(app.paused);return true;
+ },
+ pause(value){rouletteDriver?.setPaused(!LOCAL_EIGHT_DRAW_ALLOWED||manualNumbers||value);},
+ reset(){this.callbacks=null;rouletteDriver?.reset();if(manualNumbers||!LOCAL_EIGHT_DRAW_ALLOWED)rouletteDriver?.setPaused(true);},
+ number(n){if(LOCAL_EIGHT_DRAW_ALLOWED&&!manualNumbers)this.callbacks?.onNumber(n);},
+ fail(message){if(LOCAL_EIGHT_DRAW_ALLOWED&&!manualNumbers)this.callbacks?.onError(message);}
 };
 async function loadCookieRoulette(){
  const epoch=++rouletteLoadEpoch,root=$('cookie-roulette'),loading=root.querySelector('.a8-loading'),retry=$('roulette-retry');
@@ -5490,7 +5507,10 @@ async function loadCookieRoulette(){
   const [THREE,CANNON]=await loadRouletteModules();if(epoch!==rouletteLoadEpoch||!root.isConnected)return;
   rouletteDriver?.dispose();root.querySelectorAll('canvas').forEach(c=>c.remove());root.querySelector('.a8-pocket-grid').replaceChildren();
   rouletteDriver=createCookieRoulette(root,{onLaunch:()=>sceneSound('launch',{volume:jpcSession.active?.65:1,jpc:jpcSession.active}),onNumber:n=>rouletteDrawSource.number(n),getAllClearNumbers:rouletteAllClearNumbers,getReachTiers:rouletteReachTiers,getSelectedBoard:rouletteSelectedBoard,onError:message=>{rouletteReady=false;rouletteDrawSource.fail(message);retry.hidden=false;loading.hidden=false;loading.textContent=message;scheduleUI(app);}},THREE,CANNON);
-  rouletteReady=true;loading.hidden=true;rouletteDriver.setPaused(manualNumbers||app.paused);scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
+  rouletteReady=true;loading.hidden=true;
+  if(!LOCAL_EIGHT_DRAW_ALLOWED&&rouletteDriver?.draw?.mode==='eight')rouletteDriver.setPaused(true);
+  else rouletteDriver.setPaused(manualNumbers||app.paused);
+  scheduleUI(app);if(app.phase==='ready')scheduleAutoRound();
  }catch(error){if(epoch!==rouletteLoadEpoch)return;rouletteReady=false;retry.hidden=false;loading.hidden=false;loading.textContent='抽選機を読み込めませんでした。「再読込」で再試行できます。';root.querySelector('[data-status]').textContent='抽選機の読込待ち';scheduleUI(app);console.error('Cookie Link roulette:',error);}
 }
 function rouletteReachTiers(){
