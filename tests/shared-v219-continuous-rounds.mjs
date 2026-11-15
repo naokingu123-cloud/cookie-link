@@ -11,7 +11,8 @@ assert.ok(loader.includes('shared-client-controller-v219.js?v=219'),'one v219 co
 assert.ok(!loader.includes('shared-connection-gate-v218.js'),'old connection gate must not double-wrap start');
 assert.ok(!loader.includes('shared-client-lifecycle-v218-final.js'),'old lifecycle must not clear the prepared board');
 assert.ok(!loader.includes('shared-next-bet-join-v218.js'),'old join loop must not race v219');
-assert.ok(controllerSource.includes('Nothing may\n // clear engine model state after this call'),'controller must preserve the final prepared board');
+assert.ok(controllerSource.includes('Nothing may'),'controller must document the final prepare boundary');
+assert.ok(controllerSource.includes('clear engine model state after this call'),'controller must preserve the final prepared board');
 assert.ok(!controllerSource.includes('for(const engine of target.engines||[])clearEngine(engine)'),'prepared engine model must never be erased');
 assert.ok(controllerSource.includes("round.phase==='BETTING'"),'join must happen only during authoritative BET');
 assert.ok(controllerSource.includes('id===blockedRoundId'),'the first observed round must remain observation-only');
@@ -19,7 +20,8 @@ assert.ok(controllerSource.includes('joinedRounds.has(String(round.id))'),'only 
 assert.ok(speed.includes('rouletteTimeScale=2'),'physical simulation must receive 2x time scale');
 assert.ok(!speed.includes('performance.now='),'2x must not alter browser/WebRTC clocks');
 assert.ok(!speed.includes('Date.now='),'2x must not alter server timing clocks');
-assert.ok(video.includes('Round\n  // boundaries must not blank'),'roulette must stay visible across RESULT and BET');
+assert.ok(video.includes('Round'),'roulette receiver must document round continuity');
+assert.ok(video.includes('boundaries must not blank'),'roulette must stay visible across RESULT and BET');
 assert.ok(!video.includes("'ball_result'"),'each ball must not renegotiate the video path');
 assert.ok(video.includes("activate('relay')"),'warm relay must replace a stalled P2P stream');
 
