@@ -11,11 +11,13 @@ const watchdog=await readFile(new URL('../assets/shared-roulette-client-watchdog
 const server=await readFile(new URL('../server-core.mjs',import.meta.url),'utf8');
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
 
-assert.ok(wrapper.includes("shared-machine-core-v196.js?v=207"),'v207 loader must load the authoritative core');
-assert.ok(wrapper.includes("shared-recovery-replay-v207.js?v=207"),'players must load stable recovery replay');
-assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=207"),'players must retain smooth roulette video');
-assert.ok(wrapper.includes("shared-roulette-client-watchdog-v205.js?v=207"),'players must retain stalled-stream recovery');
-assert.ok(wrapper.includes("shared-recovery-completion-v206.js?v=207"),'players must retain the result completion fallback');
+assert.ok(wrapper.includes("shared-machine-core-v196.js?v=209"),'v209 loader must load the authoritative core');
+assert.ok(wrapper.includes("server-payout-control-v2.js?v=209"),'players must load isolated payout control before recovery');
+assert.ok(wrapper.includes("shared-recovery-replay-v207.js?v=209"),'players must retain stable recovery replay');
+assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=209"),'players must retain smooth roulette video');
+assert.ok(wrapper.includes("shared-roulette-client-watchdog-v205.js?v=209"),'players must retain stalled-stream recovery');
+assert.ok(wrapper.includes("shared-recovery-completion-v206.js?v=209"),'players must retain the result completion fallback');
+assert.ok(wrapper.indexOf('server-payout-control-v2.js')<wrapper.indexOf('shared-recovery-replay-v207.js'),'payout telemetry must wrap checkpoint saves before client recovery starts');
 assert.ok(wrapper.indexOf('shared-recovery-replay-v207.js')<wrapper.indexOf('shared-roulette-webrtc-client-v197.js'),'stable replay must patch state retrieval before client recovery starts');
 
 assert.ok(server.includes('pendingRoundForPlayer'),'unsettled completed rounds must remain recoverable');
@@ -48,4 +50,4 @@ assert.ok(hostKeepAlive.includes("worker.onmessage=()=>keepAwake({resumeDriver:f
 assert.ok(client.includes('requestVideoFrameCallback'),'smooth remote roulette playback must remain enabled');
 assert.ok(watchdog.includes("type:'rtc_fallback_request'"),'a stalled stream must still request relay fallback');
 
-console.log('v207 stable reconnect replay + normal result path static guards passed');
+console.log('v209 loader retains v207 reconnect replay + normal result path guards');
