@@ -314,12 +314,31 @@ server.on('upgrade',(req,socket,head)=>{
 });
 wss.on('connection',(ws,{player,machineId})=>{
  const m=machine(machineId),map=socketMap(machineId);let set=map.get(player.id);if(!set){set=new Set();map.set(player.id,set);}set.add(ws);
- ws.isAlive=true;ws.on('pong',()=>{ws.isAlive=true;player.lastSeen=now();});
+ ws.isAlive=true;ws.missedPongs=0;
+ ws.on('pong',()=>{ws.isAlive=true;ws.missedPongs=0;player.lastSeen=now();});
  ws.send(JSON.stringify({...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'}));
- ws.on('message',raw=>{try{const msg=JSON.parse(String(raw));if(msg.type==='ping')ws.send(JSON.stringify({type:'pong',serverTime:now()}));}catch{}});
+ ws.on('message',raw=>{
+  try{
+   const msg=JSON.parse(String(raw));
+   if(msg.type==='ping'){ws.send(JSON.stringify({type:'pong',serverTime:now()}));return;}
+   if(msg.type==='visual_frame'){
+    if(player.id!==m.hostPlayerId)return;
+    const image=String(msg.image||''),roundId=safeText(msg.roundId,160);
+    if(!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(image)||image.length>480000)return;
+    const payload=JSON.stringify({type:'visual_frame',roundId,image,capturedAt:Number(msg.capturedAt)||now(),serverTime:now()});
+    for(const [pid,sockets] of socketMap(machineId))if(pid!==player.id)for(const peer of sockets)if(peer.readyState===WebSocket.OPEN)try{peer.send(payload);}catch{}
+   }
+  }catch{}
+ });
  ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id)broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});});
 });
 setInterval(()=>{
- for(const ws of wss.clients){if(ws.isAlive===false){ws.terminate();continue;}ws.isAlive=false;try{ws.ping();}catch{}}
-},250).unref();
+ for(const ws of wss.clients){
+  if(ws.isAlive===false){
+   ws.missedPongs=(Number(ws.missedPongs)||0)+1;
+   if(ws.missedPongs>=3){try{ws.terminate();}catch{}continue;}
+  }else ws.missedPongs=0;
+  ws.isAlive=false;try{ws.ping();}catch{}
+ }
+},15000).unref();
 server.listen(PORT,'0.0.0.0',()=>console.log('[SharedMachine] physical roulette host server listening on http://0.0.0.0:'+PORT));
