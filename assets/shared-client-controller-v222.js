@@ -89,7 +89,11 @@ async function forceInitial(reason='result-complete',creditOverride=null){
  if(resetBusy||typeof app==='undefined')return false;resetBusy=true;
  const shared=active(),bet=selected(app);
  try{
-  const credit=Number.isFinite(Number(creditOverride))?Number(creditOverride):await settleCredit(app,shared);
+  // null/undefined means normal result settlement. Number(null) is 0, so an
+  // explicit presence check is mandatory; otherwise every normal result skips
+  // the server settle call and can leave the participant permanently pending.
+  const hasOverride=creditOverride!==null&&creditOverride!==undefined&&Number.isFinite(Number(creditOverride));
+  const credit=hasOverride?Number(creditOverride):await settleCredit(app,shared);
   rebuild(app,credit,bet,reason);
   for(const delay of [80,240,620,1200]){await sleep(delay);if(!modelReady(app))rebuild(app,credit,bet,reason+'-late');}
   resultSince=0;orphanSince=0;status('WAIT','初期盤面へ復帰・次のSERVER BET TIME待機');
