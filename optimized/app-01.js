@@ -4812,7 +4812,7 @@ function startAnima8(){
  const scene=new THREE.Scene();
  const phone=(window.matchMedia&&matchMedia('(pointer: coarse)').matches)||/iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
  const serverHostRender=new URLSearchParams(location.search).get('serverHost')==='1';
- const renderer=new THREE.WebGLRenderer({antialias:serverHostRender?false:!phone,alpha:true,powerPreference:phone?'default':'high-performance',preserveDrawingBuffer:false});
+ const renderer=new THREE.WebGLRenderer({antialias:serverHostRender?false:!phone,alpha:true,powerPreference:phone?'default':'high-performance',preserveDrawingBuffer:serverHostRender});
  renderer.setPixelRatio(serverHostRender?1:Math.min(window.devicePixelRatio||1,phone?1.15:1.4));renderer.setClearColor(0x000000,0);
  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
  renderer.shadowMap.enabled=false;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -5471,7 +5471,7 @@ function startAnima8(){
  el('.a8-loading').hidden=true;updateDrawControls();wake();
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();setPaused(true);el('.a8-loading').hidden=false;el('.a8-loading').textContent='描画が中断しました。再読込してください。';hooks.onError?.('描画が中断しました。再読込してください。');});
  // Keep a read-only inspection handle for reproducible smoke tests and future edits.
- root.anima8={physics,draw,scene,setPaused,start:()=>{if(draw.mode==='eight'&&!localEightAllowed){setPaused(true);draw.setState('external');return false;}setPaused(false);const started=draw.start();wake();return started!==false;},reset:()=>{draw.reset();setPaused(false);wake();},dispose,
+ root.anima8={physics,draw,scene,setPaused,get mirrorCanvas(){return renderer.domElement;},start:()=>{if(draw.mode==='eight'&&!localEightAllowed){setPaused(true);draw.setState('external');return false;}setPaused(false);const started=draw.start();wake();return started!==false;},reset:()=>{draw.reset();setPaused(false);wake();},dispose,
   get ledState(){return {label:centerDisplay.userData.counter,board:centerDisplay.userData.board,reachTiers:panels.map(p=>p.normalReachTier||0),reachColors:panels.flatMap((p,i)=>p.normalReachTier?[{number:i+1,tier:p.normalReachTier,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[]),betLetters:panels.map(p=>p.betLetter||' '),betIcons:panels.map(p=>p.betIcon??null),highestSlope:root.dataset.highestReach==='true',stage:normalStage().name,rainbow:panels.flatMap((p,i)=>p.normalRainbow?[i+1]:[]),centerPosition:centerDisplay.position.toArray(),centerTilt:centerDisplay.rotation.x,centerBlend:ledTransitionProgress(centerTransitionStart),slopeBlend:ledTransitionProgress(slopeTransitionStart),rainbowColors:panels.flatMap((p,i)=>p.normalRainbow?[{number:i+1,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[])};},
   get jpcCounts(){return [...jpcCounts];},
   get status(){return status.textContent;}};
