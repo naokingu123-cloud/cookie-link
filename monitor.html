@@ -106,12 +106,21 @@ async function ensurePhysicalHost(){
 }
 
 const fmt=n=>String(Math.max(0,Math.floor(Number(n)||0)));
+function phaseLabel(r,serverTime){
+ if(!r||!r.phase)return 'WAITING';
+ if(r.phase==='BETTING'){
+  const ms=Math.max(0,Number(r.betClosesAt||0)-Number(serverTime||Date.now()));
+  return 'BETTING '+(ms/1000).toFixed(1)+'s';
+ }
+ if(r.phase==='PLAYING'&&r.drawSource==='server-fallback')return 'PLAYING · SERVER FALLBACK';
+ return r.phase;
+}
 function draw(data){
  $('dot').classList.remove('off');$('conn').textContent='ONLINE';
- const r=data.round,balls=r?.balls?.length||0;
- $('round-state').textContent='ROUND '+(r?.sequence||'-')+' · '+balls+' / 8';
+ const r=data.round,balls=r?.balls?.length||0,phase=phaseLabel(r,data.serverTime);
+ $('round-state').textContent='ROUND '+(r?.sequence||'-')+' · '+phase+' · '+balls+' / 8';
  const hostOnline=!!data.machine?.hostConnected;
- $('host-state').textContent=hostOnline?'HOST ONLINE · ULTRA LIGHT · '+(r?.phase||'WAITING')+' · '+balls+' / 8':'HOST STARTING…';
+ $('host-state').textContent=hostOnline?'HOST ONLINE · '+phase+' · '+balls+' / 8':'HOST OFFLINE · '+phase;
 
  const ps=r?.players||[];
  tbody.replaceChildren();empty.style.display=ps.length?'none':'block';
