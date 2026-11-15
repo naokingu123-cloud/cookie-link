@@ -151,29 +151,26 @@ async function bodyJson(req){
  try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw Object.assign(Error('invalid_json'),{status:400});}
 }
 function parts(pathname){return pathname.split('/').filter(Boolean).map(decodeURIComponent);}
-function monitorParticipant(m,round,p){
- const player=db.players[p.playerId]||{};
- const state=p.checkpoint||{};
- const settlement=p.settlement||null;
- const currentCredit=settlement?Number(settlement.creditAfter)||0:Number(state.credit??p.creditAfterBet)||0;
+function monitorParticipant(m,round,playerId){
+ const p=round?.participants?.[playerId]||null,player=db.players[playerId]||{},state=p?.checkpoint||{},settlement=p?.settlement||null;
+ const currentCredit=settlement?Number(settlement.creditAfter)||0:Number(state.credit??p?.creditAfterBet)||0;
  const roundWin=settlement?Number(settlement.totalWin)||0:Number(state.totalWin)||0;
  return {
-  playerId:p.playerId,displayName:player.displayName||'PLAYER',connected:connected(m.id,p.playerId),
-  joinedAt:p.joinedAt,lastSeen:p.lastSeen,totalBet:Number(p.totalBet)||0,bets:p.bets||[],enabled:p.enabled||[],
-  checkpointBall:Number(p.checkpointBall)||0,currentCredit,roundWin,roundWins:Array.isArray(state.roundWins)?state.roundWins:[],
-  phase:state.phase||null,settled:!!settlement,settlement,appVersion:p.appVersion||null
+  playerId,displayName:player.displayName||'PLAYER',connected:connected(m.id,playerId),joinedAt:p?.joinedAt||null,lastSeen:p?.lastSeen||player.lastSeen||null,
+  totalBet:Number(p?.totalBet)||0,bets:p?.bets||[],enabled:p?.enabled||[],checkpointBall:Number(p?.checkpointBall)||0,currentCredit,roundWin,
+  roundWins:Array.isArray(state.roundWins)?state.roundWins:[],phase:state.phase||(p?'PLAYING':'WAITING'),settled:!!settlement,settlement,appVersion:p?.appVersion||null
  };
 }
 function monitorSnapshot(m){
- const round=m.round;
+ const round=m.round,ids=new Set(Object.keys(round?.participants||{}));for(const id of socketMap(m.id).keys())ids.add(id);
+ const players=[...ids].map(id=>monitorParticipant(m,round,id)).sort((a,b)=>Number(b.connected)-Number(a.connected)||(a.displayName||'').localeCompare(b.displayName||''));
  return {
-  ok:true,serverTime:now(),machine:{id:m.id,revision:m.revision,source:'server',connectedPlayers:socketMap(m.id).size},
+  ok:true,serverTime:now(),machine:{id:m.id,revision:m.revision,source:'server',connectedPlayers:[...socketMap(m.id).keys()].filter(id=>connected(m.id,id)).length},
   round:round?{
    id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],startedAt:round.startedAt,
    completedAt:round.completedAt||null,nextBallAt:round.nextBallAt||null,participantCount:Object.keys(round.participants||{}).length,
-   settlements:Number(round.settlementCount)||0,
-   players:Object.values(round.participants||{}).map(p=>monitorParticipant(m,round,p))
-  }:null
+   settlements:Number(round.settlementCount)||0,players
+  }:{id:null,sequence:0,phase:'WAITING',balls:[],startedAt:null,completedAt:null,nextBallAt:null,participantCount:0,settlements:0,players}
  };
 }
 function emitServerBall(m){
