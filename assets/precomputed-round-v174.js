@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
-if(window.__sweetsSharedLoaderV193)return;
-window.__sweetsSharedLoaderV193=true;
+if(window.__sweetsSharedLoaderV194)return;
+window.__sweetsSharedLoaderV194=true;
 window.__sweetsPrecomputedRoundV174=true;
 
 /*
@@ -27,16 +27,16 @@ try{
   rouletteDrawSource.start=function(callbacks){barrier.block(callbacks);};
   rouletteDrawSource.reset=function(...args){barrier.pending=null;return nativeReset(...args);};
  }
-}catch(error){console.error('[SharedMachineLoaderV193] barrier install failed',error);}
+}catch(error){console.error('[SharedMachineLoaderV194] barrier install failed',error);}
 
 (async()=>{
  try{
-  const response=await fetch('assets/shared-machine-v176.js?v=193',{cache:'no-store'});
+  const response=await fetch('assets/shared-machine-v176.js?v=194',{cache:'no-store'});
   if(!response.ok)throw Error('shared-machine-v176.js '+response.status);
   const source=await response.text();
   eval(source);
  }catch(error){
-  console.error('[SharedMachineLoaderV193] server client unavailable; local roulette stays blocked',error);
+  console.error('[SharedMachineLoaderV194] server client unavailable; local roulette stays blocked',error);
   try{
    window.__sweetsSharedDrawBarrier?.block(null);
    if(typeof countdownText==='function')countdownText('SERVER ERROR','共有抽選');
