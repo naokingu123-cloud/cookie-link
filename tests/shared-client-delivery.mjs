@@ -13,9 +13,9 @@ const recovery=await readFile(new URL('../assets/round-recovery-v1.js',import.me
 const precomputed=await readFile(new URL('../assets/precomputed-round-v174.js',import.meta.url),'utf8');
 const index=await readFile(new URL('../index.html',import.meta.url),'utf8');
 
-assert.ok(wrapper.includes("shared-machine-core-v196.js?v=201"),'shared wrapper must synchronously load the guarded core');
-assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=201"),'server host must load the smooth transmitter');
-assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=201"),'players must load the smooth receiver');
+assert.ok(wrapper.includes("shared-machine-core-v196.js?v=203"),'shared wrapper must synchronously load the guarded core');
+assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=203"),'server host must load the smooth transmitter');
+assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=203"),'players must load the smooth receiver');
 assert.ok(wrapper.includes('eval(load'),'extensions must execute inside the game private scope');
 
 assert.ok(shared.includes("current.callbacks.onNumber?.(item.number)!==false"),'shared delivery must observe Arcade.acceptNumber result');
@@ -71,3 +71,11 @@ assert.ok(!patches.includes("single-commit instant payout"),'normal physical 8-b
 console.log('legacy phantom 8-ball recovery disabled; normal physical result flow preserved');
 
 // v202 final phantom-eight rerun
+
+assert.ok(client.includes("send({type:'rtc_fallback_request'})"),'client must request relay fallback');
+assert.ok(client.includes("state?.pc?.connectionState!=='connected'&&!fallback"),'relay fallback must start immediately until P2P is connected');
+assert.ok(client.includes("setTimeout(attach,80)"),'video mount must retry until the roulette stage exists');
+assert.ok(client.includes("rouletteDriver?.setPaused(false)"),'local roulette renderer must recover if the live stream is not visible');
+assert.ok(host.includes("recorder.start(220)"),'relay video chunks must be frequent enough for responsive playback');
+assert.ok(shared.includes("closeServerGate();try{rouletteDriver?.setPaused(false)"),'client canvas must not freeze while waiting for live video');
+console.log('immediate relay fallback + responsive roulette display guards passed');
