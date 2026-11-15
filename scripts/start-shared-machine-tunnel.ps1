@@ -171,11 +171,32 @@ try {
     throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
   }
 
+  Write-Step 'Checking public tunnel reachability'
+  $PublicHealth = "$TunnelBase/api/health"
+  $PublicReady = $false
+  for ($i=0; $i -lt 40; $i++) {
+    if ($TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited before public health check completed.`n$(Read-Log $TunnelErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $PublicHealth -TimeoutSec 4
+      if ($Health.ok -eq $true -and $Health.source -eq 'physical-host') {
+        $PublicReady = $true
+        break
+      }
+    } catch {}
+    Start-Sleep -Milliseconds 500
+  }
+  if (-not $PublicReady) {
+    throw "Cloudflare public URL was created but /api/health is not reachable: $PublicHealth`n$(Read-Log $TunnelErr)"
+  }
+
   $EncodedMachine = [Uri]::EscapeDataString($Machine)
   $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
   $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
-  $PublicUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
   $DirectUrl = "$TunnelBase/?machine=$EncodedMachine"
+  $PagesUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  $PublicUrl = $DirectUrl
   $MonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
   Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
   try { Set-Clipboard -Value $PublicUrl } catch {}
@@ -186,10 +207,11 @@ try {
   Write-Host '============================================================' -ForegroundColor Green
   Write-Host $PublicUrl -ForegroundColor Yellow
   Write-Host ''
-  Write-Host 'Open this GitHub Pages URL on PLAYER devices.' -ForegroundColor White
-  Write-Host 'It contains sharedServer=... so API and WebSocket traffic go to this tunnel.' -ForegroundColor White
-  Write-Host 'The player URL was also copied to the clipboard.' -ForegroundColor White
-  Write-Host "Direct tunnel fallback: $DirectUrl" -ForegroundColor DarkYellow
+  Write-Host 'Open the yellow DIRECT TUNNEL URL on PLAYER devices.' -ForegroundColor White
+  Write-Host 'Game, API and WebSocket now use the same trycloudflare.com origin.' -ForegroundColor White
+  Write-Host 'The direct player URL was also copied to the clipboard.' -ForegroundColor White
+  Write-Host "GitHub Pages alternate: $PagesUrl" -ForegroundColor DarkYellow
+  Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
   Write-Host "Monitor + physical roulette host: $MonitorUrl" -ForegroundColor Cyan
   Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
   Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
