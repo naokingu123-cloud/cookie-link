@@ -3,7 +3,7 @@
 if(window.SweetsSharedCorePatchV216)return;
 function once(source,from,to,label){
  const count=source.split(from).length-1;
- if(count!==1)throw new Error(`[SharedCorePatchV216] ${label} matches=${count}`);
+ if(count!==1)throw new Error(`[SharedCorePatchV217] ${label} matches=${count}`);
  return source.replace(from,to);
 }
 function patch(source){
@@ -20,8 +20,6 @@ function patch(source){
 ` syncReady(){
   if(SERVER_HOST)return;
   window.__sweetsSharedClientReady=!!this.online;
-  // Shared clients never own a local BET clock or local eight-ball draw. A
-  // previously queued first-load callback is cancelled here on every sync.
   try{
    if(typeof syncDebugButtons==='function')syncDebugButtons();
    if(typeof stopAutoRound==='function')stopAutoRound();
@@ -58,9 +56,9 @@ function patch(source){
    app.locked=[...(round.participant.locked||round.participant.bets||app.locked||app.bets||[])];
    app.enabled=[...(round.participant.enabled||app.enabled||[])];
    app.paused=false;startPermitId=round.id;client.syncReady();
-   try{app.start();}catch(error){console.warn('[SharedMachineV216] server start',error);}
+   try{app.start();}catch(error){console.warn('[SharedMachineV217] server start',error);}
   }
- }catch(error){console.warn('[SharedMachineV216] state refresh',error?.message||error);}
+ }catch(error){console.warn('[SharedMachineV217] state refresh',error?.message||error);}
  scheduleServerBetClock(0);
 }`,
   'authoritative direct start');
@@ -95,8 +93,20 @@ function patch(source){
   client.syncReady();
  })`,
   'disable startup pending-round replay');
- source=source.replaceAll('[SharedMachineV204]','[SharedMachineV216]');
- source=source.replace("const VERSION='v204';","const VERSION='v216';");
+ source=once(source,
+  "   if(existing.length){hostRoundId=round.id;hostIndex=existing.length;client.send({type:'host_fallback_request',roundId:round.id});stopHost('SERVER FALLBACKへ移行 '+hostIndex+' / 8');return;}",
+  "   if(existing.length){hostRoundId=round.id;hostIndex=existing.length;stopHost('実抽選機の継続待機 '+hostIndex+' / 8');return;}",
+  'never convert a partially physical round into random fallback');
+ source=once(source,
+  "nativeStart({onNumber:reportPhysical,onError:message=>{client.send({type:'host_fallback_request',roundId:round.id});stopHost(message||'抽選機エラー');}});",
+  "nativeStart({onNumber:reportPhysical,onError:message=>{stopHost(message||'抽選機エラー');}});",
+  'physical draw errors must stop instead of generating random balls');
+ source=once(source,
+  "catch(error){console.error('[SharedMachineV204] physical host start',error);hostRunning=false;client.send({type:'host_fallback_request',roundId:round.id});}",
+  "catch(error){console.error('[SharedMachineV217] physical host start',error);hostRunning=false;stopHost('抽選機起動エラー');}",
+  'physical host startup failure must not request random fallback');
+ source=source.replaceAll('[SharedMachineV204]','[SharedMachineV217]');
+ source=source.replace("const VERSION='v204';","const VERSION='v217';");
  return source;
 }
 window.SweetsSharedCorePatchV216={patch};
