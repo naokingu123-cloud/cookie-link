@@ -114,8 +114,8 @@ jobs:
           grep -q "smoothRoulette" assets/server-monitor-host-stability-v217.js
           grep -q "Do not drop the relay merely because ICE connected" assets/shared-roulette-webrtc-host-v217.js
           grep -q "boundaries must not blank" assets/shared-roulette-client-v219.js
-          grep -q "three-round fresh-board" tests/shared-v219-continuous-rounds.mjs
-          grep -q "three live join/start/result" tests/shared-v219-three-live-cycles.mjs
+          grep -q "v222 three-round fresh-board reset" tests/shared-v219-continuous-rounds.mjs
+          grep -q "v222 three live start/reconnect/result" tests/shared-v219-three-live-cycles.mjs
           grep -q "empty physical clock" tests/server-v220-continuous-physical.mjs
           grep -q "physical host start/progress/resume watchdog" tests/shared-v221-host-draw-watchdog.mjs
           grep -q "v222 reconnect keeps PLAY alive" tests/shared-v222-reconnect-catchup.mjs
