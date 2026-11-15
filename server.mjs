@@ -27,6 +27,7 @@ let db={version:2,players:{},machines:{},updatedAt:now()};
 let saveTimer=null;
 const socketsByMachine=new Map();
 const requestBuckets=new Map();
+const visualRelayAt=new Map();
 
 function normalizeRound(round){
  if(!round)return null;
@@ -175,7 +176,7 @@ function monitorSnapshot(m){
 
 async function api(req,res,url){
  const p=parts(url.pathname);
- if(req.method==='GET'&&url.pathname==='/api/health')return reply(res,200,{ok:true,service:'sweets-link-shared-machine',version:181,source:'physical-host',time:now()});
+ if(req.method==='GET'&&url.pathname==='/api/health')return reply(res,200,{ok:true,service:'sweets-link-shared-machine',version:196,source:'physical-host',time:now()});
  if(req.method==='GET'&&p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'){
   if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});
   const m=machine(safeId(p[3])||MACHINE_DEFAULT);return reply(res,200,monitorSnapshot(m));
@@ -231,12 +232,9 @@ async function api(req,res,url){
   const existed=!!round.participants?.[player.id];if(existed)delete round.participants[player.id];
   m.revision++;m.updatedAt=now();
   const remaining=Object.keys(round.participants||{}).length;
-  if(round.phase==='PLAYING'&&remaining===0){
-   round.phase='ABORTED';round.completedAt=now();scheduleSave();
-   broadcast(m.id,{type:'round_cancelled',round:publicRound(round,null),reason:'no_participants'});
-  }else{
-   scheduleSave();broadcast(m.id,{type:'participant_left',roundId:round.id,playerId:player.id,participantCount:remaining,round:publicRound(round,null)});
-  }
+  // A player-side reset/leave is local only. The physical host owns the round lifetime,
+  // so an empty participant list must never stop or abort an in-flight roulette.
+  scheduleSave();broadcast(m.id,{type:'participant_left',roundId:round.id,playerId:player.id,participantCount:remaining,round:publicRound(round,null)});
   return reply(res,200,{ok:true,left:existed,roundId:round.id,phase:round.phase,participantCount:remaining});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='ball'){
@@ -324,8 +322,11 @@ wss.on('connection',(ws,{player,machineId})=>{
    if(msg.type==='visual_frame'){
     if(player.id!==m.hostPlayerId)return;
     const image=String(msg.image||''),roundId=safeText(msg.roundId,160);
-    if(!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(image)||image.length>480000)return;
-    const payload=JSON.stringify({type:'visual_frame',roundId,image,capturedAt:Number(msg.capturedAt)||now(),serverTime:now()});
+    if(!/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(image)||image.length>220000)return;
+    const relayNow=now(),lastRelay=Number(visualRelayAt.get(machineId))||0;
+    if(relayNow-lastRelay<700)return;
+    visualRelayAt.set(machineId,relayNow);
+    const payload=JSON.stringify({type:'visual_frame',roundId,image,capturedAt:Number(msg.capturedAt)||relayNow,serverTime:relayNow});
     for(const [pid,sockets] of socketMap(machineId))if(pid!==player.id)for(const peer of sockets)if(peer.readyState===WebSocket.OPEN)try{peer.send(payload);}catch{}
    }
   }catch{}
