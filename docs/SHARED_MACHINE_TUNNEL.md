@@ -185,3 +185,10 @@ After that:
 
 The token and hostname are stored under `.runtime`, which is ignored by Git.
 Quick Tunnel remains available only as an explicit temporary fallback with `-QuickTunnel`.
+
+
+## v188 fixed Named Tunnel client discovery
+
+- The active server discovery endpoint now points to `https://sweets.sweetslink-game.com`.
+- GitHub Pages clients accept the fixed HTTPS Named Tunnel hostname, not only temporary `trycloudflare.com` hosts.
+- Opening the normal client game URL can therefore connect automatically to the fixed Named Tunnel.
