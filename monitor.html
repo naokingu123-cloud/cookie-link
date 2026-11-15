@@ -10,7 +10,7 @@
 body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#173d5d 0,#0a1d2d 38%,#050b12 100%);color:#eaf8ff}
 header{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;background:#07111de8;border-bottom:1px solid #6fd7ff44;backdrop-filter:blur(12px)}
 h1{margin:0;font-size:22px;letter-spacing:.06em}.sub{font-size:12px;color:#8dcbe4}.status{display:flex;gap:10px;align-items:center;font-size:13px}.dot{width:10px;height:10px;border-radius:50%;background:#39d98a;box-shadow:0 0 12px #39d98a}.dot.off{background:#ff6f6f;box-shadow:0 0 12px #ff6f6f}
-main{display:grid;grid-template-columns:minmax(300px,420px) minmax(480px,1fr);gap:16px;padding:16px;max-width:1440px;margin:auto}
+main{display:grid;grid-template-columns:minmax(300px,420px) minmax(480px,1fr);gap:16px;padding:16px;max-width:1440px;margin:auto}.machine-host{grid-column:1/-1}.host-frame{display:block;width:100%;height:min(62vh,620px);min-height:420px;border:0;background:#02070b}.host-note{padding:8px 14px;border-top:1px solid #6fd7ff2e;color:#88bfd8;font-size:11px}
 .card{background:linear-gradient(180deg,#10283bcc,#091722e8);border:1px solid #6fd7ff42;border-radius:18px;box-shadow:0 14px 35px #0008;overflow:hidden}
 .card h2{margin:0;padding:12px 15px;border-bottom:1px solid #6fd7ff2e;font-size:15px;letter-spacing:.06em}
 .card-body{padding:14px}
@@ -24,10 +24,15 @@ footer{padding:0 16px 18px;max-width:1440px;margin:auto;color:#7898aa;font-size:
 </head>
 <body>
 <header>
-  <div><h1>SWEETS LINK SERVER MONITOR</h1><div class="sub">Server-authoritative roulette · game engines run only on player devices</div></div>
+  <div><h1>SWEETS LINK SERVER MONITOR</h1><div class="sub">Server PC physical roulette host · player devices receive landed numbers only</div></div>
   <div class="status"><span id="dot" class="dot off"></span><span id="conn">connecting...</span></div>
 </header>
 <main>
+<section class="card machine-host">
+<h2>CURRENT PHYSICAL ROULETTE</h2>
+<iframe id="host-frame" class="host-frame" title="SWEETS LINK physical roulette host"></iframe>
+<div class="host-note">この画面内の現行3D抽選機が8球を実抽選し、実際の入賞番号だけをサーバー経由で全クライアントへ配信します。</div>
+</section>
 <section class="card">
 <h2>ROULETTE</h2>
 <div class="card-body">
@@ -36,6 +41,8 @@ footer{padding:0 16px 18px;max-width:1440px;margin:auto;color:#7898aa;font-size:
     <div><b>ROUND</b><strong id="round">-</strong></div>
     <div><b>PHASE</b><strong id="phase">-</strong></div>
     <div><b>PLAYERS</b><strong id="count">0</strong></div>
+    <div><b>PHYSICAL HOST</b><strong id="host">-</strong></div>
+    <div><b>SOURCE</b><strong id="source">-</strong></div>
   </div>
   <div id="board" class="board"></div>
   <div id="balls" class="ball-strip"></div>
@@ -52,16 +59,18 @@ footer{padding:0 16px 18px;max-width:1440px;margin:auto;color:#7898aa;font-size:
 </div>
 </section>
 </main>
-<footer>サーバー画面ではゲーム本体を実行しません。抽選番号・接続状態・BET・クレジット・配当・精算状態だけを監視します。</footer>
+<footer>サーバーPC上の現行3D抽選機が唯一の抽選元です。プレイヤー端末ではローカル抽選を行いません。</footer>
 <script>
 (()=>{'use strict';
 const q=new URLSearchParams(location.search),machine=q.get('machine')||'public-01',adminToken=q.get('adminToken')||'';
 const $=id=>document.getElementById(id),board=$('board'),balls=$('balls'),tbody=$('players'),empty=$('empty');
+const hostUrl=new URL('/index.html',location.origin);hostUrl.searchParams.set('serverHost','1');hostUrl.searchParams.set('machine',machine);if(adminToken)hostUrl.searchParams.set('adminToken',adminToken);$('host-frame').src=hostUrl.href;
 for(let n=1;n<=25;n++){const d=document.createElement('div');d.className='num';d.dataset.n=n;d.textContent=n;board.append(d);}
 for(let i=1;i<=8;i++){const d=document.createElement('div');d.className='ball empty';d.innerHTML='<span>'+i+' BALL</span><strong>-</strong>';balls.append(d);}
 const fmt=n=>String(Math.max(0,Math.floor(Number(n)||0)));
 function draw(data){
  $('dot').classList.remove('off');$('conn').textContent='ONLINE';$('machine').textContent=data.machine?.id||machine;
+ $('host').textContent=data.machine?.hostConnected?'ONLINE':'OFFLINE';$('source').textContent=data.machine?.source||'-';
  const r=data.round;$('round').textContent=r?String(r.sequence):'-';$('phase').textContent=r?.phase||'WAITING';$('count').textContent=String(r?.players?.filter(p=>p.connected).length||0);
  const hit=new Map((r?.balls||[]).map(b=>[Number(b.number),Number(b.index)]));
  for(const el of board.children){const order=hit.get(Number(el.dataset.n));el.classList.toggle('hit',!!order);el.querySelector('.order')?.remove();if(order){const o=document.createElement('span');o.className='order';o.textContent=order;el.append(o);}}
