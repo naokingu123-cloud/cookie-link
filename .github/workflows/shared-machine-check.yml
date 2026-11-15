@@ -59,3 +59,10 @@ jobs:
           fi
       - name: Multi-client server smoke test
         run: npm run test:shared
+      - name: Ultra-light roulette static guard
+        shell: bash
+        run: |
+          grep -q "ultraLightRoulette" optimized/app-01.js
+          grep -q "physics.world.solver.iterations=5" optimized/app-01.js
+          grep -q "renderFps=ultraLightRoulette?10:30" optimized/app-01.js
+          grep -q "lightRoulette','1'" monitor.html
