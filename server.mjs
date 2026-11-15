@@ -111,7 +111,7 @@ function createRound(m){
 }
 function activeOrNewRound(m){
  const r=m.round;
- if(!r||r.phase==='COMPLETE'||now()-Number(r.startedAt||0)>ROUND_STALE_MS)return createRound(m);
+ if(!r||r.phase!=='PLAYING'||now()-Number(r.startedAt||0)>ROUND_STALE_MS)return createRound(m);
  return r;
 }
 function auth(req,url){
@@ -208,7 +208,9 @@ async function api(req,res,url){
  if(req.method==='GET'&&p[3]==='state')return reply(res,200,{ok:true,...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'});
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){
   if(!m.hostPlayerId||!connected(m.id,m.hostPlayerId))return reply(res,503,{ok:false,error:'physical_host_unavailable',...snapshot(m,player.id)});
-  const input=await bodyJson(req),round=activeOrNewRound(m),previous=round.participants[player.id];
+  const input=await bodyJson(req),avoidRoundId=safeText(input.avoidRoundId,160);
+  if(avoidRoundId&&m.round?.phase==='PLAYING'&&m.round.id===avoidRoundId)return reply(res,409,{ok:false,error:'round_in_progress',round:publicRound(m.round,player.id)});
+  const round=activeOrNewRound(m),previous=round.participants[player.id];
   round.hostPlayerId=m.hostPlayerId;
   const participant=round.participants[player.id]=previous||{
    playerId:player.id,joinedAt:now(),lastSeen:now(),clientRoundToken:safeText(input.clientRoundToken,120),
@@ -223,6 +225,20 @@ async function api(req,res,url){
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='heartbeat'){
   const input=await bodyJson(req);if(m.round?.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=m.round.participants?.[player.id];if(participant)participant.lastSeen=now();return reply(res,200,{ok:true,source:'physical-host'});
+ }
+ if(req.method==='POST'&&p[3]==='round'&&p[4]==='leave'){
+  const input=await bodyJson(req),round=m.round;
+  if(!round||round.id!==safeText(input.roundId,160))return reply(res,200,{ok:true,left:false,roundId:safeText(input.roundId,160)});
+  const existed=!!round.participants?.[player.id];if(existed)delete round.participants[player.id];
+  m.revision++;m.updatedAt=now();
+  const remaining=Object.keys(round.participants||{}).length;
+  if(round.phase==='PLAYING'&&remaining===0){
+   round.phase='ABORTED';round.completedAt=now();scheduleSave();
+   broadcast(m.id,{type:'round_cancelled',round:publicRound(round,null),reason:'no_participants'});
+  }else{
+   scheduleSave();broadcast(m.id,{type:'participant_left',roundId:round.id,playerId:player.id,participantCount:remaining,round:publicRound(round,null)});
+  }
+  return reply(res,200,{ok:true,left:existed,roundId:round.id,phase:round.phase,participantCount:remaining});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='ball'){
   const input=await bodyJson(req),round=m.round;
