@@ -1,4 +1,4 @@
-process.env.SWEETS_BET_DURATION_MS??='3000';
+process.env.SWEETS_BET_DURATION_MS??='10000';
 process.env.SWEETS_AUTONOMOUS_ROUNDS??='1';
 
 await import('./server-rtc-preload.mjs');
