@@ -196,7 +196,7 @@ try {
   $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
   $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
   $ServerHostUrl = "$TunnelBase/?serverHost=1&machine=$EncodedMachine&adminToken=$AdminToken"
-  $ServerManageUrl = "$TunnelBase/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
   $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
   $PublicUrl = $ServerManageUrl
   Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
