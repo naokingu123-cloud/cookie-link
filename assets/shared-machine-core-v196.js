@@ -1,9 +1,9 @@
 (()=>{
 'use strict';
-if(window.__sweetsSharedMachineV196)return;
-window.__sweetsSharedMachineV196=true;
+if(window.__sweetsSharedMachineV204)return;
+window.__sweetsSharedMachineV204=true;
 
-const VERSION='v196';
+const VERSION='v204';
 const SESSION_KEY='sweets-shared-session-v176';
 const SERVER_KEY='sweets-shared-server-v176';
 const MACHINE_KEY='sweets-shared-machine-v176';
@@ -39,7 +39,7 @@ async function resolveServerBase(){
     return BASE;
    }
   }
- }catch(error){console.warn('[SharedMachineV196] endpoint discovery',error?.message||error);}
+ }catch(error){console.warn('[SharedMachineV204] endpoint discovery',error?.message||error);}
  BASE=(savedServer||'').replace(/\/$/,'');
  return BASE;
 }
@@ -120,14 +120,14 @@ function serverRequired(message='サーバー抽選機に接続できません',
  layer.querySelector('[data-server-message]').textContent=message;
  const baseNode=layer.querySelector('[data-server-base]');if(baseNode)baseNode.textContent='SERVER: '+(BASE||'(未指定)');
  const button=layer.querySelector('button');
- button.onclick=async()=>{button.disabled=true;button.textContent='接続中…';try{const ok=await client.reconnect();if(ok){const run=layer.__retry;closeServerGate();if(typeof run==='function')run();}else{layer.querySelector('[data-server-message]').textContent='サーバー抽選機に接続できません';}}catch(error){layer.querySelector('[data-server-message]').textContent='再接続に失敗しました';console.warn('[SharedMachineV196] reconnect',error);}finally{if(serverGateLayer){button.disabled=false;button.textContent='再接続';}}};
+ button.onclick=async()=>{button.disabled=true;button.textContent='接続中…';try{const ok=await client.reconnect();if(ok){const run=layer.__retry;closeServerGate();if(typeof run==='function')run();}else{layer.querySelector('[data-server-message]').textContent='サーバー抽選機に接続できません';}}catch(error){layer.querySelector('[data-server-message]').textContent='再接続に失敗しました';console.warn('[SharedMachineV204] reconnect',error);}finally{if(serverGateLayer){button.disabled=false;button.textContent='再接続';}}};
  serverGateLayer=layer;document.body.append(layer);
 }
 
 class Client{
  constructor(){
-  this.online=false;this.playerId='';this.token='';this.role='offline';this.round=null;this.ws=null;this.listeners=new Set();
-  this.hostAvailable=SERVER_HOST;this.lastError='';this.reconnectTimer=0;this.connectPromise=null;this.reconnectAttempt=0;this.ready=this.init();
+  this.online=false;this.playerId='';this.token='';this.role='offline';this.round=null;this.pendingRound=null;this.ws=null;this.listeners=new Set();
+  this.hostAvailable=SERVER_HOST;this.lastError='';this.reconnectTimer=0;this.connectPromise=null;this.reconnectAttempt=0;this.clockOffset=0;this.ready=this.init();
  }
  errorText(error){
   if(!BASE)return DISCOVERY_MODE?'サーバー自動検出に失敗しました':'接続先URLが指定されていません';
@@ -137,9 +137,8 @@ class Client{
  }
  syncReady(){
   if(SERVER_HOST)return;
-  const blocked=!!(blockedRoundId&&this.round?.id===blockedRoundId&&this.round?.phase==='PLAYING');
-  window.__sweetsSharedClientReady=!!(this.online&&!blocked);
-  try{if(typeof syncDebugButtons==='function')syncDebugButtons();if(window.__sweetsSharedClientReady&&typeof scheduleAutoRound==='function'&&app?.phase==='ready')scheduleAutoRound();}catch{}
+  window.__sweetsSharedClientReady=!!this.online;
+  try{if(typeof syncDebugButtons==='function')syncDebugButtons();if(typeof scheduleAutoRound==='function'&&app?.phase==='ready')scheduleAutoRound();}catch{}
  }
  async raw(path,{method='GET',body,timeout=8000,auth=true}={}){
   if(!BASE)throw Error('sharedServer_missing');
@@ -164,7 +163,7 @@ class Client{
    let settled=false,opened=false;const ws=new WebSocket(url);this.ws=ws;
    const timer=setTimeout(()=>{if(settled)return;settled=true;this.connectPromise=null;try{ws.close();}catch{}reject(Object.assign(Error('websocket_timeout'),{name:'AbortError'}));},timeout);
    ws.onopen=()=>{if(settled)return;opened=true;settled=true;clearTimeout(timer);this.connectPromise=null;this.online=true;this.reconnectAttempt=0;this.lastError='';this.syncReady();resolve(true);};
-   ws.onmessage=event=>{try{this.accept(JSON.parse(event.data));}catch(error){console.warn('[SharedMachineV196] websocket message',error);}};
+   ws.onmessage=event=>{try{this.accept(JSON.parse(event.data));}catch(error){console.warn('[SharedMachineV204] websocket message',error);}};
    ws.onerror=()=>{if(!settled){settled=true;clearTimeout(timer);this.connectPromise=null;reject(Error('websocket_error'));}};
    ws.onclose=()=>{
     if(this.ws!==ws)return;
@@ -214,7 +213,7 @@ class Client{
    }
   }
   this.role='offline';badge('SERVER REQUIRED','offline');
-  console.warn('[SharedMachineV196] server connection failed',BASE||'(missing)',this.lastError,lastError);
+  console.warn('[SharedMachineV204] server connection failed',BASE||'(missing)',this.lastError,lastError);
   return false;
  }
  async reconnect(){
@@ -231,7 +230,14 @@ class Client{
  save(body){return this.api(`/api/machines/${MACHINE}/round/checkpoint`,{method:'POST',body,timeout:8000});}
  settle(body){return this.api(`/api/machines/${MACHINE}/round/settle`,{method:'POST',body,timeout:8000});}
  accept(message){
-  if(Object.prototype.hasOwnProperty.call(message||{},'round'))this.round=message.round;
+  if(Number.isFinite(Number(message?.serverTime)))this.clockOffset=Number(message.serverTime)-Date.now();
+  if(Object.prototype.hasOwnProperty.call(message||{},'round')){
+   const incoming=message.round;
+   if(incoming&&this.round?.id===incoming.id&&incoming.participant==null&&this.round.participant!=null)incoming.participant=this.round.participant;
+   if(incoming&&this.round?.id===incoming.id&&message.type!=='snapshot'&&incoming.canBet===false&&this.round.canBet===true)incoming.canBet=true;
+   this.round=incoming;
+  }
+  if(Object.prototype.hasOwnProperty.call(message||{},'pendingRound'))this.pendingRound=message.pendingRound;
   if(message?.machine&&Object.prototype.hasOwnProperty.call(message.machine,'hostConnected'))this.hostAvailable=!!message.machine.hostConnected;
   if(message?.type==='host_status')this.hostAvailable=!!message.online;
   if(message?.type==='host_changed')this.hostAvailable=!!message.hostConnected||message.hostPlayerId===this.playerId;
@@ -258,7 +264,7 @@ function rememberBlockedRound(roundId){
  try{if(blockedRoundId)localStorage.setItem(ABANDONED_ROUND_KEY,JSON.stringify({roundId:blockedRoundId,at:Date.now()}));else localStorage.removeItem(ABANDONED_ROUND_KEY);}catch{}
 }
 const client=new Client();
-let current=null,resumeId=null,recoveryOpen=false;
+let current=null,resumeId=null,recoveryOpen=false,startPermitId=null,serverBetTimer=0,betSyncBusy=false,lastBetSignature='',lastBetSentAt=0;
 
 function queueBall(ball,catchup=false){
  if(!current||!ball||Number(ball.index)<=current.delivered)return;
@@ -276,12 +282,12 @@ async function drain(){
     if(typeof app==='undefined'||app.phase!=='playing')break;
     const ready=!app.paused&&!app.drawHeld&&Number(app.draws?.length||0)===current.delivered;
     if(ready){
-     try{accepted=current.callbacks.onNumber?.(item.number)!==false;}catch(error){console.warn('[SharedMachineV196] onNumber',error);accepted=false;}
+     try{accepted=current.callbacks.onNumber?.(item.number)!==false;}catch(error){console.warn('[SharedMachineV204] onNumber',error);accepted=false;}
     }
     if(accepted)break;
     await wait(40);waited+=40;
     if(waited>=30000){
-     console.warn('[SharedMachineV196] ball delivery still waiting',item.index,item.number,{paused:app?.paused,drawHeld:app?.drawHeld,draws:app?.draws?.length,delivered:current?.delivered});
+     console.warn('[SharedMachineV204] ball delivery still waiting',item.index,item.number,{paused:app?.paused,drawHeld:app?.drawHeld,draws:app?.draws?.length,delivered:current?.delivered});
      waited=0;
     }
    }
@@ -290,13 +296,13 @@ async function drain(){
    status(`${item.index} / 8球　${item.number} HIT`,current.role==='host'?'共有抽選 HOST':'共有抽選');
    saveLater(item.index);if(item.catchup)await wait(100);
   }
- }catch(error){console.error('[SharedMachineV196] delivery',error);}
+ }catch(error){console.error('[SharedMachineV204] delivery',error);}
  finally{
   if(current){current.draining=false;if(current.queue.has(current.delivered+1)&&!current.stopped)setTimeout(drain,40);}
  }
 }
 function saveLater(ballIndex){
- if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV196] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
+ if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV204] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
 }
 async function startShared(callbacks,nativeReset){
  const ready=await client.ready;
@@ -305,49 +311,106 @@ async function startShared(callbacks,nativeReset){
   serverRequired('サーバーへ接続できません'+detail,()=>startShared(callbacks,nativeReset));return;
  }
  try{
-  const data=await client.join({clientRoundToken:String(callbacks.token||app.token||''),resumeRoundId:resumeId,avoidRoundId:blockedRoundId,bets:[...(app.bets||[])],locked:[...(app.locked||app.bets||[])],enabled:[...(app.enabled||[])],totalBet:totalBet(app),creditAfterBet:Number(app.credit)||0,initialState:null,appVersion:VERSION});
-  client.accept(data);const round=data.round;if(!round)throw Error('round unavailable');const participant=round.participant||{};
-  const explicitResume=!!resumeId&&resumeId===round.id;
-  if(blockedRoundId&&round.id!==blockedRoundId)rememberBlockedRound(null);
-  pendingStart=null;client.syncReady();closeServerGate();try{rouletteDriver?.setPaused(false);}catch{}
-  current={roundId:round.id,callbacks,nativeReset,role:'player',delivered:0,queue:new Map(),draining:false,stopped:false,saveTimer:0,settleSent:false,participant};app.__sharedRound=current;resumeId=null;
-  if(participant.settlement&&explicitResume){app.credit=Number(participant.settlement.creditAfter)||app.credit;app.displayCredit=app.credit;app.phase='complete';app.dealing=false;repaint(app);return;}
+  const data=await client.getState();client.accept(data);
+  const round=resumeId?(data.pendingRound?.id===resumeId?data.pendingRound:(data.round?.id===resumeId?data.round:null)):data.round;
+  if(!round)throw Error('round unavailable');
+  const participant=round.participant||{},explicitResume=!!resumeId&&resumeId===round.id;
+  if(!participant.playerId)throw Error('not participating');
+  if(!explicitResume&&(round.phase!=='PLAYING'||startPermitId!==round.id))throw Error('server start not permitted');
+
+  pendingStart=null;closeServerGate();try{rouletteDriver?.setPaused(false);}catch{}
+  current={roundId:round.id,callbacks,nativeReset,role:'player',delivered:0,queue:new Map(),draining:false,stopped:false,saveTimer:0,settleSent:false,participant};app.__sharedRound=current;
+  startPermitId=null;
+
   if(explicitResume){
    const savedBall=Math.max(0,Math.min(8,Number(participant.checkpointBall)||0));
-   if(participant.checkpoint&&savedBall){restore(app,participant.checkpoint);current.delivered=savedBall;}
-   const balls=[...(round.balls||[])].sort((x,y)=>x.index-y.index);
+   if(participant.checkpoint){restore(app,participant.checkpoint);current.delivered=savedBall;}
+   app.fastForward=true;for(const engine of app.engines||[])engine.presentationRate=60;
+   const balls=[...(round.balls||[])].sort((a,b)=>a.index-b.index);
    for(const ball of balls)if(ball.index>current.delivered)queueBall(ball,true);
-  }else if((round.balls||[]).length){
-   // A normal fresh start must never replay stale/cached server balls.
-   // If this is an already-running round, wait for the next round instead of synthesizing a local-looking catch-up.
-   rememberBlockedRound(round.id);pendingStart={callbacks,nativeReset};current.stopped=true;current=null;app.__sharedRound=null;
-   // Stay attached as a passive participant. A local reset/reload must not mutate
-   // the server-owned physical round or make the host stop.
-   status('既存ラウンド終了待ち','次ラウンド待機');client.syncReady();return;
+   resumeId=null;recoveryOpen=false;
+   status('切断中のサーバー抽選結果を高速反映中','共有抽選 RECOVERY');
+   return;
   }
-  status(client.hostAvailable?'サーバー抽選機の入賞待ち':'物理抽選ホスト起動待ち','共有抽選 SERVER');
-  saveLater(current.delivered);
+
+  resumeId=null;recoveryOpen=false;
+  try{
+   const state=checkpoint(app);
+   client.save({roundId:round.id,ballIndex:0,state}).catch(error=>console.warn('[SharedMachineV204] initial checkpoint',error?.message||error));
+  }catch(error){console.warn('[SharedMachineV204] initial checkpoint',error);}
+  const balls=[...(round.balls||[])].sort((a,b)=>a.index-b.index);
+  for(const ball of balls)queueBall(ball,true);
+  status(client.hostAvailable?'サーバー抽選機の入賞待ち':'サーバー自動抽選待ち','共有抽選 SERVER');
  }catch(error){
-  current=null;app.__sharedRound=null;
-  if(error?.status===409&&error?.data?.error==='round_in_progress'){
-   pendingStart={callbacks,nativeReset};closeServerGate();status('リセット前のラウンド終了待ち','次ラウンド待機');client.syncReady();return;
-  }
-  if(error?.status===503&&error?.data?.error==='physical_host_unavailable'){client.hostAvailable=false;client.syncReady();status('物理抽選ホスト起動待ち','共有抽選 SERVER');pendingStart={callbacks,nativeReset};return;}
-  console.warn('[SharedMachineV196] shared join failed',error?.message||error);
-  serverRequired('サーバーとのラウンド同期に失敗しました · '+client.errorText(error),()=>startShared(callbacks,nativeReset));
+  current=null;app.__sharedRound=null;startPermitId=null;resumeId=null;recoveryOpen=false;
+  console.warn('[SharedMachineV204] attach round failed',error?.message||error);
+  try{if(app?.phase==='playing')nativeReset();}catch{}
+  status('次のSERVER BET TIMEまで待機','共有抽選');
  }
 }
-function serverSettlement(){return current?.participant?.settlement||client.round?.participant?.settlement||null;}
+function serverSettlement(){return current?.participant?.settlement||null;}
 function settle(a){
  if(!current||current.settleSent||!client.online)return;current.settleSent=true;const creditAfter=(Number(a.credit)||0)+(Number(a.totalWin)||0);
- client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV196] settle',error?.message||error);});
+ client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV204] settle',error?.message||error);});
 }
 function recovery(round){
- if(query.get('resumeShared')!=='1')return;
- if(blockedRoundId&&round?.id===blockedRoundId)return;
- if(recoveryOpen||!round?.participant||typeof app==='undefined'||app.phase!=='ready')return;const p=round.participant;
- if(p.settlement){app.credit=Number(p.settlement.creditAfter)||app.credit;app.displayCredit=app.credit;repaint(app);return;}
- recoveryOpen=true;styles();const layer=document.createElement('div');layer.className='shared-v179-recovery';const values=(round.balls||[]).map(ball=>ball.number).join('　')||'まだ入賞なし';layer.innerHTML=`<div class="shared-v179-card"><h3>共有ラウンド復元</h3><div>${round.balls?.length||0} / 8球までサーバー保存済み</div><div style="margin-top:7px;font-size:18px">${values}</div><button type="button">同じ結果から再開</button></div>`;layer.querySelector('button').onclick=()=>{layer.remove();resumeId=round.id;app.bets=[...(p.bets||app.bets||[])];app.locked=[...(p.locked||p.bets||app.bets||[])];app.enabled=[...(p.enabled||app.enabled||[])];app.credit=(Number(p.creditAfterBet)||0)+(Number(p.totalBet)||0);app.displayCredit=app.credit;repaint(app);try{app.start();}catch(error){console.error(error);recoveryOpen=false;}};document.body.append(layer);
+ if(recoveryOpen||!round?.participant||round.participant.settlement||typeof app==='undefined'||app.phase!=='ready')return;
+ const p=round.participant;recoveryOpen=true;resumeId=round.id;startPermitId=null;
+ app.bets=[...(p.bets||app.bets||[])];app.locked=[...(p.locked||p.bets||app.bets||[])];app.enabled=[...(p.enabled||app.enabled||[])];
+ const savedCredit=Number(p.checkpoint?.credit);
+ app.credit=Number.isFinite(savedCredit)?savedCredit:(Number(p.creditAfterBet)||app.credit);app.displayCredit=app.credit;repaint(app);
+ status('切断中ラウンドを復元中','共有抽選 RECOVERY');
+ queueMicrotask(()=>{try{if(app.phase==='ready')app.start();}catch(error){console.error(error);recoveryOpen=false;resumeId=null;}});
+}
+
+function serverNow(){return Date.now()+Number(client.clockOffset||0);}
+function betPayload(round){
+ const bets=[...(app.bets||[])],enabled=bets.map(value=>Number(value)>0);
+ return {clientRoundToken:'bet-'+round.id+'-'+String(app.token||0),bets,locked:[...bets],enabled,totalBet:bets.reduce((sum,value,i)=>sum+(enabled[i]?Number(value)||0:0),0),creditAfterBet:Number(app.credit)||0,initialState:null,appVersion:VERSION};
+}
+async function syncBetReservation(force=false){
+ const round=client.round;
+ if(betSyncBusy||!client.online||!round||round.phase!=='BETTING'||!round.canBet||app?.phase!=='ready'||recoveryOpen)return;
+ const payload=betPayload(round),signature=round.id+'|'+payload.bets.join(',')+'|'+payload.enabled.join(',')+'|'+payload.creditAfterBet;
+ const t=Date.now();if(!force&&signature===lastBetSignature&&t-lastBetSentAt<1200)return;
+ betSyncBusy=true;
+ try{const data=await client.join(payload);client.accept(data);lastBetSignature=signature;lastBetSentAt=t;}
+ catch(error){if(error?.data)client.accept(error.data);if(error?.status!==409)console.warn('[SharedMachineV204] BET sync',error?.message||error);}
+ finally{betSyncBusy=false;}
+}
+function scheduleServerBetClock(delay=0){clearTimeout(serverBetTimer);serverBetTimer=setTimeout(serverBetTick,delay);}
+function serverBetTick(){
+ serverBetTimer=0;if(SERVER_HOST||typeof app==='undefined')return;
+ try{typeof stopAutoRound==='function'&&stopAutoRound();}catch{}
+ if(!client.online){status('SERVER','共有抽選 接続待ち');scheduleServerBetClock(400);return;}
+ if(recoveryOpen||resumeId){status('RECOVER','切断中結果を復元中');scheduleServerBetClock(150);return;}
+ const round=client.round;
+ if(!round){status('WAIT','SERVER BET TIME待機');scheduleServerBetClock(250);return;}
+ if(round.phase==='BETTING'){
+  const ms=Math.max(0,Number(round.betClosesAt||0)-serverNow());
+  if(round.canBet){countdownText((ms/1000).toFixed(1)+'秒','SERVER BET TIME');syncBetReservation(ms<1200).catch(()=>{});}
+  else countdownText('NEXT','次のBET TIME待機');
+  scheduleServerBetClock(100);return;
+ }
+ if(round.phase==='PLAYING'){
+  countdownText(round.participant?'PLAY':'NEXT',round.participant?'サーバー抽選中':'次のBET TIME待機');
+  scheduleServerBetClock(200);return;
+ }
+ countdownText('WAIT','次のSERVER BET TIME');scheduleServerBetClock(200);
+}
+async function refreshAndMaybeStart(){
+ if(!client.online)return;
+ try{
+  const data=await client.getState();client.accept(data);
+  if(data.pendingRound?.participant&&!data.pendingRound.participant.settlement&&app?.phase==='ready'){recovery(data.pendingRound);return;}
+  const round=data.round;
+  if(round?.phase==='PLAYING'&&round.participant&&app?.phase==='ready'){
+   app.bets=[...(round.participant.bets||app.bets||[])];app.enabled=[...(round.participant.enabled||app.enabled||[])];
+   startPermitId=round.id;client.syncReady();
+   try{if(typeof startReadyRound==='function')startReadyRound();else app.start();}catch(error){console.warn('[SharedMachineV204] server start',error);}
+  }
+ }catch(error){console.warn('[SharedMachineV204] state refresh',error?.message||error);}
+ scheduleServerBetClock(0);
 }
 
 let rouletteMirror=null,rouletteMirrorLast=0;
@@ -407,7 +470,7 @@ function install(){
     }
     if(typeof uiPending!=='undefined')uiPending=false;
     if(typeof uiApp!=='undefined')uiApp=null;
-   }catch(error){console.warn('[SharedMachineV196] host presentation trim',error?.message||error);}
+   }catch(error){console.warn('[SharedMachineV204] host presentation trim',error?.message||error);}
    if(document.getElementById('server-roulette-host-css'))return;
    document.documentElement.classList.add('server-roulette-host');
    const style=document.createElement('style');style.id='server-roulette-host-css';style.textContent=`
@@ -438,7 +501,7 @@ function install(){
     setTimeout(()=>captureMirrorFrame(true),120);
     if(hostIndex>=8){hostRunning=false;stopMirrorCapture();status('8球の実抽選が終了しました','SERVER ROULETTE');hostBanner('8 / 8 COMPLETE');}
    }).catch(error=>{
-    console.error('[SharedMachineV196] physical host report',error);
+    console.error('[SharedMachineV204] physical host report',error);
     stopHost('送信エラー · 抽選停止');
    });
   }
@@ -465,7 +528,7 @@ function install(){
      reader.onerror=()=>{mirrorEncoding=false;};
      reader.readAsDataURL(blob);
     },'image/jpeg',ultraLightRoulette?.22:.30);
-   }catch(error){mirrorEncoding=false;console.warn('[SharedMachineV196] mirror capture',error?.message||error);}
+   }catch(error){mirrorEncoding=false;console.warn('[SharedMachineV204] mirror capture',error?.message||error);}
   }
   function startMirrorCapture(){
    clearTimeout(mirrorTimer);mirrorTimer=0;captureMirrorFrame(true);
@@ -473,30 +536,33 @@ function install(){
   function stopMirrorCapture(){clearTimeout(mirrorTimer);mirrorTimer=0;}
   function syncHost(round=client.round){
    if(client.role!=='host'||!client.online)return;
-   if(!round||round.phase!=='PLAYING'||Number(round.participantCount||0)<1){
-    if(round?.phase==='COMPLETE'){hostRunning=false;hostBanner('ROUND COMPLETE');}
-    else hostBanner('player wait');
-    return;
+   clearTimeout(hostRetryTimer);hostRetryTimer=0;
+   if(!round){hostRunning=false;hostBanner('player wait');return;}
+   if(round.phase==='BETTING'){
+    hostRunning=false;try{rouletteDriver?.setPaused(true);}catch{}
+    const sec=Math.max(0,(Number(round.betClosesAt||0)-(Date.now()+Number(client.clockOffset||0)))/1000);
+    hostBanner('BET TIME '+sec.toFixed(1)+'s');hostRetryTimer=setTimeout(()=>syncHost(client.round),200);return;
    }
+   if(round.phase==='COMPLETE'){hostRunning=false;hostBanner('ROUND COMPLETE');return;}
+   if(round.phase!=='PLAYING'||Number(round.participantCount||0)<1){hostRunning=false;hostBanner('player wait');return;}
+   if(round.drawSource==='server-fallback'){stopHost('SERVER FALLBACK · '+(round.balls?.length||0)+' / 8');return;}
+   const until=Number(round.drawStartsAt||0)-(Date.now()+Number(client.clockOffset||0));
+   if(until>0){hostBanner('DRAW IN '+(until/1000).toFixed(1)+'s');hostRetryTimer=setTimeout(()=>syncHost(client.round),Math.min(250,Math.max(40,until)));return;}
    if(hostRoundId===round.id&&hostRunning)return;
    const existing=[...(round.balls||[])];
-   if(existing.length){
-    hostRoundId=round.id;hostIndex=existing.length;stopHost('途中ラウンド '+hostIndex+' / 8 · ホスト再起動が必要');
-    return;
-   }
-   if(!rouletteDrawSource.ready||!rouletteDriver){
-    clearTimeout(hostRetryTimer);hostRetryTimer=setTimeout(()=>syncHost(round),250);hostBanner('roulette loading');return;
-   }
+   if(existing.length){hostRoundId=round.id;hostIndex=existing.length;client.send({type:'host_fallback_request',roundId:round.id});stopHost('SERVER FALLBACKへ移行 '+hostIndex+' / 8');return;}
+   if(!rouletteDrawSource.ready||!rouletteDriver){hostRetryTimer=setTimeout(()=>syncHost(round),250);hostBanner('roulette loading');return;}
    hostRoundId=round.id;hostIndex=0;hostRunning=true;reportChain=Promise.resolve();
-   try{nativeReset();startMirrorCapture();nativeStart({onNumber:reportPhysical,onError:message=>stopHost(message||'抽選機エラー')});rouletteDriver?.setPaused(false);status('現行3D抽選機で8球を実抽選中','SERVER ROULETTE');hostBanner('0 / 8 · DRAWING');}
-   catch(error){console.error('[SharedMachineV196] physical host start',error);hostRunning=false;hostRetryTimer=setTimeout(()=>syncHost(round),500);}
+   try{nativeReset();startMirrorCapture();nativeStart({onNumber:reportPhysical,onError:message=>{client.send({type:'host_fallback_request',roundId:round.id});stopHost(message||'抽選機エラー');}});rouletteDriver?.setPaused(false);status('現行3D抽選機で8球を実抽選中','SERVER ROULETTE');hostBanner('0 / 8 · DRAWING');}
+   catch(error){console.error('[SharedMachineV204] physical host start',error);hostRunning=false;client.send({type:'host_fallback_request',roundId:round.id});}
   }
-  rouletteDrawSource.start=function(){console.info('[SharedMachineV196] local game draw ignored on server host');};
+  rouletteDrawSource.start=function(){console.info('[SharedMachineV204] local game draw ignored on server host');};
   rouletteDrawSource.reset=function(){};
   hostPresentation();
   client.on(message=>{
-   if(message.type==='round_started'||message.type==='participant_joined'||message.type==='snapshot'||message.type==='host_changed'){
-    syncHost(message.round||client.round);
+   if(['betting_started','bet_updated','round_started','participant_joined','snapshot','host_changed','server_fallback_started'].includes(message.type)){
+    if(message.type!=='snapshot'&&message.type!=='host_changed')client.getState().then(state=>{client.accept(state);syncHost(client.round);}).catch(()=>{});
+    else syncHost(message.round||client.round);
     if(message.type==='host_changed'&&!message.round){
      client.getState().then(state=>client.accept(state)).catch(()=>{});
     }
@@ -506,11 +572,12 @@ function install(){
   });
   client.ready.then(ok=>{if(ok){hostPresentation();syncHost(client.round);}else serverRequired('サーバー本体へ接続できません');});
   window.SweetsSharedMachine={version:VERSION,serverHost:true,client,get online(){return client.online;},get role(){return client.role;},state:()=>client.getState()};
-  console.info('[SharedMachineV196] physical server roulette host enabled');
+  console.info('[SharedMachineV204] physical server roulette host enabled');
   return;
  }
 
- Object.defineProperty(rouletteDrawSource,'ready',{configurable:true,get:()=>!!(client.online&&!(blockedRoundId&&client.round?.id===blockedRoundId&&client.round?.phase==='PLAYING'))});
+ rememberBlockedRound(null);
+ Object.defineProperty(rouletteDrawSource,'ready',{configurable:true,get:()=>!!(client.online&&(!!resumeId||!!(startPermitId&&client.round?.id===startPermitId&&client.round?.phase==='PLAYING'&&client.round?.participant)))});
  const originalSyncDebugButtons=typeof syncDebugButtons==='function'?syncDebugButtons:null;
  if(originalSyncDebugButtons){
   syncDebugButtons=function(){
@@ -524,19 +591,15 @@ function install(){
   };
  }
  const originalScheduleAutoRound=typeof scheduleAutoRound==='function'?scheduleAutoRound:null;
- if(originalScheduleAutoRound){
-  scheduleAutoRound=function(){
-   if(!rouletteDrawSource.ready){try{stopAutoRound();countdownText(blockedRoundId?'WAIT':'SERVER',blockedRoundId?'次ラウンド待機':'共有抽選 接続待ち');}catch{}return;}
-   return originalScheduleAutoRound();
-  };
- }
+ if(originalScheduleAutoRound){scheduleAutoRound=function(){try{stopAutoRound();}catch{}scheduleServerBetClock(0);};}
+
  function clearSharedCurrent({abandon=false}={}){
   pendingStart=null;hideRouletteMirror();
   if(!current)return;
   const old=current,roundId=old.roundId;old.stopped=true;clearTimeout(old.saveTimer);current=null;app.__sharedRound=null;
   if(abandon&&roundId){
-   rememberBlockedRound(roundId);client.syncReady();try{stopAutoRound();}catch{}
-   // Reset is client-local. Do not send leave/cancel to the physical-host round.
+   client.syncReady();try{stopAutoRound();}catch{}
+   // The server keeps the reservation/result; reconnect recovery catches up from its checkpoint.
   }
  }
  rouletteDrawSource.start=function(callbacks){startShared(callbacks,nativeReset);};
@@ -550,29 +613,33 @@ function install(){
  proto.advancePayout=function(...args){const result=nativeAdvance.apply(this,args);if(current&&this.phase==='complete')settle(this);return result;};
  proto.prepare=function(...args){const previous=this.phase,result=nativePrepare.apply(this,args);if(current&&previous==='complete')clearSharedCurrent({abandon:false});return result;};
  client.on(message=>{
-  if(message.type==='visual_frame'){
-   if(current&&message.roundId===current.roundId)showRouletteMirror(message.image);
-   return;
+  if(message.type==='visual_frame'){if(current&&message.roundId===current.roundId)showRouletteMirror(message.image);return;}
+  if(message.type==='ball_result'&&current&&message.roundId===current.roundId)queueBall(message.ball);
+  if(message.type==='round_complete'&&current&&message.round?.id===current.roundId)saveLater(8);
+  if(['betting_started','bet_updated','round_started','round_complete','server_fallback_started','player_settled','host_changed','host_status'].includes(message.type)){
+   client.getState().then(state=>{
+    client.accept(state);
+    if(message.type==='round_started')refreshAndMaybeStart();
+    else{
+     const candidate=state.pendingRound||(state.round?.participant&&state.round.phase==='PLAYING'?state.round:null);
+     if(candidate&&app?.phase==='ready')recovery(candidate);
+     scheduleServerBetClock(0);
+    }
+   }).catch(()=>{});
   }
-  if(message.type==='snapshot'&&message.round)recovery(message.round);
-  const endedId=message.round?.id||message.roundId||null;
-  if(blockedRoundId&&endedId===blockedRoundId&&['round_complete','round_cancelled'].includes(message.type)){
-   rememberBlockedRound(null);client.syncReady();
-   const pending=pendingStart;pendingStart=null;
-   if(pending&&app?.phase==='playing')startShared(pending.callbacks,pending.nativeReset);
-   else if(app?.phase==='ready'&&typeof scheduleAutoRound==='function')scheduleAutoRound();
-  }
-  if(!current)return;
-  if(message.type==='ball_result'&&message.roundId===current.roundId)queueBall(message.ball);
-  if(message.type==='round_complete'&&message.round?.id===current.roundId)saveLater(8);
- });
+ })
  client.ready.then(ok=>{
-  if(ok&&client.round)recovery(client.round);
-  if(barrier){barrier.installed=true;const pending=barrier.take();if(pending&&app?.phase==='playing')startShared(pending,nativeReset);}
+  if(ok){
+   if(barrier){barrier.installed=true;barrier.pending=null;}
+   const candidate=client.pendingRound||(client.round?.participant&&client.round.phase==='PLAYING'?client.round:null);
+   if(candidate&&app?.phase==='ready')recovery(candidate);
+   else if(client.round?.phase==='PLAYING'&&client.round.participant)refreshAndMaybeStart();
+   scheduleServerBetClock(0);
+  }
   client.syncReady();
- });
+ })
  window.SweetsSharedMachine={version:VERSION,serverHost:false,client,get online(){return client.online;},get role(){return client.role;},get active(){return current;},state:()=>client.getState()};
- console.info('[SharedMachineV196] server physical roulette only; synchronous local draw barrier and reset leave guard enabled');
+ console.info('[SharedMachineV204] server-authoritative BET clock, reconnect recovery and physical/fallback draw enabled');
 }
 install();
 })();
