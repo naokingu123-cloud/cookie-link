@@ -55,6 +55,10 @@ source=once(source,
  "  if(t-round.hostMissingSince>=HOST_FALLBACK_DELAY_MS)activateServerFallback(m,round,'host_offline');",
  "  if(t-round.hostMissingSince>=HOST_FALLBACK_DELAY_MS)round.hostMissingSince=t; // wait for the real physical host; never create random balls",
  'disable automatic random fallback');
+source=once(source,
+ " if(STATIC_DENY.has(relative)||first==='data'||first==='.git')return reply(res,404,{ok:false,error:'not_found'});",
+ " if(STATIC_DENY.has(relative)||first==='data'||first==='.git'||first==='.runtime')return reply(res,404,{ok:false,error:'not_found'});",
+ 'hide generated runtime source');
 
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');
