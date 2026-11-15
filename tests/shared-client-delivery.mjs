@@ -51,3 +51,7 @@ assert.ok(patches.includes("shared client BET countdown uses server readiness"),
 assert.ok(patches.includes("shared client start does not depend on local roulette renderer"),'shared client start must not wait for local WebGL roulette');
 assert.ok(patches.includes("shared client debug start uses server readiness"),'shared immediate-start button must use server readiness');
 console.log('shared-ready auto-start guards passed');
+
+assert.ok(patches.includes("shared client can start while tab is background"),'shared round must start even when the player tab is backgrounded');
+assert.ok(patches.includes("shared client countdown continues while tab is background"),'shared BET countdown must not freeze when monitor tab is foreground');
+console.log('background shared-client autostart guards passed');
