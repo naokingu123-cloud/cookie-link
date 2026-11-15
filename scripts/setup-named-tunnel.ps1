@@ -20,8 +20,7 @@ function Normalize-PublicHost([string]$Value) {
       return $Uri.DnsSafeHost.Trim().ToLowerInvariant()
     }
   }
-  $Value = $Value.TrimEnd('/')
-  return $Value.ToLowerInvariant()
+  return $Value.TrimEnd('/').ToLowerInvariant()
 }
 
 function Read-EndpointHost {
@@ -56,23 +55,7 @@ if ([string]::IsNullOrWhiteSpace($PublicHost)) {
 if ([string]::IsNullOrWhiteSpace($PublicHost)) {
   $PublicHost = Normalize-PublicHost (Read-Host 'Fixed public hostname (example: sweets.example.com)')
 }
-if ([string]::IsNullOrWhiteSpace($PublicHost) -or $PublicHost -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?
-
-[IO.File]::WriteAllText($HostFile,$PublicHost + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
-
-$Service = Get-Service -Name 'cloudflared' -ErrorAction SilentlyContinue
-Write-Host ''
-if ($null -eq $Service) {
-  Write-Host 'WARNING: cloudflared Windows service was not found.' -ForegroundColor Yellow
-  Write-Host 'Return to the Cloudflare Install and Run page and run its service install command as Administrator.' -ForegroundColor Yellow
-} else {
-  Write-Host ("cloudflared service: " + $Service.Status) -ForegroundColor Green
-}
-Write-Host "Saved hostname: https://$PublicHost/" -ForegroundColor Green
-Write-Host "Host file: $HostFile" -ForegroundColor DarkGray
-Write-Host ''
-Write-Host 'Now run start-shared-machine-tunnel.cmd.' -ForegroundColor Cyan
- -or $PublicHost -notmatch '\.') {
+if ([string]::IsNullOrWhiteSpace($PublicHost) -or $PublicHost -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$' -or $PublicHost -notmatch '\.') {
   throw "Invalid public hostname: $PublicHost"
 }
 
