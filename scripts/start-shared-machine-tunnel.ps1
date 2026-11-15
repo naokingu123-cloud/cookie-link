@@ -172,7 +172,10 @@ try {
   }
 
   $EncodedMachine = [Uri]::EscapeDataString($Machine)
-  $PublicUrl = "$TunnelBase/?machine=$EncodedMachine"
+  $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
+  $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
+  $PublicUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  $DirectUrl = "$TunnelBase/?machine=$EncodedMachine"
   $MonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
   Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
   try { Set-Clipboard -Value $PublicUrl } catch {}
@@ -183,9 +186,11 @@ try {
   Write-Host '============================================================' -ForegroundColor Green
   Write-Host $PublicUrl -ForegroundColor Yellow
   Write-Host ''
-  Write-Host 'Open this URL on PLAYER devices. The server PC will open the monitor only.' -ForegroundColor White
+  Write-Host 'Open this GitHub Pages URL on PLAYER devices.' -ForegroundColor White
+  Write-Host 'It contains sharedServer=... so API and WebSocket traffic go to this tunnel.' -ForegroundColor White
   Write-Host 'The player URL was also copied to the clipboard.' -ForegroundColor White
-  Write-Host "Monitor: $MonitorUrl" -ForegroundColor Cyan
+  Write-Host "Direct tunnel fallback: $DirectUrl" -ForegroundColor DarkYellow
+  Write-Host "Monitor + physical roulette host: $MonitorUrl" -ForegroundColor Cyan
   Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
   Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
   Write-Host ''
