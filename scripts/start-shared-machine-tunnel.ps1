@@ -62,25 +62,25 @@ $ServerProcess = $null
 $TunnelProcess = $null
 
 try {
-  Write-Step 'Node.jsを確認しています'
+  Write-Step 'Checking Node.js'
   $Node = Find-Command @('node.exe','node')
   $Npm = Find-Command @('npm.cmd','npm')
   if (-not $Node -or -not $Npm) {
-    throw 'Node.js 20以上が必要です。https://nodejs.org/ のLTS版をインストールしてから、もう一度実行してください。'
+    throw 'Node.js 20 or newer is required. Install the LTS release from https://nodejs.org/ and run this launcher again.'
   }
 
   $NodeVersion = (& $Node --version).Trim()
   $Major = 0
   if ($NodeVersion -match '^v(\d+)') { $Major = [int]$Matches[1] }
   if ($Major -lt 20) {
-    throw "Node.js 20以上が必要です。現在: $NodeVersion"
+    throw "Node.js 20 or newer is required. Current version: $NodeVersion"
   }
   Write-Step "Node.js $NodeVersion"
 
   if (-not (Test-Path (Join-Path $Root 'node_modules\ws\package.json'))) {
-    Write-Step '初回セットアップ: WebSocket依存関係をインストールしています'
+    Write-Step 'First setup: installing WebSocket dependency'
     & $Npm install --omit=dev --no-audit --no-fund
-    if ($LASTEXITCODE -ne 0) { throw 'npm installに失敗しました。' }
+    if ($LASTEXITCODE -ne 0) { throw 'npm install failed.' }
   }
 
   $Cloudflared = Find-Command @('cloudflared.exe','cloudflared')
@@ -88,9 +88,9 @@ try {
     $Cloudflared = Join-Path $Tools 'cloudflared.exe'
     if (-not (Test-Path $Cloudflared)) {
       if ($NoDownload) {
-        throw 'cloudflaredが見つかりません。-NoDownloadを外すか、cloudflaredをPATHへ追加してください。'
+        throw 'cloudflared was not found. Remove -NoDownload or add cloudflared to PATH.'
       }
-      Write-Step '初回セットアップ: Cloudflare公式cloudflaredを取得しています'
+      Write-Step 'First setup: downloading official Cloudflare cloudflared'
       $Download = 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe'
       $Temporary = "$Cloudflared.download"
       Remove-Item -Force -ErrorAction SilentlyContinue $Temporary
@@ -106,7 +106,7 @@ try {
     Remove-Item -Force -ErrorAction SilentlyContinue $Log
   }
 
-  Write-Step "共有サーバーを起動しています (port $Port)"
+  Write-Step "Starting shared server (port $Port)"
   $OldPort = $env:PORT
   $OldData = $env:SWEETS_DATA_FILE
   $env:PORT = [string]$Port
@@ -122,7 +122,7 @@ try {
   $Healthy = $false
   for ($i=0; $i -lt 120; $i++) {
     if ($ServerProcess.HasExited) {
-      throw "共有サーバーが終了しました。`n$(Read-Log $ServerErr)"
+      throw "Shared server exited unexpectedly.`n$(Read-Log $ServerErr)"
     }
     try {
       $Health = Invoke-RestMethod -UseBasicParsing -Uri $HealthUrl -TimeoutSec 2
@@ -131,7 +131,7 @@ try {
     Start-Sleep -Milliseconds 250
   }
   if (-not $Healthy) {
-    throw "共有サーバーの起動確認に失敗しました。`n$(Read-Log $ServerErr)"
+    throw "Shared server health check failed.`n$(Read-Log $ServerErr)"
   }
 
   $ConfigCandidates = @(
@@ -139,10 +139,10 @@ try {
     (Join-Path $env:USERPROFILE '.cloudflared\config.yaml')
   ) | Where-Object { $_ -and (Test-Path $_) }
   if ($ConfigCandidates.Count -gt 0) {
-    Write-Host '注意: ~/.cloudflared/config.yml があるとQuick Tunnelが失敗する場合があります。失敗時は一時的に名前を変更してください。' -ForegroundColor Yellow
+    Write-Host 'Note: an existing ~/.cloudflared/config.yml can interfere with Quick Tunnel. Rename it temporarily if tunnel startup fails.' -ForegroundColor Yellow
   }
 
-  Write-Step 'Cloudflare Quick Tunnelを起動しています'
+  Write-Step 'Starting Cloudflare Quick Tunnel'
   $TunnelArguments = @('tunnel','--url',"http://127.0.0.1:$Port")
   foreach ($Email in $AllowedEmail) {
     if (-not [string]::IsNullOrWhiteSpace($Email)) {
@@ -154,7 +154,7 @@ try {
   $TunnelBase = $null
   for ($i=0; $i -lt 180; $i++) {
     if ($TunnelProcess.HasExited) {
-      throw "Cloudflare Tunnelが終了しました。`n$(Read-Log $TunnelErr)"
+      throw "Cloudflare Tunnel exited unexpectedly.`n$(Read-Log $TunnelErr)"
     }
     $Combined = (Read-Log $TunnelOut) + "`n" + (Read-Log $TunnelErr)
     if ($Combined -match 'https://[a-z0-9-]+\.trycloudflare\.com') {
@@ -164,7 +164,7 @@ try {
     Start-Sleep -Milliseconds 250
   }
   if (-not $TunnelBase) {
-    throw "公開URLを取得できませんでした。`n$(Read-Log $TunnelErr)"
+    throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
   }
 
   $EncodedMachine = [Uri]::EscapeDataString($Machine)
@@ -174,14 +174,14 @@ try {
 
   Write-Host ''
   Write-Host '============================================================' -ForegroundColor Green
-  Write-Host ' SWEETS LINK 共有抽選サーバー 起動完了' -ForegroundColor Green
+  Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
   Write-Host '============================================================' -ForegroundColor Green
   Write-Host $PublicUrl -ForegroundColor Yellow
   Write-Host ''
-  Write-Host 'このURLを同じ抽選機を共有する端末で開いてください。' -ForegroundColor White
-  Write-Host 'URLはクリップボードにもコピーしました。' -ForegroundColor White
-  Write-Host 'このウィンドウを閉じると公開は終了します。' -ForegroundColor White
-  Write-Host 'ラウンド状態は .runtime\shared-machine.json に保存されます。' -ForegroundColor DarkGray
+  Write-Host 'Open this URL on every device that will share the same machine.' -ForegroundColor White
+  Write-Host 'The URL was also copied to the clipboard.' -ForegroundColor White
+  Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
+  Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
   Write-Host ''
 
   if (-not $NoBrowser) {
@@ -193,17 +193,17 @@ try {
   }
 
   if ($ServerProcess.HasExited) {
-    throw "共有サーバーが停止しました。`n$(Read-Log $ServerErr)"
+    throw "Shared server stopped.`n$(Read-Log $ServerErr)"
   }
   if ($TunnelProcess.HasExited) {
-    throw "Cloudflare Tunnelが停止しました。`n$(Read-Log $TunnelErr)"
+    throw "Cloudflare Tunnel stopped.`n$(Read-Log $TunnelErr)"
   }
 }
 catch {
   Write-Host ''
-  Write-Host "起動に失敗しました: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host "Startup failed: $($_.Exception.Message)" -ForegroundColor Red
   Write-Host ''
-  Write-Host "ログ: $Runtime" -ForegroundColor DarkGray
+  Write-Host "Logs: $Runtime" -ForegroundColor DarkGray
   exit 1
 }
 finally {
