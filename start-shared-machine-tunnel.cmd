@@ -10,7 +10,7 @@ if not exist "%~dp0.runtime\named-tunnel-host.txt" (
   call "%~dp0setup-named-tunnel.cmd"
   if errorlevel 1 exit /b %ERRORLEVEL%
 )
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\start-shared-machine-tunnel.ps1" %*
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\start-shared-machine-v205.ps1" %*
 set EXIT_CODE=%ERRORLEVEL%
 
 if not "%EXIT_CODE%"=="0" (
