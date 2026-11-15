@@ -1,6 +1,6 @@
 import http from 'node:http';
 import {createReadStream, promises as fs} from 'node:fs';
-import {createHash, randomUUID, timingSafeEqual} from 'node:crypto';
+import {createHash, randomUUID, randomInt, timingSafeEqual} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {WebSocketServer, WebSocket} from 'ws';
@@ -10,10 +10,13 @@ const PORT=Number(process.env.PORT||3000);
 const DATA_FILE=process.env.SWEETS_DATA_FILE||path.join(ROOT,'data','shared-machine.json');
 const ADMIN_TOKEN=String(process.env.SWEETS_ADMIN_TOKEN||'');
 const BALLS_PER_ROUND=8;
+const BET_DURATION_MS=Math.max(5000,Number(process.env.SWEETS_BET_DURATION_MS||20000));
 const ROUND_START_DELAY_MS=Math.max(300,Number(process.env.SWEETS_ROUND_START_DELAY_MS||2200));
 const BALL_INTERVAL_MS=Math.max(300,Number(process.env.SWEETS_BALL_INTERVAL_MS||1800));
-const CHECKPOINT_WAIT_MS=Math.max(1000,Number(process.env.SWEETS_CHECKPOINT_WAIT_MS||7000));
+const RESULT_GRACE_MS=Math.max(1000,Number(process.env.SWEETS_RESULT_GRACE_MS||5000));
+const HOST_FALLBACK_DELAY_MS=Math.max(1000,Number(process.env.SWEETS_HOST_FALLBACK_DELAY_MS||3500));
 const ROUND_STALE_MS=45*60*1000;
+const HISTORY_LIMIT=20;
 const MAX_BODY=2*1024*1024;
 const MACHINE_DEFAULT='public-01';
 const STATIC_DENY=new Set(['server.mjs','package.json','package-lock.json']);
@@ -33,9 +36,17 @@ function normalizeRound(round){
  if(!round)return null;
  round.participants=round.participants||{};
  round.balls=Array.isArray(round.balls)?round.balls:[];
+ round.eligiblePlayerIds=Array.isArray(round.eligiblePlayerIds)?round.eligiblePlayerIds.map(safeId).filter(Boolean):[];
  round.hostPlayerId=safeId(round.hostPlayerId)||null;
  round.settlementCount=Number(round.settlementCount)||0;
  round.lastBallAt=Number(round.lastBallAt)||0;
+ round.betOpenedAt=Number(round.betOpenedAt)||0;
+ round.betClosesAt=Number(round.betClosesAt)||0;
+ round.drawStartsAt=Number(round.drawStartsAt)||0;
+ round.completedAt=Number(round.completedAt)||null;
+ round.drawSource=round.drawSource||'physical';
+ round.hostMissingSince=Number(round.hostMissingSince)||0;
+ round.nextFallbackBallAt=Number(round.nextFallbackBallAt)||0;
  return round;
 }
 function normalizeMachine(m,id){
@@ -45,6 +56,7 @@ function normalizeMachine(m,id){
  m.hostPlayerId=safeId(m.hostPlayerId)||null;
  m.hostRegisteredAt=Number(m.hostRegisteredAt)||0;
  m.round=normalizeRound(m.round);
+ m.history=(Array.isArray(m.history)?m.history:[]).map(normalizeRound).filter(Boolean).slice(-HISTORY_LIMIT);
  m.updatedAt=Number(m.updatedAt)||now();
  return m;
 }
@@ -69,7 +81,7 @@ function scheduleSave(){
 }
 function machine(id=MACHINE_DEFAULT){
  id=safeId(id)||MACHINE_DEFAULT;
- return db.machines[id]||(db.machines[id]=normalizeMachine({id,revision:0,sequence:0,round:null,updatedAt:now()},id));
+ return db.machines[id]||(db.machines[id]=normalizeMachine({id,revision:0,sequence:0,round:null,history:[],updatedAt:now()},id));
 }
 function publicParticipant(participant,{includeState=true}={}){
  if(!participant)return null;
@@ -86,14 +98,28 @@ function publicRound(round,playerId){
  if(!round)return null;
  return {
   id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],
-  startedAt:round.startedAt,completedAt:round.completedAt||null,hostPlayerId:round.hostPlayerId||null,
+  betOpenedAt:round.betOpenedAt||null,betClosesAt:round.betClosesAt||null,drawStartsAt:round.drawStartsAt||null,
+  startedAt:round.startedAt||null,completedAt:round.completedAt||null,hostPlayerId:round.hostPlayerId||null,
   participant:playerId?publicParticipant(round.participants?.[playerId]):null,
-  participantCount:Object.keys(round.participants||{}).length
+  participantCount:Object.keys(round.participants||{}).length,
+  eligibleCount:(round.eligiblePlayerIds||[]).length,
+  canBet:!!playerId&&round.phase==='BETTING'&&(round.eligiblePlayerIds||[]).includes(playerId),
+  drawSource:round.drawSource||'physical'
  };
+}
+function pendingRoundForPlayer(m,playerId){
+ const rounds=[m.round,...(m.history||[])].filter(Boolean).sort((a,b)=>Number(b.sequence)-Number(a.sequence));
+ return rounds.find(round=>round.phase==='COMPLETE'&&round.participants?.[playerId]&&!round.participants[playerId].settlement)||null;
+}
+function lookupRound(m,roundId){
+ roundId=safeText(roundId,160);
+ if(m.round?.id===roundId)return m.round;
+ return (m.history||[]).find(round=>round?.id===roundId)||null;
 }
 function snapshot(m,playerId){
  const isHost=!!playerId&&m.hostPlayerId===playerId;
- return {type:'snapshot',serverTime:now(),machine:{id:m.id,revision:m.revision,hostPlayerId:m.hostPlayerId||null,hostConnected:!!m.hostPlayerId&&connected(m.id,m.hostPlayerId),source:'physical-host'},round:publicRound(m.round,playerId),role:isHost?'host':'player'};
+ const pending=isHost?null:pendingRoundForPlayer(m,playerId);
+ return {type:'snapshot',serverTime:now(),machine:{id:m.id,revision:m.revision,hostPlayerId:m.hostPlayerId||null,hostConnected:!!m.hostPlayerId&&connected(m.id,m.hostPlayerId),source:'physical-host'},round:publicRound(m.round,playerId),pendingRound:pending?publicRound(pending,playerId):null,role:isHost?'host':'player'};
 }
 function socketMap(machineId){let map=socketsByMachine.get(machineId);if(!map){map=new Map();socketsByMachine.set(machineId,map);}return map;}
 function connected(machineId,playerId){const set=socketMap(machineId).get(playerId);return !!set&&[...set].some(ws=>ws.readyState===WebSocket.OPEN);}
@@ -101,19 +127,93 @@ function broadcast(machineId,message){
  const payload=JSON.stringify({...message,serverTime:now()});
  for(const set of socketMap(machineId).values())for(const ws of set)if(ws.readyState===WebSocket.OPEN)try{ws.send(payload);}catch{}
 }
-function createRound(m){
- const sequence=(Number(m.sequence)||0)+1;m.sequence=sequence;
+function connectedPlayerIds(m){
+ return [...socketMap(m.id).keys()].filter(id=>id!==m.hostPlayerId&&connected(m.id,id));
+}
+function archiveRound(m,round){
+ if(!round)return;
+ m.history=m.history||[];
+ if(!m.history.some(item=>item?.id===round.id))m.history.push(round);
+ m.history=m.history.slice(-HISTORY_LIMIT);
+}
+function eligiblePlayerIds(m){
+ return connectedPlayerIds(m).filter(id=>!pendingRoundForPlayer(m,id));
+}
+function createBettingRound(m){
+ if(m.round?.phase==='COMPLETE')archiveRound(m,m.round);
+ const t=now(),sequence=(Number(m.sequence)||0)+1;m.sequence=sequence;
+ const eligible=eligiblePlayerIds(m);
+ if(!eligible.length){m.round=null;m.revision++;m.updatedAt=t;scheduleSave();return null;}
  const round={
-  id:m.id+'-'+sequence+'-'+randomUUID().slice(0,8),sequence,phase:'PLAYING',balls:[],
-  startedAt:now(),completedAt:null,hostPlayerId:m.hostPlayerId||null,participants:{},settlementCount:0,lastBallAt:0
+  id:m.id+'-'+sequence+'-'+randomUUID().slice(0,8),sequence,phase:'BETTING',balls:[],
+  betOpenedAt:t,betClosesAt:t+BET_DURATION_MS,drawStartsAt:0,startedAt:null,completedAt:null,
+  hostPlayerId:m.hostPlayerId||null,participants:{},eligiblePlayerIds:eligible,settlementCount:0,lastBallAt:0,
+  drawSource:'physical',hostMissingSince:0,nextFallbackBallAt:0
  };
- m.round=round;m.revision++;m.updatedAt=now();scheduleSave();broadcast(m.id,{type:'round_started',round:publicRound(round,null)});
+ m.round=round;m.revision++;m.updatedAt=t;scheduleSave();broadcast(m.id,{type:'betting_started',round:publicRound(round,null)});
  return round;
 }
-function activeOrNewRound(m){
- const r=m.round;
- if(!r||r.phase!=='PLAYING'||now()-Number(r.startedAt||0)>ROUND_STALE_MS)return createRound(m);
- return r;
+function randomUnusedNumber(round){
+ const used=new Set((round.balls||[]).map(ball=>Number(ball.number)));
+ const pool=[];for(let n=1;n<=25;n++)if(!used.has(n))pool.push(n);
+ return pool.length?pool[randomInt(pool.length)]:null;
+}
+function finishRound(m,round,at=now()){
+ if(!round||round.phase==='COMPLETE')return;
+ round.phase='COMPLETE';round.completedAt=at;round.nextFallbackBallAt=0;round.hostMissingSince=0;
+ m.revision++;m.updatedAt=at;scheduleSave();broadcast(m.id,{type:'round_complete',round:publicRound(round,null)});
+}
+function appendBall(m,round,number,reportedBy,eventId){
+ const index=round.balls.length+1;if(index>BALLS_PER_ROUND)return null;
+ number=Number(number);if(!Number.isInteger(number)||number<1||number>25||round.balls.some(ball=>Number(ball.number)===number))return null;
+ const landedAt=now(),ball={index,number,eventId:safeText(eventId||round.id+':'+index,160),landedAt,reportedBy};
+ round.balls.push(ball);round.lastBallAt=landedAt;m.revision++;m.updatedAt=landedAt;
+ scheduleSave();broadcast(m.id,{type:'ball_result',roundId:round.id,ball,phase:index>=BALLS_PER_ROUND?'COMPLETE':round.phase});
+ if(index>=BALLS_PER_ROUND)finishRound(m,round,landedAt);
+ return ball;
+}
+function activateServerFallback(m,round,reason='host_offline'){
+ if(!round||round.phase!=='PLAYING'||round.drawSource==='server-fallback')return;
+ round.drawSource='server-fallback';round.fallbackReason=reason;round.nextFallbackBallAt=now()+400;round.hostMissingSince=0;
+ m.revision++;m.updatedAt=now();scheduleSave();broadcast(m.id,{type:'server_fallback_started',roundId:round.id,reason,round:publicRound(round,null)});
+}
+function tickMachine(m){
+ const t=now(),round=m.round,hostOnline=!!m.hostPlayerId&&connected(m.id,m.hostPlayerId);
+ if(!round){
+  if(hostOnline&&eligiblePlayerIds(m).length)createBettingRound(m);
+  return;
+ }
+ if(round.phase==='BETTING'){
+  if(t<Number(round.betClosesAt||0))return;
+  for(const [id,p] of Object.entries(round.participants||{}))if(!(Number(p.totalBet)>0))delete round.participants[id];
+  if(!Object.keys(round.participants||{}).length){
+   round.phase='COMPLETE';round.completedAt=t-RESULT_GRACE_MS+800;round.drawSource='no-bets';
+   m.revision++;m.updatedAt=t;scheduleSave();broadcast(m.id,{type:'betting_closed',round:publicRound(round,null),reason:'no_bets'});return;
+  }
+  round.phase='PLAYING';round.startedAt=t;round.drawStartsAt=t+ROUND_START_DELAY_MS;round.hostPlayerId=m.hostPlayerId||null;
+  round.drawSource='physical';round.hostMissingSince=hostOnline?0:t;m.revision++;m.updatedAt=t;scheduleSave();
+  broadcast(m.id,{type:'round_started',round:publicRound(round,null)});
+  return;
+ }
+ if(round.phase==='PLAYING'){
+  if(round.balls.length>=BALLS_PER_ROUND){finishRound(m,round,t);return;}
+  if(t<Number(round.drawStartsAt||round.startedAt||0))return;
+  if(round.drawSource==='server-fallback'){
+   if(t>=Number(round.nextFallbackBallAt||0)){
+    const number=randomUnusedNumber(round);if(number!=null)appendBall(m,round,number,'server-fallback',round.id+':fallback:'+(round.balls.length+1));
+    if(round.phase==='PLAYING')round.nextFallbackBallAt=now()+BALL_INTERVAL_MS;
+   }
+   return;
+  }
+  if(hostOnline){round.hostMissingSince=0;return;}
+  if(!round.hostMissingSince)round.hostMissingSince=t;
+  if(t-round.hostMissingSince>=HOST_FALLBACK_DELAY_MS)activateServerFallback(m,round,'host_offline');
+  return;
+ }
+ if(round.phase==='COMPLETE'&&t-Number(round.completedAt||t)>=RESULT_GRACE_MS){
+  archiveRound(m,round);m.round=null;m.revision++;m.updatedAt=t;scheduleSave();
+  if(hostOnline&&eligiblePlayerIds(m).length)createBettingRound(m);
+ }
 }
 function auth(req,url){
  const raw=(req.headers.authorization||'').replace(/^Bearer\s+/i,'')||url.searchParams.get('token')||'';
@@ -167,16 +267,17 @@ function monitorSnapshot(m){
    connectedPlayers:[...socketMap(m.id).keys()].filter(id=>id!==m.hostPlayerId&&connected(m.id,id)).length
   },
   round:round?{
-   id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],startedAt:round.startedAt,
-   completedAt:round.completedAt||null,participantCount:Object.keys(round.participants||{}).length,
-   settlements:Number(round.settlementCount)||0,hostPlayerId:round.hostPlayerId||null,players
-  }:{id:null,sequence:0,phase:'WAITING',balls:[],startedAt:null,completedAt:null,participantCount:0,settlements:0,hostPlayerId:m.hostPlayerId||null,players}
+   id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],
+   betOpenedAt:round.betOpenedAt||null,betClosesAt:round.betClosesAt||null,drawStartsAt:round.drawStartsAt||null,startedAt:round.startedAt||null,
+   completedAt:round.completedAt||null,participantCount:Object.keys(round.participants||{}).length,eligibleCount:(round.eligiblePlayerIds||[]).length,
+   settlements:Number(round.settlementCount)||0,hostPlayerId:round.hostPlayerId||null,drawSource:round.drawSource||'physical',players
+  }:{id:null,sequence:0,phase:'WAITING',balls:[],betOpenedAt:null,betClosesAt:null,drawStartsAt:null,startedAt:null,completedAt:null,participantCount:0,eligibleCount:0,settlements:0,hostPlayerId:m.hostPlayerId||null,drawSource:null,players}
  };
 }
 
 async function api(req,res,url){
  const p=parts(url.pathname);
- if(req.method==='GET'&&url.pathname==='/api/health')return reply(res,200,{ok:true,service:'sweets-link-shared-machine',version:196,source:'physical-host',time:now()});
+ if(req.method==='GET'&&url.pathname==='/api/health')return reply(res,200,{ok:true,service:'sweets-link-shared-machine',version:204,source:'physical-host',time:now(),betDurationMs:BET_DURATION_MS});
  if(req.method==='GET'&&p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'){
   if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});
   const m=machine(safeId(p[3])||MACHINE_DEFAULT);return reply(res,200,monitorSnapshot(m));
@@ -199,8 +300,9 @@ async function api(req,res,url){
   const hostPlayer=auth(req,url);if(!hostPlayer)return reply(res,401,{ok:false,error:'unauthorized'});
   const m=machine(safeId(p[3])||MACHINE_DEFAULT);
   m.hostPlayerId=hostPlayer.id;m.hostRegisteredAt=now();m.revision++;m.updatedAt=now();
-  if(m.round?.phase==='PLAYING')m.round.hostPlayerId=hostPlayer.id;
+  if(m.round)m.round.hostPlayerId=hostPlayer.id;
   scheduleSave();broadcast(m.id,{type:'host_changed',hostPlayerId:hostPlayer.id,roundId:m.round?.id||null,hostConnected:connected(m.id,hostPlayer.id)});
+  tickMachine(m);
   return reply(res,200,{ok:true,...snapshot(m,hostPlayer.id),role:'host'});
  }
  const player=auth(req,url);if(!player)return reply(res,401,{ok:false,error:'unauthorized'});
@@ -208,77 +310,76 @@ async function api(req,res,url){
  const machineId=safeId(p[2])||MACHINE_DEFAULT,m=machine(machineId);
  if(req.method==='GET'&&p[3]==='state')return reply(res,200,{ok:true,...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'});
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){
-  const input=await bodyJson(req),avoidRoundId=safeText(input.avoidRoundId,160);
-  if(avoidRoundId&&m.round?.phase==='PLAYING'&&m.round.id===avoidRoundId)return reply(res,409,{ok:false,error:'round_in_progress',round:publicRound(m.round,player.id)});
-  const round=activeOrNewRound(m),previous=round.participants[player.id];
-  round.hostPlayerId=m.hostPlayerId;
-  const participant=round.participants[player.id]=previous||{
-   playerId:player.id,joinedAt:now(),lastSeen:now(),clientRoundToken:safeText(input.clientRoundToken,120),
-   bets:Array.isArray(input.bets)?input.bets:[],locked:Array.isArray(input.locked)?input.locked:[],enabled:Array.isArray(input.enabled)?input.enabled:[],
-   totalBet:Number(input.totalBet)||0,creditAfterBet:Number(input.creditAfterBet)||0,initialState:input.initialState||null,
-   checkpoint:input.initialState||null,checkpointBall:0,settlement:null,appVersion:safeText(input.appVersion,80)
-  };
-  participant.lastSeen=now();if(!participant.initialState&&input.initialState)participant.initialState=input.initialState;if(!participant.checkpoint&&input.initialState)participant.checkpoint=input.initialState;
-  m.revision++;scheduleSave();broadcast(m.id,{type:'participant_joined',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
+  const input=await bodyJson(req);tickMachine(m);const round=m.round;
+  if(!round||round.phase!=='BETTING'||now()>=Number(round.betClosesAt||0))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});
+  if(!(round.eligiblePlayerIds||[]).includes(player.id))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});
+  const total=Math.max(0,Number(input.totalBet)||0);
+  if(total<=0){
+   delete round.participants[player.id];m.revision++;scheduleSave();broadcast(m.id,{type:'bet_updated',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
+   return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
+  }
+  const previous=round.participants[player.id];
+  const participant=round.participants[player.id]=previous||{playerId:player.id,joinedAt:now(),settlement:null,checkpoint:null,checkpointBall:0,initialState:null};
+  participant.lastSeen=now();participant.clientRoundToken=safeText(input.clientRoundToken,120);
+  participant.bets=Array.isArray(input.bets)?input.bets:[];participant.locked=Array.isArray(input.locked)?input.locked:participant.bets;
+  participant.enabled=Array.isArray(input.enabled)?input.enabled:participant.bets.map(value=>Number(value)>0);
+  participant.totalBet=total;participant.creditAfterBet=Number(input.creditAfterBet)||0;participant.appVersion=safeText(input.appVersion,80);
+  m.revision++;scheduleSave();broadcast(m.id,{type:'bet_updated',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
   return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='heartbeat'){
-  const input=await bodyJson(req);if(m.round?.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
-  const participant=m.round.participants?.[player.id];if(participant)participant.lastSeen=now();return reply(res,200,{ok:true,source:'physical-host'});
+  const input=await bodyJson(req),round=lookupRound(m,input.roundId);if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
+  const participant=round.participants?.[player.id];if(participant)participant.lastSeen=now();return reply(res,200,{ok:true,source:'physical-host'});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='leave'){
-  const input=await bodyJson(req),round=m.round;
-  if(!round||round.id!==safeText(input.roundId,160))return reply(res,200,{ok:true,left:false,roundId:safeText(input.roundId,160)});
-  const existed=!!round.participants?.[player.id];if(existed)delete round.participants[player.id];
-  m.revision++;m.updatedAt=now();
+  const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(!round)return reply(res,200,{ok:true,left:false,roundId:safeText(input.roundId,160)});
+  // Once BET closes, the reservation survives disconnect/reset so the server can finish it offline.
+  const canRemove=round.phase==='BETTING';
+  const existed=!!round.participants?.[player.id];if(existed&&canRemove)delete round.participants[player.id];
+  if(existed&&round.participants?.[player.id])round.participants[player.id].lastSeen=now();
+  m.revision++;m.updatedAt=now();scheduleSave();
   const remaining=Object.keys(round.participants||{}).length;
-  // A player-side reset/leave is local only. The physical host owns the round lifetime,
-  // so an empty participant list must never stop or abort an in-flight roulette.
-  scheduleSave();broadcast(m.id,{type:'participant_left',roundId:round.id,playerId:player.id,participantCount:remaining,round:publicRound(round,null)});
-  return reply(res,200,{ok:true,left:existed,roundId:round.id,phase:round.phase,participantCount:remaining});
+  if(canRemove)broadcast(m.id,{type:'participant_left',roundId:round.id,playerId:player.id,participantCount:remaining,round:publicRound(round,null)});
+  return reply(res,200,{ok:true,left:existed&&canRemove,retained:existed&&!canRemove,roundId:round.id,phase:round.phase,participantCount:remaining});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='ball'){
   const input=await bodyJson(req),round=m.round;
   if(player.id!==m.hostPlayerId)return reply(res,403,{ok:false,error:'physical_host_required',hostPlayerId:m.hostPlayerId||null});
   if(!round||round.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   if(round.phase!=='PLAYING')return reply(res,409,{ok:false,error:'round_not_playing',...snapshot(m,player.id)});
+  if(round.drawSource==='server-fallback')return reply(res,409,{ok:false,error:'server_fallback_active',...snapshot(m,player.id)});
+  if(now()<Number(round.drawStartsAt||0))return reply(res,409,{ok:false,error:'draw_not_started',drawStartsAt:round.drawStartsAt});
   const index=Number(input.ballIndex),number=Number(input.number);
   if(!Number.isInteger(index)||index<1||index>BALLS_PER_ROUND||!Number.isInteger(number)||number<1||number>25)return reply(res,400,{ok:false,error:'invalid_ball'});
   const existing=round.balls[index-1];
-  if(existing){
-   if(Number(existing.number)===number)return reply(res,200,{ok:true,idempotent:true,ball:existing,phase:round.phase});
-   return reply(res,409,{ok:false,error:'ball_conflict',ball:existing});
-  }
+  if(existing){if(Number(existing.number)===number)return reply(res,200,{ok:true,idempotent:true,ball:existing,phase:round.phase});return reply(res,409,{ok:false,error:'ball_conflict',ball:existing});}
   if(index!==round.balls.length+1)return reply(res,409,{ok:false,error:'ball_out_of_order',expected:round.balls.length+1});
   if(round.balls.some(ball=>Number(ball.number)===number))return reply(res,409,{ok:false,error:'duplicate_number',number});
-  const landedAt=now(),ball={index,number,eventId:safeText(input.eventId||round.id+':'+index,160),landedAt,reportedBy:player.id};
-  round.balls.push(ball);round.lastBallAt=landedAt;m.revision++;m.updatedAt=landedAt;
-  if(round.balls.length>=BALLS_PER_ROUND){round.phase='COMPLETE';round.completedAt=landedAt;}
-  scheduleSave();broadcast(m.id,{type:'ball_result',roundId:round.id,ball,phase:round.phase});
-  if(round.phase==='COMPLETE')broadcast(m.id,{type:'round_complete',round:publicRound(round,null)});
+  const ball=appendBall(m,round,number,player.id,safeText(input.eventId||round.id+':'+index,160));
   return reply(res,200,{ok:true,idempotent:false,ball,phase:round.phase});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='checkpoint'){
-  const input=await bodyJson(req),round=m.round;
-  if(!round||round.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
+  const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(!participant)return reply(res,404,{ok:false,error:'not_participating'});
   const ballIndex=Math.max(0,Math.min(round.balls.length,Number(input.ballIndex)||0));
   if(ballIndex>=Number(participant.checkpointBall||0)&&input.state){participant.checkpoint=input.state;participant.checkpointBall=ballIndex;participant.lastSeen=now();scheduleSave();}
   return reply(res,200,{ok:true,checkpointBall:participant.checkpointBall});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='settle'){
-  const input=await bodyJson(req),round=m.round;
-  if(!round||round.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
+  const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(!participant)return reply(res,404,{ok:false,error:'not_participating'});
   if(participant.settlement)return reply(res,200,{ok:true,idempotent:true,settlement:participant.settlement});
   const totalWin=Math.max(0,Math.floor(Number(input.totalWin)||0));
   const settlement={id:round.id+':'+player.id,roundId:round.id,playerId:player.id,totalWin,creditAfter:Number(input.creditAfter)||0,digest:safeText(input.digest,160),settledAt:now()};
   participant.settlement=settlement;round.settlementCount=(Number(round.settlementCount)||0)+1;scheduleSave();broadcast(m.id,{type:'player_settled',roundId:round.id,playerId:player.id,totalWin});
+  tickMachine(m);
   return reply(res,200,{ok:true,idempotent:false,settlement});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='next'){
-  if(m.round&&m.round.phase!=='COMPLETE')return reply(res,409,{ok:false,error:'round_not_complete'});
-  const next=createRound(m);return reply(res,201,{ok:true,round:publicRound(next,player.id),role:'player'});
+  return reply(res,409,{ok:false,error:'server_controls_rounds',...snapshot(m,player.id)});
  }
  return reply(res,404,{ok:false,error:'not_found'});
 }
@@ -314,11 +415,16 @@ wss.on('connection',(ws,{player,machineId})=>{
  const m=machine(machineId),map=socketMap(machineId);let set=map.get(player.id);if(!set){set=new Set();map.set(player.id,set);}set.add(ws);
  ws.isAlive=true;ws.missedPongs=0;
  ws.on('pong',()=>{ws.isAlive=true;ws.missedPongs=0;player.lastSeen=now();});
+ tickMachine(m);
  ws.send(JSON.stringify({...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'}));
  ws.on('message',raw=>{
   try{
    const msg=JSON.parse(String(raw));
    if(msg.type==='ping'){ws.send(JSON.stringify({type:'pong',serverTime:now()}));return;}
+   if(msg.type==='host_fallback_request'){
+    if(player.id===m.hostPlayerId&&m.round?.phase==='PLAYING'&&(!msg.roundId||msg.roundId===m.round.id))activateServerFallback(m,m.round,'host_requested');
+    return;
+   }
    if(msg.type==='visual_frame'){
     if(player.id!==m.hostPlayerId)return;
     const image=String(msg.image||''),roundId=safeText(msg.roundId,160);
@@ -331,9 +437,10 @@ wss.on('connection',(ws,{player,machineId})=>{
    }
   }catch{}
  });
- ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id)broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});});
+ ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id)broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});tickMachine(m);});
 });
 setInterval(()=>{
+ for(const m of Object.values(db.machines||{}))tickMachine(normalizeMachine(m,m.id));
  for(const ws of wss.clients){
   if(ws.isAlive===false){
    ws.missedPongs=(Number(ws.missedPongs)||0)+1;
