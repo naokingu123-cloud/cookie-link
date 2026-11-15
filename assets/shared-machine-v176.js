@@ -3,11 +3,13 @@
 if(window.__sweetsSharedMachineV176)return;
 window.__sweetsSharedMachineV176=true;
 
-const VERSION='v180';
+const VERSION='v181';
 const SESSION_KEY='sweets-shared-session-v176';
 const SERVER_KEY='sweets-shared-server-v176';
 const MACHINE_KEY='sweets-shared-machine-v176';
 const query=new URLSearchParams(location.search);
+const SERVER_HOST=query.get('serverHost')==='1';
+const ADMIN_TOKEN=query.get('adminToken')||'';
 const explicit=query.get('sharedServer')||query.get('server')||'';
 if(explicit)try{localStorage.setItem(SERVER_KEY,explicit);}catch{}
 const BASE=String(explicit||localStorage.getItem(SERVER_KEY)||location.origin).replace(/\/$/,'');
@@ -88,7 +90,7 @@ function serverRequired(message='サーバー抽選機に接続できません',
  layer.innerHTML='<div class="shared-v179-card"><h3>SERVER REQUIRED</h3><div data-server-message></div><div style="margin-top:8px">このクライアントではローカル抽選機を使用しません。サーバーの抽選結果を受信できるまでゲーム抽選は開始されません。</div><button type="button">再接続</button></div>';
  layer.querySelector('[data-server-message]').textContent=message;
  const button=layer.querySelector('button');
- button.onclick=async()=>{button.disabled=true;button.textContent='接続中…';try{const ok=await client.reconnect();if(ok){const run=layer.__retry;closeServerGate();if(typeof run==='function')run();}else{layer.querySelector('[data-server-message]').textContent='サーバー抽選機に接続できません';}}catch(error){layer.querySelector('[data-server-message]').textContent='再接続に失敗しました';console.warn('[SharedMachineV180] reconnect',error);}finally{if(serverGateLayer){button.disabled=false;button.textContent='再接続';}}};
+ button.onclick=async()=>{button.disabled=true;button.textContent='接続中…';try{const ok=await client.reconnect();if(ok){const run=layer.__retry;closeServerGate();if(typeof run==='function')run();}else{layer.querySelector('[data-server-message]').textContent='サーバー抽選機に接続できません';}}catch(error){layer.querySelector('[data-server-message]').textContent='再接続に失敗しました';console.warn('[SharedMachineV181] reconnect',error);}finally{if(serverGateLayer){button.disabled=false;button.textContent='再接続';}}};
  serverGateLayer=layer;document.body.append(layer);
 }
 
@@ -110,16 +112,19 @@ class Client{
    try{const profile=JSON.parse(localStorage.getItem('sweets-player-v1')||'null');profileName=String(profile?.name||'').trim();}catch{}
    if(saved.token)headers.Authorization=`Bearer ${saved.token}`;
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),1500);let response;
-   const displayName=profileName||saved.displayName||('PLAYER-'+String(saved.playerId||crypto.randomUUID?.()||Date.now()).replace(/[^a-zA-Z0-9]/g,'').slice(0,6));
+   const displayName=SERVER_HOST?'SERVER ROULETTE':(profileName||saved.displayName||('PLAYER-'+String(saved.playerId||crypto.randomUUID?.()||Date.now()).replace(/[^a-zA-Z0-9]/g,'').slice(0,6)));
    try{response=await fetch(BASE+'/api/session',{method:'POST',headers,body:JSON.stringify({playerId:saved.playerId||'',displayName}),cache:'no-store',signal:controller.signal});}finally{clearTimeout(timer);}
    if(!response.ok)throw Error('session');const session=await response.json();
    this.playerId=session.player.id;this.token=session.token;write(SESSION_KEY,{playerId:this.playerId,token:this.token,displayName:session.player.displayName});
-   this.online=true;this.connect();const state=await this.getState();this.accept(state);closeServerGate();return true;
-  }catch(error){this.online=false;this.role='offline';badge('SERVER REQUIRED','offline');console.warn('[SharedMachineV180] server required',error?.message||error);return false;}
+   this.online=true;
+   if(SERVER_HOST){const host=await this.registerHost();this.accept(host);}
+   this.connect();const state=await this.getState();this.accept(state);closeServerGate();return true;
+  }catch(error){this.online=false;this.role='offline';badge('SERVER REQUIRED','offline');console.warn('[SharedMachineV181] server required',error?.message||error);return false;}
  }
  async reconnect(){try{this.ws?.close();}catch{}this.ws=null;this.online=false;this.role='offline';this.ready=this.init();return this.ready;}
  api(path,options={}){return this.raw(path,{...options,auth:true});}
  getState(){return this.api(`/api/machines/${MACHINE}/state`);}
+ registerHost(){const suffix=ADMIN_TOKEN?'?adminToken='+encodeURIComponent(ADMIN_TOKEN):'';return this.api(`/api/admin/machines/${MACHINE}/host/register${suffix}`,{method:'POST',body:{},timeout:3000});}
  join(body){return this.api(`/api/machines/${MACHINE}/round/join`,{method:'POST',body,timeout:3000});}
  report(body){return this.api(`/api/machines/${MACHINE}/round/ball`,{method:'POST',body,timeout:2500});}
  save(body){return this.api(`/api/machines/${MACHINE}/round/checkpoint`,{method:'POST',body,timeout:4000});}
@@ -129,8 +134,10 @@ class Client{
  }
  accept(message){
   if(message.round)this.round=message.round;
-  this.role=this.online?'player':'offline';
-  badge(this.online?'共有抽選 ONLINE':'',this.online?'player':'offline');
+  if(!this.online)this.role='offline';
+  else if(message.type==='host_changed')this.role=message.hostPlayerId===this.playerId?'host':'player';
+  else this.role=message.role||(SERVER_HOST?'host':'player');
+  badge(this.online?(this.role==='host'?'SERVER ROULETTE HOST':'共有抽選 ONLINE'):'',this.online?this.role:'offline');
   for(const listener of this.listeners)try{listener(message);}catch(error){console.error(error);}
  }
  on(listener){this.listeners.add(listener);return()=>this.listeners.delete(listener);}
@@ -146,10 +153,10 @@ function queueBall(ball,catchup=false){
 async function drain(){
  if(!current||current.draining)return;current.draining=true;
  try{while(current&&!current.stopped){const item=current.queue.get(current.delivered+1);if(!item)break;current.queue.delete(item.index);current.callbacks.onNumber?.(item.number);current.delivered=item.index;status(`${item.index} / 8球　${item.number} HIT`,current.role==='host'?'共有抽選 HOST':'共有抽選');saveLater(item.index);if(item.catchup)await wait(100);}}
- catch(error){console.error('[SharedMachineV180] delivery',error);}finally{if(current)current.draining=false;}
+ catch(error){console.error('[SharedMachineV181] delivery',error);}finally{if(current)current.draining=false;}
 }
 function saveLater(ballIndex){
- if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV180] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
+ if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV181] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
 }
 async function startShared(callbacks,nativeReset){
  const ready=await client.ready;
@@ -164,12 +171,12 @@ async function startShared(callbacks,nativeReset){
   const balls=[...(round.balls||[])].sort((x,y)=>x.index-y.index);for(const ball of balls)if(ball.index>current.delivered)queueBall(ball,true);
   status('サーバー抽選結果を待機','共有抽選 SERVER');
   saveLater(current.delivered);
- }catch(error){console.warn('[SharedMachineV180] shared join failed; server result required',error?.message||error);current=null;app.__sharedRound=null;serverRequired('サーバー抽選機とのラウンド同期に失敗しました',()=>startShared(callbacks,nativeReset));}
+ }catch(error){console.warn('[SharedMachineV181] shared join failed; server result required',error?.message||error);current=null;app.__sharedRound=null;serverRequired('サーバー抽選機とのラウンド同期に失敗しました',()=>startShared(callbacks,nativeReset));}
 }
 function serverSettlement(){return current?.participant?.settlement||client.round?.participant?.settlement||null;}
 function settle(a){
  if(!current||current.settleSent||!client.online)return;current.settleSent=true;const creditAfter=(Number(a.credit)||0)+(Number(a.totalWin)||0);
- client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV180] settle',error?.message||error);});
+ client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV181] settle',error?.message||error);});
 }
 function recovery(round){
  if(recoveryOpen||!round?.participant||typeof app==='undefined'||app.phase!=='ready')return;const p=round.participant;
@@ -180,7 +187,78 @@ function recovery(round){
 function install(){
  if(typeof Arcade!=='function'||typeof app==='undefined'||!app||typeof rouletteDrawSource==='undefined'){setTimeout(install,60);return;}
  const proto=Arcade.prototype;if(proto.__sharedMachineV176)return;Object.defineProperty(proto,'__sharedMachineV176',{value:true});
- const nativeReset=rouletteDrawSource.reset.bind(rouletteDrawSource),nativeBegin=proto.beginPayout,nativeAdvance=proto.advancePayout,nativePrepare=proto.prepare;
+ const nativeStart=rouletteDrawSource.start.bind(rouletteDrawSource),nativeReset=rouletteDrawSource.reset.bind(rouletteDrawSource);
+ const nativeBegin=proto.beginPayout,nativeAdvance=proto.advancePayout,nativePrepare=proto.prepare;
+
+ if(SERVER_HOST){
+  let hostRoundId=null,hostIndex=0,hostRunning=false,reportChain=Promise.resolve(),hostRetryTimer=0;
+  function hostPresentation(){
+   try{manualNumbers=false;app.paused=false;if(Array.isArray(app.bets))app.bets=app.bets.map(()=>0);stopAutoRound();}catch{}
+   if(document.getElementById('server-roulette-host-css'))return;
+   document.documentElement.classList.add('server-roulette-host');
+   const style=document.createElement('style');style.id='server-roulette-host-css';style.textContent=`
+    html.server-roulette-host,html.server-roulette-host body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#02070b!important}
+    html.server-roulette-host body>*:not(#cookie-roulette):not(.shared-v179-badge):not(.server-host-banner):not(script){display:none!important}
+    html.server-roulette-host #cookie-roulette{display:block!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:10000!important;background:#02070b!important}
+    html.server-roulette-host #manual-number-toggle,html.server-roulette-host #manual-number-panel{display:none!important}
+    .server-host-banner{position:fixed;left:10px;top:10px;z-index:11000;padding:7px 11px;border:1px solid #ffe27aaa;border-radius:10px;background:#071725df;color:#fff0a2;font:900 12px/1.2 system-ui;pointer-events:none}
+   `;document.head.append(style);
+   const root=document.getElementById('cookie-roulette');if(root&&root.parentElement!==document.body)document.body.append(root);
+   const banner=document.createElement('div');banner.className='server-host-banner';banner.textContent='SERVER PHYSICAL ROULETTE · waiting';document.body.append(banner);
+  }
+  function hostBanner(text){const b=document.querySelector('.server-host-banner');if(b)b.textContent='SERVER PHYSICAL ROULETTE · '+text;}
+  function stopHost(message){
+   hostRunning=false;clearTimeout(hostRetryTimer);hostRetryTimer=0;
+   try{rouletteDriver?.setPaused(true);}catch{}
+   status(message,'SERVER ROULETTE');hostBanner(message);
+  }
+  function reportPhysical(number){
+   const roundId=hostRoundId;
+   reportChain=reportChain.then(async()=>{
+    if(!hostRunning||roundId!==hostRoundId)return;
+    const index=hostIndex+1;
+    const data=await client.report({roundId,ballIndex:index,number:Number(number),eventId:roundId+':'+index});
+    hostIndex=Number(data.ball?.index)||index;
+    hostBanner(hostIndex+' / 8球 · '+number+' HIT');
+    if(hostIndex>=8){hostRunning=false;status('8球の実抽選が終了しました','SERVER ROULETTE');hostBanner('8 / 8 COMPLETE');}
+   }).catch(error=>{
+    console.error('[SharedMachineV181] physical host report',error);
+    stopHost('送信エラー · 抽選停止');
+   });
+  }
+  function syncHost(round=client.round){
+   if(client.role!=='host'||!client.online)return;
+   if(!round||round.phase!=='PLAYING'||Number(round.participantCount||0)<1){
+    if(round?.phase==='COMPLETE'){hostRunning=false;hostBanner('ROUND COMPLETE');}
+    else hostBanner('player wait');
+    return;
+   }
+   if(hostRoundId===round.id&&hostRunning)return;
+   const existing=[...(round.balls||[])];
+   if(existing.length){
+    hostRoundId=round.id;hostIndex=existing.length;stopHost('途中ラウンド '+hostIndex+' / 8 · ホスト再起動が必要');
+    return;
+   }
+   if(!rouletteDrawSource.ready||!rouletteDriver){
+    clearTimeout(hostRetryTimer);hostRetryTimer=setTimeout(()=>syncHost(round),250);hostBanner('roulette loading');return;
+   }
+   hostRoundId=round.id;hostIndex=0;hostRunning=true;reportChain=Promise.resolve();
+   try{nativeReset();nativeStart({onNumber:reportPhysical,onError:message=>stopHost(message||'抽選機エラー')});rouletteDriver?.setPaused(false);status('現行3D抽選機で8球を実抽選中','SERVER ROULETTE');hostBanner('0 / 8 · DRAWING');}
+   catch(error){console.error('[SharedMachineV181] physical host start',error);hostRunning=false;hostRetryTimer=setTimeout(()=>syncHost(round),500);}
+  }
+  rouletteDrawSource.start=function(){console.info('[SharedMachineV181] local game draw ignored on server host');};
+  rouletteDrawSource.reset=function(){};
+  hostPresentation();
+  client.on(message=>{
+   if(message.type==='round_started'||message.type==='participant_joined'||message.type==='snapshot'||message.type==='host_changed')syncHost(message.round||client.round);
+   if(message.type==='round_complete'&&message.round?.id===hostRoundId){hostRunning=false;hostBanner('8 / 8 COMPLETE');}
+  });
+  client.ready.then(ok=>{if(ok){hostPresentation();syncHost(client.round);}else serverRequired('サーバー本体へ接続できません');});
+  window.SweetsSharedMachine={version:VERSION,serverHost:true,client,get online(){return client.online;},get role(){return client.role;},state:()=>client.getState()};
+  console.info('[SharedMachineV181] physical server roulette host enabled');
+  return;
+ }
+
  rouletteDrawSource.start=function(callbacks){startShared(callbacks,nativeReset);};
  rouletteDrawSource.reset=function(...args){if(current){current.stopped=true;clearTimeout(current.saveTimer);current=null;app.__sharedRound=null;}return nativeReset(...args);};
  proto.beginPayout=function(...args){const saved=serverSettlement();if(current&&saved){this.credit=Number(saved.creditAfter)||this.credit;this.displayCredit=this.credit;this.payout=null;this.phase='complete';repaint(this);return true;}if(current)settle(this);return nativeBegin.apply(this,args);};
@@ -193,8 +271,8 @@ function install(){
   if(message.type==='round_complete'&&message.round?.id===current.roundId)saveLater(8);
  });
  client.ready.then(ok=>{if(ok&&client.round)recovery(client.round);});
- window.SweetsSharedMachine={version:VERSION,client,get online(){return client.online;},get role(){return client.role;},get active(){return current;},state:()=>client.getState()};
- console.info('[SharedMachineV180] server-only roulette enabled; local fallback disabled');
+ window.SweetsSharedMachine={version:VERSION,serverHost:false,client,get online(){return client.online;},get role(){return client.role;},get active(){return current;},state:()=>client.getState()};
+ console.info('[SharedMachineV181] server physical roulette results only; client local draw disabled');
 }
 install();
 })();
