@@ -1,6 +1,15 @@
 /* BET-close round plan, deterministic playback and interruption settlement. */
 (()=>{
 'use strict';
+if(window.__sweetsDisableLegacyRoundRecovery===true){
+ try{
+  localStorage.removeItem('sweets-link-pending-round-v1');
+  localStorage.removeItem('sweets-link-round-ledger-v1');
+  localStorage.removeItem('sweets-link-credit-v1');
+ }catch{}
+ console.info('[round-plan] disabled by shared physical roulette v201');
+ return;
+}
 if(typeof app==='undefined'||typeof Arcade==='undefined'||!app||!Array.isArray(app.engines))return;
 const ROUND_KEY='sweets-link-pending-round-v1';
 const CREDIT_KEY='sweets-link-credit-v1';
