@@ -7,7 +7,6 @@ param(
   [string]$Machine = 'public-01',
 
   [string]$PublicHost = '',
-  [string]$TunnelToken = '',
   [switch]$QuickTunnel,
   [switch]$NoBrowser,
   [switch]$NoDownload,
@@ -28,7 +27,6 @@ $TunnelErr = Join-Path $Runtime 'cloudflared.err.log'
 $PublicUrlFile = Join-Path $Runtime 'shared-url.txt'
 $DataFile = Join-Path $Runtime 'shared-machine.json'
 $NamedHostFile = Join-Path $Runtime 'named-tunnel-host.txt'
-$NamedTokenFile = Join-Path $Runtime 'named-tunnel-token.txt'
 $AdminToken = [guid]::NewGuid().ToString('N')
 
 New-Item -ItemType Directory -Force -Path $Runtime,$Tools | Out-Null
@@ -119,21 +117,12 @@ try {
       $PublicHost = (Get-Content -Raw -LiteralPath $NamedHostFile).Trim().ToLowerInvariant()
     }
 
-    if (-not [string]::IsNullOrWhiteSpace($TunnelToken)) {
-      $TunnelToken = $TunnelToken.Trim()
-      Save-Utf8NoBom $NamedTokenFile $TunnelToken
-    } elseif (Test-Path $NamedTokenFile) {
-      $TunnelToken = (Get-Content -Raw -LiteralPath $NamedTokenFile).Trim()
-    }
 
-    if ([string]::IsNullOrWhiteSpace($PublicHost) -or [string]::IsNullOrWhiteSpace($TunnelToken)) {
-      throw 'Named Tunnel is not configured. Run setup-named-tunnel.cmd once, then run this launcher again.'
+    if ([string]::IsNullOrWhiteSpace($PublicHost)) {
+      throw 'Named Tunnel hostname is not configured. Run setup-named-tunnel.cmd once, then run this launcher again.'
     }
     if ($PublicHost -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$' -or $PublicHost -notmatch '\.') {
       throw "Invalid PublicHost: $PublicHost"
-    }
-    if ($TunnelToken.Length -lt 20) {
-      throw 'Tunnel token looks too short. Run setup-named-tunnel.cmd again.'
     }
   }
 
@@ -198,9 +187,16 @@ try {
       throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
     }
   } else {
-    Write-Step "Starting Cloudflare Named Tunnel ($PublicHost)"
-    $TunnelArguments = @('tunnel','run','--token-file',$NamedTokenFile)
-    $TunnelProcess = Start-Process -FilePath $Cloudflared -ArgumentList $TunnelArguments -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $TunnelOut -RedirectStandardError $TunnelErr
+    Write-Step "Using installed Cloudflare Named Tunnel service ($PublicHost)"
+    $Service = Get-Service -Name 'cloudflared' -ErrorAction SilentlyContinue
+    if ($null -eq $Service) {
+      throw 'Cloudflare Named Tunnel service is not installed. In the Cloudflare tunnel setup page, run the displayed cloudflared.exe service install <TOKEN> command as Administrator.'
+    }
+    if ($Service.Status -ne 'Running') {
+      try { Start-Service -Name 'cloudflared' -ErrorAction Stop } catch {
+        throw 'The cloudflared Windows service exists but could not be started. Start it as Administrator or reinstall it from the Cloudflare tunnel setup page.'
+      }
+    }
     $TunnelBase = "https://$PublicHost"
   }
 
@@ -208,7 +204,7 @@ try {
   $PublicHealth = "$TunnelBase/api/health"
   $PublicReady = $false
   for ($i=0; $i -lt 120; $i++) {
-    if ($TunnelProcess.HasExited) {
+    if ($QuickTunnel -and $TunnelProcess.HasExited) {
       throw "Cloudflare Tunnel exited before public health check completed.`n$(Read-Log $TunnelErr)"
     }
     try {
@@ -273,14 +269,20 @@ try {
     }
   }
 
-  while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
-    Start-Sleep -Seconds 1
+  if ($QuickTunnel) {
+    while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
+      Start-Sleep -Seconds 1
+    }
+  } else {
+    while (-not $ServerProcess.HasExited) {
+      Start-Sleep -Seconds 1
+    }
   }
 
   if ($ServerProcess.HasExited) {
     throw "Shared server stopped.`n$(Read-Log $ServerErr)"
   }
-  if ($TunnelProcess.HasExited) {
+  if ($QuickTunnel -and $TunnelProcess.HasExited) {
     throw "Cloudflare Tunnel stopped.`n$(Read-Log $TunnelErr)"
   }
 }
