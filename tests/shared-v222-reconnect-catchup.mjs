@@ -38,19 +38,15 @@ const context={window:null,globalThis:null,location:{search:''},URLSearchParams,
  rouletteDrawSource:{reset(){activeRound=null;}},stopAutoRound(){},stopResultAuto(){},autoRoundStamp:null,resultAutoToken:0,roundStarting:false,countdownText(){},slots:[],
  document:{body:{classList:{add(){},remove(){}}},head:{append(){}},getElementById(id){return id==='round-result-layer'?resultLayer:null;},querySelectorAll(){return[];}},
  getComputedStyle(node){return {display:node.hidden?'none':'block',visibility:node.hidden?'hidden':'visible'};},scheduleUI(){},renderRoundResult(){},requestAnimationFrame(fn){fn();return 1;},
- setTimeout(){return 1;},clearTimeout(){},addEventListener(){},
+ setTimeout(fn,delay){if(['poll','monitor','boot'].includes(fn?.name)||delay===0)return 1;queueMicrotask(fn);return 1;},clearTimeout(){},addEventListener(){},
 };context.window=context;context.globalThis=context;
 vm.runInNewContext(controller,context,{filename:'shared-client-controller-v222.js'});
 await new Promise(resolve=>setImmediate(resolve));
 const control=context.SweetsSharedControllerV222;assert.ok(control);
 await control.refreshNow();assert.equal(startCount,1,'authoritative participant must start exactly once');assert.equal(app.phase,'playing');assert.equal(activeRound.roundId,'round-reconnect');
-
-// A transport replacement must keep the active game alive. On reconnect the
-// authoritative snapshot contains all missed balls and is handed to syncRound.
 client.online=false;client.ws={readyState:3};await control.refreshNow();assert.equal(app.phase,'playing');assert.equal(prepareCount,0);
 client.online=true;client.ws={readyState:1};serverRound={...serverRound,balls:[{index:1,number:4},{index:2,number:9},{index:3,number:15}]};client.round=serverRound;
 await control.refreshNow();assert.equal(app.phase,'playing');assert.equal(prepareCount,0);assert.ok(synced.some(item=>item.id==='round-reconnect'&&item.count===3),'missed balls must be reconciled after reconnect');
-
 serverRound={...serverRound,phase:'COMPLETE',balls:[1,2,3,4,5,6,7,8].map((number,index)=>({index:index+1,number}))};client.round=serverRound;
 await control.refreshNow();assert.ok(synced.some(item=>item.phase==='COMPLETE'&&item.count===8));
 app.phase='complete';app.draws=[1,2,3,4,5,6,7,8];app.totalWin=50;app.payout={};app.result={};resultLayer.hidden=false;
