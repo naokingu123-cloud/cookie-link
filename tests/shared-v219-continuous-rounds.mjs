@@ -7,11 +7,12 @@ const loader=await readFile(new URL('../assets/shared-machine-v176.js',import.me
 const speed=await readFile(new URL('../assets/shared-host-speed-v219.js',import.meta.url),'utf8');
 const video=await readFile(new URL('../assets/shared-roulette-client-v219.js',import.meta.url),'utf8');
 const hold=await readFile(new URL('../assets/shared-roulette-client-hold-v222.js',import.meta.url),'utf8');
-assert.ok(loader.includes('shared-client-controller-v222.js?v=222'));
-assert.ok(loader.includes('shared-core-patch-v222.js?v=222'));
-assert.ok(!loader.includes('shared-client-controller-v219.js?v=222'));
+assert.ok(loader.includes('shared-client-controller-v222.js?v=223'));
+assert.ok(loader.includes('shared-core-patch-v222.js?v=223'));
+assert.ok(!loader.includes('shared-client-controller-v219.js?v=223'));
 assert.ok(source.includes('target.prepare?.()'));
 assert.ok(source.includes('SERVER再接続中・現在ゲームを保持'));
+assert.ok(source.includes('creditOverride!==null&&creditOverride!==undefined'));
 assert.ok(speed.includes('rouletteTimeScale=2'));
 assert.ok(!speed.includes('performance.now=')&&!speed.includes('Date.now='));
 assert.ok(video.includes('boundaries must not blank'));
@@ -34,4 +35,4 @@ for(let roundIndex=1;roundIndex<=3;roundIndex++){
  for(let i=0;i<app.engines.length;i++){assert.ok(app.engines[i].boardVersion>before[i]);assert.ok(app.engines[i].mainPayout>=1001);assert.equal(slots[i].displayedPayout,app.engines[i].mainPayout);assert.equal(slots[i].dirtyMain,true);assert.equal(slots[i].lastState,null);}
 }
 assert.equal(drawResetCount,3);assert.ok(prepareCount>=3);
-console.log('v222 three-round fresh-board reset, reconnect preservation, isolated 2x and continuous video guards passed');
+console.log('v223 three-round fresh-board reset, reconnect preservation, settlement and continuous video guards passed');
