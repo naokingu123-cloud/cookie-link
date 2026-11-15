@@ -3,7 +3,7 @@
 if(window.__sweetsSharedMachineV176)return;
 window.__sweetsSharedMachineV176=true;
 
-const VERSION='v176';
+const VERSION='v179';
 const SESSION_KEY='sweets-shared-session-v176';
 const SERVER_KEY='sweets-shared-server-v176';
 const MACHINE_KEY='sweets-shared-machine-v176';
@@ -75,10 +75,10 @@ function totalBet(a){return (a.locked||a.bets||[]).reduce((sum,value,index)=>sum
 function digest(a,id){const text=`${id}|${(a.draws||[]).join(',')}|${(a.roundWins||[]).join(',')}|${Number(a.totalWin)||0}`;let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(16);}
 function status(text,label='共有抽選'){try{typeof countdownText==='function'&&countdownText(text,label);}catch{}}
 function styles(){
- if(document.getElementById('shared-machine-v176-css'))return;
- const style=document.createElement('style');style.id='shared-machine-v176-css';style.textContent=`.shared-v176-badge{position:fixed;right:8px;bottom:8px;z-index:10020;padding:5px 8px;border:1px solid #ffffff88;border-radius:10px;background:#071725de;color:#d9f5ff;font:700 10px/1.2 system-ui;box-shadow:0 2px 9px #0008;pointer-events:none}.shared-v176-badge[data-role=host]{color:#fff1a0;border-color:#ffd75eaa}.shared-v176-badge[data-role=offline]{display:none}.shared-v176-recovery{position:fixed;inset:0;z-index:10030;display:grid;place-items:center;background:#06121d99;padding:18px}.shared-v176-card{width:min(360px,92vw);padding:18px;border:3px solid #e4bc5c;border-radius:18px;background:linear-gradient(#eafaff,#bdeaff);box-shadow:0 12px 40px #0009;text-align:center;color:#174e6c;font:800 14px/1.5 system-ui}.shared-v176-card h3{margin:0 0 7px;color:#fff;-webkit-text-stroke:1px #367fa5;font:1000 24px/1.2 system-ui}.shared-v176-card button{margin-top:12px;padding:9px 22px;border:2px solid #fff1a9;border-radius:12px;background:linear-gradient(#ffdb65,#ef9e25);color:#fff;text-shadow:0 1px #9a5414;font:1000 16px/1 system-ui;box-shadow:0 3px 0 #9d621e}`;document.head.append(style);
+ if(document.getElementById('shared-machine-v179-css'))return;
+ const style=document.createElement('style');style.id='shared-machine-v179-css';style.textContent=`.shared-v179-badge{position:fixed;right:8px;bottom:8px;z-index:10020;padding:5px 8px;border:1px solid #ffffff88;border-radius:10px;background:#071725de;color:#d9f5ff;font:700 10px/1.2 system-ui;box-shadow:0 2px 9px #0008;pointer-events:none}.shared-v179-badge[data-role=host]{color:#fff1a0;border-color:#ffd75eaa}.shared-v179-badge[data-role=offline]{display:none}.shared-v179-recovery{position:fixed;inset:0;z-index:10030;display:grid;place-items:center;background:#06121d99;padding:18px}.shared-v179-card{width:min(360px,92vw);padding:18px;border:3px solid #e4bc5c;border-radius:18px;background:linear-gradient(#eafaff,#bdeaff);box-shadow:0 12px 40px #0009;text-align:center;color:#174e6c;font:800 14px/1.5 system-ui}.shared-v179-card h3{margin:0 0 7px;color:#fff;-webkit-text-stroke:1px #367fa5;font:1000 24px/1.2 system-ui}.shared-v179-card button{margin-top:12px;padding:9px 22px;border:2px solid #fff1a9;border-radius:12px;background:linear-gradient(#ffdb65,#ef9e25);color:#fff;text-shadow:0 1px #9a5414;font:1000 16px/1 system-ui;box-shadow:0 3px 0 #9d621e}`;document.head.append(style);
 }
-function badge(text='',role='offline'){styles();let node=document.querySelector('.shared-v176-badge');if(!node){node=document.createElement('div');node.className='shared-v176-badge';document.body.append(node);}node.textContent=text;node.dataset.role=role;}
+function badge(text='',role='offline'){styles();let node=document.querySelector('.shared-v179-badge');if(!node){node=document.createElement('div');node.className='shared-v179-badge';document.body.append(node);}node.textContent=text;node.dataset.role=role;}
 
 class Client{
  constructor(){this.online=false;this.playerId='';this.token='';this.role='offline';this.round=null;this.ws=null;this.listeners=new Set();this.ready=this.init();}
@@ -102,7 +102,7 @@ class Client{
    if(!response.ok)throw Error('session');const session=await response.json();
    this.playerId=session.player.id;this.token=session.token;write(SESSION_KEY,{playerId:this.playerId,token:this.token,displayName:session.player.displayName});
    this.online=true;this.connect();const state=await this.getState();this.accept(state);return true;
-  }catch(error){this.online=false;this.role='offline';badge('', 'offline');console.info('[SharedMachineV176] local mode',error?.message||error);return false;}
+  }catch(error){this.online=false;this.role='offline';badge('', 'offline');console.info('[SharedMachineV179] local mode',error?.message||error);return false;}
  }
  api(path,options={}){return this.raw(path,{...options,auth:true});}
  getState(){return this.api(`/api/machines/${MACHINE}/state`);}
@@ -115,9 +115,8 @@ class Client{
  }
  accept(message){
   if(message.round)this.round=message.round;
-  if(message.role)this.role=message.role;
-  if(message.type==='host_changed')this.role=message.hostPlayerId===this.playerId?'host':'follower';
-  badge(this.role==='host'?'共有抽選 HOST':'共有抽選 FOLLOW',this.role);
+  this.role=this.online?'player':'offline';
+  badge(this.online?'共有抽選 ONLINE':'',this.online?'player':'offline');
   for(const listener of this.listeners)try{listener(message);}catch(error){console.error(error);}
  }
  on(listener){this.listeners.add(listener);return()=>this.listeners.delete(listener);}
@@ -133,45 +132,33 @@ function queueBall(ball,catchup=false){
 async function drain(){
  if(!current||current.draining)return;current.draining=true;
  try{while(current&&!current.stopped){const item=current.queue.get(current.delivered+1);if(!item)break;current.queue.delete(item.index);current.callbacks.onNumber?.(item.number);current.delivered=item.index;status(`${item.index} / 8球　${item.number} HIT`,current.role==='host'?'共有抽選 HOST':'共有抽選');saveLater(item.index);if(item.catchup)await wait(100);}}
- catch(error){console.error('[SharedMachineV176] delivery',error);}finally{if(current)current.draining=false;}
+ catch(error){console.error('[SharedMachineV179] delivery',error);}finally{if(current)current.draining=false;}
 }
 function saveLater(ballIndex){
- if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV176] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
-}
-function stopNative(){if(!current?.nativeRunning)return;try{current.nativeReset();}catch{}current.nativeRunning=false;}
-function startNative(){
- if(!current||current.stopped||current.role!=='host'||current.nativeRunning||current.delivered>=8)return;
- current.nativeRunning=true;status('実際の入賞番号を全員へ配信','共有抽選 HOST');
- current.nativeStart({...current.callbacks,onNumber:number=>{
-  if(!current||current.stopped||current.role!=='host'||current.delivered>=8)return;
-  const index=current.delivered+1,actual=Number(number);queueBall({index,number:actual});
-  client.report({roundId:current.roundId,ballIndex:index,number:actual,eventId:`${current.roundId}:${index}`}).then(data=>{if(Number(data.ball?.number)!==actual){status('番号同期エラー：抽選停止','共有抽選');stopNative();}}).catch(error=>{console.warn('[SharedMachineV176] report',error?.message||error);setTimeout(()=>current&&client.report({roundId:current.roundId,ballIndex:index,number:actual,eventId:`${current.roundId}:${index}`}).catch(()=>{}),700);});
-  if(index>=8)setTimeout(stopNative,100);
- }});
- try{rouletteDriver?.setPaused(app.paused);}catch{}
+ if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV179] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
 }
 async function startShared(callbacks,nativeStart,nativeReset){
  const ready=await Promise.race([client.ready,wait(350).then(()=>false)]);if(!ready||!client.online){nativeStart(callbacks);return;}
  try{
   const data=await client.join({clientRoundToken:String(callbacks.token||app.token||''),resumeRoundId:resumeId,bets:[...(app.bets||[])],locked:[...(app.locked||app.bets||[])],enabled:[...(app.enabled||[])],totalBet:totalBet(app),creditAfterBet:Number(app.credit)||0,initialState:null,appVersion:VERSION});
   client.accept(data);const round=data.round;if(!round)throw Error('round unavailable');const participant=round.participant||{};
-  current={roundId:round.id,callbacks,nativeStart,nativeReset,role:data.role||client.role,delivered:0,queue:new Map(),draining:false,nativeRunning:false,stopped:false,saveTimer:0,settleSent:false,participant};app.__sharedRound=current;resumeId=null;
+  current={roundId:round.id,callbacks,nativeStart,nativeReset,role:'player',delivered:0,queue:new Map(),draining:false,stopped:false,saveTimer:0,settleSent:false,participant};app.__sharedRound=current;resumeId=null;
   if(participant.settlement){app.credit=Number(participant.settlement.creditAfter)||app.credit;app.displayCredit=app.credit;app.phase='complete';app.dealing=false;repaint(app);return;}
   const savedBall=Math.max(0,Math.min(8,Number(participant.checkpointBall)||0));if(participant.checkpoint&&savedBall){restore(app,participant.checkpoint);current.delivered=savedBall;}
   const balls=[...(round.balls||[])].sort((a,b)=>a.index-b.index);for(const ball of balls)if(ball.index>current.delivered)queueBall(ball,true);
-  if(current.role==='host')setTimeout(startNative,120);else status('ホストの実抽選を待機','共有抽選');
+  status('サーバー抽選結果を待機','共有抽選 SERVER');
   saveLater(current.delivered);
- }catch(error){console.warn('[SharedMachineV176] shared join failed; local draw',error?.message||error);current=null;app.__sharedRound=null;nativeStart(callbacks);}
+ }catch(error){console.warn('[SharedMachineV179] shared join failed; local draw',error?.message||error);current=null;app.__sharedRound=null;nativeStart(callbacks);}
 }
 function serverSettlement(){return current?.participant?.settlement||client.round?.participant?.settlement||null;}
 function settle(a){
  if(!current||current.settleSent||!client.online)return;current.settleSent=true;const creditAfter=(Number(a.credit)||0)+(Number(a.totalWin)||0);
- client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV176] settle',error?.message||error);});
+ client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV179] settle',error?.message||error);});
 }
 function recovery(round){
  if(recoveryOpen||!round?.participant||typeof app==='undefined'||app.phase!=='ready')return;const p=round.participant;
  if(p.settlement){app.credit=Number(p.settlement.creditAfter)||app.credit;app.displayCredit=app.credit;repaint(app);return;}
- recoveryOpen=true;styles();const layer=document.createElement('div');layer.className='shared-v176-recovery';const values=(round.balls||[]).map(ball=>ball.number).join('　')||'まだ入賞なし';layer.innerHTML=`<div class="shared-v176-card"><h3>共有ラウンド復元</h3><div>${round.balls?.length||0} / 8球までサーバー保存済み</div><div style="margin-top:7px;font-size:18px">${values}</div><button type="button">同じ結果から再開</button></div>`;layer.querySelector('button').onclick=()=>{layer.remove();resumeId=round.id;app.bets=[...(p.bets||app.bets||[])];app.locked=[...(p.locked||p.bets||app.bets||[])];app.enabled=[...(p.enabled||app.enabled||[])];app.credit=(Number(p.creditAfterBet)||0)+(Number(p.totalBet)||0);app.displayCredit=app.credit;repaint(app);try{app.start();}catch(error){console.error(error);recoveryOpen=false;}};document.body.append(layer);
+ recoveryOpen=true;styles();const layer=document.createElement('div');layer.className='shared-v179-recovery';const values=(round.balls||[]).map(ball=>ball.number).join('　')||'まだ入賞なし';layer.innerHTML=`<div class="shared-v179-card"><h3>共有ラウンド復元</h3><div>${round.balls?.length||0} / 8球までサーバー保存済み</div><div style="margin-top:7px;font-size:18px">${values}</div><button type="button">同じ結果から再開</button></div>`;layer.querySelector('button').onclick=()=>{layer.remove();resumeId=round.id;app.bets=[...(p.bets||app.bets||[])];app.locked=[...(p.locked||p.bets||app.bets||[])];app.enabled=[...(p.enabled||app.enabled||[])];app.credit=(Number(p.creditAfterBet)||0)+(Number(p.totalBet)||0);app.displayCredit=app.credit;repaint(app);try{app.start();}catch(error){console.error(error);recoveryOpen=false;}};document.body.append(layer);
 }
 
 function install(){
@@ -183,10 +170,15 @@ function install(){
  proto.beginPayout=function(...args){const saved=serverSettlement();if(current&&saved){this.credit=Number(saved.creditAfter)||this.credit;this.displayCredit=this.credit;this.payout=null;this.phase='complete';repaint(this);return true;}if(current)settle(this);return nativeBegin.apply(this,args);};
  proto.advancePayout=function(...args){const result=nativeAdvance.apply(this,args);if(current&&this.phase==='complete')settle(this);return result;};
  proto.prepare=function(...args){const previous=this.phase,result=nativePrepare.apply(this,args);if(current&&['complete','ready'].includes(previous)){current.stopped=true;clearTimeout(current.saveTimer);current=null;this.__sharedRound=null;}return result;};
- client.on(message=>{if(message.type==='snapshot'&&message.round)recovery(message.round);if(!current)return;if(message.type==='host_changed'&&(!message.roundId||message.roundId===current.roundId)){current.role=message.hostPlayerId===client.playerId?'host':'follower';if(current.role==='host')startNative();else stopNative();}if(message.type==='ball_result'&&message.roundId===current.roundId)queueBall(message.ball);if(message.type==='round_complete'&&message.round?.id===current.roundId)saveLater(8);});
+ client.on(message=>{
+  if(message.type==='snapshot'&&message.round)recovery(message.round);
+  if(!current)return;
+  if(message.type==='ball_result'&&message.roundId===current.roundId)queueBall(message.ball);
+  if(message.type==='round_complete'&&message.round?.id===current.roundId)saveLater(8);
+ });
  client.ready.then(ok=>{if(ok&&client.round)recovery(client.round);});
  window.SweetsSharedMachine={version:VERSION,client,get online(){return client.online;},get role(){return client.role;},get active(){return current;},state:()=>client.getState()};
- console.info('[SharedMachineV176] native host draw, shared numbers, checkpoints and idempotent settlement enabled');
+ console.info('[SharedMachineV179] server-authoritative roulette, checkpoints and idempotent settlement enabled');
 }
 install();
 })();
