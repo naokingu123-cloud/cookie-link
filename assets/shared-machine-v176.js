@@ -20,7 +20,7 @@ try{
   }else{
    eval(load('assets/shared-connection-gate-v218.js?v=218')+'\n//# sourceURL=shared-connection-gate-v218.js');
    eval(load('assets/server-payout-control-v3.js?v=218')+'\n//# sourceURL=server-payout-control-v3.js');
-   eval(load('assets/shared-client-lifecycle-v218.js?v=218')+'\n//# sourceURL=shared-client-lifecycle-v218.js');
+   eval(load('assets/shared-client-lifecycle-v218-final.js?v=218')+'\n//# sourceURL=shared-client-lifecycle-v218-final.js');
    eval(load('assets/shared-next-bet-join-v218.js?v=218')+'\n//# sourceURL=shared-next-bet-join-v218.js');
    eval(load('assets/shared-roulette-client-v218.js?v=218')+'\n//# sourceURL=shared-roulette-client-v218.js');
   }
