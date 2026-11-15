@@ -1,0 +1,6 @@
+node_modules/
+.tools/
+.runtime/
+data/shared-machine.json
+data/shared-machine.json.tmp
+*.log
