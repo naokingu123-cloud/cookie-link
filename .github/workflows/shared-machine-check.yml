@@ -14,6 +14,7 @@ on:
       - 'assets/server-monitor-payout-v1.css'
       - 'assets/server-monitor-payout-v3.js'
       - 'assets/server-payout-control-v3.js'
+      - 'assets/shared-client-flow-v211.js'
       - 'assets/server-offline-settlement-worker-v3.js'
       - 'assets/shared-machine-v176.js'
       - 'assets/shared-machine-core-v196.js'
