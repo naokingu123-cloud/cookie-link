@@ -55,7 +55,7 @@ state={serverTime:12000,round:{...state.round,phase:'PLAYING',canBet:false,drawS
 await context.SweetsNextBetJoinV215.syncNow();
 assert.equal(startCalls,1,'participating PLAYING round must start the game directly');
 assert.equal(app.phase,'playing');
-assert.deepEqual(app.locked,[100]);
+assert.deepEqual(Array.from(app.locked),[100]);
 
 state={serverTime:20000,round:{id:'round-3',phase:'BETTING',canBet:true,participant:null,betClosesAt:30000}};client.round=state.round;
 app.phase='complete';app.prepare=function(){prepareCalls++;this.phase='ready';};
