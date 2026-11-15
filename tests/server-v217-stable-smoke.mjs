@@ -12,7 +12,7 @@ const port=37000+Math.floor(Math.random()*1000),base='http://127.0.0.1:'+port,ad
 const child=spawn(process.execPath,['server.mjs'],{
  cwd:root,
  env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:adminToken,
-  SWEETS_PLAYER_STABLE_MS:'500',SWEETS_BET_DURATION_MS:'900',SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_RESULT_GRACE_MS:'400',SWEETS_HOST_FALLBACK_DELAY_MS:'500'},
+  SWEETS_CONTINUOUS_PHYSICAL_ROUNDS:'0',SWEETS_PLAYER_STABLE_MS:'500',SWEETS_BET_DURATION_MS:'900',SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_RESULT_GRACE_MS:'400',SWEETS_HOST_FALLBACK_DELAY_MS:'500'},
  stdio:['ignore','pipe','pipe']
 });
 let stderr='';child.stderr.on('data',chunk=>stderr+=chunk);
