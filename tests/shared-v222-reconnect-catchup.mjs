@@ -13,13 +13,14 @@ const patchContext={window:{},console};
 vm.runInNewContext(basePatch,patchContext);
 vm.runInNewContext(reconnectPatch,patchContext);
 const patched=patchContext.window.SweetsSharedCorePatchV222.patch(core);
-new vm.Script(patched,{filename:'shared-machine-core-v196-v222-patched.js'});
+new vm.Script(patched,{filename:'shared-machine-core-v196-v223-patched.js'});
 assert.ok(patched.includes('function syncAuthoritativeRound(round)'),'core must reconcile authoritative ball history');
 assert.ok(patched.includes('syncRound:syncAuthoritativeRound'),'controller must be able to request catch-up');
 assert.ok(patched.includes("if(message.type==='visual_frame'){hideRouletteMirror();return;}"),'legacy first-HIT JPEG mirror must be disabled');
-assert.ok(loader.includes('shared-client-controller-v222.js?v=222'));
-assert.ok(loader.includes('shared-roulette-client-hold-v222.js?v=222'));
-assert.ok(!loader.includes('shared-client-controller-v219.js?v=222'));
+assert.ok(loader.includes('shared-client-controller-v222.js?v=223'));
+assert.ok(loader.includes('shared-roulette-client-hold-v222.js?v=223'));
+assert.ok(!loader.includes('shared-client-controller-v219.js?v=223'));
+assert.ok(controller.includes('creditOverride!==null&&creditOverride!==undefined'),'normal result must not mistake null for a zero-credit override');
 assert.ok(hold.includes('last-good remote frame continuity'));
 
 let activeRound=null,startCount=0,prepareCount=0,settleCount=0;
