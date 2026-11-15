@@ -32,6 +32,7 @@ on:
       - 'tests/client-no-local-eight.mjs'
       - 'tests/server-v217-stable-smoke.mjs'
       - 'tests/shared-v219-continuous-rounds.mjs'
+      - 'tests/shared-v219-three-live-cycles.mjs'
       - 'tests/payout-v3-runtime.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
       - 'scripts/start-shared-machine-v205.ps1'
@@ -100,6 +101,7 @@ jobs:
           grep -q "Do not drop the relay merely because ICE connected" assets/shared-roulette-webrtc-host-v217.js
           grep -q "boundaries must not blank" assets/shared-roulette-client-v219.js
           grep -q "three-round fresh-board" tests/shared-v219-continuous-rounds.mjs
+          grep -q "three live join/start/result" tests/shared-v219-three-live-cycles.mjs
           grep -q "SWEETS_AUTONOMOUS_ROUNDS='0'" server.mjs
           if grep -q "server-autonomous-rounds-v213.mjs" server.mjs; then
             echo 'Legacy synthetic autonomous rounds must not be loaded.'
