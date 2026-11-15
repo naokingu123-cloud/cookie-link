@@ -151,7 +151,7 @@ renderRoundResult=function(a){
 /* Load this source through direct eval so it remains inside the bundled app's
    lexical scope and can journal/replay every engine without exposing internals. */
 if(!window.__sweetsPrecomputedRoundLoader){
- window.__sweetsPrecomputedRoundLoader=fetch('assets/precomputed-round-v174.js?v=194',{cache:'no-store'})
+ window.__sweetsPrecomputedRoundLoader=fetch('assets/precomputed-round-v174.js?v=195',{cache:'no-store'})
   .then(response=>{if(!response.ok)throw Error('precomputed round HTTP '+response.status);return response.text();})
   .then(source=>eval(source))
   .catch(error=>console.error('[PrecomputedRoundV174] loader failed',error));
