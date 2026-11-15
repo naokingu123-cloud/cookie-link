@@ -154,3 +154,11 @@ start-shared-machine-tunnel.cmd -Machine room-02
 - クライアントはゲーム起動時に `shared-endpoint.json` を読み、現在のサーバーURLを自動取得します。
 - サーバー側は従来どおり `trycloudflare.com/?machine=...&adminToken=...` の管理画面を使用します。
 - この自動公開には、サーバーPC上のリポジトリがGit cloneであり、`origin/main` へpushできるGit認証が必要です。
+
+
+## v186 ZIP展開版
+
+- ZIP展開した `cookie-link-main` でもランチャーは停止しません。
+- Git clone / pushが利用できない場合、`shared-endpoint.json` の自動公開だけをスキップし、Nodeサーバー、Quick Tunnel、サーバー管理画面は起動を継続します。
+- Git公開できる環境では通常ゲームURLだけでの自動発見を使用します。
+- ZIP環境かつQuick Tunnelではホスト名が毎回変わるため、完全なゼロ設定自動発見には固定ホスト名（Named Tunnel等）または公開可能なランデブー先が必要です。
