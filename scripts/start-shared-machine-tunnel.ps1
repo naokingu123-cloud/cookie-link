@@ -191,53 +191,73 @@ try {
     throw "Cloudflare public URL was created but /api/health is not reachable: $PublicHealth`n$(Read-Log $TunnelErr)"
   }
 
-  Write-Step 'Publishing server endpoint for automatic client discovery'
-  $Git = Find-Command @('git.exe','git')
-  if (-not $Git -or -not (Test-Path (Join-Path $Root '.git'))) {
-    throw 'Automatic client discovery requires this folder to be a Git clone with push access to origin/main.'
-  }
-  $EndpointPath = Join-Path $Root 'shared-endpoint.json'
-  $EndpointData = [ordered]@{
-    version = 1
-    machine = $Machine
-    server = $TunnelBase
-    updatedAt = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-  }
-  $EndpointJson = $EndpointData | ConvertTo-Json -Compress
-  [IO.File]::WriteAllText($EndpointPath,$EndpointJson + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
-
-  & $Git -C $Root add -- shared-endpoint.json
-  if ($LASTEXITCODE -ne 0) { throw 'git add shared-endpoint.json failed.' }
-  $StagedEndpoint = (& $Git -C $Root diff --cached --name-only -- shared-endpoint.json) -join ''
-  if (-not [string]::IsNullOrWhiteSpace($StagedEndpoint)) {
-    & $Git -C $Root -c user.name='SWEETS LINK Server' -c user.email='sweets-link@localhost' commit -m 'Publish active shared server endpoint' -- shared-endpoint.json
-    if ($LASTEXITCODE -ne 0) { throw 'git commit for shared-endpoint.json failed.' }
-  }
-  & $Git -C $Root push origin HEAD:main
-  if ($LASTEXITCODE -ne 0) {
-    throw 'git push failed. The client cannot auto-discover this server until shared-endpoint.json is published to main.'
-  }
-
-  $DiscoveryUrl = 'https://naokingu123-cloud.github.io/cookie-link/shared-endpoint.json'
+  Write-Step 'Trying automatic client discovery publishing'
   $DiscoveryReady = $false
-  for ($i=0; $i -lt 180; $i++) {
+  $DiscoveryUrl = 'https://naokingu123-cloud.github.io/cookie-link/shared-endpoint.json'
+  $Git = Find-Command @('git.exe','git')
+  $CanPublish = $false
+  if ($Git -and (Test-Path (Join-Path $Root '.git'))) {
     try {
-      $Published = Invoke-RestMethod -UseBasicParsing -Uri ($DiscoveryUrl + '?_=' + [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()) -TimeoutSec 4
-      if ($Published.server -eq $TunnelBase -and $Published.machine -eq $Machine) {
-        $DiscoveryReady = $true
-        break
+      $Origin = (& $Git -C $Root remote get-url origin 2>$null) -join ''
+      if ($Origin -match 'github\.com[:/]naokingu123-cloud/cookie-link(?:\.git)?$') {
+        $CanPublish = $true
       }
     } catch {}
-    Start-Sleep -Seconds 1
   }
-  if (-not $DiscoveryReady) {
-    throw "GitHub Pages did not publish the current server endpoint: $DiscoveryUrl"
+
+  if ($CanPublish) {
+    try {
+      $EndpointPath = Join-Path $Root 'shared-endpoint.json'
+      $EndpointData = [ordered]@{
+        version = 1
+        machine = $Machine
+        server = $TunnelBase
+        updatedAt = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+      }
+      $EndpointJson = $EndpointData | ConvertTo-Json -Compress
+      [IO.File]::WriteAllText($EndpointPath,$EndpointJson + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
+
+      & $Git -C $Root add -- shared-endpoint.json
+      if ($LASTEXITCODE -ne 0) { throw 'git add shared-endpoint.json failed.' }
+      $StagedEndpoint = (& $Git -C $Root diff --cached --name-only -- shared-endpoint.json) -join ''
+      if (-not [string]::IsNullOrWhiteSpace($StagedEndpoint)) {
+        & $Git -C $Root -c user.name='SWEETS LINK Server' -c user.email='sweets-link@localhost' commit -m 'Publish active shared server endpoint' -- shared-endpoint.json
+        if ($LASTEXITCODE -ne 0) { throw 'git commit for shared-endpoint.json failed.' }
+      }
+      & $Git -C $Root push origin HEAD:main
+      if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
+
+      for ($i=0; $i -lt 180; $i++) {
+        try {
+          $Published = Invoke-RestMethod -UseBasicParsing -Uri ($DiscoveryUrl + '?_=' + [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()) -TimeoutSec 4
+          if ($Published.server -eq $TunnelBase -and $Published.machine -eq $Machine) {
+            $DiscoveryReady = $true
+            break
+          }
+        } catch {}
+        Start-Sleep -Seconds 1
+      }
+    } catch {
+      Write-Host "Automatic discovery publish skipped: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+  } else {
+    Write-Host 'Automatic discovery publish skipped: this is a ZIP/non-Git folder.' -ForegroundColor Yellow
+  }
+
+  if ($DiscoveryReady) {
+    Write-Step 'Automatic client discovery is READY'
+  } else {
+    Write-Host 'Server will continue running. Zero-config discovery is not published for this Quick Tunnel session.' -ForegroundColor Yellow
   }
 
   $EncodedMachine = [Uri]::EscapeDataString($Machine)
   $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
   $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
-  if ($Machine -eq 'public-01') { $ClientUrl = $PlayerApp } else { $ClientUrl = "${PlayerApp}?machine=$EncodedMachine" }
+  if ($DiscoveryReady) {
+    if ($Machine -eq 'public-01') { $ClientUrl = $PlayerApp } else { $ClientUrl = "${PlayerApp}?machine=$EncodedMachine" }
+  } else {
+    $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  }
   $ServerHostUrl = "$TunnelBase/?serverHost=1&machine=$EncodedMachine&adminToken=$AdminToken"
   $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
   $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
@@ -255,8 +275,12 @@ try {
   Write-Host 'PLAYER GAME URL (just open this normally):' -ForegroundColor White
   Write-Host $ClientUrl -ForegroundColor Cyan
   Write-Host ''
-  Write-Host 'The game auto-discovers the active server. No sharedServer parameter is needed.' -ForegroundColor White
-  Write-Host 'The normal game URL was copied to the clipboard.' -ForegroundColor White
+  if ($DiscoveryReady) {
+    Write-Host 'The game auto-discovers the active server. No sharedServer parameter is needed.' -ForegroundColor White
+  } else {
+    Write-Host 'ZIP mode fallback: this session uses a sharedServer parameter because Quick Tunnel has a temporary hostname.' -ForegroundColor Yellow
+  }
+  Write-Host 'The working player URL was copied to the clipboard.' -ForegroundColor White
   Write-Host "Physical host page: $ServerHostUrl" -ForegroundColor DarkYellow
   Write-Host "Local monitor fallback: $LocalMonitorUrl" -ForegroundColor DarkGray
   Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
