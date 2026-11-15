@@ -16,3 +16,11 @@ assert.ok(app.includes("get mirrorCanvas(){return renderer.domElement;}"),'roule
 assert.ok(shared.includes("rouletteDriver?.mirrorCanvas||document.querySelector('#cookie-roulette canvas')"),'mirror capture must prefer the real roulette WebGL canvas');
 
 console.log('shared late-ball delivery + roulette mirror guards passed');
+
+assert.ok(shared.includes("ABANDONED_ROUND_KEY='sweets-shared-abandoned-round-v194'"),'reset round block must persist');
+assert.ok(shared.includes("localStorage.setItem(ABANDONED_ROUND_KEY"),'abandoned round must survive reload/restart');
+assert.ok(shared.includes("if(query.get('resumeShared')!=='1')return;"),'old round recovery must be explicit opt-in');
+assert.ok(shared.includes("pendingStart={callbacks,nativeReset};current.stopped=true"),'fresh starts must wait for a clean round instead of replaying existing balls');
+assert.ok(shared.includes("document.querySelector('#cookie-roulette .a8-stage')"),'roulette mirror must mount in the visible 3D stage');
+assert.ok(shared.includes("object-fit:contain!important"),'roulette mirror must not be cropped by cover positioning');
+assert.ok(shared.includes("z-index:9999!important"),'roulette mirror must stay above the stage background');
