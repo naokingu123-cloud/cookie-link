@@ -24,3 +24,10 @@ assert.ok(shared.includes("pendingStart={callbacks,nativeReset};current.stopped=
 assert.ok(shared.includes("document.querySelector('#cookie-roulette .a8-stage')"),'roulette mirror must mount in the visible 3D stage');
 assert.ok(shared.includes("object-fit:contain!important"),'roulette mirror must not be cropped by cover positioning');
 assert.ok(shared.includes("z-index:9999!important"),'roulette mirror must stay above the stage background');
+
+
+assert.ok(!shared.includes("client.leave({roundId}).catch"),'client reset must not send leave to the physical round');
+assert.ok(!shared.includes("setInterval(()=>captureMirrorFrame"),'roulette mirroring must not continuously read back WebGL frames');
+assert.ok(shared.includes("setTimeout(()=>captureMirrorFrame(true),120)"),'roulette mirror should refresh on physical HIT events');
+assert.ok(shared.includes("rouletteMirror.decoding='async'"),'client mirror image decode should stay asynchronous');
+console.log('reset isolation + low-cost mirror guards passed');
