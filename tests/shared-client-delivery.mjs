@@ -6,6 +6,7 @@ const shared=await readFile(new URL('../assets/shared-machine-core-v196.js',impo
 const host=await readFile(new URL('../assets/shared-roulette-webrtc-host-v197.js',import.meta.url),'utf8');
 const client=await readFile(new URL('../assets/shared-roulette-webrtc-client-v197.js',import.meta.url),'utf8');
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
+const patches=await readFile(new URL('../assets/cookie-upgrade-patches.js',import.meta.url),'utf8');
 
 assert.ok(wrapper.includes("shared-machine-core-v196.js?v=197"),'shared wrapper must synchronously load the guarded core');
 assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=197"),'server host must load the smooth transmitter');
@@ -45,3 +46,8 @@ assert.ok(client.includes("playoutDelayHint'in e.receiver"),'receiver should req
 assert.ok(client.includes("send({type:'rtc_fallback_request'})"),'client must automatically recover when direct WebRTC cannot connect');
 
 console.log('shared delivery + reset isolation + smooth roulette video guards passed');
+
+assert.ok(patches.includes("shared client BET countdown uses server readiness"),'shared client countdown must use server readiness');
+assert.ok(patches.includes("shared client start does not depend on local roulette renderer"),'shared client start must not wait for local WebGL roulette');
+assert.ok(patches.includes("shared client debug start uses server readiness"),'shared immediate-start button must use server readiness');
+console.log('shared-ready auto-start guards passed');
