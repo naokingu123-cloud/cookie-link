@@ -69,3 +69,5 @@ assert.ok(index.includes("localStorage.removeItem('sweets-link-pending-round-v1'
 assert.ok(index.includes("localStorage.removeItem('sweets-link-credit-v1')"),'legacy synthetic credit cache must be cleared before game boot');
 assert.ok(!patches.includes("single-commit instant payout"),'normal physical 8-ball result flow must remain unchanged');
 console.log('legacy phantom 8-ball recovery disabled; normal physical result flow preserved');
+
+// v202 final phantom-eight rerun
