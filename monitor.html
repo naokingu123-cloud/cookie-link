@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SWEETS LINK サーバー管理</title>
-<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=213">
+<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=217">
 </head>
 <body>
-<!-- host URL uses searchParams.set('lightRoulette','1') in server-monitor-payout-v3.js -->
+<!-- v217 keeps one smooth physical-host iframe alive across all rounds. -->
 <header>
- <div><h1>SWEETS LINK サーバー管理</h1><div class="sub">共通PO制御・プレイヤー成績・切断時自動精算・常時抽選</div></div>
+ <div><h1>SWEETS LINK サーバー管理</h1><div class="sub">共通PO制御・プレイヤー成績・切断時自動精算・安定接続制御</div></div>
  <div class="status"><span id="dot" class="dot off"></span><span id="conn">接続中…</span></div>
 </header>
 <main>
  <section class="card host-card">
-  <h2><span>現在の物理抽選機</span><span id="host-state" class="host-state">抽選機を起動中…</span></h2>
+  <h2><span>現在の物理抽選機（2倍速）</span><span id="host-state" class="host-state">抽選機を起動中…</span></h2>
   <iframe id="host-frame" class="host-frame" title="SWEETS LINK 物理抽選機"></iframe>
  </section>
  <section class="card payout-card" id="payout-card">
@@ -50,7 +50,8 @@
  </section>
 </main>
 <iframe id="settlement-worker" class="settlement-worker" title="切断時自動精算"></iframe>
-<script src="/assets/server-monitor-payout-v3.js?v=213"></script>
-<script src="/assets/server-monitor-system-filter-v213.js?v=213"></script>
+<script src="/assets/server-monitor-host-stability-v217.js?v=217"></script>
+<script src="/assets/server-monitor-payout-v3.js?v=217"></script>
+<script src="/assets/server-monitor-system-filter-v213.js?v=217"></script>
 </body>
 </html>
