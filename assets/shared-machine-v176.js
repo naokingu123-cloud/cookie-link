@@ -198,12 +198,13 @@ function install(){
    document.documentElement.classList.add('server-roulette-host');
    const style=document.createElement('style');style.id='server-roulette-host-css';style.textContent=`
     html.server-roulette-host,html.server-roulette-host body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#02070b!important}
-    html.server-roulette-host body>*:not(#cookie-roulette):not(.shared-v179-badge):not(.server-host-banner):not(script){display:none!important}
-    html.server-roulette-host #cookie-roulette{display:block!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:10000!important;background:#02070b!important}
-    html.server-roulette-host #manual-number-toggle,html.server-roulette-host #manual-number-panel{display:none!important}
+    html.server-roulette-host #viewport,html.server-roulette-host #screen,html.server-roulette-host .arena{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;transform:none!important}
+    html.server-roulette-host #screen>*:not(.arena){display:none!important}
+    html.server-roulette-host .arena>*:not(#cookie-roulette){display:none!important}
+    html.server-roulette-host #cookie-roulette{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:10000!important;background:#02070b!important}
+    html.server-roulette-host #manual-number-toggle,html.server-roulette-host #manual-number-panel,html.server-roulette-host #bet-countdown,html.server-roulette-host .roulette-info-strip{display:none!important}
     .server-host-banner{position:fixed;left:10px;top:10px;z-index:11000;padding:7px 11px;border:1px solid #ffe27aaa;border-radius:10px;background:#071725df;color:#fff0a2;font:900 12px/1.2 system-ui;pointer-events:none}
    `;document.head.append(style);
-   const root=document.getElementById('cookie-roulette');if(root&&root.parentElement!==document.body)document.body.append(root);
    const banner=document.createElement('div');banner.className='server-host-banner';banner.textContent='SERVER PHYSICAL ROULETTE · waiting';document.body.append(banner);
   }
   function hostBanner(text){const b=document.querySelector('.server-host-banner');if(b)b.textContent='SERVER PHYSICAL ROULETTE · '+text;}
