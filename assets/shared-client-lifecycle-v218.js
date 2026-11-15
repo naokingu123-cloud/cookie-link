@@ -1,0 +1,179 @@
+(()=>{
+'use strict';
+if(window.__sweetsSharedClientLifecycleV218)return;
+window.__sweetsSharedClientLifecycleV218=true;
+const params=new URLSearchParams(location.search);
+if(params.get('serverHost')==='1'||params.get('serverSettlementWorker')==='1')return;
+
+const finite=value=>Number.isFinite(Number(value))?Number(value):0;
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+let timer=0,resetBusy=false,resultSince=0,lastResetRound='',generation=0,lastBlocked=0;
+
+const machine=()=>window.SweetsSharedMachine;
+const client=()=>machine()?.client;
+const active=()=>machine()?.active;
+const gate=()=>window.SweetsConnectionGateV218;
+const currentRound=()=>client()?.round||null;
+function stopLocal(){
+ try{if(typeof stopAutoRound==='function')stopAutoRound();}catch{}
+ try{if(typeof autoRoundStamp!=='undefined')autoRoundStamp=null;}catch{}
+ try{if(typeof stopResultAuto==='function')stopResultAuto();}catch{}
+ try{if(typeof resultAutoToken!=='undefined')resultAutoToken=-1;}catch{}
+ try{if(typeof roundStarting!=='undefined')roundStarting=false;}catch{}
+}
+function status(text,label='共有抽選'){try{typeof countdownText==='function'&&countdownText(text,label);}catch{}}
+function queueSize(engine){const q=engine?.queue;return Array.isArray(q)?q.length:Number(q?.size)||0;}
+function engineClean(engine){return finite(engine?.processed)===0&&finite(engine?.accepted)===0&&!engine?.busy&&!engine?.running&&queueSize(engine)===0;}
+function resultHidden(){const node=document.getElementById('round-result-layer');return !node||node.hidden||getComputedStyle(node).display==='none';}
+function pristine(target=window.app){
+ return !!target&&!resetBusy&&target.phase==='ready'&&!(target.draws?.length)&&!target.payout&&!target.result&&!target.dealing&&!target.fastForward&&!active()&&(target.engines||[]).every(engineClean)&&resultHidden();
+}
+function selected(target){
+ const bets=Array.isArray(target?.bets)?target.bets.map(value=>Math.max(0,finite(value))):[];
+ const locked=Array.isArray(target?.locked)?target.locked.map(value=>Math.max(0,finite(value))):[...bets];
+ const enabled=Array.isArray(target?.enabled)?target.enabled.map(Boolean):bets.map(value=>value>0);
+ return {bets,locked,enabled};
+}
+function hideResult(){
+ const node=document.getElementById('round-result-layer');if(node){node.hidden=true;node.classList.remove('show','active','is-visible');}
+ for(const selector of ['.round-result','.result-overlay','.payout-overlay'])for(const element of document.querySelectorAll(selector)){element.classList.remove('show','active','is-visible');}
+}
+function clearEngine(engine){
+ try{engine.paused=false;engine.presentationRate=1;engine.busy=false;engine.running=false;}catch{}
+ try{if(Array.isArray(engine.queue))engine.queue.length=0;else engine.queue?.clear?.();}catch{}
+ for(const key of ['processed','accepted','hitCount','ballCount','drawCount','currentWin','totalWin'])if(key in (engine||{}))try{engine[key]=0;}catch{}
+ for(const key of ['result','payout','lastResult','lastPayout'])if(key in (engine||{}))try{engine[key]=null;}catch{}
+}
+function resetEngines(target){
+ // Reset the model BEFORE Arcade.prepare. prepare/onChange is therefore the last
+ // writer and renders the newly generated boards and tab payouts, never the old one.
+ for(const [index,engine] of (target.engines||[]).entries()){
+  if(index===0&&(!engine.kind||/^game[-_ ]?0$/i.test(String(engine.kind))))engine.kind='cookie';
+  try{
+   if(typeof engine.reset==='function'){
+    try{engine.reset({keepWonder:false,forceNew:true});}catch{engine.reset();}
+   }
+  }catch(error){console.warn('[SharedLifecycle218] engine reset',index,error?.message||error);}
+  clearEngine(engine);
+ }
+}
+function clearApp(target,credit,bet){
+ target.token=finite(target.token)+1;target.phase='complete';target.draws=[];target.payout=null;target.result=null;
+ target.dealing=false;target.fastForward=false;target.drawHeld=false;target.paused=false;target.totalWin=0;
+ target.paid=(target.engines||[]).map(()=>false);target.roundWins=(target.engines||[]).map(()=>0);
+ target.bets=[...bet.bets];target.locked=[...bet.locked];target.enabled=[...bet.enabled];
+ target.credit=credit;target.displayCredit=credit;
+}
+function markVisualDirty(){
+ try{
+  if(typeof slots!=='undefined'&&Array.isArray(slots))for(const slot of slots){
+   slot.dirtyMain=true;slot.dirtyMini=true;slot.lastState=null;slot.miniTween=null;
+   try{slot.particles?.replaceChildren?.();}catch{}
+  }
+ }catch{}
+}
+function finalRender(target){
+ markVisualDirty();hideResult();
+ for(const name of ['renderGameTabs','renderTabs','renderSlots','renderMain','renderRoundResult','syncPause','requestFit']){
+  try{const fn=globalThis[name];if(typeof fn==='function')fn(target);}catch{}
+ }
+ try{typeof scheduleUI==='function'&&scheduleUI(target);}catch{}
+ try{target.onChange?.(target);}catch{}
+}
+function fullRebuild(target,credit,bet,reason){
+ generation++;stopLocal();
+ try{rouletteDrawSource?.reset?.();}catch(error){console.warn('[SharedLifecycle218] shared reset',error?.message||error);}
+ resetEngines(target);clearApp(target,credit,bet);
+ try{target.prepare?.();}catch(error){console.warn('[SharedLifecycle218] prepare',error?.message||error);}
+ // Some prepare implementations restore transient fields from the result callback.
+ // Normalize only after prepare, without resetting the board a second time.
+ target.phase='ready';target.draws=[];target.payout=null;target.result=null;target.dealing=false;target.fastForward=false;target.drawHeld=false;target.paused=false;
+ target.paid=(target.engines||[]).map(()=>false);target.roundWins=(target.engines||[]).map(()=>0);target.totalWin=0;
+ target.bets=[...bet.bets];target.locked=[...bet.locked];target.enabled=[...bet.enabled];target.credit=credit;target.displayCredit=credit;
+ for(const engine of target.engines||[])clearEngine(engine);
+ finalRender(target);
+ console.info('[SharedLifecycle218] canonical full rebuild',reason,'generation',generation);
+}
+async function settleCredit(target,sharedRound){
+ const c=client(),roundId=String(sharedRound?.roundId||''),participant=sharedRound?.participant||{};
+ if(Number.isFinite(Number(participant.settlement?.creditAfter)))return Number(participant.settlement.creditAfter);
+ const base=Number.isFinite(Number(participant.creditAfterBet))?Number(participant.creditAfterBet):finite(target.credit);
+ const totalWin=Math.max(0,finite(target.totalWin)),expected=base+totalWin;
+ if(!c?.online||!roundId)return expected;
+ try{
+  const response=await c.settle({roundId,totalWin,creditAfter:expected,immediateReset:true});
+  if(response?.settlement){sharedRound.participant={...participant,settlement:response.settlement};return finite(response.settlement.creditAfter);}
+ }catch(error){console.warn('[SharedLifecycle218] settle',error?.message||error);}
+ try{
+  const state=await c.getState();c.accept?.(state);
+  for(const round of [state?.pendingRound,state?.round])if(round?.id===roundId&&Number.isFinite(Number(round.participant?.settlement?.creditAfter)))return Number(round.participant.settlement.creditAfter);
+ }catch{}
+ return expected;
+}
+async function forceInitial(reason='result-complete'){
+ if(resetBusy||typeof app==='undefined')return false;
+ const sharedRound=active(),round=currentRound();
+ if(round?.phase==='PLAYING'&&round?.participant?.playerId&&sharedRound?.roundId===round.id)return false;
+ resetBusy=true;const roundId=String(sharedRound?.roundId||'');const bet=selected(app);
+ try{
+  const credit=await settleCredit(app,sharedRound);
+  fullRebuild(app,credit,bet,reason);
+  // Late result callbacks are invalidated by token, but verify both model and DOM.
+  for(const delay of [80,220,520,1000]){
+   await sleep(delay);
+   if(pristine(app))continue;
+   fullRebuild(app,credit,bet,reason+'-verify');
+  }
+  lastResetRound=roundId;resultSince=0;status('WAIT','初期盤面へ復帰・次のSERVER BET TIME待機');
+  try{const c=client(),state=await c?.getState?.();if(state){gate()?.noteState?.(state);c.accept?.(state);}}catch{}
+  setTimeout(()=>window.SweetsNextBetJoinV218?.syncNow?.(),0);
+  return pristine(app);
+ }finally{resetBusy=false;}
+}
+function canStart(target){
+ const round=currentRound();return !!(client()?.online&&gate()?.canStart?.(round)&&round?.participant?.playerId&&(!active()||active().roundId===round.id)&&pristine(target));
+}
+function installGuards(){
+ if(typeof Arcade!=='function'||!Arcade.prototype)return false;
+ const proto=Arcade.prototype;if(proto.__sharedLifecycleV218)return true;
+ const nativeStart=proto.start;if(typeof nativeStart!=='function')return false;
+ Object.defineProperty(proto,'__sharedLifecycleV218',{value:true});
+ proto.start=function(...args){
+  stopLocal();
+  if(!canStart(this)){
+   const time=Date.now();if(time-lastBlocked>1500){lastBlocked=time;console.info('[SharedLifecycle218] rejected non-authoritative start',currentRound()?.phase||'none');}
+   status(gate()?.stable?.()?'NEXT':'WAIT',gate()?.stable?.()?'次の完全なSERVER BET TIME待機':'安定接続を確認中');return false;
+  }
+  return nativeStart.apply(this,args);
+ };
+ if(typeof startReadyRound==='function'){const native=startReadyRound;try{startReadyRound=function(...args){stopLocal();return canStart(app)?native.apply(this,args):false;};}catch{}}
+ if(typeof scheduleAutoRound==='function')try{scheduleAutoRound=function(){stopLocal();return false;};}catch{}
+ if(typeof rouletteDrawSource==='object'&&rouletteDrawSource&&typeof rouletteDrawSource.start==='function'&&!rouletteDrawSource.__sharedStartV218){
+  const native=rouletteDrawSource.start.bind(rouletteDrawSource);rouletteDrawSource.__sharedStartV218=true;
+  rouletteDrawSource.start=function(...args){return canStart(app)?native(...args):false;};
+ }
+ return true;
+}
+function monitor(){
+ timer=0;stopLocal();
+ if(typeof app==='undefined'||!installGuards()){timer=setTimeout(monitor,60);return;}
+ const phase=String(app.phase||''),round=currentRound();
+ if(phase==='playing'&&!active()&&!gate()?.canStart?.(round)){forceInitial('unauthorised-playing');timer=setTimeout(monitor,80);return;}
+ if(['result','paying','complete','error'].includes(phase)){
+  if(!resultSince)resultSince=Date.now();const age=Date.now()-resultSince;
+  const done=round?.phase!=='PLAYING'||(round?.balls?.length||0)>=8;
+  if(done&&((phase==='complete'&&age>100)||(phase==='paying'&&age>4200)||(phase==='result'&&age>4200)||(phase==='error'&&age>800)))forceInitial('phase-'+phase);
+ }else resultSince=0;
+ if(phase==='ready'&&!active()&&!pristine(app))forceInitial('dirty-ready');
+ timer=setTimeout(monitor,90);
+}
+function boot(){
+ if(typeof app==='undefined'||!client()||!gate()){setTimeout(boot,50);return;}
+ if(app.engines?.[0]&&(!app.engines[0].kind||/^game[-_ ]?0$/i.test(String(app.engines[0].kind))))app.engines[0].kind='cookie';
+ stopLocal();installGuards();monitor();
+ window.SweetsSharedLifecycleV218={forceInitial,canStart,isPristine:()=>pristine(app),get resetBusy(){return resetBusy;},get generation(){return generation;},get lastResetRound(){return lastResetRound;}};
+ addEventListener('beforeunload',()=>clearTimeout(timer),{once:true});
+ console.info('[SharedLifecycle218] one-owner result settlement, full model reset and final render enabled');
+}
+boot();
+})();
