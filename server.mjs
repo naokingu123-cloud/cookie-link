@@ -1,6 +1,6 @@
 import http from 'node:http';
 import {createReadStream, promises as fs} from 'node:fs';
-import {createHash, randomUUID, randomInt, timingSafeEqual} from 'node:crypto';
+import {createHash, randomUUID, timingSafeEqual} from 'node:crypto';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {WebSocketServer, WebSocket} from 'ws';
@@ -28,28 +28,21 @@ let saveTimer=null;
 const socketsByMachine=new Map();
 const requestBuckets=new Map();
 
-function makePlan(existing=[]){
- const used=new Set(existing.map(Number));
- const pool=[];for(let n=1;n<=25;n++)if(!used.has(n))pool.push(n);
- for(let i=pool.length-1;i>0;i--){const j=randomInt(i+1);[pool[i],pool[j]]=[pool[j],pool[i]];}
- return [...existing.map(Number),...pool].slice(0,BALLS_PER_ROUND);
-}
 function normalizeRound(round){
  if(!round)return null;
  round.participants=round.participants||{};
  round.balls=Array.isArray(round.balls)?round.balls:[];
- round.hostPlayerId='server';
- round.drawPlan=Array.isArray(round.drawPlan)&&round.drawPlan.length>=BALLS_PER_ROUND?round.drawPlan:makePlan(round.balls.map(ball=>ball.number));
- round.nextBallAt=Number(round.nextBallAt)||null;
- round.lastBallAt=Number(round.lastBallAt)||0;
+ round.hostPlayerId=safeId(round.hostPlayerId)||null;
  round.settlementCount=Number(round.settlementCount)||0;
+ round.lastBallAt=Number(round.lastBallAt)||0;
  return round;
 }
 function normalizeMachine(m,id){
  m.id=safeId(m.id||id)||MACHINE_DEFAULT;
  m.revision=Number(m.revision)||0;
  m.sequence=Number(m.sequence)||0;
- m.hostPlayerId='server';
+ m.hostPlayerId=safeId(m.hostPlayerId)||null;
+ m.hostRegisteredAt=Number(m.hostRegisteredAt)||0;
  m.round=normalizeRound(m.round);
  m.updatedAt=Number(m.updatedAt)||now();
  return m;
@@ -92,13 +85,15 @@ function publicRound(round,playerId){
  if(!round)return null;
  return {
   id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],
-  startedAt:round.startedAt,completedAt:round.completedAt||null,hostPlayerId:'server',
-  nextBallAt:round.nextBallAt||null,
+  startedAt:round.startedAt,completedAt:round.completedAt||null,hostPlayerId:round.hostPlayerId||null,
   participant:playerId?publicParticipant(round.participants?.[playerId]):null,
   participantCount:Object.keys(round.participants||{}).length
  };
 }
-function snapshot(m,playerId){return {type:'snapshot',serverTime:now(),machine:{id:m.id,revision:m.revision,hostPlayerId:'server'},round:publicRound(m.round,playerId)};}
+function snapshot(m,playerId){
+ const isHost=!!playerId&&m.hostPlayerId===playerId;
+ return {type:'snapshot',serverTime:now(),machine:{id:m.id,revision:m.revision,hostPlayerId:m.hostPlayerId||null,hostConnected:!!m.hostPlayerId&&connected(m.id,m.hostPlayerId),source:'physical-host'},round:publicRound(m.round,playerId),role:isHost?'host':'player'};
+}
 function socketMap(machineId){let map=socketsByMachine.get(machineId);if(!map){map=new Map();socketsByMachine.set(machineId,map);}return map;}
 function connected(machineId,playerId){const set=socketMap(machineId).get(playerId);return !!set&&[...set].some(ws=>ws.readyState===WebSocket.OPEN);}
 function broadcast(machineId,message){
@@ -106,10 +101,10 @@ function broadcast(machineId,message){
  for(const set of socketMap(machineId).values())for(const ws of set)if(ws.readyState===WebSocket.OPEN)try{ws.send(payload);}catch{}
 }
 function createRound(m){
- const sequence=(Number(m.sequence)||0)+1;m.sequence=sequence;m.hostPlayerId='server';
+ const sequence=(Number(m.sequence)||0)+1;m.sequence=sequence;
  const round={
-  id:m.id+'-'+sequence+'-'+randomUUID().slice(0,8),sequence,phase:'PLAYING',balls:[],drawPlan:makePlan(),
-  startedAt:now(),completedAt:null,hostPlayerId:'server',participants:{},settlementCount:0,nextBallAt:null,lastBallAt:0
+  id:m.id+'-'+sequence+'-'+randomUUID().slice(0,8),sequence,phase:'PLAYING',balls:[],
+  startedAt:now(),completedAt:null,hostPlayerId:m.hostPlayerId||null,participants:{},settlementCount:0,lastBallAt:0
  };
  m.round=round;m.revision++;m.updatedAt=now();scheduleSave();broadcast(m.id,{type:'round_started',round:publicRound(round,null)});
  return round;
@@ -162,45 +157,25 @@ function monitorParticipant(m,round,playerId){
  };
 }
 function monitorSnapshot(m){
- const round=m.round,ids=new Set(Object.keys(round?.participants||{}));for(const id of socketMap(m.id).keys())ids.add(id);
+ const round=m.round,ids=new Set(Object.keys(round?.participants||{}));for(const id of socketMap(m.id).keys())if(id!==m.hostPlayerId)ids.add(id);
  const players=[...ids].map(id=>monitorParticipant(m,round,id)).sort((a,b)=>Number(b.connected)-Number(a.connected)||(a.displayName||'').localeCompare(b.displayName||''));
  return {
-  ok:true,serverTime:now(),machine:{id:m.id,revision:m.revision,source:'server',connectedPlayers:[...socketMap(m.id).keys()].filter(id=>connected(m.id,id)).length},
+  ok:true,serverTime:now(),machine:{
+   id:m.id,revision:m.revision,source:'physical-host',hostPlayerId:m.hostPlayerId||null,
+   hostConnected:!!m.hostPlayerId&&connected(m.id,m.hostPlayerId),
+   connectedPlayers:[...socketMap(m.id).keys()].filter(id=>id!==m.hostPlayerId&&connected(m.id,id)).length
+  },
   round:round?{
    id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],startedAt:round.startedAt,
-   completedAt:round.completedAt||null,nextBallAt:round.nextBallAt||null,participantCount:Object.keys(round.participants||{}).length,
-   settlements:Number(round.settlementCount)||0,players
-  }:{id:null,sequence:0,phase:'WAITING',balls:[],startedAt:null,completedAt:null,nextBallAt:null,participantCount:0,settlements:0,players}
+   completedAt:round.completedAt||null,participantCount:Object.keys(round.participants||{}).length,
+   settlements:Number(round.settlementCount)||0,hostPlayerId:round.hostPlayerId||null,players
+  }:{id:null,sequence:0,phase:'WAITING',balls:[],startedAt:null,completedAt:null,participantCount:0,settlements:0,hostPlayerId:m.hostPlayerId||null,players}
  };
-}
-function emitServerBall(m){
- const round=m.round,index=round.balls.length+1;
- if(index>BALLS_PER_ROUND)return;
- const number=Number(round.drawPlan[index-1]),landedAt=now();
- const ball={index,number,eventId:round.id+':'+index,landedAt,reportedBy:'server'};
- round.balls.push(ball);round.lastBallAt=landedAt;round.nextBallAt=landedAt+BALL_INTERVAL_MS;m.revision++;m.updatedAt=landedAt;
- if(round.balls.length>=BALLS_PER_ROUND){round.phase='COMPLETE';round.completedAt=landedAt;round.nextBallAt=null;}
- scheduleSave();broadcast(m.id,{type:'ball_result',roundId:round.id,ball,phase:round.phase});
- if(round.phase==='COMPLETE')broadcast(m.id,{type:'round_complete',round:publicRound(round,null)});
-}
-function tickMachine(m){
- const round=m.round;if(!round||round.phase!=='PLAYING')return;
- const participants=Object.values(round.participants||{});if(!participants.length)return;
- const online=participants.filter(p=>connected(m.id,p.playerId));if(!online.length)return;
- if(!round.nextBallAt){round.nextBallAt=now()+ROUND_START_DELAY_MS;scheduleSave();return;}
- if(now()<round.nextBallAt)return;
- const previous=round.balls.length;
- if(previous>0){
-  const ready=online.every(p=>Number(p.checkpointBall||0)>=previous);
-  const timedOut=now()-Number(round.lastBallAt||0)>=CHECKPOINT_WAIT_MS;
-  if(!ready&&!timedOut)return;
- }
- emitServerBall(m);
 }
 
 async function api(req,res,url){
  const p=parts(url.pathname);
- if(req.method==='GET'&&url.pathname==='/api/health')return reply(res,200,{ok:true,service:'sweets-link-shared-machine',version:179,source:'server',time:now()});
+ if(req.method==='GET'&&url.pathname==='/api/health')return reply(res,200,{ok:true,service:'sweets-link-shared-machine',version:181,source:'physical-host',time:now()});
  if(req.method==='GET'&&p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'){
   if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});
   const m=machine(safeId(p[3])||MACHINE_DEFAULT);return reply(res,200,monitorSnapshot(m));
@@ -218,12 +193,23 @@ async function api(req,res,url){
   const player={id,tokenHash:hash(token),displayName:safeText(input.displayName||'PLAYER',32),createdAt:now(),lastSeen:now()};
   db.players[id]=player;scheduleSave();return reply(res,201,{ok:true,player:{id,displayName:player.displayName,createdAt:player.createdAt,lastSeen:player.lastSeen},token});
  }
+ if(req.method==='POST'&&p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'&&p[4]==='host'&&p[5]==='register'){
+  if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});
+  const hostPlayer=auth(req,url);if(!hostPlayer)return reply(res,401,{ok:false,error:'unauthorized'});
+  const m=machine(safeId(p[3])||MACHINE_DEFAULT);
+  m.hostPlayerId=hostPlayer.id;m.hostRegisteredAt=now();m.revision++;m.updatedAt=now();
+  if(m.round?.phase==='PLAYING')m.round.hostPlayerId=hostPlayer.id;
+  scheduleSave();broadcast(m.id,{type:'host_changed',hostPlayerId:hostPlayer.id,roundId:m.round?.id||null,hostConnected:connected(m.id,hostPlayer.id)});
+  return reply(res,200,{ok:true,...snapshot(m,hostPlayer.id),role:'host'});
+ }
  const player=auth(req,url);if(!player)return reply(res,401,{ok:false,error:'unauthorized'});
  if(p[0]!=='api'||p[1]!=='machines')return reply(res,404,{ok:false,error:'not_found'});
  const machineId=safeId(p[2])||MACHINE_DEFAULT,m=machine(machineId);
- if(req.method==='GET'&&p[3]==='state')return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
+ if(req.method==='GET'&&p[3]==='state')return reply(res,200,{ok:true,...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'});
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){
+  if(!m.hostPlayerId||!connected(m.id,m.hostPlayerId))return reply(res,503,{ok:false,error:'physical_host_unavailable',...snapshot(m,player.id)});
   const input=await bodyJson(req),round=activeOrNewRound(m),previous=round.participants[player.id];
+  round.hostPlayerId=m.hostPlayerId;
   const participant=round.participants[player.id]=previous||{
    playerId:player.id,joinedAt:now(),lastSeen:now(),clientRoundToken:safeText(input.clientRoundToken,120),
    bets:Array.isArray(input.bets)?input.bets:[],locked:Array.isArray(input.locked)?input.locked:[],enabled:Array.isArray(input.enabled)?input.enabled:[],
@@ -231,15 +217,34 @@ async function api(req,res,url){
    checkpoint:input.initialState||null,checkpointBall:0,settlement:null,appVersion:safeText(input.appVersion,80)
   };
   participant.lastSeen=now();if(!participant.initialState&&input.initialState)participant.initialState=input.initialState;if(!participant.checkpoint&&input.initialState)participant.checkpoint=input.initialState;
-  if(!round.nextBallAt)round.nextBallAt=now()+ROUND_START_DELAY_MS;
-  m.revision++;scheduleSave();broadcast(m.id,{type:'participant_joined',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length});
+  m.revision++;scheduleSave();broadcast(m.id,{type:'participant_joined',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
   return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='heartbeat'){
   const input=await bodyJson(req);if(m.round?.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
-  const participant=m.round.participants?.[player.id];if(participant)participant.lastSeen=now();return reply(res,200,{ok:true,source:'server'});
+  const participant=m.round.participants?.[player.id];if(participant)participant.lastSeen=now();return reply(res,200,{ok:true,source:'physical-host'});
  }
- if(req.method==='POST'&&p[3]==='round'&&p[4]==='ball')return reply(res,403,{ok:false,error:'server_authoritative'});
+ if(req.method==='POST'&&p[3]==='round'&&p[4]==='ball'){
+  const input=await bodyJson(req),round=m.round;
+  if(player.id!==m.hostPlayerId)return reply(res,403,{ok:false,error:'physical_host_required',hostPlayerId:m.hostPlayerId||null});
+  if(!round||round.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
+  if(round.phase!=='PLAYING')return reply(res,409,{ok:false,error:'round_not_playing',...snapshot(m,player.id)});
+  const index=Number(input.ballIndex),number=Number(input.number);
+  if(!Number.isInteger(index)||index<1||index>BALLS_PER_ROUND||!Number.isInteger(number)||number<1||number>25)return reply(res,400,{ok:false,error:'invalid_ball'});
+  const existing=round.balls[index-1];
+  if(existing){
+   if(Number(existing.number)===number)return reply(res,200,{ok:true,idempotent:true,ball:existing,phase:round.phase});
+   return reply(res,409,{ok:false,error:'ball_conflict',ball:existing});
+  }
+  if(index!==round.balls.length+1)return reply(res,409,{ok:false,error:'ball_out_of_order',expected:round.balls.length+1});
+  if(round.balls.some(ball=>Number(ball.number)===number))return reply(res,409,{ok:false,error:'duplicate_number',number});
+  const landedAt=now(),ball={index,number,eventId:safeText(input.eventId||round.id+':'+index,160),landedAt,reportedBy:player.id};
+  round.balls.push(ball);round.lastBallAt=landedAt;m.revision++;m.updatedAt=landedAt;
+  if(round.balls.length>=BALLS_PER_ROUND){round.phase='COMPLETE';round.completedAt=landedAt;}
+  scheduleSave();broadcast(m.id,{type:'ball_result',roundId:round.id,ball,phase:round.phase});
+  if(round.phase==='COMPLETE')broadcast(m.id,{type:'round_complete',round:publicRound(round,null)});
+  return reply(res,200,{ok:true,idempotent:false,ball,phase:round.phase});
+ }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='checkpoint'){
   const input=await bodyJson(req),round=m.round;
   if(!round||round.id!==input.roundId)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
@@ -260,7 +265,7 @@ async function api(req,res,url){
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='next'){
   if(m.round&&m.round.phase!=='COMPLETE')return reply(res,409,{ok:false,error:'round_not_complete'});
-  const next=createRound(m);return reply(res,201,{ok:true,round:publicRound(next,player.id),role:'player'});
+  if(!m.hostPlayerId||!connected(m.id,m.hostPlayerId))return reply(res,503,{ok:false,error:'physical_host_unavailable'});const next=createRound(m);return reply(res,201,{ok:true,round:publicRound(next,player.id),role:'player'});
  }
  return reply(res,404,{ok:false,error:'not_found'});
 }
@@ -295,12 +300,11 @@ server.on('upgrade',(req,socket,head)=>{
 wss.on('connection',(ws,{player,machineId})=>{
  const m=machine(machineId),map=socketMap(machineId);let set=map.get(player.id);if(!set){set=new Set();map.set(player.id,set);}set.add(ws);
  ws.isAlive=true;ws.on('pong',()=>{ws.isAlive=true;player.lastSeen=now();});
- ws.send(JSON.stringify({...snapshot(m,player.id),role:'player'}));
+ ws.send(JSON.stringify({...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'}));
  ws.on('message',raw=>{try{const msg=JSON.parse(String(raw));if(msg.type==='ping')ws.send(JSON.stringify({type:'pong',serverTime:now()}));}catch{}});
- ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);});
+ ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id)broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});});
 });
 setInterval(()=>{
  for(const ws of wss.clients){if(ws.isAlive===false){ws.terminate();continue;}ws.isAlive=false;try{ws.ping();}catch{}}
- for(const m of Object.values(db.machines))tickMachine(m);
 },250).unref();
-server.listen(PORT,'0.0.0.0',()=>console.log('[SharedMachine] server-authoritative roulette listening on http://0.0.0.0:'+PORT));
+server.listen(PORT,'0.0.0.0',()=>console.log('[SharedMachine] physical roulette host server listening on http://0.0.0.0:'+PORT));
