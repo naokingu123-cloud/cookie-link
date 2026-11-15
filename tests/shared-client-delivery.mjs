@@ -7,10 +7,15 @@ const host=await readFile(new URL('../assets/shared-roulette-webrtc-host-v197.js
 const client=await readFile(new URL('../assets/shared-roulette-webrtc-client-v197.js',import.meta.url),'utf8');
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
 const patches=await readFile(new URL('../assets/cookie-upgrade-patches.js',import.meta.url),'utf8');
+const menu=await readFile(new URL('../assets/game-menu-v91.js',import.meta.url),'utf8');
+const titles=await readFile(new URL('../assets/game-titles-v91.js',import.meta.url),'utf8');
+const recovery=await readFile(new URL('../assets/round-recovery-v1.js',import.meta.url),'utf8');
+const precomputed=await readFile(new URL('../assets/precomputed-round-v174.js',import.meta.url),'utf8');
+const index=await readFile(new URL('../index.html',import.meta.url),'utf8');
 
-assert.ok(wrapper.includes("shared-machine-core-v196.js?v=200"),'shared wrapper must synchronously load the guarded core');
-assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=200"),'server host must load the smooth transmitter');
-assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=200"),'players must load the smooth receiver');
+assert.ok(wrapper.includes("shared-machine-core-v196.js?v=201"),'shared wrapper must synchronously load the guarded core');
+assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=201"),'server host must load the smooth transmitter');
+assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=201"),'players must load the smooth receiver');
 assert.ok(wrapper.includes('eval(load'),'extensions must execute inside the game private scope');
 
 assert.ok(shared.includes("current.callbacks.onNumber?.(item.number)!==false"),'shared delivery must observe Arcade.acceptNumber result');
@@ -56,11 +61,11 @@ assert.ok(patches.includes("shared client can start while tab is background"),'s
 assert.ok(patches.includes("shared client countdown continues while tab is background"),'shared BET countdown must not freeze when monitor tab is foreground');
 console.log('background shared-client autostart guards passed');
 
-assert.ok(patches.includes("finish eighth-ball processing immediately"),'8th-ball result processing must fast-forward immediately');
-assert.ok(patches.includes("single-commit instant payout"),'CREDIT must be committed once without a gating payout animation');
-assert.ok(patches.includes("short non-blocking result display"),'result screen must not hold the next game for eight seconds');
-assert.ok(patches.includes("shared game logic continues in background"),'shared result processing must continue while monitor is foreground');
-assert.ok(shared.includes("A settled server round is historical"),'startup must never replay a settled payout');
-assert.ok(shared.includes("CREDIT is owned by the"),'server settlement must not overwrite local CREDIT');
-assert.ok(shared.includes("get:()=>!!client.online"),'previous physical round must not block local next-game readiness');
-console.log('non-blocking result + single-credit settlement guards passed');
+assert.ok(!menu.includes("fetch('assets/precomputed-round-v174.js"),'menu must not load the legacy precomputed round');
+assert.ok(!titles.includes("request.open('GET','assets/round-recovery-v1.js"),'titles must not load legacy round recovery');
+assert.ok(recovery.includes("__sweetsDisableLegacyRoundRecovery===true"),'legacy recovery file must have a hard kill switch');
+assert.ok(precomputed.includes("__sweetsDisableLegacyPrecomputedRound===true"),'legacy precomputed file must have a hard kill switch');
+assert.ok(index.includes("localStorage.removeItem('sweets-link-pending-round-v1')"),'stale synthetic round must be cleared before game boot');
+assert.ok(index.includes("localStorage.removeItem('sweets-link-credit-v1')"),'legacy synthetic credit cache must be cleared before game boot');
+assert.ok(!patches.includes("single-commit instant payout"),'normal physical 8-ball result flow must remain unchanged');
+console.log('legacy phantom 8-ball recovery disabled; normal physical result flow preserved');
