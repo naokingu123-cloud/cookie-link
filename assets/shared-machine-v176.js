@@ -6,9 +6,9 @@ function load(url){
  return x.responseText;
 }
 try{
- eval(load('assets/shared-machine-core-v196.js?v=203')+'\n//# sourceURL=shared-machine-core-v196.js');
+ eval(load('assets/shared-machine-core-v196.js?v=204')+'\n//# sourceURL=shared-machine-core-v196.js');
  const host=new URLSearchParams(location.search).get('serverHost')==='1';
- const file=host?'assets/shared-roulette-webrtc-host-v197.js?v=203':'assets/shared-roulette-webrtc-client-v197.js?v=203';
+ const file=host?'assets/shared-roulette-webrtc-host-v197.js?v=204':'assets/shared-roulette-webrtc-client-v197.js?v=204';
  eval(load(file)+'\n//# sourceURL='+file.split('?')[0]);
-}catch(error){console.error('[SharedMachineLoaderV203]',error);throw error;}
+}catch(error){console.error('[SharedMachineLoaderV204]',error);throw error;}
 })();
