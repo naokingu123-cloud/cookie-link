@@ -207,7 +207,6 @@ async function api(req,res,url){
  const machineId=safeId(p[2])||MACHINE_DEFAULT,m=machine(machineId);
  if(req.method==='GET'&&p[3]==='state')return reply(res,200,{ok:true,...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'});
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){
-  if(!m.hostPlayerId||!connected(m.id,m.hostPlayerId))return reply(res,503,{ok:false,error:'physical_host_unavailable',...snapshot(m,player.id)});
   const input=await bodyJson(req),avoidRoundId=safeText(input.avoidRoundId,160);
   if(avoidRoundId&&m.round?.phase==='PLAYING'&&m.round.id===avoidRoundId)return reply(res,409,{ok:false,error:'round_in_progress',round:publicRound(m.round,player.id)});
   const round=activeOrNewRound(m),previous=round.participants[player.id];
@@ -281,7 +280,7 @@ async function api(req,res,url){
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='next'){
   if(m.round&&m.round.phase!=='COMPLETE')return reply(res,409,{ok:false,error:'round_not_complete'});
-  if(!m.hostPlayerId||!connected(m.id,m.hostPlayerId))return reply(res,503,{ok:false,error:'physical_host_unavailable'});const next=createRound(m);return reply(res,201,{ok:true,round:publicRound(next,player.id),role:'player'});
+  const next=createRound(m);return reply(res,201,{ok:true,round:publicRound(next,player.id),role:'player'});
  }
  return reply(res,404,{ok:false,error:'not_found'});
 }
