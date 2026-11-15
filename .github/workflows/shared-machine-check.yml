@@ -6,6 +6,7 @@ on:
     paths:
       - 'package.json'
       - 'server.mjs'
+      - 'optimized/app-01.js'
       - 'monitor.html'
       - 'assets/shared-machine-v176.js'
       - 'assets/precomputed-round-v174.js'
