@@ -95,10 +95,12 @@ class Client{
   if(DISABLED){badge('', 'offline');return false;}
   try{
    const health=await this.raw('/api/health',{auth:false,timeout:900});if(!health.ok)throw Error('health');
-   const saved=read(SESSION_KEY,{}),headers={'Content-Type':'application/json'};
+   const saved=read(SESSION_KEY,{}),headers={'Content-Type':'application/json'};let profileName='';
+   try{const profile=JSON.parse(localStorage.getItem('sweets-player-v1')||'null');profileName=String(profile?.name||'').trim();}catch{}
    if(saved.token)headers.Authorization=`Bearer ${saved.token}`;
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),1500);let response;
-   try{response=await fetch(BASE+'/api/session',{method:'POST',headers,body:JSON.stringify({playerId:saved.playerId||'',displayName:saved.displayName||'PLAYER'}),cache:'no-store',signal:controller.signal});}finally{clearTimeout(timer);}
+   const displayName=profileName||saved.displayName||('PLAYER-'+String(saved.playerId||crypto.randomUUID?.()||Date.now()).replace(/[^a-zA-Z0-9]/g,'').slice(0,6));
+   try{response=await fetch(BASE+'/api/session',{method:'POST',headers,body:JSON.stringify({playerId:saved.playerId||'',displayName}),cache:'no-store',signal:controller.signal});}finally{clearTimeout(timer);}
    if(!response.ok)throw Error('session');const session=await response.json();
    this.playerId=session.player.id;this.token=session.token;write(SESSION_KEY,{playerId:this.playerId,token:this.token,displayName:session.player.displayName});
    this.online=true;this.connect();const state=await this.getState();this.accept(state);return true;
