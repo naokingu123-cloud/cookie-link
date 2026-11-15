@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SWEETS LINK サーバー管理</title>
-<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=210">
+<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=213">
 </head>
 <body>
 <!-- host URL uses searchParams.set('lightRoulette','1') in server-monitor-payout-v3.js -->
 <header>
- <div><h1>SWEETS LINK サーバー管理</h1><div class="sub">共通PO制御・プレイヤー成績・切断時自動精算</div></div>
+ <div><h1>SWEETS LINK サーバー管理</h1><div class="sub">共通PO制御・プレイヤー成績・切断時自動精算・常時抽選</div></div>
  <div class="status"><span id="dot" class="dot off"></span><span id="conn">接続中…</span></div>
 </header>
 <main>
@@ -50,6 +50,7 @@
  </section>
 </main>
 <iframe id="settlement-worker" class="settlement-worker" title="切断時自動精算"></iframe>
-<script src="/assets/server-monitor-payout-v3.js?v=210"></script>
+<script src="/assets/server-monitor-payout-v3.js?v=213"></script>
+<script src="/assets/server-monitor-system-filter-v213.js?v=213"></script>
 </body>
 </html>
