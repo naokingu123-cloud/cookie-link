@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SWEETS LINK Server Monitor</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#eaf8ff;background:#07111d}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#173d5d 0,#0a1d2d 38%,#050b12 100%);color:#eaf8ff}
+header{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;background:#07111de8;border-bottom:1px solid #6fd7ff44;backdrop-filter:blur(12px)}
+h1{margin:0;font-size:22px;letter-spacing:.06em}.sub{font-size:12px;color:#8dcbe4}.status{display:flex;gap:10px;align-items:center;font-size:13px}.dot{width:10px;height:10px;border-radius:50%;background:#39d98a;box-shadow:0 0 12px #39d98a}.dot.off{background:#ff6f6f;box-shadow:0 0 12px #ff6f6f}
+main{display:grid;grid-template-columns:minmax(300px,420px) minmax(480px,1fr);gap:16px;padding:16px;max-width:1440px;margin:auto}
+.card{background:linear-gradient(180deg,#10283bcc,#091722e8);border:1px solid #6fd7ff42;border-radius:18px;box-shadow:0 14px 35px #0008;overflow:hidden}
+.card h2{margin:0;padding:12px 15px;border-bottom:1px solid #6fd7ff2e;font-size:15px;letter-spacing:.06em}
+.card-body{padding:14px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.meta div{background:#08121bcc;border:1px solid #6fd7ff22;border-radius:10px;padding:9px}.meta b{display:block;font-size:11px;color:#7fb9d1;margin-bottom:3px}.meta strong{font-size:18px}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.num{position:relative;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:linear-gradient(#173751,#0b2031);border:2px solid #4f799255;color:#cbe8f5;font-weight:900;font-size:18px;transition:.2s}.num.hit{background:radial-gradient(circle at 35% 25%,#fff7ad,#f6b52f 48%,#9d5713);border-color:#fff0a3;color:#fff;text-shadow:0 2px #7f4818;box-shadow:0 0 14px #ffcf55aa}.order{position:absolute;right:-3px;top:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#ef6fa6;border:1px solid #fff;color:#fff;display:grid;place-items:center;font-size:10px}
+.ball-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:12px}.ball{min-height:49px;border:1px solid #4e7991;border-radius:10px;background:#07131d;display:grid;place-items:center;text-align:center}.ball span{display:block;font-size:9px;color:#6d9ab0}.ball strong{font-size:19px;color:#ffe177}.ball.empty strong{color:#375466}
+.players{width:100%;border-collapse:collapse;font-size:12px}.players th,.players td{padding:9px 8px;border-bottom:1px solid #6fd7ff1d;text-align:right;white-space:nowrap}.players th{position:sticky;top:0;background:#0b1d2b;color:#83c7e4;font-size:10px}.players th:first-child,.players td:first-child{text-align:left}.player-name{font-weight:800;color:#fff}.online{display:inline-block;width:8px;height:8px;border-radius:50%;background:#38d787;margin-right:6px}.offline{background:#66737c}.money{font-variant-numeric:tabular-nums;font-weight:800}.win{color:#ffd85c}.settled{color:#61e6a0}.pending{color:#ffb764}.empty-note{padding:24px;text-align:center;color:#7995a5}
+footer{padding:0 16px 18px;max-width:1440px;margin:auto;color:#7898aa;font-size:11px}
+@media(max-width:900px){main{grid-template-columns:1fr}.players{font-size:11px}.card{overflow:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>SWEETS LINK SERVER MONITOR</h1><div class="sub">Server-authoritative roulette · game engines run only on player devices</div></div>
+  <div class="status"><span id="dot" class="dot off"></span><span id="conn">connecting...</span></div>
+</header>
+<main>
+<section class="card">
+<h2>ROULETTE</h2>
+<div class="card-body">
+  <div class="meta">
+    <div><b>MACHINE</b><strong id="machine">-</strong></div>
+    <div><b>ROUND</b><strong id="round">-</strong></div>
+    <div><b>PHASE</b><strong id="phase">-</strong></div>
+    <div><b>PLAYERS</b><strong id="count">0</strong></div>
+  </div>
+  <div id="board" class="board"></div>
+  <div id="balls" class="ball-strip"></div>
+</div>
+</section>
+<section class="card">
+<h2>CONNECTED PLAYERS / PAYOUT & CREDIT</h2>
+<div class="card-body" style="padding:0;overflow:auto">
+<table class="players">
+<thead><tr><th>PLAYER</th><th>BET</th><th>CREDIT</th><th>ROUND WIN</th><th>SAVED</th><th>SETTLEMENT</th></tr></thead>
+<tbody id="players"></tbody>
+</table>
+<div id="empty" class="empty-note">プレイヤー接続待ち</div>
+</div>
+</section>
+</main>
+<footer>サーバー画面ではゲーム本体を実行しません。抽選番号・接続状態・BET・クレジット・配当・精算状態だけを監視します。</footer>
+<script>
+(()=>{'use strict';
+const q=new URLSearchParams(location.search),machine=q.get('machine')||'public-01',adminToken=q.get('adminToken')||'';
+const $=id=>document.getElementById(id),board=$('board'),balls=$('balls'),tbody=$('players'),empty=$('empty');
+for(let n=1;n<=25;n++){const d=document.createElement('div');d.className='num';d.dataset.n=n;d.textContent=n;board.append(d);}
+for(let i=1;i<=8;i++){const d=document.createElement('div');d.className='ball empty';d.innerHTML='<span>'+i+' BALL</span><strong>-</strong>';balls.append(d);}
+const fmt=n=>String(Math.max(0,Math.floor(Number(n)||0)));
+function draw(data){
+ $('dot').classList.remove('off');$('conn').textContent='ONLINE';$('machine').textContent=data.machine?.id||machine;
+ const r=data.round;$('round').textContent=r?String(r.sequence):'-';$('phase').textContent=r?.phase||'WAITING';$('count').textContent=String(r?.players?.filter(p=>p.connected).length||0);
+ const hit=new Map((r?.balls||[]).map(b=>[Number(b.number),Number(b.index)]));
+ for(const el of board.children){const order=hit.get(Number(el.dataset.n));el.classList.toggle('hit',!!order);el.querySelector('.order')?.remove();if(order){const o=document.createElement('span');o.className='order';o.textContent=order;el.append(o);}}
+ [...balls.children].forEach((el,i)=>{const b=r?.balls?.[i];el.classList.toggle('empty',!b);el.querySelector('strong').textContent=b?String(b.number):'-';});
+ const ps=r?.players||[];tbody.replaceChildren();empty.style.display=ps.length?'none':'block';
+ for(const p of ps){
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td><span class="online '+(p.connected?'':'offline')+'"></span><span class="player-name"></span></td>'+
+   '<td class="money">'+fmt(p.totalBet)+'</td><td class="money">'+fmt(p.currentCredit)+'</td>'+
+   '<td class="money win">'+fmt(p.roundWin)+'</td><td>'+fmt(p.checkpointBall)+' / 8</td>'+
+   '<td class="'+(p.settled?'settled':'pending')+'">'+(p.settled?'SETTLED':'PLAYING')+'</td>';
+  tr.querySelector('.player-name').textContent=p.displayName||p.playerId.slice(0,8);tbody.append(tr);
+ }
+}
+async function poll(){
+ try{
+  const u='/api/admin/machines/'+encodeURIComponent(machine)+'?adminToken='+encodeURIComponent(adminToken)+'&_='+Date.now();
+  const res=await fetch(u,{cache:'no-store'});if(!res.ok)throw Error('HTTP '+res.status);draw(await res.json());
+ }catch(error){$('dot').classList.add('off');$('conn').textContent='OFFLINE / '+error.message;}
+}
+poll();setInterval(poll,700);
+})();
+</script>
+</body>
+</html>
