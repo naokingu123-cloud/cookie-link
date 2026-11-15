@@ -51,8 +51,12 @@ source=once(source,
     return;
    }`,
  'disable requested random fallback');
+source=once(source,
+ "  if(t-round.hostMissingSince>=HOST_FALLBACK_DELAY_MS)activateServerFallback(m,round,'host_offline');",
+ "  if(t-round.hostMissingSince>=HOST_FALLBACK_DELAY_MS)round.hostMissingSince=t; // wait for the real physical host; never create random balls",
+ 'disable automatic random fallback');
 
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');
 await import(pathToFileURL(OUTPUT).href+'?v=217-'+Date.now());
-console.info('[ServerCoreLoaderV217] stable-player core loaded; random fallback requests disabled');
+console.info('[ServerCoreLoaderV217] stable-player core loaded; every random fallback path disabled');
