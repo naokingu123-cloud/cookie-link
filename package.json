@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check server.mjs && node --check server-core.mjs && node --check server-rtc-preload.mjs && node --check optimized/app-01.js && node --check assets/shared-machine-v176.js && node --check assets/shared-machine-core-v196.js && node --check assets/shared-roulette-webrtc-host-v197.js && node --check assets/shared-roulette-webrtc-client-v197.js && node --check assets/precomputed-round-v174.js && node --check tests/shared-server-smoke.mjs && node --check tests/shared-rtc-signaling.mjs && node --check tests/client-no-local-eight.mjs && node --check tests/shared-client-delivery.mjs",
+    "check": "node --check server.mjs && node --check server-core.mjs && node --check server-rtc-preload.mjs && node --check optimized/app-01.js && node --check assets/shared-machine-v176.js && node --check assets/shared-machine-core-v196.js && node --check assets/shared-roulette-webrtc-host-v197.js && node --check assets/shared-roulette-webrtc-client-v197.js && node --check assets/shared-host-keepalive-v205.js && node --check assets/shared-roulette-client-watchdog-v205.js && node --check assets/precomputed-round-v174.js && node --check tests/shared-server-smoke.mjs && node --check tests/shared-rtc-signaling.mjs && node --check tests/client-no-local-eight.mjs && node --check tests/shared-client-delivery.mjs",
     "test:shared": "node tests/shared-server-smoke.mjs && node tests/shared-rtc-signaling.mjs && node tests/client-no-local-eight.mjs && node tests/shared-client-delivery.mjs",
-    "tunnel:windows": "powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-shared-machine-tunnel.ps1",
+    "tunnel:windows": "powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-shared-machine-v205.ps1",
     "test:light": "node tests/client-no-local-eight.mjs && node tests/shared-client-delivery.mjs"
   },
   "engines": {"node": ">=20"},
