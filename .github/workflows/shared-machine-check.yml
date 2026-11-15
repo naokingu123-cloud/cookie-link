@@ -19,23 +19,22 @@ on:
       - 'assets/server-monitor-host-stability-v217.js'
       - 'assets/server-monitor-system-filter-v213.js'
       - 'assets/server-payout-control-v3.js'
-      - 'assets/shared-client-flow-v212.js'
-      - 'assets/shared-client-lifecycle-v217.js'
-      - 'assets/shared-connection-gate-v217.js'
+      - 'assets/shared-client-lifecycle-v218-final.js'
+      - 'assets/shared-connection-gate-v218.js'
       - 'assets/shared-core-patch-v216.js'
-      - 'assets/shared-next-bet-join-v217.js'
+      - 'assets/shared-next-bet-join-v218.js'
       - 'assets/server-offline-settlement-worker-v3.js'
       - 'assets/shared-machine-v176.js'
       - 'assets/shared-machine-core-v196.js'
       - 'assets/shared-roulette-webrtc-host-v217.js'
-      - 'assets/shared-roulette-webrtc-client-v197.js'
+      - 'assets/shared-roulette-client-v218.js'
       - 'assets/shared-host-keepalive-v206.js'
-      - 'assets/shared-host-speed-v217.js'
+      - 'assets/shared-host-speed-v218.js'
       - 'tests/shared-rtc-signaling.mjs'
       - 'tests/client-no-local-eight.mjs'
       - 'tests/server-v217-stable-smoke.mjs'
-      - 'tests/shared-v217-static.mjs'
-      - 'tests/shared-v217-full-reset-runtime.mjs'
+      - 'tests/shared-v218-static.mjs'
+      - 'tests/shared-v218-runtime.mjs'
       - 'tests/payout-v3-runtime.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
       - 'scripts/start-shared-machine-v205.ps1'
@@ -98,10 +97,10 @@ jobs:
         shell: bash
         run: |
           grep -q "rouletteTimeScale" optimized/app-01.js
-          grep -q "button.click()" assets/shared-host-speed-v217.js
+          grep -q "button.click()" assets/shared-host-speed-v218.js
           grep -q "smoothRoulette" assets/server-monitor-host-stability-v217.js
           grep -q "Do not drop the relay merely because ICE connected" assets/shared-roulette-webrtc-host-v217.js
-          grep -q "shared-roulette-relay" assets/shared-roulette-webrtc-client-v197.js
+          grep -q "Relay remains warm for the entire PLAYING phase" assets/shared-roulette-client-v218.js
           grep -q "SWEETS_AUTONOMOUS_ROUNDS='0'" server.mjs
           if grep -q "server-autonomous-rounds-v213.mjs" server.mjs; then
             echo 'Legacy synthetic autonomous rounds must not be loaded.'
