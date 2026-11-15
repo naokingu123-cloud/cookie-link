@@ -4800,8 +4800,9 @@ function startAnima8(){
  const physics=new RoulettePhysics(CANNON),draw=new DrawController(physics);
  const scene=new THREE.Scene();
  const phone=(window.matchMedia&&matchMedia('(pointer: coarse)').matches)||/iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
- const renderer=new THREE.WebGLRenderer({antialias:!phone,alpha:true,powerPreference:phone?'default':'high-performance',preserveDrawingBuffer:false});
- renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,phone?1.15:1.4));renderer.setClearColor(0x000000,0);
+ const serverHostRender=new URLSearchParams(location.search).get('serverHost')==='1';
+ const renderer=new THREE.WebGLRenderer({antialias:serverHostRender?false:!phone,alpha:true,powerPreference:phone?'default':'high-performance',preserveDrawingBuffer:false});
+ renderer.setPixelRatio(serverHostRender?1:Math.min(window.devicePixelRatio||1,phone?1.15:1.4));renderer.setClearColor(0x000000,0);
  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
  renderer.shadowMap.enabled=false;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  stage.prepend(renderer.domElement);
