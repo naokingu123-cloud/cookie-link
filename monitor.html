@@ -55,7 +55,7 @@ let hostLastReload=0,hostActionBusy=false,lastRoundId='',lastBallCount=-1;
 
 function hostUrl(){
  const u=new URL('/index.html',location.origin);
- u.searchParams.set('serverHost','1');u.searchParams.set('machine',machine);
+ u.searchParams.set('serverHost','1');u.searchParams.set('lightRoulette','1');u.searchParams.set('machine',machine);
  if(adminToken)u.searchParams.set('adminToken',adminToken);
  u.searchParams.set('hostBoot',String(Date.now()));
  return u.href;
@@ -111,7 +111,7 @@ function draw(data){
  const r=data.round,balls=r?.balls?.length||0;
  $('round-state').textContent='ROUND '+(r?.sequence||'-')+' · '+balls+' / 8';
  const hostOnline=!!data.machine?.hostConnected;
- $('host-state').textContent=hostOnline?'HOST ONLINE · '+(r?.phase||'WAITING')+' · '+balls+' / 8':'HOST STARTING…';
+ $('host-state').textContent=hostOnline?'HOST ONLINE · ULTRA LIGHT · '+(r?.phase||'WAITING')+' · '+balls+' / 8':'HOST STARTING…';
 
  const ps=r?.players||[];
  tbody.replaceChildren();empty.style.display=ps.length?'none':'block';
