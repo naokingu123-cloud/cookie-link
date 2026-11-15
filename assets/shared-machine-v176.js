@@ -419,7 +419,7 @@ function install(){
    if((!force&&!hostRunning)||!hostRoundId||!client.online||mirrorEncoding)return;
    const roundId=hostRoundId,capturedAt=Date.now();
    try{
-    const source=document.querySelector('#cookie-roulette canvas');if(!source||!source.width||!source.height)return;
+    const source=rouletteDriver?.mirrorCanvas||document.querySelector('#cookie-roulette canvas');if(!source||!source.width||!source.height)return;
     if(!mirrorCanvas)mirrorCanvas=document.createElement('canvas');
     const targetWidth=Math.min(480,Math.max(320,source.width)),scale=targetWidth/source.width,targetHeight=Math.max(180,Math.round(source.height*scale));
     if(mirrorCanvas.width!==targetWidth||mirrorCanvas.height!==targetHeight){mirrorCanvas.width=targetWidth;mirrorCanvas.height=targetHeight;mirrorCtx=mirrorCanvas.getContext('2d',{alpha:false});}
