@@ -1,5 +1,9 @@
 (()=>{
 'use strict';
+if(window.__sweetsDisableLegacyPrecomputedRound===true){
+ console.info('[PrecomputedRoundV174] disabled by shared physical roulette v201');
+ return;
+}
 if(window.__sweetsSharedLoaderV195)return;
 window.__sweetsSharedLoaderV195=true;
 window.__sweetsPrecomputedRoundV174=true;
