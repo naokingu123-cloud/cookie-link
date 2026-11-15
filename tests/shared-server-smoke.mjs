@@ -49,11 +49,18 @@ try{
 
  const authHost={token:sessionHost.token,playerId:sessionHost.player.id};
  const authA={token:sessionA.token,playerId:sessionA.player.id},authB={token:sessionB.token,playerId:sessionB.player.id},authC={token:sessionC.token,playerId:sessionC.player.id};
+
+ // A player may enter PLAYING before the physical-host iframe finishes registering.
+ // The round must be retained and start as soon as the host registers.
+ const joinedA=await json('/api/machines/public-01/round/join',{...authA,method:'POST',body:{clientRoundToken:'a',bets:[100],locked:[100],enabled:[true],totalBet:100,creditAfterBet:900,appVersion:'test'}});
+ assert.equal(joinedA.round.phase,'PLAYING');
+ assert.equal(joinedA.round.balls.length,0);
+
  const registered=await json('/api/admin/machines/public-01/host/register?adminToken='+encodeURIComponent(adminToken),{...authHost,method:'POST',body:{}});
  assert.equal(registered.role,'host');
  assert.equal(registered.machine.hostPlayerId,sessionHost.player.id);
+ assert.equal(registered.round.id,joinedA.round.id);
 
- const joinedA=await json('/api/machines/public-01/round/join',{...authA,method:'POST',body:{clientRoundToken:'a',bets:[100],locked:[100],enabled:[true],totalBet:100,creditAfterBet:900,appVersion:'test'}});
  const joinedB=await json('/api/machines/public-01/round/join',{...authB,method:'POST',body:{clientRoundToken:'b',bets:[200],locked:[200],enabled:[true],totalBet:200,creditAfterBet:800,appVersion:'test'}});
  const joinedC=await json('/api/machines/public-01/round/join',{...authC,method:'POST',body:{clientRoundToken:'c',bets:[300],locked:[300],enabled:[true],totalBet:300,creditAfterBet:700,appVersion:'test'}});
  assert.equal(joinedA.role,'player');assert.equal(joinedB.role,'player');assert.equal(joinedC.role,'player');assert.equal(joinedA.round.id,joinedB.round.id);assert.equal(joinedA.round.id,joinedC.round.id);
