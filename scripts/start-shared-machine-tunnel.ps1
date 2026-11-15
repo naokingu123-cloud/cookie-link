@@ -3,8 +3,900 @@ param(
   [ValidateRange(1024,65535)]
   [int]$Port = 3000,
 
-  [ValidatePattern('^[A-Za-z0-9_-]{1,64}$')]
+  [ValidatePattern('^[A-Za-z0-9_-]{1,64}
+  [switch]$NoDownload,
+
+  [string[]]$AllowedEmail = @()
+)
+
+$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+$Root = Split-Path -Parent $PSScriptRoot
+$Runtime = Join-Path $Root '.runtime'
+$Tools = Join-Path $Root '.tools'
+$ServerOut = Join-Path $Runtime 'shared-server.out.log'
+$ServerErr = Join-Path $Runtime 'shared-server.err.log'
+$TunnelOut = Join-Path $Runtime 'cloudflared.out.log'
+$TunnelErr = Join-Path $Runtime 'cloudflared.err.log'
+$PublicUrlFile = Join-Path $Runtime 'shared-url.txt'
+$DataFile = Join-Path $Runtime 'shared-machine.json'
+$NamedHostFile = Join-Path $Runtime 'named-tunnel-host.txt'
+$NamedTokenFile = Join-Path $Runtime 'named-tunnel-token.txt'
+$AdminToken = [guid]::NewGuid().ToString('N')
+
+New-Item -ItemType Directory -Force -Path $Runtime,$Tools | Out-Null
+Set-Location $Root
+
+if (-not $QuickTunnel) {
+  if (-not [string]::IsNullOrWhiteSpace($PublicHost)) {
+    $PublicHost = $PublicHost.Trim().ToLowerInvariant()
+    [IO.File]::WriteAllText($NamedHostFile,$PublicHost + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
+  } elseif (Test-Path $NamedHostFile) {
+    $PublicHost = (Get-Content -Raw -LiteralPath $NamedHostFile).Trim().ToLowerInvariant()
+  }
+
+  if (-not [string]::IsNullOrWhiteSpace($TunnelToken)) {
+    $TunnelToken = $TunnelToken.Trim()
+    [IO.File]::WriteAllText($NamedTokenFile,$TunnelToken + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
+  } elseif (Test-Path $NamedTokenFile) {
+    $TunnelToken = (Get-Content -Raw -LiteralPath $NamedTokenFile).Trim()
+  }
+
+  if ([string]::IsNullOrWhiteSpace($PublicHost) -or [string]::IsNullOrWhiteSpace($TunnelToken)) {
+    throw 'Named Tunnel is not configured. Run setup-named-tunnel.cmd once, then run this launcher again. Use -QuickTunnel only for temporary fallback.'
+  }
+  if ($PublicHost -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?([string]$Text) {
+  Write-Host "[SWEETS LINK] $Text" -ForegroundColor Cyan
+}
+
+function Read-Log([string]$Path) {
+  if (Test-Path $Path) {
+    return Get-Content -Raw -LiteralPath $Path -ErrorAction SilentlyContinue
+  }
+  return ''
+}
+
+function Stop-Child($Process) {
+  if ($null -eq $Process) { return }
+  try {
+    if (-not $Process.HasExited) {
+      Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
+      $Process.WaitForExit(3000) | Out-Null
+    }
+  } catch {}
+}
+
+function Find-Command([string[]]$Names) {
+  foreach ($Name in $Names) {
+    $Command = Get-Command $Name -ErrorAction SilentlyContinue
+    if ($null -ne $Command) { return $Command.Source }
+  }
+  return $null
+}
+
+$ServerProcess = $null
+$TunnelProcess = $null
+
+try {
+  Write-Step 'Checking Node.js'
+  $Node = Find-Command @('node.exe','node')
+  $Npm = Find-Command @('npm.cmd','npm')
+  if (-not $Node -or -not $Npm) {
+    throw 'Node.js 20 or newer is required. Install the LTS release from https://nodejs.org/ and run this launcher again.'
+  }
+
+  $NodeVersion = (& $Node --version).Trim()
+  $Major = 0
+  if ($NodeVersion -match '^v(\d+)') { $Major = [int]$Matches[1] }
+  if ($Major -lt 20) {
+    throw "Node.js 20 or newer is required. Current version: $NodeVersion"
+  }
+  Write-Step "Node.js $NodeVersion"
+
+  if (-not (Test-Path (Join-Path $Root 'node_modules\ws\package.json'))) {
+    Write-Step 'First setup: installing WebSocket dependency'
+    & $Npm install --omit=dev --no-audit --no-fund
+    if ($LASTEXITCODE -ne 0) { throw 'npm install failed.' }
+  }
+
+  $Cloudflared = Find-Command @('cloudflared.exe','cloudflared')
+  if (-not $Cloudflared) {
+    $Cloudflared = Join-Path $Tools 'cloudflared.exe'
+    if (-not (Test-Path $Cloudflared)) {
+      if ($NoDownload) {
+        throw 'cloudflared was not found. Remove -NoDownload or add cloudflared to PATH.'
+      }
+      Write-Step 'First setup: downloading official Cloudflare cloudflared'
+      $Download = 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe'
+      $Temporary = "$Cloudflared.download"
+      Remove-Item -Force -ErrorAction SilentlyContinue $Temporary
+      Invoke-WebRequest -UseBasicParsing -Uri $Download -OutFile $Temporary
+      Move-Item -Force $Temporary $Cloudflared
+    }
+  }
+
+  $CloudflaredVersion = (& $Cloudflared --version 2>&1 | Select-Object -First 1)
+  Write-Step "cloudflared: $CloudflaredVersion"
+
+  foreach ($Log in @($ServerOut,$ServerErr,$TunnelOut,$TunnelErr)) {
+    Remove-Item -Force -ErrorAction SilentlyContinue $Log
+  }
+
+  Write-Step "Starting shared server (port $Port)"
+  $OldPort = $env:PORT
+  $OldData = $env:SWEETS_DATA_FILE
+  $OldAdmin = $env:SWEETS_ADMIN_TOKEN
+  $env:PORT = [string]$Port
+  $env:SWEETS_DATA_FILE = $DataFile
+  $env:SWEETS_ADMIN_TOKEN = $AdminToken
+  try {
+    $ServerProcess = Start-Process -FilePath $Node -ArgumentList @('server.mjs') -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $ServerOut -RedirectStandardError $ServerErr
+  } finally {
+    $env:PORT = $OldPort
+    $env:SWEETS_DATA_FILE = $OldData
+    $env:SWEETS_ADMIN_TOKEN = $OldAdmin
+  }
+
+  $HealthUrl = "http://127.0.0.1:$Port/api/health"
+  $Healthy = $false
+  for ($i=0; $i -lt 120; $i++) {
+    if ($ServerProcess.HasExited) {
+      throw "Shared server exited unexpectedly.`n$(Read-Log $ServerErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $HealthUrl -TimeoutSec 2
+      if ($Health.ok) { $Healthy = $true; break }
+    } catch {}
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $Healthy) {
+    throw "Shared server health check failed.`n$(Read-Log $ServerErr)"
+  }
+
+  $ConfigCandidates = @(
+    (Join-Path $env:USERPROFILE '.cloudflared\config.yml'),
+    (Join-Path $env:USERPROFILE '.cloudflared\config.yaml')
+  ) | Where-Object { $_ -and (Test-Path $_) }
+  if ($ConfigCandidates.Count -gt 0) {
+    Write-Host 'Note: an existing ~/.cloudflared/config.yml can interfere with Quick Tunnel. Rename it temporarily if tunnel startup fails.' -ForegroundColor Yellow
+  }
+
+  if ($QuickTunnel) {
+    Write-Step 'Starting Cloudflare Quick Tunnel'
+    $TunnelArguments = @('tunnel','--url',"http://127.0.0.1:$Port")
+    foreach ($Email in $AllowedEmail) {
+      if (-not [string]::IsNullOrWhiteSpace($Email)) {
+        $TunnelArguments += @('--allowed-mail',$Email.Trim())
+      }
+    }
+    $TunnelProcess = Start-Process -FilePath $Cloudflared -ArgumentList $TunnelArguments -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $TunnelOut -RedirectStandardError $TunnelErr
+
+    $TunnelBase = $null
+    for ($i=0; $i -lt 180; $i++) {
+      if ($TunnelProcess.HasExited) {
+        throw "Cloudflare Tunnel exited unexpectedly.`n$(Read-Log $TunnelErr)"
+      }
+      $Combined = (Read-Log $TunnelOut) + "`n" + (Read-Log $TunnelErr)
+      if ($Combined -match 'https://[a-z0-9-]+\.trycloudflare\.com') {
+        $TunnelBase = $Matches[0]
+        break
+      }
+      Start-Sleep -Milliseconds 250
+    }
+    if (-not $TunnelBase) {
+      throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
+    }
+  } else {
+    Write-Step "Starting Cloudflare Named Tunnel ($PublicHost)"
+    $TunnelArguments = @('tunnel','--no-autoupdate','run','--token-file',$NamedTokenFile)
+    $TunnelProcess = Start-Process -FilePath $Cloudflared -ArgumentList $TunnelArguments -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $TunnelOut -RedirectStandardError $TunnelErr
+    $TunnelBase = "https://$PublicHost"
+  }
+
+  Write-Step 'Checking public tunnel reachability'
+  $PublicHealth = "$TunnelBase/api/health"
+  $PublicReady = $false
+  for ($i=0; $i -lt 40; $i++) {
+    if ($TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited before public health check completed.`n$(Read-Log $TunnelErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $PublicHealth -TimeoutSec 4
+      if ($Health.ok -eq $true -and $Health.source -eq 'physical-host') {
+        $PublicReady = $true
+        break
+      }
+    } catch {}
+    Start-Sleep -Milliseconds 500
+  }
+  if (-not $PublicReady) {
+    throw "Cloudflare public URL was created but /api/health is not reachable: $PublicHealth`n$(Read-Log $TunnelErr)"
+  }
+
+  $EncodedMachine = [Uri]::EscapeDataString($Machine)
+  $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
+  $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
+  if ($QuickTunnel) {
+    $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  } elseif ($Machine -eq 'public-01') {
+    $ClientUrl = "$TunnelBase/"
+  } else {
+    $ClientUrl = "$TunnelBase/?machine=$EncodedMachine"
+  }
+  $ServerHostUrl = "$TunnelBase/index.html?serverHost=1&machine=$EncodedMachine&adminToken=$AdminToken"
+  $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
+  $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $PublicUrl = $ServerManageUrl
+  Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
+  try { Set-Clipboard -Value $ClientUrl } catch {}
+
+  Write-Host ''
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host 'SERVER MANAGEMENT (open on this PC):' -ForegroundColor White
+  Write-Host $ServerManageUrl -ForegroundColor Yellow
+  Write-Host ''
+  Write-Host 'PLAYER GAME URL (bookmark this):' -ForegroundColor White
+  Write-Host $ClientUrl -ForegroundColor Cyan
+  Write-Host ''
+  if ($QuickTunnel) {
+    Write-Host 'Quick Tunnel fallback: this temporary session uses a sharedServer parameter.' -ForegroundColor Yellow
+  } else {
+    Write-Host 'Named Tunnel: this hostname is stable. Players only open the game URL; no parameters or setup are needed.' -ForegroundColor White
+  }
+  Write-Host 'The working player URL was copied to the clipboard.' -ForegroundColor White
+  Write-Host "Physical host page: $ServerHostUrl" -ForegroundColor DarkYellow
+  Write-Host "Local monitor fallback: $LocalMonitorUrl" -ForegroundColor DarkGray
+  Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
+  Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
+  Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
+  Write-Host ''
+
+  if (-not $NoBrowser) {
+    try { Start-Process $ServerManageUrl | Out-Null } catch {
+      try { Start-Process $LocalMonitorUrl | Out-Null } catch {}
+    }
+  }
+
+  while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
+    Start-Sleep -Seconds 1
+  }
+
+  if ($ServerProcess.HasExited) {
+    throw "Shared server stopped.`n$(Read-Log $ServerErr)"
+  }
+  if ($TunnelProcess.HasExited) {
+    throw "Cloudflare Tunnel stopped.`n$(Read-Log $TunnelErr)"
+  }
+}
+catch {
+  Write-Host ''
+  Write-Host "Startup failed: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host ''
+  Write-Host "Logs: $Runtime" -ForegroundColor DarkGray
+  exit 1
+}
+finally {
+  Stop-Child $TunnelProcess
+  Stop-Child $ServerProcess
+}
+)]
   [string]$Machine = 'public-01',
+
+  [string]$PublicHost = '',
+  [string]$TunnelToken = '',
+  [switch]$QuickTunnel,
+
+  [switch]$NoBrowser,
+  [switch]$NoDownload,
+
+  [string[]]$AllowedEmail = @()
+)
+
+$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+$Root = Split-Path -Parent $PSScriptRoot
+$Runtime = Join-Path $Root '.runtime'
+$Tools = Join-Path $Root '.tools'
+$ServerOut = Join-Path $Runtime 'shared-server.out.log'
+$ServerErr = Join-Path $Runtime 'shared-server.err.log'
+$TunnelOut = Join-Path $Runtime 'cloudflared.out.log'
+$TunnelErr = Join-Path $Runtime 'cloudflared.err.log'
+$PublicUrlFile = Join-Path $Runtime 'shared-url.txt'
+$DataFile = Join-Path $Runtime 'shared-machine.json'
+$AdminToken = [guid]::NewGuid().ToString('N')
+
+New-Item -ItemType Directory -Force -Path $Runtime,$Tools | Out-Null
+Set-Location $Root
+
+function Write-Step([string]$Text) {
+  Write-Host "[SWEETS LINK] $Text" -ForegroundColor Cyan
+}
+
+function Read-Log([string]$Path) {
+  if (Test-Path $Path) {
+    return Get-Content -Raw -LiteralPath $Path -ErrorAction SilentlyContinue
+  }
+  return ''
+}
+
+function Stop-Child($Process) {
+  if ($null -eq $Process) { return }
+  try {
+    if (-not $Process.HasExited) {
+      Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
+      $Process.WaitForExit(3000) | Out-Null
+    }
+  } catch {}
+}
+
+function Find-Command([string[]]$Names) {
+  foreach ($Name in $Names) {
+    $Command = Get-Command $Name -ErrorAction SilentlyContinue
+    if ($null -ne $Command) { return $Command.Source }
+  }
+  return $null
+}
+
+$ServerProcess = $null
+$TunnelProcess = $null
+
+try {
+  Write-Step 'Checking Node.js'
+  $Node = Find-Command @('node.exe','node')
+  $Npm = Find-Command @('npm.cmd','npm')
+  if (-not $Node -or -not $Npm) {
+    throw 'Node.js 20 or newer is required. Install the LTS release from https://nodejs.org/ and run this launcher again.'
+  }
+
+  $NodeVersion = (& $Node --version).Trim()
+  $Major = 0
+  if ($NodeVersion -match '^v(\d+)') { $Major = [int]$Matches[1] }
+  if ($Major -lt 20) {
+    throw "Node.js 20 or newer is required. Current version: $NodeVersion"
+  }
+  Write-Step "Node.js $NodeVersion"
+
+  if (-not (Test-Path (Join-Path $Root 'node_modules\ws\package.json'))) {
+    Write-Step 'First setup: installing WebSocket dependency'
+    & $Npm install --omit=dev --no-audit --no-fund
+    if ($LASTEXITCODE -ne 0) { throw 'npm install failed.' }
+  }
+
+  $Cloudflared = Find-Command @('cloudflared.exe','cloudflared')
+  if (-not $Cloudflared) {
+    $Cloudflared = Join-Path $Tools 'cloudflared.exe'
+    if (-not (Test-Path $Cloudflared)) {
+      if ($NoDownload) {
+        throw 'cloudflared was not found. Remove -NoDownload or add cloudflared to PATH.'
+      }
+      Write-Step 'First setup: downloading official Cloudflare cloudflared'
+      $Download = 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe'
+      $Temporary = "$Cloudflared.download"
+      Remove-Item -Force -ErrorAction SilentlyContinue $Temporary
+      Invoke-WebRequest -UseBasicParsing -Uri $Download -OutFile $Temporary
+      Move-Item -Force $Temporary $Cloudflared
+    }
+  }
+
+  $CloudflaredVersion = (& $Cloudflared --version 2>&1 | Select-Object -First 1)
+  Write-Step "cloudflared: $CloudflaredVersion"
+
+  foreach ($Log in @($ServerOut,$ServerErr,$TunnelOut,$TunnelErr)) {
+    Remove-Item -Force -ErrorAction SilentlyContinue $Log
+  }
+
+  Write-Step "Starting shared server (port $Port)"
+  $OldPort = $env:PORT
+  $OldData = $env:SWEETS_DATA_FILE
+  $OldAdmin = $env:SWEETS_ADMIN_TOKEN
+  $env:PORT = [string]$Port
+  $env:SWEETS_DATA_FILE = $DataFile
+  $env:SWEETS_ADMIN_TOKEN = $AdminToken
+  try {
+    $ServerProcess = Start-Process -FilePath $Node -ArgumentList @('server.mjs') -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $ServerOut -RedirectStandardError $ServerErr
+  } finally {
+    $env:PORT = $OldPort
+    $env:SWEETS_DATA_FILE = $OldData
+    $env:SWEETS_ADMIN_TOKEN = $OldAdmin
+  }
+
+  $HealthUrl = "http://127.0.0.1:$Port/api/health"
+  $Healthy = $false
+  for ($i=0; $i -lt 120; $i++) {
+    if ($ServerProcess.HasExited) {
+      throw "Shared server exited unexpectedly.`n$(Read-Log $ServerErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $HealthUrl -TimeoutSec 2
+      if ($Health.ok) { $Healthy = $true; break }
+    } catch {}
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $Healthy) {
+    throw "Shared server health check failed.`n$(Read-Log $ServerErr)"
+  }
+
+  $ConfigCandidates = @(
+    (Join-Path $env:USERPROFILE '.cloudflared\config.yml'),
+    (Join-Path $env:USERPROFILE '.cloudflared\config.yaml')
+  ) | Where-Object { $_ -and (Test-Path $_) }
+  if ($ConfigCandidates.Count -gt 0) {
+    Write-Host 'Note: an existing ~/.cloudflared/config.yml can interfere with Quick Tunnel. Rename it temporarily if tunnel startup fails.' -ForegroundColor Yellow
+  }
+
+  Write-Step 'Starting Cloudflare Quick Tunnel'
+  $TunnelArguments = @('tunnel','--url',"http://127.0.0.1:$Port")
+  foreach ($Email in $AllowedEmail) {
+    if (-not [string]::IsNullOrWhiteSpace($Email)) {
+      $TunnelArguments += @('--allowed-mail',$Email.Trim())
+    }
+  }
+  $TunnelProcess = Start-Process -FilePath $Cloudflared -ArgumentList $TunnelArguments -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $TunnelOut -RedirectStandardError $TunnelErr
+
+  $TunnelBase = $null
+  for ($i=0; $i -lt 180; $i++) {
+    if ($TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited unexpectedly.`n$(Read-Log $TunnelErr)"
+    }
+    $Combined = (Read-Log $TunnelOut) + "`n" + (Read-Log $TunnelErr)
+    if ($Combined -match 'https://[a-z0-9-]+\.trycloudflare\.com') {
+      $TunnelBase = $Matches[0]
+      break
+    }
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $TunnelBase) {
+    throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
+  }
+
+  Write-Step 'Checking public tunnel reachability'
+  $PublicHealth = "$TunnelBase/api/health"
+  $PublicReady = $false
+  for ($i=0; $i -lt 40; $i++) {
+    if ($TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited before public health check completed.`n$(Read-Log $TunnelErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $PublicHealth -TimeoutSec 4
+      if ($Health.ok -eq $true -and $Health.source -eq 'physical-host') {
+        $PublicReady = $true
+        break
+      }
+    } catch {}
+    Start-Sleep -Milliseconds 500
+  }
+  if (-not $PublicReady) {
+    throw "Cloudflare public URL was created but /api/health is not reachable: $PublicHealth`n$(Read-Log $TunnelErr)"
+  }
+
+  Write-Step 'Trying automatic client discovery publishing'
+  $DiscoveryReady = $false
+  $DiscoveryUrl = 'https://naokingu123-cloud.github.io/cookie-link/shared-endpoint.json'
+  $Git = Find-Command @('git.exe','git')
+  $CanPublish = $false
+  if ($Git -and (Test-Path (Join-Path $Root '.git'))) {
+    try {
+      $Origin = (& $Git -C $Root remote get-url origin 2>$null) -join ''
+      if ($Origin -match 'github\.com[:/]naokingu123-cloud/cookie-link(?:\.git)?$') {
+        $CanPublish = $true
+      }
+    } catch {}
+  }
+
+  if ($CanPublish) {
+    try {
+      $EndpointPath = Join-Path $Root 'shared-endpoint.json'
+      $EndpointData = [ordered]@{
+        version = 1
+        machine = $Machine
+        server = $TunnelBase
+        updatedAt = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+      }
+      $EndpointJson = $EndpointData | ConvertTo-Json -Compress
+      [IO.File]::WriteAllText($EndpointPath,$EndpointJson + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
+
+      & $Git -C $Root add -- shared-endpoint.json
+      if ($LASTEXITCODE -ne 0) { throw 'git add shared-endpoint.json failed.' }
+      $StagedEndpoint = (& $Git -C $Root diff --cached --name-only -- shared-endpoint.json) -join ''
+      if (-not [string]::IsNullOrWhiteSpace($StagedEndpoint)) {
+        & $Git -C $Root -c user.name='SWEETS LINK Server' -c user.email='sweets-link@localhost' commit -m 'Publish active shared server endpoint' -- shared-endpoint.json
+        if ($LASTEXITCODE -ne 0) { throw 'git commit for shared-endpoint.json failed.' }
+      }
+      & $Git -C $Root push origin HEAD:main
+      if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
+
+      for ($i=0; $i -lt 180; $i++) {
+        try {
+          $Published = Invoke-RestMethod -UseBasicParsing -Uri ($DiscoveryUrl + '?_=' + [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()) -TimeoutSec 4
+          if ($Published.server -eq $TunnelBase -and $Published.machine -eq $Machine) {
+            $DiscoveryReady = $true
+            break
+          }
+        } catch {}
+        Start-Sleep -Seconds 1
+      }
+    } catch {
+      Write-Host "Automatic discovery publish skipped: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+  } else {
+    Write-Host 'Automatic discovery publish skipped: this is a ZIP/non-Git folder.' -ForegroundColor Yellow
+  }
+
+  if ($DiscoveryReady) {
+    Write-Step 'Automatic client discovery is READY'
+  } else {
+    Write-Host 'Server will continue running. Zero-config discovery is not published for this Quick Tunnel session.' -ForegroundColor Yellow
+  }
+
+  $EncodedMachine = [Uri]::EscapeDataString($Machine)
+  $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
+  $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
+  if ($DiscoveryReady) {
+    if ($Machine -eq 'public-01') { $ClientUrl = $PlayerApp } else { $ClientUrl = "${PlayerApp}?machine=$EncodedMachine" }
+  } else {
+    $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  }
+  $ServerHostUrl = "$TunnelBase/?serverHost=1&machine=$EncodedMachine&adminToken=$AdminToken"
+  $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
+  $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $PublicUrl = $ServerManageUrl
+  Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
+  try { Set-Clipboard -Value $ClientUrl } catch {}
+
+  Write-Host ''
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host 'SERVER MANAGEMENT (open on this PC):' -ForegroundColor White
+  Write-Host $ServerManageUrl -ForegroundColor Yellow
+  Write-Host ''
+  Write-Host 'PLAYER GAME URL (just open this normally):' -ForegroundColor White
+  Write-Host $ClientUrl -ForegroundColor Cyan
+  Write-Host ''
+  if ($DiscoveryReady) {
+    Write-Host 'The game auto-discovers the active server. No sharedServer parameter is needed.' -ForegroundColor White
+  } else {
+    Write-Host 'ZIP mode fallback: this session uses a sharedServer parameter because Quick Tunnel has a temporary hostname.' -ForegroundColor Yellow
+  }
+  Write-Host 'The working player URL was copied to the clipboard.' -ForegroundColor White
+  Write-Host "Physical host page: $ServerHostUrl" -ForegroundColor DarkYellow
+  Write-Host "Local monitor fallback: $LocalMonitorUrl" -ForegroundColor DarkGray
+  Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
+  Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
+  Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
+  Write-Host ''
+
+  if (-not $NoBrowser) {
+    try { Start-Process $ServerManageUrl | Out-Null } catch {
+      try { Start-Process $LocalMonitorUrl | Out-Null } catch {}
+    }
+  }
+
+  while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
+    Start-Sleep -Seconds 1
+  }
+
+  if ($ServerProcess.HasExited) {
+    throw "Shared server stopped.`n$(Read-Log $ServerErr)"
+  }
+  if ($TunnelProcess.HasExited) {
+    throw "Cloudflare Tunnel stopped.`n$(Read-Log $TunnelErr)"
+  }
+}
+catch {
+  Write-Host ''
+  Write-Host "Startup failed: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host ''
+  Write-Host "Logs: $Runtime" -ForegroundColor DarkGray
+  exit 1
+}
+finally {
+  Stop-Child $TunnelProcess
+  Stop-Child $ServerProcess
+}
+ -or $PublicHost -notmatch '\.') {
+    throw "Invalid PublicHost: $PublicHost"
+  }
+}
+
+function Write-Step([string]$Text) {
+  Write-Host "[SWEETS LINK] $Text" -ForegroundColor Cyan
+}
+
+function Read-Log([string]$Path) {
+  if (Test-Path $Path) {
+    return Get-Content -Raw -LiteralPath $Path -ErrorAction SilentlyContinue
+  }
+  return ''
+}
+
+function Stop-Child($Process) {
+  if ($null -eq $Process) { return }
+  try {
+    if (-not $Process.HasExited) {
+      Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
+      $Process.WaitForExit(3000) | Out-Null
+    }
+  } catch {}
+}
+
+function Find-Command([string[]]$Names) {
+  foreach ($Name in $Names) {
+    $Command = Get-Command $Name -ErrorAction SilentlyContinue
+    if ($null -ne $Command) { return $Command.Source }
+  }
+  return $null
+}
+
+$ServerProcess = $null
+$TunnelProcess = $null
+
+try {
+  Write-Step 'Checking Node.js'
+  $Node = Find-Command @('node.exe','node')
+  $Npm = Find-Command @('npm.cmd','npm')
+  if (-not $Node -or -not $Npm) {
+    throw 'Node.js 20 or newer is required. Install the LTS release from https://nodejs.org/ and run this launcher again.'
+  }
+
+  $NodeVersion = (& $Node --version).Trim()
+  $Major = 0
+  if ($NodeVersion -match '^v(\d+)') { $Major = [int]$Matches[1] }
+  if ($Major -lt 20) {
+    throw "Node.js 20 or newer is required. Current version: $NodeVersion"
+  }
+  Write-Step "Node.js $NodeVersion"
+
+  if (-not (Test-Path (Join-Path $Root 'node_modules\ws\package.json'))) {
+    Write-Step 'First setup: installing WebSocket dependency'
+    & $Npm install --omit=dev --no-audit --no-fund
+    if ($LASTEXITCODE -ne 0) { throw 'npm install failed.' }
+  }
+
+  $Cloudflared = Find-Command @('cloudflared.exe','cloudflared')
+  if (-not $Cloudflared) {
+    $Cloudflared = Join-Path $Tools 'cloudflared.exe'
+    if (-not (Test-Path $Cloudflared)) {
+      if ($NoDownload) {
+        throw 'cloudflared was not found. Remove -NoDownload or add cloudflared to PATH.'
+      }
+      Write-Step 'First setup: downloading official Cloudflare cloudflared'
+      $Download = 'https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe'
+      $Temporary = "$Cloudflared.download"
+      Remove-Item -Force -ErrorAction SilentlyContinue $Temporary
+      Invoke-WebRequest -UseBasicParsing -Uri $Download -OutFile $Temporary
+      Move-Item -Force $Temporary $Cloudflared
+    }
+  }
+
+  $CloudflaredVersion = (& $Cloudflared --version 2>&1 | Select-Object -First 1)
+  Write-Step "cloudflared: $CloudflaredVersion"
+
+  foreach ($Log in @($ServerOut,$ServerErr,$TunnelOut,$TunnelErr)) {
+    Remove-Item -Force -ErrorAction SilentlyContinue $Log
+  }
+
+  Write-Step "Starting shared server (port $Port)"
+  $OldPort = $env:PORT
+  $OldData = $env:SWEETS_DATA_FILE
+  $OldAdmin = $env:SWEETS_ADMIN_TOKEN
+  $env:PORT = [string]$Port
+  $env:SWEETS_DATA_FILE = $DataFile
+  $env:SWEETS_ADMIN_TOKEN = $AdminToken
+  try {
+    $ServerProcess = Start-Process -FilePath $Node -ArgumentList @('server.mjs') -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $ServerOut -RedirectStandardError $ServerErr
+  } finally {
+    $env:PORT = $OldPort
+    $env:SWEETS_DATA_FILE = $OldData
+    $env:SWEETS_ADMIN_TOKEN = $OldAdmin
+  }
+
+  $HealthUrl = "http://127.0.0.1:$Port/api/health"
+  $Healthy = $false
+  for ($i=0; $i -lt 120; $i++) {
+    if ($ServerProcess.HasExited) {
+      throw "Shared server exited unexpectedly.`n$(Read-Log $ServerErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $HealthUrl -TimeoutSec 2
+      if ($Health.ok) { $Healthy = $true; break }
+    } catch {}
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $Healthy) {
+    throw "Shared server health check failed.`n$(Read-Log $ServerErr)"
+  }
+
+  $ConfigCandidates = @(
+    (Join-Path $env:USERPROFILE '.cloudflared\config.yml'),
+    (Join-Path $env:USERPROFILE '.cloudflared\config.yaml')
+  ) | Where-Object { $_ -and (Test-Path $_) }
+  if ($ConfigCandidates.Count -gt 0) {
+    Write-Host 'Note: an existing ~/.cloudflared/config.yml can interfere with Quick Tunnel. Rename it temporarily if tunnel startup fails.' -ForegroundColor Yellow
+  }
+
+  Write-Step 'Starting Cloudflare Quick Tunnel'
+  $TunnelArguments = @('tunnel','--url',"http://127.0.0.1:$Port")
+  foreach ($Email in $AllowedEmail) {
+    if (-not [string]::IsNullOrWhiteSpace($Email)) {
+      $TunnelArguments += @('--allowed-mail',$Email.Trim())
+    }
+  }
+  $TunnelProcess = Start-Process -FilePath $Cloudflared -ArgumentList $TunnelArguments -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $TunnelOut -RedirectStandardError $TunnelErr
+
+  $TunnelBase = $null
+  for ($i=0; $i -lt 180; $i++) {
+    if ($TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited unexpectedly.`n$(Read-Log $TunnelErr)"
+    }
+    $Combined = (Read-Log $TunnelOut) + "`n" + (Read-Log $TunnelErr)
+    if ($Combined -match 'https://[a-z0-9-]+\.trycloudflare\.com') {
+      $TunnelBase = $Matches[0]
+      break
+    }
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $TunnelBase) {
+    throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
+  }
+
+  Write-Step 'Checking public tunnel reachability'
+  $PublicHealth = "$TunnelBase/api/health"
+  $PublicReady = $false
+  for ($i=0; $i -lt 40; $i++) {
+    if ($TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited before public health check completed.`n$(Read-Log $TunnelErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $PublicHealth -TimeoutSec 4
+      if ($Health.ok -eq $true -and $Health.source -eq 'physical-host') {
+        $PublicReady = $true
+        break
+      }
+    } catch {}
+    Start-Sleep -Milliseconds 500
+  }
+  if (-not $PublicReady) {
+    throw "Cloudflare public URL was created but /api/health is not reachable: $PublicHealth`n$(Read-Log $TunnelErr)"
+  }
+
+  Write-Step 'Trying automatic client discovery publishing'
+  $DiscoveryReady = $false
+  $DiscoveryUrl = 'https://naokingu123-cloud.github.io/cookie-link/shared-endpoint.json'
+  $Git = Find-Command @('git.exe','git')
+  $CanPublish = $false
+  if ($Git -and (Test-Path (Join-Path $Root '.git'))) {
+    try {
+      $Origin = (& $Git -C $Root remote get-url origin 2>$null) -join ''
+      if ($Origin -match 'github\.com[:/]naokingu123-cloud/cookie-link(?:\.git)?$') {
+        $CanPublish = $true
+      }
+    } catch {}
+  }
+
+  if ($CanPublish) {
+    try {
+      $EndpointPath = Join-Path $Root 'shared-endpoint.json'
+      $EndpointData = [ordered]@{
+        version = 1
+        machine = $Machine
+        server = $TunnelBase
+        updatedAt = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+      }
+      $EndpointJson = $EndpointData | ConvertTo-Json -Compress
+      [IO.File]::WriteAllText($EndpointPath,$EndpointJson + [Environment]::NewLine,(New-Object Text.UTF8Encoding($false)))
+
+      & $Git -C $Root add -- shared-endpoint.json
+      if ($LASTEXITCODE -ne 0) { throw 'git add shared-endpoint.json failed.' }
+      $StagedEndpoint = (& $Git -C $Root diff --cached --name-only -- shared-endpoint.json) -join ''
+      if (-not [string]::IsNullOrWhiteSpace($StagedEndpoint)) {
+        & $Git -C $Root -c user.name='SWEETS LINK Server' -c user.email='sweets-link@localhost' commit -m 'Publish active shared server endpoint' -- shared-endpoint.json
+        if ($LASTEXITCODE -ne 0) { throw 'git commit for shared-endpoint.json failed.' }
+      }
+      & $Git -C $Root push origin HEAD:main
+      if ($LASTEXITCODE -ne 0) { throw 'git push failed.' }
+
+      for ($i=0; $i -lt 180; $i++) {
+        try {
+          $Published = Invoke-RestMethod -UseBasicParsing -Uri ($DiscoveryUrl + '?_=' + [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()) -TimeoutSec 4
+          if ($Published.server -eq $TunnelBase -and $Published.machine -eq $Machine) {
+            $DiscoveryReady = $true
+            break
+          }
+        } catch {}
+        Start-Sleep -Seconds 1
+      }
+    } catch {
+      Write-Host "Automatic discovery publish skipped: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+  } else {
+    Write-Host 'Automatic discovery publish skipped: this is a ZIP/non-Git folder.' -ForegroundColor Yellow
+  }
+
+  if ($DiscoveryReady) {
+    Write-Step 'Automatic client discovery is READY'
+  } else {
+    Write-Host 'Server will continue running. Zero-config discovery is not published for this Quick Tunnel session.' -ForegroundColor Yellow
+  }
+
+  $EncodedMachine = [Uri]::EscapeDataString($Machine)
+  $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
+  $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
+  if ($DiscoveryReady) {
+    if ($Machine -eq 'public-01') { $ClientUrl = $PlayerApp } else { $ClientUrl = "${PlayerApp}?machine=$EncodedMachine" }
+  } else {
+    $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  }
+  $ServerHostUrl = "$TunnelBase/?serverHost=1&machine=$EncodedMachine&adminToken=$AdminToken"
+  $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
+  $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  $PublicUrl = $ServerManageUrl
+  Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
+  try { Set-Clipboard -Value $ClientUrl } catch {}
+
+  Write-Host ''
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host 'SERVER MANAGEMENT (open on this PC):' -ForegroundColor White
+  Write-Host $ServerManageUrl -ForegroundColor Yellow
+  Write-Host ''
+  Write-Host 'PLAYER GAME URL (just open this normally):' -ForegroundColor White
+  Write-Host $ClientUrl -ForegroundColor Cyan
+  Write-Host ''
+  if ($DiscoveryReady) {
+    Write-Host 'The game auto-discovers the active server. No sharedServer parameter is needed.' -ForegroundColor White
+  } else {
+    Write-Host 'ZIP mode fallback: this session uses a sharedServer parameter because Quick Tunnel has a temporary hostname.' -ForegroundColor Yellow
+  }
+  Write-Host 'The working player URL was copied to the clipboard.' -ForegroundColor White
+  Write-Host "Physical host page: $ServerHostUrl" -ForegroundColor DarkYellow
+  Write-Host "Local monitor fallback: $LocalMonitorUrl" -ForegroundColor DarkGray
+  Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
+  Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
+  Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
+  Write-Host ''
+
+  if (-not $NoBrowser) {
+    try { Start-Process $ServerManageUrl | Out-Null } catch {
+      try { Start-Process $LocalMonitorUrl | Out-Null } catch {}
+    }
+  }
+
+  while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
+    Start-Sleep -Seconds 1
+  }
+
+  if ($ServerProcess.HasExited) {
+    throw "Shared server stopped.`n$(Read-Log $ServerErr)"
+  }
+  if ($TunnelProcess.HasExited) {
+    throw "Cloudflare Tunnel stopped.`n$(Read-Log $TunnelErr)"
+  }
+}
+catch {
+  Write-Host ''
+  Write-Host "Startup failed: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host ''
+  Write-Host "Logs: $Runtime" -ForegroundColor DarkGray
+  exit 1
+}
+finally {
+  Stop-Child $TunnelProcess
+  Stop-Child $ServerProcess
+}
+)]
+  [string]$Machine = 'public-01',
+
+  [string]$PublicHost = '',
+  [string]$TunnelToken = '',
+  [switch]$QuickTunnel,
 
   [switch]$NoBrowser,
   [switch]$NoDownload,
