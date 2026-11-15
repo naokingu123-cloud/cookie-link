@@ -137,7 +137,9 @@ function archiveRound(m,round){
  m.history=m.history.slice(-HISTORY_LIMIT);
 }
 function eligiblePlayerIds(m){
- return connectedPlayerIds(m).filter(id=>!pendingRoundForPlayer(m,id));
+ // BET eligibility is based only on being connected when the server opens the window.
+ // Previous settlement/recovery never blocks the global server clock.
+ return connectedPlayerIds(m);
 }
 function createBettingRound(m){
  if(m.round?.phase==='COMPLETE')archiveRound(m,m.round);
