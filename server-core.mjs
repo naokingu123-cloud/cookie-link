@@ -364,7 +364,11 @@ async function api(req,res,url){
   if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(!participant)return reply(res,404,{ok:false,error:'not_participating'});
   const ballIndex=Math.max(0,Math.min(round.balls.length,Number(input.ballIndex)||0));
-  if(ballIndex>=Number(participant.checkpointBall||0)&&input.state){participant.checkpoint=input.state;participant.checkpointBall=ballIndex;participant.lastSeen=now();scheduleSave();}
+  if(ballIndex>=Number(participant.checkpointBall||0)&&input.state){
+   participant.checkpoint=input.state;participant.checkpointBall=ballIndex;participant.lastSeen=now();
+   if(ballIndex===0&&!participant.initialState)participant.initialState=input.state;
+   scheduleSave();
+  }
   return reply(res,200,{ok:true,checkpointBall:participant.checkpointBall});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='settle'){
@@ -439,8 +443,8 @@ wss.on('connection',(ws,{player,machineId})=>{
  });
  ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id)broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});tickMachine(m);});
 });
+setInterval(()=>{for(const m of Object.values(db.machines||{}))tickMachine(normalizeMachine(m,m.id));},250).unref();
 setInterval(()=>{
- for(const m of Object.values(db.machines||{}))tickMachine(normalizeMachine(m,m.id));
  for(const ws of wss.clients){
   if(ws.isAlive===false){
    ws.missedPongs=(Number(ws.missedPongs)||0)+1;
