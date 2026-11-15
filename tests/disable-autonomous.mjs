@@ -1,0 +1,1 @@
+process.env.SWEETS_AUTONOMOUS_ROUNDS='0';
