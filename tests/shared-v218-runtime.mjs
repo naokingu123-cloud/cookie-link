@@ -23,12 +23,11 @@ const context={window:null,globalThis:null,location:{search:''},URLSearchParams,
  rouletteDrawSource:{start(){return true;},reset(){drawResets++;activeRound=null;}},stopAutoRound(){},stopResultAuto(){},autoRoundStamp:null,resultAutoToken:0,roundStarting:false,countdownText(){},
  document:{getElementById(id){return id==='round-result-layer'?resultLayer:null;},querySelectorAll(){return[];}},getComputedStyle(){return {display:resultLayer.hidden?'none':'block'};},
  scheduleUI(){for(let i=0;i<slots.length;i++)slots[i].displayedPayout=app.engines[i].totalHundredths;},renderRoundResult(){},syncPause(){},requestFit(){},
- setTimeout(callback,delay){if(delay<=10){scheduled.push(callback);return scheduled.length;}return global.setTimeout(callback,delay);},clearTimeout(id){global.clearTimeout(id);},addEventListener(){}}
+ setTimeout(callback,delay){if(callback?.name==='monitor')return 1;if(delay<=10){scheduled.push(callback);return scheduled.length;}return global.setTimeout(callback,delay);},clearTimeout(id){global.clearTimeout(id);},addEventListener(){}}
 context.window=context;context.globalThis=context;
 vm.runInNewContext(source,context);
 assert.ok(context.SweetsSharedLifecycleV218);
 
-// End of game 1: old board, old tab payout and result layer are all dirty.
 app.phase='complete';app.credit=900;app.displayCredit=900;app.totalWin=50;app.draws=[1,2,3,4,5,6,7,8];app.payout={};app.result={};app.paid=[true,true];app.roundWins=[20,30];
 for(const engine of app.engines){engine.processed=8;engine.accepted=8;engine.busy=true;engine.totalHundredths=777;}
 resultLayer.hidden=false;activeRound={roundId:'round-1',participant:{playerId:'PLAYER',creditAfterBet:900}};
@@ -41,7 +40,6 @@ assert.ok(events.indexOf('engine-reset-false')<events.indexOf('prepare'),'engine
 for(let i=0;i<app.engines.length;i++){assert.ok(app.engines[i].boardVersion>oldBoards[i]);assert.equal(slots[i].displayedPayout,0);assert.equal(slots[i].dirtyMain,true);assert.equal(slots[i].lastState,null);}
 assert.equal(app.engines[0].kind,'cookie');assert.equal(context.SweetsSharedLifecycleV218.isPristine(),true);
 
-// Game 2 must start on the freshly generated board without logout/reset button.
 serverRound={id:'round-2',phase:'PLAYING',participant:{playerId:'PLAYER',bets:[100,100],locked:[100,100],enabled:[true,true]},balls:[]};client.round=serverRound;
 assert.equal(app.start(),true);assert.equal(startCalls,1);assert.equal(app.phase,'playing');
 console.log('v218 game1 result -> full board/tab reset -> game2 start regression passed');
