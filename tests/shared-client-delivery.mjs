@@ -5,6 +5,8 @@ const wrapper=await readFile(new URL('../assets/shared-machine-v176.js',import.m
 const shared=await readFile(new URL('../assets/shared-machine-core-v196.js',import.meta.url),'utf8');
 const host=await readFile(new URL('../assets/shared-roulette-webrtc-host-v197.js',import.meta.url),'utf8');
 const client=await readFile(new URL('../assets/shared-roulette-webrtc-client-v197.js',import.meta.url),'utf8');
+const hostKeepAlive=await readFile(new URL('../assets/shared-host-keepalive-v205.js',import.meta.url),'utf8');
+const clientWatchdog=await readFile(new URL('../assets/shared-roulette-client-watchdog-v205.js',import.meta.url),'utf8');
 const server=await readFile(new URL('../server-core.mjs',import.meta.url),'utf8');
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
 const patches=await readFile(new URL('../assets/cookie-upgrade-patches.js',import.meta.url),'utf8');
@@ -13,10 +15,15 @@ const titles=await readFile(new URL('../assets/game-titles-v91.js',import.meta.u
 const recovery=await readFile(new URL('../assets/round-recovery-v1.js',import.meta.url),'utf8');
 const precomputed=await readFile(new URL('../assets/precomputed-round-v174.js',import.meta.url),'utf8');
 const index=await readFile(new URL('../index.html',import.meta.url),'utf8');
+const launcher=await readFile(new URL('../scripts/launch-host-browser-v205.ps1',import.meta.url),'utf8');
+const launcherWrapper=await readFile(new URL('../scripts/start-shared-machine-v205.ps1',import.meta.url),'utf8');
+const launcherCmd=await readFile(new URL('../start-shared-machine-tunnel.cmd',import.meta.url),'utf8');
 
-assert.ok(wrapper.includes("shared-machine-core-v196.js?v=204"),'shared wrapper must load v204 authoritative client');
-assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=204"),'server host must load current smooth transmitter');
-assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=204"),'players must load current smooth receiver');
+assert.ok(wrapper.includes("shared-machine-core-v196.js?v=205"),'shared wrapper must load v205 authoritative client');
+assert.ok(wrapper.includes("shared-host-keepalive-v205.js?v=205"),'server host must load background keepalive before video capture');
+assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=205"),'server host must load current smooth transmitter');
+assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=205"),'players must load current smooth receiver');
+assert.ok(wrapper.includes("shared-roulette-client-watchdog-v205.js?v=205"),'players must load stalled-stream watchdog');
 assert.ok(wrapper.includes('eval(load'),'extensions must execute inside the game private scope');
 
 assert.ok(server.includes("phase:'BETTING'"),'server must own a BETTING phase');
@@ -56,8 +63,22 @@ assert.ok(host.includes('new MediaRecorder(media'),'NAT-restricted clients must 
 assert.ok(host.includes("recorder.start(220)"),'relay chunks must stay responsive');
 assert.ok(client.includes('requestVideoFrameCallback'),'client must track rendered live frames');
 assert.ok(client.includes('MediaSource.isTypeSupported'),'WebSocket fallback must play continuously');
-assert.ok(client.includes("state?.pc?.connectionState!=='connected'&&!fallback"),'relay fallback must start until P2P is connected');
-assert.ok(client.includes("setTimeout(attach,80)"),'video mount must retry until roulette stage exists');
+assert.ok(clientWatchdog.includes("type:'rtc_fallback_request'"),'stalled connected WebRTC must request relay fallback too');
+assert.ok(clientWatchdog.includes('getVideoPlaybackQuality'),'watchdog must verify actual decoded-frame progress');
+assert.ok(clientWatchdog.includes("video.dataset.live='0'"),'a frozen remote frame must expose the responsive local canvas while recovering');
+
+assert.ok(hostKeepAlive.includes("app.pause=function(value)"),'host must ignore page-visibility pause during a physical round');
+assert.ok(hostKeepAlive.includes("rouletteDrawSource.pause=function(value)"),'draw source pause must be ignored during a physical round');
+assert.ok(hostKeepAlive.includes("nativeCapture.call(this,0)"),'host canvas capture must use manual frame requests');
+assert.ok(hostKeepAlive.includes("requestFrame"),'worker heartbeat must pump canvas frames');
+assert.ok(hostKeepAlive.includes("setInterval(()=>postMessage(0),42)"),'host frame pump must target about 24 fps');
+
+for(const flag of ['--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows','CalculateNativeWinOcclusion']){
+ assert.ok(launcher.includes(flag),'dedicated host browser must include '+flag);
+}
+assert.ok(launcher.includes("--app=$LocalUrl"),'dedicated browser must open the local monitor app');
+assert.ok(launcherWrapper.includes("-NoBrowser"),'legacy launcher must not also open a throttled default-browser tab');
+assert.ok(launcherCmd.includes('start-shared-machine-v205.ps1'),'CMD launcher must use the dedicated-browser wrapper');
 
 assert.ok(patches.includes("shared client start does not depend on local roulette renderer"),'server-controlled start must not depend on local roulette readiness');
 assert.ok(patches.includes("shared client can start while tab is background"),'server-authorized round must not freeze only because monitor is foreground');
@@ -70,4 +91,4 @@ assert.ok(index.includes("localStorage.removeItem('sweets-link-pending-round-v1'
 assert.ok(index.includes("localStorage.removeItem('sweets-link-credit-v1')"),'legacy synthetic credit cache must be cleared before game boot');
 assert.ok(!patches.includes("single-commit instant payout"),'normal physical result flow must remain unchanged');
 
-console.log('server-authoritative BET clock + reconnect recovery + smooth roulette guards passed');
+console.log('server BET clock + background-safe host + smooth client roulette guards passed');
