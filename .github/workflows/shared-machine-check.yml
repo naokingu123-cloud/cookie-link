@@ -96,31 +96,11 @@ jobs:
           fi
       - name: Stable shared-machine regressions
         run: npm run test:shared
-      - name: Physical roulette continuity guard
-        shell: bash
+      - name: Reconnect and physical roulette guards
         run: |
-          grep -q "rouletteTimeScale" optimized/app-01.js
-          grep -q "rouletteTimeScale=2" assets/shared-host-speed-v219.js
-          grep -q "browser clocks unchanged" assets/shared-host-speed-v219.js
-          grep -q "physical host must draw empty authoritative rounds" assets/shared-core-patch-v221.js
-          grep -q "restart a stalled physical draw" assets/shared-core-patch-v221.js
-          grep -q "physical result progress and retry" assets/shared-core-patch-v221.js
-          grep -q "authoritative catch-up helper" assets/shared-core-patch-v222.js
-          grep -q "legacy first-HIT JPEG mirror" assets/shared-core-patch-v222.js
-          grep -q "reconnect-safe authoritative rounds" assets/shared-client-controller-v222.js
-          grep -q "creditOverride!==null&&creditOverride!==undefined" assets/shared-client-controller-v222.js
-          grep -q "last-good remote frame continuity" assets/shared-roulette-client-hold-v222.js
-          grep -q "CONTINUOUS_PHYSICAL_ROUNDS" server-core-loader-v220.mjs
-          grep -q "SWEETS_CONTINUOUS_PHYSICAL_ROUNDS??='1'" server.mjs
-          grep -q "smoothRoulette" assets/server-monitor-host-stability-v217.js
-          grep -q "Do not drop the relay merely because ICE connected" assets/shared-roulette-webrtc-host-v217.js
-          grep -q "boundaries must not blank" assets/shared-roulette-client-v219.js
-          grep -q "v223 three-round fresh-board reset" tests/shared-v219-continuous-rounds.mjs
-          grep -q "v222 three live start/reconnect/result" tests/shared-v219-three-live-cycles.mjs
-          grep -q "empty physical clock" tests/server-v220-continuous-physical.mjs
-          grep -q "physical host start/progress/resume watchdog" tests/shared-v221-host-draw-watchdog.mjs
-          grep -q "v222 reconnect keeps PLAY alive" tests/shared-v222-reconnect-catchup.mjs
-          grep -q "SWEETS_AUTONOMOUS_ROUNDS='0'" server.mjs
+          node tests/shared-v221-host-draw-watchdog.mjs
+          node tests/shared-v222-reconnect-catchup.mjs
+          node tests/shared-v219-continuous-rounds.mjs
           if grep -q "server-autonomous-rounds-v213.mjs" server.mjs; then
             echo 'Legacy synthetic autonomous rounds must not be loaded.'
             exit 1
