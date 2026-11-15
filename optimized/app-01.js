@@ -2546,6 +2546,10 @@ class Arcade{
  }
  failDraw(message,token){if(token!==this.token||this.phase!=='playing')return;this.drawError=message;this.phase='error';this.token++;this.dealing=false;this.pause(true);this.onChange(this);}
  async deal(token){
+  if(typeof LOCAL_EIGHT_DRAW_ALLOWED!=='undefined'&&!LOCAL_EIGHT_DRAW_ALLOWED){
+   console.warn('[ClientDrawGuard] Arcade.deal() blocked on shared client');
+   return false;
+  }
   for(let k=0;k<8;k++){
    if(k&&!await this.wait(5000,token))return;
    if([3,5,6,7].includes(k))while(token===this.token&&this.phase==='playing'&&!this.engines.every((e,i)=>!this.enabled[i]||(!e.opening&&e.idle&&e.processed>=e.accepted)))await this.sleep(40);
@@ -5525,8 +5529,8 @@ function rouletteSelectedBoard(){const setup=window.SweetsLineup;return {index:a
 // Manual draw source shares Arcade.acceptNumber, including queued Canyon hits.
 function setupManualNumbers(){
  const root=$('cookie-roulette'),panel=document.createElement('section');panel.id='manual-number-panel';panel.hidden=true;panel.setAttribute('aria-label','番号指定モード');panel.innerHTML='<header><b>番号指定</b><span id="manual-count">0 / 8球</span><button id="manual-start" type="button">開始</button></header><div id="manual-number-grid"></div><p id="manual-history" aria-live="polite">開始後、番号をタップ</p>';
- for(let n=1;n<=25;n++){const b=document.createElement('button');b.type='button';b.textContent=n;b.dataset.number=n;b.setAttribute('aria-label',n+'番を入賞');b.onclick=()=>{if(!manualNumbers||app.phase!=='playing'||app.paused||app.drawHeld||app.draws.includes(n)||app.draws.length>=8)return;rouletteDrawSource.callbacks?.onNumber(n);syncManualNumbers();};panel.querySelector('#manual-number-grid').append(b);}root.append(panel);
- const toggle=document.createElement('button');toggle.id='manual-number-toggle';toggle.type='button';toggle.title='番号指定／ルーレットを切替。進行中の場合は現在のゲームをリセット';toggle.onclick=()=>{if(jpcSession.active)return;manualNumbers=!manualNumbers;if(app.phase!=='ready')debugResetRound();else{rouletteDrawSource.reset();stopAutoRound();}syncPause();syncManualNumbers();scheduleAutoRound();scheduleUI(app);};root.append(toggle);
+ for(let n=1;n<=25;n++){const b=document.createElement('button');b.type='button';b.textContent=n;b.dataset.number=n;b.setAttribute('aria-label',n+'番を入賞');b.onclick=()=>{if(!LOCAL_EIGHT_DRAW_ALLOWED)return;if(!manualNumbers||app.phase!=='playing'||app.paused||app.drawHeld||app.draws.includes(n)||app.draws.length>=8)return;rouletteDrawSource.callbacks?.onNumber(n);syncManualNumbers();};panel.querySelector('#manual-number-grid').append(b);}root.append(panel);
+ const toggle=document.createElement('button');toggle.id='manual-number-toggle';toggle.type='button';toggle.title='番号指定／ルーレットを切替。進行中の場合は現在のゲームをリセット';if(!LOCAL_EIGHT_DRAW_ALLOWED){toggle.hidden=true;toggle.disabled=true;}toggle.onclick=()=>{if(!LOCAL_EIGHT_DRAW_ALLOWED||jpcSession.active)return;manualNumbers=!manualNumbers;if(app.phase!=='ready')debugResetRound();else{rouletteDrawSource.reset();stopAutoRound();}syncPause();syncManualNumbers();scheduleAutoRound();scheduleUI(app);};root.append(toggle);
  $('manual-start').onclick=()=>{activateGameAudio({gesture:true});startReadyRound();syncManualNumbers();};syncManualNumbers();
 }
 function syncManualNumbers(){
