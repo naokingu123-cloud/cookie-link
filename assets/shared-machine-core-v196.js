@@ -309,7 +309,7 @@ async function startShared(callbacks,nativeReset){
   client.accept(data);const round=data.round;if(!round)throw Error('round unavailable');const participant=round.participant||{};
   const explicitResume=!!resumeId&&resumeId===round.id;
   if(blockedRoundId&&round.id!==blockedRoundId)rememberBlockedRound(null);
-  pendingStart=null;client.syncReady();closeServerGate();try{rouletteDriver?.setPaused(true);}catch{}
+  pendingStart=null;client.syncReady();closeServerGate();try{rouletteDriver?.setPaused(false);}catch{}
   current={roundId:round.id,callbacks,nativeReset,role:'player',delivered:0,queue:new Map(),draining:false,stopped:false,saveTimer:0,settleSent:false,participant};app.__sharedRound=current;resumeId=null;
   if(participant.settlement&&explicitResume){app.credit=Number(participant.settlement.creditAfter)||app.credit;app.displayCredit=app.credit;app.phase='complete';app.dealing=false;repaint(app);return;}
   if(explicitResume){
