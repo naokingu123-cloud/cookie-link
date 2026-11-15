@@ -2698,8 +2698,9 @@ class RecordBook{
 
 
 const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg',inks=['#f3348e','#f8be19','#65cc46','#35ace9','#ac50df'];
+const serverHostPage=new URLSearchParams(location.search).get('serverHost')==='1';
 const num=n=>n.toLocaleString('ja-JP',{maximumFractionDigits:2,useGrouping:false}),units=[5,10,20,50,100,500];
-let app,active=0,unit=Array.from({length:window.SweetsLineup?.ids?.length||3},()=>4),userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=true,payoutStamp=null;
+let app,active=0,unit=Array.from({length:window.SweetsLineup?.ids?.length||3},()=>4),userPaused=false,audio=null,uiPending=false,uiApp=null,payKey='',ballsKey='',inView=!serverHostPage,payoutStamp=null;
 const motionReduced=matchMedia('(prefers-reduced-motion: reduce)').matches,allNineMode=window.SweetsLineup?.mode==='all';
 function put(id,value){const el=$(id),text=String(value);if(el.textContent!==text)el.textContent=text;}
 function scheduleUI(a){if(a)uiApp=a;if(uiPending||document.hidden||!inView)return;uiPending=true;requestAnimationFrame(flushUI);}
@@ -5959,7 +5960,7 @@ for(let n=1;n<=25;n++)fetchEffectBytes(numberVoiceFile(n)).catch(()=>{});
 scheduleAutoRound();
 
 document.addEventListener('visibilitychange',syncPause);
-if(typeof IntersectionObserver!=='undefined')new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;syncPause();},{threshold:0}).observe($('viewport'));
+if(typeof IntersectionObserver!=='undefined')new IntersectionObserver(entries=>{if(serverHostPage){inView=false;return;}inView=entries[0].isIntersecting;syncPause();},{threshold:0}).observe($('viewport'));
 const desktopView=matchMedia('(any-hover: hover) and (any-pointer: fine)').matches;
 document.body.classList.add(desktopView?'desktop-view':'mobile-view');
 // Fill the available phone viewport, not a fixed 480:960 letterbox.
