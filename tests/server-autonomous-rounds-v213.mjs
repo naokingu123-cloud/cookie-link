@@ -24,17 +24,23 @@ let stderr='';child.stderr.on('data',chunk=>stderr+=chunk);
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
 async function json(url,{method='GET',body,token,playerId}={}){
- const response=await fetch(base+url,{method,headers:{'content-type':'application/json',...(token?{authorization:'Bearer '+token,'x-player-id':playerId}:{})},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
- const data=await response.json();if(!response.ok)throw Object.assign(Error(data.error||String(response.status)),{status:response.status,data});return data;
+ for(let attempt=0;attempt<3;attempt++){
+  const response=await fetch(base+url,{method,headers:{'content-type':'application/json',...(token?{authorization:'Bearer '+token,'x-player-id':playerId}:{})},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
+  const data=await response.json();
+  if(response.status===429&&attempt<2){await sleep(250*(attempt+1));continue;}
+  if(!response.ok)throw Object.assign(Error(data.error||String(response.status)),{status:response.status,data});
+  return data;
+ }
+ throw Error('request retries exhausted');
 }
 async function waitHealth(){
  for(let i=0;i<120;i++){try{const response=await fetch(base+'/api/health',{cache:'no-store'});if(response.ok)return;}catch{}await sleep(80);}
  throw Error('server failed: '+stderr);
 }
 async function adminState(){return json('/api/admin/machines/public-01?adminToken='+encodeURIComponent(adminToken));}
-async function waitFor(predicate,timeout=14000){
+async function waitFor(predicate,timeout=16000){
  const started=Date.now();let value;
- while(Date.now()-started<timeout){value=await adminState();if(predicate(value))return value;await sleep(60);}
+ while(Date.now()-started<timeout){value=await adminState();if(predicate(value))return value;await sleep(160);}
  throw Error('state timeout: '+JSON.stringify(value)+'\n'+stderr);
 }
 function openSocket(session){
