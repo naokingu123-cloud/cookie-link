@@ -43,7 +43,7 @@ function regenerateReadyBoards(){
  }finally{debugPayoutTarget=previous;}
  try{app.onChange?.(app);}catch{}
 }
-function resetToServerWaiting(credit,reason='サーバー精算済み'){ 
+function resetToServerWaiting(credit,reason='サーバー精算済み'){
  try{rouletteDrawSource?.reset?.();}catch{}
  try{
   app.payout=null;app.result=null;app.dealing=false;app.fastForward=false;app.drawHeld=false;
@@ -96,7 +96,12 @@ function installClient(){
   saveChain=saveChain.catch(()=>{}).then(async()=>{const ball=clamp(Number(request.ballIndex)||0,0,8),complete=await waitForBall(ball);if(request.state)request.state.payoutV3=telemetry(ball,complete);const response=await originalSave(request);applyControl(response?.payoutControlV3);return response;});return saveChain;
  };
  client.settle=async function(payload){
-  await waitForBall(8);const final=telemetry(8,true);if(Number.isFinite(Number(payload?.totalWin)))final.roundWin=Number(payload.totalWin);
+  // Immediate reset starts only after beginPayout has calculated the final WIN.
+  // Capture telemetry synchronously before the board is reset; waiting here would
+  // observe the newly prepared board and could delay settlement for 18 seconds.
+  const immediate=payload?.immediateReset===true;
+  if(!immediate)await waitForBall(8);
+  const final=telemetry(8,true);if(Number.isFinite(Number(payload?.totalWin)))final.roundWin=Number(payload.totalWin);
   const response=await originalSettle({...payload,payoutV3:final});applyControl(response?.payoutControlV3);return response;
  };
  client.join=async function(payload){
