@@ -25,6 +25,7 @@ $TunnelOut = Join-Path $Runtime 'cloudflared.out.log'
 $TunnelErr = Join-Path $Runtime 'cloudflared.err.log'
 $PublicUrlFile = Join-Path $Runtime 'shared-url.txt'
 $DataFile = Join-Path $Runtime 'shared-machine.json'
+$AdminToken = [guid]::NewGuid().ToString('N')
 
 New-Item -ItemType Directory -Force -Path $Runtime,$Tools | Out-Null
 Set-Location $Root
@@ -109,13 +110,16 @@ try {
   Write-Step "Starting shared server (port $Port)"
   $OldPort = $env:PORT
   $OldData = $env:SWEETS_DATA_FILE
+  $OldAdmin = $env:SWEETS_ADMIN_TOKEN
   $env:PORT = [string]$Port
   $env:SWEETS_DATA_FILE = $DataFile
+  $env:SWEETS_ADMIN_TOKEN = $AdminToken
   try {
     $ServerProcess = Start-Process -FilePath $Node -ArgumentList @('server.mjs') -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $ServerOut -RedirectStandardError $ServerErr
   } finally {
     $env:PORT = $OldPort
     $env:SWEETS_DATA_FILE = $OldData
+    $env:SWEETS_ADMIN_TOKEN = $OldAdmin
   }
 
   $HealthUrl = "http://127.0.0.1:$Port/api/health"
@@ -169,6 +173,7 @@ try {
 
   $EncodedMachine = [Uri]::EscapeDataString($Machine)
   $PublicUrl = "$TunnelBase/?machine=$EncodedMachine"
+  $MonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
   Set-Content -LiteralPath $PublicUrlFile -Value $PublicUrl -Encoding UTF8
   try { Set-Clipboard -Value $PublicUrl } catch {}
 
@@ -178,14 +183,15 @@ try {
   Write-Host '============================================================' -ForegroundColor Green
   Write-Host $PublicUrl -ForegroundColor Yellow
   Write-Host ''
-  Write-Host 'Open this URL on every device that will share the same machine.' -ForegroundColor White
-  Write-Host 'The URL was also copied to the clipboard.' -ForegroundColor White
+  Write-Host 'Open this URL on PLAYER devices. The server PC will open the monitor only.' -ForegroundColor White
+  Write-Host 'The player URL was also copied to the clipboard.' -ForegroundColor White
+  Write-Host "Monitor: $MonitorUrl" -ForegroundColor Cyan
   Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
   Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
   Write-Host ''
 
   if (-not $NoBrowser) {
-    try { Start-Process $PublicUrl | Out-Null } catch {}
+    try { Start-Process $MonitorUrl | Out-Null } catch {}
   }
 
   while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
