@@ -4816,6 +4816,7 @@ function startAnima8(){
  const scene=new THREE.Scene();
  const phone=(window.matchMedia&&matchMedia('(pointer: coarse)').matches)||/iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
  const rouletteQuery=new URLSearchParams(location.search),serverHostRender=rouletteQuery.get('serverHost')==='1',ultraLightRoulette=serverHostRender&&rouletteQuery.get('lightRoulette')==='1';
+ if(ultraLightRoulette&&physics.world?.solver){physics.world.solver.iterations=5;physics.world.solver.tolerance=.001;}
  const renderer=new THREE.WebGLRenderer({antialias:serverHostRender?false:!phone,alpha:true,powerPreference:ultraLightRoulette?'low-power':phone?'default':'high-performance',preserveDrawingBuffer:serverHostRender});
  renderer.setPixelRatio(ultraLightRoulette?.65:serverHostRender?1:Math.min(window.devicePixelRatio||1,phone?1.15:1.4));renderer.setClearColor(0x000000,0);
  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
