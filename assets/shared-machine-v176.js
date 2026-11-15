@@ -8,22 +8,22 @@ function load(url){
 try{
  const params=new URLSearchParams(location.search),worker=params.get('serverSettlementWorker')==='1',host=params.get('serverHost')==='1';
  if(worker){
-  eval(load('assets/server-offline-settlement-worker-v3.js?v=222')+'\n//# sourceURL=server-offline-settlement-worker-v3.js');
+  eval(load('assets/server-offline-settlement-worker-v3.js?v=223')+'\n//# sourceURL=server-offline-settlement-worker-v3.js');
  }else{
-  eval(load('assets/shared-core-patch-v221.js?v=222')+'\n//# sourceURL=shared-core-patch-v221.js');
-  eval(load('assets/shared-core-patch-v222.js?v=222')+'\n//# sourceURL=shared-core-patch-v222.js');
-  const coreSource=window.SweetsSharedCorePatchV222.patch(load('assets/shared-machine-core-v196.js?v=222'));
-  eval(coreSource+'\n//# sourceURL=shared-machine-core-v196-v222-patched.js');
+  eval(load('assets/shared-core-patch-v221.js?v=223')+'\n//# sourceURL=shared-core-patch-v221.js');
+  eval(load('assets/shared-core-patch-v222.js?v=223')+'\n//# sourceURL=shared-core-patch-v222.js');
+  const coreSource=window.SweetsSharedCorePatchV222.patch(load('assets/shared-machine-core-v196.js?v=223'));
+  eval(coreSource+'\n//# sourceURL=shared-machine-core-v196-v223-patched.js');
   if(host){
-   eval(load('assets/shared-host-keepalive-v206.js?v=222')+'\n//# sourceURL=shared-host-keepalive-v206.js');
-   eval(load('assets/shared-host-speed-v219.js?v=222')+'\n//# sourceURL=shared-host-speed-v219.js');
-   eval(load('assets/shared-roulette-webrtc-host-v217.js?v=222')+'\n//# sourceURL=shared-roulette-webrtc-host-v217.js');
+   eval(load('assets/shared-host-keepalive-v206.js?v=223')+'\n//# sourceURL=shared-host-keepalive-v206.js');
+   eval(load('assets/shared-host-speed-v219.js?v=223')+'\n//# sourceURL=shared-host-speed-v219.js');
+   eval(load('assets/shared-roulette-webrtc-host-v217.js?v=223')+'\n//# sourceURL=shared-roulette-webrtc-host-v217.js');
   }else{
-   eval(load('assets/server-payout-control-v3.js?v=222')+'\n//# sourceURL=server-payout-control-v3.js');
-   eval(load('assets/shared-client-controller-v222.js?v=222')+'\n//# sourceURL=shared-client-controller-v222.js');
-   eval(load('assets/shared-roulette-client-v219.js?v=222')+'\n//# sourceURL=shared-roulette-client-v219.js');
-   eval(load('assets/shared-roulette-client-hold-v222.js?v=222')+'\n//# sourceURL=shared-roulette-client-hold-v222.js');
+   eval(load('assets/server-payout-control-v3.js?v=223')+'\n//# sourceURL=server-payout-control-v3.js');
+   eval(load('assets/shared-client-controller-v222.js?v=223')+'\n//# sourceURL=shared-client-controller-v222.js');
+   eval(load('assets/shared-roulette-client-v219.js?v=223')+'\n//# sourceURL=shared-roulette-client-v219.js');
+   eval(load('assets/shared-roulette-client-hold-v222.js?v=223')+'\n//# sourceURL=shared-roulette-client-hold-v222.js');
   }
  }
-}catch(error){console.error('[SharedMachineLoaderV222]',error);throw error;}
+}catch(error){console.error('[SharedMachineLoaderV223]',error);throw error;}
 })();
