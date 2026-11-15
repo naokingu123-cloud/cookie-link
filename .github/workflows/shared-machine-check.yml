@@ -9,6 +9,9 @@ on:
       - 'assets/shared-machine-v176.js'
       - 'assets/precomputed-round-v174.js'
       - 'tests/shared-server-smoke.mjs'
+      - 'scripts/start-shared-machine-tunnel.ps1'
+      - 'start-shared-machine-tunnel.cmd'
+      - 'docs/SHARED_MACHINE_TUNNEL.md'
       - '.github/workflows/shared-machine-check.yml'
 
 jobs:
@@ -21,11 +24,21 @@ jobs:
         with:
           node-version: '20'
       - run: npm install --ignore-scripts
-      - name: Syntax check
+      - name: JavaScript syntax check
+        run: npm run check
+      - name: PowerShell syntax check
+        shell: pwsh
         run: |
-          node --check server.mjs
-          node --check assets/shared-machine-v176.js
-          node --check assets/precomputed-round-v174.js
-          node --check tests/shared-server-smoke.mjs
-      - name: Server smoke test
-        run: node tests/shared-server-smoke.mjs
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'scripts/start-shared-machine-tunnel.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+      - name: Multi-client server smoke test
+        run: npm run test:shared
