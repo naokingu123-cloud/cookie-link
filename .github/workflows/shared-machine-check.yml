@@ -11,6 +11,8 @@ on:
       - 'assets/precomputed-round-v174.js'
       - 'tests/shared-server-smoke.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
+      - 'scripts/setup-named-tunnel.ps1'
+      - 'setup-named-tunnel.cmd'
       - 'start-shared-machine-tunnel.cmd'
       - 'docs/SHARED_MACHINE_TUNNEL.md'
       - '.github/workflows/shared-machine-check.yml'
@@ -32,20 +34,24 @@ jobs:
         run: |
           $tokens = $null
           $errors = $null
-          [System.Management.Automation.Language.Parser]::ParseFile(
-            (Resolve-Path 'scripts/start-shared-machine-tunnel.ps1'),
-            [ref]$tokens,
-            [ref]$errors
-          ) | Out-Null
-          if ($errors.Count -gt 0) {
-            $errors | ForEach-Object { Write-Error $_.Message }
-            exit 1
+          foreach ($file in @('scripts/start-shared-machine-tunnel.ps1','scripts/setup-named-tunnel.ps1')) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $file),
+              [ref]$tokens,
+              [ref]$errors
+            ) | Out-Null
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error ($file + ': ' + $_.Message) }
+              exit 1
+            }
           }
       - name: Windows PowerShell 5.1 encoding guard
         shell: bash
         run: |
-          if LC_ALL=C grep -nP '[^\x00-\x7F]' scripts/start-shared-machine-tunnel.ps1; then
-            echo 'Launcher must remain ASCII-only for Windows PowerShell 5.1 compatibility.'
+          if LC_ALL=C grep -nP '[^\x00-\x7F]' scripts/start-shared-machine-tunnel.ps1 scripts/setup-named-tunnel.ps1; then
+            echo 'PowerShell scripts must remain ASCII-only for Windows PowerShell 5.1 compatibility.'
             exit 1
           fi
       - name: Multi-client server smoke test
