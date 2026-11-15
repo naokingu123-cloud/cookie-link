@@ -11,6 +11,7 @@ on:
       - 'assets/shared-machine-v176.js'
       - 'assets/precomputed-round-v174.js'
       - 'tests/shared-server-smoke.mjs'
+      - 'tests/client-no-local-eight.mjs'
       - 'scripts/start-shared-machine-tunnel.ps1'
       - 'scripts/setup-named-tunnel.ps1'
       - 'setup-named-tunnel.cmd'
