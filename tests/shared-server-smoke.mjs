@@ -13,14 +13,14 @@ const base='http://127.0.0.1:'+port;
 const adminToken='test-admin-token';
 const child=spawn(process.execPath,['server.mjs'],{
  cwd:root,
- env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_ADMIN_TOKEN:adminToken,SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_BALL_INTERVAL_MS:'300',SWEETS_CHECKPOINT_WAIT_MS:'1200'},
+ env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_ADMIN_TOKEN:adminToken},
  stdio:['ignore','pipe','pipe']
 });
 let stderr='';child.stderr.on('data',chunk=>stderr+=chunk);
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
 async function waitForHealth(){
- for(let i=0;i<80;i++){try{const response=await fetch(base+'/api/health');if(response.ok)return;}catch{}await sleep(100);}
+ for(let i=0;i<80;i++){try{const response=await fetch(base+'/api/health');if(response.ok){const h=await response.json();assert.equal(h.source,'physical-host');return;}}catch{}await sleep(100);}
  throw Error('server did not start: '+stderr);
 }
 async function json(url,{method='GET',body,token,playerId}={}){
@@ -37,14 +37,21 @@ function openSocket(session){
 }
 async function expectHttpError(fn,status){try{await fn();assert.fail('expected HTTP '+status);}catch(error){assert.equal(error.status,status);}}
 
-let socketA,socketB;
+let socketHost,socketA,socketB;
 try{
  await waitForHealth();
+ const sessionHost=await json('/api/session',{method:'POST',body:{displayName:'SERVER ROULETTE'}});
  const sessionA=await json('/api/session',{method:'POST',body:{displayName:'PLAYER A'}});
  const sessionB=await json('/api/session',{method:'POST',body:{displayName:'PLAYER B'}});
- socketA=await openSocket(sessionA);socketB=await openSocket(sessionB);
- await socketA.inbox.next(m=>m.type==='snapshot');await socketB.inbox.next(m=>m.type==='snapshot');
+ socketHost=await openSocket(sessionHost);socketA=await openSocket(sessionA);socketB=await openSocket(sessionB);
+ await socketHost.inbox.next(m=>m.type==='snapshot');await socketA.inbox.next(m=>m.type==='snapshot');await socketB.inbox.next(m=>m.type==='snapshot');
+
+ const authHost={token:sessionHost.token,playerId:sessionHost.player.id};
  const authA={token:sessionA.token,playerId:sessionA.player.id},authB={token:sessionB.token,playerId:sessionB.player.id};
+ const registered=await json('/api/admin/machines/public-01/host/register?adminToken='+encodeURIComponent(adminToken),{...authHost,method:'POST',body:{}});
+ assert.equal(registered.role,'host');
+ assert.equal(registered.machine.hostPlayerId,sessionHost.player.id);
+
  const joinedA=await json('/api/machines/public-01/round/join',{...authA,method:'POST',body:{clientRoundToken:'a',bets:[100],locked:[100],enabled:[true],totalBet:100,creditAfterBet:900,appVersion:'test'}});
  const joinedB=await json('/api/machines/public-01/round/join',{...authB,method:'POST',body:{clientRoundToken:'b',bets:[200],locked:[200],enabled:[true],totalBet:200,creditAfterBet:800,appVersion:'test'}});
  assert.equal(joinedA.role,'player');assert.equal(joinedB.role,'player');assert.equal(joinedA.round.id,joinedB.round.id);
@@ -52,22 +59,25 @@ try{
 
  await expectHttpError(()=>json('/api/machines/public-01/round/ball',{...authA,method:'POST',body:{roundId,ballIndex:1,number:7}}),403);
 
- const seen=[];
+ const physicalNumbers=[3,7,11,15,19,23,5,9],seen=[];
  for(let index=1;index<=8;index++){
+  const number=physicalNumbers[index-1];
+  const reported=await json('/api/machines/public-01/round/ball',{...authHost,method:'POST',body:{roundId,ballIndex:index,number,eventId:roundId+':'+index}});
+  assert.equal(reported.ball.number,number);
   const [a,b]=await Promise.all([
    socketA.inbox.next(m=>m.type==='ball_result'&&m.roundId===roundId&&m.ball?.index===index),
    socketB.inbox.next(m=>m.type==='ball_result'&&m.roundId===roundId&&m.ball?.index===index)
   ]);
-  assert.equal(a.ball.number,b.ball.number);seen.push(a.ball.number);
+  assert.equal(a.ball.number,number);assert.equal(b.ball.number,number);seen.push(number);
   await Promise.all([
    json('/api/machines/public-01/round/checkpoint',{...authA,method:'POST',body:{roundId,ballIndex:index,state:{draws:[...seen],credit:900,totalWin:index*10,roundWins:[index*10]}}}),
    json('/api/machines/public-01/round/checkpoint',{...authB,method:'POST',body:{roundId,ballIndex:index,state:{draws:[...seen],credit:800,totalWin:index*20,roundWins:[index*20]}}})
   ]);
  }
- assert.equal(new Set(seen).size,8);
+ assert.deepEqual(seen,physicalNumbers);
 
  const monitor=await json('/api/admin/machines/public-01?adminToken='+adminToken);
- assert.equal(monitor.machine.source,'server');assert.equal(monitor.round.balls.length,8);assert.equal(monitor.round.players.length,2);
+ assert.equal(monitor.machine.source,'physical-host');assert.equal(monitor.machine.hostConnected,true);assert.equal(monitor.round.balls.length,8);assert.equal(monitor.round.players.length,2);
  assert.equal(monitor.round.players.find(p=>p.displayName==='PLAYER A').roundWin,80);
  assert.equal(monitor.round.players.find(p=>p.displayName==='PLAYER B').currentCredit,800);
 
@@ -79,7 +89,7 @@ try{
  const monitorAfter=await json('/api/admin/machines/public-01?adminToken='+adminToken);
  const pb=monitorAfter.round.players.find(p=>p.displayName==='PLAYER B');
  assert.equal(pb.settled,true);assert.equal(pb.currentCredit,1050);assert.equal(pb.roundWin,250);
- console.log('server-authoritative multi-client monitor smoke test passed');
+ console.log('physical-host multi-client shared roulette smoke test passed');
 }finally{
- try{socketA?.ws.close();}catch{}try{socketB?.ws.close();}catch{}child.kill('SIGTERM');await sleep(100);await rm(temp,{recursive:true,force:true});
+ try{socketHost?.ws.close();}catch{}try{socketA?.ws.close();}catch{}try{socketB?.ws.close();}catch{}child.kill('SIGTERM');await sleep(100);await rm(temp,{recursive:true,force:true});
 }
