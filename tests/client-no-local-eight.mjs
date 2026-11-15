@@ -10,6 +10,8 @@ assert.match(source,/if\(this\.mode==='eight'&&!localEightAllowed\)\{if\(this\.s
 assert.match(source,/if\(!LOCAL_EIGHT_DRAW_ALLOWED\)\{rouletteDriver\.setPaused\(true\);return false;\}/);
 assert.match(source,/number\(n\)\{if\(LOCAL_EIGHT_DRAW_ALLOWED&&!manualNumbers\)this\.callbacks\?\.onNumber\(n\);\}/);
 assert.match(source,/start:\(\)=>\{if\(draw\.mode==='eight'&&!localEightAllowed\)\{setPaused\(true\);draw\.setState\('external'\);return false;\}/);
+assert.ok(source.includes("[ClientDrawGuard] Arcade.deal() blocked on shared client"),'Arcade random eight-ball fallback must be hard-blocked on clients');
+assert.ok(source.includes("if(!LOCAL_EIGHT_DRAW_ALLOWED)return;if(!manualNumbers"),'manual local number injection must be blocked on clients');
 
 const physicsLaunches=[...source.matchAll(/physics\.launch\(/g)].length;
 assert.equal(physicsLaunches,1,'all physics launches must remain behind DrawController.launch()');
