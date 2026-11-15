@@ -3,6 +3,7 @@ import {readFile} from 'node:fs/promises';
 
 const wrapper=await readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8');
 const core=await readFile(new URL('../assets/shared-machine-core-v196.js',import.meta.url),'utf8');
+const flow=await readFile(new URL('../assets/shared-client-flow-v211.js',import.meta.url),'utf8');
 const replay=await readFile(new URL('../assets/shared-recovery-replay-v207.js',import.meta.url),'utf8');
 const completion=await readFile(new URL('../assets/shared-recovery-completion-v206.js',import.meta.url),'utf8');
 const hostKeepAlive=await readFile(new URL('../assets/shared-host-keepalive-v206.js',import.meta.url),'utf8');
@@ -11,16 +12,22 @@ const watchdog=await readFile(new URL('../assets/shared-roulette-client-watchdog
 const server=await readFile(new URL('../server-core.mjs',import.meta.url),'utf8');
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
 
-assert.ok(wrapper.includes("shared-machine-core-v196.js?v=210"),'v210 loader must load the authoritative core');
-assert.ok(wrapper.includes("server-payout-control-v3.js?v=210"),'players must load the common payout controller before recovery');
-assert.ok(wrapper.includes("shared-recovery-replay-v207.js?v=210"),'players must retain stable recovery replay for non-offline-managed cases');
-assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=210"),'players must retain smooth roulette video');
-assert.ok(wrapper.includes("shared-roulette-client-watchdog-v205.js?v=210"),'players must retain stalled-stream recovery');
-assert.ok(wrapper.includes("shared-recovery-completion-v206.js?v=210"),'players must retain the result completion fallback');
-assert.ok(wrapper.includes("server-offline-settlement-worker-v3.js?v=210"),'dedicated server iframe must load the offline result worker');
-assert.ok(wrapper.indexOf('server-payout-control-v3.js')<wrapper.indexOf('shared-recovery-replay-v207.js'),'payout telemetry must wrap checkpoint saves before client recovery starts');
+assert.ok(wrapper.includes("shared-machine-core-v196.js?v=211"),'v211 loader must load the authoritative core');
+assert.ok(wrapper.includes("server-payout-control-v3.js?v=211"),'players must load the common payout controller before recovery');
+assert.ok(wrapper.includes("shared-client-flow-v211.js?v=211"),'players must load the immediate settlement flow');
+assert.ok(wrapper.includes("shared-recovery-replay-v207.js?v=211"),'players must retain stable recovery replay for non-offline-managed cases');
+assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=211"),'players must retain smooth roulette video');
+assert.ok(wrapper.includes("shared-roulette-client-watchdog-v205.js?v=211"),'players must retain stalled-stream recovery');
+assert.ok(wrapper.includes("shared-recovery-completion-v206.js?v=211"),'players must retain the result completion fallback');
+assert.ok(wrapper.includes("server-offline-settlement-worker-v3.js?v=211"),'dedicated server iframe must load the offline result worker');
+assert.ok(wrapper.indexOf('server-payout-control-v3.js')<wrapper.indexOf('shared-client-flow-v211.js'),'payout telemetry must wrap settlement before immediate reset is installed');
+assert.ok(wrapper.indexOf('shared-client-flow-v211.js')<wrapper.indexOf('shared-recovery-replay-v207.js'),'immediate reset must be installed before client recovery starts');
 assert.ok(wrapper.indexOf('shared-recovery-replay-v207.js')<wrapper.indexOf('shared-roulette-webrtc-client-v197.js'),'stable replay must patch state retrieval before client recovery starts');
 assert.ok(wrapper.indexOf('if(worker)')<wrapper.indexOf("shared-machine-core-v196.js"),'settlement worker must bypass the normal shared client core');
+
+assert.ok(flow.includes("engine.kind='cookie'"),'GAME0 must map to Cookie Link');
+assert.ok(flow.includes('client.settle({roundId:active.roundId,totalWin,creditAfter,immediateReset:true})'),'immediate reset must still send authoritative settlement');
+assert.ok(flow.includes("typeof machine.prepare==='function'"),'immediate reset must advance to the next ready state');
 
 assert.ok(server.includes('pendingRoundForPlayer'),'unsettled completed rounds must remain recoverable in the core');
 assert.ok(server.includes('out.initialState=participant.initialState||null'),'the stable zero-ball state must be returned when ordinary recovery is used');
@@ -45,4 +52,4 @@ assert.ok(app.includes("if(ev.phase==='complete'&&!this.paid[i]"),'engine comple
 assert.ok(hostKeepAlive.includes("worker.onmessage=()=>keepAwake({resumeDriver:false,pumpFrame:true})"),'video capture must remain independent of the roulette physics clock');
 assert.ok(client.includes('requestVideoFrameCallback'),'smooth remote roulette playback must remain enabled');
 assert.ok(watchdog.includes("type:'rtc_fallback_request'"),'a stalled stream must still request relay fallback');
-console.log('v210 retains recovery, host timing and smooth roulette guards');
+console.log('v211 retains recovery, immediate settlement, host timing and smooth roulette guards');
