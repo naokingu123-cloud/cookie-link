@@ -1,0 +1,31 @@
+name: Shared machine check
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'package.json'
+      - 'server.mjs'
+      - 'assets/shared-machine-v176.js'
+      - 'assets/precomputed-round-v174.js'
+      - 'tests/shared-server-smoke.mjs'
+      - '.github/workflows/shared-machine-check.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --ignore-scripts
+      - name: Syntax check
+        run: |
+          node --check server.mjs
+          node --check assets/shared-machine-v176.js
+          node --check assets/precomputed-round-v174.js
+          node --check tests/shared-server-smoke.mjs
+      - name: Server smoke test
+        run: node tests/shared-server-smoke.mjs
