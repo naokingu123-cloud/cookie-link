@@ -4815,9 +4815,9 @@ function startAnima8(){
  const physics=new RoulettePhysics(CANNON),draw=new DrawController(physics);
  const scene=new THREE.Scene();
  const phone=(window.matchMedia&&matchMedia('(pointer: coarse)').matches)||/iPad|iPhone|iPod|Android/i.test(navigator.userAgent);
- const serverHostRender=new URLSearchParams(location.search).get('serverHost')==='1';
- const renderer=new THREE.WebGLRenderer({antialias:serverHostRender?false:!phone,alpha:true,powerPreference:phone?'default':'high-performance',preserveDrawingBuffer:serverHostRender});
- renderer.setPixelRatio(serverHostRender?1:Math.min(window.devicePixelRatio||1,phone?1.15:1.4));renderer.setClearColor(0x000000,0);
+ const rouletteQuery=new URLSearchParams(location.search),serverHostRender=rouletteQuery.get('serverHost')==='1',ultraLightRoulette=serverHostRender&&rouletteQuery.get('lightRoulette')==='1';
+ const renderer=new THREE.WebGLRenderer({antialias:serverHostRender?false:!phone,alpha:true,powerPreference:ultraLightRoulette?'low-power':phone?'default':'high-performance',preserveDrawingBuffer:serverHostRender});
+ renderer.setPixelRatio(ultraLightRoulette?.65:serverHostRender?1:Math.min(window.devicePixelRatio||1,phone?1.15:1.4));renderer.setClearColor(0x000000,0);
  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
  renderer.shadowMap.enabled=false;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  stage.prepend(renderer.domElement);
@@ -5414,14 +5414,19 @@ function startAnima8(){
  function render(now){
   frame=0;if(disposed)return;
   const drawing=true; // Keep the physical rotor turning before and after the draw.
-  if(drawing&&!paused&&now-paintStamp<1000/30){wake();return;}paintStamp=now;
-  const elapsed=Math.min((now-last)/1000,.1);last=now;
+  const renderFps=ultraLightRoulette?10:30;
+  if(drawing&&!paused&&now-paintStamp<1000/renderFps){wake();return;}paintStamp=now;
+  const elapsed=Math.min((now-last)/1000,.15);last=now;
   syncJpcRpm(elapsed);
-  if(drawing&&!paused&&!document.hidden){accumulator+=elapsed*rate*rouletteTimeScale;let steps=0;while(accumulator>=1/120&&steps<48){draw.update();physics.step();accumulator-=1/120;steps++;}}
+  if(drawing&&!paused&&!document.hidden){
+   const physicsDt=ultraLightRoulette?1/60:1/120,maxSteps=ultraLightRoulette?12:48;
+   accumulator+=elapsed*rate*rouletteTimeScale;let steps=0;
+   while(accumulator>=physicsDt&&steps<maxSteps){draw.update();physics.step(physicsDt);accumulator-=physicsDt;steps++;}
+  }
   rotor.quaternion.copy(physics.rotor.quaternion);pocketFill.rotation.value=physics.angle;pocketFill.strength.value=brightness;
   for(const ball of physics.balls){const view=ballViews.get(ball.id);if(!view)continue;if(ball.dead){scene.remove(view.mesh,view.trail);view.mesh.geometry.dispose();view.trail.geometry.dispose();view.trail.material.dispose();ballViews.delete(ball.id);continue;}view.mesh.scale.setScalar(ball.radius/DIM.ball);view.mesh.position.copy(ball.body.position);view.mesh.quaternion.copy(ball.body.quaternion);
-   if(!paused&&!ball.resolved&&physics.time-view.lastTrailTime>.025){view.points.push([ball.body.position.x,ball.body.position.y,ball.body.position.z]);if(view.points.length>20)view.points.shift();view.lastTrailTime=physics.time;const arr=view.trail.geometry.attributes.position.array;view.points.forEach((p,i)=>arr.set(p,i*3));view.trail.geometry.attributes.position.needsUpdate=true;view.trail.geometry.setDrawRange(0,view.points.length);}
-   view.trail.visible=el('#a8-trails').checked&&!ball.resolved;
+   if(!ultraLightRoulette&&!paused&&!ball.resolved&&physics.time-view.lastTrailTime>.025){view.points.push([ball.body.position.x,ball.body.position.y,ball.body.position.z]);if(view.points.length>20)view.points.shift();view.lastTrailTime=physics.time;const arr=view.trail.geometry.attributes.position.array;view.points.forEach((p,i)=>arr.set(p,i*3));view.trail.geometry.attributes.position.needsUpdate=true;view.trail.geometry.setDrawRange(0,view.points.length);}
+   view.trail.visible=!ultraLightRoulette&&el('#a8-trails').checked&&!ball.resolved;
   }
   physics.balls=physics.balls.filter(b=>!b.dead);
   const normalReach=draw.mode==='eight'?(hooks.getReachTiers?.()||new Map()):new Map(),phase=normalStage();
@@ -5450,10 +5455,10 @@ function startAnima8(){
    }else{
     const flash=false,green=hitTimes[i]>-100,tier=green||phase.bet?0:(normalReach.get(i+1)||0),rainbow=tier===3;
     // Advance across the LED cells themselves counterclockwise, independently of rotor speed.
-    const tick=Math.floor(physics.time*2),textureKey=phase.bet?'bet/'+tick+'/'+Math.floor(physics.time*4):'number';
+    const tick=Math.floor(physics.time*2),textureKey=ultraLightRoulette?'number':phase.bet?'bet/'+tick+'/'+Math.floor(physics.time*4):'number';
     if(p.normalTextureKey!==textureKey){
      p.normalTextureKey=textureKey;
-     if(phase.bet)drawBetPanel(p,i,tick);
+     if(!ultraLightRoulette&&phase.bet)drawBetPanel(p,i,tick);
      else drawPanel(i);
     }
     if(rainbow&&!p.normalRainbow)p.rainbowStarted=physics.time;
