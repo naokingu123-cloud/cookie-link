@@ -3,50 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SWEETS LINK Server Monitor</title>
-<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=209">
+<title>SWEETS LINK サーバー管理</title>
+<link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=210">
 </head>
 <body>
-<!-- Physical-host URL is constructed with lightRoulette','1' by server-monitor-payout-v2.js. -->
 <header>
- <div><h1>SWEETS LINK SERVER MONITOR</h1><div class="sub">Physical roulette host · player × game telemetry · payout control</div></div>
- <div class="status"><span id="dot" class="dot off"></span><span id="conn">connecting...</span></div>
+ <div><h1>SWEETS LINK サーバー管理</h1><div class="sub">共通PO制御・プレイヤー成績・切断時自動精算</div></div>
+ <div class="status"><span id="dot" class="dot off"></span><span id="conn">接続中…</span></div>
 </header>
 <main>
- <section class="card">
-  <h2><span>CURRENT PHYSICAL ROULETTE</span><span id="host-state" class="host-state">HOST STARTING…</span></h2>
-  <iframe id="host-frame" class="host-frame" title="SWEETS LINK physical roulette host"></iframe>
+ <section class="card host-card">
+  <h2><span>現在の物理抽選機</span><span id="host-state" class="host-state">抽選機を起動中…</span></h2>
+  <iframe id="host-frame" class="host-frame" title="SWEETS LINK 物理抽選機"></iframe>
  </section>
- <section class="card" id="payout-card">
-  <h2><span>PAYOUT CONTROL</span><span class="host-state">PLAYER × GAMEごとに独立補正 · 全体POは表示専用</span></h2>
+ <section class="card payout-card" id="payout-card">
+  <h2><span>ペイアウト管理</span><span class="host-state">プレイヤー単位・全ゲーム共通設定</span></h2>
   <div class="summary">
-   <div class="metric target"><small>DEFAULT TARGET PAYOUT</small><strong id="metric-target">-</strong></div>
-   <div class="metric actual"><small>DISPLAY-ONLY GLOBAL ACTUAL</small><strong id="metric-actual">-</strong></div>
-   <div class="metric bet"><small>CUMULATIVE BET</small><strong id="metric-bet">-</strong></div>
-   <div class="metric win"><small>CUMULATIVE WIN</small><strong id="metric-win">-</strong></div>
+   <div class="metric target"><small>標準目標PO</small><strong id="metric-target">-</strong></div>
+   <div class="metric actual"><small>全体実測PO（表示用）</small><strong id="metric-actual">-</strong></div>
+   <div class="metric bet"><small>確定累計BET</small><strong id="metric-bet">-</strong></div>
+   <div class="metric win"><small>確定累計WIN</small><strong id="metric-win">-</strong></div>
   </div>
   <div class="controls" id="global-controls" data-control>
-   <label class="field"><span>個別制御の標準目標 PO (%)</span><input id="target-rate" type="number" min="50" max="150" step="0.1"></label>
+   <label class="field"><span>標準目標PO (%)</span><input id="target-rate" type="number" min="50" max="150" step="0.1"></label>
    <label class="field"><span>設定下限 (%)</span><input id="min-rate" type="number" min="40" max="150" step="0.1"></label>
    <label class="field"><span>設定上限 (%)</span><input id="max-rate" type="number" min="50" max="180" step="0.1"></label>
-   <label class="field"><span>1球最大補正幅 (%)</span><input id="max-step" type="number" min="0.1" max="10" step="0.1"></label>
-   <label class="field"><span>事前分布BET量</span><input id="maturity-bet" type="number" min="1" step="1"></label>
+   <label class="field"><span>通常ラウンド最大変化</span><input id="max-step" type="number" min="0.1" max="20" step="0.1"></label>
+   <label class="field"><span>差額回収ラウンド数</span><input id="recovery-rounds" type="number" min="1" max="50" step="1"></label>
+   <label class="field"><span>目標からの最大補正</span><input id="max-bias" type="number" min="1" max="60" step="0.1"></label>
+   <label class="field"><span>BET急変判定倍率</span><input id="bet-shock" type="number" min="1.1" max="10" step="0.1"></label>
    <button id="save-global" class="primary" type="button">標準設定を保存</button>
   </div>
   <div id="control-message" class="message">設定を読み込み中…</div>
   <div id="global-games" class="global-games"></div>
  </section>
- <section class="card">
-  <h2><span>PLAYERS</span><span id="round-state" class="host-state">ROUND - · 0 / 8</span></h2>
+ <section class="card players-card">
+  <h2><span>プレイヤー一覧</span><span id="round-state" class="host-state">ラウンド -　待機中</span></h2>
   <div class="players-wrap">
    <table class="players">
-    <thead><tr><th>PLAYER</th><th>ROUND BET</th><th>CREDIT</th><th>ROUND WIN</th><th>CUM BET</th><th>CUM WIN</th><th>ACTUAL PO</th><th>AVG SET PO</th><th>CONTROL</th><th>BALL</th><th>STATUS</th><th>DETAIL</th></tr></thead>
+    <thead><tr><th>プレイヤー</th><th>今回BET</th><th>CREDIT</th><th>今回WIN</th><th>累計BET</th><th>累計WIN</th><th>実測PO</th><th>設定PO</th><th>制御</th><th>球数</th><th>状態</th><th>詳細</th></tr></thead>
     <tbody id="players"></tbody>
    </table>
-   <div id="empty" class="empty-note">プレイヤー接続待ち</div>
+   <div id="empty" class="empty-note">プレイヤーの接続待ち</div>
   </div>
  </section>
 </main>
-<script src="/assets/server-monitor-payout-v2.js?v=209"></script>
+<iframe id="settlement-worker" class="settlement-worker" title="切断時自動精算"></iframe>
+<script src="/assets/server-monitor-payout-v3.js?v=210"></script>
 </body>
 </html>
