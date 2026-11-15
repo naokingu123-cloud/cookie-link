@@ -26,13 +26,15 @@ start-shared-machine-tunnel.cmd
 http://127.0.0.1:3000/monitor.html?machine=public-01&adminToken=...
 ```
 
-プレイヤーへ渡すURLは別で、コンソールへ表示される次の形式です。
+プレイヤーへ渡す標準URLは、Cloudflare Quick Tunnel自身からゲームを開く同一オリジンURLです。
 
 ```text
 https://xxxxx.trycloudflare.com/?machine=public-01
 ```
 
-このプレイヤーURLはクリップボードにもコピーされます。
+ランチャーはこの公開URLの `/api/health` が外部から実際に応答するまでREADYにしません。ゲーム・API・WebSocketがすべて同じ `trycloudflare.com` になるため、このURLを標準で使用してください。プレイヤーURLはクリップボードにもコピーされます。
+
+GitHub Pages版は代替URLとして表示しますが、標準接続には上記Direct Tunnel URLを使います。
 
 ## 抽選方式
 
@@ -124,3 +126,12 @@ start-shared-machine-tunnel.cmd -Machine room-02
 各ゲームの配当計算そのものは、まだプレイヤー端末の既存ゲームエンジンで行います。
 
 したがって通常のリロード・再接続・再抽選・二重精算対策には使えますが、改造クライアントによる不正を完全に防ぐには、将来的に配当計算とクレジット台帳もサーバー側へ移す必要があります。
+
+
+## v183 接続・リセット保護
+
+- クライアントはWebSocketが実際にOPENになるまで接続成功扱いにしません。
+- Cloudflare経由のhealth/session/WebSocketには長めのタイムアウトと自動再試行を使用します。
+- サーバー未接続時は「すぐ開始」を無効化し「SERVER待機」と表示します。
+- 接続失敗画面には実際の接続先SERVER URLを表示します。
+- 即リセット時は現在の共有ラウンドからleaveし、その旧ラウンドの残り球を再受信・再加算しません。
