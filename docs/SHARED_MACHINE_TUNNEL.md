@@ -135,3 +135,11 @@ start-shared-machine-tunnel.cmd -Machine room-02
 - サーバー未接続時は「すぐ開始」を無効化し「SERVER待機」と表示します。
 - 接続失敗画面には実際の接続先SERVER URLを表示します。
 - 即リセット時は現在の共有ラウンドからleaveし、その旧ラウンドの残り球を再受信・再加算しません。
+
+
+## v184 サーバー管理URL
+
+- `https://xxxxx.trycloudflare.com/?machine=public-01&adminToken=...` はサーバーPC側で開く管理画面です。
+- この管理画面に現行3D物理抽選機、接続プレイヤー、BET、CREDIT、ROUND WIN、8球結果をまとめて表示します。
+- プレイヤー端末へ渡すのは GitHub Pages + `sharedServer=https://xxxxx.trycloudflare.com` のクライアントURLです。
+- ランチャーはサーバー管理URLを自動でサーバーPCに開き、クライアントURLをクリップボードへコピーします。
