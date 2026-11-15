@@ -88,8 +88,8 @@ async function ensurePhysicalHost(){
  hostActionBusy=true;
  try{
   if(!sm.online){
-   $('host-state').textContent='HOST RECONNECTING…';
-   await sm.client.reconnect();
+   $('host-state').textContent='HOST CONNECTING…';
+   await sm.client.connect({timeout:12000});
   }
   if(sm.role!=='host'){
    $('host-state').textContent='HOST REGISTERING…';
