@@ -19,13 +19,17 @@ const jsonHeaders=session=>({
 });
 
 async function request(pathname,{session=null,method='GET',body,timeout=5000}={}){
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
- try{
-  const response=await fetch(BASE+pathname,{method,headers:jsonHeaders(session),body:body===undefined?undefined:JSON.stringify(body),signal:controller.signal,cache:'no-store'});
-  const payload=await response.json().catch(()=>({}));
-  if(!response.ok)throw Object.assign(Error(payload.error||`HTTP ${response.status}`),{status:response.status,payload});
-  return payload;
- }finally{clearTimeout(timer);}
+ for(let attempt=0;attempt<3;attempt++){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
+  try{
+   const response=await fetch(BASE+pathname,{method,headers:jsonHeaders(session),body:body===undefined?undefined:JSON.stringify(body),signal:controller.signal,cache:'no-store'});
+   const payload=await response.json().catch(()=>({}));
+   if(response.status===429&&attempt<2){await sleep(250*(attempt+1));continue;}
+   if(!response.ok)throw Object.assign(Error(payload.error||`HTTP ${response.status}`),{status:response.status,payload});
+   return payload;
+  }finally{clearTimeout(timer);}
+ }
+ throw Error('request retries exhausted');
 }
 
 function loadSessions(){try{return JSON.parse(fs.readFileSync(SESSION_FILE,'utf8'))||{};}catch{return {};}}
@@ -94,9 +98,9 @@ async function startRunner(session){
    await settleRound(state.pendingRound);
    if(round?.phase==='COMPLETE')await settleRound(round);
   }catch(error){console.warn('[AutonomousRoundsV213] runner state',error?.message||error);}
-  finally{busy=false;refresh(150);}
+  finally{busy=false;refresh(400);}
  };
- socket=connectSocket(session,()=>refresh(0));
+ socket=connectSocket(session,()=>refresh(40));
  refresh(0);
  return ()=>{clearTimeout(refreshTimer);socket.close();};
 }
@@ -129,9 +133,9 @@ async function startFallbackHost(session){
    if(round?.id!==lastFallbackRound&&round?.drawSource==='server-fallback')lastFallbackRound=round.id;
    if(!round||round.phase==='COMPLETE'||round.phase==='BETTING')lastFallbackRound='';
   }catch(error){console.warn('[AutonomousRoundsV213] host state',error?.message||error);}
-  finally{busy=false;pollTimer=setTimeout(poll,180);}
+  finally{busy=false;pollTimer=setTimeout(poll,300);}
  };
- socket=connectSocket(session,()=>{clearTimeout(pollTimer);pollTimer=setTimeout(poll,0);});
+ socket=connectSocket(session,()=>{clearTimeout(pollTimer);pollTimer=setTimeout(poll,40);});
  pollTimer=setTimeout(poll,0);
  return ()=>{clearTimeout(pollTimer);socket.close();};
 }
