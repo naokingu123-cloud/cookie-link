@@ -40,5 +40,12 @@ jobs:
             $errors | ForEach-Object { Write-Error $_.Message }
             exit 1
           }
+      - name: Windows PowerShell 5.1 encoding guard
+        shell: bash
+        run: |
+          if LC_ALL=C grep -nP '[^\x00-\x7F]' scripts/start-shared-machine-tunnel.ps1; then
+            echo 'Launcher must remain ASCII-only for Windows PowerShell 5.1 compatibility.'
+            exit 1
+          fi
       - name: Multi-client server smoke test
         run: npm run test:shared
