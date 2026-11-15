@@ -4,17 +4,15 @@ import {readFile} from 'node:fs/promises';
 const shared=await readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8');
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
 
-// Server-delivered balls must stay queued until Arcade.acceptNumber accepts them.
-assert.match(shared,/current\.callbacks\.onNumber\?\.\(item\.number\\)!==false/);
-assert.match(shared,/if\(!current\|\|current\.stopped\|\|!accepted\)break;/);
-const deletePos=shared.indexOf('current.queue.delete(item.index)');
+assert.ok(shared.includes("current.callbacks.onNumber?.(item.number)!==false"),'shared delivery must observe Arcade.acceptNumber result');
+assert.ok(shared.includes("if(!current||current.stopped||!accepted)break;"),'shared delivery must retain a rejected ball');
+const deletePos=shared.indexOf("current.queue.delete(item.index)");
 const acceptedPos=shared.indexOf("if(!current||current.stopped||!accepted)break;");
 assert.ok(deletePos>acceptedPos,'shared queue must delete a ball only after acceptance');
-assert.match(shared,/!app\.paused&&!app\.drawHeld&&Number\(app\.draws\?\.length\|\|0\)===current\.delivered/);
+assert.ok(shared.includes("!app.paused&&!app.drawHeld&&Number(app.draws?.length||0)===current.delivered"),'shared delivery must wait through draw holds');
 
-// Server-host rendering must retain the WebGL frame for mirroring and expose the exact renderer canvas.
-assert.match(app,/preserveDrawingBuffer:serverHostRender/);
-assert.match(app,/get mirrorCanvas\(\)\{return renderer\.domElement;\}/);
-assert.match(shared,/rouletteDriver\?\.mirrorCanvas\|\|document\.querySelector\('#cookie-roulette canvas'\)/);
+assert.ok(app.includes("preserveDrawingBuffer:serverHostRender"),'server host WebGL frame must remain readable for mirroring');
+assert.ok(app.includes("get mirrorCanvas(){return renderer.domElement;}"),'roulette must expose its actual WebGL canvas');
+assert.ok(shared.includes("rouletteDriver?.mirrorCanvas||document.querySelector('#cookie-roulette canvas')"),'mirror capture must prefer the real roulette WebGL canvas');
 
 console.log('shared late-ball delivery + roulette mirror guards passed');
