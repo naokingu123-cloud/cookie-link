@@ -61,6 +61,12 @@ try{
  assert.equal(registered.machine.hostPlayerId,sessionHost.player.id);
  assert.equal(registered.round.id,joinedA.round.id);
 
+ // Physical-host visual frames are relayed to players, but only from the registered host.
+ const visualPayload='data:image/jpeg;base64,'+Buffer.from('mirror-frame').toString('base64');
+ socketHost.ws.send(JSON.stringify({type:'visual_frame',roundId:joinedA.round.id,image:visualPayload,capturedAt:Date.now()}));
+ const mirrored=await socketA.inbox.next(m=>m.type==='visual_frame'&&m.roundId===joinedA.round.id);
+ assert.equal(mirrored.image,visualPayload);
+
  const joinedB=await json('/api/machines/public-01/round/join',{...authB,method:'POST',body:{clientRoundToken:'b',bets:[200],locked:[200],enabled:[true],totalBet:200,creditAfterBet:800,appVersion:'test'}});
  const joinedC=await json('/api/machines/public-01/round/join',{...authC,method:'POST',body:{clientRoundToken:'c',bets:[300],locked:[300],enabled:[true],totalBet:300,creditAfterBet:700,appVersion:'test'}});
  assert.equal(joinedA.role,'player');assert.equal(joinedB.role,'player');assert.equal(joinedC.role,'player');assert.equal(joinedA.round.id,joinedB.round.id);assert.equal(joinedA.round.id,joinedC.round.id);
