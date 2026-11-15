@@ -8,9 +8,9 @@ const client=await readFile(new URL('../assets/shared-roulette-webrtc-client-v19
 const app=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
 const patches=await readFile(new URL('../assets/cookie-upgrade-patches.js',import.meta.url),'utf8');
 
-assert.ok(wrapper.includes("shared-machine-core-v196.js?v=197"),'shared wrapper must synchronously load the guarded core');
-assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=197"),'server host must load the smooth transmitter');
-assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=197"),'players must load the smooth receiver');
+assert.ok(wrapper.includes("shared-machine-core-v196.js?v=200"),'shared wrapper must synchronously load the guarded core');
+assert.ok(wrapper.includes("shared-roulette-webrtc-host-v197.js?v=200"),'server host must load the smooth transmitter');
+assert.ok(wrapper.includes("shared-roulette-webrtc-client-v197.js?v=200"),'players must load the smooth receiver');
 assert.ok(wrapper.includes('eval(load'),'extensions must execute inside the game private scope');
 
 assert.ok(shared.includes("current.callbacks.onNumber?.(item.number)!==false"),'shared delivery must observe Arcade.acceptNumber result');
@@ -55,3 +55,12 @@ console.log('shared-ready auto-start guards passed');
 assert.ok(patches.includes("shared client can start while tab is background"),'shared round must start even when the player tab is backgrounded');
 assert.ok(patches.includes("shared client countdown continues while tab is background"),'shared BET countdown must not freeze when monitor tab is foreground');
 console.log('background shared-client autostart guards passed');
+
+assert.ok(patches.includes("finish eighth-ball processing immediately"),'8th-ball result processing must fast-forward immediately');
+assert.ok(patches.includes("single-commit instant payout"),'CREDIT must be committed once without a gating payout animation');
+assert.ok(patches.includes("short non-blocking result display"),'result screen must not hold the next game for eight seconds');
+assert.ok(patches.includes("shared game logic continues in background"),'shared result processing must continue while monitor is foreground');
+assert.ok(shared.includes("A settled server round is historical"),'startup must never replay a settled payout');
+assert.ok(shared.includes("CREDIT is owned by the"),'server settlement must not overwrite local CREDIT');
+assert.ok(shared.includes("get:()=>!!client.online"),'previous physical round must not block local next-game readiness');
+console.log('non-blocking result + single-credit settlement guards passed');
