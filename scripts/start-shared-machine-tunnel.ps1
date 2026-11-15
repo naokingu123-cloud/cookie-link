@@ -27,7 +27,30 @@ $TunnelErr = Join-Path $Runtime 'cloudflared.err.log'
 $PublicUrlFile = Join-Path $Runtime 'shared-url.txt'
 $DataFile = Join-Path $Runtime 'shared-machine.json'
 $NamedHostFile = Join-Path $Runtime 'named-tunnel-host.txt'
+$EndpointFile = Join-Path $Root 'shared-endpoint.json'
 $AdminToken = [guid]::NewGuid().ToString('N')
+
+function Normalize-PublicHost([string]$Value) {
+  if ([string]::IsNullOrWhiteSpace($Value)) { return '' }
+  $Value = $Value.Trim()
+  $Uri = $null
+  if ([Uri]::TryCreate($Value,[UriKind]::Absolute,[ref]$Uri)) {
+    if (($Uri.Scheme -eq 'https' -or $Uri.Scheme -eq 'http') -and -not [string]::IsNullOrWhiteSpace($Uri.DnsSafeHost)) {
+      return $Uri.DnsSafeHost.Trim().ToLowerInvariant()
+    }
+  }
+  return $Value.TrimEnd('/').ToLowerInvariant()
+}
+
+function Read-EndpointHost {
+  if (-not (Test-Path $EndpointFile)) { return '' }
+  try {
+    $Data = Get-Content -Raw -LiteralPath $EndpointFile | ConvertFrom-Json
+    return Normalize-PublicHost ([string]$Data.server)
+  } catch {
+    return ''
+  }
+}
 
 New-Item -ItemType Directory -Force -Path $Runtime,$Tools | Out-Null
 Set-Location $Root
@@ -119,9 +142,191 @@ try {
 
 
     if ([string]::IsNullOrWhiteSpace($PublicHost)) {
+      $PublicHost = Read-EndpointHost
+      if (-not [string]::IsNullOrWhiteSpace($PublicHost)) {
+        Save-Utf8NoBom $NamedHostFile $PublicHost
+        Write-Step "Recovered Named Tunnel hostname from shared-endpoint.json ($PublicHost)"
+      }
+    }
+    if ([string]::IsNullOrWhiteSpace($PublicHost)) {
       throw 'Named Tunnel hostname is not configured. Run setup-named-tunnel.cmd once, then run this launcher again.'
     }
-    if ($PublicHost -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$' -or $PublicHost -notmatch '\.') {
+    $PublicHost = Normalize-PublicHost $PublicHost
+    if ($PublicHost -notmatch '^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?
+  }
+
+  foreach ($Log in @($ServerOut,$ServerErr,$TunnelOut,$TunnelErr)) {
+    Remove-Item -Force -ErrorAction SilentlyContinue $Log
+  }
+
+  Write-Step "Starting shared server (port $Port)"
+  $OldPort = $env:PORT
+  $OldData = $env:SWEETS_DATA_FILE
+  $OldAdmin = $env:SWEETS_ADMIN_TOKEN
+  $env:PORT = [string]$Port
+  $env:SWEETS_DATA_FILE = $DataFile
+  $env:SWEETS_ADMIN_TOKEN = $AdminToken
+  try {
+    $ServerProcess = Start-Process -FilePath $Node -ArgumentList @('server.mjs') -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $ServerOut -RedirectStandardError $ServerErr
+  } finally {
+    $env:PORT = $OldPort
+    $env:SWEETS_DATA_FILE = $OldData
+    $env:SWEETS_ADMIN_TOKEN = $OldAdmin
+  }
+
+  $HealthUrl = "http://127.0.0.1:$Port/api/health"
+  $Healthy = $false
+  for ($i=0; $i -lt 120; $i++) {
+    if ($ServerProcess.HasExited) {
+      throw "Shared server exited unexpectedly.`n$(Read-Log $ServerErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $HealthUrl -TimeoutSec 2
+      if ($Health.ok) { $Healthy = $true; break }
+    } catch {}
+    Start-Sleep -Milliseconds 250
+  }
+  if (-not $Healthy) {
+    throw "Shared server health check failed.`n$(Read-Log $ServerErr)"
+  }
+
+  if ($QuickTunnel) {
+    Write-Step 'Starting Cloudflare Quick Tunnel fallback'
+    $TunnelArguments = @('tunnel','--url',"http://127.0.0.1:$Port")
+    foreach ($Email in $AllowedEmail) {
+      if (-not [string]::IsNullOrWhiteSpace($Email)) {
+        $TunnelArguments += @('--allowed-mail',$Email.Trim())
+      }
+    }
+    $TunnelProcess = Start-Process -FilePath $Cloudflared -ArgumentList $TunnelArguments -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $TunnelOut -RedirectStandardError $TunnelErr
+
+    $TunnelBase = $null
+    for ($i=0; $i -lt 180; $i++) {
+      if ($TunnelProcess.HasExited) {
+        throw "Cloudflare Quick Tunnel exited unexpectedly.`n$(Read-Log $TunnelErr)"
+      }
+      $Combined = (Read-Log $TunnelOut) + "`n" + (Read-Log $TunnelErr)
+      if ($Combined -match 'https://[a-z0-9-]+\.trycloudflare\.com') {
+        $TunnelBase = $Matches[0]
+        break
+      }
+      Start-Sleep -Milliseconds 250
+    }
+    if (-not $TunnelBase) {
+      throw "Could not obtain the public Quick Tunnel URL.`n$(Read-Log $TunnelErr)"
+    }
+  } else {
+    Write-Step "Using installed Cloudflare Named Tunnel service ($PublicHost)"
+    $Service = Get-Service -Name 'cloudflared' -ErrorAction SilentlyContinue
+    if ($null -eq $Service) {
+      throw 'Cloudflare Named Tunnel service is not installed. In the Cloudflare tunnel setup page, run the displayed cloudflared.exe service install <TOKEN> command as Administrator.'
+    }
+    if ($Service.Status -ne 'Running') {
+      try { Start-Service -Name 'cloudflared' -ErrorAction Stop } catch {
+        throw 'The cloudflared Windows service exists but could not be started. Start it as Administrator or reinstall it from the Cloudflare tunnel setup page.'
+      }
+    }
+    $TunnelBase = "https://$PublicHost"
+  }
+
+  Write-Step 'Checking public tunnel reachability'
+  $PublicHealth = "$TunnelBase/api/health"
+  $PublicReady = $false
+  for ($i=0; $i -lt 120; $i++) {
+    if ($QuickTunnel -and $TunnelProcess.HasExited) {
+      throw "Cloudflare Tunnel exited before public health check completed.`n$(Read-Log $TunnelErr)"
+    }
+    try {
+      $Health = Invoke-RestMethod -UseBasicParsing -Uri $PublicHealth -TimeoutSec 4
+      if ($Health.ok -eq $true -and $Health.source -eq 'physical-host') {
+        $PublicReady = $true
+        break
+      }
+    } catch {}
+    Start-Sleep -Milliseconds 500
+  }
+  if (-not $PublicReady) {
+    if ($QuickTunnel) {
+      throw "Quick Tunnel exists but /api/health is not reachable: $PublicHealth`n$(Read-Log $TunnelErr)"
+    }
+    throw "Named Tunnel hostname is not reaching this server: $PublicHealth`nCheck the Cloudflare Published application route: $PublicHost -> http://localhost:$Port`n$(Read-Log $TunnelErr)"
+  }
+
+  $EncodedMachine = [Uri]::EscapeDataString($Machine)
+  $EncodedTunnel = [Uri]::EscapeDataString($TunnelBase)
+  $PlayerApp = 'https://naokingu123-cloud.github.io/cookie-link/'
+
+  if ($QuickTunnel) {
+    $ClientUrl = "${PlayerApp}?machine=$EncodedMachine&sharedServer=$EncodedTunnel"
+  } elseif ($Machine -eq 'public-01') {
+    $ClientUrl = "$TunnelBase/"
+  } else {
+    $ClientUrl = "$TunnelBase/?machine=$EncodedMachine"
+  }
+
+  $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
+  $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  Set-Content -LiteralPath $PublicUrlFile -Value $ServerManageUrl -Encoding UTF8
+  try { Set-Clipboard -Value $ClientUrl } catch {}
+
+  Write-Host ''
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
+  Write-Host '============================================================' -ForegroundColor Green
+  Write-Host 'SERVER MANAGEMENT (open on this PC):' -ForegroundColor White
+  Write-Host $ServerManageUrl -ForegroundColor Yellow
+  Write-Host ''
+  Write-Host 'PLAYER GAME URL:' -ForegroundColor White
+  Write-Host $ClientUrl -ForegroundColor Cyan
+  Write-Host ''
+  if ($QuickTunnel) {
+    Write-Host 'Quick Tunnel fallback is temporary. The client URL changes on restart.' -ForegroundColor Yellow
+  } else {
+    Write-Host 'Named Tunnel is active. This PLAYER GAME URL is stable.' -ForegroundColor White
+    Write-Host 'Players only open the game URL; no sharedServer parameter or setup is needed.' -ForegroundColor White
+  }
+  Write-Host 'The PLAYER GAME URL was copied to the clipboard.' -ForegroundColor White
+  Write-Host "Local monitor fallback: $LocalMonitorUrl" -ForegroundColor DarkGray
+  Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
+  Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
+  Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
+  Write-Host ''
+
+  if (-not $NoBrowser) {
+    try { Start-Process $ServerManageUrl | Out-Null } catch {
+      try { Start-Process $LocalMonitorUrl | Out-Null } catch {}
+    }
+  }
+
+  if ($QuickTunnel) {
+    while (-not $ServerProcess.HasExited -and -not $TunnelProcess.HasExited) {
+      Start-Sleep -Seconds 1
+    }
+  } else {
+    while (-not $ServerProcess.HasExited) {
+      Start-Sleep -Seconds 1
+    }
+  }
+
+  if ($ServerProcess.HasExited) {
+    throw "Shared server stopped.`n$(Read-Log $ServerErr)"
+  }
+  if ($QuickTunnel -and $TunnelProcess.HasExited) {
+    throw "Cloudflare Tunnel stopped.`n$(Read-Log $TunnelErr)"
+  }
+}
+catch {
+  Write-Host ''
+  Write-Host "Startup failed: $($_.Exception.Message)" -ForegroundColor Red
+  Write-Host ''
+  Write-Host "Logs: $Runtime" -ForegroundColor DarkGray
+  exit 1
+}
+finally {
+  Stop-Child $TunnelProcess
+  Stop-Child $ServerProcess
+}
+ -or $PublicHost -notmatch '\.') {
       throw "Invalid PublicHost: $PublicHost"
     }
   }
