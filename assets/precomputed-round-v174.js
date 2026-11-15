@@ -14,12 +14,16 @@ try{
  if(typeof rouletteDrawSource!=='undefined'&&rouletteDrawSource&&!window.__sweetsSharedDrawBarrier){
   const nativeStart=rouletteDrawSource.start.bind(rouletteDrawSource);
   const nativeReset=rouletteDrawSource.reset.bind(rouletteDrawSource);
+  const readyDescriptor=Object.getOwnPropertyDescriptor(rouletteDrawSource,'ready');
+  const nativeReady=readyDescriptor?.get?readyDescriptor.get.bind(rouletteDrawSource):()=>true;
   const barrier={
-   nativeStart,nativeReset,pending:null,installed:false,
+   nativeStart,nativeReset,nativeReady,pending:null,installed:false,
    block(callbacks){this.pending=callbacks||null;try{nativeReset();}catch{}try{typeof stopAutoRound==='function'&&stopAutoRound();}catch{}try{typeof countdownText==='function'&&countdownText('SERVER','共有抽選 接続待ち');}catch{}},
    take(){const value=this.pending;this.pending=null;return value;}
   };
   window.__sweetsSharedDrawBarrier=barrier;
+  window.__sweetsSharedClientReady=false;
+  Object.defineProperty(rouletteDrawSource,'ready',{configurable:true,get:()=>window.__sweetsSharedClientReady===true});
   rouletteDrawSource.start=function(callbacks){barrier.block(callbacks);};
   rouletteDrawSource.reset=function(...args){barrier.pending=null;return nativeReset(...args);};
  }
