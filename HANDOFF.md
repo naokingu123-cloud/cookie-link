@@ -566,3 +566,13 @@
 - BETコントロールは実DOM値が変わるときだけ書換。100回同状態checkで対象setter/属性/class更新が8,600→0。native HUD上書きは次回補正する。映像の同値表示・native pause・ホスト通知の反復も減らす。
 - 新規回帰 `tests/shared-v230-client-lifecycle.mjs` / `tests/shared-v230-video-lifecycle.mjs` をtest:syncとShared machine checkへ追加。controller単独の3cycle計測でtimer増殖・無限dirty-ready resetは再現せず、追加6種実engineのresetも持越しなし。
 - 版 `20261116-v230-result-input-performance`。v229までの即時BET・WIN精算・20秒BET・映像復旧を維持。今回の更新でCREDITを初期値へ戻さない。Windowsファイル更新と画面再読み込み、20秒設定未適用なら既存ランチャーからサーバー再起動。`.runtime`・`.tools`・`data`は保持。
+
+## 2026-11-16 — v231 サーバー映像専用クライアント
+
+- ユーザー明示: クライアントのルーレットは完全に不要。BET TIMEもサーバーが描画して配信する。
+- loadCookieRouletteはserverHost=1以外では3Dモジュールの取得/renderer/物理world生成より前に戻る。再試行でも同じ。旧canvasを表示しない。
+- 新規視聴者のWebM先頭ヘッダー取得で共有recorderを再起動し既存視聴者も巻き込む経路に対し、サーバー表示canvas由来の独立JPEGフレームrelayを追加。最大15fps/720x405、1encodeを購読者で共有。直接WebRTC30fpsが正常ならJPEG購読を停止。旧ホストとのWebM互換は保持。
+- JPEGはdecode成功後に表示、最新1枚だけ待機、同じimgを再利用。古いhost/sequenceと送信詰まりを排除。登録hostだけが新フレームを送信可能。
+- tests/shared-v231-remote-display.mjsと実server/wsのshared-rtc-signaling.mjsで生成抑止、同時視聴、後発接続、decode/queue/backpressure、宛先分離を確認。既存同期テストも維持。詳細docs/shared-sync-v231.md。
+- 版20261116-v231-remote-roulette-only。Windowsサーバー更新/再起動＋ホスト/クライアント再読込が必要。.runtime/.tools/data/CREDITを保持。
+- 各ゲームPO/対称初期盤面の改定は続くv232作業であり、この映像版に混在させない。

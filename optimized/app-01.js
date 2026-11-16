@@ -5512,6 +5512,14 @@ const rouletteDrawSource={
 };
 async function loadCookieRoulette(){
  const epoch=++rouletteLoadEpoch,root=$('cookie-roulette'),loading=root.querySelector('.a8-loading'),retry=$('roulette-retry');
+ if(!LOCAL_EIGHT_DRAW_ALLOWED){
+  // A player is a display-only receiver, including during the server BET TIME.
+  // Do not allocate a renderer, physics world, local draw clock or capture loop.
+  rouletteReady=false;rouletteDriver?.dispose?.();rouletteDriver=null;
+  retry.hidden=true;loading.hidden=false;loading.textContent='サーバーの抽選映像に接続しています…';
+  root.dataset.rouletteSource='server';root.querySelectorAll('.a8-stage>canvas').forEach(canvas=>canvas.remove());
+  scheduleUI(app);window.SweetsRouletteClientV224?.retry?.();return;
+ }
  rouletteReady=false;retry.hidden=true;loading.hidden=false;loading.textContent='抽選機を読み込み中…';scheduleUI(app);
  try{
   const [THREE,CANNON]=await loadRouletteModules();if(epoch!==rouletteLoadEpoch||!root.isConnected)return;

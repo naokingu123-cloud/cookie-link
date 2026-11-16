@@ -74,9 +74,10 @@ try{
  const auth={token:hostSession.token,playerId:hostSession.player.id};
  await json('/api/admin/machines/public-01/host/register?adminToken='+adminToken,{...auth,method:'POST',body:{}});
 
- host.ws.send(JSON.stringify({type:'rtc_host_ready',protocol:197,instanceId:'hostA'}));
+ host.ws.send(JSON.stringify({type:'rtc_host_ready',protocol:197,instanceId:'hostA',frameRelay:1}));
  const ready=await player.messages.next(m=>m.type==='rtc_host_ready');
  assert.equal(ready.fromPlayerId,hostSession.player.id);assert.equal(ready.fromInstanceId,'hostA');
+ assert.equal(ready.frameRelay,1,'the registered host advertises independently decodable image frames');
 
  player.ws.send(JSON.stringify({type:'rtc_watch',protocol:197,instanceId:'playerA',roundId:'round-test'}));
  const watch=await host.messages.next(m=>m.type==='rtc_watch');
@@ -108,6 +109,18 @@ try{
  player.ws.send(JSON.stringify({type:'rtc_fallback_stop',protocol:197,instanceId:'playerA',targetPlayerId:hostSession.player.id,targetInstanceId:'hostA'}));
  const fallbackStop=await host.messages.next(m=>m.type==='rtc_fallback_stop');
  assert.equal(fallbackStop.fromPlayerId,playerSession.player.id);
+
+ player.ws.send(JSON.stringify({type:'rtc_frame_watch',protocol:197,instanceId:'playerA'}));
+ const frameWatch=await host.messages.next(m=>m.type==='rtc_frame_watch');assert.equal(frameWatch.fromInstanceId,'playerA');
+ const frameData=Buffer.from([255,216,255,217]).toString('base64');
+ const framePacket={type:'rtc_frame',protocol:197,instanceId:'hostA',targetPlayerId:playerSession.player.id,targetInstanceId:'playerA',mime:'image/jpeg',sequence:17,data:frameData};
+ host.ws.send(JSON.stringify(framePacket));
+ const frame=await player.messages.next(m=>m.type==='rtc_frame');assert.equal(frame.data,frameData);assert.equal(frame.sequence,17);
+ await assert.rejects(other.messages.next(m=>m.type==='rtc_frame',150),/timeout/);
+ other.ws.send(JSON.stringify({...framePacket,instanceId:'otherA',sequence:18}));
+ await assert.rejects(player.messages.next(m=>m.type==='rtc_frame'&&m.sequence===18,150),/timeout/,'only the registered physical host can supply image frames');
+ player.ws.send(JSON.stringify({type:'rtc_frame_stop',protocol:197,instanceId:'playerA'}));
+ assert.equal((await host.messages.next(m=>m.type==='rtc_frame_stop')).fromInstanceId,'playerA');
 
  player.ws.close();
  const left=await host.messages.next(m=>m.type==='rtc_peer_left');

@@ -50,6 +50,7 @@ on:
       - 'tests/shared-v229-video-display.mjs'
       - 'tests/shared-v230-client-lifecycle.mjs'
       - 'tests/shared-v230-video-lifecycle.mjs'
+      - 'tests/shared-v231-remote-display.mjs'
       - 'assets/cookie-upgrade-patches.js'
       - 'tests/shared-v225-video-reconnect.mjs'
       - 'tests/shared-v225-payout-lifecycle.mjs'
