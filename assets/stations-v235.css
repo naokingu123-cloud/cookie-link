@@ -64,3 +64,74 @@ body.mobile-landscape #screen>.arena>.stations-strip-v235::-webkit-scrollbar{dis
 @media(prefers-reduced-motion:reduce){.station-card-v235[data-reach="1"]{animation:none}}
 
 .station-self-v235{border-color:var(--station-color,#9ad8e5);box-shadow:0 0 5px var(--station-color,#9ad8e5);color:#fff}
+
+/* v240: one compact six-slot rail to the LEFT of the live roulette.
+   Do not reparent, resize, cover the centre of, or re-encode the video. */
+#screen>.arena>.stations-strip-v235{
+ inset:65px auto 26px 3px!important;width:clamp(75px,20%,98px)!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:repeat(6,minmax(0,1fr))!important;
+ gap:2px!important;align-content:stretch!important;overflow:hidden!important;
+ pointer-events:none!important;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235{
+ width:100%;height:100%;max-width:none!important;grid-column:1!important;
+ display:grid;grid-template-columns:20px minmax(0,1fr)!important;
+ grid-template-rows:minmax(9px,1fr) minmax(9px,1fr) minmax(10px,1fr)!important;
+ gap:0 2px!important;padding:1px 3px!important;align-self:stretch;
+ pointer-events:none!important;border-radius:6px;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235 img{
+ width:20px;height:22px;grid-column:1;grid-row:1/3;align-self:center;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235 .station-id{
+ grid-column:2;grid-row:1;font-size:8px;line-height:1.1;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235 .station-name{
+ grid-column:2;grid-row:2;font-size:8px;line-height:1.1;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235 .station-win{
+ grid-column:1/-1;grid-row:3;text-align:right;font-size:10px;line-height:1.1;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235[data-empty="1"]{
+ opacity:.48!important;grid-template-rows:minmax(10px,1fr) minmax(10px,1fr)!important;
+}
+#screen>.arena>.stations-strip-v235 .station-card-v235[data-self="1"]{
+ background:linear-gradient(145deg,#204c60f5,#132c44f5)!important;
+ outline:1px solid var(--station-color);outline-offset:-2px;
+}
+#screen>.arena>.station-self-v235{display:none!important}
+#screen>.arena.stations-reserved-v235 .avatar-box{
+ /* Character editor remains available but no longer covers the rail. */
+ right:12px!important;top:4px!important;bottom:auto!important;
+}
+#screen>.arena[data-station-density="compact"]>.stations-strip-v235,
+body.mobile-landscape #screen>.arena>.stations-strip-v235{
+ inset:54px auto 24px 3px!important;width:clamp(72px,19%,93px)!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:repeat(6,minmax(0,1fr))!important;
+ overflow:hidden!important;
+}
+/* Monitor host player list: six rows, left of its persistent 3D iframe. */
+.stations-monitor-v235 .station-list{
+ inset:46px auto 35px 7px!important;width:112px!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:repeat(6,minmax(0,1fr))!important;
+ gap:3px!important;overflow:hidden!important;
+}
+.stations-monitor-v235 .station-card-v235{
+ grid-template-columns:28px minmax(0,1fr)!important;
+ grid-template-rows:minmax(13px,1fr) minmax(12px,1fr) minmax(12px,1fr)!important;
+ padding:2px 4px!important;height:100%;grid-column:1!important;
+}
+.stations-monitor-v235 .station-card-v235 img{width:27px;height:29px}
+.stations-monitor-v235 .station-card-v235 .station-id{font-size:10px}
+.stations-monitor-v235 .station-card-v235 .station-name{font-size:9px}
+.stations-monitor-v235 .station-card-v235 .station-win{font-size:12px;text-align:right}
+/* Operator-only manual BET button, independent of the 3D renderer. */
+.server-bet-actions{display:flex;align-items:center;gap:7px;min-width:0;flex-wrap:wrap}
+#server-bet-now{border:1px solid #fbd587;border-radius:7px;background:linear-gradient(#ffe49e,#ddac55);color:#472c12;font:900 12px/1.2 system-ui;padding:6px 9px;cursor:pointer;white-space:nowrap}
+#server-bet-now:disabled{opacity:.55;cursor:wait}
+#server-bet-now-status{font:700 10px/1.3 system-ui;color:#beeaff;max-width:190px}
+#server-bet-now-status[data-state="error"]{color:#ffb4b4}
+@media(max-width:650px){.server-bet-actions{gap:4px}#server-bet-now{font-size:10px;padding:5px 6px}#server-bet-now-status{font-size:9px}}

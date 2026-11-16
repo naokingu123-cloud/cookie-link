@@ -16,6 +16,13 @@ on:
       - 'index.html'
       - 'monitor.html'
       - 'assets/shared-machine-v176.js'
+      - 'assets/server-monitor-bet-now-v240.js'
+      - 'assets/shared-client-background-v240.js'
+      - 'assets/shared-host-keepalive-v206.js'
+      - 'assets/shared-core-patch-v221.js'
+      - 'docs/stations-v240.md'
+      - 'tests/server-bet-now-v240.mjs'
+      - 'tests/background-continuity-v240.mjs'
       - 'tests/stations*v235*'
       - 'tests/stations*v236*'
       - '.github/workflows/stations-check.yml'
@@ -35,6 +42,8 @@ jobs:
         run: node tests/stations-detail-v238.mjs && node tests/stations-highlight-v239.mjs
       - name: Real-only migration and actual live-WIN UI
         run: node tests/stations-live-win-v236.mjs
+      - name: Operator BET control and unfocused physical/client continuity
+        run: node tests/server-bet-now-v240.mjs && node tests/background-continuity-v240.mjs
       - name: Two real players, live WIN, checkpoint fallback and settlement
         run: node tests/stations-two-player-v236.mjs
       - name: Seat allocation, privacy and idle-round guards

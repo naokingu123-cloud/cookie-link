@@ -79,10 +79,25 @@ function install(){
   workerUrl=URL.createObjectURL(blob);worker=new Worker(workerUrl);
   // Keep 24fps idle, use 60fps only for WebRTC viewers, downshift to 30fps
   // under sustained encoder/network pressure. This never resets the physics.
-  worker.onmessage=()=>keepAwake({resumeDriver:false,pumpFrame:true});
+  worker.onmessage=()=>{
+   const running=keepAwake({resumeDriver:false,pumpFrame:false});
+   if(!running)return;
+   // The native RAF is suspended in hidden tabs. Advance the real host's
+   // existing physics in this *same* 24/30/60fps worker tick, then capture.
+   // Never create a second local draw or alter the 1x physical time scale.
+   if(document.hidden)try{document.getElementById('cookie-roulette')?.anima8?.pumpBackground?.();}catch{}
+   try{window.__sweetsHostCaptureTrackV206?.requestFrame?.();}catch{}
+  };
   worker.postMessage({fps:captureFps});
  }catch(error){console.warn('[HostKeepAlive206] worker unavailable',error?.message||error);}
 
+ // Graceful fallback on older browsers without a worker. This timer can be
+ // throttled by the OS; the server still owns BET time and ball ordering.
+ const fallbackClock=worker||typeof setInterval!=='function'?null:setInterval(()=>{
+  if(!document.hidden)return;
+  const running=keepAwake({resumeDriver:false,pumpFrame:false});
+  if(running)try{document.getElementById('cookie-roulette')?.anima8?.pumpBackground?.();}catch{}
+ },42);
  const hardWake=()=>keepAwake({resumeDriver:true,pumpFrame:true});
  document.addEventListener('visibilitychange',hardWake,true);
  addEventListener('blur',hardWake,true);
@@ -100,6 +115,7 @@ function install(){
  attachClient();
  window.SweetsHostKeepAliveV206={setCaptureFps,get capturePumpActive(){return !!worker;},get captureFps(){return captureFps;}};
  addEventListener('beforeunload',()=>{
+  if(fallbackClock)clearInterval(fallbackClock);
   try{worker?.terminate();}catch{}
   try{if(workerUrl)URL.revokeObjectURL(workerUrl);}catch{}
  },{once:true});

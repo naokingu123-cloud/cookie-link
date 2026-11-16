@@ -111,7 +111,7 @@ function patch(source){
   }
   function hostMotionStalled(){
    const now=Date.now(),key=hostMotionState();
-   if(document.hidden||hostReportsPending>0){hostMotionKey=key;hostMotionAt=now;hostWakeAt=0;return false;}
+   if(hostReportsPending>0||(document.hidden&&!window.SweetsHostKeepAliveV206?.capturePumpActive)){hostMotionKey=key;hostMotionAt=now;hostWakeAt=0;return false;}
    if(key!==hostMotionKey){hostMotionKey=key;hostMotionAt=now;hostWakeAt=0;}
    if(!hostMotionAt)hostMotionAt=now;
    const idle=now-hostMotionAt;
@@ -187,7 +187,7 @@ function patch(source){
     const currentCount=(round.balls||[]).length;
     if(currentCount>hostIndex){hostIndex=currentCount;hostProgressAt=Date.now();}
     try{if(typeof inView!=='undefined')inView=true;}catch{}
-    const finishedAttempt=!document.hidden&&hostReportsPending===0&&rouletteDriver?.draw?.state==='complete'&&hostIndex<8;
+    const finishedAttempt=(!document.hidden||window.SweetsHostKeepAliveV206?.capturePumpActive)&&hostReportsPending===0&&rouletteDriver?.draw?.state==='complete'&&hostIndex<8;
     if(!finishedAttempt&&!hostMotionStalled()){hostBanner(hostIndex+' / 8球 · DRAWING');hostRetryTimer=setTimeout(()=>syncHost(client.round),500);return;}
     hostRunning=false;hostAttempt++;
     hostBanner((finishedAttempt?'残りの物理抽選を継続 ':'物理進行の停止を検知・再起動 ')+hostIndex+' / 8');

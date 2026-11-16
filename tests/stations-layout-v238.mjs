@@ -26,9 +26,9 @@ try{
   await fs.writeFile(path.join(out,'metrics-'+size.width+'.json'),JSON.stringify(current,null,2));await page.screenshot({path:path.join(out,'client-'+size.width+'.png'),fullPage:true});
   const oldStyle=await page.addStyleTag({content:'html:not(.server-roulette-host) #screen>.arena.stations-reserved-v235{margin-bottom:44px!important} html:not(.server-roulette-host) #screen>.arena.stations-reserved-v235 #cookie-roulette .a8-stage{inset:8px 13px 38px!important}'});
   const before=await page.locator('#cookie-roulette .a8-stage').boundingBox();await oldStyle.evaluate(el=>el.remove());
-  assert.equal(current.cards.length,5);assert.equal(current.margin,'0px');assert.ok(current.wheel.w>before.width,'roulette width restored');
+  assert.equal(current.cards.length,6);assert.equal(current.margin,'0px');assert.ok(current.wheel.w>before.width,'roulette width restored');
   if(size.width<size.height)assert.ok(current.wheel.h>before.height+15,'lower strip space returned to roulette');
-  for(const c of current.cards)assert.ok(c.right<=current.arena.x+current.arena.w*.25||c.x>=current.arena.x+current.arena.w*.75,'cards stay outside the central 50%');
+  for(const c of current.cards)assert.ok(c.right<=current.arena.x+current.arena.w*.27,'all six cards remain in a single LEFT rail');
   for(let i=0;i<current.cards.length;i++)for(let j=i+1;j<current.cards.length;j++){
    const a=current.cards[i],b=current.cards[j];const overlap=Math.max(0,Math.min(a.right,b.right)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.y,b.y));assert.ok(overlap<1,'station cards must not overlap each other');
   }

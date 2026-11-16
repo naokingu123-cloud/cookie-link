@@ -48,7 +48,7 @@ assert.equal(service.progress(m,'a',{roundId:'r2',win:300,detail:input}),true);
 assert.equal(service.progress(m,'b',{roundId:'r2',win:800,detail:{...input,best:{numbers:[19],gain:2000,tier:2},achievedTier:2}}),true);
 let rows=service.snapshot(m).seats;
 assert.deepEqual(rows[0].detail.best.numbers,[17]);assert.deepEqual(rows[1].detail.best.numbers,[19]);assert.equal(rows[1].detail.best.gain,2000);
-view.receive({type:'station_roster',stations:service.snapshot(m,'a')});assert.match(view.otherText(2),/19番/);assert.match(view.otherText(2),/2,000/);assert.match(view.otherText(2),/超高配当獲得/);assert.equal(view.otherText(1),'');
+view.receive({type:'station_roster',stations:service.snapshot(m,'a')});assert.match(view.otherText(2),/800 WIN/);assert.match(view.otherText(1),/300 WIN/);assert.doesNotMatch(view.otherText(2),/19番|2,000|超高配当獲得/,'only ST, avatar, name and live WIN are visible');
 assert.equal(service.progress(m,'host',{roundId:'r2',win:99999,detail:input}),false);
 assert.equal(service.progress(m,'outsider',{roundId:'r2',win:99999,detail:input}),false);
 assert.equal(service.progress(m,'a',{roundId:'old',win:99999,detail:input}),false);

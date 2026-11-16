@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SWEETS LINK サーバー管理</title>
 <link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=217">
-<link rel="stylesheet" href="/assets/stations-v235.css?v=239">
+<link rel="stylesheet" href="/assets/stations-v235.css?v=240">
 </head>
 <body>
 <!-- One physical-host iframe stays alive across all rounds. -->
@@ -15,7 +15,7 @@
 </header>
 <main>
  <section class="card host-card">
-  <h2><span>現在の物理抽選機（標準1倍速）</span><span id="host-state" class="host-state">抽選機を起動中…</span></h2>
+  <h2><span>現在の物理抽選機（標準1倍速）</span><div class="server-bet-actions"><button type="button" id="server-bet-now">BET TIME 開始</button><span id="server-bet-now-status" role="status" aria-live="polite"></span><span id="host-state" class="host-state">抽選機を起動中…</span></div></h2>
   <iframe id="host-frame" class="host-frame" title="SWEETS LINK 物理抽選機"></iframe>
  </section>
  <section class="card payout-card" id="payout-card">
@@ -54,6 +54,7 @@
 <script src="/assets/server-monitor-host-stability-v217.js?v=217"></script>
 <script src="/assets/server-monitor-payout-v3.js?v=217"></script>
 <script src="/assets/server-monitor-system-filter-v213.js?v=217"></script>
-<script src="/assets/stations-v235.js?v=239"></script>
+<script src="/assets/stations-v235.js?v=240"></script>
+<script src="/assets/server-monitor-bet-now-v240.js?v=240"></script>
 </body>
 </html>

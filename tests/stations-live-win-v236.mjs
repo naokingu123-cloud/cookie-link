@@ -26,7 +26,7 @@ assert.equal(b.sent.find(msg=>msg.type==='station_progress')?.win,750,'B has dis
 time+=300;service.tick(m);
 for(const view of [a,b])view.receive({type:'station_roster',stations:service.snapshot(m,view.client.playerId)});
 assert.match(a.otherText(2),/750 WIN/);assert.match(b.otherText(1),/200 WIN/);
-assert.equal(a.cards().length,5);assert.equal(b.cards().length,5);assert.equal(a.otherText(1),'');assert.equal(b.otherText(2),'');
+assert.equal(a.cards().length,6);assert.equal(b.cards().length,6);assert.match(a.otherText(1),/200 WIN/);assert.match(b.otherText(2),/750 WIN/); // Self and peers share the same left rail.
 const before=b.sent.length;b.tick();assert.equal(b.sent.length,before,'unchanged WIN causes no extra traffic');
 b.model.engines[0].totalHundredths=500;b.tick();assert.equal(b.sent.at(-1).win,1000,'newly earned payout is sent');
 assert.equal(b.model.totalWin,0,'roster must not change payout state');

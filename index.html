@@ -434,7 +434,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   extras.push('assets/game-menu-v91.js?v=232','assets/demo-suite-v91.js?v=154','assets/arcade-show-v91.js?v=91','assets/game-titles-v91.js?v=204');
   // Shared-machine code must execute inside the game's private scope so it can
   // intercept rouletteDrawSource/Arcade without exposing game internals globally.
-  extras.push('assets/shared-machine-v176.js?v=239');
+  extras.push('assets/shared-machine-v176.js?v=240');
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
   let [game,...extensions]=await Promise.all(responses.map(r=>r.text()));
@@ -462,6 +462,22 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(game.split(sixTopMessage).length!==2)throw new Error('Six Drop refill caption patch target missing');
   game=game.replace(sixTopMessage,
     "this.candyMessage=missed.length?'未抽選ドロップを補充！':'上段のドロップを補充！';this.emit('pyramidTopUp'");
+  // v240: server-host drawing must continue when its window loses focus.
+  // A dedicated worker already drives frame capture. While hidden, that same
+  // worker calls one bounded physics/render tick: no duplicate physics clock.
+  const hostTickRoot='root.anima8={physics,draw,scene,setPaused,get mirrorCanvas()';
+  if(game.split(hostTickRoot).length!==2)throw new Error('server host background driver target missing');
+  game=game.replace(hostTickRoot,
+    'root.anima8={physics,draw,scene,setPaused,pumpBackground:()=>{if(serverHostPage&&document.hidden&&!paused)render(performance.now());},get mirrorCanvas()');
+  const hostPhysicsGuard='if(drawing&&!paused&&!document.hidden)';
+  if(game.split(hostPhysicsGuard).length!==3)throw new Error('server background physics guard target drift');
+  game=game.split(hostPhysicsGuard).join('if(drawing&&!paused&&(!document.hidden||serverHostPage))');
+  // Client server-only results are authoritative; losing tab focus or opening
+  // the local menu must not pause the already accepted games.
+  const oldClientPause='app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);';
+  if(game.split(oldClientPause).length!==2)throw new Error('client visibility pause target drift');
+  game=game.replace(oldClientPause,
+    'app.pause(userPaused||jpcSession.active||(!window.__sweetsSharedClientReady&&(menuOpen||document.hidden||!inView)));');
   const end=game.lastIndexOf('})();');
   if(end<0)throw new Error('ゲームスクリプト構造が不正です');
   const merged=[game.slice(0,end),...extensions,game.slice(end)].join('\n');

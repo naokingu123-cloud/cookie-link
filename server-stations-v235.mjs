@@ -196,6 +196,49 @@ export function patchStationCore(source){
  once("role:isHost?'host':'player'};","role:isHost?'host':'player',stations:stationView};",'public snapshot');
  once(' return connectedPlayerIds(m);',' return stations.eligible(m,connectedPlayerIds(m));','seat eligibility');
  once('function tickMachine(m){\n const t=now()', 'function tickMachine(m){\n stations.tick(m);\n const t=now()', 'clock');
+ // An operator may request the next BET at any time, but never discard an
+ // active physical result or an already-reserved BET. A queued request consumes
+ // at most 1.5s of result grace, then transitions to a fresh server BET.
+ once(" if(round.phase==='COMPLETE'&&t-Number(round.completedAt||t)>=RESULT_GRACE_MS){",
+      " if(round.phase==='COMPLETE'&&(!m.betNowQueuedAt||hostOnline)&&t-Number(round.completedAt||t)>=(m.betNowQueuedAt?Math.min(RESULT_GRACE_MS,1500):RESULT_GRACE_MS)){",'manual grace');
+ const completeStart=source.includes('CONTINUOUS_PHYSICAL_ROUNDS||eligiblePlayerIds(m).length')
+  ?'  if(hostOnline&&(CONTINUOUS_PHYSICAL_ROUNDS||eligiblePlayerIds(m).length))createBettingRound(m);'
+  :'  if(hostOnline&&eligiblePlayerIds(m).length)createBettingRound(m);';
+ const completeEnd=completeStart.includes('CONTINUOUS_PHYSICAL_ROUNDS')
+  ?'  if((hostOnline||forced)&&(CONTINUOUS_PHYSICAL_ROUNDS||eligiblePlayerIds(m).length))createBettingRound(m);'
+  :'  if((hostOnline||forced)&&eligiblePlayerIds(m).length)createBettingRound(m);';
+ once('  archiveRound(m,round);m.round=null;m.revision++;m.updatedAt=t;scheduleSave();\n'+completeStart,
+      '  const forced=!!m.betNowQueuedAt;m.betNowQueuedAt=0;\n  archiveRound(m,round);m.round=null;m.revision++;m.updatedAt=t;scheduleSave();\n'+completeEnd,'manual complete transition');
+ once('function auth(req,url){', `function requestServerBetNow(m){
+  const t=now(),round=m.round,hostOnline=!!m.hostPlayerId&&connected(m.id,m.hostPlayerId);
+  if(round?.phase==='PLAYING'){
+   if(!m.betNowQueuedAt){m.betNowQueuedAt=t;m.revision++;m.updatedAt=t;scheduleSave();}
+   return {action:'queued',roundId:round.id,betClosesAt:null};
+  }
+  if(round?.phase==='BETTING'){
+   // Re-open the *same* reserved round. No fresh BET ID, release or second debit.
+   round.betClosesAt=t+BET_DURATION_MS;
+   round.eligiblePlayerIds=[...new Set([...(round.eligiblePlayerIds||[]),...eligiblePlayerIds(m)])];
+   m.betNowQueuedAt=0;m.revision++;m.updatedAt=t;scheduleSave();
+   broadcast(m.id,{type:'betting_started',round:publicRound(round,null),reason:'admin_extended'});
+   return {action:'extended',roundId:round.id,betClosesAt:round.betClosesAt};
+  }
+  if(!hostOnline){
+   m.betNowQueuedAt=t;m.revision++;m.updatedAt=t;scheduleSave();
+   return {action:'waiting_host',roundId:round?.id||null,betClosesAt:null};
+  }
+  if(round?.phase==='COMPLETE')archiveRound(m,round);
+  m.round=null;m.betNowQueuedAt=0;
+  const next=createBettingRound(m);
+  return {action:next?'started':'waiting_host',roundId:next?.id||null,betClosesAt:next?.betClosesAt||null};
+}
+function auth(req,url){`,'manual server BET action');
+ once(' const p=parts(url.pathname);',` const p=parts(url.pathname);
+ if(req.method==='POST'&&p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'&&p[4]==='bet-now'){
+  if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});
+  const m=machine(safeId(p[3])||MACHINE_DEFAULT);
+  return reply(res,200,{ok:true,...requestServerBetNow(m),serverTime:now()});
+ }`,'manual protected admin route');
  once(" if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){",` if(req.method==='GET'&&p[3]==='stations')return reply(res,200,{ok:true,stations:stations.snapshot(m,player.id)});\n if(req.method==='POST'&&p[3]==='stations'&&p[4]==='join'){\n  const input=await bodyJson(req);return reply(res,200,{ok:true,stations:stations.join(m,player.id,input)});\n }\n if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){\n  // Use the established terminal BET rejection to release any client-side hold.\n  if(!stations.snapshot(m,player.id).selfStation)return reply(res,409,{ok:false,error:'wait_next_bet',reason:'machine_full',...snapshot(m,player.id)});`, 'player routes');
  once(" const p=parts(url.pathname);",` const p=parts(url.pathname);\n if(p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'&&p[4]==='stations'){\n  if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});\n  const m=machine(safeId(p[3])||MACHINE_DEFAULT);\n  if(req.method==='GET')return reply(res,200,{ok:true,stations:stations.snapshot(m)});\n  if(req.method==='POST'&&p[5]==='demo'){const input=await bodyJson(req);return reply(res,200,{ok:true,stations:stations.configure(m,input.count)});}\n  return reply(res,404,{ok:false,error:'not_found'});\n }`, 'admin routes');
  once("   const msg=JSON.parse(String(raw));",`   const msg=JSON.parse(String(raw));\n   if(msg.type==='station_hello'||msg.type==='station_profile'){\n    const t=now();if(t-(ws.stationProfileAt||0)<1500)return;ws.stationProfileAt=t;\n    const view=stations.join(m,player.id,msg.profile);\n    ws.send(JSON.stringify({type:'station_roster',serverTime:t,stations:view}));return;\n   }\n   if(msg.type==='station_progress'){\n    const t=now();if(t-(ws.stationWinAt||0)<400)return;ws.stationWinAt=t;\n    stations.progress(m,player.id,msg);return;\n   }`, 'socket messages');
