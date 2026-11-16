@@ -67,6 +67,8 @@ on:
       - 'assets/party-castella-host.js'
       - 'assets/party-castella.js'
       - 'assets/game-menu-v91.js'
+      - 'assets/arcade-candy-world-v157.css'
+      - '.github/tests/nine_tab_visibility_v233.cjs'
       - 'tests/payout-v232-bootstrap.mjs'
       - 'tests/payout-v232-classic-rules.cjs'
       - 'tests/payout-v232-classic-sample.cjs'
@@ -97,6 +99,8 @@ jobs:
       - run: npm install --ignore-scripts
       - name: JavaScript syntax check
         run: npm run check
+      - name: Nine-game tab visibility regression
+        run: node .github/tests/nine_tab_visibility_v233.cjs
       - name: PowerShell syntax check
         shell: pwsh
         run: |
