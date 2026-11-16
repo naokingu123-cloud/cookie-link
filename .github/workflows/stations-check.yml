@@ -12,7 +12,7 @@ on:
 jobs:
   stations:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,9 +21,13 @@ jobs:
       - run: npm install --ignore-scripts
       - name: Station syntax
         run: node --check server-stations-v235.mjs && node --check assets/stations-v235.js
-      - name: Seat allocation and real-rule TEST players
-        run: node tests/stations-v235.mjs && node tests/stations-snapshot-v235.mjs
+      - name: Seat allocation, privacy and idle-round guards
+        run: node tests/stations-v235.mjs && node tests/stations-snapshot-v235.mjs && node tests/stations-round-idle-v235.mjs
       - name: Actual HTTP and WebSocket six-seat integration
         run: node tests/stations-integration-v235.mjs
       - name: Wallet restart compatibility with server diagnostics
         run: node tests/stations-wallet-repro-v235.mjs
+      - name: Existing shared-machine and payout regressions
+        run: npm run check && npm run test:shared
+      - name: Existing tab visibility and HD60 regressions
+        run: node .github/tests/nine_tab_visibility_v233.cjs && node tests/roulette-hd60-v234.mjs
