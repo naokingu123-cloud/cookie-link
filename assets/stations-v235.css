@@ -1,30 +1,66 @@
-/* Station cards are outside the video and contain no animated 3D renderer. */
-html:not(.server-roulette-host) #screen>.arena.stations-reserved-v235{margin-bottom:44px!important;overflow:visible!important}
-#screen>.arena>.stations-strip-v235{position:absolute;left:0;right:0;bottom:-44px;height:40px;z-index:5;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;pointer-events:none;isolation:isolate}
-.station-card-v235{box-sizing:border-box;min-width:0;display:grid;grid-template-columns:27px minmax(0,1fr);grid-template-rows:12px 11px 13px;gap:0 2px;border:1px solid #d6ad6c;border-radius:6px;padding:1px 3px;background:linear-gradient(145deg,#3b2949,#1b2339);color:#fff5df;box-shadow:inset 0 0 0 1px #ffffff1a;font:700 9px/1.15 system-ui,sans-serif;text-align:left;overflow:hidden;pointer-events:none}
-.station-card-v235 img{grid-column:1;grid-row:1/4;align-self:center;width:27px;height:34px;object-fit:contain;min-width:0;border:0;background:none}
-.station-card-v235 .station-id{grid-column:2;grid-row:1;color:#f8ce78;white-space:nowrap;line-height:12px;font-size:9px}
-.station-card-v235 .station-name{grid-column:2;grid-row:2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;line-height:11px}
-.station-card-v235 .station-win{grid-column:2;grid-row:3;color:#fff3b1;font-size:10px;line-height:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.station-card-v235 .station-win small{font-size:6px;padding-left:2px}
+/* v238: recover the old lower strip's 44px for the roulette. Cards occupy
+   narrow side rails only; the full video retains object-fit:contain. */
+html:not(.server-roulette-host) #screen>.arena.stations-reserved-v235{margin-bottom:0!important;overflow:hidden!important}
+html:not(.server-roulette-host) #screen>.arena.stations-reserved-v235 #cookie-roulette{left:0!important;right:0!important}
+html:not(.server-roulette-host) #screen>.arena.stations-reserved-v235 #cookie-roulette .a8-stage{inset:3px 3px 29px!important}
+#screen>.arena>.stations-strip-v235{position:absolute;inset:82px 3px 32px;z-index:35;display:grid;grid-template-columns:84px minmax(0,1fr) 84px;grid-template-rows:repeat(3,minmax(64px,1fr));gap:3px 0;pointer-events:none;isolation:isolate;overflow-y:auto;scrollbar-width:none}
+.station-card-v235{box-sizing:border-box;min-width:0;min-height:0;align-self:center;display:grid;grid-template-columns:21px minmax(0,1fr);grid-template-rows:11px 10px 13px 12px 11px;gap:0 2px;border:1px solid #d6ad6c;border-radius:7px;padding:2px 3px;background:linear-gradient(145deg,#34243deb,#112337eb);color:#fff5df;box-shadow:inset 0 0 0 1px #ffffff1a,0 1px 3px #0005;font:700 9px/1.1 system-ui,sans-serif;text-align:left;overflow:hidden;pointer-events:auto}
+.station-card-v235 img{grid-column:1;grid-row:1/3;align-self:center;width:21px;height:25px;object-fit:contain;min-width:0;border:0;background:none}
+.station-card-v235 .station-id{grid-column:2;grid-row:1;color:#f8ce78;white-space:nowrap;line-height:11px;font-size:9px}
+.station-card-v235 .station-name{grid-column:2;grid-row:2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;line-height:10px}
+.station-card-v235 .station-win{grid-column:1/-1;grid-row:3;text-align:center;color:#fff3b1;font-size:11px;line-height:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.station-card-v235 .station-best{grid-column:1/-1;grid-row:4;display:flex;gap:2px;justify-content:space-between;align-items:center;min-width:0;color:#a7efff;border-top:1px solid #ffffff24;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:8px;line-height:12px;overflow:hidden}
+.station-card-v235 .station-best-number{flex:none;font-size:8px}
+.station-card-v235 .station-best-gain{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:9px;color:#b6f9dc}
+.station-card-v235 .station-state{grid-column:1/-1;grid-row:5;display:block;min-width:0;text-align:center;color:#dce5f3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:8px;line-height:11px}
 .station-card-v235 .station-test{font-size:6px;margin-left:3px;color:#c8e5ff;background:#234c70;border-radius:2px;padding:0 2px}
-.station-card-v235[data-offline="1"]{opacity:.6}
-.station-card-v235[data-empty="1"]{opacity:.5}
-.station-card-v235[data-empty="1"] .station-name{grid-row:2/4;align-self:center}
-.station-self-v235{position:absolute;left:7px;bottom:0;z-index:4;pointer-events:none;color:#e6f9ff;background:#0c233ae0;border:1px solid #9ad8e5;border-radius:6px;padding:2px 5px;font:800 8px/1.1 system-ui,sans-serif}
-.station-card-v235[data-self="1"]{border-color:#8ce6ea;background:linear-gradient(145deg,#184755,#153348)}
-.stations-monitor-v235{margin:14px 0 0;padding:12px;border:1px solid #a9b7c8;border-radius:12px;background:#111c2b;color:#f6f2e3;font-family:system-ui,sans-serif}
-.stations-monitor-v235 header{position:static;backdrop-filter:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0;margin:0 0 10px;background:none}
-.stations-monitor-v235 h3{margin:0;font-size:16px}
-.stations-monitor-v235 .station-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.stations-monitor-v235 .station-card-v235{grid-template-columns:40px minmax(0,1fr);grid-template-rows:18px 18px 22px;font-size:13px;padding:5px}
-.stations-monitor-v235 .station-card-v235 img{width:40px;height:56px}
-.stations-monitor-v235 .station-id{font-size:13px;line-height:18px}
-.stations-monitor-v235 .station-name{font-size:12px;line-height:18px}
-.stations-monitor-v235 .station-win{font-size:17px;line-height:22px}
-.stations-monitor-v235 .station-win small{font-size:9px}
-.stations-monitor-v235 .station-test{font-size:8px}
-.stations-monitor-v235 button{font:700 12px/1.2 system-ui,sans-serif;cursor:pointer;padding:6px 9px;border:1px solid #7faac6;border-radius:6px;background:#213d57;color:#fff;margin-left:6px}
-.stations-monitor-v235 .station-note{margin:8px 0 0;color:#b4c6d9;font-size:11px}
-@media(max-width:850px){.stations-monitor-v235 .station-list{grid-template-columns:repeat(3,minmax(0,1fr))}.stations-monitor-v235 header{flex-wrap:wrap}}
+.station-card-v235[data-award="1"] .station-state{color:#ffe376}
+.station-card-v235[data-award="2"]{border-color:#e1a1ff}
+.station-card-v235[data-award="2"] .station-state{color:#f0c4ff}
+.station-card-v235[data-award="3"]{border-color:#fff1ab;box-shadow:inset 0 0 0 1px #f197d9aa,0 0 5px #ffd87988}
+.station-card-v235[data-award="3"] .station-state{color:#fff0a0;font-weight:900;background:linear-gradient(90deg,#b5427438,#6463c655)}
+.station-card-v235[data-offline="1"]{opacity:.65}
+.station-card-v235[data-empty="1"]{opacity:.42;grid-template-rows:11px 16px;padding:3px}
+.station-card-v235[data-empty="1"] .station-best,.station-card-v235[data-empty="1"] .station-win,.station-card-v235[data-empty="1"] .station-state{display:none}
+.station-card-v235[data-empty="1"] .station-name{grid-column:1/-1;text-align:center}
+.station-self-v235{position:absolute;left:50%;bottom:31px;transform:translateX(-50%);z-index:36;pointer-events:none;color:#e6f9ff;background:#0c233ad9;border:1px solid #9ad8e588;border-radius:6px;padding:2px 6px;font:800 8px/1.1 system-ui,sans-serif}
+.station-card-v235[data-self="1"]{border-color:#8ce6ea;background:linear-gradient(145deg,#184755ed,#153348ed)}
+/* The own avatar remains available in the wardrobe; its arena thumbnail moves
+   to the centre header so it cannot cover the right-hand station cards. */
+html #screen>.arena.stations-reserved-v235 .avatar-box{right:100px!important;top:4px!important;bottom:auto!important;transform:scale(.65)!important;transform-origin:right top!important;pointer-events:auto}
+#screen>.arena.stations-reserved-v235[data-station-density="compact"]>.stations-strip-v235{top:78px;grid-template-columns:82px minmax(0,1fr) 82px;grid-template-rows:repeat(3,minmax(57px,1fr));gap:3px 0;pointer-events:auto}
+#screen>.arena[data-station-density="compact"] .station-card-v235{grid-template-rows:10px 9px 12px 11px 10px;padding:1px 2px}
+#screen>.arena[data-station-density="compact"] .station-state{font-size:7.5px;line-height:10px}
+/* Narrow landscape view keeps the readable cards scrollable on the edges,
+   rather than forcing a shrunken or cropped roulette into a tiny centre box. */
+body.mobile-landscape #screen>.arena>.stations-strip-v235{top:78px;bottom:30px;overflow-y:auto;grid-template-rows:repeat(3,57px);align-content:start;scrollbar-width:none;pointer-events:auto}
+body.mobile-landscape #screen>.arena>.stations-strip-v235::-webkit-scrollbar{display:none}
+/* Monitor: overlay beside the existing iframe, never detach/restart that host. */
+.station-host-card-v238{position:relative}
+.station-host-card-v238 .host-frame{height:330px!important;min-height:330px!important}
+.stations-monitor-v235{margin:0;padding:0 8px 7px;color:#f6f2e3;font-family:system-ui,sans-serif}
+.stations-monitor-v235 header{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);padding:0;margin:0}
+.stations-monitor-v235 .station-list{position:absolute;inset:48px 7px 38px;display:grid;grid-template-columns:112px minmax(0,1fr) 112px;grid-template-rows:repeat(3,minmax(0,1fr));gap:5px 0;pointer-events:none}
+.stations-monitor-v235 .station-card-v235{grid-template-columns:27px minmax(0,1fr);grid-template-rows:14px 13px 20px 15px 14px;padding:3px 4px;border-radius:8px}
+.stations-monitor-v235 .station-card-v235 img{width:27px;height:30px}
+.stations-monitor-v235 .station-id{font-size:11px;line-height:14px}
+.stations-monitor-v235 .station-name{font-size:10px;line-height:13px}
+.stations-monitor-v235 .station-win{font-size:18px;line-height:20px}
+.stations-monitor-v235 .station-best{font-size:10px;line-height:15px}
+.stations-monitor-v235 .station-best-number,.stations-monitor-v235 .station-best-gain{font-size:10px}
+.stations-monitor-v235 .station-state{font-size:10px;line-height:14px}
+.stations-monitor-v235 .station-note{margin:5px 0 0;color:#b4c6d9;font-size:9px;line-height:1.4}
 @media(forced-colors:active){.station-card-v235,.station-self-v235{background:Canvas;color:CanvasText;border:1px solid CanvasText;box-shadow:none}}
+
+#screen>.arena>.stations-strip-v235::-webkit-scrollbar{display:none}
+.station-card-v235 .station-best[data-tier="3"]{color:#f1baff}
+
+/* v239: seat palette; state remains readable when highest-role reach pulses. */
+.station-card-v235{--station-color:#ff5d9e;border-color:var(--station-color);box-shadow:inset 3px 0 0 var(--station-color),inset 0 0 0 1px #ffffff1c,0 1px 3px #0005}
+.station-card-v235 .station-id{color:var(--station-color);text-shadow:0 0 5px color-mix(in srgb,var(--station-color),transparent 42%)}
+.station-card-v235[data-reach="1"]:not([data-award="3"]){box-shadow:inset 3px 0 0 var(--station-color),0 0 4px var(--station-color)}
+.station-card-v235[data-reach="1"] .station-state{color:#fff0bd;font-weight:900}
+.station-card-v235[data-award="3"]{box-shadow:inset 3px 0 0 var(--station-color),0 0 5px #ffd87988}
+@media(prefers-reduced-motion:reduce){.station-card-v235[data-reach="1"]{animation:none}}
+
+.station-self-v235{border-color:var(--station-color,#9ad8e5);box-shadow:0 0 5px var(--station-color,#9ad8e5);color:#fff}

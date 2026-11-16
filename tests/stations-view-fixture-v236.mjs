@@ -2,7 +2,7 @@ import vm from 'node:vm';
 // A minimal DOM for executing the actual roster script in the game's private
 // lexical scope. There is intentionally no window.app or fabricated UI WIN.
 class Element {
- constructor(tag){this.tagName=tag;this.children=[];this.parentNode=null;this.isConnected=false;this.dataset={};this.style={};this.attrs={};this._text='';this.clientWidth=0;this.scrollWidth=0;this.classList={add(){},remove(){}};}
+ constructor(tag){this.tagName=tag;this.children=[];this.parentNode=null;this.isConnected=false;this.dataset={};this.style={setProperty(name,value){this[name]=value}};this.attrs={};this._text='';this.clientWidth=0;this.scrollWidth=0;this.classList={add(){},remove(){}};}
  set textContent(value){for(const child of this.children)child.parentNode=null;this.children=[];this._text=String(value);}
  get textContent(){return this._text+this.children.map(n=>n.textContent).join('');}
  append(...children){for(const child of children){child.remove();child.parentNode=this;child.isConnected=true;this.children.push(child);}}

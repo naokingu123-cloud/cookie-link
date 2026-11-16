@@ -6,6 +6,15 @@ on:
       - 'server-stations-v235.mjs'
       - 'server-core-loader-v220.mjs'
       - 'assets/stations-v235.*'
+      - 'assets/stations-reach-host-v239.js'
+      - 'docs/stations-v238.md'
+      - 'docs/stations-v239.md'
+      - 'tests/stations-detail-v238.mjs'
+      - 'tests/stations-highlight-v239.mjs'
+      - 'tests/stations-layout-v238.mjs'
+      - 'tests/stations-view-fixture-v236.mjs'
+      - 'index.html'
+      - 'monitor.html'
       - 'assets/shared-machine-v176.js'
       - 'tests/stations*v235*'
       - 'tests/stations*v236*'
@@ -21,7 +30,9 @@ jobs:
           node-version: '20'
       - run: npm install --ignore-scripts
       - name: Station syntax
-        run: node --check server-stations-v235.mjs && node --check assets/stations-v235.js
+        run: node --check server-stations-v235.mjs && node --check assets/stations-v235.js && node --check assets/stations-reach-host-v239.js
+      - name: Stations sidebar, high-pay and rotating 3D reach colors
+        run: node tests/stations-detail-v238.mjs && node tests/stations-highlight-v239.mjs
       - name: Real-only migration and actual live-WIN UI
         run: node tests/stations-live-win-v236.mjs
       - name: Two real players, live WIN, checkpoint fallback and settlement
