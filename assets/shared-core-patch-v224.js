@@ -66,6 +66,14 @@ function patch(baseSource){
 }`,
  'disable duplicate core start');
  source=once(source,
+` if(round.phase==='BETTING'){
+  const ms=Math.max(0,Number(round.betClosesAt||0)-serverNow());`,
+` if(round.phase==='BETTING'){
+  const registration=window.SweetsSharedControllerV224?.betStatus?.(round);
+  if(registration){countdownText(registration.text,registration.label);scheduleServerBetClock(100);return;}
+  const ms=Math.max(0,Number(round.betClosesAt||0)-serverNow());`,
+ 'show actual BET registration state');
+ source=once(source,
  "  if(message.type==='visual_frame'){if(current&&message.roundId===current.roundId)showRouletteMirror(message.image);return;}",
  "  if(message.type==='visual_frame'){hideRouletteMirror();return;}",
  'disable first-hit JPEG freeze overlay');
@@ -75,3 +83,4 @@ function patch(baseSource){
 }
 window.SweetsSharedCorePatchV224={patch};
 })();
+

@@ -531,3 +531,12 @@
 - 実Arcade.drawHeldがgetterのみであることを反映し、リセット時の代入を除去。テストは実Arcadeと実bundled CANNON/Physics/DrawControllerを用いる。
 - 新回帰 `tests/shared-v226-host-start.mjs` / `tests/shared-v226-client-start.mjs`。詳細は `docs/shared-sync-v226.md`。
 - ホスト側JSも変更されるため、Windows側のファイル更新とホスト監視画面の再読み込みが必要。GitHub Pages反映だけでWindows更新完了と扱わない。
+
+## 2026-11-16 — v227 BETカウント後NEXTになり開始しない問題
+
+- 映像freshnessをBET参加の必須条件にしていたため、結果通信が正常でも映像停止・非対応端末では登録が0件となる経路を再現して修正。結果参加と映像復旧は独立させる。
+- controller安定化中に見たBETの一律拒否を除去。安定確認後、サーバーcanBet=true・締切まで2.2秒以上なら同じBETへ参加する。サーバーの安定接続者・後入り端末の資格判定は変更しない。
+- BET登録後のHTTP ACK消失を実core全体で再現。現ページ・現接続・同一ラウンド・同一tokenの要求だけをsnapshotの参加情報で確認し、誤った0WIN破棄を防ぐ。異なるtokenや切断前の要求からは復旧しない。
+- BET時計は参加の実状態を表示。登録待ち/確認中/登録済み/再試行/残高不足を区別する。
+- `tests/shared-v227-registration.mjs` / `shared-v227-bet-reservation.mjs` / `shared-v227-client-install.mjs` を通常CIへ追加。実サーバー、実Clientのstale判定、core全体install、実Arcade/engineを含む。詳細 `docs/shared-sync-v227.md`。
+- クライアント版 `20261116-v227-bet-start-recovery`。Nodeサーバー/ホスト処理は変更なし。Pages利用者は公開反映後に再読み込みする。Windowsからクライアントファイルを配信する場合はそのファイル更新が必要。標準1倍速を維持。

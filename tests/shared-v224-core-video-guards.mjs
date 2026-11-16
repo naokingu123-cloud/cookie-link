@@ -19,10 +19,10 @@ assert.ok(patched.includes('One owner only: SharedClientControllerV224 starts a 
 assert.ok(patched.includes('never replays or resumes an interrupted round'));
 assert.ok(patched.includes("if(message.type==='visual_frame'){hideRouletteMirror();return;}"));
 assert.ok(!patched.includes("showRouletteMirror(message.image)"),'legacy JPEG first-HIT still image must be disabled');
-assert.ok(loader.includes('shared-core-patch-v224.js?v=226'));
-assert.ok(loader.includes('shared-client-controller-v224.js?v=226'));
-assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v=226'));
-assert.ok(loader.includes('shared-roulette-client-v224.js?v=226'));
+assert.ok(loader.includes('shared-core-patch-v224.js?v=227'));
+assert.ok(loader.includes('shared-client-controller-v224.js?v=227'));
+assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v=227'));
+assert.ok(loader.includes('shared-roulette-client-v224.js?v=227'));
 assert.ok(!loader.includes('shared-core-patch-v222.js'));
 assert.ok(!loader.includes('shared-client-controller-v222.js'));
 assert.ok(!loader.includes('shared-roulette-client-hold-v222.js'));
@@ -30,7 +30,7 @@ assert.ok(host.indexOf("document.querySelector('#cookie-roulette .a8-stage>canva
 assert.ok(host.includes('track?.requestFrame?.()'),'host must pump canvas capture frames');
 assert.ok(host.includes("next!==canvas||track?.readyState!=='live'"),'host must rebuild a replaced or ended capture source');
 assert.ok(client.includes('.shared-roulette-hold-v222,.shared-roulette-mirror'),'legacy static overlays must be removed');
-assert.ok(client.includes('function isFresh()'),'BET readiness must require advancing decoded video');
+assert.ok(client.includes('function isFresh()'),'video freshness must remain observable independently of BET readiness');
 assert.ok(client.includes('round boundaries never rebuild the video'),'P2P/relay stream must persist across round boundaries');
 assert.ok(!client.includes("'ball_result'"),'ball events must not renegotiate video');
 console.log('v224 single lifecycle owner + live-canvas video continuity guards passed');
