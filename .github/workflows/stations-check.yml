@@ -22,6 +22,6 @@ jobs:
       - name: Station syntax
         run: node --check server-stations-v235.mjs && node --check assets/stations-v235.js
       - name: Seat allocation and real-rule TEST players
-        run: node tests/stations-v235.mjs
+        run: node tests/stations-v235.mjs && node tests/stations-snapshot-v235.mjs
       - name: Actual HTTP and WebSocket six-seat integration
         run: node tests/stations-integration-v235.mjs

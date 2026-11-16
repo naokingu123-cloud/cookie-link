@@ -9,6 +9,7 @@ const ACCENTS=['#ec6798','#67c6de','#a58ae0','#e7b847','#68be93'];
 const NAMES=['シュガー','ミント','ココア','プリン','こはく'];
 const integer=v=>Math.max(0,Math.min(1e12,Math.floor(Number(v)||0)));
 export function cleanProfile(input={}){
+ input=input&&typeof input==='object'?input:{};
  const pet=input.pet||{},pick=(values,value)=>values.includes(value)?value:values[0];
  const name=Array.from(String(input.name||'プレイヤー').normalize('NFC').replace(/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/g,'').trim()).slice(0,12).join('')||'プレイヤー';
  const photo=String(input.photo||'');
@@ -122,7 +123,13 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
   r.signature=signature;r.lastSend=now();r.revision++;
   broadcast(m.id,{type:'station_roster',stations:payload(m,null,true)});
  }
- function snapshot(m,id=null){sync(m);return payload(m,id);}
+ function snapshot(m,id=null,includePhotos=true){
+  sync(m);const result=payload(m,id);
+  // Frequent state polling must not resend up to six base64 thumbnails.
+  // Initial hello/profile replies and changed-photo broadcasts supply them.
+  if(!includePhotos)for(const seat of result.seats)if(seat.photo)delete seat.photo;
+  return result;
+ }
  function join(m,id,input){
   sync(m);const station=allocate(m,id);if(input&&station)updateProfile(m,id,input);fillTests(m);tick(m);return snapshot(m,id);
  }
@@ -149,12 +156,14 @@ export function patchStationCore(source){
  const once=(from,to,label)=>{if(source.split(from).length!==2)throw Error('[Stations235] patch target '+label);source=source.replace(from,to);};
  once("import http from 'node:http';","import http from 'node:http';\nimport {createStationService} from '../server-stations-v235.mjs';",'import');
  once('await loadDb();',`const stations=createStationService({getDb:()=>db,socketMap,connected,broadcast,scheduleSave,now});\nawait loadDb();`,'service');
- once("role:isHost?'host':'player'};","role:isHost?'host':'player',stations:stations.snapshot(m,playerId)};",'public snapshot');
+ once(" return {type:'snapshot',serverTime:now()",` const stationView=stations.snapshot(m,playerId,false),stationRound=publicRound(m.round,playerId);\n if(stationRound&&!stationView.selfStation)stationRound.canBet=false;\n return {type:'snapshot',serverTime:now()`, 'snapshot seat guard');
+ once('round:publicRound(m.round,playerId),pendingRound:','round:stationRound,pendingRound:', 'snapshot round');
+ once("role:isHost?'host':'player'};","role:isHost?'host':'player',stations:stationView};",'public snapshot');
  once(' return connectedPlayerIds(m);',' return stations.eligible(m,connectedPlayerIds(m));','seat eligibility');
  once('function tickMachine(m){\n const t=now()', 'function tickMachine(m){\n stations.tick(m);\n const t=now()', 'clock');
- once(" if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){",` if(req.method==='GET'&&p[3]==='stations')return reply(res,200,{ok:true,stations:stations.snapshot(m,player.id)});\n if(req.method==='POST'&&p[3]==='stations'&&p[4]==='join'){\n  const input=await bodyJson(req);return reply(res,200,{ok:true,stations:stations.join(m,player.id,input)});\n }\n if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){\n  if(!stations.snapshot(m,player.id).selfStation)return reply(res,409,{ok:false,error:'machine_full',stations:stations.snapshot(m,player.id)});`, 'player routes');
+ once(" if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){",` if(req.method==='GET'&&p[3]==='stations')return reply(res,200,{ok:true,stations:stations.snapshot(m,player.id)});\n if(req.method==='POST'&&p[3]==='stations'&&p[4]==='join'){\n  const input=await bodyJson(req);return reply(res,200,{ok:true,stations:stations.join(m,player.id,input)});\n }\n if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){\n  // Use the established terminal BET rejection to release any client-side hold.\n  if(!stations.snapshot(m,player.id).selfStation)return reply(res,409,{ok:false,error:'wait_next_bet',reason:'machine_full',...snapshot(m,player.id)});`, 'player routes');
  once(" const p=parts(url.pathname);",` const p=parts(url.pathname);\n if(p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'&&p[4]==='stations'){\n  if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});\n  const m=machine(safeId(p[3])||MACHINE_DEFAULT);\n  if(req.method==='GET')return reply(res,200,{ok:true,stations:stations.snapshot(m)});\n  if(req.method==='POST'&&p[5]==='demo'){const input=await bodyJson(req);return reply(res,200,{ok:true,stations:stations.configure(m,input.count)});}\n  return reply(res,404,{ok:false,error:'not_found'});\n }`, 'admin routes');
  once("   const msg=JSON.parse(String(raw));",`   const msg=JSON.parse(String(raw));\n   if(msg.type==='station_hello'||msg.type==='station_profile'){\n    const t=now();if(t-(ws.stationProfileAt||0)<1500)return;ws.stationProfileAt=t;\n    const view=stations.join(m,player.id,msg.profile);\n    ws.send(JSON.stringify({type:'station_roster',serverTime:t,stations:view}));return;\n   }\n   if(msg.type==='station_progress'){\n    const t=now();if(t-(ws.stationWinAt||0)<400)return;ws.stationWinAt=t;\n    stations.progress(m,player.id,msg);return;\n   }`, 'socket messages');
- once('  ok:true,serverTime:now(),machine:{','  ok:true,serverTime:now(),stations:stations.snapshot(m),machine:{','monitor roster');
+ once('  ok:true,serverTime:now(),machine:{','  ok:true,serverTime:now(),stations:stations.snapshot(m,null,false),machine:{','monitor roster');
  return source;
 }

@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createStationService,patchStationCore,cleanProfile} from '../server-stations-v235.mjs';
+const source=await readFile(new URL('../server-core.mjs',import.meta.url),'utf8'),patched=patchStationCore(source);
+assert.match(patched,/if\(stationRound&&!stationView.selfStation\)stationRound.canBet=false/);
+assert.match(patched,/error:'wait_next_bet',reason:'machine_full'/,'full room uses the existing client refund contract');
+const db={players:{p:{displayName:'P'}}},map=new Map([['p',new Set([{}])]]),m={id:'sample',hostPlayerId:'host',round:null};
+const service=createStationService({getDb:()=>db,socketMap:()=>map,connected:(room,id)=>map.has(id),broadcast(){},scheduleSave(){},now:()=>10000});
+const photo='data:image/png;base64,iVBORw0KGgo'+ 'A'.repeat(20000);
+service.join(m,'p',{name:'P',photo});
+const full=service.snapshot(m,'p'),light=service.snapshot(m,'p',false);
+assert.equal(full.seats[0].photo,photo);assert.equal(light.seats[0].photo,undefined);
+assert.ok(JSON.stringify(light).length<4000,'routine roster must remain lightweight');
+assert.equal(light.selfStation,1);assert.equal(light.seats.length,6);
+assert.equal(cleanProfile(null).name,'プレイヤー');
+console.log('STATIONS_V235_SNAPSHOT_PASS');
