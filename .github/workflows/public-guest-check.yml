@@ -1,0 +1,30 @@
+name: Public guest entry check
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/guest-entry-v237.js'
+      - 'assets/shared-machine-v176.js'
+      - 'tests/guest-*-v237.mjs'
+      - '.github/workflows/public-guest-check.yml'
+jobs:
+  guest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --ignore-scripts
+      - name: Bare invitation and protected session storage
+        run: node tests/guest-entry-v237.mjs
+      - name: Seven fresh browsers and six-seat admission
+        run: node tests/guest-login-v237.mjs
+      - name: Existing physical draw, wallet, payout and real WIN
+        run: npm run check && npm run test:shared && node tests/stations-live-win-v236.mjs && node tests/stations-two-player-v236.mjs
+      - name: Existing HD60 and tab visibility
+        run: node tests/roulette-hd60-v234.mjs && node .github/tests/nine_tab_visibility_v233.cjs
+      - name: Public endpoint read-only diagnostics
+        if: always()
+        run: node tests/guest-public-probe-v237.mjs
