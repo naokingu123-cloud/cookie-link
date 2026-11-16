@@ -83,17 +83,16 @@ html.arcade-candy-world-v157[data-lineup="all"] #tabs>.tab-slot>.all-tab-frame-o
   opacity:1!important;
   position:absolute!important;
   inset:0!important;
-  z-index:80!important;
+  /* The nine game boards, titles, reach and BET layers MUST be above the
+     ornamental image. The old z-index:80 hid all nine live tabs on iPhone. */
+  z-index:1!important;
   pointer-events:none!important;
   box-sizing:border-box!important;
   border:2px solid transparent!important;
   border-radius:10px!important;
-  background:
-    linear-gradient(transparent,transparent) padding-box,
-    conic-gradient(from 25deg,
-      #fff7c8 0 7%,#e99a34 8% 14%,#fff0a0 15% 24%,#c95190 25% 32%,
-      #fff8cb 33% 45%,#e29233 46% 55%,#fff1a6 56% 67%,#c74a88 68% 77%,
-      #fff6c3 78% 90%,#d87f2f 91% 100%) border-box!important;
+  /* Each game already supplies a generated confectionery frame in
+     --all-tab-frame. Do not replace it with a full-coverage pinwheel. */
+  background:var(--all-tab-frame) center/100% 100% no-repeat!important;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.95),
     inset 0 0 0 3px rgba(190,62,125,.76),

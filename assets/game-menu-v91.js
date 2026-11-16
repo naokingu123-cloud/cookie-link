@@ -121,7 +121,7 @@ renderRoundResult=function(a){
  document.documentElement.classList.add('arcade-candy-world');
  const styles=[
   ['arcade-candy-world-v156-css','assets/arcade-candy-world-v156.css?v=156'],
-  ['arcade-candy-world-v157-css','assets/arcade-candy-world-v157.css?v=157'],
+  ['arcade-candy-world-v157-css','assets/arcade-candy-world-v157.css?v=233'],
   ['result-board-v170-css','assets/result-board-v170.css?v=170'],
   ['waffle-pow-v159-css','assets/waffle-pow-v159.css?v=163']
  ];
