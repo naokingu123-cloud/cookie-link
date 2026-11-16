@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const load=p=>fs.readFile(new URL('../'+p,import.meta.url),'utf8');
+const release=JSON.parse(await load('app-version.json')).version.match(/-v(\d+)-/)?.[1];
+assert.ok(release&&Number(release)>=237,'app release version is present');
 const [entry,core,p221,p224,loader,station,endpoint]=await Promise.all([
  'assets/guest-entry-v237.js','assets/shared-machine-core-v196.js','assets/shared-core-patch-v221.js','assets/shared-core-patch-v224.js','assets/shared-machine-v176.js','assets/stations-v235.js','shared-endpoint.json'
 ].map(load));
@@ -53,7 +55,7 @@ new vm.Script(patched);
 assert.match(patched,/SweetsGuestEntryV237\.readSession\(SESSION_KEY,BASE,SERVER_HOST\)/);
 assert.match(patched,/body:\{playerId:this.playerId,displayName\}/,'automatic server-issued guest registration remains unchanged');
 assert.match(patched,/if\(SERVER_HOST\)\{const host=await this.registerHost\(\)/,'guest never registers as the physical host');
-assert.ok(loader.includes("guest-entry-v237.js?v=237"));
+assert.ok(loader.includes('guest-entry-v237.js?v='+release));
 assert.ok(loader.includes('SweetsGuestEntryV237.patch('));
 new vm.Script(a.patchStations(station));
 assert.throws(()=>a.patch('different core'),/source drift/);
