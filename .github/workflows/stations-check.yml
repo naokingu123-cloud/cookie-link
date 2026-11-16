@@ -8,6 +8,7 @@ on:
       - 'assets/stations-v235.*'
       - 'assets/shared-machine-v176.js'
       - 'tests/stations*v235*'
+      - 'tests/stations*v236*'
       - '.github/workflows/stations-check.yml'
 jobs:
   stations:
@@ -21,6 +22,10 @@ jobs:
       - run: npm install --ignore-scripts
       - name: Station syntax
         run: node --check server-stations-v235.mjs && node --check assets/stations-v235.js
+      - name: Real-only migration and actual live-WIN UI
+        run: node tests/stations-live-win-v236.mjs
+      - name: Two real players, live WIN, checkpoint fallback and settlement
+        run: node tests/stations-two-player-v236.mjs
       - name: Seat allocation, privacy and idle-round guards
         run: node tests/stations-v235.mjs && node tests/stations-snapshot-v235.mjs && node tests/stations-round-idle-v235.mjs
       - name: Actual HTTP and WebSocket six-seat integration

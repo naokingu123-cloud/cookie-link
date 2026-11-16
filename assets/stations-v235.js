@@ -1,4 +1,5 @@
-/* Six-seat roster: DOM updates only, no extra video or 3D renderers. */
+/* Six-seat roster v236: real players by default; live earned WIN, not only
+ * the end-of-round Arcade totals. DOM-only, no extra video/3D renderers. */
 (()=>{
 'use strict';
 if(window.SweetsStationsV235)return;
@@ -18,10 +19,9 @@ function mount(){
  if(root?.isConnected)return true;
  if(monitor){
   const frame=document.getElementById('host-frame');if(!frame)return false;
-  const section=make('section','stations-monitor-v235'),head=make('header'),title=make('h3','','STATION PLAYERS · 6席'),controls=make('div');
-  for(const [label,count] of [['テスト参加5名',5],['テスト参加OFF',0]]){const button=make('button','',label);button.type='button';button.onclick=()=>configure(count,button);controls.append(button);}
-  head.append(title,controls);root=make('div','station-list');
-  const note=make('p','station-note','TESTは共通8球で遊ぶジェリービンゴの疑似参加者です。実プレイヤーのCREDIT・PO集計には含めません。');
+  const section=make('section','stations-monitor-v235'),head=make('header'),title=make('h3','','STATION PLAYERS · 6席');
+  head.append(title);root=make('div','station-list');
+  const note=make('p','station-note','実プレイヤーのみ参加。WINは今回の獲得配当（精算後は確定値）です。疑似プレイヤーは停止中です。');
   section.append(head,root,note);frame.after(section);selfLabel=note;
  }else{
   const arena=document.querySelector('#screen>.arena');if(!arena)return false;
@@ -54,6 +54,7 @@ function paint(){
    const src=photo||FALLBACK;if(c.img.getAttribute('src')!==src)c.img.src=src;
    c.img.style.filter=hue?'hue-rotate('+hue+'deg)':'none';c.img.hidden=!!row.empty;
    const amount=Math.max(0,Math.floor(Number(row.win)||0));setText(c.win,row.empty?'':amount.toLocaleString('ja-JP')+' WIN');
+   c.win.title=row.empty?'':row.settled?'今回の確定WIN':row.phase==='WAITING'?'次のBETから参加待ち':'今回の獲得WIN（進行中）';
    c.node.setAttribute('aria-label','st.'+row.station+' '+(row.empty?'空席':(row.name||'')+(row.test?' テスト参加':'')+' '+amount+' WIN'+(!row.connected?' 再接続待ち':'')));
   }
   if(c.node.parentNode!==root)root.append(c.node);
@@ -72,6 +73,25 @@ function thumbnail(){
   const data=canvas.toDataURL('image/png');return data.length<=24000?data:'';
  }catch{return '';}
 }
+function currentWin(a,round,active,calculate){
+ if(!a||a.phase==='ready'||!round?.participant||round.phase==='BETTING'||active?.roundId!==round.id)return null;
+ const amount=value=>{const n=Number(value);return Number.isFinite(n)?Math.max(0,n):0;};
+ let earned=0;
+ for(let index=0;index<(a.engines||[]).length;index++){
+  if(a.enabled?.[index]===false)continue;
+  const engine=a.engines[index],bet=amount(a.locked?.[index]??a.bets?.[index]);
+  if(bet<=0)continue;
+  let win=amount(a.roundWins?.[index]);
+  // Same medal conversion as game tabs / payoutV3 telemetry. totalHundredths
+  // is already earned on the actual board, NOT a hypothetical next-hit reach.
+  if(!a.paid?.[index]&&typeof calculate==='function'){
+   try{win=amount(calculate(bet,amount(engine?.totalHundredths)));}catch{}
+  }
+  earned+=win;
+ }
+ const paid=(Array.isArray(a.roundWins)?a.roundWins:[]).reduce((sum,value,index)=>sum+(a.enabled?.[index]===false?0:amount(value)),0);
+ return Math.min(1e12,Math.floor(Math.max(earned,paid,amount(a.totalWin))));
+}
 function playerTick(){
  if(disposed)return;
  if(!client){client=window.SweetsSharedMachine?.client;if(client)client.on(message=>{if(message.stations)accept(message.stations);if(message.type==='snapshot'&&client.ws!==lastSocket)lastSocket=null;});}
@@ -79,11 +99,14 @@ function playerTick(){
   const t=Date.now(),p=profile(),key=JSON.stringify(p),newSocket=client.ws!==lastSocket;
   if(newSocket){lastSocket=client.ws;roster=null;profileKey='';lastProgress='';}
   if((newSocket||key!==profileKey||!roster||t-lastProfileAt>15000)&&t-lastHelloAt>=2000){p.photo=thumbnail();if(client.send({type:'station_hello',profile:p})){profileKey=key;lastProfileAt=t;lastHelloAt=t;}}
-  // Only the current local game's earned WIN; never the previous result or a reach prediction.
+  // This script is evaluated in the game's lexical scope by shared-machine.
+  // Do not rely on window.app, DOM text or end-of-round totalWin alone.
   const a=(()=>{try{return typeof app==='undefined'?null:app;}catch{return null;}})(),round=client.round,active=window.SweetsSharedMachine?.active;
-  if(a&&round?.participant&&round.phase!=='BETTING'&&active?.roundId===round.id){
-   const win=Math.max(0,Number(a.totalWin)||0,(Array.isArray(a.roundWins)?a.roundWins:[]).reduce((sum,v)=>sum+(Number(v)||0),0)),stamp=round.id+'|'+Math.floor(win);
-   if(stamp!==lastProgress&&client.send({type:'station_progress',roundId:round.id,win:Math.floor(win)}))lastProgress=stamp;
+  const calculate=typeof medalWin==='function'?medalWin:null;
+  const win=currentWin(a,round,active,calculate);
+  if(win!==null){
+   const stamp=round.id+'|'+win;
+   if(stamp!==lastProgress&&client.send({type:'station_progress',roundId:round.id,win}))lastProgress=stamp;
   }
  }
  paint();timer=setTimeout(playerTick,1000);
@@ -94,12 +117,7 @@ async function poll(){
  try{const response=await fetch(adminUrl(),{cache:'no-store'});if(response.ok){const data=await response.json();roster=null;accept(data.stations);}}
  catch{}finally{fetching=false;if(!disposed)timer=setTimeout(poll,2000);}
 }
-async function configure(count,button){
- button.disabled=true;
- try{const url=adminUrl().replace('/stations','/stations/demo'),response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({count})});const data=await response.json();if(!response.ok)throw Error(data.error);roster=null;accept(data.stations);}
- catch(error){setText(selfLabel,'テスト参加の変更に失敗しました: '+String(error.message||error));}finally{button.disabled=false;}
-}
-window.SweetsStationsV235={accept,get roster(){return roster;},paint};
+window.SweetsStationsV235={accept,get roster(){return roster;},paint,currentWin};
 mount();if(monitor)poll();else playerTick();
 addEventListener('beforeunload',()=>{disposed=true;clearTimeout(timer);},{once:true});
 })();

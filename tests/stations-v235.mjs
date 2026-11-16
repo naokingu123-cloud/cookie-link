@@ -9,6 +9,8 @@ const m={id:'one',hostPlayerId:'host',round:null};
 function connect(id,machine=m){db.players[id]||={id,displayName:id,tokenHash:'secret',credit:999};socketMap(machine.id).set(id,new Set([{}]));service.tick(machine);return service.snapshot(machine,id);}
 function disconnect(id){socketMap(m.id).delete(id);time+=1;service.tick(m);}
 connect('host');assert.equal(service.snapshot(m).seats.filter(s=>!s.empty).length,0,'host is not a seat');
+assert.equal(service.snapshot(m).demoCount,0,'v236 defaults to real players only');
+service.configure(m,5); // Explicit opt-in only for retained TEST-rule regression coverage.
 let roster=connect('p1');assert.equal(roster.selfStation,1);assert.equal(roster.seats.filter(s=>s.test).length,5);
 assert.equal(Object.keys(db.players).filter(id=>id.startsWith('station-test')).length,0);
 assert.equal(service.join(m,'p1').selfStation,1,'duplicate tab reuses seat');
@@ -33,7 +35,9 @@ assert.equal(service.progress(m,'p1',{roundId:'wrong',win:999}),false);
 service.progress(m,'p1',{roundId:m.round.id,win:100});assert.equal(service.snapshot(m).seats[0].win,100);
 m.round.participants.p1.settlement={totalWin:80};assert.equal(service.snapshot(m).seats[0].win,80,'final settlement overrides provisional display');
 assert.equal(service.progress(m,'p1',{roundId:m.round.id,win:999}),false);
-const two={id:'two',hostPlayerId:'host',round:null};time+=10;connect('p1',two);
+const two={id:'two',hostPlayerId:'host',round:null};time+=10;
+service.configure(two,5); // Isolated fixture; normal machines remain at zero.
+connect('p1',two);
 assert.equal(service.snapshot(two,'p1').selfStation,1);assert.equal(service.snapshot(two).seats.filter(s=>s.test).length,5);
 time+=20;two.round={id:'round-test',phase:'BETTING',betOpenedAt:time,balls:[],participants:{}};service.tick(two);
 for(let i=1;i<=8;i++){time+=250;two.round.phase=i===8?'COMPLETE':'PLAYING';two.round.balls.push({index:i,number:i});service.tick(two);}

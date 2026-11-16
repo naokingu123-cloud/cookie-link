@@ -25,6 +25,9 @@ try{
  await call('/api/admin/machines/public-01/host/register?adminToken='+admin,{method:'POST',session:host,body:{}});
  let monitor=await call('/api/admin/machines/public-01/stations?adminToken='+admin);
  assert.ok(monitor.stations.seats.every(s=>s.empty),'host does not consume st.1');
+ assert.equal(monitor.stations.demoCount,0,'production default is TEST OFF');
+ // Explicitly enable legacy TEST-rule coverage in this isolated test server.
+ await call('/api/admin/machines/public-01/stations/demo?adminToken='+admin,{method:'POST',body:{count:5}});
  const player=await session('人間1');const ws=await connect(player);
  let state=await wait(player,s=>s.stations?.selfStation===1);
  assert.equal(state.stations.seats.filter(s=>s.test).length,5);

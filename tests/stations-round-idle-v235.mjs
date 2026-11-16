@@ -3,14 +3,14 @@ import {createStationService} from '../server-stations-v235.mjs';
 let now=10000;const messages=[],db={players:{p:{displayName:'PLAYER'}}},sockets=new Map([['p',new Set([{}])]]);
 const m={id:'idle-test',hostPlayerId:'host',round:null};
 const service=createStationService({getDb:()=>db,socketMap:()=>sockets,connected:(_,id)=>sockets.has(id),broadcast:(_,value)=>messages.push(value),scheduleSave(){},now:()=>now});
+assert.equal(service.snapshot(m).demoCount,0);
+service.configure(m,5); // Explicit fixture opt-in, not the production default.
 service.join(m,'p');
 const tests=()=>service.snapshot(m,'p').seats.filter(s=>s.test);
 assert.equal(tests().length,5);
 now+=500;m.round={id:'completed-round',phase:'COMPLETE',betOpenedAt:now,balls:Array.from({length:8},(_,i)=>({number:i+1,index:i+1})),participants:{}};
 service.tick(m);
 assert.ok(tests().every(s=>s.ballCount===8&&s.bet===100&&s.settled));
-// The core clears a completed round while waiting for a restarted host. This
-// used to leave a cached board behind and crash an incoming WebSocket snapshot.
 now+=500;m.round=null;
 assert.doesNotThrow(()=>service.tick(m));
 assert.ok(tests().every(s=>s.roundId===null&&s.phase==='WAITING'&&s.ballCount===0&&s.bet===0&&s.win===0&&!s.settled));

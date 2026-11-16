@@ -1,5 +1,5 @@
-/* Six public stations. Test players use the real Jelly rules without rendering,
- * network peers, wallets or contributions to the real payout controller. */
+/* Six public stations. v236 defaults to real players only, migrates old TEST
+ * seats away, and reads the same live payout telemetry as the server monitor. */
 import './assets/jelly-rules.js';
 const JELLY=globalThis.JellyRules;
 export const CAPACITY=6;
@@ -24,8 +24,14 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
  const runtime=m=>{let r=rooms.get(m.id);if(!r){r={bots:new Map(),signature:'',lastSend:-Infinity,revision:0,photos:new Map()};rooms.set(m.id,r);}return r;};
  function data(m){
   let d=m.stationsV235;
-  if(!d||!Array.isArray(d.seats))d=m.stationsV235={seats:Array(CAPACITY).fill(null),demoCount:5,sequence:0};
+  if(!d||!Array.isArray(d.seats))d=m.stationsV235={seats:Array(CAPACITY).fill(null),demoCount:0,sequence:0};
   d.seats=Array.from({length:CAPACITY},(_,i)=>d.seats[i]||null);
+  // A saved v235 demoCount=5 must not repopulate the five TEST seats.
+  // Preserve real players' station numbers, account data and round state.
+  if(d.settingsVersion!==236){
+   d.demoCount=0;d.seats=d.seats.map(s=>s?.kind==='test'?null:s);
+   d.settingsVersion=236;runtime(m).bots.clear();scheduleSave();
+  }
   d.demoCount=Math.max(0,Math.min(5,Math.floor(Number(d.demoCount)||0)));
   d.sequence=integer(d.sequence);
   const used=new Set();d.seats=d.seats.map(s=>{if(!s||!['human','test'].includes(s.kind)||!s.playerId||used.has(s.playerId))return null;used.add(s.playerId);return s;});
@@ -38,7 +44,7 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
   const d=data(m);let at=d.seats.findIndex(s=>s?.playerId===id);
   if(at>=0)return at+1;
   at=d.seats.findIndex(s=>!s);
-  // A real arrival can replace a TEST seat, never another real player.
+  // Retain explicit admin/test-fixture opt-in, never automatic TEST admission.
   const testAt=d.seats.findIndex(s=>s?.kind==='test');
   if(testAt>=0&&(at<0||testAt<at))at=testAt;
   if(at<0)return null;
@@ -49,7 +55,7 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
   const d=data(m),hasHuman=d.seats.some(s=>s?.kind==='human');
   const tests=d.seats.filter(s=>s?.kind==='test');
   for(const s of tests.slice(hasHuman?d.demoCount:0))release(m,s.playerId);
-  if(!hasHuman)return;
+  if(!hasHuman||!d.demoCount)return;
   let n=d.seats.filter(s=>s?.kind==='test').length;
   for(let k=0;k<5&&n<d.demoCount;k++){
    const id='station-test-'+k;if(d.seats.some(s=>s?.playerId===id))continue;
@@ -65,15 +71,12 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
    else if(!s.offlineSince){s.offlineSince=t;scheduleSave();}
    else if(t-s.offlineSince>=graceMs&&m.round?.phase!=='PLAYING')release(m,s.playerId);
   }
-  // Wait until the host is registered so its initial socket never claims st.1.
-  // Map insertion order is server-observed connection order, not client clocks.
+  // Server-observed connection order; the roulette host never claims a seat.
   if(m.hostPlayerId)for(const id of socketMap(m.id).keys())if(!systemPlayer(m,id)&&connected(m.id,id))allocate(m,id);
   fillTests(m);advanceTests(m);return d;
  }
  function advanceTests(m){
   const round=m.round,r=runtime(m),d=data(m);
-  // A completed round can be cleared before the next BET opens, including
-  // while a restarted host reconnects. Never retain a playable orphan board.
   if(!round){r.bots.clear();return;}
   for(const s of d.seats){
    if(s?.kind!=='test')continue;
@@ -110,7 +113,13 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
     if(participant){
      entry.bet=integer(participant.totalBet);entry.ballCount=integer(participant.checkpointBall);entry.phase=round.phase;
      entry.settled=!!participant.settlement;
-     entry.win=participant.settlement?integer(participant.settlement.totalWin):Math.max(integer(state?.totalWin),(Array.isArray(state?.roundWins)?state.roundWins:[]).reduce((a,b)=>a+integer(b),0),s.liveRound===round.id?integer(s.liveWin):0);
+     // Arcade.totalWin/roundWins can remain zero until payout. The checkpoint
+     // already includes the per-game earned WIN in payoutV3; use it too.
+     // This is display only. An acknowledged settlement (including 0) wins.
+     const telemetry=Number(state?.payoutV3?.version)===3?state.payoutV3:null;
+     const gameWin=(Array.isArray(telemetry?.games)?telemetry.games:[]).reduce((sum,game)=>sum+integer(game?.win),0);
+     const checkpointWin=Math.max(integer(state?.totalWin),(Array.isArray(state?.roundWins)?state.roundWins:[]).reduce((a,b)=>a+integer(b),0),integer(telemetry?.roundWin),integer(gameWin));
+     entry.win=participant.settlement?integer(participant.settlement.totalWin):Math.max(checkpointWin,s.liveRound===round.id?integer(s.liveWin):0);
     }
    }
    return entry;
@@ -129,8 +138,6 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
  }
  function snapshot(m,id=null,includePhotos=true){
   sync(m);const result=payload(m,id);
-  // Frequent state polling must not resend up to six base64 thumbnails.
-  // Initial hello/profile replies and changed-photo broadcasts supply them.
   if(!includePhotos)for(const seat of result.seats)if(seat.photo)delete seat.photo;
   return result;
  }
