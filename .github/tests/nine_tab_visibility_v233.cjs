@@ -15,5 +15,5 @@ assert.equal((all.match(/--all-tab-frame:url/g)||[]).length,9,'all nine game fra
 assert(all.includes('z-index:30!important'),'live preview above decoration');
 assert(all.includes('z-index:40!important'),'BET and reach above decoration');
 assert(menu.includes('arcade-candy-world-v157.css?v=233'),'mobile CSS cache must be busted');
-assert(version.includes('v233-tab-visibility'),'installed clients must refresh');
+assert(Number(version.match(/-v(\d+)-/)?.[1])>=233,'installed clients must receive the frame fix');
 console.log('NINE_TAB_VISIBILITY_V233_PASS');

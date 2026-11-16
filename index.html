@@ -434,7 +434,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   extras.push('assets/game-menu-v91.js?v=232','assets/demo-suite-v91.js?v=154','assets/arcade-show-v91.js?v=91','assets/game-titles-v91.js?v=204');
   // Shared-machine code must execute inside the game's private scope so it can
   // intercept rouletteDrawSource/Arcade without exposing game internals globally.
-  extras.push('assets/shared-machine-v176.js?v=233');
+  extras.push('assets/shared-machine-v176.js?v=234');
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
   let [game,...extensions]=await Promise.all(responses.map(r=>r.text()));

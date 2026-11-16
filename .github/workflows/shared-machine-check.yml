@@ -24,6 +24,8 @@ on:
       - 'assets/shared-client-controller-v224.js'
       - 'assets/server-offline-settlement-worker-v3.js'
       - 'assets/shared-machine-v176.js'
+      - 'tests/roulette-hd60-v234.mjs'
+      - 'assets/shared-host-keepalive-v206.js'
       - 'assets/shared-machine-core-v196.js'
       - 'assets/shared-roulette-webrtc-host-v224.js'
       - 'assets/shared-roulette-client-v224.js'
@@ -101,6 +103,8 @@ jobs:
         run: npm run check
       - name: Nine-game tab visibility regression
         run: node .github/tests/nine_tab_visibility_v233.cjs
+      - name: HD video adaptive capture regression
+        run: node tests/roulette-hd60-v234.mjs
       - name: PowerShell syntax check
         shell: pwsh
         run: |

@@ -8,7 +8,13 @@ function install(){
  if(typeof app==='undefined'||!app||typeof rouletteDrawSource==='undefined'){setTimeout(install,60);return;}
  const nativeAppPause=typeof app.pause==='function'?app.pause.bind(app):null;
  const nativeDrawPause=typeof rouletteDrawSource.pause==='function'?rouletteDrawSource.pause.bind(rouletteDrawSource):null;
- let worker=null,workerUrl='',activeRoundId='',driverRunning=false;
+ let worker=null,workerUrl='',activeRoundId='',driverRunning=false,captureFps=24;
+ function setCaptureFps(value){
+  const fps=Number(value)>=45?60:Number(value)>=26?30:24;
+  if(fps===captureFps)return;
+  captureFps=fps;
+  try{worker?.postMessage({fps});}catch{}
+ }
 
  function physicalRound(){
   const round=window.SweetsSharedMachine?.client?.round;
@@ -68,10 +74,13 @@ function install(){
  }
 
  try{
-  const blob=new Blob(["setInterval(()=>postMessage('frame'),42)"],{type:'text/javascript'});
+  const workerSource="let timer=null;function setRate(value){const fps=Math.max(24,Math.min(60,Number(value)||24));if(timer)clearInterval(timer);timer=setInterval(()=>postMessage('frame'),Math.round(1000/fps));}onmessage=event=>{if(event.data&&event.data.fps)setRate(event.data.fps);};setRate(24);";
+  const blob=new Blob([workerSource],{type:'text/javascript'});
   workerUrl=URL.createObjectURL(blob);worker=new Worker(workerUrl);
-  // Capture at about 24 fps without repeatedly resetting the physics clock.
+  // Keep 24fps idle, use 60fps only for WebRTC viewers, downshift to 30fps
+  // under sustained encoder/network pressure. This never resets the physics.
   worker.onmessage=()=>keepAwake({resumeDriver:false,pumpFrame:true});
+  worker.postMessage({fps:captureFps});
  }catch(error){console.warn('[HostKeepAlive206] worker unavailable',error?.message||error);}
 
  const hardWake=()=>keepAwake({resumeDriver:true,pumpFrame:true});
@@ -89,11 +98,12 @@ function install(){
   hardWake();
  };
  attachClient();
+ window.SweetsHostKeepAliveV206={setCaptureFps,get capturePumpActive(){return !!worker;},get captureFps(){return captureFps;}};
  addEventListener('beforeunload',()=>{
   try{worker?.terminate();}catch{}
   try{if(workerUrl)URL.revokeObjectURL(workerUrl);}catch{}
  },{once:true});
- console.info('[HostKeepAlive206] background guard enabled; physics clock is independent from the manual 24fps capture pump');
+ console.info('[HostKeepAlive206] adaptive manual video capture 24/30/60fps; physical clock independent');
 }
 install();
 })();
