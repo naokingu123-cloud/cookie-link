@@ -5,6 +5,8 @@ import {randomUUID} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 
 const VERSION=3;
+const WALLET_INITIAL_CREDIT=1000000,WALLET_INITIALIZATION_VERSION=228;
+let coreDatabase=null;
 const DATA_DIR=process.env.SWEETS_DATA_DIR||path.join(process.cwd(),'data');
 const DATA_FILE=path.join(DATA_DIR,'payout-control-v3.json');
 const LEGACY_FILE=path.join(DATA_DIR,'payout-control-v2.json');
@@ -43,7 +45,7 @@ function normalizePlayer(player={},config=DEFAULT_CONFIG){
  player.currentRoundId=safeId(player.currentRoundId);player.currentRoundBet=finite(player.currentRoundBet);player.currentRoundWin=finite(player.currentRoundWin);
  player.lastBall=Math.max(0,Math.min(8,Number(player.lastBall)||0));player.lastQuotedBet=finite(player.lastQuotedBet);player.lastQuoteKey=String(player.lastQuoteKey||'');
  player.wallet=player.wallet&&typeof player.wallet==='object'?player.wallet:{credit:null,revision:0,lastRoundId:null,updatedAt:0};
- player.wallet.credit=Number.isFinite(Number(player.wallet.credit))?Number(player.wallet.credit):null;player.wallet.revision=Number(player.wallet.revision)||0;
+ player.wallet.credit=player.wallet.credit!=null&&Number.isFinite(Number(player.wallet.credit))?Number(player.wallet.credit):null;player.wallet.revision=Number(player.wallet.revision)||0;
  player.updatedAt=finite(player.updatedAt)||now();return player;
 }
 function migrateV2(){
@@ -73,12 +75,58 @@ function normalizeDb(input){
 }
 const db=load();
 function scheduleSave(){dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(save,100);saveTimer.unref?.();}
-function save(){if(!dirty)return;dirty=false;db.updatedAt=now();try{fs.mkdirSync(DATA_DIR,{recursive:true});fs.writeFileSync(DATA_FILE,JSON.stringify(db,null,2));}catch(error){console.error('[PayoutV3] save',error);}}
-process.on('exit',save);process.on('SIGINT',()=>{save();process.exit(0);});process.on('SIGTERM',()=>{save();process.exit(0);});
+function save(required=false){if(!dirty)return;dirty=false;db.updatedAt=now();try{fs.mkdirSync(DATA_DIR,{recursive:true});const temporary=DATA_FILE+'.tmp';fs.writeFileSync(temporary,JSON.stringify(db,null,2));fs.renameSync(temporary,DATA_FILE);}catch(error){dirty=true;console.error('[PayoutV3] save',error);if(required)throw Object.assign(Error('wallet_persist_failed'),{status:503});}}
+function persistWallet(){dirty=true;clearTimeout(saveTimer);saveTimer=null;save(true);}
+process.on('exit',()=>save());process.on('SIGINT',()=>{save();process.exit(0);});process.on('SIGTERM',()=>{save();process.exit(0);});
 
 function machine(id){id=safeId(id)||'public-01';return db.machines[id]||(db.machines[id]={id,players:{},updatedAt:now()});}
 function player(machineId,playerId){const m=machine(machineId);playerId=safeId(playerId);const p=m.players[playerId]||(m.players[playerId]={playerId,games:{},rounds:{}});return normalizePlayer(p,db.config);}
 function roundRecord(machineId,playerId,roundId){const p=player(machineId,playerId);roundId=safeId(roundId)||'round';const round=p.rounds[roundId]||(p.rounds[roundId]={id:roundId,games:{},ballHistory:[],balls:[]});return normalizeRound(round);}
+function coreRounds(machineId){const m=coreDatabase?.machines?.[machineId];return [m?.round,...(m?.history||[])].filter(Boolean);}
+function legacyPending(machineId,playerId,p){return coreRounds(machineId).filter(round=>Number(round.participants?.[playerId]?.totalBet)>0&&!round.participants[playerId].settlement&&!p.rounds?.[round.id]?.committed);}
+function reservedRoundId(p){return Object.values(p.rounds||{}).filter(round=>round.reservation?.status==='reserved').sort((a,b)=>Number(b.reservation.reservedAt)-Number(a.reservation.reservedAt))[0]?.id||null;}
+function ensureWallet(machineId,playerId,p=player(machineId,playerId)){
+ if(Number(p.wallet.initializationVersion)===WALLET_INITIALIZATION_VERSION)return true;
+ // Do not replace a live legacy participant's already-reserved credit. Its
+ // final settlement closes the old ledger before the one-time million reset.
+ if(legacyPending(machineId,playerId,p).length){p.wallet.initializationPending=true;return false;}
+ p.wallet={...p.wallet,credit:WALLET_INITIAL_CREDIT,revision:(Number(p.wallet.revision)||0)+1,lastRoundId:null,source:'initial',reservedRoundId:null,initializationVersion:WALLET_INITIALIZATION_VERSION,initializationPending:false,updatedAt:now()};
+ p.updatedAt=now();persistWallet();return true;
+}
+function walletError(machineId,playerId,code,status=409){return Object.assign(Error(code),{status,payoutControlV3:publicControl(machineId,playerId)});}
+function requireAmount(value,label,machineId,playerId){
+ const amount=Number(value);if(!Number.isSafeInteger(amount)||amount<0)throw walletError(machineId,playerId,label,400);return amount;
+}
+function reserveWallet(machineId,playerId,coreRound,body){
+ const p=player(machineId,playerId),ready=ensureWallet(machineId,playerId,p),id=safeId(coreRound.id),record=roundRecord(machineId,playerId,id);
+ const bet=requireAmount(body.totalBet,'invalid_bet',machineId,playerId);
+ for(const name of ['creditBefore','creditAfterBet'])if(body[name]!=null)requireAmount(body[name],'invalid_credit',machineId,playerId);
+ if(Array.isArray(body.bets)){
+  let sum=0;for(let index=0;index<body.bets.length;index++){const amount=requireAmount(body.bets[index],'invalid_bet',machineId,playerId);if(body.enabled?.[index]!==false)sum+=amount;}
+  if(!Number.isSafeInteger(sum)||sum!==bet)throw walletError(machineId,playerId,'bet_total_mismatch',400);
+ }
+ const participant=coreRound.participants?.[playerId];
+ if(record.committed||participant?.settlement)throw walletError(machineId,playerId,'round_already_settled');
+ if(!ready){
+  if(participant&&bet===Number(participant.totalBet))return {creditBefore:Number(participant.creditAfterBet)+bet,creditAfterBet:Number(participant.creditAfterBet),totalBet:bet,idempotent:true};
+  throw walletError(machineId,playerId,'wallet_migration_pending');
+ }
+ const previous=record.reservation,oldBet=previous?.status==='reserved'?Number(previous.bet)||0:0;
+ const available=Number(p.wallet.credit)+oldBet;
+ if(!Number.isSafeInteger(available)||available<bet)throw walletError(machineId,playerId,'insufficient_credit');
+ const changed=bet!==oldBet,creditAfterBet=available-bet;
+ record.reservation={...previous,roundId:id,status:bet>0?'reserved':'released',bet,creditBefore:available,creditAfterBet,clientRoundToken:String(body.clientRoundToken||''),reservedAt:previous?.reservedAt||now()};
+ record.bet=bet;record.updatedAt=now();
+ if(p.currentRoundId===id)p.currentRoundBet=bet;
+ if(changed)p.wallet={...p.wallet,credit:creditAfterBet,revision:(Number(p.wallet.revision)||0)+1,lastRoundId:id,source:'bet',updatedAt:now()};
+ p.wallet.reservedRoundId=reservedRoundId(p);p.updatedAt=now();persistWallet();
+ return {creditBefore:available,creditAfterBet,totalBet:bet,idempotent:!changed};
+}
+function releaseWallet(machineId,playerId,coreRound){
+ const p=player(machineId,playerId),record=p.rounds?.[coreRound.id];
+ if(record?.reservation?.status==='reserved')return reserveWallet(machineId,playerId,coreRound,{totalBet:0,bets:[],clientRoundToken:record.reservation.clientRoundToken});
+ return null;
+}
 function targetFor(p){return clamp(p.targetRate||db.config.targetRate,db.config.minRate,db.config.maxRate);}
 function monetaryDebt(p){return targetFor(p)*p.lifetimeBet/100-p.lifetimeWin;}
 function desiredForBet(p,bet){
@@ -106,10 +154,13 @@ function gameRowsFromBet(body){
 function processJoin(machineId,playerId,body,response){
  const roundId=safeId(response?.round?.id||body?.roundId);if(!roundId)return null;
  const p=player(machineId,playerId),bet=Math.max(0,finite(body.totalBet)),round=roundRecord(machineId,playerId,roundId);
+ // The real core reserves before admitting a participant. Keep standalone
+ // middleware users on the same ledger when no core bridge is attached.
+ if(!coreDatabase)reserveWallet(machineId,playerId,{id:roundId,participants:{}},body);
  if(p.currentRoundId!==roundId){p.currentRoundId=roundId;p.currentRoundWin=0;p.lastBall=0;}
  p.currentRoundBet=bet;round.bet=bet;round.phase=response?.round?.phase||round.phase;round.updatedAt=now();round.quotedRate=quoteRate(p,roundId,bet);
  for(const item of gameRowsFromBet(body)){const g=round.games[item.id]||(round.games[item.id]={bet:0,win:0});g.bet=item.bet;}
- p.updatedAt=now();machine(machineId).updatedAt=now();trimRounds(p);scheduleSave();return publicControl(machineId,playerId);
+ p.updatedAt=now();machine(machineId).updatedAt=now();trimRounds(p);persistWallet();return publicControl(machineId,playerId);
 }
 function telemetryFrom(payload){const telemetry=payload?.state?.payoutV3;return telemetry&&Number(telemetry.version)===VERSION?telemetry:null;}
 function processTelemetry(machineId,playerId,payload){
@@ -133,17 +184,32 @@ function finalGames(payload,round){
 }
 function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games,source='client',digest=null}={}){
  const p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);if(round.committed)return round.settlement;
- const win=Math.max(0,finite(totalWin)),bet=Math.max(0,finite(round.bet||Object.values(games||{}).reduce((sum,g)=>sum+finite(g.bet),0)));
- round.win=win;round.phase='COMPLETE';round.committed=true;round.settlement={totalWin:round1(win),creditAfter:round1(creditAfter),source,digest:digest||null,settledAt:now()};
+ const win=requireAmount(totalWin,'invalid_win',machineId,playerId),bet=Math.max(0,finite(round.bet||Object.values(games||{}).reduce((sum,g)=>sum+finite(g.bet),0)));
+ if(creditAfter!=null)requireAmount(creditAfter,'invalid_credit',machineId,playerId);
+ const initialized=ensureWallet(machineId,playerId,p),reservation=round.reservation;
+ let credit;
+ if(reservation?.status==='reserved'){
+  credit=Number(p.wallet.credit)+win;requireAmount(credit,'invalid_credit',machineId,playerId);reservation.status='settled';
+ }else if(!initialized){
+  const legacy=coreRounds(machineId).find(item=>item.id===roundId)?.participants?.[playerId];
+  credit=requireAmount(legacy?Number(legacy.creditAfterBet)+win:Number(creditAfter??p.wallet.credit),'invalid_credit',machineId,playerId);
+ }else{
+  // Expired legacy records cannot modify the new initial wallet. Every new
+  // paid round must have a persisted reservation before it can award a WIN.
+  credit=Number(p.wallet.credit);
+ }
+ round.win=win;round.phase='COMPLETE';round.committed=true;round.settlement={totalWin:win,creditAfter:credit,source,digest:digest||null,settledAt:now()};
  p.lifetimeBet+=bet;p.lifetimeWin+=win;p.currentRoundId=round.id;p.currentRoundBet=bet;p.currentRoundWin=win;p.lastBall=8;
  for(const [id,item] of Object.entries(games||{})){const total=p.games[id]||(p.games[id]={bet:0,win:0});total.bet+=Math.max(0,finite(item.bet));total.win+=Math.max(0,finite(item.win));const rg=round.games[id]||(round.games[id]={});Object.assign(rg,item);}
- const credit=Number.isFinite(Number(creditAfter))?Number(creditAfter):p.wallet.credit;
- p.wallet={credit:credit==null?null:round1(credit),revision:(Number(p.wallet.revision)||0)+1,lastRoundId:round.id,source,updatedAt:now()};p.updatedAt=now();quoteRate(p,'post-'+round.id,Math.max(bet,p.lastQuotedBet||bet));
- round.work=null;trimRounds(p);scheduleSave();return round.settlement;
+ p.wallet={...p.wallet,credit,revision:(Number(p.wallet.revision)||0)+1,lastRoundId:round.id,source,reservedRoundId:reservedRoundId(p),updatedAt:now()};p.updatedAt=now();quoteRate(p,'post-'+round.id,Math.max(bet,p.lastQuotedBet||bet));
+ if(!initialized){ensureWallet(machineId,playerId,p);round.settlement.creditAfter=p.wallet.credit;}
+ round.work=null;trimRounds(p);persistWallet();return round.settlement;
 }
 function processSettle(machineId,playerId,body,response){
  const roundId=safeId(body.roundId);if(!roundId)return null;const round=roundRecord(machineId,playerId,roundId),games=finalGames(body,round);
- commitSettlement(machineId,playerId,roundId,{totalWin:finite(body.totalWin),creditAfter:finite(body.creditAfter),games,source:'client',digest:body.digest});return publicControl(machineId,playerId);
+ const settlement=commitSettlement(machineId,playerId,roundId,{totalWin:response?.settlement?.totalWin??body.totalWin,creditAfter:response?.settlement?.creditAfter??body.creditAfter,games,source:'client',digest:body.digest});
+ if(response?.settlement)Object.assign(response.settlement,{totalWin:settlement.totalWin,creditAfter:settlement.creditAfter});
+ return publicControl(machineId,playerId);
 }
 function markOffline(machineId,playerId){
  const p=player(machineId,playerId);for(const round of Object.values(p.rounds))if(!round.settlement&&!round.committed&&['PLAYING','COMPLETE'].includes(round.phase))round.wasOffline=true;p.updatedAt=now();scheduleSave();
@@ -178,7 +244,7 @@ function completeOfflineWork(machineId,body){
 function failOfflineWork(machineId,body){const p=player(machineId,body.playerId),round=roundRecord(machineId,p.playerId,body.roundId);if(round.work?.token===body.token)round.work=null;scheduleSave();}
 function pendingOffline(p){return Object.values(p.rounds||{}).some(round=>round.wasOffline&&!round.committed&&!round.settlement&&round.phase==='COMPLETE');}
 function publicControl(machineId,playerId){
- const p=player(machineId,playerId),games={};for(const [id,g] of Object.entries(p.games))games[id]={bet:round1(g.bet),win:round1(g.win),actualRate:g.bet>0?round1(g.win/g.bet*100):null};
+ const p=player(machineId,playerId);ensureWallet(machineId,playerId,p);const games={};for(const [id,g] of Object.entries(p.games))games[id]={bet:round1(g.bet),win:round1(g.win),actualRate:g.bet>0?round1(g.win/g.bet*100):null};
  const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,updatedAt:p.updatedAt,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
 }
 function aggregateMachine(machineId){
@@ -193,6 +259,15 @@ function overlayPlayerState(machineId,playerId,response){
  if(response?.round?.participant&&settledIds.has(response.round.id))response.round.participant.settlement=p.rounds[response.round.id].settlement;
  response.payoutControlV3=publicControl(machineId,playerId);return response;
 }
+globalThis[Symbol.for('sweets-link.payout-v3.wallet')]={
+ attachCore(database){coreDatabase=database;},
+ reserve:reserveWallet,
+ release:releaseWallet,
+ settle(machineId,playerId,coreRound,body){
+  const record=roundRecord(machineId,playerId,coreRound.id);if(!record.bet)record.bet=Number(coreRound.participants?.[playerId]?.totalBet)||0;
+  return commitSettlement(machineId,playerId,coreRound.id,{totalWin:body.totalWin,creditAfter:body.creditAfter,games:finalGames(body,record),source:'client',digest:body.digest});
+ }
+};
 function parseJson(value){try{return JSON.parse(Buffer.isBuffer(value)?value.toString('utf8'):String(value||''));}catch{return null;}}
 function setJson(response,payload,status=200){const text=JSON.stringify(payload);response.statusCode=status;try{response.removeHeader('content-length');response.setHeader('content-type','application/json; charset=utf-8');response.setHeader('content-length',Buffer.byteLength(text));}catch{}return text;}
 function adminAllowed(req,url){const supplied=String(req.headers['x-admin-token']||url.searchParams.get('adminToken')||'');return !!ADMIN_TOKEN&&supplied===ADMIN_TOKEN;}

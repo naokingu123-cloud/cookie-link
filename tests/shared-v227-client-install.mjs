@@ -86,7 +86,7 @@ function harness({joinDelay=5,loseJoinAck=false,foreignParticipant=false}={}){
  // These are the actual production Engine, ChocoDigEngine, CandyCarnivalEngine,
  // Arcade and native draw-source definitions, including the normal app patch.
  vm.runInContext(engineSource+'\nglobalThis.Arcade=Arcade;',context,{timeout:10000});
- vm.runInContext("globalThis.app=new Arcade({random,sleep:ms=>new Promise(resolve=>setTimeout(resolve,ms)),onChange:onGameChange,onEvent:onGameEvent});app.credit=1000;app.bets=[10,10,10];app.locked=[0,0,0];",context,{timeout:10000});
+ vm.runInContext("globalThis.app=new Arcade({random,sleep:ms=>new Promise(resolve=>setTimeout(resolve,ms)),onChange:onGameChange,onEvent:onGameEvent});app.credit=1000;app.displayCredit=1000;app.bets=[10,10,10];app.locked=[0,0,0];",context,{timeout:10000});
  vm.runInContext(drawSource+"\nrouletteDriver={setPaused(){},reset(){},start(){throw Error('local physical draw must never run on the client');}};rouletteReady=false;app.drawSource=rouletteDrawSource;globalThis.rouletteDrawSource=rouletteDrawSource;",context);
  context.slots=[];context.SweetsRouletteClientV224={isFresh:()=>true};
  // Execute all of install(): do not substitute drawSource.ready/start, Client,
@@ -152,14 +152,15 @@ for(const settled of [false,true]){
  stale.betting(settled?'settled-before-ack':'replaced-before-ack');await stale.advance(1000);
  const request=stale.events.find(event=>event.kind==='join');assert.ok(request);
  assert.equal(stale.control.describe().joinedRoundId,'');
- const credit=settled?1580:1640;
+ const beforeCredit=stale.app.credit,credit=settled?1580:1640;
  stale.supersedeReservation({settled,credit});
- assert.equal(stale.app.credit,credit,'the newer authoritative wallet must be applied before the old join response arrives');
+ const expectedCredit=settled?credit:beforeCredit;
+ assert.equal(stale.app.credit,expectedCredit,settled?'the settled wallet must apply after the authoritative pending round has ended':'a pending BET must not hydrate an unrelated reservation wallet');
  assert.equal(stale.machine.client.round.phase,settled?'COMPLETE':'BETTING');
  await stale.advance(request.at+2500-stale.now+10);
  assert.equal(stale.control.describe().joinedRoundId,'','an older successful join ACK must not override a newer '+(settled?'settled COMPLETE state':'reservation token'));
- assert.equal(stale.app.credit,credit,'the rejected ACK must not restore its old creditAfterBet');
- assert.equal(stale.app.displayCredit,credit);assert.equal(stale.machine.active,null);assert.equal(stale.app.phase,'ready');
+ assert.equal(stale.app.credit,expectedCredit,'the rejected ACK must not restore its old creditAfterBet');
+ assert.equal(stale.app.displayCredit,expectedCredit);assert.equal(stale.machine.active,null);assert.equal(stale.app.phase,'ready');
  assert.equal(stale.errors.length,0,JSON.stringify(stale.errors));
 }
 

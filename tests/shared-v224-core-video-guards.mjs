@@ -6,6 +6,7 @@ const basePatch=await readFile(new URL('../assets/shared-core-patch-v221.js',imp
 const patch=await readFile(new URL('../assets/shared-core-patch-v224.js',import.meta.url),'utf8');
 const core=await readFile(new URL('../assets/shared-machine-core-v196.js',import.meta.url),'utf8');
 const loader=await readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8');
+const release=JSON.parse(await readFile(new URL('../app-version.json',import.meta.url),'utf8')).version.match(/-v(\d+)-/)[1];
 const host=await readFile(new URL('../assets/shared-roulette-webrtc-host-v224.js',import.meta.url),'utf8');
 const client=await readFile(new URL('../assets/shared-roulette-client-v224.js',import.meta.url),'utf8');
 
@@ -19,10 +20,10 @@ assert.ok(patched.includes('One owner only: SharedClientControllerV224 starts a 
 assert.ok(patched.includes('never replays or resumes an interrupted round'));
 assert.ok(patched.includes("if(message.type==='visual_frame'){hideRouletteMirror();return;}"));
 assert.ok(!patched.includes("showRouletteMirror(message.image)"),'legacy JPEG first-HIT still image must be disabled');
-assert.ok(loader.includes('shared-core-patch-v224.js?v=227'));
-assert.ok(loader.includes('shared-client-controller-v224.js?v=227'));
-assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v=227'));
-assert.ok(loader.includes('shared-roulette-client-v224.js?v=227'));
+assert.ok(loader.includes('shared-core-patch-v224.js?v='+release));
+assert.ok(loader.includes('shared-client-controller-v224.js?v='+release));
+assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release));
+assert.ok(loader.includes('shared-roulette-client-v224.js?v='+release));
 assert.ok(!loader.includes('shared-core-patch-v222.js'));
 assert.ok(!loader.includes('shared-client-controller-v222.js'));
 assert.ok(!loader.includes('shared-roulette-client-hold-v222.js'));

@@ -51,7 +51,7 @@ async function until(predicate,label,timeout=7000,interval=25){
 
 async function session(name,ip){
  const result=await json('/api/session',{ip,body:{displayName:name}});
- Object.assign(result,{name,ip,sockets:[],socket:null,credit:10000,lifetimeBet:0,lifetimeWin:0,walletRevision:0});
+ Object.assign(result,{name,ip,sockets:[],socket:null,credit:1000000,lifetimeBet:0,lifetimeWin:0,walletRevision:0});
  sessions.push(result);return result;
 }
 
@@ -87,6 +87,7 @@ async function join(client,round){
  const observed=await state(client);
  assert.equal(observed.round.id,round.id);
  assert.equal(observed.round.canBet,true,client.name+' must be eligible for the new BET');
+ assert.equal(observed.payoutControlV3.wallet.credit,client.credit);
  client.credit-=client.bet;
  const result=await json(`/api/machines/${MACHINE}/round/join`,{session:client,body:{
   clientRoundToken:'v225-e2e-'+round.id+'-'+client.name,
@@ -95,6 +96,10 @@ async function join(client,round){
  }});
  assert.equal(result.round.id,round.id);
  assert.equal(result.round.participant.playerId,client.player.id);
+ assert.equal(result.round.participant.creditAfterBet,client.credit);
+ assert.equal(result.payoutControlV3.wallet.credit,client.credit);
+ assert.equal(result.payoutControlV3.wallet.revision,observed.payoutControlV3.wallet.revision+1);
+ client.walletRevision=result.payoutControlV3.wallet.revision;
  assert.equal(result.payoutControlV3.version,3);
  assert.equal(result.payoutControlV3.source,'per-player-common');
  assert.equal(result.payoutControlV3.lifetimeBet,client.lifetimeBet,'BET reservation must not double-count settled turnover');

@@ -30,10 +30,12 @@ const joinBody=(token,totalBet,games)=>({clientRoundToken:token,totalBet,bets:ga
 try{
  const aJoin=await post('/api/machines/public-01/round/join','A',joinBody('r1',100,[{id:'cookie',bet:60},{id:'choco',bet:40}]));
  assert.equal(aJoin.payoutControlV3.effectiveRate,90);assert.equal(aJoin.payoutControlV3.source,'per-player-common');
+ assert.equal(aJoin.payoutControlV3.wallet.credit,999900);assert.equal(aJoin.payoutControlV3.wallet.source,'bet');
  const aBall=await post('/api/machines/public-01/round/checkpoint','A',{roundId:'r1',ballIndex:3,state:{credit:900,payoutV3:{version:3,ball:3,complete:true,phase:'PLAYING',credit:900,roundBet:100,roundWin:30,games:[{id:'cookie',bet:60,win:20,appliedRate:90},{id:'choco',bet:40,win:10,appliedRate:90}]}}});
  assert.equal(aBall.payoutControlV3.currentRoundWin,30);assert.equal(aBall.payoutControlV3.lifetimeWin,0,'per-ball nWIN must not inflate cumulative WIN');
  const aSettle=await post('/api/machines/public-01/round/settle','A',{roundId:'r1',totalWin:120,creditAfter:1020,digest:'a-r1',payoutV3:{version:3,games:[{id:'cookie',bet:60,win:70,appliedRate:90},{id:'choco',bet:40,win:50,appliedRate:90}]}});
  assert.equal(aSettle.payoutControlV3.currentRoundWin,120);assert.equal(aSettle.payoutControlV3.lifetimeWin,120);assert.equal(aSettle.payoutControlV3.lifetimeBet,100);
+ assert.equal(aSettle.payoutControlV3.wallet.credit,1000020,'server wallet must apply initial credit minus BET plus WIN, ignoring the old caller credit');
  assert.equal(aSettle.payoutControlV3.games.cookie.win,70);assert.equal(aSettle.payoutControlV3.games.choco.win,50);
  const low=await post('/api/machines/public-01/round/join','A',joinBody('r2-low',10,[{id:'cookie',bet:5},{id:'choco',bet:5}]));
  assert.equal(low.payoutControlV3.effectiveRate,55,'low BET must be bounded by the configured 35-point correction cap');
@@ -51,8 +53,9 @@ try{
  assert.ok(workResponse.work);assert.equal(workResponse.work.playerId,'B');assert.equal(workResponse.work.balls.length,8);assert.equal(workResponse.work.stableBall,0);
  const completed=await fetch(base+'/api/admin/machines/public-01/payout-v3/offline-work/complete?adminToken=admin-test',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:workResponse.work.token,playerId:'B',roundId:'rB',totalWin:80,creditAfter:980,games:[{id:'cookie',bet:100,win:80,appliedRate:90}]})}).then(response=>response.json());
  assert.equal(completed.settlement.source,'server-worker');
- const bState=await getState('B');assert.equal(bState.pendingRound,null,'server-settled round must not replay on the client');assert.equal(bState.payoutControlV3.offlinePending,false);assert.equal(bState.payoutControlV3.wallet.credit,980);assert.equal(bState.payoutControlV3.wallet.source,'server-worker');assert.equal(bState.payoutControlV3.lifetimeWin,80);
+ const bState=await getState('B');assert.equal(bState.pendingRound,null,'server-settled round must not replay on the client');assert.equal(bState.payoutControlV3.offlinePending,false);assert.equal(bState.payoutControlV3.wallet.credit,999980);assert.equal(bState.payoutControlV3.wallet.source,'server-worker');assert.equal(bState.payoutControlV3.lifetimeWin,80);
  console.log('common player rate, BET-shock repricing, WIN semantics and offline settlement runtime passed');
 }finally{
  await new Promise(resolve=>wss.close(resolve));await new Promise(resolve=>server.close(resolve));await rm(temp,{recursive:true,force:true});
 }
+

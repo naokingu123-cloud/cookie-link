@@ -10,6 +10,11 @@
    source=source.replace(oldText,newText);history.push(label);
   }
   once(
+   'speed,credit:1000,displayCredit:1000,totalWin:0',
+   'speed,credit:1000000,displayCredit:1000000,totalWin:0',
+   'temporary one-million opening credit; server wallet owns subsequent balances'
+  );
+  once(
    'const COOKIE_ALL_CLEAR_HUNDREDTHS=2000; // 20x; shared by settlement, previews and award labels.',
    'const COOKIE_ALL_CLEAR_HUNDREDTHS=300; const COOKIE_CLEAR_BONUSES=[300,1000,5000,20000,50000]; const cookieClearBonus=n=>COOKIE_CLEAR_BONUSES[Math.max(0,Math.min(4,n-1))]; const cookieClearTotal=n=>{let sum=0;for(let i=1;i<=n;i++)sum+=cookieClearBonus(i);return sum;};',
    'progressive all-clear prize constants'

@@ -540,3 +540,12 @@
 - BET時計は参加の実状態を表示。登録待ち/確認中/登録済み/再試行/残高不足を区別する。
 - `tests/shared-v227-registration.mjs` / `shared-v227-bet-reservation.mjs` / `shared-v227-client-install.mjs` を通常CIへ追加。実サーバー、実Clientのstale判定、core全体install、実Arcade/engineを含む。詳細 `docs/shared-sync-v227.md`。
 - クライアント版 `20261116-v227-bet-start-recovery`。Nodeサーバー/ホスト処理は変更なし。Pages利用者は公開反映後に再読み込みする。Windowsからクライアントファイルを配信する場合はそのファイル更新が必要。標準1倍速を維持。
+
+## 2026-11-16 — v228 初期100万・自動REBET・残高の一元化
+
+- ユーザー指定: 暫定の初期CREDITを1,000,000、AUTO REBETをON。通常9面×3,000=27,000の成立後は973,000。ゲーム終了時にWINを加算し、その残高から次のBETを控除する。残高不足はBET／増額ボタンを灰色・無効にし、負残高にしない。
+- 誤CREDIT不足を実9面＋core全installで再現。サーバーwalletが500,000でも、同revisionをlocalStorageで確認済みだと新ページに復元せず、初期1,000で27,000を判定していた。ページ内適用記録を分離し修正。
+- 全0BETの旧額への暗黙復元を廃止。次のlocked/enabled/ゲーム別内訳は現在のbetsから生成。受付中の予算を確認し、登録中・登録済みBETは変更しない。AUTO OFFの手動BETも用意。
+- サーバーがwalletを初期化・BET予約控除・WIN精算し、同一ラウンドの再送は二重控除／二重加算しない。予約・精算の永続化を成功ACK前に確認する。旧walletは未精算ゲーム終了後に一度だけ100万へ移行し、再読み込みで再初期化しない。
+- 回帰 `tests/shared-v228-wallet-hydration.mjs`、`tests/shared-v228-credit-rebet.mjs`、`tests/server-wallet-v228.mjs`。詳細 `docs/shared-sync-v228.md`。
+- 版 `20261116-v228-credit-auto-rebet`。今回はNodeサーバー側にも変更あり。Windowsプロジェクトを更新し、既存データを保持してランチャーから再起動する。公開クライアントだけの更新をWindows反映済みと扱わない。

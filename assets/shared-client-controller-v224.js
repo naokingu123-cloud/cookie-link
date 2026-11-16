@@ -17,6 +17,7 @@ const COMPLETE_STALL_MS=60000;
 const LOSS_KEY='sweets-shared-loss-v224';
 const NORMAL_KEY='sweets-shared-normal-settlements-v225';
 const NORMAL_REVIEW_KEY='sweets-shared-settlement-review-v225';
+const AUTO_REBET_KEY='sweets-shared-auto-rebet-v228';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const finite=value=>Number.isFinite(Number(value))?Number(value):0;
 const machine=()=>window.SweetsSharedMachine;
@@ -28,10 +29,11 @@ let socketRef=null,socketWasOpen=false,connectionEpoch=0,onlineSince=0,firstSnap
 let joinedRoundId='',startedRoundId='',startingRoundId='';
 const betSession=typeof crypto!=='undefined'&&typeof crypto.randomUUID==='function'?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12);
 let betAttempt=null,betAttemptSequence=0;
+let autoRebet=(()=>{try{return localStorage.getItem(AUTO_REBET_KEY)!=='0';}catch{return true;}})(),manualBetRoundId='';
 let pollTimer=0,pollDueAt=0,pollBusy=false,pollRequested=false,pollStopped=false,nextPollAt=0;
 let backoffUntil=0,pollFailures=0,refreshPromise=null;
 let joinBusy=false,startBusy=false,resetBusy=false,abandonBusy=false,finishBusy=false;
-let resultSince=0,completeSeenAt=0,completeProgress='',completeProgressAt=0,lastStatus='',generation=0,lastBet=[],lastParticipant=null,lastServerWallet=null;
+let resultSince=0,completeSeenAt=0,completeProgress='',completeProgressAt=0,lastStatus='',generation=0,lastParticipant=null,lastServerWallet=null;
 const joinedRounds=new Set(),normalSettled=new Set(),abandonedRounds=new Set();
 const normalPending=new Map(Object.entries(readLosses(NORMAL_KEY)).filter(([id,payload])=>payload?.roundId===id&&Number.isFinite(Number(payload.totalWin))&&Number.isFinite(Number(payload.creditAfter)))),normalCredits=new Map();
 const normalReview=new Map(Object.entries(readLosses(NORMAL_REVIEW_KEY)));
@@ -44,6 +46,8 @@ function saveLosses(){try{localStorage.setItem(LOSS_KEY,JSON.stringify(lossQueue
 function saveNormals(){try{localStorage.setItem(NORMAL_KEY,JSON.stringify(Object.fromEntries(normalPending)));}catch{}}
 function queueLoss(roundId,creditAfterBet){
  if(!roundId||normalPending.has(String(roundId))||normalSettled.has(String(roundId))||normalReview.has(String(roundId)))return;abandonedRounds.add(String(roundId));
+ joinedRounds.delete(String(roundId));if(joinedRoundId===String(roundId))joinedRoundId='';if(startedRoundId===String(roundId))startedRoundId='';if(startingRoundId===String(roundId))startingRoundId='';
+ if(betAttempt?.roundId===String(roundId))betAttempt=null;if(manualBetRoundId===String(roundId))manualBetRoundId='';
  lossQueue[String(roundId)]={roundId:String(roundId),creditAfterBet:Math.max(0,finite(creditAfterBet)),at:Date.now()};saveLosses();
 }
 function dropLoss(roundId){delete lossQueue[String(roundId)];saveLosses();}
@@ -59,7 +63,7 @@ function rememberWallet(control){
  if(!wallet||wallet.credit==null||!Number.isFinite(Number(wallet.credit))||Number(wallet.revision)<1)return;
  if(client()?.playerId&&playerId&&playerId!==String(client().playerId))return;
  if(lastServerWallet&&lastServerWallet.playerId===playerId&&Number(wallet.revision)<lastServerWallet.revision)return;
- lastServerWallet={playerId,revision:Number(wallet.revision),credit:Number(wallet.credit)};
+ lastServerWallet={playerId,revision:Number(wallet.revision),credit:Number(wallet.credit),lastRoundId:String(wallet.lastRoundId||'')};
 }
 function showSettlementReview(){
  if(!normalReview.size||typeof document.createElement!=='function'||document.getElementById('shared-settlement-review-v225'))return;
@@ -114,17 +118,80 @@ function schedulePoll(delay=POLL_MS){
  if(pollTimer&&pollDueAt>=backoffUntil&&pollDueAt<=due)return;
  clearTimeout(pollTimer);pollDueAt=due;pollTimer=setTimeout(poll,Math.max(0,due-now));
 }
-function resetStability(){connectionEpoch++;onlineSince=0;firstSnapshotAt=0;lastSnapshotAt=0;snapshotCount=0;betAttempt=null;joinedRoundId='';startedRoundId='';startingRoundId='';joinedRounds.clear();}
+function resetStability(){connectionEpoch++;onlineSince=0;firstSnapshotAt=0;lastSnapshotAt=0;snapshotCount=0;betAttempt=null;manualBetRoundId='';joinedRoundId='';startedRoundId='';startingRoundId='';joinedRounds.clear();}
 function stable(){const now=Date.now();return wsOpen()&&onlineSince>0&&snapshotCount>=SNAPSHOT_MIN&&firstSnapshotAt>0&&now-firstSnapshotAt>=STABLE_MS&&now-lastSnapshotAt<=SNAPSHOT_FRESH_MS;}
 function noteSnapshot(state){
  const now=Date.now();if(!firstSnapshotAt)firstSnapshotAt=now;lastSnapshotAt=now;snapshotCount++;
 }
 function selected(target=window.app){
  const bets=Array.isArray(target?.bets)?target.bets.map(value=>Math.max(0,finite(value))):[];
- const locked=Array.isArray(target?.locked)?target.locked.map(value=>Math.max(0,finite(value))):[...bets];
- const enabled=Array.isArray(target?.enabled)?target.enabled.map(Boolean):bets.map(value=>value>0);
- if(bets.some(value=>value>0))lastBet=[...bets];else if(lastBet.length)for(let index=0;index<lastBet.length;index++)bets[index]=Math.max(0,finite(lastBet[index]));
- return {bets,locked:locked.some(value=>value>0)?locked:[...bets],enabled:enabled.length?enabled:bets.map(value=>value>0)};
+ const ids=window.SweetsLineup?.ids;
+ if(Array.isArray(ids))for(let index=0;index<bets.length;index++)if(!ids[index])bets[index]=0;
+ // Ready selections are the only input for the next BET. Do not revive a
+ // previous nonzero stake after the user has explicitly selected zero.
+ return {bets,locked:[...bets],enabled:bets.map(value=>value>0)};
+}
+function expireBetAttempt(round=client()?.round){
+ if(!round)return;
+ const id=String(round.id||'');
+ if(betAttempt&&(id!==betAttempt.roundId||!['BETTING','PLAYING'].includes(round.phase)||round.participant?.settlement||abandonedRounds.has(betAttempt.roundId))){
+  if(manualBetRoundId===betAttempt.roundId)manualBetRoundId='';betAttempt=null;
+ }
+ // A server-settled reservation that never attached has no local animation to
+ // finish. Release its edit lock so AUTO OFF can still place the next BET.
+ if(joinedRoundId&&typeof app!=='undefined'&&app.phase==='ready'&&!active()&&!machine()?.pendingStart&&(id!==joinedRoundId||!['BETTING','PLAYING'].includes(round.phase)||round.participant?.settlement)){
+  const previous=joinedRoundId,settlement=id===previous?round.participant?.settlement:client()?.pendingRound?.id===previous?client().pendingRound.participant?.settlement:null;
+  joinedRounds.delete(previous);joinedRoundId='';if(startedRoundId===previous)startedRoundId='';if(startingRoundId===previous)startingRoundId='';
+  const credit=lastServerWallet?.lastRoundId===previous?lastServerWallet.credit:settlement?.creditAfter;
+  if(credit!=null&&Number.isFinite(Number(credit))&&Number(credit)>=0){app.credit=Number(credit);app.displayCredit=app.credit;try{app.onChange?.(app);}catch{}}
+ }
+}
+function totalSelected(target=window.app){return selected(target).bets.reduce((sum,value)=>sum+value,0);}
+function canEditBets(target=window.app){return !!target&&target.phase==='ready'&&!active()&&!joinBusy&&!resetBusy&&!abandonBusy&&!finishBusy&&!betAttempt&&!joinedRoundId&&!startedRoundId;}
+function canSetBet(index,value,target=window.app){
+ if(!canEditBets(target)||!Number.isInteger(index)||index<0||index>=(target.bets?.length||0)||!Number.isSafeInteger(value)||value<0)return false;
+ if(Array.isArray(window.SweetsLineup?.ids)&&!window.SweetsLineup.ids[index]&&value>0)return false;
+ const before=selected(target),current=before.bets[index],total=before.bets.reduce((sum,bet,i)=>sum+(i===index?value:bet),0);
+ return value<=current||(Number.isSafeInteger(total)&&total<=Math.max(0,finite(target.credit)));
+}
+function setAutoRebet(value){
+ autoRebet=!!value;try{localStorage.setItem(AUTO_REBET_KEY,autoRebet?'1':'0');}catch{}
+ refreshBetControls();if(autoRebet)schedulePoll(0);return autoRebet;
+}
+function requestBet(){
+ const round=client()?.round,total=totalSelected(app);
+ if(!canEditBets(app)||!stable()||round?.phase!=='BETTING'||!round.canBet||total<=0||total>finite(app.credit)||finite(round.betClosesAt)-(Date.now()+finite(client()?.clockOffset))<MIN_BET_REMAIN_MS)return false;
+ manualBetRoundId=String(round.id);schedulePoll(0);return true;
+}
+function disableBetButton(button,disabled,reason=''){
+ if(!button)return;button.disabled=!!disabled;button.setAttribute?.('aria-disabled',String(!!disabled));button.classList?.toggle?.('shared-bet-disabled',!!disabled);
+ if(disabled&&reason)button.title=reason;else if(button.title==='CREDIT不足'||button.title==='BET登録後は変更できません')button.title='';
+}
+function refreshBetControls(target=typeof app!=='undefined'?app:window.app){
+ if(!target)return;
+ const editable=canEditBets(target),round=client()?.round,total=totalSelected(target),funded=total>0&&total<=Math.max(0,finite(target.credit));
+ if(typeof slots!=='undefined'&&Array.isArray(slots))for(const slot of slots){
+  const index=Number(slot.i),current=finite(target.bets?.[index]);
+  const increment=typeof units!=='undefined'&&typeof unit!=='undefined'?finite(units[unit[index]]):5;
+  disableBetButton(slot.cycle,!editable,'BET登録後は変更できません');
+  disableBetButton(slot.addBet,!canSetBet(index,current+increment,target),editable?'CREDIT不足':'BET登録後は変更できません');
+  disableBetButton(slot.oneBet,!canSetBet(index,current+1,target),editable?'CREDIT不足':'BET登録後は変更できません');
+ }
+ const toggle=document.getElementById('shared-auto-rebet-v228');if(toggle)toggle.checked=autoRebet;
+ const button=document.getElementById('shared-bet-v228');
+ if(button){
+  const registered=joinedRounds.has(String(round?.id||'')),remaining=finite(round?.betClosesAt)-(Date.now()+finite(client()?.clockOffset));
+  disableBetButton(button,!editable||!funded||!stable()||round?.phase!=='BETTING'||!round.canBet||remaining<MIN_BET_REMAIN_MS,!funded?'CREDIT不足':'');
+  button.textContent=registered?'BET登録済み':joinBusy?'登録中…':!funded&&total>0?'CREDIT不足':'BETする';
+ }
+}
+function installBetControls(){
+ const clock=document.getElementById('bet-countdown');if(!clock||typeof document.createElement!=='function'||document.getElementById('shared-auto-rebet-v228'))return;
+ const style=document.createElement('style');style.textContent='.shared-bet-disabled{filter:grayscale(1)!important;opacity:.38!important;cursor:not-allowed!important}#bet-countdown small{white-space:normal}#shared-bet-v228{display:block;width:100%;min-height:20px;padding:2px;margin-top:3px;font:800 9px/1.2 system-ui}#bet-countdown .shared-auto-rebet-label{margin-top:3px;font:800 8px/1.3 system-ui}';document.head?.append?.(style);
+ const label=document.createElement('label');label.className='shared-auto-rebet-label';
+ const toggle=document.createElement('input');toggle.type='checkbox';toggle.id='shared-auto-rebet-v228';toggle.checked=autoRebet;toggle.onchange=()=>setAutoRebet(toggle.checked);
+ label.append(toggle,'AUTO REBET');const button=document.createElement('button');button.id='shared-bet-v228';button.type='button';button.textContent='BETする';button.onclick=requestBet;
+ clock.append(label,button);refreshBetControls();
 }
 function queueSize(engine){const queue=engine?.queue;if(Array.isArray(queue))return queue.length;if(queue&&Number.isFinite(Number(queue.size)))return Number(queue.size);return 0;}
 function engineRuntimeClean(engine){return finite(engine?.processed)===0&&finite(engine?.accepted)===0&&!engine?.busy&&!engine?.running&&queueSize(engine)===0;}
@@ -235,9 +302,9 @@ function applyParticipant(participant){
  const bets=Array.isArray(participant.bets)?participant.bets.map(value=>Math.max(0,finite(value))):[];
  const locked=Array.isArray(participant.locked)?participant.locked.map(value=>Math.max(0,finite(value))):[...bets];
  const enabled=Array.isArray(participant.enabled)?participant.enabled.map(Boolean):bets.map(value=>value>0);
- app.bets=[...bets];app.locked=[...locked];app.enabled=[...enabled];if(bets.some(value=>value>0))lastBet=[...bets];
+ app.bets=[...bets];app.locked=[...locked];app.enabled=[...enabled];
  if(Number.isFinite(Number(participant.creditAfterBet))){app.credit=Number(participant.creditAfterBet);app.displayCredit=app.credit;}
- lastParticipant=participant;
+ lastParticipant=participant;try{app.onChange?.(app);}catch{}refreshBetControls(app);
 }
 function confirmBet(round,attempt=betAttempt,directResponse=false){
  const c=client(),id=String(round?.id||''),participant=round?.participant;
@@ -247,7 +314,7 @@ function confirmBet(round,attempt=betAttempt,directResponse=false){
  // Only a reservation submitted by this live controller can replace a lost
  // HTTP ACK. An old page, interrupted round or unrelated participant cannot.
  if(participant.clientRoundToken!==attempt.payload.clientRoundToken&&(!directResponse||participant.clientRoundToken))return false;
- joinedRounds.add(id);joinedRoundId=id;betAttempt=null;applyParticipant(participant);status('BET','BET登録済み');return true;
+ joinedRounds.add(id);joinedRoundId=id;betAttempt=null;manualBetRoundId='';applyParticipant(participant);status('BET','BET登録済み');return true;
 }
 function betStatus(round=client()?.round){
  if(round?.phase!=='BETTING')return null;
@@ -264,6 +331,7 @@ function betStatus(round=client()?.round){
  const bet=selected(app),total=bet.bets.reduce((sum,value,index)=>sum+(bet.enabled[index]!==false?Math.max(0,finite(value)):0),0);
  if(total<=0)return {text:'BET',label:'BETを設定してください'};
  if(finite(app.credit)<total)return {text:'CREDIT',label:'CREDIT不足'};
+ if(!autoRebet&&manualBetRoundId!==id)return {text,label:'AUTO REBET OFF・BET待ち'};
  return {text,label:betAttempt?.roundId===id?'BET登録を再確認中':'SERVER BET TIME・BET登録待ち'};
 }
 function canStart(target=window.app){
@@ -276,6 +344,18 @@ function installGuards(){
  if(!proto.__sharedControllerStartV224){
   nativeStart=proto.start;if(typeof nativeStart!=='function')return false;Object.defineProperty(proto,'__sharedControllerStartV224',{value:true});
   proto.start=function(...args){stopLocal();if(!canStart(this)){status(stable()?'NEXT':'WAIT',stable()?'次のSERVER BET TIME待機':'安定接続を確認中');return false;}return nativeStart.apply(this,args);};
+ }
+ if(!proto.__sharedBetBudgetV228&&typeof proto.setBet==='function'){
+  const nativeSetBet=proto.setBet;Object.defineProperty(proto,'__sharedBetBudgetV228',{value:true});
+  proto.setBet=function(index,value){
+   if(!canSetBet(index,value,this)){refreshBetControls(this);return false;}
+   const changed=nativeSetBet.call(this,index,value);
+   if(changed!==false){const bet=selected(this);this.bets=bet.bets;this.locked=bet.locked;this.enabled=bet.enabled;}
+   refreshBetControls(this);return changed;
+  };
+ }
+ if(typeof hud==='function'&&!hud.__sharedBetBudgetV228){
+  const nativeHud=hud;hud=function(...args){const result=nativeHud.apply(this,args);refreshBetControls(args[0]);return result;};hud.__sharedBetBudgetV228=true;
  }
  if(!nativeSharedReset){
   nativeSharedReset=rouletteDrawSource.reset.bind(rouletteDrawSource);
@@ -294,10 +374,11 @@ async function joinBet(round){
  // decoding/reconnection is independent and must never silently skip a BET.
  if(joinBusy||resetBusy||!stable()||!modelReady(app)||!round||round.phase!=='BETTING'||round.canBet!==true)return false;
  const id=String(round.id||'');if(!id||joinedRounds.has(id)||abandonedRounds.has(id))return false;
+ if(!autoRebet&&manualBetRoundId!==id)return false;
  const serverNow=Date.now()+finite(client()?.clockOffset),remaining=finite(round.betClosesAt)-serverNow;if(remaining<MIN_BET_REMAIN_MS)return false;
  const bet=selected(app),totalBet=bet.bets.reduce((sum,value,index)=>sum+(bet.enabled[index]!==false?Math.max(0,finite(value)):0),0),creditBefore=Math.max(0,finite(app.credit));
  if(totalBet<=0){status('BET','BETを設定してください');return false;}if(creditBefore<totalBet){status('CREDIT','CREDIT不足');return false;}
- if(!betAttempt||betAttempt.roundId!==id||betAttempt.epoch!==connectionEpoch)betAttempt={roundId:id,epoch:connectionEpoch,socket:client()?.ws,payload:{roundId:id,clientRoundToken:'v227-'+betSession+'-'+connectionEpoch+'-'+(++betAttemptSequence),bets:bet.bets,locked:bet.locked,enabled:bet.enabled,totalBet,creditBefore,creditAfterBet:creditBefore-totalBet,initialState:null,appVersion:'v227-normal-cycle'}};
+ if(!betAttempt||betAttempt.roundId!==id||betAttempt.epoch!==connectionEpoch)betAttempt={roundId:id,epoch:connectionEpoch,socket:client()?.ws,payload:{roundId:id,clientRoundToken:'v228-'+betSession+'-'+connectionEpoch+'-'+(++betAttemptSequence),bets:bet.bets,locked:bet.locked,enabled:bet.enabled,totalBet,creditBefore,creditAfterBet:creditBefore-totalBet,initialState:null,appVersion:'v228-credit-rebet'}};
  const attempt=betAttempt;joinBusy=true;
  try{
   const response=await client().join(attempt.payload);
@@ -306,9 +387,10 @@ async function joinBet(round){
  }catch(error){
   if(error?.data?.round){const accepted=client()?.accept?.(error.data);if(accepted!==false)rememberWallet(error.data.payoutControlV3);}
   if(confirmBet(client()?.round,attempt))return true;
+  if(['insufficient_credit','invalid_bet','invalid_credit','bet_total_mismatch','wallet_migration_pending','wait_next_bet','round_mismatch','round_already_settled'].includes(String(error?.data?.error||''))&&betAttempt===attempt){betAttempt=null;manualBetRoundId='';}
   if(Number(error?.status)===429)deferRequest(error);if(![409].includes(Number(error?.status)))console.warn('[SharedController224] join',error?.message||error);
  }
- finally{joinBusy=false;}
+ finally{joinBusy=false;refreshBetControls(app);}
  return false;
 }
 async function startRound(round){
@@ -406,6 +488,8 @@ async function poll(){
 }
 function monitorResults(){
  if(typeof app==='undefined'){setTimeout(monitorResults,60);return;}stopLocal();installGuards();inspectSocket();
+ expireBetAttempt();
+ refreshBetControls(app);
  const phase=String(app.phase||''),round=client()?.round,shared=active();
  if(phase==='playing'){
   resultSince=0;
@@ -431,14 +515,14 @@ function monitorResults(){
 function boot(){
  if(typeof app==='undefined'||!client()||typeof Arcade!=='function'||typeof rouletteDrawSource==='undefined'){setTimeout(boot,50);return;}
  if(app.engines?.[0]&&(!app.engines[0].kind||/^game[-_ ]?0$/i.test(String(app.engines[0].kind))))app.engines[0].kind='cookie';
- stopLocal();installGuards();inspectSocket();showSettlementReview();poll();monitorResults();
+ stopLocal();installGuards();inspectSocket();showSettlementReview();installBetControls();poll();monitorResults();
  // HTTP getState() itself emits a snapshot through accept(). Scheduling another
  // GET for that snapshot creates an unbounded response -> request feedback loop.
  client().on?.(message=>{if(['ball_result','round_started','round_complete','betting_started','host_changed','host_status'].includes(message?.type))schedulePoll(0);});
  addEventListener('beforeunload',()=>{
   pollStopped=true;clearTimeout(pollTimer);const shared=active();if(shared?.roundId){if(['result','paying','complete'].includes(String(app?.phase||'')))queueNormal(shared);else{const p=shared.participant||lastParticipant||{};queueLoss(shared.roundId,p.creditAfterBet);}}
  },{once:true});
- window.SweetsSharedControllerV224={hardReset,abandonRound,finishNormal,canStart,stable,remoteReady,betStatus,refreshNow:refreshState,isReady:()=>modelReady(app),describe:()=>({connectionEpoch,onlineSince,firstSnapshotAt,lastSnapshotAt,snapshotCount,joinedRoundId,startedRoundId,pendingBetRoundId:betAttempt?.roundId||null,activeRound:active()?.roundId||null,losses:Object.keys(lossQueue),pendingSettlements:[...normalPending.keys()],settlementReview:[...normalReview.keys()],generation,resetBusy})};
+ window.SweetsSharedControllerV224={hardReset,abandonRound,finishNormal,canStart,canEditBets,canSetBet,refreshBetControls,setAutoRebet,requestBet,stable,remoteReady,betStatus,refreshNow:refreshState,isReady:()=>modelReady(app),describe:()=>({connectionEpoch,onlineSince,firstSnapshotAt,lastSnapshotAt,snapshotCount,autoRebet,joinedRoundId,startedRoundId,pendingBetRoundId:betAttempt?.roundId||null,activeRound:active()?.roundId||null,losses:Object.keys(lossQueue),pendingSettlements:[...normalPending.keys()],settlementReview:[...normalReview.keys()],generation,resetBusy})};
  console.info('[SharedController224] normal-cycle priority; disconnects are zero-WIN losses and never replayed');
 }
 boot();

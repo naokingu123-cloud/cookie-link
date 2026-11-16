@@ -10,6 +10,7 @@ const ROOT=path.dirname(fileURLToPath(import.meta.url));
 const PORT=Number(process.env.PORT||3000);
 const DATA_FILE=process.env.SWEETS_DATA_FILE||path.join(ROOT,'data','shared-machine.json');
 const ADMIN_TOKEN=String(process.env.SWEETS_ADMIN_TOKEN||'');
+const payoutWallet=globalThis[Symbol.for('sweets-link.payout-v3.wallet')];
 const BALLS_PER_ROUND=8;
 const BET_DURATION_MS=Math.max(300,Number(process.env.SWEETS_BET_DURATION_MS||20000));
 const ROUND_START_DELAY_MS=Math.max(300,Number(process.env.SWEETS_ROUND_START_DELAY_MS||2200));
@@ -72,15 +73,18 @@ async function loadDb(){
   }
  }catch(error){if(error?.code!=='ENOENT')console.warn('[SharedMachine] database load failed',error);}
 }
+let saveQueue=Promise.resolve();
+function flushDb(){
+ clearTimeout(saveTimer);saveTimer=null;db.updatedAt=now();const serialized=JSON.stringify(db,null,2);
+ const pending=saveQueue.catch(()=>{}).then(async()=>{
+  await fs.mkdir(path.dirname(DATA_FILE),{recursive:true});
+  const temporary=DATA_FILE+'.tmp';await fs.writeFile(temporary,serialized);await fs.rename(temporary,DATA_FILE);
+ });
+ saveQueue=pending;return pending;
+}
 function scheduleSave(){
  db.updatedAt=now();if(saveTimer)return;
- saveTimer=setTimeout(async()=>{
-  saveTimer=null;
-  try{
-   await fs.mkdir(path.dirname(DATA_FILE),{recursive:true});
-   const temp=DATA_FILE+'.tmp';await fs.writeFile(temp,JSON.stringify(db,null,2));await fs.rename(temp,DATA_FILE);
-  }catch(error){console.error('[SharedMachine] database save failed',error);}
- },40);
+ saveTimer=setTimeout(()=>{saveTimer=null;flushDb().catch(error=>console.error('[SharedMachine] database save failed',error));},40);
 }
 function machine(id=MACHINE_DEFAULT){
  id=safeId(id)||MACHINE_DEFAULT;
@@ -334,10 +338,11 @@ async function api(req,res,url){
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){
   const input=await bodyJson(req);tickMachine(m);const round=m.round;
   if(!round||round.phase!=='BETTING'||now()>=Number(round.betClosesAt||0))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});
+  if(input.roundId&&String(input.roundId)!==round.id)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   if(!(round.eligiblePlayerIds||[]).includes(player.id))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});
-  const total=Math.max(0,Number(input.totalBet)||0);
+  const reservation=payoutWallet?.reserve(m.id,player.id,round,input),total=reservation?reservation.totalBet:Math.max(0,Number(input.totalBet)||0);
   if(total<=0){
-   delete round.participants[player.id];m.revision++;scheduleSave();broadcast(m.id,{type:'bet_updated',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
+   delete round.participants[player.id];m.revision++;scheduleSave();await flushDb();broadcast(m.id,{type:'bet_updated',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
    return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
   }
   const previous=round.participants[player.id];
@@ -345,8 +350,8 @@ async function api(req,res,url){
   participant.lastSeen=now();participant.clientRoundToken=safeText(input.clientRoundToken,120);
   participant.bets=Array.isArray(input.bets)?input.bets:[];participant.locked=Array.isArray(input.locked)?input.locked:participant.bets;
   participant.enabled=Array.isArray(input.enabled)?input.enabled:participant.bets.map(value=>Number(value)>0);
-  participant.totalBet=total;participant.creditAfterBet=Number(input.creditAfterBet)||0;participant.appVersion=safeText(input.appVersion,80);
-  m.revision++;scheduleSave();broadcast(m.id,{type:'bet_updated',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
+  participant.totalBet=total;participant.creditAfterBet=reservation?reservation.creditAfterBet:Number(input.creditAfterBet)||0;participant.appVersion=safeText(input.appVersion,80);
+  m.revision++;scheduleSave();await flushDb();broadcast(m.id,{type:'bet_updated',roundId:round.id,playerId:player.id,participantCount:Object.keys(round.participants).length,round:publicRound(round,null)});
   return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='heartbeat'){
@@ -358,9 +363,9 @@ async function api(req,res,url){
   if(!round)return reply(res,200,{ok:true,left:false,roundId:safeText(input.roundId,160)});
   // Once BET closes, the reservation survives disconnect/reset so the server can finish it offline.
   const canRemove=round.phase==='BETTING';
-  const existed=!!round.participants?.[player.id];if(existed&&canRemove)delete round.participants[player.id];
+  const existed=!!round.participants?.[player.id];if(existed&&canRemove){payoutWallet?.release(m.id,player.id,round);delete round.participants[player.id];}
   if(existed&&round.participants?.[player.id])round.participants[player.id].lastSeen=now();
-  m.revision++;m.updatedAt=now();scheduleSave();
+  m.revision++;m.updatedAt=now();scheduleSave();await flushDb();
   const remaining=Object.keys(round.participants||{}).length;
   if(canRemove)broadcast(m.id,{type:'participant_left',roundId:round.id,playerId:player.id,participantCount:remaining,round:publicRound(round,null)});
   return reply(res,200,{ok:true,left:existed&&canRemove,retained:existed&&!canRemove,roundId:round.id,phase:round.phase,participantCount:remaining});
@@ -397,10 +402,10 @@ async function api(req,res,url){
   const input=await bodyJson(req),round=lookupRound(m,input.roundId);
   if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(!participant)return reply(res,404,{ok:false,error:'not_participating'});
-  if(participant.settlement)return reply(res,200,{ok:true,idempotent:true,settlement:participant.settlement});
-  const totalWin=Math.max(0,Math.floor(Number(input.totalWin)||0));
-  const settlement={id:round.id+':'+player.id,roundId:round.id,playerId:player.id,totalWin,creditAfter:Number(input.creditAfter)||0,digest:safeText(input.digest,160),settledAt:now()};
-  participant.settlement=settlement;round.settlementCount=(Number(round.settlementCount)||0)+1;scheduleSave();broadcast(m.id,{type:'player_settled',roundId:round.id,playerId:player.id,totalWin});
+  if(participant.settlement){await flushDb();return reply(res,200,{ok:true,idempotent:true,settlement:participant.settlement});}
+  const authoritative=payoutWallet?.settle(m.id,player.id,round,input),totalWin=authoritative?authoritative.totalWin:Math.max(0,Math.floor(Number(input.totalWin)||0));
+  const settlement={id:round.id+':'+player.id,roundId:round.id,playerId:player.id,totalWin,creditAfter:authoritative?authoritative.creditAfter:Number(input.creditAfter)||0,digest:safeText(input.digest,160),settledAt:now()};
+  participant.settlement=settlement;round.settlementCount=(Number(round.settlementCount)||0)+1;scheduleSave();await flushDb();broadcast(m.id,{type:'player_settled',roundId:round.id,playerId:player.id,totalWin});
   tickMachine(m);
   return reply(res,200,{ok:true,idempotent:false,settlement});
  }
@@ -423,6 +428,7 @@ async function staticFile(req,res,url){
 }
 
 await loadDb();
+payoutWallet?.attachCore(db);
 const server=http.createServer(async(req,res)=>{
  cors(req,res);if(req.method==='OPTIONS'){res.writeHead(204);return res.end();}
  const url=new URL(req.url||'/', 'http://'+(req.headers.host||'localhost'));
@@ -433,7 +439,7 @@ const server=http.createServer(async(req,res)=>{
    await api(req,res,url);
   }else await staticFile(req,res,url); // Page assets must not consume or be blocked by the API budget.
  }
- catch(error){console.error('[SharedMachine] request failed',error);reply(res,error.status||500,{ok:false,error:error.message||'server_error'});}
+ catch(error){console.error('[SharedMachine] request failed',error);reply(res,error.status||500,{ok:false,error:error.message||'server_error',...(error.payoutControlV3?{payoutControlV3:error.payoutControlV3}:{})});}
 });
 const wss=new WebSocketServer({noServer:true});
 server.on('upgrade',(req,socket,head)=>{
