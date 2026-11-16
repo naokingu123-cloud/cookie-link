@@ -2,14 +2,26 @@ name: Station detail v238
 on:
   workflow_dispatch:
   push:
-    branches: ['feature/stations-detail-v238']
+    paths:
+      - 'server-stations-v235.mjs'
+      - 'assets/stations-v235.*'
+      - 'assets/shared-machine-v176.js'
+      - 'tests/stations-detail-v238.mjs'
+      - 'tests/stations-layout-v238.mjs'
+      - '.github/workflows/stations-detail-v238.yml'
 jobs:
-  inspect:
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node .github/tests/stations-inspect-v238.mjs
+      - run: npm install --ignore-scripts
+      - name: Station detail and isolation
+        run: node --check assets/stations-v235.js && node --check server-stations-v235.mjs && node tests/stations-detail-v238.mjs
+      - name: Real player and six-seat regressions
+        run: node tests/stations-live-win-v236.mjs && node tests/stations-two-player-v236.mjs && node tests/stations-v235.mjs && node tests/stations-snapshot-v235.mjs && node tests/stations-round-idle-v235.mjs && node tests/stations-integration-v235.mjs
+      - name: Existing game, guest and HD60 regressions
+        run: npm run check && npm run test:shared && node tests/roulette-hd60-v234.mjs && node .github/tests/nine_tab_visibility_v233.cjs

@@ -1,5 +1,5 @@
-/* Six public stations. v236 defaults to real players only, migrates old TEST
- * seats away, and reads the same live payout telemetry as the server monitor. */
+/* Six public stations. Real players by default. v238 adds bounded, display-only
+ * next-HIT metadata; no station message can change a wallet or draw result. */
 import './assets/jelly-rules.js';
 const JELLY=globalThis.JellyRules;
 export const CAPACITY=6;
@@ -7,27 +7,42 @@ const FLAVORS=['strawberry','vanilla','mint','chocolate','grape'];
 const TOPS=['strawberry','cookie','crown','none'],OUTFITS=['bow','cape','apron','none'];
 const ACCENTS=['#ec6798','#67c6de','#a58ae0','#e7b847','#68be93'];
 const NAMES=['シュガー','ミント','ココア','プリン','こはく'];
+const GAME_IDS=new Set(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella']);
 const integer=v=>Math.max(0,Math.min(1e12,Math.floor(Number(v)||0)));
 export function cleanProfile(input={}){
  input=input&&typeof input==='object'?input:{};
  const pet=input.pet||{},pick=(values,value)=>values.includes(value)?value:values[0];
  const name=Array.from(String(input.name||'プレイヤー').normalize('NFC').replace(/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/g,'').trim()).slice(0,12).join('')||'プレイヤー';
  const photo=String(input.photo||'');
- // No remote URL/SVG/HTML is accepted; bounded raster thumbnails only.
  const validPhoto=photo.length<=24000&&(/^data:image\/png;base64,iVBOR[A-Za-z0-9+/=]+$/.test(photo)||/^data:image\/webp;base64,UklGR[A-Za-z0-9+/=]+$/.test(photo));
  return {name,pet:{flavor:pick(FLAVORS,pet.flavor),top:pick(TOPS,pet.top),outfit:pick(OUTFITS,pet.outfit),accent:pick(ACCENTS,pet.accent)},photo:validPhoto?photo:''};
+}
+export function cleanStationDetail(input,round){
+ if(!input||typeof input!=='object'||input.version!==238||!round||String(input.roundId)!==round.id)return null;
+ const ballCount=Number(input.ballCount),count=(round.balls||[]).length;
+ if(!Number.isInteger(ballCount)||ballCount<0||ballCount>8||ballCount>count)return null;
+ const highestGames=[...new Set((Array.isArray(input.highestGames)?input.highestGames:[]).slice(0,9).filter(id=>GAME_IDS.has(id)))];
+ let achievedTier=Math.min(3,integer(input.achievedTier));if(achievedTier===3&&!highestGames.length)achievedTier=2;
+ let prediction=['ready','none','updating','complete'].includes(input.prediction)?input.prediction:'updating',best=null;
+ if(count>=8||round.phase!=='PLAYING')prediction=round.phase==='BETTING'?'updating':'complete';
+ else if(ballCount!==count)prediction='updating';
+ else if(prediction==='ready'){
+  const used=new Set((round.balls||[]).map(b=>Number(b.number))),gain=Number(input.best?.gain);
+  const numbers=[...new Set((Array.isArray(input.best?.numbers)?input.best.numbers:[]).slice(0,25).filter(n=>Number.isInteger(n)&&n>=1&&n<=25&&!used.has(n)))].sort((a,b)=>a-b);
+  if(numbers.length&&Number.isFinite(gain)&&gain>0)best={numbers,gain:integer(gain),tier:Math.min(3,integer(input.best.tier))};
+  if(!best||best.gain<=0){best=null;prediction='updating';}
+ }
+ return {version:238,roundId:round.id,ballCount,prediction,best,achievedTier,highestGames,paused:input.paused===true};
 }
 function randomFor(text){let seed=2166136261;for(const char of text)seed=Math.imul(seed^char.charCodeAt(0),16777619);return()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);}
 export function createStationService({getDb,socketMap,connected,broadcast,scheduleSave,now=Date.now,graceMs=60000,rules=JELLY}={}){
  if(!rules?.create||!rules?.draw)throw Error('Station Jelly rules unavailable');
  const rooms=new Map();
- const runtime=m=>{let r=rooms.get(m.id);if(!r){r={bots:new Map(),signature:'',lastSend:-Infinity,revision:0,photos:new Map()};rooms.set(m.id,r);}return r;};
+ const runtime=m=>{let r=rooms.get(m.id);if(!r){r={bots:new Map(),details:new Map(),signature:'',lastSend:-Infinity,revision:0,photos:new Map()};rooms.set(m.id,r);}return r;};
  function data(m){
   let d=m.stationsV235;
   if(!d||!Array.isArray(d.seats))d=m.stationsV235={seats:Array(CAPACITY).fill(null),demoCount:0,sequence:0};
   d.seats=Array.from({length:CAPACITY},(_,i)=>d.seats[i]||null);
-  // A saved v235 demoCount=5 must not repopulate the five TEST seats.
-  // Preserve real players' station numbers, account data and round state.
   if(d.settingsVersion!==236){
    d.demoCount=0;d.seats=d.seats.map(s=>s?.kind==='test'?null:s);
    d.settingsVersion=236;runtime(m).bots.clear();scheduleSave();
@@ -38,17 +53,16 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
   return d;
  }
  function systemPlayer(m,id){return id===m.hostPlayerId;}
- function release(m,id){const d=data(m),i=d.seats.findIndex(s=>s?.playerId===id);if(i<0)return false;d.seats[i]=null;runtime(m).bots.delete(id);scheduleSave();return true;}
+ function release(m,id){const d=data(m),i=d.seats.findIndex(s=>s?.playerId===id);if(i<0)return false;d.seats[i]=null;runtime(m).bots.delete(id);runtime(m).details.delete(id);scheduleSave();return true;}
  function allocate(m,id){
   if(systemPlayer(m,id))return null;
   const d=data(m);let at=d.seats.findIndex(s=>s?.playerId===id);
   if(at>=0)return at+1;
   at=d.seats.findIndex(s=>!s);
-  // Retain explicit admin/test-fixture opt-in, never automatic TEST admission.
   const testAt=d.seats.findIndex(s=>s?.kind==='test');
   if(testAt>=0&&(at<0||testAt<at))at=testAt;
   if(at<0)return null;
-  if(d.seats[at])runtime(m).bots.delete(d.seats[at].playerId);
+  if(d.seats[at]){runtime(m).bots.delete(d.seats[at].playerId);runtime(m).details.delete(d.seats[at].playerId);}
   d.seats[at]={playerId:id,kind:'human',joinedAt:now(),order:++d.sequence,offlineSince:0};scheduleSave();return at+1;
  }
  function fillTests(m){
@@ -71,8 +85,8 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
    else if(!s.offlineSince){s.offlineSince=t;scheduleSave();}
    else if(t-s.offlineSince>=graceMs&&m.round?.phase!=='PLAYING')release(m,s.playerId);
   }
-  // Server-observed connection order; the roulette host never claims a seat.
   if(m.hostPlayerId)for(const id of socketMap(m.id).keys())if(!systemPlayer(m,id)&&connected(m.id,id))allocate(m,id);
+  for(const [id,value] of runtime(m).details)if(value.detail.roundId!==m.round?.id)runtime(m).details.delete(id);
   fillTests(m);advanceTests(m);return d;
  }
  function advanceTests(m){
@@ -113,13 +127,18 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
     if(participant){
      entry.bet=integer(participant.totalBet);entry.ballCount=integer(participant.checkpointBall);entry.phase=round.phase;
      entry.settled=!!participant.settlement;
-     // Arcade.totalWin/roundWins can remain zero until payout. The checkpoint
-     // already includes the per-game earned WIN in payoutV3; use it too.
-     // This is display only. An acknowledged settlement (including 0) wins.
      const telemetry=Number(state?.payoutV3?.version)===3?state.payoutV3:null;
      const gameWin=(Array.isArray(telemetry?.games)?telemetry.games:[]).reduce((sum,game)=>sum+integer(game?.win),0);
      const checkpointWin=Math.max(integer(state?.totalWin),(Array.isArray(state?.roundWins)?state.roundWins:[]).reduce((a,b)=>a+integer(b),0),integer(telemetry?.roundWin),integer(gameWin));
      entry.win=participant.settlement?integer(participant.settlement.totalWin):Math.max(checkpointWin,s.liveRound===round.id?integer(s.liveWin):0);
+     const saved=r.details.get(s.playerId),detail=cleanStationDetail(saved?.detail,round);
+     if(detail){
+      // Ball receipt, inactivity and final settlement invalidate a prediction
+      // independently of the client's animation or its next telemetry packet.
+      if(!entry.connected||now()-saved.at>12000){detail.best=null;detail.prediction=round.phase==='PLAYING'?'updating':'complete';}
+      if(entry.settled){detail.best=null;detail.prediction='complete';detail.paused=false;if(!entry.win){detail.achievedTier=0;detail.highestGames=[];}}
+      entry.detail=detail;
+     }
     }
    }
    return entry;
@@ -153,9 +172,12 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
  }
  function progress(m,id,msg){
   const s=data(m).seats.find(s=>s?.kind==='human'&&s.playerId===id),round=m.round,p=round?.participants?.[id];
-  if(!s||!p||p.settlement||round.id!==String(msg.roundId)||round.phase==='BETTING')return false;
+  if(!s||!p||round.id!==String(msg.roundId)||round.phase==='BETTING')return false;
+  const detail=cleanStationDetail(msg.detail,round),previous=runtime(m).details.get(id);
+  if(detail&&(!previous||previous.detail.roundId!==round.id||detail.ballCount>=previous.detail.ballCount))runtime(m).details.set(id,{detail,at:now()});
+  if(p.settlement)return !!detail;
   if(s.liveRound!==round.id){s.liveRound=round.id;s.liveWin=0;}
-  s.liveWin=Math.max(integer(s.liveWin),integer(msg.win));return true; // display only; never a wallet write
+  s.liveWin=Math.max(integer(s.liveWin),integer(msg.win));return true;
  }
  function configure(m,count){const n=Number(count);if(!Number.isInteger(n)||n<0||n>5)throw Object.assign(Error('invalid_test_count'),{status:400});data(m).demoCount=n;scheduleSave();tick(m);return snapshot(m);}
  function eligible(m,ids){sync(m);const seated=new Set(data(m).seats.filter(s=>s?.kind==='human').map(s=>s.playerId));return ids.filter(id=>seated.has(id));}
