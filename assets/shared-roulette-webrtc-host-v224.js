@@ -12,7 +12,7 @@ function boot(){
  if(!client){setTimeout(boot,80);return;}
  if(typeof RTCPeerConnection!=='function'||!HTMLCanvasElement.prototype.captureStream){console.warn('[RouletteHost224] WebRTC unsupported');return;}
  const peers=new Map(),offers=new Map(),subscribers=new Map();
- let stream=null,track=null,canvas=null,recorder=null,recorderTask=null,streamId='',sequence=0,sendChain=Promise.resolve(),captureBusy=null,sourceEpoch=0;
+ let stream=null,track=null,canvas=null,recorder=null,recorderTask=null,streamId='',sequence=0,sendChain=Promise.resolve(),captureBusy=null,sourceEpoch=0,lastAnnounceAt=0,announcedSocket=null;
  const roundId=()=>String(client.round?.id||'');
  const send=message=>client.send({...message,protocol:PROTOCOL,instanceId,roundId:roundId()});
  const key=(id,instance='')=>String(id)+':'+String(instance||'default');
@@ -128,8 +128,12 @@ function boot(){
   else if(message.type==='rtc_ice'){if(session.pc.remoteDescription)try{await session.pc.addIceCandidate(message.candidate);}catch{}else session.ice.push(message.candidate);}
   else if(message.type==='rtc_restart')offer(id,instance,true).catch(()=>{});
  }
- const announce=()=>{if(client.online&&(shared.role==='host'||client.role==='host'))send({type:'rtc_host_ready'});};
- client.on(message=>{onMessage(message);if(['snapshot','host_changed','host_status'].includes(message.type))setTimeout(announce,0);});
+ const announce=()=>{
+  if(!client.online||shared.role!=='host'&&client.role!=='host'){lastAnnounceAt=0;announcedSocket=null;return;}
+  const now=Date.now();if(announcedSocket===client.ws&&now-lastAnnounceAt<3000)return;
+  if(send({type:'rtc_host_ready'})){lastAnnounceAt=now;announcedSocket=client.ws;}
+ };
+ client.on(message=>{onMessage(message);if(['snapshot','host_changed','host_status'].includes(message.type))announce();});
  client.ready.then(ok=>{if(ok){announce();capture().catch(error=>console.warn('[RouletteHost224]',error?.message||error));}});
  const announceTimer=setInterval(announce,3000);
  const frameTimer=setInterval(()=>{try{track?.requestFrame?.();}catch{}},34);

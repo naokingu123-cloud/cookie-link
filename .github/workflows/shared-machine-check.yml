@@ -48,6 +48,8 @@ on:
       - 'tests/server-wallet-v228.mjs'
       - 'tests/shared-v229-immediate-bet.mjs'
       - 'tests/shared-v229-video-display.mjs'
+      - 'tests/shared-v230-client-lifecycle.mjs'
+      - 'tests/shared-v230-video-lifecycle.mjs'
       - 'assets/cookie-upgrade-patches.js'
       - 'tests/shared-v225-video-reconnect.mjs'
       - 'tests/shared-v225-payout-lifecycle.mjs'

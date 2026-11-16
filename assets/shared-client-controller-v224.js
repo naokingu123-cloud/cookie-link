@@ -216,8 +216,12 @@ function requestBet(){
  manualBetRoundId=String(round.id);joinBet(round).catch(()=>{});return !!betAttempt||joinedRoundId===String(round.id);
 }
 function disableBetButton(button,disabled,reason=''){
- if(!button)return;button.disabled=!!disabled;button.setAttribute?.('aria-disabled',String(!!disabled));button.classList?.toggle?.('shared-bet-disabled',!!disabled);
- if(disabled&&reason)button.title=reason;else if(button.title==='CREDIT不足'||button.title==='BET登録後は変更できません')button.title='';
+ if(!button)return;disabled=!!disabled;
+ if(button.disabled!==disabled)button.disabled=disabled;
+ const aria=String(disabled);if(button.getAttribute?.('aria-disabled')!==aria)button.setAttribute?.('aria-disabled',aria);
+ if(button.classList?.contains?.('shared-bet-disabled')!==disabled)button.classList?.toggle?.('shared-bet-disabled',disabled);
+ if(disabled&&reason){if(button.title!==reason)button.title=reason;}
+ else if(button.title==='CREDIT不足'||button.title==='BET登録後は変更できません')button.title='';
 }
 function refreshBetControls(target=typeof app!=='undefined'?app:window.app){
  if(!target)return;
@@ -229,12 +233,12 @@ function refreshBetControls(target=typeof app!=='undefined'?app:window.app){
   disableBetButton(slot.addBet,!canSetBet(index,current+increment,target),editable?'CREDIT不足':'BET登録後は変更できません');
   disableBetButton(slot.oneBet,!canSetBet(index,current+1,target),editable?'CREDIT不足':'BET登録後は変更できません');
  }
- const toggle=document.getElementById('shared-auto-rebet-v228');if(toggle)toggle.checked=autoRebet;
+ const toggle=document.getElementById('shared-auto-rebet-v228');if(toggle&&toggle.checked!==autoRebet)toggle.checked=autoRebet;
  const button=document.getElementById('shared-bet-v228');
  if(button){
   const registered=joinedRounds.has(String(round?.id||'')),remaining=finite(round?.betClosesAt)-(Date.now()+finite(client()?.clockOffset));
   disableBetButton(button,!editable||!funded||!stable()||round?.phase!=='BETTING'||!round.canBet||remaining<MIN_BET_REMAIN_MS,!funded?'CREDIT不足':'');
-  button.textContent=registered?'BET登録済み':joinBusy?'登録中…':!funded&&total>0?'CREDIT不足':'BETする';
+  const label=registered?'BET登録済み':joinBusy?'登録中…':!funded&&total>0?'CREDIT不足':'BETする';if(button.textContent!==label)button.textContent=label;
  }
 }
 function installBetControls(){
@@ -254,7 +258,24 @@ function resultLayerHidden(){
 function modelReady(target=window.app){
  return !!target&&target.phase==='ready'&&!(target.draws?.length)&&!target.payout&&!target.result&&!target.dealing&&!target.fastForward&&!active()&&(target.engines||[]).every(engineRuntimeClean)&&resultLayerHidden();
 }
+function releaseResultInput(){
+ // The native renderer restores these locks only while its layer is visible.
+ // Shared completion can hide that layer before the next animation frame, so
+ // release its ownership explicitly before changing hidden. Preserve other
+ // modals: JPC opens before the player menu, which is the outer input owner.
+ if(typeof resultInert==='undefined'||!Array.isArray(resultInert)||!resultInert.length)return;
+ const owners=[];
+ if(typeof jpcSession!=='undefined'&&jpcSession?.active&&Array.isArray(jpcSession.inert))owners.push(jpcSession.inert);
+ if(typeof menuOpen!=='undefined'&&menuOpen&&typeof recordInert!=='undefined'&&Array.isArray(recordInert))owners.push(recordInert);
+ for(const [element,previous] of resultInert){
+  if(!element)continue;let locked=!!previous;
+  for(const owner of owners){const entry=owner.find(item=>item?.[0]===element);if(entry){entry[1]=!!entry[1]&&locked;locked=true;}}
+  if(element.inert!==locked)element.inert=locked;
+ }
+ resultInert=[];
+}
 function hideResults(){
+ releaseResultInput();
  const direct=document.getElementById('round-result-layer');if(direct){direct.hidden=true;direct.classList?.remove?.('show','active','is-visible');}
  try{for(const selector of ['.round-result','.result-overlay','.payout-overlay','[data-result-overlay]'])for(const node of document.querySelectorAll(selector)){node.hidden=true;node.classList?.remove?.('show','active','is-visible');}}catch{}
 }

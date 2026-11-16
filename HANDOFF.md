@@ -558,3 +558,11 @@
 - server.mjsのBET期間既定を10秒から20秒へ変更。環境変数指定なしの実サーバーでhealthと実round期限の双方が20,000msになることを確認。
 - 新規回帰 `tests/shared-v229-immediate-bet.mjs` / `tests/shared-v229-video-display.mjs` をtest:syncとShared machine checkへ追加。v228の初期100万・AUTO REBET初期ON・27,000 BET・終了時WIN加算を維持。
 - 版 `20261116-v229-immediate-bet-video`。Windows側も最新mainへ更新して既存ランチャーから再起動し、ホスト/プレイヤー画面を再読み込みする。`.runtime`・`.tools`・`data`を保持。公開クライアント更新をWindowsサーバー更新済みと扱わない。
+
+## 2026-11-16 — v230 / リザルト後の操作復帰・反復更新の負荷軽減
+- ユーザー追加報告: 2ゲーム目以降か不明だがクライアント全体を操作できず、処理も重く感じる。詳細は `docs/shared-sync-v230.md`。
+- 実renderRoundResultで再現: 結果表示がarena/deck/game/play-controlsをinertにする一方、controllerが先に結果layer.hidden=trueを設定するとnativeの入力復元が飛ばされる。結果が閉じてphase=readyでもinertが残り、タブやBETが操作不能になる。
+- hideResultsの直前にresultInertの所有分を復元。元からのinert、メニュー/JPCの入力制限は保持し、外側メニューの復元記録を補正する。実リザルト・実menu処理で3cycle、result/menu両順序、JPC重なり、元からinert=trueを確認。
+- BETコントロールは実DOM値が変わるときだけ書換。100回同状態checkで対象setter/属性/class更新が8,600→0。native HUD上書きは次回補正する。映像の同値表示・native pause・ホスト通知の反復も減らす。
+- 新規回帰 `tests/shared-v230-client-lifecycle.mjs` / `tests/shared-v230-video-lifecycle.mjs` をtest:syncとShared machine checkへ追加。controller単独の3cycle計測でtimer増殖・無限dirty-ready resetは再現せず、追加6種実engineのresetも持越しなし。
+- 版 `20261116-v230-result-input-performance`。v229までの即時BET・WIN精算・20秒BET・映像復旧を維持。今回の更新でCREDITを初期値へ戻さない。Windowsファイル更新と画面再読み込み、20秒設定未適用なら既存ランチャーからサーバー再起動。`.runtime`・`.tools`・`data`は保持。

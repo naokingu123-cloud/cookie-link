@@ -13,8 +13,10 @@ function boot(){
  if(!client){setTimeout(boot,70);return;}
  let peer=null,relay=null,p2pVideo=null,relayVideo=null,healthTimer=0,requestTimer=0;
  let p2pFrameAt=0,relayFrameAt=0,lastRelayChunk=0,lastRequest=0,source='',lastGood='',lastGoodAt=0;
- let requestRelayPending=false,relayRestartPending=false;
+ let requestRelayPending=false,relayRestartPending=false,legacyCleaned=false,liveClass=false,lastHostKey='';
+ let stageNode=null,indicatorNode=null,localPause=null;
  const retiredStreams=new Set(),blockedVideos=new Set(),frameWatches={p2p:null,relay:null};
+ const relaySupported=(()=>{try{return typeof MediaSource==='function'&&['video/webm;codecs=vp8','video/webm'].some(mime=>MediaSource.isTypeSupported(mime));}catch{return false;}})();
  const roundId=()=>String(client.round?.id||'');
  const send=message=>client.send({...message,protocol:PROTOCOL,instanceId,roundId:roundId()});
  function css(){
@@ -32,19 +34,39 @@ function boot(){
   document.head.append(style);
  }
  function cleanLegacy(){
+  if(legacyCleaned)return;legacyCleaned=true;
   try{for(const node of document.querySelectorAll('.shared-roulette-hold-v222,.shared-roulette-mirror'))node.remove();}catch{}
   try{document.body.classList.remove('shared-roulette-hold-v222-live','shared-roulette-live','shared-roulette-v219-live');}catch{}
  }
- function stage(){css();cleanLegacy();return document.querySelector('#cookie-roulette .a8-stage');}
+ function stage(){css();cleanLegacy();if(!stageNode?.isConnected)stageNode=document.querySelector('#cookie-roulette .a8-stage');return stageNode;}
  function make(kind){
   const root=stage();if(!root)return null;const video=document.createElement('video');Object.assign(video,{autoplay:true,muted:true,playsInline:true,disablePictureInPicture:true});
   video.className=`shared-roulette-v224 shared-roulette-${kind}-v224`;video.dataset.active='0';root.append(video);return video;
  }
  function view(kind){if(kind==='p2p'){if(!p2pVideo?.isConnected)p2pVideo=make('p2p');return p2pVideo;}if(!relayVideo?.isConnected)relayVideo=make('relay');return relayVideo;}
  function indicator(show){
-  const root=stage();if(!root)return;let node=root.querySelector('.roulette-reconnect-v224');
-  if(!node){node=document.createElement('button');node.type='button';node.className='roulette-reconnect-v224';node.onclick=retryView;root.append(node);}
-  node.textContent=blockedVideos.size?'映像を再生':lastGood?'映像再接続中・再試行':'映像接続中・再試行';node.dataset.show=show?'1':'0';
+  const root=stage();if(!root)return;if(!indicatorNode?.isConnected)indicatorNode=root.querySelector('.roulette-reconnect-v224');
+  if(!indicatorNode){indicatorNode=document.createElement('button');indicatorNode.type='button';indicatorNode.className='roulette-reconnect-v224';indicatorNode.onclick=retryView;root.append(indicatorNode);}
+  const text=blockedVideos.size?'映像を再生':lastGood?'映像再接続中・再試行':'映像接続中・再試行',visible=show?'1':'0';
+  if(indicatorNode.textContent!==text)indicatorNode.textContent=text;if(indicatorNode.dataset.show!==visible)indicatorNode.dataset.show=visible;
+ }
+ function pauseLocal(){
+  try{
+   const driver=typeof rouletteDriver==='undefined'?null:rouletteDriver;if(!driver||typeof driver.setPaused!=='function')return;
+   if(!localPause||localPause.driver!==driver||driver.setPaused!==localPause.wrapper){
+    const state={driver,native:driver.setPaused,paused:null,wrapper:null};
+    // Track pauses performed by the app too: a round reset may unpause this
+    // same driver, while a reload replaces it. Repeated health reads are inert.
+    state.wrapper=function(value,...args){const result=state.native.call(this,value,...args);state.paused=!!value;return result;};
+    driver.setPaused=state.wrapper;localPause=state;
+   }
+   if(localPause.paused!==true)driver.setPaused(true);
+  }catch{}
+ }
+ function display(kind){
+  source=kind;for(const [name,video] of [['p2p',p2pVideo],['relay',relayVideo]])if(video){const active=kind===name?'1':'0';if(video.dataset.active!==active)video.dataset.active=active;}
+  const visible=!!kind,hasClass=document.body.classList.contains?.('shared-roulette-v224-live')??liveClass;
+  if(visible!==hasClass)document.body.classList[visible?'add':'remove']('shared-roulette-v224-live');liveClass=visible;pauseLocal();
  }
  function play(video){
   const attached=video?.srcObject||video?.src;if(!attached)return;
@@ -59,15 +81,12 @@ function boot(){
  }
  const decoded=video=>!!video&&video.readyState>=2&&video.videoWidth>0&&video.videoHeight>0;
  function setVisible(kind,reconnecting=false){
-  const video=kind==='p2p'?p2pVideo:relayVideo;if(!decoded(video))return false;source=kind;
-  if(p2pVideo)p2pVideo.dataset.active=kind==='p2p'?'1':'0';if(relayVideo)relayVideo.dataset.active=kind==='relay'?'1':'0';
-  document.body.classList.add('shared-roulette-v224-live');indicator(reconnecting);try{rouletteDriver?.setPaused?.(true);}catch{}return true;
+  const video=kind==='p2p'?p2pVideo:relayVideo;if(!decoded(video))return false;display(kind);indicator(reconnecting);return true;
  }
  function activate(kind){if(setVisible(kind,false)){lastGood=kind;lastGoodAt=Date.now();}}
  function holdLast(){return lastGood&&setVisible(lastGood,true);}
  function showLocal(reconnecting=false){
-  source='';if(p2pVideo)p2pVideo.dataset.active='0';if(relayVideo)relayVideo.dataset.active='0';document.body.classList.remove('shared-roulette-v224-live');indicator(reconnecting);
-  try{rouletteDriver?.setPaused?.(true);}catch{}
+  display('');indicator(reconnecting);
  }
  function stopFrameWatch(kind){
   const watch=frameWatches[kind];frameWatches[kind]=null;if(!watch)return;watch.stopped=true;blockedVideos.delete(watch.video);
@@ -146,12 +165,13 @@ function boot(){
   const run=()=>{
    if(!client.online)return;const now=Date.now(),remaining=650-(now-lastRequest);if(remaining>0){requestTimer=setTimeout(run,remaining);return;}
    lastRequest=now;send({type:'rtc_watch'});
-   if(requestRelayPending||relayRestartPending){if(relayRestartPending)send({type:'rtc_fallback_stop'});send({type:'rtc_fallback_request'});requestRelayPending=false;relayRestartPending=false;}
+   if(requestRelayPending||relayRestartPending){if(relayRestartPending)send({type:'rtc_fallback_stop'});if(relaySupported)send({type:'rtc_fallback_request'});requestRelayPending=false;relayRestartPending=false;}
   };
   requestTimer=setTimeout(run,Math.max(0,delay));
  }
  async function onMessage(value){
-  if(value.type==='rtc_host_ready'){request(0,true);return;}if(value.type==='rtc_host_offline'){holdLast()||showLocal(true);request(500,true);return;}
+  if(value.type==='rtc_host_ready'){const hostKey=String(value.fromPlayerId||'')+':'+String(value.fromInstanceId||''),changed=!!lastHostKey&&lastHostKey!==hostKey;lastHostKey=hostKey;if(changed||!isFresh())request(0,true);return;}
+  if(value.type==='rtc_host_offline'){lastHostKey='';holdLast()||showLocal(true);request(500,true);return;}
   if(value.targetInstanceId&&value.targetInstanceId!==instanceId)return;if(value.type==='rtc_offer'){await offer(value);return;}
   if(value.type==='rtc_ice'){const session=peer;if(!session||value.fromPlayerId&&value.fromPlayerId!==session.host||value.fromInstanceId&&value.fromInstanceId!==session.hostInstance)return;if(session.pc.remoteDescription)try{await session.pc.addIceCandidate(value.candidate);}catch{}else session.ice.push(value.candidate);return;}
   if(value.type==='rtc_media'){relayChunk(value);return;}if(value.type==='rtc_media_stop'&&(!value.streamId||relay?.id===value.streamId)){closeRelay();if(Date.now()-p2pFrameAt>1200)request(80,true);}
@@ -166,7 +186,7 @@ function boot(){
   // Receiving chunks is not proof of successful decoding. A silent MediaSource
   // stall must obtain a fresh WebM header even while packets keep arriving.
   if(relay&&now-(relayFrameAt||relay.createdAt)>5000&&!blockedVideos.has(relayVideo)){closeRelay(relay);request(0,true,true);}
-  if(!relay||now-lastRelayChunk>2400)request(0,true);
+  if(!relay&&!p2pFresh||relay&&now-lastRelayChunk>2400)request(0,true);
   for(const video of [p2pVideo,relayVideo])if(video?.paused)play(video);
  }
  client.on(value=>{onMessage(value);if(['host_changed','host_status'].includes(value?.type))request(80,true);});
