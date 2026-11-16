@@ -25,3 +25,5 @@ jobs:
         run: node tests/stations-v235.mjs && node tests/stations-snapshot-v235.mjs
       - name: Actual HTTP and WebSocket six-seat integration
         run: node tests/stations-integration-v235.mjs
+      - name: Wallet restart compatibility with server diagnostics
+        run: node tests/stations-wallet-repro-v235.mjs
