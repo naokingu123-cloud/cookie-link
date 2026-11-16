@@ -13,6 +13,8 @@ function boot(){
  if(!client){setTimeout(boot,70);return;}
  let peer=null,relay=null,p2pVideo=null,relayVideo=null,healthTimer=0,requestTimer=0;
  let p2pFrameAt=0,relayFrameAt=0,lastRelayChunk=0,lastRequest=0,source='',lastGood='',lastGoodAt=0;
+ let requestRelayPending=false,relayRestartPending=false;
+ const retiredStreams=new Set();
  const roundId=()=>String(client.round?.id||'');
  const send=message=>client.send({...message,protocol:PROTOCOL,instanceId,roundId:roundId()});
  function css(){
@@ -60,37 +62,75 @@ function boot(){
   video.addEventListener('playing',mark);video.addEventListener('timeupdate',mark);
   if(typeof video.requestVideoFrameCallback==='function'){const tick=()=>{if(!video.isConnected)return;mark();video.requestVideoFrameCallback(tick);};video.requestVideoFrameCallback(tick);}
  }
- function closePeer(){const current=peer;peer=null;if(current){clearTimeout(current.timer);try{current.pc.close();}catch{}}p2pFrameAt=0;if(p2pVideo)try{p2pVideo.srcObject=null;}catch{}}
- function closeRelay(){const current=relay;relay=null;if(current){try{if(current.ms.readyState==='open')current.ms.endOfStream();}catch{}try{URL.revokeObjectURL(current.url);}catch{}}relayFrameAt=0;lastRelayChunk=0;if(relayVideo)try{relayVideo.removeAttribute('src');relayVideo.load();}catch{}}
+ function closePeer(expected=null){if(expected&&peer!==expected)return;const current=peer;peer=null;if(current){clearTimeout(current.timer);try{current.pc.close();}catch{}}p2pFrameAt=0;if(p2pVideo)try{p2pVideo.srcObject=null;}catch{}}
+ function retryPeer(current,delay=100){
+  if(peer!==current)return;closePeer(current);
+  // rtc_watch alone leaves a still-connected peer on the host untouched.
+  // Request an explicit replacement when our decoder/negotiation has failed.
+  send({type:'rtc_restart',targetPlayerId:current.host,targetInstanceId:current.hostInstance});request(delay,true);
+ }
+ function closeRelay(expected=null){
+  if(expected&&relay!==expected)return;const current=relay;relay=null;
+  if(current){retiredStreams.add(current.id);while(retiredStreams.size>24)retiredStreams.delete(retiredStreams.values().next().value);try{if(current.ms.readyState==='open')current.ms.endOfStream();}catch{}try{URL.revokeObjectURL(current.url);}catch{}}
+  relayFrameAt=0;lastRelayChunk=0;if(relayVideo)try{relayVideo.removeAttribute('src');relayVideo.load();}catch{}
+ }
  function decode(data){const binary=atob(data),bytes=new Uint8Array(binary.length);for(let index=0;index<binary.length;index++)bytes[index]=binary.charCodeAt(index);return bytes;}
- function pump(current){if(relay!==current||!current.sb||current.sb.updating||!current.queue.length)return;try{current.sb.appendBuffer(current.queue.shift());}catch(error){console.warn('[RouletteClient224] relay append',error?.message||error);closeRelay();request(100,true);}}
+ function pump(current){if(relay!==current||!current.sb||current.sb.updating||!current.queue.length)return;try{current.sb.appendBuffer(current.queue.shift());}catch(error){console.warn('[RouletteClient224] relay append',error?.message||error);closeRelay(current);request(100,true,true);}}
  function startRelay(message){
   const mime=String(message.mime||'video/webm;codecs=vp8');if(typeof MediaSource!=='function'||!MediaSource.isTypeSupported(mime))return false;closeRelay();const video=view('relay');if(!video)return false;
   const ms=new MediaSource(),url=URL.createObjectURL(ms),current={id:String(message.streamId||''),ms,url,sb:null,queue:[],seq:-1};relay=current;
   try{video.srcObject=null;}catch{}video.src=url;video.play().catch(()=>{});watchFrames(video,'relay');
   ms.addEventListener('sourceopen',()=>{
    if(relay!==current)return;
-   try{current.sb=ms.addSourceBuffer(mime);try{current.sb.mode='sequence';}catch{}current.sb.addEventListener('updateend',()=>{if(relay!==current)return;try{const ranges=video.buffered;if(ranges.length){const end=ranges.end(ranges.length-1);if(end-video.currentTime>.9)video.currentTime=Math.max(0,end-.08);}}catch{}pump(current);});pump(current);}catch(error){console.warn('[RouletteClient224] relay source',error?.message||error);closeRelay();}
+   try{
+    current.sb=ms.addSourceBuffer(mime);try{current.sb.mode='sequence';}catch{}
+    current.sb.addEventListener('error',()=>{if(relay!==current)return;closeRelay(current);request(100,true,true);});
+    current.sb.addEventListener('updateend',()=>{
+     if(relay!==current)return;
+     try{const ranges=video.buffered;if(ranges.length){const end=ranges.end(ranges.length-1);if(end-video.currentTime>.9)video.currentTime=Math.max(0,end-.08);if(video.currentTime-ranges.start(0)>12){current.sb.remove(0,Math.max(0,video.currentTime-4));return;}}}catch{}
+     pump(current);
+    });pump(current);
+   }catch(error){console.warn('[RouletteClient224] relay source',error?.message||error);closeRelay(current);request(100,true,true);}
   },{once:true});return true;
  }
  function relayChunk(message){
-  if(!message.streamId||!message.data)return;if(!relay||relay.id!==String(message.streamId))startRelay(message);const current=relay;if(!current)return;const seq=Number(message.sequence)||0;if(seq<=current.seq)return;current.seq=seq;
-  try{current.queue.push(decode(message.data));}catch{return;}if(current.queue.length>14)current.queue.splice(0,current.queue.length-7);lastRelayChunk=Date.now();pump(current);
+  const id=String(message.streamId||''),seq=Number(message.sequence);if(!id||!message.data||!Number.isInteger(seq)||seq<0||retiredStreams.has(id))return;
+  // Every new MediaSource needs the recorder's first WebM chunk. Mid-stream
+  // reconnects and missing chunks request a new stream instead of decoding junk.
+  if(!relay||relay.id!==id){if(seq!==0){request(0,true,true);return;}if(!startRelay(message))return;}
+  const current=relay;if(!current||seq<=current.seq)return;
+  if(seq!==current.seq+1){closeRelay(current);request(100,true,true);return;}
+  try{current.queue.push(decode(message.data));current.seq=seq;}catch{closeRelay(current);request(100,true,true);return;}
+  if(current.queue.length>14){closeRelay(current);request(100,true,true);return;}
+  lastRelayChunk=Date.now();pump(current);
  }
- async function flushIce(session){if(!session.pc.remoteDescription)return;while(session.ice.length)try{await session.pc.addIceCandidate(session.ice.shift());}catch{}}
+ async function flushIce(session){if(!session.pc.remoteDescription)return;while(peer===session&&session.ice.length)try{await session.pc.addIceCandidate(session.ice.shift());}catch{}}
  async function offer(message){
-  const now=Date.now();if(peer?.pc?.connectionState==='connected'&&now-p2pFrameAt<1000)return;const host=String(message.fromPlayerId||''),hostInstance=String(message.fromInstanceId||'');
-  if(!host||!message.description||typeof RTCPeerConnection!=='function')return;closePeer();const pc=new RTCPeerConnection(rtcConfig),session={pc,host,hostInstance,ice:[],timer:0};peer=session;
-  pc.onicecandidate=event=>{if(event.candidate)send({type:'rtc_ice',targetPlayerId:host,targetInstanceId:hostInstance,candidate:event.candidate.toJSON?.()||event.candidate});};
+  const now=Date.now(),host=String(message.fromPlayerId||''),hostInstance=String(message.fromInstanceId||'');if(peer?.host===host&&peer?.hostInstance===hostInstance&&peer?.pc?.connectionState==='connected'&&now-p2pFrameAt<1000)return;
+  if(!host||!message.description||typeof RTCPeerConnection!=='function')return;closePeer();const pc=new RTCPeerConnection(rtcConfig),session={pc,host,hostInstance,ice:[],timer:0,createdAt:Date.now()};peer=session;
+  pc.onicecandidate=event=>{if(peer===session&&event.candidate)send({type:'rtc_ice',targetPlayerId:host,targetInstanceId:hostInstance,candidate:event.candidate.toJSON?.()||event.candidate});};
   pc.ontrack=event=>{if(peer!==session)return;const stream=event.streams?.[0]||new MediaStream([event.track]);const attach=()=>{if(peer!==session)return;const video=view('p2p');if(!video){setTimeout(attach,70);return;}video.srcObject=stream;video.play().catch(()=>{});watchFrames(video,'p2p');};attach();};
-  pc.onconnectionstatechange=()=>{if(peer!==session)return;const state=pc.connectionState;if(state==='failed'||state==='closed'){closePeer();request(100,true);}else if(state==='disconnected'){clearTimeout(session.timer);session.timer=setTimeout(()=>{if(peer===session&&pc.connectionState==='disconnected'){closePeer();request(0,true);}},1800);}};
-  try{await pc.setRemoteDescription(message.description);await pc.setLocalDescription(await pc.createAnswer());send({type:'rtc_answer',targetPlayerId:host,targetInstanceId:hostInstance,description:pc.localDescription.toJSON?.()||pc.localDescription});await flushIce(session);}catch(error){console.warn('[RouletteClient224] offer',error?.message||error);closePeer();request(160,true);}
+  pc.onconnectionstatechange=()=>{if(peer!==session)return;const state=pc.connectionState;if(state==='failed'||state==='closed'){retryPeer(session,100);}else if(state==='disconnected'){clearTimeout(session.timer);session.timer=setTimeout(()=>{if(peer===session&&pc.connectionState==='disconnected')retryPeer(session,0);},1800);}};
+  try{
+   await pc.setRemoteDescription(message.description);if(peer!==session)return;
+   const description=await pc.createAnswer();if(peer!==session)return;
+   await pc.setLocalDescription(description);if(peer!==session)return;
+   send({type:'rtc_answer',targetPlayerId:host,targetInstanceId:hostInstance,description:pc.localDescription.toJSON?.()||pc.localDescription});await flushIce(session);
+  }catch(error){if(peer!==session)return;console.warn('[RouletteClient224] offer',error?.message||error);retryPeer(session,160);}
  }
- function request(delay=0,relayToo=true){clearTimeout(requestTimer);requestTimer=setTimeout(()=>{if(!client.online)return;const now=Date.now();if(now-lastRequest<650)return;lastRequest=now;send({type:'rtc_watch'});if(relayToo)send({type:'rtc_fallback_request'});},delay);}
+ function request(delay=0,relayToo=true,restartRelay=false){
+  requestRelayPending=requestRelayPending||relayToo;relayRestartPending=relayRestartPending||restartRelay;clearTimeout(requestTimer);
+  const run=()=>{
+   if(!client.online)return;const now=Date.now(),remaining=650-(now-lastRequest);if(remaining>0){requestTimer=setTimeout(run,remaining);return;}
+   lastRequest=now;send({type:'rtc_watch'});
+   if(requestRelayPending||relayRestartPending){if(relayRestartPending)send({type:'rtc_fallback_stop'});send({type:'rtc_fallback_request'});requestRelayPending=false;relayRestartPending=false;}
+  };
+  requestTimer=setTimeout(run,Math.max(0,delay));
+ }
  async function onMessage(value){
   if(value.type==='rtc_host_ready'){request(0,true);return;}if(value.type==='rtc_host_offline'){holdLast()||showLocal(true);request(500,true);return;}
   if(value.targetInstanceId&&value.targetInstanceId!==instanceId)return;if(value.type==='rtc_offer'){await offer(value);return;}
-  if(value.type==='rtc_ice'){const session=peer;if(!session)return;if(session.pc.remoteDescription)try{await session.pc.addIceCandidate(value.candidate);}catch{}else session.ice.push(value.candidate);return;}
+  if(value.type==='rtc_ice'){const session=peer;if(!session||value.fromPlayerId&&value.fromPlayerId!==session.host||value.fromInstanceId&&value.fromInstanceId!==session.hostInstance)return;if(session.pc.remoteDescription)try{await session.pc.addIceCandidate(value.candidate);}catch{}else session.ice.push(value.candidate);return;}
   if(value.type==='rtc_media'){relayChunk(value);return;}if(value.type==='rtc_media_stop'&&(!value.streamId||relay?.id===value.streamId)){closeRelay();if(Date.now()-p2pFrameAt>1200)request(80,true);}
  }
  function isFresh(){const now=Date.now();return !!((p2pFrameAt&&now-p2pFrameAt<1500)||(relayFrameAt&&now-relayFrameAt<1900));}
@@ -99,7 +139,8 @@ function boot(){
   // Ball messages and round boundaries never rebuild the video. A short frame
   // stall keeps the last decoded remote frame visible while P2P/relay recover.
   if(p2pFresh)activate('p2p');else if(relayFresh)activate('relay');else if(lastGoodAt&&now-lastGoodAt<6000)holdLast();else showLocal(true);
-  if(peer?.pc?.connectionState==='connected'&&p2pFrameAt&&now-p2pFrameAt>3500){closePeer();request(100,true);}if(!relay||now-lastRelayChunk>2400)request(0,true);
+  if(peer){const connected=peer.pc.connectionState==='connected',age=now-(p2pFrameAt||peer.createdAt);if(connected&&age>3500||!connected&&age>8000)retryPeer(peer,100);}
+  if(!relay||now-lastRelayChunk>2400)request(0,true);
   for(const video of [p2pVideo,relayVideo])if(video?.paused)video.play().catch(()=>{});
  }
  client.on(value=>{onMessage(value);if(['host_changed','host_status'].includes(value?.type))request(80,true);});
@@ -110,3 +151,4 @@ function boot(){
 }
 boot();
 })();
+

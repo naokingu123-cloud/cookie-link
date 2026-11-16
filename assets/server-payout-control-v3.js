@@ -5,7 +5,7 @@ if(new URLSearchParams(location.search).get('serverHost')==='1'||new URLSearchPa
 
 const ALIASES={six:'candy',drop:'candy',sixdrop:'candy',waffle:'stick',cookie:'cookie',choco:'choco',candy:'candy',gelato:'gelato',winery:'winery',jelly:'jelly',popcorn:'popcorn',stick:'stick',castella:'castella'};
 const WALLET_KEY='sweets-payout-wallet-v3';
-let controls={version:3,effectiveRate:90,games:{}},saveChain=Promise.resolve(),lastSignature='',clientRef=null,offlineResetKey='',pollTimer=0;
+let controls={version:3,effectiveRate:90,games:{}},saveChain=Promise.resolve(),lastSignature='',clientRef=null,offlineResetKey='';
 const appliedRates=new Map();
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const finite=value=>Number.isFinite(Number(value))?Number(value):0;
@@ -58,24 +58,32 @@ function resetToServerWaiting(credit,reason='サーバー精算済み'){
   if(typeof countdownText==='function')countdownText('WAIT',reason+'・次のBET TIME待機');
  }catch(error){console.warn('[PayoutControlV3] reset after server settlement',error);}
 }
-function applyWallet(control){
+function applyWallet(control,{acknowledgedRoundId=''}={}){
  const wallet=control?.wallet;if(!wallet||!Number(wallet.revision))return;
  const local=readWallet(),samePlayer=String(local.playerId||'')===String(control.playerId||''),seen=samePlayer?Number(local.revision)||0:0;
  if(Number(wallet.revision)<=seen)return;
+ const ownAcknowledgement=wallet.source==='client'&&String(wallet.lastRoundId||'')===String(acknowledgedRoundId||'');
+ const shared=window.SweetsSharedMachine?.active,lifecycle=window.SweetsSharedControllerV224?.describe?.();
+ // The lifecycle controller owns normal settlement and board transitions.
+ // Acknowledging our own settlement must not call reset() and turn a WIN into
+ // an abandoned round. An old wallet must not undo a newer reserved BET either.
+ if(!ownAcknowledgement&&(shared?.roundId||lifecycle?.joinedRoundId||lifecycle?.startedRoundId))return;
  writeWallet({playerId:control.playerId,revision:Number(wallet.revision),credit:wallet.credit,lastRoundId:wallet.lastRoundId});
+ if(ownAcknowledgement)return;
  resetToServerWaiting(wallet.credit,wallet.source==='server-worker'?'切断中ラウンドをサーバーで即時精算':'精算反映');
 }
-function applyControl(control){
+function applyControl(control,options={}){
  if(!control||Number(control.version)!==3)return;
- const before=commonRate(),nextSignature=signature(control),changed=nextSignature!==lastSignature;controls=control;installEngineWrappers();setDisplay();applyWallet(control);
- if(control.offlinePending){
+ if(String(control.playerId||'')===String(controls.playerId||'')&&Number(control.updatedAt)>0&&Number(control.updatedAt)<Number(controls.updatedAt))return;
+ const before=commonRate(),nextSignature=signature(control),changed=nextSignature!==lastSignature;controls=control;installEngineWrappers();setDisplay();applyWallet(control,options);
+ if(control.offlinePending&&!window.SweetsSharedControllerV224){
   const key=String(control.currentRoundId||'offline');if(offlineResetKey!==key){offlineResetKey=key;resetToServerWaiting(null,'切断中ラウンドをサーバー精算中');}
  }else offlineResetKey='';
  if(changed){lastSignature=nextSignature;if(app?.phase==='ready'&&Math.abs(commonRate()-before)>.01)queueMicrotask(regenerateReadyBoards);}
 }
 function processed(engine,ball){return Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length))>=ball;}
-async function waitForBall(ball,timeout=18000){
- if(ball<=0)return true;const started=Date.now();while(Date.now()-started<timeout){if((app.engines||[]).every((engine,index)=>app.enabled?.[index]===false||processed(engine,ball)))return true;await sleep(50);}return false;
+async function waitForBall(ball,timeout=18000,current=()=>true){
+ if(ball<=0)return current();const started=Date.now();while(Date.now()-started<timeout){if(!current())return false;if((app.engines||[]).every((engine,index)=>app.enabled?.[index]===false||processed(engine,ball)))return true;await sleep(50);}return false;
 }
 function previewWin(engine,bet,index){if(app.paid?.[index])return Math.max(0,finite(app.roundWins?.[index]));try{return Math.max(0,finite(medalWin(Math.max(0,bet),finite(engine?.totalHundredths))));}catch{return Math.max(0,finite(app.roundWins?.[index]));}}
 function gameBetRows(){const rows=[];for(let index=0;index<(app.engines||[]).length;index++){if(app.enabled?.[index]===false)continue;const engine=app.engines[index];rows.push({id:gameId(engine,index),bet:Math.max(0,finite(app.bets?.[index]))});}return rows;}
@@ -93,16 +101,34 @@ function installClient(){
  const originalSave=client.save.bind(client),originalSettle=client.settle.bind(client),originalJoin=client.join.bind(client),originalState=client.getState.bind(client);
  client.save=function(payload){
   const request={...payload,state:payload?.state&&typeof payload.state==='object'?{...payload.state}:payload?.state};
-  saveChain=saveChain.catch(()=>{}).then(async()=>{const ball=clamp(Number(request.ballIndex)||0,0,8),complete=await waitForBall(ball);if(request.state)request.state.payoutV3=telemetry(ball,complete);const response=await originalSave(request);applyControl(response?.payoutControlV3);return response;});return saveChain;
+  const token=app.token,roundId=String(request.roundId||'');
+  const current=()=>app.token===token&&String(window.SweetsSharedMachine?.active?.roundId||'')===roundId;
+  saveChain=saveChain.catch(()=>{}).then(async()=>{
+   const ball=clamp(Number(request.ballIndex)||0,0,8);
+   if(!current())return {ok:true,skipped:true,reason:'round_changed'};
+   const complete=await waitForBall(ball,18000,current);
+   if(!current())return {ok:true,skipped:true,reason:'round_changed'};
+   if(request.state)request.state.payoutV3=telemetry(ball,complete);
+   const response=await originalSave(request);applyControl(response?.payoutControlV3);return response;
+  });return saveChain;
+ };
+ client.prepareSettlement=function(payload){
+  // Freeze the completed board once. Retries, including after a page reload,
+  // must retain that round's game-level WIN/BET and applied payout rate.
+  const saved=payload?.payoutV3;
+  const final=Number(saved?.version)===3?JSON.parse(JSON.stringify(saved)):telemetry(8,true);
+  if(Number.isFinite(Number(payload?.totalWin)))final.roundWin=Number(payload.totalWin);
+  if(payload?.abandoned===true){final.roundWin=0;final.games=(final.games||[]).map(game=>({...game,win:0}));}
+  return {...payload,payoutV3:final};
  };
  client.settle=async function(payload){
   // Immediate reset starts only after beginPayout has calculated the final WIN.
   // Capture telemetry synchronously before the board is reset; waiting here would
   // observe the newly prepared board and could delay settlement for 18 seconds.
-  const immediate=payload?.immediateReset===true;
-  if(!immediate)await waitForBall(8);
-  const final=telemetry(8,true);if(Number.isFinite(Number(payload?.totalWin)))final.roundWin=Number(payload.totalWin);
-  const response=await originalSettle({...payload,payoutV3:final});applyControl(response?.payoutControlV3);return response;
+  const abandoned=payload?.abandoned===true;
+  const immediate=payload?.immediateReset===true||abandoned||['result','paying','complete'].includes(app.phase);
+  if(!immediate&&Number(payload?.payoutV3?.version)!==3)await waitForBall(8);
+  const response=await originalSettle(client.prepareSettlement(payload));applyControl(response?.payoutControlV3,{acknowledgedRoundId:String(payload?.roundId||'')});return response;
  };
  client.join=async function(payload){
   const response=await originalJoin({...payload,payoutV3Bet:{version:3,games:gameBetRows()}});applyControl(response?.payoutControlV3);return response;
@@ -110,7 +136,9 @@ function installClient(){
  client.getState=async function(...args){const response=await originalState(...args);applyControl(response?.payoutControlV3);return response;};
  client.on(message=>applyControl(message?.payoutControlV3));
  originalState().then(response=>applyControl(response?.payoutControlV3)).catch(()=>{});
- clearInterval(pollTimer);pollTimer=setInterval(()=>{if(!client.online)return;client.getState().catch(()=>{});},controls.offlinePending?650:1800);
+ // The shared controller is the only owner of periodic state reconciliation.
+ // All its responses already pass through the getState wrapper above, including
+ // retry/cooldown handling; an independent timer would bypass that policy.
 }
 function install(){
  if(typeof app==='undefined'||typeof debugPayoutTarget==='undefined'||typeof medalWin!=='function'){setTimeout(install,60);return;}
@@ -119,3 +147,4 @@ function install(){
 }
 install();
 })();
+

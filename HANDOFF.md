@@ -510,3 +510,14 @@
 - Coefficients interpolated across calibrated knots. Source copies sync: index, assets/choco-dig.js, assets/six-candy-rounds-engine.js, assets/six-candy.js.
 - Endpoint validation: 50 target Cookie48.690%, Canyon51.841%, Six48.730%;150 target Cookie149.394%, Canyon153.844%, Six148.268%. Cookie/Canyon10k per endpoint;Six5k.110 Cookie112.836%(5k),Canyon108.500%(10k).90 uses unchanged v25 base Cookie90.0814%,Canyon89.5701%;Six88.702%(5k). Estimates under uniform8/25, ordinary5colourCookie. Manual numbers,3/4colour/depth debugging not calibrated. Canyon300m ~5% only baseline90, othertargets change continuation too.
 - docs/debug-economy-v26.md + statistics JSON contain reproduction commands/seeds/raw metrics. Tests new debug_economy_rules.cjs/browser.py/six_sample.cjs; shared economy_balance accepts fifth target argument. UI tested320/390/1280, invalid input, midgame lock, storage, payouts fixed. Existing Canyon/Six rules pass.
+
+## 2026-11-16 — v225 共有抽選の通信・精算・映像再接続
+
+- ユーザー報告: `rate_limited`で抽選機が表示されない、接続直後に切断し次ゲームへ進まない。詳しい原因と更新手順は `docs/shared-sync-v225.md`。
+- HTTP snapshot→即時HTTP再取得の循環を除去し800msへ制御。共有GET・429待機・初期失敗後の自動復帰を追加。静的配信をAPI制限から分離し、loopback Tunnel経由の利用者IPを適切に分離。
+- ホスト専用セッションと登録再試行、古い応答の巻戻り防止、同じ参加中ラウンドの球の補完、古い非同期配送/保存の混入防止を実装。
+- 正常精算はcontrollerへ集約。確定BET/WIN/POのsnapshotを保存してACKまで同じ内容を再送。古いwalletや正常精算ACKで盤面をリセットしない。永久エラーは記録を保持し、次BETを塞がない。
+- 映像接続の競合とWebM途中参加/欠落を修正。通常のラウンド切替では映像を再構築しない。既存3D物理と盤面の配当計算は維持。
+- v225回帰は `npm run test:sync`、既存回帰を含む全体は `npm run test:shared`。詳細はドキュメントの検証表。
+- 実server.mjs＋配当middlewareの複数クライアント・複数ラウンド試験と、実クライアント通信/制御コードのVM試験を使用。試験用クラウドブラウザはWebGL無効のため、実3D描画・実映像の滑らかさは未検証。
+- Windows Node.js側は利用者PCで更新・再起動が必要。Pages反映だけでサーバー更新済みと扱わない。既存 `.runtime` / `.tools` / `data` を保持し、既存ランチャーで起動。

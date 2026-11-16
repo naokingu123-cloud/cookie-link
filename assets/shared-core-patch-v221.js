@@ -122,7 +122,7 @@ function patch(source){
    reportChain=reportChain.then(async()=>{
     if(!hostRunning||roundId!==hostRoundId)return;
     let state=null;
-    try{state=await client.getState();client.accept(state);}catch{}
+    try{state=await client.getState();if(client.accept(state)===false)state=null;}catch{}
     const round=state?.round||client.round;
     if(!round||round.id!==roundId||round.phase!=='PLAYING')return;
     const existing=[...(round.balls||[])],value=Number(number);hostIndex=existing.length;
@@ -188,3 +188,4 @@ function patch(source){
 }
 window.SweetsSharedCorePatchV221={patch};
 })();
+

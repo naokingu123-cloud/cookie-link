@@ -4,12 +4,12 @@ if(window.__sweetsSharedMachineV204)return;
 window.__sweetsSharedMachineV204=true;
 
 const VERSION='v204';
-const SESSION_KEY='sweets-shared-session-v176';
 const SERVER_KEY='sweets-shared-server-v176';
 const MACHINE_KEY='sweets-shared-machine-v176';
 const ABANDONED_ROUND_KEY='sweets-shared-abandoned-round-v194';
 const query=new URLSearchParams(location.search);
 const SERVER_HOST=query.get('serverHost')==='1';
+const SESSION_KEY=SERVER_HOST?'sweets-shared-host-session-v225':'sweets-shared-session-v176';
 const ADMIN_TOKEN=query.get('adminToken')||'';
 const explicit=query.get('sharedServer')||query.get('server')||'';
 if(explicit)try{localStorage.setItem(SERVER_KEY,explicit);}catch{}
@@ -127,7 +127,8 @@ function serverRequired(message='サーバー抽選機に接続できません',
 class Client{
  constructor(){
   this.online=false;this.playerId='';this.token='';this.role='offline';this.round=null;this.pendingRound=null;this.ws=null;this.listeners=new Set();
-  this.hostAvailable=SERVER_HOST;this.lastError='';this.reconnectTimer=0;this.connectPromise=null;this.reconnectAttempt=0;this.clockOffset=0;this.ready=this.init();
+  this.hostAvailable=SERVER_HOST;this.hostRegistered=false;this.lastError='';this.reconnectTimer=0;this.connectPromise=null;this.stateRequest=null;this.reconnectAttempt=0;this.clockOffset=0;
+  this.httpRetryAt=0;this.httpFailures=0;this.initPromise=null;this.initTimer=0;this.initAttempt=0;this.stateRetryTimer=0;this.stateRetryAttempt=0;this.stateStamp=null;this.ready=this.init();
  }
  errorText(error){
   if(!BASE)return DISCOVERY_MODE?'サーバー自動検出に失敗しました':'接続先URLが指定されていません';
@@ -142,13 +143,29 @@ class Client{
  }
  async raw(path,{method='GET',body,timeout=8000,auth=true}={}){
   if(!BASE)throw Error('sharedServer_missing');
+  if(Date.now()<Number(this.httpRetryAt||0)){
+   const retryAfterMs=this.httpRetryAt-Date.now();
+   throw Object.assign(Error('rate_limited'),{status:429,retryAfterMs,deferred:true,data:{ok:false,error:'rate_limited',retryAfterMs}});
+  }
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
   try{
    const headers={'Content-Type':'application/json'};
    if(auth&&this.token){headers.Authorization=`Bearer ${this.token}`;headers['X-Player-Id']=this.playerId;}
    const response=await fetch(BASE+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body),cache:'no-store',signal:controller.signal});
    const data=await response.json().catch(()=>({error:'invalid_response'}));
-   if(!response.ok){const error=Error(data.error||`HTTP ${response.status}`);error.status=response.status;error.data=data;throw error;}
+   if(!response.ok){
+    const error=Error(data.error||`HTTP ${response.status}`);error.status=response.status;error.data=data;
+    const retryAfter=String(response.headers?.get?.('Retry-After')||'').trim();
+    const headerDelay=retryAfter?(/^\d+(?:\.\d+)?$/.test(retryAfter)?Number(retryAfter)*1000:Date.parse(retryAfter)-Date.now()):0;
+    error.retryAfterMs=Math.max(0,Number(data.retryAfterMs)||0,Number.isFinite(headerDelay)?headerDelay:0);
+    if(response.status===429){
+     this.httpFailures=Math.min(6,Number(this.httpFailures||0)+1);
+     error.retryAfterMs=Math.max(error.retryAfterMs,Math.min(30000,1000*Math.pow(2,this.httpFailures-1)));
+     this.httpRetryAt=Math.max(Number(this.httpRetryAt)||0,Date.now()+error.retryAfterMs);
+    }
+    throw error;
+   }
+   if(Date.now()>=Number(this.httpRetryAt||0)){this.httpRetryAt=0;this.httpFailures=0;}
    return data;
   }finally{clearTimeout(timer);}
  }
@@ -167,7 +184,7 @@ class Client{
    ws.onerror=()=>{if(!settled){settled=true;clearTimeout(timer);this.connectPromise=null;reject(Error('websocket_error'));}};
    ws.onclose=()=>{
     if(this.ws!==ws)return;
-    this.ws=null;this.connectPromise=null;this.online=false;this.syncReady();
+    this.ws=null;this.connectPromise=null;this.online=false;this.hostRegistered=false;this.syncReady();
     if(!settled){settled=true;clearTimeout(timer);reject(Error('websocket_closed'));}
     if(opened)this.scheduleReconnect();
    };
@@ -175,27 +192,54 @@ class Client{
   return this.connectPromise;
  }
  scheduleReconnect(){
-  if(this.reconnectTimer||this.connectPromise||this.ws?.readyState===WebSocket.OPEN)return;
-  const delay=Math.min(8000,1000*Math.pow(1.6,Math.min(5,this.reconnectAttempt++)));
+  if(this.reconnectTimer||this.connectPromise||this.initPromise||this.ws?.readyState===WebSocket.OPEN)return;
+  if(!this.playerId||!this.token){this.scheduleInit();return;}
+  const delay=Math.max(Math.min(8000,1000*Math.pow(1.6,Math.min(5,this.reconnectAttempt++))),Number(this.httpRetryAt||0)-Date.now());
   badge('SERVER RECONNECTING','offline');
   this.reconnectTimer=setTimeout(async()=>{
    this.reconnectTimer=0;
    try{
     await this.connect({timeout:12000});
+    if(SERVER_HOST&&!this.hostRegistered)this.accept(await this.registerHost());
     const state=await this.getState();this.accept(state);closeServerGate();
-   }catch(error){this.lastError=this.errorText(error);this.scheduleReconnect();}
+   }catch(error){this.lastError=this.errorText(error);if(this.ws?.readyState===WebSocket.OPEN)this.scheduleStateRefresh(error);else this.scheduleReconnect();}
   },delay);
+ }
+ scheduleStateRefresh(error=null){
+  if(this.stateRetryTimer)return;
+  const delay=Math.max(800,Math.min(30000,1000*Math.pow(1.6,Math.min(8,this.stateRetryAttempt++))),Number(this.httpRetryAt||0)-Date.now(),Number(error?.retryAfterMs)||0);
+  this.stateRetryTimer=setTimeout(async()=>{
+   this.stateRetryTimer=0;
+   if(this.ws?.readyState!==WebSocket.OPEN){this.scheduleReconnect();return;}
+   try{
+    if(SERVER_HOST&&!this.hostRegistered)this.accept(await this.registerHost());
+    this.accept(await this.getState());this.stateRetryAttempt=0;this.lastError='';closeServerGate();
+   }catch(nextError){this.lastError=this.errorText(nextError);this.scheduleStateRefresh(nextError);}
+  },delay);
+ }
+ scheduleInit(error=null){
+  if(this.initTimer||this.initPromise||this.ws?.readyState===WebSocket.OPEN)return;
+  const delay=Math.max(Math.min(30000,1000*Math.pow(1.6,Math.min(8,this.initAttempt++))),Number(this.httpRetryAt||0)-Date.now(),Number(error?.retryAfterMs)||0);
+  this.initTimer=setTimeout(()=>{this.initTimer=0;this.ready=this.init();},delay);
  }
  send(message){
   if(this.ws?.readyState!==WebSocket.OPEN)return false;
   try{this.ws.send(JSON.stringify(message));return true;}catch{return false;}
  }
- async init(){
+ init(){
+  if(this.initPromise)return this.initPromise;
+  clearTimeout(this.initTimer);this.initTimer=0;
+  const run=this.initialize();this.initPromise=run;
+  run.then(ok=>{if(this.initPromise===run)this.initPromise=null;if(ok)this.initAttempt=0;else this.scheduleInit();},error=>{if(this.initPromise===run)this.initPromise=null;this.lastError=this.errorText(error);this.scheduleInit(error);});
+  return run;
+ }
+ async initialize(){
   let lastError=null;
   for(let attempt=1;attempt<=3;attempt++){
    try{
     await resolveServerBase();
     if(!BASE)throw Error('server_discovery_failed');
+    if(this.stateBase!==BASE){this.stateBase=BASE;this.stateStamp=null;this.round=null;this.pendingRound=null;this.httpRetryAt=0;this.httpFailures=0;}
     const health=await this.raw('/api/health',{auth:false,timeout:7000});if(!health.ok)throw Error('health_failed');
     const saved=read(SESSION_KEY,{});let profileName='';
     try{const profile=JSON.parse(localStorage.getItem('sweets-player-v1')||'null');profileName=String(profile?.name||'').trim();}catch{}
@@ -207,9 +251,13 @@ class Client{
     if(SERVER_HOST){const host=await this.registerHost();this.accept(host);}
     const state=await this.getState();this.accept(state);this.lastError='';closeServerGate();return true;
    }catch(error){
-    lastError=error;this.lastError=this.errorText(error);this.online=false;this.syncReady();
+    lastError=error;this.lastError=this.errorText(error);
+    // A temporary HTTP error after the WS handshake must not disconnect a
+    // healthy result/video channel or restart an already-running physical host.
+    if(this.ws?.readyState===WebSocket.OPEN){this.online=true;this.syncReady();this.scheduleStateRefresh(error);closeServerGate();return true;}
+    this.online=false;this.syncReady();
     if(this.ws){const old=this.ws;this.ws=null;try{old.close();}catch{}}
-    if(attempt<3)await wait(700*attempt);
+    if(attempt<3)await wait(Math.max(700*attempt,Number(error?.retryAfterMs)||0,error?.status===429?1000*Math.pow(2,attempt-1):0));
    }
   }
   this.role='offline';badge('SERVER REQUIRED','offline');
@@ -217,25 +265,58 @@ class Client{
   return false;
  }
  async reconnect(){
+  if(this.ws?.readyState===WebSocket.OPEN){this.online=true;this.syncReady();this.scheduleStateRefresh();return true;}
+  if(this.initPromise)return this.initPromise;
   clearTimeout(this.reconnectTimer);this.reconnectTimer=0;this.reconnectAttempt=0;
   if(this.ws){const old=this.ws;this.ws=null;try{old.close();}catch{}}
   this.connectPromise=null;this.online=false;this.role='offline';this.syncReady();this.ready=this.init();return this.ready;
  }
  api(path,options={}){return this.raw(path,{...options,auth:true});}
- getState(){return this.api(`/api/machines/${MACHINE}/state`,{timeout:8000});}
- registerHost(){const suffix=ADMIN_TOKEN?'?adminToken='+encodeURIComponent(ADMIN_TOKEN):'';return this.api(`/api/admin/machines/${MACHINE}/host/register${suffix}`,{method:'POST',body:{},timeout:8000});}
+ getState(){
+  if(!this.stateRequest)this.stateRequest=this.api(`/api/machines/${MACHINE}/state`,{timeout:8000}).finally(()=>{this.stateRequest=null;});
+  return this.stateRequest;
+ }
+ async registerHost(){const suffix=ADMIN_TOKEN?'?adminToken='+encodeURIComponent(ADMIN_TOKEN):'';const data=await this.api(`/api/admin/machines/${MACHINE}/host/register${suffix}`,{method:'POST',body:{},timeout:8000});this.hostRegistered=true;return data;}
  join(body){return this.api(`/api/machines/${MACHINE}/round/join`,{method:'POST',body,timeout:8000});}
  leave(body){return this.api(`/api/machines/${MACHINE}/round/leave`,{method:'POST',body,timeout:5000});}
  report(body){return this.api(`/api/machines/${MACHINE}/round/ball`,{method:'POST',body,timeout:7000});}
  save(body){return this.api(`/api/machines/${MACHINE}/round/checkpoint`,{method:'POST',body,timeout:8000});}
  settle(body){return this.api(`/api/machines/${MACHINE}/round/settle`,{method:'POST',body,timeout:8000});}
+ isStaleState(message){
+  if(!Object.prototype.hasOwnProperty.call(message||{},'round'))return false;
+  const stamp=this.stateStamp;if(!stamp)return false;
+  const incoming=message.round,sequence=Number(incoming?.sequence),revision=Number(message.machine?.revision),time=Number(message.serverTime);
+  if(Number.isFinite(sequence)&&sequence>0&&stamp.sequence>0&&sequence<stamp.sequence)return true;
+  if(Number.isFinite(revision)&&revision>=0&&Number.isFinite(stamp.revision)&&revision<stamp.revision)return true;
+  if(Number.isFinite(time)&&time>0&&stamp.serverTime>0&&time<stamp.serverTime)return true;
+  if(incoming&&incoming.id===stamp.roundId){
+   const rank={BETTING:1,PLAYING:2,COMPLETE:3};
+   if((rank[incoming.phase]||0)<stamp.phase)return true;
+   if(Array.isArray(incoming.balls)&&incoming.balls.length<stamp.ballCount)return true;
+  }
+  return false;
+ }
  accept(message){
-  if(Number.isFinite(Number(message?.serverTime)))this.clockOffset=Number(message.serverTime)-Date.now();
+  if(this.isStaleState(message))return false;
+  const carriesRound=Object.prototype.hasOwnProperty.call(message||{},'round');
+  const carriesBall=message?.type==='ball_result'&&message.roundId===this.round?.id&&message.ball;
+  // RTC/pong traffic is not an authoritative game-state timestamp. Updating the
+  // state watermark from it would reject legitimate in-flight HTTP snapshots.
+  if((carriesRound||carriesBall)&&Number.isFinite(Number(message?.serverTime)))this.clockOffset=Number(message.serverTime)-Date.now();
   if(Object.prototype.hasOwnProperty.call(message||{},'round')){
    const incoming=message.round;
    if(incoming&&this.round?.id===incoming.id&&incoming.participant==null&&this.round.participant!=null)incoming.participant=this.round.participant;
    if(incoming&&this.round?.id===incoming.id&&message.type!=='snapshot'&&incoming.canBet===false&&this.round.canBet===true)incoming.canBet=true;
    this.round=incoming;
+  }
+  if(carriesBall){
+   const balls=new Map((this.round.balls||[]).map(ball=>[Number(ball.index),ball]));balls.set(Number(message.ball.index),message.ball);
+   this.round={...this.round,balls:[...balls.values()].sort((a,b)=>Number(a.index)-Number(b.index))};
+   if(message.phase==='COMPLETE')this.round.phase='COMPLETE';
+  }
+  if(carriesRound||carriesBall){
+   const previous=this.stateStamp||{},round=this.round,rank={BETTING:1,PLAYING:2,COMPLETE:3},revision=Number(message.machine?.revision);
+   this.stateStamp={roundId:round?.id||previous.roundId||'',sequence:Math.max(Number(previous.sequence)||0,Number(round?.sequence)||0),phase:rank[round?.phase]||0,ballCount:round?.balls?.length||0,revision:Number.isFinite(revision)?Math.max(Number(previous.revision)||0,revision):previous.revision,serverTime:Math.max(Number(previous.serverTime)||0,Number(message.serverTime)||0)};
   }
   if(Object.prototype.hasOwnProperty.call(message||{},'pendingRound'))this.pendingRound=message.pendingRound;
   if(message?.machine&&Object.prototype.hasOwnProperty.call(message.machine,'hostConnected'))this.hostAvailable=!!message.machine.hostConnected;
@@ -243,11 +324,14 @@ class Client{
   if(message?.type==='host_changed')this.hostAvailable=!!message.hostConnected||message.hostPlayerId===this.playerId;
   if(!this.online)this.role='offline';
   else if(message?.type==='host_changed')this.role=message.hostPlayerId===this.playerId?'host':'player';
-  else this.role=message?.role||(SERVER_HOST?'host':'player');
+  else if(message?.role==='host'||message?.role==='player')this.role=message.role;
+  else if(this.role!=='host'&&this.role!=='player')this.role='player';
+  if(SERVER_HOST&&(message?.role==='host'||message?.role==='player'||message?.type==='host_changed'))this.hostRegistered=this.role==='host';
   if(SERVER_HOST)this.hostAvailable=true;
   badge(this.online?(this.role==='host'?'SERVER ROULETTE HOST':'共有抽選 ONLINE'):'SERVER REQUIRED',this.online?this.role:'offline');
   this.syncReady();
   for(const listener of this.listeners)try{listener(message);}catch(error){console.error(error);}
+  return true;
  }
  on(listener){this.listeners.add(listener);return()=>this.listeners.delete(listener);}
 }
@@ -267,22 +351,24 @@ const client=new Client();
 let current=null,resumeId=null,recoveryOpen=false,startPermitId=null,serverBetTimer=0,betSyncBusy=false,lastBetSignature='',lastBetSentAt=0;
 
 function queueBall(ball,catchup=false){
- if(!current||!ball||Number(ball.index)<=current.delivered)return;
+ if(!current||!ball)return;
+ if(!current.authoritativeBalls)current.authoritativeBalls=new Map();current.authoritativeBalls.set(Number(ball.index),ball);
+ if(Number(ball.index)<=current.delivered)return;
  current.queue.set(Number(ball.index),{index:Number(ball.index),number:Number(ball.number),catchup});drain();
 }
 async function drain(){
- if(!current||current.draining)return;current.draining=true;
+ const session=current;if(!session||session.draining)return;session.draining=true;
  try{
-  while(current&&!current.stopped){
-   const item=current.queue.get(current.delivered+1);if(!item)break;
+  while(current===session&&!session.stopped){
+   const item=session.queue.get(session.delivered+1);if(!item)break;
    // The game can temporarily reject a server ball while board animations hold draws.
    // Never delete or advance the shared queue until Arcade.acceptNumber actually accepts it.
    let accepted=false,waited=0;
-   while(current&&!current.stopped&&!accepted){
+   while(current===session&&!session.stopped&&!accepted){
     if(typeof app==='undefined'||app.phase!=='playing')break;
-    const ready=!app.paused&&!app.drawHeld&&Number(app.draws?.length||0)===current.delivered;
+    const ready=!app.paused&&!app.drawHeld&&Number(app.draws?.length||0)===session.delivered;
     if(ready){
-     try{accepted=current.callbacks.onNumber?.(item.number)!==false;}catch(error){console.warn('[SharedMachineV204] onNumber',error);accepted=false;}
+     try{accepted=session.callbacks.onNumber?.(item.number)!==false;}catch(error){console.warn('[SharedMachineV204] onNumber',error);accepted=false;}
     }
     if(accepted)break;
     await wait(40);waited+=40;
@@ -291,18 +377,18 @@ async function drain(){
      waited=0;
     }
    }
-   if(!current||current.stopped||!accepted)break;
-   current.queue.delete(item.index);current.delivered=item.index;
-   status(`${item.index} / 8球　${item.number} HIT`,current.role==='host'?'共有抽選 HOST':'共有抽選');
+   if(current!==session||session.stopped||!accepted)break;
+   session.queue.delete(item.index);session.delivered=item.index;
+   status(`${item.index} / 8球　${item.number} HIT`,session.role==='host'?'共有抽選 HOST':'共有抽選');
    saveLater(item.index);if(item.catchup)await wait(100);
   }
  }catch(error){console.error('[SharedMachineV204] delivery',error);}
  finally{
-  if(current){current.draining=false;if(current.queue.has(current.delivered+1)&&!current.stopped)setTimeout(drain,40);}
+  session.draining=false;if(current===session&&session.queue.has(session.delivered+1)&&!session.stopped)setTimeout(()=>{if(current===session)drain();},40);
  }
 }
 function saveLater(ballIndex){
- if(!current||!client.online)return;clearTimeout(current.saveTimer);current.saveTimer=setTimeout(()=>{const run=()=>{if(!current)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:current.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV204] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
+ if(!current||!client.online)return;const session=current;clearTimeout(session.saveTimer);session.saveTimer=setTimeout(()=>{const run=()=>{if(current!==session||session.stopped)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:session.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV204] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
 }
 async function startShared(callbacks,nativeReset){
  const ready=await client.ready;
@@ -312,7 +398,7 @@ async function startShared(callbacks,nativeReset){
  }
  try{
   const data=await client.getState();client.accept(data);
-  const round=resumeId?(data.pendingRound?.id===resumeId?data.pendingRound:(data.round?.id===resumeId?data.round:null)):data.round;
+  const round=resumeId?(client.pendingRound?.id===resumeId?client.pendingRound:(client.round?.id===resumeId?client.round:null)):client.round;
   if(!round)throw Error('round unavailable');
   const participant=round.participant||{},explicitResume=!!resumeId&&resumeId===round.id;
   if(!participant.playerId)throw Error('not participating');
@@ -350,8 +436,10 @@ async function startShared(callbacks,nativeReset){
 }
 function serverSettlement(){return current?.participant?.settlement||null;}
 function settle(a){
- if(!current||current.settleSent||!client.online)return;current.settleSent=true;const creditAfter=(Number(a.credit)||0)+(Number(a.totalWin)||0);
- client.settle({roundId:current.roundId,totalWin:Number(a.totalWin)||0,creditAfter,digest:digest(a,current.roundId)}).then(data=>{if(current)current.participant={...(current.participant||{}),settlement:data.settlement};}).catch(error=>{if(current)current.settleSent=false;console.warn('[SharedMachineV204] settle',error?.message||error);});
+ // The lifecycle controller owns normal settlement, keeps its payload stable,
+ // and waits for an ACK before preparing the next board. Payout animation must
+ // not race it with a separately calculated credit or a second settlement.
+ return false;
 }
 function recovery(round){
  if(recoveryOpen||!round?.participant||round.participant.settlement||typeof app==='undefined'||app.phase!=='ready')return;
@@ -613,6 +701,15 @@ function install(){
  proto.advancePayout=function(...args){const result=nativeAdvance.apply(this,args);if(current&&this.phase==='complete')settle(this);return result;};
  proto.prepare=function(...args){const previous=this.phase,result=nativePrepare.apply(this,args);if(current&&previous==='complete')clearSharedCurrent({abandon:false});return result;};
  client.on(message=>{
+  // Repair missed live WS deliveries only for the already-attached round.
+  // Interrupted rounds have no current session and are never replayed here.
+  if(current){
+   const authoritative=[message.round,message.pendingRound].find(round=>round?.id===current.roundId);
+   if(authoritative){
+    for(const ball of authoritative.balls||[])queueBall(ball,true);
+    if(authoritative.participant)current.participant={...(current.participant||{}),...authoritative.participant};
+   }
+  }
   if(message.type==='visual_frame'){if(current&&message.roundId===current.roundId)showRouletteMirror(message.image);return;}
   if(message.type==='ball_result'&&current&&message.roundId===current.roundId)queueBall(message.ball);
   if(message.type==='round_complete'&&current&&message.round?.id===current.roundId)saveLater(8);
@@ -643,3 +740,4 @@ function install(){
 }
 install();
 })();
+

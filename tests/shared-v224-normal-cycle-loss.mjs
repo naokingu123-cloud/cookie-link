@@ -5,8 +5,8 @@ import vm from 'node:vm';
 const controllerSource=await readFile(new URL('../assets/shared-client-controller-v224.js',import.meta.url),'utf8');
 const loader=await readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8');
 const patch=await readFile(new URL('../assets/shared-core-patch-v224.js',import.meta.url),'utf8');
-assert.ok(loader.includes('shared-client-controller-v224.js?v=224'));
-assert.ok(loader.includes('shared-roulette-client-v224.js?v=224'));
+assert.ok(loader.includes('shared-client-controller-v224.js?v=225'));
+assert.ok(loader.includes('shared-roulette-client-v224.js?v=225'));
 assert.ok(!loader.includes('shared-client-controller-v222.js'));
 assert.ok(!loader.includes('shared-core-patch-v222.js'));
 assert.ok(!loader.includes('shared-roulette-client-hold-v222.js'));
@@ -85,3 +85,4 @@ await control.refreshNow();
 assert.ok(settlePayloads.some(item=>item.roundId==='loss-round'&&item.totalWin===0&&item.creditAfter===lossCredit),'disconnect must settle zero WIN at post-BET credit');
 assert.ok(!settlePayloads.some(item=>item.roundId==='loss-round'&&item.totalWin>0));
 console.log('v224 three normal cycles + disconnect-as-loss + no legacy replay passed');
+

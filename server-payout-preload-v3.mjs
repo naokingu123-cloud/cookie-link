@@ -179,7 +179,7 @@ function failOfflineWork(machineId,body){const p=player(machineId,body.playerId)
 function pendingOffline(p){return Object.values(p.rounds||{}).some(round=>round.wasOffline&&!round.committed&&!round.settlement&&round.phase==='COMPLETE');}
 function publicControl(machineId,playerId){
  const p=player(machineId,playerId),games={};for(const [id,g] of Object.entries(p.games))games[id]={bet:round1(g.bet),win:round1(g.win),actualRate:g.bet>0?round1(g.win/g.bet*100):null};
- const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
+ const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,updatedAt:p.updatedAt,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
 }
 function aggregateMachine(machineId){
  const m=machine(machineId),players=[],gameTotals={};let totalBet=0,totalWin=0;
@@ -256,3 +256,4 @@ http.ServerResponse.prototype.end=function(chunk,encoding,callback){
 };
 
 console.info('[PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded');
+

@@ -1,6 +1,7 @@
 import http from 'node:http';
 import {createReadStream, promises as fs} from 'node:fs';
 import {createHash, randomUUID, randomInt, timingSafeEqual} from 'node:crypto';
+import {isIP} from 'node:net';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {WebSocketServer, WebSocket} from 'ws';
@@ -30,6 +31,8 @@ let db={version:2,players:{},machines:{},updatedAt:now()};
 let saveTimer=null;
 const socketsByMachine=new Map();
 const requestBuckets=new Map();
+const API_RATE_WINDOW_MS=10000,API_RATE_LIMIT=240;
+let lastRequestBucketSweep=0;
 const visualRelayAt=new Map();
 
 function normalizeRound(round){
@@ -231,13 +234,30 @@ function adminAllowed(req,url){
  if(ADMIN_TOKEN)return (url.searchParams.get('adminToken')||req.headers['x-admin-token']||'')===ADMIN_TOKEN;
  return isLoopback(req.socket.remoteAddress||'');
 }
-function rateAllowed(req){
- const key=req.socket.remoteAddress||'unknown',time=now(),bucket=requestBuckets.get(key)||{time,count:0};
- if(time-bucket.time>10000){bucket.time=time;bucket.count=0;}bucket.count++;requestBuckets.set(key,bucket);return bucket.count<=240;
+function requestClientKey(req){
+ const remote=req.socket.remoteAddress||'unknown';
+ // The supported Cloudflare Tunnel runs on this machine. Only its loopback
+ // connection may supply the visitor IP; direct clients cannot choose a bucket.
+ const forwarded=req.headers['cf-connecting-ip'];
+ if(isLoopback(remote)&&typeof forwarded==='string'&&isIP(forwarded.trim()))return 'cloudflare:'+forwarded.trim().toLowerCase();
+ return 'direct:'+remote;
+}
+function apiRetryAfter(req){
+ const time=now();
+ if(time-lastRequestBucketSweep>=API_RATE_WINDOW_MS){
+  for(const [key,bucket] of requestBuckets)if(time-bucket.time>=API_RATE_WINDOW_MS)requestBuckets.delete(key);
+  lastRequestBucketSweep=time;
+ }
+ const key=requestClientKey(req);
+ let bucket=requestBuckets.get(key);
+ if(!bucket||time-bucket.time>=API_RATE_WINDOW_MS){bucket={time,count:0};requestBuckets.set(key,bucket);}
+ if(bucket.count>=API_RATE_LIMIT)return Math.max(1,API_RATE_WINDOW_MS-(time-bucket.time));
+ bucket.count++;return 0;
 }
 function cors(req,res){
  const origin=req.headers.origin||'*';res.setHeader('Access-Control-Allow-Origin',origin==='null'?'*':origin);res.setHeader('Vary','Origin');
  res.setHeader('Access-Control-Allow-Headers','Content-Type, Authorization, X-Player-Id, X-Admin-Token');
+ res.setHeader('Access-Control-Expose-Headers','Retry-After');
  res.setHeader('Access-Control-Allow-Methods','GET,POST,OPTIONS');res.setHeader('Access-Control-Max-Age','86400');
 }
 function reply(res,status,payload){
@@ -404,9 +424,15 @@ async function staticFile(req,res,url){
 
 await loadDb();
 const server=http.createServer(async(req,res)=>{
- cors(req,res);if(req.method==='OPTIONS'){res.writeHead(204);return res.end();}if(!rateAllowed(req))return reply(res,429,{ok:false,error:'rate_limited'});
+ cors(req,res);if(req.method==='OPTIONS'){res.writeHead(204);return res.end();}
  const url=new URL(req.url||'/', 'http://'+(req.headers.host||'localhost'));
- try{if(url.pathname.startsWith('/api/'))await api(req,res,url);else await staticFile(req,res,url);}
+ try{
+  if(url.pathname.startsWith('/api/')){
+   const retryAfterMs=apiRetryAfter(req);
+   if(retryAfterMs){res.setHeader('Retry-After',String(Math.ceil(retryAfterMs/1000)));return reply(res,429,{ok:false,error:'rate_limited',retryAfterMs});}
+   await api(req,res,url);
+  }else await staticFile(req,res,url); // Page assets must not consume or be blocked by the API budget.
+ }
  catch(error){console.error('[SharedMachine] request failed',error);reply(res,error.status||500,{ok:false,error:error.message||'server_error'});}
 });
 const wss=new WebSocketServer({noServer:true});
@@ -443,7 +469,7 @@ wss.on('connection',(ws,{player,machineId})=>{
    }
   }catch{}
  });
- ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id)broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});tickMachine(m);});
+ ws.on('close',()=>{set.delete(ws);if(!set.size)map.delete(player.id);if(m.hostPlayerId===player.id&&!connected(machineId,player.id))broadcast(machineId,{type:'host_status',hostPlayerId:player.id,online:false,roundId:m.round?.id||null});tickMachine(m);});
 });
 setInterval(()=>{for(const m of Object.values(db.machines||{}))tickMachine(normalizeMachine(m,m.id));},250).unref();
 setInterval(()=>{
@@ -456,3 +482,4 @@ setInterval(()=>{
  }
 },15000).unref();
 server.listen(PORT,'0.0.0.0',()=>console.log('[SharedMachine] physical roulette host server listening on http://0.0.0.0:'+PORT));
+
