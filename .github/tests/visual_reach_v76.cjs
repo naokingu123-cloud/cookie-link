@@ -8,7 +8,7 @@ const w=read('assets/winery-pyramid-v1.js');
 const gcss=read('assets/gelato-prism-rail-v76.css');
 const wcss=read('assets/winery-stand-focus-v76.css');
 const html=read('index.html');
-const core=require('../../assets/winery-pyramid-core-v1.js');
+const core=require('./load-browser-umd.cjs')('../../assets/winery-pyramid-core-v1.js');
 new Function(g);new Function(w);
 const sourceStart=g.indexOf(' const H=106,HW=Math.sqrt(3)*H/2,X=250,Y=250;');
 const sourceEnd=g.indexOf(' const path=nodes=>',sourceStart);

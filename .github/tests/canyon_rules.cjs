@@ -1,7 +1,10 @@
 const fs=require('fs'),assert=require('node:assert/strict');
-const html=fs.readFileSync('index.html','utf8'),source=fs.readFileSync('assets/choco-dig.js','utf8'),base=html.slice(html.indexOf('class Engine{'),html.indexOf('/* Chocolate Canyon:',html.indexOf('class Engine{')));
-assert(html.includes(source.trim()),'Shipped engine and dedicated source differ');
-const q=new Function('SIZE','wonderTier',base+source.split('const chocoSprites=')[0]+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY,chocoFillRows,chocoOreValue,chocoOreRates,CHOCO_FRUIT_DEPTH,chocoFruitWin,chocoFallDuration,chocoBonusKind,CHOCO_ORE_DISTRIBUTIONS,chocoOreQuantile};')(5,()=>0);
+const compiled=fs.readFileSync('optimized/app-01.js','utf8'),source=fs.readFileSync('assets/choco-dig.js','utf8');
+const engineStart=compiled.indexOf('class Engine{'),engineEnd=compiled.indexOf('const elixirGlyphs=',engineStart);
+assert(engineStart>=0&&engineEnd>engineStart,'Compiled base Engine must be present');
+const base=compiled.slice(engineStart,engineEnd),rules=source.split('const chocoSprites=')[0];
+assert(compiled.includes(rules.trim()),'Shipped Canyon rules and dedicated source differ');
+const q=new Function('SIZE','wonderTier',base+rules+';return {ChocoDigEngine,chocoGroups,chocoFallStep,chocoPlan,chocoExcavate,chocoClone,chocoJoinMotion,chocoDrillRoute,chocoDrillLevel,CHOCO_DRILL_POWER,CHOCO_PRIZES,CHOCO_SAVE_KEY,chocoFillRows,chocoOreValue,chocoOreRates,CHOCO_FRUIT_DEPTH,chocoFruitWin,chocoFallDuration,chocoBonusKind,CHOCO_ORE_DISTRIBUTIONS,chocoOreQuantile};')(5,()=>0);
 const empty=()=>Array.from({length:12},()=>Array(7).fill(null)),tile=(id,color,prize=null)=>({id,color,number:null,prize}),rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 const full=()=>Array.from({length:12},(_,r)=>Array.from({length:7},(_,c)=>tile(r*7+c+1,(r+c)%4)));
 const state=()=>({drills:Array.from({length:13},(_,c)=>({numbers:[c+1],hits:[],level:1})),lucky:{numbers:[14,15,16],hits:[],drawn:[]}});

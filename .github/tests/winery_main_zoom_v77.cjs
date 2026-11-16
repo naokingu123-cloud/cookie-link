@@ -4,7 +4,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
 const s=fs.readFileSync('assets/winery-pyramid-v1.js','utf8');
 const css=fs.readFileSync('assets/winery-main-board-enlarge-v77.css','utf8');
 const html=fs.readFileSync('index.html','utf8');
-const core=require('../../assets/winery-pyramid-core-v1.js');
+const core=require('./load-browser-umd.cjs')('../../assets/winery-pyramid-core-v1.js');
 new Function(s);
 const zoom=Number(s.match(/WP_MAIN_CUP_ZOOM=([0-9.]+)/)?.[1]);
 const spread=Number(s.match(/WP_MAIN_X_SPREAD=([0-9.]+)/)?.[1]);

@@ -1,7 +1,7 @@
 /* Winery Pyramid payout regression v72.
  * Run: node .github/tests/winery_payout_v72.cjs */
 'use strict';
-const K=require('../../assets/winery-pyramid-core-v1.js');
+const K=require('./load-browser-umd.cjs')('../../assets/winery-pyramid-core-v1.js');
 function check(condition,label){if(!condition)throw new Error('WINERY_PAY_V72: '+label);}
 function near(actual,expected,label){
  check(Math.abs(actual-expected)<1e-9,label+' expected '+expected+', got '+actual);

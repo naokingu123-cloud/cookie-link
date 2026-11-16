@@ -95,6 +95,10 @@ npm run test:shared
 npm run test:payout
 ```
 
+旧CJS検査のうち、WineryのUMD読み込みを前提にした4本と、旧inline版を探していたCanyonルール検査は現在のモジュール・バンドル構成へ修正した。検査する配当・流路・表示寸法等の条件は変更していない。共有抽選の現行CIは成功している。
+
+旧`Verify Six Candy Stage v5 and public Pages`の後半にあるブラウザ検査は、indexへの旧inlineフック、クライアント側のローカル抽選canvas、自動抽選を前提としており、現在のサーバー専用構成には未対応。この旧検査はv231時点でも失敗していた。今回の共有同期・盤面検査の成功とは区別し、旧ブラウザ検査も成功したとは扱わない。
+
 重い校正処理は通常CIに含めない。再現コマンド、seed、型別統計、誤差情報は次を参照する。
 
 - `docs/payout-v232-classic.md`
