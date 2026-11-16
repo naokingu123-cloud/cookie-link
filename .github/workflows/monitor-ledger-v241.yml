@@ -1,0 +1,60 @@
+name: Monitor ledger v241
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/monitor-ledger-v241']
+    paths:
+      - 'assets/*v241*'
+      - 'assets/shared-machine-v176.js'
+      - 'server-core-loader-v220.mjs'
+      - 'monitor.html'
+      - 'tests/monitor*v241*'
+      - '.github/workflows/monitor-ledger-v241.yml'
+permissions:
+  contents: read
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Existing reach-cache contract
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const s=fs.readFileSync('optimized/app-01.js','utf8');
+          for(const name of ['function visibleTabReachResults','function tabReachCurrentValue','function prepareTabReach']){
+            const at=s.indexOf(name);console.log(name,at,at>=0?s.slice(at,at+3000):'not present');
+          }
+          JS
+      - name: Ledger and source-contract checks
+        if: hashFiles('tests/monitor-ledger-v241.mjs') != ''
+        run: node tests/monitor-ledger-v241.mjs
+      - name: Two-player forecast authorization and settlement
+        if: hashFiles('tests/monitor-ledger-integration-v241.mjs') != ''
+        run: node tests/monitor-ledger-integration-v241.mjs
+      - name: Existing shared machine regressions
+        if: hashFiles('tests/monitor-ledger-v241.mjs') != ''
+        run: npm run check && npm run test:shared
+      - name: Export exact tested source for local display checks
+        if: always()
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile
+          root=pathlib.Path('.')
+          with zipfile.ZipFile('monitor-source.zip','w',zipfile.ZIP_DEFLATED) as z:
+            for p in root.rglob('*'):
+              if not p.is_file() or any(x in p.parts for x in ['.git','.runtime','.tools','data']): continue
+              if p.suffix.lower() in ['.js','.mjs','.cjs','.css','.html','.json','.yml','.md'] and (p.parts[0]!='node_modules' or p.parts[1]=='ws'):
+                z.write(p,p.as_posix())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: monitor-v241-source
+          path: monitor-source.zip
+          retention-days: 3
