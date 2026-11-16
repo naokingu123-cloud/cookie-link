@@ -14,14 +14,17 @@ function control(roundId,credit,revision=1,source='client'){
 function fixture(){
  let now=100000,timerId=0,active={roundId:'round-1',participant:{playerId:'PLAYER',creditAfterBet:900}},joinedRoundId='round-1';
  const timers=new Map(),storage=new Map(),listeners=[];
- const calls={save:[],settle:[],join:[],state:0,reset:0,abandon:0,prepare:0,engineReset:0,change:0};
+ const calls={save:[],settle:[],join:[],warnings:[],state:0,reset:0,abandon:0,prepare:0,engineReset:0,change:0};
  const behavior={settleResponse:{ok:true},saveResponse:{ok:true},stateResponse:{ok:true}};
  class FakeDate extends Date{constructor(...args){super(...(args.length?args:[now]));}static now(){return now;}}
  const engines=['cookie','choco'].map(kind=>({kind,processed:0,accepted:0,draws:[],totalHundredths:200,reset(){calls.engineReset++;this.processed=0;this.accepted=0;},freshBoard(){calls.engineReset++;}}));
- const app={token:1,phase:'playing',credit:900,displayCredit:900,bets:[60,40],locked:[60,40],enabled:[true,true],paid:[false,false],roundWins:[20,10],totalWin:30,draws:[1,2,3],engines,result:{keep:'result'},payout:{keep:'payout'},dealing:false,paused:false,
+ // Arcade exposes a computed getter without a setter. A plain writable mock
+ // would hide strict-mode writes that abort wallet restoration in the game.
+ class ArcadeMock{get drawHeld(){return this.phase==='playing'&&this.engines.some((engine,index)=>this.enabled[index]&&engine.holdDraws);}}
+ const app=Object.assign(new ArcadeMock(),{token:1,phase:'playing',credit:900,displayCredit:900,bets:[60,40],locked:[60,40],enabled:[true,true],paid:[false,false],roundWins:[20,10],totalWin:30,draws:[1,2,3],engines,result:{keep:'result'},payout:{keep:'payout'},dealing:false,paused:false,
   prepare(){calls.prepare++;this.phase='ready';this.draws=[];this.totalWin=0;this.roundWins=[0,0];for(const engine of engines)engine.reset();},
   onChange(){calls.change++;}
- };
+ });
  const client={online:true,round:{id:'round-1',phase:'PLAYING',participant:{playerId:'PLAYER',creditAfterBet:900}},
   async save(payload){calls.save.push(plain(payload));return behavior.saveResponse;},
   async settle(payload){calls.settle.push(plain(payload));return behavior.settleResponse;},
@@ -30,7 +33,7 @@ function fixture(){
   on(listener){listeners.push(listener);return()=>{};}
  };
  const schedule=(callback,ms,interval=false)=>{const id=++timerId;timers.set(id,{callback,at:now+Math.max(0,Number(ms)||0),interval:interval?Math.max(1,Number(ms)||1):0});return id;};
- const context={window:null,globalThis:null,app,debugPayoutTarget:90,jpcSession:null,location:{search:''},URLSearchParams,Date:FakeDate,console:{info(){},warn(){},error:console.error},
+ const context={window:null,globalThis:null,app,debugPayoutTarget:90,jpcSession:null,location:{search:''},URLSearchParams,Date:FakeDate,console:{info(){},warn(...args){calls.warnings.push(args.map(value=>String(value?.message||value)).join(' '));},error:console.error},
   medalWin:(bet,hundredths)=>Math.floor(bet*hundredths/100),
   document:{getElementById(){return null;}},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}},
   localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value))},
@@ -94,6 +97,31 @@ await test('normal settlement wallet acknowledgement preserves the normal result
  assert.equal(f.app.phase,'result');assert.equal(f.app.result,result);assert.equal(f.app.payout,payout);
  assert.equal(f.active().roundId,'round-1');assert.equal(f.app.totalWin,120);
  assert.equal(JSON.parse(f.storage.get('sweets-payout-wallet-v3')).revision,1,'the wallet ACK should still be recorded');
+ assert.deepEqual(f.calls.warnings,[],'normal acknowledgement must not trigger a swallowed reset exception');
+});
+
+await test('wallet restoration completes with the real Arcade getter-only drawHeld contract',async()=>{
+ for(const source of ['client','server-worker']){
+  const f=fixture();await flush();
+  f.setRound('round-2',{reserved:false,running:false,credit:800});
+  f.engines[0].holdDraws=true;
+  const descriptor=Object.getOwnPropertyDescriptor(Object.getPrototypeOf(f.app),'drawHeld');
+  assert.equal(typeof descriptor.get,'function');assert.equal(descriptor.set,undefined);
+  assert.equal(f.app.drawHeld,true,'drawHeld is computed from the enabled engines while playing');
+
+  // No active or reserved round remains. Applying the server wallet must
+  // prepare the abandoned board and finish restoring credit, even if an old
+  // engine still holds draws. Exceptions inside this path are caught by the
+  // production wrapper, so verify both its warning output and final state.
+  f.emit(control('round-1',1100,2,source));await flush();
+  assert.deepEqual(f.calls.warnings,[],source+' wallet restoration must not write to a getter-only property');
+  assert.equal(f.calls.reset,1);assert.equal(f.calls.prepare,1);
+  assert.equal(f.app.phase,'ready');assert.equal(f.app.drawHeld,false);
+  assert.equal(f.app.credit,1100);assert.equal(f.app.displayCredit,1100);
+  assert.equal(f.app.result,null);assert.equal(f.app.payout,null);assert.equal(f.app.totalWin,0);
+  assert.equal(f.active(),null);
+  assert.equal(JSON.parse(f.storage.get('sweets-payout-wallet-v3')).revision,2);
+ }
 });
 
 await test('an old wallet does not roll back a different active or reserved round',async()=>{

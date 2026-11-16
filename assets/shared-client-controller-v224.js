@@ -149,7 +149,7 @@ function renderAll(target){
  try{requestAnimationFrame(()=>{markDirty();try{if(typeof scheduleUI==='function')scheduleUI(target);}catch{}try{target.onChange?.(target);}catch{}});}catch{}
 }
 function clearTop(target,credit,bet,phase){
- target.token=finite(target.token)+1;target.phase=phase;target.draws=[];target.payout=null;target.result=null;target.dealing=false;target.fastForward=false;target.drawHeld=false;target.paused=false;target.totalWin=0;
+ target.token=finite(target.token)+1;target.phase=phase;target.draws=[];target.payout=null;target.result=null;target.dealing=false;target.fastForward=false;target.paused=false;target.totalWin=0;
  target.paid=(target.engines||[]).map(()=>false);target.roundWins=(target.engines||[]).map(()=>0);target.bets=[...bet.bets];target.locked=[...bet.locked];target.enabled=[...bet.enabled];target.credit=credit;target.displayCredit=credit;
 }
 function resetEngines(target){
@@ -240,7 +240,7 @@ function applyParticipant(participant){
 }
 function canStart(target=window.app){
  const round=client()?.round,id=String(round?.id||'');
- return !!(!resetBusy&&!abandonBusy&&target?.phase==='ready'&&modelReady(target)&&stable()&&remoteReady()&&round?.phase==='PLAYING'&&round?.participant?.playerId&&id===startingRoundId&&joinedRounds.has(id)&&!abandonedRounds.has(id));
+ return !!(!resetBusy&&!abandonBusy&&target?.phase==='ready'&&modelReady(target)&&stable()&&round?.phase==='PLAYING'&&round?.participant?.playerId&&id===startingRoundId&&joinedRounds.has(id)&&!abandonedRounds.has(id));
 }
 function installGuards(){
  if(typeof Arcade!=='function'||!Arcade.prototype||typeof rouletteDrawSource==='undefined')return false;
@@ -281,10 +281,8 @@ async function startRound(round){
  const id=String(round?.id||'');if(startBusy||resetBusy||!id||id!==joinedRoundId||!joinedRounds.has(id)||abandonedRounds.has(id)||!round?.participant?.playerId)return false;
  if(active()?.roundId===id){startedRoundId=id;return true;}
  if(app.phase!=='ready'||!modelReady(app))return false;
- if(!remoteReady()){
-  const deadline=finite(round.drawStartsAt)+1800;if(deadline&&Date.now()+finite(client()?.clockOffset)>deadline)await abandonRound('video-not-ready');
-  else status('VIDEO','抽選機映像の同期待ち');return false;
- }
+ // The BET was already accepted while the live view was ready. A short video
+ // stall must not discard that BET while the authoritative result WS is healthy.
  startBusy=true;startingRoundId=id;
  try{
   applyParticipant(round.participant);const began=app.start();
@@ -375,7 +373,12 @@ function monitorResults(){
  if(phase==='playing'){
   resultSince=0;
   if(!wsOpen()&&shared)abandonRound('socket-lost').catch(()=>{});
-  else if(!shared&&startedRoundId){if(!completeSeenAt)completeSeenAt=Date.now();if(Date.now()-completeSeenAt>3000)abandonRound('attach-failed').catch(()=>{});}
+  else if(!shared&&startedRoundId){
+   const pending=machine()?.pendingStart;
+   if(pending?.roundId===startedRoundId&&Number(pending.token)===Number(app.token)){
+    completeSeenAt=0;if(Date.now()>Number(pending.deadline||0))abandonRound('attach-timeout').catch(()=>{});
+   }else{if(!completeSeenAt)completeSeenAt=Date.now();if(Date.now()-completeSeenAt>3000)abandonRound('attach-failed').catch(()=>{});}
+  }
   if(shared&&fullyReceived(shared)&&!normalPending.has(String(shared.roundId))&&!normalSettled.has(String(shared.roundId))){
    const progress=completionProgressKey(shared);if(progress!==completeProgress){completeProgress=progress;completeProgressAt=Date.now();}
    if(Date.now()-completeProgressAt>COMPLETE_STALL_MS)abandonRound('engine-stalled').catch(()=>{});

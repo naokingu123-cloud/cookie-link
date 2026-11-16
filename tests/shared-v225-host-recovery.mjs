@@ -90,7 +90,7 @@ for(const old of [
 ]){
  const reports=[],context=stateHarness.context;
  client.getState=async()=>old;client.report=async payload=>{reports.push(payload);return{ball:{index:payload.ballIndex}};};
- Object.assign(context,{client,hostRoundId:'round-9',hostIndex:1,hostRunning:true,hostProgressAt:0,hostAttempt:1,reportChain:Promise.resolve(),hostRetryTimer:0,hostBanner(){},captureMirrorFrame(){},stopMirrorCapture(){},status(){},syncHost(){}});
+ Object.assign(context,{client,hostRoundId:'round-9',hostIndex:1,hostRunning:true,hostProgressAt:0,hostAttempt:1,hostReportsPending:0,reportChain:Promise.resolve(),hostRetryTimer:0,hostBanner(){},captureMirrorFrame(){},stopMirrorCapture(){},status(){},syncHost(){}});
  vm.runInContext(source.slice(reportStart,reportEnd)+'\nglobalThis.testReportPhysical=reportPhysical;',context);
  context.testReportPhysical(9);await context.reportChain;
  assert.equal(reports.length,1,'a rejected HTTP snapshot must not discard the current physical HIT');

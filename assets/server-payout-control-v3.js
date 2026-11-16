@@ -46,7 +46,7 @@ function regenerateReadyBoards(){
 function resetToServerWaiting(credit,reason='サーバー精算済み'){
  try{rouletteDrawSource?.reset?.();}catch{}
  try{
-  app.payout=null;app.result=null;app.dealing=false;app.fastForward=false;app.drawHeld=false;
+  app.payout=null;app.result=null;app.dealing=false;app.fastForward=false;
   for(const engine of app.engines||[]){try{engine.paused=false;engine.presentationRate=1;}catch{}}
   if(app.phase!=='ready'){
    app.phase='complete';

@@ -38,6 +38,8 @@ on:
       - 'tests/payout-v3-runtime.mjs'
       - 'tests/shared-client-http-backoff.mjs'
       - 'tests/shared-v225-host-recovery.mjs'
+      - 'tests/shared-v226-host-start.mjs'
+      - 'tests/shared-v226-client-start.mjs'
       - 'tests/shared-v225-video-reconnect.mjs'
       - 'tests/shared-v225-payout-lifecycle.mjs'
       - 'tests/server-rate-limit-v225.mjs'
@@ -104,7 +106,7 @@ jobs:
         run: |
           grep -q "SWEETS_AUTONOMOUS_ROUNDS='0'" server.mjs
           grep -q "SWEETS_CONTINUOUS_PHYSICAL_ROUNDS??='1'" server.mjs
-          grep -q "rouletteTimeScale=2" assets/shared-host-speed-v219.js
+          grep -q "rouletteTimeScale=1" assets/shared-host-speed-v219.js
           grep -q "disconnects are zero-WIN losses" assets/shared-client-controller-v224.js
           grep -q "visible Three.js canvas is authoritative" assets/shared-roulette-webrtc-host-v224.js
           grep -q "round boundaries never rebuild the video" assets/shared-roulette-client-v224.js

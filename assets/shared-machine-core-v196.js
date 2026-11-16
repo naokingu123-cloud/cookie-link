@@ -391,20 +391,27 @@ function saveLater(ballIndex){
  if(!current||!client.online)return;const session=current;clearTimeout(session.saveTimer);session.saveTimer=setTimeout(()=>{const run=()=>{if(current!==session||session.stopped)return;let state;try{state=checkpoint(app);}catch(error){console.warn(error);return;}client.save({roundId:session.roundId,ballIndex,state}).catch(error=>console.warn('[SharedMachineV204] save',error?.message||error));};if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:1600});else setTimeout(run,0);},950);
 }
 async function startShared(callbacks,nativeReset){
- const ready=await client.ready;
- if(!ready||!client.online){
-  const detail=client.lastError?' · '+client.lastError:'';
-  serverRequired('サーバーへ接続できません'+detail,()=>startShared(callbacks,nativeReset));return;
- }
+ const attempt={roundId:String(resumeId||client.round?.id||''),token:Number(callbacks?.token??app?.token),startedAt:Date.now(),deadline:Date.now()+12000};
+ pendingStart=attempt;
+ const ownsStart=()=>pendingStart===attempt&&app?.phase==='playing'&&Number(app.token)===attempt.token&&client.online&&client.round?.id===attempt.roundId;
  try{
-  const data=await client.getState();client.accept(data);
+  const ready=await client.ready;
+  if(!ownsStart())return;
+  if(!ready)throw Error('shared client not ready');
+  try{const data=await client.getState();if(!ownsStart())return;client.accept(data);}
+  catch(error){
+   // A fresh accepted WS state may already describe our reserved round even if
+   // its redundant HTTP confirmation is throttled or briefly unavailable.
+   if(!ownsStart()||client.round?.phase!=='PLAYING'||!client.round?.participant?.playerId)throw error;
+  }
+  if(!ownsStart())return;
   const round=resumeId?(client.pendingRound?.id===resumeId?client.pendingRound:(client.round?.id===resumeId?client.round:null)):client.round;
   if(!round)throw Error('round unavailable');
   const participant=round.participant||{},explicitResume=!!resumeId&&resumeId===round.id;
   if(!participant.playerId)throw Error('not participating');
   if(!explicitResume&&(round.phase!=='PLAYING'||startPermitId!==round.id))throw Error('server start not permitted');
 
-  pendingStart=null;closeServerGate();try{rouletteDriver?.setPaused(false);}catch{}
+  closeServerGate();try{rouletteDriver?.setPaused(false);}catch{}
   current={roundId:round.id,callbacks,nativeReset,role:'player',delivered:0,queue:new Map(),draining:false,stopped:false,saveTimer:0,settleSent:false,participant};app.__sharedRound=current;
   startPermitId=null;
 
@@ -428,11 +435,12 @@ async function startShared(callbacks,nativeReset){
   for(const ball of balls)queueBall(ball,true);
   status(client.hostAvailable?'サーバー抽選機の入賞待ち':'サーバー自動抽選待ち','共有抽選 SERVER');
  }catch(error){
+  if(!ownsStart())return;
   current=null;app.__sharedRound=null;startPermitId=null;resumeId=null;recoveryOpen=false;
   console.warn('[SharedMachineV204] attach round failed',error?.message||error);
   try{if(app?.phase==='playing')nativeReset();}catch{}
   status('次のSERVER BET TIMEまで待機','共有抽選');
- }
+ }finally{if(pendingStart===attempt)pendingStart=null;}
 }
 function serverSettlement(){return current?.participant?.settlement||null;}
 function settle(a){
@@ -735,7 +743,7 @@ function install(){
   }
   client.syncReady();
  })
- window.SweetsSharedMachine={version:VERSION,serverHost:false,client,get online(){return client.online;},get role(){return client.role;},get active(){return current;},state:()=>client.getState()};
+ window.SweetsSharedMachine={version:VERSION,serverHost:false,client,get online(){return client.online;},get role(){return client.role;},get active(){return current;},get pendingStart(){return pendingStart;},state:()=>client.getState()};
  console.info('[SharedMachineV204] server-authoritative BET clock, reconnect recovery and physical/fallback draw enabled');
 }
 install();

@@ -95,8 +95,33 @@ function patch(source){
   'disable startup pending-round replay');
  source=once(source,
   "  let hostRoundId=null,hostIndex=0,hostRunning=false,reportChain=Promise.resolve(),hostRetryTimer=0,mirrorTimer=0,mirrorCanvas=null,mirrorCtx=null,mirrorEncoding=false;",
-  "  let hostRoundId=null,hostIndex=0,hostRunning=false,hostProgressAt=0,hostAttempt=0,reportChain=Promise.resolve(),hostRetryTimer=0,mirrorTimer=0,mirrorCanvas=null,mirrorCtx=null,mirrorEncoding=false;",
+  "  let hostRoundId=null,hostIndex=0,hostRunning=false,hostProgressAt=0,hostAttempt=0,hostReportsPending=0,hostMotionKey='',hostMotionAt=0,hostWakeAt=0,reportChain=Promise.resolve(),hostRetryTimer=0,mirrorTimer=0,mirrorCanvas=null,mirrorCtx=null,mirrorEncoding=false;",
   'physical host watchdog state');
+ source=once(source,
+  "  function hostPresentation(){",
+`  function hostMotionState(){
+   try{
+    const driver=rouletteDriver,physics=driver?.physics,draw=driver?.draw;
+    if(!physics||!draw)return null;
+    // The rotor keeps ticking after a completed draw. Count simulation time
+    // only while the physical attempt is running; a completed partial attempt
+    // is handled after its result queue has drained.
+    return JSON.stringify([draw.state,draw.state==='running'?Number(physics.time)||0:0,Number(physics.serial)||0,Number(physics.active)||0,physics.hits?.length||0,Number(physics.faults)||0,Number(draw.group)||0,Number(draw.sent)||0]);
+   }catch{return null;}
+  }
+  function hostMotionStalled(){
+   const now=Date.now(),key=hostMotionState();
+   if(document.hidden||hostReportsPending>0){hostMotionKey=key;hostMotionAt=now;hostWakeAt=0;return false;}
+   if(key!==hostMotionKey){hostMotionKey=key;hostMotionAt=now;hostWakeAt=0;}
+   if(!hostMotionAt)hostMotionAt=now;
+   const idle=now-hostMotionAt;
+   // A healthy frame loop must not be cancelled and have its accumulated
+   // physics time cleared on every network snapshot or 500ms watchdog tick.
+   if(idle>=2500&&!hostWakeAt){hostWakeAt=now;try{rouletteDriver?.setPaused(false);}catch{}}
+   return idle>=60000&&hostWakeAt>0&&now-hostWakeAt>=10000;
+  }
+  function hostPresentation(){`,
+  'observe physical progress without resetting the render clock');
  source=once(source,
   "    if(typeof inView!=='undefined')inView=false;",
   "    if(typeof inView!=='undefined')inView=true;",
@@ -118,11 +143,13 @@ function patch(source){
    });
   }`,
 `  function reportPhysical(number){
-   const roundId=hostRoundId;hostProgressAt=Date.now();
-   reportChain=reportChain.then(async()=>{
-    if(!hostRunning||roundId!==hostRoundId)return;
+   const roundId=hostRoundId,attempt=hostAttempt;hostProgressAt=Date.now();hostReportsPending++;
+   const current=()=>hostRunning&&roundId===hostRoundId&&attempt===hostAttempt;
+   reportChain=reportChain.catch(()=>{}).then(async()=>{
+    while(current()){
     let state=null;
     try{state=await client.getState();if(client.accept(state)===false)state=null;}catch{}
+    if(!current())return;
     const round=state?.round||client.round;
     if(!round||round.id!==roundId||round.phase!=='PLAYING')return;
     const existing=[...(round.balls||[])],value=Number(number);hostIndex=existing.length;
@@ -133,17 +160,21 @@ function patch(source){
     const index=hostIndex+1;
     try{
      const data=await client.report({roundId,ballIndex:index,number:value,eventId:roundId+':'+index+':'+hostAttempt});
+     if(roundId!==hostRoundId||attempt!==hostAttempt)return;
      hostIndex=Number(data.ball?.index)||index;hostProgressAt=Date.now();
      hostBanner(hostIndex+' / 8球 · '+value+' HIT');
      setTimeout(()=>captureMirrorFrame(true),120);
      if(hostIndex>=8){hostRunning=false;clearTimeout(hostRetryTimer);hostRetryTimer=0;stopMirrorCapture();status('8球の実抽選が終了しました','SERVER ROULETTE');hostBanner('8 / 8 COMPLETE');}
+     return;
     }catch(error){
+     if(!current())return;
      const code=String(error?.data?.error||error?.message||'');
      console.error('[SharedMachineV221] physical host report',code,error);
-     hostRunning=false;hostBanner('入賞送信を再同期 · '+hostIndex+' / 8');
-     clearTimeout(hostRetryTimer);hostRetryTimer=setTimeout(()=>syncHost(client.round),code==='draw_not_started'?500:900);
+     hostBanner('入賞結果を保持・再送待ち · '+hostIndex+' / 8');
+     await wait(Math.max(1000,Number(error?.retryAfterMs)||0,Number(error?.data?.retryAfterMs)||0,Number(client.httpRetryAt||0)-Date.now()));
     }
-   });
+    }
+   }).finally(()=>{hostReportsPending=Math.max(0,hostReportsPending-1);});
   }`,
   'physical result progress and retry');
  source=once(source,
@@ -155,11 +186,11 @@ function patch(source){
 `   if(hostRoundId===round.id&&hostRunning){
     const currentCount=(round.balls||[]).length;
     if(currentCount>hostIndex){hostIndex=currentCount;hostProgressAt=Date.now();}
-    try{if(typeof inView!=='undefined')inView=true;rouletteDriver?.setPaused(false);}catch{}
-    const idle=Date.now()-Number(hostProgressAt||0);
-    if(idle<15000){hostBanner(hostIndex+' / 8球 · DRAWING');hostRetryTimer=setTimeout(()=>syncHost(client.round),500);return;}
-    hostRunning=false;hostAttempt++;try{nativeReset();}catch{}
-    hostBanner('無進行を検知・抽選機再起動 '+hostIndex+' / 8');
+    try{if(typeof inView!=='undefined')inView=true;}catch{}
+    const finishedAttempt=!document.hidden&&hostReportsPending===0&&rouletteDriver?.draw?.state==='complete'&&hostIndex<8;
+    if(!finishedAttempt&&!hostMotionStalled()){hostBanner(hostIndex+' / 8球 · DRAWING');hostRetryTimer=setTimeout(()=>syncHost(client.round),500);return;}
+    hostRunning=false;hostAttempt++;
+    hostBanner((finishedAttempt?'残りの物理抽選を継続 ':'物理進行の停止を検知・再起動 ')+hostIndex+' / 8');
    }`,
   'restart a stalled physical draw');
  source=once(source,
@@ -168,7 +199,7 @@ function patch(source){
   'resume partial physical round without fallback');
  source=once(source,
   "   hostRoundId=round.id;hostIndex=0;hostRunning=true;reportChain=Promise.resolve();",
-  "   hostRoundId=round.id;hostIndex=existing.length;hostRunning=true;hostProgressAt=Date.now();hostAttempt++;reportChain=Promise.resolve();",
+  "   hostRoundId=round.id;hostIndex=existing.length;hostRunning=true;hostProgressAt=Date.now();hostMotionKey='';hostMotionAt=Date.now();hostWakeAt=0;hostAttempt++;reportChain=Promise.resolve();",
   'start or resume physical progress');
  source=once(source,
   "nativeStart({onNumber:reportPhysical,onError:message=>{client.send({type:'host_fallback_request',roundId:round.id});stopHost(message||'抽選機エラー');}});",
