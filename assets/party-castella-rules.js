@@ -1,4 +1,4 @@
-/* One fixed griddle: three concentric hexagons and three diameters. */
+/* Ten geometric griddles: fixed visible budgets, calibrated number/channel layouts. */
 (function(root){
   'use strict';
   const h=Math.sqrt(3)/2,corners=[[0,-1],[-1,0],[-1,1],[0,1],[1,0],[1,-1]];
@@ -18,66 +18,66 @@
     }
     rings.push(row);
   }
-  const neighbours=cells.map(()=>[]);
-  for(const [a,b] of originalEdges){neighbours[a].push(b);neighbours[b].push(a);}
-  // Record all incoming passages at each depth. Two branches can fill the same well once.
-  const pours=cells.map(({id})=>{
-    const first=neighbours[id],near=new Set([id,...first]),second=new Set();
-    const flow=first.map(a=>[id,a,1]);
-    for(const a of first)for(const b of neighbours[a]){
-      if(near.has(b))continue;
-      second.add(b);flow.push([a,b,2]);
-    }
-    return {layers:[[id],first,[...second]],flow};
-  });
+  const coordinateIds=new Map(cells.map(c=>[c.q+','+c.r,c.id]));
+  function transformId(id,orientation=0){
+    let {q,r}=cells[id];if(orientation&1)q=-q-r;
+    for(let k=0;k<(orientation>>1);k++){const next=q+r;r=-q;q=next;}
+    return coordinateIds.get(q+','+r);
+  }
+  const channelCache=new Map(),flowCache=new WeakMap();
+  // Every family has the same 36 perimeter and 18 radial links. Each segment
+  // connects adjacent hex cells; the renderer draws these exact state.edges.
+  function channelEdges(pattern=0,orientation=0){
+    const key=pattern+':'+orientation;if(channelCache.has(key))return channelCache.get(key);
+    const edges=[];for(let ring=1;ring<=3;ring++)for(let k=0;k<rings[ring].length;k++)edges.push([rings[ring][k],rings[ring][(k+1)%rings[ring].length]]);
+    for(let id=1;id<=6;id++)edges.push([0,id]);
+    const inner=[[1,7],[1,8],[1,18]][Math.floor(pattern/5)],outer=[[7,19],[7,20],[7,36],[8,20],[8,21]][pattern%5];
+    for(const pair of [inner,outer])for(let k=0;k<6;k++)edges.push(pair.map(id=>transformId(id,k*2)));
+    const mapped=edges.map(pair=>pair.map(id=>transformId(id,orientation)));channelCache.set(key,mapped);return mapped;
+  }
+  function passages(edges){
+    if(flowCache.has(edges))return flowCache.get(edges);
+    const neighbours=cells.map(()=>[]);for(const [a,b] of edges){neighbours[a].push(b);neighbours[b].push(a);}
+    const result=cells.map(({id})=>{
+      const first=neighbours[id],near=new Set([id,...first]),second=new Set(),flow=first.map(a=>[id,a,1]);
+      for(const a of first)for(const b of neighbours[a]){if(near.has(b))continue;second.add(b);flow.push([a,b,2]);}
+      return {layers:[[id],first,[...second]],flow};
+    });flowCache.set(edges,result);return result;
+  }
   function distance(a,b){
     const q=a.q-b.q,r=a.r-b.r;
     return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r));
   }
-  // Heat travels in every direction irrespective of the pouring channels.
-  // The opening grid retains 19 fixed diagonal locations. Six extra number sites,
-  // six initially filled wells and every special tile are chosen before drawing.
-  // The number sites and starter wells are both reflection- and rotation-symmetric.
-  const EX0=[8,10,12,14,16,18],EX2=[12,18,21,23,30,32],EX3=[12,18,26,27,35,36];
-  const G1=[20,24,29,33],G2=[21,23,30,32],G3=[26,27,35,36];
-  // Exact RTP (%) per mold: all C(25,5)=53,130 pouring combinations times
-  // C(20,3)=1,140 baking combinations, with ODDS-UP multiplying base awards.
+  // Heat keeps the original hex-radius rule. All settings have six initially
+  // filled wells, one FIRE and two ODDS tiles. The 25 unique number locations
+  // retain the centre plus all 18 diagonal locations; number sites and starter
+  // wells have half-turn symmetry. No future roulette draw is consulted.
+  // Exact gross RTP per mold enumerates C(25,5) * C(20,3)=60,568,200 outcomes.
   const molds=[
-    {name:'花車',starter:[2,5,9,15,22,31],extras:EX0,flames:[21,30],odds:G3,returnPercent:259.74898230425},
-    {name:'星影',starter:[9,12,15,18,22,31],extras:EX0,flames:[26,35],odds:G1,returnPercent:277.05386522961},
-    {name:'花束',starter:[9,15,19,25,28,34],extras:EX0,flames:[26,35],odds:G2,returnPercent:284.05237880604},
-    {name:'双葉',starter:[2,5,19,25,28,34],extras:EX0,flames:[27,36],odds:G1,returnPercent:283.83253638048},
-    {name:'雪風',starter:[2,5,9,12,15,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:289.45312094465},
-    {name:'琥珀',starter:[12,18,19,25,28,34],extras:EX0,flames:[27,36],odds:G2,returnPercent:279.3882794932},
-    {name:'花冠',starter:[1,3,4,6,12,18],extras:EX3,flames:[23,32],odds:G1,returnPercent:286.34481444058},
-    {name:'雪華',starter:[8,10,12,14,16,18],extras:EX3,flames:[21,30],odds:G1,returnPercent:291.21287754961},
-    {name:'六華',starter:[8,10,14,16,22,31],extras:EX2,flames:[26,35],odds:G1,returnPercent:322.66830812208},
-    {name:'金華',starter:[19,22,25,28,31,34],extras:EX0,flames:[20,29],odds:G2,returnPercent:333.06314171463}
+    {"name":"花車","starter":[2,5,9,15,22,31],"extras":[8,10,12,14,16,18],"flames":[21],"odds":[26,35],"channelPattern":0,"returnPercent":74.485511208852},
+    {"name":"星影","starter":[1,4,8,12,14,18],"extras":[20,26,27,29,35,36],"flames":[32],"odds":[10,16],"channelPattern":14,"returnPercent":40.306441168798},
+    {"name":"花束","starter":[3,6,7,10,13,16],"extras":[12,18,24,27,33,36],"flames":[21],"odds":[8,14],"channelPattern":3,"returnPercent":45.715922216609},
+    {"name":"双葉","starter":[1,3,4,6,9,15],"extras":[8,14,21,27,30,36],"flames":[33],"odds":[20,29],"channelPattern":1,"returnPercent":62.857485941468},
+    {"name":"雪風","starter":[3,6,8,12,14,18],"extras":[8,12,14,18,26,35],"flames":[30],"odds":[10,16],"channelPattern":1,"returnPercent":79.08057313904},
+    {"name":"琥珀","starter":[12,18,23,27,32,36],"extras":[8,14,23,27,32,36],"flames":[26],"odds":[10,16],"channelPattern":6,"returnPercent":96.44431591165},
+    {"name":"花冠","starter":[1,4,7,13,27,36],"extras":[8,14,24,27,33,36],"flames":[10],"odds":[26,35],"channelPattern":12,"returnPercent":115.63653526108},
+    {"name":"雪華","starter":[3,6,9,15,20,29],"extras":[10,16,24,27,33,36],"flames":[18],"odds":[8,14],"channelPattern":0,"returnPercent":133.51669052407},
+    {"name":"六華","starter":[19,23,25,28,32,34],"extras":[12,18,23,24,32,33],"flames":[8],"odds":[10,16],"channelPattern":9,"returnPercent":154.89629946077},
+    {"name":"金華","starter":[19,21,25,28,30,34],"extras":[12,18,20,23,29,32],"flames":[14],"odds":[10,16],"channelPattern":13,"returnPercent":168.43139502247}
   ];
   const heatRadii=[null,1,2,3].map(r=>r?cells.map(a=>cells.filter(b=>distance(a,b)<=r).map(b=>b.id)):null);
   const ODDS_STEP=50; // Each honey tile adds 50% of the BASE payout: ×(1+0.5*n).
-  // Exact enumeration with the current fixed-number bake rules AND proportional
-  // +0.5x ODDS-UP produces a 259.75–333.06% theoretical RTP range.
-  // Map the nominal 50–150 control across the feasible patterns but report the
-  // actual RTP. Meeting 50–150 requires separate future odds/board calibration.
-  const minReturn=Math.min(...molds.map(x=>x.returnPercent));
-  const maxReturn=Math.max(...molds.map(x=>x.returnPercent));
-  function effectiveTarget(requested){
-    const input=Math.max(50,Math.min(150,Number.isFinite(requested)?requested:90));
-    return minReturn+(input-50)*(maxReturn-minReturn)/100;
-  }
+  const FIRE_COUNT=1,ODDS_COUNT=2;
+  const minReturn=Math.min(...molds.map(x=>x.returnPercent)),maxReturn=Math.max(...molds.map(x=>x.returnPercent));
+  function effectiveTarget(requested){return Math.max(50,Math.min(150,Number.isFinite(Number(requested))?Number(requested):90));}
   function isSymmetric(ids){
-    const set=new Set(ids),lookup=new Map(cells.map(c=>[c.q+','+c.r,c.id]));
-    return ids.every(i=>{
-      const {q,r}=cells[i],reflection=lookup.get((-q-r)+','+r),turn=lookup.get((-q)+','+(-r));
-      return set.has(reflection)&&set.has(turn);
-    });
+    const set=new Set(ids);return ids.every(id=>set.has(transformId(id,6)));
   }
   function verifyMolds(){
     for(const board of molds){
       const markers=[...board.flames,...board.odds],numbered=new Set([...spokes,...board.extras]);
       if(board.starter.length!==6||board.extras.length!==6||
-         board.flames.length!==2||board.odds.length!==4||new Set(markers).size!==6||
+         board.flames.length!==FIRE_COUNT||board.odds.length!==ODDS_COUNT||new Set(markers).size!==FIRE_COUNT+ODDS_COUNT||
          markers.some(i=>numbered.has(i)||board.starter.includes(i))||
          !isSymmetric(board.starter)||!isSymmetric([...numbered]))
         throw new Error('Invalid Party Castella layout: '+board.name);
@@ -106,14 +106,15 @@
     const weight=lo.i===hi.i?0:(rate-lo.m.returnPercent)/(hi.m.returnPercent-lo.m.returnPercent);
     return createBoard(rng()<weight?hi.i:lo.i,rate,rng,target);
   }
-  function createBoard(moldIndex,target,rng,requestedTarget=target){
-    const board=molds[moldIndex],labels=Array(37).fill(null),deck=shuffled(rng);
-    [...spokes,...board.extras].forEach((id,i)=>{labels[id]=deck[i];});
+  function createBoard(moldIndex,target,rng=Math.random,requestedTarget=target,forcedOrientation=null){
+    const board=molds[moldIndex],orientation=forcedOrientation??Math.floor(rng()*12),labels=Array(37).fill(null),deck=shuffled(rng);
+    const mapped=ids=>ids.map(id=>transformId(id,orientation)),starter=mapped(board.starter);
+    [...spokes,...board.extras].forEach((id,i)=>{labels[transformId(id,orientation)]=deck[i];});
     return {draws:[],phase:'pour',cells:cells.map(c=>({...c,number:labels[c.id]})),
-      edges:originalEdges,boardName:board.name,moldIndex,target,requestedTarget,
+      edges:channelEdges(board.channelPattern,orientation),boardName:board.name,moldIndex,target,requestedTarget,channelPattern:board.channelPattern,orientation,
       zones:[],zoneByNumber:Array(26).fill(null),
-      specials:{fire:board.flames.slice(),odds:board.odds.slice()},
-      wet:cells.map(c=>board.starter.includes(c.id)),baked:Array(37).fill(false),
+      specials:{fire:mapped(board.flames),odds:mapped(board.odds)},
+      wet:cells.map(c=>starter.includes(c.id)),baked:Array(37).fill(false),
       wetCount:6,bakedCount:0,fireLevel:1,oddsHits:0,oddsBonus:0,oddsMultiplier:100,
       lastNumber:null,lastZone:null,sources:[],flow:[],wave:[],
       totalHundredths:0,highestRole:false};
@@ -135,7 +136,7 @@
     if(state.draws.length>=8||!Number.isInteger(number)||number<1||number>25||state.draws.includes(number))return null;
     const draws=[...state.draws,number],ball=draws.length;
     if(ball<=5){
-      const id=state.cells.find(c=>c.number===number).id,wet=state.wet.slice(),{flow,layers}=pours[id];
+      const id=state.cells.find(c=>c.number===number).id,wet=state.wet.slice(),{flow,layers}=passages(state.edges||originalEdges)[id];
       const wave=layers.map(layer=>layer.filter(i=>!wet[i]));
       for(const layer of wave)for(const i of layer)wet[i]=true;
       const fireLevel=1+state.specials.fire.filter(i=>wet[i]).length;
@@ -161,7 +162,7 @@
       const number=cell.number;
       if(number===null||s.draws.includes(number))continue;
       if(s.phase==='pour'){
-        const {layers}=pours[cell.id];
+        const {layers}=passages(s.edges||originalEdges)[cell.id];
         const oddsUp=s.specials.odds.some(id=>!s.wet[id]&&layers.some(layer=>layer.includes(id)));
         if(oddsUp)hits.push({number,anchor:cell.id,total:base,gain:0,allClear:false,oddsUp});
       }else{
@@ -176,7 +177,7 @@
   }
   function createDemo(){
     let seed=1015568748;
-    const state=createBoard(0,90,()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32));
+    const state=createBoard(0,90,()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32),90,0);
     const opening=[0,19,25,28,34].map(id=>state.cells[id].number);
     const bakedBoard=opening.reduce(draw,state);
     let closing=null;
@@ -189,7 +190,7 @@
     }
     return {state,draws:[...opening,...(closing||bakedBoard.zones.slice(0,3).map(z=>z.numbers[0]))]};
   }
-  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createBoard,createDemo,draw,reaches,payRows,payout,molds,ODDS_STEP,minReturn,maxReturn};
+  const api={cells,originalEdges,zoneFor,effectiveTarget,create,createBoard,createDemo,draw,reaches,payRows,payout,molds,ODDS_STEP,FIRE_COUNT,ODDS_COUNT,minReturn,maxReturn};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.PartyCastellaRules=api;
 })(globalThis);

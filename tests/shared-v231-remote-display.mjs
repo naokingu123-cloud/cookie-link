@@ -42,6 +42,11 @@ const frame=(sequence,fromInstanceId='host-tab')=>({type:'rtc_frame',fromPlayerI
 viewer.dispatch(ready);await viewer.clock.advance(700);
 assert.ok(viewer.messages.some(message=>message.type==='rtc_frame_watch'));
 assert.equal(viewer.recorders?.length||0,0);
+viewer.dispatch({type:'rtc_offer',fromPlayerId:'another-player',fromInstanceId:'other-tab',description:{type:'offer',sdp:'rogue-offer'}});
+viewer.dispatch({type:'rtc_media',fromPlayerId:'host',fromInstanceId:'retired-host',streamId:'rogue-stream',sequence:0,mime:'video/webm;codecs=vp8',data:Buffer.from('rogue-frame').toString('base64')});
+await fx.flush();
+assert.equal(viewer.peers.length,0,'a different player cannot replace the announced physical host offer');
+assert.equal(viewer.sources.length,0,'legacy media from a retired host instance must not create a decoder');
 viewer.dispatch(frame(0));assert.equal(viewer.api.isFresh(),false,'only a decoded remote image is a displayed frame');
 images.at(-1).completeFrame();assert.equal(viewer.api.source,'frame');assert.equal(viewer.api.isFresh(),true);
 assert.equal(viewer.stage.children.filter(node=>node.tagName==='img').length,1);
@@ -61,6 +66,15 @@ const css=viewer.context.document.getElementById('shared-roulette-v224-css').tex
 assert.match(css,/#cookie-roulette \.a8-stage>canvas\{display:none!important\}/,'an old canvas can never become the fallback display');
 await frameFx.attach(viewer);viewer.video('p2p').frame();viewer.api.health();
 assert.equal(viewer.api.source,'p2p');assert.ok(viewer.messages.some(message=>message.type==='rtc_frame_stop'),'healthy direct video stops redundant JPEG traffic');
+
+const legacy=fx.viewer();await fx.flush();legacy.dispatch({...ready,frameRelay:0});
+const legacyChunk={type:'rtc_media',fromPlayerId:'host',fromInstanceId:'host-tab',streamId:'legacy-host',sequence:0,mime:'video/webm;codecs=vp8',data:Buffer.from('host-frame').toString('base64')};
+legacy.dispatch(legacyChunk);assert.equal(legacy.sources.length,1,'the announced old host can still stream through WebM');
+legacy.sources[0].open();
+legacy.dispatch({type:'rtc_media_stop',fromPlayerId:'another-player',fromInstanceId:'other-tab',streamId:'legacy-host'});
+assert.equal(legacy.sources[0].readyState,'open','another player cannot clear the host decoder');
+legacy.dispatch({type:'rtc_media_stop',fromPlayerId:'host',fromInstanceId:'host-tab',streamId:'legacy-host'});
+assert.equal(legacy.sources[0].readyState,'ended','the announced host retains the normal stop behavior');
 
 const encodes=[],draws=[];
 const hostVm={runInNewContext(source,c,options){

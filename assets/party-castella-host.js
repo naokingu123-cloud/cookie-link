@@ -16,7 +16,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   this.version++;this.state=R.create({rng:app.random,target:debugPayoutTarget});this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;
-  payoutNote.textContent='パーティカステラ：設定 '+percent.format(debugPayoutTarget)+'% → 実際の理論配当率 '+percent.format(this.state.target)+'%（新ODDS倍率での全10型 '+percent.format(R.minReturn)+'〜'+percent.format(R.maxReturn)+'%。50〜150%設定への実効調整は未達）。ODDSは基本配当×(1+0.5×発動数)。';
+  payoutNote.textContent='パーティカステラ：目標 '+percent.format(this.state.target)+'%（対称な数字配置・流路10型の構成比で調整。各型の理論値 '+percent.format(R.minReturn)+'〜'+percent.format(R.maxReturn)+'%）。初期生地6個・FIRE1個・ODDS2個は全設定共通。ODDSは基本配当×(1+0.5×発動数)。';
   this.running=false;this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   paused=false;clock=0;stamp=null;lastHit=lastMain=lastMini=-Infinity;
   stopSugarAward(slot);invalidateReach(slot);this.emit('ready');

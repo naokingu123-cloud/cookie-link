@@ -21,7 +21,7 @@ const engine={
  },
  get totalHundredths(){
   const shown=this.trace?.oddsReason&&this.oddsStart==null?this.trace.before:this.state;
-  return K.payout(shown.lines.length,shown.oddsMultiplier);
+  return K.payout(shown.lines.length,shown.oddsMultiplier,shown.payoutVersion??0);
  },
  get allClears(){return Number(this.state.lines.length===12);},
  reset(){

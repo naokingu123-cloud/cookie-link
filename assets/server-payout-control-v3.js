@@ -23,7 +23,14 @@ function setDisplay(){
  window.dispatchEvent(new CustomEvent('sweets:payout-control-v3',{detail:controls}));
 }
 function signature(control){return JSON.stringify([Number(control?.effectiveRate),control?.mode,Number(control?.manualRate),Number(control?.wallet?.revision),!!control?.offlinePending]);}
-function withCommonRate(engine,index,native,args){const rate=commonRate(),previous=debugPayoutTarget,id=gameId(engine,index);debugPayoutTarget=rate;appliedRates.set(id,rate);try{return native.apply(engine,args);}finally{debugPayoutTarget=previous;}}
+function withCommonRate(engine,index,native,args){
+ const rate=commonRate(),previous=debugPayoutTarget,id=gameId(engine,index);debugPayoutTarget=rate;
+ // Standalone rules (notably Winery's UMD engine) cannot see the app's lexical
+ // debug setting. Apply the same server quote before generating the next board.
+ // Assign directly here: setPayoutTarget() would recursively reset the engine.
+ if('payoutTarget' in engine)engine.payoutTarget=rate;
+ appliedRates.set(id,rate);try{return native.apply(engine,args);}finally{debugPayoutTarget=previous;}
+}
 function installEngineWrappers(){
  if(typeof app==='undefined'||!app?.engines)return;
  app.engines.forEach((engine,index)=>{

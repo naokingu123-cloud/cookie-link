@@ -1,0 +1,1452 @@
+{
+  "version": 232,
+  "model": "Eight uniformly drawn distinct numbers from 1..25; direct game payout, excluding the separate Sugar/JPC value. Finite-sample estimates are not per-game guarantees.",
+  "gelato": {
+    "method": "Exact enumeration of C(25,8)=1,081,575 combinations, grouped into feasible hit subsets of 19 unique board numbers. All 12 geometric transforms were independently checked.",
+    "colorCounts": [
+      8,
+      4,
+      4,
+      4,
+      4
+    ],
+    "patternCount": 21,
+    "transforms": 12,
+    "fixedCountAwards": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.2,
+      0.3,
+      0.5,
+      0.7,
+      0.9,
+      1.3,
+      1.7,
+      2.1,
+      2.6,
+      3.4,
+      4.3,
+      6.4,
+      8.5,
+      17,
+      100
+    ],
+    "fixedColorAwards": [
+      0,
+      1,
+      3,
+      5,
+      10
+    ],
+    "patterns": [
+      {
+        "id": "A",
+        "name": "氷晶の王冠",
+        "expectedRate": 71.653912119
+      },
+      {
+        "id": "B",
+        "name": "ミントの花飾り",
+        "expectedRate": 74.686434135
+      },
+      {
+        "id": "C",
+        "name": "双翼のソルベ",
+        "expectedRate": 76.74482121
+      },
+      {
+        "id": "D",
+        "name": "スノーリボン",
+        "expectedRate": 78.110237385
+      },
+      {
+        "id": "E",
+        "name": "フロストの花輪",
+        "expectedRate": 79.463356679
+      },
+      {
+        "id": "F",
+        "name": "アクア・プリズム",
+        "expectedRate": 80.623424173
+      },
+      {
+        "id": "G",
+        "name": "彩氷のしずく",
+        "expectedRate": 81.450458822
+      },
+      {
+        "id": "H",
+        "name": "六花のオーロラ",
+        "expectedRate": 82.232189169
+      },
+      {
+        "id": "I",
+        "name": "レインボーの羽",
+        "expectedRate": 83.227959226
+      },
+      {
+        "id": "J",
+        "name": "ミント・クラウン",
+        "expectedRate": 84.103349282
+      },
+      {
+        "id": "K",
+        "name": "雪花のガーデン",
+        "expectedRate": 85.190005316
+      },
+      {
+        "id": "L",
+        "name": "ダブルジュエル",
+        "expectedRate": 86.403790768
+      },
+      {
+        "id": "M",
+        "name": "クリスタル・ローズ",
+        "expectedRate": 88.738164251
+      },
+      {
+        "id": "N",
+        "name": "ルビーフローラ",
+        "expectedRate": 94.173478492
+      },
+      {
+        "id": "O",
+        "name": "アメジストの宝冠",
+        "expectedRate": 104.184249821
+      },
+      {
+        "id": "P",
+        "name": "虹色の流星",
+        "expectedRate": 115.134022144
+      },
+      {
+        "id": "Q",
+        "name": "対角のスノーフレーク",
+        "expectedRate": 47.936185655
+      },
+      {
+        "id": "R",
+        "name": "四隅の結晶",
+        "expectedRate": 62.698823475
+      },
+      {
+        "id": "S",
+        "name": "クリスタルリング",
+        "expectedRate": 120.002847699
+      },
+      {
+        "id": "T",
+        "name": "三葉の宝石",
+        "expectedRate": 139.993232092
+      },
+      {
+        "id": "U",
+        "name": "氷晶のメダリオン",
+        "expectedRate": 159.999149389
+      }
+    ],
+    "mixtureMeans": {
+      "50": 50,
+      "90": 90,
+      "150": 150
+    },
+    "checkpointCompatibility": {
+      "versionField": "pattern.payoutVersion",
+      "newVersion": 232,
+      "legacyCountAwards": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1,
+        1.5,
+        2,
+        2.5,
+        3,
+        4,
+        5,
+        7.5,
+        10,
+        20,
+        100
+      ],
+      "rule": "A restored pattern lacking version 232 keeps the legacy count table for prediction, actual awards and visible payout rows. The next fresh board uses the fixed v232 table."
+    }
+  },
+  "popcorn": {
+    "patternCount": 6,
+    "initialKernelPowerCounts": [
+      49,
+      8,
+      2,
+      2,
+      0,
+      0
+    ],
+    "fixedFirstPopAward": 120,
+    "fixedClearAwards": [
+      1,
+      3,
+      20,
+      50,
+      200,
+      500,
+      1000,
+      2000
+    ],
+    "calibration": [
+      {
+        "name": "双葉のリボン",
+        "rounds": 30000,
+        "seed": 231761,
+        "mean": 48.269666666666666,
+        "se": 0.8763049180106373,
+        "ci95": [
+          46.552109027365816,
+          49.987224305967516
+        ],
+        "clearCounts": [
+          26544,
+          3100,
+          325,
+          26,
+          5,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.0333,
+        "seconds": 21.798
+      },
+      {
+        "name": "対角の花束",
+        "rounds": 30000,
+        "seed": 231761,
+        "mean": 53.832,
+        "se": 0.8183054803678147,
+        "ci95": [
+          52.228121258479085,
+          55.435878741520916
+        ],
+        "clearCounts": [
+          26136,
+          3470,
+          364,
+          27,
+          3,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.04226666666666667,
+        "seconds": 23.161
+      },
+      {
+        "name": "風車のつぼみ",
+        "rounds": 30000,
+        "seed": 231761,
+        "mean": 60.81666666666667,
+        "se": 0.8648559235609816,
+        "ci95": [
+          59.12154905648715,
+          62.51178427684619
+        ],
+        "clearCounts": [
+          25653,
+          3896,
+          406,
+          43,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.04906666666666667,
+        "seconds": 22.399
+      },
+      {
+        "name": "宝石の花輪",
+        "rounds": 30000,
+        "seed": 231761,
+        "mean": 118.02533333333334,
+        "se": 1.3601893743751137,
+        "ci95": [
+          115.35936215955812,
+          120.69130450710855
+        ],
+        "clearCounts": [
+          24365,
+          4836,
+          711,
+          80,
+          8,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.1687,
+        "seconds": 29.65
+      },
+      {
+        "name": "シュガーリボン",
+        "rounds": 30000,
+        "seed": 231761,
+        "mean": 145.05233333333334,
+        "se": 2.342571502012423,
+        "ci95": [
+          140.460893189389,
+          149.64377347727768
+        ],
+        "clearCounts": [
+          22478,
+          6401,
+          951,
+          153,
+          14,
+          3,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.1963,
+        "seconds": 28.938
+      },
+      {
+        "name": "プリズムクロス",
+        "rounds": 30000,
+        "seed": 231761,
+        "mean": 350.82966666666664,
+        "se": 5.630623139937204,
+        "ci95": [
+          339.79364531238974,
+          361.86568802094354
+        ],
+        "clearCounts": [
+          24,
+          23734,
+          5368,
+          755,
+          103,
+          15,
+          1,
+          0,
+          0
+        ],
+        "sugarRate": 0.21526666666666666,
+        "seconds": 29.785
+      }
+    ],
+    "independentValidation": [
+      {
+        "target": 50,
+        "rounds": 30000,
+        "seed": 581332,
+        "mean": 48.592333333333336,
+        "se": 0.7354874832658547,
+        "ci95": [
+          47.15077786613226,
+          50.03388880053441
+        ],
+        "clearCounts": [
+          26474,
+          3176,
+          323,
+          25,
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.0353,
+        "patterns": {
+          "対角の花束": 9422,
+          "双葉のリボン": 20578
+        },
+        "seconds": 22.903
+      },
+      {
+        "target": 90,
+        "rounds": 30000,
+        "seed": 581332,
+        "mean": 90.69733333333333,
+        "se": 1.2930101880610338,
+        "ci95": [
+          88.1630333647337,
+          93.23163330193296
+        ],
+        "clearCounts": [
+          25124,
+          4245,
+          559,
+          62,
+          10,
+          0,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.10893333333333333,
+        "patterns": {
+          "宝石の花輪": 15412,
+          "風車のつぼみ": 14588
+        },
+        "seconds": 26.252
+      },
+      {
+        "target": 150,
+        "rounds": 30000,
+        "seed": 581332,
+        "mean": 149.09,
+        "se": 2.303990441000618,
+        "ci95": [
+          144.57417873563878,
+          153.60582126436123
+        ],
+        "clearCounts": [
+          21956,
+          6767,
+          1112,
+          138,
+          25,
+          2,
+          0,
+          0,
+          0
+        ],
+        "sugarRate": 0.19423333333333334,
+        "patterns": {
+          "シュガーリボン": 29271,
+          "プリズムクロス": 729
+        },
+        "seconds": 28.344
+      }
+    ],
+    "reproduceCalibration": "node tests/payout-v232-midgames-sample.mjs popcorn patterns 30000 231761",
+    "reproduceValidation": "node tests/payout-v232-midgames-sample.mjs popcorn targets 30000 581332",
+    "checkpointCompatibility": "Saved state.firstPopAward remains authoritative in native preview/draw, host settlement and visible payout rows; new boards always use 120."
+  },
+  "winery": {
+    "patternCount": 8,
+    "symmetry": "mirror",
+    "nonemptyGlasses": 6,
+    "initialVolumeRange": [
+      4.9,
+      5.4
+    ],
+    "initialVolumeMaxMinRatio": 1.1020408163265305,
+    "fixedFullGlassAwards": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0.3,
+      0.6,
+      1,
+      1.5,
+      2,
+      3,
+      4,
+      6,
+      10,
+      15,
+      30,
+      100
+    ],
+    "fixedRules": [
+      "Overflow splits equally between the two glasses beneath it.",
+      "Boosts double subsequent pour power, capped at 16.",
+      "MIX uses actual visible fruit layers; each full mixed glass adds 0.1 to the native final multiplier.",
+      "There is no target-dependent global volume scale or hidden award multiplier."
+    ],
+    "selection": "Two nearest lower and two nearest higher pattern anchors are mixed to the requested target, then selected uniformly within the chosen pair using one random roll.",
+    "patterns": [
+      {
+        "name": "果実の足あと",
+        "volumes": [
+          0.95,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.2,
+          0,
+          0,
+          0,
+          0.95,
+          0.95,
+          0.95,
+          0.95,
+          0
+        ],
+        "flavors": [
+          1,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          1,
+          5,
+          5,
+          5,
+          1,
+          1,
+          1,
+          1,
+          5
+        ],
+        "totalVolume": 4.95,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "lemon": 6
+        }
+      },
+      {
+        "name": "レモンの花壇",
+        "volumes": [
+          0.95,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.15,
+          0,
+          0,
+          0.95,
+          0,
+          0.95,
+          0.95,
+          0,
+          0.95
+        ],
+        "flavors": [
+          4,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          1,
+          5,
+          5,
+          1,
+          5,
+          1,
+          1,
+          5,
+          1
+        ],
+        "totalVolume": 4.9,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "lemon": 5,
+          "grape": 1
+        }
+      },
+      {
+        "name": "ぶどうのリボン",
+        "volumes": [
+          0.9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.9,
+          0,
+          0,
+          0.9,
+          0,
+          0.9,
+          0.9,
+          0,
+          0.9
+        ],
+        "flavors": [
+          4,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          4,
+          5,
+          5,
+          4,
+          5,
+          4,
+          4,
+          5,
+          4
+        ],
+        "totalVolume": 5.4,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "grape": 6
+        }
+      },
+      {
+        "name": "レモンの王冠",
+        "volumes": [
+          0,
+          0.9,
+          0.9,
+          0,
+          0,
+          0,
+          0,
+          0.9,
+          0.9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.9,
+          0,
+          0,
+          0.9,
+          0
+        ],
+        "flavors": [
+          5,
+          1,
+          1,
+          5,
+          5,
+          5,
+          5,
+          1,
+          1,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          1,
+          5,
+          5,
+          1,
+          5
+        ],
+        "totalVolume": 5.4,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "lemon": 6
+        }
+      },
+      {
+        "name": "メロンの花輪",
+        "volumes": [
+          0,
+          0.9,
+          0.9,
+          0,
+          0,
+          0,
+          0.9,
+          0,
+          0,
+          0.9,
+          0,
+          0.9,
+          0,
+          0.9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flavors": [
+          5,
+          2,
+          2,
+          5,
+          5,
+          5,
+          2,
+          5,
+          5,
+          2,
+          5,
+          2,
+          5,
+          2,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "totalVolume": 5.4,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "melon": 6
+        }
+      },
+      {
+        "name": "白い果樹園",
+        "volumes": [
+          0,
+          0.9,
+          0.9,
+          0,
+          0.9,
+          0,
+          0,
+          0.9,
+          0.9,
+          0,
+          0,
+          0,
+          0.9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flavors": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "totalVolume": 5.4,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "white": 6
+        }
+      },
+      {
+        "name": "翠のピラミッド",
+        "volumes": [
+          0.8,
+          0.95,
+          0.95,
+          0.95,
+          0.8,
+          0.95,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flavors": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "totalVolume": 5.4,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "melon": 6
+        }
+      },
+      {
+        "name": "ジュースの宝冠",
+        "volumes": [
+          0.8,
+          0.95,
+          0.95,
+          0.95,
+          0.8,
+          0.95,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flavors": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "totalVolume": 5.4,
+        "nonempty": 6,
+        "nonemptyFlavorCounts": {
+          "white": 6
+        }
+      }
+    ],
+    "calibration": [
+      {
+        "pattern": "果実の足あと",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 49.117495,
+        "se": 0.4968272578065991,
+        "ci95": [
+          48.14371357469906,
+          50.09127642530093
+        ],
+        "patterns": {
+          "果実の足あと": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          109,
+          1349,
+          8783,
+          34004,
+          57224,
+          38580,
+          25849,
+          12009,
+          7798,
+          5533,
+          3605,
+          2363,
+          1401,
+          804,
+          388,
+          141,
+          45,
+          15
+        ],
+        "initialVolumeRange": [
+          4.95,
+          4.95
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "レモンの花壇",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 49.18934,
+        "se": 0.7300794462603518,
+        "ci95": [
+          47.75838428532971,
+          50.62029571467029
+        ],
+        "patterns": {
+          "レモンの花壇": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          114,
+          1408,
+          9545,
+          37437,
+          61115,
+          35957,
+          23123,
+          10710,
+          7405,
+          4991,
+          3344,
+          2164,
+          1277,
+          738,
+          390,
+          179,
+          53,
+          50
+        ],
+        "initialVolumeRange": [
+          4.9,
+          4.9
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "ぶどうのリボン",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 60.08807,
+        "se": 0.7834841771333838,
+        "ci95": [
+          58.55244101281857,
+          61.623698987181434
+        ],
+        "patterns": {
+          "ぶどうのリボン": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          93,
+          1171,
+          7697,
+          29522,
+          55286,
+          38748,
+          28769,
+          14230,
+          9180,
+          5935,
+          3909,
+          2457,
+          1455,
+          831,
+          432,
+          179,
+          56,
+          50
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "レモンの王冠",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 88.844555,
+        "se": 0.6159697351000777,
+        "ci95": [
+          87.63725431920385,
+          90.05185568079615
+        ],
+        "patterns": {
+          "レモンの王冠": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          89,
+          1144,
+          6856,
+          25059,
+          45379,
+          36566,
+          27108,
+          17685,
+          13446,
+          10272,
+          7166,
+          4324,
+          2522,
+          1454,
+          646,
+          208,
+          60,
+          16
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "メロンの花輪",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 102.04724,
+        "se": 0.8379534754638303,
+        "ci95": [
+          100.4048511880909,
+          103.6896288119091
+        ],
+        "patterns": {
+          "メロンの花輪": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          64,
+          902,
+          5827,
+          22118,
+          45196,
+          43102,
+          27147,
+          17268,
+          12442,
+          9160,
+          6516,
+          4327,
+          2731,
+          1686,
+          945,
+          413,
+          125,
+          31
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "白い果樹園",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 140.191535,
+        "se": 0.7128046079724225,
+        "ci95": [
+          138.79443796837404,
+          141.58863203162593
+        ],
+        "patterns": {
+          "白い果樹園": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          45,
+          516,
+          2817,
+          9146,
+          17619,
+          26519,
+          42721,
+          41944,
+          23142,
+          15574,
+          9582,
+          5262,
+          2824,
+          1385,
+          624,
+          193,
+          69,
+          18
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "翠のピラミッド",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 153.863525,
+        "se": 0.9260627224156427,
+        "ci95": [
+          152.04844206406534,
+          155.67860793593468
+        ],
+        "patterns": {
+          "翠のピラミッド": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          85,
+          1095,
+          6239,
+          20498,
+          25346,
+          26549,
+          25375,
+          28048,
+          27065,
+          15436,
+          10435,
+          6588,
+          3664,
+          2006,
+          1001,
+          387,
+          149,
+          34
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      },
+      {
+        "pattern": "ジュースの宝冠",
+        "rounds": 200000,
+        "seed": 231995,
+        "mean": 159.423585,
+        "se": 0.9787605550152392,
+        "ci95": [
+          157.50521431217012,
+          161.34195568782988
+        ],
+        "patterns": {
+          "ジュースの宝冠": 200000
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          85,
+          1095,
+          6239,
+          20498,
+          25346,
+          26549,
+          25375,
+          28048,
+          27065,
+          15436,
+          10435,
+          6588,
+          3664,
+          2006,
+          1001,
+          387,
+          149,
+          34
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ]
+      }
+    ],
+    "independentValidation": [
+      {
+        "target": 50,
+        "rounds": 150000,
+        "seed": 581332,
+        "mean": 49.87730666666667,
+        "se": 0.6860861670519849,
+        "ci95": [
+          48.53257777924478,
+          51.222035554088556
+        ],
+        "patterns": {
+          "果実の足あと": 72726,
+          "ぶどうのリボン": 2472,
+          "レモンの花壇": 72175,
+          "レモンの王冠": 2627
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          71,
+          1032,
+          6936,
+          26380,
+          44063,
+          27955,
+          18606,
+          8679,
+          5752,
+          3965,
+          2784,
+          1673,
+          1046,
+          551,
+          317,
+          127,
+          43,
+          20
+        ],
+        "initialVolumeRange": [
+          4.9,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ],
+        "sugarRate": 0.0995
+      },
+      {
+        "target": 90,
+        "rounds": 150000,
+        "seed": 581332,
+        "mean": 89.63554666666667,
+        "se": 0.8054851183690532,
+        "ci95": [
+          88.05679583466332,
+          91.21429749867002
+        ],
+        "patterns": {
+          "メロンの花輪": 25060,
+          "ぶどうのリボン": 50169,
+          "レモンの王冠": 49680,
+          "白い果樹園": 25091
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          53,
+          796,
+          4750,
+          17649,
+          32872,
+          27464,
+          22796,
+          15524,
+          9969,
+          6990,
+          4833,
+          2926,
+          1751,
+          895,
+          472,
+          184,
+          58,
+          18
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ],
+        "sugarRate": 0.10046666666666666
+      },
+      {
+        "target": 150,
+        "rounds": 150000,
+        "seed": 581332,
+        "mean": 149.65813333333332,
+        "se": 1.081598965258326,
+        "ci95": [
+          147.53819936142702,
+          151.77806730523963
+        ],
+        "patterns": {
+          "翠のピラミッド": 61270,
+          "ジュースの宝冠": 60735,
+          "メロンの花輪": 13972,
+          "白い果樹園": 14023
+        },
+        "fullCounts": [
+          0,
+          0,
+          0,
+          0,
+          53,
+          817,
+          4517,
+          14570,
+          19832,
+          21254,
+          20396,
+          21293,
+          18971,
+          11011,
+          7402,
+          4742,
+          2576,
+          1406,
+          754,
+          264,
+          118,
+          24
+        ],
+        "initialVolumeRange": [
+          5.4,
+          5.4
+        ],
+        "nonemptyRange": [
+          6,
+          6
+        ],
+        "sugarRate": 0.0998
+      }
+    ],
+    "reproduceCalibration": "node tests/payout-v232-midgames-sample.mjs winery patterns 200000 231995",
+    "reproduceValidation": "node tests/payout-v232-midgames-sample.mjs winery targets 150000 581332",
+    "checkpointCompatibility": "Existing saved glasses, fruit layers, payout totals and thresholds remain authoritative; only fresh openings use the new pattern bank."
+  }
+}

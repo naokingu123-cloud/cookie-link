@@ -88,6 +88,8 @@ try{
  const receivedOffer=await player.messages.next(m=>m.type==='rtc_offer');
  assert.deepEqual(receivedOffer.description,offer);assert.equal(receivedOffer.targetInstanceId,'playerA');
  await assert.rejects(other.messages.next(m=>m.type==='rtc_offer',250),/timeout/);
+  other.ws.send(JSON.stringify({type:'rtc_offer',protocol:197,instanceId:'otherA',targetPlayerId:playerSession.player.id,targetInstanceId:'playerA',description:offer}));
+  await assert.rejects(player.messages.next(m=>m.type==='rtc_offer'&&m.fromPlayerId===otherSession.player.id,150),/timeout/,'only the registered physical host can offer roulette video');
 
  const answer={type:'answer',sdp:'v=0\r\no=rtc-player 1 1 IN IP4 127.0.0.1\r\n'};
  player.ws.send(JSON.stringify({type:'rtc_answer',protocol:197,instanceId:'playerA',targetPlayerId:hostSession.player.id,targetInstanceId:'hostA',description:answer}));
@@ -106,6 +108,10 @@ try{
  host.ws.send(JSON.stringify({type:'rtc_media',protocol:197,instanceId:'hostA',targetPlayerId:playerSession.player.id,targetInstanceId:'playerA',streamId:'streamA',mime:'video/webm;codecs=vp8',sequence:0,data:mediaData}));
  const media=await player.messages.next(m=>m.type==='rtc_media');
  assert.equal(media.data,mediaData);assert.equal(media.streamId,'streamA');
+  other.ws.send(JSON.stringify({type:'rtc_media',protocol:197,instanceId:'otherA',targetPlayerId:playerSession.player.id,targetInstanceId:'playerA',streamId:'rogueStream',mime:'video/webm;codecs=vp8',sequence:0,data:mediaData}));
+  await assert.rejects(player.messages.next(m=>m.type==='rtc_media'&&m.streamId==='rogueStream',150),/timeout/,'legacy WebM relay must also require the registered host');
+  other.ws.send(JSON.stringify({type:'rtc_media_stop',protocol:197,instanceId:'otherA',targetPlayerId:playerSession.player.id,targetInstanceId:'playerA',streamId:'streamA'}));
+  await assert.rejects(player.messages.next(m=>m.type==='rtc_media_stop',150),/timeout/,'another player cannot stop the host video');
  player.ws.send(JSON.stringify({type:'rtc_fallback_stop',protocol:197,instanceId:'playerA',targetPlayerId:hostSession.player.id,targetInstanceId:'hostA'}));
  const fallbackStop=await host.messages.next(m=>m.type==='rtc_fallback_stop');
  assert.equal(fallbackStop.fromPlayerId,playerSession.player.id);

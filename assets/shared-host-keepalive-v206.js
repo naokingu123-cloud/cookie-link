@@ -12,7 +12,9 @@ function install(){
 
  function physicalRound(){
   const round=window.SweetsSharedMachine?.client?.round;
-  return round&&round.phase==='PLAYING'&&round.drawSource!=='server-fallback'?round:null;
+  // BET uses the same host canvas with the draw still ready. Keep its existing
+  // lights/rotor awake on focus changes; this never starts a draw or a timer.
+  return round&&(round.phase==='BETTING'||round.phase==='PLAYING'&&round.drawSource!=='server-fallback')?round:null;
  }
  function keepAwake({resumeDriver=false,pumpFrame=true}={}){
   const round=physicalRound();

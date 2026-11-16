@@ -77,6 +77,25 @@ function patch(baseSource){
  "  if(message.type==='visual_frame'){if(current&&message.roundId===current.roundId)showRouletteMirror(message.image);return;}",
  "  if(message.type==='visual_frame'){hideRouletteMirror();return;}",
  'disable first-hit JPEG freeze overlay');
+ source=once(source,
+ '  function hostMotionState(){',
+ "  let hostBetRoundId='',hostBetDriver=null;\n  function hostMotionState(){",
+ 'remember the prepared host BET presentation');
+ source=once(source,
+`   if(round.phase==='BETTING'){
+    hostRunning=false;try{rouletteDriver?.setPaused(true);}catch{}`,
+`   if(round.phase==='BETTING'){
+    hostRunning=false;
+    // The existing ready-state renderer supplies BET lettering and lights.
+    // Prepare it once per BET/driver, then keep its clock running. Never call
+    // nativeStart here: the server PLAYING transition alone launches balls.
+    if(rouletteReady&&rouletteDriver&&(hostBetRoundId!==round.id||hostBetDriver!==rouletteDriver)){
+     try{
+      nativeReset();rouletteDriver.setPaused(false);
+      hostBetRoundId=round.id;hostBetDriver=rouletteDriver;
+     }catch(error){console.warn('[SharedMachineV224] host BET presentation',error);}
+    }`,
+ 'animate the existing BET presentation on the host only');
  source=source.replaceAll('[SharedMachineV221]','[SharedMachineV224]');
  source=source.replace("const VERSION='v221';","const VERSION='v224';");
  return source;

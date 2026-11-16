@@ -54,28 +54,47 @@ try{
  });
  const ranked=[...FACES].sort((a,b)=>
    a.edges.reduce((n,i)=>n+1/supports[i],0)-b.edges.reduce((n,i)=>n+1/supports[i],0));
- // Monte Carlo, 45,000 eight-ball draws across 25 slots:
- // ≈2.63 rare and ≈5.05 common face hits per round.
- // Face awards ≈88% of BET; full-clear bonus adds ≈0.5%
- // leaving limited room for Wonder Sugar-related value.
+ // Decorative face tiers do not affect awards. The shared count/collector
+ // tables below and the visible color pattern determine every payout.
  ranked.forEach((f,i)=>{f.tier=Math.min(3,Math.floor(i/6));f.reward=0;});
- // Colors: 0=水色, 1=緑, 2=黄色, 3=赤, 4=紫.  All patterns are mirror-symmetric.
+ // Colors: 0=水色, 1=緑, 2=黄色, 3=赤, 4=紫. All but the low-rate
+ // diagonal template are mirror-symmetric; every template has 12 orientations.
  const GRADE_COLORS=['#36d6fc','#34d77b','#ffd63c','#f64a6d','#ac66f2'];
  const GRADE_NAMES=['水色','緑','黄色','赤','紫'];
  const COLLECTOR_MULT=[0,1,3,5,10];
- const COUNT_MULT=[0,0,0,0,0,0,0,0,0,0,0.2,0.4,0.6,0.8,1,1.5,2,2.5,3,4,5,7.5,10,20,100];
- const PATTERNS=[{"id":"A","name":"氷晶の王冠","weight":5,"grades":[3,3,4,2,1,0,1,4,0,2,0,0,0,2,0,0,0,1,1,2,4,4,3,3]},{"id":"B","name":"ミントの花飾り","weight":5,"grades":[4,4,4,3,2,0,2,4,0,3,0,0,1,1,1,0,0,0,0,1,3,3,2,2]},{"id":"C","name":"双翼のソルベ","weight":6,"grades":[4,4,2,4,0,0,0,2,0,4,0,0,1,3,1,1,1,2,2,3,0,0,3,3]},{"id":"D","name":"スノーリボン","weight":6,"grades":[2,2,2,4,0,3,0,2,3,4,0,0,0,3,0,0,0,1,1,3,4,4,1,1]},{"id":"E","name":"フロストの花輪","weight":6,"grades":[1,1,3,4,1,0,1,3,0,4,0,0,0,4,0,0,0,3,3,4,2,2,2,2]},{"id":"F","name":"アクア・プリズム","weight":6,"grades":[3,3,1,2,0,1,0,1,1,2,2,2,0,4,0,0,0,0,0,4,3,3,4,4]},{"id":"G","name":"彩氷のしずく","weight":7,"grades":[0,0,3,1,2,0,2,3,0,1,1,1,0,4,0,3,3,0,0,4,2,2,4,4]},{"id":"H","name":"六花のオーロラ","weight":7,"grades":[3,3,4,0,0,2,0,4,2,0,0,0,1,4,1,1,1,0,0,4,2,2,3,3]},{"id":"I","name":"レインボーの羽","weight":9,"grades":[0,0,2,3,0,0,0,2,0,3,0,0,1,1,1,2,2,3,3,1,4,4,4,4]},{"id":"J","name":"ミント・クラウン","weight":9,"grades":[4,4,1,4,3,0,3,1,0,4,1,1,2,2,2,0,0,0,0,2,3,3,0,0]},{"id":"K","name":"雪花のガーデン","weight":9,"grades":[4,4,4,3,0,1,0,4,1,3,1,1,0,2,0,0,0,3,3,2,0,0,2,2]},{"id":"L","name":"ダブルジュエル","weight":9,"grades":[4,4,3,4,0,2,0,3,2,4,0,0,0,1,0,3,3,0,0,1,1,1,2,2]},{"id":"M","name":"クリスタル・ローズ","weight":8,"grades":[2,2,2,3,1,0,1,2,0,3,3,3,0,0,0,1,1,0,0,0,4,4,4,4]},{"id":"N","name":"ルビーフローラ","weight":5,"grades":[2,2,4,1,0,0,0,4,0,1,1,1,0,3,0,0,0,4,4,3,2,2,3,3]},{"id":"O","name":"アメジストの宝冠","weight":2,"grades":[4,4,0,2,3,1,3,0,1,2,1,1,0,3,0,2,2,0,0,3,0,0,4,4]},{"id":"P","name":"虹色の流星","weight":1,"grades":[4,4,0,3,0,0,0,0,0,3,3,3,1,2,1,0,0,1,1,2,2,2,4,4]}];
+ const LEGACY_COUNT_MULT=[0,0,0,0,0,0,0,0,0,0,0.2,0.4,0.6,0.8,1,1.5,2,2.5,3,4,5,7.5,10,20,100];
+ const COUNT_MULT=[0,0,0,0,0,0,0,0,0,0,0.2,0.3,0.5,0.7,0.9,1.3,1.7,2.1,2.6,3.4,4.3,6.4,8.5,17,100];
+ const PATTERNS=[{"id":"A","name":"氷晶の王冠","weight":5,"grades":[3,3,4,2,1,0,1,4,0,2,0,0,0,2,0,0,0,1,1,2,4,4,3,3],"expectedRate":71.653912119},{"id":"B","name":"ミントの花飾り","weight":5,"grades":[4,4,4,3,2,0,2,4,0,3,0,0,1,1,1,0,0,0,0,1,3,3,2,2],"expectedRate":74.686434135},{"id":"C","name":"双翼のソルベ","weight":6,"grades":[4,4,2,4,0,0,0,2,0,4,0,0,1,3,1,1,1,2,2,3,0,0,3,3],"expectedRate":76.74482121},{"id":"D","name":"スノーリボン","weight":6,"grades":[2,2,2,4,0,3,0,2,3,4,0,0,0,3,0,0,0,1,1,3,4,4,1,1],"expectedRate":78.110237385},{"id":"E","name":"フロストの花輪","weight":6,"grades":[1,1,3,4,1,0,1,3,0,4,0,0,0,4,0,0,0,3,3,4,2,2,2,2],"expectedRate":79.463356679},{"id":"F","name":"アクア・プリズム","weight":6,"grades":[3,3,1,2,0,1,0,1,1,2,2,2,0,4,0,0,0,0,0,4,3,3,4,4],"expectedRate":80.623424173},{"id":"G","name":"彩氷のしずく","weight":7,"grades":[0,0,3,1,2,0,2,3,0,1,1,1,0,4,0,3,3,0,0,4,2,2,4,4],"expectedRate":81.450458822},{"id":"H","name":"六花のオーロラ","weight":7,"grades":[3,3,4,0,0,2,0,4,2,0,0,0,1,4,1,1,1,0,0,4,2,2,3,3],"expectedRate":82.232189169},{"id":"I","name":"レインボーの羽","weight":9,"grades":[0,0,2,3,0,0,0,2,0,3,0,0,1,1,1,2,2,3,3,1,4,4,4,4],"expectedRate":83.227959226},{"id":"J","name":"ミント・クラウン","weight":9,"grades":[4,4,1,4,3,0,3,1,0,4,1,1,2,2,2,0,0,0,0,2,3,3,0,0],"expectedRate":84.103349282},{"id":"K","name":"雪花のガーデン","weight":9,"grades":[4,4,4,3,0,1,0,4,1,3,1,1,0,2,0,0,0,3,3,2,0,0,2,2],"expectedRate":85.190005316},{"id":"L","name":"ダブルジュエル","weight":9,"grades":[4,4,3,4,0,2,0,3,2,4,0,0,0,1,0,3,3,0,0,1,1,1,2,2],"expectedRate":86.403790768},{"id":"M","name":"クリスタル・ローズ","weight":8,"grades":[2,2,2,3,1,0,1,2,0,3,3,3,0,0,0,1,1,0,0,0,4,4,4,4],"expectedRate":88.738164251},{"id":"N","name":"ルビーフローラ","weight":5,"grades":[2,2,4,1,0,0,0,4,0,1,1,1,0,3,0,0,0,4,4,3,2,2,3,3],"expectedRate":94.173478492},{"id":"O","name":"アメジストの宝冠","weight":2,"grades":[4,4,0,2,3,1,3,0,1,2,1,1,0,3,0,2,2,0,0,3,0,0,4,4],"expectedRate":104.184249821},{"id":"P","name":"虹色の流星","weight":1,"grades":[4,4,0,3,0,0,0,0,0,3,3,3,1,2,1,0,0,1,1,2,2,2,4,4],"expectedRate":115.134022144},{"id":"Q","name":"対角のスノーフレーク","weight":1,"grades":[4,3,2,3,0,1,0,4,2,1,0,0,0,2,0,1,3,0,0,1,3,4,4,2],"expectedRate":47.936185655},{"id":"R","name":"四隅の結晶","weight":1,"grades":[3,3,3,4,1,0,1,3,0,4,0,0,0,4,0,1,1,0,0,4,2,2,2,2],"expectedRate":62.698823475},{"id":"S","name":"クリスタルリング","weight":1,"grades":[4,4,4,3,2,1,2,4,1,3,2,2,0,1,0,0,0,3,3,1,0,0,0,0],"expectedRate":120.002847699},{"id":"T","name":"三葉の宝石","weight":1,"grades":[0,0,0,1,3,0,3,0,0,1,4,4,1,4,1,2,2,0,0,4,2,2,3,3],"expectedRate":139.993232092},{"id":"U","name":"氷晶のメダリオン","weight":1,"grades":[0,0,2,0,3,0,3,2,0,0,1,1,0,3,0,4,4,1,1,3,4,4,2,2],"expectedRate":159.999149389}];
  const BONUS=10000,flavors=['#ff3b82','#ffc224','#38db80','#00bfe9','#536cf7','#bb55f7'];
- function selectPattern(random){
-   const roll=random()*100;let total=0;
-   for(const pattern of PATTERNS){total+=pattern.weight;if(roll<total)return pattern;}
-   return PATTERNS[PATTERNS.length-1];
+ // v232: a single displayed paytable is shared by every setting. Pattern
+ // means are exact over all C(25,8) unordered draws, not live look-ahead.
+ // The 19 numbers remain unique and each board keeps 8/4/4/4/4 ice colors.
+ const RATE_PATTERNS=[...PATTERNS].sort((a,b)=>a.expectedRate-b.expectedRate);
+ const FACE_TRANSFORMS=[];
+ for(let reflect=0;reflect<2;reflect++)for(let turn=0;turn<6;turn++){
+   const angle=turn*Math.PI/3,co=Math.cos(angle),si=Math.sin(angle);
+   const nodes=RAW.map(([px,py])=>{
+     const x=(px-X)*(reflect?-1:1),y=py-Y,tx=X+x*co-y*si,ty=Y+x*si+y*co;
+     return RAW.findIndex(([qx,qy])=>Math.abs(qx-tx)<1e-5&&Math.abs(qy-ty)<1e-5);
+   });
+   if(nodes.some(i=>i<0))continue;
+   const faces=FACES.map(f=>{const key=f.nodes.map(i=>nodes[i]).sort((a,b)=>a-b).join(',');return FACES.findIndex(g=>g.nodes.slice().sort((a,b)=>a-b).join(',')===key);});
+   if(faces.every(i=>i>=0))FACE_TRANSFORMS.push(faces);
  }
- function evaluatePrize(filled,grades){
+ function patternMix(rate=90){
+   const target=Math.max(50,Math.min(150,Number(rate)||90));
+   let hi=1;while(hi<RATE_PATTERNS.length-1&&RATE_PATTERNS[hi].expectedRate<target)hi++;
+   const low=RATE_PATTERNS[hi-1],high=RATE_PATTERNS[hi];
+   return {low,high,probability:(target-low.expectedRate)/(high.expectedRate-low.expectedRate),target};
+ }
+ function selectPattern(random,rate=90){
+   const mix=patternMix(rate);return random()<mix.probability?mix.high:mix.low;
+ }
+ function evaluatePrize(filled,grades,countPaytable=COUNT_MULT){
    const counts=[0,0,0,0,0];
    for(const id of filled)counts[grades[id]]++;
    const collectorMult=counts.reduce((sum,n,color)=>sum+(color>0&&n===4?COLLECTOR_MULT[color]:0),0);
-   const countMult=COUNT_MULT[filled.size]||0;
+   const countMult=countPaytable[filled.size]||0;
    return {counts,collectorMult,countMult,hundredths:Math.round((collectorMult+countMult)*100)};
  }
  // Sanity: 24/24 pays the final count tier only, plus each of four collectors.
@@ -136,8 +155,14 @@ try{
      let nums=Array.from({length:25},(_,i)=>i+1);
      for(let i=24;i>0;i--){const j=Math.floor(this.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
      this.nodeNumbers=nums.slice(0,19);this.hits=new Set();this.links=new Set();
-     this.pattern=selectPattern(this.random);
-     this.faceGrades=this.pattern.grades.slice();
+     this.payoutTarget=Math.max(50,Math.min(150,Number(typeof debugPayoutTarget!=='undefined'?debugPayoutTarget:this.payoutTarget)||90));
+     // The version belongs inside the saved pattern: restoring an old snapshot
+     // replaces this object even when its omitted top-level fields would retain
+     // constructor defaults. Active old rounds keep their original paytable.
+     this.pattern={...selectPattern(this.random,this.payoutTarget),payoutVersion:232};
+     this.patternTransform=Math.floor(this.random()*FACE_TRANSFORMS.length);
+     this.faceGrades=Array(24).fill(0);
+     FACE_TRANSFORMS[this.patternTransform].forEach((to,from)=>{this.faceGrades[to]=this.pattern.grades[from];});
      this.collectorCounts=[0,0,0,0,0];
      this.collectorMult=0;this.countMult=0;
      // Exactly ~10% sugar-acquisition probability under the 25-number, 8-ball model.
@@ -159,6 +184,7 @@ try{
      this.emit('ready',{filled:this.filled.size});
    }
    get idle(){return !this.busy&&!this.queue.length;}
+   get countPaytable(){return Number(this.pattern?.payoutVersion)>=232?COUNT_MULT:LEGACY_COUNT_MULT;}
    start(){if(this.running||this.roundBet<=0)return;this.running=true;this.emit('waiting');}
    previewDraw(n){
      if(!this.running||this.seen.has(n)||this.pendingDraws.has(n))return false;
@@ -186,7 +212,7 @@ try{
      const next=new Set(this.hits);next.add(pos);
      const state=this.stateFor(next),prospective=new Set(this.filled);
      for(const id of state.faces)prospective.add(id);
-     const prize=evaluatePrize(prospective,this.faceGrades);
+     const prize=evaluatePrize(prospective,this.faceGrades,this.countPaytable);
      const gain=Math.max(0,prize.hundredths-this.totalHundredths);
      const allClear=this.filled.size<24&&prospective.size===24;
      return {number,gain,total:prize.hundredths,allClear,tier:allClear?3:prize.hundredths>=1000?2:prize.hundredths>=300?1:0};
@@ -221,7 +247,7 @@ try{
                this.wonderToken=step;this.emit('stepcollect',{steps:[step]});this.emit('sugaraward',{steps:[step]});
              }
              if(this.filled.size===24&&!this.allComplete){this.allComplete=true;this.allClears++;}
-             const prize=evaluatePrize(this.filled,this.faceGrades);
+             const prize=evaluatePrize(this.filled,this.faceGrades,this.countPaytable);
              this.collectorCounts=prize.counts;
              this.collectorMult=prize.collectorMult;
              this.countMult=prize.countMult;
@@ -533,11 +559,12 @@ try{
  function updateCollectorHUD(e,bet){
    if(!e?.faceGrades)return;
    const key=[e.cycle,e.phase,e.filled.size,e.totalHundredths,
-     e.pattern?.id,e.sugarTarget,e.sugarAwarded,bet].join('/');
+     e.pattern?.id,e.pattern?.payoutVersion||0,e.sugarTarget,e.sugarAwarded,bet].join('/');
    if(key===collectorKey)return;
    collectorKey=key;
-   const counts=e.collectorCounts||evaluatePrize(e.filled,e.faceGrades).counts;
-   const best=[{mult:COUNT_MULT[e.filled.size]||0,
+   const countPaytable=e.countPaytable;
+   const counts=e.collectorCounts||evaluatePrize(e.filled,e.faceGrades,countPaytable).counts;
+   const best=[{mult:countPaytable[e.filled.size]||0,
      name:e.filled.size>=10?e.filled.size+'枚パネル':'未成立'}];
    for(const row of collectorPanel.querySelectorAll('[data-grade]')){
      const grade=+row.dataset.grade,count=counts[grade],color=GRADE_COLORS[grade];
@@ -564,7 +591,7 @@ try{
    schedulePayoutSlide(e);
    for(const row of collectorPanel.querySelectorAll('.gp-pay-row')){
      const n=+row.dataset.panels;
-     const payout=num(medalWin(bet,Math.round(COUNT_MULT[n]*100)))+'WIN';
+     const payout=num(medalWin(bet,Math.round(countPaytable[n]*100)))+'WIN';
      const label=row.querySelector('.gp-pay-win');
      if(label.textContent!==payout)label.textContent=payout;
      // The current-highlight is owned by paintPayoutStep(), so it advances
@@ -1198,7 +1225,8 @@ try{
    get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,
      pattern:e.pattern?.id,counts:e.collectorCounts.slice(),sugarTarget:e.sugarTarget,sugarAwarded:e.sugarAwarded,countMult:e.countMult,
      collectorMult:e.collectorMult,totalHundredths:e.totalHundredths,bonus:e.allComplete};},
-   patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,grades:p.grades.slice()})),
+   patterns:PATTERNS.map(p=>({id:p.id,name:p.name,weight:p.weight,expectedRate:p.expectedRate,grades:p.grades.slice()})),
+   patternMix,transforms:FACE_TRANSFORMS.map(v=>v.slice()),
    prizes:{countMultiplier:COUNT_MULT.slice(),colorMultipliers:COLLECTOR_MULT.slice()},
    payoutWindowFor,
    get reach(){return [...getNodeReachTiers(e)].map(([index,r])=>({index,...r}));},

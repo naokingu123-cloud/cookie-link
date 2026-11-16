@@ -1,8 +1,8 @@
-/* SWEETS LINK v162 — scheduled Waffle POW turns, adjacent-rank strikes,
+/* SWEETS LINK v232 — geometric payout mix, fixed Waffle POW schedule,
    exact payout ladder and restrained board animation. */
 (()=>{
 'use strict';
-const VERSION='v162';
+const VERSION='v232';
 if(window.SweetsLineup&&!window.SweetsLineup.chosen?.includes('stick'))return;
 if(window.WafflePowV159?.version===VERSION)return;
 window.WafflePowV159={version:VERSION};
@@ -36,23 +36,24 @@ function install(){
  };
 
  const drawOrders=43609104000;
- // No-POW ordinary rates and the additional return per scheduled POW turn are
- // Monte-Carlo calibration anchors for the new rack. They keep the existing
- // target-rate mold mixer useful while POW frequency changes with the target.
+ // Ordinary-return anchors for a target-independent POW schedule (one turn
+ // with probability .95). Each geometric mold was measured in 50,000 actual
+ // engine games; rare reversal return retains the exact event probabilities.
+ // Only the mirror-symmetric opening mold mix responds to the target.
  const molds=[
-  {name:'千鳥',normal:36.0,powDelta:1.5,events:233424/drawOrders,games:233424/drawOrders},
-  {name:'小花',normal:41.1,powDelta:1.1,events:14512/drawOrders,games:14512/drawOrders},
-  {name:'飛石',normal:61.5,powDelta:6.0,events:25920/drawOrders,games:25920/drawOrders},
-  {name:'小紋',normal:127.0,powDelta:21.2,events:979056/drawOrders,games:967464/drawOrders},
-  {name:'双葉',normal:176.0,powDelta:39.4,events:2880/drawOrders,games:2880/drawOrders},
-  {name:'花菱',normal:245.0,powDelta:50.4,events:171720/drawOrders,games:171720/drawOrders},
-  {name:'風車',normal:332.0,powDelta:114.2,events:8/drawOrders,games:8/drawOrders},
-  {name:'花窓',normal:412.0,powDelta:113.9,events:720/drawOrders,games:720/drawOrders},
-  {name:'組市松',normal:362.0,powDelta:98.0,events:4844/drawOrders,games:4844/drawOrders}
+  {name:'千鳥',normal:38.06,events:233424/drawOrders,games:233424/drawOrders},
+  {name:'小花',normal:42.8442,events:14512/drawOrders,games:14512/drawOrders},
+  {name:'飛石',normal:66.6022,events:25920/drawOrders,games:25920/drawOrders},
+  {name:'小紋',normal:145.6448,events:979056/drawOrders,games:967464/drawOrders},
+  {name:'双葉',normal:210.817,events:2880/drawOrders,games:2880/drawOrders},
+  {name:'花菱',normal:292.6372,events:171720/drawOrders,games:171720/drawOrders},
+  {name:'風車',normal:434.6322,events:8/drawOrders,games:8/drawOrders},
+  {name:'花窓',normal:527.631,events:720/drawOrders,games:720/drawOrders},
+  {name:'組市松',normal:453.082,events:4844/drawOrders,games:4844/drawOrders}
  ];
  const clampRate=value=>Math.max(50,Math.min(150,Number.isFinite(Number(value))?Number(value):90));
- const expectedPowCount=rate=>Math.min(3,.25+(clampRate(rate)-50)*.0175+Math.max(0,clampRate(rate)-120)/150);
- const effectiveNormal=(m,rate)=>m.normal+m.powDelta*expectedPowCount(rate);
+ const expectedPowCount=()=>.95;
+ const effectiveNormal=m=>m.normal;
  const moldTotal=(m,rate)=>effectiveNormal(m,rate)+m.events*REVERSAL_BONUS;
  function mixtureFor(target){
   const desired=clampRate(target);

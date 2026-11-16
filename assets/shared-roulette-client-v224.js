@@ -211,7 +211,11 @@ function boot(){
  async function onMessage(value){
   if(value.type==='rtc_host_ready'){const hostKey=String(value.fromPlayerId||'')+':'+String(value.fromInstanceId||''),changed=!!lastHostKey&&lastHostKey!==hostKey,capable=Number(value.frameRelay)===1&&framesSupported,upgrade=capable&&!frameCapable;lastHostKey=hostKey;frameCapable=capable;if(changed){frameWatching=false;frameAt=0;}if(changed||upgrade||!isFresh())request(0,true);return;}
   if(value.type==='rtc_host_offline'){lastHostKey='';frameWatching=false;holdLast()||showRemoteWaiting(true);request(500,true);return;}
-  if(value.targetInstanceId&&value.targetInstanceId!==instanceId)return;if(value.type==='rtc_offer'){await offer(value);return;}
+  if(value.targetInstanceId&&value.targetInstanceId!==instanceId)return;
+  // The fallback transport and direct offers must come from the same announced
+  // physical host as JPEG frames. Ignore retired hosts even on older relays.
+  if(lastHostKey&&['rtc_offer','rtc_media','rtc_media_stop'].includes(value.type)&&String(value.fromPlayerId||'')+':'+String(value.fromInstanceId||'')!==lastHostKey)return;
+  if(value.type==='rtc_offer'){await offer(value);return;}
   if(value.type==='rtc_frame'){receiveFrame(value);return;}
   if(value.type==='rtc_ice'){const session=peer;if(!session||value.fromPlayerId&&value.fromPlayerId!==session.host||value.fromInstanceId&&value.fromInstanceId!==session.hostInstance)return;if(session.pc.remoteDescription)try{await session.pc.addIceCandidate(value.candidate);}catch{}else session.ice.push(value.candidate);return;}
   if(value.type==='rtc_media'){relayChunk(value);return;}if(value.type==='rtc_media_stop'&&(!value.streamId||relay?.id===value.streamId)){closeRelay();if(Date.now()-p2pFrameAt>1200)request(80,true);}

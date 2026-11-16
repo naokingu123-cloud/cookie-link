@@ -576,3 +576,16 @@
 - tests/shared-v231-remote-display.mjsと実server/wsのshared-rtc-signaling.mjsで生成抑止、同時視聴、後発接続、decode/queue/backpressure、宛先分離を確認。既存同期テストも維持。詳細docs/shared-sync-v231.md。
 - 版20261116-v231-remote-roulette-only。Windowsサーバー更新/再起動＋ホスト/クライアント再読込が必要。.runtime/.tools/data/CREDITを保持。
 - 各ゲームPO/対称初期盤面の改定は続くv232作業であり、この映像版に混在させない。
+
+## 2026-11-16 — v232 各ゲームの幾何盤面と50〜150％の配当調整
+
+- ユーザー指定: 特殊マスやボーナス個数の露骨な設定差を減らし、配置・連結・色の関係で各ゲームを調整する。初期盤面は複数の対称/幾何パターンを優先し、クッキーは例外可。詳細は`docs/payout-v232.md`と3群の統計JSON。
+- CookieはWILD/予告率を固定し、遠距離色関係・番号/ハンマー配置へ調整を集約。Canyonは12左右対称地形、鉱石/アイテム在庫の抽選を固定し露出位置と事前価値を調整。Sixは既存6対称型を維持し色分離を再校正。実indexの最上段補充パッチを含め、Engineと高速集計の最終盤面/WIN等を比較した。
+- Gelato21型・12向き、Popcorn6点対称型・爆弾12個固定・初回配当120個固定、Winery8左右対称型・液入り6杯・総液量4.9〜5.4杯。Wineryへ小数付きサーバーquoteをreset前に直接渡し、進行中の旧盤面をresetしない回帰を追加。
+- Jelly6対称型・FREE4個固定、Waffle9対称型・POW予定枠の抽選は95%1回/5%0回固定。Castella10型・12向き、生地6/FIRE1/ODDS2/流路54本固定。実表示と2段階流入が同じedgesを使い、旧259〜333%への目標読み替えを撤去。
+- 50%を実現するためGelato通常枚数配当とJelly通常ライン配当を全設定共通で一度だけ見直した。Gelato全埋め100倍・色配当、Jelly全12ライン300倍は維持。旧checkpointは新盤面生成まで旧配当を維持し、表示/予測/WINを一致させる。Popcorn旧firstPopAward、Castella旧特殊個数も保存状態を尊重する。
+- 理論/試算は一様な重複なし8/25の通常ゲーム直接配当、共通Sugar/JPCを除く。Gelatoは1081575通り、Jelly/Castellaは型ごと60568200通りの全数計算。その他は独立draw RNGによる実処理試算。Waffleは通常実測と希少3000倍リバーサルの厳密期待値を区別する。物理抽選や有限実績で設定値ぴったりとは主張しない。
+- `npm run test:payout`に3群のルール/実Engine回帰を追加し、`test:shared`に含めた。重い統計試算はCIから分離。変更した全ブラウザーJSのキャッシュを232へ更新（Jelly host/view/lessonも含む）。Waffle追加ルールの後追い動的読込は廃止し、indexの共有同期より前の読込順へ統合。遅延適用で開始直後の未入賞ラウンドがresetされる競合を防ぐ。
+- 版`20261116-v232-geometric-payout`。v231サーバー映像専用、v230入力復旧、即時BET控除・AUTO REBET・20秒BET・既存CREDITを保持。Windowsプロジェクトも更新し、既存ランチャーで再起動してホスト/クライアントを再読み込みする。`.runtime`/`.tools`/`data`を削除しない。
+- 再開時の最終監査で、サーバーBET中に前回のDRAW ENDが静止する問題を再現し修正。BET開始時に一度だけ既存ready演出へ戻し、ホスト描画と照明を動かす。200ms時計やsnapshotはリセットせず、BET19.999秒間の発射0・PLAYING通知時のみ開始を実物理で検証した。core patchとhost keepaliveを更新。
+- 残っていた上部の即リセット・通常リセットボタンとそのクリック処理を撤去。内部復旧/JPC初期化は維持。新JPEGだけでなく旧WebM/offer/stopも登録ホストに限定し、クライアントで旧ホストinstanceを排除。修正前に失敗する実WebSocket回帰を追加し、旧ホスト互換を含めて成功した。

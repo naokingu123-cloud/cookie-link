@@ -715,7 +715,7 @@ function panel(c,state,o,x,y,w,h,popupAge,shownOdds){
   }
   if(sugar)sugarMarker(c,20,cy,Math.min(16,rowH*.97),o.sugarIcon);
   lettering(c,n+'本',sugar?29:16,cy,size,active||top?'#ffe3a1':'#fff3e7',{align:'left',max:38});
-  const win=Math.floor(bet*K.payout(n,shownOdds)/100);
+  const win=Math.floor(bet*K.payout(n,shownOdds,state.payoutVersion??(o.demo?K.PAYOUT_VERSION:0))/100);
   lettering(c,win.toLocaleString('en-US'),right,cy,size,'#ffe38e',{align:'right',max:right-67,face:'ArcadePayout,Georgia,serif'});
   y0+=ht;
  }

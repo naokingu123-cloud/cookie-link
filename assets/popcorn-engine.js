@@ -207,38 +207,34 @@
   const clearPay=[[1,1],[2,3],[3,20],[4,50],[5,200],[6,500],[7,1000],[8,2000]];
   const clearTotals=[0];
   for(const [,award] of clearPay) clearTotals.push(clearTotals[clearTotals.length-1]+award);
-  // Symmetric opening boards. Every pattern has at least one ordinary fuse
-  // that can clear all 61 kernels immediately; ALL is not needed.
-  // "mirror" means left/right reflection, "rot180" means half-turn symmetry.
-  const initialPatterns=[
-    {name:'ミラーリボン',symmetry:'mirror',clearPorts:[7],powers:[0,0,0,0,0,0,2,3,3,2,0,0,1,0,1,0,1,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,3,2,0,0,2,3,0,1,0,1,1,1,0,1,0,1,0,0,1,0,0,0,0,0,0]},
-    {name:'ミラークラウン',symmetry:'mirror',clearPorts:[7],powers:[0,0,3,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,0,3,1,1,1,1,3,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2,0,1,0,0,0,0,1,0,0,0,0,0]},
-    {name:'ミラースター',symmetry:'mirror',clearPorts:[7],powers:[0,0,0,0,0,1,0,1,1,0,1,0,2,4,0,4,2,0,4,0,0,0,0,0,0,4,0,0,0,0,4,0,0,0,0,1,0,1,0,0,1,0,1,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,2,0,0]},
-    {name:'ターンフラワー',symmetry:'rot180',clearPorts:[10],powers:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,2,0,0,2,0,0,0,0,1,3,0,0,0,0,2,0,0,0,0,3,1,0,0,0,0,2,0,0,2,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1]},
-    {name:'ターンリング',symmetry:'rot180',clearPorts:[4],powers:[0,0,1,0,0,0,0,0,0,0,0,0,0,3,1,0,1,0,4,0,0,1,1,0,2,0,0,0,0,1,2,1,0,0,0,0,2,0,1,1,0,0,4,0,1,0,1,3,0,0,0,0,0,0,0,0,0,0,1,0,0]},
-    {name:'ターンクロス',symmetry:'rot180',clearPorts:[7],powers:[0,1,1,1,0,0,0,0,0,0,0,0,0,0,4,0,1,0,0,0,0,0,0,0,1,1,0,2,2,0,0,0,2,2,0,1,1,0,0,0,0,0,0,0,1,0,4,0,0,0,0,0,0,0,0,0,0,1,1,1,0]}
-  ].map(pattern=>Object.freeze({...pattern,powers:Object.freeze(pattern.powers.slice()),clearPorts:Object.freeze(pattern.clearPorts.slice())}));
-  function patternChanceForRate(target){
+  // v232: every opening comes from a half-turn-symmetric template. All
+  // templates contain the same 8 yellow, 2 red and 2 purple bombs. Only
+  // their connectivity changes; the visible payout table stays identical.
+  // Means below are offline eight-draw simulations, never live look-ahead.
+  const initialPatterns=[{"powers":[0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,2,0,0,0,1,0,0,1,3,0,0,0,0,0,0,0,3,1,0,0,1,0,0,0,2,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0],"name":"双葉のリボン","symmetry":"rot180","expectedRate":48.269666667,"clearPorts":[],"calibration":{"rounds":30000,"seed":231761,"se":0.876304918}},{"powers":[0,0,0,0,0,1,0,0,0,0,2,0,0,0,0,0,0,1,0,0,1,0,0,1,0,3,0,0,0,0,0,0,0,0,0,3,0,1,0,0,1,0,0,1,0,0,0,0,0,0,2,0,0,0,0,1,0,0,0,0,0],"name":"対角の花束","symmetry":"rot180","expectedRate":53.832,"clearPorts":[],"calibration":{"rounds":30000,"seed":231761,"se":0.81830548}},{"powers":[0,0,1,0,0,2,0,0,0,0,0,3,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,3,0,0,0,0,0,2,0,0,1,0,0],"name":"風車のつぼみ","symmetry":"rot180","expectedRate":60.816666667,"clearPorts":[],"calibration":{"rounds":30000,"seed":231761,"se":0.864855924}},{"powers":[0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,2,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,2,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"宝石の花輪","symmetry":"rot180","expectedRate":118.025333333,"clearPorts":[],"calibration":{"rounds":30000,"seed":231761,"se":1.360189374}},{"powers":[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,2,0,3,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,3,0,2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0],"name":"シュガーリボン","symmetry":"rot180","expectedRate":145.052333333,"clearPorts":[],"calibration":{"rounds":30000,"seed":231761,"se":2.342571502}},{"powers":[0,0,0,0,0,0,1,2,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,3,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,2,1,0,0,0,0,0,0],"name":"プリズムクロス","symmetry":"rot180","expectedRate":350.829666667,"clearPorts":[],"calibration":{"rounds":30000,"seed":231761,"se":5.63062314}}].map(pattern=>Object.freeze({...pattern,powers:Object.freeze(pattern.powers.slice()),clearPorts:Object.freeze(pattern.clearPorts.slice())}));
+  const ratePatterns=[...initialPatterns].sort((a,b)=>a.expectedRate-b.expectedRate);
+  const mirrorIndex=cells.map(a=>cells.findIndex(b=>Math.abs(a.x+b.x)<1e-8&&Math.abs(a.y-b.y)<1e-8));
+  function patternChanceForRate(){return 1;}
+  function patternMix(target){
     const rate=Math.max(50,Math.min(150,Number(target)||90));
-    return .02+.002*(rate-50); // 2% at PO50 → 22% at PO150.
+    let hi=1;while(hi<ratePatterns.length-1&&ratePatterns[hi].expectedRate<rate)hi++;
+    const low=ratePatterns[hi-1],high=ratePatterns[hi];
+    return {low,high,probability:Math.max(0,Math.min(1,(rate-low.expectedRate)/(high.expectedRate-low.expectedRate))),target:rate};
   }
-  function patternForRate(target,rng){
-    if(rng()>=patternChanceForRate(target))return null;
-    return initialPatterns[Math.floor(rng()*initialPatterns.length)];
+  function patternForRate(target,rng){const mix=patternMix(target);return rng()<mix.probability?mix.high:mix.low;}
+  function patternBoard(pattern,mirror=false){
+    const board=Array(cells.length);
+    pattern.powers.forEach((power,index)=>{const id=mirror?mirrorIndex[index]:index;board[id]=Object.freeze({id,bomb:power>0,power,color:power});});
+    return board;
   }
-  function patternBoard(pattern){return pattern.powers.map((power,id)=>Object.freeze({id,bomb:power>0,power,color:power}));}
-  // Existing random-board RTP anchors remain the primary calibration. The
-  // symmetric opening chance is a secondary lever that rises with the setting.
-  const startRates=[[230,48.541],[220,50.003],[210,51.881],[200,54.251],
-    [190,57.213],[180,60.863],[170,65.284],[160,70.572],[150,76.808],
-    [140,84.128],[130,92.652],[120,102.484],[110,113.750],[100,126.584],
-    [90,141.248],[80,158.012]];
-  function firstForRate(target,roll){
-    const rate=Math.max(50,Math.min(150,Number(target)||90));
-    const i=startRates.findIndex(([,rtp])=>rtp>=rate);
-    const [lo,a]=startRates[i-1],[hi,b]=startRates[i];
-    return roll<(rate-a)/(b-a)?hi:lo;
-  }
+  const openingPorts=new Map(initialPatterns.map(pattern=>{
+    const variants=[false,true].map(mirror=>{
+      const numbers=Array.from({length:17},(_,i)=>i+1),probe={board:patternBoard(pattern,mirror),numbers,allIndex:15,boostIndex:16,popped:0,clears:0,bet:100,firstPopAward};
+      return ports.flatMap((_,port)=>ignition(probe,numbers[port]).clear?[port]:[]);
+    });return [pattern,variants];
+  }));
+  // Retain the API for views that ask for the first tier; it is now fixed.
+  function firstForRate(){return firstPopAward;}
   function payout(popped,clears,bet=100,first=firstPopAward){
     return Math.floor((popOdds(Math.floor((popped-first)/10))+clearTotals[Math.min(clears,clearPay.length)])*bet+1e-8);
   }
@@ -263,19 +259,17 @@
   function create({rng=Math.random,bet=100,rate=90}={}){
     const allIndex=ports.length,boostIndex=allIndex+1;
     const numbers=shuffle(Array.from({length:25},(_,i)=>i+1),rng).slice(0,boostIndex+1);
-    const level=1,pattern=patternForRate(rate,rng),chances=probabilitiesForLevel(level);
-    const board=pattern?patternBoard(pattern):cells.map((_,id)=>kernel(id,chances,rng));
+    const level=1,pattern=patternForRate(rate,rng),mirrored=rng()<.5;
+    const board=patternBoard(pattern,mirrored);
     const sugarTarget=rng()<.67448?230:240;
-    const targetRate=Math.max(50,Math.min(150,Number(rate)||90)),mix=patternChanceForRate(targetRate),t=(targetRate-50)/100;
-    // At the top setting the authored patterns add a few points of expected
-    // value, so lower the threshold target slightly; low settings are unchanged.
-    const correction=4*t*t*t;
-    const first=firstForRate(Math.max(50,targetRate-correction),rng());
-    const openingClearPorts=pattern?pattern.clearPorts.slice():[],openingClearNumbers=openingClearPorts.map(port=>numbers[port]);
-    return {board,numbers,drawn:[],allIndex,boostIndex,level,firstPopAward:first,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet,
-      targetRate,initialPattern:pattern?.name||'ランダム',initialSymmetry:pattern?.symmetry||'random',
-      openingPatternChance:mix,openingClearPorts,openingClearNumbers};
+    const targetRate=Math.max(50,Math.min(150,Number(rate)||90));
+    const openingClearPorts=openingPorts.get(pattern)[Number(mirrored)].slice();
+    const openingClearNumbers=openingClearPorts.map(port=>numbers[port]);
+    return {board,numbers,drawn:[],allIndex,boostIndex,level,firstPopAward,sugarTarget,sugarAwarded:false,turn:0,popped:0,refilled:0,clears:0,win:0,bet,
+      targetRate,initialPattern:pattern.name,initialSymmetry:pattern.symmetry,initialMirrored:mirrored,
+      openingPatternChance:1,openingClearPorts,openingClearNumbers};
   }
+
   function ignition(state,number){
     const port=state.numbers.indexOf(number);
     const all=port===state.allIndex,boost=port===state.boostIndex;
@@ -366,7 +360,7 @@
     state.win=win;
     return {before,after,port,all,boost,oldLevel,newLevel:state.level,firstPopAward:state.firstPopAward,sugarTarget:state.sugarTarget,sugarCrossed,beforeNumbers,afterNumbers,oldNumber:port<0?null:number,newNumber,waves,settled,fallSteps,refillSteps,moves,count,clear,oldWin,win};
   }
-  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,probabilitiesForLevel,powerForRoll,popPay,popPayFor,clearPay,payout,initialPatterns,patternChanceForRate,patternForRate,firstForRate,create,preview,draw};
+  const api={cells,ports,outline,columns,neighbors,radiusTwo,radiusThree,blastAreas,lightningAxes,settle,motionPoint,probabilitiesForLevel,powerForRoll,popPay,popPayFor,clearPay,payout,initialPatterns,patternChanceForRate,patternMix,patternForRate,patternBoard,firstForRate,create,preview,draw};
   root.PopcornEngine=api;
   if(typeof module!=='undefined' && module.exports) module.exports=api;
 })(typeof window==='undefined'?globalThis:window);

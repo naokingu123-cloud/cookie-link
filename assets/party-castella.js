@@ -424,7 +424,7 @@ function mount(panel){
  <div class="pct-anchors" role="group" aria-label="番号を選ぶと焼き範囲を表示"></div></div>
  <div class="pct-status" role="status" aria-label="火力・オッズアップ状況" aria-live="polite">
    <div class="pct-status-fire"><div class="pct-icon-fire" aria-hidden="true"></div><div class="pct-stat-line"><small>火力 LEVEL</small><strong class="pct-fire-value">Lv.1</strong><span class="pct-fire-radius">周囲1マス</span></div></div>
-   <div class="pct-status-odds"><div class="pct-icon-odds" aria-hidden="true"></div><div class="pct-stat-line"><small>ODDS UP</small><strong class="pct-odds-value">×1.0</strong><span class="pct-odds-hit">0/4</span></div></div>
+   <div class="pct-status-odds"><div class="pct-icon-odds" aria-hidden="true"></div><div class="pct-stat-line"><small>ODDS UP</small><strong class="pct-odds-value">×1.0</strong><span class="pct-odds-hit">0/${R.ODDS_COUNT??2}</span></div></div>
  </div>
  <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true"></div>
  <div class="pct-caption" role="status" aria-live="polite"></div>`;
@@ -502,7 +502,7 @@ function mount(panel){
    q('.pct-fire-value').textContent='Lv.'+(s.fireLevel||1);
    q('.pct-fire-radius').textContent='周囲'+(s.fireLevel||1)+'マス';
    q('.pct-odds-value').textContent='×'+(1+(s.oddsHits||0)*.5).toFixed(1);
-   q('.pct-odds-hit').textContent=(s.oddsHits||0)+'/4';
+   q('.pct-odds-hit').textContent=(s.oddsHits||0)+'/'+(s.specials?.odds?.length??R.ODDS_COUNT??2);
    root.dataset.flame=String(s.fireLevel||1);
    root.dataset.odds=String(s.oddsHits||0);
   }

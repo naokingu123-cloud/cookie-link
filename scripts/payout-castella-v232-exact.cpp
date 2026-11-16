@@ -1,0 +1,19 @@
+// Reproduce with: g++ -O3 -std=c++17 scripts/payout-castella-v232-exact.cpp -o /tmp/castella-v232-exact && /tmp/castella-v232-exact
+// Ten actual shipped templates, all C(25,5) * C(20,3) disjoint draw sets each.
+#include <bits/stdc++.h>
+using namespace std; using U=uint64_t;
+struct Cell {int q,r,ring;};
+
+vector<Cell> cells; vector<vector<int>> rings; vector<vector<int>> neigh;
+U pours[15][37],heat[4][37];
+int lookup(int q,int r){for(int i=0;i<37;i++)if(cells[i].q==q&&cells[i].r==r)return i;return -1;}
+int dist(int a,int b){int q=cells[a].q-cells[b].q,r=cells[a].r-cells[b].r;return max({abs(q),abs(r),abs(q+r)});}
+void init(){
+ int cor[6][2]={{0,-1},{-1,0},{-1,1},{0,1},{1,0},{1,-1}}; cells.push_back({0,0,0});rings={{0}};neigh.resize(37);
+ auto edge=[](int a,int b){neigh[a].push_back(b);neigh[b].push_back(a);};
+ for(int r=1;r<=3;r++){vector<int> row;int start=cells.size();for(int k=0;k<6*r;k++){int side=k/r,t=k%r,id=cells.size();auto a=cor[side],b=cor[(side+1)%6];cells.push_back({(r-t)*a[0]+t*b[0],(r-t)*a[1]+t*b[1],r});row.push_back(id);edge(id,start+(k+1)%(6*r));if(!t)edge(id,rings[r-1][side*(r-1)]);}rings.push_back(row);}
+ for(int r=1;r<=3;r++)for(int i=0;i<37;i++)for(int j=0;j<37;j++)if(dist(i,j)<=r)heat[r][i]|=1ull<<j;
+ vector<pair<int,int>> first,second;for(int j:rings[2])if(dist(1,j)==1)first.push_back({1,j});for(int i:{7,8})for(int j:rings[3])if(dist(i,j)==1)second.push_back({i,j});int g=0;for(auto e1:first)for(auto e2:second){vector<vector<int>> n(37);auto add=[&](int a,int b){n[a].push_back(b);n[b].push_back(a);};for(int r=1;r<=3;r++)for(int k=0;k<(int)rings[r].size();k++)add(rings[r][k],rings[r][(k+1)%rings[r].size()]);for(int i=1;i<=6;i++)add(0,i);for(auto e:{e1,e2}){Cell a=cells[e.first],b=cells[e.second];for(int k=0;k<6;k++){add(lookup(a.q,a.r),lookup(b.q,b.r));a={a.q+a.r,-a.q,a.ring};b={b.q+b.r,-b.q,b.ring};}}for(int i=0;i<37;i++){pours[g][i]=1ull<<i;for(int a:n[i]){pours[g][i]|=1ull<<a;for(int b:n[a])pours[g][i]|=1ull<<b;}}g++;}cerr<<"graphs "<<g<<"\n";
+
+}
+int main(){init();const U records[][6]={{0ull,0ull,19634585599ull,2151711268ull,2097152ull,34426847232ull},{1ull,14ull,123452697343ull,282898ull,4294967296ull,66560ull},{2ull,3ull,97094908671ull,74952ull,2097152ull,16640ull},{3ull,1ull,89563786239ull,33370ull,8589934592ull,537919488ull},{4ull,1ull,54061366271ull,282952ull,1073741824ull,66560ull},{5ull,6ull,92791303167ull,73157316608ull,67108864ull,66560ull},{6ull,12ull,97094659071ull,68853702802ull,1024ull,34426847232ull},{7ull,0ull,97094708991ull,537952840ull,262144ull,16640ull},{8ull,9ull,32544570111ull,21785739264ull,256ull,66560ull},{9ull,13ull,24475777791ull,18558222336ull,16384ull,66560ull}};int pay[]={20,40,60,80,100,120,140,160,180,200,250,300,400,500,750,1000,2000,5000};for(const auto &record:records){int id=record[0],graph=record[1];U numberMask=record[2],starter=record[3],fire=record[4],odds=record[5];vector<int> ids;for(int i=0;i<37;i++)if(numberMask>>i&1)ids.push_back(i);long double sum=0,sq=0;uint64_t N=0,hist[38]={};for(int a=0;a<21;a++)for(int b=a+1;b<22;b++)for(int c=b+1;c<23;c++)for(int d=c+1;d<24;d++)for(int e=d+1;e<25;e++){U wet=starter|pours[graph][ids[a]]|pours[graph][ids[b]]|pours[graph][ids[c]]|pours[graph][ids[d]]|pours[graph][ids[e]];int level=1+__builtin_popcountll(wet&fire),od=__builtin_popcountll(wet&odds);vector<U> areas;for(int i=0;i<25;i++)if(i!=a&&i!=b&&i!=c&&i!=d&&i!=e)areas.push_back(heat[level][ids[i]]&wet);for(int x=0;x<18;x++)for(int y=x+1;y<19;y++)for(int z=y+1;z<20;z++){int count=__builtin_popcountll(areas[x]|areas[y]|areas[z]);double w=count>=20?pay[count-20]*(1+.5*od):0;sum+=w;sq+=w*w;hist[count]++;N++;}}cout<<"{\"id\":"<<id<<",\"graph\":"<<graph<<",\"n\":"<<N<<",\"mean\":"<<setprecision(14)<<(double)(sum/N)<<",\"allClear\":"<<hist[37]<<",\"hist\":[";for(int i=0;i<38;i++){if(i)cout<<",";cout<<hist[i];}cout<<"]}\n";}}

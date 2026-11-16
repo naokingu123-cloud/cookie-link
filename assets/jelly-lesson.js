@@ -78,9 +78,10 @@ function strip(c,scene,t){
   const q=ramp(t,.5,.70);
   if(q){c.save();c.globalAlpha=q;box(c,x-7,y-7,cols*w+14,h+14,9,null,'#ffec8e');c.restore();}
   label(c,'100 BET',126,183,18,'#dbfff2','#173e4c');
-  label(c,'基本 0.2倍 × 1.5',126,210,20,'#fff5bd','#173e4c');
+  const base=window.JellyRules?.payout(1)??16;
+  label(c,'基本 '+(base/100)+'倍 × 1.5',126,210,20,'#fff5bd','#173e4c');
   label(c,'→',253,196,30,'#fff5bd','#173e4c');
-  box(c,292,167,176,56,20,'#173c48','#ffe49c');label(c,t<.5?'リーチ':'30 WIN',380,195,t<.5?24:32,'#ffea9d');
+  box(c,292,167,176,56,20,'#173c48','#ffe49c');label(c,t<.5?'リーチ':Math.floor(base*1.5)+' WIN',380,195,t<.5?24:32,'#ffea9d');
  }
 }
 function drop(c,x,y,r,tone){

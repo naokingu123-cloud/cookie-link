@@ -6,13 +6,22 @@ function debugEconomyInterpolate(knots,target=debugPayoutTarget){
  for(let i=1;i<knots.length;i++)if(p<=knots[i][0]){const [a,x]=knots[i-1],[b,y]=knots[i];return x+(y-x)*(p-a)/(b-a);}return knots.at(-1)[1];
 }
 function debugEconomyProfile(){return {
- cookieBias:debugEconomyInterpolate([[50,-1.8],[90,0],[110,.16],[130,.5],[150,1]]),
- cookiePlacement:debugEconomyInterpolate([[50,-1],[90,0],[110,.16],[130,.5],[150,1]]),
- cookieHammer:debugEconomyInterpolate([[50,0],[90,0],[110,.48],[130,1.5],[150,3]]),
- canyonDensity:debugEconomyInterpolate([[50,.52],[90,1],[150,1.6]]),
- canyonRareBoost:debugEconomyInterpolate([[50,1],[90,1],[150,3]]),
- sixSpread:debugEconomyInterpolate([[50,.575],[70,.43],[90,.30],[110,.17],[130,.07],[150,-.055]])
+ cookieBias:debugEconomyInterpolate([[50,-.45],[70,-.05],[90,.35],[110,.9],[130,1.5],[150,2]]),
+ cookiePlacement:debugEconomyInterpolate([[50,-.35],[70,0],[90,.28],[110,.75],[130,1.2],[150,1.6]]),
+ cookieHammer:debugEconomyInterpolate([[50,0],[70,.4],[90,1],[110,1.7],[130,2.4],[150,3]]),
+ cookieColorAffinity:debugEconomyInterpolate([[50,0],[70,.1],[90,.2],[110,.27],[130,.34],[150,.4]]),
+ canyonExposure:debugEconomyInterpolate([[50,-6],[70,0],[90,1.3],[110,2.2],[130,3.1],[150,4]]),
+ canyonValuePower:debugEconomyInterpolate([[50,5],[70,3.2],[90,1.4],[110,.38],[130,.3],[150,.17]]),
+ sixSpread:debugEconomyInterpolate([[50,.78],[70,.65],[90,.52],[110,.41],[130,.30],[150,.20]])
 };}
+function debugCookieColorOrder(order,board,r,c,random){
+ const strength=debugEconomyProfile().cookieColorAffinity||0;
+ if(!strength||random()>=Math.abs(strength))return order;
+ // Only not-yet-filled cookie colours are selected. Existing tiles and the
+ // no-adjacent-equal-colour rule remain owned by the normal colour solver.
+ const score=color=>[[r-2,c,1],[r+2,c,1],[r-1,c-1,.6],[r-1,c+1,.6],[r+1,c-1,.6],[r+1,c+1,.6]].reduce((n,[y,x,w])=>n+(board[y]?.[x]?.color===color?w:0),0);
+ return [...order].sort((a,b)=>(score(b)-score(a))*Math.sign(strength));
+}
 function debugCookiePotential(board,tileId,coverage=null){
  const g=board.map(row=>row.map(t=>t?.id===tileId?null:t));let cleared=0,max=0,chains=0;
  for(let step=0;step<32;step++){

@@ -18,8 +18,9 @@ const chocoFruitWin=index=>[300,500,1000,2000,3000,5000,7500,10000,20000,30000][
 const chocoBonusKind=index=>index<=4?'fruit':CHOCO_BONUS_GEMS[Math.min(5,index-5)];
 const chocoFallDuration=distance=>Math.round(125*Math.sqrt(Math.max(1,distance)));
 const CHOCO_POWERS={clear:'全消し',random:'ランダム消し',transmute:'鉱石化'};
-function chocoOreRates(distance=0,totalDepth=0){const t=Math.min(1,Math.max(0,distance)/60),deep=Math.min(1,Math.max(0,totalDepth-300)/100);const rates={...CHOCO_ITEM_RATES,copper:(CHOCO_ITEM_RATES.copper-.004*t)*(1-.35*deep),silver:CHOCO_ITEM_RATES.silver+.0012*t,gold:CHOCO_ITEM_RATES.gold+.00036*t,diamond:CHOCO_ITEM_RATES.diamond+.00012*t};const density=typeof debugEconomyProfile==='function'?debugEconomyProfile().canyonDensity:1;for(const k of Object.keys(rates))if(k!=='sugar')rates[k]*=density;const rare=typeof debugEconomyProfile==='function'?debugEconomyProfile().canyonRareBoost:1;for(const k of ['silver','gold','diamond'])rates[k]*=rare;return rates;}
-// Integer weights total 1000 per mineral (0.1 percentage-point precision).
+function chocoOreRates(distance=0,totalDepth=0){const t=Math.min(1,Math.max(0,distance)/60),deep=Math.min(1,Math.max(0,totalDepth-300)/100);return {...CHOCO_ITEM_RATES,copper:(CHOCO_ITEM_RATES.copper-.004*t)*(1-.35*deep),silver:CHOCO_ITEM_RATES.silver+.0012*t,gold:CHOCO_ITEM_RATES.gold+.00036*t,diamond:CHOCO_ITEM_RATES.diamond+.00012*t};}
+// Reference quantile weights total1000. Generation selects a quantile before
+// any draw; the allowed values, displayed rank ranges and rank-up rule stay fixed.
 const CHOCO_ORE_DISTRIBUTIONS={
  copper:[[10,800],[20,150],[30,30],[40,10],[50,9],[100,1]],
  silver:[[50,700],[60,200],[70,50],[80,30],[90,10],[100,9],[500,1]],
@@ -28,7 +29,7 @@ const CHOCO_ORE_DISTRIBUTIONS={
 };
 function chocoOreQuantile(kind,u){let n=Math.min(.999999999,Math.max(0,u))*1000;for(const [value,weight]of CHOCO_ORE_DISTRIBUTIONS[kind]){n-=weight;if(n<0)return value;}return CHOCO_ORES[kind].max;}
 function chocoRankOre(tile){const keys=Object.keys(CHOCO_ORES),index=keys.indexOf(tile.ore);if(index<0||index===3)return false;let cumulative=0,u=0;for(const [value,weight]of CHOCO_ORE_DISTRIBUTIONS[tile.ore]){u=(cumulative+weight/2)/1000;if(value>=tile.baseValue)break;cumulative+=weight;}tile.ore=keys[index+1];tile.baseValue=chocoOreQuantile(tile.ore,u);tile.value=tile.baseValue;tile.multiplier=1;return true;}
-function chocoOreValue(w,kind){return chocoOreQuantile(kind,chocoRandom(w));}
+function chocoOreValue(w,kind){const power=typeof debugEconomyProfile==='function'?debugEconomyProfile().canyonValuePower??1:1;return chocoOreQuantile(kind,Math.pow(chocoRandom(w),power));}
 function chocoMakeOre(w,tile){const rates=chocoOreRates(w.depth-(w.startDepth||0),w.depth),keys=Object.keys(CHOCO_ORES),total=keys.reduce((n,k)=>n+rates[k],0);let p=chocoRandom(w)*total,kind=keys.at(-1);for(const k of keys){p-=rates[k];if(p<0){kind=k;break;}}const def=CHOCO_ORES[kind],value=chocoOreValue(w,kind);return {id:tile.id,color:-1,number:null,prize:null,item:'ore',ore:kind,baseValue:value,value,multiplier:1};}
 
 const CHOCO_TYPES=[
@@ -39,6 +40,48 @@ const CHOCO_TYPES=[
 ];
 const chocoClone=g=>g.map(row=>row.map(t=>t?{...t}:null));
 function chocoRandom(w){w.seed=(Math.imul(w.seed,1664525)+1013904223)>>>0;return w.seed/4294967296;}
+// Authored terrain families use only the existing compact3–6-cell sections.
+// Reflecting the twelve-row pattern and permuting its four colours preserve
+// left/right geometry. Family selection never depends on the payout setting.
+const CHOCO_INITIAL_PATTERNS=Object.freeze([
+ ['3313133','3313133','3113113','0032300','2032302','2232322','0210120','0010100','2210122','1201021','1201021','1101011'],
+ ['0002000','0332330','2332332','2331332','2001002','1101011','1103011','2223222','2003002','3010103','3110113','3310133'],
+ ['3313133','3313133','3313133','0012100','0332330','0132310','1110111','0030300','1030301','1031301','1231321','1221221'],
+ ['3331333','1331331','1121211','1220221','3110113','3310133','1313131','1103011','1303031','2302032','2312132','2112112'],
+ ['0001000','1001001','1221221','1123211','3023203','3003003','3312133','1112111','2232322','2230322','1230321','1130311'],
+ ['1101011','1001001','2201022','2221222','3002003','3302033','3112113','0132310','0030300','0030300','2110112','2210122'],
+ ['1110111','2130312','2330332','2232322','0002000','2012102','2110112','2210122','3330333','1231321','1221221','1221221'],
+ ['3113113','3113113','3013103','0003000','3112113','3312133','2212122','2202022','2103012','1103011','1223221','2223222'],
+ ['1112111','2112112','2202022','3203023','3303033','3323233','2221222','3331333','0321230','0020200','1020201','1110111'],
+ ['0001000','1021201','1121211','1223221','0113110','0013100','3021203','3321233','0221220','0032300','0132310','1132311'],
+ ['2220222','1110111','2110112','2232322','3332333','0002000','3330333','1130311','1120211','3323233','3223223','1113111'],
+ ['0013100','0013100','1013101','1220221','1320231','2320232','2331332','2201022','3001003','3332333','0002000','0002000']
+].map(pattern=>Object.freeze(pattern)));
+function chocoPlaceOreInventory(rows,regions,w,start){
+ const payloads=[];
+ for(const row of rows)for(const tile of row)if(tile.item==='ore'){
+  payloads.push({item:tile.item,ore:tile.ore,baseValue:tile.baseValue,value:tile.value,multiplier:tile.multiplier,encased:true});
+  for(const key of ['item','ore','baseValue','value','multiplier','encased'])delete tile[key];
+ }
+ if(!payloads.length)return;
+ const strength=typeof debugEconomyProfile==='function'?debugEconomyProfile().canyonExposure??0:0,candidates=[];
+ for(let id=0;id<regions.length;id++){
+  const cells=regions[id];if(cells.length<4||cells.some(([r,c])=>rows[r][c].item))continue;
+  const positions=cells.filter(([r,c])=>{
+   if(start+r<2||rows[r][c].extension&&r===0)return false;
+   const rest=cells.filter(([y,x])=>y!==r||x!==c),seen=new Set([rest[0].join(',')]),queue=[rest[0]];
+   for(let i=0;i<queue.length;i++)for(const p of rest)if(!seen.has(p.join(','))&&Math.abs(p[0]-queue[i][0])+Math.abs(p[1]-queue[i][1])===1){seen.add(p.join(','));queue.push(p);}
+   return seen.size===rest.length;
+  });
+  if(!positions.length)continue;
+  const access=Math.max(...cells.map(([r,c])=>1-(start+r)/11+(c===0||c===6?.15:0)));
+  const key=-Math.log(Math.max(1e-12,chocoRandom(w)))/Math.exp(Math.max(-2,Math.min(2,strength*(access-.5))));
+  candidates.push({id,positions,key});
+ }
+ candidates.sort((a,b)=>a.key-b.key||a.id-b.id);
+ if(candidates.length<payloads.length)throw Error('Canyon ore inventory has no valid placement');
+ for(let i=0;i<payloads.length;i++){const positions=candidates[i].positions,[r,c]=positions[Math.floor(chocoRandom(w)*positions.length)];Object.assign(rows[r][c],payloads[i]);}
+}
 // Compact polyominoes: no snakes, holes or branching tendrils.
 const CHOCO_SHAPES=(()=>{
  const bases=[[[0,0],[0,1],[0,2]],[[0,0],[1,0],[1,1]],[[0,0],[0,1],[1,0],[1,1]],[[0,0],[0,1],[0,2],[0,3]],[[0,0],[1,0],[2,0],[2,1]],[[0,0],[0,1],[0,2],[1,1]],[[0,0],[0,1],[1,1],[1,2]],[[0,0],[0,1],[1,0],[1,1],[2,0]],[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2]]],seen=new Set(),out=[];
@@ -64,14 +107,19 @@ function chocoFillRows(w){
    const id=regions.length;for(const [y,x] of cells)board[y][x]=id;regions.push(cells);if(viable()&&fill())return true;regions.pop();for(const [y,x] of cells)board[y][x]=-1;
   }return false;
  }
- if(!fill()){regions.length=0;for(let r=0;r<height;r++){const split=chocoRandom(w)<.5?3:4;for(const [lo,hi] of [[0,split],[split,7]]){const id=regions.length,cells=[];for(let c=lo;c<hi;c++){board[r][c]=id;cells.push([r,c]);}regions.push(cells);}}}
+ let initialPattern=null;
+ if(start===0&&height===12){
+  initialPattern=[...CHOCO_INITIAL_PATTERNS[Math.floor(chocoRandom(w)*CHOCO_INITIAL_PATTERNS.length)]];if(chocoRandom(w)<.5)initialPattern.reverse();
+  for(let r=0;r<height;r++)for(let c=0;c<7;c++)if(board[r][c]<0){const id=regions.length,cells=[[r,c]];board[r][c]=id;for(let i=0;i<cells.length;i++)for(const [dr,dc]of [[1,0],[-1,0],[0,1],[0,-1]]){const y=cells[i][0]+dr,x=cells[i][1]+dc;if(y>=0&&y<height&&x>=0&&x<7&&board[y][x]<0&&initialPattern[y][x]===initialPattern[r][c]){board[y][x]=id;cells.push([y,x]);}}regions.push(cells);}
+ }else if(!fill()){regions.length=0;for(let r=0;r<height;r++){const split=chocoRandom(w)<.5?3:4;for(const [lo,hi] of [[0,split],[split,7]]){const id=regions.length,cells=[];for(let c=lo;c<hi;c++){board[r][c]=id;cells.push([r,c]);}regions.push(cells);}}}
  const edges=regions.map(()=>new Set()),forbidden=regions.map(()=>new Set());
  regions.forEach((cells,id)=>{for(const [r,c] of cells){for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){const other=board[r+dr]?.[c+dc];if(other!=null&&other!==id)edges[id].add(other);}if(r===0&&w.strata.at(-1)?.[c]?.color>=0)forbidden[id].add(w.strata.at(-1)[c].color);}});
  const colors=regions.map(()=>-1),palette=[0,1,2,3];for(let i=3;i>0;i--){const j=Math.floor(chocoRandom(w)*(i+1));[palette[i],palette[j]]=[palette[j],palette[i]];}let colorAttempts=0;
  function colorNext(){if(++colorAttempts>4000)return false;let id=-1,score=-1;for(let i=0;i<colors.length;i++)if(colors[i]<0){const saturation=new Set([...forbidden[i],...[...edges[i]].map(n=>colors[n]).filter(c=>c>=0)]).size,s=saturation*100+edges[i].size;if(s>score){score=s;id=i;}}if(id<0)return true;
   for(const color of palette)if(!forbidden[id].has(color)&&![...edges[id]].some(n=>colors[n]===color)){colors[id]=color;if(colorNext())return true;colors[id]=-1;}return false;
  }
- if(!colorNext()){
+ if(initialPattern)regions.forEach((cells,id)=>{const [r,c]=cells[0];colors[id]=palette[Number(initialPattern[r][c])];});
+ else if(!colorNext()){
   // A thin refill may touch all four old colors. Prefer the smallest boundary join.
   colors.fill(-1);for(let id=0;id<regions.length;id++){let best=Infinity,chosen=0;for(const color of palette){let score=0;for(const n of edges[id])if(colors[n]===color)score+=100+regions[n].length;for(const [r,c]of regions[id])if(r===0&&w.strata.at(-1)?.[c]?.color===color)score+=10;if(score<best){best=score;chosen=color;}}colors[id]=chosen;}
  }
@@ -94,6 +142,7 @@ function chocoFillRows(w){
   const remaining=cells.filter(([y,x])=>y!==r||x!==c),seen=new Set([remaining[0].join(',')]),queue=[remaining[0]];for(let i=0;i<queue.length;i++)for(const cell of remaining)if(!seen.has(cell.join(','))&&Math.abs(cell[0]-queue[i][0])+Math.abs(cell[1]-queue[i][1])===1){seen.add(cell.join(','));queue.push(cell);}if(seen.size!==remaining.length)continue;
   const tile=rows[r][c];if(CHOCO_ORES[kind]||kind==='sugar')tile.encased=true;else tile.color=-1;specials.add(groupId);if(CHOCO_ORES[kind]){const def=CHOCO_ORES[kind],baseValue=chocoOreValue(w,kind);Object.assign(tile,{item:'ore',ore:kind,baseValue,value:baseValue,multiplier:1});}else{tile.item=kind;if(kind==='sugar')w.nextSugar=w.depth+start+r+18;}
  }
+ chocoPlaceOreInventory(rows,regions,w,start);
  w.strata.push(...rows);if(w.strata.length<12)chocoFillRows(w);
 }
 function chocoGroups(grid){

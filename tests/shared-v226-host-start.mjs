@@ -2,12 +2,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 
-const [speedSource,appSource,coreSource,basePatch,nextPatch]=await Promise.all([
+const [speedSource,appSource,coreSource,basePatch,nextPatch,keepaliveSource]=await Promise.all([
  fs.readFile(process.env.HOST_START_SPEED||new URL('../assets/shared-host-speed-v219.js',import.meta.url),'utf8'),
  fs.readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8'),
  fs.readFile(new URL('../assets/shared-machine-core-v196.js',import.meta.url),'utf8'),
  fs.readFile(process.env.HOST_START_V221||new URL('../assets/shared-core-patch-v221.js',import.meta.url),'utf8'),
- fs.readFile(new URL('../assets/shared-core-patch-v224.js',import.meta.url),'utf8')
+ fs.readFile(new URL('../assets/shared-core-patch-v224.js',import.meta.url),'utf8'),
+ fs.readFile(new URL('../assets/shared-host-keepalive-v206.js',import.meta.url),'utf8')
 ]);
 const quiet={info(){},warn(){},error(){}};
 const flush=async()=>{for(let i=0;i<35;i++)await Promise.resolve();};
@@ -88,14 +89,14 @@ const hostEnd=patched.indexOf('\n rememberBlockedRound(null);',hostStart);
 assert.ok(hostStart>=0&&hostEnd>hostStart,'exercise the complete production host branch after both patches');
 const hostSource=patched.slice(hostStart,hostEnd);
 
-function hostHarness({physical=null,reportFailures=0,retryAfterMs=0}={}){
+function hostHarness({physical=null,reportFailures=0,retryAfterMs=0,phase='PLAYING'}={}){
  let now=100000,nextId=0,callbacks=null;
  const timers=new Map(),listeners=[],reports=[],launches=[],hits=[],calls={reset:0,start:0,resume:0};
  const later=(fn,ms=0)=>{const id=++nextId;timers.set(id,{fn,at:now+Math.max(0,Number(ms)||0)});return id;};
  const driver=physical||{physics:{time:0,serial:0,active:0,hits:[],faults:0},draw:{state:'ready',group:0,sent:0}};
  driver.setPaused=value=>{if(!value)calls.resume++;};
  const client={online:true,role:'host',clockOffset:0,httpRetryAt:0,ready:Promise.resolve(true),
-  round:{id:'round-1',phase:'PLAYING',participantCount:1,drawStartsAt:now,balls:[]},
+  round:{id:'round-1',phase,participantCount:1,drawStartsAt:now,betClosesAt:now+20000,balls:[]},
   on:fn=>listeners.push(fn),send(){},
   async getState(){return{round:this.round};},accept(){return true;},
   async report(payload){
@@ -145,6 +146,52 @@ function hostHarness({physical=null,reportFailures=0,retryAfterMs=0}={}){
  return{context,client,driver,calls,reports,launches,hits,advance,
   emitNumber:number=>callbacks.onNumber(number),snapshot:()=>listeners.forEach(fn=>fn({type:'snapshot',round:client.round}))};
 }
+
+// The real ready-state draw renders the existing BET TIME lettering/lighting.
+// Reset the prior result once, then leave that host canvas animating for the
+// authoritative BET window without launching any physical draw.
+const betPhysics=new PHYSICS.RoulettePhysics(CANNON),betDraw=new DRAW.DrawController(betPhysics);
+betDraw.state='complete';betPhysics.hits.push({pocket:17});
+const bet=hostHarness({phase:'BETTING',physical:{physics:betPhysics,draw:betDraw}});await flush();
+assert.equal(betDraw.state,'ready','BET must leave the previous completed presentation');
+assert.equal(betPhysics.hits.length,0,'previous HIT indicators must not remain the BET presentation');
+assert.equal(bet.calls.reset,1);assert.equal(bet.calls.start,0);assert.equal(bet.calls.resume,1);
+let betAccumulator=0;
+await bet.advance(19999,ms=>{
+ betAccumulator+=ms/1000;
+ while(betAccumulator>=1/120){betDraw.update();betPhysics.step(1/120);betAccumulator-=1/120;}
+ bet.snapshot();
+});
+assert.equal(bet.calls.reset,1,'frequent snapshots/BET clock ticks cannot reset the animation');
+assert.equal(bet.calls.resume,1,'healthy BET ticks cannot repeatedly clear the render clock');
+assert.equal(bet.calls.start,0);assert.equal(betPhysics.serial,0);assert.equal(betPhysics.active,0);
+assert.ok(betPhysics.time>19,'the existing host rotor and lighting clock remains live');
+const normalStageStart=appSource.indexOf('function normalStage(){'),normalStageEnd=appSource.indexOf('\n function petalPulse(',normalStageStart);
+assert.ok(normalStageStart>=0&&normalStageEnd>normalStageStart);
+const betStage=vm.runInNewContext(appSource.slice(normalStageStart,normalStageEnd)+'\nnormalStage();',{draw:betDraw});
+assert.equal(betStage.name,'BET TIME');assert.equal(betStage.bet,true);
+bet.client.round.phase='PLAYING';bet.snapshot();await flush();
+assert.equal(bet.calls.start,1,'only the authoritative PLAYING transition starts the draw');
+assert.equal(bet.calls.reset,2);assert.equal(betDraw.state,'running');
+bet.client.round={...bet.client.round,id:'round-2',phase:'BETTING',balls:[]};bet.snapshot();await flush();
+assert.equal(bet.calls.reset,3);assert.equal(bet.calls.start,1);assert.equal(betDraw.state,'ready');
+bet.snapshot();assert.equal(bet.calls.reset,3,'the next BET likewise prepares exactly once');
+
+const wakeEvents=new Map(),wakeSnapshots=[],wakeCalls={resume:0,nativePause:0};
+const wakeClient={round:{id:'bet-focus',phase:'BETTING'},on:fn=>wakeSnapshots.push(fn)};
+const wakeContext={window:{SweetsSharedMachine:{client:wakeClient}},location:{search:'?serverHost=1'},URLSearchParams,
+ document:{addEventListener:(name,fn)=>wakeEvents.set(name,fn)},addEventListener:(name,fn)=>wakeEvents.set(name,fn),
+ HTMLCanvasElement:class{},Blob:class{},URL:{createObjectURL:()=>''},Worker:class{constructor(){throw Error('worker unavailable');}},
+ app:{paused:false,engines:[],pause(){wakeCalls.nativePause++;}},rouletteDrawSource:{pause(){}},
+ rouletteDriver:{setPaused(value){assert.equal(value,false);wakeCalls.resume++;}},setTimeout(){},console:quiet};
+vm.runInNewContext(keepaliveSource,wakeContext);
+assert.equal(wakeCalls.resume,1,'BET keeps the existing host renderer active on initial attachment');
+for(let n=0;n<30;n++)for(const listener of wakeSnapshots)listener({type:'snapshot'});
+assert.equal(wakeCalls.resume,1,'BET snapshot traffic must not restart the renderer clock');
+wakeEvents.get('visibilitychange')();assert.equal(wakeCalls.resume,2,'returning to the host BET tab wakes the existing animation');
+wakeContext.app.pause(true);assert.equal(wakeCalls.nativePause,0,'a background pause must not freeze the server BET feed');
+wakeClient.round.phase='COMPLETE';wakeContext.app.pause(true);
+assert.equal(wakeCalls.nativePause,1,'outside BET/drawing, the original pause behavior remains available');
 
 const flight=hostHarness({physical:{physics,draw}});await flush();
 let accumulator=0;
@@ -203,6 +250,6 @@ assert.equal(delayed.calls.start,2,'only after the pending HIT is acknowledged m
 console.log('v226 physical host start passed',JSON.stringify({
  firstGroupLaunchSeconds:flight.launches.map(ball=>Number(ball.time.toFixed(4))),
  firstGroupHitSeconds:flight.hits.map(hit=>Number(hit.time.toFixed(4))),
- standardSpeedThroughout:true,legacyDoubleSpeedRestored:true,noPrematureReset:true,hiddenTabPreserved:true,
+ standardSpeedThroughout:true,legacyDoubleSpeedRestored:true,serverBetPreview:true,noPrematureReset:true,hiddenTabPreserved:true,
  frozenDriverRecovery:true,completedPartialRecovery:true,rateLimitedHitRetained:true
 }));

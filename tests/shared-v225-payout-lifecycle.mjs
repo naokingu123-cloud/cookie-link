@@ -203,3 +203,35 @@ await test('a persisted settlement snapshot retries immediately after reload wit
  assert.equal(normalized.payoutV3.roundWin,121,'snapshot total WIN must agree with the authoritative settlement amount');
  assert.deepEqual(plain(normalized.payoutV3.games),expected.payoutV3.games,'normalization must not sample the current board again');
 });
+
+await test('server decimal payout quotes reach the real standalone Winery engine only when its next board is generated',async()=>{
+ const coreSource=await readFile(new URL('../assets/winery-pyramid-core-v1.js',import.meta.url),'utf8');
+ const coreContext={module:{exports:{}}};
+ vm.runInNewContext(coreSource,coreContext,{filename:'winery-pyramid-core-v1.js'});
+ const {WineryEngine}=coreContext.module.exports;
+ const random=()=>{let seed=232;return()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};};
+ const actual=new WineryEngine({random:random(),sleep:async()=>{}});
+ const reference=new WineryEngine({random:random(),sleep:async()=>{}});
+ const board=engine=>plain({cycle:engine.cycle,pattern:engine.pattern,numbers:engine.nodeNumbers,boosts:engine.boostNumbers,glasses:engine.glasses,sugarTarget:engine.sugarTarget});
+ const f=fixture();await flush();
+ f.engines.push(actual);f.app.bets.push(3000);f.app.locked.push(3000);f.app.enabled.push(true);f.app.paid.push(false);f.app.roundWins.push(0);
+ f.setRound('round-2',{phase:'BETTING',reserved:false,running:false,credit:900});
+ const cycle=actual.cycle;
+ f.emit({...control('round-2',900,0),effectiveRate:53.4});await flush();
+ reference.payoutTarget=53.4;reference.reset();
+ assert.equal(actual.payoutTarget,53.4,'a UMD engine must receive the same decimal quote as lexical engines');
+ assert.equal(actual.cycle,cycle+1,'direct property assignment must not recursively reset the engine');
+ assert.deepEqual(board(actual),board(reference),'the generated board must use the server quote, not the standalone default of 90');
+
+ f.setRound('round-2',{phase:'PLAYING',reserved:true,running:true,credit:800});actual.start();
+ const playing=board(actual);
+ f.emit({...control('round-2',800,0),effectiveRate:147.6});await flush();
+ assert.equal(actual.payoutTarget,53.4,'a new quote must not change an active board');
+ assert.deepEqual(board(actual),playing);assert.equal(actual.running,true);
+ const snapshot=f.client.prepareSettlement({roundId:'round-2',totalWin:0});
+ assert.equal(snapshot.payoutV3.games.find(game=>game.id==='winery').appliedRate,53.4,'feedback must retain the quote that generated this board');
+
+ actual.reset();reference.payoutTarget=147.6;reference.reset();
+ assert.equal(actual.payoutTarget,147.6);assert.deepEqual(board(actual),board(reference));
+ assert.deepEqual(f.calls.warnings,[]);
+});
