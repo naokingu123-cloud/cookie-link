@@ -71,7 +71,10 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
   fillTests(m);advanceTests(m);return d;
  }
  function advanceTests(m){
-  const round=m.round,r=runtime(m),d=data(m);if(!round)return;
+  const round=m.round,r=runtime(m),d=data(m);
+  // A completed round can be cleared before the next BET opens, including
+  // while a restarted host reconnects. Never retain a playable orphan board.
+  if(!round){r.bots.clear();return;}
   for(const s of d.seats){
    if(s?.kind!=='test')continue;
    let bot=r.bots.get(s.playerId);
@@ -99,8 +102,9 @@ export function createStationService({getDb,socketMap,connected,broadcast,schedu
    if(!s)return {station:i+1,empty:true};
    const p=profile(m,s),entry={station:i+1,playerId:s.playerId,name:p.name,pet:p.pet,photo:p.photo,test:s.kind==='test',connected:s.kind==='test'||connected(m.id,s.playerId),joinedAt:s.joinedAt,win:0,roundId:round?.id||null,phase:'WAITING',settled:false};
    if(s.kind==='test'){
-    const bot=r.bots.get(s.playerId);entry.game='jelly';entry.bet=bot?.state?100:0;entry.win=bot?.win||0;entry.ballCount=bot?.state?.draws.length||0;
-    if(bot?.state){entry.phase=round.phase;entry.settled=round.phase==='COMPLETE';}
+    const cached=r.bots.get(s.playerId),bot=round&&cached?.roundId===round.id?cached:null;
+    entry.game='jelly';entry.bet=bot?.state?100:0;entry.win=bot?.win||0;entry.ballCount=bot?.state?.draws.length||0;
+    if(round&&bot?.state){entry.phase=round.phase;entry.settled=round.phase==='COMPLETE';}
    }else{
     const participant=round?.participants?.[s.playerId],state=participant?.checkpoint;
     if(participant){
