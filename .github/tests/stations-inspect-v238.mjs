@@ -1,9 +1,6 @@
 import fs from 'node:fs';
-const files=['optimized/app-01.js','assets/gelato-prism-v28.js','assets/winery-pyramid-v1.js','assets/popcorn-host.js','assets/jelly-host.js','assets/bingo-stick-host.js','assets/waffle-pow-v159.js','assets/party-castella-host.js','assets/arcade-candy-world-v156.css','assets/arcade-candy-world-v157.css','assets/all-tabs-v150.css','assets/shared-roulette-client-v224.js'];
-for(const file of files){
- const text=fs.readFileSync(file,'utf8'),lines=text.split('\n');console.log('\n### '+file+' ('+lines.length+' lines)');
- const out=new Set();
- const match=file.endsWith('.css')?/arena|a8-stage|cookie-roulette|height.*vh/:/function (?:\w*(?:Reach|Highest|highest|Achiev|AllClear|rouletteSelected|requestReach)|fit\b)|(?:const|let) (?:visibleReach|tabReach)|reachResults=|tabReachResults=|highestRole|highestAchiev|topAward|allClearCount|clearedRounds|\.reachStatus=|\.tabstate\.textContent|\.tabstate\.dataset/;
- for(let i=0;i<lines.length;i++)if(lines[i].length<15000&&match.test(lines[i])){for(let j=Math.max(0,i-1);j<=Math.min(lines.length-1,i+(file.endsWith('.css')?3:6));j++)out.add(j);}
- let count=0;for(const i of [...out].sort((a,b)=>a-b)){if(++count>160){console.log('...');break;}console.log((i+1)+': '+lines[i].slice(0,1800));}
-}
+const app=fs.readFileSync('optimized/app-01.js','utf8').split('\n');
+for(const [a,b] of [[3756,3780],[3860,3940]])console.log('APP '+a+'-'+b+'\n'+app.slice(a-1,b).map((s,i)=>(a+i)+': '+s).join('\n'));
+for(let i=0;i<app.length;i++)if(/^function (?:fit\b|rouletteAllClearNumbers|rouletteReachTiers)|^const .*highest|^function .*highest/i.test(app[i]))console.log('APP '+(i+1)+'\n'+app.slice(Math.max(0,i-1),i+35).join('\n'));
+for(const file of ['assets/gelato-prism-v28.js','assets/winery-pyramid-core-v1.js','assets/bingo-stick-host.js','assets/choco-dig.js']){const l=fs.readFileSync(file,'utf8').split('\n');console.log('\n'+file);for(let i=0;i<l.length;i++)if(/allClears|highestRole|bonusResolvedDepth|roundBonus|highest.*=|fullCount/.test(l[i])&&l[i].length<15000)console.log((i+1)+': '+l.slice(Math.max(0,i-1),i+2).join('\n').slice(0,1800));}
+for(const file of fs.readdirSync('optimized').filter(x=>x.endsWith('.css')).map(x=>'optimized/'+x).concat(['assets/shared-roulette-client-v224.js','assets/arcade-candy-world-v156.css','assets/arcade-candy-world-v157.css'])){const l=fs.readFileSync(file,'utf8').split('\n');for(let i=0;i<l.length;i++)if(/(?:arena|a8-stage|cookie-roulette|#screen)/.test(l[i])&&l[i].length<10000)console.log(file+':'+(i+1)+': '+l.slice(i,i+(l[i].includes('{')&&!l[i].includes('}')?5:1)).join('\n'));}
