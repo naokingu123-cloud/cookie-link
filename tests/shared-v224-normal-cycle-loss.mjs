@@ -35,7 +35,7 @@ const client={
  async getState(){return {serverTime:now,round:serverRound,pendingRound:null};},
  accept(value){if(Object.prototype.hasOwnProperty.call(value||{},'round')){this.round=value.round;serverRound=value.round;}},
  async join(payload){
-  joinCount++;assert.equal(payload.totalBet,20);assert.equal(payload.creditAfterBet,app.credit-20);
+  joinCount++;assert.equal(payload.totalBet,20);assert.equal(payload.creditAfterBet,app.credit);assert.equal(payload.creditAfterBet,payload.creditBefore-20);
   const participant={playerId:'PLAYER',bets:[10,10],locked:[10,10],enabled:[true,true],totalBet:20,creditAfterBet:payload.creditAfterBet};
   serverRound={...serverRound,participant};this.round=serverRound;return {serverTime:now,round:serverRound};
  },

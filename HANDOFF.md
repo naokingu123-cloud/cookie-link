@@ -549,3 +549,12 @@
 - サーバーがwalletを初期化・BET予約控除・WIN精算し、同一ラウンドの再送は二重控除／二重加算しない。予約・精算の永続化を成功ACK前に確認する。旧walletは未精算ゲーム終了後に一度だけ100万へ移行し、再読み込みで再初期化しない。
 - 回帰 `tests/shared-v228-wallet-hydration.mjs`、`tests/shared-v228-credit-rebet.mjs`、`tests/server-wallet-v228.mjs`。詳細 `docs/shared-sync-v228.md`。
 - 版 `20261116-v228-credit-auto-rebet`。今回はNodeサーバー側にも変更あり。Windowsプロジェクトを更新し、既存データを保持してランチャーから再起動する。公開クライアントだけの更新をWindows反映済みと扱わない。
+
+## 2026-11-16 — v229 / BET操作時のCREDIT反映・映像表示・20秒BET
+- ユーザーはv228でゲーム進行の復旧を確認。追加依頼はBET操作時の即時控除、クライアント抽選機の表示、BET TIME20秒。詳細は `docs/shared-sync-v229.md`。
+- 各枠の増額をローカル予約として即時にCREDITへ反映し、減額は予約済み分のみ返却。中央BET/AUTOの送信時は残額だけ控除し、成功ACK・開始・再送では再控除しない。遅れて届く財布・前ゲーム精算と新しい予約の重なりも保護する。
+- 公開v228のDOMで外枠438.75×285.675pxに対してstage/videoの高さ0を実測。動画CSSがnative absoluteをrelativeに変えていたため、元の絶対配置を維持する修正を入れた。WebGL初期化に失敗しても動画領域を確保する。
+- 動画は現在sessionの再生可能フレームだけをfreshと扱い、未デコードのrelay・古いイベント・空videoのholdを修正。再生/再試行ボタンを追加し、映像待ちでゲーム進行を止めない。同player別instanceの視聴も許可する。
+- server.mjsのBET期間既定を10秒から20秒へ変更。環境変数指定なしの実サーバーでhealthと実round期限の双方が20,000msになることを確認。
+- 新規回帰 `tests/shared-v229-immediate-bet.mjs` / `tests/shared-v229-video-display.mjs` をtest:syncとShared machine checkへ追加。v228の初期100万・AUTO REBET初期ON・27,000 BET・終了時WIN加算を維持。
+- 版 `20261116-v229-immediate-bet-video`。Windows側も最新mainへ更新して既存ランチャーから再起動し、ホスト/プレイヤー画面を再読み込みする。`.runtime`・`.tools`・`data`を保持。公開クライアント更新をWindowsサーバー更新済みと扱わない。

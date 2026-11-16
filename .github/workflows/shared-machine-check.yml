@@ -46,6 +46,8 @@ on:
       - 'tests/shared-v228-wallet-hydration.mjs'
       - 'tests/shared-v228-credit-rebet.mjs'
       - 'tests/server-wallet-v228.mjs'
+      - 'tests/shared-v229-immediate-bet.mjs'
+      - 'tests/shared-v229-video-display.mjs'
       - 'assets/cookie-upgrade-patches.js'
       - 'tests/shared-v225-video-reconnect.mjs'
       - 'tests/shared-v225-payout-lifecycle.mjs'

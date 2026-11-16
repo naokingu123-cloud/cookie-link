@@ -29,6 +29,7 @@ let socketRef=null,socketWasOpen=false,connectionEpoch=0,onlineSince=0,firstSnap
 let joinedRoundId='',startedRoundId='',startingRoundId='';
 const betSession=typeof crypto!=='undefined'&&typeof crypto.randomUUID==='function'?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12);
 let betAttempt=null,betAttemptSequence=0;
+let draftReserved=0,draftRoundId='',pendingFunds=null;
 let autoRebet=(()=>{try{return localStorage.getItem(AUTO_REBET_KEY)!=='0';}catch{return true;}})(),manualBetRoundId='';
 let pollTimer=0,pollDueAt=0,pollBusy=false,pollRequested=false,pollStopped=false,nextPollAt=0;
 let backoffUntil=0,pollFailures=0,refreshPromise=null;
@@ -48,6 +49,7 @@ function queueLoss(roundId,creditAfterBet){
  if(!roundId||normalPending.has(String(roundId))||normalSettled.has(String(roundId))||normalReview.has(String(roundId)))return;abandonedRounds.add(String(roundId));
  joinedRounds.delete(String(roundId));if(joinedRoundId===String(roundId))joinedRoundId='';if(startedRoundId===String(roundId))startedRoundId='';if(startingRoundId===String(roundId))startingRoundId='';
  if(betAttempt?.roundId===String(roundId))betAttempt=null;if(manualBetRoundId===String(roundId))manualBetRoundId='';
+ if(pendingFunds?.roundId===String(roundId)){pendingFunds=null;setAvailableCredit(Math.max(0,finite(creditAfterBet)));}
  lossQueue[String(roundId)]={roundId:String(roundId),creditAfterBet:Math.max(0,finite(creditAfterBet)),at:Date.now()};saveLosses();
 }
 function dropLoss(roundId){delete lossQueue[String(roundId)];saveLosses();}
@@ -118,7 +120,7 @@ function schedulePoll(delay=POLL_MS){
  if(pollTimer&&pollDueAt>=backoffUntil&&pollDueAt<=due)return;
  clearTimeout(pollTimer);pollDueAt=due;pollTimer=setTimeout(poll,Math.max(0,due-now));
 }
-function resetStability(){connectionEpoch++;onlineSince=0;firstSnapshotAt=0;lastSnapshotAt=0;snapshotCount=0;betAttempt=null;manualBetRoundId='';joinedRoundId='';startedRoundId='';startingRoundId='';joinedRounds.clear();}
+function resetStability(){connectionEpoch++;onlineSince=0;firstSnapshotAt=0;lastSnapshotAt=0;snapshotCount=0;if(pendingFunds)pendingFunds.cancelled=true;betAttempt=null;manualBetRoundId='';joinedRoundId='';startedRoundId='';startingRoundId='';joinedRounds.clear();}
 function stable(){const now=Date.now();return wsOpen()&&onlineSince>0&&snapshotCount>=SNAPSHOT_MIN&&firstSnapshotAt>0&&now-firstSnapshotAt>=STABLE_MS&&now-lastSnapshotAt<=SNAPSHOT_FRESH_MS;}
 function noteSnapshot(state){
  const now=Date.now();if(!firstSnapshotAt)firstSnapshotAt=now;lastSnapshotAt=now;snapshotCount++;
@@ -131,10 +133,60 @@ function selected(target=window.app){
  // previous nonzero stake after the user has explicitly selected zero.
  return {bets,locked:[...bets],enabled:bets.map(value=>value>0)};
 }
-function expireBetAttempt(round=client()?.round){
+function setAvailableCredit(value){
+ app.credit=Math.max(0,finite(value));app.displayCredit=app.credit;
+ try{app.onChange?.(app);}catch{}refreshBetControls(app);
+}
+function betBudget(target=window.app){return Math.max(0,finite(target?.credit))+draftReserved;}
+function reserveSelection(before,after){
+ const change=after>before?after-before:-Math.min(draftReserved,before-after);
+ draftReserved=Math.max(0,draftReserved+change);
+ if(draftReserved&&!draftRoundId&&client()?.round?.phase==='BETTING')draftRoundId=String(client().round.id||'');
+ if(!draftReserved)draftRoundId='';
+ if(change)setAvailableCredit(finite(app.credit)-change);
+}
+function releaseDraft(){const credit=finite(app.credit)+draftReserved;draftReserved=0;draftRoundId='';setAvailableCredit(credit);}
+function rejectBetFunds(attempt){
+ if(pendingFunds===attempt?.funds){const credit=finite(app.credit)+pendingFunds.held;pendingFunds=null;setAvailableCredit(credit);}
+ if(betAttempt===attempt)betAttempt=null;if(manualBetRoundId===attempt?.roundId)manualBetRoundId='';
+}
+// Wallet values are server balances. Local, uncommitted selections are a
+// separate reservation, so hydration must not make their money spendable twice.
+function projectWalletCredit(credit,wallet={},options={}){
+ credit=Math.max(0,finite(credit));const funds=pendingFunds;
+ if(funds){
+  const matching=wallet.source==='bet'&&String(wallet.lastRoundId||'')===funds.roundId;
+  const rejected=options.joinRejected&&String(options.joiningRoundId||'')===funds.roundId;
+  const round=options.round||client()?.round,closed=round&&(round.id!==funds.roundId||round.phase!=='BETTING');
+  const settled=String(wallet.lastRoundId||'')===funds.roundId&&['client','server-worker'].includes(wallet.source)&&round?.id===funds.roundId&&(round.phase==='COMPLETE'||round.participant?.settlement);
+  if(matching){funds.held=0;if(funds.cancelled)pendingFunds=null;return credit;}
+  if(settled||rejected||(funds.cancelled&&closed)){pendingFunds=null;return credit;}
+  return Math.max(0,credit-funds.held);
+ }
+ if(draftReserved>credit){draftReserved=0;draftRoundId='';}
+ return Math.max(0,credit-draftReserved);
+}
+function resolveExpiredFunds(state,authoritative){
+ const funds=pendingFunds;if(!funds?.cancelled||!authoritative)return;
+ const candidate=[state?.round,state?.pendingRound].find(round=>round?.id===funds.roundId&&round?.participant?.playerId&&(!client()?.playerId||round.participant.playerId===client().playerId));
+ if(candidate){
+  const credit=candidate.participant.settlement?.creditAfter??candidate.participant.creditAfterBet;
+  if(credit!=null&&Number.isFinite(Number(credit))){pendingFunds=null;setAvailableCredit(Number(credit));}return;
+ }
+ const round=state?.round;if(!round||round.id===funds.roundId&&round.phase==='BETTING')return;
+ const wallet=state?.payoutControlV3?.wallet,credit=wallet?.credit;
+ const restored=credit!=null&&Number.isFinite(Number(credit))?Number(credit):finite(app.credit)+funds.held;
+ pendingFunds=null;setAvailableCredit(restored);
+}
+function expireBetAttempt(round=client()?.round,authoritative=false){
  if(!round)return;
  const id=String(round.id||'');
- if(betAttempt&&(id!==betAttempt.roundId||!['BETTING','PLAYING'].includes(round.phase)||round.participant?.settlement||abandonedRounds.has(betAttempt.roundId))){
+ if(draftReserved){
+  if(!draftRoundId&&round.phase==='BETTING')draftRoundId=id;
+  if(draftRoundId&&(id!==draftRoundId||round.phase!=='BETTING'||finite(round.betClosesAt)<=Date.now()+finite(client()?.clockOffset)))releaseDraft();
+ }
+ if(betAttempt&&(id!==betAttempt.roundId||!['BETTING','PLAYING'].includes(round.phase)||round.participant?.settlement||abandonedRounds.has(betAttempt.roundId)||(authoritative&&round.phase==='PLAYING'&&!round.participant?.playerId))){
+  if(pendingFunds===betAttempt.funds)pendingFunds.cancelled=true;
   if(manualBetRoundId===betAttempt.roundId)manualBetRoundId='';betAttempt=null;
  }
  // A server-settled reservation that never attached has no local animation to
@@ -143,25 +195,25 @@ function expireBetAttempt(round=client()?.round){
   const previous=joinedRoundId,settlement=id===previous?round.participant?.settlement:client()?.pendingRound?.id===previous?client().pendingRound.participant?.settlement:null;
   joinedRounds.delete(previous);joinedRoundId='';if(startedRoundId===previous)startedRoundId='';if(startingRoundId===previous)startingRoundId='';
   const credit=lastServerWallet?.lastRoundId===previous?lastServerWallet.credit:settlement?.creditAfter;
-  if(credit!=null&&Number.isFinite(Number(credit))&&Number(credit)>=0){app.credit=Number(credit);app.displayCredit=app.credit;try{app.onChange?.(app);}catch{}}
+  if(credit!=null&&Number.isFinite(Number(credit))&&Number(credit)>=0)setAvailableCredit(projectWalletCredit(Number(credit)));
  }
 }
 function totalSelected(target=window.app){return selected(target).bets.reduce((sum,value)=>sum+value,0);}
-function canEditBets(target=window.app){return !!target&&target.phase==='ready'&&!active()&&!joinBusy&&!resetBusy&&!abandonBusy&&!finishBusy&&!betAttempt&&!joinedRoundId&&!startedRoundId;}
+function canEditBets(target=window.app){return !!target&&target.phase==='ready'&&!active()&&!joinBusy&&!resetBusy&&!abandonBusy&&!finishBusy&&!betAttempt&&!pendingFunds&&!joinedRoundId&&!startedRoundId;}
 function canSetBet(index,value,target=window.app){
  if(!canEditBets(target)||!Number.isInteger(index)||index<0||index>=(target.bets?.length||0)||!Number.isSafeInteger(value)||value<0)return false;
  if(Array.isArray(window.SweetsLineup?.ids)&&!window.SweetsLineup.ids[index]&&value>0)return false;
  const before=selected(target),current=before.bets[index],total=before.bets.reduce((sum,bet,i)=>sum+(i===index?value:bet),0);
- return value<=current||(Number.isSafeInteger(total)&&total<=Math.max(0,finite(target.credit)));
+ return value<=current||(Number.isSafeInteger(total)&&total<=betBudget(target));
 }
 function setAutoRebet(value){
  autoRebet=!!value;try{localStorage.setItem(AUTO_REBET_KEY,autoRebet?'1':'0');}catch{}
- refreshBetControls();if(autoRebet)schedulePoll(0);return autoRebet;
+ refreshBetControls();if(autoRebet){joinBet(client()?.round).catch(()=>{});schedulePoll(0);}return autoRebet;
 }
 function requestBet(){
  const round=client()?.round,total=totalSelected(app);
- if(!canEditBets(app)||!stable()||round?.phase!=='BETTING'||!round.canBet||total<=0||total>finite(app.credit)||finite(round.betClosesAt)-(Date.now()+finite(client()?.clockOffset))<MIN_BET_REMAIN_MS)return false;
- manualBetRoundId=String(round.id);schedulePoll(0);return true;
+ if(!canEditBets(app)||!stable()||!modelReady(app)||round?.phase!=='BETTING'||!round.canBet||total<=0||total>betBudget(app)||finite(round.betClosesAt)-(Date.now()+finite(client()?.clockOffset))<MIN_BET_REMAIN_MS)return false;
+ manualBetRoundId=String(round.id);joinBet(round).catch(()=>{});return !!betAttempt||joinedRoundId===String(round.id);
 }
 function disableBetButton(button,disabled,reason=''){
  if(!button)return;button.disabled=!!disabled;button.setAttribute?.('aria-disabled',String(!!disabled));button.classList?.toggle?.('shared-bet-disabled',!!disabled);
@@ -169,7 +221,7 @@ function disableBetButton(button,disabled,reason=''){
 }
 function refreshBetControls(target=typeof app!=='undefined'?app:window.app){
  if(!target)return;
- const editable=canEditBets(target),round=client()?.round,total=totalSelected(target),funded=total>0&&total<=Math.max(0,finite(target.credit));
+ const editable=canEditBets(target),round=client()?.round,total=totalSelected(target),funded=total>0&&total<=betBudget(target);
  if(typeof slots!=='undefined'&&Array.isArray(slots))for(const slot of slots){
   const index=Number(slot.i),current=finite(target.bets?.[index]);
   const increment=typeof units!=='undefined'&&typeof unit!=='undefined'?finite(units[unit[index]]):5;
@@ -303,7 +355,7 @@ function applyParticipant(participant){
  const locked=Array.isArray(participant.locked)?participant.locked.map(value=>Math.max(0,finite(value))):[...bets];
  const enabled=Array.isArray(participant.enabled)?participant.enabled.map(Boolean):bets.map(value=>value>0);
  app.bets=[...bets];app.locked=[...locked];app.enabled=[...enabled];
- if(Number.isFinite(Number(participant.creditAfterBet))){app.credit=Number(participant.creditAfterBet);app.displayCredit=app.credit;}
+ if(Number.isFinite(Number(participant.creditAfterBet))){app.credit=projectWalletCredit(Number(participant.creditAfterBet),{source:'bet',lastRoundId:client()?.round?.id});app.displayCredit=app.credit;}
  lastParticipant=participant;try{app.onChange?.(app);}catch{}refreshBetControls(app);
 }
 function confirmBet(round,attempt=betAttempt,directResponse=false){
@@ -314,7 +366,7 @@ function confirmBet(round,attempt=betAttempt,directResponse=false){
  // Only a reservation submitted by this live controller can replace a lost
  // HTTP ACK. An old page, interrupted round or unrelated participant cannot.
  if(participant.clientRoundToken!==attempt.payload.clientRoundToken&&(!directResponse||participant.clientRoundToken))return false;
- joinedRounds.add(id);joinedRoundId=id;betAttempt=null;manualBetRoundId='';applyParticipant(participant);status('BET','BET登録済み');return true;
+ joinedRounds.add(id);joinedRoundId=id;if(pendingFunds===attempt.funds)pendingFunds=null;betAttempt=null;manualBetRoundId='';applyParticipant(participant);status('BET','BET登録済み');return true;
 }
 function betStatus(round=client()?.round){
  if(round?.phase!=='BETTING')return null;
@@ -330,7 +382,8 @@ function betStatus(round=client()?.round){
  if(remaining<MIN_BET_REMAIN_MS)return {text:'NEXT',label:'受付締切・次のBET TIME待機'};
  const bet=selected(app),total=bet.bets.reduce((sum,value,index)=>sum+(bet.enabled[index]!==false?Math.max(0,finite(value)):0),0);
  if(total<=0)return {text:'BET',label:'BETを設定してください'};
- if(finite(app.credit)<total)return {text:'CREDIT',label:'CREDIT不足'};
+ if(!betAttempt&&betBudget(app)<total)return {text:'CREDIT',label:'CREDIT不足'};
+ if(pendingFunds?.cancelled)return {text:'WAIT',label:'BET残高をサーバーへ確認中'};
  if(!autoRebet&&manualBetRoundId!==id)return {text,label:'AUTO REBET OFF・BET待ち'};
  return {text,label:betAttempt?.roundId===id?'BET登録を再確認中':'SERVER BET TIME・BET登録待ち'};
 }
@@ -349,8 +402,9 @@ function installGuards(){
   const nativeSetBet=proto.setBet;Object.defineProperty(proto,'__sharedBetBudgetV228',{value:true});
   proto.setBet=function(index,value){
    if(!canSetBet(index,value,this)){refreshBetControls(this);return false;}
+   const before=totalSelected(this);
    const changed=nativeSetBet.call(this,index,value);
-   if(changed!==false){const bet=selected(this);this.bets=bet.bets;this.locked=bet.locked;this.enabled=bet.enabled;}
+   if(changed!==false){const bet=selected(this);this.bets=bet.bets;this.locked=bet.locked;this.enabled=bet.enabled;reserveSelection(before,totalSelected(this));}
    refreshBetControls(this);return changed;
   };
  }
@@ -374,11 +428,16 @@ async function joinBet(round){
  // decoding/reconnection is independent and must never silently skip a BET.
  if(joinBusy||resetBusy||!stable()||!modelReady(app)||!round||round.phase!=='BETTING'||round.canBet!==true)return false;
  const id=String(round.id||'');if(!id||joinedRounds.has(id)||abandonedRounds.has(id))return false;
+ if(pendingFunds&&pendingFunds!==betAttempt?.funds)return false;
  if(!autoRebet&&manualBetRoundId!==id)return false;
  const serverNow=Date.now()+finite(client()?.clockOffset),remaining=finite(round.betClosesAt)-serverNow;if(remaining<MIN_BET_REMAIN_MS)return false;
- const bet=selected(app),totalBet=bet.bets.reduce((sum,value,index)=>sum+(bet.enabled[index]!==false?Math.max(0,finite(value)):0),0),creditBefore=Math.max(0,finite(app.credit));
- if(totalBet<=0){status('BET','BETを設定してください');return false;}if(creditBefore<totalBet){status('CREDIT','CREDIT不足');return false;}
- if(!betAttempt||betAttempt.roundId!==id||betAttempt.epoch!==connectionEpoch)betAttempt={roundId:id,epoch:connectionEpoch,socket:client()?.ws,payload:{roundId:id,clientRoundToken:'v228-'+betSession+'-'+connectionEpoch+'-'+(++betAttemptSequence),bets:bet.bets,locked:bet.locked,enabled:bet.enabled,totalBet,creditBefore,creditAfterBet:creditBefore-totalBet,initialState:null,appVersion:'v228-credit-rebet'}};
+ if(!betAttempt||betAttempt.roundId!==id||betAttempt.epoch!==connectionEpoch){
+  const bet=selected(app),totalBet=bet.bets.reduce((sum,value)=>sum+value,0),creditBefore=betBudget(app);
+  if(totalBet<=0){status('BET','BETを設定してください');return false;}if(creditBefore<totalBet){status('CREDIT','CREDIT不足');return false;}
+  const funds={roundId:id,held:totalBet,cancelled:false};
+  betAttempt={roundId:id,epoch:connectionEpoch,socket:client()?.ws,funds,payload:{roundId:id,clientRoundToken:'v229-'+betSession+'-'+connectionEpoch+'-'+(++betAttemptSequence),bets:bet.bets,locked:bet.locked,enabled:bet.enabled,totalBet,creditBefore,creditAfterBet:creditBefore-totalBet,initialState:null,appVersion:'v229-immediate-bet'}};
+  draftReserved=0;draftRoundId='';pendingFunds=funds;setAvailableCredit(creditBefore-totalBet);
+ }
  const attempt=betAttempt;joinBusy=true;
  try{
   const response=await client().join(attempt.payload);
@@ -387,7 +446,7 @@ async function joinBet(round){
  }catch(error){
   if(error?.data?.round){const accepted=client()?.accept?.(error.data);if(accepted!==false)rememberWallet(error.data.payoutControlV3);}
   if(confirmBet(client()?.round,attempt))return true;
-  if(['insufficient_credit','invalid_bet','invalid_credit','bet_total_mismatch','wallet_migration_pending','wait_next_bet','round_mismatch','round_already_settled'].includes(String(error?.data?.error||''))&&betAttempt===attempt){betAttempt=null;manualBetRoundId='';}
+  if(['insufficient_credit','invalid_bet','invalid_credit','bet_total_mismatch','wallet_migration_pending','wait_next_bet','round_mismatch','round_already_settled'].includes(String(error?.data?.error||''))){rejectBetFunds(attempt);}
   if(Number(error?.status)===429)deferRequest(error);if(![409].includes(Number(error?.status)))console.warn('[SharedController224] join',error?.message||error);
  }
  finally{joinBusy=false;refreshBetControls(app);}
@@ -433,7 +492,10 @@ async function finishNormal(reason='result-complete'){
 async function flushStaleState(state){
  for(const [roundId] of normalPending){
   if(roundId===active()?.roundId)continue;
-  try{const credit=await settleNormal({roundId});if(!active()&&!joinedRoundId&&app?.phase==='ready'){app.credit=credit;app.displayCredit=credit;}}
+  // A restored settlement can finish while the user edits the next selection.
+  // Its balance is authoritative, but any draft reservation is still held.
+  // A newer submitted BET owns its own wallet and must not be rewound here.
+  try{const credit=await settleNormal({roundId});if(!active()&&!joinedRoundId&&!betAttempt&&!pendingFunds&&app?.phase==='ready')setAvailableCredit(projectWalletCredit(credit));}
   catch(error){deferRequest(error);return;}
  }
  await flushLosses();const currentId=String(active()?.roundId||'');
@@ -443,10 +505,11 @@ async function flushStaleState(state){
   queueLoss(id,round.participant.creditAfterBet);settleZero(id,round.participant.creditAfterBet).catch(()=>{});abandonedRounds.add(id);
  }
 }
-async function processState(state){
+async function processState(state,authoritative=false){
  // A successful server registration can outlive a lost HTTP response. Confirm
  // its exact token before stale-round cleanup can classify it as an old loss.
  confirmBet(state?.round);confirmBet(client()?.round);
+ expireBetAttempt(state?.round||client()?.round,authoritative);resolveExpiredFunds(state,authoritative);
  await flushStaleState(state);if(backoffUntil>Date.now())return;
  const round=state?.round||client()?.round,shared=active(),activeId=String(shared?.roundId||'');
  if(activeId){
@@ -470,7 +533,7 @@ async function refreshState(){
  refreshPromise=(async()=>{
   const c=client(),state=await c.getState();if(Date.now()>=backoffUntil){pollFailures=0;backoffUntil=0;}
   const accepted=c.accept?.(state),latest=accepted===false?{round:c.round,pendingRound:c.pendingRound}:state;
-  if(accepted!==false){noteSnapshot(latest);rememberWallet(state?.payoutControlV3);}await processState(latest);return latest;
+  if(accepted!==false){noteSnapshot(latest);rememberWallet(state?.payoutControlV3);}await processState(latest,accepted!==false);return latest;
  })().finally(()=>{refreshPromise=null;});
  return refreshPromise;
 }
@@ -522,7 +585,7 @@ function boot(){
  addEventListener('beforeunload',()=>{
   pollStopped=true;clearTimeout(pollTimer);const shared=active();if(shared?.roundId){if(['result','paying','complete'].includes(String(app?.phase||'')))queueNormal(shared);else{const p=shared.participant||lastParticipant||{};queueLoss(shared.roundId,p.creditAfterBet);}}
  },{once:true});
- window.SweetsSharedControllerV224={hardReset,abandonRound,finishNormal,canStart,canEditBets,canSetBet,refreshBetControls,setAutoRebet,requestBet,stable,remoteReady,betStatus,refreshNow:refreshState,isReady:()=>modelReady(app),describe:()=>({connectionEpoch,onlineSince,firstSnapshotAt,lastSnapshotAt,snapshotCount,autoRebet,joinedRoundId,startedRoundId,pendingBetRoundId:betAttempt?.roundId||null,activeRound:active()?.roundId||null,losses:Object.keys(lossQueue),pendingSettlements:[...normalPending.keys()],settlementReview:[...normalReview.keys()],generation,resetBusy})};
+ window.SweetsSharedControllerV224={hardReset,abandonRound,finishNormal,canStart,canEditBets,canSetBet,refreshBetControls,setAutoRebet,requestBet,projectWalletCredit,stable,remoteReady,betStatus,refreshNow:refreshState,isReady:()=>modelReady(app),describe:()=>({connectionEpoch,onlineSince,firstSnapshotAt,lastSnapshotAt,snapshotCount,autoRebet,joinedRoundId,startedRoundId,pendingBetRoundId:betAttempt?.roundId||null,draftReserved,pendingDebitRoundId:pendingFunds?.roundId||null,localReserved:draftReserved+(pendingFunds?.held||0),activeRound:active()?.roundId||null,losses:Object.keys(lossQueue),pendingSettlements:[...normalPending.keys()],settlementReview:[...normalReview.keys()],generation,resetBusy})};
  console.info('[SharedController224] normal-cycle priority; disconnects are zero-WIN losses and never replayed');
 }
 boot();

@@ -16,6 +16,7 @@ function boot(){
  const roundId=()=>String(client.round?.id||'');
  const send=message=>client.send({...message,protocol:PROTOCOL,instanceId,roundId:roundId()});
  const key=(id,instance='')=>String(id)+':'+String(instance||'default');
+ const remote=(id,instance='')=>!!id&&(id!==client.playerId||!!instance&&instance!==instanceId);
  function source(){
   // The visible Three.js canvas is authoritative. rouletteDriver.mirrorCanvas
   // can be a one-frame helper and previously caused the first-HIT freeze.
@@ -118,9 +119,9 @@ function boot(){
  }
  async function onMessage(message){
   const id=String(message.fromPlayerId||''),instance=String(message.fromInstanceId||''),peerKey=key(id,instance);
-  if(message.type==='rtc_watch'){if(id&&id!==client.playerId)offer(id,instance).catch(error=>console.warn('[RouletteHost224] offer',error?.message||error));return;}
-  if(message.type==='rtc_peer_list'){for(const peer of message.peers||[])if(peer?.playerId&&peer.playerId!==client.playerId)offer(String(peer.playerId),String(peer.instanceId||'')).catch(()=>{});return;}
-  if(message.type==='rtc_fallback_request'){if(id&&id!==client.playerId){const fresh=!subscribers.has(peerKey);subscribers.set(peerKey,{id,instance});ensureRecorder(fresh&&!!recorder).catch(error=>console.warn('[RouletteHost224] relay',error?.message||error));}return;}
+  if(message.type==='rtc_watch'){if(remote(id,instance))offer(id,instance).catch(error=>console.warn('[RouletteHost224] offer',error?.message||error));return;}
+  if(message.type==='rtc_peer_list'){for(const peer of message.peers||[])if(remote(String(peer?.playerId||''),String(peer?.instanceId||'')))offer(String(peer.playerId),String(peer.instanceId||'')).catch(()=>{});return;}
+  if(message.type==='rtc_fallback_request'){if(remote(id,instance)){const fresh=!subscribers.has(peerKey);subscribers.set(peerKey,{id,instance});ensureRecorder(fresh&&!!recorder).catch(error=>console.warn('[RouletteHost224] relay',error?.message||error));}return;}
   if(message.type==='rtc_fallback_stop'||message.type==='rtc_peer_left'){dropSubscriber(peerKey,false);if(message.type==='rtc_peer_left'){const job=offers.get(peerKey);if(job){job.cancelled=true;offers.delete(peerKey);}closePeer(peerKey);}return;}
   const session=peers.get(peerKey);if(!session)return;
   if(message.type==='rtc_answer'&&message.description){try{await session.pc.setRemoteDescription(message.description);if(peers.get(peerKey)===session)await flushIce(session);}catch{closePeer(peerKey,session);}}

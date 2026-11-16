@@ -1,4 +1,4 @@
-process.env.SWEETS_BET_DURATION_MS??='10000';
+process.env.SWEETS_BET_DURATION_MS??='20000';
 // The legacy v213 synthetic-player runner remains disabled. v220 advances
 // empty authoritative rounds directly inside the server core instead.
 process.env.SWEETS_AUTONOMOUS_ROUNDS='0';
@@ -14,3 +14,4 @@ await import('./server-startup-sanitize-v217.mjs');
 await import('./server-rtc-preload.mjs');
 await import('./server-payout-preload-v3.mjs');
 await import('./server-core-loader-v220.mjs');
+

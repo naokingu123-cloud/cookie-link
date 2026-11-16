@@ -90,7 +90,7 @@ next.emit({type:'rtc_offer',fromPlayerId:'host',fromInstanceId:'host-instance',d
 await flush();assert.equal(interrupted.video.peers.length,1);
 const peer=interrupted.video.peers[0];peer.connectionState='connected';peer.ontrack({streams:[{}]});await flush();
 const nativeVideo=interrupted.video.stage.children.find(node=>String(node.className||'').includes('shared-roulette-p2p-v224'));
-assert.ok(nativeVideo);nativeVideo.emit('playing');assert.equal(interrupted.video.api.isFresh(),true);
+assert.ok(nativeVideo);Object.assign(nativeVideo,{readyState:4,videoWidth:720,videoHeight:405});nativeVideo.emit('playing');assert.equal(interrupted.video.api.isFresh(),true);
 await openBet(next,'video-lost-before-start');
 peer.connectionState='failed';peer.onconnectionstatechange();await flush();
 assert.equal(interrupted.video.api.isFresh(),false,'losing the actual peer must clear video freshness before PLAYING');

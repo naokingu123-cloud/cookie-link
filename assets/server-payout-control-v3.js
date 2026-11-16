@@ -43,7 +43,7 @@ function regenerateReadyBoards(){
  }finally{debugPayoutTarget=previous;}
  try{app.onChange?.(app);}catch{}
 }
-function resetToServerWaiting(credit,reason='サーバー精算済み'){
+function resetToServerWaiting(credit,reason='サーバー精算済み',wallet={},options={}){
  try{rouletteDrawSource?.reset?.();}catch{}
  try{
   app.payout=null;app.result=null;app.dealing=false;app.fastForward=false;
@@ -53,17 +53,20 @@ function resetToServerWaiting(credit,reason='サーバー精算済み'){
    if(typeof app.prepare==='function')app.prepare();
    else{app.phase='ready';app.draws=[];app.paid=(app.paid||[]).map(()=>false);app.roundWins=(app.roundWins||[]).map(()=>0);app.totalWin=0;}
   }
-  if(Number.isFinite(Number(credit))){app.credit=Number(credit);app.displayCredit=Number(credit);}
+  if(credit!=null&&Number.isFinite(Number(credit)))updateWalletCredit(Number(credit),wallet,options);
   app.onChange?.(app);
   if(typeof countdownText==='function')countdownText('WAIT',reason+'・次のBET TIME待機');
  }catch(error){console.warn('[PayoutControlV3] reset after server settlement',error);}
 }
-function updateWalletCredit(credit){
- app.credit=credit;app.displayCredit=credit;
+function updateWalletCredit(credit,wallet={},options={}){
+ const projected=window.SweetsSharedControllerV224?.projectWalletCredit?.(credit,wallet,options);
+ const available=Number.isFinite(projected)?projected:credit;
+ if(options.repeated&&app.credit===available&&app.displayCredit===available)return;
+ app.credit=available;app.displayCredit=available;
  try{app.onChange?.(app);}catch{}
  try{window.SweetsSharedControllerV224?.refreshBetControls?.(app);}catch{}
 }
-function applyWallet(control,{acknowledgedRoundId='',joiningRoundId='',joinRejected=false}={}){
+function applyWallet(control,{acknowledgedRoundId='',joiningRoundId='',joinRejected=false,round:stateRound=null}={}){
  const wallet=control?.wallet,playerId=String(control?.playerId||''),revision=Number(wallet?.revision),credit=Number(wallet?.credit);
  if(!wallet||!Number.isFinite(revision)||revision<=0||wallet.credit==null||!Number.isFinite(credit)||credit<0)return;
  if(clientRef?.playerId&&playerId!==String(clientRef.playerId))return;
@@ -71,9 +74,11 @@ function applyWallet(control,{acknowledgedRoundId='',joiningRoundId='',joinRejec
  const applied=appliedWallet?.playerId===playerId?Number(appliedWallet.revision)||0:0;
  // The persistent cache records what a previous page observed; it does not
  // mean that this new Arcade instance has received that balance already.
- if(revision<seen||revision<=applied)return;
+ if(revision<seen||revision<applied)return;
+ const lifecycle=window.SweetsSharedControllerV224?.describe?.(),repeated=revision===applied;
+ if(repeated&&!lifecycle?.localReserved&&!lifecycle?.pendingDebitRoundId)return;
  const walletRoundId=String(wallet.lastRoundId||''),ownAcknowledgement=wallet.source==='client'&&!!acknowledgedRoundId&&walletRoundId===String(acknowledgedRoundId);
- const shared=window.SweetsSharedMachine?.active,lifecycle=window.SweetsSharedControllerV224?.describe?.();
+ const shared=window.SweetsSharedMachine?.active;
  const reservedId=String(shared?.roundId||lifecycle?.startedRoundId||lifecycle?.joinedRoundId||''),attemptId=String(lifecycle?.pendingBetRoundId||''),round=clientRef?.round;
  const pendingId=attemptId&&round?.id===attemptId&&['BETTING','PLAYING'].includes(round.phase)&&!round.participant?.settlement?attemptId:'',protectedId=reservedId||pendingId;
  const betWallet=wallet.source==='bet',currentBet=betWallet&&!!protectedId&&walletRoundId===protectedId;
@@ -90,8 +95,8 @@ function applyWallet(control,{acknowledgedRoundId='',joiningRoundId='',joinRejec
  if(ownAcknowledgement)return;
  // A successful BET (or rejected over-budget BET) updates the available
  // balance without resetting the selected board or interrupting its start.
- if(betWallet||rejectedBet||app.phase==='ready'){updateWalletCredit(credit);return;}
- resetToServerWaiting(credit,wallet.source==='server-worker'?'切断中ラウンドをサーバーで即時精算':'精算反映');
+ if(betWallet||rejectedBet||app.phase==='ready'){updateWalletCredit(credit,wallet,{joiningRoundId,joinRejected,round:stateRound,repeated});return;}
+ resetToServerWaiting(credit,wallet.source==='server-worker'?'切断中ラウンドをサーバーで即時精算':'精算反映',wallet,{joiningRoundId,joinRejected,round:stateRound,repeated});
 }
 function applyControl(control,options={}){
  if(!control||Number(control.version)!==3)return;
@@ -104,7 +109,7 @@ function applyControl(control,options={}){
 }
 function applyStateControl(response,options={}){
  if(clientRef?.isStaleState?.(response)===true)return;
- applyControl(response?.payoutControlV3,options);
+ applyControl(response?.payoutControlV3,{...options,round:response?.round});
 }
 function processed(engine,ball){return Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length))>=ball;}
 async function waitForBall(ball,timeout=18000,current=()=>true){
@@ -169,7 +174,7 @@ function installClient(){
   }
  };
  client.getState=async function(...args){const response=await originalState(...args);applyStateControl(response);return response;};
- client.on(message=>applyControl(message?.payoutControlV3));
+ client.on(message=>applyControl(message?.payoutControlV3,{round:message?.round}));
  originalState().then(response=>applyStateControl(response)).catch(()=>{});
  // The shared controller is the only owner of periodic state reconciliation.
  // All its responses already pass through the getState wrapper above, including
