@@ -7,6 +7,7 @@ const previous=await fs.readFile(new URL('./shared-v225-video-reconnect.mjs',imp
 const loader=await fs.readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8');
 const index=await fs.readFile(new URL('../index.html',import.meta.url),'utf8');
 const version=JSON.parse(await fs.readFile(new URL('../app-version.json',import.meta.url),'utf8')).version;
+const release=version.match(/-v(\d+)-/)?.[1];
 const flush=async()=>{for(let i=0;i<35;i++)await Promise.resolve();};
 function section(source,start,end){const a=source.indexOf(start),b=source.indexOf(end,a);assert.ok(a>=0&&b>a,'fixture '+start);return source.slice(a,b);}
 const common=section(previous,'function deferred(){','function makeHost(){');
@@ -17,10 +18,10 @@ assert.match(hostSource,/FPS=60,BITRATE=3000000,SAFE_FPS=30,SAFE_BITRATE=1600000
 assert.match(hostSource,/STREAM_MAX_WIDTH=1280,STREAM_MAX_HEIGHT=720/);
 assert.match(hostSource,/capturePumpActive\|\|!peers.size/,'single worker pump');
 assert.match(hostSource,/clearInterval\(qualityTimer\)/,'timer cleanup');
-assert.match(loader,/shared-roulette-webrtc-host-v224\.js\?v=234/);
-assert.match(loader,/shared-host-keepalive-v206\.js\?v=234/);
-assert.match(index,/assets\/shared-machine-v176\.js\?v=234/);
-assert.match(version,/v234-hd60-stream/);
+assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release));
+assert.ok(loader.includes('shared-host-keepalive-v206.js?v='+release));
+assert.match(index,/assets\/shared-machine-v176\.js\?v=\d+/);
+assert.ok(Number(release)>=234);
 const workerSource=keepSource.match(/const workerSource="([^"]+)";/)?.[1];
 assert.ok(workerSource);
 const intervals=[],cleared=[],worker={setInterval(fn,period){intervals.push(period);return intervals.length;},clearInterval(id){cleared.push(id);},postMessage(){}};

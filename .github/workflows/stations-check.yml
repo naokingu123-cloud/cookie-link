@@ -1,0 +1,27 @@
+name: Six station check
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'server-stations-v235.mjs'
+      - 'server-core-loader-v220.mjs'
+      - 'assets/stations-v235.*'
+      - 'assets/shared-machine-v176.js'
+      - 'tests/stations*v235*'
+      - '.github/workflows/stations-check.yml'
+jobs:
+  stations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --ignore-scripts
+      - name: Station syntax
+        run: node --check server-stations-v235.mjs && node --check assets/stations-v235.js
+      - name: Seat allocation and real-rule TEST players
+        run: node tests/stations-v235.mjs
+      - name: Actual HTTP and WebSocket six-seat integration
+        run: node tests/stations-integration-v235.mjs

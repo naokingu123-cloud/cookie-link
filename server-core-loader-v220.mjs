@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {patchStationCore} from './server-stations-v235.mjs';
 
 const ROOT=process.cwd();
 const SOURCE=path.join(ROOT,'server-core.mjs');
@@ -95,8 +96,9 @@ source=once(source,
  " if(STATIC_DENY.has(relative)||first==='data'||first==='.git')return reply(res,404,{ok:false,error:'not_found'});",
  " if(STATIC_DENY.has(relative)||first==='data'||first==='.git'||first==='.runtime')return reply(res,404,{ok:false,error:'not_found'});",
  'hide generated runtime source');
+source=patchStationCore(source);
 
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');
-await import(pathToFileURL(OUTPUT).href+'?v=220-'+Date.now());
-console.info('[ServerCoreLoaderV220] continuous physical clock loaded; no synthetic players and no random fallback');
+await import(pathToFileURL(OUTPUT).href+'?v=235-'+Date.now());
+console.info('[ServerCoreLoaderV220] continuous physical clock and six stations loaded; no random fallback');
