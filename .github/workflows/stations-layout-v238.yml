@@ -1,0 +1,45 @@
+name: Station layout v238
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/stations-detail-v238']
+    paths:
+      - 'assets/stations-v235.*'
+      - 'monitor.html'
+      - 'tests/stations-layout-v238.mjs'
+      - '.github/workflows/stations-layout-v238.yml'
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts
+      - name: Reproducible QA source (no credentials or saved player data)
+        run: tar --exclude=.git --exclude=.runtime --exclude=.tools --exclude=data --exclude='assets/audio' -czf /tmp/stations-v238-source.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stations-v238-source
+          path: /tmp/stations-v238-source.tar.gz
+          retention-days: 1
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Actual page DOM, responsive placement and iframe continuity
+        run: node tests/stations-layout-v238.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stations-v238-layout
+          path: qa-stations-v238/
+          retention-days: 3
