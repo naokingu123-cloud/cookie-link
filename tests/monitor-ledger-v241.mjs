@@ -30,7 +30,7 @@ const original=JSON.stringify(data),rows=M.rows(data),summary=M.total(rows,data)
 assert.equal(rows.length,2,'host excluded from both list and total');assert.equal(rows[0].hg,-10000);assert.equal(summary.input,110000);assert.equal(summary.output,110000);assert.equal(summary.hg,0);assert.equal(summary.actual,100);
 assert.equal(summary.setting,(27000*90+10000*100)/37000);assert.equal(summary.corrected,(27000*85+10000*100)/37000);
 assert.equal(M.numberCell(rows[0],data,7).ratio,'+0.10倍');assert.equal(M.numberCell(rows[0],data,1).text,'入賞済');assert.equal(M.numberCell(rows[0],data,2).text,'+0');assert.equal(JSON.stringify(data),original,'rendering never mutates server data');
-data.hitForecasts.b=null;assert.equal(M.total(M.rows(data),data).forecast,null,'partial totals must not imply an unknown player has zero gain');
+data.hitForecasts.b=null;const partialTotal=M.total(M.rows(data),data).forecast;assert.equal(partialTotal.partial,true,'unknown player contributions are marked provisional');assert.equal(partialTotal.gains[6],2700,'known player gain is shown without assuming the other player is zero');
 data.serverTime=14000;assert.equal(M.rows(data)[0].forecast,null,'stale source must not retain color');data.serverTime=1000;
 data.round.players[0].settled=true;data.round.players[0].settlement={totalWin:0};assert.equal(M.rows(data)[0].win,0);data.round.players[0].settled=false;
 data.round.id='next';data.round.phase='BETTING';data.round.players=[];data.stations.seats=[];
