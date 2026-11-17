@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {brotliDecompressSync} from 'node:zlib';
+import {execFileSync} from 'node:child_process';
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const encoded=[1,2,3].map(i=>fs.readFileSync(`scripts/sixdrop-v247-payload-${i}.b64`,'utf8').trim()).join('');
 const packed=Buffer.from(encoded,'base64');
@@ -22,4 +23,9 @@ for(const item of data.files){
  fs.mkdirSync(path.dirname(name),{recursive:true});fs.writeFileSync(name,after);
  console.log('SIXDROP_PATCH',name,after.length);
 }
-fs.mkdirSync('.runtime',{recursive:true});fs.writeFileSync('.runtime/sixdrop-patched-paths.json',JSON.stringify(data.files.map(x=>x.path)));
+const testPath='tests/hidden-results-v246.mjs',test=fs.readFileSync(testPath,'utf8');
+const old="assert.ok(loader.includes('shared-client-hidden-v246.js?v=246'));";
+if(test.split(old).length!==2)throw Error('Hidden-client regression contract changed');
+fs.writeFileSync(testPath,test.replace(old,"assert.match(loader,/shared-client-hidden-v246\\.js\\?v=\\d+/);"));
+fs.mkdirSync('.runtime',{recursive:true});fs.writeFileSync('.runtime/sixdrop-patched-paths.json',JSON.stringify([...data.files.map(x=>x.path),testPath]));
+execFileSync(process.execPath,['tests/sixdrop-gravity-v247.cjs'],{stdio:'inherit'});
