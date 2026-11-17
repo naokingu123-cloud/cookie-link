@@ -5,3 +5,7 @@ const samples=['function frame(','function loop(','function tick(','function run
 for(const word of samples){const positions=[];let p=-1;while((p=s.indexOf(word,p+1))>=0){positions.push(p);if(positions.length>=40)break;}console.log('\nPATTERN '+word+' count<=40='+positions.length+' positions='+positions.slice(0,12).join(','));for(const p of positions.slice(0,word==='document.hidden'?12:word.includes('requestAnimationFrame')?10:5))console.log('SNIP '+p+' '+JSON.stringify(s.slice(Math.max(0,p-190),p+400)));}
 for(const word of ['class Arcade','function renderRoundResult(','function scheduleUI(','function ready']){const p=s.indexOf(word);if(p>=0)console.log('\nLONG '+word+' '+s.slice(p,p+5000));}
 for(const word of ['function frame(', 'requestAnimationFrame', 'document.hidden']){const p=i.indexOf(word);if(p>=0)console.log('INDEX '+word+' '+i.slice(Math.max(0,p-250),p+450));}
+
+console.log('==== GAMEPLAY BLOCKING CONDITIONS ====');
+const needles=['document.hidden','!inView','inView','await new Promise(resolve=>setTimeout','await this.sleep','await e.sleep','await sleep(','this.sleep(','s.chocoTime','payoutStamp'];
+for(const w of needles){let positions=[...s.matchAll(new RegExp(w.replace(/[.*+?^\x24{}()|[\]\\]/g,'\\\$&'),'g'))].map(x=>x.index).filter(p=>p>580000&&p<1155000);console.log('BLOCK_PATTERN '+w+' positions='+positions.length);for(const p of positions.slice(0,w==='document.hidden'?70:w==='!inView'?35:12))console.log('BLOCK '+w+' '+p+' '+JSON.stringify(s.slice(Math.max(0,p-220),p+260))); }
