@@ -21,7 +21,7 @@
     const d=row?.detail,station=Number(row?.station);
     if(!row||row.empty||row.test||!row.connected||row.settled||row.phase!=='PLAYING'||row.roundId!==roundId||
        !Number.isInteger(station)||station<1||station>6||d?.version!==238||d.roundId!==roundId||
-       d.prediction!=='ready'||d.ballCount!==balls.length)continue;
+       !['ready','partial'].includes(d.prediction)||d.ballCount!==balls.length)continue;
     const reach=Array.isArray(d.highestReachNumbers)?d.highestReachNumbers:[];
     for(const n of reach){
      if(!Number.isInteger(n)||n<1||n>25||used.has(n))continue;

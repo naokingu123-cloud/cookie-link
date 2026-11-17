@@ -77,3 +77,7 @@ body .forecast-tile-v242 .forecast-ratio-v242{grid-row:4}
    Only their text changes across the blue→cyan→green→yellow→red hue scale. */
 body table.players td.money.po{font-variant-numeric:tabular-nums}
 .payout-card input[type=number]{transition:color .15s linear,text-shadow .15s linear}
+
+/* v246: confirmed subtotals from unfinished games use dotted tiles. */
+.forecast-tile-v242[data-partial="1"]{outline:1px dotted #fbd37dcc;outline-offset:-1px}
+.forecast-tile-v242[data-partial="1"] .forecast-bar-v245{opacity:.78}

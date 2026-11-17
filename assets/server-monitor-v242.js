@@ -45,7 +45,7 @@ function forecasts(tr,r,data){
  for(let n=1;n<=25;n++){
   const v=values[n-1],tile=node('div','forecast-tile-v242');
   const gain=Number.isFinite(v.gain)&&v.gain>0?v.gain:0;
-  tile.dataset.number=String(n);tile.dataset.tier=v.color||'';tile.title=v.hint;
+  tile.dataset.number=String(n);tile.dataset.tier=v.color||'';tile.dataset.partial=v.partial?'1':'0';tile.title=v.hint;
   const bar=node('span','forecast-bar-v245');
   bar.setAttribute('aria-hidden','true');
   bar.style.height=gain&&maxGain?Math.max(4,100*gain/maxGain).toFixed(2)+'%':'0%';

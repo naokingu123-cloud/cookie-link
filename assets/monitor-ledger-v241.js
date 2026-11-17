@@ -72,18 +72,31 @@ function numberCell(row,data,n){
  const gain=row.forecast?.gains?.[n-1];
  if(!present(gain)||Number(gain)<0)return {text:'—',hint:'予測の更新待ち（旧クライアントは再読み込みしてください）',ratio:'更新待ち',color:''};
  const base=money(row.forecast.baseWin),amount=money(gain);
- return {text:'+'+fmt(amount),ratio:multiple(amount,row.bet),color:tier(base,amount,row.bet),gain:amount,hint:n+'番入賞で '+fmt(base)+' → '+fmt(base+amount)+' WIN／合計BET '+fmt(row.bet)+'に対して増加 '+multiple(amount,row.bet)};
+ const partial=row.forecast?.partial===true;
+ const coverage=partial?('　【暫定 '+(row.forecast.readyGames||0)+'/'+(row.forecast.totalGames||'?')+'ゲーム確定、残り更新中】'):'';
+ return {text:'+'+fmt(amount),ratio:multiple(amount,row.bet),color:partial?'':tier(base,amount,row.bet),gain:amount,partial,
+  hint:n+'番入賞で確認済み増加WIN '+fmt(amount)+'／合計BET '+fmt(row.bet)+'に対して増加 '+multiple(amount,row.bet)+coverage};
 }
 function total(list,data){
  const sum=key=>list.reduce((a,r)=>a+finite(r[key]),0),bet=sum('bet'),input=sum('input'),output=sum('output');
  const weighted=key=>bet>0&&list.filter(r=>r.bet>0).every(r=>present(r[key]))?list.reduce((a,r)=>a+(r.bet>0?r.bet*r[key]:0),0)/bet:null;
  const row={id:'total',bet,win:sum('win'),credit:sum('credit'),input,output,hg:input-output,actual:input>0?output/input*100:null,setting:weighted('setting'),corrected:weighted('corrected'),connected:list.filter(r=>r.connected).length,settled:false,ballCount:(data.round?.balls||[]).length,forecast:null};
  const active=list.filter(r=>r.bet>0&&!r.settled);
- if(data.round?.phase==='PLAYING'&&row.ballCount<8&&active.length&&active.every(r=>r.forecast)){
-  row.forecast={baseWin:list.reduce((a,r)=>a+(r.forecast?money(r.forecast.baseWin):r.win),0),gains:Array.from({length:25},(_,i)=>{
-   const values=active.map(r=>r.forecast.gains[i]);return values.every(present)?values.reduce((a,n)=>a+money(n),0):null;
-  })};
+ const available=active.filter(r=>r.forecast);
+ // The aggregate shares confirmed per-game subtotals immediately, even when
+ // another player or game remains pending. 'partial' forbids a final claim.
+ if(data.round?.phase==='PLAYING'&&row.ballCount<8&&available.length){
+  const partial=available.length!==active.length||available.some(r=>r.forecast.partial);
+  const readyGames=available.reduce((n,r)=>n+(r.forecast.readyGames||0),0);
+  const totalGames=active.reduce((n,r)=>n+(r.forecast?.totalGames||0),0);
+  row.forecast={partial,readyGames,totalGames,
+   baseWin:list.reduce((a,r)=>a+(r.forecast?money(r.forecast.baseWin):r.win),0),
+   gains:Array.from({length:25},(_,i)=>{
+    const values=available.map(r=>r.forecast.gains[i]);
+    return values.every(present)?values.reduce((a,n)=>a+money(n),0):null;
+   })};
  }
+
  return row;
 }
 root.SweetsMonitorLedgerV241={rows,total,numberCell,status,tier,configured,fmt,rate,multiple,spectrum,COLUMNS};

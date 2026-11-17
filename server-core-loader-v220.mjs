@@ -25,12 +25,15 @@ function createMonitorForecastsV241({connected,now}){
   if(!eligible(m,id)||!p||msg?.roundId!==r.id)return false;
   let map=rooms.get(m);if(!map){map=new Map();rooms.set(m,map);}
   const count=(r.balls||[]).length;
-  if(r.phase!=='PLAYING'||p.settlement||count>=8||d?.version!==238||d.roundId!==r.id||d.ballCount!==count||d.paused||!['ready','none'].includes(d.prediction)||!valid(d.predictionBaseWin)||!Array.isArray(d.numberGains)||d.numberGains.length!==25){map.delete(id);return false;}
+  const isPartial=d?.prediction==='partial';
+  const readyGames=Number(d?.readyGames),totalGames=Number(d?.totalGames);
+  const validProgress=!isPartial||(Number.isInteger(readyGames)&&Number.isInteger(totalGames)&&readyGames>=1&&totalGames<=9&&readyGames<totalGames);
+  if(r.phase!=='PLAYING'||p.settlement||count>=8||d?.version!==238||d.roundId!==r.id||d.ballCount!==count||d.paused||!['ready','none','partial'].includes(d.prediction)||!validProgress||!valid(d.predictionBaseWin)||!Array.isArray(d.numberGains)||d.numberGains.length!==25){map.delete(id);return false;}
   const used=new Set((r.balls||[]).map(b=>Number(b.number)));
   const gains=d.numberGains.map((n,i)=>used.has(i+1)?null:n);
   if(gains.some((n,i)=>!used.has(i+1)&&!valid(n))){map.delete(id);return false;}
   for(const key of map.keys())if(!eligible(m,key))map.delete(key);
-  map.set(id,{roundId:r.id,ballCount:count,baseWin:d.predictionBaseWin,gains,at:now()});return true;
+  map.set(id,{roundId:r.id,ballCount:count,baseWin:d.predictionBaseWin,gains,partial:isPartial,readyGames:isPartial?readyGames:totalGames||0,totalGames:totalGames||0,at:now()});return true;
  }
  function snapshot(m){
   const result={},map=rooms.get(m),r=m.round;
@@ -38,7 +41,7 @@ function createMonitorForecastsV241({connected,now}){
   for(const [id,value] of map){
    const p=r?.participants?.[id];
    if(!eligible(m,id)||!p||!connected(m.id,id)||r.phase!=='PLAYING'||p.settlement||(r.balls||[]).length>=8||value.roundId!==r.id||value.ballCount!==r.balls.length||now()-value.at>12000){map.delete(id);continue;}
-   result[id]={roundId:r.id,ballCount:value.ballCount,baseWin:value.baseWin,gains:[...value.gains],bet:Number(p.totalBet)||0,at:value.at};
+   result[id]={roundId:r.id,ballCount:value.ballCount,baseWin:value.baseWin,gains:[...value.gains],partial:value.partial===true,readyGames:value.readyGames,totalGames:value.totalGames,bet:Number(p.totalBet)||0,at:value.at};
   }
   return result;
  }

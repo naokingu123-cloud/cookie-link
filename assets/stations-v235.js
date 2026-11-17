@@ -62,7 +62,7 @@ function rowPresentation(row){
  const best=!row.empty&&row.connected&&!row.settled&&row.phase==='PLAYING'&&detail?.prediction==='ready'?detail.best:null;
  const numbers=Array.isArray(best?.numbers)?best.numbers.filter(n=>Number.isInteger(n)&&n>=1&&n<=25):[];
  const gain=amount(best?.gain);
- const highestReach=detail?.prediction!=='ready'?[]:Array.isArray(detail.highestReachNumbers)&&detail.highestReachNumbers.length?detail.highestReachNumbers:best?.tier===3?numbers:[];
+ const highestReach=!['ready','partial'].includes(detail?.prediction)?[]:Array.isArray(detail.highestReachNumbers)&&detail.highestReachNumbers.length?detail.highestReachNumbers:best?.tier===3?numbers:[];
  if(tier<3&&highestReach.length)label='最高役リーチ';
  const predictionText=row.empty?'':row.phase==='WAITING'||row.phase==='BETTING'?'次HIT待ち':row.settled||row.phase==='COMPLETE'?'抽選終了':detail?.prediction==='none'?'増加なし':'更新中';
  const roleNames=(detail?.highestGames||[]).map(id=>GAME_NAMES[id]).filter(Boolean);
