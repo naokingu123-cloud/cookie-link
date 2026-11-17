@@ -1,0 +1,27 @@
+/* The overview is the first ledger row; the settings card is controls only. */
+main{max-width:none;grid-template-columns:minmax(480px,1.8fr) minmax(320px,.8fr)}
+.payout-card .controls{grid-template-columns:repeat(2,minmax(0,1fr));padding-top:10px}
+.payout-card .field span{font-size:10px}.payout-card .field input{font-size:12px}
+.payout-card .message{font-size:10px;line-height:1.5}
+.monitor-legend-v241{padding:8px 11px;font-size:10px;line-height:1.6;color:#bad8e8;border-bottom:1px solid #6fd7ff2e}
+.monitor-legend-v241 b{white-space:nowrap}.monitor-legend-v241 .red{color:#ff7b83}.monitor-legend-v241 .purple{color:#cc9cff}
+.players-wrap{max-height:calc(100vh - 470px);min-height:240px;overflow:auto;overscroll-behavior:contain}
+.players{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:11px;font-variant-numeric:tabular-nums}
+.players th,.players td{padding:7px 9px;vertical-align:middle;min-width:76px;border-right:1px solid #6fd7ff10}
+.players th{height:34px;font-size:10px;z-index:4}
+.players th:first-child,.players tr:not(.detail-row)>td:first-child{position:sticky;left:0;min-width:170px;max-width:200px;background:#0b1d2b;z-index:2;box-shadow:3px 0 5px #0003}
+.players th:first-child{z-index:6}
+.players .player-id{font-size:8px;font-weight:500;max-width:178px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.players .player-name{font-size:11px}.players .player-state{min-width:160px;text-align:left}
+.players .gain-cell,.players .number-heading{min-width:67px;text-align:center}
+.gain-value{font-size:11px;font-weight:850;color:#def2ff;display:block;white-space:nowrap}
+.gain-ratio{display:block;font-size:8px;line-height:1.4;color:#8cadc0;margin-top:2px;white-space:nowrap}
+.gain-cell[data-tier="red"] .gain-value{color:#ff6e7e}
+.gain-cell[data-tier="purple"] .gain-value{color:#cf9bff}
+.gain-cell[data-tier="rainbow"] .gain-value,.monitor-legend-v241 .rainbow{color:#ffe3a1;background:linear-gradient(90deg,#ff9a9f,#ffd873,#b1f398,#7de4ff,#b6a4ff,#ffb7e2);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.player-total-v241>td{position:sticky;top:34px;z-index:3;background:#163748;color:#f3fbff;font-weight:850;border-bottom:2px solid #6fd7ff66}
+.players .player-total-v241>td:first-child{z-index:5;background:#163748}
+.hg.negative{color:#ff8c99}.configured{color:#a9edc9}
+.players .detail-row td{position:static;min-width:0}.players .detail{max-width:1660px}
+@media(max-width:1100px){main{grid-template-columns:1fr}.payout-card .controls{grid-template-columns:repeat(4,minmax(0,1fr))}.players-wrap{max-height:65vh}}
+@media(max-width:650px){.payout-card .controls{grid-template-columns:repeat(2,minmax(0,1fr))}.players th,.players td{padding:6px}.players th:first-child,.players tr:not(.detail-row)>td:first-child{min-width:140px;max-width:150px}.players .player-id{max-width:130px}.monitor-legend-v241{font-size:9px}}

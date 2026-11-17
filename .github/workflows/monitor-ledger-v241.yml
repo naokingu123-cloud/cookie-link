@@ -2,7 +2,7 @@ name: Monitor ledger v241
 on:
   workflow_dispatch:
   push:
-    branches: ['feature/monitor-ledger-v241']
+    branches: ['main', 'feature/monitor-ledger-v241']
     paths:
       - 'assets/*v241*'
       - 'assets/shared-machine-v176.js'
@@ -40,6 +40,9 @@ jobs:
       - name: Existing shared machine regressions
         if: hashFiles('tests/monitor-ledger-v241.mjs') != ''
         run: npm run check && npm run test:shared
+      - name: Retain guest, background, stations and HD60 behavior
+        if: hashFiles('tests/monitor-ledger-v241.mjs') != ''
+        run: node tests/guest-entry-v237.mjs && node tests/background-continuity-v240.mjs && node tests/server-bet-now-v240.mjs && node tests/stations-live-win-v236.mjs && node tests/stations-detail-v238.mjs && node tests/stations-highlight-v239.mjs && node tests/roulette-hd60-v234.mjs && node .github/tests/nine_tab_visibility_v233.cjs
       - name: Export exact tested source for local display checks
         if: always()
         run: |

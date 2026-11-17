@@ -15,6 +15,36 @@ function replaceExact(source,from,to,expected,label){
 }
 function once(source,from,to,label){return replaceExact(source,from,to,1,label);}
 
+// Display-only forecasts are ephemeral, bounded to the six authenticated seats,
+// and exposed solely through the already protected administrator snapshot.
+function createMonitorForecastsV241({connected,now}){
+ const rooms=new WeakMap(),valid=n=>typeof n==='number'&&Number.isSafeInteger(n)&&n>=0&&n<=1e12;
+ function eligible(m,id){return id!==m.hostPlayerId&&m.stationsV235?.seats?.some(s=>s?.kind==='human'&&s.playerId===id);}
+ function record(m,id,msg){
+  const r=m.round,d=msg?.detail,p=r?.participants?.[id];
+  if(!eligible(m,id)||!p||msg?.roundId!==r.id)return false;
+  let map=rooms.get(m);if(!map){map=new Map();rooms.set(m,map);}
+  const count=(r.balls||[]).length;
+  if(r.phase!=='PLAYING'||p.settlement||count>=8||d?.version!==238||d.roundId!==r.id||d.ballCount!==count||d.paused||!['ready','none'].includes(d.prediction)||!valid(d.predictionBaseWin)||!Array.isArray(d.numberGains)||d.numberGains.length!==25){map.delete(id);return false;}
+  const used=new Set((r.balls||[]).map(b=>Number(b.number)));
+  const gains=d.numberGains.map((n,i)=>used.has(i+1)?null:n);
+  if(gains.some((n,i)=>!used.has(i+1)&&!valid(n))){map.delete(id);return false;}
+  for(const key of map.keys())if(!eligible(m,key))map.delete(key);
+  map.set(id,{roundId:r.id,ballCount:count,baseWin:d.predictionBaseWin,gains,at:now()});return true;
+ }
+ function snapshot(m){
+  const result={},map=rooms.get(m),r=m.round;
+  if(!map)return result;
+  for(const [id,value] of map){
+   const p=r?.participants?.[id];
+   if(!eligible(m,id)||!p||!connected(m.id,id)||r.phase!=='PLAYING'||p.settlement||(r.balls||[]).length>=8||value.roundId!==r.id||value.ballCount!==r.balls.length||now()-value.at>12000){map.delete(id);continue;}
+   result[id]={roundId:r.id,ballCount:value.ballCount,baseWin:value.baseWin,gains:[...value.gains],bet:Number(p.totalBet)||0,at:value.at};
+  }
+  return result;
+ }
+ return {record,snapshot};
+}
+
 let source=await fs.readFile(SOURCE,'utf8');
 source=once(source,
  "const ROOT=path.dirname(fileURLToPath(import.meta.url));",
@@ -97,6 +127,9 @@ source=once(source,
  " if(STATIC_DENY.has(relative)||first==='data'||first==='.git'||first==='.runtime')return reply(res,404,{ok:false,error:'not_found'});",
  'hide generated runtime source');
 source=patchStationCore(source);
+source=once(source,'await loadDb();',createMonitorForecastsV241.toString()+'\nconst monitorForecastsV241=createMonitorForecastsV241({connected,now});\nawait loadDb();','monitor forecast service');
+source=once(source,'stations.progress(m,player.id,msg);return;','stations.progress(m,player.id,msg);monitorForecastsV241.record(m,player.id,msg);return;','authenticated forecast telemetry');
+source=once(source,'stations:stations.snapshot(m,null,false),machine:{','stations:stations.snapshot(m,null,false),hitForecasts:monitorForecastsV241.snapshot(m),machine:{','admin-only number forecasts');
 
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');

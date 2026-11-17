@@ -1,0 +1,59 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+import {stationView} from './stations-view-fixture-v236.mjs';
+const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
+const context={};context.window=context;vm.createContext(context);
+vm.runInContext(await read('assets/monitor-ledger-v241.js'),context);
+vm.runInContext(await read('assets/server-monitor-v241.js'),context);
+vm.runInContext(await read('assets/stations-number-preview-v241.js'),context);
+const M=context.SweetsMonitorLedgerV241;
+assert.equal(M.COLUMNS.length,39);assert.deepEqual(Array.from(M.COLUMNS.slice(0,10)),['プレイヤー','BET','WIN','CREDIT','IN','OUT','H/G','実測P/O','設定P/O','補正P/O']);
+for(const [base,gain,bet,color] of [[290,10,100,'red'],[300,500,100,''],[900,100,100,'purple'],[1000,3900,100,''],[4999,1,100,'rainbow'],[1,6000,100,'rainbow'],[2,0,0,''],[27000*2,27000*.1,27000,'']])assert.equal(M.tier(base,gain,bet),color);
+assert.equal(M.multiple(2700,27000),'+0.1倍');assert.equal(M.multiple(0,0),'—');assert.equal(M.multiple(1,1000000),'+0.0001倍未満');assert.equal(M.fmt(-23000),'-23,000');
+assert.equal(M.configured({mode:'manual',manualRate:105,targetRate:90},{targetRate:80}),105);
+assert.equal(M.configured({targetRate:95},{targetRate:90}),90);assert.equal(M.configured({},{targetRate:92}),92);
+const gains=Array(25).fill(0);gains[0]=null;gains[6]=2700;
+const data={serverTime:1000,machine:{hostPlayerId:'host',hostConnected:true},round:{id:'r',phase:'PLAYING',balls:[{number:1,index:1}],players:[{playerId:'a',displayName:'A',connected:true,totalBet:27000,roundWin:54000},{playerId:'b',displayName:'B',connected:true,totalBet:10000,roundWin:1000}]},payoutControlV3:{config:{targetRate:90},players:[{playerId:'a',currentRoundId:'r',currentRoundBet:27000,currentRoundWin:54000,lifetimeBet:100000,lifetimeWin:110000,targetRate:90,effectiveRate:85,wallet:{credit:900000}},{playerId:'b',currentRoundId:'r',currentRoundBet:10000,currentRoundWin:1000,lifetimeBet:10000,lifetimeWin:0,mode:'manual',manualRate:100,effectiveRate:100,wallet:{credit:990000}},{playerId:'host',wallet:{credit:9999999}}]},stations:{seats:[{station:1,playerId:'a',roundId:'r',connected:true,win:54000},{station:2,playerId:'b',roundId:'r',connected:true,win:1000}]},hitForecasts:{a:{roundId:'r',ballCount:1,bet:27000,baseWin:54000,gains,at:1000},b:{roundId:'r',ballCount:1,bet:10000,baseWin:1000,gains:Array(25).fill(0),at:1000}}};
+const original=JSON.stringify(data),rows=M.rows(data),summary=M.total(rows,data);
+assert.equal(rows.length,2,'host excluded from both list and total');assert.equal(rows[0].hg,-10000);assert.equal(summary.input,110000);assert.equal(summary.output,110000);assert.equal(summary.hg,0);assert.equal(summary.actual,100);
+assert.equal(summary.setting,(27000*90+10000*100)/37000);assert.equal(summary.corrected,(27000*85+10000*100)/37000);
+assert.equal(M.numberCell(rows[0],data,7).ratio,'+0.1倍');assert.equal(M.numberCell(rows[0],data,1).text,'入賞済');assert.equal(M.numberCell(rows[0],data,2).text,'+0');assert.equal(JSON.stringify(data),original,'rendering never mutates server data');
+data.hitForecasts.b=null;assert.equal(M.total(M.rows(data),data).forecast,null,'partial totals must not imply an unknown player has zero gain');
+data.serverTime=14000;assert.equal(M.rows(data)[0].forecast,null,'stale source must not retain color');data.serverTime=1000;
+data.round.players[0].settled=true;data.round.players[0].settlement={totalWin:0};assert.equal(M.rows(data)[0].win,0);data.round.players[0].settled=false;
+data.round.id='next';data.round.phase='BETTING';data.round.players=[];data.stations.seats=[];
+for(const row of M.rows(data)){assert.equal(row.bet,0);assert.equal(row.win,0);assert.equal(row.forecast,null);assert.doesNotMatch(row.state,/WAITING|PLAYING|COMPLETE/);}
+// Exercise the production client patch, with the actual private-scope fixture.
+const source=context.SweetsStationNumbersV241.patch(await read('assets/stations-v235.js'));
+new vm.Script(source);
+const engines=[{kind:'cookie',version:1,totalHundredths:100},{kind:'jelly',version:1,totalHundredths:50}];
+const app={phase:'playing',token:1,draws:[1],locked:[100,200],enabled:[true,true],paid:[false,false],roundWins:[0,0],totalWin:0,engines};
+const round={id:'x',phase:'PLAYING',balls:[{number:1,index:1}],participant:{totalBet:300}};
+const view=stationView(source,{id:'a',model:app,round});
+const slots=engines.map((engine,i)=>({engine,tabReachVersion:1,reachStatus:'ready',tabReachBase:engine.totalHundredths,tabReachResults:i?[{number:7,total:100,gain:50}]:[{number:7,total:300,gain:200}]}));
+let reads=0;const cache=s=>{reads++;return s.tabReachResults;},calc=(bet,h)=>Math.floor(bet*h/100);
+let detail=view.api.currentDetail(app,round,view.shared.active,slots,cache,calc);
+assert.equal(reads,2);assert.equal(detail.predictionBaseWin,200);assert.equal(detail.numberGains.length,25);assert.equal(detail.numberGains[0],null);assert.equal(detail.numberGains[6],300);assert.equal(detail.numberGains[1],0);
+slots[0].reachStatus='pending';detail=view.api.currentDetail(app,round,view.shared.active,slots,cache,calc);assert.equal(detail.numberGains,null);slots[0].reachStatus='ready';
+round.phase='COMPLETE';detail=view.api.currentDetail(app,round,view.shared.active,slots,cache,calc);assert.equal(detail.numberGains,null);
+// Execute the exact service function embedded into the generated server core.
+const loader=await read('server-core-loader-v220.mjs'),start=loader.indexOf('function createMonitorForecastsV241('),end=loader.indexOf('\nlet source=',start);
+let now=1000;const service=vm.runInNewContext('('+loader.slice(start,end).trim()+')')({connected:()=>true,now:()=>now});
+const machine={id:'m',hostPlayerId:'host',stationsV235:{seats:[{kind:'human',playerId:'a'}]},round:{id:'r',phase:'PLAYING',balls:[{number:1,index:1}],participants:{a:{totalBet:27000}}}};
+const msg={roundId:'r',detail:{version:238,roundId:'r',ballCount:1,prediction:'ready',predictionBaseWin:54000,numberGains:gains}};
+assert.equal(service.record(machine,'host',msg),false);assert.equal(service.record(machine,'other',msg),false);assert.equal(service.record(machine,'a',msg),true);assert.equal(service.snapshot(machine).a.bet,27000);
+now=14000;assert.equal(Object.keys(service.snapshot(machine)).length,0);
+assert.equal(service.record(machine,'a',{...msg,detail:{...msg.detail,numberGains:[1]}}),false);
+assert.equal(service.record(machine,'a',msg),true);machine.round.balls.push({number:7,index:2});assert.equal(Object.keys(service.snapshot(machine)).length,0);
+assert.equal(service.record(machine,'a',msg),false);machine.round.balls.pop();assert.equal(service.record(machine,'a',msg),true);machine.round.participants.a.settlement={totalWin:0};assert.equal(Object.keys(service.snapshot(machine)).length,0);
+// When running in the real repository, verify the retained monitor source too.
+try{const original=await read('assets/server-monitor-payout-v3.js'),patched=context.SweetsMonitorViewV241.patch(original);new vm.Script(patched);assert.match(patched,/td.colSpan=39/);assert.doesNotMatch(patched,/\$\('metric-target'\)/);assert.match(patched,/hostFrame.src=hostUrl\(\)/);}catch(e){if(e.code!=='ENOENT')throw e;if(!process.env.SWEETS_PARTIAL_SOURCE_TEST)throw e;console.log('Full v3 monitor source is verified by repository CI, not this partial local checkout.');}
+const bundle=await read('optimized/app-01.js');
+const visibleStart=bundle.indexOf('function visibleTabReachResults('),visibleEnd=bundle.indexOf('\nfunction finishReachSlide(',visibleStart);
+assert.ok(visibleStart>=0&&visibleEnd>visibleStart);
+const visibility={reachAvailable:()=>true,chocoReachReady:()=>true};vm.createContext(visibility);
+vm.runInContext(bundle.slice(visibleStart,visibleEnd)+';globalThis.visible=visibleTabReachResults',visibility);
+const allHits=Array.from({length:25},(_,i)=>({number:i+1,gain:i+1,total:100+i+1}));
+assert.equal(visibility.visible({engine:{version:1},tabReachVersion:1,tabReachResults:allHits},{}).length,25,'all 25 cached candidates, not only the page or largest, are used');
+console.log('MONITOR_LEDGER_V241_PASS');

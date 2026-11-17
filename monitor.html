@@ -6,6 +6,7 @@
 <title>SWEETS LINK サーバー管理</title>
 <link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=217">
 <link rel="stylesheet" href="/assets/stations-v235.css?v=240">
+<link rel="stylesheet" href="/assets/server-monitor-v241.css?v=241">
 </head>
 <body>
 <!-- One physical-host iframe stays alive across all rounds. -->
@@ -20,14 +21,8 @@
  </section>
  <section class="card payout-card" id="payout-card">
   <h2><span>ペイアウト管理</span><span class="host-state">プレイヤー単位・全ゲーム共通設定</span></h2>
-  <div class="summary">
-   <div class="metric target"><small>標準目標PO</small><strong id="metric-target">-</strong></div>
-   <div class="metric actual"><small>全体実測PO（表示用）</small><strong id="metric-actual">-</strong></div>
-   <div class="metric bet"><small>確定累計BET</small><strong id="metric-bet">-</strong></div>
-   <div class="metric win"><small>確定累計WIN</small><strong id="metric-win">-</strong></div>
-  </div>
   <div class="controls" id="global-controls" data-control>
-   <label class="field"><span>標準目標PO (%)</span><input id="target-rate" type="number" min="50" max="150" step="0.1"></label>
+   <label class="field"><span>全体設定P/O (%)</span><input id="target-rate" type="number" min="50" max="150" step="0.1"></label>
    <label class="field"><span>設定下限 (%)</span><input id="min-rate" type="number" min="40" max="150" step="0.1"></label>
    <label class="field"><span>設定上限 (%)</span><input id="max-rate" type="number" min="50" max="180" step="0.1"></label>
    <label class="field"><span>通常ラウンド最大変化</span><input id="max-step" type="number" min="0.1" max="20" step="0.1"></label>
@@ -37,13 +32,13 @@
    <button id="save-global" class="primary" type="button">標準設定を保存</button>
   </div>
   <div id="control-message" class="message">設定を読み込み中…</div>
-  <div id="global-games" class="global-games"></div>
  </section>
  <section class="card players-card">
   <h2><span>プレイヤー一覧</span><span id="round-state" class="host-state">ラウンド -　待機中</span></h2>
-  <div class="players-wrap">
+  <div class="monitor-legend-v241">番号ごとの上段は次の入賞による増加WIN、下段はBETに対する増加倍率です。<b class="red">初めて3倍</b>・<b class="purple">初めて10倍</b>・<b class="rainbow">初めて50倍</b>に達する候補を色分け。入賞済み・更新待ちは数値と区別します。表は左右にスクロールできます。合計P/Oは実測＝OUT÷IN、設定・補正＝BET加重平均です。</div>
+  <div class="players-wrap" tabindex="0" aria-label="プレイヤー別配当一覧・左右スクロール">
    <table class="players">
-    <thead><tr><th>プレイヤー</th><th>今回BET</th><th>CREDIT</th><th>今回WIN</th><th>累計BET</th><th>累計WIN</th><th>実測PO</th><th>設定PO</th><th>制御</th><th>球数</th><th>状態</th><th>詳細</th></tr></thead>
+    <thead><tr><th>プレイヤー</th><th>BET</th><th>WIN</th><th>CREDIT</th><th>IN</th><th>OUT</th><th>H/G</th><th>実測P/O</th><th>設定P/O</th><th>補正P/O</th><th>1番</th><th>2番</th><th>3番</th><th>4番</th><th>5番</th><th>6番</th><th>7番</th><th>8番</th><th>9番</th><th>10番</th><th>11番</th><th>12番</th><th>13番</th><th>14番</th><th>15番</th><th>16番</th><th>17番</th><th>18番</th><th>19番</th><th>20番</th><th>21番</th><th>22番</th><th>23番</th><th>24番</th><th>25番</th><th>制御</th><th>球数</th><th>状態</th><th>詳細</th></tr></thead>
     <tbody id="players"></tbody>
    </table>
    <div id="empty" class="empty-note">プレイヤーの接続待ち</div>
@@ -52,7 +47,8 @@
 </main>
 <iframe id="settlement-worker" class="settlement-worker" title="切断時自動精算"></iframe>
 <script src="/assets/server-monitor-host-stability-v217.js?v=217"></script>
-<script src="/assets/server-monitor-payout-v3.js?v=217"></script>
+<script src="/assets/monitor-ledger-v241.js?v=241"></script>
+<script src="/assets/server-monitor-v241.js?v=241" data-boot="1"></script>
 <script src="/assets/server-monitor-system-filter-v213.js?v=217"></script>
 <script src="/assets/stations-v235.js?v=240"></script>
 <script src="/assets/server-monitor-bet-now-v240.js?v=240"></script>
