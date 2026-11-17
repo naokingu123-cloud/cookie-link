@@ -18,13 +18,14 @@ jobs:
           node-version: '20'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Apply checked source transformations
-        run: node scripts/apply-operator-v242.mjs && node scripts/v242/harden.mjs
+        run: node scripts/apply-operator-v242.mjs && node scripts/v242/harden.mjs && node scripts/v242/polish.mjs
       - name: Runtime syntax
         run: |
           npm run check
           node --check assets/server-monitor-v242.js
           node --check assets/payout-trend-v242.js
           node --check assets/server-monitor-bet-now-v242.js
+          node tests/operator-polish-v242.mjs
       - name: Real two-player cancellation, refund and crash recovery
         run: node tests/operator-refund-v242.mjs
       - name: Actual client refund and no automatic redebit
@@ -60,8 +61,8 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add server-payout-preload-v3.mjs server-core.mjs server-core-loader-v220.mjs assets/shared-machine-core-v196.js assets/server-payout-control-v3.js assets/shared-client-controller-v224.js assets/shared-machine-v176.js index.html monitor.html assets/server-monitor-v241.js tests/server-bet-now-v240.mjs app-version.json
+          git add server-payout-preload-v3.mjs server-core.mjs server-core-loader-v220.mjs assets/shared-machine-core-v196.js assets/server-payout-control-v3.js assets/shared-client-controller-v224.js assets/shared-machine-v176.js index.html monitor.html assets/server-monitor-v241.js assets/server-monitor-v242.css tests/server-bet-now-v240.mjs app-version.json
           if ! git diff --cached --quiet; then
-            git commit -m 'v242: apply verified compact operator dashboard, atomic refunds and persistent trends'
+            git commit -m 'v242: retain independent settings and chart refresh, separate the St rail and reject stale host callbacks'
             git push origin HEAD:feature/operator-v242
           fi

@@ -1,0 +1,11 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import vm from 'node:vm';
+const css=fs.readFileSync('assets/server-monitor-v242.css','utf8'),core=fs.readFileSync('assets/shared-machine-core-v196.js','utf8'),view=fs.readFileSync('assets/server-monitor-v241.js','utf8');
+assert.ok(css.includes('margin-left:84px!important;width:calc(100% - 84px)!important'));
+assert.ok(css.includes('margin-left:48px!important;width:calc(100% - 48px)!important'));
+assert.ok(view.includes('window.SweetsMonitorSnapshotV242=data;window.SweetsPayoutTrendV242?.update(data.payoutTrendV242)'));
+const start=core.indexOf('  function syncHost(round=client.round){'),end=core.indexOf("   if(client.role!=='host'||!client.online)return;",start);assert.ok(start>=0&&end>start);
+const preamble=core.slice(start,end)+'return round;}';const context={client:{round:{id:'new-bet',phase:'BETTING'}}};vm.createContext(context);vm.runInContext(preamble+'\nglobalThis.sync=syncHost;',context);
+assert.equal(context.sync({id:'cancelled-draw',phase:'PLAYING'}).id,'new-bet');assert.equal(context.sync().phase,'BETTING');
+context.client.round=null;assert.equal(context.sync({id:'cancelled-draw'}),null);
+assert.equal((fs.readFileSync('server-core.mjs','utf8').match(/if\(m.operatorRequestsV242\?\.\[requestId\]\)\{await flushDb\(\)/g)||[]).length,2);
+console.log('OPERATOR_POLISH_V242_PASS');
