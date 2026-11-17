@@ -1,0 +1,39 @@
+name: Client repair v243
+on:
+  workflow_dispatch:
+  push:
+    branches: ['fix/client-perf-v243']
+    paths: ['scripts/apply-client-v243.mjs', 'scripts/forecast-v243.mjs', 'tests/client-rejoin-v243.mjs', 'tests/client-forecast-v243.mjs', '.github/workflows/client-fix-v243.yml']
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/client-perf-v243
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Apply bounded client repairs
+        run: node scripts/apply-client-v243.mjs
+      - name: Syntax and refund re-entry
+        run: npm run check && node tests/client-rejoin-v243.mjs
+      - name: Existing ledger, forecasts, seats and refunds
+        run: node tests/operator-refund-v242.mjs && node tests/monitor-ledger-v241.mjs && node tests/monitor-ledger-integration-v241.mjs && node tests/stations-detail-v238.mjs && node tests/stations-highlight-v239.mjs && node tests/guest-entry-v237.mjs && node tests/background-continuity-v240.mjs && node tests/roulette-hd60-v234.mjs
+      - name: Existing shared rounds and payouts
+        run: npm run test:shared
+      - name: Export verified core changes without publishing production
+        run: |
+          mkdir -p qa-client-v243
+          git diff --stat > qa-client-v243/changes.txt
+          git diff > qa-client-v243/source.patch
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-v243-tested-patch
+          path: qa-client-v243
+          retention-days: 3
