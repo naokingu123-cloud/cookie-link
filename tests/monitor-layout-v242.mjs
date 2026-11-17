@@ -34,9 +34,9 @@ try{
  return {forecastColumns,forecastRows,forecastSameLine,forecastLabels,forecastBars,progressHeaders,progressTexts,forecastRaw,ratioRaw,rateStyle,barHeight,trendPO,viewport:[innerWidth,innerHeight],page:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],wrap:[w.clientWidth,w.clientHeight,w.scrollWidth,w.scrollHeight],table:table.getBoundingClientRect().toJSON(),main:m.getBoundingClientRect().toJSON(),rows:document.querySelectorAll('#players>tr').length,tiles:document.querySelectorAll('.forecast-tile-v242').length,inputs:document.querySelectorAll('#global-controls input').length,red:document.querySelectorAll('[data-tier=red]').length,purple:document.querySelectorAll('[data-tier=purple]').length,rainbow:document.querySelectorAll('[data-tier=rainbow]').length};});
   assert.equal(metrics.forecastBars,175,'25 bars in each of 7 rows');
   assert.equal(metrics.progressHeaders,1);
-  assert.ok(metrics.progressTexts.every(x=>/^\\d+$/.test(x)),'progress is a single number');
+  assert.ok(metrics.progressTexts.every(x=>/^\d+$/.test(x)),'progress is a single number');
   assert.ok(metrics.forecastRaw.every(x=>!x.includes(',')),'no grouping commas in forecast text');
-  assert.ok(metrics.ratioRaw.every(x=>!x.includes(',')&&(!/[0-9]+\\.([0-9]+)/.test(x)||x.match(/\\.([0-9]+)/)?.[1]?.length<=2)),'ratios have at most two decimal places');
+  assert.ok(metrics.ratioRaw.every(x=>!x.includes(',')&&(!/[0-9]+\.([0-9]+)/.test(x)||x.match(/\.([0-9]+)/)?.[1]?.length<=2)),'ratios have at most two decimal places');
   assert.equal(metrics.rateStyle[0],'rgb(77, 77, 255)','50 percent is blue');
   assert.equal(metrics.rateStyle[1],'rgb(255, 77, 77)','150 percent is red');
   assert.ok(metrics.barHeight.some(x=>parseFloat(x)>0),'gain bars must render');
