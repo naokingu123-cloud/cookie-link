@@ -1,0 +1,71 @@
+name: Six Drop v247 single-HIT progressive rebuild
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/sixdrop-v247']
+    paths:
+      - 'scripts/apply-sixdrop-v247.mjs'
+      - 'scripts/sixdrop-v247-payload-*.b64'
+      - '.github/workflows/sixdrop-v247.yml'
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Apply exact checksummed implementation
+        run: node scripts/apply-sixdrop-v247.mjs
+      - name: New rules, prediction equivalence and persistent progressive
+        run: |
+          node --check assets/sixdrop-progressive-core-v247.js
+          node --check assets/sixdrop-progressive-host-v247.js
+          npm run check
+          node tests/sixdrop-progressive-v247.cjs
+          node tests/sixdrop-carry-v247.mjs
+          node tests/progressive-forecast-v246.mjs
+          node tests/hidden-results-v246.mjs
+          node tests/background-continuity-v240.mjs
+      - name: Existing shared roulette, refund, wallet, broadcast and other games
+        run: npm run test:shared
+      - name: Sample layout-based payout tuning with positive-game carry
+        run: SIXDROP_SAMPLES=1500 node tests/sixdrop-payout-sample-v247.cjs 50 90 150 | tee docs/sixdrop-v247-samples.jsonl
+      - name: Browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Actual nine-game client, new Six Drop HUD and forced-BET refund
+        run: node tests/client-browser-v243.mjs
+      - name: Hidden single-HIT play, result, payout and server carry acknowledgement
+        run: node tests/client-hidden-browser-v246.mjs
+      - name: Preserve 25-number monitor and six-seat layouts
+        run: |
+          node tests/monitor-layout-v242.mjs
+          node tests/stations-detail-v238.mjs
+          node tests/stations-highlight-v239.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sixdrop-v247-qa
+          path: |
+            qa-client-v243
+            qa-monitor-v242
+            docs/sixdrop-v247-samples.jsonl
+            docs/client-v246-qa.json
+            node_modules/ws
+          retention-days: 2
+      - name: Commit verified runtime only to feature branch
+        run: |
+          test "$(git ls-remote origin refs/heads/feature/sixdrop-v247 | cut -f1)" = "$GITHUB_SHA"
+          node --input-type=module -e "import fs from 'node:fs';import {execFileSync} from 'node:child_process';execFileSync('git',['add','--',...JSON.parse(fs.readFileSync('.runtime/sixdrop-patched-paths.json','utf8')),'docs/sixdrop-v247-samples.jsonl']);"
+          cp docs/client-v246-qa.json docs/sixdrop-v247-browser-qa.json
+          git add docs/sixdrop-v247-browser-qa.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'v247: verified Six Drop single-HIT color chains and persistent progressive'
+          git push origin HEAD:feature/sixdrop-v247
