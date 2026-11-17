@@ -3,7 +3,7 @@
 'use strict';
 const model=root.SweetsMonitorLedgerV241;if(!model)throw Error('ledger model missing');
 const signatures=new WeakMap(),titles=['プレイヤー','BET','WIN','CREDIT','IN','OUT','H/G','実測P/O','設定P/O','補正P/O','1〜25番：増加WIN／BET倍率','制御','球数','状態','詳細'];
-const widths=[10,3.8,3.8,3.8,3.8,3.8,3.8,3.8,3.8,3.8,43,2.6,2.2,6.2,1.8];
+const widths=[8.5,3.2,3.2,3.2,3.2,3.2,3.2,3.2,3.2,3.2,52,2.4,1.9,5.1,1.3];
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=String(text);return e;};
 function td(tr,cls,text,title){const e=node('td',cls,text);if(title)e.title=title;tr.append(e);return e;}
 function init(tbody){
@@ -34,7 +34,7 @@ function fitNumbers(tbody){
  const candidates=[...tbody.querySelectorAll('.money,.forecast-value-v242,.forecast-ratio-v242')];
  for(const e of candidates)e.style.fontSize='';
  const changes=[];
- for(const e of candidates){const available=e.clientWidth-(e.classList.contains('forecast-value-v242')?8:2);if(available>0&&e.scrollWidth>e.clientWidth){const size=parseFloat(getComputedStyle(e).fontSize);changes.push([e,Math.max(2.5,size*available/e.scrollWidth)]);}}
+ for(const e of candidates){const available=e.clientWidth-1;if(available>0&&e.scrollWidth>e.clientWidth){const size=parseFloat(getComputedStyle(e).fontSize);changes.push([e,Math.max(2.5,size*available/e.scrollWidth)]);}}
  for(const [e,size] of changes)e.style.fontSize=size.toFixed(2)+'px';
 }
 function render(data,{tbody,empty,openDetails,detail,refresh}){
