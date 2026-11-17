@@ -1,0 +1,67 @@
+name: Operator compact refund v242
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/operator-v242']
+permissions:
+  contents: write
+jobs:
+  operator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/operator-v242
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Apply checked source transformations
+        run: node scripts/apply-operator-v242.mjs && node scripts/v242/harden.mjs
+      - name: Runtime syntax
+        run: |
+          npm run check
+          node --check assets/server-monitor-v242.js
+          node --check assets/payout-trend-v242.js
+          node --check assets/server-monitor-bet-now-v242.js
+      - name: Real two-player cancellation, refund and crash recovery
+        run: node tests/operator-refund-v242.mjs
+      - name: Actual client refund and no automatic redebit
+        run: node tests/operator-client-v242.mjs
+      - name: Existing synchronization, wallet and game payouts
+        run: npm run test:shared
+      - name: Existing station, prediction, background and HD60 behavior
+        run: |
+          node tests/monitor-ledger-v241.mjs
+          node tests/monitor-ledger-integration-v241.mjs
+          node tests/guest-entry-v237.mjs
+          node tests/background-continuity-v240.mjs
+          node tests/stations-live-win-v236.mjs
+          node tests/stations-detail-v238.mjs
+          node tests/stations-highlight-v239.mjs
+          node tests/roulette-hd60-v234.mjs
+          node .github/tests/nine_tab_visibility_v233.cjs
+      - name: Browser layout dependencies
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: One-screen desktop and narrow viewport checks
+        run: node tests/monitor-layout-v242.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: operator-v242-qa
+          path: qa-monitor-v242
+          if-no-files-found: ignore
+          retention-days: 5
+      - name: Persist only the verified source on this feature branch
+        if: success() && github.ref == 'refs/heads/feature/operator-v242'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add server-payout-preload-v3.mjs server-core.mjs server-core-loader-v220.mjs assets/shared-machine-core-v196.js assets/server-payout-control-v3.js assets/shared-client-controller-v224.js assets/shared-machine-v176.js index.html monitor.html assets/server-monitor-v241.js tests/server-bet-now-v240.mjs app-version.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v242: apply verified compact operator dashboard, atomic refunds and persistent trends'
+            git push origin HEAD:feature/operator-v242
+          fi
