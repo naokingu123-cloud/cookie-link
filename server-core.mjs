@@ -458,10 +458,10 @@ function recoverOperatorCancellationV242(m){
 async function forceServerBetV242(m,input={}){
  const requestId=String(input.requestId||'');
  if(!/^[A-Za-z0-9_.:-]{8,120}$/.test(requestId))throw Object.assign(Error('request_id_required'),{status:400});
- if(m.operatorRequestsV242?.[requestId])return {...m.operatorRequestsV242[requestId],idempotent:true};
+ if(m.operatorRequestsV242?.[requestId]){await flushDb();return {...m.operatorRequestsV242[requestId],idempotent:true};}
  if(operatorBusyV242.has(m))throw Object.assign(Error('operator_busy'),{status:409});
  recoverOperatorCancellationV242(m);
- if(m.operatorRequestsV242?.[requestId])return {...m.operatorRequestsV242[requestId],idempotent:true};
+ if(m.operatorRequestsV242?.[requestId]){await flushDb();return {...m.operatorRequestsV242[requestId],idempotent:true};}
  const round=m.round,expected=input.roundId==null?'':String(input.roundId);
  if(expected!==String(round?.id||''))throw Object.assign(Error('operator_round_changed'),{status:409});
  if(!payoutWallet?.operatorCancel)throw Object.assign(Error('refund_service_unavailable'),{status:503});

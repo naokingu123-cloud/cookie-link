@@ -67,6 +67,8 @@ function patch(source){
   source=source.slice(0,start)+body+source.slice(end);
  }
  replaceFunction('updateOverview','playerControl',`function updateOverview(data){
+  // v242 update independent of focused inputs
+  window.SweetsMonitorSnapshotV242=data;window.SweetsPayoutTrendV242?.update(data.payoutTrendV242);
   const config=payout(data).config||{};
   if(!controlsInitialized&&!focusedControl()){
    $('target-rate').value=config.targetRate??90;$('min-rate').value=config.minRate??50;$('max-rate').value=config.maxRate??150;

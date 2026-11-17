@@ -632,6 +632,8 @@ function install(){
   }
   function stopMirrorCapture(){clearTimeout(mirrorTimer);mirrorTimer=0;}
   function syncHost(round=client.round){
+   // v242 no stale host callback may restart a cancelled physical round.
+   if(round?.id!==client.round?.id)round=client.round;
    if(client.role!=='host'||!client.online)return;
    clearTimeout(hostRetryTimer);hostRetryTimer=0;
    if(!round){hostRunning=false;hostBanner('player wait');return;}
