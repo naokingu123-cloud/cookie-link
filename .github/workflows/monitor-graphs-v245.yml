@@ -1,0 +1,43 @@
+name: v245 forecast gain graphs, spectral P/O and progress
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main', 'feature/monitor-v245']
+    paths:
+      - 'assets/server-monitor-v242.js'
+      - 'assets/server-monitor-v242.css'
+      - 'assets/monitor-ledger-v241.js'
+      - 'assets/server-monitor-v241.js'
+      - 'assets/payout-trend-v242.js'
+      - 'monitor.html'
+      - 'tests/monitor-layout-v242.mjs'
+      - 'tests/monitor-ledger-v241.mjs'
+      - 'app-version.json'
+      - '.github/workflows/monitor-graphs-v245.yml'
+permissions:
+  contents: read
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Node deps
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax and server forecast regression
+        run: |
+          node --check assets/monitor-ledger-v241.js
+          node --check assets/server-monitor-v242.js
+          node --check assets/payout-trend-v242.js
+          node tests/monitor-ledger-v241.mjs
+          node tests/monitor-ledger-integration-v241.mjs
+          node tests/operator-polish-v242.mjs
+      - name: Browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: 25 bars, gain values, spectrum and one screen
+        run: node tests/monitor-layout-v242.mjs

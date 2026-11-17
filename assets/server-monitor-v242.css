@@ -50,3 +50,30 @@ body .players .details-btn{font-size:clamp(3px,.54vw,8px);min-width:0;width:100%
 /* v242 separate rail and iframe: keep all six St cards outside the video. */
 body .station-host-card-v238 .host-frame,body .host-card .host-frame{margin-left:84px!important;width:calc(100% - 84px)!important;flex:1;align-self:flex-start}
 @media(max-width:800px){body .station-host-card-v238 .host-frame,body .host-card .host-frame{margin-left:48px!important;width:calc(100% - 48px)!important}}
+
+/* v245: all 25 gain bars and numbers remain on ONE row. Each bar is scaled
+   against the largest available gain in that same player/total row. */
+body .forecast-tile-v242{
+ display:grid;grid-template-columns:minmax(0,1fr);
+ grid-template-rows:min-content minmax(4px,1fr) min-content min-content;
+ justify-items:stretch;align-items:center;
+ text-align:center;padding:1px 0;gap:0;
+}
+body .forecast-tile-v242 .forecast-number-v242{grid-row:1}
+body .forecast-tile-v242 .forecast-bar-v245{
+ display:block;grid-row:2;justify-self:center;align-self:end;
+ width:clamp(1px,48%,14px);max-height:100%;min-height:0;
+ border-radius:2px 2px 0 0;
+ background:linear-gradient(to top,#1375ab,#7ce9ff);
+ box-shadow:0 0 3px #62cfff65;
+ pointer-events:none;
+}
+body .forecast-tile-v242 .forecast-value-v242{grid-row:3}
+body .forecast-tile-v242 .forecast-ratio-v242{grid-row:4}
+.forecast-tile-v242[data-tier=red] .forecast-bar-v245{background:linear-gradient(to top,#c5223b,#ff8894)}
+.forecast-tile-v242[data-tier=purple] .forecast-bar-v245{background:linear-gradient(to top,#7022ae,#d69aff)}
+.forecast-tile-v242[data-tier=rainbow] .forecast-bar-v245{background:linear-gradient(to top,#ff6275,#ffd574,#85f3b6,#77c3ff,#bf81ff)}
+/* Colored payout-rate figures have the same neutral background as other cells.
+   Only their text changes across the blue→cyan→green→yellow→red hue scale. */
+body table.players td.money.po{font-variant-numeric:tabular-nums}
+.payout-card input[type=number]{transition:color .15s linear,text-shadow .15s linear}

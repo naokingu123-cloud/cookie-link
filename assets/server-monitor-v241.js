@@ -47,12 +47,12 @@ function render(data,{tbody,empty,openDetails,detail,refresh}){
  summary.children[8].title='現在のBETを重みにした設定P/Oの加重平均。BETなしは未算出';
  summary.children[9].title='現在のBETを重みにした補正P/Oの加重平均。BETなしは未算出';
  numberCells(summary,total,data);
- cell(summary,'','—');cell(summary,'',total.ballCount+' / 8');cell(summary,'','全体集計');cell(summary,'','');fragment.append(summary);
+ cell(summary,'','—');cell(summary,'',String(total.ballCount));cell(summary,'','全体集計');cell(summary,'','');fragment.append(summary);
  for(const row of rows){
   const tr=el('tr','player-ledger-row');tr.dataset.playerId=row.id;
   const name=cell(tr,'','');name.append(el('span','online '+(row.connected?'':'offline')),el('span','player-name',row.player.displayName||row.id.slice(0,8)),el('span','player-id',row.id));
   metricCells(tr,row);numberCells(tr,row,data);
-  cell(tr,'',row.control.mode==='manual'?'手動':'自動');cell(tr,'',row.ballCount+' / 8');cell(tr,'player-state '+(row.settled?'ok':''),row.state);
+  cell(tr,'',row.control.mode==='manual'?'手動':'自動');cell(tr,'',String(row.ballCount));cell(tr,'player-state '+(row.settled?'ok':''),row.state);
   const td=cell(tr,'',''),button=el('button','details-btn',openDetails.has(row.id)?'閉じる':'詳細');button.type='button';
   button.onclick=()=>{openDetails.has(row.id)?openDetails.delete(row.id):openDetails.add(row.id);refresh();};td.append(button);fragment.append(tr);
   if(openDetails.has(row.id))fragment.append(detail(row.player,row.control,data));

@@ -4,9 +4,9 @@
 const ctx=canvas.getContext('2d'),range=document.getElementById('trend-range-v242'),tip=document.getElementById('trend-tooltip-v242'),summary=document.getElementById('trend-summary-v242');
 const series={input:{label:'IN',color:'#73d8ff'},output:{label:'OUT',color:'#ffacbe'},po:{label:'実測P/O',color:'#ffe179',percent:true},hg:{label:'H/G',color:'#8ae4ad'},rollingPo:{label:'直近10G P/O',color:'#d4b0ff',percent:true}};
 let data={points:[]},signature='',frame=0,points=[],plot=null;
-const number=n=>Number(n).toLocaleString('ja-JP',{maximumFractionDigits:1});
+const number=n=>Number(n).toLocaleString('ja-JP',{useGrouping:false,maximumFractionDigits:1});
 const clock=t=>new Date(t).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
-const compact=n=>Math.abs(n)>=10000?(n/10000).toLocaleString('ja-JP',{maximumFractionDigits:1})+'万':number(n);
+const compact=n=>Math.abs(n)>=10000?(n/10000).toLocaleString('ja-JP',{useGrouping:false,maximumFractionDigits:1})+'万':number(n);
 function enabled(){return [...document.querySelectorAll('[data-series]')].filter(x=>x.checked&&series[x.dataset.series]).map(x=>x.dataset.series);}
 function request(){if(!frame)frame=requestAnimationFrame(()=>{frame=0;draw();});}
 function update(value){if(!value||!Array.isArray(value.points))return;const next=JSON.stringify(value);if(next===signature)return;signature=next;data=value;request();}
@@ -16,7 +16,14 @@ function draw(){
  const small=w<300,font=small?6:8;ctx.font=font+'px system-ui';ctx.fillStyle='#a4c5da';
  points=data.points.slice(-Math.max(1,Number(range.value)||30));
  if(!points.length){ctx.textAlign='center';ctx.fillText('確定ゲームの精算待ち',w/2,h/2);summary.textContent='確定値のみ・取消ゲームは除外';plot=null;return;}
- const keys=enabled(),last=points.at(-1);summary.textContent='IN '+number(last.input)+' / OUT '+number(last.output)+' / P/O '+(last.po==null?'—':number(last.po)+'%')+(last.partial?'（精算中）':'');
+ const keys=enabled(),last=points.at(-1);
+ summary.textContent='IN '+number(last.input)+' / OUT '+number(last.output)+' / P/O ';
+ const poValue=document.createElement('strong');
+ poValue.textContent=last.po==null?'—':number(last.po)+'%';
+ const spectrum=window.SweetsMonitorLedgerV241?.spectrum?.(last.po);
+ if(spectrum){poValue.style.color=spectrum;poValue.style.textShadow='0 0 5px '+spectrum;}
+ summary.append(poValue);
+ if(last.partial)summary.append('（精算中）');
  const left=small?28:45,right=small?23:38,top=14,bottom=small?24:30,pw=Math.max(1,w-left-right),ph=Math.max(1,h-top-bottom);
  const amounts=keys.filter(k=>!series[k].percent).flatMap(k=>points.map(p=>p[k]).filter(Number.isFinite)),percents=keys.filter(k=>series[k].percent).flatMap(k=>points.map(p=>p[k]).filter(Number.isFinite));
  let min=Math.min(0,...amounts),max=Math.max(1,...amounts),pmax=Math.max(100,...percents);if(max!==min)max+=(max-min)*.08;pmax*=1.08;
@@ -26,7 +33,7 @@ function draw(){
  for(let i=0;i<=4;i++){
   const yy=top+ph*i/4;ctx.beginPath();ctx.moveTo(left,yy);ctx.lineTo(w-right,yy);ctx.stroke();
   ctx.fillStyle='#88b4cf';ctx.textAlign='right';ctx.fillText(compact(max-(max-min)*i/4),left-4,yy);
-  ctx.fillStyle='#e7d389';ctx.textAlign='left';ctx.fillText(number(pmax*(1-i/4))+'%',w-right+3,yy);
+  ctx.fillStyle=window.SweetsMonitorLedgerV241?.spectrum?.(pmax*(1-i/4))||'#e7d389';ctx.textAlign='left';ctx.fillText(number(pmax*(1-i/4))+'%',w-right+3,yy);
  }
  ctx.textAlign='left';ctx.fillStyle='#91b5cc';ctx.fillText('メダル累計',left,5);ctx.textAlign='right';ctx.fillText('P/O',w-right,5);
  const ticks=Math.min(points.length,small?3:6),used=new Set();

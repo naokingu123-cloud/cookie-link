@@ -4,11 +4,14 @@
 const finite=v=>Number.isFinite(Number(v))?Number(v):0;
 const money=v=>Math.max(0,finite(v));
 const present=v=>v!==null&&v!==undefined&&Number.isFinite(Number(v));
-const fmt=v=>finite(v).toLocaleString('ja-JP',{maximumFractionDigits:1});
+const fmt=v=>finite(v).toLocaleString('ja-JP',{useGrouping:false,maximumFractionDigits:1});
 const rate=v=>present(v)?finite(v).toFixed(1)+'%':'—';
-const multiple=(gain,bet)=>bet>0?(gain>0&&gain/bet<.0001?'+0.0001倍未満':'+'+(gain/bet).toLocaleString('ja-JP',{maximumFractionDigits:4})+'倍'):'—';
+const multiple=(gain,bet)=>bet>0?(gain>0&&gain/bet<.005?'+0.01倍未満':'+'+(gain/bet).toFixed(2)+'倍'):'—';
+// Visible-light hue: 50%=blue (240°), 75%=cyan, 100%=green,
+// 125%=yellow, 150%=red (0°). Clamp only the COLOR, never the value.
+const spectrum=value=>present(value)?'hsl('+(240-2.4*Math.max(0,Math.min(100,Number(value)-50))).toFixed(1)+' 100% 65%)':null;
 const SYSTEM=new Set(['SERVER CLOCK','SERVER FALLBACK HOST','SERVER ROULETTE']);
-const COLUMNS=['プレイヤー','BET','WIN','CREDIT','IN','OUT','H/G','実測P/O','設定P/O','補正P/O',...Array.from({length:25},(_,i)=>(i+1)+'番'),'制御','球数','状態','詳細'];
+const COLUMNS=['プレイヤー','BET','WIN','CREDIT','IN','OUT','H/G','実測P/O','設定P/O','補正P/O',...Array.from({length:25},(_,i)=>(i+1)+'番'),'制御','進行度','状態','詳細'];
 function configured(control,config){
  // The existing individual operator control is manualRate. Auto players
  // display the current global target, not a historical normalized targetRate.
@@ -83,5 +86,5 @@ function total(list,data){
  }
  return row;
 }
-root.SweetsMonitorLedgerV241={rows,total,numberCell,status,tier,configured,fmt,rate,multiple,COLUMNS};
+root.SweetsMonitorLedgerV241={rows,total,numberCell,status,tier,configured,fmt,rate,multiple,spectrum,COLUMNS};
 })(typeof window!=='undefined'?window:globalThis);
