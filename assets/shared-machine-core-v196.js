@@ -290,7 +290,7 @@ class Client{
   if(Number.isFinite(revision)&&revision>=0&&Number.isFinite(stamp.revision)&&revision<stamp.revision)return true;
   if(Number.isFinite(time)&&time>0&&stamp.serverTime>0&&time<stamp.serverTime)return true;
   if(incoming&&incoming.id===stamp.roundId){
-   const rank={BETTING:1,PLAYING:2,COMPLETE:3};
+   const rank={BETTING:1,PLAYING:2,COMPLETE:3,CANCELLED:4};
    if((rank[incoming.phase]||0)<stamp.phase)return true;
    if(Array.isArray(incoming.balls)&&incoming.balls.length<stamp.ballCount)return true;
   }
@@ -298,6 +298,7 @@ class Client{
  }
  accept(message){
   if(this.isStaleState(message))return false;
+  window.SweetsSharedControllerV224?.operatorStateV242?.(message);
   const carriesRound=Object.prototype.hasOwnProperty.call(message||{},'round');
   const carriesBall=message?.type==='ball_result'&&message.roundId===this.round?.id&&message.ball;
   // RTC/pong traffic is not an authoritative game-state timestamp. Updating the
@@ -315,7 +316,7 @@ class Client{
    if(message.phase==='COMPLETE')this.round.phase='COMPLETE';
   }
   if(carriesRound||carriesBall){
-   const previous=this.stateStamp||{},round=this.round,rank={BETTING:1,PLAYING:2,COMPLETE:3},revision=Number(message.machine?.revision);
+   const previous=this.stateStamp||{},round=this.round,rank={BETTING:1,PLAYING:2,COMPLETE:3,CANCELLED:4},revision=Number(message.machine?.revision);
    this.stateStamp={roundId:round?.id||previous.roundId||'',sequence:Math.max(Number(previous.sequence)||0,Number(round?.sequence)||0),phase:rank[round?.phase]||0,ballCount:round?.balls?.length||0,revision:Number.isFinite(revision)?Math.max(Number(previous.revision)||0,revision):previous.revision,serverTime:Math.max(Number(previous.serverTime)||0,Number(message.serverTime)||0)};
   }
   if(Object.prototype.hasOwnProperty.call(message||{},'pendingRound'))this.pendingRound=message.pendingRound;

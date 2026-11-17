@@ -74,6 +74,7 @@ function updateWalletCredit(credit,wallet={},options={}){
  try{window.SweetsSharedControllerV224?.refreshBetControls?.(app);}catch{}
 }
 function applyWallet(control,{acknowledgedRoundId='',joiningRoundId='',joinRejected=false,round:stateRound=null}={}){
+ if(window.SweetsSharedControllerV224?.operatorRefundPendingV242?.())return;
  const wallet=control?.wallet,playerId=String(control?.playerId||''),revision=Number(wallet?.revision),credit=Number(wallet?.credit);
  if(!wallet||!Number.isFinite(revision)||revision<=0||wallet.credit==null||!Number.isFinite(credit)||credit<0)return;
  if(clientRef?.playerId&&playerId!==String(clientRef.playerId))return;
@@ -107,6 +108,7 @@ function applyWallet(control,{acknowledgedRoundId='',joiningRoundId='',joinRejec
 }
 function applyControl(control,options={}){
  if(!control||Number(control.version)!==3)return;
+ window.SweetsSharedControllerV224?.operatorStateV242?.(control);
  if(String(control.playerId||'')===String(controls.playerId||'')&&Number(control.updatedAt)>0&&Number(control.updatedAt)<Number(controls.updatedAt))return;
  const before=commonRate(),nextSignature=signature(control),changed=nextSignature!==lastSignature;controls=control;installEngineWrappers();setDisplay();applyWallet(control,options);
  if(control.offlinePending&&!window.SweetsSharedControllerV224){
@@ -115,6 +117,7 @@ function applyControl(control,options={}){
  if(changed){lastSignature=nextSignature;if(app?.phase==='ready'&&Math.abs(commonRate()-before)>.01)queueMicrotask(regenerateReadyBoards);}
 }
 function applyStateControl(response,options={}){
+ window.SweetsSharedControllerV224?.operatorStateV242?.(response);
  if(clientRef?.isStaleState?.(response)===true)return;
  applyControl(response?.payoutControlV3,{...options,round:response?.round});
 }

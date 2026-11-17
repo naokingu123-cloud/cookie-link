@@ -166,6 +166,7 @@ function telemetryFrom(payload){const telemetry=payload?.state?.payoutV3;return 
 function processTelemetry(machineId,playerId,payload){
  const telemetry=telemetryFrom(payload);if(!telemetry)return null;
  const roundId=safeId(payload.roundId),ball=Math.max(0,Math.min(8,Number(payload.ballIndex)||Number(telemetry.ball)||0)),p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);
+ if(round.cancelledV242||operatorCancelledV242(machineId,roundId))return publicControl(machineId,playerId);
  round.phase=telemetry.phase||round.phase;round.lastBall=Math.max(round.lastBall,ball);round.win=Math.max(0,finite(telemetry.roundWin));round.updatedAt=now();
  p.currentRoundId=roundId;p.currentRoundBet=Math.max(0,finite(telemetry.roundBet||round.bet));p.currentRoundWin=round.win;p.lastBall=ball;p.currentCredit=finite(telemetry.credit);p.updatedAt=now();
  const games={};for(const item of Array.isArray(telemetry.games)?telemetry.games:[]){
@@ -183,7 +184,9 @@ function finalGames(payload,round){
  return out;
 }
 function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games,source='client',digest=null}={}){
+ const cancelled=operatorCancelledV242(machineId,roundId);if(cancelled?.refunds?.[playerId])return cancelled.refunds[playerId].settlement;
  const p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);if(round.committed)return round.settlement;
+ operatorTrendStateV242(machineId);
  const win=requireAmount(totalWin,'invalid_win',machineId,playerId),bet=Math.max(0,finite(round.bet||Object.values(games||{}).reduce((sum,g)=>sum+finite(g.bet),0)));
  if(creditAfter!=null)requireAmount(creditAfter,'invalid_credit',machineId,playerId);
  const initialized=ensureWallet(machineId,playerId,p),reservation=round.reservation;
@@ -203,7 +206,7 @@ function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games
  for(const [id,item] of Object.entries(games||{})){const total=p.games[id]||(p.games[id]={bet:0,win:0});total.bet+=Math.max(0,finite(item.bet));total.win+=Math.max(0,finite(item.win));const rg=round.games[id]||(round.games[id]={});Object.assign(rg,item);}
  p.wallet={...p.wallet,credit,revision:(Number(p.wallet.revision)||0)+1,lastRoundId:round.id,source,reservedRoundId:reservedRoundId(p),updatedAt:now()};p.updatedAt=now();quoteRate(p,'post-'+round.id,Math.max(bet,p.lastQuotedBet||bet));
  if(!initialized){ensureWallet(machineId,playerId,p);round.settlement.creditAfter=p.wallet.credit;}
- round.work=null;trimRounds(p);persistWallet();return round.settlement;
+ round.work=null;operatorRecordTrendV242(machineId,roundId);trimRounds(p);persistWallet();return round.settlement;
 }
 function processSettle(machineId,playerId,body,response){
  const roundId=safeId(body.roundId);if(!roundId)return null;const round=roundRecord(machineId,playerId,roundId),games=finalGames(body,round);
@@ -216,13 +219,13 @@ function markOffline(machineId,playerId){
 }
 function observeRound(machineId,round){
  if(!round?.id)return;const m=machine(machineId),roundId=safeId(round.id),balls=Array.isArray(round.balls)?round.balls.slice(0,8):[];
- for(const p of Object.values(m.players)){const record=p.rounds?.[roundId];if(!record)continue;record.phase=round.phase||record.phase;record.balls=balls.length?balls:record.balls;record.updatedAt=now();if(round.phase==='COMPLETE')record.lastBall=8;}
+ for(const p of Object.values(m.players)){const record=p.rounds?.[roundId];if(!record||record.cancelledV242)continue;record.phase=round.phase||record.phase;record.balls=balls.length?balls:record.balls;record.updatedAt=now();if(round.phase==='COMPLETE')record.lastBall=8;}
  scheduleSave();
 }
 function observeSocketMessage(machineId,message){
  if(message?.type==='snapshot'){observeRound(machineId,message.round);observeRound(machineId,message.pendingRound);return;}
  if(message?.type==='ball_result'){
-  const m=machine(machineId),roundId=safeId(message.roundId);for(const p of Object.values(m.players)){const r=p.rounds?.[roundId];if(!r)continue;const ball=message.ball;if(ball&&!r.balls.some(item=>Number(item.index)===Number(ball.index)))r.balls.push(ball);r.balls.sort((a,b)=>a.index-b.index);r.lastBall=Math.max(r.lastBall,Number(ball?.index)||0);r.phase=message.phase||r.phase;r.updatedAt=now();}scheduleSave();return;
+  const m=machine(machineId),roundId=safeId(message.roundId);for(const p of Object.values(m.players)){const r=p.rounds?.[roundId];if(!r||r.cancelledV242)continue;const ball=message.ball;if(ball&&!r.balls.some(item=>Number(item.index)===Number(ball.index)))r.balls.push(ball);r.balls.sort((a,b)=>a.index-b.index);r.lastBall=Math.max(r.lastBall,Number(ball?.index)||0);r.phase=message.phase||r.phase;r.updatedAt=now();}scheduleSave();return;
  }
  if(message?.type==='round_complete')observeRound(machineId,message.round);
 }
@@ -245,7 +248,7 @@ function failOfflineWork(machineId,body){const p=player(machineId,body.playerId)
 function pendingOffline(p){return Object.values(p.rounds||{}).some(round=>round.wasOffline&&!round.committed&&!round.settlement&&round.phase==='COMPLETE');}
 function publicControl(machineId,playerId){
  const p=player(machineId,playerId);ensureWallet(machineId,playerId,p);const games={};for(const [id,g] of Object.entries(p.games))games[id]={bet:round1(g.bet),win:round1(g.win),actualRate:g.bet>0?round1(g.win/g.bet*100):null};
- const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,updatedAt:p.updatedAt,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
+ const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,refundsV242:operatorRefundNoticesV242(machineId,playerId),updatedAt:p.updatedAt,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
 }
 function aggregateMachine(machineId){
  const m=machine(machineId),players=[],gameTotals={};let totalBet=0,totalWin=0;
@@ -332,3 +335,99 @@ http.ServerResponse.prototype.end=function(chunk,encoding,callback){
 
 console.info('[PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded');
 
+
+// v242: operator cancellations share the wallet's synchronous atomic save.
+// This code is appended inside the existing payout module, not a second ledger.
+function operatorRefundNoticesV242(machineId,playerId){
+ const p=machine(machineId).players?.[safeId(playerId)];
+ return (p?.operatorRefundsV242||[]).slice(-64).map(r=>({...r}));
+}
+function operatorCancelledV242(machineId,roundId){return machine(machineId).operatorVoidsV242?.[String(roundId)]||null;}
+function operatorTrendStateV242(machineId){
+ const m=machine(machineId);
+ if(m.trendV242?.version===242)return m.trendV242;
+ const samples={};let knownIn=0,knownOut=0,totalIn=0,totalOut=0;
+ for(const p of Object.values(m.players||{})){
+  totalIn+=finite(p.lifetimeBet);totalOut+=finite(p.lifetimeWin);
+  for(const r of Object.values(p.rounds||{})){
+   if(!r.committed||r.cancelledV242||r.settlement?.cancelled)continue;
+   const core=coreRounds(machineId).find(x=>x.id===r.id),sequence=Number(core?.sequence)||Number(String(r.id).match(/-(\d+)-[^-]+$/)?.[1])||0;
+   const sample=samples[r.id]||(samples[r.id]={roundId:r.id,sequence,at:Number(core?.completedAt)||Number(r.settlement?.settledAt)||Number(r.updatedAt)||now(),contributions:{},expected:Object.keys(core?.participants||{}).length});
+   sample.contributions[p.playerId]={input:finite(r.bet),output:finite(r.win)};knownIn+=finite(r.bet);knownOut+=finite(r.win);
+  }
+ }
+ m.trendV242={version:242,baselineIn:Math.max(0,totalIn-knownIn),baselineOut:Math.max(0,totalOut-knownOut),samples};
+ return m.trendV242;
+}
+function operatorRecordTrendV242(machineId,roundId){
+ const state=operatorTrendStateV242(machineId),m=machine(machineId),id=String(roundId);
+ if(operatorCancelledV242(machineId,id)){delete state.samples[id];return;}
+ const core=coreRounds(machineId).find(x=>x.id===id);
+ let sample=state.samples[id];
+ for(const p of Object.values(m.players||{})){
+  const r=p.rounds?.[id];if(!r?.committed||r.cancelledV242)continue;
+  if(!sample)sample=state.samples[id]={roundId:id,sequence:Number(core?.sequence)||Number(id.match(/-(\d+)-[^-]+$/)?.[1])||0,at:Number(core?.completedAt)||Number(r.settlement?.settledAt)||now(),contributions:{},expected:0};
+  sample.contributions[p.playerId]={input:finite(r.bet),output:finite(r.win)};
+ }
+ if(sample&&core)sample.expected=Object.keys(core.participants||{}).length;
+ const sorted=Object.values(state.samples).sort((a,b)=>a.sequence-b.sequence||a.at-b.at);
+ for(const old of sorted.slice(0,-120)){
+  for(const c of Object.values(old.contributions)){state.baselineIn+=finite(c.input);state.baselineOut+=finite(c.output);}
+  delete state.samples[old.roundId];
+ }
+}
+function operatorTrendV242(machineId){
+ const state=operatorTrendStateV242(machineId);let input=state.baselineIn,output=state.baselineOut;
+ const points=[],window=[];
+ for(const s of Object.values(state.samples).sort((a,b)=>a.sequence-b.sequence||a.at-b.at)){
+  if(operatorCancelledV242(machineId,s.roundId))continue;
+  const rows=Object.values(s.contributions),roundIn=rows.reduce((a,r)=>a+finite(r.input),0),roundOut=rows.reduce((a,r)=>a+finite(r.output),0);
+  input+=roundIn;output+=roundOut;window.push({input:roundIn,output:roundOut});if(window.length>10)window.shift();
+  const wi=window.reduce((a,r)=>a+r.input,0),wo=window.reduce((a,r)=>a+r.output,0);
+  points.push({roundId:s.roundId,game:s.sequence,at:s.at,input,output,hg:input-output,po:input>0?100*output/input:null,roundIn,roundOut,roundPo:roundIn>0?100*roundOut/roundIn:null,rollingPo:wi>0?100*wo/wi:null,partial:s.expected>rows.length,settledPlayers:rows.length,expectedPlayers:s.expected});
+ }
+ return {version:242,points:points.slice(-120),baselineIn:state.baselineIn,baselineOut:state.baselineOut,source:'server-settlements',window:10};
+}
+function operatorCancelWalletV242(machineId,coreRound,requestId){
+ if(!coreRound?.id)throw Object.assign(Error('round_required'),{status:400});
+ const m=machine(machineId),id=String(coreRound.id),prior=m.operatorVoidsV242?.[id];
+ if(prior)return {...prior,idempotent:true};
+ // Initialize the trend BEFORE reversing lifetime totals so its baseline stays valid.
+ operatorTrendStateV242(machineId);
+ const before=JSON.parse(JSON.stringify(m)),at=now(),refunds={};let total=0;
+ try{
+  for(const [pid,participant] of Object.entries(coreRound.participants||{})){
+   const p=player(machineId,pid),r=roundRecord(machineId,pid,id);
+   const wager=requireAmount(r.reservation?.bet??participant.totalBet??r.bet,'invalid_bet',machineId,pid);
+   const committed=!!r.committed,oldWin=committed?requireAmount(r.win||0,'invalid_win',machineId,pid):0;
+   // A previously disconnected client may already have settled a zero-WIN loss.
+   // Reverse that same round once as well; do not overwrite later wallet balances.
+   let refund=wager,credit=Number(p.wallet.credit);
+   if(r.reservation?.status==='released')refund=0;
+   if(!Number.isSafeInteger(credit)||credit<0)credit=requireAmount(participant.creditAfterBet,'invalid_credit',machineId,pid);
+   const next=credit+refund-oldWin;
+   requireAmount(next,'invalid_credit',machineId,pid);
+   if(committed){
+    p.lifetimeBet=Math.max(0,finite(p.lifetimeBet)-finite(r.bet));p.lifetimeWin=Math.max(0,finite(p.lifetimeWin)-oldWin);
+    for(const [gid,g] of Object.entries(r.games||{}))if(p.games[gid]){p.games[gid].bet=Math.max(0,finite(p.games[gid].bet)-finite(g.bet));p.games[gid].win=Math.max(0,finite(p.games[gid].win)-finite(g.win));}
+   }
+   r.cancelledV242=true;r.committed=true;r.phase='CANCELLED';r.win=0;r.work=null;r.wasOffline=false;r.stableState=null;r.updatedAt=at;
+   r.reservation={...(r.reservation||{}),roundId:id,bet:wager,status:'refunded',refundedAt:at,requestId};
+   r.settlement={id:id+':'+pid,roundId:id,playerId:pid,totalWin:0,creditAfter:next,source:'admin-refund',cancelled:true,refundedBet:refund,settledAt:at,requestId};
+   if(p.currentRoundId===id){p.currentRoundBet=0;p.currentRoundWin=0;p.lastBall=0;}
+   if(Number.isFinite(Number(r.quotedRate)))p.effectiveRate=Number(r.quotedRate);
+   p.lastQuoteKey='';p.wallet={...p.wallet,credit:next,revision:(Number(p.wallet.revision)||0)+1,lastRoundId:id,source:'admin-refund',reservedRoundId:reservedRoundId(p),initializationVersion:WALLET_INITIALIZATION_VERSION,initializationPending:false,updatedAt:at};p.updatedAt=at;
+   const notice={roundId:id,requestId,refundedBet:refund,credit:next,revision:p.wallet.revision,at};
+   p.operatorRefundsV242=[...(p.operatorRefundsV242||[]).filter(x=>x.roundId!==id),notice].slice(-64);refunds[pid]={...notice,settlement:{...r.settlement}};total+=refund;
+  }
+  const result={version:242,roundId:id,requestId,at,sequence:Number(coreRound.sequence)||0,refundedTotal:total,refundedPlayers:Object.keys(refunds).length,refunds};
+  (m.operatorVoidsV242||={})[id]=result;
+  delete m.trendV242.samples[id];
+  // The persisted tombstone is also a recovery journal if the core save fails.
+  persistWallet();return result;
+ }catch(error){db.machines[safeId(machineId)||'public-01']=before;dirty=true;throw error;}
+}
+Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
+ operatorCancel:operatorCancelWalletV242,operatorCancelled:operatorCancelledV242,
+ operatorNotices:operatorRefundNoticesV242,operatorTrend:operatorTrendV242
+});

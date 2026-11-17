@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="/assets/server-monitor-payout-v1.css?v=217">
 <link rel="stylesheet" href="/assets/stations-v235.css?v=240">
 <link rel="stylesheet" href="/assets/server-monitor-v241.css?v=241">
+<link rel="stylesheet" href="/assets/server-monitor-v242.css?v=242">
 </head>
 <body>
 <!-- One physical-host iframe stays alive across all rounds. -->
@@ -16,7 +17,7 @@
 </header>
 <main>
  <section class="card host-card">
-  <h2><span>現在の物理抽選機（標準1倍速）</span><div class="server-bet-actions"><button type="button" id="server-bet-now">BET TIME 開始</button><span id="server-bet-now-status" role="status" aria-live="polite"></span><span id="host-state" class="host-state">抽選機を起動中…</span></div></h2>
+  <h2><span>現在の物理抽選機（標準1倍速）</span><div class="server-bet-actions"><button type="button" id="server-bet-now">強制BET・全額返却</button><span id="server-bet-now-status" role="status" aria-live="polite"></span><span id="host-state" class="host-state">抽選機を起動中…</span></div></h2>
   <iframe id="host-frame" class="host-frame" title="SWEETS LINK 物理抽選機"></iframe>
  </section>
  <section class="card payout-card" id="payout-card">
@@ -33,9 +34,10 @@
   </div>
   <div id="control-message" class="message">設定を読み込み中…</div>
  </section>
+ <section class="card trend-card-v242"><h2>直近の払い出し推移 <span id="trend-summary-v242"></span></h2><div class="trend-controls-v242"><label><input type="checkbox" data-series="input" checked>IN</label><label><input type="checkbox" data-series="output" checked>OUT</label><label><input type="checkbox" data-series="po" checked>実測P/O</label><label><input type="checkbox" data-series="hg">H/G</label><label><input type="checkbox" data-series="rollingPo">直近10G P/O</label><select id="trend-range-v242" aria-label="表示ゲーム数"><option value="30">直近30G</option><option value="60">直近60G</option><option value="120">直近120G</option></select></div><div class="trend-plot-v242"><canvas id="payout-trend-v242" aria-label="IN OUT 実測P/Oの推移"></canvas><output id="trend-tooltip-v242" hidden></output></div></section>
  <section class="card players-card">
   <h2><span>プレイヤー一覧</span><span id="round-state" class="host-state">ラウンド -　待機中</span></h2>
-  <div class="monitor-legend-v241">番号ごとの上段は次の入賞による増加WIN、下段はBETに対する増加倍率です。<b class="red">初めて3倍</b>・<b class="purple">初めて10倍</b>・<b class="rainbow">初めて50倍</b>に達する候補を色分け。入賞済み・更新待ちは数値と区別します。表は左右にスクロールできます。合計P/Oは実測＝OUT÷IN、設定・補正＝BET加重平均です。</div>
+  <div class="monitor-legend-v241">上段：増加WIN／下段：BET倍率。3倍到達＝赤・10倍＝紫・50倍＝虹。全体集計と在席6名を表示。詳細は別窓で開きます。</div>
   <div class="players-wrap" tabindex="0" aria-label="プレイヤー別配当一覧・左右スクロール">
    <table class="players">
     <thead><tr><th>プレイヤー</th><th>BET</th><th>WIN</th><th>CREDIT</th><th>IN</th><th>OUT</th><th>H/G</th><th>実測P/O</th><th>設定P/O</th><th>補正P/O</th><th>1番</th><th>2番</th><th>3番</th><th>4番</th><th>5番</th><th>6番</th><th>7番</th><th>8番</th><th>9番</th><th>10番</th><th>11番</th><th>12番</th><th>13番</th><th>14番</th><th>15番</th><th>16番</th><th>17番</th><th>18番</th><th>19番</th><th>20番</th><th>21番</th><th>22番</th><th>23番</th><th>24番</th><th>25番</th><th>制御</th><th>球数</th><th>状態</th><th>詳細</th></tr></thead>
@@ -48,9 +50,11 @@
 <iframe id="settlement-worker" class="settlement-worker" title="切断時自動精算"></iframe>
 <script src="/assets/server-monitor-host-stability-v217.js?v=217"></script>
 <script src="/assets/monitor-ledger-v241.js?v=241"></script>
-<script src="/assets/server-monitor-v241.js?v=241" data-boot="1"></script>
+<script src="/assets/server-monitor-v242.js?v=242"></script>
+<script src="/assets/payout-trend-v242.js?v=242"></script>
+<script src="/assets/server-monitor-v241.js?v=242" data-boot="1"></script>
 <script src="/assets/server-monitor-system-filter-v213.js?v=217"></script>
 <script src="/assets/stations-v235.js?v=240"></script>
-<script src="/assets/server-monitor-bet-now-v240.js?v=240"></script>
+<script src="/assets/server-monitor-bet-now-v242.js?v=242"></script>
 </body>
 </html>

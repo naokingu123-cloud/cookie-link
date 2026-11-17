@@ -35,6 +35,7 @@ function numberCells(tr,row,data){
  }
 }
 function render(data,{tbody,empty,openDetails,detail,refresh}){
+ if(root.SweetsMonitorCompactV242)return root.SweetsMonitorCompactV242.render(data,{tbody,empty,openDetails,detail,refresh});
  const rows=model.rows(data),total=model.total(rows,data);
  header(tbody);
  const signature=JSON.stringify([rows.map(r=>[r.id,r.player.displayName,r.connected,r.bet,r.win,r.credit,r.input,r.output,r.setting,r.corrected,r.ballCount,r.state,r.forecast?.baseWin,r.forecast?.gains,openDetails.has(r.id)?r.control:null]),data.round?.phase,data.round?.balls,total.setting,total.corrected,[...openDetails]]);

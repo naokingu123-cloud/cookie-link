@@ -131,6 +131,13 @@ source=once(source,'await loadDb();',createMonitorForecastsV241.toString()+'\nco
 source=once(source,'stations.progress(m,player.id,msg);return;','stations.progress(m,player.id,msg);monitorForecastsV241.record(m,player.id,msg);return;','authenticated forecast telemetry');
 source=once(source,'stations:stations.snapshot(m,null,false),machine:{','stations:stations.snapshot(m,null,false),hitForecasts:monitorForecastsV241.snapshot(m),machine:{','admin-only number forecasts');
 
+
+// v242: applied after the established station/forecast patch contracts.
+source=once(source,'function tickMachine(m){','function tickMachine(m){\n if(operatorBusyV242.has(m))return;recoverOperatorCancellationV242(m);','operator transition lock');
+source=once(source,'return reply(res,200,{ok:true,...requestServerBetNow(m),serverTime:now()});','const input=await bodyJson(req);return reply(res,200,{ok:true,...await forceServerBetV242(m,input),serverTime:now()});','forced BET transaction');
+source=once(source,'stations:stationView};','stations:stationView,operatorRefundsV242:payoutWallet?.operatorNotices?.(m.id,playerId)||[]};','personalized refunds');
+source=once(source,'hitForecasts:monitorForecastsV241.snapshot(m),machine:{','hitForecasts:monitorForecastsV241.snapshot(m),payoutTrendV242:payoutWallet?.operatorTrend?.(m.id)||null,machine:{','operator trend');
+
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');
 await import(pathToFileURL(OUTPUT).href+'?v=235-'+Date.now());

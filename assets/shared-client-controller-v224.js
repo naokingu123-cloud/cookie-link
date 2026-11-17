@@ -46,6 +46,7 @@ let lossQueue=readLosses();
 function saveLosses(){try{localStorage.setItem(LOSS_KEY,JSON.stringify(lossQueue));}catch{}}
 function saveNormals(){try{localStorage.setItem(NORMAL_KEY,JSON.stringify(Object.fromEntries(normalPending)));}catch{}}
 function queueLoss(roundId,creditAfterBet){
+ if(operatorVoidsV242.has(String(roundId)))return;
  if(!roundId||normalPending.has(String(roundId))||normalSettled.has(String(roundId))||normalReview.has(String(roundId)))return;abandonedRounds.add(String(roundId));
  joinedRounds.delete(String(roundId));if(joinedRoundId===String(roundId))joinedRoundId='';if(startedRoundId===String(roundId))startedRoundId='';if(startingRoundId===String(roundId))startingRoundId='';
  if(betAttempt?.roundId===String(roundId))betAttempt=null;if(manualBetRoundId===String(roundId))manualBetRoundId='';
@@ -54,7 +55,7 @@ function queueLoss(roundId,creditAfterBet){
 }
 function dropLoss(roundId){delete lossQueue[String(roundId)];saveLosses();}
 function queueNormal(shared){
- const roundId=String(shared?.roundId||startedRoundId||'');if(!roundId||normalPending.has(roundId)||normalSettled.has(roundId)||normalReview.has(roundId))return;
+ const roundId=String(shared?.roundId||startedRoundId||'');if(operatorVoidsV242.has(roundId))return;if(!roundId||normalPending.has(roundId)||normalSettled.has(roundId)||normalReview.has(roundId))return;
  const participant=shared?.participant||lastParticipant||{},base=Number.isFinite(Number(participant.creditAfterBet))?Number(participant.creditAfterBet):finite(app.credit),win=Math.max(0,finite(app.totalWin));
  const raw={roundId,totalWin:win,creditAfter:base+win,digest:'complete-v224:'+roundId};
  const prepared=client()?.prepareSettlement?.(raw)||raw;
@@ -314,11 +315,12 @@ function rebuildFreshBoard(target,credit,bet,reason){
  console.info('[SharedController224] fresh board prepared',reason,'generation',generation);
 }
 async function hardReset(credit,reason){
+ const epochV242=operatorEpochV242;
  if(resetBusy||typeof app==='undefined')return false;resetBusy=true;const bet=selected(app);
  try{
   rebuildFreshBoard(app,Math.max(0,finite(credit)),bet,reason);
   for(const delay of [100,320,850]){
-   await sleep(delay);
+   await sleep(delay);if(epochV242!==operatorEpochV242)return false;
    if(['result','paying','complete','error','playing'].includes(String(app.phase||''))||app.draws?.length||app.payout||app.result||active())rebuildFreshBoard(app,Math.max(0,finite(credit)),bet,reason+'-late');
    else{hideResults();renderAll(app);}
   }
@@ -326,7 +328,7 @@ async function hardReset(credit,reason){
  }finally{resetBusy=false;}
 }
 async function settleZero(roundId,creditAfterBet){
- roundId=String(roundId||'');if(!roundId)return false;
+ roundId=String(roundId||'');if(!roundId)return false;if(operatorVoidsV242.has(roundId)){dropLoss(roundId);return true;}
  if(normalPending.has(roundId)||normalSettled.has(roundId)||normalReview.has(roundId)){dropLoss(roundId);return true;}
  const credit=Math.max(0,finite(creditAfterBet));queueLoss(roundId,credit);
  const c=client();if(!wsOpen(c))return false;
@@ -342,6 +344,7 @@ function participantFor(roundId){
  return lastParticipant||{};
 }
 async function abandonRound(reason='connection-lost'){
+ const refundEpochV242=operatorEpochV242;
  if(abandonBusy||resetBusy||typeof app==='undefined')return false;
  const shared=active(),roundId=String(shared?.roundId||startedRoundId||client()?.round?.id||'');
  if(!roundId||abandonedRounds.has(roundId)&&!shared&&app.phase==='ready')return false;
@@ -350,7 +353,7 @@ async function abandonRound(reason='connection-lost'){
  try{
   const participant=participantFor(roundId),credit=Number.isFinite(Number(participant?.creditAfterBet))?Number(participant.creditAfterBet):finite(app.credit);
   queueLoss(roundId,credit);joinedRounds.delete(roundId);if(joinedRoundId===roundId)joinedRoundId='';if(startedRoundId===roundId)startedRoundId='';if(startingRoundId===roundId)startingRoundId='';
-  await hardReset(credit,'abandon-'+reason);settleZero(roundId,credit).catch(()=>{});
+  await hardReset(credit,'abandon-'+reason);if(refundEpochV242!==operatorEpochV242)return false;settleZero(roundId,credit).catch(()=>{});
   status('LOSS','接続中断のため当該ゲームは0WINで終了');return true;
  }finally{abandonBusy=false;}
 }
@@ -405,6 +408,8 @@ function betStatus(round=client()?.round){
  if(total<=0)return {text:'BET',label:'BETを設定してください'};
  if(!betAttempt&&betBudget(app)<total)return {text:'CREDIT',label:'CREDIT不足'};
  if(pendingFunds?.cancelled)return {text:'WAIT',label:'BET残高をサーバーへ確認中'};
+ if(operatorAwaitingV242.size)return {text:'WAIT',label:'BET返却の残高確認中'};
+ if(operatorManualBetV242(round))return {text,label:'BET全額返却済み・BETするで再参加'};
  if(!autoRebet&&manualBetRoundId!==id)return {text,label:'AUTO REBET OFF・BET待ち'};
  return {text,label:betAttempt?.roundId===id?'BET登録を再確認中':'SERVER BET TIME・BET登録待ち'};
 }
@@ -450,6 +455,7 @@ async function joinBet(round){
  if(joinBusy||resetBusy||!stable()||!modelReady(app)||!round||round.phase!=='BETTING'||round.canBet!==true)return false;
  const id=String(round.id||'');if(!id||joinedRounds.has(id)||abandonedRounds.has(id))return false;
  if(pendingFunds&&pendingFunds!==betAttempt?.funds)return false;
+ if(operatorAwaitingV242.size||operatorManualBetV242(round))return false;
  if(!autoRebet&&manualBetRoundId!==id)return false;
  const serverNow=Date.now()+finite(client()?.clockOffset),remaining=finite(round.betClosesAt)-serverNow;if(remaining<MIN_BET_REMAIN_MS)return false;
  if(!betAttempt||betAttempt.roundId!==id||betAttempt.epoch!==connectionEpoch){
@@ -488,7 +494,7 @@ async function startRound(round){
  return false;
 }
 async function settleNormal(shared){
- const roundId=String(shared?.roundId||startedRoundId||'');if(!roundId)return finite(app.credit);
+ const roundId=String(shared?.roundId||startedRoundId||'');if(!roundId||operatorVoidsV242.has(roundId))return lastServerWallet?.credit??finite(app.credit);
  if(normalSettled.has(roundId))return normalCredits.get(roundId)??finite(app.credit);
  if(normalReview.has(roundId))return finite(normalReview.get(roundId)?.credit);
  const participant=shared?.participant||lastParticipant||{};queueNormal(shared);
@@ -496,17 +502,19 @@ async function settleNormal(shared){
  let response;
  try{response=participant.settlement?{settlement:participant.settlement}:await client().settle(normalPending.get(roundId));}
  catch(error){if(terminalSettlement(error))return quarantineNormal(roundId,error);throw error;}
+ if(operatorVoidsV242.has(roundId))return lastServerWallet?.credit??finite(app.credit);
  if(!response?.settlement||!Number.isFinite(Number(response.settlement.creditAfter)))throw Error('settlement_ack_missing');
  const credit=Number(response.settlement.creditAfter);
  normalSettled.add(roundId);normalCredits.set(roundId,credit);normalPending.delete(roundId);saveNormals();dropLoss(roundId);return credit;
 }
 async function finishNormal(reason='result-complete'){
+ const epochV242=operatorEpochV242;
  if(resetBusy||abandonBusy||finishBusy||Date.now()<Math.max(backoffUntil,Number(client()?.httpRetryAt)||0))return false;
  const shared=active(),roundId=String(shared?.roundId||startedRoundId||'');
  if(!roundId)return hardReset(finite(app.credit),reason+'-no-round');
  finishBusy=true;
  try{
-  const credit=await settleNormal(shared);joinedRounds.delete(roundId);if(joinedRoundId===roundId)joinedRoundId='';if(startedRoundId===roundId)startedRoundId='';return await hardReset(credit,reason);
+  const credit=await settleNormal(shared);if(epochV242!==operatorEpochV242||operatorVoidsV242.has(roundId))return false;joinedRounds.delete(roundId);if(joinedRoundId===roundId)joinedRoundId='';if(startedRoundId===roundId)startedRoundId='';return await hardReset(credit,reason);
  }catch(error){deferRequest(error);console.warn('[SharedController224] settlement awaiting ACK',error?.message||error);return false;}
  finally{finishBusy=false;}
 }
@@ -516,7 +524,7 @@ async function flushStaleState(state){
   // A restored settlement can finish while the user edits the next selection.
   // Its balance is authoritative, but any draft reservation is still held.
   // A newer submitted BET owns its own wallet and must not be rewound here.
-  try{const credit=await settleNormal({roundId});if(!active()&&!joinedRoundId&&!betAttempt&&!pendingFunds&&app?.phase==='ready')setAvailableCredit(projectWalletCredit(credit));}
+  try{const credit=await settleNormal({roundId});if(operatorVoidsV242.has(roundId))continue;if(!active()&&!joinedRoundId&&!betAttempt&&!pendingFunds&&app?.phase==='ready')setAvailableCredit(projectWalletCredit(credit));}
   catch(error){deferRequest(error);return;}
  }
  await flushLosses();const currentId=String(active()?.roundId||'');
@@ -602,13 +610,57 @@ function boot(){
  stopLocal();installGuards();inspectSocket();showSettlementReview();installBetControls();poll();monitorResults();
  // HTTP getState() itself emits a snapshot through accept(). Scheduling another
  // GET for that snapshot creates an unbounded response -> request feedback loop.
- client().on?.(message=>{if(['ball_result','round_started','round_complete','betting_started','host_changed','host_status'].includes(message?.type))schedulePoll(0);});
+ client().on?.(message=>{if(['round_cancelled','ball_result','round_started','round_complete','betting_started','host_changed','host_status'].includes(message?.type))schedulePoll(0);});
  addEventListener('beforeunload',()=>{
   pollStopped=true;clearTimeout(pollTimer);const shared=active();if(shared?.roundId){if(['result','paying','complete'].includes(String(app?.phase||'')))queueNormal(shared);else{const p=shared.participant||lastParticipant||{};queueLoss(shared.roundId,p.creditAfterBet);}}
  },{once:true});
- window.SweetsSharedControllerV224={hardReset,abandonRound,finishNormal,canStart,canEditBets,canSetBet,refreshBetControls,setAutoRebet,requestBet,projectWalletCredit,stable,remoteReady,betStatus,refreshNow:refreshState,isReady:()=>modelReady(app),describe:()=>({connectionEpoch,onlineSince,firstSnapshotAt,lastSnapshotAt,snapshotCount,autoRebet,joinedRoundId,startedRoundId,pendingBetRoundId:betAttempt?.roundId||null,draftReserved,pendingDebitRoundId:pendingFunds?.roundId||null,localReserved:draftReserved+(pendingFunds?.held||0),activeRound:active()?.roundId||null,losses:Object.keys(lossQueue),pendingSettlements:[...normalPending.keys()],settlementReview:[...normalReview.keys()],generation,resetBusy})};
+ window.SweetsSharedControllerV224={operatorRefundPendingV242:()=>operatorAwaitingV242.size>0,operatorStateV242,operatorVoidsV242,hardReset,abandonRound,finishNormal,canStart,canEditBets,canSetBet,refreshBetControls,setAutoRebet,requestBet,projectWalletCredit,stable,remoteReady,betStatus,refreshNow:refreshState,isReady:()=>modelReady(app),describe:()=>({connectionEpoch,onlineSince,firstSnapshotAt,lastSnapshotAt,snapshotCount,autoRebet,joinedRoundId,startedRoundId,pendingBetRoundId:betAttempt?.roundId||null,draftReserved,pendingDebitRoundId:pendingFunds?.roundId||null,localReserved:draftReserved+(pendingFunds?.held||0),activeRound:active()?.roundId||null,losses:Object.keys(lossQueue),pendingSettlements:[...normalPending.keys()],settlementReview:[...normalReview.keys()],generation,resetBusy})};
  console.info('[SharedController224] normal-cycle priority; disconnects are zero-WIN losses and never replayed');
 }
+
+// v242: an operator refund is not a loss, replay, or a normal payout.
+let operatorEpochV242=0;
+const operatorVoidsV242=new Set(),operatorAwaitingV242=new Set();
+function operatorManualBetV242(round){return !!(round?.forcedFromRoundId&&operatorVoidsV242.has(String(round.forcedFromRoundId))&&manualBetRoundId!==String(round.id));}
+function operatorStateV242(message){
+ const c=client(),control=message?.payoutControlV3||(Number(message?.version)===3?message:null);
+ if(control?.playerId&&c?.playerId&&String(control.playerId)!==String(c.playerId))return false;
+ const wallet=control?.wallet,validWallet=wallet&&Number.isSafeInteger(Number(wallet.credit))&&Number(wallet.credit)>=0&&Number(wallet.revision)>=1&&(!lastServerWallet||Number(wallet.revision)>=lastServerWallet.revision);
+ const notices=[...(Array.isArray(message?.operatorRefundsV242)?message.operatorRefundsV242:[]),...(Array.isArray(control?.refundsV242)?control.refundsV242:[])];
+ const eventId=message?.type==='round_cancelled'&&message.reason==='admin_refund'?String(message.cancelledRoundId||message.round?.id||''):'';
+ if(eventId)notices.push({roundId:eventId});
+ let reset=false,changed=false;
+ for(const notice of notices){
+  const id=String(notice?.roundId||'');if(!id)continue;
+  const affected=active()?.roundId===id||startedRoundId===id||joinedRoundId===id||startingRoundId===id||betAttempt?.roundId===id||pendingFunds?.roundId===id;
+  const first=!operatorVoidsV242.has(id);operatorVoidsV242.add(id);abandonedRounds.add(id);changed=changed||first;
+  delete lossQueue[id];normalPending.delete(id);normalReview.delete(id);normalSettled.delete(id);normalCredits.delete(id);joinedRounds.delete(id);
+  if(affected){
+   reset=true;operatorAwaitingV242.add(id);operatorEpochV242++;
+   if(joinedRoundId===id)joinedRoundId='';if(startedRoundId===id)startedRoundId='';if(startingRoundId===id)startingRoundId='';
+   if(betAttempt?.roundId===id)betAttempt=null;if(pendingFunds?.roundId===id)pendingFunds=null;
+   draftReserved=0;draftRoundId='';manualBetRoundId='';lastParticipant=null;
+  }
+ }
+ if(!notices.length)return false;
+ saveLosses();saveNormals();try{localStorage.setItem(NORMAL_REVIEW_KEY,JSON.stringify(Object.fromEntries(normalReview)));}catch{}
+ // v242 refund-confirmation barrier
+ const waiting=operatorAwaitingV242.size>0;
+ const confirmed=!waiting||[...operatorAwaitingV242].every(id=>notices.some(n=>String(n.roundId)===id&&Number(n.revision)>0&&validWallet&&Number(wallet.revision)>=Number(n.revision)));
+ if(validWallet&&confirmed)rememberWallet(control);
+ if(reset&&typeof app!=='undefined'){
+  const credit=validWallet&&confirmed?Number(wallet.credit):Math.max(0,finite(app.credit));
+  // token/engine queues and the shared session are invalidated synchronously.
+  rebuildFreshBoard(app,credit,selected(app),'operator-refund');resultSince=0;completeSeenAt=0;completeProgress='';completeProgressAt=0;
+ }
+ if(validWallet&&confirmed&&waiting&&!active()&&!joinedRoundId&&!betAttempt){
+  operatorAwaitingV242.clear();setAvailableCredit(Number(wallet.credit));
+  status('BET','BET全額返却済み・「BETする」で再参加');
+ }else if(waiting)status('WAIT','抽選中断・BET全額返却を確認中');
+ if(reset||changed){refreshBetControls(app);schedulePoll(0);}
+ return reset;
+}
+
 boot();
 })();
 

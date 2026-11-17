@@ -104,7 +104,7 @@ function publicParticipant(participant,{includeState=true}={}){
 function publicRound(round,playerId){
  if(!round)return null;
  return {
-  id:round.id,sequence:round.sequence,phase:round.phase,balls:[...(round.balls||[])],
+  id:round.id,sequence:round.sequence,phase:round.phase,cancelled:!!round.cancelledV242,forcedFromRoundId:round.forcedFromRoundId||null,balls:[...(round.balls||[])],
   betOpenedAt:round.betOpenedAt||null,betClosesAt:round.betClosesAt||null,drawStartsAt:round.drawStartsAt||null,
   startedAt:round.startedAt||null,completedAt:round.completedAt||null,hostPlayerId:round.hostPlayerId||null,
   participant:playerId?publicParticipant(round.participants?.[playerId]):null,
@@ -148,13 +148,13 @@ function eligiblePlayerIds(m){
  // Previous settlement/recovery never blocks the global server clock.
  return connectedPlayerIds(m);
 }
-function createBettingRound(m){
+function createBettingRound(m,forcedFromRoundId=null){
  if(m.round?.phase==='COMPLETE')archiveRound(m,m.round);
  const t=now(),sequence=(Number(m.sequence)||0)+1;m.sequence=sequence;
  const eligible=eligiblePlayerIds(m);
  if(!eligible.length){m.round=null;m.revision++;m.updatedAt=t;scheduleSave();return null;}
  const round={
-  id:m.id+'-'+sequence+'-'+randomUUID().slice(0,8),sequence,phase:'BETTING',balls:[],
+  id:m.id+'-'+sequence+'-'+randomUUID().slice(0,8),sequence,phase:'BETTING',balls:[],forcedFromRoundId,
   betOpenedAt:t,betClosesAt:t+BET_DURATION_MS,drawStartsAt:0,startedAt:null,completedAt:null,
   hostPlayerId:m.hostPlayerId||null,participants:{},eligiblePlayerIds:eligible,settlementCount:0,lastBallAt:0,
   drawSource:'physical',hostMissingSince:0,nextFallbackBallAt:0
@@ -336,7 +336,7 @@ async function api(req,res,url){
  const machineId=safeId(p[2])||MACHINE_DEFAULT,m=machine(machineId);
  if(req.method==='GET'&&p[3]==='state')return reply(res,200,{ok:true,...snapshot(m,player.id),role:m.hostPlayerId===player.id?'host':'player'});
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='join'){
-  const input=await bodyJson(req);tickMachine(m);const round=m.round;
+  const input=await bodyJson(req);if(operatorBusyV242.has(m))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});tickMachine(m);const round=m.round;
   if(!round||round.phase!=='BETTING'||now()>=Number(round.betClosesAt||0))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});
   if(input.roundId&&String(input.roundId)!==round.id)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   if(!(round.eligiblePlayerIds||[]).includes(player.id))return reply(res,409,{ok:false,error:'wait_next_bet',...snapshot(m,player.id)});
@@ -355,11 +355,13 @@ async function api(req,res,url){
   return reply(res,200,{ok:true,...snapshot(m,player.id),role:'player'});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='heartbeat'){
-  const input=await bodyJson(req),round=lookupRound(m,input.roundId);if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
+  const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(round?.cancelledV242||payoutWallet?.operatorCancelled?.(m.id,input.roundId))return reply(res,409,{ok:false,error:'round_cancelled',...snapshot(m,player.id)});if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(participant)participant.lastSeen=now();return reply(res,200,{ok:true,source:'physical-host'});
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='leave'){
   const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(round?.cancelledV242||payoutWallet?.operatorCancelled?.(m.id,input.roundId))return reply(res,409,{ok:false,error:'round_cancelled',...snapshot(m,player.id)});
   if(!round)return reply(res,200,{ok:true,left:false,roundId:safeText(input.roundId,160)});
   // Once BET closes, the reservation survives disconnect/reset so the server can finish it offline.
   const canRemove=round.phase==='BETTING';
@@ -388,6 +390,7 @@ async function api(req,res,url){
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='checkpoint'){
   const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(round?.cancelledV242||payoutWallet?.operatorCancelled?.(m.id,input.roundId))return reply(res,409,{ok:false,error:'round_cancelled',...snapshot(m,player.id)});
   if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(!participant)return reply(res,404,{ok:false,error:'not_participating'});
   const ballIndex=Math.max(0,Math.min(round.balls.length,Number(input.ballIndex)||0));
@@ -400,6 +403,7 @@ async function api(req,res,url){
  }
  if(req.method==='POST'&&p[3]==='round'&&p[4]==='settle'){
   const input=await bodyJson(req),round=lookupRound(m,input.roundId);
+  if(round?.cancelledV242||payoutWallet?.operatorCancelled?.(m.id,input.roundId))return reply(res,409,{ok:false,error:'round_cancelled',...snapshot(m,player.id)});
   if(!round)return reply(res,409,{ok:false,error:'round_mismatch',...snapshot(m,player.id)});
   const participant=round.participants?.[player.id];if(!participant)return reply(res,404,{ok:false,error:'not_participating'});
   if(participant.settlement){await flushDb();return reply(res,200,{ok:true,idempotent:true,settlement:participant.settlement});}
@@ -427,8 +431,58 @@ async function staticFile(req,res,url){
  }catch(error){if(error?.code==='ENOENT')reply(res,404,{ok:false,error:'not_found'});else reply(res,500,{ok:false,error:'static_error'});}
 }
 
+
+// v242: synchronous money transaction first, then persist the cancelled core.
+const operatorBusyV242=new WeakSet();
+function finishOperatorCancellationV242(m,record){
+ const old=m.round;if(!old||old.id!==record.roundId)return null;
+ old.cancelledV242=true;old.phase='CANCELLED';old.completedAt=record.at;old.nextFallbackBallAt=0;old.hostMissingSince=0;
+ for(const [pid,r] of Object.entries(record.refunds||{}))if(old.participants?.[pid]){
+  old.participants[pid].settlement={...r.settlement};old.participants[pid].checkpoint=null;old.participants[pid].initialState=null;
+ }
+ old.settlementCount=Object.keys(old.participants||{}).length;
+ m.betNowQueuedAt=0;m.revision++;m.updatedAt=now();
+ broadcast(m.id,{type:'round_cancelled',round:publicRound(old,null),reason:'admin_refund',cancelledRoundId:old.id});
+ archiveRound(m,old);m.round=null;
+ const next=createBettingRound(m,old.id);
+ const result={action:'refunded',cancelledRoundId:old.id,roundId:next?.id||null,betClosesAt:next?.betClosesAt||null,refundedTotal:record.refundedTotal,refundedPlayers:record.refundedPlayers,requestId:record.requestId};
+ (m.operatorRequestsV242||={})[record.requestId]=result;
+ const keys=Object.keys(m.operatorRequestsV242);for(const key of keys.slice(0,-128))delete m.operatorRequestsV242[key];
+ scheduleSave();return result;
+}
+function recoverOperatorCancellationV242(m){
+ if(operatorBusyV242.has(m))return;
+ const record=m.round&&payoutWallet?.operatorCancelled?.(m.id,m.round.id);
+ if(record)finishOperatorCancellationV242(m,record);
+}
+async function forceServerBetV242(m,input={}){
+ const requestId=String(input.requestId||'');
+ if(!/^[A-Za-z0-9_.:-]{8,120}$/.test(requestId))throw Object.assign(Error('request_id_required'),{status:400});
+ if(m.operatorRequestsV242?.[requestId])return {...m.operatorRequestsV242[requestId],idempotent:true};
+ if(operatorBusyV242.has(m))throw Object.assign(Error('operator_busy'),{status:409});
+ recoverOperatorCancellationV242(m);
+ if(m.operatorRequestsV242?.[requestId])return {...m.operatorRequestsV242[requestId],idempotent:true};
+ const round=m.round,expected=input.roundId==null?'':String(input.roundId);
+ if(expected!==String(round?.id||''))throw Object.assign(Error('operator_round_changed'),{status:409});
+ if(!payoutWallet?.operatorCancel)throw Object.assign(Error('refund_service_unavailable'),{status:503});
+ operatorBusyV242.add(m);
+ try{
+  let result;
+  if(round){
+   const record=payoutWallet.operatorCancel(m.id,round,requestId);
+   result=finishOperatorCancellationV242(m,record);
+  }else{
+   const next=createBettingRound(m);
+   result={action:'started',roundId:next?.id||null,betClosesAt:next?.betClosesAt||null,refundedTotal:0,refundedPlayers:0,requestId};
+   (m.operatorRequestsV242||={})[requestId]=result;scheduleSave();
+  }
+  await flushDb();return {...result,idempotent:false};
+ }finally{operatorBusyV242.delete(m);}
+}
+
 await loadDb();
 payoutWallet?.attachCore(db);
+for(const m of Object.values(db.machines||{}))recoverOperatorCancellationV242(m);
 const server=http.createServer(async(req,res)=>{
  cors(req,res);if(req.method==='OPTIONS'){res.writeHead(204);return res.end();}
  const url=new URL(req.url||'/', 'http://'+(req.headers.host||'localhost'));
