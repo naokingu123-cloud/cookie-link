@@ -621,7 +621,7 @@ function boot(){
 // v242: an operator refund is not a loss, replay, or a normal payout.
 let operatorEpochV242=0;
 const operatorVoidsV242=new Set(),operatorAwaitingV242=new Set();
-function operatorManualBetV242(round){return !!(round?.forcedFromRoundId&&operatorVoidsV242.has(String(round.forcedFromRoundId))&&manualBetRoundId!==String(round.id));}
+function operatorManualBetV242(round){return !!(round?.forcedFromRoundId&&operatorVoidsV242.has(String(round.forcedFromRoundId))&&!autoRebet&&manualBetRoundId!==String(round.id));}
 function operatorStateV242(message){
  const c=client(),control=message?.payoutControlV3||(Number(message?.version)===3?message:null);
  if(control?.playerId&&c?.playerId&&String(control.playerId)!==String(c.playerId))return false;
@@ -629,11 +629,14 @@ function operatorStateV242(message){
  const notices=[...(Array.isArray(message?.operatorRefundsV242)?message.operatorRefundsV242:[]),...(Array.isArray(control?.refundsV242)?control.refundsV242:[])];
  const eventId=message?.type==='round_cancelled'&&message.reason==='admin_refund'?String(message.cancelledRoundId||message.round?.id||''):'';
  if(eventId)notices.push({roundId:eventId});
- let reset=false,changed=false;
+ let reset=false,changed=false,persistChangedV243=false;
  for(const notice of notices){
   const id=String(notice?.roundId||'');if(!id)continue;
   const affected=active()?.roundId===id||startedRoundId===id||joinedRoundId===id||startingRoundId===id||betAttempt?.roundId===id||pendingFunds?.roundId===id;
   const first=!operatorVoidsV242.has(id);operatorVoidsV242.add(id);abandonedRounds.add(id);changed=changed||first;
+  // Repeated historical notices must not synchronously write storage on every
+  // HTTP response and WebSocket snapshot. Only removed persisted entries matter.
+  persistChangedV243=persistChangedV243||Object.prototype.hasOwnProperty.call(lossQueue,id)||normalPending.has(id)||normalReview.has(id);
   delete lossQueue[id];normalPending.delete(id);normalReview.delete(id);normalSettled.delete(id);normalCredits.delete(id);joinedRounds.delete(id);
   if(affected){
    reset=true;operatorAwaitingV242.add(id);operatorEpochV242++;
@@ -643,7 +646,7 @@ function operatorStateV242(message){
   }
  }
  if(!notices.length)return false;
- saveLosses();saveNormals();try{localStorage.setItem(NORMAL_REVIEW_KEY,JSON.stringify(Object.fromEntries(normalReview)));}catch{}
+ if(persistChangedV243){saveLosses();saveNormals();try{localStorage.setItem(NORMAL_REVIEW_KEY,JSON.stringify(Object.fromEntries(normalReview)));}catch{}}
  // v242 refund-confirmation barrier
  const waiting=operatorAwaitingV242.size>0;
  const confirmed=!waiting||[...operatorAwaitingV242].every(id=>notices.some(n=>String(n.roundId)===id&&Number(n.revision)>0&&validWallet&&Number(wallet.revision)>=Number(n.revision)));
@@ -655,7 +658,7 @@ function operatorStateV242(message){
  }
  if(validWallet&&confirmed&&waiting&&!active()&&!joinedRoundId&&!betAttempt){
   operatorAwaitingV242.clear();setAvailableCredit(Number(wallet.credit));
-  status('BET','BET全額返却済み・「BETする」で再参加');
+  status('BET',autoRebet?'BET全額返却済み・自動BETを再登録':'BET全額返却済み・「BETする」で再参加');
  }else if(waiting)status('WAIT','抽選中断・BET全額返却を確認中');
  if(reset||changed){refreshBetControls(app);schedulePoll(0);}
  return reset;

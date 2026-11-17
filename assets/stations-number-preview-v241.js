@@ -12,6 +12,11 @@ function patch(source){
   if(a.enabled?.[i]===false)continue;
   const bet=amount(a.locked?.[i]??a.bets?.[i]);if(!bet)continue;
   if(a.paid?.[i]){baseWin+=amount(a.roundWins?.[i]);continue;}
+  const collectionOnlyV243=groupedNoGainV243(a.engines[i],a);
+  if(collectionOnlyV243){
+   try{const value=calculate(bet,amount(a.engines[i].totalHundredths));if(!Number.isFinite(value)||value<0){validBase=false;break;}baseWin+=value;}catch{validBase=false;break;}
+   continue;
+  }
   const slot=(boardSlots||[]).find(s=>s?.engine===a.engines[i]);
   if(!Number.isFinite(Number(slot?.tabReachBase))){validBase=false;break;}
   try{const value=calculate(bet,amount(slot.tabReachBase));if(!Number.isFinite(value)||value<0){validBase=false;break;}baseWin+=value;}catch{validBase=false;break;}

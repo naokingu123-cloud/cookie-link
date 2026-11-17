@@ -81,10 +81,10 @@ function paint(){
  const visible=new Set();
  for(let i=0;i<list.length;i++){
   const row=list[i],c=card(row.station);visible.add(row.station);
-  c.node.style.gridColumn='1';
-  c.node.style.gridRow=String(i+1);
+  if(c.node.style.gridColumn!=='1')c.node.style.gridColumn='1';
+  if(c.node.style.gridRow!==String(i+1))c.node.style.gridRow=String(i+1);
   const photo=photos.get(row.playerId)||'',hue=photo?0:Math.max(0,FLAVORS.indexOf(row.pet?.flavor))*55,p=rowPresentation(row);
-  const key=JSON.stringify([row,photo,hue,p]);
+  const key=JSON.stringify([row.station,row.playerId,own,row.empty,row.connected,row.name,row.win,row.settled,row.test,photo,hue,p.tier,p.highestReach]);
   if(c.key!==key){
    c.key=key;c.fitWidth=0;
    const stationColor=STATION_COLORS[row.station-1]||STATION_COLORS[0];
@@ -154,6 +154,15 @@ function attachAwards(a){
   e.emit=function(...args){const result=original.apply(this,args);try{observeAward(a,this);}catch{}return result;};
  }
 }
+// Grouped cookie/candy games only collect the next number after ball 1 or
+// ball 3. That next HIT cannot award a medal yet; no simulation is necessary.
+// Never infer zero for a busy board, a single-HIT game, or an unknown phase.
+function groupedNoGainV243(e,a){
+ const kind=String(e?.kind||''),count=a?.draws?.length,done=count===1?0:count===3?3:-1;
+ if(!['cookie','candy'].includes(kind)||done<0||a?.phase!=='playing'||a.paused)return false;
+ if(kind==='cookie'&&(e.reachMode==='single'||e.drawMode==='single'))return false;
+ return Number(e.processed)===done&&Number(e.accepted)===done&&!e.busy&&!e.opening&&!e.transitionPending&&!e.fx&&!(e.queue?.length)&&['waiting','settled'].includes(e.phase)&&Number.isFinite(Number(e.totalHundredths));
+}
 function currentDetail(a,round,active,boardSlots,readCache,calculate){
  if(!a||!round?.participant||active?.roundId!==round.id||a.phase==='ready'||round.phase==='BETTING')return null;
  const balls=Array.isArray(round.balls)?round.balls:[],used=new Set(balls.map(b=>Number(b.number)));
@@ -169,12 +178,12 @@ function currentDetail(a,round,active,boardSlots,readCache,calculate){
   if(a.paid?.[i]||count>=8||round.phase!=='PLAYING')continue;
   eligible++;
   const s=(boardSlots||[]).find(slot=>slot?.engine===e);
-  let entries=null;
-  if(s&&s.tabReachVersion===e.version&&s.reachStatus==='ready')try{entries=readCache?.(s,a);}catch{}
+  const noGain=groupedNoGainV243(e,a);let entries=noGain?[]:null;
+  if(!noGain&&s&&s.tabReachVersion===e.version&&s.reachStatus==='ready')try{entries=readCache?.(s,a);}catch{}
   if(!Array.isArray(entries)){pending=true;continue;}
   // Each game may list only increasing numbers. Missing entries add zero.
   // Convert total and baseline independently to preserve medal rounding.
-  const perGame=new Map(),base=amount(s.tabReachBase);
+  const perGame=new Map(),base=noGain?amount(e.totalHundredths):amount(s.tabReachBase);
   for(const hit of entries){
    const n=Number(hit?.number);if(!Number.isInteger(n)||n<1||n>25||used.has(n))continue;
    let gain=0;try{gain=amount(calculate(bet,amount(hit.total)))-amount(calculate(bet,base));}catch{pending=true;continue;}
@@ -226,7 +235,7 @@ async function poll(){
  try{const response=await fetch(adminUrl(),{cache:'no-store'});if(response.ok){const data=await response.json();roster=null;accept(data.stations);}}
  catch{}finally{fetching=false;if(!disposed)timer=setTimeout(poll,2000);}
 }
-window.SweetsStationsV235={accept,get roster(){return roster;},paint,currentWin,currentDetail,rowPresentation};
+window.SweetsStationsV235={accept,get roster(){return roster;},paint,currentWin,currentDetail,rowPresentation,groupedNoGainV243};
 mount();if(monitor)poll();else playerTick();
 addEventListener('beforeunload',()=>{disposed=true;clearTimeout(timer);resizeObserver?.disconnect();},{once:true});
 })();

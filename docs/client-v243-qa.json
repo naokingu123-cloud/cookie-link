@@ -1,0 +1,35 @@
+{
+  "version": "20261117-v243-client-rejoin-forecast-performance",
+  "clientGames": 9,
+  "forecastChecks": [
+    {
+      "ballCount": 1,
+      "available": 24,
+      "positive": 1,
+      "baseWin": 1200
+    },
+    {
+      "ballCount": 2,
+      "available": 23,
+      "positive": 21,
+      "baseWin": 1200
+    },
+    {
+      "ballCount": 3,
+      "available": 22,
+      "positive": 14,
+      "baseWin": 1200
+    }
+  ],
+  "monitorTiles": 25,
+  "monitorRatios": true,
+  "normalRoundStarted": true,
+  "forcedRejoined": true,
+  "forcedCountdownStarted": true,
+  "nextBallReceived": true,
+  "forcedRoundBetRequests": 1,
+  "confirmedRefund": 27000,
+  "creditAfterRefundAndNewBet": 973000,
+  "unchangedRefundQueueWrites4500ms": 0,
+  "pageErrors": []
+}
