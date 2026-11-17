@@ -40,7 +40,7 @@ try{
  sb.send(JSON.stringify({type:'station_progress',roundId:bet.id,win:1000,detail:{...detail,predictionBaseWin:1000,numberGains:gains.map((v,i)=>i===0?null:100)}}));
  const d=await until(async()=>{const d=await monitor();return d.hitForecasts?.[a.player.id]&&d.hitForecasts?.[b.player.id]?d:null;},'both forecasts');
  const rows=model.rows(d),ar=rows.find(r=>r.id===a.player.id);assert.ok(ar);
- assert.equal(model.numberCell(ar,d,7).color,'red');assert.equal(model.numberCell(ar,d,8).color,'purple');assert.equal(model.numberCell(ar,d,9).color,'rainbow');assert.equal(model.numberCell(ar,d,10).ratio,'+0.1倍');
+ assert.equal(model.numberCell(ar,d,7).color,'red');assert.equal(model.numberCell(ar,d,8).color,'purple');assert.equal(model.numberCell(ar,d,9).color,'rainbow');assert.equal(model.numberCell(ar,d,10).ratio,'+0.10倍');
  assert.equal(model.total(rows,d).bet,37000);
  const publicState=await state(b);assert.equal(publicState.hitForecasts,undefined);assert.ok(!JSON.stringify(publicState.stations).includes('numberGains'),'forecasts are admin-only');
  assert.ok(wire.every(msg=>!JSON.stringify(msg).includes('numberGains')&&!msg.hitForecasts),'public WebSocket cannot disclose admin forecasts');
