@@ -12,6 +12,7 @@ on:
       - 'monitor.html'
       - 'tests/monitor-layout-v242.mjs'
       - 'tests/monitor-ledger-v241.mjs'
+      - 'tests/monitor-ledger-integration-v241.mjs'
       - 'app-version.json'
       - '.github/workflows/monitor-graphs-v245.yml'
 permissions:
