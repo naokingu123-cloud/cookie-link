@@ -128,13 +128,13 @@ async function waitForBall(ball,timeout=18000,current=()=>true){
 function previewWin(engine,bet,index){if(app.paid?.[index])return Math.max(0,finite(app.roundWins?.[index]));try{return Math.max(0,finite(medalWin(Math.max(0,bet),finite(engine?.totalHundredths))));}catch{return Math.max(0,finite(app.roundWins?.[index]));}}
 function gameBetRows(payload){
  const bets=Array.isArray(payload?.bets)?payload.bets:app.bets,enabled=Array.isArray(payload?.enabled)?payload.enabled:(Array.isArray(payload?.bets)?bets.map(value=>finite(value)>0):app.enabled),rows=[];
- for(let index=0;index<(app.engines||[]).length;index++){if(enabled?.[index]===false)continue;const engine=app.engines[index];rows.push({id:gameId(engine,index),bet:Math.max(0,finite(bets?.[index]))});}return rows;
+ for(let index=0;index<(app.engines||[]).length;index++){if(enabled?.[index]===false)continue;const engine=app.engines[index];rows.push({id:gameId(engine,index),bet:Math.max(0,finite(bets?.[index])),...(engine?.rulesVersion===247?{rulesVersion:247}:{})});}return rows;
 }
 function telemetry(ball,complete){
  const games=[];let roundWin=0,roundBet=0;
  for(let index=0;index<(app.engines||[]).length;index++){
   if(app.enabled?.[index]===false)continue;const engine=app.engines[index],id=gameId(engine,index),bet=Math.max(0,finite(app.locked?.[index]??app.bets?.[index])),win=previewWin(engine,bet,index);
-  roundBet+=bet;roundWin+=win;games.push({id,bet,win,processed:Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length)),appliedRate:appliedRates.get(id)??commonRate()});
+  roundBet+=bet;roundWin+=win;games.push({id,bet,win,processed:Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length)),appliedRate:appliedRates.get(id)??commonRate(),...(engine.rulesVersion===247?{rulesVersion:247,carryV247:engine.progressiveCarryV247?.()}: {})});
  }
  if(ball>=8&&Number.isFinite(Number(app.totalWin))&&['result','paying','complete'].includes(app.phase))roundWin=Math.max(roundWin,finite(app.totalWin));
  return {version:3,ball,number:Number(app.draws?.[ball-1])||null,complete,phase:app.phase,credit:finite(app.credit),roundBet,roundWin,games,commonRate:commonRate(),debugTarget:finite(debugPayoutTarget),capturedAt:Date.now()};

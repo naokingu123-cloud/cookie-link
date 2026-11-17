@@ -19,6 +19,7 @@ function restore(a,state){
  if(!state)return false;
  for(const key of ['credit','displayCredit','bets','locked','enabled','paid','draws','roundWins','totalWin','wonderBank','wonderSteps','wonderValue'])if(key in state)try{a[key]=revive(state[key]);}catch{}
  (state.engines||[]).forEach((saved,index)=>{const engine=a.engines?.[index];if(!engine)return;for(const [key,value] of Object.entries(saved))try{if(typeof engine[key]!=='function')engine[key]=revive(value);}catch{}});
+ for(const engine of a.engines||[])engine.afterCheckpointRestoreV247?.();
  return true;
 }
 async function api(path,options={}){
@@ -59,7 +60,7 @@ async function settleWork(work){
   app.dealing=false;app.fastForward=false;for(const engine of app.engines||[])engine.presentationRate=1;app.finishRound();
  }
  const games=[];for(let index=0;index<(app.engines||[]).length;index++){
-  if(app.enabled?.[index]===false)continue;games.push({id:gameId(app.engines[index],index),bet:Math.max(0,finite(app.locked?.[index])),win:Math.max(0,finite(app.roundWins?.[index])),appliedRate:finite(work.rate)||90});
+  if(app.enabled?.[index]===false)continue;games.push({id:gameId(app.engines[index],index),bet:Math.max(0,finite(app.locked?.[index])),win:Math.max(0,finite(app.roundWins?.[index])),appliedRate:finite(work.rate)||90,...(app.engines[index]?.rulesVersion===247?{rulesVersion:247,carryV247:app.engines[index].progressiveCarryV247?.()}: {})});
  }
  const totalWin=Math.max(0,finite(app.totalWin)||games.reduce((sum,item)=>sum+item.win,0)),creditAfter=finite(work.state?.credit)+totalWin;
  await api(`/api/admin/machines/${encodeURIComponent(machine)}/payout-v3/offline-work/complete`,{method:'POST',body:JSON.stringify({token:work.token,playerId:work.playerId,roundId:work.roundId,totalWin,creditAfter,games,digest:`server-worker:${work.roundId}:${totalWin}`})});

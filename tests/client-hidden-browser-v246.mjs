@@ -53,14 +53,22 @@ try{
   await call('/api/machines/public-01/round/ball',{session:host,body:{roundId:round.id,ballIndex:i+1,number:numbers[i],eventId:round.id+':qa:'+(i+1)}});
   const forecast=await until(async()=>{const data=await call('/api/admin/machines/public-01',{adminOnly:true});const f=data.hitForecasts?.[playerId];return f?.ballCount===i+1&&f.gains?.length===25?f:null;},'actual nine-game forecast after ball '+(i+1),50000);
   for(let n=1;n<=25;n++){if(numbers.slice(0,i+1).includes(n))assert.equal(forecast.gains[n-1],null);else assert.ok(Number.isSafeInteger(forecast.gains[n-1])&&forecast.gains[n-1]>=0);}
-  const batchTotals=await page.evaluate(()=>window.__client243.app.engines.filter(e=>['cookie','candy'].includes(e.kind)).map(e=>e.totalHundredths));
-  if(i===0)firstBatchTotals=batchTotals;if(i===1)assert.deepEqual(batchTotals,firstBatchTotals,'second number only collects: cookie/candy WIN is unchanged');
+  const batchTotals=await page.evaluate(()=>window.__client243.app.engines.filter(e=>e.kind==='cookie').map(e=>e.totalHundredths));
+  if(i===0)firstBatchTotals=batchTotals;if(i===1)assert.deepEqual(batchTotals,firstBatchTotals,'second number only collects in Cookie; Six Drop now receives every number');
+  const sixSingle=await page.evaluate(()=>{const e=window.__client243.app.engines.find(x=>x.kind==='candy');return {version:e.rulesVersion,drawMode:e.drawMode,accepted:e.accepted};});
+  assert.equal(sixSingle.version,247);assert.equal(sixSingle.drawMode,'single');assert.equal(sixSingle.accepted,i+1);
   forecastChecks.push({ballCount:i+1,available:forecast.gains.filter(x=>x!==null).length,positive:forecast.gains.filter(x=>x>0).length,baseWin:forecast.baseWin});
   await monitor.waitForFunction(id=>{const row=document.querySelector('.compact-player-v242[data-player-id="'+id+'"]');return row&&[...row.querySelectorAll('.forecast-value-v242')].some(n=>/^\+/.test(n.textContent));},playerId,{timeout:15000});
  }
  const dom=await monitor.evaluate(id=>{const row=document.querySelector('.compact-player-v242[data-player-id="'+id+'"]');return {tiles:row.querySelectorAll('.forecast-tile-v242').length,amounts:[...row.querySelectorAll('.forecast-value-v242')].map(n=>n.textContent),ratios:[...row.querySelectorAll('.forecast-ratio-v242')].map(n=>n.textContent)};},playerId);
  assert.equal(dom.tiles,25);assert.ok(dom.ratios.some(s=>/^\+.*倍/.test(s)));
- await monitor.screenshot({path:out+'/monitor-forecast.png'});await page.screenshot({path:out+'/client-forecast.png'});
+ await page.locator('#tab2').click({force:true});
+ await page.waitForFunction(()=>document.body.classList.contains('carnival-active')&&document.querySelector('#carnival-heading[data-progressive247="1"]'));
+ const sixHud=await page.evaluate(()=>{const h=document.querySelector('.sd247-roles'),e=window.SixDropV247.engine;return {display:getComputedStyle(h).display,height:h.getBoundingClientRect().height,cards:h.querySelectorAll('section').length,label:document.querySelector('#carnival-heading').textContent,rules:e.rulesVersion,mode:e.drawMode,processed:e.processed,accepted:e.accepted,feed:e.state?.feed,carry:window.SixDropV247.carry};});
+ assert.notEqual(sixHud.display,'none','new role payout panel must override the old glass filter');assert.ok(sixHud.height>40);assert.equal(sixHud.cards,3);assert.equal(sixHud.rules,247);assert.equal(sixHud.mode,'single');assert.match(sixHud.label,/プログレッシブ/);
+ await monitor.screenshot({path:out+'/monitor-forecast.png'});await page.screenshot({path:out+'/sixdrop-v247-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await sleep(350);await page.screenshot({path:out+'/sixdrop-v247-mobile.png'});await page.setViewportSize({width:1366,height:900});
+ console.log('SIXDROP_V247_BROWSER_HUD',JSON.stringify(sixHud));
  // The actual button triggers the actual server cancellation and client rejoin.
  await monitor.waitForFunction(id=>window.SweetsMonitorSnapshotV242?.round?.id===id,round.id);
  const forcedResponse=monitor.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/bet-now')&&r.request().method()==='POST');
@@ -125,6 +133,11 @@ try{
  assert.equal(account.lifetimeBet,27000,'the cancelled round must not be counted as IN');
  assert.equal(account.lifetimeWin,hiddenState.award.win,'server OUT equals the native game result');
  assert.equal(account.wallet.credit,hiddenState.credit,'local and server wallets agree');
+ assert.ok(account.sixDropV247&&account.sixDropV247.version===247,'server owns the progressive ledger');
+ if(hiddenState.award.roundWins[2]===0)assert.equal(account.sixDropV247.bankUnits,0,'a zero Six Drop WIN clears its bank even when other games win');
+ else assert.ok(account.sixDropV247.bankUnits>0,'positive Six Drop WIN preserves its accumulated bank');
+ const clientCarry=await page.evaluate(()=>window.SixDropV247.carry);assert.equal(clientCarry.bankUnits,account.sixDropV247.bankUnits,'fresh board inherits acknowledged server carry');
+ console.log('SIXDROP_V247_SERVER_CARRY',JSON.stringify({sixWin:hiddenState.award.roundWins[2],server:account.sixDropV247,client:clientCarry}));
  console.log('HIDDEN_NATIVE_ROUND',JSON.stringify(hiddenState));
  await page.screenshot({path:out+'/hidden-nine-games-complete.png'});
  assert.equal(errors.length,0,JSON.stringify(errors));

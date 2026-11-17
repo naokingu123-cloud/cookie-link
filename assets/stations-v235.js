@@ -160,7 +160,7 @@ function attachAwards(a){
 function groupedNoGainV243(e,a){
  const kind=String(e?.kind||''),count=a?.draws?.length,done=count===1?0:count===3?3:-1;
  if(!['cookie','candy'].includes(kind)||done<0||a?.phase!=='playing'||a.paused)return false;
- if(kind==='cookie'&&(e.reachMode==='single'||e.drawMode==='single'))return false;
+ if(e.drawMode==='single'||kind==='cookie'&&e.reachMode==='single')return false;
  return Number(e.processed)===done&&Number(e.accepted)===done&&!e.busy&&!e.opening&&!e.transitionPending&&!e.fx&&!(e.queue?.length)&&['waiting','settled'].includes(e.phase)&&Number.isFinite(Number(e.totalHundredths));
 }
 function currentDetail(a,round,active,boardSlots,readCache,calculate){

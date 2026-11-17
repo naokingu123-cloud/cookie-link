@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
 const source=await read('assets/shared-client-hidden-v246.js'),index=await read('index.html'),loader=await read('assets/shared-machine-v176.js');
 new vm.Script(source);
-assert.ok(loader.includes('shared-client-hidden-v246.js?v=246'));
+assert.match(loader,/shared-client-hidden-v246\.js\?v=\d+/);
 for(const s of ['const paused=!app||app.paused||document.hidden||!inView;if(s.chocoClockStamp==null)','while(token===e.version&&s.reachStatus===\'pending\')await new Promise(resolve=>setTimeout(resolve,16));','if(!a.paused&&!document.hidden&&inView)remaining-=Math.min(50,now-last);'])assert.ok(index.includes(s),'native completion patch contract: '+s);
 let now=Date.now(),worker=null,creditAdds=0,results=0,payouts=0,balls=0;
 const handlers={};class WorkerMock{

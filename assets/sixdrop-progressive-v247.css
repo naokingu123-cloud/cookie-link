@@ -1,0 +1,24 @@
+/* Retain the approved candy jar and large drops. Only the rule HUD changes. */
+#carnival-heading[data-progressive247="1"]{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;padding:3px 7px!important;min-height:48px}
+.sd247-progressive{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:1px 5px;min-width:0;flex:1;color:#fff3bf;text-shadow:0 1px 3px #321225}
+.sd247-progressive>small,.sd247-progressive>span{grid-column:1/-1;font:800 clamp(7px,.85vw,11px)/1.25 system-ui}
+.sd247-progressive>strong{font:1000 clamp(17px,2.3vw,29px)/1.05 system-ui;color:#ffdd64;font-variant-numeric:tabular-nums}
+.sd247-progressive>em{font:900 10px/1 system-ui;font-style:normal}
+.sd247-colors{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:3px;width:112px;font:800 8px/1.2 system-ui;color:#fffbdb}
+.sd247-colors small,.sd247-colors span{width:100%;text-align:center}
+.sd247-colors i{width:13px;height:13px;border:1px solid #fff9;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,var(--drop-color) 50%);box-shadow:0 1px 2px #0008}
+.sd247-odds .six-glass-ui,.sd247-odds .six-role-summary,.sd247-odds .six-round-cards{display:none!important}
+.sd247-roles{display:flex;flex-direction:column;gap:5px;padding:3px;color:#fff4d3}
+.sd247-roles>section{display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:auto auto auto;gap:2px 3px;align-items:center;border:1px solid #ffe4b655;border-radius:7px;background:linear-gradient(120deg,#2b1649e6,#153b57e6);padding:4px}
+.sd247-roles img{grid-row:1/4;width:32px;height:36px;object-fit:contain}
+.sd247-roles b{font:900 clamp(7px,.8vw,11px)/1.1 system-ui}
+.sd247-roles small{font:700 clamp(6px,.65vw,9px)/1.15 system-ui}
+.sd247-roles strong{font:1000 clamp(8px,1vw,13px)/1.05 system-ui;color:#ffdc75;font-variant-numeric:tabular-nums}
+.sd247-count{color:#bcedff}.sd247-subtotal{grid-column:1/-1;text-align:right}.sd247-footer{font:700 clamp(6px,.7vw,9px)/1.4 system-ui;color:#ffedc4;text-align:center}
+#carnival-heading[data-progressive247="1"] .six-top-rounds{display:none!important}
+@media(max-width:600px){.sd247-colors{width:88px}.sd247-roles>section{grid-template-columns:25px minmax(0,1fr);padding:2px}.sd247-roles img{width:24px;height:29px}.sd247-progressive>strong{font-size:18px}}
+/* Override the older glass HUD's direct-child filter without removing its
+   approved generated picture frame. Old 100x/round descriptions stay hidden. */
+body.carnival-active #carnival-odds.sd247-odds > :not(.sd247-roles){display:none!important}
+body.carnival-active #carnival-odds.sd247-odds > .sd247-roles{display:flex!important;position:absolute!important;inset:0!important;box-sizing:border-box!important;height:100%!important;width:100%!important;padding:clamp(9px,2vh,17px) 7px!important;z-index:4!important}
+body.carnival-active #carnival-odds.sd247-odds .sd247-roles>section{flex:1;min-height:0}

@@ -15,7 +15,7 @@ const games={
  choco:{name:'チョコレートキャニオン',accent:'#ffcc88',ink:'#603844',steps:[
   ['ドリルHIT','ドリルの向きに地層を掘る'],['ドリルLv','レベルが上がると深く掘れる'],['同色の連鎖','落下後、同色4マス以上で消去'],['鉱石GET','地表に出た鉱石を獲得'],['ボーナス層','100mごとにボーナス層へ']]},
  candy:{name:'シックスドロップ',accent:'#ffb7dc',ink:'#64344b',steps:[
-  ['HITと落下','すき間にドロップが落ちる'],['一直線','同じ色を4個以上並べる'],['トライアングル','同色6個で3段の三角形'],['ヘキサゴン','中心を囲む同色6個の輪']]},
+  ['1球ずつHIT','毎回10段までドロップを補充'],['同じ色を一斉消去','直線4個以上で同色が全部消える'],['役が育つ配当','直線＜△＜⬡ ／ 同じ役の次回配当UP'],['全消しで総取り','消去数で蓄積・0 WINまで継続']]},
  gelato:{name:'ジェラートプリズム',accent:'#91edff',ink:'#343856',steps:[
   ['交点にHIT','抽選された番号が点灯'],['ライン成立','HITした点を盤面の線で結ぶ'],['三角形GET','線で囲んだ小さな三角形を獲得'],['全埋め','本盤は三角形24枚で全埋め']]},
  winery:{name:'ワイナリーピラミッド',accent:'#ffcb9d',ink:'#65364b',steps:[
@@ -110,7 +110,7 @@ function sixDiagram(c,stage,t){
  for(let i=0;i<pos.length;i++){
   let [x,y]=pos[i],selected=group.includes(i),color=selected?stage%4:colors[(i+Math.floor(i/5))%4];
   if(!stage&&i===1){const u=ease((t-.46)/.45);x+=u*21.5;y+=u*38;}
-  const fade=stage?(selected?vanish:0):(i===6?ease((t-.22)/.22):0);
+  const fade=stage?(color===stage%4?vanish:0):(i===6?ease((t-.22)/.22):0);
   c.save();c.globalAlpha=1-fade;candy(c,color,x,y,40);
   if(!stage&&i===6)text(c,'12',x,y,17,'#482f55',31);
   if(stage&&selected&&t>.28)dot(c,x,y,18.7,null,'#ffef9e',2.4);c.restore();
@@ -120,7 +120,7 @@ function sixDiagram(c,stage,t){
   const outline=stage===1?[0,3]:stage===2?[2,10,12,2]:[1,2,7,11,10,5,1];
   line(c,outline.map(i=>pos[i]),'rgba(255,244,178,.9)',3.1);
  }
- tag(c,['12 HIT','4個以上','3段・6個','6個の輪'][stage],105,193,130);
+ tag(c,['1球ずつHIT','同色すべて消去','同じ役で配当UP','全消し BONUS'][stage],105,193,130);
 }
 const prismPoints=[[22,116],[83,42],[100,147],[170,71]],prismLines=[[0,1],[0,2],[1,2],[1,3],[2,3]];
 function gelatoDiagram(c,stage,t){

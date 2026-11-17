@@ -1,0 +1,63 @@
+{
+  "version": "20261117-v247-sixdrop-single-progressive",
+  "hiddenState": {
+    "credit": 1010440,
+    "phases": [
+      "playing",
+      "result",
+      "paying",
+      "complete",
+      "ready"
+    ],
+    "award": {
+      "phase": "complete",
+      "win": 37440,
+      "roundWins": [
+        600,
+        600,
+        11940,
+        21900,
+        0,
+        0,
+        2400,
+        0,
+        0
+      ],
+      "credit": 1010440
+    },
+    "advanceResult": 10
+  },
+  "hiddenNineGameResultAndPayout": true,
+  "clientGames": 9,
+  "forecastChecks": [
+    {
+      "ballCount": 1,
+      "available": 24,
+      "positive": 0,
+      "baseWin": 600
+    },
+    {
+      "ballCount": 2,
+      "available": 23,
+      "positive": 10,
+      "baseWin": 600
+    },
+    {
+      "ballCount": 3,
+      "available": 22,
+      "positive": 0,
+      "baseWin": 1800
+    }
+  ],
+  "monitorTiles": 25,
+  "monitorRatios": true,
+  "normalRoundStarted": true,
+  "forcedRejoined": true,
+  "forcedCountdownStarted": true,
+  "nextBallReceived": true,
+  "forcedRoundBetRequests": 1,
+  "confirmedRefund": 27000,
+  "creditAfterRefundAndNewBet": 973000,
+  "unchangedRefundQueueWrites4500ms": 0,
+  "pageErrors": []
+}
