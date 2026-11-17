@@ -1,0 +1,22 @@
+{
+  "version": "20261117-v247-sixdrop-single-progressive",
+  "runtimeCommit": "a298db56c5473c9e2c8a44bc5aefea10096d6f9e",
+  "fullRegressionRun": 44087072414,
+  "finalHudAndHiddenRun": 44088507137,
+  "finalRunConclusion": "success",
+  "ruleGames": 300,
+  "gravity": {"basicCases":29,"boards":120,"motionSteps":764,"trajectorySamples":19100,"gapMoves":525,"officialInternalTieBreakVerified":false},
+  "visualReview": {"desktop":true,"mobile":true,"legacyHudCssConflictFixed":true},
+  "hiddenPositiveGame": {"creditBefore":973000,"win":37440,"creditAfter":1010440,"sixDropWin":11940,"carryPreserved":true},
+  "hiddenZeroGame": {"creditBefore":973000,"win":14400,"creditAfter":987400,"sixDropWin":0,"carryReset":true},
+  "serverWalletAndCarryMatch":true,
+  "refund": {"amount":27000,"rejoined":true,"countdownStarted":true,"betRequests":1,"duplicateQueueWrites4500ms":0},
+  "monitorNumbers":25,
+  "pageErrors":[],
+  "payoutSamples": [
+    {"setting":50,"games":1500,"actual":46.986,"standardErrorPoints":2.667659207453439},
+    {"setting":90,"games":1500,"actual":88.69866666666667,"standardErrorPoints":4.46951182009019},
+    {"setting":150,"games":1500,"actual":150.04133333333334,"standardErrorPoints":7.2336235099194415}
+  ],
+  "limits": ["finite payout samples, not exact RTP guarantees", "no claim of Nintendo internal code equivalence", "OS suspension cannot execute browser JavaScript"]
+}
