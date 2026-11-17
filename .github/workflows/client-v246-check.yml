@@ -1,0 +1,56 @@
+name: Client v246 progressive payouts and smooth hidden-safe rendering
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main']
+    paths:
+      - 'assets/**'
+      - 'index.html'
+      - 'monitor.html'
+      - 'server-core-loader-v220.mjs'
+      - 'server-stations-v235.mjs'
+      - 'tests/*v246.mjs'
+      - 'tests/monitor-ledger-v241.mjs'
+      - '.github/workflows/client-v246-check.yml'
+permissions:
+  contents: read
+concurrency:
+  group: client-v246-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Actual source and cached forecast contracts
+        run: |
+          npm run check
+          node tests/progressive-forecast-v246.mjs
+          node tests/hidden-results-v246.mjs
+          node tests/hidden-engine-clocks-v246.mjs
+          node tests/client-smooth-v246.mjs
+          node tests/background-continuity-v240.mjs
+          node tests/monitor-ledger-v241.mjs
+          node tests/monitor-ledger-integration-v241.mjs
+          node tests/payout-v232-bootstrap.mjs
+      - name: Browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Real nine games, forced BET, hidden result and exact wallet
+        run: node tests/client-hidden-browser-v246.mjs
+      - name: Single-row monitor graphics and no-scroll layout
+        run: node tests/monitor-layout-v242.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-v246-browser-qa
+          path: |
+            qa-client-v243
+            qa-monitor-v242
+          retention-days: 3
