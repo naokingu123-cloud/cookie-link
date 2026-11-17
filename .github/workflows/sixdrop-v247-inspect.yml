@@ -1,0 +1,22 @@
+name: Six Drop v247 source inspection
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/sixdrop-v247']
+    paths: ['.github/workflows/sixdrop-v247-inspect.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package exact source and rules for regression work
+        run: |
+          tar --exclude='.git' --exclude='data' --exclude='.runtime' --exclude='.tools' --exclude='node_modules' --exclude='*.mp3' --exclude='*.wav' --exclude='*.ogg' --exclude='*.webp' --exclude='*.png' --exclude='*.jpg' --exclude='*.woff*' --exclude='*.ttf' --exclude='*.otf' -czf /tmp/sixdrop-source-v247.tar.gz .
+          node -e "const fs=require('fs');const s=fs.readFileSync('optimized/app-01.js','utf8');for(const word of ['class CandyCarnivalEngine','function sixRoundColors','const SIX_','function sixPlan','function carnivalHud','function carnivalEvent']){const at=s.indexOf(word);console.log('\nSECTION '+word+' at '+at+'\n'+s.slice(Math.max(0,at),at+1600));}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sixdrop-source-v247
+          path: /tmp/sixdrop-source-v247.tar.gz
+          retention-days: 1
