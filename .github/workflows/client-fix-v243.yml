@@ -3,13 +3,13 @@ on:
   workflow_dispatch:
   push:
     branches: ['fix/client-perf-v243']
-    paths: ['scripts/apply-client-v243.mjs', 'scripts/forecast-v243.mjs', 'tests/client-rejoin-v243.mjs', 'tests/client-forecast-v243.mjs', '.github/workflows/client-fix-v243.yml']
+    paths: ['scripts/apply-client-v243.mjs', 'scripts/forecast-v243.mjs', 'tests/client-rejoin-v243.mjs', 'tests/client-forecast-v243.mjs', 'tests/client-browser-v243.mjs', '.github/workflows/client-fix-v243.yml']
 permissions:
   contents: write
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,21 +19,30 @@ jobs:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Apply bounded client repairs
-        run: node scripts/apply-client-v243.mjs
-      - name: Syntax and refund re-entry
-        run: npm run check && node tests/client-rejoin-v243.mjs
+        run: node scripts/apply-client-v243.mjs && node scripts/forecast-v243.mjs
+      - name: Syntax, confirmed refund re-entry and cached forecasts
+        run: npm run check && node tests/client-rejoin-v243.mjs && node tests/client-forecast-v243.mjs
       - name: Existing ledger, forecasts, seats and refunds
         run: node tests/operator-refund-v242.mjs && node tests/monitor-ledger-v241.mjs && node tests/monitor-ledger-integration-v241.mjs && node tests/stations-detail-v238.mjs && node tests/stations-highlight-v239.mjs && node tests/guest-entry-v237.mjs && node tests/background-continuity-v240.mjs && node tests/roulette-hd60-v234.mjs
       - name: Existing shared rounds and payouts
         run: npm run test:shared
-      - name: Export verified core changes without publishing production
-        run: |
-          mkdir -p qa-client-v243
-          git diff --stat > qa-client-v243/changes.txt
-          git diff > qa-client-v243/source.patch
+      - name: Browser dependencies
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright && npx playwright install --with-deps chromium
+      - name: Actual nine-game client, live monitor forecasts and forced countdown
+        run: node tests/client-browser-v243.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: client-v243-tested-patch
+          name: client-v243-verified
           path: qa-client-v243
           retention-days: 3
+      - name: Commit only verified runtime changes to this repair branch
+        if: success() && github.ref == 'refs/heads/fix/client-perf-v243'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/shared-machine-v176.js assets/shared-client-controller-v224.js assets/stations-v235.js assets/stations-number-preview-v241.js index.html app-version.json tests/operator-client-v242.mjs docs/client-v243-qa.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'v243: verified forced-BET re-entry, cached number forecasts and change-only refund persistence'
+            git push origin HEAD:fix/client-perf-v243
+          fi
