@@ -1,0 +1,47 @@
+name: Six Drop v247 rules gravity and HUD
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main', 'feature/sixdrop-v247']
+    paths:
+      - 'assets/sixdrop-progressive*'
+      - 'tests/sixdrop-*'
+      - 'index.html'
+      - 'server-payout-preload-v3.mjs'
+      - '.github/workflows/sixdrop-v247-check.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Rules, original gravity, forecast and persistent carry
+        run: |
+          npm run check
+          node tests/sixdrop-progressive-v247.cjs
+          node tests/sixdrop-gravity-v247.cjs
+          node tests/sixdrop-carry-v247.mjs
+          node tests/progressive-forecast-v246.mjs
+          node tests/hidden-results-v246.mjs
+      - name: Install browser
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Live nine-game client, readable Six Drop and forced BET
+        run: node tests/sixdrop-hud-v247.mjs
+      - name: Hidden full-game payout and carry
+        run: node tests/client-hidden-browser-v246.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sixdrop-v247-final-hud
+          path: |
+            qa-client-v243
+            docs/client-v246-qa.json
+          retention-days: 3
