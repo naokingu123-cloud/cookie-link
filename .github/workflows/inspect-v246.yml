@@ -1,0 +1,17 @@
+name: v246 inspect existing native background gameplay loop
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/progressive-background-v246']
+    paths: ['tests/inspect-v246.mjs','.github/workflows/inspect-v246.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/inspect-v246.mjs
