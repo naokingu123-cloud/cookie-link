@@ -598,7 +598,7 @@ function monitorResults(){
   }else{completeProgress='';completeProgressAt=0;if(shared)completeSeenAt=0;}
  }else if(['result','paying','complete','error'].includes(phase)){
   if(!resultSince)resultSince=Date.now();const age=Date.now()-resultSince,overlayGone=resultLayerHidden();
-  if((phase==='complete'&&age>250)||(overlayGone&&age>900)||(phase==='error'&&age>1000)||age>RESULT_MAX_MS)finishNormal('phase-'+phase).catch(()=>{});
+  if((phase==='complete'&&age>250)||(!document.hidden&&overlayGone&&age>900)||(phase==='error'&&age>1000)||(!document.hidden&&age>RESULT_MAX_MS)||(document.hidden&&age>15000))finishNormal('phase-'+phase).catch(()=>{});
  }else{
   resultSince=0;if(phase==='ready'&&!active()&&!modelReady(app)&&!resetBusy)hardReset(finite(app.credit),'dirty-ready').catch(()=>{});
  }

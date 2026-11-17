@@ -472,6 +472,18 @@ Copyright 2016 The Rounded M+ Project Authors.
   const hostPhysicsGuard='if(drawing&&!paused&&!document.hidden)';
   if(game.split(hostPhysicsGuard).length!==3)throw new Error('server background physics guard target drift');
   game=game.split(hostPhysicsGuard).join('if(drawing&&!paused&&(!document.hidden||serverHostPage))');
+
+  // v246: only time-dependent engine state is allowed to advance in hidden
+  // shared-client pages. Audio/canvas/roulette remains throttled offscreen.
+  const hiddenClockBefore="const paused=!app||app.paused||document.hidden||!inView;if(s.chocoClockStamp==null)",hiddenClockAfter="const paused=!app||app.paused||(!window.__sweetsSharedClientReady&&(document.hidden||!inView));if(s.chocoClockStamp==null)";
+  const hiddenReachBefore="while(token===e.version&&s.reachStatus==='pending')await new Promise(resolve=>setTimeout(resolve,16));",hiddenReachAfter="while(token===e.version&&s.reachStatus==='pending'&&!(window.__sweetsSharedClientReady&&document.hidden))await new Promise(resolve=>setTimeout(resolve,16));";
+  const hiddenHoldBefore="if(!a.paused&&!document.hidden&&inView)remaining-=Math.min(50,now-last);",hiddenHoldAfter="if(!a.paused&&((!document.hidden&&inView)||window.__sweetsSharedClientReady))remaining-=Math.min(window.__sweetsSharedClientReady&&document.hidden?1200:50,Math.max(0,now-last));";
+  for(const [a,b,label] of [[hiddenClockBefore,hiddenClockAfter,'choco clock'],
+   [hiddenReachBefore,hiddenReachAfter,'offscreen reach cache wait'],
+   [hiddenHoldBefore,hiddenHoldAfter,'final board display hold']]){
+   if(game.split(a).length!==2)throw Error('hidden completion source drift: '+label);
+   game=game.replace(a,b);
+  }
   // Client server-only results are authoritative; losing tab focus or opening
   // the local menu must not pause the already accepted games.
   const oldClientPause='app.pause(menuOpen||userPaused||document.hidden||!inView||jpcSession.active);';
