@@ -4,11 +4,9 @@ on:
   push:
     branches: ['feature/client-smooth-v246']
     paths:
-      - 'scripts/apply-client-smooth-v246.mjs'
-      - 'scripts/prepare-smooth-tests-v246.mjs'
+      - 'scripts/*v246.mjs'
       - 'assets/client-render-patch-v246.js'
-      - 'tests/client-smooth-v246.mjs'
-      - 'tests/client-hidden-browser-v246.mjs'
+      - 'tests/*v246.mjs'
       - '.github/workflows/smooth-v246.yml'
 permissions:
   contents: write
@@ -25,12 +23,14 @@ jobs:
       - name: Apply visual-only and continuation fixes
         run: |
           node scripts/apply-client-smooth-v246.mjs
+          node scripts/apply-game-clock-v246.mjs
           node scripts/prepare-smooth-tests-v246.mjs
       - name: Progressive previews and native timing assertions
         run: |
           npm run check
           node tests/progressive-forecast-v246.mjs
           node tests/hidden-results-v246.mjs
+          node tests/hidden-engine-clocks-v246.mjs
           node tests/background-continuity-v240.mjs
           node tests/monitor-ledger-v241.mjs
           node tests/monitor-ledger-integration-v241.mjs
@@ -61,6 +61,6 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/shared-roulette-client-v224.js assets/shared-client-background-v240.js assets/shared-client-hidden-v246.js index.html monitor.html app-version.json docs/client-v243-qa.json docs/client-v246-qa.json tests/payout-v232-bootstrap.mjs tests/client-hidden-browser-v246.mjs
+          git add assets/shared-roulette-client-v224.js assets/shared-client-background-v240.js assets/shared-client-hidden-v246.js assets/jelly-host.js assets/popcorn-host.js assets/bingo-stick-host.js assets/party-castella-host.js index.html monitor.html app-version.json docs/client-v243-qa.json docs/client-v246-qa.json tests/payout-v232-bootstrap.mjs tests/client-hidden-browser-v246.mjs
           git commit -m 'v246: verified smooth client video, progressive payouts and hidden completion'
           git push origin HEAD:feature/client-smooth-v246
