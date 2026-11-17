@@ -9,8 +9,9 @@ const [hostSource,clientSource,loader,version] = await Promise.all([
  readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8'),
  readFile(new URL('../app-version.json',import.meta.url),'utf8')
 ]);
-assert.match(version,/-v(239|240)-/);
-assert.match(loader,/stations-reach-host-v239\.js\?v=(239|240)/);
+const release=JSON.parse(version).version.match(/-v(\d+)-/)?.[1];
+assert.ok(release&&Number(release)>=239);
+assert.ok(loader.includes('stations-reach-host-v239.js?v='+release));
 assert.equal(STATION_COLORS.length,6);
 assert.equal(new Set(STATION_COLORS).size,6,'each ST uses a unique tint');
 assert.match(clientSource,/highestReachNumbers/);
