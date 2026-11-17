@@ -5,6 +5,7 @@ on:
     branches: ['feature/client-smooth-v246']
     paths:
       - 'scripts/apply-client-smooth-v246.mjs'
+      - 'scripts/prepare-smooth-tests-v246.mjs'
       - 'assets/client-render-patch-v246.js'
       - 'tests/client-smooth-v246.mjs'
       - 'tests/client-hidden-browser-v246.mjs'
@@ -22,7 +23,9 @@ jobs:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Apply visual-only and continuation fixes
-        run: node scripts/apply-client-smooth-v246.mjs
+        run: |
+          node scripts/apply-client-smooth-v246.mjs
+          node scripts/prepare-smooth-tests-v246.mjs
       - name: Progressive previews and native timing assertions
         run: |
           npm run check
@@ -32,8 +35,9 @@ jobs:
           node tests/monitor-ledger-v241.mjs
           node tests/monitor-ledger-integration-v241.mjs
           node tests/client-smooth-v246.mjs
+          node tests/payout-v232-bootstrap.mjs
       - name: Existing shared video, bet, wallet and reconnect behavior
-        run: npm run test:shared
+        run: npm run test:shared > shared-v246.log 2>&1 || (tail -90 shared-v246.log; exit 1)
       - name: Browser dependencies
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
@@ -51,11 +55,12 @@ jobs:
           path: |
             qa-client-v243
             qa-monitor-v242
+            shared-v246.log
           retention-days: 3
       - name: Save verified runtime only to feature branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/shared-roulette-client-v224.js assets/shared-client-background-v240.js assets/shared-client-hidden-v246.js index.html monitor.html app-version.json docs/client-v243-qa.json
+          git add assets/shared-roulette-client-v224.js assets/shared-client-background-v240.js assets/shared-client-hidden-v246.js index.html monitor.html app-version.json docs/client-v243-qa.json docs/client-v246-qa.json tests/payout-v232-bootstrap.mjs tests/client-hidden-browser-v246.mjs
           git commit -m 'v246: verified smooth client video, progressive payouts and hidden completion'
           git push origin HEAD:feature/client-smooth-v246
