@@ -409,6 +409,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <script src="assets/player-lounge.js?v=115"></script>
 <script src="assets/bgm-player.js?v=20261106-jpc2"></script>
 <script src="assets/cookie-upgrade-patches.js?v=232"></script>
+<script src="assets/client-render-patch-v246.js?v=246"></script>
 <script>
 /* Load the v3 title extension in the same private scope as the game. */
 (async function(){
@@ -446,6 +447,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   else game=game.replace(originalAmberProfile,slopedAmberProfile);
   if(!window.CookieUpgradePatch)throw new Error("Cookie upgrade patch failed to load");
   game=window.CookieUpgradePatch.patch(game);
+  game=window.SweetsRenderPatchV246.patch(game);
   // Pocket balls keep a static collision sphere in the rotor frame.
   // Their visual positions follow the rotor quaternion, with no individual
   // post-capture rigid-body simulation. This prevents later balls passing through.

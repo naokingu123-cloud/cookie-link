@@ -92,6 +92,15 @@ function paint(mini){
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
 slot.paintCastella=paint;
+// v246: the hidden-tab worker calls only the normal logical advance.
+// No canvas painting, RNG prediction or extra draw is introduced.
+engine.pumpHiddenV246=function(elapsed){
+ if(!document.hidden||!window.__sweetsSharedClientReady||app.phase!=='playing'||app.paused||!app.enabled[id]||!engine.running||jpcSession.active)return false;
+ const dt=Math.max(0,Math.min(100,Number(elapsed)||0));if(!dt)return false;
+ stamp=null;clock+=dt;
+ return true;
+};
+
 function wake(){
  if(reachTimer){clearTimeout(reachTimer);reachTimer=0;}
  if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);
@@ -99,7 +108,7 @@ function wake(){
 function tick(now){
  frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
  if(moving&&stamp!==null)clock+=Math.max(0,now-stamp);stamp=moving?now:null;
- if(active===id&&clock-lastMain>=40){paint(false);lastMain=clock;}
+ if(active===id&&clock-lastMain>=(window.SweetsRenderCadenceV246?.activeInterval?.()??32)-.75){const paintStartV246=performance.now();paint(false);lastMain=clock;window.SweetsRenderCadenceV246?.recordClient?.(performance.now()-paintStartV246);}
  if(app.phase!=='ready'&&(!allNineMode||active===id)&&clock-lastMini>=120){paint(true);lastMini=clock;}
  const reachAnimation=app.phase==='playing'&&!motionReduced&&slot.reachStatus==='ready'&&slot.reachResults?.length>0&&(!allNineMode||active===id);
  if(moving&&app.phase!=='ready'&&clock-lastHit<=animationMs)wake();

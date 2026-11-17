@@ -12,7 +12,7 @@
   const c=client();if(!c?.online||!window.__sweetsSharedClientReady)return false;
   const a=typeof app==='undefined'?null:app;
   // An explicit manual pause remains respected. Never start local draws.
-  if(!a||typeof userPaused!=='undefined'&&userPaused||a.phase!=='playing')return false;
+  if(!a||typeof userPaused!=='undefined'&&userPaused||!['playing','result','paying'].includes(a.phase))return false;
   if(a.paused){try{a.pause(false);}catch{}}
   lastRun=Date.now();return !a.paused;
  }

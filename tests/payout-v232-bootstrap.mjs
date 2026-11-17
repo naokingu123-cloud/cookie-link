@@ -30,7 +30,7 @@ function fixture({chosen=ALL,search='?set=all',holdWaffle=false,failWaffle=false
  const element=tag=>({tagName:tag.toUpperCase(),style:{},textContent:'',setAttribute(){},remove(){}});
  const switcher=element('a');
  const location=new URL('https://fixture.invalid/'+search);
- const context={URL,location,SweetsLineup:{mode:'all',chosen:[...chosen]},
+ const context={URL,URLSearchParams,location,SweetsLineup:{mode:'all',chosen:[...chosen]},
   console:{info(){},warn:(...args)=>warnings.push(args),error:(...args)=>errors.push(args)},
   document:{
    getElementById:id=>{assert.equal(id,'lineup-link');return switcher;},
@@ -53,6 +53,7 @@ function fixture({chosen=ALL,search='?set=all',holdWaffle=false,failWaffle=false
  };
  context.window=context;vm.createContext(context);
  vm.runInContext(source('assets/cookie-upgrade-patches.js'),context,{filename:'cookie-upgrade-patches.js'});
+ vm.runInContext(source('assets/client-render-patch-v246.js'),context,{filename:'client-render-patch-v246.js'});
  const done=vm.runInContext(loader,context,{filename:'index.html:game-loader'});
  return {done,requests,scripts,alerts,errors,warnings,fetchGate,bodyGate,get waffleTextCalls(){return waffleTextCalls;}};
 }

@@ -165,6 +165,15 @@ function paint(mini){
  V.draw(mini?slot.mini:ctx,d.state,{width:dest.width,height:dest.height,mini,demo:displayDemo,lesson:mini?null:d.lesson,time:clock,bet:app.bet(id),turn:d.turn,elapsed:d.elapsed,focusPort,sugarIcon:getSugarSprite(sugarVisualTier(displayDemo?app.bet(id):engine.wonderToken||app.bet(id))),reach:displayDemo?[]:(mini?slot.tabReachResults:slot.reachResults)});
 }
 slot.paintPopcorn=paint;
+// v246: the hidden-tab worker calls only the normal logical advance.
+// No canvas painting, RNG prediction or extra draw is introduced.
+engine.pumpHiddenV246=function(elapsed){
+ if(!document.hidden||!window.__sweetsSharedClientReady||app.phase!=='playing'||app.paused||!app.enabled[id]||!engine.running||jpcSession.active)return false;
+ const dt=Math.max(0,Math.min(100,Number(elapsed)||0));if(!dt)return false;
+ stamp=0;clock+=dt;step(dt);
+ return true;
+};
+
 function badgeAt(event){
  const r=canvas.getBoundingClientRect();
  return V.pickPort(r.width,r.height,event.clientX-r.left,event.clientY-r.top);
@@ -234,7 +243,7 @@ function tick(now){
  if(advancing){clock+=dt;if(app.phase==='ready'&&active===id)demoClock+=elapsed;step(dt);}
  const selected=active===id;
  const fastSupply=advancing&&selected&&engine.presentationRate>1&&engine.trace&&V.refilling(engine.trace,engine.elapsed);
- if(selected&&(fastSupply||clock-lastMain>=33)){paint(false);lastMain=clock;}
+ if(selected&&(fastSupply||clock-lastMain>=(window.SweetsRenderCadenceV246?.activeInterval?.()??32)-.75)){const paintStartV246=performance.now();paint(false);lastMain=clock;window.SweetsRenderCadenceV246?.recordClient?.(performance.now()-paintStartV246);}
  if(app.phase!=='ready'&&engine.trace&&(!allNineMode||selected)&&clock-lastMini>=150){paint(true);lastMini=clock;}
  if(advancing&&(selected||(!allNineMode&&app.phase==='ready')||engine.trace||engine.queue.length))requestFrame();
 }

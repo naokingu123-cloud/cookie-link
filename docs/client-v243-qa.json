@@ -1,24 +1,24 @@
 {
-  "version": "20261117-v243-client-rejoin-forecast-performance",
+  "version": "20261117-v246-progressive-hidden-smooth",
   "clientGames": 9,
   "forecastChecks": [
     {
       "ballCount": 1,
       "available": 24,
-      "positive": 1,
-      "baseWin": 1200
+      "positive": 0,
+      "baseWin": 0
     },
     {
       "ballCount": 2,
       "available": 23,
-      "positive": 21,
-      "baseWin": 1200
+      "positive": 18,
+      "baseWin": 0
     },
     {
       "ballCount": 3,
       "available": 22,
-      "positive": 14,
-      "baseWin": 1200
+      "positive": 4,
+      "baseWin": 0
     }
   ],
   "monitorTiles": 25,

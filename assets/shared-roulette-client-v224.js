@@ -16,6 +16,8 @@ function boot(){
  let requestRelayPending=false,relayRestartPending=false,legacyCleaned=false,liveClass=false,lastHostKey='';
  let stageNode=null,indicatorNode=null,localPause=null,waitingNode=null;
  let frameImage=null,framePending=null,frameNext=null,frameAt=0,frameSequence=-1,frameHost='',frameCapable=false,frameWatching=false;
+ let resumeGraceUntilV246=0,framePaintV246=0,frameReadyV246=null;
+ const videoStatsV246={fps:0,presented:0,stamp:0,kind:''};
  const framesSupported=typeof Image==='function';
  const retiredStreams=new Set(),blockedVideos=new Set(),frameWatches={p2p:null,relay:null};
  const relaySupported=(()=>{try{return typeof MediaSource==='function'&&['video/webm;codecs=vp8','video/webm'].some(mime=>MediaSource.isTypeSupported(mime));}catch{return false;}})();
@@ -97,6 +99,7 @@ function boot(){
  }
  function frameFresh(){return !!(frameImage?.naturalWidth&&frameAt&&Date.now()-frameAt<2200);}
  function receiveFrame(message){
+  if(document.hidden)return;
   if(!framesSupported||!frameCapable||message.mime!=='image/jpeg'||typeof message.data!=='string'||message.data.length>240000)return;
   const host=String(message.fromPlayerId||'')+':'+String(message.fromInstanceId||'');
   if(lastHostKey&&host!==lastHostKey)return;
@@ -106,22 +109,32 @@ function boot(){
  }
  function decodeFrame(){
   if(framePending||!frameNext)return;const job=frameNext;frameNext=null;
-  const pending=new Image();framePending=pending;
+  const pending=new Image();pending.decoding='async';framePending=pending;
   const finish=ok=>{
    if(framePending!==pending)return;framePending=null;
    if(ok&&pending.naturalWidth>0&&job.host===frameHost&&(!lastHostKey||job.host===lastHostKey)){
-    const root=stage();if(root){
-     if(!frameImage?.isConnected){
-      pending.className='shared-roulette-v224 shared-roulette-frame-v231';pending.dataset.active='0';pending.alt='サーバー配信の抽選機';pending.draggable=false;
-      root.append(pending);frameImage=pending;
-     }else frameImage.src=pending.src;
-     frameAt=Date.now();lastGood='frame';lastGoodAt=frameAt;
-     if(!(decoded(p2pVideo)&&p2pFrameAt&&frameAt-p2pFrameAt<1500))activate('frame');
+    frameReadyV246={job,pending};
+    if(!framePaintV246){
+     if(typeof requestAnimationFrame==='function')framePaintV246=requestAnimationFrame(paintFrameV246);
+     else paintFrameV246();
     }
    }
    pending.onload=pending.onerror=null;decodeFrame();
   };
   pending.onload=()=>finish(true);pending.onerror=()=>finish(false);pending.src='data:image/jpeg;base64,'+job.data;
+ }
+ function paintFrameV246(){
+  framePaintV246=0;const value=frameReadyV246;frameReadyV246=null;
+  if(!value||document.hidden||value.job.host!==frameHost||lastHostKey&&value.job.host!==lastHostKey)return;
+  const {pending}=value,root=stage();if(!root)return;
+  // Retain one stable DOM image. Replacing it each packet would wake the
+  // cabinet's child-list observers and cause additional full-layout work.
+  if(!frameImage?.isConnected){
+   pending.className='shared-roulette-v224 shared-roulette-frame-v231';pending.dataset.active='0';pending.alt='サーバー配信の抽選機';pending.draggable=false;
+   root.append(pending);frameImage=pending;
+  }else if(frameImage.src!==pending.src)frameImage.src=pending.src;
+  frameAt=Date.now();lastGood='frame';lastGoodAt=frameAt;
+  if(!(decoded(p2pVideo)&&p2pFrameAt&&frameAt-p2pFrameAt<1500))activate('frame');
  }
  function stopFrameWatch(kind){
   const watch=frameWatches[kind];frameWatches[kind]=null;if(!watch)return;watch.stopped=true;blockedVideos.delete(watch.video);
@@ -136,7 +149,16 @@ function boot(){
    const now=Date.now();if(kind==='p2p')p2pFrameAt=now;else relayFrameAt=now;lastGood=kind;lastGoodAt=now;blockedVideos.delete(video);
   };
   for(const event of ['playing','loadeddata','timeupdate'])video.addEventListener(event,watch.mark);
-  if(typeof video.requestVideoFrameCallback==='function'){const tick=()=>{if(!current())return;watch.mark();watch.frameId=video.requestVideoFrameCallback(tick);};watch.frameId=video.requestVideoFrameCallback(tick);}
+  if(typeof video.requestVideoFrameCallback==='function'){const tick=(timestamp,metadata)=>{
+   if(!current())return;watch.mark();
+   if(kind==='p2p'&&metadata&&Number.isFinite(metadata.presentedFrames)){
+    const at=Date.now();
+    if(videoStatsV246.kind!==kind||metadata.presentedFrames<videoStatsV246.presented){videoStatsV246.stamp=at;videoStatsV246.presented=metadata.presentedFrames;videoStatsV246.kind=kind;}
+    if(!videoStatsV246.stamp){videoStatsV246.stamp=at;videoStatsV246.presented=metadata.presentedFrames;}
+    else if(at-videoStatsV246.stamp>=1500){videoStatsV246.fps=Math.max(0,1000*(metadata.presentedFrames-videoStatsV246.presented)/(at-videoStatsV246.stamp));videoStatsV246.stamp=at;videoStatsV246.presented=metadata.presentedFrames;}
+   }
+   watch.frameId=video.requestVideoFrameCallback(tick);
+  };watch.frameId=video.requestVideoFrameCallback(tick);}
   watch.mark();
  }
  function closePeer(expected=null){if(expected&&peer!==expected)return;stopFrameWatch('p2p');const current=peer;peer=null;if(current){clearTimeout(current.timer);try{current.pc.close();}catch{}}p2pFrameAt=0;}
@@ -164,7 +186,7 @@ function boot(){
     current.sb.addEventListener('error',()=>{if(relay!==current)return;closeRelay(current);request(100,true,true);});
     current.sb.addEventListener('updateend',()=>{
      if(relay!==current)return;
-     try{const ranges=video.buffered;if(ranges.length){const end=ranges.end(ranges.length-1);if(end-video.currentTime>.9)video.currentTime=Math.max(0,end-.08);if(video.currentTime-ranges.start(0)>12){current.sb.remove(0,Math.max(0,video.currentTime-4));return;}}}catch{}
+     try{const ranges=video.buffered;if(ranges.length){const end=ranges.end(ranges.length-1);const lag=end-video.currentTime;if(lag>1.8){video.currentTime=Math.max(0,end-.22);video.playbackRate=1;}else video.playbackRate=lag>.55?1.04:1;if(video.currentTime-ranges.start(0)>12){current.sb.remove(0,Math.max(0,video.currentTime-4));return;}}}catch{}
      pump(current);
     });pump(current);
    }catch(error){console.warn('[RouletteClient224] relay source',error?.message||error);closeRelay(current);request(100,true,true);}
@@ -186,7 +208,7 @@ function boot(){
   const now=Date.now(),host=String(message.fromPlayerId||''),hostInstance=String(message.fromInstanceId||'');if(peer?.host===host&&peer?.hostInstance===hostInstance&&peer?.pc?.connectionState==='connected'&&now-p2pFrameAt<1000)return;
   if(!host||!message.description||typeof RTCPeerConnection!=='function')return;closePeer();const pc=new RTCPeerConnection(rtcConfig),session={pc,host,hostInstance,ice:[],timer:0,createdAt:Date.now()};peer=session;
   pc.onicecandidate=event=>{if(peer===session&&event.candidate)send({type:'rtc_ice',targetPlayerId:host,targetInstanceId:hostInstance,candidate:event.candidate.toJSON?.()||event.candidate});};
-  pc.ontrack=event=>{if(peer!==session)return;const stream=event.streams?.[0]||new MediaStream([event.track]);session.stream=stream;const attach=()=>{if(peer!==session)return;const video=view('p2p');if(!video){setTimeout(attach,70);return;}video.srcObject=stream;play(video);watchFrames(video,'p2p',session);};attach();};
+  pc.ontrack=event=>{if(peer!==session)return;try{if(event.receiver&&'jitterBufferTarget' in event.receiver)event.receiver.jitterBufferTarget=80;}catch{}const stream=event.streams?.[0]||new MediaStream([event.track]);session.stream=stream;const attach=()=>{if(peer!==session)return;const video=view('p2p');if(!video){setTimeout(attach,70);return;}video.srcObject=stream;play(video);watchFrames(video,'p2p',session);};attach();};
   pc.onconnectionstatechange=()=>{if(peer!==session)return;const state=pc.connectionState;if(state==='failed'||state==='closed'){retryPeer(session,100);}else if(state==='disconnected'){clearTimeout(session.timer);session.timer=setTimeout(()=>{if(peer===session&&pc.connectionState==='disconnected')retryPeer(session,0);},1800);}};
   try{
    await pc.setRemoteDescription(message.description);if(peer!==session)return;
@@ -198,7 +220,7 @@ function boot(){
  function request(delay=0,relayToo=true,restartRelay=false){
   requestRelayPending=requestRelayPending||relayToo;relayRestartPending=relayRestartPending||restartRelay;clearTimeout(requestTimer);
   const run=()=>{
-   if(!client.online)return;const now=Date.now(),remaining=650-(now-lastRequest);if(remaining>0){requestTimer=setTimeout(run,remaining);return;}
+   if(!client.online||document.hidden)return;const now=Date.now(),remaining=650-(now-lastRequest);if(remaining>0){requestTimer=setTimeout(run,remaining);return;}
    lastRequest=now;send({type:'rtc_watch'});
    if(requestRelayPending||relayRestartPending){
     if(frameCapable&&framesSupported){if(relay)closeRelay();send({type:'rtc_fallback_stop'});frameWatching=send({type:'rtc_frame_watch'});}
@@ -222,6 +244,11 @@ function boot(){
  }
  function isFresh(){const now=Date.now();return !!((decoded(p2pVideo)&&p2pFrameAt&&now-p2pFrameAt<1500)||(decoded(relayVideo)&&relayFrameAt&&now-relayFrameAt<1900)||frameFresh());}
  function health(){
+  if(document.hidden){
+   if(frameWatching){send({type:'rtc_frame_stop'});frameWatching=false;}
+   return;
+  }
+  if(Date.now()<resumeGraceUntilV246)return;
   cleanLegacy();const now=Date.now(),p2pFresh=decoded(p2pVideo)&&!!p2pFrameAt&&now-p2pFrameAt<1500,relayFresh=decoded(relayVideo)&&!!relayFrameAt&&now-relayFrameAt<1900;
   // Ball messages and round boundaries never rebuild the video. A short frame
   // stall keeps the last decoded remote frame visible while P2P/relay recover.
@@ -235,10 +262,23 @@ function boot(){
   else if(!relay&&!p2pFresh||relay&&now-lastRelayChunk>2400)request(0,true);
   for(const video of [p2pVideo,relayVideo])if(video?.paused)play(video);
  }
+ function visibilityV246(){
+  frameReadyV246=null;
+  if(framePaintV246&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(framePaintV246);framePaintV246=0;
+  if(document.hidden){
+   if(frameWatching){send({type:'rtc_frame_stop'});frameWatching=false;}
+   frameNext=null;return;
+  }
+  resumeGraceUntilV246=Date.now()+1800;videoStatsV246.stamp=0;
+  for(const video of [p2pVideo,relayVideo])play(video);
+  // Existing peers survive. A fresh decoded frame, not focus itself, proves
+  // playback health; the normal watchdog runs only after the wake-up grace.
+ }
+ document.addEventListener?.('visibilitychange',visibilityV246);
  client.on(value=>{onMessage(value);if(['host_changed','host_status'].includes(value?.type))request(80,true);});
  client.ready.then(ok=>{if(ok){view('p2p');view('relay');request(60,true);}});healthTimer=setInterval(health,300);
- addEventListener('beforeunload',()=>{clearTimeout(requestTimer);clearInterval(healthTimer);closePeer();closeRelay();send({type:'rtc_frame_stop'});if(framePending)framePending.onload=framePending.onerror=null;framePending=frameNext=null;},{once:true});
- window.SweetsRouletteClientV224={request,retry:retryView,health,isFresh,describe:()=>({state:isFresh()?'playing':blockedVideos.size?'playback-blocked':lastGood?'reconnecting':'connecting',source,peerState:peer?.pc.connectionState||'none',relayStreamId:relay?.id||'',p2pFrameAt,relayFrameAt,lastRelayChunk}),get source(){return source;},get lastGoodAt(){return lastGoodAt;}};
+ addEventListener('beforeunload',()=>{document.removeEventListener?.('visibilitychange',visibilityV246);if(framePaintV246&&typeof cancelAnimationFrame==='function')cancelAnimationFrame(framePaintV246);frameReadyV246=null;clearTimeout(requestTimer);clearInterval(healthTimer);closePeer();closeRelay();send({type:'rtc_frame_stop'});if(framePending)framePending.onload=framePending.onerror=null;framePending=frameNext=null;},{once:true});
+ window.SweetsRouletteClientV224={request,retry:retryView,health,isFresh,describe:()=>({state:isFresh()?'playing':blockedVideos.size?'playback-blocked':lastGood?'reconnecting':'connecting',source,decodedFps:Math.round(videoStatsV246.fps*10)/10,hidden:!!document.hidden,peerState:peer?.pc.connectionState||'none',relayStreamId:relay?.id||'',p2pFrameAt,relayFrameAt,lastRelayChunk}),get source(){return source;},get lastGoodAt(){return lastGoodAt;}};
  console.info('[RouletteClient224] continuous cross-round P2P/relay stream with last-frame hold enabled');
 }
 boot();

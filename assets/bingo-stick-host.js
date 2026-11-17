@@ -124,6 +124,15 @@ function paint(mini){
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }
 slot.paintStick=paint;
+// v246: the hidden-tab worker calls only the normal logical advance.
+// No canvas painting, RNG prediction or extra draw is introduced.
+engine.pumpHiddenV246=function(elapsed){
+ if(!document.hidden||!window.__sweetsSharedClientReady||app.phase!=='playing'||app.paused||!app.enabled[id]||!engine.running||jpcSession.active)return false;
+ const dt=Math.max(0,Math.min(100,Number(elapsed)||0));if(!dt)return false;
+ stamp=null;clock+=animating?Math.min(90,dt*engine.presentationRate):dt;if(animating)advanceMove();
+ return true;
+};
+
 function wake(){
  if(miniTimer){clearTimeout(miniTimer);miniTimer=0;}
  if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);
@@ -136,7 +145,7 @@ function tick(now){
  }
  stamp=moving?now:null;
  if(moving&&animating)advanceMove();
- if(active===id&&(animating||clock-lastMain>=32)){paint(false);lastMain=clock;}
+ if(active===id&&clock-lastMain>=(window.SweetsRenderCadenceV246?.activeInterval?.()??32)-.75){const paintStartV246=performance.now();paint(false);lastMain=clock;window.SweetsRenderCadenceV246?.recordClient?.(performance.now()-paintStartV246);}
  if(app.phase!=='ready'&&(!allNineMode||active===id)&&clock-lastMini>=(animating?100:140)){paint(true);lastMini=clock;}
  const reaching=app.phase==='playing'&&slot.reachResults.length&&!motionReduced;
  if(moving&&(animating||active===id&&reaching))wake();

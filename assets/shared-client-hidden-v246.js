@@ -66,13 +66,19 @@ function pump(at=Date.now()){
  const a=currentApp(),elapsed=Math.max(0,at-seenAt);seenAt=at;
  if(!document.hidden||!a||!mayRun()||a.phase==='ready')return false;
  if(a.paused){try{window.SweetsClientBackgroundV240?.nudge?.();}catch{}}
- if(a.paused||at-lastAdvance<RESULT_PULSE_MS)return false;
- lastAdvance=at;
+ if(a.paused)return false;
+ if(a.phase==='playing'&&elapsed>0){
+  for(const engine of a.engines||[])if(typeof engine.pumpHiddenV246==='function'){
+   try{engine.pumpHiddenV246(Math.min(100,elapsed));}catch(error){console.warn('[HiddenGame246] game clock',engine.kind,error);}
+  }
+ }
+ if(at-lastAdvance<RESULT_PULSE_MS)return false;
+ const advanceMs=lastAdvance?Math.max(0,at-lastAdvance):RESULT_PULSE_MS;lastAdvance=at;
  if(a.phase==='result'){
-  try{return !!a.advanceResult(Math.min(MAX_RESULT_STEP_MS,Math.max(RESULT_PULSE_MS,elapsed)));}catch(error){console.warn('[HiddenGame246] result',error);return false;}
+  try{return !!a.advanceResult(Math.min(MAX_RESULT_STEP_MS,Math.max(RESULT_PULSE_MS,advanceMs)));}catch(error){console.warn('[HiddenGame246] result',error);return false;}
  }
  if(a.phase==='paying'){
-  try{return !!a.advancePayout(Math.min(MAX_RESULT_STEP_MS,Math.max(RESULT_PULSE_MS,elapsed)));}catch(error){console.warn('[HiddenGame246] payout',error);return false;}
+  try{return !!a.advancePayout(Math.min(MAX_RESULT_STEP_MS,Math.max(RESULT_PULSE_MS,advanceMs)));}catch(error){console.warn('[HiddenGame246] payout',error);return false;}
  }
  return false;
 }

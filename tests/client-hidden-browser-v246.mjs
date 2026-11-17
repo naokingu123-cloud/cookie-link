@@ -84,8 +84,17 @@ try{
  // background-tab throttling, so native Promise timers still have a chance.
  const hidden=await page.evaluate(()=>{
   const a=window.__client243.app;
-  window.__v246Phases=[];const previous=a.onChange;
-  a.onChange=function(...args){if(window.__v246Phases.at(-1)!==a.phase)window.__v246Phases.push(a.phase);return previous.apply(this,args);};
+  // Observe one completed round without the next AUTO REBET changing CREDIT.
+  window.SweetsSharedControllerV224.setAutoRebet(false);
+  window.__v246Phases=[];window.__v246Award=null;window.__v246AdvanceResult=0;
+  const nativeAdvance=a.advanceResult;
+  a.advanceResult=function(...args){window.__v246AdvanceResult++;return nativeAdvance.apply(this,args);};
+  const previous=a.onChange;
+  a.onChange=function(...args){
+   if(window.__v246Phases.at(-1)!==a.phase)window.__v246Phases.push(a.phase);
+   if(['result','paying','complete'].includes(a.phase)&&a.result)window.__v246Award={phase:a.phase,win:a.totalWin,roundWins:[...a.roundWins],credit:a.credit};
+   return previous.apply(this,args);
+  };
   Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});
   document.dispatchEvent(new Event('visibilitychange'));
   return {worker:window.SweetsHiddenGameV246?.workerActive,hidden:document.hidden};
@@ -105,20 +114,27 @@ try{
    processed:window.__client243?.app.engines?.map(e=>e.processed||0),
    shared:window.SweetsSharedControllerV224?.describe?.()
   }));
-  return value.phases.includes('result')&&value.phases.includes('paying')&&
-    value.phases.includes('complete')&&value.phase==='ready'?value:null;
- },'hidden real 9-game result, payout, and next ready',210000);
- const hiddenState=await page.evaluate(()=>({credit:window.__client243.app.credit,phases:window.__v246Phases}));
- assert.ok(hiddenState.credit>=973000,'the refunded and rebet wallet was not lost');
+  return value.phases.includes('result')&&value.phases.includes('complete')&&value.phase==='ready'?value:null;
+ },'hidden real 9-game result, payout, and next ready',140000);
+ const hiddenState=await page.evaluate(()=>({credit:window.__client243.app.credit,phases:window.__v246Phases,award:window.__v246Award,advanceResult:window.__v246AdvanceResult}));
+ assert.ok(hiddenState.award&&hiddenState.advanceResult>0,'native result logic advances while hidden');
+ assert.equal(hiddenState.award.win,hiddenState.award.roundWins.reduce((a,b)=>a+b,0),'nine game award sum');
+ assert.equal(hiddenState.credit,973000+hiddenState.award.win,'one exact credited award, no AUTO REBET in this assertion');
+ const ledger=await call('/api/admin/machines/public-01',{adminOnly:true});
+ const account=ledger.payoutControlV3.players.find(p=>p.playerId===playerId);
+ assert.equal(account.lifetimeBet,27000,'the cancelled round must not be counted as IN');
+ assert.equal(account.lifetimeWin,hiddenState.award.win,'server OUT equals the native game result');
+ assert.equal(account.wallet.credit,hiddenState.credit,'local and server wallets agree');
+ console.log('HIDDEN_NATIVE_ROUND',JSON.stringify(hiddenState));
  await page.screenshot({path:out+'/hidden-nine-games-complete.png'});
  assert.equal(errors.length,0,JSON.stringify(errors));
  assert.ok(!warnings.some(s=>s.includes('display unavailable')),JSON.stringify(warnings));
- const report={version,hiddenNineGameResultAndPayout:true,clientGames:9,forecastChecks,monitorTiles:dom.tiles,monitorRatios:true,normalRoundStarted:true,forcedRejoined:true,forcedCountdownStarted:true,nextBallReceived:true,forcedRoundBetRequests:joins.filter(j=>j.roundId===forced.roundId).length,confirmedRefund:27000,creditAfterRefundAndNewBet:973000,unchangedRefundQueueWrites4500ms:repeatedWrites,pageErrors:errors};
- await fs.writeFile('docs/client-v243-qa.json',JSON.stringify(report,null,2)+'\n');await fs.writeFile(out+'/result.json',JSON.stringify(report,null,2));console.log('CLIENT_BROWSER_V243_PASS',JSON.stringify(report));
+ const report={version,hiddenState,hiddenNineGameResultAndPayout:true,clientGames:9,forecastChecks,monitorTiles:dom.tiles,monitorRatios:true,normalRoundStarted:true,forcedRejoined:true,forcedCountdownStarted:true,nextBallReceived:true,forcedRoundBetRequests:joins.filter(j=>j.roundId===forced.roundId).length,confirmedRefund:27000,creditAfterRefundAndNewBet:973000,unchangedRefundQueueWrites4500ms:repeatedWrites,pageErrors:errors};
+ await fs.writeFile('docs/client-v246-qa.json',JSON.stringify(report,null,2)+'\n');await fs.writeFile(out+'/result.json',JSON.stringify(report,null,2));console.log('CLIENT_BROWSER_V243_PASS',JSON.stringify(report));
 }catch(error){
  console.error('CLIENT_BROWSER_V243_FAIL',error);
  if(page){try{
-  const state=await page.evaluate(()=>({phase:window.__client243?.app.phase,draws:window.__client243?.app.draws,controller:window.SweetsSharedControllerV224?.describe(),slots:window.__client243?.slots.map(s=>({kind:s.engine?.kind,phase:s.engine?.phase,processed:s.engine?.processed,accepted:s.engine?.accepted,busy:s.engine?.busy,fx:!!s.engine?.fx,idle:s.engine?.idle,queue:s.engine?.queue?.length,reach:s.reachStatus,base:s.tabReachBase,cacheVersion:s.tabReachVersion,engineVersion:s.engine?.version}))}));
+  const state=await page.evaluate(()=>({phase:window.__client243?.app.phase,hiddenPhases:window.__v246Phases,award:window.__v246Award,resultAdvances:window.__v246AdvanceResult,draws:window.__client243?.app.draws,controller:window.SweetsSharedControllerV224?.describe(),slots:window.__client243?.slots.map(s=>({kind:s.engine?.kind,phase:s.engine?.phase,processed:s.engine?.processed,accepted:s.engine?.accepted,busy:s.engine?.busy,fx:!!s.engine?.fx,idle:s.engine?.idle,queue:s.engine?.queue?.length,reach:s.reachStatus,base:s.tabReachBase,cacheVersion:s.tabReachVersion,engineVersion:s.engine?.version}))}));
   console.error('CLIENT_STATE',JSON.stringify(state));
  }catch{}}
  console.error(logs.slice(-6000));throw error;
