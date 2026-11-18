@@ -387,6 +387,9 @@ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-numbers{
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-track{
  position:relative;display:flex;width:max-content;min-width:200%;height:100%;align-items:center;
  animation:v250-reach-marquee var(--v250-reach-duration,6s) linear infinite;will-change:transform;
+ /* The older ALL layout pauses every descendant of an inactive card.
+    Keep its other effects quiet; the reach row must flow on every card. */
+ animation-play-state:running!important;
 }
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence{
  display:flex;flex:0 0 auto;justify-content:space-around;align-items:center;width:max-content;min-width:50%;height:100%;
@@ -408,7 +411,7 @@ html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .v250-reach-s
  font-size:12.5px!important;line-height:17px!important;
 }
 @keyframes v250-reach-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-html.arcade-v249.arcade-tabs-v250 body.paused #tabs .v250-reach-track{animation-play-state:paused}
+html.arcade-v249.arcade-tabs-v250 body.paused #screen #tabs .v250-reach-track{animation-play-state:paused!important}
 
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop{
  position:absolute!important;left:4px!important;right:4px!important;top:13px!important;height:32px!important;

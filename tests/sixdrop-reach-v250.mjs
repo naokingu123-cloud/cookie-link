@@ -6,9 +6,16 @@ import {createUiFixture,sleep} from './ui-v250-fixture.mjs';
 const fixture=await createUiFixture({output:'qa-sixdrop-v250'});
 const {page,errors}=fixture;
 try{
+ await page.evaluate(()=>{const q=window.__qa250;q.select(q.slots.find(s=>s.engine.kind==='candy').i);});
+ await page.waitForFunction(()=>{
+  const canvas=window.__qa250.slots.find(s=>s.engine.kind==='candy').candyCanvas;
+  if(!canvas.width||!canvas.height)return false;
+  const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+  for(let i=3;i<pixels.length;i+=4)if(pixels[i])return true;
+  return false;
+ },null,{timeout:10000});
  const measurement=await page.evaluate(async()=>{
   const q=window.__qa250,slot=q.slots.find(s=>s.engine.kind==='candy');
-  q.select(slot.i);
   const grid=slot.engine.pyramid,entry=grid.flatMap((row,r)=>row.map((tile,c)=>tile?.number!=null?{tile,r,c}:null).filter(Boolean))[0];
   if(!entry)throw Error('Actual single-draw board has no numbered drop');
   // A separate visual probe avoids touching the real engine, its forecast or BET.

@@ -13,7 +13,7 @@ async function readReachMotion(){
   if(!track)return {missing:true};
   const style=getComputedStyle(track),ancestors=[];
   for(let node=track;node;node=node.parentElement){const css=getComputedStyle(node);if(css.display==='none'||css.visibility==='hidden')ancestors.push({tag:node.tagName,id:node.id,className:node.className,display:css.display,visibility:css.visibility});}
-  return {connected:track.isConnected,animationName:style.animationName,animationDuration:style.animationDuration,animationPlayState:style.animationPlayState,durationVariable:style.getPropertyValue('--v250-reach-duration'),transform:style.transform,x:style.transform==='none'?0:new DOMMatrixReadOnly(style.transform).m41,width:track.getBoundingClientRect().width,hiddenAncestors:ancestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,phase:window.__qa250.app.phase,bodyClass:document.body.className,animations:track.getAnimations().map(animation=>({name:animation.animationName||'',playState:animation.playState,pending:animation.pending,currentTime:animation.currentTime,playbackRate:animation.playbackRate}))};
+  return {connected:track.isConnected,selected:slot.tab.getAttribute('aria-selected')==='true',animationName:style.animationName,animationDuration:style.animationDuration,animationPlayState:style.animationPlayState,durationVariable:style.getPropertyValue('--v250-reach-duration'),transform:style.transform,x:style.transform==='none'?0:new DOMMatrixReadOnly(style.transform).m41,width:track.getBoundingClientRect().width,hiddenAncestors:ancestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,phase:window.__qa250.app.phase,bodyClass:document.body.className,animations:track.getAnimations().map(animation=>({name:animation.animationName||'',playState:animation.playState,pending:animation.pending,currentTime:animation.currentTime,playbackRate:animation.playbackRate}))};
  });
 }
 try{
@@ -103,7 +103,7 @@ try{
  // that inserted/replaced the track. Retain strict elapsed-time/direction checks.
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const motion=await readReachMotion();report.reach.motion=motion;
- assert.equal(motion.connected,true);assert.deepEqual(motion.hiddenAncestors,[]);assert.equal(motion.reducedMotion,false);assert.equal(motion.paused,false);
+ assert.equal(motion.connected,true);assert.equal(motion.selected,false,'the first scroll check covers a nonselected tab');assert.deepEqual(motion.hiddenAncestors,[]);assert.equal(motion.reducedMotion,false);assert.equal(motion.paused,false);
  assert.equal(motion.animationName,'v250-reach-marquee','the scrolling track retains its CSS animation');
  const running=motion.animations.find(animation=>animation.name==='v250-reach-marquee');
  assert.equal(running?.playState,'running','the reach marquee runs after the rendering frame');
@@ -113,6 +113,29 @@ try{
  assert.ok(continued?.currentTime>running.currentTime,'the reach animation clock advances');
  assert.ok(scrolled.x<motion.x,'reach numbers move from right to left');
  assert.notEqual(scrolled.transform,motion.transform,'reach strip moves without an old !important transform reset');
+ const selectionFlow=[];report.reach.selectionFlow=selectionFlow;
+ for(const selected of [true,false]){
+  await page.evaluate(selected=>{const q=window.__qa250;q.select(selected?window.__tabPreview250.slot.i:0);},selected);
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  const before=await readReachMotion();await sleep(160);const after=await readReachMotion();selectionFlow.push({selected,before,after});
+  assert.equal(after.selected,selected);assert.equal(after.animationPlayState,'running');
+  assert.ok(after.animations[0].currentTime>before.animations[0].currentTime,'selection changes keep the reach clock running');
+  assert.ok(after.x<before.x,'the reach continues leftward after selection changes');
+ }
+ // The real menu pause still stops the opted-in track and closing it resumes.
+ await page.locator('#open-record-menu').click();
+ await page.waitForFunction(()=>document.body.classList.contains('paused'));
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const stopped=await readReachMotion();await sleep(160);const still=await readReachMotion();
+ const pauseFlow={stopped,still};report.reach.pauseFlow=pauseFlow;
+ assert.equal(still.animationPlayState,'paused');assert.equal(still.animations[0].playState,'paused');
+ assert.equal(still.animations[0].currentTime,stopped.animations[0].currentTime,'normal pause freezes the reach clock');
+ assert.equal(still.transform,stopped.transform);
+ await page.locator('#record-close-top').click();
+ await page.waitForFunction(()=>!document.body.classList.contains('paused'));
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const resumeStart=await readReachMotion();await sleep(160);const resumed=await readReachMotion();Object.assign(pauseFlow,{resumeStart,resumed});
+ assert.equal(resumed.animationPlayState,'running');assert.ok(resumed.animations[0].currentTime>resumeStart.animations[0].currentTime);assert.ok(resumed.x<resumeStart.x,'closing the menu resumes leftward motion');
  const upgraded=await page.evaluate(()=>{
   const q=window.__qa250,slot=window.__tabPreview250.slot;
   Object.assign(slot.tabReachResults.find(p=>p.number===5),{gain:1000,total:slot.engine.totalHundredths+1000});q.updateReachUI();
@@ -141,7 +164,7 @@ try{
  assert.equal(reappeared.count,reappeared.before+1,'the same high reach announces once after disappearing');
  assert.equal(reappeared.afterRepeated,reappeared.count,'repainting an unchanged reappeared reach does not announce again');
  assert.match(reappeared.text,/超高額リーチ/);
- report.reach={input,motion,scrolled,upgraded,empty,reappeared};
+ report.reach={input,motion,scrolled,selectionFlow,pauseFlow,upgraded,empty,reappeared};
  report.sugar=await page.evaluate(()=>window.__qa250.slots.map(slot=>({kind:slot.engine.kind,samePlaque:slot.tabSugar.parentElement===slot.tabWin.parentElement,row:getComputedStyle(slot.tabSugar).gridRowStart,winRow:getComputedStyle(slot.tabWin.parentElement.querySelector('.win-word')).gridRowStart})));
  for(const sugar of report.sugar){assert.equal(sugar.samePlaque,true);assert.equal(sugar.row,sugar.winRow,'sugar GET belongs beside WIN');}
  await page.evaluate(()=>{const q=window.__qa250,fixture=window.__tabPreview250;fixture.slot.tabReachResults=fixture.original;q.updateReachUI();if(fixture.before!==JSON.stringify({bets:q.app.bets,credit:q.app.credit,draws:q.app.draws,win:q.app.totalWin}))throw Error('UI reach previews changed gameplay state');delete window.__tabPreview250;});

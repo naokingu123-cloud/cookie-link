@@ -48,11 +48,27 @@ jobs:
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
       - name: Nine tabs, shared BET and continuous reach strip
+        id: tabs
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/tabs-v250-browser.mjs
+      - name: Retain tab diagnostics immediately on failure
+        if: ${{ !cancelled() && steps.tabs.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-v250-tabs-diagnostics
+          path: qa-tabs-v250/
+          retention-days: 3
       - name: Castella61 real eight-ball round, gauges and Sugar
+        id: castella
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/castella-v250-view.mjs
+      - name: Retain Castella diagnostics immediately on failure
+        if: ${{ !cancelled() && steps.castella.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-v250-castella-diagnostics
+          path: qa-castella-v250/
+          retention-days: 3
       - name: Transparent Six Drop all-clear reach
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/sixdrop-reach-v250.mjs

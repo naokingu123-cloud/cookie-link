@@ -7,7 +7,18 @@ import {createUiFixture,sleep} from './ui-v250-fixture.mjs';
 const out='qa-castella-v250';
 const fixture=await createUiFixture({startRound:true,output:out});
 const {page,context,call,host,round,errors}=fixture;
-const report={version:fixture.version,screens:[],balls:[],sugar:null,legacy:null};
+const report={version:fixture.version,screens:[],balls:[],waits:[],plan:null,current:null,sugar:null,legacy:null};
+// Match the app's unpaused presentation clock. A wall-clock sleep can end
+// before its sequence of 40 ms timers under the real nine-game render load.
+function presentationReady(count){
+ const app=window.__qa250?.app,e=window.PartyCastella?.engine,s=e?.state,r=document.querySelector('.pct-scene');
+ if(!app||!s||!r)return false;
+ const id=app.engines.indexOf(e),wait=window.__castella250PresentationWait;
+ const observed={processed:e.processed,phase:s.phase,pour:s.pourLevel,lastPour:s.lastPourLevel,fire:s.fireLevel,fireTriggers:s.fireTriggered.length,pourTriggers:s.pourTriggered.length,wet:s.wetCount,baked:s.bakedCount,sugarEarned:s.sugarEarned,collected:e.wonderCollected,roundSteps:e.roundSteps,bank:app.wonderBank.filter(t=>t.game===id).length-window.__castella250BeforeBank,gauges:[...r.querySelectorAll('.pct-gauge')].map(n=>Number(n.getAttribute('aria-valuenow'))),currentRows:[...r.querySelectorAll('tbody tr.current')].map(n=>Number(n.dataset.count)),total:s.totalHundredths,paid:app.paid[id],stage:r.dataset.stage};
+ const checks={processed:observed.processed===count,presentation:wait?.count===count&&wait.complete===true,gauges:observed.gauges.length===2&&observed.gauges[0]===observed.pour&&observed.gauges[1]===observed.fire,stage:observed.stage===(count>=5?'bake':'pour'),bakedLabel:r.querySelector('.pct-pan>canvas')?.getAttribute('aria-label')?.includes('焼き上がり '+observed.baked+'個')===true,sugar:!observed.sugarEarned||observed.collected===true,settled:count!==8||observed.paid===true};
+ window.__castella250WaitStatus={count,checks,observed,presentation:wait,appPhase:app.phase,paused:app.paused};
+ return Object.values(checks).every(Boolean)?observed:false;
+}
 try{
  await page.evaluate(()=>window.__qa250.select(window.__qa250.app.engines.findIndex(e=>e.kind==='castella')));
  await page.waitForFunction(()=>document.querySelector('.pct-scene')?.dataset.holes==='61');
@@ -33,7 +44,7 @@ try{
   for(const c of data.centers)assert.ok(c.x-c.r>=0&&c.x+c.r<=data.bounds.width&&c.y-c.r>=0&&c.y+c.r<=data.bounds.height,'all 61 holes fit the real canvas');
   const file=`castella-initial-${width}.png`;await page.screenshot({path:out+'/'+file});report.screens.push({width,height,file,data});
  }
- await page.setViewportSize({width:1366,height:900});await touch.send('Emulation.setTouchEmulationEnabled',{enabled:false,maxTouchPoints:1});
+ await touch.send('Emulation.setTouchEmulationEnabled',{enabled:false,maxTouchPoints:1});await page.setViewportSize({width:1366,height:900});
  // Pick two actual numbered power-ups, then visible candidates that wet the
  // sugar hole and both heat switches. This is a deterministic test sequence.
  const plan=await page.evaluate(()=>{
@@ -50,16 +61,24 @@ try{
   }
   return {draws,expectedSugar:s.sugarEarned,expectedFire:best.state.fireLevel,expectedPayout:s.totalHundredths,expectedBaked:s.bakedCount};
  });
+ report.plan=plan;
  assert.equal(plan.expectedSugar,true,'the test sequence reaches the marked sugar hole');
  for(let index=0;index<plan.draws.length;index++){
-  const number=plan.draws[index];
+  const number=plan.draws[index],count=index+1;
+  report.current={count,number,step:'sending'};
   await call('/api/machines/public-01/round/ball',{session:host,body:{roundId:round.id,ballIndex:index+1,number,eventId:round.id+':castella250:'+(index+1)}});
-  await page.waitForFunction(count=>window.PartyCastella.engine.processed===count,index+1,{timeout:15000});
-  await sleep(1550);
-  const observed=await page.evaluate(()=>{
-   const e=window.PartyCastella.engine,s=e.state,r=document.querySelector('.pct-scene');
-   return {processed:e.processed,phase:s.phase,pour:s.pourLevel,lastPour:s.lastPourLevel,fire:s.fireLevel,fireTriggers:s.fireTriggered.length,pourTriggers:s.pourTriggered.length,wet:s.wetCount,baked:s.bakedCount,sugarEarned:s.sugarEarned,collected:e.wonderCollected,roundSteps:e.roundSteps,bank:window.__qa250.app.wonderBank.filter(t=>t.game===window.__qa250.app.engines.indexOf(e)).length-window.__castella250BeforeBank,gauges:[...r.querySelectorAll('.pct-gauge')].map(n=>Number(n.getAttribute('aria-valuenow'))),currentRows:[...r.querySelectorAll('tbody tr.current')].map(n=>Number(n.dataset.count)),total:s.totalHundredths};
-  });
+  report.current.step='processing';
+  await page.waitForFunction(count=>window.PartyCastella.engine.processed===count,count,{timeout:15000});
+  const wait={count,number,timeoutMs:15000,startedAt:new Date().toISOString(),status:'waiting'};report.waits.push(wait);report.current.step='presentation';
+  await page.evaluate(count=>{
+   const app=window.__qa250.app,token=app.token,started=performance.now();
+   const wait={count,token,animationMs:1500,complete:false,cancelled:false,elapsedMs:0};window.__castella250PresentationWait=wait;
+   app.wait(wait.animationMs,token).then(complete=>{wait.complete=complete;wait.cancelled=!complete;wait.elapsedMs=Math.round(performance.now()-started);},error=>{wait.error=String(error);});
+  },count);
+  const ready=await page.waitForFunction(presentationReady,count,{timeout:wait.timeoutMs});
+  const observed=await ready.jsonValue();await ready.dispose();
+  wait.status='complete';wait.finishedAt=new Date().toISOString();wait.conditions=await page.evaluate(()=>window.__castella250WaitStatus);
+  report.balls.push(observed);report.current.step='assertions';
   assert.equal(observed.processed,index+1);assert.deepEqual(observed.gauges,[observed.pour,observed.fire]);
   if(index===0){assert.equal(observed.lastPour,1);assert.equal(observed.pour,2);}
   if(index===1){assert.equal(observed.lastPour,2);assert.equal(observed.pour,3);}
@@ -67,8 +86,8 @@ try{
   assert.ok(observed.bank<=1,'Sugar is awarded once across several baking balls');
   if(observed.sugarEarned){assert.equal(observed.collected,true);assert.equal(observed.bank,1);assert.equal(observed.roundSteps,1);}
   if(index===4){assert.equal(observed.fire,plan.expectedFire);await page.screenshot({path:out+'/castella-levels-and-bake.png'});}
-  report.balls.push(observed);
  }
+ report.current=null;
  const last=report.balls.at(-1);assert.equal(last.total,plan.expectedPayout);assert.equal(last.baked,plan.expectedBaked);assert.equal(last.bank,1);report.sugar={oneAward:true,bakedHoleRequired:true,expected:plan.expectedSugar};
  await page.screenshot({path:out+'/castella-baked-sugar.png'});
  report.legacy=await page.evaluate(()=>{
@@ -84,6 +103,17 @@ try{
  await fs.writeFile(out+'/result.json',JSON.stringify(report,null,2)+'\n');
  console.log('CASTELLA_V250_VIEW_PASS',JSON.stringify({screens:report.screens.length,balls:report.balls.length,sugar:report.sugar,legacy:report.legacy,pageErrors:errors}));
 }catch(error){
+ report.failure={message:String(error),stack:error.stack,pageErrors:errors,warnings:fixture.warnings};
+ try{
+  const state=await page.evaluate(()=>{
+   const app=window.__qa250?.app,e=window.PartyCastella?.engine;
+   return {wait:window.__castella250WaitStatus,presentation:window.__castella250PresentationWait,app:app&&{phase:app.phase,paused:app.paused,token:app.token,draws:app.draws,enabled:app.enabled,paid:app.paid,roundWins:app.roundWins},engine:e&&{processed:e.processed,accepted:e.accepted,version:e.version,running:e.running,phase:e.phase,wonderCollected:e.wonderCollected,wonderToken:e.wonderToken,roundSteps:e.roundSteps,state:e.state},viewport:{width:innerWidth,height:innerHeight,touchPoints:navigator.maxTouchPoints,htmlClass:document.documentElement.className,bodyClass:document.body.className}};
+  });
+  report.failure.state=state;
+  await fs.writeFile(out+'/failure-state.json',JSON.stringify(state,null,2)+'\n');
+ }catch(captureError){report.failure.captureError=String(captureError);}
+ await fs.writeFile(out+'/partial-result.json',JSON.stringify(report,null,2)+'\n');
+ await fs.writeFile(out+'/failure-server.log',fixture.logs.slice(-20000));
  try{await page.screenshot({path:out+'/failure.png'});}catch{}
  console.error('CASTELLA_V250_VIEW_FAIL',error,JSON.stringify(errors),fixture.logs.slice(-4000));throw error;
 }finally{await fixture.close();}
