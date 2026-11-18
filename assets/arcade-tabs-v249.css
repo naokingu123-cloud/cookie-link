@@ -112,6 +112,29 @@ html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name img,
 html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name svg{
  height:18px!important;max-height:18px!important;max-width:100%!important;object-fit:contain!important;
 }
+/* Native captions stay readable in the small preview face. Keep the decoded
+   artwork in its title node; the selected face uses its separate full logo. */
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name>.v249-game-logo{display:none!important}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name>.v249-game-caption{
+ display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;
+ width:100%!important;min-width:0!important;height:18px!important;box-sizing:border-box!important;
+ padding:0 13px 0 0!important;margin:0!important;border:0!important;border-radius:3px!important;
+ background:linear-gradient(#fffdf0c9,#fff5dba8)!important;
+ color:var(--v249-brand-ink,#603525)!important;
+ font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif!important;
+ font-weight:900!important;font-size:10px!important;line-height:18px!important;letter-spacing:-.12px!important;
+ text-align:center!important;text-indent:0!important;text-transform:none!important;
+ text-shadow:0 .7px 0 #fff9e4!important;-webkit-text-stroke:.4px #fff9e4!important;paint-order:stroke fill;
+ pointer-events:none!important;user-select:none!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .v249-game-caption[data-lines="2"]{
+ font-size:8.8px!important;line-height:9px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .v249-game-caption[data-compact="true"]{font-size:8.8px!important}
+html.arcade-v249[data-lineup="all"] #screen #tabs .v249-game-caption>span{
+ display:block!important;max-width:100%!important;margin:0!important;padding:0!important;
+ font:inherit!important;letter-spacing:inherit!important;white-space:nowrap!important;
+}
 html.arcade-v249[data-lineup="all"] #screen #tabs .mini-wrap{
  width:31px!important;min-width:31px!important;height:28px!important;min-height:28px!important;
  border-radius:4px!important;box-shadow:inset 0 0 0 1px #fff9!important;
@@ -192,6 +215,10 @@ html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs .reach-s
 html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs .tab-locked-bet{
  width:calc(100% - 6px)!important;min-width:0!important;max-width:calc(100% - 6px)!important;
 }
+/* The connected player status is already shown in the cabinet. On phones its
+   duplicate fixed badge covered CREDIT; offline and host warnings stay visible. */
+html.arcade-v249 body.mobile-view>.shared-v179-badge[data-role="player"],
+html.arcade-v249 body.mobile-landscape>.shared-v179-badge[data-role="player"]{display:none!important}
 @media(hover:hover) and (pointer:fine){
  html.arcade-v249 #screen #tabs>.tab-slot>.tab:hover{filter:brightness(1.04)}
 }

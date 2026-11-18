@@ -33,7 +33,7 @@ html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="cookie"] .biscuit-fr
  border-color:#71372b!important;box-shadow:inset 0 0 0 1px #fffce2,inset 0 0 0 3px #d99747,0 2px 0 #71372b!important;
 }
 html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="cookie"] .board{
- background-color:var(--v249-check-a)!important;background-image:var(--v249-checker)!important;background-size:28px 28px!important;
+ background-color:var(--v249-check-a)!important;background-image:var(--v249-checker)!important;background-size:28px 28px!important;background-repeat:repeat!important;
  border-color:#fff0ba!important;box-shadow:inset 0 1px 5px #1f122967,0 0 0 1px #884a32,0 0 0 3px #f7bf66!important;
 }
 html.arcade-v249 .v249-game-surface[data-v249-kind="cookie"] .tray-seams{opacity:.18}
@@ -54,15 +54,15 @@ html.arcade-v249 .v249-game-surface[data-v249-kind="choco"] .choco-surface::afte
 /* Six Drop keeps its approved candy bottle. The glass has a recessed well;
    the full-clear counter and original amount font remain untouched. */
 html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="candy"] .six-board-viewport{
- background-color:var(--v249-check-a)!important;background-image:linear-gradient(135deg,#89f0ff0f,transparent 32%,#e4a7ff13 75%),var(--v249-checker)!important;background-size:auto,26px 26px!important;
+ background-color:var(--v249-check-a)!important;background-image:linear-gradient(135deg,#89f0ff0f,transparent 32%,#e4a7ff13 75%),var(--v249-checker)!important;background-size:auto,26px 26px!important;background-repeat:no-repeat,repeat!important;
  box-shadow:inset 0 0 0 1px #c2fcff,inset 0 0 0 3px #467b92,inset 0 0 12px #0c1a385e!important;border-radius:10px!important;
 }
-html.arcade-v249 body[data-v249-game="candy"] .sd247-roles section{
+html.arcade-v249 body.carnival-active[data-v249-game="candy"] #carnival-odds.sd247-odds .sd247-roles>section{
  background:linear-gradient(135deg,#624b8b,#322848 78%)!important;border-color:#edc884!important;border-radius:8px!important;
  box-shadow:inset 0 1px #fff6dc80,inset 0 0 0 1px #724d64,0 1px 0 #47263d!important;
 }
-html.arcade-v249 body[data-v249-game="candy"] .sd247-roles section:nth-child(2){background:linear-gradient(135deg,#355e81,#24364c 78%)!important}
-html.arcade-v249 body[data-v249-game="candy"] .sd247-roles section:nth-child(3){background:linear-gradient(135deg,#7a435c,#44233b 78%)!important}
+html.arcade-v249 body.carnival-active[data-v249-game="candy"] #carnival-odds.sd247-odds .sd247-roles>section:nth-child(2){background:linear-gradient(135deg,#355e81,#24364c 78%)!important}
+html.arcade-v249 body.carnival-active[data-v249-game="candy"] #carnival-odds.sd247-odds .sd247-roles>section:nth-child(3){background:linear-gradient(135deg,#7a435c,#44233b 78%)!important}
 
 /* Gelato: an ice-blue confectionery shop, frosted bevels and jewel labels. */
 html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-scene{

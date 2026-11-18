@@ -37,7 +37,7 @@ function showDraft(){
  else play.removeAttribute('href');
 }
 $('open-lineup-picker').onclick=()=>{
- draft=chosen.slice();
+ draft=chosen.slice(0,3);
  if(mode!=='custom')try{const last=JSON.parse(localStorage.getItem('sweets-lineup-v91'));if(Array.isArray(last)&&last.length&&last.length<=3&&new Set(last).size===last.length&&last.every(k=>Object.hasOwn(catalog,k)))draft=last;}catch{}
  showDraft();pick.showModal();
 };

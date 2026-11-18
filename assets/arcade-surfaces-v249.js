@@ -5,7 +5,7 @@
 'use strict';
 if(window.SweetsArcadeSurfacesV249)return;
 const query=new URLSearchParams(location.search);
-if(query.get('serverSettlementWorker')==='1')return;
+if(query.get('serverSettlementWorker')==='1'||query.get('serverHost')==='1')return;
 const kinds=new Set(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella']);
 const stages=new Map(),motions=window.matchMedia('(prefers-reduced-motion: reduce)');
 const root=document.documentElement;

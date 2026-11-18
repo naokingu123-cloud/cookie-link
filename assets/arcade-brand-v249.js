@@ -15,6 +15,12 @@ const palettes={
  stick:['#dfa15d','#ffe7c1','#81502b'],
  castella:['#eea34b','#ffe8c3','#8c491d']
 };
+const compactTitleLines={
+ choco:['チョコレート','キャニオン'],
+ gelato:['ジェラート','プリズム'],
+ winery:['ワイナリー','ピラミッド'],
+ popcorn:['ポップコーン','スプラッシュ']
+};
 const catalog=Object.fromEntries(Object.entries(palettes).map(([kind,[accent,pale,ink]])=>{
  const game=lineup.catalog[kind],logo='assets/arcade-v249/logo-'+kind+'.webp';
  if(game)game.logo=logo;
@@ -48,7 +54,12 @@ function illustration(game,className='v249-game-logo'){
 for(const slot of slots){
  const kind=slot.holder?.dataset.gameKind,game=catalog[kind];if(!game||slot.holder.hidden)continue;
  const title=slot.tab.querySelector('.tab-game-name');if(!title)continue;
- const img=illustration(game);title.replaceChildren(img);titleImages.push(img);
+ const img=illustration(game),caption=document.createElement('span');
+ const proposed=compactTitleLines[kind],lines=proposed?.join('')===game.name?proposed:[game.name];
+ caption.className='v249-game-caption';caption.setAttribute('aria-hidden','true');
+ caption.dataset.lines=String(lines.length);caption.dataset.compact=String(lines.length===1&&Array.from(game.name).length>7);
+ for(const text of lines){const line=document.createElement('span');line.textContent=text;caption.append(line);}
+ title.replaceChildren(img,caption);titleImages.push(img);
  title.setAttribute('role','img');title.setAttribute('aria-label',game.name);
  title.dataset.logoKind=kind;
  // Some old titles used a background sprite as well as their child artwork.

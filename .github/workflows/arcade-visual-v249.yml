@@ -10,6 +10,8 @@ on:
       - 'assets/arcade-brand-v249*'
       - 'assets/arcade-tabs-v249*'
       - 'assets/arcade-surfaces-v249*'
+      - 'assets/game-menu-v91.js'
+      - 'assets/lineups-v91.js'
       - 'assets/shared-machine-v176.js'
       - 'tests/arcade-visual-v249.mjs'
       - '.github/workflows/arcade-visual-v249.yml'

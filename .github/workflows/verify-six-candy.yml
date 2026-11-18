@@ -7,6 +7,13 @@ on:
       - index.html
       - 'assets/six-candy*'
       - 'assets/sixdrop-progressive*'
+      - 'assets/arcade-v249/**'
+      - 'assets/arcade-brand-v249*'
+      - 'assets/arcade-tabs-v249*'
+      - 'assets/arcade-surfaces-v249*'
+      - 'assets/jelly-view.js'
+      - 'assets/game-menu-v91.js'
+      - 'assets/lineups-v91.js'
       - 'assets/choco-dig*'
       - 'assets/manual-numbers*'
       - '.github/tests/manual_numbers_browser.py'

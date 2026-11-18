@@ -20,7 +20,7 @@ replaceOnce(beforeBalls,String.raw`
   const images=[...document.querySelectorAll('#tabs img.v249-selected-logo')];
   await Promise.all(images.map(image=>image.decode()));
  });
- const arcadeVisualReport={version,viewports:[],rapidSelection:null,keyboard:null,reducedMotion:null,landscape:null,live:null};
+ const arcadeVisualReport={version,viewports:[],menus:[],rapidSelection:null,keyboard:null,reducedMotion:null,landscape:null,live:null};
  // Chromium's native touch emulation changes pointer media queries without
  // replacing application code or opening a second participating player.
  const touch249=await context.newCDPSession(page);
@@ -68,15 +68,62 @@ replaceOnce(beforeBalls,String.raw`
     return {kind:slot.engine.kind,exists:true,renderer:node.className?.baseVal??node.className,width:rect.width,height:rect.height,previewVisible:shown,paint};
    };
    const selectedPreview=previewOf(current);
+   const captions=slots.filter(s=>s.i!==active).map(slot=>{
+    const row=slot.tab.querySelector('.tab-game-name'),caption=row?.querySelector('.v249-game-caption'),bounds=row.getBoundingClientRect();
+    if(!caption)return {kind:slot.engine.kind,exists:false};
+    let visible=true;for(let node=caption;node&&node!==slot.holder;node=node.parentElement){const style=getComputedStyle(node);if(style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0){visible=false;break;}}
+    const style=getComputedStyle(caption),lines=[...caption.children].map(line=>{const range=document.createRange();range.selectNodeContents(line);const r=range.getBoundingClientRect();return {text:line.textContent,fontSize:parseFloat(getComputedStyle(line).fontSize),left:r.left,right:r.right,top:r.top,bottom:r.bottom};});
+    return {kind:slot.engine.kind,exists:true,visible,text:caption.textContent.replace(/\s/g,''),name:window.SweetsArcadeBrandV249.catalog[slot.engine.kind].name.replace(/\s/g,''),fontWeight:style.fontWeight,lines,row:{left:bounds.left,right:bounds.right,top:bounds.top,bottom:bounds.bottom}};
+   });
+   const credit=document.querySelector('#credit').getBoundingClientRect();
+   const creditStatus={mobile:document.body.classList.contains('mobile-view'),badges:[...document.querySelectorAll('.shared-v179-badge[data-role="player"]')].map(node=>{const r=node.getBoundingClientRect(),style=getComputedStyle(node),visible=r.width>0&&r.height>0&&style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)>0;return {visible,overlap:visible?Math.max(0,Math.min(r.right,credit.right)-Math.max(r.left,credit.left))*Math.max(0,Math.min(r.bottom,credit.bottom)-Math.max(r.top,credit.top)):0};})};
+   const surfaceSelector=current.engine.kind==='cookie'?'.board':current.engine.kind==='candy'?'.six-board-viewport':null,surface=surfaceSelector?current.panel.querySelector(surfaceSelector):null;
+   const surfaceTexture=surface?{image:getComputedStyle(surface).backgroundImage,repeat:getComputedStyle(surface).backgroundRepeat}:null;
    const center=current.tab.getBoundingClientRect(),hit=document.elementFromPoint(center.x+center.width/2,center.y+center.height/2);
    const rect=current.panel.getBoundingClientRect();
-   return {active,selected:selected.map(s=>s.i),visible:visible.map(s=>s.i),kind:app.engines[active].kind,surfaceKind:document.body.dataset.v249Game,logoVisible:visibleImage,selectedPreview,tabReceivesPointer:!!hit&&(current.tab===hit||current.tab.contains(hit)),panel:{width:rect.width,height:rect.height},diagnostics:window.SweetsArcadeTabsV249.describe(),inactivePreviews:slots.filter(s=>s.i!==active).map(s=>{const image=s.tab.querySelector('img.v249-selected-logo');return {...previewOf(s),logoHidden:getComputedStyle(image).display==='none'||getComputedStyle(image).visibility==='hidden'||Number(getComputedStyle(image).opacity)===0};})};
+   return {active,selected:selected.map(s=>s.i),visible:visible.map(s=>s.i),kind:app.engines[active].kind,surfaceKind:document.body.dataset.v249Game,logoVisible:visibleImage,selectedPreview,captions,creditStatus,surfaceTexture,tabReceivesPointer:!!hit&&(current.tab===hit||current.tab.contains(hit)),panel:{width:rect.width,height:rect.height},diagnostics:window.SweetsArcadeTabsV249.describe(),inactivePreviews:slots.filter(s=>s.i!==active).map(s=>{const image=s.tab.querySelector('img.v249-selected-logo');return {...previewOf(s),logoHidden:getComputedStyle(image).display==='none'||getComputedStyle(image).visibility==='hidden'||Number(getComputedStyle(image).opacity)===0};})};
   });
   assert.equal(result.active,expected);assert.deepEqual(result.selected,[expected]);assert.deepEqual(result.visible,[expected]);
   assert.equal(result.surfaceKind,result.kind);assert.equal(result.logoVisible,true,'selected card presents its game logo');assert.equal(result.selectedPreview.exists,true);assert.equal(result.selectedPreview.previewVisible,false,'selected card does not duplicate its live main board');assert.equal(result.tabReceivesPointer,true,'decorations do not intercept the tab center');
   assert.ok(result.panel.width>150&&result.panel.height>150,'active board remains readable');
   for(const preview of result.inactivePreviews){assert.equal(preview.exists,true);assert.equal(preview.previewVisible,true,preview.kind+' keeps a live miniature');assert.equal(preview.logoHidden,true,preview.kind+' switches from logo to preview');assert.ok(preview.width>=20&&preview.height>=20);if(preview.paint.kind==='canvas'){assert.ok(preview.paint.visiblePixels>20&&preview.paint.colors>4,preview.kind+' miniature contains painted game pixels');}else{assert.ok(preview.paint.geometry>20&&preview.paint.numberedNodes===19,'Gelato SVG fallback has the actual numbered board');}}
+  for(const caption of result.captions){
+   assert.equal(caption.exists,true,caption.kind+' retains its readable inactive name');assert.equal(caption.visible,true);assert.equal(caption.text,caption.name);assert.ok(Number(caption.fontWeight)>=700);
+   assert.equal(caption.lines.length,['choco','gelato','winery','popcorn'].includes(caption.kind)?2:1,'long names use deliberate readable lines');
+   for(const line of caption.lines){assert.ok(line.text.trim()&&line.fontSize>=8.75,'caption uses native bold text at its designed size');assert.ok(line.left>=caption.row.left-2&&line.right<=caption.row.right+2&&line.top>=caption.row.top-2&&line.bottom<=caption.row.bottom+2,caption.kind+' caption fits its row');}
+  }
+  for(const badge of result.creditStatus.badges)assert.ok(badge.overlap<1,'connected status does not cover CREDIT');
+  if(['cookie','candy'].includes(result.kind)){assert.ok(result.surfaceTexture?.image.includes('repeating-conic-gradient'),'the current board uses its new checker material');assert.equal(result.kind==='cookie'?result.surfaceTexture.repeat:result.surfaceTexture.repeat.split(',').at(-1).trim(),'repeat','the checker material repeats across the board');}
   return result;
+ }
+ async function inspectPicker(width,height){
+  const pagesBefore=context.pages().length;
+  const before=await page.evaluate(()=>({gameplay:window.__qa249Snapshot(),paused:window.__client243.app.paused,active:window.__client243.active,url:location.href}));
+  await page.locator('#open-record-menu').click();
+  await page.locator('#open-lineup-picker').click();
+  await page.locator('dialog.lineup-picker').waitFor({state:'visible'});
+  await page.evaluate(()=>Promise.all([...document.querySelectorAll('.lineup-picker img.v249-menu-logo')].map(image=>image.decode())));
+  const picker=await page.evaluate(()=>{
+   const rect=node=>{const r=node.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
+   const dialog=document.querySelector('dialog.lineup-picker'),catalog=window.SweetsArcadeBrandV249.catalog;
+   return {open:dialog.open,bounds:rect(dialog),scrollWidth:dialog.scrollWidth,clientWidth:dialog.clientWidth,selected:[...dialog.querySelectorAll('.lineup-grid button[aria-pressed="true"]')].map(button=>button.dataset.key),count:dialog.querySelector('.lineup-count')?.textContent,cards:[...dialog.querySelectorAll('.lineup-grid button')].map(button=>{const image=button.querySelector('img.v249-menu-logo'),kind=button.dataset.key;return {kind,label:button.getAttribute('aria-label'),expectedLabel:catalog[kind]?.name,bounds:rect(button),logo:!!image,source:image?.getAttribute('src'),logoBounds:image?rect(image):null,natural:image?[image.naturalWidth,image.naturalHeight]:[0,0]};})};
+  });
+  assert.equal(picker.open,true);assert.equal(picker.cards.length,9);assert.ok(picker.selected.length>0&&picker.selected.length<=3,'native picker starts with a valid draft without changing the nine-game round');
+  assert.ok(picker.bounds.x>=0&&picker.bounds.y>=0&&picker.bounds.right<=width+1&&picker.bounds.bottom<=height+1,'selection dialog fits this viewport');
+  assert.ok(picker.scrollWidth<=picker.clientWidth+2,'selection dialog has no horizontal clipping');
+  for(const card of picker.cards){
+   assert.equal(card.label,card.expectedLabel);assert.equal(card.logo,true);assert.ok(card.natural[0]>=100&&card.natural[1]>=30,card.kind+' menu logo decodes');assert.ok(card.source?.split('?')[0].endsWith('assets/arcade-v249/logo-'+card.kind+'.webp'));
+   assert.ok(card.bounds.x>=picker.bounds.x-1&&card.bounds.right<=picker.bounds.right+1&&card.bounds.y>=picker.bounds.y-1&&card.bounds.bottom<=picker.bounds.bottom+1,card.kind+' menu card stays inside the visible dialog');
+   assert.ok(card.logoBounds.width>60&&card.logoBounds.height>=40&&card.logoBounds.x>=card.bounds.x&&card.logoBounds.right<=card.bounds.right&&card.logoBounds.y>=card.bounds.y&&card.logoBounds.bottom<=card.bounds.bottom,card.kind+' logo fits its native menu card');
+  }
+  const file='lineup-menu-'+width+'.png';await page.screenshot({path:out+'/'+file});
+  await page.locator('.lineup-picker .lineup-close').click();
+  await page.locator('#record-close-top').click();
+  await page.waitForFunction(()=>document.querySelector('#record-menu-layer').hidden&&!document.querySelector('dialog.lineup-picker').open&&!document.body.classList.contains('player-menu-open'));
+  await settled();
+  const after=await page.evaluate(()=>({gameplay:window.__qa249Snapshot(),paused:window.__client243.app.paused,active:window.__client243.active,url:location.href}));
+  assert.deepEqual(after,before,'opening and closing the native picker does not change gameplay, pause state, selection or location');assert.equal(context.pages().length,pagesBefore,'no play link or new participant is opened');
+  arcadeVisualReport.menus.push({width,height,file,...picker});
  }
  await page.evaluate(()=>{
   const {app}=window.__client243;
@@ -106,6 +153,7 @@ replaceOnce(beforeBalls,String.raw`
    await page.screenshot({path:out+'/'+file});
    arcadeVisualReport.viewports.push({width,height,index,kind:selection.kind,file,geometry});
   }
+  await inspectPicker(width,height);
  }
  await page.setViewportSize({width:430,height:932});await sleep(350);
  await page.evaluate(()=>{for(const index of [0,8,1,7,2,6,3,5,4,0,8,2,7,1,6,3,5,4])document.querySelector('#tab'+index).click();});
@@ -145,7 +193,7 @@ replaceOnce(beforeBalls,String.raw`
  await page.setViewportSize({width:1366,height:900});await sleep(350);
  await page.locator('#tab2').click();await settled();
  await fs.writeFile(out+'/visual-result.json',JSON.stringify(arcadeVisualReport,null,2)+'\n');
- console.log('ARCADE_VISUAL_V249_LAYOUT_PASS',JSON.stringify({version,logos:branding.logos.length,surfaces:branding.surfaces.length,screens:arcadeVisualReport.viewports.length,rapidFinal:arcadeVisualReport.rapidSelection.active,gameplay,keyboard:arcadeVisualReport.keyboard,reducedMotion:true}));
+ console.log('ARCADE_VISUAL_V249_LAYOUT_PASS',JSON.stringify({version,logos:branding.logos.length,surfaces:branding.surfaces.length,screens:arcadeVisualReport.viewports.length,menus:arcadeVisualReport.menus.length,landscape:arcadeVisualReport.landscape.viewport,rapidFinal:arcadeVisualReport.rapidSelection.active,gameplay,keyboard:arcadeVisualReport.keyboard,reducedMotion:true}));
  `+beforeBalls);
 const afterBalls="console.log('SIXDROP_V247_BROWSER_HUD',JSON.stringify(sixHud));";
 const ballLoop='for(let i=0;i<numbers.length;i++){\n  await call';

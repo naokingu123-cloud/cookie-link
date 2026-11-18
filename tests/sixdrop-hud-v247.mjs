@@ -35,12 +35,15 @@ source=source.replace(anchor,anchor+`
    const base=rgba(style.backgroundColor);if(base?.[3]===1)stops.push(base);
    return {label:name.textContent,background:style.backgroundImage,backgroundStops:stops.length,labelVisible:nameStyle.display!=='none'&&nameStyle.visibility!=='hidden'&&name.getBoundingClientRect().height>0,labelSize:parseFloat(nameStyle.fontSize),amountSize:parseFloat(numberStyle.fontSize),labelContrast:stops.length?Math.min(...stops.map(color=>contrast(rgba(nameStyle.color),color))):0,amountContrast:stops.length?Math.min(...stops.map(color=>contrast(rgba(numberStyle.color),color))):0};
   });
-  return {heading:getComputedStyle(heading).display,background:getComputedStyle(row).backgroundColor,labelDisplay:getComputedStyle(label).display,labelColor:getComputedStyle(label).color,amountColor:getComputedStyle(amount).color,labelSize:parseFloat(getComputedStyle(label).fontSize),amountSize:parseFloat(getComputedStyle(amount).fontSize),label:label.textContent,roleRows,headingHeight:heading.getBoundingClientRect().height,bankFont:getComputedStyle(gold).fontFamily,bankAlignment:getComputedStyle(bank).textAlign,bankWeight:getComputedStyle(gold).fontWeight,bankText:frame.textContent,frameBorder:parseFloat(getComputedStyle(frame).borderTopWidth),frameBackground:getComputedStyle(frame).backgroundImage,obsoleteText:!!document.querySelector('.sd247-colors,.sd247-footer,#sd247-progress'),frames:window.__sixBankFrames};
+  return {surfaceVersion:document.documentElement.dataset.arcadeSurfaces,activeGame:document.body.dataset.v249Game,arcadeTheme:document.documentElement.classList.contains('arcade-v249'),heading:getComputedStyle(heading).display,background:getComputedStyle(row).backgroundColor,labelDisplay:getComputedStyle(label).display,labelColor:getComputedStyle(label).color,amountColor:getComputedStyle(amount).color,labelSize:parseFloat(getComputedStyle(label).fontSize),amountSize:parseFloat(getComputedStyle(amount).fontSize),label:label.textContent,roleRows,headingHeight:heading.getBoundingClientRect().height,bankFont:getComputedStyle(gold).fontFamily,bankAlignment:getComputedStyle(bank).textAlign,bankWeight:getComputedStyle(gold).fontWeight,bankText:frame.textContent,frameBorder:parseFloat(getComputedStyle(frame).borderTopWidth),frameBackground:getComputedStyle(frame).backgroundImage,obsoleteText:!!document.querySelector('.sd247-colors,.sd247-footer,#sd247-progress'),frames:window.__sixBankFrames};
  });
+ assert.equal(hudReadability.surfaceVersion,'v249');assert.equal(hudReadability.activeGame,'candy');assert.equal(hudReadability.arcadeTheme,true);
  assert.equal(hudReadability.heading,'flex','old round-only block layout must not displace the candy payout frame');
  assert.equal(hudReadability.roleRows.length,3);
+ assert.equal(new Set(hudReadability.roleRows.map(row=>row.background)).size,3,'the three v249 role plaques have distinct jewel colors');
  for(const row of hudReadability.roleRows){
-  assert.ok(row.backgroundStops>0,row.label+' has an opaque readable plaque');
+  assert.match(row.background,/linear-gradient/,row.label+' uses its v249 gradient instead of the previous solid plaque');
+  assert.ok(row.backgroundStops>=2,row.label+' has an opaque readable gradient');
   assert.equal(row.labelVisible,true,row.label+' label remains visible');
   assert.ok(row.labelContrast>=4.5&&row.amountContrast>=4.5,row.label+' lettering maintains 4.5:1 contrast across its gradient');
   assert.ok(row.labelSize>=9&&row.amountSize>=12,row.label+' retains readable minimum type sizes');
