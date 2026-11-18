@@ -20,7 +20,7 @@ try{
  await until(async()=>{try{return (await fetch(base+'/api/health')).ok;}catch{return false;}},'server boot',15000);
  const host=await call('/api/session',{body:{displayName:'SERVER ROULETTE'}});
  ws=new WebSocket('ws://127.0.0.1:'+port+'/ws?machineId=public-01&playerId='+host.player.id+'&token='+host.token);ws.on('error',()=>{});await once(ws,'open');
- browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+ browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{}),args:['--no-sandbox','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
  context=await browser.newContext({viewport:{width:1366,height:900}});
  await context.addInitScript(()=>{
   window.__storage243={};const native=Storage.prototype.setItem;
@@ -65,7 +65,7 @@ try{
  await page.locator('#tab2').click({force:true});
  await page.waitForFunction(()=>document.body.classList.contains('carnival-active')&&document.querySelector('#carnival-heading[data-progressive247="1"]'));
  const sixHud=await page.evaluate(()=>{const h=document.querySelector('.sd247-roles'),e=window.SixDropV247.engine;return {display:getComputedStyle(h).display,height:h.getBoundingClientRect().height,cards:h.querySelectorAll('section').length,label:document.querySelector('#carnival-heading').textContent,rules:e.rulesVersion,mode:e.drawMode,processed:e.processed,accepted:e.accepted,feed:e.state?.feed,carry:window.SixDropV247.carry};});
- assert.notEqual(sixHud.display,'none','new role payout panel must override the old glass filter');assert.ok(sixHud.height>40);assert.equal(sixHud.cards,3);assert.equal(sixHud.rules,247);assert.equal(sixHud.mode,'single');assert.match(sixHud.label,/プログレッシブ/);
+ assert.notEqual(sixHud.display,'none','new role payout panel must override the old glass filter');assert.ok(sixHud.height>40);assert.equal(sixHud.cards,3);assert.equal(sixHud.rules,247);assert.equal(sixHud.mode,'single');assert.match(sixHud.label,/全消し\s*\d+\s*WIN/);
  await monitor.screenshot({path:out+'/monitor-forecast.png'});await page.screenshot({path:out+'/sixdrop-v247-desktop.png'});
  await page.setViewportSize({width:390,height:844});await sleep(350);await page.screenshot({path:out+'/sixdrop-v247-mobile.png'});await page.setViewportSize({width:1366,height:900});
  console.log('SIXDROP_V247_BROWSER_HUD',JSON.stringify(sixHud));

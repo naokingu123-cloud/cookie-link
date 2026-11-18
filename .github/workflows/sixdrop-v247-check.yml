@@ -1,8 +1,8 @@
-name: Six Drop v247 rules gravity and HUD
+name: Six Drop v248 connected groups colors and HUD
 on:
   workflow_dispatch:
   push:
-    branches: ['main', 'feature/sixdrop-v247']
+    branches: ['main', 'feature/sixdrop-v247', 'feature/sixdrop-v248']
     paths:
       - 'assets/sixdrop-progressive*'
       - 'tests/sixdrop-*'
@@ -24,9 +24,7 @@ jobs:
       - name: Rules, original gravity, forecast and persistent carry
         run: |
           npm run check
-          node tests/sixdrop-progressive-v247.cjs
-          node tests/sixdrop-gravity-v247.cjs
-          node tests/sixdrop-carry-v247.mjs
+          npm run test:sixdrop
           node tests/progressive-forecast-v246.mjs
           node tests/hidden-results-v246.mjs
       - name: Install browser
@@ -40,8 +38,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: sixdrop-v247-final-hud
+          name: sixdrop-v248-final-hud
           path: |
             qa-client-v243
             docs/client-v246-qa.json
-          retention-days: 3
+          retention-days: 7

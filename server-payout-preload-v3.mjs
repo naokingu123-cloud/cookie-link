@@ -5,8 +5,10 @@ import {randomUUID} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 
 const VERSION=3;
-// v247: a per-player, wager-denominated progressive. Normal wallet settlement
-// commits this ledger once; operator cancellation restores the pre-BET state.
+// v247 storage is retained by v248: bankUnits are hundredths of already-earned
+// medals, never a count to reprice when BET or the per-drop accrual rate changes.
+// Normal wallet settlement commits once; operator cancellation restores the
+// pre-BET bank AND removed count, which selects the next game's fixed palette.
 function sixCarry247(value){
  const nonnegative=(v,max)=>Number.isSafeInteger(Number(v))&&Number(v)>=0?Math.min(max,Number(v)):0;
  return {version:247,revision:nonnegative(value?.revision,1e12),roundId:String(value?.roundId||'').slice(0,160),bankUnits:nonnegative(value?.bankUnits,1e14),removed:nonnegative(value?.removed,1e9),feed:nonnegative(value?.feed,1e9)};

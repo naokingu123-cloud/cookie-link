@@ -1,6 +1,12 @@
-const fs=require('fs');
+const fs=require('fs'),vm=require('vm');
 require('../assets/sixdrop-progressive-core-v247.js');
-const s=fs.readFileSync('optimized/app-01.js','utf8');
+// The production loader transforms the bundled game before injecting the v247
+// host. In particular this patch supplies the denser supported gap templates.
+// Using raw bundle geometry here silently sampled a different board generator.
+const context={window:{},console:{info(){},warn(){}}};
+vm.runInNewContext(fs.readFileSync('assets/cookie-upgrade-patches.js','utf8'),context);
+const s=context.window.CookieUpgradePatch.patch(fs.readFileSync('optimized/app-01.js','utf8'));
+if(!context.window.CookieUpgradePatch.history.includes('stable symmetric initial gaps'))throw Error('Production Six Drop gap-template patch did not apply');
 const geom=s.slice(s.indexOf('const SIX_ROWS=10'),s.indexOf('class SixBallCandyEngine'));
 const G=new Function('const motionReduced=false;'+geom+';return {empty:sixEmpty,clone:sixClone,count:sixCount,valid:sixValid,step:sixStep,neighbors:sixNeighbors,patterns:sixPatterns,findShapes:sixFindShapes,drop:sixDrop,point:sixPoint,gapTemplates:SIX_START_GAP_TEMPLATES};')();
 module.exports={G,R:globalThis.SweetsSixDropV247.create(G)};
