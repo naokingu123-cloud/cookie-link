@@ -1,0 +1,40 @@
+{
+  "version": 251,
+  "date": "2026-11-18",
+  "method": "imagegen",
+  "userIntent": "ダンゴデビンゴ。成立ラインに串を通す。他ゲームと同じ質感・演出。",
+  "assets": [
+    {
+      "path": "assets/arcade-v249/logo-dango.webp",
+      "size": [
+        768,
+        384
+      ],
+      "bytes": 101726,
+      "sha256": "6d33d37c15ce4ce2dab2ebd181066c137784340811a96b8ec52cade88067bbe5",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "transparent": true,
+      "preparation": "WebP encoding and proportional resize only; no painted or generated-text modification.",
+      "prompt": "Create a premium Japanese arcade sweets-game logo, landscape 2:1 composition on a fully transparent background. The ONLY readable text is the exact Japanese game name 「ダンゴデビンゴ」, rendered accurately as one joyful but clearly readable line in chunky polished 3D lettering: warm strawberry pink, ivory cream, fresh matcha green, golden biscuit outlines, subtle glossy candy highlights. Decorative motif: three round Japanese dango dumplings in pink, white and pale green, on two delicate bamboo skewers, with a small triangular arrangement of dango echoing a bingo board. Integrate the skewers behind and through the dumpling motifs; no extra words, no English, no numbers, no additional logos. Friendly high-quality arcade cabinet identity, rounded confectionery forms with realistic sweet texture, warm studio lighting, clean readable silhouette at small sizes. Keep all content comfortably within frame; substantial transparent padding around artwork. The text is the dominant focal point. Asset for a Japanese web arcade called SWEETS LINK, matching rich glossy sweets themed game logos."
+    },
+    {
+      "path": "assets/dango-art/background.webp",
+      "size": [
+        1152,
+        768
+      ],
+      "bytes": 115012,
+      "sha256": "9f3733650f8bf62f15cca40dec8a676951ec655084c59602f1697c9379501c9f",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "transparent": false,
+      "preparation": "WebP encoding and proportional resize only; no painted or generated-text modification.",
+      "prompt": "Create a beautiful wide 3:2 background illustration for a premium Japanese dango sweets arcade game. A dreamy miniature Japanese confectionery garden and hanami tea stand: softly lit pink cherry blossom branches along upper corners, gentle matcha green foliage, honey bamboo rails near the bottom, a few glossy pink ivory and green dango skewers decorating the extreme edges. Warm ivory washi and very soft pastel atmosphere. Rich tactile pastry materials, refined high quality 3D confectionery art, friendly and inviting. The CENTER 75 percent must be quiet softly textured pale cream, spacious and low contrast, with absolutely NO game board, NO grid, NO individual numbered pieces and NO text or writing. Edge decoration only, subtle depth of field, top down/front stage composition for background behind a separate accurately drawn interactive bingo board. Avoid bright central glare and dark shadows. Palette strawberry pink, pale matcha, ivory, warm bamboo gold."
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 if(window.SweetsStationsV235)return;
 const FALLBACK='assets/pets/strawberry-mochi.png',FLAVORS=['strawberry','vanilla','mint','chocolate','grape'];
 const STATION_COLORS=['#ff5d9e','#39d5f5','#ffd363','#b38bff','#66e7b4','#ff9a65'];
-const GAME_NAMES={cookie:'クッキーリンク',choco:'チョコレートキャニオン',candy:'シックスドロップ',gelato:'ジェラートプリズム',winery:'ワイナリーピラミッド',popcorn:'ポップコーンスプラッシュ',jelly:'ジェリービンゴ',stick:'ワッフルリバーシ',castella:'パーティカステラ'};
+const GAME_NAMES={cookie:'クッキーリンク',choco:'チョコレートキャニオン',candy:'シックスドロップ',gelato:'ジェラートプリズム',winery:'ワイナリーピラミッド',popcorn:'ポップコーンスプラッシュ',jelly:'ジェリービンゴ',stick:'ワッフルリバーシ',castella:'パーティカステラ',dango:'ダンゴデビンゴ'};
 const params=new URLSearchParams(location.search),monitor=!!document.getElementById('host-frame');
 if(!monitor&&(params.get('serverHost')==='1'||params.get('serverSettlementWorker')==='1'))return;
 let savedMachine='';try{savedMachine=localStorage.getItem('sweets-shared-machine-v176')||'';}catch{}

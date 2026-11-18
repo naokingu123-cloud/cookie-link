@@ -14,7 +14,7 @@ const base='http://127.0.0.1:'+port,admin='v243-isolated-admin';
 const server=spawn(process.execPath,['server.mjs'],{cwd:process.cwd(),env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'core.json'),SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:admin,SWEETS_PLAYER_STABLE_MS:'500',SWEETS_BET_DURATION_MS:'15000',SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_RESULT_GRACE_MS:'8000'},stdio:['ignore','pipe','pipe']});
 let logs='',browser,context,page,monitor,ws;server.stdout.on('data',b=>logs+=b);server.stderr.on('data',b=>logs+=b);
 const errors=[],warnings=[],joins=[],forecastChecks=[];
-async function call(route,{session,body,adminOnly=false}={}){const response=await fetch(base+route+(adminOnly?'?adminToken='+admin:''),{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(session?{'X-Player-Id':session.player.id,Authorization:'Bearer '+session.token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(8000)});const data=await response.json();assert.equal(response.ok,true,route+' '+JSON.stringify(data));return data;}
+async function call(route,{session,body,adminOnly=false}={}){if(route.endsWith('/round/ball')&&body?.ballIndex===6){const current=await call('/api/machines/public-01/state',{session});await sleep(Math.max(0,Number(current.round?.thinkingClosesAt||0)-Date.now()+40));}const response=await fetch(base+route+(adminOnly?'?adminToken='+admin:''),{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(session?{'X-Player-Id':session.player.id,Authorization:'Bearer '+session.token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(8000)});const data=await response.json();assert.equal(response.ok,true,route+' '+JSON.stringify(data));return data;}
 async function until(fn,label,ms=40000){const end=Date.now()+ms;while(Date.now()<end){const v=await fn();if(v)return v;await sleep(300);}throw Error(label);}
 try{
  await until(async()=>{try{return (await fetch(base+'/api/health')).ok;}catch{return false;}},'server boot',15000);
@@ -37,7 +37,7 @@ try{
  await page.goto(base+'/?appv='+version,{waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.__client243&&window.SweetsSharedMachine?.client?.online&&window.SweetsStationsV235,{timeout:60000});
  await sleep(5500);
- assert.equal(await page.evaluate(()=>window.__client243.app.engines.length),9);
+ assert.equal(await page.evaluate(()=>window.__client243.app.engines.length),10);
  const playerId=await page.evaluate(()=>window.SweetsSharedMachine.client.playerId);
  await call('/api/admin/machines/public-01/host/register',{session:host,body:{},adminOnly:true});
  const round=await until(async()=>{const s=await call('/api/machines/public-01/state',{session:host});return s.round?.phase==='PLAYING'?s.round:null;},'normal round PLAYING');
@@ -51,7 +51,7 @@ try{
  const numbers=[3,7,11];let firstBatchTotals;
  for(let i=0;i<numbers.length;i++){
   await call('/api/machines/public-01/round/ball',{session:host,body:{roundId:round.id,ballIndex:i+1,number:numbers[i],eventId:round.id+':qa:'+(i+1)}});
-  const forecast=await until(async()=>{const data=await call('/api/admin/machines/public-01',{adminOnly:true});const f=data.hitForecasts?.[playerId];return f?.ballCount===i+1&&f.gains?.length===25?f:null;},'actual nine-game forecast after ball '+(i+1),50000);
+  const forecast=await until(async()=>{const data=await call('/api/admin/machines/public-01',{adminOnly:true});const f=data.hitForecasts?.[playerId];return f?.ballCount===i+1&&f.gains?.length===25?f:null;},'actual ten-game forecast after ball '+(i+1),50000);
   for(let n=1;n<=25;n++){if(numbers.slice(0,i+1).includes(n))assert.equal(forecast.gains[n-1],null);else assert.ok(Number.isSafeInteger(forecast.gains[n-1])&&forecast.gains[n-1]>=0);}
   const batchTotals=await page.evaluate(()=>window.__client243.app.engines.filter(e=>e.kind==='cookie').map(e=>e.totalHundredths));
   if(i===0)firstBatchTotals=batchTotals;if(i===1)assert.deepEqual(batchTotals,firstBatchTotals,'second number only collects in Cookie; Six Drop now receives every number');
@@ -72,11 +72,11 @@ try{
  // The actual button triggers the actual server cancellation and client rejoin.
  await monitor.waitForFunction(id=>window.SweetsMonitorSnapshotV242?.round?.id===id,round.id);
  const forcedResponse=monitor.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/bet-now')&&r.request().method()==='POST');
- await monitor.locator('#server-bet-now').click();const forced=await (await forcedResponse).json();assert.equal(forced.ok,true);assert.equal(forced.refundedTotal,27000);
+ await monitor.locator('#server-bet-now').click();const forced=await (await forcedResponse).json();assert.equal(forced.ok,true);assert.equal(forced.refundedTotal,30000);
  await page.bringToFront();
  await page.waitForFunction(id=>window.SweetsSharedControllerV224.describe().joinedRoundId===id,forced.roundId,{timeout:12000});
  assert.equal(joins.filter(j=>j.roundId===forced.roundId).length,1,'exactly one next-round reservation');
- assert.equal(await page.evaluate(()=>window.__client243.app.credit),973000,'refund followed by one new 27,000 BET');
+ assert.equal(await page.evaluate(()=>window.__client243.app.credit),970000,'refund followed by one new 30,000 BET');
  const queueKeys=['sweets-shared-loss-v224','sweets-shared-normal-settlements-v225','sweets-shared-settlement-review-v225'];
  const queueWrites=()=>page.evaluate(keys=>keys.reduce((n,k)=>n+(window.__storage243[k]||0),0),queueKeys);
  const beforeWrites=await queueWrites();await sleep(4500);const repeatedWrites=await queueWrites()-beforeWrites;assert.equal(repeatedWrites,0,'steady refund notices must not repeatedly write storage');
@@ -86,7 +86,7 @@ try{
  await call('/api/machines/public-01/round/ball',{session:host,body:{roundId:forced.roundId,ballIndex:1,number:4,eventId:forced.roundId+':1'}});
  await page.waitForFunction(()=>window.__client243.app.draws.includes(4),null,{timeout:12000});
 
- assert.equal(await page.evaluate(()=>window.__client243.app.credit),973000);
+ assert.equal(await page.evaluate(()=>window.__client243.app.credit),970000);
  // No foreground rAF or normal UI scheduler is allowed to advance the payout.
  // Chromium remains runnable while document.hidden is overridden to emulate
  // background-tab throttling, so native Promise timers still have a chance.
@@ -126,11 +126,11 @@ try{
  },'hidden real 9-game result, payout, and next ready',140000);
  const hiddenState=await page.evaluate(()=>({credit:window.__client243.app.credit,phases:window.__v246Phases,award:window.__v246Award,advanceResult:window.__v246AdvanceResult}));
  assert.ok(hiddenState.award&&hiddenState.advanceResult>0,'native result logic advances while hidden');
- assert.equal(hiddenState.award.win,hiddenState.award.roundWins.reduce((a,b)=>a+b,0),'nine game award sum');
- assert.equal(hiddenState.credit,973000+hiddenState.award.win,'one exact credited award, no AUTO REBET in this assertion');
+ assert.equal(hiddenState.award.win,hiddenState.award.roundWins.reduce((a,b)=>a+b,0),'ten game award sum');
+ assert.equal(hiddenState.credit,970000+hiddenState.award.win,'one exact credited award, no AUTO REBET in this assertion');
  const ledger=await call('/api/admin/machines/public-01',{adminOnly:true});
  const account=ledger.payoutControlV3.players.find(p=>p.playerId===playerId);
- assert.equal(account.lifetimeBet,27000,'the cancelled round must not be counted as IN');
+ assert.equal(account.lifetimeBet,30000,'the cancelled round must not be counted as IN');
  assert.equal(account.lifetimeWin,hiddenState.award.win,'server OUT equals the native game result');
  assert.equal(account.wallet.credit,hiddenState.credit,'local and server wallets agree');
  assert.ok(account.sixDropV247&&account.sixDropV247.version===247,'server owns the progressive ledger');
@@ -142,7 +142,7 @@ try{
  await page.screenshot({path:out+'/hidden-nine-games-complete.png'});
  assert.equal(errors.length,0,JSON.stringify(errors));
  assert.ok(!warnings.some(s=>s.includes('display unavailable')),JSON.stringify(warnings));
- const report={version,hiddenState,hiddenNineGameResultAndPayout:true,clientGames:9,forecastChecks,monitorTiles:dom.tiles,monitorRatios:true,normalRoundStarted:true,forcedRejoined:true,forcedCountdownStarted:true,nextBallReceived:true,forcedRoundBetRequests:joins.filter(j=>j.roundId===forced.roundId).length,confirmedRefund:27000,creditAfterRefundAndNewBet:973000,unchangedRefundQueueWrites4500ms:repeatedWrites,pageErrors:errors};
+ const report={version,hiddenState,hiddenNineGameResultAndPayout:true,clientGames:10,forecastChecks,monitorTiles:dom.tiles,monitorRatios:true,normalRoundStarted:true,forcedRejoined:true,forcedCountdownStarted:true,nextBallReceived:true,forcedRoundBetRequests:joins.filter(j=>j.roundId===forced.roundId).length,confirmedRefund:30000,creditAfterRefundAndNewBet:970000,unchangedRefundQueueWrites4500ms:repeatedWrites,pageErrors:errors};
  await fs.writeFile('docs/client-v246-qa.json',JSON.stringify(report,null,2)+'\n');await fs.writeFile(out+'/result.json',JSON.stringify(report,null,2));console.log('CLIENT_BROWSER_V243_PASS',JSON.stringify(report));
 }catch(error){
  console.error('CLIENT_BROWSER_V243_FAIL',error);

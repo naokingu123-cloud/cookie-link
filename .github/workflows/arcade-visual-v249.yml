@@ -1,8 +1,8 @@
-name: Arcade v250 tabs Castella61 and game surfaces
+name: Arcade v251 Dango and ten-game cabinet
 on:
   workflow_dispatch:
   push:
-    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61']
+    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo']
     paths:
       - 'index.html'
       - 'app-version.json'
@@ -15,6 +15,10 @@ on:
       - 'assets/shared-machine-v176.js'
       - 'assets/party-castella*'
       - 'assets/castella-lesson.js'
+      - 'assets/dango*'
+      - 'assets/dango-art/**'
+      - 'server-thinking-v251.mjs'
+      - 'tests/*v251*'
       - 'optimized/app-01.js'
       - 'optimized/style-01.css'
       - 'tests/*v250*'
@@ -25,7 +29,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 16
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,6 +41,7 @@ jobs:
           npm run check
           npm run test:sixdrop
           npm run test:castella
+          npm run test:dango
           node tests/client-smooth-v246.mjs
           node tests/hidden-engine-clocks-v246.mjs
           node tests/hidden-results-v246.mjs
@@ -47,7 +52,7 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
-      - name: Nine tabs, shared BET and continuous reach strip
+      - name: Ten tabs, shared BET and continuous reach strip
         id: tabs
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/tabs-v250-browser.mjs
@@ -58,6 +63,10 @@ jobs:
           name: arcade-v250-tabs-diagnostics
           path: qa-tabs-v250/
           retention-days: 3
+      - name: Dango placement, thinking deadline, skewers and payout
+        id: dango
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/dango-v251-view.mjs
       - name: Castella61 real eight-ball round, gauges and Sugar
         id: castella
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
@@ -77,16 +86,17 @@ jobs:
         run: |
           node tests/client-browser-v243.mjs
           node tests/sixdrop-hud-v247.mjs
-      - name: Full hidden nine-game round, payout and carry
+      - name: Full hidden ten-game round, payout and carry
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/client-hidden-browser-v246.mjs
       - name: Retain every game screenshot and behavior report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v250-visual-verification
+          name: arcade-v251-visual-verification
           path: |
             qa-v250/
+            qa-dango-v251/
             qa-tabs-v250/
             qa-castella-v250/
             qa-sixdrop-v250/

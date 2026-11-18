@@ -76,6 +76,7 @@ html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="wine
 html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="popcorn"]{--v249-card-light:#fff8bb;--v249-card-mid:#f7d864;--v249-card-edge:#d28a29}
 html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="jelly"]{--v249-card-light:#e5ffde;--v249-card-mid:#9ce39d;--v249-card-edge:#3a9d78}
 html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="stick"]{--v249-card-light:#ffe7bd;--v249-card-mid:#f3b879;--v249-card-edge:#bd6c3e}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="dango"]{--v249-card-light:#fff1df;--v249-card-mid:#edb4c7;--v249-card-edge:#a3696d}
 html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="castella"]{--v249-card-light:#ffe8c2;--v249-card-mid:#ffc171;--v249-card-edge:#dd7138}
 html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot>.all-tab-frame-overlay{
  inset:0!important;border:2px solid #fff9e8!important;border-radius:8px!important;
@@ -429,4 +430,41 @@ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop small{font:800 9
  html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-track{animation:none!important;transform:none!important;min-width:0;will-change:auto}
  html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence[aria-hidden="true"]{display:none}
  html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-clip{overflow-x:auto!important;scrollbar-width:none}
+}
+
+/* v251: the tenth card is a game. A large shared BET control belongs to the
+   console, alongside the history and ledger, rather than covering any card. */
+html.arcade-v249.arcade-tabs-v250 #screen #console{
+ display:grid!important;grid-template-columns:84px minmax(0,1fr) 44px!important;
+ grid-template-rows:24px 40px!important;gap:3px 7px!important;
+ height:78px!important;min-height:78px!important;padding:5px 9px 6px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #console>.v250-common-bet{
+ position:relative!important;inset:auto!important;grid-column:1!important;grid-row:1/3!important;
+ width:84px!important;height:67px!important;z-index:2!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch{
+ flex-direction:column!important;gap:2px!important;padding:3px!important;border-width:2px!important;border-radius:9px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch>span{font-size:11px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch>strong{font-size:20px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch small{font-size:9px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .drawline{
+ grid-column:2/4!important;grid-row:1!important;display:grid!important;width:100%!important;
+ height:24px!important;grid-template-columns:146px minmax(0,1fr)!important;grid-template-rows:24px!important;gap:0 5px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #console .history-label{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .balls{grid-column:1!important;grid-row:1!important;width:146px!important;height:24px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console #ballinfo{grid-column:2!important;grid-row:1!important;width:100%!important;text-align:center!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .meters{grid-column:2!important;grid-row:2!important;height:40px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .menu-reserve{grid-column:3!important;grid-row:2!important;height:36px!important}
+html.arcade-v249.arcade-tabs-v250 body.mobile-landscape #screen{grid-template-rows:minmax(130px,1fr) 178px 78px!important}
+
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="dango"]{
+ grid-column:5!important;grid-row:2!important;
+ --game-pale:#fff0df;--game-mid:#eab2bf;--game-edge:#a86e6b;--game-ink:#683d3c;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="dango"]:not(.selected) .mini-wrap{
+ width:73px!important;max-width:calc(100% - 4px)!important;height:47px!important;left:50%!important;
+ transform:translateX(-50%)!important;transform-origin:center!important;
 }

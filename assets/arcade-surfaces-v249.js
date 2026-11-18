@@ -6,12 +6,12 @@
 if(window.SweetsArcadeSurfacesV249)return;
 const query=new URLSearchParams(location.search);
 if(query.get('serverSettlementWorker')==='1'||query.get('serverHost')==='1')return;
-const kinds=new Set(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella']);
+const kinds=new Set(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango']);
 const stages=new Map(),motions=window.matchMedia('(prefers-reduced-motion: reduce)');
 const root=document.documentElement;
 root.classList.add('arcade-v249');root.dataset.arcadeSurfaces='v249';
 const kindOf=(slot,engine)=>kinds.has(engine?.kind)?engine.kind:window.SweetsLineup?.ids?.[slot.i]||'cookie';
-const settledKinds=new Set(['jelly','stick','castella']);
+const settledKinds=new Set(['jelly','stick','castella','dango']);
 function kindCue(kind,phase,detail,engine,previous){
  if(phase==='allclear'||phase==='pyramidAllClear'||phase==='wineryAllFull'||phase==='reversal'||phase==='reversalBonus')return ['clear',4];
  if(phase==='sugaraward')return ['sugar',3];
@@ -41,6 +41,7 @@ function kindCue(kind,phase,detail,engine,previous){
   }
   if(kind==='stick')return state.reversalThisMove?['clear',4]:state.flipped?.length?['flip',state.flipped.length>=8?3:2]:null;
   if(kind==='castella')return state.bakedCount>previous.baked?['bake',state.highestRole?4:state.bakedCount-previous.baked>=6?3:2]:['hit',1];
+  if(kind==='dango')return state.newLines?.length?['bingo',state.highestRole?4:state.newLines.length>=3?3:2]:['hit',1];
  }
  return null;
 }

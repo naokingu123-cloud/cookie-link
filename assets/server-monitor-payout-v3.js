@@ -3,7 +3,7 @@ const query=new URLSearchParams(location.search),machine=query.get('machine')||'
 const $=id=>document.getElementById(id),hostFrame=$('host-frame'),workerFrame=$('settlement-worker'),tbody=$('players'),empty=$('empty');
 let hostLastReload=0,hostBusy=false,lastSnapshot=null,controlsInitialized=false,drawDeferred=false;
 const openDetails=new Set();
-const GAME_NAMES={cookie:'クッキーリンク',choco:'チョコレートキャニオン',candy:'シックスドロップ',gelato:'ジェラートプリズム',winery:'ジュースピラミッド',jelly:'ジェリービンゴ',popcorn:'ポップコーンスプラッシュ',stick:'ワッフルリバーシ',castella:'パーティカステラ'};
+const GAME_NAMES={cookie:'クッキーリンク',choco:'チョコレートキャニオン',candy:'シックスドロップ',gelato:'ジェラートプリズム',winery:'ジュースピラミッド',jelly:'ジェリービンゴ',popcorn:'ポップコーンスプラッシュ',stick:'ワッフルリバーシ',castella:'パーティカステラ',dango:'ダンゴデビンゴ'};
 const num=value=>Math.max(0,Number(value)||0),fmt=value=>Math.floor(num(value)).toLocaleString('ja-JP'),fmt1=value=>Number(value||0).toFixed(1);
 const fmtRate=value=>value==null||!Number.isFinite(Number(value))?'-':Number(value).toFixed(1)+'%';
 const gameName=id=>GAME_NAMES[id]||String(id||'ゲーム').replace(/[-_]/g,' ').toUpperCase();

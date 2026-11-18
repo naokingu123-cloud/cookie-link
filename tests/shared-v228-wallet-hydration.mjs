@@ -5,6 +5,13 @@ import vm from 'node:vm';
 
 const source=await readFile(process.env.SWEETS_TEST_PAYOUT_SOURCE||new URL('../assets/server-payout-control-v3.js',import.meta.url),'utf8');
 const bundle=await readFile(new URL('../optimized/app-01.js',import.meta.url),'utf8');
+const lineupSource=await readFile(new URL('../assets/lineups-v91.js',import.meta.url),'utf8');
+const lineupContext={window:{},location:{search:''},URLSearchParams,
+ document:{documentElement:{dataset:{},toggleAttribute(){}},addEventListener(){},head:{}},
+ MutationObserver:class{observe(){}}};
+vm.runInNewContext(lineupSource,lineupContext);
+const lineup=Array.from(lineupContext.window.SweetsLineup.ids);
+assert.equal(lineup.length,10);assert.equal(lineup.at(-1),'dango');
 const begin=bundle.indexOf('class Arcade{'),end=bundle.indexOf('// Only the next HIT is simulated.',begin);
 assert.ok(begin>=0&&end>begin);
 const arcadeSource=bundle.slice(begin,end);
@@ -29,7 +36,7 @@ function fixture({savedWallet=null,startupControl=null}={}){
  };
  const context={window:null,globalThis:null,console:{info(){},warn(...args){calls.warnings.push(args);},error:console.error},
   URLSearchParams,location:{search:''},Date,setTimeout,clearTimeout,queueMicrotask,
-  Engine,medalWin:(bet,hundredths)=>Math.floor(bet*hundredths/100),debugPayoutTarget:90,
+  Engine,SweetsLineup:{ids:lineup},medalWin:(bet,hundredths)=>Math.floor(bet*hundredths/100),debugPayoutTarget:90,
   document:{getElementById(){return null;}},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}},dispatchEvent(){},
   localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value))},
   SweetsSharedMachine:{client,get active(){return active;}},
@@ -38,7 +45,7 @@ function fixture({savedWallet=null,startupControl=null}={}){
   changed(){calls.change++;}
  };
  context.window=context;context.globalThis=context;vm.createContext(context);
- vm.runInContext(arcadeSource+'\nglobalThis.app=new Arcade({initialEngines:Array(9).fill(Engine),onChange:changed});app.credit=1000000;app.displayCredit=1000000;app.drawSource=rouletteDrawSource;',context);
+ vm.runInContext(arcadeSource+'\nglobalThis.app=new Arcade({initialEngines:SweetsLineup.ids.map(()=>Engine),onChange:changed});app.credit=1000000;app.displayCredit=1000000;app.drawSource=rouletteDrawSource;',context);
  const app=context.app,nativePrepare=app.prepare;app.prepare=function(...args){calls.prepare++;return nativePrepare.apply(this,args);};
  vm.runInContext(source,context);
  return {app,client,behavior,calls,storage,context,
@@ -61,17 +68,17 @@ await test('a fresh Arcade hydrates an already cached wallet revision exactly on
  assert.equal(f.calls.reset,0);assert.deepEqual(f.calls.warnings,[]);
 });
 
-await test('a successful 27000 BET synchronizes 973000 without another debit or reset',async()=>{
+await test('a successful 30000 BET synchronizes 970000 without another debit or reset',async()=>{
  const f=fixture({startupControl:control(1000000,1)});await flush();f.setRound('round-1',{pending:true});
- const value=control(973000,2,{source:'bet',roundId:'round-1'});
- f.behavior.join={round:{id:'round-1',phase:'BETTING',participant:{playerId:'PLAYER',clientRoundToken:'token-round-1',creditAfterBet:973000}},payoutControlV3:value};
- const payload={roundId:'round-1',clientRoundToken:'token-round-1',totalBet:27000};
+ const value=control(970000,2,{source:'bet',roundId:'round-1'});
+ f.behavior.join={round:{id:'round-1',phase:'BETTING',participant:{playerId:'PLAYER',clientRoundToken:'token-round-1',creditAfterBet:970000}},payoutControlV3:value};
+ const payload={roundId:'round-1',clientRoundToken:'token-round-1',totalBet:30000};
  await f.client.join(payload);
- assert.equal(f.app.credit,973000);assert.equal(f.app.displayCredit,973000);assert.equal(f.calls.reset,0);assert.equal(f.calls.prepare,0);
+ assert.equal(f.app.credit,970000);assert.equal(f.app.displayCredit,970000);assert.equal(f.calls.reset,0);assert.equal(f.calls.prepare,0);
  await f.client.join(payload);f.emit(value);await flush();
- assert.equal(f.app.credit,973000,'an idempotent BET response must not debit the stake twice');
+ assert.equal(f.app.credit,970000,'an idempotent BET response must not debit the stake twice');
  assert.equal(JSON.parse(f.storage.get('sweets-payout-wallet-v3')).revision,2);
- assert.equal(f.app.bets.reduce((sum,value)=>sum+value,0),27000);
+ assert.equal(f.app.bets.reduce((sum,value)=>sum+value,0),30000);
 });
 
 await test('per-game BET telemetry follows the normalized reservation payload rather than old app flags',async()=>{
@@ -82,46 +89,55 @@ await test('per-game BET telemetry follows the normalized reservation payload ra
  assert.deepEqual(Array.from(f.app.enabled),[true,false],'preparing the request must not mutate the currently displayed model');
 });
 
+await test('the production ten-game reservation preserves Dango identity and its 3000 BET',async()=>{
+ const f=fixture();await flush();f.app.engines.forEach((engine,index)=>{engine.kind=lineup[index];});
+ const bets=lineup.map(()=>3000),enabled=lineup.map(()=>true);
+ await f.client.join({roundId:'round-1',clientRoundToken:'token-round-1',bets,locked:bets,enabled,totalBet:30000});
+ assert.deepEqual(f.calls.join[0].payoutV3Bet.games,lineup.map(id=>({id,bet:3000})));
+ assert.equal(f.calls.join[0].payoutV3Bet.games.reduce((sum,row)=>sum+row.bet,0),30000);
+ assert.deepEqual(f.calls.join[0].payoutV3Bet.games.at(-1),{id:'dango',bet:3000});
+});
+
 await test('a matching reservation snapshot can synchronize a lost BET ACK without reset',async()=>{
  const f=fixture({startupControl:control(1000000,1)});await flush();f.setRound('round-1',{pending:true});
- f.emit(control(973000,2,{source:'bet',roundId:'round-1'}));await flush();
- assert.equal(f.app.credit,973000);assert.equal(f.app.displayCredit,973000);assert.equal(f.calls.reset,0);
- f.setRound('round-1',{phase:'playing',joined:true,running:true,credit:973000});
- f.emit(control(1000000,1));await flush();assert.equal(f.app.credit,973000);assert.equal(f.calls.reset,0);
+ f.emit(control(970000,2,{source:'bet',roundId:'round-1'}));await flush();
+ assert.equal(f.app.credit,970000);assert.equal(f.app.displayCredit,970000);assert.equal(f.calls.reset,0);
+ f.setRound('round-1',{phase:'playing',joined:true,running:true,credit:970000});
+ f.emit(control(1000000,1));await flush();assert.equal(f.app.credit,970000);assert.equal(f.calls.reset,0);
 });
 
 await test('old wallets do not overwrite active, reserved or pending BET balances',async()=>{
  for(const state of [{phase:'playing',running:true,joined:true},{joined:true},{pending:true}]){
-  const f=fixture();await flush();f.setRound('round-2',{...state,credit:946000});
+  const f=fixture();await flush();f.setRound('round-2',{...state,credit:940000});
   for(const source of ['bet','client','server-worker'])f.emit(control(980000,8,{source,roundId:'round-1'}));
-  await flush();assert.equal(f.app.credit,946000);assert.equal(f.app.displayCredit,946000);assert.equal(f.calls.reset,0);assert.equal(f.calls.change,0);
+  await flush();assert.equal(f.app.credit,940000);assert.equal(f.app.displayCredit,940000);assert.equal(f.calls.reset,0);assert.equal(f.calls.change,0);
  }
 });
 
 await test('an expired pending attempt cannot prevent the next authoritative wallet from hydrating',async()=>{
  for(const changed of [false,true]){
-  const f=fixture();await flush();f.setRound('round-1',{pending:true,credit:973000});
-  f.client.round=changed?{id:'round-2',phase:'BETTING',participant:null}:{id:'round-1',phase:'COMPLETE',participant:{playerId:'PLAYER',settlement:{creditAfter:983000}}};
-  f.emit(control(983000,3,{source:'server-worker',roundId:'round-1'}));await flush();
-  assert.equal(f.app.credit,983000);assert.equal(f.app.displayCredit,983000);assert.equal(f.calls.reset,0);
+  const f=fixture();await flush();f.setRound('round-1',{pending:true,credit:970000});
+  f.client.round=changed?{id:'round-2',phase:'BETTING',participant:null}:{id:'round-1',phase:'COMPLETE',participant:{playerId:'PLAYER',settlement:{creditAfter:980000}}};
+  f.emit(control(980000,3,{source:'server-worker',roundId:'round-1'}));await flush();
+  assert.equal(f.app.credit,980000);assert.equal(f.app.displayCredit,980000);assert.equal(f.calls.reset,0);
  }
 });
 
 await test('a late reservation balance cannot rewind an already calculated payout',async()=>{
- const f=fixture();await flush();f.setRound('round-1',{phase:'paying',joined:true,running:true,credit:983000});
- f.app.totalWin=10000;f.app.displayCredit=977000;f.app.payout={from:973000,to:983000,amount:10000,elapsed:400,duration:1000};
- f.emit(control(973000,2,{source:'bet',roundId:'round-1'}));await flush();
- assert.equal(f.app.credit,983000);assert.equal(f.app.displayCredit,977000);assert.equal(f.app.phase,'paying');assert.equal(f.calls.reset,0);
+ const f=fixture();await flush();f.setRound('round-1',{phase:'paying',joined:true,running:true,credit:980000});
+ f.app.totalWin=10000;f.app.displayCredit=974000;f.app.payout={from:970000,to:980000,amount:10000,elapsed:400,duration:1000};
+ f.emit(control(970000,2,{source:'bet',roundId:'round-1'}));await flush();
+ assert.equal(f.app.credit,980000);assert.equal(f.app.displayCredit,974000);assert.equal(f.app.phase,'paying');assert.equal(f.calls.reset,0);
 });
 
 await test('own normal settlement ACK records the wallet while preserving result animation',async()=>{
- const f=fixture();await flush();f.setRound('round-1',{phase:'result',joined:true,running:true,credit:973000});
+ const f=fixture();await flush();f.setRound('round-1',{phase:'result',joined:true,running:true,credit:970000});
  f.app.totalWin=10000;f.app.result={elapsed:100,duration:1800};
- f.behavior.settle={settlement:{totalWin:10000,creditAfter:983000},payoutControlV3:control(983000,3,{source:'client',roundId:'round-1'})};
- const result=f.app.result;await f.client.settle({roundId:'round-1',totalWin:10000,creditAfter:983000});
+ f.behavior.settle={settlement:{totalWin:10000,creditAfter:980000},payoutControlV3:control(980000,3,{source:'client',roundId:'round-1'})};
+ const result=f.app.result;await f.client.settle({roundId:'round-1',totalWin:10000,creditAfter:980000});
  assert.equal(f.app.phase,'result');assert.equal(f.app.result,result);assert.equal(f.app.totalWin,10000);
- assert.equal(f.calls.reset,0);assert.equal(f.calls.prepare,0);assert.equal(f.app.credit,973000,'the lifecycle controller owns payout application after its ACK');
- assert.equal(JSON.parse(f.storage.get('sweets-payout-wallet-v3')).credit,983000);
+ assert.equal(f.calls.reset,0);assert.equal(f.calls.prepare,0);assert.equal(f.app.credit,970000,'the lifecycle controller owns payout application after its ACK');
+ assert.equal(JSON.parse(f.storage.get('sweets-payout-wallet-v3')).credit,980000);
 });
 
 await test('a current pending BET rejected for funds synchronizes the authoritative balance',async()=>{
@@ -132,12 +148,12 @@ await test('a current pending BET rejected for funds synchronizes the authoritat
 });
 
 await test('stale successful BET responses cannot roll back a newer authoritative wallet',async()=>{
- const f=fixture({startupControl:control(983000,3,{source:'client',roundId:'round-1'})});await flush();
- f.setRound('round-2',{pending:true,credit:983000});
- f.behavior.join={staleForTest:true,round:{id:'round-2',phase:'BETTING',participant:{playerId:'PLAYER',clientRoundToken:'token-round-2'}},payoutControlV3:control(956000,4,{source:'bet',roundId:'round-2'})};
+ const f=fixture({startupControl:control(980000,3,{source:'client',roundId:'round-1'})});await flush();
+ f.setRound('round-2',{pending:true,credit:980000});
+ f.behavior.join={staleForTest:true,round:{id:'round-2',phase:'BETTING',participant:{playerId:'PLAYER',clientRoundToken:'token-round-2'}},payoutControlV3:control(950000,4,{source:'bet',roundId:'round-2'})};
  await f.client.join({roundId:'round-2',clientRoundToken:'token-round-2'});
- assert.equal(f.app.credit,983000);assert.equal(f.calls.reset,0);
- f.behavior.state=f.behavior.join;await f.client.getState();assert.equal(f.app.credit,983000);
+ assert.equal(f.app.credit,980000);assert.equal(f.calls.reset,0);
+ f.behavior.state=f.behavior.join;await f.client.getState();assert.equal(f.app.credit,980000);
  assert.equal(JSON.parse(f.storage.get('sweets-payout-wallet-v3')).revision,3);
 });
 

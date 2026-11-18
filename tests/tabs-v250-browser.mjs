@@ -6,7 +6,7 @@ import {createUiFixture,sleep,until} from './ui-v250-fixture.mjs';
 
 const fixture=await createUiFixture({startRound:false,output:'qa-tabs-v250'});
 const {page,context,call,host,errors,output}=fixture;
-const report={version:250,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
+const report={version:251,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
 async function readReachMotion(){
  return page.evaluate(()=>{
   const slot=window.__tabPreview250?.slot,track=slot?.reachNumbers.querySelector('.v250-reach-track');
@@ -18,7 +18,7 @@ async function readReachMotion(){
 }
 try{
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===250&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
+ await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===251&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
  await page.evaluate(()=>Promise.all([...document.querySelectorAll('.v250-background-logo')].map(image=>image.decode())));
  const firstBet=await page.evaluate(()=>({bets:[...window.__qa250.app.bets],credit:window.__qa250.app.credit,unit:[...window.__qa250.unit]}));
  await page.locator('.v250-shared-bet-switch').focus();await page.keyboard.press('Space');
@@ -51,7 +51,7 @@ try{
     return {kind:slot.engine.kind,active:slot.i===active,holder,bounds,mini,add,one,backdropVisible:shown(backdrop),backdropLoaded:backdrop.complete&&backdrop.naturalWidth>0,miniZ:Number(getComputedStyle(wrap).zIndex),backdropZ:Number(getComputedStyle(backdrop).zIndex),logicalMiniWidth:parseFloat(getComputedStyle(wrap).width),titleRemoved:getComputedStyle(slot.tab.querySelector('.tab-game-name')).display==='none',buttonFont:parseFloat(getComputedStyle(slot.addBet).fontSize)};
    })};
   });
-  assert.equal(view.slots.length,9);assert.equal(view.common.visibleButtons,1);assert.equal(view.common.outsideTablist,true);assert.equal(view.common.clickable,true,'shared BET switch has an independent hit target');
+  assert.equal(view.slots.length,10);assert.equal(view.common.visibleButtons,1);assert.equal(view.common.outsideTablist,true);assert.equal(view.common.clickable,true,'shared BET switch has an independent hit target');
   for(const slot of view.slots){
    assert.equal(slot.titleRemoved,true);assert.equal(slot.backdropLoaded,true);assert.equal(slot.backdropVisible,!slot.active);
    assert.ok(slot.bounds.left>=slot.holder.left-1&&slot.bounds.right<=slot.holder.right+1);
@@ -62,7 +62,7 @@ try{
   }
   await page.screenshot({path:output+'/tabs-'+width+'x'+height+'.png'});report.viewports.push(view);
  }
- for(let i=0;i<9;i++){
+ for(let i=0;i<10;i++){
   await page.locator('#tab'+i).click();await sleep(240);
   const selection=await page.evaluate(()=>({active:window.__qa250.active,selected:window.__qa250.slots.filter(s=>s.tab.getAttribute('aria-selected')==='true').map(s=>s.i),panels:window.__qa250.slots.filter(s=>!s.panel.hidden).map(s=>s.i),logos:[...document.querySelectorAll('.v249-selected-logo')].filter(n=>getComputedStyle(n).display!=='none'&&getComputedStyle(n).visibility!=='hidden').length}));
   assert.equal(selection.active,i);assert.deepEqual(selection.selected,[i]);assert.deepEqual(selection.panels,[i]);assert.equal(selection.logos,1);report.selection.push(selection);

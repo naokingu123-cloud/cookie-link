@@ -7,9 +7,10 @@ import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const base=new URL(process.env.SIXDROP_PUBLIC_BASE||'https://naokingu123-cloud.github.io/cookie-link/');
 const revision=process.env.GITHUB_SHA||'local-verification',out='qa-six-v248-public';
-const gameKinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella'];
+const gameKinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const arcadeFiles=['assets/arcade-brand-v249.js','assets/arcade-brand-v249.css','assets/arcade-tabs-v249.js','assets/arcade-tabs-v249.css','assets/arcade-surfaces-v249.js','assets/arcade-surfaces-v249.css','assets/jelly-view.js','assets/game-menu-v91.js','assets/lineups-v91.js',...gameKinds.map(kind=>'assets/arcade-v249/logo-'+kind+'.webp')];
 arcadeFiles.push('assets/party-castella-rules.js','assets/party-castella-host.js','assets/party-castella.js','assets/party-castella.css','assets/castella-lesson.js');
+arcadeFiles.push('assets/dango-bingo-rules.js','assets/dango-bingo-view.js','assets/dango-bingo-host.js','assets/dango-bingo-lesson.js','assets/dango-bingo.css','assets/dango-art/background.webp','assets/dango-thinking-v251.js','assets/server-payout-control-v3.js','assets/player-lounge.js','assets/demo-suite-v91.js','assets/arcade-show-v91.js');
 const files=['index.html','app-version.json','optimized/app-01.js','optimized/style-01.css','optimized/media/a73bbbdd98d48aac.woff2','assets/cookie-upgrade-patches.js','assets/sixdrop-progressive-core-v247.js','assets/sixdrop-progressive-host-v247.js','assets/sixdrop-progressive-v247.css','assets/shared-machine-v176.js','assets/shared-client-controller-v224.js','assets/stations-v235.js','assets/stations-progressive-v246.js','monitor.html','assets/monitor-ledger-v241.js','assets/server-monitor-v241.js','assets/server-monitor-v242.js',...arcadeFiles];
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=Object.fromEntries(await Promise.all(files.map(async name=>[name,digest(await fs.readFile(name))])));
@@ -53,7 +54,7 @@ try{
   const url=new URL(base);url.searchParams.set('appv',appVersion);url.searchParams.set('verify',revision);
   const response=await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:60000});assert.equal(response.status(),200);
   await page.waitForFunction(()=>window.SixDropV247?.engine&&window.SweetsSharedMachine&&window.SweetsStationsV235&&document.querySelector('#sd247-bank .gold-number'),null,{timeout:60000});
-  await page.waitForFunction(()=>window.SweetsArcadeBrandV249?.catalog&&window.SweetsArcadeTabsV249&&window.SweetsArcadeSurfacesV249&&document.querySelectorAll('#tabs img.v249-selected-logo').length===9&&['arcade-brand-v249.css','arcade-tabs-v249.css','arcade-surfaces-v249.css'].every(name=>[...document.styleSheets].some(sheet=>sheet.href?.includes(name))),null,{timeout:30000});
+  await page.waitForFunction(()=>window.SweetsArcadeBrandV249?.catalog&&window.SweetsArcadeTabsV249&&window.SweetsArcadeSurfacesV249&&document.querySelectorAll('#tabs img.v249-selected-logo').length===10&&['arcade-brand-v249.css','arcade-tabs-v249.css','arcade-surfaces-v249.css'].every(name=>[...document.styleSheets].some(sheet=>sheet.href?.includes(name))),null,{timeout:30000});
   await page.evaluate(()=>document.querySelector('#tab2')?.click());
   await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('#tabs img.v249-game-logo,#tabs img.v249-selected-logo')].map(image=>image.decode()));});
   await page.waitForFunction(()=>window.SweetsArcadeTabsV249.describe().runningAnimations===0,null,{timeout:3000});
@@ -73,8 +74,8 @@ try{
   assert.deepEqual([...info.finalColors].sort(),['violet','pink','red','orange'].sort());
   const arcade=info.arcade;
   assert.equal(arcade.rootClass,true);assert.equal(arcade.surfaceRevision,'v249');assert.equal(arcade.activeGame,'candy');assert.equal(arcade.landscape,mobile&&width>height);
-  assert.deepEqual(arcade.brand,{games:9,titles:9,loaded:9});assert.equal(arcade.tabs.logos,9);assert.equal(arcade.tabs.activeIndex,2);assert.equal(arcade.tabs.runningAnimations,0);assert.equal(arcade.surfaces,9);
-  assert.deepEqual([...arcade.catalogKinds].sort(),[...gameKinds].sort());assert.equal(arcade.logos.length,9);
+  assert.deepEqual(arcade.brand,{games:10,titles:10,loaded:10});assert.equal(arcade.tabs.logos,10);assert.equal(arcade.tabs.activeIndex,2);assert.equal(arcade.tabs.runningAnimations,0);assert.equal(arcade.surfaces,10);
+  assert.deepEqual([...arcade.catalogKinds].sort(),[...gameKinds].sort());assert.equal(arcade.logos.length,10);
   for(const logo of arcade.logos){assert.ok(logo.src.split('?')[0].endsWith('assets/arcade-v249/logo-'+logo.kind+'.webp'));assert.ok(logo.width>=100&&logo.height>=30,logo.kind+' published logo decodes');}
   assert.ok(arcade.selectedLogo.visible&&arcade.selectedLogo.width>30&&arcade.selectedLogo.height>20,'published selected card displays the logo face');assert.ok(arcade.selectedLogo.src.split('?')[0].endsWith('assets/arcade-v249/logo-candy.webp'));
   assert.ok(['brand','tabs','surfaces'].every(name=>arcade.styles.some(href=>href.includes('arcade-'+name+'-v249.css'))),'all three published presentation styles are loaded');
@@ -85,13 +86,23 @@ try{
    const bet=[...document.querySelectorAll('.v250-shared-bet-switch')];
    return {tabsRevision:window.SweetsArcadeTabsV249.version,backgroundLogos:backgrounds.length,visibleBackgrounds:backgrounds.filter(visible).length,decodedBackgrounds:backgrounds.filter(n=>n.complete&&n.naturalWidth===768).length,commonBetButtons:bet.length,commonBetOutsideTabs:bet.every(n=>!document.getElementById('tabs').contains(n)),castellaRevision:rules.REVISION,castellaHoles:state.cells.length,castellaEdges:state.edges.length,castellaSpecials:{pour:state.specials.pour.length,fire:state.specials.fire.length,sugar:state.specials.sugar.length,odds:state.specials.odds.length},castellaPayoutRows:rules.payRows.length};
   });
-  assert.equal(current.tabsRevision,250);assert.equal(current.backgroundLogos,9);assert.equal(current.visibleBackgrounds,8);assert.equal(current.decodedBackgrounds,9);
+  assert.equal(current.tabsRevision,251);assert.equal(current.backgroundLogos,10);assert.equal(current.visibleBackgrounds,9);assert.equal(current.decodedBackgrounds,10);
   assert.equal(current.commonBetButtons,1);assert.equal(current.commonBetOutsideTabs,true);
   assert.equal(current.castellaRevision,250);assert.equal(current.castellaHoles,61);assert.equal(current.castellaEdges,84);
   assert.deepEqual(current.castellaSpecials,{pour:2,fire:2,sugar:1,odds:0});assert.equal(current.castellaPayoutRows,13);
   info.v250=current;
   assert.deepEqual(errors,[],'published frontend has no uncaught JavaScript errors');
   await page.screenshot({path:out+'/public-ready-'+width+'.png'});
+  await page.evaluate(()=>document.querySelector('#tab9').click());
+  await page.waitForFunction(()=>window.DangoBingo?.engine&&!window.DangoBingo.engine.liveBoard&&document.body.classList.contains('dgb-active')&&window.SweetsDemoSuite.status.kind==='dango',null,{timeout:10000});
+  info.dango=await page.evaluate(()=>{
+   const e=window.DangoBingo.engine,R=window.DangoBingoRules,root=document.querySelector('.dgb-scene');
+   return {revision:R.REVISION,liveBoard:e.liveBoard,cells:e.state.cells.length,numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.lines.length,payRows:root.querySelectorAll('tbody tr').length,buttons:root.querySelectorAll('.dgb-cell').length,demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier};
+  });
+  assert.equal(info.dango.revision,251);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,25);assert.equal(info.dango.lines,19);assert.equal(info.dango.payRows,13);assert.equal(info.dango.buttons,25);
+  assert.deepEqual(info.dango.numbers,Array.from({length:25},(_,i)=>i+1));assert.deepEqual(info.dango.initialFree,[]);assert.equal(info.dango.odds,1);
+  assert.deepEqual(errors,[],'published Dango initialization has no uncaught errors');
+  await page.screenshot({path:out+'/public-dango-ready-'+width+'.png'});
   report.screens.push({width,height,...info,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
   await context.close();
  }

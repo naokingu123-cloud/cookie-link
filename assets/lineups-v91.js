@@ -10,10 +10,11 @@ const catalog={
  popcorn:{name:'ポップコーンスプラッシュ',logo:'assets/arcade-v249/logo-popcorn.webp',home:2,record:4},
  jelly:{name:'ジェリービンゴ',logo:'assets/arcade-v249/logo-jelly.webp',home:0,record:7},
  stick:{name:'ワッフルリバーシ',logo:'assets/arcade-v249/logo-stick.webp',home:0,record:8},
- castella:{name:'パーティカステラ',logo:'assets/arcade-v249/logo-castella.webp',home:0,record:9}
+ castella:{name:'パーティカステラ',logo:'assets/arcade-v249/logo-castella.webp',home:0,record:9},
+ dango:{name:'ダンゴデビンゴ',logo:'assets/arcade-v249/logo-dango.webp',home:0,record:10}
 };
 const classic=['cookie','choco','candy'],legacyMounts=['gelato','winery','popcorn'],festival=['jelly','stick','castella'];
-const all=[...classic,...legacyMounts,...festival];
+const all=[...classic,...legacyMounts,...festival,'dango'];
 const params=new URLSearchParams(location.search),custom=params.get('games')?.split(',').map(id=>['waffle','reversi'].includes(id)?'stick':id)||[];
 const valid=custom.length>=1&&custom.length<=3&&new Set(custom).size===custom.length&&custom.every(id=>Object.hasOwn(catalog,id));
 const requested=params.get('set');

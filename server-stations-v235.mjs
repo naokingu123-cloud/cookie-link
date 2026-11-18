@@ -8,7 +8,7 @@ const FLAVORS=['strawberry','vanilla','mint','chocolate','grape'];
 const TOPS=['strawberry','cookie','crown','none'],OUTFITS=['bow','cape','apron','none'];
 const ACCENTS=['#ec6798','#67c6de','#a58ae0','#e7b847','#68be93'];
 const NAMES=['シュガー','ミント','ココア','プリン','こはく'];
-const GAME_IDS=new Set(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella']);
+const GAME_IDS=new Set(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango']);
 const integer=v=>Math.max(0,Math.min(1e12,Math.floor(Number(v)||0)));
 export function cleanProfile(input={}){
  input=input&&typeof input==='object'?input:{};
@@ -22,7 +22,7 @@ export function cleanStationDetail(input,round){
  if(!input||typeof input!=='object'||input.version!==238||!round||String(input.roundId)!==round.id)return null;
  const ballCount=Number(input.ballCount),count=(round.balls||[]).length;
  if(!Number.isInteger(ballCount)||ballCount<0||ballCount>8||ballCount>count)return null;
- const highestGames=[...new Set((Array.isArray(input.highestGames)?input.highestGames:[]).slice(0,9).filter(id=>GAME_IDS.has(id)))];
+ const highestGames=[...new Set((Array.isArray(input.highestGames)?input.highestGames:[]).slice(0,10).filter(id=>GAME_IDS.has(id)))];
  let achievedTier=Math.min(3,integer(input.achievedTier));if(achievedTier===3&&!highestGames.length)achievedTier=2;
  let prediction=['ready','none','partial','updating','complete'].includes(input.prediction)?input.prediction:'updating',best=null,highestReachNumbers=[];
  if(count>=8||round.phase!=='PLAYING')prediction=round.phase==='BETTING'?'updating':'complete';
@@ -38,7 +38,7 @@ export function cleanStationDetail(input,round){
   const used=new Set((round.balls||[]).map(b=>Number(b.number)));
   highestReachNumbers=[...new Set((Array.isArray(input.highestReachNumbers)?input.highestReachNumbers:[]).filter(n=>Number.isInteger(n)&&n>=1&&n<=25&&!used.has(n)))].sort((a,b)=>a-b);
  }
- const progress=prediction==='partial'?{readyGames:Math.min(9,integer(input.readyGames)),totalGames:Math.min(9,integer(input.totalGames))}:{};
+ const progress=prediction==='partial'?{readyGames:Math.min(10,integer(input.readyGames)),totalGames:Math.min(10,integer(input.totalGames))}:{};
  return {version:238,roundId:round.id,ballCount,prediction,best,highestReachNumbers,achievedTier,highestGames,paused:input.paused===true,...progress};
 }
 function randomFor(text){let seed=2166136261;for(const char of text)seed=Math.imul(seed^char.charCodeAt(0),16777619);return()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);}

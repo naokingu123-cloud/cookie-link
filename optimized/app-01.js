@@ -2709,7 +2709,7 @@ function sanitizeRecords(from){
  const to=emptyRecords();if(!from||typeof from!=='object')return to;
  for(const key of [...RECORD_SUMS,...RECORD_MAXIMA])to[key]=recordCount(from[key]);
  for(const def of TITLE_DEFS)if(recordCount(from.titles?.[def.id])&&to[def.metric]>=def.target)to.titles[def.id]=from.titles[def.id];
- for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(9,recordCount(r.game)))}));
+ for(const key of ['best','clears'])to[key]=(Array.isArray(from[key])?from[key]:[]).slice(0,50).filter(r=>r&&Number.isFinite(r.at)&&r.at>0).map(r=>({at:Math.min(r.at,8640000000000000),win:recordCount(r.win),bet:recordCount(r.bet),link:Math.min(64,recordCount(r.link)),chain:recordCount(r.chain),clears:recordCount(r.clears),sugars:Math.min(1,recordCount(r.sugars)),game:Math.max(1,Math.min(10,recordCount(r.game)))}));
  to.best=to.best.filter(r=>r.win>0).sort((a,b)=>b.win-a.win||b.at-a.at);to.clears=to.clears.filter(r=>r.clears>0).sort((a,b)=>b.at-a.at);
  return to;
 }
@@ -3220,6 +3220,7 @@ function cookieMiniEvent(s,ev,e){
  if(ev.phase==='vanish')fx.shatter=makeShatterFx(ev,grid,e.speed,e.version);s.cookieMiniState=fx;
 }
 function miniature(s){
+ if(s.engine?.kind==='dango'){s.paintDango(true);return;}
  if(s.engine?.kind==='castella'){s.paintCastella(true);return;}
  if(s.engine?.kind==='stick'){s.paintStick(true);return;}
  if(s.engine?.kind==='jelly'){s.paintJelly(true);return;}
@@ -3689,6 +3690,7 @@ function startHammerTransfer(s,ev,e){
 }
 
 function render(s,ev,e,animate=true){
+ if(e?.kind==='dango'){s.paintDango(false);return;}
  if(e?.kind==='castella'){s.paintCastella(false);return;}
  if(e?.kind==='stick'){s.paintStick(false);return;}
  if(e?.kind==='jelly'){s.paintJelly(false);return;}
@@ -3767,7 +3769,7 @@ function reachContext(e,a=app){
   else if(count>=3&&count<=8){if(e.processed!==count)return null;}
   else return null;
  }else if(e.reachMode==='single'||e.drawMode==='single'){
-  if(e.processed!==count||(!count&&(!['popcorn','jelly','stick','castella'].includes(e.kind)||!e.running)))return null;
+  if(e.processed!==count||(!count&&(!['popcorn','jelly','stick','castella','dango'].includes(e.kind)||!e.running)))return null;
  }else{
   if(count===2){if(e.processed!==0||e.accepted!==0)return null;pending=a.draws.slice(0,2);}
   else if(count===4){if(e.processed!==3||e.accepted!==3)return null;pending=a.draws.slice(3,4);}
@@ -3779,6 +3781,7 @@ function reachContext(e,a=app){
 function reachContextKey(e,a=app){return reachContext(e,a)?.key||null;}
 function failReachPreview(s,epoch,error){if(s.reachEpoch!==epoch)return;s.reachStatus='error';s.reachResults=[];s.tabReachResults=[];s.reachError=String(error?.message||error);console.warn('Reach preview skipped:',s.reachError);scheduleUI(app);}
 function requestReach(s,e,a=app){
+ if(e?.kind==='dango')return s.updateDangoReach(a);
  if(e?.kind==='castella')return s.updateCastellaReach(a);
  if(e?.kind==='stick')return s.updateStickReach(a);
  if(e?.kind==='jelly')return s.updateJellyReach(a);
@@ -4517,6 +4520,9 @@ class DrawController{
  stop(){if(this.mode==='continuous'&&this.state==='running')this.setState(this.physics.active?'draining':'complete');}
  launch(spec=null){
   if(this.mode==='eight'&&!localEightAllowed)return null;
+  // The shared server holds normal launches after the fifth accepted ball.
+  // Keep physics moving while already launched balls settle, including retries.
+  if(this.mode==='eight'&&typeof this.canLaunchNormal==='function'&&this.canLaunchNormal()===false)return null;
   const ball=this.physics.launch(spec);if(ball)this.onLaunch?.(ball);return ball;
  }
  update(){

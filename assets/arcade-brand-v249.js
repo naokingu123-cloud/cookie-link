@@ -13,7 +13,8 @@ const palettes={
  popcorn:['#efbd35','#fff7bc','#825325'],
  jelly:['#72cc97','#e4ffde','#2d765e'],
  stick:['#dfa15d','#ffe7c1','#81502b'],
- castella:['#eea34b','#ffe8c3','#8c491d']
+ castella:['#eea34b','#ffe8c3','#8c491d'],
+ dango:['#e7a0b4','#fff0d6','#784144']
 };
 const compactTitleLines={
  choco:['チョコレート','キャニオン'],
@@ -28,7 +29,7 @@ const catalog=Object.fromEntries(Object.entries(palettes).map(([kind,[accent,pal
 }));
 const titleImages=[];
 window.SweetsArcadeBrandV249=Object.freeze({
- version:250,catalog:Object.freeze(catalog),
+ version:251,catalog:Object.freeze(catalog),
  describe(){return {games:Object.keys(catalog).length,titles:titleImages.length,loaded:titleImages.filter(img=>img.complete&&img.naturalWidth>0).length};}
 });
 const params=new URLSearchParams(location.search);
@@ -36,7 +37,7 @@ if(params.get('serverHost')==='1'||params.get('serverSettlementWorker')==='1')re
 document.documentElement.classList.add('arcade-brand-v249');
 if(!document.getElementById('arcade-brand-v249-css')){
  const link=document.createElement('link');link.id='arcade-brand-v249-css';link.rel='stylesheet';
- link.href='assets/arcade-brand-v249.css?v=250';document.head.append(link);
+ link.href='assets/arcade-brand-v249.css?v=251';document.head.append(link);
 }
 function tint(element,game){
  if(!element||!game)return;

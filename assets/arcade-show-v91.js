@@ -5,7 +5,7 @@
  const tones={
   cookie:[1.01,'cookie-hit','chain'],choco:[.91,'drill','melt'],candy:[1.10,'six-hit','triangle'],
   gelato:[1.20,'glass','hexagon'],winery:[.89,'glass','transfer'],popcorn:[1.07,'pop','chain'],
-  jelly:[1.16,'glass','line'],stick:[.98,'landing','chain'],castella:[1.04,'cookie-hit','line']
+  jelly:[1.16,'glass','line'],stick:[.98,'landing','chain'],castella:[1.04,'cookie-hit','line'],dango:[1.08,'cookie-hit','line']
  };
  const rawSound=sceneSound;
  let source=null;

@@ -27,6 +27,7 @@ export async function createUiFixture({startRound=true,viewport={width:1366,heig
  server.stdout.on('data',data=>logs+=data);server.stderr.on('data',data=>logs+=data);
  const errors=[],warnings=[],requests=[];
  async function call(route,{session,body,adminOnly=false}={}){
+  if(route.endsWith('/round/ball')&&body?.ballIndex===6){const current=await call('/api/machines/public-01/state',{session});await sleep(Math.max(0,Number(current.round?.thinkingClosesAt||0)-Date.now()+40));}
   const url=new URL(route,base);if(adminOnly)url.searchParams.set('adminToken',admin);
   const response=await fetch(url,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(session?{'X-Player-Id':session.player.id,Authorization:'Bearer '+session.token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(10000)});
   const data=await response.json();assert.equal(response.ok,true,route+' '+JSON.stringify(data));return data;

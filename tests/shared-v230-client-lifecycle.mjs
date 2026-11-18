@@ -3,12 +3,12 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 
 const read=path=>readFile(new URL('../'+path,import.meta.url),'utf8');
-const [bundle,core,patch221,patch224,upgrade,payout,controller,installFixture,creditFixture]=await Promise.all([
+const [bundle,core,patch221,patch224,upgrade,payout,controller,installFixture,creditFixture,lineupSource]=await Promise.all([
  read('optimized/app-01.js'),read('assets/shared-machine-core-v196.js'),read('assets/shared-core-patch-v221.js'),
  read('assets/shared-core-patch-v224.js'),read('assets/cookie-upgrade-patches.js'),
  process.env.CLIENT_LIFECYCLE_PAYOUT?readFile(process.env.CLIENT_LIFECYCLE_PAYOUT,'utf8'):read('assets/server-payout-control-v3.js'),
  process.env.CLIENT_LIFECYCLE_CONTROLLER?readFile(process.env.CLIENT_LIFECYCLE_CONTROLLER,'utf8'):read('assets/shared-client-controller-v224.js'),
- read('tests/shared-v227-client-install.mjs'),read('tests/shared-v228-credit-rebet.mjs')
+ read('tests/shared-v227-client-install.mjs'),read('tests/shared-v228-credit-rebet.mjs'),read('assets/lineups-v91.js')
 ]);
 function section(source,start,end){
  const a=source.indexOf(start),b=source.indexOf(end,a);assert.ok(a>=0&&b>a,'fixture/source boundary: '+start);return source.slice(a,b);
@@ -21,10 +21,16 @@ const drawSource=section(game,'const LOCAL_EIGHT_DRAW_ALLOWED=','async function 
 const resultRenderer=section(game,'function renderRoundResult(','function nextFromResult(');
 const recordMenu=section(game,'function openRecordMenu(','function paintRecordNumbers(');
 const flush=()=>new Promise(resolve=>setImmediate(resolve)),copy=value=>JSON.parse(JSON.stringify(value));
-const lineup=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella'];
+const lineupContext={window:{},location:{search:''},URLSearchParams,
+ document:{documentElement:{dataset:{},toggleAttribute(){}},addEventListener(){},head:{}},
+ MutationObserver:class{observe(){}}};
+vm.runInNewContext(lineupSource,lineupContext);
+const lineup=Array.from(lineupContext.window.SweetsLineup.ids);
+assert.equal(lineup.length,10,'the production ALL lineup includes ten games');
+assert.equal(lineup.at(-1),'dango');
 const fullInstall=new Function('assert','vm','engineSource','drawSource','coreSource','payout','controller','flush','copy',
  section(installFixture,'function harness(','\nasync function stable(')+'\nreturn harness();');
-const nineSlots=new Function('assert','vm','build','lineup','engineSource','drawSource','coreSource','payout','controller','flush','copy',
+const allSlots=new Function('assert','vm','build','lineup','engineSource','drawSource','coreSource','payout','controller','flush','copy',
  section(creditFixture,'\nfunction harness(','\nconst joins=')+'\nreturn harness();');
 
 function harness(){
@@ -65,13 +71,13 @@ function harness(){
   }};
   return fullInstall(...args);
  }
- const h=nineSlots(assert,vm,build,lineup,engineSource,drawSource,coreSource,payout,controller,flush,copy);
+ const h=allSlots(assert,vm,build,lineup,engineSource,drawSource,coreSource,payout,controller,flush,copy);
  return Object.assign(h,{stats,panels,tab:()=>context.document.getElementById('test-game-tab')});
 }
 async function ready(h){await h.advance(5000);assert.equal(h.control.stable(),true);assert.equal(h.control.isReady(),true);}
 async function result(h,id,win=5000){
  h.betting(id);await h.advance(1200);h.playing();await h.advance(1400);assert.equal(h.app.phase,'playing');
- h.app.roundWins=[win,...Array(8).fill(0)];h.app.paid=Array(9).fill(true);h.app.draws=[3,7,11,15,19,23,4,8];
+ h.app.roundWins=[win,...Array(lineup.length-1).fill(0)];h.app.paid=Array(lineup.length).fill(true);h.app.draws=[3,7,11,15,19,23,4,8];
  h.machine.active.delivered=8;h.round.phase='COMPLETE';h.round.balls=h.app.draws.map((number,index)=>({index:index+1,number}));
  h.app.finishRound();await h.advance(20);
  assert.equal(h.context.document.getElementById('round-result-layer').hidden,false);
@@ -91,7 +97,7 @@ const h=harness();await ready(h);
 if(process.env.CLIENT_LIFECYCLE_CASE!=='controls'){
  for(let cycle=1;cycle<=3;cycle++){
   await result(h,'normal-'+cycle);await h.advance(2200);unlocked(h);
-  assert.equal(h.getWallet().credit,1000000+cycle*(5000-27000),'normal BET and WIN stay exactly once per cycle');
+  assert.equal(h.getWallet().credit,1000000+cycle*(5000-30000),'normal BET and WIN stay exactly once per cycle');
   assert.equal(h.app.credit,h.getWallet().credit);assert.equal(h.control.describe().resetBusy,false);
  }
  const menu=harness();await ready(menu);await result(menu,'result-then-menu');menu.context.openRecordMenu();

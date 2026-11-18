@@ -153,7 +153,7 @@ async function ball(host,round,index,number){
 }
 
 try{
- for(const filename of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json'])await fs.copyFile(path.join(ROOT,filename),path.join(temporary,filename));
+ for(const filename of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-thinking-v251.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json'])await fs.copyFile(path.join(ROOT,filename),path.join(temporary,filename));
  await fs.mkdir(path.join(temporary,'assets'),{recursive:true});
  await fs.copyFile(path.join(ROOT,'assets','jelly-rules.js'),path.join(temporary,'assets','jelly-rules.js'));
  const require=createRequire(import.meta.url);

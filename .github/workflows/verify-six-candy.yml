@@ -13,6 +13,8 @@ on:
       - 'assets/arcade-surfaces-v249*'
       - 'assets/party-castella*'
       - 'assets/castella-lesson.js'
+      - 'assets/dango*'
+      - 'assets/dango-art/**'
       - 'assets/jelly-view.js'
       - 'assets/game-menu-v91.js'
       - 'assets/lineups-v91.js'
@@ -57,7 +59,7 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
-      - name: Verify current HUD and nine-game automatic BET on an isolated server
+      - name: Verify current HUD and ten-game automatic BET on an isolated server
         run: node tests/sixdrop-hud-v247.mjs
       - name: Verify published hashes and frontend without public game actions
         run: node .github/tests/sixdrop_public_v248.mjs

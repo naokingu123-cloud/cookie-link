@@ -3,7 +3,7 @@
 if(window.__sweetsPayoutControlV3)return;window.__sweetsPayoutControlV3=true;
 if(new URLSearchParams(location.search).get('serverHost')==='1'||new URLSearchParams(location.search).get('serverSettlementWorker')==='1')return;
 
-const ALIASES={six:'candy',drop:'candy',sixdrop:'candy',waffle:'stick',cookie:'cookie',choco:'choco',candy:'candy',gelato:'gelato',winery:'winery',jelly:'jelly',popcorn:'popcorn',stick:'stick',castella:'castella'};
+const ALIASES={six:'candy',drop:'candy',sixdrop:'candy',waffle:'stick',cookie:'cookie',choco:'choco',candy:'candy',gelato:'gelato',winery:'winery',jelly:'jelly',popcorn:'popcorn',stick:'stick',castella:'castella',dango:'dango'};
 const WALLET_KEY='sweets-payout-wallet-v3';
 let controls={version:3,effectiveRate:90,games:{}},saveChain=Promise.resolve(),lastSignature='',clientRef=null,offlineResetKey='',appliedWallet=null;
 const appliedRates=new Map();
@@ -35,7 +35,9 @@ function installEngineWrappers(){
  if(typeof app==='undefined'||!app?.engines)return;
  app.engines.forEach((engine,index)=>{
   if(!engine||engine.__serverPayoutV3)return;engine.__serverPayoutV3=true;
-  for(const method of ['reset','freshBoard'])if(typeof engine[method]==='function'){const native=engine[method];engine[method]=function(...args){return withCommonRate(engine,index,native,args);};}
+  // Dango reveals its real numbered/FREE board only after BET has locked.
+  const methods=gameId(engine,index)==='dango'?['reset','freshBoard','start']:['reset','freshBoard'];
+  for(const method of methods)if(typeof engine[method]==='function'){const native=engine[method];engine[method]=function(...args){return withCommonRate(engine,index,native,args);};}
  });
 }
 function regenerateReadyBoards(){

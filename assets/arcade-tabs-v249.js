@@ -11,7 +11,7 @@ if(!deck||typeof select!=='function'||typeof paintTabWin!=='function')return;
 root.classList.add('arcade-v249','arcade-tabs-v250');
 if(!document.getElementById('arcade-tabs-v249-css')){
  const link=document.createElement('link');link.id='arcade-tabs-v249-css';
- link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=250';document.head.append(link);
+ link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=251';document.head.append(link);
 }
 const media=matchMedia('(prefers-reduced-motion: reduce)');
 const records=new Map(),selectionAnimations=new Set(),rewardAnimations=new Map(),reachAnimations=new Map();
@@ -133,8 +133,7 @@ if(commonBet){
  const selectedUnit=unit[firstVisible.i]??4;unit.fill(selectedUnit);
  for(const slot of slots)if(slot.cycle!==commonBet){slot.cycle.hidden=true;slot.cycle.tabIndex=-1;slot.cycle.setAttribute('aria-hidden','true');}
  commonBet.classList.add('v250-shared-bet-switch');commonBetHost.append(commonBet);
- if(allNineMode)document.querySelector('#screen>.games-deck')?.append(commonBetHost);
- else document.querySelector('#console .drawline')?.append(commonBetHost);
+ document.getElementById('console')?.append(commonBetHost);
  commonBet.onclick=()=>{
   if(commonBet.disabled||app?.phase!=='ready')return;
   const next=((unit[firstVisible.i]??4)+1)%units.length;unit.fill(next);
@@ -279,7 +278,7 @@ window.addEventListener('pagehide',()=>{disposed=true;quiet();});
 window.addEventListener('pageshow',event=>{if(event.persisted){disposed=false;syncFace();}});
 syncFace();
 window.SweetsArcadeTabsV249={
- version:250,
+ version:251,
  describe(){return {activeIndex:active,transitions,runningAnimations:selectionAnimations.size+rewardAnimations.size+reachAnimations.size,reducedMotion:media.matches,rewardBursts,reachBursts,logos:records.size,sharedBetUnit:commonBet?units[unit[firstVisible.i]]:null};}
 };
 })();

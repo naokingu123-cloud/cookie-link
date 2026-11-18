@@ -21,14 +21,14 @@ for(let i=0;i<5;i++)host.window.SweetsRenderCadenceV246.recordHost(25);
 assert.equal(host.window.SweetsRenderCadenceV246.hostFps(),30);
 host.window.SweetsHostKeepAliveV206.captureFps=24;assert.equal(host.window.SweetsRenderCadenceV246.hostFps(),24);
 function section(source,a,b){const start=source.indexOf(a),end=source.indexOf(b,start);assert.ok(start>=0&&end>start,a);return source.slice(start,end);}
-// Run the actual flushUI with nine dirty thumbnails. Only the selected one
+// Run the actual flushUI with ten dirty thumbnails. Only the selected one
 // and two inactive previews may draw per frame; every preview eventually draws.
-const painted=[],slots=Array.from({length:9},(_,i)=>({i,dirtyMini:true,dirtyMain:false}));let deferred=0;
+const painted=[],slots=Array.from({length:10},(_,i)=>({i,dirtyMini:true,dirtyMain:false}));let deferred=0;
 const ui={uiPending:true,uiApp:{phase:'playing',paused:false},document:{hidden:false},inView:true,payoutStamp:null,slots,active:0,allNineMode:true,window:{SweetsRenderCadenceV246:{deferUI(){deferred++;}}},miniature(s){painted.push(s.i);},render(){},syncPendingHitTiles(){},updateMiniResults(){},hud(){},syncPresentationRate(){},syncBetPreview(){},scheduleUI(){}};
 vm.createContext(ui);vm.runInContext(section(patched,'function flushUI(timestamp){','// Predefined irregular fractures'),ui);
 vm.runInContext('flushUI(1000)',ui);assert.deepEqual(painted,[0,1,2]);assert.equal(deferred,1);
-for(let i=1;i<=3;i++)vm.runInContext('flushUI('+(1000+40*i)+')',ui);
-assert.deepEqual(painted,[0,1,2,3,4,5,6,7,8]);
+for(let i=1;i<=4;i++)vm.runInContext('flushUI('+(1000+40*i)+')',ui);
+assert.deepEqual(painted,[0,1,2,3,4,5,6,7,8,9]);
 const fixture=new Function('assert','vm','clientSource','hostSource','previousTests',section(displayTests,'const flush=','const cases=[]')+'\nreturn {viewer,attach,flush};');
 const proxy={runInNewContext(source,context,options){context.document.hidden=false;context.document.addEventListener=(name,fn)=>{if(name==='visibilitychange')context.__visible=fn;};context.document.removeEventListener=()=>{};return vm.runInNewContext(source,context,options);}};
 const fx=fixture(assert,proxy,clientSource,hostSource,previousTests),viewer=fx.viewer();await fx.flush();

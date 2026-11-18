@@ -1,0 +1,435 @@
+{
+  "game": "ダンゴデビンゴ",
+  "version": "20261118-v251-dango-de-bingo",
+  "rulesRevision": 251,
+  "ruleId": "initial-hit-free-v4",
+  "ruleModel": "Initial numbered FREE0..3 always marked. Initial FREE HIT in first5 grants one player FREE; base player FREE1, max4. No line awards. Initial FREE never raises odds. Player FREE placed after5 before unknown last3; only its later raw HIT raises global multiplier by1. Perlength final count payouts are summed, multiplied by1+player FREE hits in last3. No double odds on stacked initial FREE.",
+  "referencePolicy": "Maximum conditional expected payout after seeing only first5; all legal player FREE subsets considered without future knowledge.",
+  "selectionTiming": "Select initial mold independently after BET lock and before any number is drawn or the mold is shown. Shuffle numbers1..25 once, then keep them.",
+  "scope": "Uniform8/25 without replacement; continuous BET units; excludes medal rounding, shared sugar and JPC. Automatic placement deliberately uses line/reach priorities, not expected payout.",
+  "sampling": {
+    "firstFiveSets": 53130,
+    "futureTriplesPerFirstFive": 1140,
+    "outcomeDenominator": 60568200,
+    "payoutNumeratorUnit": "one tenth of BET"
+  },
+  "festivalProbability": 0.005,
+  "festivalPurpose": "Keeps the three5-cell-line2000BET role possible at every payout setting.",
+  "payouts": {
+    "3": {
+      "1": 0.2,
+      "2": 1,
+      "3": 5,
+      "4+": 100
+    },
+    "4": {
+      "1": 1,
+      "2": 3,
+      "3": 50,
+      "4+": 500
+    },
+    "5": {
+      "1": 3,
+      "2": 100,
+      "3+": 2000
+    },
+    "7": {
+      "1": 25
+    },
+    "9": {
+      "1": 100
+    }
+  },
+  "templates": [
+    {
+      "name": "grant0",
+      "initialCellsOneBased": [],
+      "optimalRtpPercent": 45.422107970849,
+      "optimalPayoutNumeratorTenths": 275113532,
+      "optimalAwardPercent": 64.655401679429,
+      "autoRtpPercent": 43.6491531859953,
+      "autoPayoutNumeratorTenths": 264375064,
+      "autoAwardPercent": 69.6595507213356
+    },
+    {
+      "name": "grant1-bottom",
+      "initialCellsOneBased": [
+        21
+      ],
+      "optimalRtpPercent": 96.471642545098,
+      "optimalPayoutNumeratorTenths": 584311374,
+      "optimalAwardPercent": 81.650134889265,
+      "autoRtpPercent": 84.1168590118247,
+      "autoPayoutNumeratorTenths": 509480674,
+      "autoAwardPercent": 90.8400695414425
+    },
+    {
+      "name": "grant2-20_22",
+      "initialCellsOneBased": [
+        20,
+        22
+      ],
+      "optimalRtpPercent": 146.51402617215,
+      "optimalPayoutNumeratorTenths": 887409084,
+      "optimalAwardPercent": 85.923900660743,
+      "autoRtpPercent": 123.806694602118,
+      "autoPayoutNumeratorTenths": 749874864,
+      "autoAwardPercent": 93.1777219729165
+    },
+    {
+      "name": "grant2-11_15",
+      "initialCellsOneBased": [
+        11,
+        15
+      ],
+      "optimalRtpPercent": 212.16565029174,
+      "optimalPayoutNumeratorTenths": 1285049154,
+      "optimalAwardPercent": 82.337003576134,
+      "autoRtpPercent": 147.93755601124,
+      "autoPayoutNumeratorTenths": 896031148,
+      "autoAwardPercent": 95.3375153958678
+    },
+    {
+      "name": "grant3-6_7_8",
+      "initialCellsOneBased": [
+        6,
+        7,
+        8
+      ],
+      "optimalRtpPercent": 735.49485637678,
+      "optimalPayoutNumeratorTenths": 4454759956,
+      "optimalAwardPercent": 96.223531490122,
+      "autoRtpPercent": 486.836156597026,
+      "autoPayoutNumeratorTenths": 2948678970,
+      "autoAwardPercent": 98.5908562579043
+    }
+  ],
+  "optimalCalibratedRows": [
+    {
+      "targetOptimalPercent": 50,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [],
+      "highInitialCells": [
+        21
+      ],
+      "highProbabilityAmongNonFestival": 0.022197935159719538,
+      "absoluteLowProbability": 0.972913054516079,
+      "absoluteHighProbability": 0.022086945483920938,
+      "actualAutoPercent": 46.75889621548489,
+      "conditionalWeightFraction": [
+        682923588,
+        30765185279
+      ]
+    },
+    {
+      "targetOptimalPercent": 60,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [],
+      "highInitialCells": [
+        21
+      ],
+      "highProbabilityAmongNonFestival": 0.21907046965195687,
+      "absoluteLowProbability": 0.7770248826963029,
+      "absoluteHighProbability": 0.2179751173036971,
+      "actualAutoPercent": 54.68604112744711,
+      "conditionalWeightFraction": [
+        6739743588,
+        30765185279
+      ]
+    },
+    {
+      "targetOptimalPercent": 70,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [],
+      "highInitialCells": [
+        21
+      ],
+      "highProbabilityAmongNonFestival": 0.4159430041441942,
+      "absoluteLowProbability": 0.5811367108765267,
+      "absoluteHighProbability": 0.41386328912347325,
+      "actualAutoPercent": 62.61318603940934,
+      "conditionalWeightFraction": [
+        12796563588,
+        30765185279
+      ]
+    },
+    {
+      "targetOptimalPercent": 75,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [],
+      "highInitialCells": [
+        21
+      ],
+      "highProbabilityAmongNonFestival": 0.5143792713903129,
+      "absoluteLowProbability": 0.4831926249666387,
+      "absoluteHighProbability": 0.5118073750333614,
+      "actualAutoPercent": 66.57675849539045,
+      "conditionalWeightFraction": [
+        15824973588,
+        30765185279
+      ]
+    },
+    {
+      "targetOptimalPercent": 80,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [],
+      "highInitialCells": [
+        21
+      ],
+      "highProbabilityAmongNonFestival": 0.6128155386364316,
+      "absoluteLowProbability": 0.3852485390567506,
+      "absoluteHighProbability": 0.6097514609432494,
+      "actualAutoPercent": 70.54033095137156,
+      "conditionalWeightFraction": [
+        18853383588,
+        30765185279
+      ]
+    },
+    {
+      "targetOptimalPercent": 90,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [],
+      "highInitialCells": [
+        21
+      ],
+      "highProbabilityAmongNonFestival": 0.8096880731286689,
+      "absoluteLowProbability": 0.18936036723697444,
+      "absoluteHighProbability": 0.8056396327630255,
+      "actualAutoPercent": 78.46747586333379,
+      "conditionalWeightFraction": [
+        24910203588,
+        30765185279
+      ]
+    },
+    {
+      "targetOptimalPercent": 100,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "highProbabilityAmongNonFestival": 0.00669264613907167,
+      "absoluteLowProbability": 0.9883408170916237,
+      "absoluteHighProbability": 0.006659182908376312,
+      "actualAutoPercent": 86.39475737454984,
+      "conditionalWeightFraction": [
+        201838309,
+        30158222145
+      ]
+    },
+    {
+      "targetOptimalPercent": 110,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "highProbabilityAmongNonFestival": 0.20752742913387012,
+      "absoluteLowProbability": 0.7885102080117993,
+      "absoluteHighProbability": 0.20648979198820078,
+      "actualAutoPercent": 94.32600139483624,
+      "conditionalWeightFraction": [
+        6258658309,
+        30158222145
+      ]
+    },
+    {
+      "targetOptimalPercent": 120,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "highProbabilityAmongNonFestival": 0.4083622121286686,
+      "absoluteLowProbability": 0.5886795989319747,
+      "absoluteHighProbability": 0.40632040106802525,
+      "actualAutoPercent": 102.25724541512263,
+      "conditionalWeightFraction": [
+        12315478309,
+        30158222145
+      ]
+    },
+    {
+      "targetOptimalPercent": 125,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "highProbabilityAmongNonFestival": 0.5087796036260678,
+      "absoluteLowProbability": 0.48876429439206254,
+      "absoluteHighProbability": 0.5062357056079374,
+      "actualAutoPercent": 106.22286742526583,
+      "conditionalWeightFraction": [
+        15343888309,
+        30158222145
+      ]
+    },
+    {
+      "targetOptimalPercent": 130,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "highProbabilityAmongNonFestival": 0.609196995123467,
+      "absoluteLowProbability": 0.38884898985215033,
+      "absoluteHighProbability": 0.6061510101478497,
+      "actualAutoPercent": 110.18848943540902,
+      "conditionalWeightFraction": [
+        18372298309,
+        30158222145
+      ]
+    },
+    {
+      "targetOptimalPercent": 140,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "highProbabilityAmongNonFestival": 0.8100317781182654,
+      "absoluteLowProbability": 0.18901838077232586,
+      "absoluteHighProbability": 0.8059816192276741,
+      "actualAutoPercent": 118.11973345569542,
+      "conditionalWeightFraction": [
+        24429118309,
+        30158222145
+      ]
+    },
+    {
+      "targetOptimalPercent": 150,
+      "festivalProbability": 0.005,
+      "festivalInitialCells": [
+        6,
+        7,
+        8
+      ],
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "highProbabilityAmongNonFestival": 0.008282942382906038,
+      "absoluteLowProbability": 0.9867584723290085,
+      "absoluteHighProbability": 0.008241527670991507,
+      "actualAutoPercent": 125.82071707412062,
+      "conditionalWeightFraction": [
+        327716164,
+        39565186965
+      ]
+    }
+  ],
+  "automaticPolicy": {
+    "priority": [
+      "new completed line count",
+      "longest new completed line",
+      "longest new reach",
+      "new reach count",
+      "closest incomplete line",
+      "that line length",
+      "stable uint32 hash"
+    ],
+    "symmetry": "Canonicalize BOTH initial FREE mask and first5 mask under left/right reflection, then reflect selected FREE back.",
+    "hash": "uint32 hash32(h ^ initial*0xc2b2ae35 ^ (cellId+1)*0x9e3779b9 ^ (placementIndex+1)*0x85ebca6b); multiplication wraps32 bits."
+  },
+  "checks": {
+    "meanPlayerFree": "1+initialCount/5",
+    "meanOddsMultiplier": "1.15+0.03*initialCount",
+    "markedCellsAfterPlacement": "6+initialCount",
+    "initialFreeNeverOdds": true,
+    "completedLineNeverGrantsFree": true
+  },
+  "reproduction": {
+    "source": "scripts/dango-v251-calibrate.cpp",
+    "build": "g++ -O3 -std=c++20 scripts/dango-v251-calibrate.cpp -o /tmp/dango-v251-calibrate",
+    "examples": [
+      "/tmp/dango-v251-calibrate plain /tmp/dango-plain.json full 0",
+      "/tmp/dango-v251-calibrate one /tmp/dango-one.json full 0x100000",
+      "/tmp/dango-v251-calibrate two /tmp/dango-two.json full 0x280000",
+      "/tmp/dango-v251-calibrate shoulders /tmp/dango-shoulders.json full 0x4400",
+      "/tmp/dango-v251-calibrate festival /tmp/dango-festival.json full 0xe0"
+    ]
+  }
+}

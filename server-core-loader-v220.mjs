@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {patchStationCore} from './server-stations-v235.mjs';
+import {patchThinkingCoreV251} from './server-thinking-v251.mjs';
 
 const ROOT=process.cwd();
 const SOURCE=path.join(ROOT,'server-core.mjs');
@@ -27,7 +28,7 @@ function createMonitorForecastsV241({connected,now}){
   const count=(r.balls||[]).length;
   const isPartial=d?.prediction==='partial';
   const readyGames=Number(d?.readyGames),totalGames=Number(d?.totalGames);
-  const validProgress=!isPartial||(Number.isInteger(readyGames)&&Number.isInteger(totalGames)&&readyGames>=1&&totalGames<=9&&readyGames<totalGames);
+  const validProgress=!isPartial||(Number.isInteger(readyGames)&&Number.isInteger(totalGames)&&readyGames>=1&&totalGames<=10&&readyGames<totalGames);
   if(r.phase!=='PLAYING'||p.settlement||count>=8||d?.version!==238||d.roundId!==r.id||d.ballCount!==count||d.paused||!['ready','none','partial'].includes(d.prediction)||!validProgress||!valid(d.predictionBaseWin)||!Array.isArray(d.numberGains)||d.numberGains.length!==25){map.delete(id);return false;}
   const used=new Set((r.balls||[]).map(b=>Number(b.number)));
   const gains=d.numberGains.map((n,i)=>used.has(i+1)?null:n);
@@ -150,6 +151,7 @@ source=once(source,'function tickMachine(m){','function tickMachine(m){\n if(ope
 source=once(source,'return reply(res,200,{ok:true,...requestServerBetNow(m),serverTime:now()});','const input=await bodyJson(req);return reply(res,200,{ok:true,...await forceServerBetV242(m,input),serverTime:now()});','forced BET transaction');
 source=once(source,'stations:stationView};','stations:stationView,operatorRefundsV242:payoutWallet?.operatorNotices?.(m.id,playerId)||[]};','personalized refunds');
 source=once(source,'hitForecasts:monitorForecastsV241.snapshot(m),machine:{','hitForecasts:monitorForecastsV241.snapshot(m),payoutTrendV242:payoutWallet?.operatorTrend?.(m.id)||null,machine:{','operator trend');
+source=patchThinkingCoreV251(source);
 
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');

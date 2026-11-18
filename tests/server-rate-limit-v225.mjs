@@ -46,7 +46,7 @@ async function ready(port){
 }
 
 try{
- for(const filename of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json']){
+ for(const filename of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-thinking-v251.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json']){
   // This optional override lets the exact same integration test demonstrate
   // the regression against an archived, unmodified server core.
   const source=filename==='server-core.mjs'&&process.env.SWEETS_TEST_CORE_SOURCE||path.join(ROOT,filename);

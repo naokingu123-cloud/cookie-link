@@ -3,7 +3,7 @@
 if(window.__sweetsOfflineSettlementWorkerV3)return;window.__sweetsOfflineSettlementWorkerV3=true;
 const query=new URLSearchParams(location.search);if(query.get('serverSettlementWorker')!=='1')return;
 const machine=String(query.get('machine')||'public-01'),adminToken=String(query.get('adminToken')||'');
-const ALIASES={six:'candy',drop:'candy',sixdrop:'candy',waffle:'stick',cookie:'cookie',choco:'choco',candy:'candy',gelato:'gelato',winery:'winery',jelly:'jelly',popcorn:'popcorn',stick:'stick',castella:'castella'};
+const ALIASES={six:'candy',drop:'candy',sixdrop:'candy',waffle:'stick',cookie:'cookie',choco:'choco',candy:'candy',gelato:'gelato',winery:'winery',jelly:'jelly',popcorn:'popcorn',stick:'stick',castella:'castella',dango:'dango'};
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const finite=value=>Number.isFinite(Number(value))?Number(value):0;
 const gameId=(engine,index)=>ALIASES[String(engine?.kind||engine?.id||'').toLowerCase()]||String(engine?.kind||engine?.id||('game-'+index)).toLowerCase();

@@ -23,7 +23,8 @@ const games={
  popcorn:{name:'ポップコーンスプラッシュ',accent:'#ffe093'},
  jelly:{name:'ジェリービンゴ',accent:'#adf2e1'},
  stick:{name:'ワッフルリバーシ',accent:'#ffd994'},
- castella:{name:'パーティカステラ',accent:'#ffcc81'}
+ castella:{name:'パーティカステラ',accent:'#ffcc81'},
+ dango:{name:'ダンゴデビンゴ',accent:'#f1b9c9'}
 };
 const alias={canyon:'choco',chocolate:'choco',six:'candy',sixdrop:'candy',drop:'candy',prism:'gelato',pyramid:'winery'};
 function kindOf(s){

@@ -14,21 +14,21 @@ try{
  for(const automatic of [true,false]){
   const h=harness(),oldId='cancel-v243-'+automatic,nextId='forced-v243-'+automatic;
   await h.advance(5000);h.betting(oldId);await h.advance(1200);h.playing();await h.advance(1400);
-  assert.equal(h.app.credit,973000);assert.equal(h.machine.active?.roundId,oldId);
+  assert.equal(h.app.credit,970000);assert.equal(h.machine.active?.roundId,oldId);
   if(!automatic)h.control.setAutoRebet(false);
   h.machine.client.accept({type:'round_cancelled',reason:'admin_refund',cancelledRoundId:oldId,round:{...h.round,phase:'CANCELLED'}});
-  assert.equal(h.machine.active,null);assert.equal(h.app.phase,'ready');assert.equal(h.app.credit,973000,'never guess refund credit');
+  assert.equal(h.machine.active,null);assert.equal(h.app.phase,'ready');assert.equal(h.app.credit,970000,'never guess refund credit');
   h.betting(nextId);h.round.forcedFromRoundId=oldId;h.snapshot();await h.advance(1200);
   assert.equal(h.control.operatorRefundPendingV242(),true);
   assert.equal(h.events.filter(e=>e.kind==='join'&&e.payload.roundId===nextId).length,0,'do not rebet before confirmed wallet revision');
   const notice=h.refund(oldId);h.snapshot();await h.advance(3500);
   assert.equal(h.control.operatorRefundPendingV242(),false);
   const joins=()=>h.events.filter(e=>e.kind==='join'&&e.payload.roundId===nextId);
-  if(automatic){assert.equal(joins().length,1,'AUTO ON automatically rejoins a forced BET exactly once');assert.equal(h.app.credit,973000);}
+  if(automatic){assert.equal(joins().length,1,'AUTO ON automatically rejoins a forced BET exactly once');assert.equal(h.app.credit,970000);}
   else{assert.equal(joins().length,0,'AUTO OFF is respected');assert.equal(h.app.credit,1000000);assert.equal(h.control.requestBet(),true);await h.advance(1200);assert.equal(joins().length,1);}
   assert.equal(h.control.describe().joinedRoundId,nextId);
   h.playing();await h.advance(1400);
-  assert.equal(h.machine.active?.roundId,nextId,'zero-second server transition starts the forced round, not NEXT');assert.equal(h.app.phase,'playing');assert.equal(h.app.credit,973000,'starting must not debit again');
+  assert.equal(h.machine.active?.roundId,nextId,'zero-second server transition starts the forced round, not NEXT');assert.equal(h.app.phase,'playing');assert.equal(h.app.credit,970000,'starting must not debit again');
   assert.equal(h.events.filter(e=>e.kind==='settle'&&e.payload.roundId===oldId).length,0,'cancelled round is never settled as a loss');
   let writes=0;const store=h.context.localStorage,native=store.setItem.bind(store);store.setItem=(...args)=>{writes++;return native(...args);};
   const wallet=h.getWallet(),generation=h.control.describe().generation;
@@ -36,7 +36,7 @@ try{
   for(let i=0;i<100;i++)h.control.operatorStateV242(message);
   assert.equal(writes,0,'100 unchanged old refund notices cause zero synchronous storage writes');
   assert.equal(h.control.describe().generation,generation,'duplicate notices cannot rebuild the board');assert.equal(h.machine.active?.roundId,nextId);
-  h.control.operatorStateV242({...message,playerId:'OTHER',wallet:{credit:1,revision:999}});assert.equal(h.app.credit,973000);
+  h.control.operatorStateV242({...message,playerId:'OTHER',wallet:{credit:1,revision:999}});assert.equal(h.app.credit,970000);
   assert.equal(h.errors.length,0,JSON.stringify(h.errors));
  }
  console.log('CLIENT_REJOIN_V243_PASS',JSON.stringify({autoOn:'one rebet then PLAYING',autoOff:'manual BET preserved',refundBeforeRebet:true,duplicateNotices:100,duplicateStorageWrites:0,staleRefundCannotReset:true}));
