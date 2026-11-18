@@ -83,6 +83,13 @@ function fit(){
 }
 function paint(){
  if(!state.active)return;
+ // Hidden clients can finish the native result/payout before their first DOM
+ // frame. Catch up only this decorative clock so TOTAL cannot be skipped on
+ // return; never rewind or advance the engine's own timestamps or settlement.
+ if(!state.paused){
+  const phase=state.model?.phase,nativeElapsed=phase==='paying'||phase==='complete'?1310:phase==='result'?numeric(state.model?.result?.elapsed):0;
+  state.elapsed=Math.max(state.elapsed,Math.min(1310,nativeElapsed));
+ }
  const reduced=media.matches,elapsed=reduced?1500:state.elapsed,open=ease(elapsed/450),totalProgress=ease((elapsed-1050)/260);
  state.phase=elapsed<450?'opening':elapsed<1050?'rows':elapsed<1310?'total':'hold';layer.dataset.sr253Phase=state.phase;layer.dataset.sr253Paused=String(state.paused);layer.dataset.sr253Reduced=String(reduced);
  card.style.opacity=String(.25+.75*open);card.style.transform='translateY('+(18*(1-open)).toFixed(2)+'px) scale('+(0.97+.03*open).toFixed(4)+')';card.style.clipPath='inset(0 '+((1-open)*47).toFixed(3)+'% round 16px)';

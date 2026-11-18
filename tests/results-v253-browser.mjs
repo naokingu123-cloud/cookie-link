@@ -8,7 +8,7 @@ import {createUiFixture,sleep} from './ui-v250-fixture.mjs';
 
 const output='qa-results-v253',fixture=await createUiFixture({startRound:false,output});
 const {page,context,errors}=fixture;
-const report={version:fixture.version,scope:'Controlled result records rendered by the shipped native result UI; native result, payout and prepare functions remain in charge. Isolated local server only.',cases:[],lifecycle:null,zero:null,reduced:null};
+const report={version:fixture.version,scope:'Controlled result records rendered by the shipped native result UI; native result, payout and prepare functions remain in charge. Isolated local server only.',cases:[],latePhases:[],lifecycle:null,zero:null,reduced:null};
 const wins=[12000,0,450,1234567,5,7600,8800,0,600,100000];
 let caseSerial=0;
 
@@ -23,19 +23,20 @@ async function observe(){
    resultDuration:a.result?.duration??null,payoutDuration:a.payout?.duration??null,layerHidden:layer.hidden,layer:bounds(layer),panel:bounds(panel),console:bounds(document.getElementById('console')),
    total:{text:document.getElementById('result-total-win').textContent,font:getComputedStyle(document.querySelector('#result-total-win .gold-number')||document.getElementById('result-total-win')).fontFamily,rect:bounds(document.getElementById('result-total-win'))},
    rows:rows.map(row=>{const value=row.querySelector('.result-value'),logo=row.querySelector('.result-game-emblem'),award=row.querySelector('.result-game-award'),sugar=row.querySelector('.sr253-row-sugar');return {index:Number(row.dataset.gameIndex),kind:row.dataset.gameKind,visible:visible(row),rect:bounds(row),logo:{src:logo?.getAttribute('src')||'',loaded:!!logo?.complete&&logo?.naturalWidth>0,rect:bounds(logo)},win:value?.textContent||'',font:getComputedStyle(value?.querySelector('.gold-number')||value||row).fontFamily,award:bounds(award),sugar:{text:sugar?.textContent||'',visible:visible(sugar)},scrollWidth:row.scrollWidth,clientWidth:row.clientWidth};}),
+   floatingControls:['#screen>#debug-tools #debug-start','#screen>#debug-tools #jpc-mode'].map(selector=>{const node=document.querySelector(selector),css=node&&getComputedStyle(node);return {selector,exists:!!node,visible:visible(node),visibility:css?.visibility,pointerEvents:css?.pointerEvents,text:node?.textContent||''};}),
    wipe:wipe?{visible:visible(wipe),hidden:wipe.hidden,pointerEvents:getComputedStyle(wipe).pointerEvents,opacity:Number(getComputedStyle(wipe).opacity),rect:bounds(wipe),animations:wipe.getAnimations({subtree:true}).map(animation=>({playState:animation.playState,currentTime:animation.currentTime}))}:null,
    menu:document.body.classList.contains('player-menu-open'),documentHidden:document.hidden,beginCount:window.__resultsTest253?.beginCount||0,acceptedBeginCount:window.__resultsTest253?.acceptedBeginCount||0
   };
  });
 }
-async function present(indexes,{zero=false,sugar=[0,6],width=390,height=844}={}){
+async function present(indexes,{zero=false,sugar=[0,6],width=390,height=844,firstPhase='result'}={}){
  caseSerial++;
  // The controller performs three delayed cleanup checks after READY. Do not
  // inject the next controlled result until that existing cleanup has finished.
  await page.waitForFunction(()=>!window.SweetsSharedControllerV224?.describe().resetBusy,null,{timeout:5000});
  await page.setViewportSize({width,height});
  await sleep(120);
- const data=await page.evaluate(({indexes,zero,sugar,wins,caseSerial})=>{
+ const data=await page.evaluate(({indexes,zero,sugar,wins,caseSerial,firstPhase})=>{
   const q=window.__qa250,a=q.app;
   if(document.body.classList.contains('player-menu-open'))document.getElementById('record-close-top')?.click();
   // The normal prepare path closes the previous result and advances its token.
@@ -45,16 +46,36 @@ async function present(indexes,{zero=false,sugar=[0,6],width=390,height=844}={})
   const enabled=a.engines.map((_,i)=>indexes.includes(i)),locked=enabled.map(on=>on?100:0),values=a.engines.map((_,i)=>enabled[i]&&!zero?wins[i]:0);
   a.enabled=enabled;a.locked=locked;a.roundWins=values;a.paid=enabled.map(()=>true);
   a.engines.forEach((engine,i)=>{engine.wonderCollected=enabled[i]&&sugar.includes(i);engine.wonderToken=engine.wonderCollected?{game:i,value:100,directJpc:false}:null;});
-  a.phase='playing';a.result=null;a.payout=null;a.finishRound();q.scheduleUI(a);
   window.__resultsTest253.current={caseSerial,token:a.token,before,indexes,values,sugar:sugar.filter(i=>enabled[i]),total:values.reduce((sum,n)=>sum+n,0)};
+  a.phase='playing';a.result=null;a.payout=null;a.finishRound();
+  if(firstPhase!=='result'){
+   // Enter the late phase through real native methods before the first result
+   // DOM is rendered. hud() is the same shipped renderer used by flushUI().
+   // Its synchronous before/after snapshot cannot pass by waiting 1.3 seconds.
+   a.beginPayout();if(firstPhase==='complete')a.advancePayout(a.payout.duration);
+   const native=()=>({phase:a.phase,token:a.token,credit:a.credit,displayCredit:a.displayCredit,totalWin:a.totalWin,result:JSON.parse(JSON.stringify(a.result)),payout:JSON.parse(JSON.stringify(a.payout)),acceptedBeginCount:window.__resultsTest253.acceptedBeginCount});
+   const layer=document.getElementById('round-result-layer'),alreadyRendered=!layer.hidden&&layer.dataset.round===String(a.token),beforePaint=native();
+   q.hud(a);
+   const afterPaint=native(),total=layer.querySelector('.result-total'),rows=[...layer.querySelectorAll('.result-game[data-game-index]')].filter(row=>!row.hidden&&!row.classList.contains('no-bet'));
+   window.__resultsTest253.current.firstRender={requestedPhase:firstPhase,alreadyRendered,beforePaint,afterPaint,presentation:window.SweetsResultsV253.describe(),layerHidden:layer.hidden,total:{text:document.getElementById('result-total-win').textContent,opacity:Number(getComputedStyle(total).opacity)},rows:rows.map(row=>({index:Number(row.dataset.gameIndex),text:row.querySelector('.result-value').textContent,opacity:Number(getComputedStyle(row).opacity)})),floatingControls:['#screen>#debug-tools #debug-start','#screen>#debug-tools #jpc-mode'].map(selector=>({selector,visibility:getComputedStyle(document.querySelector(selector)).visibility}))};
+  }
+  q.scheduleUI(a);
   return window.__resultsTest253.current;
- },{indexes,zero,sugar,wins,caseSerial});
- await page.waitForFunction(token=>window.SweetsResultsV253.describe().active&&String(window.SweetsResultsV253.describe().token)===String(token),data.token,{timeout:5000});
+ },{indexes,zero,sugar,wins,caseSerial,firstPhase});
+ if(firstPhase==='result')await page.waitForFunction(token=>window.SweetsResultsV253.describe().active&&String(window.SweetsResultsV253.describe().token)===String(token),data.token,{timeout:5000});
  return {...data,width,height};
 }
 function contained(inner,outer,label,tolerance=2){
  assert.ok(inner&&outer&&inner.width>0&&inner.height>0,label+' has visible bounds');
  assert.ok(inner.left>=outer.left-tolerance&&inner.top>=outer.top-tolerance&&inner.right<=outer.right+tolerance&&inner.bottom<=outer.bottom+tolerance,label+' fits: '+JSON.stringify({inner,outer}));
+}
+function verifyFloatingControls(state,hidden){
+ assert.equal(state.floatingControls.length,2);
+ for(const control of state.floatingControls){
+  assert.equal(control.exists,true,'native floating control exists: '+control.selector);
+  assert.equal(control.visible,!hidden,'native floating control '+(hidden?'is hidden during results/cut-in':'returns after the cut-in')+': '+control.selector);
+  if(hidden){assert.equal(control.visibility,'hidden');assert.equal(control.pointerEvents,'none');}
+ }
 }
 function verifyRows(state,expected){
  const shown=state.rows.filter(row=>row.visible),actualIndexes=shown.map(row=>row.index).sort((a,b)=>a-b);
@@ -71,6 +92,7 @@ function verifyRows(state,expected){
   assert.equal(row.sugar.visible,expected.sugar.includes(row.index),'Sugar badge comes only from this game result');
  }
  assert.equal(state.sugarBank,expected.before.sugarBank,'presentation does not add Sugar tokens');assert.deepEqual(state.draws,expected.before.draws,'presentation never generates lottery numbers');
+ verifyFloatingControls(state,true);
 }
 async function complete(expected){
  // The shared controller can close COMPLETE at its next 100ms monitor tick,
@@ -122,6 +144,7 @@ try{
  for(const config of configs){
   await touch.send('Emulation.setTouchEmulationEnabled',{enabled:config.width<900,maxTouchPoints:1});
   const expected=await present(config.indexes,config),entry=await observe();
+  verifyFloatingControls(entry,true);
   assert.equal(entry.resultDuration,1800,'existing native result duration is preserved');assert.equal(entry.credit,expected.before.credit,'displaying the result cannot pay early');
   const prefix='results-'+config.width+'x'+config.height+'-'+config.indexes.length;
   await page.screenshot({path:output+'/'+prefix+'-entry.png'});
@@ -134,11 +157,29 @@ try{
   await sleep(60);const repeated=await observe();assert.equal(repeated.presentation.startCount,before,'same-token rerender does not replay entrance');assert.ok(repeated.presentation.elapsed>=shown.presentation.elapsed,'same-token rerender does not rewind presentation');assert.equal(new Set(repeated.rows.map(row=>row.index)).size,repeated.rows.length,'no duplicate game rows');
   const done=await complete(expected),closed=await closeNative();await sleep(160);const cutin=await observe();
   assert.equal(cutin.phase,'ready');assert.equal(cutin.layerHidden,true);assert.equal(cutin.credit,done.credit,'cut-in does not change payout');
+  verifyFloatingControls(cutin,true);
   assert.ok(closed.token>done.token,'native cleanup advances to a fresh board');assert.equal(cutin.presentation.wipe.startCount,done.presentation.wipe.startCount+1,'the native close creates exactly one new cut-in');
   if(cutin.wipe?.visible){assert.equal(cutin.wipe.pointerEvents,'none','outro never captures next-game input');await page.screenshot({path:output+'/'+prefix+'-cutin.png'});}
   else throw new Error('Normal completed result should show the short sweets cut-in after native closure');
-  await sleep(650);const after=await observe();assert.ok(!after.wipe?.visible,'cut-in removes itself without delaying ready state');assert.equal(after.phase,'ready');
+  await sleep(650);const after=await observe();assert.ok(!after.wipe?.visible,'cut-in removes itself without delaying ready state');assert.equal(after.phase,'ready');verifyFloatingControls(after,false);
   report.cases.push({expected,entry,middle,shown,rerender:{startCount:before,after:repeated.presentation.startCount,indexes:stable},done,closed,cutin,after});
+ }
+ // First rendering after a hidden/native advance must be immediately readable.
+ // No animation wait precedes the assertions: the firstRender evidence above
+ // comes from the very call that created this token's result DOM.
+ for(const firstPhase of ['paying','complete']){
+  const expected=await present([0,6,9],{width:844,height:390,firstPhase}),first=expected.firstRender;
+  assert.equal(first.alreadyRendered,false,'late-phase case starts before this result token has a DOM');
+  assert.equal(first.beforePaint.phase,firstPhase);assert.deepEqual(first.afterPaint,first.beforePaint,'first result paint cannot alter native phase, clocks, payout or CREDIT');
+  assert.equal(first.beforePaint.result.duration,1800);assert.equal(first.beforePaint.credit,expected.before.credit+expected.total);
+  assert.equal(first.beforePaint.acceptedBeginCount,expected.before.acceptedBeginCount+1);assert.equal(first.beforePaint.payout.elapsed,firstPhase==='paying'?0:first.beforePaint.payout.duration);
+  assert.equal(first.presentation.active,true);assert.equal(first.presentation.phase,'hold','late native phases skip the already-elapsed visual entrance immediately');assert.equal(first.presentation.elapsed,1310);assert.equal(first.layerHidden,false);
+  assert.equal(first.total.text,String(expected.total));assert.equal(first.total.opacity,1,'TOTAL is fully visible on the first synchronous paint');
+  assert.deepEqual(first.rows.map(row=>row.index),expected.indexes);for(const row of first.rows){assert.equal(row.opacity,1);assert.equal(row.text,String(expected.values[row.index]));}
+  assert.ok(first.floatingControls.every(control=>control.visibility==='hidden'));
+  const done=await complete(expected),closed=await closeNative();await sleep(810);const after=await observe();
+  assert.equal(done.payoutDuration,first.beforePaint.payout.duration,'native payout duration is preserved through completion');assert.equal(after.credit,done.credit);assert.equal(after.phase,'ready');assert.ok(!after.wipe?.visible);verifyFloatingControls(after,false);
+  report.latePhases.push({expected,first,done,closed,after});
  }
  // Menu and hidden-document events stop only the presentation clock. Native
  // state remains authoritative, and a hidden close must not queue a late wipe.
@@ -181,7 +222,7 @@ try{
  const starts=report.cases.map(item=>item.entry.presentation.startCount);assert.ok(starts.every((count,index)=>!index||count>starts[index-1]),'new native tokens replay the entrance once');
  assert.deepEqual(errors,[]);report.pageErrors=errors;
  await fs.writeFile(output+'/result.json',JSON.stringify(report,null,2)+'\n');
- console.log('RESULTS_V253_BROWSER_PASS',JSON.stringify({viewports:report.cases.length,gameCounts:report.cases.map(item=>item.expected.indexes.length),nativeDuration:1800,exactPayout:true,sameTokenNoReplay:true,nextTokenReplay:true,menuPause:true,hiddenCleanup:true,reducedMotion:true,zeroWin:true,errors}));
+ console.log('RESULTS_V253_BROWSER_PASS',JSON.stringify({viewports:report.cases.length,gameCounts:report.cases.map(item=>item.expected.indexes.length),nativeDuration:1800,exactPayout:true,sameTokenNoReplay:true,nextTokenReplay:true,floatingControlsRestore:true,immediateLatePhases:report.latePhases.map(item=>item.first.requestedPhase),menuPause:true,hiddenCleanup:true,reducedMotion:true,zeroWin:true,errors}));
 }catch(error){
  report.failure={message:String(error),stack:error.stack,errors,warnings:fixture.warnings};
  try{report.failure.current=await observe();await page.screenshot({path:output+'/failure.png'});}catch(captureError){report.failure.captureError=String(captureError);}
