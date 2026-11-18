@@ -30,6 +30,9 @@ async function observe(){
 }
 async function present(indexes,{zero=false,sugar=[0,6],width=390,height=844}={}){
  caseSerial++;
+ // The controller performs three delayed cleanup checks after READY. Do not
+ // inject the next controlled result until that existing cleanup has finished.
+ await page.waitForFunction(()=>!window.SweetsSharedControllerV224?.describe().resetBusy,null,{timeout:5000});
  await page.setViewportSize({width,height});
  await sleep(120);
  const data=await page.evaluate(({indexes,zero,sugar,wins,caseSerial})=>{
@@ -70,16 +73,23 @@ function verifyRows(state,expected){
  assert.equal(state.sugarBank,expected.before.sugarBank,'presentation does not add Sugar tokens');assert.deepEqual(state.draws,expected.before.draws,'presentation never generates lottery numbers');
 }
 async function complete(expected){
- await page.waitForFunction(()=>window.__qa250.app.phase==='complete',null,{timeout:8000});
- const done=await observe();assert.equal(done.credit,expected.before.credit+expected.total,'native payout credits the total exactly once');assert.equal(done.displayCredit,done.credit);assert.equal(done.acceptedBeginCount,expected.before.acceptedBeginCount+1,'one accepted native payout transition per result');
- const repeated=await page.evaluate(()=>{const a=window.__qa250.app,before=a.credit;for(let i=0;i<5;i++){a.beginPayout();a.advanceResult(2000);a.advancePayout(3000);a.onChange?.(a);}return {before,after:a.credit,phase:a.phase};});
- assert.equal(repeated.after,repeated.before,'repeat result/payout callbacks cannot duplicate CREDIT');assert.equal(repeated.phase,'complete');
+ // The shared controller can close COMPLETE at its next 100ms monitor tick,
+ // even without a physical round in this fixture. Read the atomic observation
+ // taken by onChange instead of racing several browser RPCs against that tick.
+ await page.waitForFunction(token=>!!window.__resultsTest253.completed[token],expected.token,{timeout:8000});
+ const done=await page.evaluate(token=>window.__resultsTest253.completed[token],expected.token);
+ assert.equal(done.phase,'complete');assert.equal(done.token,expected.token);
+ assert.equal(done.credit,expected.before.credit+expected.total,'native payout credits the total exactly once');assert.equal(done.displayCredit,done.credit);assert.equal(done.acceptedBeginCount,expected.before.acceptedBeginCount+1,'one accepted native payout transition per result');
+ assert.equal(done.repeated.after,done.repeated.before,'repeat payout callbacks cannot duplicate CREDIT');assert.equal(done.repeated.phase,'complete','repeat callbacks do not advance the native result lifecycle');
  return done;
 }
 async function closeNative({direct=false}={}){
- const closed=await page.evaluate(direct=>{const a=window.__qa250.app;if(direct){a.result=null;a.payout=null;a.phase='ready';document.getElementById('round-result-layer').hidden=true;a.onChange?.(a);}else a.prepare();window.__qa250.scheduleUI(a);return {phase:a.phase,credit:a.credit,token:a.token};},direct);
+ if(direct)await page.evaluate(()=>{const a=window.__qa250.app;a.result=null;a.payout=null;a.phase='ready';document.getElementById('round-result-layer').hidden=true;a.onChange?.(a);window.__qa250.scheduleUI(a);});
+ // Observe the real controller's cleanup. An extra prepare() here could bump
+ // its new token and cancel the very cut-in this test is meant to inspect.
+ await page.waitForFunction(()=>window.__qa250.app.phase==='ready'&&document.getElementById('round-result-layer').hidden,null,{timeout:3000});
+ const closed=await page.evaluate(()=>{const a=window.__qa250.app;return {phase:a.phase,credit:a.credit,token:a.token};});
  assert.equal(closed.phase,'ready','next BET is ready immediately, without waiting for visual exit');
- await page.waitForFunction(()=>document.getElementById('round-result-layer').hidden,null,{timeout:2000});
  return closed;
 }
 try{
@@ -87,9 +97,25 @@ try{
  await page.evaluate(async()=>{await window.SweetsResultsV253.assetsReady;});
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{
-  const a=window.__qa250.app,original=a.beginPayout;
-  window.__resultsTest253={beginCount:0,acceptedBeginCount:0};
+  const a=window.__qa250.app,original=a.beginPayout,originalChange=a.onChange;
+  window.__resultsTest253={beginCount:0,acceptedBeginCount:0,completed:{},completionQueued:false};
   a.beginPayout=function(...args){const q=window.__resultsTest253,prior=this.phase;q.beginCount++;const result=original.apply(this,args);if(prior==='result'&&this.phase!=='result')q.acceptedBeginCount++;return result;};
+  a.onChange=function(...args){
+   const result=originalChange.apply(this,args),q=window.__resultsTest253,token=a.token;
+   if(a.phase==='complete'&&q.current?.token===token&&!q.completed[token]&&!q.completionQueued){
+    q.completionQueued=true;
+    // Complete the native callback first (including the accepted-begin counter)
+    // then inspect and retry in the same JS turn, before any controller timer.
+    queueMicrotask(()=>{
+     q.completionQueued=false;if(a.phase!=='complete'||a.token!==token||q.completed[token])return;
+     const done={phase:a.phase,token:a.token,credit:a.credit,displayCredit:a.displayCredit,totalWin:a.totalWin,resultDuration:a.result?.duration??null,payoutDuration:a.payout?.duration??null,acceptedBeginCount:q.acceptedBeginCount,beginCount:q.beginCount,presentation:window.SweetsResultsV253.describe()};
+     q.completed[token]=done;
+     const before=a.credit;for(let i=0;i<5;i++){a.beginPayout();a.onChange?.(a);}
+     done.repeated={before,after:a.credit,phase:a.phase};
+    });
+   }
+   return result;
+  };
  });
  const touch=await context.newCDPSession(page);
  const configs=[{indexes:Array.from({length:10},(_,i)=>i),width:390,height:844},{indexes:[0,6,9],width:844,height:390},{indexes:[0],width:1366,height:900},{indexes:Array.from({length:10},(_,i)=>i),width:844,height:390}];
@@ -108,6 +134,7 @@ try{
   await sleep(60);const repeated=await observe();assert.equal(repeated.presentation.startCount,before,'same-token rerender does not replay entrance');assert.ok(repeated.presentation.elapsed>=shown.presentation.elapsed,'same-token rerender does not rewind presentation');assert.equal(new Set(repeated.rows.map(row=>row.index)).size,repeated.rows.length,'no duplicate game rows');
   const done=await complete(expected),closed=await closeNative();await sleep(160);const cutin=await observe();
   assert.equal(cutin.phase,'ready');assert.equal(cutin.layerHidden,true);assert.equal(cutin.credit,done.credit,'cut-in does not change payout');
+  assert.ok(closed.token>done.token,'native cleanup advances to a fresh board');assert.equal(cutin.presentation.wipe.startCount,done.presentation.wipe.startCount+1,'the native close creates exactly one new cut-in');
   if(cutin.wipe?.visible){assert.equal(cutin.wipe.pointerEvents,'none','outro never captures next-game input');await page.screenshot({path:output+'/'+prefix+'-cutin.png'});}
   else throw new Error('Normal completed result should show the short sweets cut-in after native closure');
   await sleep(650);const after=await observe();assert.ok(!after.wipe?.visible,'cut-in removes itself without delaying ready state');assert.equal(after.phase,'ready');
