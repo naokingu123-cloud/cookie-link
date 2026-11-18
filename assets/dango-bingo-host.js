@@ -11,9 +11,9 @@ let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTime
 const payoutNote=document.createElement('small');payoutNote.id='dango-payout-status';
 document.getElementById('debug-payout-status')?.after(payoutNote);
 const engine={
- kind:'dango',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'5個ライン3本',version:0,
+ kind:'dango',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'最高役',version:0,
  maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,idle:true,busy:false,
- get allClears(){return Number(this.liveBoard&&this.state?.highestRole);},
+ get allClears(){return Number(this.liveBoard&&R.highestRolesFor(this.state).length>0);},
  get totalHundredths(){return this.liveBoard&&this.state?.phase==='done'?this.state.totalHundredths:0;},
  get paused(){return paused;},
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
@@ -56,7 +56,7 @@ const engine={
    invalidateReach(slot);this.emit('settled');slot.updateDangoReach(app);
    if(!settlementWorker&&active===id)sceneSound(next.lastOddsGain?'bonus':next.newLines.length?'line':'cookie-hit',{volume:next.lastOddsGain ? .55 : .3});
    if(!settlementWorker&&next.lastBonusGain)announceAchievement(game.name+'　初期FREEにHIT！ 配置FREE＋1');
-   if(!settlementWorker&&next.highestRole&&!before.highestRole)announceAchievement(game.name+'　5個ラインの串3本完成！ '+num(medalWin(app.locked[id],next.totalHundredths))+' WIN');
+   announceHighestRoles(next,R.highestRolesFor(before));
    if(next.phase==='done')finish(this.version);
   }
  },
@@ -68,6 +68,10 @@ const engine={
   clearTimeout(checkpointTimer);checkpointTimer=0;
   invalidateReach(slot);this.emit('settled');slot.updateDangoReach(app);
   if(!settlementWorker&&active===id)sceneSound(next.completedLines.length>previous.size?'line':'cookie-land',{volume:.36});
+  // Manual choices remain reversible throughout thinking. Announce the final
+  // role only after commitment, relative to the five-ball board without any
+  // player FREE. This also works when restoring an old placing checkpoint.
+  announceHighestRoles(next,rolesBeforePlacement(before));
   return next;
  },
  emit(phase){this.phase=phase;slot.event={phase};slot.dirtyMain=slot.dirtyMini=true;lastMain=lastMini=-Infinity;wake();scheduleUI(app);}
@@ -76,6 +80,20 @@ app.engines[id]=slot.engine=engine;slot.holder.classList.add('dgb-slot');slot.pa
 // The nine-dango bottom row needs a wide mini canvas. Only this game's
 // instance changes size; DangoBingoView.drawMini still accepts any resolution.
 if(slot.mini?.canvas){slot.mini.canvas.width=240;slot.mini.canvas.height=154;}
+function roleLabel(state,roles=R.highestRolesFor(state)){
+ return roles.map(length=>length+'個ライン '+state.lineCounts[length]+'本').join('・');
+}
+function announceHighestRoles(state,previousRoles){
+ if(settlementWorker||!engine.liveBoard)return;
+ const added=R.highestRolesFor(state).filter(length=>!previousRoles.includes(length));
+ if(added.length)announceAchievement(game.name+'　最高役！ '+roleLabel(state,added)+'完成！ '+num(medalWin(app.locked[id],state.totalHundredths))+' WIN');
+}
+function rolesBeforePlacement(state){
+ const marked=new Set([...state.initialFreeCells,...state.draws.slice(0,5).map(n=>state.numbers.indexOf(n))]);
+ const lineCounts={3:0,4:0,5:0,7:0,9:0};
+ for(const line of R.lines)if(line.cells.every(cellId=>marked.has(cellId)))lineCounts[line.length]++;
+ return R.highestRolesFor({lineCounts});
+}
 function thinking(){
  const state=window.SweetsDangoThinkingV251?.state?.();
  const ownRound=app.__sharedRound?.roundId;
@@ -128,7 +146,7 @@ function finish(version,token=app.token){
    const delay=Math.max(animationMs,Math.min(3200,engine.animationLines.length*150+500));
    const complete=settlementWorker?await Promise.resolve(true):await app.wait(delay,token);
    if(!complete||!currentJob(job)||app.phase!=='playing'||app.enabled[id]===false||app.paid[id])return;
-   if(!settlementWorker&&active===id&&engine.totalHundredths){const tier=reachTier(engine.totalHundredths,engine.state.highestRole);sceneSound(['line','bonus','big-bonus','allclear'][tier],{volume:.6+tier*.06});}
+   if(!settlementWorker&&active===id&&engine.totalHundredths){const tier=reachTier(engine.totalHundredths,engine.allClears>0);sceneSound(['line','bonus','big-bonus','allclear'][tier],{volume:.6+tier*.06});}
    if(!settlementWorker)await finishGamePresentation(slot,engine,app,version);
    if(!currentJob(job)||app.phase!=='playing'||app.enabled[id]===false||app.paid[id])return;
    engine.running=false;engine.emit('complete');app.paid[id]=true;app.roundWins[id]=medalWin(app.locked[id],engine.totalHundredths);
@@ -191,7 +209,8 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  oldResult(a);if(!a.result)return;const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.dango===String(a.token))return;
  row.dataset.dango=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state,lines=[3,4,5,7,9].filter(length=>s.lineCounts[length]).map(length=>length+'個ライン '+s.lineCounts[length]+'本').join(' ／ ');
- row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+' ／ 配置FREE '+s.manualFreeCells.length+'個 ／ ODDS ×'+s.oddsMultiplier+(s.highestRole?' ／ 5個ライン3本以上！':''):'参加なし';
+ const highestRoles=R.highestRolesFor(s);
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+' ／ 配置FREE '+s.manualFreeCells.length+'個 ／ ODDS ×'+s.oddsMultiplier+(highestRoles.length?' ／ 最高役：'+roleLabel(s,highestRoles):''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;lastMain=-Infinity;wake();});

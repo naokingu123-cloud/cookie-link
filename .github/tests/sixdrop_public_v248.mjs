@@ -29,6 +29,8 @@ arcadeFiles.push('assets/dango-bingo-rules.js','assets/dango-bingo-view.js','ass
 arcadeFiles.push(...['dango-white','bamboo-skewer','scene'].map(name=>'assets/dango-art-v252/'+name+'.webp'));
 arcadeFiles.push(...['dango-green','dango-pink','dango-yellow','dango-rainbow','tsukimi-stand'].map(name=>'assets/dango-art-v253/'+name+'.webp'));
 arcadeFiles.push('assets/sweets-results-v253.js','assets/sweets-results-v253.css','assets/results-art-v253/result-frame.webp','assets/results-art-v253/sweets-wipe.webp');
+arcadeFiles.push('assets/sugar-challenge-rules-v254.js','assets/sugar-challenge-v254.js','assets/sugar-challenge-v254.css','assets/sugar-roulette-v254.js','assets/reach-art-v254/reach-common.webp','assets/shared-machine-core-v196.js','assets/server-offline-settlement-worker-v3.js');
+arcadeFiles.push(...['scale','bottle','jpc-title'].map(name=>'assets/sugar-art-v254/'+name+'.webp'));
 const files=['index.html','app-version.json','optimized/app-01.js','optimized/style-01.css','optimized/media/a73bbbdd98d48aac.woff2','assets/cookie-upgrade-patches.js','assets/sixdrop-progressive-core-v247.js','assets/sixdrop-progressive-host-v247.js','assets/sixdrop-progressive-v247.css','assets/shared-machine-v176.js','assets/shared-client-controller-v224.js','assets/stations-v235.js','assets/stations-progressive-v246.js','monitor.html','assets/monitor-ledger-v241.js','assets/server-monitor-v241.js','assets/server-monitor-v242.js',...arcadeFiles];
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=Object.fromEntries(await Promise.all(files.map(async name=>[name,digest(await fs.readFile(name))])));
@@ -104,7 +106,7 @@ try{
    const bet=[...document.querySelectorAll('.v250-shared-bet-switch')];
    return {tabsRevision:window.SweetsArcadeTabsV249.version,backgroundLogos:backgrounds.length,visibleBackgrounds:backgrounds.filter(visible).length,decodedBackgrounds:backgrounds.filter(n=>n.complete&&n.naturalWidth===768).length,commonBetButtons:bet.length,commonBetOutsideTabs:bet.every(n=>!document.getElementById('tabs').contains(n)),castellaRevision:rules.REVISION,castellaHoles:state.cells.length,castellaEdges:state.edges.length,castellaSpecials:{pour:state.specials.pour.length,fire:state.specials.fire.length,sugar:state.specials.sugar.length,odds:state.specials.odds.length},castellaPayoutRows:rules.payRows.length};
   });
-  assert.equal(current.tabsRevision,252);assert.equal(current.backgroundLogos,10);assert.equal(current.visibleBackgrounds,9);assert.equal(current.decodedBackgrounds,10);
+  assert.equal(current.tabsRevision,254);assert.equal(current.backgroundLogos,10);assert.equal(current.visibleBackgrounds,9);assert.equal(current.decodedBackgrounds,10);
   assert.equal(current.commonBetButtons,1);assert.equal(current.commonBetOutsideTabs,true);
   assert.equal(current.castellaRevision,250);assert.equal(current.castellaHoles,61);assert.equal(current.castellaEdges,84);
   assert.deepEqual(current.castellaSpecials,{pour:2,fire:2,sugar:1,odds:0});assert.equal(current.castellaPayoutRows,13);
@@ -130,27 +132,31 @@ try{
    }finally{prototype.drawImage=native;}
    const rectOf=node=>{const {x,y,width,height,top,right,bottom,left}=node.getBoundingClientRect();return {x,y,width,height,top,right,bottom,left};};
    const payoutBounds={panel:rectOf(root.querySelector('.dgb-pay')),rows:[...root.querySelectorAll('.dgb-pay tr')].map(row=>({length:Number(row.dataset.length)||null,rect:rectOf(row),cells:[...row.children].map((cell,column)=>({column,kind:cell.tagName.toLowerCase(),text:cell.textContent,rect:rectOf(cell)}))}))};
-   const payCells=[...root.querySelectorAll('.dgb-pay td[data-valid="true"]')].map(td=>({win:td.textContent,font:getComputedStyle(td.querySelector('.gold-number')||td).fontFamily})),geometry=V.geometry(640,420);
+   const payCells=[...root.querySelectorAll('.dgb-pay td[data-valid="true"]')].map(td=>({length:Number(td.closest('tr').dataset.length),count:Number(td.dataset.count),highest:td.dataset.highestRole==='true',rainbowAnimation:getComputedStyle(td,'::before').animationName,win:td.textContent,font:getComputedStyle(td.querySelector('.gold-number')||td).fontFamily})),geometry=V.geometry(640,420);
    const panRect=rectOf(root.querySelector('.dgb-pan')),mainGeometry=V.geometry(panRect.width,panRect.height);
    const positions={scene:rectOf(root),pan:panRect,geometry:mainGeometry,payout:rectOf(root.querySelector('.dgb-pay')),free:rectOf(root.querySelector('.dgb-free-stat')),oldTopText:root.querySelectorAll('.dgb-status,.dgb-phase-label,.dgb-phase-value,.dgb-pay-title').length,invalidPayoutCells:root.querySelectorAll('.dgb-pay td:not([data-valid="true"])').length};
    const payRowLabels=[...root.querySelectorAll('.dgb-pay tbody th')].map(th=>th.textContent),payBackgrounds=[...root.querySelectorAll('.dgb-pay tbody tr')].map(row=>({length:Number(row.dataset.length),row:getComputedStyle(row).backgroundColor,cell:getComputedStyle(row.querySelector('td')).backgroundColor}));
-   return {revision:R.REVISION,liveBoard:e.liveBoard,cells:e.state.cells.length,numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.lines.length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,payBackgrounds,positions,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
+   return {revision:R.REVISION,highestRoleMinimums:R.highestRoleMinimums,liveBoard:e.liveBoard,cells:e.state.cells.length,numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.lines.length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,payBackgrounds,positions,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
   });
   report.currentScreen={width,height,...info};
-  assert.equal(info.dango.revision,253);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,25);assert.equal(info.dango.lines,19);assert.equal(info.dango.payRows,5);assert.equal(info.dango.payCells.length,13);assert.equal(info.dango.buttons,25);
+  assert.equal(info.dango.revision,254);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,25);assert.equal(info.dango.lines,19);assert.equal(info.dango.payRows,5);assert.equal(info.dango.payCells.length,13);assert.equal(info.dango.buttons,25);
+  assert.deepEqual(info.dango.highestRoleMinimums,{3:4,4:3,5:2,7:1,9:1});
+  assert.deepEqual(info.dango.payCells.filter(cell=>cell.highest).map(cell=>[cell.length,cell.count]),[[3,4],[4,3],[4,4],[5,2],[5,3],[7,1],[9,1]]);
+  for(const cell of info.dango.payCells.filter(cell=>cell.highest))assert.equal(cell.rainbowAnimation,'dgb-pay-rainbow');
   assert.deepEqual(info.dango.payHeaders.slice(1),['1本','2本','3本','4本以上']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);
   for(const cell of info.dango.payCells){assert.match(cell.font,/ArcadePayout/);assert.doesNotMatch(cell.win,/[,，]/);}
   assertPayoutContained(info.dango.payoutBounds);
   assert.deepEqual(info.dango.payRowLabels,['3個ライン','4個ライン','5個ライン','7個ライン','9個ライン']);
   assert.equal(info.dango.positions.oldTopText,0);assert.equal(info.dango.positions.invalidPayoutCells,0);
   const {scene,payout,free,pan,geometry:mainGeometry}=info.dango.positions;
+  assert.ok(payout.width>=mainGeometry.unit*4.36*1.22,'published payout is enlarged without changing the dango geometry');
   assert.ok(payout.left<scene.left+scene.width*.08&&payout.top<scene.top+scene.height*.1,'published payout sits in the upper left');
   assert.ok(free.left>pan.x+mainGeometry.centers[0].x+mainGeometry.radius*.4,'published remaining FREE is right of the dango apex');
   assert.ok(free.right<=scene.right+1&&free.bottom<=scene.bottom+1);
   for(const row of info.dango.payBackgrounds){const bg=[row.cell,row.row].find(color=>color&&!color.endsWith(', 0)')&&color!=='transparent'),rgb=bg?.match(/[\d.]+/g)?.slice(0,3).map(Number);assert.ok(rgb&&Math.max(...rgb)<110,'published payout uses a dark tinted background');}
   for(const row of info.dango.payoutBounds.rows)for(const cell of row.cells)for(const point of mainGeometry.centers){const rect=cell.rect,x=pan.x+point.x,y=pan.y+point.y,dx=x-Math.max(rect.left,Math.min(rect.right,x)),dy=y-Math.max(rect.top,Math.min(rect.bottom,y));assert.ok(Math.hypot(dx,dy)>=mainGeometry.radius*.85,'published payout avoids the dango core');}
   assert.deepEqual(info.dango.numbers,Array.from({length:25},(_,i)=>i+1));assert.ok(info.dango.initialFree.length>=1&&info.dango.initialFree.length<=3);assert.equal(info.dango.odds,1);
-  assert.equal(info.dango.art.revision,253);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
+  assert.equal(info.dango.art.revision,253);assert.equal(info.dango.art.presentationRevision,254);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
   assert.deepEqual(info.dango.art.images.map(image=>image.key).sort(),['green','pink','rainbow','skewer','stand','white','yellow']);
   for(const image of info.dango.art.images){assert.equal(image.loaded,true);assert.ok(image.width>=64&&image.height>=16);assert.match(image.url,/\/dango-art-v25[23]\//);const version=['white','skewer'].includes(image.key)?252:253;assert.ok(image.url.includes('/dango-art-v'+version+'/'));}
   for(const image of info.dango.cssAssets)assert.ok(image.width>=256&&image.height>=256);
@@ -167,6 +173,26 @@ try{
   assert.equal(info.results.installed,true);assert.equal(info.results.stylesheet,true);assert.equal(info.results.resultHidden,true);
   assert.equal(info.results.assets.length,2);for(const asset of info.results.assets)assert.ok(asset.width>0&&asset.height>0);
   assert.deepEqual(errors,[],'published result module initializes without errors');
+  await page.waitForFunction(()=>window.SugarChallengeRulesV254?.REVISION===254&&window.SweetsSugarChallengeV254?.version===254&&document.querySelector('.sc254-overlay'),null,{timeout:10000});
+  info.sugar=await page.evaluate(async()=>{
+   const R=window.SugarChallengeRulesV254,ui=window.SweetsSugarChallengeV254,assets=await Promise.all(['scale','bottle','jpc-title'].map(async name=>{const image=new Image();image.src='assets/sugar-art-v254/'+name+'.webp?v=254';await image.decode();return {name,width:image.naturalWidth,height:image.naturalHeight};}));
+   await Promise.all([...document.querySelectorAll('.sc254-overlay img,.sc254-celebration img,.sc254-dock img')].map(image=>image.decode()));
+   await window.SweetsArcadeTabsV249.reachFrameReady;
+   const tabs=window.SweetsArcadeTabsV249.describe(),overlay=document.querySelector('.sc254-overlay'),dock=document.querySelector('.sc254-dock');
+   return {revision:R.REVISION,ui:ui.describe(),stylesheet:[...document.styleSheets].some(sheet=>sheet.href?.includes('sugar-challenge-v254.css')),overlayHidden:overlay.hidden,dockHidden:dock.hidden,dockParent:dock.parentElement.id,assets,
+    cards:R.cards.map(card=>({id:card.id,lowMax:card.lowMax,highMin:card.highMin,luckySums:card.luckySums.slice()})),reachFrame:tabs.reachFrame,
+    reachPopups:[...document.querySelectorAll('.v250-reach-pop')].map(node=>({game:node.dataset.gameKind,image:getComputedStyle(node,'::before').backgroundImage,hidden:node.hidden,numberNodes:node.querySelectorAll('small').length})),
+    serverRouletteInstalled:!!window.SweetsSugarRouletteV254};
+  });
+  assert.equal(info.sugar.revision,254);assert.equal(info.sugar.ui.version,254);assert.equal(info.sugar.ui.challenge,null);assert.equal(info.sugar.ui.bankCount,0);assert.equal(info.sugar.ui.artLoaded,true);
+  assert.equal(info.sugar.stylesheet,true);assert.equal(info.sugar.overlayHidden,true);assert.equal(info.sugar.dockHidden,true);assert.equal(info.sugar.dockParent,'cookie-roulette');
+  assert.equal(info.sugar.serverRouletteInstalled,false,'published player does not install a second local roulette');
+  assert.equal(info.sugar.assets.length,3);for(const asset of info.sugar.assets)assert.ok(asset.width>=100&&asset.height>=100,'published '+asset.name+' artwork decodes');
+  assert.deepEqual(info.sugar.cards.map(card=>card.id),['standard','lucky','wide']);
+  for(const card of info.sugar.cards)for(const sum of card.luckySums)assert.ok(sum>card.lowMax&&sum<card.highMin,'lucky final sums are outside the two JPC tail intervals');
+  assert.equal(info.sugar.reachFrame.loaded,true);assert.ok(info.sugar.reachFrame.width>=300&&info.sugar.reachFrame.height>=100);
+  assert.equal(info.sugar.reachPopups.length,10);for(const pop of info.sugar.reachPopups){assert.match(pop.image,/reach-art-v254\/reach-common\.webp/);assert.equal(pop.hidden,true);assert.equal(pop.numberNodes,0);}
+  assert.deepEqual(errors,[],'published Sugar and reach modules initialize without errors');
   await page.screenshot({path:out+'/public-dango-ready-'+width+'.png'});
   report.screens.push({width,height,...info,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
   report.currentScreen=null;
@@ -181,4 +207,5 @@ await fs.writeFile(out+'/public-deployment.json',JSON.stringify(report,null,2)+'
 console.log('SIXDROP_PUBLIC_V248_READ_ONLY_PASS',JSON.stringify(report));
 console.log('ARCADE_PUBLIC_V249_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,logos:gameKinds.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,landscape:screen.arcade.landscape,loadedLogos:screen.arcade.brand.loaded,pageErrors:screen.pageErrors.length}))}));
 console.log('ARCADE_PUBLIC_V250_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,...screen.v250,pageErrors:screen.pageErrors.length}))}));
-console.log('DANGO_PUBLIC_V253_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,decodedSprites:screen.dango.art.images.length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
+console.log('DANGO_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
+console.log('SUGAR_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,rulesRevision:screen.sugar.revision,decodedSugarAssets:screen.sugar.assets.length,reachFrameDecoded:screen.sugar.reachFrame.loaded,overlayHidden:screen.sugar.overlayHidden,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));

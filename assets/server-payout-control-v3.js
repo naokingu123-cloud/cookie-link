@@ -112,6 +112,7 @@ function applyControl(control,options={}){
  if(!control||Number(control.version)!==3)return;
  window.SweetsSharedControllerV224?.operatorStateV242?.(control);
  if(String(control.playerId||'')===String(controls.playerId||'')&&Number(control.updatedAt)>0&&Number(control.updatedAt)<Number(controls.updatedAt))return;
+ window.SweetsSugarChallengeV254?.accept?.(control.sugarV254);
  const before=commonRate(),nextSignature=signature(control),changed=nextSignature!==lastSignature;controls=control;installEngineWrappers();setDisplay();applyWallet(control,options);
  if(control.offlinePending&&!window.SweetsSharedControllerV224){
   const key=String(control.currentRoundId||'offline');if(offlineResetKey!==key){offlineResetKey=key;resetToServerWaiting(null,'切断中ラウンドをサーバー精算中');}
@@ -164,7 +165,7 @@ function installClient(){
   const final=Number(saved?.version)===3?JSON.parse(JSON.stringify(saved)):telemetry(8,true);
   if(Number.isFinite(Number(payload?.totalWin)))final.roundWin=Number(payload.totalWin);
   if(payload?.abandoned===true){final.roundWin=0;final.games=(final.games||[]).map(game=>({...game,win:0}));}
-  return {...payload,payoutV3:final};
+  return {...payload,payoutV3:final,sugarV254:payload?.sugarV254||window.SweetsSugarChallengeV254?.payload?.()};
  };
  client.settle=async function(payload){
   // Immediate reset starts only after beginPayout has calculated the final WIN.
@@ -177,7 +178,7 @@ function installClient(){
  };
  client.join=async function(payload){
   try{
-   const response=await originalJoin({...payload,payoutV3Bet:{version:3,games:gameBetRows(payload)}});
+   const response=await originalJoin({...payload,payoutV3Bet:{version:3,games:gameBetRows(payload)},sugarV254:window.SweetsSugarChallengeV254?.payload?.()});
    const participant=response?.round?.participant,matching=String(response?.round?.id||'')===String(payload?.roundId||'')&&(!participant?.clientRoundToken||participant.clientRoundToken===payload?.clientRoundToken);
    applyStateControl(response,{joiningRoundId:matching?String(payload?.roundId||''):''});return response;
   }catch(error){

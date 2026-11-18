@@ -36,6 +36,7 @@ async function waitProcessed(ball,timeout=25000){
  const start=Date.now();while(Date.now()-start<timeout){if((app.engines||[]).every((engine,index)=>app.enabled?.[index]===false||processed(engine,ball)))return true;await sleep(20);}return false;
 }
 function prepareWork(work){
+ app.__sugarWorkRoundId=work.roundId;
  const state=work.state||{},totalBet=(state.locked||state.bets||[]).reduce((sum,value,index)=>sum+(state.enabled?.[index]===false?0:finite(value)),0);
  app.phase='ready';app.paused=false;app.fastForward=true;app.drawHeld=false;app.bets=[...(state.bets||[])];app.locked=[...(state.locked||state.bets||[])];app.enabled=[...(state.enabled||[])];
  app.credit=finite(state.credit)+totalBet;app.displayCredit=app.credit;debugPayoutTarget=finite(work.rate)||90;drawCallbacks=null;
@@ -63,7 +64,7 @@ async function settleWork(work){
   if(app.enabled?.[index]===false)continue;games.push({id:gameId(app.engines[index],index),bet:Math.max(0,finite(app.locked?.[index])),win:Math.max(0,finite(app.roundWins?.[index])),appliedRate:finite(work.rate)||90,...(app.engines[index]?.rulesVersion===247?{rulesVersion:247,carryV247:app.engines[index].progressiveCarryV247?.()}: {})});
  }
  const totalWin=Math.max(0,finite(app.totalWin)||games.reduce((sum,item)=>sum+item.win,0)),creditAfter=finite(work.state?.credit)+totalWin;
- await api(`/api/admin/machines/${encodeURIComponent(machine)}/payout-v3/offline-work/complete`,{method:'POST',body:JSON.stringify({token:work.token,playerId:work.playerId,roundId:work.roundId,totalWin,creditAfter,games,digest:`server-worker:${work.roundId}:${totalWin}`})});
+ await api(`/api/admin/machines/${encodeURIComponent(machine)}/payout-v3/offline-work/complete`,{method:'POST',body:JSON.stringify({token:work.token,playerId:work.playerId,roundId:work.roundId,totalWin,creditAfter,games,sugarV254:window.SweetsSugarChallengeV254?.payload?.(),digest:`server-worker:${work.roundId}:${totalWin}`})});
  console.info('[OfflineSettlementWorkerV3] settled',work.roundId,work.playerId,totalWin);
 }
 async function loop(){

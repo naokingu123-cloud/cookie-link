@@ -1,8 +1,8 @@
-name: Arcade v253 Dango tsukimi and sweets result presentation
+name: Arcade v254 Sugar Challenge and Dango reach presentation
 on:
   workflow_dispatch:
   push:
-    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo', 'feature/v252-dango-art-reach-pages', 'feature/v253-dango-tsukimi-lines']
+    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo', 'feature/v252-dango-art-reach-pages', 'feature/v253-dango-tsukimi-lines', 'feature/v254-sugar-challenge']
     paths:
       - 'index.html'
       - 'app-version.json'
@@ -21,10 +21,26 @@ on:
       - 'assets/dango-art-v253/**'
       - 'assets/sweets-results-v253*'
       - 'assets/results-art-v253/**'
+      - 'assets/sugar-challenge*v254*'
+      - 'assets/sugar-roulette-v254.js'
+      - 'assets/sugar-art-v254/**'
+      - 'assets/reach-art-v254/**'
+      - 'assets/shared-machine-core-v196.js'
+      - 'assets/server-payout-control-v3.js'
+      - 'assets/server-offline-settlement-worker-v3.js'
       - 'server-thinking-v251.mjs'
+      - 'server-sugar*v254.mjs'
+      - 'server-core-loader-v220.mjs'
+      - 'server-payout-preload-v3.mjs'
       - 'tests/*v251*'
       - 'tests/*v252*'
       - 'tests/*v253*'
+      - 'tests/*v254*'
+      - 'scripts/*v254*'
+      - 'docs/sugar-challenge-v254-probabilities.json'
+      - 'docs/dango-v254-calibration.json'
+      - 'package.json'
+      - 'package-lock.json'
       - 'optimized/app-01.js'
       - 'optimized/style-01.css'
       - 'tests/*v250*'
@@ -48,6 +64,7 @@ jobs:
           npm run test:sixdrop
           npm run test:castella
           npm run test:dango
+          npm run test:sugar
           node tests/client-smooth-v246.mjs
           node tests/hidden-engine-clocks-v246.mjs
           node tests/hidden-results-v246.mjs
@@ -66,7 +83,7 @@ jobs:
         if: ${{ !cancelled() && (steps.results.outcome == 'success' || steps.results.outcome == 'failure') }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v253-results-verification
+          name: arcade-v254-results-verification
           path: qa-results-v253/
           retention-days: 3
       - name: Ten tabs, shared BET and four-item reach pages
@@ -77,7 +94,7 @@ jobs:
         if: ${{ !cancelled() && steps.tabs.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v253-tabs-diagnostics
+          name: arcade-v254-tabs-diagnostics
           path: qa-tabs-v250/
           retention-days: 3
       - name: Dango placement, thinking deadline, skewers and payout
@@ -88,8 +105,19 @@ jobs:
         if: ${{ !cancelled() && steps.dango.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v253-dango-diagnostics
+          name: arcade-v254-dango-diagnostics
           path: qa-dango-v251/
+          retention-days: 3
+      - name: Sugar Challenge scale, bottle, cards, folding and JPC presentation
+        id: sugar
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/sugar-challenge-v254-browser.mjs
+      - name: Retain Sugar Challenge screenshots and diagnostics immediately
+        if: ${{ !cancelled() && (steps.sugar.outcome == 'success' || steps.sugar.outcome == 'failure') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-v254-sugar-verification
+          path: qa-sugar-v254/
           retention-days: 3
       - name: Castella61 real eight-ball round, gauges and Sugar
         id: castella
@@ -99,7 +127,7 @@ jobs:
         if: ${{ !cancelled() && steps.castella.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v253-castella-diagnostics
+          name: arcade-v254-castella-diagnostics
           path: qa-castella-v250/
           retention-days: 3
       - name: Transparent Six Drop all-clear reach
@@ -117,11 +145,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v253-visual-verification
+          name: arcade-v254-visual-verification
           path: |
             qa-v250/
             qa-dango-v251/
             qa-results-v253/
+            qa-sugar-v254/
             qa-tabs-v250/
             qa-castella-v250/
             qa-sixdrop-v250/

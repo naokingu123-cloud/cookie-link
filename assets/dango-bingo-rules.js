@@ -9,7 +9,7 @@
   if(root)root.DangoBingoRules=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const REVISION=253,LEGACY_REVISION=251,ALL=(1<<25)-1,DENOMINATOR=60568200,FESTIVAL_PROBABILITY=.005;
+  const REVISION=254,PREVIOUS_REVISION=253,LEGACY_REVISION=251,ALL=(1<<25)-1,DENOMINATOR=60568200,FESTIVAL_PROBABILITY=.005,MIN_REGULAR_MOLD_PROBABILITY=.002;
   const LENGTHS=[3,4,5,7,9];
   const freeze=value=>{
     if(value&&typeof value==='object'&&!Object.isFrozen(value)){
@@ -34,6 +34,9 @@
   }
   const mirror=cells.map(c=>cells.find(x=>x.row===c.row&&x.x===-c.x).id);
   const geometry=freeze({cells,lines,mirror,rows:[1,3,5,7,9]});
+  const highestRoleMinimums=freeze({3:4,4:3,5:2,7:1,9:1});
+  function isHighestRole(length,count){return Number.isFinite(count)&&highestRoleMinimums[length]!==undefined&&count>=highestRoleMinimums[length];}
+  function highestRolesFor(state){return LENGTHS.filter(length=>isHighestRole(length,state?.lineCounts?.[length]??state?.counts?.[length]??0));}
   // The three small tiers are adjusted so even the minimum one-FREE mold can
   // reach a 50% setting. Existing revision251 checkpoints keep their old table.
   const legacyTiers=freeze({3:[0,20,100,500,10000],4:[0,100,300,5000,50000],5:[0,300,10000,200000],7:[0,2500],9:[0,10000]});
@@ -54,7 +57,7 @@
     {id:'shoulders',name:'よりそい',initialFreeCells:[10,14],optimalNumeratorTenths:1285049154,automaticNumeratorTenths:896031148},
     {id:'festival',name:'三色まつり',initialFreeCells:[5,6,7],optimalNumeratorTenths:4454759956,automaticNumeratorTenths:2948678970}
   ].map(m=>({...m,optimalReturnPercent:10*m.optimalNumeratorTenths/DENOMINATOR,automaticReturnPercent:10*m.automaticNumeratorTenths/DENOMINATOR})));
-  const molds=freeze([
+  const previousMolds=freeze([
     {id:'edge',name:'すそのひと粒',initialFreeCells:[17],mirrorRandomly:true,optimalNumeratorTenths:277406842,automaticNumeratorTenths:235838809},
     {id:'one',name:'ひと粒',initialFreeCells:[20],optimalNumeratorTenths:414836844,automaticNumeratorTenths:324652551},
     {id:'two',name:'ふた粒',initialFreeCells:[19,21],optimalNumeratorTenths:624489542,automaticNumeratorTenths:447384849},
@@ -62,21 +65,90 @@
     {id:'festival',name:'三色まつり',initialFreeCells:[5,6,7],optimalNumeratorTenths:4305190290,automaticNumeratorTenths:2664728671}
   ].map(m=>({...m,optimalReturnPercent:10*m.optimalNumeratorTenths/DENOMINATOR,automaticReturnPercent:10*m.automaticNumeratorTenths/DENOMINATOR})));
   const legacy=freeze({revision:LEGACY_REVISION,ruleId:'initial-hit-free-v4',tiers:legacyTiers,payRows:legacyPayRows,molds:legacyMolds});
+  const legacy253=freeze({revision:PREVIOUS_REVISION,ruleId:'initial-required-free-v5',tiers,payRows,molds:previousMolds});
+  // Each pool selects one of its variants uniformly before number shuffling.
+  // Variant numerators are exact over C(25,5)*C(20,3), independent of ball labels.
+  const molds=freeze([
+    {id:"edge",name:"すそのひと粒",variants:[
+      {"id":"one-17","initialFreeCells":[17],"initialReflected":false,"optimalNumeratorTenths":277406842,"automaticNumeratorTenths":235838809},
+      {"id":"one-17-mirror","initialFreeCells":[23],"initialReflected":true,"optimalNumeratorTenths":277406842,"automaticNumeratorTenths":235838809}
+    ]},
+    {id:"one",name:"ひと粒いろいろ",variants:[
+      {"id":"one-20","initialFreeCells":[20],"initialReflected":false,"optimalNumeratorTenths":414836844,"automaticNumeratorTenths":324652551},
+      {"id":"one-0","initialFreeCells":[0],"initialReflected":false,"optimalNumeratorTenths":525609257,"automaticNumeratorTenths":419542606},
+      {"id":"one-1","initialFreeCells":[1],"initialReflected":false,"optimalNumeratorTenths":417395211,"automaticNumeratorTenths":337491741},
+      {"id":"one-2","initialFreeCells":[2],"initialReflected":false,"optimalNumeratorTenths":408202041,"automaticNumeratorTenths":327042802},
+      {"id":"one-1-mirror","initialFreeCells":[3],"initialReflected":true,"optimalNumeratorTenths":417395211,"automaticNumeratorTenths":337491741},
+      {"id":"one-4","initialFreeCells":[4],"initialReflected":false,"optimalNumeratorTenths":492916742,"automaticNumeratorTenths":378243958},
+      {"id":"one-5","initialFreeCells":[5],"initialReflected":false,"optimalNumeratorTenths":417458113,"automaticNumeratorTenths":340773423},
+      {"id":"one-6","initialFreeCells":[6],"initialReflected":false,"optimalNumeratorTenths":488238689,"automaticNumeratorTenths":395280425},
+      {"id":"one-5-mirror","initialFreeCells":[7],"initialReflected":true,"optimalNumeratorTenths":417458113,"automaticNumeratorTenths":340773423},
+      {"id":"one-4-mirror","initialFreeCells":[8],"initialReflected":true,"optimalNumeratorTenths":492916742,"automaticNumeratorTenths":378243958},
+      {"id":"one-9","initialFreeCells":[9],"initialReflected":false,"optimalNumeratorTenths":388771612,"automaticNumeratorTenths":299299911},
+      {"id":"one-10","initialFreeCells":[10],"initialReflected":false,"optimalNumeratorTenths":352321081,"automaticNumeratorTenths":278020035},
+      {"id":"one-11","initialFreeCells":[11],"initialReflected":false,"optimalNumeratorTenths":392737966,"automaticNumeratorTenths":320429912},
+      {"id":"one-12","initialFreeCells":[12],"initialReflected":false,"optimalNumeratorTenths":426459605,"automaticNumeratorTenths":311626544},
+      {"id":"one-11-mirror","initialFreeCells":[13],"initialReflected":true,"optimalNumeratorTenths":392737966,"automaticNumeratorTenths":320429912},
+      {"id":"one-10-mirror","initialFreeCells":[14],"initialReflected":true,"optimalNumeratorTenths":352321081,"automaticNumeratorTenths":278020035},
+      {"id":"one-9-mirror","initialFreeCells":[15],"initialReflected":true,"optimalNumeratorTenths":388771612,"automaticNumeratorTenths":299299911},
+      {"id":"one-16","initialFreeCells":[16],"initialReflected":false,"optimalNumeratorTenths":349091231,"automaticNumeratorTenths":282764069},
+      {"id":"one-17","initialFreeCells":[17],"initialReflected":false,"optimalNumeratorTenths":277406842,"automaticNumeratorTenths":235838809},
+      {"id":"one-18","initialFreeCells":[18],"initialReflected":false,"optimalNumeratorTenths":317457752,"automaticNumeratorTenths":264874215},
+      {"id":"one-19","initialFreeCells":[19],"initialReflected":false,"optimalNumeratorTenths":307893136,"automaticNumeratorTenths":256269965},
+      {"id":"one-19-mirror","initialFreeCells":[21],"initialReflected":true,"optimalNumeratorTenths":307893136,"automaticNumeratorTenths":256269965},
+      {"id":"one-18-mirror","initialFreeCells":[22],"initialReflected":true,"optimalNumeratorTenths":317457752,"automaticNumeratorTenths":264874215},
+      {"id":"one-17-mirror","initialFreeCells":[23],"initialReflected":true,"optimalNumeratorTenths":277406842,"automaticNumeratorTenths":235838809},
+      {"id":"one-16-mirror","initialFreeCells":[24],"initialReflected":true,"optimalNumeratorTenths":349091231,"automaticNumeratorTenths":282764069}
+    ]},
+    {id:"two",name:"ふた粒いろいろ",variants:[
+      {"id":"two-middle","initialFreeCells":[19,21],"initialReflected":false,"optimalNumeratorTenths":624489542,"automaticNumeratorTenths":447384849},
+      {"id":"two-edge","initialFreeCells":[17,23],"initialReflected":false,"optimalNumeratorTenths":507092971,"automaticNumeratorTenths":364948246},
+      {"id":"two-corners","initialFreeCells":[16,24],"initialReflected":false,"optimalNumeratorTenths":739274113,"automaticNumeratorTenths":494923172},
+      {"id":"two-wide","initialFreeCells":[18,22],"initialReflected":false,"optimalNumeratorTenths":716802480,"automaticNumeratorTenths":521537659}
+    ]},
+    {id:"shoulders",name:"ひろがるふた粒",variants:[
+      {"id":"two-shoulders","initialFreeCells":[10,14],"initialReflected":false,"optimalNumeratorTenths":1058887719,"automaticNumeratorTenths":630265093},
+      {"id":"two-spine","initialFreeCells":[0,20],"initialReflected":false,"optimalNumeratorTenths":1298177034,"automaticNumeratorTenths":852876457},
+      {"id":"two-cross","initialFreeCells":[5,14],"initialReflected":false,"optimalNumeratorTenths":774741551,"automaticNumeratorTenths":543436458},
+      {"id":"two-cross-mirror","initialFreeCells":[7,10],"initialReflected":true,"optimalNumeratorTenths":774741551,"automaticNumeratorTenths":543436458},
+      {"id":"two-bowl","initialFreeCells":[4,12],"initialReflected":false,"optimalNumeratorTenths":1094691743,"automaticNumeratorTenths":687642736},
+      {"id":"two-bowl-mirror","initialFreeCells":[8,12],"initialReflected":true,"optimalNumeratorTenths":1094691743,"automaticNumeratorTenths":687642736}
+    ]},
+    {id:"festival",name:"三色まつり",variants:[
+      {"id":"three-festival","initialFreeCells":[5,6,7],"initialReflected":false,"optimalNumeratorTenths":4305190290,"automaticNumeratorTenths":2664728671},
+      {"id":"three-five","initialFreeCells":[4,8,20],"initialReflected":false,"optimalNumeratorTenths":4379422245,"automaticNumeratorTenths":2650738217},
+      {"id":"three-cross","initialFreeCells":[1,8,20],"initialReflected":false,"optimalNumeratorTenths":2353461354,"automaticNumeratorTenths":1231270947},
+      {"id":"three-cross-mirror","initialFreeCells":[3,4,20],"initialReflected":true,"optimalNumeratorTenths":2353461354,"automaticNumeratorTenths":1231270947},
+      {"id":"three-wide","initialFreeCells":[10,18,20],"initialReflected":false,"optimalNumeratorTenths":2778799717,"automaticNumeratorTenths":1876390330},
+      {"id":"three-wide-mirror","initialFreeCells":[14,20,22],"initialReflected":true,"optimalNumeratorTenths":2778799717,"automaticNumeratorTenths":1876390330}
+    ]}
+  ].map(m=>{
+    const layoutCount=m.variants.length;
+    const optimalNumeratorSumTenths=m.variants.reduce((sum,v)=>sum+v.optimalNumeratorTenths,0);
+    const automaticNumeratorSumTenths=m.variants.reduce((sum,v)=>sum+v.automaticNumeratorTenths,0);
+    return {...m,initialFreeCells:m.variants[0].initialFreeCells,layoutCount,optimalNumeratorSumTenths,automaticNumeratorSumTenths,
+      poolOutcomeDenominator:layoutCount*DENOMINATOR,
+      optimalNumeratorTenths:optimalNumeratorSumTenths/layoutCount,automaticNumeratorTenths:automaticNumeratorSumTenths/layoutCount,
+      optimalReturnPercent:10*optimalNumeratorSumTenths/(layoutCount*DENOMINATOR),automaticReturnPercent:10*automaticNumeratorSumTenths/(layoutCount*DENOMINATOR)};
+  }));
 
   function effectiveTarget(value){
     const n=Number(value);return Math.max(50,Math.min(150,Number.isFinite(n)?n:90));
   }
   function calibrationForTarget(value=90){
-    const target=effectiveTarget(value),festival=molds.length-1,remaining=1-FESTIVAL_PROBABILITY;
-    const regularTarget=(target-FESTIVAL_PROBABILITY*molds[festival].optimalReturnPercent)/remaining;
+    const target=effectiveTarget(value),festival=molds.length-1;
+    const remaining=1-FESTIVAL_PROBABILITY-festival*MIN_REGULAR_MOLD_PROBABILITY;
+    const fixedReturn=FESTIVAL_PROBABILITY*molds[festival].optimalReturnPercent+
+      MIN_REGULAR_MOLD_PROBABILITY*molds.slice(0,festival).reduce((sum,m)=>sum+m.optimalReturnPercent,0);
+    const regularTarget=(target-fixedReturn)/remaining;
     let low=0;
     while(low<festival-1&&molds[low+1].optimalReturnPercent<regularTarget)low++;
     const high=Math.min(low+1,festival-1),span=molds[high].optimalReturnPercent-molds[low].optimalReturnPercent;
     const highShare=span?Math.max(0,Math.min(1,(regularTarget-molds[low].optimalReturnPercent)/span)):0;
-    const weights=molds.map((_,moldIndex)=>({moldIndex,weight:0}));
+    const weights=molds.map((_,moldIndex)=>({moldIndex,weight:moldIndex===festival?FESTIVAL_PROBABILITY:MIN_REGULAR_MOLD_PROBABILITY}));
     weights[low].weight+=remaining*(1-highShare);weights[high].weight+=remaining*highShare;
-    weights[festival].weight=FESTIVAL_PROBABILITY;
-    return {target,reference:'optimal-manual',festivalProbability:FESTIVAL_PROBABILITY,weights,
+    return {target,reference:'optimal-manual',festivalProbability:FESTIVAL_PROBABILITY,
+      minimumRegularMoldProbability:MIN_REGULAR_MOLD_PROBABILITY,weights,
       optimalReturnPercent:weights.reduce((sum,x)=>sum+x.weight*molds[x.moldIndex].optimalReturnPercent,0),
       automaticReturnPercent:weights.reduce((sum,x)=>sum+x.weight*molds[x.moldIndex].automaticReturnPercent,0)};
   }
@@ -106,7 +178,7 @@
     value>>>=0;value^=value>>>16;value=Math.imul(value,0x7feb352d);value^=value>>>15;
     value=Math.imul(value,0x846ca68b);value^=value>>>16;return value>>>0;
   }
-  function stateOk(state){return !!state&&(state.rulesRevision===REVISION||state.rulesRevision===LEGACY_REVISION)&&Array.isArray(state.numbers)&&state.numbers.length===25&&Array.isArray(state.draws);}
+  function stateOk(state){return !!state&&[REVISION,PREVIOUS_REVISION,LEGACY_REVISION].includes(state.rulesRevision)&&Array.isArray(state.numbers)&&state.numbers.length===25&&Array.isArray(state.draws);}
   function cellIdOk(id){return Number.isInteger(id)&&id>=0&&id<25;}
   function scoreGreater(a,b){for(let i=0;i<a.length;i++)if(a[i]!==b[i])return a[i]>b[i];return false;}
 
@@ -118,6 +190,8 @@
     const freeBudget=1+bonusHits.length,oddsMultiplier=1+oddsHits.length,markedMask=initialMask|manualMask|hitMask;
     const completedLines=lines.filter(line=>(line.mask&markedMask)===line.mask).map(line=>line.id);
     const lineCounts={3:0,4:0,5:0,7:0,9:0};for(const id of completedLines)lineCounts[lines[id].length]++;
+    const highestRoles=highestRolesFor({lineCounts}),previousHighestRoles=highestRolesFor(previous);
+    const newHighestRoles=previous?highestRoles.filter(length=>!previousHighestRoles.includes(length)):[];
     const payoutTable=tiersFor(source);
     const baseHundredths=LENGTHS.reduce((sum,length)=>sum+payoutTable[length][Math.min(lineCounts[length],payoutTable[length].length-1)],0);
     const previousLines=new Set(previous?.completedLines||[]),newLines=previous?completedLines.filter(id=>!previousLines.has(id)):[];
@@ -127,7 +201,7 @@
       initialFreeCells,manualFreeCells,initialFree:initialFreeCells,manualFree:manualFreeCells,
       freeBudget,freeQuota:freeBudget,freeRemaining:Math.max(0,freeBudget-manualFreeCells.length),bonusHits,oddsHits,
       oddsMultiplier,multiplier:oddsMultiplier,baseHundredths,totalHundredths:baseHundredths*oddsMultiplier,
-      lineCounts,counts:lineCounts,completedLines,newLines,highestRole:lineCounts[5]>=3,
+      lineCounts,counts:lineCounts,completedLines,newLines,highestRole:highestRoles.length>0,highestRoles,newHighestRoles,
       hitCells,markedCells:idsOf(markedMask),initialMask,manualMask,hitMask,markedMask,
       lineMasks:lines.map(line=>line.mask),lastBonusGain:previous?Math.max(0,freeBudget-previous.freeBudget):0,
       lastOddsGain:previous?Math.max(0,oddsMultiplier-previous.oddsMultiplier):0,
@@ -139,9 +213,12 @@
     const rng=typeof options.rng==='function'?options.rng:options.seed!==undefined?seededRandom(options.seed):Math.random;
     const moldIndex=options.moldIndex===undefined?pickMold(target,rng):options.moldIndex;
     if(!Number.isInteger(moldIndex)||!molds[moldIndex])throw new RangeError('Unknown Dango mold.');
-    let initialFreeCells=(options.initialFreeCells??molds[moldIndex].initialFreeCells).slice();
-    const initialReflected=options.initialFreeCells===undefined&&!!molds[moldIndex].mirrorRandomly&&sample(rng)<.5;
-    if(initialReflected)initialFreeCells=initialFreeCells.map(id=>mirror[id]);
+    const mold=molds[moldIndex],customInitial=options.initialFreeCells!==undefined;
+    const initialVariantIndex=customInitial?null:options.initialVariantIndex??Math.floor(sample(rng)*mold.variants.length);
+    if(!customInitial&&(!Number.isInteger(initialVariantIndex)||!mold.variants[initialVariantIndex]))throw new RangeError('Unknown Dango initial layout.');
+    const variant=customInitial?null:mold.variants[initialVariantIndex];
+    const initialFreeCells=(customInitial?options.initialFreeCells:variant.initialFreeCells).slice();
+    const initialReflected=!!variant?.initialReflected;
     if(initialFreeCells.length<1||initialFreeCells.length>3||new Set(initialFreeCells).size!==initialFreeCells.length||!initialFreeCells.every(cellIdOk))throw new RangeError('Dango initial FREE must contain 1–3 distinct cells.');
     let numbers;
     if(options.numbers!==undefined){
@@ -151,8 +228,8 @@
       numbers=Array.from({length:25},(_,i)=>i+1);
       for(let i=24;i>0;i--){const j=Math.floor(sample(rng)*(i+1));[numbers[i],numbers[j]]=[numbers[j],numbers[i]];}
     }
-    return derive({rulesRevision:REVISION,ruleId:'initial-required-free-v5',numbers,draws:[],initialFreeCells,manualFreeCells:[],freeCommitted:false,
-      target,requestedTarget,moldIndex,moldId:molds[moldIndex].id,moldName:molds[moldIndex].name,initialReflected,seed:options.seed??null,
+    return derive({rulesRevision:REVISION,ruleId:'random-initial-free-v6',numbers,draws:[],initialFreeCells,manualFreeCells:[],freeCommitted:false,
+      target,requestedTarget,moldIndex,moldId:molds[moldIndex].id,moldName:molds[moldIndex].name,initialReflected,initialVariantIndex,initialLayoutId:variant?.id??'custom',seed:options.seed??null,
       calibrationReference:'optimal-manual',lastNumber:null,lastCell:null});
   }
   function draw(state,number){
@@ -222,14 +299,15 @@
     for(let n=1;n<=25;n++)if(!state.draws.includes(n)){
       const next=draw(state,n);if(!next)continue;
       const gainHundredths=next.totalHundredths-state.totalHundredths,oddsUp=next.oddsMultiplier>state.oddsMultiplier;
-      const allClear=next.highestRole&&!state.highestRole;
+      const allClear=next.newHighestRoles.length>0;
       if(gainHundredths>0||oddsUp||allClear)result.push({n,number:n,totalHundredths:next.totalHundredths,gainHundredths,
-        total:next.totalHundredths/100,gain:gainHundredths/100,oddsUp,allClear,highestRole:next.highestRole,newLines:next.newLines.slice()});
+        total:next.totalHundredths/100,gain:gainHundredths/100,oddsUp,allClear,highestRole:next.highestRole,
+        highestRoles:next.highestRoles.slice(),newHighestRoles:next.newHighestRoles.slice(),newLines:next.newLines.slice()});
     }
     return result;
   }
-  return freeze({REVISION,version:REVISION,ruleId:'initial-required-free-v5',geometry,cells,lines,CELLS:cells,LINES:lines,molds,tiers,payRows,tiersFor,payRowsBaseFor,legacy,
-    FESTIVAL_PROBABILITY,DENOMINATOR,create,createBoard:create,draw,placeFree,undoFree,autoPlace,commitFree,reaches,
+  return freeze({REVISION,version:REVISION,ruleId:'random-initial-free-v6',geometry,cells,lines,CELLS:cells,LINES:lines,molds,tiers,payRows,tiersFor,payRowsBaseFor,legacy,legacy253,highestRoleMinimums,isHighestRole,highestRolesFor,
+    FESTIVAL_PROBABILITY,MIN_REGULAR_MOLD_PROBABILITY,DENOMINATOR,create,createBoard:create,draw,placeFree,undoFree,autoPlace,commitFree,reaches,
     payout,payoutState:payout,payRowsFor,weightsForTarget,calibrationForTarget,effectiveTarget,seededRandom,
     helpers:{popcount,maskOf,idsOf,reflect,hash32}});
 });

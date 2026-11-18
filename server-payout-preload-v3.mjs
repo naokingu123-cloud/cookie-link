@@ -4,8 +4,10 @@ import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 import {isStaleCheckpointV251} from './server-thinking-v251.mjs';
+import {createSugarChallengeLedger} from './server-sugar-challenge-v254.mjs';
 
 const VERSION=3;
+const sugarLedgerV254=createSugarChallengeLedger();
 // v247 storage is retained by v248: bankUnits are hundredths of already-earned
 // medals, never a count to reprice when BET or the per-drop accrual rate changes.
 // Normal wallet settlement commits once; operator cancellation restores the
@@ -58,6 +60,7 @@ function normalizePlayer(player={},config=DEFAULT_CONFIG){
  player.wallet=player.wallet&&typeof player.wallet==='object'?player.wallet:{credit:null,revision:0,lastRoundId:null,updatedAt:0};
  player.wallet.credit=player.wallet.credit!=null&&Number.isFinite(Number(player.wallet.credit))?Number(player.wallet.credit):null;player.wallet.revision=Number(player.wallet.revision)||0;
  player.sixDropV247=sixCarry247(player.sixDropV247);
+ sugarLedgerV254.normalize(player);
  player.updatedAt=finite(player.updatedAt)||now();return player;
 }
 function migrateV2(){
@@ -173,6 +176,7 @@ function processJoin(machineId,playerId,body,response){
  if(p.currentRoundId!==roundId){p.currentRoundId=roundId;p.currentRoundWin=0;p.lastBall=0;}
  p.currentRoundBet=bet;round.bet=bet;round.phase=response?.round?.phase||round.phase;round.updatedAt=now();round.quotedRate=quoteRate(p,roundId,bet);
  for(const item of gameRowsFromBet(body)){const g=round.games[item.id]||(round.games[item.id]={bet:0,win:0});g.bet=item.bet;if(item.rulesVersion===247&&item.id==='candy')g.rulesVersion=247;}
+ ingestSugarV254(machineId,playerId,roundId,body);
  p.updatedAt=now();machine(machineId).updatedAt=now();trimRounds(p);persistWallet();return publicControl(machineId,playerId);
 }
 function telemetryFrom(payload){const telemetry=payload?.state?.payoutV3;return telemetry&&Number(telemetry.version)===VERSION?telemetry:null;}
@@ -181,6 +185,7 @@ function processTelemetry(machineId,playerId,payload){
  const roundId=safeId(payload.roundId),ball=Math.max(0,Math.min(8,Number(payload.ballIndex)||Number(telemetry.ball)||0)),p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);
  if(round.cancelledV242||operatorCancelledV242(machineId,roundId))return publicControl(machineId,playerId);
  if(isStaleCheckpointV251(ball,payload.state,round.stableBall,round.stableState))return publicControl(machineId,playerId);
+ ingestSugarV254(machineId,playerId,roundId,payload);
  round.phase=telemetry.phase||round.phase;round.lastBall=Math.max(round.lastBall,ball);round.win=Math.max(0,finite(telemetry.roundWin));round.updatedAt=now();
  p.currentRoundId=roundId;p.currentRoundBet=Math.max(0,finite(telemetry.roundBet||round.bet));p.currentRoundWin=round.win;p.lastBall=ball;p.currentCredit=finite(telemetry.credit);p.updatedAt=now();
  const games={};for(const item of Array.isArray(telemetry.games)?telemetry.games:[]){
@@ -235,7 +240,7 @@ function processSettle(machineId,playerId,body,response){
  return publicControl(machineId,playerId);
 }
 function markOffline(machineId,playerId){
- const p=player(machineId,playerId);for(const round of Object.values(p.rounds))if(!round.settlement&&!round.committed&&['PLAYING','COMPLETE'].includes(round.phase))round.wasOffline=true;p.updatedAt=now();scheduleSave();
+ const p=player(machineId,playerId);for(const round of Object.values(p.rounds))if(!round.settlement&&!round.committed&&round.bet>0&&['BETTING','PLAYING','COMPLETE'].includes(round.phase))round.wasOffline=true;p.updatedAt=now();scheduleSave();
 }
 function observeRound(machineId,round){
  if(!round?.id)return;const m=machine(machineId),roundId=safeId(round.id),balls=Array.isArray(round.balls)?round.balls.slice(0,8):[];
@@ -261,6 +266,7 @@ function claimOfflineWork(machineId){
 }
 function completeOfflineWork(machineId,body){
  const p=player(machineId,body.playerId),round=roundRecord(machineId,p.playerId,body.roundId);if(!round.work||round.work.token!==body.token)throw Object.assign(Error('work_lock_mismatch'),{status:409});
+ ingestSugarV254(machineId,p.playerId,round.id,body);
  const games={};for(const item of Array.isArray(body.games)?body.games:[]){const id=safeId(item.id||item.kind||'game');if(id)games[id]={bet:Math.max(0,finite(item.bet)),win:Math.max(0,finite(item.win)),appliedRate:Number.isFinite(Number(item.appliedRate))?Number(item.appliedRate):null,...(id==='candy'&&sixGame247(item)?{rulesVersion:247,carryV247:sixCarry247(item.carryV247)}:{})};}
  return commitSettlement(machineId,p.playerId,round.id,{totalWin:body.totalWin,creditAfter:body.creditAfter,games,source:'server-worker',digest:body.digest});
 }
@@ -268,7 +274,7 @@ function failOfflineWork(machineId,body){const p=player(machineId,body.playerId)
 function pendingOffline(p){return Object.values(p.rounds||{}).some(round=>round.wasOffline&&!round.committed&&!round.settlement&&round.phase==='COMPLETE');}
 function publicControl(machineId,playerId){
  const p=player(machineId,playerId);ensureWallet(machineId,playerId,p);const games={};for(const [id,g] of Object.entries(p.games))games[id]={bet:round1(g.bet),win:round1(g.win),actualRate:g.bet>0?round1(g.win/g.bet*100):null};
- const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,refundsV242:operatorRefundNoticesV242(machineId,playerId),updatedAt:p.updatedAt,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,sixDropV247:{...p.sixDropV247},wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
+ const current=p.rounds?.[p.currentRoundId]||null;return {version:VERSION,source:'per-player-common',playerId:p.playerId,refundsV242:operatorRefundNoticesV242(machineId,playerId),updatedAt:p.updatedAt,mode:p.mode,manualRate:round1(p.manualRate),targetRate:round1(targetFor(p)),effectiveRate:round1(p.mode==='manual'?p.manualRate:p.effectiveRate),desiredRate:round1(desiredForBet(p,p.currentRoundBet||p.lastQuotedBet||db.config.minimumQuoteBet)),actualRate:p.lifetimeBet>0?round1(p.lifetimeWin/p.lifetimeBet*100):null,debt:round1(monetaryDebt(p)),lifetimeBet:round1(p.lifetimeBet),lifetimeWin:round1(p.lifetimeWin),currentRoundId:p.currentRoundId||null,currentRoundBet:round1(p.currentRoundBet),currentRoundWin:round1(p.currentRoundWin),lastBall:p.lastBall,sixDropV247:{...p.sixDropV247},sugarV254:sugarLedgerV254.publicState(p),wallet:{...p.wallet},offlinePending:pendingOffline(p),games,ballHistory:current?.ballHistory||[],currentGames:current?.games||{}};
 }
 function aggregateMachine(machineId){
  const m=machine(machineId),players=[],gameTotals={};let totalBet=0,totalWin=0;
@@ -283,11 +289,12 @@ function overlayPlayerState(machineId,playerId,response){
  response.payoutControlV3=publicControl(machineId,playerId);return response;
 }
 globalThis[Symbol.for('sweets-link.payout-v3.wallet')]={
- attachCore(database){coreDatabase=database;},
+ attachCore(database){coreDatabase=database;hydrateSugarV254();},
  reserve:reserveWallet,
  release:releaseWallet,
  settle(machineId,playerId,coreRound,body){
   const record=roundRecord(machineId,playerId,coreRound.id);if(!record.bet)record.bet=Number(coreRound.participants?.[playerId]?.totalBet)||0;
+  ingestSugarV254(machineId,playerId,coreRound.id,body);
   return commitSettlement(machineId,playerId,coreRound.id,{totalWin:body.totalWin,creditAfter:body.creditAfter,games:finalGames(body,record),source:'client',digest:body.digest});
  }
 };
@@ -300,11 +307,18 @@ const nativeIterator=http.IncomingMessage.prototype[Symbol.asyncIterator];
 http.IncomingMessage.prototype[Symbol.asyncIterator]=async function* capture(){const chunks=[];for await(const chunk of nativeIterator.call(this)){chunks.push(Buffer.from(chunk));yield chunk;}requestBodies.set(this,Buffer.concat(chunks).toString('utf8'));};
 
 const nativeWssEmit=WebSocketServer.prototype.emit;
+const payoutSocketsV254=new Map();
 WebSocketServer.prototype.emit=function(type,...args){
  if(type==='connection'){
-  const [ws,req]=args;try{
-   const url=new URL(req?.url||'/',`http://${req?.headers?.host||'localhost'}`),machineId=safeId(url.searchParams.get('machineId'))||'public-01',playerId=safeId(url.searchParams.get('playerId'));
-   if(playerId){const nativeSend=ws.send.bind(ws);ws.send=function(data,...rest){try{observeSocketMessage(machineId,parseJson(data));}catch{}return nativeSend(data,...rest);};ws.on('close',()=>markOffline(machineId,playerId));}
+  const [ws,meta]=args;try{
+   // The production core emits authenticated {player,machineId} metadata;
+   // standalone middleware tests and ordinary ws servers emit IncomingMessage.
+   const url=new URL(meta?.url||'/',`http://${meta?.headers?.host||'localhost'}`),machineId=safeId(meta?.machineId||url.searchParams.get('machineId'))||'public-01',playerId=safeId(meta?.player?.id||url.searchParams.get('playerId'));
+   if(playerId){
+    const key=machineId+'\0'+playerId,sockets=payoutSocketsV254.get(key)||new Set();sockets.add(ws);payoutSocketsV254.set(key,sockets);
+    const nativeSend=ws.send.bind(ws);ws.send=function(data,...rest){try{observeSocketMessage(machineId,parseJson(data));}catch{}return nativeSend(data,...rest);};
+    ws.on('close',()=>{sockets.delete(ws);if(!sockets.size){payoutSocketsV254.delete(key);markOffline(machineId,playerId);}});
+   }
   }catch{}
  }
  return nativeWssEmit.call(this,type,...args);
@@ -416,6 +430,7 @@ function operatorCancelWalletV242(machineId,coreRound,requestId){
  operatorTrendStateV242(machineId);
  const before=JSON.parse(JSON.stringify(m)),at=now(),refunds={};let total=0;
  try{
+  for(const p of Object.values(m.players||{}))sugarLedgerV254.cancel(p,id);
   for(const [pid,participant] of Object.entries(coreRound.participants||{})){
    const p=player(machineId,pid),r=roundRecord(machineId,pid,id);
    const wager=requireAmount(r.reservation?.bet??participant.totalBet??r.bet,'invalid_bet',machineId,pid);
@@ -451,4 +466,67 @@ function operatorCancelWalletV242(machineId,coreRound,requestId){
 Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
  operatorCancel:operatorCancelWalletV242,operatorCancelled:operatorCancelledV242,
  operatorNotices:operatorRefundNoticesV242,operatorTrend:operatorTrendV242
+});
+
+// v254 keeps Sugar receipts, consumed batches, pending JPC rights and bonus cash
+// in this same atomic wallet document. Native game WIN never includes the bonus.
+function sugarStationV254(core,playerId){
+ const seats=core?.stationsV235?.seats||[],index=seats.findIndex(s=>s?.kind==='human'&&s.playerId===playerId);
+ return index<0?null:index+1;
+}
+function startSugarInBetV254(machineId,p){
+ const core=coreDatabase?.machines?.[machineId],round=core?.round,station=sugarStationV254(core,p.playerId);
+ if(!round||round.phase!=='BETTING'||!station||!(round.eligiblePlayerIds||[]).includes(p.playerId))return false;
+ return sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed;
+}
+function ingestSugarV254(machineId,playerId,roundId,payload,{startInBet=true}={}){
+ const tokens=payload?.sugarV254?.tokens||payload?.state?.wonderBank;
+ if(!Array.isArray(tokens))return false;
+ const p=player(machineId,playerId),groups=new Map();let changed=false;
+ const legacy=tokens.filter(t=>t&&(!t.sourceRoundId||t.sourceRoundId==='legacy'));
+ if(legacy.length&&!p.sugarV254.legacyImported)changed=sugarLedgerV254.ingest(p,{roundId:'legacy',tokens:legacy,legacy:true,payoutRate:p.mode==='manual'?p.manualRate:p.effectiveRate}).changed||changed;
+ for(const token of tokens){if(!token||!token.sourceRoundId||token.sourceRoundId==='legacy')continue;const key=String(token.sourceRoundId);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(token);}
+ for(const [id,rows] of groups){
+  const core=coreRounds(machineId).find(r=>r.id===id),participant=core?.participants?.[playerId],record=p.rounds?.[id];
+  if(!participant||!(Number(participant.totalBet)>0)||core.cancelledV242||record?.cancelledV242)continue;
+  const rate=Number(record?.quotedRate)||p.effectiveRate;
+  const result=sugarLedgerV254.ingest(p,{roundId:id,tokens:rows,locked:participant.locked?.length?participant.locked:participant.bets,bets:participant.bets,games:record?.games,payoutRate:rate});changed=result.changed||changed;
+ }
+ if(startInBet)changed=startSugarInBetV254(machineId,p)||changed;
+ if(changed)persistWallet();return changed;
+}
+function hydrateSugarV254(){
+ let changed=false;
+ for(const [machineId,m] of Object.entries(db.machines||{}))for(const p of Object.values(m.players||{})){
+  const candidates=coreRounds(machineId).map(r=>({time:Number(r.completedAt||r.startedAt||r.betOpenedAt),state:r.participants?.[p.playerId]?.checkpoint||r.participants?.[p.playerId]?.initialState})).concat(Object.values(p.rounds||{}).map(r=>({time:Number(r.updatedAt),state:r.stableState}))).filter(r=>Array.isArray(r.state?.wonderBank)).sort((a,b)=>b.time-a.time);
+  // A checkpoint can be durable just before its wallet receipt is saved.
+  // Recover v254 tokens through their real source round/BET checks; only
+  // pre-v254 tokens may use the one-time visual-value migration fallback.
+  const bank=candidates[0]?.state?.wonderBank;
+  if(bank?.length)changed=ingestSugarV254(machineId,p.playerId,null,{state:{wonderBank:bank}},{startInBet:false})||changed;
+  for(const round of coreRounds(machineId))if(p.sugarV254.rounds?.[round.id]&&!round.cancelledV242)changed=sugarLedgerV254.advance(p,{roundId:round.id,balls:round.balls||[]}).changed||changed;
+ }
+ if(changed)persistWallet();
+}
+Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
+ publicControl,
+ sugarState:(machineId,playerId)=>sugarLedgerV254.publicState(player(machineId,playerId)),
+ sugarBetting(core,round){
+  let changed=false;
+  for(const id of round.eligiblePlayerIds||[]){const station=sugarStationV254(core,id);if(!station)continue;const p=player(core.id,id);ensureWallet(core.id,id,p);changed=sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed||changed;}
+  if(changed)persistWallet();
+ },
+ sugarBall(core,round){
+  let changed=false;
+  for(const p of Object.values(machine(core.id).players||{}))if(p.sugarV254?.rounds?.[round.id])changed=sugarLedgerV254.advance(p,{roundId:round.id,balls:round.balls||[]}).changed||changed;
+  if(changed)persistWallet();
+ },
+ sugarReaches(machineId,roundId){
+  if(!roundId)return [];const output=[];
+  for(const p of Object.values(machine(machineId).players||{})){
+   for(const row of sugarLedgerV254.publicReach(p,roundId))output.push({station:row.station,roundId,number:row.number,sum:row.sum,status:'reach'});
+   const state=sugarLedgerV254.publicState(p).challenge;
+   if(state?.roundId===roundId&&state.phase==='complete'&&state.jpcQualified)output.push({station:state.station,roundId,number:state.draws[7],sum:state.sum,status:'acquired'});
+  }return output;
+ }
 });

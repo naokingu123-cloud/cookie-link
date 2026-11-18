@@ -16,7 +16,7 @@ const legacyCreate=moldIndex=>plain(legacySnapshots.ready[moldIndex]);
 const hit=(state,numbers)=>numbers.reduce((s,n)=>{const next=R.draw(s,n);assert(next);return next;},state);
 const phase5=(moldIndex,numbers)=>hit(create(moldIndex),numbers);
 
-assert.equal(R.REVISION,253);assert.equal(R.cells.length,25);assert.equal(R.lines.length,19);
+assert.equal(R.REVISION,254);assert.equal(R.cells.length,25);assert.equal(R.lines.length,19);
 assert.deepEqual(plain(R.geometry.rows),[1,3,5,7,9]);
 assert.deepEqual(plain(R.lines.reduce((a,l)=>(a[l.length]=(a[l.length]||0)+1,a),{})),{3:7,4:6,5:4,7:1,9:1});
 assert.deepEqual(plain(R.payRows.map(r=>[r.length,r.count,r.hundredths,r.atLeast])),[
@@ -37,13 +37,9 @@ for(let target=50;target<=150;target++){
   assert(c.automaticReturnPercent<=c.optimalReturnPercent);
   if(target>50)assert(c.automaticReturnPercent>R.calibrationForTarget(target-1).automaticReturnPercent);
 }
-for(const row of calibration.optimalCalibratedRows){
-  const c=R.calibrationForTarget(row.targetOptimalPercent);
-  assert(Math.abs(c.automaticReturnPercent-row.actualAutoPercent)<1e-10);
-}
 assert.equal(R.effectiveTarget(-100),50);assert.equal(R.effectiveTarget(999),150);assert.equal(R.effectiveTarget(NaN),90);
 for(let i=0;i<R.molds.length;i++){
-  const m=R.molds[i],doc=calibration.templates[i];
+  const m=R.legacy253.molds[i],doc=calibration.templates[i];
   assert.deepEqual(plain(m.initialFreeCells.map(x=>x+1)),doc.initialCellsOneBased);
   assert.equal(m.optimalNumeratorTenths,doc.optimalPayoutNumeratorTenths);
   assert.equal(m.automaticNumeratorTenths,doc.autoPayoutNumeratorTenths);
@@ -51,12 +47,12 @@ for(let i=0;i<R.molds.length;i++){
   else assert.deepEqual(plain(m.initialFreeCells.map(id=>R.geometry.mirror[id]+1)),doc.mirroredCellsOneBased);
 }
 
-// Layout choice consumes RNG once, and the number shuffle consumes it24 times.
+// Pool and layout choices consume RNG twice, then the number shuffle uses24 calls.
 // The round never reads layout RNG again, including automatic/forecast operations.
 for(const target of [50,75,100,125,150])for(let seed=1;seed<=15;seed++){
   let calls=0,allowed=true;const nextRandom=seeded(seed+target*101);
   const s=R.create({target,rng:()=>{assert(allowed);calls++;return nextRandom();}});allowed=false;
-  assert.equal(calls,s.moldIndex===0?26:25);const expectedCalls=calls;assert.deepEqual(sorted(s.numbers),identity);
+  assert.equal(calls,26);const expectedCalls=calls;assert.deepEqual(sorted(s.numbers),identity);
   assert.equal(s.initialFreeCells.length>=1&&s.initialFreeCells.length<=3,true);assert.equal(s.freeBudget,1);
   assert.deepEqual(plain(R.create({target,seed})),plain(R.create({target,seed})));
   let round=hit(s,[1,2,3,4,5]);round=R.commitFree(round,{autoFill:true});round=hit(round,[6,7,8]);
@@ -64,7 +60,7 @@ for(const target of [50,75,100,125,150])for(let seed=1;seed<=15;seed++){
 }
 
 // Every calibrated boundary and both extremes of the RNG select a nonempty
-// initial FREE pattern. The edge pattern adds an independent fair reflection.
+// initial FREE pattern. The edge pool samples its two locations uniformly.
 let boundaryBoards=0;
 for(let target=50;target<=150;target++){
   const weights=R.weightsForTarget(target);let cumulative=0;const rolls=[0,.5,1];
@@ -72,10 +68,10 @@ for(let target=50;target<=150;target++){
   for(const roll of rolls){
     let call=0;const board=R.create({target,rng:()=>call++===0?roll:.25});
     assert(board.initialFreeCells.length>=1&&board.initialFreeCells.length<=3);
-    assert.equal(board.rulesRevision,253);assert.equal(board.freeBudget,1);boundaryBoards++;
+    assert.equal(board.rulesRevision,254);assert.equal(board.freeBudget,1);boundaryBoards++;
   }
 }
-for(const [roll,expected]of [[.499999,[23]],[.5,[17]]]){
+for(const [roll,expected]of [[.499999,[17]],[.5,[23]]]){
  const board=R.create({moldIndex:0,numbers:identity,rng:()=>roll});
  assert.deepEqual(plain(board.initialFreeCells),expected);
 }
@@ -143,7 +139,7 @@ for(let mold=0;mold<calibration.templates.length;mold++){
     assert.equal(state.freeBudget,v.budget);state=R.commitFree(state,{autoFill:false});
     state=hit(state,decode(v.lastThreeMask).map(id=>id+1));
     assert.equal(state.oddsMultiplier,v.multiplier);assert.equal(state.totalHundredths,v.hundredths);
-    assert.equal(state.rulesRevision,253);currentCppVectors++;
+    assert.equal(state.rulesRevision,254);currentCppVectors++;
     if(mold===0){
       let mirror=R.create({moldIndex:0,initialFreeCells:[23],numbers:identity});
       mirror=hit(mirror,decode(R.helpers.reflect(v.firstFiveMask)).map(id=>id+1));
@@ -165,7 +161,7 @@ legacy=R.undoFree(legacy,5);assert.equal(legacy.rulesRevision,251);legacy=R.plac
 legacy=R.commitFree(legacy,{autoFill:false});
 assert.equal(R.reaches(legacy).find(row=>row.n===6).totalHundredths,40);
 legacy=hit(legacy,[6,7,8]);
-assert.deepEqual(plain(legacy),legacySnapshots.final);
+assert.deepEqual(Object.fromEntries(Object.keys(legacySnapshots.final).map(key=>[key,plain(legacy)[key]])),legacySnapshots.final);
 assert.equal(R.payRowsFor(legacy)[0].hundredths,40);
 
 // Direct geometric oracle; it reads cells and actual numbers, not cached masks/counts.
@@ -178,7 +174,8 @@ function oracle(state){
   const base=[3,4,5,7,9].reduce((sum,length)=>sum+(R.payRows.filter(row=>row.length===length&&row.count<=counts[length]).at(-1)?.hundredths||0),0);
   const quota=1+state.draws.slice(0,5).filter(n=>initial.has(state.numbers.indexOf(n))).length;
   const multiplier=1+state.draws.slice(5).filter(n=>manual.has(state.numbers.indexOf(n))&&!initial.has(state.numbers.indexOf(n))).length;
-  return {counts,quota,multiplier,total:base*multiplier,highest:counts[5]>=3};
+  const highestRoles=Object.entries({3:4,4:3,5:2,7:1,9:1}).filter(([length,count])=>counts[length]>=count).map(([length])=>Number(length));
+  return {counts,quota,multiplier,total:base*multiplier,highest:highestRoles.length>0,highestRoles};
 }
 let games=0,forecasts=0;
 for(let mold=0;mold<5;mold++)for(let seed=1;seed<=40;seed++){
@@ -207,8 +204,9 @@ for(let mold=0;mold<5;mold++)for(let seed=1;seed<=40;seed++){
       assert.deepEqual(plain(state),before);
       for(const n of identity.filter(n=>!state.draws.includes(n))){
         const future=oracle(R.draw(state,n)),gain=future.total-state.totalHundredths,oddsUp=future.multiplier>state.oddsMultiplier;
-        assert.equal(forecast.has(n),gain>0||oddsUp);
-        if(forecast.has(n)){const row=forecast.get(n);assert.equal(row.gainHundredths,gain);assert.equal(row.totalHundredths,future.total);assert.equal(row.oddsUp,oddsUp);assert.equal(row.allClear,future.highest&&!state.highestRole);}
+        const newRoles=future.highestRoles.filter(length=>!expected.highestRoles.includes(length));
+        assert.equal(forecast.has(n),gain>0||oddsUp||newRoles.length>0);
+        if(forecast.has(n)){const row=forecast.get(n);assert.equal(row.gainHundredths,gain);assert.equal(row.totalHundredths,future.total);assert.equal(row.oddsUp,oddsUp);assert.equal(row.allClear,newRoles.length>0);assert.deepEqual(plain(row.newHighestRoles),newRoles);}
         forecasts++;
       }
     }
@@ -217,6 +215,7 @@ for(let mold=0;mold<5;mold++)for(let seed=1;seed<=40;seed++){
 }
 for(const invalid of [0,26,-1,NaN,1.5,'1'])assert.equal(R.draw(create(0),invalid),null);
 assert.throws(()=>R.create({initialFreeCells:[]}));assert.throws(()=>R.create({initialFreeCells:[0,1,2,3]}));assert.throws(()=>R.create({numbers:Array(25).fill(1)}));
-console.log(JSON.stringify({ok:true,rule:'initial-required-free-v5',molds:5,legacyCppVectors:CPP_VECTORS.length,currentCppVectors,boundaryBoards,games,forecasts,calibrationTargets:101,highestRoleWitness:true}));
+console.log(JSON.stringify({ok:true,rule:R.ruleId,molds:5,legacyCppVectors:CPP_VECTORS.length,currentCppVectors,boundaryBoards,games,forecasts,calibrationTargets:101,highestRoleWitness:true}));
 
+await import('./dango-v254-rules.mjs');
 await import('./dango-v253-checkpoint.mjs');

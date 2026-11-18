@@ -85,11 +85,12 @@ function engineSnapshot(engine){
  return out;
 }
 function checkpoint(a){
+ window.SweetsSugarChallengeV254?.stampBank?.();
  const state={
   version:176,savedAt:Date.now(),phase:a.phase,credit:Number(a.credit)||0,displayCredit:Number(a.displayCredit)||0,
   bets:clone(a.bets)||[],locked:clone(a.locked)||[],enabled:clone(a.enabled)||[],paid:clone(a.paid)||[],draws:clone(a.draws)||[],
   roundWins:clone(a.roundWins)||[],totalWin:Number(a.totalWin)||0,wonderBank:clone(a.wonderBank)||[],wonderSteps:Number(a.wonderSteps)||0,
-  wonderValue:Number(a.wonderValue)||0,engines:(a.engines||[]).map(engineSnapshot)
+  wonderValue:Number(a.wonderValue)||0,sugarV254:window.SweetsSugarChallengeV254?.snapshot?.()||null,engines:(a.engines||[]).map(engineSnapshot)
  };
  if(JSON.stringify(state).length<1500000)return state;
  state.engines=(a.engines||[]).map(engine=>({kind:engine?.kind,state:clone(engine?.state),processed:Number(engine?.processed)||0,accepted:Number(engine?.accepted)||0,totalHundredths:Number(engine?.totalHundredths)||0}));

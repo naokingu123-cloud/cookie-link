@@ -1,4 +1,4 @@
-/* v252: illustrated preview cards, one shared BET unit and four-number reach pages.
+/* v254: illustrated preview cards, sweet-shaped reach badges and four-number pages.
    This extension runs in the existing game scope. It never changes a board,
    wager, RNG, draw, payout, game clock or the server's current round. */
 (()=>{
@@ -11,9 +11,11 @@ if(!deck||typeof select!=='function'||typeof paintTabWin!=='function')return;
 root.classList.add('arcade-v249','arcade-tabs-v250');
 if(!document.getElementById('arcade-tabs-v249-css')){
  const link=document.createElement('link');link.id='arcade-tabs-v249-css';
- link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=252';document.head.append(link);
+ link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=254';document.head.append(link);
 }
 const media=matchMedia('(prefers-reduced-motion: reduce)');
+const reachFrame=new Image();reachFrame.decoding='async';
+const reachFrameReady=new Promise(resolve=>{reachFrame.onload=()=>resolve(true);reachFrame.onerror=()=>resolve(false);reachFrame.src='assets/reach-art-v254/reach-common.webp?v=254';});
 const records=new Map(),selectionAnimations=new Set(),rewardAnimations=new Map(),reachAnimations=new Map();
 let transitions=0,rewardBursts=0,reachBursts=0,serial=0,disposed=false;
 const canMove=()=>!disposed&&!media.matches&&!document.hidden;
@@ -112,7 +114,7 @@ for(const slot of slots){
  slot.holder.append(rewardBox);
  const shown=Number(slot.tabWin.textContent.replace(/[^0-9.\-]/g,''))||0;
  const reachPop=document.createElement('span');reachPop.className='v250-reach-pop';reachPop.hidden=true;
- reachPop.setAttribute('role','status');reachPop.setAttribute('aria-live','polite');slot.holder.append(reachPop);
+ reachPop.setAttribute('role','status');reachPop.setAttribute('aria-live','polite');reachPop.setAttribute('aria-atomic','true');reachPop.dataset.gameKind=key;slot.holder.append(reachPop);
  records.set(slot.i,{logo,reward:rewardBox,amount:rewardBox.querySelector('.v249-reward-amount'),win:shown,scope:scope(slot),rewardCount:0,reachPop,reachSeen:new Map(),reachScope:scope(slot),reachKey:null});
  slot.holder.dataset.v249RewardCount='0';slot.holder.dataset.v249GameLabel=labelFor(key);
  slot.tab.addEventListener('pointerdown',event=>{
@@ -166,15 +168,18 @@ function stopReach(slot){
  const animation=reachAnimations.get(slot.i);if(animation)animation.cancel();reachAnimations.delete(slot.i);
  record.reachPop.hidden=true;
 }
-function popupReach(slot,tier,numbers){
- const record=records.get(slot.i);if(!record||disposed||document.hidden||app?.paused||app?.phase!=='playing')return;
+function popupReach(slot,tier){
+ const record=records.get(slot.i);if(!record||!pagerRunning()||app?.phase!=='playing')return;
  stopReach(slot);
- const name=tier===3?(slot.engine?.allReachName||'最高役'):tier===2?'超高額':'高額';
+ const name=tier===3?'最高役':tier===2?'超高額':'高額';
  const label=name+'リーチ';
  const title=document.createElement('strong');title.textContent=label;
- const detail=document.createElement('small');detail.textContent=numbers.slice(0,4).join('・')+(numbers.length>4?' …':'');
- record.reachPop.replaceChildren(title,detail);record.reachPop.dataset.tier=String(tier);
+ // Reach numbers remain in their four-cell pager. The short-lived badge
+ // announces only the award class, leaving its pastry center easy to read.
+ record.reachPop.replaceChildren(title);record.reachPop.dataset.tier=String(tier);record.reachPop.dataset.motionPaused=String(media.matches);
+ record.reachPop.setAttribute('aria-label',label+(tier===3&&slot.engine?.allReachName&&slot.engine.allReachName!=='最高役'?'（'+slot.engine.allReachName+'）':''));
  record.reachPop.hidden=false;reachBursts++;slot.holder.dataset.v250ReachPopCount=String((Number(slot.holder.dataset.v250ReachPopCount)||0)+1);
+ record.reachPop.style.setProperty('--v254-reach-title-size',Math.max(7,Math.min(11,Math.min(record.reachPop.clientWidth||100,126)*.64/label.length))+'px');
  if(typeof record.reachPop.animate!=='function'){record.reachPop.hidden=true;return;}
  const animation=record.reachPop.animate(media.matches?[
   {opacity:0},{opacity:1,offset:.08},{opacity:1,offset:.9},{opacity:0}
@@ -249,6 +254,9 @@ syncReachPager=function(){
  const now=Date.now(),running=pagerRunning(),due=[];
  for(const slot of slots){
   const record=records.get(slot.i);if(!record)continue;
+  const animation=reachAnimations.get(slot.i),paused=String(!running||media.matches);
+  if(record.reachPop.dataset.motionPaused!==paused)record.reachPop.dataset.motionPaused=paused;
+  if(animation){if(!running&&animation.playState==='running')animation.pause();else if(running&&animation.playState==='paused')animation.play();}
   const paged=!slot.holder.hidden&&!slot.reachStrip.hidden&&(slot.reachPageResults?.length||0)>REACH_PAGE_SIZE;
   if(!running||!paged){
    if(slot.reachPageDue){record.reachRemaining=Math.max(0,slot.reachPageDue-now);slot.reachPageDue=0;}
@@ -286,7 +294,7 @@ function flowReach(slot,results,a){
  // Remember the latest stable preview, not a lifetime maximum. A reach that
  // genuinely drops away and later returns can announce its new appearance.
  record.reachSeen=new Map(results.map(hit=>[hit.number,hit.tier]));
- if(newlyHigh.length){const tier=Math.max(...newlyHigh.map(hit=>hit.tier));popupReach(slot,tier,newlyHigh.filter(hit=>hit.tier===tier).map(hit=>hit.number));}
+ if(newlyHigh.length){const tier=Math.max(...newlyHigh.map(hit=>hit.tier));popupReach(slot,tier);}
 }
 syncReachPager();
 updateReachUI=function(a){
@@ -339,7 +347,7 @@ window.addEventListener('pagehide',()=>{disposed=true;quiet();syncReachPager();}
 window.addEventListener('pageshow',event=>{if(event.persisted){disposed=false;syncFace();syncReachPager();}});
 syncFace();
 window.SweetsArcadeTabsV249={
- version:252,
- describe(){return {activeIndex:active,transitions,runningAnimations:selectionAnimations.size+rewardAnimations.size+reachAnimations.size,reducedMotion:media.matches,rewardBursts,reachBursts,logos:records.size,sharedBetUnit:commonBet?units[unit[firstVisible.i]]:null,reachPager:{pageSize:REACH_PAGE_SIZE,holdMs:REACH_HOLD_MS,slideMs:REACH_SLIDE_MS}};}
+ version:254,reachFrameReady,
+ describe(){return {activeIndex:active,transitions,runningAnimations:selectionAnimations.size+rewardAnimations.size+reachAnimations.size,reducedMotion:media.matches,rewardBursts,reachBursts,logos:records.size,sharedBetUnit:commonBet?units[unit[firstVisible.i]]:null,reachPager:{pageSize:REACH_PAGE_SIZE,holdMs:REACH_HOLD_MS,slideMs:REACH_SLIDE_MS},reachFrame:{url:reachFrame.src,loaded:reachFrame.complete&&reachFrame.naturalWidth>0,width:reachFrame.naturalWidth,height:reachFrame.naturalHeight},reachPopups:[...records.entries()].map(([index,record])=>({index,game:record.reachPop.dataset.gameKind,visible:!record.reachPop.hidden,tier:Number(record.reachPop.dataset.tier)||0,label:record.reachPop.textContent,hasNumbers:!!record.reachPop.querySelector('small'),paused:record.reachPop.dataset.motionPaused==='true',count:Number(slots[index].holder.dataset.v250ReachPopCount)||0}))};}
 };
 })();

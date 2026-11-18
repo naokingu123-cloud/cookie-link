@@ -1,0 +1,1216 @@
+{
+  "schema": "sweets-link-sugar-challenge-probabilities-v254",
+  "rulesRevision": 254,
+  "reproduction": "node scripts/sugar-challenge-v254-probabilities.mjs",
+  "verification": "node tests/sugar-challenge-v254-rules.mjs",
+  "method": "Exact integer dynamic programming for 8 distinct uniform numbers from 1..25. The native test independently enumerates every 8-number combination.",
+  "assumptions": [
+    "Shared numbers are modeled as uniformly drawn without replacement; this module never selects or changes the shared draw.",
+    "The card, multiplier and Sugar-value jitter are chosen before the challenge and independently of the shared numbers.",
+    "A lucky number means the FINAL SUM of all eight numbers, never an individual drawn number. Every lucky sum lies strictly outside its card's two JPC tail intervals.",
+    "JPC earns an entitlement only. Future JPC execution and its expected monetary value are not implemented or included in cash expectations.",
+    "Displayed cash expectations are before integer-medal payout flooring. Each actual cash award floors JP multiplied by its stated fraction, losing less than one medal.",
+    "The Sugar rate factor is the owning game's P/O setting at Sugar acquisition, clamped to 50..150 percent. Existing visual token.value is retained separately from challengeValue.",
+    "These probabilities are conditional on starting a Sugar Challenge; they do not represent total arcade P/O or include the frequency/cost of earning five Sugar."
+  ],
+  "drawModel": {
+    "population": 25,
+    "draws": 8,
+    "replacement": false,
+    "orderMattersForSum": false,
+    "outcomeCount": 1081575,
+    "minSum": 36,
+    "maxSum": 172,
+    "centerSum": 104
+  },
+  "sugarValue": {
+    "sourceBet": "The Sugar's own game BET locked for the round where it was acquired.",
+    "sugarRequired": 5,
+    "baseBetMultiplier": 10,
+    "payoutRatePercent": {
+      "min": 50,
+      "max": 150
+    },
+    "jitterBasisPoints": {
+      "min": 8000,
+      "max": 12000,
+      "uniformSteps": 4001,
+      "mean": 10000
+    },
+    "rounding": "Nearest integer medal; halves round up. At most 0.5 medal error per Sugar.",
+    "equalBetBaseJpExpectationBeforeRoundingAt100Percent": 50
+  },
+  "multiplier": {
+    "rows": [
+      {
+        "multiplier": 1,
+        "weightBps": 8000
+      },
+      {
+        "multiplier": 2,
+        "weightBps": 1500
+      },
+      {
+        "multiplier": 3,
+        "weightBps": 400
+      },
+      {
+        "multiplier": 5,
+        "weightBps": 90
+      },
+      {
+        "multiplier": 10,
+        "weightBps": 10
+      }
+    ],
+    "mean": {
+      "numerator": "12750",
+      "denominator": "10000",
+      "value": 1.275
+    },
+    "equalBetFinalJpExpectationBeforeRoundingAt100Percent": 63.74999999999999
+  },
+  "cards": [
+    {
+      "id": "standard",
+      "name": "シュガーカード",
+      "rarity": "normal",
+      "weightBps": 9000,
+      "lowJpc": {
+        "min": 36,
+        "max": 70
+      },
+      "highJpc": {
+        "min": 138,
+        "max": 172
+      },
+      "luckySums": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "luckySumCounts": [
+        {
+          "sum": 77,
+          "count": 7618
+        },
+        {
+          "sum": 88,
+          "count": 16450
+        },
+        {
+          "sum": 120,
+          "count": 16450
+        },
+        {
+          "sum": 131,
+          "count": 7618
+        }
+      ],
+      "jpcCounts": {
+        "low": 26755,
+        "high": 26755,
+        "lucky": 48136
+      },
+      "jpcOutcomes": 101646,
+      "jpcProbability": {
+        "numerator": "101646",
+        "denominator": "1081575",
+        "value": 0.09397961306428125
+      },
+      "jpcPercent": 9.397961306428126,
+      "cashBandsByDistanceFrom104": [
+        {
+          "distance": 30,
+          "hundredths": 20
+        },
+        {
+          "distance": 24,
+          "hundredths": 10
+        },
+        {
+          "distance": 18,
+          "hundredths": 5
+        },
+        {
+          "distance": 12,
+          "hundredths": 3
+        },
+        {
+          "distance": 6,
+          "hundredths": 2
+        },
+        {
+          "distance": 0,
+          "hundredths": 1
+        }
+      ],
+      "cashTiers": [
+        {
+          "hundredths": 20,
+          "fraction": 0.2,
+          "ranges": [
+            {
+              "min": 71,
+              "max": 74
+            },
+            {
+              "min": 134,
+              "max": 137
+            }
+          ],
+          "outcomeCount": 39302,
+          "probability": 0.0363377481912951
+        },
+        {
+          "hundredths": 10,
+          "fraction": 0.1,
+          "ranges": [
+            {
+              "min": 75,
+              "max": 76
+            },
+            {
+              "min": 78,
+              "max": 80
+            },
+            {
+              "min": 128,
+              "max": 130
+            },
+            {
+              "min": 132,
+              "max": 133
+            }
+          ],
+          "outcomeCount": 80940,
+          "probability": 0.07483530961791832
+        },
+        {
+          "hundredths": 5,
+          "fraction": 0.05,
+          "ranges": [
+            {
+              "min": 81,
+              "max": 86
+            },
+            {
+              "min": 122,
+              "max": 127
+            }
+          ],
+          "outcomeCount": 151880,
+          "probability": 0.14042484339967176
+        },
+        {
+          "hundredths": 3,
+          "fraction": 0.03,
+          "ranges": [
+            {
+              "min": 87,
+              "max": 87
+            },
+            {
+              "min": 89,
+              "max": 92
+            },
+            {
+              "min": 116,
+              "max": 119
+            },
+            {
+              "min": 121,
+              "max": 121
+            }
+          ],
+          "outcomeCount": 178904,
+          "probability": 0.16541062801932366
+        },
+        {
+          "hundredths": 2,
+          "fraction": 0.02,
+          "ranges": [
+            {
+              "min": 93,
+              "max": 98
+            },
+            {
+              "min": 110,
+              "max": 115
+            }
+          ],
+          "outcomeCount": 262644,
+          "probability": 0.24283475487136813
+        },
+        {
+          "hundredths": 1,
+          "fraction": 0.01,
+          "ranges": [
+            {
+              "min": 99,
+              "max": 109
+            }
+          ],
+          "outcomeCount": 266259,
+          "probability": 0.24617710283614175
+        }
+      ],
+      "cashHundredthsNumerator": 3683099,
+      "expectedCashFractionOfFinalJp": {
+        "numerator": "3683099",
+        "denominator": "108157500",
+        "value": 0.03405310773640293
+      }
+    },
+    {
+      "id": "lucky",
+      "name": "ラッキーシュガーカード",
+      "rarity": "rare",
+      "weightBps": 500,
+      "lowJpc": {
+        "min": 36,
+        "max": 70
+      },
+      "highJpc": {
+        "min": 138,
+        "max": 172
+      },
+      "luckySums": [
+        77,
+        88,
+        99,
+        109,
+        120,
+        131
+      ],
+      "luckySumCounts": [
+        {
+          "sum": 77,
+          "count": 7618
+        },
+        {
+          "sum": 88,
+          "count": 16450
+        },
+        {
+          "sum": 99,
+          "count": 23638
+        },
+        {
+          "sum": 109,
+          "count": 23638
+        },
+        {
+          "sum": 120,
+          "count": 16450
+        },
+        {
+          "sum": 131,
+          "count": 7618
+        }
+      ],
+      "jpcCounts": {
+        "low": 26755,
+        "high": 26755,
+        "lucky": 95412
+      },
+      "jpcOutcomes": 148922,
+      "jpcProbability": {
+        "numerator": "148922",
+        "denominator": "1081575",
+        "value": 0.13768994290733422
+      },
+      "jpcPercent": 13.76899429073342,
+      "cashBandsByDistanceFrom104": [
+        {
+          "distance": 30,
+          "hundredths": 20
+        },
+        {
+          "distance": 24,
+          "hundredths": 10
+        },
+        {
+          "distance": 18,
+          "hundredths": 5
+        },
+        {
+          "distance": 12,
+          "hundredths": 3
+        },
+        {
+          "distance": 6,
+          "hundredths": 2
+        },
+        {
+          "distance": 0,
+          "hundredths": 1
+        }
+      ],
+      "cashTiers": [
+        {
+          "hundredths": 20,
+          "fraction": 0.2,
+          "ranges": [
+            {
+              "min": 71,
+              "max": 74
+            },
+            {
+              "min": 134,
+              "max": 137
+            }
+          ],
+          "outcomeCount": 39302,
+          "probability": 0.0363377481912951
+        },
+        {
+          "hundredths": 10,
+          "fraction": 0.1,
+          "ranges": [
+            {
+              "min": 75,
+              "max": 76
+            },
+            {
+              "min": 78,
+              "max": 80
+            },
+            {
+              "min": 128,
+              "max": 130
+            },
+            {
+              "min": 132,
+              "max": 133
+            }
+          ],
+          "outcomeCount": 80940,
+          "probability": 0.07483530961791832
+        },
+        {
+          "hundredths": 5,
+          "fraction": 0.05,
+          "ranges": [
+            {
+              "min": 81,
+              "max": 86
+            },
+            {
+              "min": 122,
+              "max": 127
+            }
+          ],
+          "outcomeCount": 151880,
+          "probability": 0.14042484339967176
+        },
+        {
+          "hundredths": 3,
+          "fraction": 0.03,
+          "ranges": [
+            {
+              "min": 87,
+              "max": 87
+            },
+            {
+              "min": 89,
+              "max": 92
+            },
+            {
+              "min": 116,
+              "max": 119
+            },
+            {
+              "min": 121,
+              "max": 121
+            }
+          ],
+          "outcomeCount": 178904,
+          "probability": 0.16541062801932366
+        },
+        {
+          "hundredths": 2,
+          "fraction": 0.02,
+          "ranges": [
+            {
+              "min": 93,
+              "max": 98
+            },
+            {
+              "min": 110,
+              "max": 115
+            }
+          ],
+          "outcomeCount": 262644,
+          "probability": 0.24283475487136813
+        },
+        {
+          "hundredths": 1,
+          "fraction": 0.01,
+          "ranges": [
+            {
+              "min": 100,
+              "max": 108
+            }
+          ],
+          "outcomeCount": 218983,
+          "probability": 0.2024667729930888
+        }
+      ],
+      "cashHundredthsNumerator": 3635823,
+      "expectedCashFractionOfFinalJp": {
+        "numerator": "3635823",
+        "denominator": "108157500",
+        "value": 0.0336160044379724
+      }
+    },
+    {
+      "id": "wide",
+      "name": "ワイドシュガーカード",
+      "rarity": "rare",
+      "weightBps": 500,
+      "lowJpc": {
+        "min": 36,
+        "max": 78
+      },
+      "highJpc": {
+        "min": 130,
+        "max": 172
+      },
+      "luckySums": [
+        88,
+        120
+      ],
+      "luckySumCounts": [
+        {
+          "sum": 88,
+          "count": 16450
+        },
+        {
+          "sum": 120,
+          "count": 16450
+        }
+      ],
+      "jpcCounts": {
+        "low": 75627,
+        "high": 75627,
+        "lucky": 32900
+      },
+      "jpcOutcomes": 184154,
+      "jpcProbability": {
+        "numerator": "184154",
+        "denominator": "1081575",
+        "value": 0.17026466033331022
+      },
+      "jpcPercent": 17.026466033331022,
+      "cashBandsByDistanceFrom104": [
+        {
+          "distance": 23,
+          "hundredths": 20
+        },
+        {
+          "distance": 19,
+          "hundredths": 10
+        },
+        {
+          "distance": 15,
+          "hundredths": 5
+        },
+        {
+          "distance": 10,
+          "hundredths": 3
+        },
+        {
+          "distance": 5,
+          "hundredths": 2
+        },
+        {
+          "distance": 0,
+          "hundredths": 1
+        }
+      ],
+      "cashTiers": [
+        {
+          "hundredths": 20,
+          "fraction": 0.2,
+          "ranges": [
+            {
+              "min": 79,
+              "max": 81
+            },
+            {
+              "min": 127,
+              "max": 129
+            }
+          ],
+          "outcomeCount": 58916,
+          "probability": 0.05447241291634884
+        },
+        {
+          "hundredths": 10,
+          "fraction": 0.1,
+          "ranges": [
+            {
+              "min": 82,
+              "max": 85
+            },
+            {
+              "min": 123,
+              "max": 126
+            }
+          ],
+          "outcomeCount": 101178,
+          "probability": 0.09354691075514875
+        },
+        {
+          "hundredths": 5,
+          "fraction": 0.05,
+          "ranges": [
+            {
+              "min": 86,
+              "max": 87
+            },
+            {
+              "min": 89,
+              "max": 89
+            },
+            {
+              "min": 119,
+              "max": 119
+            },
+            {
+              "min": 121,
+              "max": 122
+            }
+          ],
+          "outcomeCount": 95244,
+          "probability": 0.08806046737396851
+        },
+        {
+          "hundredths": 3,
+          "fraction": 0.03,
+          "ranges": [
+            {
+              "min": 90,
+              "max": 94
+            },
+            {
+              "min": 114,
+              "max": 118
+            }
+          ],
+          "outcomeCount": 195946,
+          "probability": 0.1811672791993158
+        },
+        {
+          "hundredths": 2,
+          "fraction": 0.02,
+          "ranges": [
+            {
+              "min": 95,
+              "max": 99
+            },
+            {
+              "min": 109,
+              "max": 113
+            }
+          ],
+          "outcomeCount": 227154,
+          "probability": 0.2100214964288191
+        },
+        {
+          "hundredths": 1,
+          "fraction": 0.01,
+          "ranges": [
+            {
+              "min": 100,
+              "max": 108
+            }
+          ],
+          "outcomeCount": 218983,
+          "probability": 0.2024667729930888
+        }
+      ],
+      "cashHundredthsNumerator": 3927449,
+      "expectedCashFractionOfFinalJp": {
+        "numerator": "3927449",
+        "denominator": "108157500",
+        "value": 0.03631231306196981
+      }
+    }
+  ],
+  "mixture": {
+    "weightBasisPoints": 10000,
+    "jpcProbability": {
+      "numerator": "1081352000",
+      "denominator": "10815750000",
+      "value": 0.09997938191988535
+    },
+    "jpcPercent": 9.997938191988535,
+    "targetJpcPercent": 10,
+    "targetDifferencePercentagePoints": -0.0020618080114651605,
+    "expectedCashFractionOfFinalJp": {
+      "numerator": "36929527000",
+      "denominator": "1081575000000",
+      "value": 0.03414421283775975
+    },
+    "expectedCashFractionOfBaseJp": {
+      "numerator": "470851469250000",
+      "denominator": "10815750000000000",
+      "value": 0.04353387136814368
+    },
+    "expectedCashInSourceBetUnitsAt100PercentBeforeRounding": 2.1766935684071833,
+    "jpcFutureValueIncluded": false
+  },
+  "sumDistribution": [
+    {
+      "sum": 36,
+      "count": 1
+    },
+    {
+      "sum": 37,
+      "count": 1
+    },
+    {
+      "sum": 38,
+      "count": 2
+    },
+    {
+      "sum": 39,
+      "count": 3
+    },
+    {
+      "sum": 40,
+      "count": 5
+    },
+    {
+      "sum": 41,
+      "count": 7
+    },
+    {
+      "sum": 42,
+      "count": 11
+    },
+    {
+      "sum": 43,
+      "count": 15
+    },
+    {
+      "sum": 44,
+      "count": 22
+    },
+    {
+      "sum": 45,
+      "count": 29
+    },
+    {
+      "sum": 46,
+      "count": 40
+    },
+    {
+      "sum": 47,
+      "count": 52
+    },
+    {
+      "sum": 48,
+      "count": 70
+    },
+    {
+      "sum": 49,
+      "count": 89
+    },
+    {
+      "sum": 50,
+      "count": 116
+    },
+    {
+      "sum": 51,
+      "count": 146
+    },
+    {
+      "sum": 52,
+      "count": 186
+    },
+    {
+      "sum": 53,
+      "count": 230
+    },
+    {
+      "sum": 54,
+      "count": 287
+    },
+    {
+      "sum": 55,
+      "count": 350
+    },
+    {
+      "sum": 56,
+      "count": 430
+    },
+    {
+      "sum": 57,
+      "count": 518
+    },
+    {
+      "sum": 58,
+      "count": 626
+    },
+    {
+      "sum": 59,
+      "count": 745
+    },
+    {
+      "sum": 60,
+      "count": 889
+    },
+    {
+      "sum": 61,
+      "count": 1045
+    },
+    {
+      "sum": 62,
+      "count": 1231
+    },
+    {
+      "sum": 63,
+      "count": 1433
+    },
+    {
+      "sum": 64,
+      "count": 1669
+    },
+    {
+      "sum": 65,
+      "count": 1923
+    },
+    {
+      "sum": 66,
+      "count": 2216
+    },
+    {
+      "sum": 67,
+      "count": 2529
+    },
+    {
+      "sum": 68,
+      "count": 2886
+    },
+    {
+      "sum": 69,
+      "count": 3264
+    },
+    {
+      "sum": 70,
+      "count": 3689
+    },
+    {
+      "sum": 71,
+      "count": 4137
+    },
+    {
+      "sum": 72,
+      "count": 4635
+    },
+    {
+      "sum": 73,
+      "count": 5154
+    },
+    {
+      "sum": 74,
+      "count": 5725
+    },
+    {
+      "sum": 75,
+      "count": 6316
+    },
+    {
+      "sum": 76,
+      "count": 6959
+    },
+    {
+      "sum": 77,
+      "count": 7618
+    },
+    {
+      "sum": 78,
+      "count": 8328
+    },
+    {
+      "sum": 79,
+      "count": 9049
+    },
+    {
+      "sum": 80,
+      "count": 9818
+    },
+    {
+      "sum": 81,
+      "count": 10591
+    },
+    {
+      "sum": 82,
+      "count": 11406
+    },
+    {
+      "sum": 83,
+      "count": 12218
+    },
+    {
+      "sum": 84,
+      "count": 13066
+    },
+    {
+      "sum": 85,
+      "count": 13899
+    },
+    {
+      "sum": 86,
+      "count": 14760
+    },
+    {
+      "sum": 87,
+      "count": 15596
+    },
+    {
+      "sum": 88,
+      "count": 16450
+    },
+    {
+      "sum": 89,
+      "count": 17266
+    },
+    {
+      "sum": 90,
+      "count": 18090
+    },
+    {
+      "sum": 91,
+      "count": 18864
+    },
+    {
+      "sum": 92,
+      "count": 19636
+    },
+    {
+      "sum": 93,
+      "count": 20344
+    },
+    {
+      "sum": 94,
+      "count": 21039
+    },
+    {
+      "sum": 95,
+      "count": 21660
+    },
+    {
+      "sum": 96,
+      "count": 22258
+    },
+    {
+      "sum": 97,
+      "count": 22770
+    },
+    {
+      "sum": 98,
+      "count": 23251
+    },
+    {
+      "sum": 99,
+      "count": 23638
+    },
+    {
+      "sum": 100,
+      "count": 23987
+    },
+    {
+      "sum": 101,
+      "count": 24234
+    },
+    {
+      "sum": 102,
+      "count": 24438
+    },
+    {
+      "sum": 103,
+      "count": 24537
+    },
+    {
+      "sum": 104,
+      "count": 24591
+    },
+    {
+      "sum": 105,
+      "count": 24537
+    },
+    {
+      "sum": 106,
+      "count": 24438
+    },
+    {
+      "sum": 107,
+      "count": 24234
+    },
+    {
+      "sum": 108,
+      "count": 23987
+    },
+    {
+      "sum": 109,
+      "count": 23638
+    },
+    {
+      "sum": 110,
+      "count": 23251
+    },
+    {
+      "sum": 111,
+      "count": 22770
+    },
+    {
+      "sum": 112,
+      "count": 22258
+    },
+    {
+      "sum": 113,
+      "count": 21660
+    },
+    {
+      "sum": 114,
+      "count": 21039
+    },
+    {
+      "sum": 115,
+      "count": 20344
+    },
+    {
+      "sum": 116,
+      "count": 19636
+    },
+    {
+      "sum": 117,
+      "count": 18864
+    },
+    {
+      "sum": 118,
+      "count": 18090
+    },
+    {
+      "sum": 119,
+      "count": 17266
+    },
+    {
+      "sum": 120,
+      "count": 16450
+    },
+    {
+      "sum": 121,
+      "count": 15596
+    },
+    {
+      "sum": 122,
+      "count": 14760
+    },
+    {
+      "sum": 123,
+      "count": 13899
+    },
+    {
+      "sum": 124,
+      "count": 13066
+    },
+    {
+      "sum": 125,
+      "count": 12218
+    },
+    {
+      "sum": 126,
+      "count": 11406
+    },
+    {
+      "sum": 127,
+      "count": 10591
+    },
+    {
+      "sum": 128,
+      "count": 9818
+    },
+    {
+      "sum": 129,
+      "count": 9049
+    },
+    {
+      "sum": 130,
+      "count": 8328
+    },
+    {
+      "sum": 131,
+      "count": 7618
+    },
+    {
+      "sum": 132,
+      "count": 6959
+    },
+    {
+      "sum": 133,
+      "count": 6316
+    },
+    {
+      "sum": 134,
+      "count": 5725
+    },
+    {
+      "sum": 135,
+      "count": 5154
+    },
+    {
+      "sum": 136,
+      "count": 4635
+    },
+    {
+      "sum": 137,
+      "count": 4137
+    },
+    {
+      "sum": 138,
+      "count": 3689
+    },
+    {
+      "sum": 139,
+      "count": 3264
+    },
+    {
+      "sum": 140,
+      "count": 2886
+    },
+    {
+      "sum": 141,
+      "count": 2529
+    },
+    {
+      "sum": 142,
+      "count": 2216
+    },
+    {
+      "sum": 143,
+      "count": 1923
+    },
+    {
+      "sum": 144,
+      "count": 1669
+    },
+    {
+      "sum": 145,
+      "count": 1433
+    },
+    {
+      "sum": 146,
+      "count": 1231
+    },
+    {
+      "sum": 147,
+      "count": 1045
+    },
+    {
+      "sum": 148,
+      "count": 889
+    },
+    {
+      "sum": 149,
+      "count": 745
+    },
+    {
+      "sum": 150,
+      "count": 626
+    },
+    {
+      "sum": 151,
+      "count": 518
+    },
+    {
+      "sum": 152,
+      "count": 430
+    },
+    {
+      "sum": 153,
+      "count": 350
+    },
+    {
+      "sum": 154,
+      "count": 287
+    },
+    {
+      "sum": 155,
+      "count": 230
+    },
+    {
+      "sum": 156,
+      "count": 186
+    },
+    {
+      "sum": 157,
+      "count": 146
+    },
+    {
+      "sum": 158,
+      "count": 116
+    },
+    {
+      "sum": 159,
+      "count": 89
+    },
+    {
+      "sum": 160,
+      "count": 70
+    },
+    {
+      "sum": 161,
+      "count": 52
+    },
+    {
+      "sum": 162,
+      "count": 40
+    },
+    {
+      "sum": 163,
+      "count": 29
+    },
+    {
+      "sum": 164,
+      "count": 22
+    },
+    {
+      "sum": 165,
+      "count": 15
+    },
+    {
+      "sum": 166,
+      "count": 11
+    },
+    {
+      "sum": 167,
+      "count": 7
+    },
+    {
+      "sum": 168,
+      "count": 5
+    },
+    {
+      "sum": 169,
+      "count": 3
+    },
+    {
+      "sum": 170,
+      "count": 2
+    },
+    {
+      "sum": 171,
+      "count": 1
+    },
+    {
+      "sum": 172,
+      "count": 1
+    }
+  ]
+}

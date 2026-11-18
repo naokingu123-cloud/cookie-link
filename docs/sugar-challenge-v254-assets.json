@@ -1,0 +1,79 @@
+{
+  "version": 254,
+  "tool": "imagegen",
+  "styleReference": "assets/results-art-v253/result-frame.webp",
+  "prompts": [
+    {
+      "key": "bottle",
+      "prompt": "Create one premium game sprite, transparent background. A magical sugar bottle for a Japanese sweets kingdom arcade game, front elevation, centered, no ground or scenery, entirety visible with 8% margins. Match the reference's polished delicious semi-realistic 3D confectionery finish, warm gold embossed rims, tiny pastel pink/green candy gems, ivory whipped cream scrolls, warm highlights. Large bulbous clear glass body with broad near-round belly and tapered neck; OPEN mouth ready to pour sugar in, no stopper. Belly is EMPTY, clean transparent glass, no existing liquid or solid filling; delicate edge highlights only so runtime colored sugar can show through. Body approximately x20-80% y25-88%, opening center x50% y18%, simple golden scalloped footing at bottom. A small crescent and star gold ornament at shoulder, avoid opaque decoration inside glass belly. A charming collectible high-quality machine asset, gently lit, orthographic front view. No text, no numbers, no letters, no shadow outside object. Portrait ratio 3:4.",
+      "transparentBackground": true
+    },
+    {
+      "key": "scale",
+      "prompt": "Create a single centered premium game sprite on fully transparent background: a candy kingdom mechanical weighing scale for magically weighing sugar, front view. Match reference's glossy detailed 3D confectionery, biscuit and gold ornamental carving, pink strawberry frosting, mint candy gems, whipped cream. A broad OPEN SHALLOW gold-rimmed bowl on top ready for sugar, bowl sits on a sturdy gold and biscuit pedestal. The front pedestal has a large dark navy-chocolate oval display inset, EMPTY with no writing, where runtime JP number will appear. Bowl occupies upper 1/3 with plenty of visible interior. Entire scale visible with margins, no background, no scenery, no people, no text, no letters, no numbers. Ratio 1:1.",
+      "transparentBackground": true
+    },
+    {
+      "key": "jpc-title",
+      "prompt": "Create a spectacular premium Japanese sweets kingdom arcade JACKPOT award typography cutout on a fully transparent background, polished glossy 3D confectionery and ornate warm gold in same art direction as reference. Exact large readable two-line English text: JACKPOT on first line and CHANCE on second line, with exact Japanese text 獲得 in a smaller centered third line. Thick embossed gold beveled letter faces, ivory highlights, deep pink and violet depth, dark chocolate outline for contrast, compact grand upward crest shape. Frame the lettering with a golden biscuit crown at top, swirling cream wings, sugar crystals and starbursts, red pink mint candy pearls. Text must be dominant, razor-legible, generous inner spacing. Dynamic glorious triumphant silhouette, not a rectangle. No extra words, no extra numbers. Entire design visible with10% clear margin. Landscape 3:2.",
+      "transparentBackground": true
+    },
+    {
+      "key": "reach-common",
+      "prompt": "Create one horizontal premium sweets kingdom arcade REACH badge frame sprite on transparent background. Reference glossy semirealistic 3D confectionery aesthetic: baked golden biscuits, ivory whipped cream scallops, gold trim, pink/mint candy gems. WIDE 3:1 ratio, dynamic NONRECTANGULAR silhouette: soft five-point stars extending left and right, curved upward cream wings, little gold biscuit crown, scalloped ribbonlike bottom. Central horizontal 60% of width by45% height is a solid smooth very dark violet-chocolate panel with NO text and no pattern, ample room for Japanese runtime label. Outer shape exciting and celebratory yet compact, crisp silhouette for tiny 110px display. No letters, no numbers, no words. Entire design visible with transparent margins. No background.",
+      "transparentBackground": true
+    }
+  ],
+  "jpcCutoutEdit": "Edit only the background of this exact JACKPOT CHANCE 獲得 artwork. Preserve all existing letters, all gold and pink confectionery decorations and their proportions exactly. Remove the brown/gold rectangular background and all background haze outside the badge, replacing it with fully transparent alpha. Keep the object as a clean transparent cutout with crisp decorated silhouette, generous transparent margin; no rectangular panel, no colored backdrop. All text must remain exactly JACKPOT CHANCE 獲得, unchanged.",
+  "note": "Generated artwork is shipped as alpha-preserving resized WebP. Amounts, rules, probabilities and hit markers are rendered by runtime code.",
+  "files": [
+    {
+      "key": "bottle",
+      "path": "assets/sugar-art-v254/bottle.webp",
+      "width": 600,
+      "height": 800,
+      "bytes": 140968,
+      "sha256": "25636f821aba985cc30aabe8cb7948772b13efa173a0503eaf668bdc723c7696",
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "key": "scale",
+      "path": "assets/sugar-art-v254/scale.webp",
+      "width": 640,
+      "height": 640,
+      "bytes": 105558,
+      "sha256": "240bdc9a3d17db105b1954c971090d28d2c7f52c54522c07b5acf19e2bd56bd8",
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "key": "jpc-title",
+      "path": "assets/sugar-art-v254/jpc-title.webp",
+      "width": 1200,
+      "height": 800,
+      "bytes": 302472,
+      "sha256": "45bdae1b228e77a0835b31cb9a6300b561845387b84923ffcd37de5e0efef026",
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "key": "reach-common",
+      "path": "assets/reach-art-v254/reach-common.webp",
+      "width": 720,
+      "height": 240,
+      "bytes": 67600,
+      "sha256": "7db10fa71f9962341c4f3cc1335828b7edac09e238b2b403361b2147078ac25b",
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  ]
+}

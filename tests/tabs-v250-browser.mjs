@@ -6,7 +6,7 @@ import {createUiFixture,sleep,until} from './ui-v250-fixture.mjs';
 
 const fixture=await createUiFixture({startRound:false,output:'qa-tabs-v250'});
 const {page,context,call,host,errors,output}=fixture;
-const report={version:252,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
+const report={version:254,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
 async function readReachMotion(){
  return page.evaluate(()=>{
   const slot=window.__tabPreview250?.slot,current=slot?.reachNumbers,incoming=slot?.reachIncoming;
@@ -29,7 +29,10 @@ async function waitForReachSlide(){
 }
 try{
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===252&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
+ await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===254&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
+ report.reachArt=await page.evaluate(async()=>{await window.SweetsArcadeTabsV249.reachFrameReady;return {asset:window.SweetsArcadeTabsV249.describe().reachFrame,frames:[...document.querySelectorAll('.v250-reach-pop')].map(node=>({game:node.dataset.gameKind,image:getComputedStyle(node,'::before').backgroundImage,pointerEvents:getComputedStyle(node).pointerEvents}))};});
+ assert.equal(report.reachArt.asset.loaded,true,'the generated sweet-shaped reach frame decodes');assert.ok(report.reachArt.asset.width>=300&&report.reachArt.asset.height>=100);assert.equal(report.reachArt.frames.length,10);
+ for(const frame of report.reachArt.frames){assert.match(frame.image,/reach-art-v254\/reach-common\.webp/);assert.equal(frame.pointerEvents,'none');}
  await page.evaluate(()=>Promise.all([...document.querySelectorAll('.v250-background-logo')].map(image=>image.decode())));
  const firstBet=await page.evaluate(()=>({bets:[...window.__qa250.app.bets],credit:window.__qa250.app.credit,unit:[...window.__qa250.unit]}));
  await page.locator('.v250-shared-bet-switch').focus();await page.keyboard.press('Space');
@@ -111,7 +114,7 @@ try{
  assert.deepEqual(input.allNumbers,expectedNumbers,'all paid reach numbers are retained, odds-only number is excluded');
  assert.deepEqual(input.digits,expectedNumbers.slice(0,4),'a stationary page contains exactly four numbers');
  assert.deepEqual(input.pager,{pageSize:4,holdMs:2000,slideMs:650});
- assert.equal(input.caption,'リーチ');assert.match(input.popup,/高額リーチ/);
+ assert.equal(input.caption,'リーチ');assert.equal(input.popup,'高額リーチ');assert.doesNotMatch(input.popup,/\d/,'only the separate four-cell pager shows reach numbers');
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const motion=await readReachMotion();report.reach.motion=motion;
  assert.equal(motion.current.connected,true);assert.equal(motion.selected,false,'the first page check covers a nonselected tab');assert.deepEqual(motion.hiddenAncestors,[]);assert.equal(motion.reducedMotion,false);assert.equal(motion.paused,false);
@@ -175,6 +178,21 @@ try{
  });
  assert.equal(upgraded.count,input.count+1);assert.equal(upgraded.afterRepeated,upgraded.count);assert.match(upgraded.text,/超高額リーチ/);
  await page.screenshot({path:output+'/reach-popup.png'});
+ const highest=await page.evaluate(()=>{
+  const q=window.__qa250,slot=window.__tabPreview250.slot;Object.assign(slot.tabReachResults.find(p=>p.number===5),{allClear:true});q.updateReachUI();
+  const pop=slot.holder.querySelector('.v250-reach-pop'),count=Number(slot.holder.dataset.v250ReachPopCount);q.updateReachUI();
+  return {count,afterRepeated:Number(slot.holder.dataset.v250ReachPopCount),text:pop.textContent,tier:pop.dataset.tier,numberNodes:pop.querySelectorAll('small').length,image:getComputedStyle(pop,'::before').backgroundImage};
+ });
+ assert.equal(highest.count,upgraded.count+1);assert.equal(highest.afterRepeated,highest.count);assert.equal(highest.text,'最高役リーチ');assert.equal(highest.tier,'3');assert.equal(highest.numberNodes,0);assert.match(highest.image,/reach-common\.webp/);
+ await page.locator('#open-record-menu').click();
+ await page.waitForFunction(()=>document.body.classList.contains('player-menu-open'));
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const pausedPopup=await page.evaluate(()=>{const pop=window.__tabPreview250.slot.holder.querySelector('.v250-reach-pop');return {paused:pop.dataset.motionPaused,animations:pop.getAnimations({subtree:true}).map(a=>({playState:a.playState,time:Number(a.currentTime)}))};});
+ await sleep(200);
+ const heldPopup=await page.evaluate(()=>window.__tabPreview250.slot.holder.querySelector('.v250-reach-pop').getAnimations({subtree:true}).map(a=>({playState:a.playState,time:Number(a.currentTime)})));
+ assert.equal(pausedPopup.paused,'true');assert.ok(pausedPopup.animations.length>0);assert.ok(pausedPopup.animations.every(a=>a.playState==='paused'));assert.deepEqual(heldPopup,pausedPopup.animations,'the sweet-frame burst freezes with the menu');
+ await page.locator('#record-close-top').click();
+ Object.assign(report.reach,{highest,popupPause:{pausedPopup,heldPopup}});
  await page.emulateMedia({reducedMotion:'reduce'});await sleep(100);
  const reducedFirst=await readReachMotion();
  report.reducedMotion={first:reducedFirst,layout:await page.evaluate(()=>{const slot=window.__tabPreview250.slot;return {tabIndex:slot.reachClip.tabIndex,overflow:getComputedStyle(slot.reachClip).overflowX};})};

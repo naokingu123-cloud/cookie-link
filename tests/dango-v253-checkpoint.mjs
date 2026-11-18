@@ -1,5 +1,5 @@
 /* Exercise the real Dango host, common checkpoint serializer and offline worker
-   restore against genuine revision251 snapshots and new revision253 rounds. */
+   restore against genuine revision251/253 snapshots and new revision254 rounds. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -10,6 +10,7 @@ const hostSource=read('assets/dango-bingo-host.js');
 const coreSource=read('assets/shared-machine-core-v196.js');
 const workerSource=read('assets/server-offline-settlement-worker-v3.js');
 const snapshots=JSON.parse(read('tests/dango-v251-checkpoints.json'));
+const snapshots253=JSON.parse(read('tests/dango-v253-checkpoints.json'));
 const workerEntry=workerSource.lastIndexOf('install();');
 const serializerStart=coreSource.indexOf('const CONTROLS='),serializerEnd=coreSource.indexOf('function totalBet(');
 assert(workerEntry>0&&serializerStart>0&&serializerEnd>serializerStart);
@@ -61,7 +62,7 @@ assert.equal(saved.engines[0].state.rulesRevision,251);
 assert.deepEqual(saved.engines[0].state.manualFreeCells,[5]);
 const afterWire=fixture();afterWire.context.testRestore(afterWire.app,saved);afterWire.app.phase='playing';await flush();
 for(const n of [6,7,8])afterWire.receive(n);await flush();
-assert.deepEqual(plain(afterWire.engine.state),snapshots.final);
+assert.deepEqual(Object.fromEntries(Object.keys(snapshots.final).map(key=>[key,plain(afterWire.engine.state)[key]])),snapshots.final);
 assert.equal(afterWire.app.roundWins[0],40,'legacy two-times0.2 pays0.4 rather than new0.2');
 assert.equal(afterWire.app.paid[0],true);assert.equal(afterWire.counters.finish,1);assert.equal(afterWire.counters.records,1);
 assert.equal(afterWire.counters.waits,0);assert.equal(afterWire.counters.presentations,0);
@@ -85,17 +86,34 @@ assert.equal(finished.app.roundWins[0],40);assert.equal(finished.counters.finish
 assert.equal(finished.engine.state.rulesRevision,251);
 const paid=fixture();paid.restore(snapshots.final,true);await flush();assert.equal(paid.counters.finish,0);
 
-// A new board remains revision253 through the same shared serializer/worker,
+// Saved v253 boards retain their numbered initial FREE locations and payout
+// through the same actual shared serializer and settlement-worker restore.
+for(let i=0;i<snapshots253.committed.length;i++){
+ const previous=fixture();previous.restore(snapshots253.committed[i]);await flush();
+ const previousWire=plain(previous.checkpoint());assert.equal(previousWire.engines[0].state.rulesRevision,253);
+ const restored=fixture();restored.context.testRestore(restored.app,previousWire);restored.app.phase='playing';await flush();
+ for(const n of [6,7,8])restored.receive(n);await flush();
+ assert.equal(restored.engine.state.rulesRevision,253);
+ assert.deepEqual(plain(restored.engine.state.initialFreeCells),snapshots253.committed[i].initialFreeCells);
+ assert.deepEqual(plain(restored.engine.state.numbers),snapshots253.committed[i].numbers);
+ assert.equal(restored.app.roundWins[0],snapshots253.done[i].totalHundredths);
+ assert.equal(restored.counters.finish,1);assert.equal(restored.app.paid[0],true);
+ restored.engine.afterCheckpointRestoreV247();restored.receive(8);await flush();assert.equal(restored.counters.finish,1);
+ assert.equal(restored.counters.waits,0);assert.equal(restored.counters.presentations,0);
+}
+
+// A new board remains revision254 through the same shared serializer/worker,
 // has at least one initial FREE, and uses the adjusted table when settled.
 const current=fixture();let s=current.R.create({moldIndex:0,initialFreeCells:[17],numbers:Array.from({length:25},(_,i)=>i+1)});
 s=[2,3,4,10,17].reduce((state,n)=>current.R.draw(state,n),s);
 s=current.R.commitFree(current.R.placeFree(s,5),{autoFill:false});
 current.restore(s);await flush();const currentSaved=current.checkpoint();
-assert.equal(currentSaved.engines[0].state.rulesRevision,253);
+assert.equal(currentSaved.engines[0].state.rulesRevision,254);
 for(const n of [6,7,8])current.receive(n);await flush();
-assert.equal(current.engine.state.rulesRevision,253);assert.equal(current.engine.state.initialFreeCells.length,1);
+assert.equal(current.engine.state.rulesRevision,254);assert.equal(current.engine.state.initialFreeCells.length,1);
 assert.equal(current.app.roundWins[0],20);assert.equal(current.counters.finish,1);
 
-console.log('DANGO_V253_CHECKPOINT_PASS',JSON.stringify({legacyRevision:251,newRevision:253,oldEmptyInitialContinued:true,
+console.log('DANGO_V253_CHECKPOINT_PASS',JSON.stringify({legacyRevisions:[251,253],newRevision:254,oldEmptyInitialContinued:true,
+ legacy253Molds:snapshots253.committed.length,
  realSharedSerializer:true,realWorkerRestore:true,realHostFinish:true,legacyWin:40,currentWin:20,
  uncommittedLegacyAutoFill:true,eighthBallNoReplay:true,paidGuard:true,noPresentationWait:true}));
