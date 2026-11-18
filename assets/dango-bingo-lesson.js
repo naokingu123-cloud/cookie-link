@@ -6,7 +6,7 @@ const steps=[
  {title:'白いお団子の番号にHIT！',caption:'25個のお団子に1〜25の番号。縦・横・斜めの3マス以上をそろえて、串を通そう。'},
  {title:'緑の初期FREEにHITで配置＋1',caption:'初期FREEは0〜3個。前半5球で緑の番号にHITすると、配置できるFREEが1〜4個になります。'},
  {title:'5球のあと、赤いFREEを配置',caption:'シンキングタイムにお団子を選んで「配置完了」。未配置分は時間切れでおまかせ配置されます。'},
- {title:'赤いFREEに後半HITでODDS UP！',caption:'後半3球で配置FREEの番号にHITすると、赤い団子に金箔が付きODDS＋1。各串の配当を合計して倍率を掛けます。'}
+ {title:'赤いFREEに後半HITでODDS UP！',caption:'後半3球で配置FREEの番号にHITすると、赤い団子に金箔が付きODDS＋1。長さごとの完成本数で配当が決まり、その合計にODDS倍率を掛けます。'}
 ];
 const first=[2,3,5,12,21],last=[4,9,14],numbers=Array.from({length:25},(_,i)=>i+1);
 let buffer;
