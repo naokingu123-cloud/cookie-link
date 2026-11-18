@@ -1,0 +1,289 @@
+{
+  "version": "20261119-v253-dango-tsukimi-results",
+  "baseCommit": "065633c76c52ac2bedfbceea6da901ab0966a91e",
+  "implementationCommit": "9e6433d99f75e85bcf10fb463bef1ebb57cae970",
+  "featureRunId": 44345756082,
+  "status": "Implementation, native regressions, browser review, main save and public Pages verification completed",
+  "localVerification": {
+    "syntax": true,
+    "dango": {
+      "games": 200,
+      "forecasts": 11400,
+      "calibrationTargets": 101,
+      "newBoardBoundaryCases": 1313,
+      "newCppVectors": 42,
+      "legacyCppVectors": 60,
+      "legacyCheckpointWorkerPayout": true,
+      "thinkingDeadlineAndSaveBarrier": true
+    }
+  },
+  "assets": {
+    "manifest": "docs/dango-v253-assets.json",
+    "newCount": 5,
+    "newBytes": 275972,
+    "usedCanvasImages": 7,
+    "usedBackgrounds": 1
+  },
+  "calibration": {
+    "file": "docs/dango-v253-calibration.json",
+    "initialFreeMin": 1,
+    "initialFreeMax": 3,
+    "manualFreeMax": 4,
+    "targetRange": [
+      50,
+      150
+    ],
+    "reference": "optimal-manual-before-future",
+    "autoAtTargets": {
+      "50": 41.507803164,
+      "75": 57.463357658,
+      "100": 72.098549474,
+      "125": 83.633554125,
+      "150": 94.158474214
+    },
+    "payoutChanges": [
+      {
+        "length": 3,
+        "count": 1,
+        "old": 0.2,
+        "new": 0.1
+      },
+      {
+        "length": 3,
+        "count": 2,
+        "old": 1,
+        "new": 0.5
+      },
+      {
+        "length": 4,
+        "count": 1,
+        "old": 1,
+        "new": 0.4
+      }
+    ],
+    "otherPayoutsUnchanged": true,
+    "legacyRevision": 251,
+    "newRevision": 253
+  },
+  "unchangedRules": [
+    "Manual FREE quota=1+initial FREE first-five hits, max4",
+    "Only later HIT on placed FREE raises odds; initial FREE does not",
+    "Simple automatic placement prioritizes completed lines and long reaches without future knowledge",
+    "Six Drop progressive and carry, Castella61, server own-BET colors",
+    "Four-number tab reach paging and shared BET"
+  ],
+  "limitations": [
+    "Windows and iPhone hardware not tested",
+    "Audio perception not tested",
+    "Public verification must be read-only",
+    "GitHub Pages deployment does not update Windows shared-server source"
+  ],
+  "publishedCodeCommit": "9e6433d99f75e85bcf10fb463bef1ebb57cae970",
+  "resultPresentation": {
+    "module": "assets/sweets-results-v253.js",
+    "nativeResultDuration": 1800,
+    "unfoldMs": 450,
+    "totalCompleteMs": 1310,
+    "cutinMs": 650,
+    "generatedAssets": 2,
+    "newBytes": 403910,
+    "readyDuringCutin": true,
+    "nativeControllerUnchanged": true,
+    "hiddenNativeProgressCatchup": true,
+    "floatingControlsOcclusionFix": true,
+    "earlyArtifact": {
+      "runId": 44345756082,
+      "artifactId": 14446256767,
+      "sha256": "67e5da4ed85054b4294e1bb1b1e54f5deb397420ba8c45ddb01c0b4521ae445c",
+      "reviewedByRoot": [
+        "results-844x390-10-final.png",
+        "results-844x390-3-cutin.png",
+        "results-1366x900-1-final.png"
+      ],
+      "immediateLatePhases": [
+        "paying",
+        "complete"
+      ],
+      "nativeUnchanged": true
+    }
+  },
+  "resolvedDuringVerification": [
+    "Result lifecycle test records native COMPLETE atomically before the controller's 100 ms cleanup.",
+    "Result and cut-in hide only the two floating machine controls, restoring them immediately afterward.",
+    "A first result paint that is already paying or complete reveals all rows and TOTAL immediately, without changing native clocks or credit."
+  ],
+  "featureArtifactId": 14445738985,
+  "featureArtifactSha256": "bb19f88c0527ae3bcf31fe2203403113feb0c4696bdef5f31896fcdd769c3f83",
+  "publicVerification": {
+    "runId": 44346919336,
+    "artifactId": 14446626645,
+    "artifactSha256": "6b40f0cac42b795d3e65b8f0122f0daf07abff853d86fbe74e345a1d1e8fa574",
+    "pagesRunId": 44346918035,
+    "matchingFiles": 64,
+    "screens": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "pageErrors": [],
+    "readOnly": true,
+    "resultModule": true,
+    "resultStylesheet": true,
+    "resultRasterImages": 2,
+    "report": "docs/dango-v253-public-qa.json"
+  },
+  "verificationScope": {
+    "nativeAndBrowser": "Full feature run succeeded at the final published code SHA; real isolated server and Chromium, no public game actions.",
+    "public": "Published SHA-256 files and three-size frontend initialization; public game API, WebSockets and non-GET are blocked in the test.",
+    "finalDocumentation": "The final follow-up commit updates documentation and QA only; verified runtime files are unchanged."
+  },
+  "browserVerification": {
+    "DANGO_V253_CHECKPOINT_PASS": {
+      "legacyRevision": 251,
+      "newRevision": 253,
+      "oldEmptyInitialContinued": true,
+      "realSharedSerializer": true,
+      "realWorkerRestore": true,
+      "realHostFinish": true,
+      "legacyWin": 40,
+      "currentWin": 20,
+      "uncommittedLegacyAutoFill": true,
+      "eighthBallNoReplay": true,
+      "paidGuard": true,
+      "noPresentationWait": true
+    },
+    "RESULTS_V253_BROWSER_PASS": {
+      "viewports": 4,
+      "gameCounts": [
+        10,
+        3,
+        1,
+        10
+      ],
+      "nativeDuration": 1800,
+      "exactPayout": true,
+      "sameTokenNoReplay": true,
+      "nextTokenReplay": true,
+      "floatingControlsRestore": true,
+      "immediateLatePhases": [
+        "paying",
+        "complete"
+      ],
+      "menuPause": true,
+      "hiddenCleanup": true,
+      "reducedMotion": true,
+      "zeroWin": true,
+      "errors": []
+    },
+    "TABS_V252_OK": {
+      "viewports": 5,
+      "selections": 10,
+      "miniatureLogicalPx": 47,
+      "sharedBet": true,
+      "allReachNumbers": 23,
+      "pageSize": 4,
+      "pages": 6,
+      "holdMs": 2000,
+      "slideMs": 650,
+      "stationaryHold": true,
+      "pairedLeftRightSlide": true,
+      "selectedAndInactivePaging": true,
+      "pauseResume": true,
+      "hiddenSuspension": true,
+      "highPopup": true,
+      "ultraPopup": true,
+      "reappearedPopup": true,
+      "empty": true,
+      "reducedMotionPaging": true,
+      "errors": 0
+    },
+    "DANGO_V253_VIEW_PASS": {
+      "screens": 5,
+      "balls": 8,
+      "manual": [
+        5,
+        11,
+        3
+      ],
+      "multiplier": 4,
+      "skewers": 19,
+      "rasterAssets": 8,
+      "errors": []
+    },
+    "CASTELLA_V250_VIEW_PASS": {
+      "screens": 2,
+      "balls": 8,
+      "sugar": {
+        "oneAward": true,
+        "bakedHoleRequired": true,
+        "expected": true
+      },
+      "legacy": {
+        "holes": 37,
+        "geometry": {
+          "radius": 3,
+          "panW": 7.34,
+          "panH": 6.316152422706632
+        },
+        "painted": 87341,
+        "corners": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "rows": 18
+      },
+      "pageErrors": []
+    },
+    "SIXDROP_REACH_V250_PASS": {
+      "number": 21,
+      "parts": 3,
+      "fills": [
+        "none",
+        "none",
+        "none"
+      ],
+      "centerOpaquePixels": 0,
+      "sourceFill": "none",
+      "gameStateUnchanged": true
+    },
+    "HIDDEN_NATIVE_ROUND": {
+      "credit": 985000,
+      "phases": [
+        "playing",
+        "result",
+        "paying",
+        "complete",
+        "ready"
+      ],
+      "award": {
+        "phase": "complete",
+        "win": 15000,
+        "roundWins": [
+          600,
+          1200,
+          0,
+          600,
+          0,
+          7500,
+          2400,
+          0,
+          1200,
+          1500
+        ],
+        "credit": 985000
+      },
+      "advanceResult": 10
+    }
+  }
+}
