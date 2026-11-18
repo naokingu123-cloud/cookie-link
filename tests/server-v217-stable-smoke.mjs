@@ -64,6 +64,10 @@ try{
  // The same real host reconnects and completes the authoritative physical draw.
  hostSocket=await openSocket(host);await sleep(100);
  const numbers=[2,5,8,11,14,17,20,23];
+ // The current client does not replay a disconnected round locally. Preserve
+ // its last stable board for the server worker before closing the connection.
+ const checkpoint={savedAt:Date.now(),draws:[],engines:[],payoutV3:{version:3,ball:0,complete:true,phase:'PLAYING',credit:joined.payoutControlV3.wallet.credit,roundBet:100,roundWin:0,games:[{id:'cookie',bet:100,win:0,appliedRate:90}]}};
+ await json('/api/machines/public-01/round/checkpoint',{method:'POST',session:player,body:{roundId,ballIndex:0,state:checkpoint}});
  playerSocket.ws.close();playerSocket=null; // server continues after a legitimate participant disconnects
  for(let index=1;index<=8;index++){
   const report=await json('/api/machines/public-01/round/ball',{method:'POST',session:host,body:{roundId,ballIndex:index,number:numbers[index-1],eventId:roundId+':physical:'+index}});
@@ -72,9 +76,25 @@ try{
  const completed=await waitState(player,s=>s.round?.id===roundId&&s.round.phase==='COMPLETE');
  assert.deepEqual(completed.round.balls.map(ball=>ball.number),numbers);
  assert.ok(completed.round.balls.every(ball=>ball.reportedBy===host.player.id));
- assert.equal(completed.pendingRound.id,roundId);
+ assert.equal(completed.pendingRound,null,'disconnected rounds belong to the server worker, not a client replay');
+ assert.equal(completed.payoutControlV3.offlinePending,true);
+ assert.equal(completed.round.participant.totalBet,100,'the legitimate participant and reservation remain attached');
+ assert.deepEqual(completed.round.participant.checkpoint,checkpoint);
+ const worker=await json('/api/admin/machines/public-01/payout-v3/offline-work?adminToken='+encodeURIComponent(adminToken));
+ assert.equal(worker.work.roundId,roundId);assert.equal(worker.work.playerId,player.player.id);
+ assert.deepEqual(worker.work.balls.map(ball=>ball.number),numbers,'worker receives the same eight physical results');
+ assert.deepEqual(worker.work.state,checkpoint);
+ await json('/api/admin/machines/public-01/payout-v3/offline-work/complete?adminToken='+encodeURIComponent(adminToken),{method:'POST',body:{token:worker.work.token,playerId:player.player.id,roundId,totalWin:0,games:[{id:'cookie',bet:100,win:0}]}});
+ playerSocket=await openSocket(player);
+ const recovered=await json('/api/machines/public-01/state',{session:player});
+ assert.equal(recovered.pendingRound,null);assert.equal(recovered.payoutControlV3.offlinePending,false);
+ assert.equal(recovered.payoutControlV3.wallet.credit,joined.payoutControlV3.wallet.credit,'zero-WIN worker settlement keeps the exact reserved balance');
+ assert.equal(recovered.payoutControlV3.wallet.source,'server-worker');
+ const late=await json('/api/machines/public-01/round/settle',{method:'POST',session:player,body:{roundId,totalWin:25}});
+ assert.equal(late.settlement.totalWin,0,'a delayed client result cannot settle the worker-owned round twice');
+ assert.equal(late.payoutControlV3.wallet.credit,recovered.payoutControlV3.wallet.credit);
 
- console.log('v217 stable-player eligibility + physical-only no-random-fallback smoke test passed');
+ console.log('v217 stable-player eligibility + physical-only no-random-fallback + durable offline worker and reconnect smoke test passed');
 }finally{
  try{hostSocket?.ws.close();}catch{}try{playerSocket?.ws.close();}catch{}try{momentarySocket?.ws.close();}catch{}
  child.kill('SIGTERM');await sleep(150);await rm(temp,{recursive:true,force:true});

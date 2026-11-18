@@ -47,9 +47,10 @@ async function finish(host,roundId,machine='public-01'){
 const settle=(session,roundId,totalWin=0,machine='public-01',creditAfter=123)=>json('/api/machines/{machine}/round/settle',{session,machine,body:{roundId,totalWin,creditAfter,digest:'wallet-test',payoutV3:{version:3,games:[{id:'cookie',bet:27000,win:totalWin}]}}});
 
 try{
- for(const name of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-thinking-v251.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json'])await fs.copyFile(path.join(ROOT,name),path.join(temporary,name));
+ for(const name of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-thinking-v251.mjs','server-sugar-core-v254.mjs','server-sugar-challenge-v254.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json'])await fs.copyFile(path.join(ROOT,name),path.join(temporary,name));
  await fs.mkdir(path.join(temporary,'assets'),{recursive:true});
  await fs.copyFile(path.join(ROOT,'assets','jelly-rules.js'),path.join(temporary,'assets','jelly-rules.js'));
+ await fs.copyFile(path.join(ROOT,'assets','sugar-challenge-rules-v254.js'),path.join(temporary,'assets','sugar-challenge-rules-v254.js'));
  const require=createRequire(import.meta.url);await fs.cp(path.dirname(require.resolve('ws/package.json')),path.join(temporary,'node_modules','ws'),{recursive:true});await fs.mkdir(dataDir,{recursive:true});
  const players=Object.fromEntries([legacy,legacyHost,idle,migrated,poor].map(session=>[session.player.id,{id:session.player.id,tokenHash:hash(session.token),displayName:session.player.id,createdAt:Date.now(),lastSeen:Date.now()}]));
  await fs.writeFile(path.join(dataDir,'db.json'),JSON.stringify({version:2,players,machines:{legacy:{id:'legacy',revision:1,sequence:1,hostPlayerId:legacyHost.player.id,history:[],round:{id:'legacy-old-round',sequence:1,phase:'PLAYING',drawSource:'physical',startedAt:Date.now()-1000,drawStartsAt:Date.now()-1000,balls:[],eligiblePlayerIds:[legacy.player.id],participants:{[legacy.player.id]:{playerId:legacy.player.id,totalBet:300,bets:[300],locked:[300],enabled:[true],creditAfterBet:700,clientRoundToken:'old-page',settlement:null}}}}}}));

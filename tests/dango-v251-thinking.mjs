@@ -52,7 +52,7 @@ assert.ok(patched.includes('if(item.index===6)await window.SweetsDangoThinkingV2
 const clockStart=patched.indexOf('let lastCheckpointSavedAtV251=0;'),clockEnd=patched.indexOf('\nfunction restore(a,state){',clockStart);
 assert.ok(clockStart>=0&&clockEnd>clockStart);
 let snapshotNow=123456;
-const clockContext={Date:class extends Date{static now(){return snapshotNow;}},clone:value=>value===undefined?undefined:JSON.parse(JSON.stringify(value)),engineSnapshot:value=>value};
+const clockContext={window:{},Date:class extends Date{static now(){return snapshotNow;}},clone:value=>value===undefined?undefined:JSON.parse(JSON.stringify(value)),engineSnapshot:value=>value};
 vm.createContext(clockContext);vm.runInContext(patched.slice(clockStart,clockEnd)+'\nglobalThis.makeCheckpoint=checkpoint;',clockContext);
 const clockApp={phase:'playing',engines:[]};
 const clockOne=clockContext.makeCheckpoint(clockApp),clockTwo=clockContext.makeCheckpoint(clockApp);

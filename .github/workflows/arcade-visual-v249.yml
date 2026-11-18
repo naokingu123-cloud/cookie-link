@@ -72,6 +72,7 @@ jobs:
           node tests/client-join-ack-v248.mjs
       - name: Install browser
         id: browser
+        if: ${{ !cancelled() }}
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
