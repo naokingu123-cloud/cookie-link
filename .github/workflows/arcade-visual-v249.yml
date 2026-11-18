@@ -1,8 +1,8 @@
-name: Arcade v251 Dango and ten-game cabinet
+name: Arcade v252 Dango raster art and four-item reach pages
 on:
   workflow_dispatch:
   push:
-    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo']
+    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo', 'feature/v252-dango-art-reach-pages']
     paths:
       - 'index.html'
       - 'app-version.json'
@@ -17,8 +17,10 @@ on:
       - 'assets/castella-lesson.js'
       - 'assets/dango*'
       - 'assets/dango-art/**'
+      - 'assets/dango-art-v252/**'
       - 'server-thinking-v251.mjs'
       - 'tests/*v251*'
+      - 'tests/*v252*'
       - 'optimized/app-01.js'
       - 'optimized/style-01.css'
       - 'tests/*v250*'
@@ -52,7 +54,7 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
-      - name: Ten tabs, shared BET and continuous reach strip
+      - name: Ten tabs, shared BET and four-item reach pages
         id: tabs
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/tabs-v250-browser.mjs
@@ -60,7 +62,7 @@ jobs:
         if: ${{ !cancelled() && steps.tabs.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v250-tabs-diagnostics
+          name: arcade-v252-tabs-diagnostics
           path: qa-tabs-v250/
           retention-days: 3
       - name: Dango placement, thinking deadline, skewers and payout
@@ -71,7 +73,7 @@ jobs:
         if: ${{ !cancelled() && steps.dango.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v251-dango-diagnostics
+          name: arcade-v252-dango-diagnostics
           path: qa-dango-v251/
           retention-days: 3
       - name: Castella61 real eight-ball round, gauges and Sugar
@@ -82,7 +84,7 @@ jobs:
         if: ${{ !cancelled() && steps.castella.outcome == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v250-castella-diagnostics
+          name: arcade-v252-castella-diagnostics
           path: qa-castella-v250/
           retention-days: 3
       - name: Transparent Six Drop all-clear reach
@@ -100,7 +102,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v251-visual-verification
+          name: arcade-v252-visual-verification
           path: |
             qa-v250/
             qa-dango-v251/

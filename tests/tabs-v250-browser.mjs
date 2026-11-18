@@ -6,19 +6,30 @@ import {createUiFixture,sleep,until} from './ui-v250-fixture.mjs';
 
 const fixture=await createUiFixture({startRound:false,output:'qa-tabs-v250'});
 const {page,context,call,host,errors,output}=fixture;
-const report={version:251,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
+const report={version:252,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
 async function readReachMotion(){
  return page.evaluate(()=>{
-  const slot=window.__tabPreview250?.slot,track=slot?.reachNumbers.querySelector('.v250-reach-track');
-  if(!track)return {missing:true};
-  const style=getComputedStyle(track),ancestors=[];
-  for(let node=track;node;node=node.parentElement){const css=getComputedStyle(node);if(css.display==='none'||css.visibility==='hidden')ancestors.push({tag:node.tagName,id:node.id,className:node.className,display:css.display,visibility:css.visibility});}
-  return {connected:track.isConnected,selected:slot.tab.getAttribute('aria-selected')==='true',animationName:style.animationName,animationDuration:style.animationDuration,animationPlayState:style.animationPlayState,durationVariable:style.getPropertyValue('--v250-reach-duration'),transform:style.transform,x:style.transform==='none'?0:new DOMMatrixReadOnly(style.transform).m41,width:track.getBoundingClientRect().width,hiddenAncestors:ancestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,phase:window.__qa250.app.phase,bodyClass:document.body.className,animations:track.getAnimations().map(animation=>({name:animation.animationName||'',playState:animation.playState,pending:animation.pending,currentTime:animation.currentTime,playbackRate:animation.playbackRate}))};
+  const slot=window.__tabPreview250?.slot,current=slot?.reachNumbers,incoming=slot?.reachIncoming;
+  if(!current)return {missing:true};
+  const inspect=node=>{
+   if(!node)return null;
+   const style=getComputedStyle(node),rect=node.getBoundingClientRect();
+   return {connected:node.isConnected,digits:[...node.children].map(n=>Number(n.textContent)),animationName:style.animationName,animationDuration:style.animationDuration,animationPlayState:style.animationPlayState,transform:style.transform,x:style.transform==='none'?0:new DOMMatrixReadOnly(style.transform).m41,width:rect.width,left:rect.left,right:rect.right,animations:node.getAnimations().map(animation=>({name:animation.animationName||'',playState:animation.playState,pending:animation.pending,currentTime:animation.currentTime}))};
+  };
+  const hiddenAncestors=[];for(let node=current;node;node=node.parentElement){const css=getComputedStyle(node);if(css.display==='none'||css.visibility==='hidden')hiddenAncestors.push({tag:node.tagName,id:node.id,className:node.className,display:css.display,visibility:css.visibility});}
+  return {now:performance.now(),selected:slot.tab.getAttribute('aria-selected')==='true',index:slot.reachPage,phase:slot.reachStrip.dataset.pagePhase,pageCount:Number(slot.reachStrip.dataset.pageCount),pageSize:Number(slot.reachStrip.dataset.pageSize),pagerPaused:slot.reachStrip.dataset.pagerPaused==='true',current:inspect(current),incoming:inspect(incoming),hiddenAncestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,documentHidden:document.hidden,gamePhase:window.__qa250.app.phase};
  });
+}
+async function waitForReachPage(index){
+ await page.waitForFunction(index=>{const slot=window.__tabPreview250.slot;return slot.reachPage===index&&slot.reachStrip.dataset.pagePhase==='hold'&&!slot.reachIncoming;},index,{timeout:5000});
+ return readReachMotion();
+}
+async function waitForReachSlide(){
+ await page.waitForFunction(()=>{const slot=window.__tabPreview250.slot;return !!slot.reachIncoming&&slot.reachStrip.dataset.pagePhase==='slide';},null,{timeout:5000});
 }
 try{
  await page.emulateMedia({reducedMotion:'no-preference'});
- await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===251&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
+ await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===252&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
  await page.evaluate(()=>Promise.all([...document.querySelectorAll('.v250-background-logo')].map(image=>image.decode())));
  const firstBet=await page.evaluate(()=>({bets:[...window.__qa250.app.bets],credit:window.__qa250.app.credit,unit:[...window.__qa250.unit]}));
  await page.locator('.v250-shared-bet-switch').focus();await page.keyboard.press('Space');
@@ -93,49 +104,68 @@ try{
   q.updateReachUI();
   Object.assign(slot.tabReachResults.find(p=>p.number===5),{gain:300,total:slot.engine.totalHundredths+300});
   q.updateReachUI();
-  const digits=[...slot.reachNumbers.querySelector('.v250-reach-sequence:not([aria-hidden])').children].map(n=>Number(n.textContent));
-  return {digits,caption:slot.reachCaption.textContent,popup:slot.holder.querySelector('.v250-reach-pop').textContent,count:Number(slot.holder.dataset.v250ReachPopCount)};
+  return {createdAt:performance.now(),digits:[...slot.reachNumbers.children].map(n=>Number(n.textContent)),allNumbers:slot.reachPageResults.map(p=>p.number),caption:slot.reachCaption.textContent,popup:slot.holder.querySelector('.v250-reach-pop').textContent,count:Number(slot.holder.dataset.v250ReachPopCount),pager:window.SweetsArcadeTabsV249.describe().reachPager};
  });
+ const expectedNumbers=Array.from({length:25},(_,i)=>i+1).filter(n=>![3,25].includes(n));
  report.reach={input};
- assert.deepEqual(input.digits,Array.from({length:25},(_,i)=>i+1).filter(n=>![3,25].includes(n)),'all paid reach numbers are retained, odds-only number is excluded');
+ assert.deepEqual(input.allNumbers,expectedNumbers,'all paid reach numbers are retained, odds-only number is excluded');
+ assert.deepEqual(input.digits,expectedNumbers.slice(0,4),'a stationary page contains exactly four numbers');
+ assert.deepEqual(input.pager,{pageSize:4,holdMs:2000,slideMs:650});
  assert.equal(input.caption,'リーチ');assert.match(input.popup,/高額リーチ/);
- // CSS animation creation is observed after rendering, not in the same task
- // that inserted/replaced the track. Retain strict elapsed-time/direction checks.
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const motion=await readReachMotion();report.reach.motion=motion;
- assert.equal(motion.connected,true);assert.equal(motion.selected,false,'the first scroll check covers a nonselected tab');assert.deepEqual(motion.hiddenAncestors,[]);assert.equal(motion.reducedMotion,false);assert.equal(motion.paused,false);
- assert.equal(motion.animationName,'v250-reach-marquee','the scrolling track retains its CSS animation');
- const running=motion.animations.find(animation=>animation.name==='v250-reach-marquee');
- assert.equal(running?.playState,'running','the reach marquee runs after the rendering frame');
- await sleep(330);
+ assert.equal(motion.current.connected,true);assert.equal(motion.selected,false,'the first page check covers a nonselected tab');assert.deepEqual(motion.hiddenAncestors,[]);assert.equal(motion.reducedMotion,false);assert.equal(motion.paused,false);
+ assert.equal(motion.phase,'hold');assert.equal(motion.pageSize,4);assert.equal(motion.pageCount,6);assert.equal(motion.current.animationName,'none');assert.equal(motion.current.x,0);assert.equal(motion.incoming,null);
+ await sleep(1000);
+ const held=await readReachMotion();report.reach.held=held;
+ assert.equal(held.index,0);assert.equal(held.phase,'hold');assert.equal(held.current.x,0);assert.deepEqual(held.current.digits,input.digits,'numbers remain stationary during their reading time');
+ await waitForReachSlide();await sleep(120);
+ const firstSlide=await readReachMotion();report.reach.firstSlide=firstSlide;
+ assert.ok(firstSlide.now-input.createdAt>=1900,'the first four numbers remain for approximately two seconds before moving');
+ assert.equal(firstSlide.index,1);assert.equal(firstSlide.current.animationName,'v252-reach-leave');assert.equal(firstSlide.incoming.animationName,'v252-reach-enter');
+ assert.equal(firstSlide.current.animationPlayState,'running');assert.equal(firstSlide.incoming.animationPlayState,'running');
+ assert.deepEqual(firstSlide.current.digits,expectedNumbers.slice(0,4));assert.deepEqual(firstSlide.incoming.digits,expectedNumbers.slice(4,8));
+ assert.ok(firstSlide.current.x<0,'the old four move left');assert.ok(firstSlide.incoming.x>0,'the next four enter from the right');
+ await sleep(140);
  const scrolled=await readReachMotion();report.reach.scrolled=scrolled;
- const continued=scrolled.animations.find(animation=>animation.name==='v250-reach-marquee');
- assert.ok(continued?.currentTime>running.currentTime,'the reach animation clock advances');
- assert.ok(scrolled.x<motion.x,'reach numbers move from right to left');
- assert.notEqual(scrolled.transform,motion.transform,'reach strip moves without an old !important transform reset');
+ assert.ok(scrolled.current.x<firstSlide.current.x,'outgoing page continues left');assert.ok(scrolled.incoming.x<firstSlide.incoming.x,'incoming page continues from right to center');
+ await page.screenshot({path:output+'/reach-four-slide.png'});
+ const pages=[{index:0,digits:input.digits}],firstNext=await waitForReachPage(1);pages.push({index:1,digits:firstNext.current.digits});report.reach.pages=pages;
+ assert.equal(firstNext.current.x,0);assert.equal(firstNext.current.animationName,'none');
+ for(let index=2;index<6;index++){const observed=await waitForReachPage(index);assert.equal(observed.current.x,0);assert.ok(observed.current.digits.length<=4);pages.push({index,digits:observed.current.digits});}
+ assert.deepEqual(pages.flatMap(p=>p.digits),expectedNumbers,'every reach appears in order across six real elapsed-time pages');
+ assert.equal(pages.at(-1).digits.length,3,'the final partial page retains all three remaining numbers');
+ const wrapped=await waitForReachPage(0);report.reach.wrapped=wrapped;assert.deepEqual(wrapped.current.digits,input.digits,'last page wraps back to the first four');
  const selectionFlow=[];report.reach.selectionFlow=selectionFlow;
  for(const selected of [true,false]){
   await page.evaluate(selected=>{const q=window.__qa250;q.select(selected?window.__tabPreview250.slot.i:0);},selected);
-  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-  const before=await readReachMotion();await sleep(160);const after=await readReachMotion();selectionFlow.push({selected,before,after});
-  assert.equal(after.selected,selected);assert.equal(after.animationPlayState,'running');
-  assert.ok(after.animations[0].currentTime>before.animations[0].currentTime,'selection changes keep the reach clock running');
-  assert.ok(after.x<before.x,'the reach continues leftward after selection changes');
+  const before=await readReachMotion();await waitForReachSlide();await sleep(120);const sliding=await readReachMotion();
+  assert.equal(sliding.selected,selected);assert.equal(sliding.current.animationPlayState,'running');assert.equal(sliding.incoming.animationPlayState,'running');
+  assert.ok(sliding.current.x<0&&sliding.incoming.x>0,'both selected and inactive cards have the paired directional transition');
+  const after=await waitForReachPage((before.index+1)%6);selectionFlow.push({selected,before,sliding,after});
  }
- // The real menu pause still stops the opted-in track and closing it resumes.
- await page.locator('#open-record-menu').click();
+ // Pause during a transition, longer than its entire duration, then resume it.
+ await waitForReachSlide();await sleep(100);await page.locator('#open-record-menu').click();
  await page.waitForFunction(()=>document.body.classList.contains('paused'));
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
- const stopped=await readReachMotion();await sleep(160);const still=await readReachMotion();
+ const stopped=await readReachMotion();await sleep(900);const still=await readReachMotion();
  const pauseFlow={stopped,still};report.reach.pauseFlow=pauseFlow;
- assert.equal(still.animationPlayState,'paused');assert.equal(still.animations[0].playState,'paused');
- assert.equal(still.animations[0].currentTime,stopped.animations[0].currentTime,'normal pause freezes the reach clock');
- assert.equal(still.transform,stopped.transform);
- await page.locator('#record-close-top').click();
- await page.waitForFunction(()=>!document.body.classList.contains('paused'));
- await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
- const resumeStart=await readReachMotion();await sleep(160);const resumed=await readReachMotion();Object.assign(pauseFlow,{resumeStart,resumed});
- assert.equal(resumed.animationPlayState,'running');assert.ok(resumed.animations[0].currentTime>resumeStart.animations[0].currentTime);assert.ok(resumed.x<resumeStart.x,'closing the menu resumes leftward motion');
+ assert.equal(stopped.phase,'slide');assert.equal(still.pagerPaused,true);assert.equal(still.current.animationPlayState,'paused');assert.equal(still.incoming.animationPlayState,'paused');
+ assert.equal(still.index,stopped.index);assert.equal(still.current.x,stopped.current.x);assert.equal(still.incoming.x,stopped.incoming.x,'menu pause freezes both pages');
+ await page.locator('#record-close-top').click();await page.waitForFunction(()=>!document.body.classList.contains('paused'));
+ const resumed=await waitForReachPage(stopped.index);pauseFlow.resumed=resumed;
+ assert.equal(resumed.pagerPaused,false);assert.deepEqual(resumed.current.digits,stopped.incoming.digits,'closing the menu completes the same pending page');
+ // Hidden-document suspension preserves the reading page and does not skip it.
+ const hiddenStart=await page.evaluate(()=>{
+  window.__tabHiddenDescriptor252=Object.getOwnPropertyDescriptor(document,'hidden');
+  Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));
+  return {index:window.__tabPreview250.slot.reachPage,phase:window.__tabPreview250.slot.reachStrip.dataset.pagePhase};
+ });
+ await sleep(2200);const hiddenStill=await readReachMotion();
+ assert.equal(hiddenStill.documentHidden,true);assert.equal(hiddenStill.pagerPaused,true);assert.equal(hiddenStill.index,hiddenStart.index);assert.equal(hiddenStill.phase,hiddenStart.phase);
+ await page.evaluate(()=>{const descriptor=window.__tabHiddenDescriptor252;if(descriptor)Object.defineProperty(document,'hidden',descriptor);else delete document.hidden;delete window.__tabHiddenDescriptor252;document.dispatchEvent(new Event('visibilitychange'));});
+ await page.waitForFunction(()=>!window.__qa250.app.paused);
+ const hiddenResume=await waitForReachPage((hiddenStart.index+1)%6);report.reach.hiddenFlow={hiddenStart,hiddenStill,hiddenResume};
  const upgraded=await page.evaluate(()=>{
   const q=window.__qa250,slot=window.__tabPreview250.slot;
   Object.assign(slot.tabReachResults.find(p=>p.number===5),{gain:1000,total:slot.engine.totalHundredths+1000});q.updateReachUI();
@@ -146,8 +176,12 @@ try{
  assert.equal(upgraded.count,input.count+1);assert.equal(upgraded.afterRepeated,upgraded.count);assert.match(upgraded.text,/超高額リーチ/);
  await page.screenshot({path:output+'/reach-popup.png'});
  await page.emulateMedia({reducedMotion:'reduce'});await sleep(100);
- report.reducedMotion=await page.evaluate(()=>{const slot=window.__tabPreview250.slot,track=slot.reachNumbers.querySelector('.v250-reach-track');return {motion:window.SweetsArcadeTabsV249.describe().reducedMotion,animation:getComputedStyle(track).animationName,tabIndex:slot.reachClip.tabIndex,overflow:getComputedStyle(slot.reachClip).overflowX};});
- assert.equal(report.reducedMotion.motion,true);assert.equal(report.reducedMotion.animation,'none');assert.equal(report.reducedMotion.tabIndex,0);assert.equal(report.reducedMotion.overflow,'auto');
+ const reducedFirst=await readReachMotion();
+ report.reducedMotion={first:reducedFirst,layout:await page.evaluate(()=>{const slot=window.__tabPreview250.slot;return {tabIndex:slot.reachClip.tabIndex,overflow:getComputedStyle(slot.reachClip).overflowX};})};
+ assert.equal(reducedFirst.reducedMotion,true);assert.equal(reducedFirst.phase,'hold');assert.equal(reducedFirst.current.animationName,'none');assert.equal(reducedFirst.incoming,null);assert.equal(reducedFirst.index,0);
+ assert.equal(report.reducedMotion.layout.tabIndex,0);assert.equal(report.reducedMotion.layout.overflow,'hidden');
+ const reducedNext=await waitForReachPage(1);report.reducedMotion.next=reducedNext;
+ assert.equal(reducedNext.current.animationName,'none');assert.equal(reducedNext.incoming,null);assert.equal(reducedNext.current.x,0);assert.deepEqual(reducedNext.current.digits,expectedNumbers.slice(4,8),'reduced motion still advances to all later pages without sliding');
  await page.emulateMedia({reducedMotion:'no-preference'});
  const empty=await page.evaluate(()=>{
   const q=window.__qa250,slot=window.__tabPreview250.slot;slot.tabReachResults=[{number:25,total:0,gain:0,oddsUp:true,tier:0}];q.updateReachUI();
@@ -164,12 +198,12 @@ try{
  assert.equal(reappeared.count,reappeared.before+1,'the same high reach announces once after disappearing');
  assert.equal(reappeared.afterRepeated,reappeared.count,'repainting an unchanged reappeared reach does not announce again');
  assert.match(reappeared.text,/超高額リーチ/);
- report.reach={input,motion,scrolled,selectionFlow,pauseFlow,upgraded,empty,reappeared};
+ Object.assign(report.reach,{upgraded,empty,reappeared});
  report.sugar=await page.evaluate(()=>window.__qa250.slots.map(slot=>({kind:slot.engine.kind,samePlaque:slot.tabSugar.parentElement===slot.tabWin.parentElement,row:getComputedStyle(slot.tabSugar).gridRowStart,winRow:getComputedStyle(slot.tabWin.parentElement.querySelector('.win-word')).gridRowStart})));
  for(const sugar of report.sugar){assert.equal(sugar.samePlaque,true);assert.equal(sugar.row,sugar.winRow,'sugar GET belongs beside WIN');}
  await page.evaluate(()=>{const q=window.__qa250,fixture=window.__tabPreview250;fixture.slot.tabReachResults=fixture.original;q.updateReachUI();if(fixture.before!==JSON.stringify({bets:q.app.bets,credit:q.app.credit,draws:q.app.draws,win:q.app.totalWin}))throw Error('UI reach previews changed gameplay state');delete window.__tabPreview250;});
  assert.deepEqual(errors,[],'no page exceptions');
  await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));
- console.log('TABS_V250_OK',JSON.stringify({viewports:report.viewports.length,selections:report.selection.length,miniatureLogicalPx:47,sharedBet:true,allReachNumbers:input.digits.length,highPopup:true,ultraPopup:true,reappearedPopup:true,empty:true,reducedMotion:true,errors:errors.length}));
+ console.log('TABS_V252_OK',JSON.stringify({viewports:report.viewports.length,selections:report.selection.length,miniatureLogicalPx:47,sharedBet:true,allReachNumbers:expectedNumbers.length,pageSize:4,pages:pages.length,holdMs:2000,slideMs:650,stationaryHold:true,pairedLeftRightSlide:true,selectedAndInactivePaging:true,pauseResume:true,hiddenSuspension:true,highPopup:true,ultraPopup:true,reappearedPopup:true,empty:true,reducedMotionPaging:true,errors:errors.length}));
 }catch(error){report.failure={message:String(error),stack:error.stack,motion:await readReachMotion().catch(e=>({error:String(e)}))};await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));await page.screenshot({path:output+'/failure.png'}).catch(()=>{});throw error;}
 finally{await fixture.close();}

@@ -15,6 +15,7 @@ on:
       - 'assets/castella-lesson.js'
       - 'assets/dango*'
       - 'assets/dango-art/**'
+      - 'assets/dango-art-v252/**'
       - 'assets/jelly-view.js'
       - 'assets/game-menu-v91.js'
       - 'assets/lineups-v91.js'

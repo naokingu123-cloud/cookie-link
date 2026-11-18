@@ -1,0 +1,144 @@
+{
+  "version": 252,
+  "generator": "image_gen.imagegen",
+  "conversion": "Generated PNG to WebP, proportional downscale only, original alpha preserved. Runtime reads dominant alpha bounds for consistent visible sprite size. No synthetic repainting.",
+  "assets": [
+    {
+      "file": "assets/dango-art-v252/dango-white.webp",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "bytes": 42096,
+      "sha256": "5743b70a4e521a0b01d21679771e6129edd4c8451c52beed4f2f8f3f7c408a68",
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite for a premium Japanese wagashi arcade bingo game named Dango de Bingo. Single standalone object on a genuinely transparent background. Camera directly above/front orthographic, almost spherical circular silhouette, centered, no camera tilt. High-end edible 3D confectionery illustration, soft mochi rice-dough, slightly glossy and powdery, tactile tiny dimples, warm studio key light from upper left, gentle occlusion at lower right. Crisp readable silhouette at 24px; occupy 82 percent of square canvas, generous transparent padding. No writing, numbers, letters, logo, face, character, plate, skewer or surrounding objects. No backdrop or drop shadow extending beyond the object. Square format. Subject: one pure ivory-white Japanese dango ball. Keep the main body distinctly white, subtle warm shadows only, plump and delicious. Very soft luminous highlights and fine flour texture."
+    },
+    {
+      "file": "assets/dango-art-v252/dango-green.webp",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "bytes": 59302,
+      "sha256": "89e06f8ab4d63f99b4e027d45a211fe86431d36d6d9bdedd35ca28648d2278ea",
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite for a premium Japanese wagashi arcade bingo game named Dango de Bingo. Single standalone object on a genuinely transparent background. Camera directly above/front orthographic, almost spherical circular silhouette, centered, no camera tilt. High-end edible 3D confectionery illustration, soft mochi rice-dough, slightly glossy and powdery, tactile tiny dimples, warm studio key light from upper left, gentle occlusion at lower right. Crisp readable silhouette at 24px; occupy 82 percent of square canvas, generous transparent padding. No writing, numbers, letters, logo, face, character, plate, skewer or surrounding objects. No backdrop or drop shadow extending beyond the object. Square format. Subject: one matcha-green Japanese dango ball. The main body should be unmistakably rich leaf green, light jade highlights and moss-green shaded edge, plump and delicious. No gold."
+    },
+    {
+      "file": "assets/dango-art-v252/dango-red.webp",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "bytes": 63376,
+      "sha256": "6a923585a2e47759cb012bb74b2483535ea4c9a387b9a73f9e79d0ebc629b11a",
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite for a premium Japanese wagashi arcade bingo game named Dango de Bingo. Single standalone object on a genuinely transparent background. Camera directly above/front orthographic, almost spherical circular silhouette, centered, no camera tilt. High-end edible 3D confectionery illustration, soft mochi rice-dough, slightly glossy and powdery, tactile tiny dimples, warm studio key light from upper left, gentle occlusion at lower right. Crisp readable silhouette at 24px; occupy 82 percent of square canvas, generous transparent padding. No writing, numbers, letters, logo, face, character, plate, skewer or surrounding objects. No backdrop or drop shadow extending beyond the object. Square format. Subject: one deep strawberry-red Japanese dango ball. The main body should be unmistakably red, with soft coral highlights and cranberry shaded edge, not pastel pink or purple. Plump and delicious. No gold."
+    },
+    {
+      "file": "assets/dango-art-v252/dango-gold.webp",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "bytes": 86792,
+      "sha256": "f804124f28edc08c54338fa0dc6e3739c7d0458066bced18e41edfe2fe9d8b9c",
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite for a premium Japanese wagashi arcade bingo game named Dango de Bingo. Single standalone object on a genuinely transparent background. Camera directly above/front orthographic, almost spherical circular silhouette, centered, no camera tilt. High-end edible 3D confectionery illustration, soft mochi rice-dough, slightly glossy and powdery, tactile tiny dimples, warm studio key light from upper left, gentle occlusion at lower right. Crisp readable silhouette at 24px; occupy 82 percent of square canvas, generous transparent padding. No writing, numbers, letters, logo, face, character, plate, skewer or surrounding objects. No backdrop or drop shadow extending beyond the object. Square format. Subject: one deep strawberry-red Japanese dango ball decorated with premium edible gold leaf flakes around the outer third of its face and a delicate continuous gold-leaf rim around its circular edge. The whole middle 45 percent stays clear, red and readable for a later overlaid number. Keep the red mochi body clearly red; metallic gold texture and small leaf flakes sparkle under warm light. Do not turn the entire ball gold."
+    },
+    {
+      "file": "assets/dango-art-v252/bamboo-skewer.webp",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "dimensions": [
+        1152,
+        384
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "bytes": 18112,
+      "sha256": "a50b581576e450c3cd33e0513c1fcd87bbe4d024567b268451e329d0759b2d91",
+      "prompt": "Use case: stylized-concept. Asset type: one production transparent horizontal bamboo-skewer sprite for a Japanese dango bingo arcade game. A single straight slender polished golden-bamboo skewer pointing from left to right, orthographic side view, long narrow uniform shaft with subtle bamboo fibers and warm woodgrain, slightly flattened blunt handle at the left end and a clean spear-point tip at the right end. One object only. 8:1 object aspect ratio, exactly horizontal through image center, occupy 94% of image width, transparent padding above and below. Warm upper-left lighting, crisp 3D illustrated material, visible textured shaft at small sizes. Transparent background. No foods, text, numbers, shadows outside the object, decorations, multiple skewers or crossed sticks."
+    },
+    {
+      "file": "assets/dango-art-v252/scene.webp",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1279,
+        853
+      ],
+      "mode": "RGB",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "bytes": 254692,
+      "sha256": "1553f80488bf1d930882c1f09a9ee702ddb33ec62861d9b7a8c8d69bd3dd60e9",
+      "prompt": "Use case: stylized-concept. Asset type: production background for Dango de Bingo in the SAME sweets-kingdom arcade series as the supplied reference. Input image is a STYLE AND MATERIAL REFERENCE, not an edit target. Generate a brand-new illustrated 3D confectionery landscape matching the reference's luminous saturated palette, delicious realistic food textures, shiny golden highlights, soft sculpted clouds, fantastical scale and cheerful polished arcade-game look. Adapt the landscape from sponge cake to Japanese dango: white mochi-domed sweet castles and a matcha-green candy-roof confectionery palace at the far left, white and matcha mochi rolling hills, small strawberry-red sweets, a warm syrup stream and gold-edged confectionery terraces, a few sakura blossoms and sweet-shaped balloons only near the edges, bright aqua sky and a delicate rainbow. Keep the middle 65% comparatively calm and softly detailed, as numbered dango sprites will be drawn on top, but the landscape and its atmosphere must be clearly visible, never hidden behind a plain opaque beige panel. Full-bleed landscape 3:2 composition. No foreground game pieces, no UI, words, letters, numbers or watermark. Do not make a flat vector, ink drawing or subdued traditional illustration; directly match the reference's rich rendered edible world.",
+      "styleReference": "assets/party-castella-bg.webp"
+    },
+    {
+      "file": "assets/dango-art-v252/panel-frame.webp",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "dimensions": [
+        1278,
+        426
+      ],
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "bytes": 85486,
+      "sha256": "1712bf5a85d399e998214254a1a7d370b9991342534166bb37e6d555667710c1",
+      "prompt": "Use case: stylized-concept. Edit this existing glossy dango confectionery menu frame into a WIDE HORIZONTAL payout table background. Preserve the same golden baked border, red/green/white realistic edible mochi textures, warm premium arcade rendering, shiny gold trims and bright light-ivory paper. Change the composition from tall narrow to about 3.5:1 width-to-height: a horizontal rectangular plaque with thin, ornate golden cookie borders no more than 4% of the width and 7% of height. A tiny cluster of red, matcha-green and white dango with edible goldleaf sits only in the top-left outside corner; matching tiny curls at the right corner. The middle 88% must remain uninterrupted pale cream paper, fully blank, with almost no texture and no objects crossing it, since exact five-row/five-column numerical game payout data will be overlaid by code. Straight frontal orthographic view, no perspective, no shadow outside the panel, no scenery, no letters, numbers, symbols, logos or watermarks. It must visually belong to the bright fantastical SWEETS LINK confectionery kingdom style of the input; same material and taste, just much wider and shorter. Full rectangular image with opaque background.",
+      "styleReference": "Generated portrait Dango frame using assets/party-castella-bakery-menu.webp as reference; same rendering style.",
+      "finalEdit": "Generated wide frame edited by image_gen.imagegen to remove only the exterior black background, preserving gold border and opaque cream interior, transparent_background=true.",
+      "finalEditPrompt": "Edit this exact confectionery payout frame asset. Preserve its entire ornate golden baked frame, small red green and white mochi cluster and all light cream paper inside the frame EXACTLY as provided. Only remove the PURE BLACK outside background beyond the outermost silhouette of the frame and dango. All exterior black gaps above the top border, outside rounded corners and below the bottom border must become true alpha transparency. Interior cream paper remains fully opaque and blank. Do not recolor, redraw, rearrange, resize or add anything. Same wide 3:1 aspect, no text, no numbers."
+    }
+  ]
+}

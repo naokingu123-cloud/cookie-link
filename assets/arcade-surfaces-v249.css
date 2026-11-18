@@ -174,5 +174,5 @@ html.arcade-v249 body #screen #panels>.panel.v249-game-surface>.v249-event-stage
 
 html.arcade-v249 :is(body[data-v249-game="dango"],.v249-game-surface[data-v249-kind="dango"]){
  --v249-accent:#f6c6d2;--v249-mid:#e9afb9;--v249-deep:#664039;--v249-edge:#aa7050;
- --v249-check-a:#f8ebd2;--v249-check-b:#eee3c9;--v249-world:url('dango-art/background.webp');
+ --v249-check-a:#f8ebd2;--v249-check-b:#eee3c9;--v249-world:url('dango-art-v252/scene.webp');
 }

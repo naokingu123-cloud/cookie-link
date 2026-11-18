@@ -371,35 +371,29 @@ html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared
 html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch>strong{font-size:9px}
 html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch small{font-size:5px}
 
-/* A single repeated strip exposes every reach; no four-item page truncation.
-   Only this inner track moves, avoiding the old important transform reset. */
+/* Four stationary numbers per page; paired pages translate only at a change.
+   The page override also permits paging on nonselected ALL cards. */
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-strip[data-empty="true"]{
  border-color:transparent!important;background:none!important;box-shadow:none!important;
 }
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-strip[data-empty="true"]::before{display:none!important}
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-caption[hidden]{display:none!important}
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-clip{
- top:0!important;bottom:auto!important;transform:none!important;overflow:hidden!important;align-self:center!important;
+ position:relative!important;top:0!important;bottom:auto!important;transform:none!important;overflow:hidden!important;align-self:center!important;
 }
-html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-numbers{
- position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:100%!important;
- transform:none!important;animation:none!important;overflow:visible!important;
-}
-html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-track{
- position:relative;display:flex;width:max-content;min-width:200%;height:100%;align-items:center;
- animation:v250-reach-marquee var(--v250-reach-duration,6s) linear infinite;will-change:transform;
- /* The older ALL layout pauses every descendant of an inactive card.
-    Keep its other effects quiet; the reach row must flow on every card. */
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v252-reach-page{
+ position:absolute!important;inset:0!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-template-rows:100%!important;align-items:center!important;gap:1px!important;width:100%!important;height:100%!important;
+ margin:0!important;padding:0!important;overflow:visible!important;transform:translateX(0);animation:none;
  animation-play-state:running!important;
 }
-html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence{
- display:flex;flex:0 0 auto;justify-content:space-around;align-items:center;width:max-content;min-width:50%;height:100%;
- padding-right:14px;box-sizing:border-box;gap:5px;
-}
-html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence .reach-num{
- flex:0 0 auto!important;display:grid!important;place-items:center!important;width:auto!important;min-width:15px!important;
- max-width:none!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;
- line-height:1!important;transform:none!important;align-items:center!important;justify-items:center!important;
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v252-reach-page.v252-reach-leave{animation:v252-reach-leave 650ms cubic-bezier(.4,0,.2,1) both}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v252-reach-page.v252-reach-enter{animation:v252-reach-enter 650ms cubic-bezier(.4,0,.2,1) both}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-strip[data-pager-paused="true"] .v252-reach-page{animation-play-state:paused!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v252-reach-page .reach-num{
+ display:grid!important;place-items:center!important;width:100%!important;min-width:0!important;max-width:none!important;
+ height:100%!important;min-height:0!important;margin:0!important;padding:0!important;line-height:1!important;
+ transform:none!important;align-items:center!important;justify-items:center!important;
 }
 html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .reach-strip{
  height:20px!important;min-height:20px!important;padding:1px 2px!important;align-items:center!important;
@@ -408,11 +402,9 @@ html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .reach-clip{h
 html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .reach-caption{
  height:17px!important;transform:none!important;align-self:center!important;line-height:17px!important;
 }
-html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .v250-reach-sequence .reach-num{
- font-size:12.5px!important;line-height:17px!important;
-}
-@keyframes v250-reach-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-html.arcade-v249.arcade-tabs-v250 body.paused #screen #tabs .v250-reach-track{animation-play-state:paused!important}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .v252-reach-page .reach-num{font-size:12.5px!important;line-height:17px!important}
+@keyframes v252-reach-leave{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@keyframes v252-reach-enter{from{transform:translateX(100%)}to{transform:translateX(0)}}
 
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop{
  position:absolute!important;left:4px!important;right:4px!important;top:13px!important;height:32px!important;
@@ -427,9 +419,8 @@ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop[data-tier="3"]{b
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop strong{font:900 10px/13px system-ui,sans-serif;white-space:nowrap}
 html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop small{font:800 9px/11px system-ui,sans-serif}
 @media(prefers-reduced-motion:reduce){
- html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-track{animation:none!important;transform:none!important;min-width:0;will-change:auto}
- html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence[aria-hidden="true"]{display:none}
- html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-clip{overflow-x:auto!important;scrollbar-width:none}
+ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v252-reach-page{animation:none!important;transform:none!important}
+ html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-clip{overflow:hidden!important}
 }
 
 /* v251: the tenth card is a game. A large shared BET control belongs to the

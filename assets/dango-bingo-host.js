@@ -7,7 +7,7 @@ const view=window.DangoBingoView.mount(slot.panel);
 const settlementWorker=new URLSearchParams(location.search).get('serverSettlementWorker')==='1';
 const demoNumbers=Array.from({length:25},(_,i)=>i+1),animationMs=1500;
 let clock=0,lastHit=-Infinity,lineStart=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,reachTimer=0,paused=false;
-let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTimer=0,placementSaving=false;
+let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTimer=0;
 const payoutNote=document.createElement('small');payoutNote.id='dango-payout-status';
 document.getElementById('debug-payout-status')?.after(payoutNote);
 const engine={
@@ -19,7 +19,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   presentationEpoch++;pendingFinish=null;lastRestoredState=null;
-  clearTimeout(checkpointTimer);checkpointTimer=0;placementSaving=false;
+  clearTimeout(checkpointTimer);checkpointTimer=0;
   this.version++;this.liveBoard=false;
   // This fixed demonstration is unrelated to the next mold and uses no live RNG.
   this.state=R.create({moldIndex:0,numbers:demoNumbers,seed:251});
@@ -83,7 +83,7 @@ function thinking(){
 }
 function canPlace(){
  const t=thinking();
- return !settlementWorker&&engine.liveBoard&&engine.running&&engine.state.phase==='placing'&&!placementSaving&&app.phase==='playing'&&!app.paid[id]&&app.enabled[id]!==false&&t.enabled===true&&t.active===true&&t.ballCount===5&&t.remainingMs>0;
+ return !settlementWorker&&engine.liveBoard&&engine.running&&engine.state.phase==='placing'&&app.phase==='playing'&&!app.paid[id]&&app.enabled[id]!==false&&t.enabled===true&&t.active===true&&t.ballCount===5&&t.remainingMs>0;
 }
 function savePlacementSoon(){
  if(settlementWorker)return;
@@ -101,16 +101,7 @@ function changePlacement(next){
 }
 view.setCallbacks({
  onCell(cellId){if(!canPlace())return;const s=engine.state;changePlacement(s.manualFreeCells.includes(cellId)?R.undoFree(s,cellId):R.placeFree(s,cellId));},
- onUndo(){if(!canPlace())return;const last=engine.state.manualFreeCells.at(-1);if(last!==undefined)changePlacement(R.undoFree(engine.state,last));},
- onAuto(){if(canPlace())changePlacement(R.autoPlace(engine.state));},
- async onConfirm(){
-  if(!canPlace()||engine.state.freeRemaining)return;
-  const epoch=presentationEpoch,version=engine.version,token=app.token;
-  engine.finishThinkingV251({reason:'manual'});placementSaving=true;engine.emit('settled');
-  try{await window.SweetsDangoThinkingV251?.checkpointPlacement?.();}
-  catch(error){console.warn('[Dango] confirmed placement checkpoint',error);}
-  finally{if(epoch===presentationEpoch&&version===engine.version&&token===app.token){placementSaving=false;engine.emit('settled');}}
- }
+ onAuto(){if(canPlace())changePlacement(R.autoPlace(engine.state));}
 });
 function projectReaches(state){
  return R.reaches(state).map(hit=>{
@@ -151,7 +142,7 @@ engine.afterCheckpointRestoreV247=function(){
  if(lastRestoredState!==state){presentationEpoch++;pendingFinish=null;lastRestoredState=state;}
  this.liveBoard=true;this.processed=this.accepted=state.draws.length;this.drawn=new Set(state.draws);this.running=true;
  this.busy=false;this.queue=[];paused=false;stamp=null;lastHit=lineStart=-Infinity;lastMain=lastMini=-Infinity;
- this.animationLines=[];placementSaving=false;
+ this.animationLines=[];
  const version=this.version,token=app.token,epoch=presentationEpoch;
  Promise.resolve().then(()=>{
   if(epoch!==presentationEpoch||version!==this.version||token!==app.token||app.enabled[id]===false||app.paid[id]||app.phase!=='playing')return;
