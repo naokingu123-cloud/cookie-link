@@ -26,7 +26,7 @@ function stampBank(){
 }
 function payload(){return {version:254,tokens:clone(stampBank())};}
 function paused(){return document.hidden||!!app.paused||typeof menuOpen!=='undefined'&&menuOpen||typeof userPaused!=='undefined'&&userPaused||typeof inView!=='undefined'&&!inView;}
-function num(node,value,size=30,width=180){if(!node)return;const text=String(Math.max(0,Math.floor(Number(value)||0)));if(node.dataset.amount===text)return;node.dataset.amount=text;if(typeof fitGoldenNumber==='function')fitGoldenNumber(node,text,size,width);else node.textContent=text;}
+function num(node,value,size=30,width=180){if(!node)return;const text=String(Math.max(0,Math.floor(Number(value)||0))),available=Math.max(1,Math.min(width,node.clientWidth||width)),key=text+'/'+size+'/'+available;if(node.dataset.amountFit===key)return;node.dataset.amount=text;node.dataset.amountFit=key;if(typeof fitGoldenNumber==='function')fitGoldenNumber(node,text,size,available);else node.textContent=text;}
 function setExpanded(value){expanded=!!value;paintKey='';render();if(!expanded)dock?.focus({preventScroll:true});wake();}
 function restore(raw){const next=raw?.version===254?raw:null;if(!next)return false;
  if(server&&Number(next.revision)<Number(server.revision))return false;
@@ -58,7 +58,8 @@ function mount(){
  announcement=document.createElement('div');announcement.className='sc254-announcement';announcement.hidden=true;announcement.setAttribute('role','status');announcement.innerHTML='<div class="sc254-announcement-rays"></div><div class="sc254-announcement-badge"><small>5 SUGAR GET!</small><strong>シュガーチャレンジ</strong><span>次のゲームでスタート！</span></div>';screen.append(announcement);
  celebration=document.createElement('div');celebration.className='sc254-celebration';celebration.hidden=true;celebration.setAttribute('role','status');celebration.innerHTML='<div class="sc254-celebration-rays"></div><img src="assets/sugar-art-v254/jpc-title.webp" alt="JACKPOT CHANCE獲得"><div><span>JACKPOT</span><b></b><small>JPC挑戦権を獲得！</small></div>';screen.append(celebration);
  overlay.addEventListener('click',()=>setExpanded(false));overlay.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '||event.key==='Escape'){event.preventDefault();setExpanded(false);}});dock.addEventListener('click',event=>{event.stopPropagation();setExpanded(true);overlay.focus({preventScroll:true});});
- new ResizeObserver(()=>{if(overlay)overlay.style.setProperty('--sc254-unit',Math.max(1,Math.min(game.clientWidth/700,game.clientHeight/440)).toFixed(4));}).observe(game);
+ const resize=()=>{if(!overlay)return;overlay.style.setProperty('--sc254-unit',Math.max(1,Math.min(game.clientWidth/700,game.clientHeight/440)).toFixed(4));paintKey='';render();wake();};
+ new ResizeObserver(resize).observe(game);addEventListener('resize',resize);
 }
 function rangeText(ranges){return ranges.map(r=>r.min===r.max?String(r.min):r.min+'〜'+r.max).join(' / ');}
 function render(){
@@ -73,14 +74,15 @@ function render(){
  let shownJP=s.jpAmount;
  if(!introDone){const position=clamp(intro/650,0,5),whole=Math.min(5,Math.floor(position)),part=position-whole;shownJP=s.sugarValues.slice(0,whole).reduce((n,x)=>n+x,0)+(s.sugarValues[whole]||0)*part;if(intro>=3250)shownJP=s.jpBase;num(scaleAmount,shownJP,27,160);if(intro>=4600)shownJP=s.jpBase+(s.jpAmount-s.jpBase)*clamp((intro-4600)/650);const ms=[1,2,3,5,10];multiplier.textContent='×'+(intro<3350?'?':intro<4600?ms[Math.floor(intro/80)%5]:s.multiplier);scale.dataset.pouring=String(intro<3250);scale.querySelectorAll('.sugar-gem').forEach((el,i)=>{el.dataset.poured=String(position>=i+1);el.dataset.active=String(Math.floor(position)===i);});}
  else multiplier.textContent='×'+s.multiplier;
- num(amount,shownJP,32,190);num(sumNode,reduced?s.sum:fillSum,48,160);num(dockAmount,s.sum,23,110);num(celebration.querySelector('b'),s.jpAmount,48,260);
+ num(amount,shownJP,26,112);num(sumNode,reduced?s.sum:fillSum,48,160);num(dockAmount,s.sum,23,110);num(celebration.querySelector('b'),s.jpAmount,48,260);
  fill.style.height=(clamp((reduced?s.sum:fillSum)/172)*100).toFixed(3)+'%';bottle.dataset.pouring=String(fillAge<800&&s.draws.length>0&&!reduced);bottle.querySelector('[data-sc-ball-count]').textContent=s.draws.length+' / 8球';bottle.querySelector('.sc254-last-hit').textContent=s.draws.length?'＋'+s.draws.at(-1):'';
  dock.querySelector('em').textContent=s.jpcQualified?'JPC獲得！':s.phase==='complete'?String(s.cashWin)+' WIN':s.draws.length+' / 8球 · JP '+String(s.jpAmount);dock.setAttribute('aria-label','シュガーチャレンジ 合計'+s.sum+'、'+s.draws.length+'球。タップして大きく表示');
  phaseText.textContent=!introDone?intro<3250?'5個のシュガーを魔法の秤へ…':intro<4600?'デジタルルーレットでJP倍率決定！':'JACKPOT ×'+s.multiplier+' に決定！':s.jpcQualified?'JACKPOT CHANCE 獲得！':s.phase==='complete'?String(s.cashWin)+' WIN GET!':'HITした数字の量だけシュガーを投入！';
  const key=s.id+'/'+s.draws.join(',');if(key===paintKey)return;paintKey=key;
  cardName.textContent=(card.rarity==='rare'?'★ RARE CARD ★　':'')+card.name;
  targets.replaceChildren();const low=document.createElement('div'),lucky=document.createElement('div');low.className='sc254-extremes';low.innerHTML='<small>JPC</small><b>合計 '+card.lowMax+' 以下</b><span>または</span><b>'+card.highMin+' 以上</b>';lucky.className='sc254-lucky';lucky.innerHTML='<small>LUCKY TOTAL → JPC</small>'+card.luckySums.map(n=>'<b>'+n+'</b>').join('');targets.append(low,lucky);
- table.innerHTML=R.payoutRows(s.cardId).map(row=>'<tr data-current="'+String(s.phase==='complete'&&s.award?.payoutHundredths===row.hundredths)+'"><td>'+rangeText(row.ranges)+'</td><td><span>JP ×'+row.fraction+'</span><b class="gold-number">'+R.cashFor(s.jpAmount,row.hundredths)+'</b></td></tr>').join('');
+ table.innerHTML=R.payoutRows(s.cardId).map(row=>'<tr data-current="'+String(s.phase==='complete'&&s.award?.payoutHundredths===row.hundredths)+'"><td>'+rangeText(row.ranges)+'</td><td><span>JP ×'+row.fraction+'</span><b data-sc-win="'+R.cashFor(s.jpAmount,row.hundredths)+'"></b></td></tr>').join('');
+ table.querySelectorAll('[data-sc-win]').forEach(node=>num(node,Number(node.dataset.scWin),16,112));
  history.innerHTML=Array.from({length:8},(_,i)=>'<span data-hit="'+String(i<s.draws.length)+'">'+(s.draws[i]??'·')+'</span>').join('');
  const reaches=R.reaches(s);reachText.textContent=s.jpcQualified?'合計 '+s.sum+' → JPC獲得！':reaches.length?'JPCリーチ　'+reaches.map(r=>r.number).join('・'):s.phase==='complete'?'合計 '+s.sum+' → JP ×'+s.award.payoutFraction:'';
  overlay.setAttribute('aria-label','シュガーチャレンジ 合計'+s.sum+'、JP '+s.jpAmount+'。タップで小さく表示');

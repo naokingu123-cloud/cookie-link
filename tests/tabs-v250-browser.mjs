@@ -27,6 +27,26 @@ async function waitForReachPage(index){
 async function waitForReachSlide(){
  await page.waitForFunction(()=>{const slot=window.__tabPreview250.slot;return !!slot.reachIncoming&&slot.reachStrip.dataset.pagePhase==='slide';},null,{timeout:5000});
 }
+async function captureReachPopup(file){
+ // Freeze only the real badge's presentation animations at a visible frame.
+ // A full-page capture can otherwise finish after the short badge has expired.
+ await page.evaluate(()=>{
+  const pop=window.__tabPreview250.slot.holder.querySelector('.v250-reach-pop');
+  if(pop.hidden)throw Error('Reach badge expired before its screenshot');
+  window.__reachCapture254=pop.getAnimations({subtree:true}).map(animation=>({animation,rate:animation.playbackRate}));
+  for(const {animation}of window.__reachCapture254){animation.playbackRate=0;const duration=Number(animation.effect.getTiming().duration);if(Number.isFinite(duration))animation.currentTime=duration*.4;}
+ });
+ try{
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  const observed=await page.evaluate(()=>{
+   const pop=window.__tabPreview250.slot.holder.querySelector('.v250-reach-pop'),box=pop.getBoundingClientRect(),title=pop.querySelector('strong').getBoundingClientRect();
+   return {text:pop.textContent,hidden:pop.hidden,opacity:Number(getComputedStyle(pop).opacity),numberNodes:pop.querySelectorAll('small').length,bounds:{left:box.left,top:box.top,width:box.width,height:box.height},title:{left:title.left,right:title.right,width:title.width}};
+  });
+  assert.equal(observed.hidden,false);assert.ok(observed.opacity>.9,'the captured badge is visibly opaque');assert.equal(observed.numberNodes,0);
+  assert.ok(observed.title.left>=observed.bounds.left&&observed.title.right<=observed.bounds.left+observed.bounds.width,'reach label fits the sweet frame');
+  await page.screenshot({path:output+'/'+file});return observed;
+ }finally{await page.evaluate(()=>{for(const {animation,rate}of window.__reachCapture254||[])animation.playbackRate=rate;delete window.__reachCapture254;});}
+}
 try{
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===254&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
@@ -177,13 +197,14 @@ try{
   return {count,afterRepeated:Number(slot.holder.dataset.v250ReachPopCount),text};
  });
  assert.equal(upgraded.count,input.count+1);assert.equal(upgraded.afterRepeated,upgraded.count);assert.match(upgraded.text,/超高額リーチ/);
- await page.screenshot({path:output+'/reach-popup.png'});
+ report.reach.popupCapture=await captureReachPopup('reach-popup.png');
  const highest=await page.evaluate(()=>{
   const q=window.__qa250,slot=window.__tabPreview250.slot;Object.assign(slot.tabReachResults.find(p=>p.number===5),{allClear:true});q.updateReachUI();
   const pop=slot.holder.querySelector('.v250-reach-pop'),count=Number(slot.holder.dataset.v250ReachPopCount);q.updateReachUI();
   return {count,afterRepeated:Number(slot.holder.dataset.v250ReachPopCount),text:pop.textContent,tier:pop.dataset.tier,numberNodes:pop.querySelectorAll('small').length,image:getComputedStyle(pop,'::before').backgroundImage};
  });
  assert.equal(highest.count,upgraded.count+1);assert.equal(highest.afterRepeated,highest.count);assert.equal(highest.text,'最高役リーチ');assert.equal(highest.tier,'3');assert.equal(highest.numberNodes,0);assert.match(highest.image,/reach-common\.webp/);
+ report.reach.highestCapture=await captureReachPopup('reach-highest-popup.png');
  await page.locator('#open-record-menu').click();
  await page.waitForFunction(()=>document.body.classList.contains('player-menu-open'));
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -193,7 +214,8 @@ try{
  assert.equal(pausedPopup.paused,'true');assert.ok(pausedPopup.animations.length>0);assert.ok(pausedPopup.animations.every(a=>a.playState==='paused'));assert.deepEqual(heldPopup,pausedPopup.animations,'the sweet-frame burst freezes with the menu');
  await page.locator('#record-close-top').click();
  Object.assign(report.reach,{highest,popupPause:{pausedPopup,heldPopup}});
- await page.emulateMedia({reducedMotion:'reduce'});await sleep(100);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.waitForFunction(()=>window.SweetsArcadeTabsV249.describe().reducedMotion&&window.__tabPreview250.slot.reachClip.tabIndex===0,null,{timeout:3000});
  const reducedFirst=await readReachMotion();
  report.reducedMotion={first:reducedFirst,layout:await page.evaluate(()=>{const slot=window.__tabPreview250.slot;return {tabIndex:slot.reachClip.tabIndex,overflow:getComputedStyle(slot.reachClip).overflowX};})};
  assert.equal(reducedFirst.reducedMotion,true);assert.equal(reducedFirst.phase,'hold');assert.equal(reducedFirst.current.animationName,'none');assert.equal(reducedFirst.incoming,null);assert.equal(reducedFirst.index,0);
@@ -223,5 +245,5 @@ try{
  assert.deepEqual(errors,[],'no page exceptions');
  await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));
  console.log('TABS_V252_OK',JSON.stringify({viewports:report.viewports.length,selections:report.selection.length,miniatureLogicalPx:47,sharedBet:true,allReachNumbers:expectedNumbers.length,pageSize:4,pages:pages.length,holdMs:2000,slideMs:650,stationaryHold:true,pairedLeftRightSlide:true,selectedAndInactivePaging:true,pauseResume:true,hiddenSuspension:true,highPopup:true,ultraPopup:true,reappearedPopup:true,empty:true,reducedMotionPaging:true,errors:errors.length}));
-}catch(error){report.failure={message:String(error),stack:error.stack,motion:await readReachMotion().catch(e=>({error:String(e)}))};await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));await page.screenshot({path:output+'/failure.png'}).catch(()=>{});throw error;}
+}catch(error){report.failure={message:String(error),stack:error.stack,pageErrors:errors,tabState:await page.evaluate(()=>window.SweetsArcadeTabsV249?.describe()).catch(e=>({error:String(e)})),motion:await readReachMotion().catch(e=>({error:String(e)}))};await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));await page.screenshot({path:output+'/failure.png'}).catch(()=>{});throw error;}
 finally{await fixture.close();}

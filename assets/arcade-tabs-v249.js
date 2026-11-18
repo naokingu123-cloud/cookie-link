@@ -258,6 +258,8 @@ syncReachPager=function(){
   if(record.reachPop.dataset.motionPaused!==paused)record.reachPop.dataset.motionPaused=paused;
   if(animation){if(!running&&animation.playState==='running')animation.pause();else if(running&&animation.playState==='paused')animation.play();}
   const paged=!slot.holder.hidden&&!slot.reachStrip.hidden&&(slot.reachPageResults?.length||0)>REACH_PAGE_SIZE;
+  const tabIndex=media.matches&&paged?0:-1;
+  if(slot.reachClip.tabIndex!==tabIndex)slot.reachClip.tabIndex=tabIndex;
   if(!running||!paged){
    if(slot.reachPageDue){record.reachRemaining=Math.max(0,slot.reachPageDue-now);slot.reachPageDue=0;}
    slot.reachStrip.dataset.pagerPaused='true';continue;
@@ -285,7 +287,6 @@ function flowReach(slot,results,a){
  slot.reachPage=0;slot.reachPageDue=0;
  slot.reachCaption.hidden=hidden||!results.length;slot.reachCaption.classList.remove('odds-up');slot.reachCaption.replaceChildren();
  const maxTier=Math.max(0,...results.map(hit=>hit.tier));slot.reachCaption.dataset.tier=String(maxTier);
- slot.reachClip.tabIndex=media.matches&&results.length>REACH_PAGE_SIZE?0:-1;
  paintFourReaches(slot,record);
  if(hidden||!results.length){record.reachSeen.clear();stopReach(slot);return;}
  const badge=document.createElement('span');badge.className='reach-badge-label';badge.textContent='リーチ';slot.reachCaption.append(badge);

@@ -8,7 +8,7 @@ import {createUiFixture,sleep} from './ui-v250-fixture.mjs';
 
 const output=process.env.SWEETS_QA_OUTPUT_DIR||'qa-sugar-v254',fixture=await createUiFixture({startRound:false,output});
 const {page,errors}=fixture;
-const report={version:fixture.version,scope:'Rule-derived server snapshots injected only into the Sugar presentation API; real server ownership and settlement are tested separately.',intro:null,screens:[],cards:[],awards:[],lifecycle:null,lucky:null};
+const report={version:fixture.version,scope:'Rule-derived server snapshots injected only into the Sugar presentation API; real server ownership and settlement are tested separately.',intro:null,screens:[],highAmounts:[],cards:[],awards:[],lifecycle:null,lucky:null};
 const sugarValues=[1000,1100,950,1050,900],jpAmount=15000;
 let serial=0;
 
@@ -27,15 +27,15 @@ async function read(){
    viewport:{width:innerWidth,height:innerHeight},screen:rect(document.getElementById('screen')),game:rect(document.querySelector('#screen>.game')),overlay:{visible:visible(overlay),rect:rect(overlay),role:overlay.getAttribute('role'),expanded:ui.describe().expanded,paused:overlay.dataset.paused,reduced:overlay.dataset.reduced,background:getComputedStyle(overlay).backgroundImage,overflowing},
    bottle:{visible:visible(overlay.querySelector('.sc254-bottle')),pouring:overlay.querySelector('.sc254-bottle').dataset.pouring,fill:Number.parseFloat(overlay.querySelector('.sc254-fill').style.height),sum:num('[data-sc-sum]'),label:text('[data-sc-ball-count]')},
    scale:{visible:visible(overlay.querySelector('.sc254-scale')),amount:num('[data-sc-scale-amount]'),pouring:overlay.querySelector('.sc254-scale').dataset.pouring,gems:[...overlay.querySelectorAll('.sc254-five .sugar-gem')].map(node=>({poured:node.dataset.poured,active:node.dataset.active}))},
-   jp:{value:num('[data-sc-amount]'),text:jp.textContent,font:getComputedStyle(jp.querySelector('.gold-number')||jp).fontFamily,rect:rect(jp)},sumFont:getComputedStyle(sumNode.querySelector('.gold-number')||sumNode).fontFamily,multiplier:text('[data-sc-multiplier]'),phaseText:text('.sc254-phase'),cardName:text('.sc254-card-name'),lucky:[...overlay.querySelectorAll('.sc254-lucky>b')].map(node=>Number(node.textContent)),extremes:text('.sc254-extremes'),reach:text('.sc254-reach'),history:[...overlay.querySelectorAll('.sc254-history>span')].map(node=>({hit:node.dataset.hit,text:node.textContent})),
-   payouts:[...overlay.querySelectorAll('.sc254-payouts tbody tr')].map(node=>({range:node.firstElementChild.textContent,fraction:node.querySelector('td>span').textContent,value:Number(node.querySelector('b').textContent),text:node.querySelector('b').textContent,font:getComputedStyle(node.querySelector('b')).fontFamily,current:node.dataset.current==='true',rect:rect(node)})),table:rect(overlay.querySelector('.sc254-payouts')),targets:rect(overlay.querySelector('.sc254-targets')),footer:rect(overlay.querySelector('footer')),
+   jp:{value:num('[data-sc-amount]'),text:jp.textContent,font:getComputedStyle(jp.querySelector('.gold-number')||jp).fontFamily,rect:rect(jp),face:rect(jp.querySelector('.gold-number'))},sumFont:getComputedStyle(sumNode.querySelector('.gold-number')||sumNode).fontFamily,multiplier:text('[data-sc-multiplier]'),phaseText:text('.sc254-phase'),cardName:text('.sc254-card-name'),lucky:[...overlay.querySelectorAll('.sc254-lucky>b')].map(node=>Number(node.textContent)),extremes:text('.sc254-extremes'),reach:text('.sc254-reach'),history:[...overlay.querySelectorAll('.sc254-history>span')].map(node=>({hit:node.dataset.hit,text:node.textContent})),
+   payouts:[...overlay.querySelectorAll('.sc254-payouts tbody tr')].map(node=>({range:node.firstElementChild.textContent,fraction:node.querySelector('td>span').textContent,value:Number(node.querySelector('b').textContent),text:node.querySelector('b').textContent,font:getComputedStyle(node.querySelector('b')).fontFamily,current:node.dataset.current==='true',rect:rect(node),valueRect:rect(node.querySelector('b')),valueFace:rect(node.querySelector('b>.gold-number'))})),table:rect(overlay.querySelector('.sc254-payouts')),targets:rect(overlay.querySelector('.sc254-targets')),footer:rect(overlay.querySelector('footer')),
    dock:{visible:visible(dock),rect:rect(dock),parent:dock.parentElement.id,parentRect:rect(dock.parentElement),text:dock.textContent,paused:dock.dataset.paused,animationPlayState:getComputedStyle(dock).animationPlayState},
    announcement:{visible:visible(announcement),text:announcement.textContent,pointerEvents:getComputedStyle(announcement).pointerEvents,rect:rect(announcement),badge:rect(announcement.querySelector('.sc254-announcement-badge'))},
    celebration:{visible:visible(celebration),text:celebration.textContent,pointerEvents:getComputedStyle(celebration).pointerEvents,image:celebration.querySelector('img').getAttribute('src'),alt:celebration.querySelector('img').alt,loaded:celebration.querySelector('img').complete&&celebration.querySelector('img').naturalWidth>0,rect:rect(celebration),title:rect(celebration.querySelector('img'))},
    animations:overlay.getAnimations({subtree:true}).map(animation=>({name:animation.animationName||'',state:animation.playState,time:Number(animation.currentTime)}))};
  });
 }
-async function inject({id='sugar-view-'+(++serial),draws=[],cardId='standard',multiplier=3,queued=false,bank=[],challenge=true,startedAgo=0}={}){
+async function inject({id='sugar-view-'+(++serial),draws=[],cardId='standard',multiplier=3,values=sugarValues,queued=false,bank=[],challenge=true,startedAgo=0}={}){
  return page.evaluate(({id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues})=>{
   const ui=window.SweetsSugarChallengeV254,R=window.SugarChallengeRulesV254,a=window.__qa250.app;
   const native=()=>({credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),locked:a.locked.slice(),draws:a.draws.slice(),totalWin:a.totalWin,token:a.token,phase:a.phase});
@@ -45,16 +45,16 @@ async function inject({id='sugar-view-'+(++serial),draws=[],cardId='standard',mu
   const raw={version:254,revision:++window.__sugarView254.revision,bank,acceptedIds:[...known],queued,challenge:state,startedAt:Date.now()-startedAgo};
   const accepted=ui.accept(raw),after=native();window.__sugarView254.last=raw;
   return {id,accepted,before,after,challenge:state,raw};
- },{id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues});
+ },{id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues:values});
 }
 function preserved(record){assert.equal(record.accepted,true);assert.deepEqual(record.after,record.before,'accepting a Sugar display snapshot cannot change native CREDIT, BET, draw history or settlement');}
-function verifyPanel(state){
+function verifyPanel(state,{jp=jpAmount,multiplier=3}={}){
  assert.equal(state.overlay.visible,true);contained(state.overlay.rect,state.game,'expanded Sugar panel');contained(state.targets,state.overlay.rect,'JPC and lucky targets');contained(state.table,state.overlay.rect,'all six payout rows');contained(state.footer,state.overlay.rect,'fold instruction');
  for(const row of state.payouts)contained(row.rect,state.table,'payout row '+row.fraction);
  assert.deepEqual(state.overlay.overflowing,[],'Sugar content has no horizontal overflow');assert.ok(state.api.artLoaded,'scale, bottle and JPC artwork decode');
- assert.equal(state.payouts.length,6);assert.deepEqual(state.payouts.map(row=>row.fraction),['JP ×0.2','JP ×0.1','JP ×0.05','JP ×0.03','JP ×0.02','JP ×0.01']);assert.deepEqual(state.payouts.map(row=>row.value),[3000,1500,750,450,300,150]);
+ assert.equal(state.payouts.length,6);assert.deepEqual(state.payouts.map(row=>row.fraction),['JP ×0.2','JP ×0.1','JP ×0.05','JP ×0.03','JP ×0.02','JP ×0.01']);assert.deepEqual(state.payouts.map(row=>row.value),[20,10,5,3,2,1].map(percent=>Math.floor(jp*percent/100)));
  for(const row of state.payouts){assert.match(row.font,/ArcadePayout/);assert.doesNotMatch(row.text,/[,，]/);assert.ok(row.range.length>0);}
- assert.equal(state.jp.value,jpAmount);assert.match(state.jp.font,/ArcadePayout/);assert.match(state.sumFont,/ArcadePayout/);assert.doesNotMatch(state.jp.text,/[,，]/);assert.equal(state.multiplier,'×3');
+ assert.equal(state.jp.value,jp);assert.match(state.jp.font,/ArcadePayout/);assert.match(state.sumFont,/ArcadePayout/);assert.doesNotMatch(state.jp.text,/[,，]/);assert.equal(state.multiplier,'×'+multiplier);
 }
 function numbersForSum(sum){
  const numbers=[1,2,3,4,5,6,7,8];let extra=sum-36;
@@ -97,6 +97,14 @@ try{
   await page.locator('.sc254-overlay').click();const folded=await read();assert.equal(folded.overlay.visible,false);assert.equal(folded.dock.visible,true);assert.equal(folded.dock.parent,'cookie-roulette');contained(folded.dock.rect,folded.dock.parentRect,'folded roulette dock');
   await page.locator('.sc254-dock').click();const expanded=await read();assert.equal(expanded.overlay.visible,true);assert.equal(expanded.dock.visible,false);assert.equal(expanded.api.challenge.id,state.api.challenge.id);assert.equal(expanded.api.challenge.sum,state.api.challenge.sum,'folding never changes the active challenge');
   report.screens.push({width,height,state,pouring:pouring.bottle,folded:folded.dock,expanded:expanded.overlay});
+ }
+ preserved(await inject({id:'sugar-large-jp',values:[30000,30000,30000,30000,30000],multiplier:10,draws:[1,2,3,10]}));
+ for(const [width,height]of [[390,844],[844,390],[1366,900]]){
+  await page.setViewportSize({width,height});await sleep(150);
+  const state=await read();verifyPanel(state,{jp:1500000,multiplier:10});
+  contained(state.jp.face,state.jp.rect,'seven-digit JP fits after same-value resize');
+  for(const row of state.payouts)contained(row.valueFace,row.valueRect,'large payout fits '+row.value);
+  await page.screenshot({path:output+'/sugar-large-jp-'+width+'x'+height+'.png'});report.highAmounts.push({width,height,state});
  }
  for(const [cardId,lucky,low,high]of [['standard',[77,88,120,131],70,138],['lucky',[77,88,99,109,120,131],70,138],['wide',[88,120],78,130]]){
   preserved(await inject({cardId,draws:[1,2,3,10]}));const state=await read();verifyPanel(state);assert.deepEqual(state.lucky,lucky);assert.match(state.extremes,new RegExp(low+' 以下'));assert.match(state.extremes,new RegExp(high+' 以上'));assert.equal(state.cardName.includes('RARE CARD'),cardId!=='standard');report.cards.push({cardId,lucky:state.lucky,extremes:state.extremes,name:state.cardName});

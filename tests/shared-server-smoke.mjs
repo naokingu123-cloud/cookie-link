@@ -14,7 +14,7 @@ const adminToken='test-admin-token';
 const child=spawn(process.execPath,['server.mjs'],{
  cwd:root,
  env:{
-  ...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_ADMIN_TOKEN:adminToken,
+  ...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:adminToken,
   SWEETS_BET_DURATION_MS:'700',SWEETS_ROUND_START_DELAY_MS:'350',SWEETS_RESULT_GRACE_MS:'400',
   SWEETS_HOST_FALLBACK_DELAY_MS:'400',SWEETS_BALL_INTERVAL_MS:'120'
  },

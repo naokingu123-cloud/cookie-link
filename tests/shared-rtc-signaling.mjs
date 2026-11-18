@@ -13,7 +13,7 @@ const base='http://127.0.0.1:'+port;
 const adminToken='rtc-admin-token';
 const child=spawn(process.execPath,['server.mjs'],{
  cwd:root,
- env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_ADMIN_TOKEN:adminToken},
+ env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'db.json'),SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:adminToken},
  stdio:['ignore','pipe','pipe']
 });
 let stderr='';child.stderr.on('data',chunk=>stderr+=chunk);
