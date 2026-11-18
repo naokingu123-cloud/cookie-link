@@ -1,0 +1,441 @@
+{
+  "version": "20261118-v249-arcade-logos-motion",
+  "codeCommit": "3c096fe3170473e8f333a49264892a20a050276b",
+  "previousMain": "3d57fca84a0f96f3fc80d5a1e79488f534b32478",
+  "verifiedAtUtc": "2026-11-18T10:05:38Z",
+  "ci": [
+    {
+      "id": 44280979184,
+      "name": "Shared machine check",
+      "sha": "3c096fe3170473e8f333a49264892a20a050276b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44280979184"
+    },
+    {
+      "id": 44280979238,
+      "name": "Six station check",
+      "sha": "3c096fe3170473e8f333a49264892a20a050276b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44280979238"
+    },
+    {
+      "id": 44280979200,
+      "name": "Arcade v249 logos cards and game surfaces",
+      "sha": "3c096fe3170473e8f333a49264892a20a050276b",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44280979200"
+    }
+  ],
+  "sourceIdentity": {
+    "trackedFiles": 953,
+    "allGitBlobHashesMatchCandidate": true
+  },
+  "behaviorReports": [
+    {
+      "test": "ARCADE_VISUAL_V249_LAYOUT_PASS",
+      "data": {
+        "version": "20261118-v249-arcade-logos-motion",
+        "logos": 9,
+        "surfaces": 9,
+        "screens": 18,
+        "menus": 2,
+        "landscape": [
+          844,
+          390
+        ],
+        "rapidFinal": 4,
+        "gameplay": {
+          "sameEngines": true,
+          "unchanged": true
+        },
+        "keyboard": {
+          "order": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          "end": 8,
+          "home": 0,
+          "right": 1
+        },
+        "reducedMotion": true
+      }
+    },
+    {
+      "test": "ARCADE_VISUAL_V249_LIVE_PASS",
+      "data": {
+        "draws": [
+          3,
+          7,
+          11
+        ],
+        "engines": [
+          {
+            "index": 0,
+            "kind": "cookie",
+            "accepted": 3,
+            "processed": 0,
+            "phase": "fall"
+          },
+          {
+            "index": 1,
+            "kind": "choco",
+            "accepted": 3,
+            "processed": 2,
+            "phase": "canyonReturn"
+          },
+          {
+            "index": 2,
+            "kind": "candy",
+            "accepted": 3,
+            "processed": 3,
+            "phase": "waiting"
+          },
+          {
+            "index": 3,
+            "kind": "gelato",
+            "accepted": 3,
+            "processed": 3,
+            "phase": "waiting"
+          },
+          {
+            "index": 4,
+            "kind": "winery",
+            "accepted": 3,
+            "processed": 3,
+            "phase": "waiting"
+          },
+          {
+            "index": 5,
+            "kind": "popcorn",
+            "accepted": 3,
+            "processed": 1,
+            "phase": "popcornDraw"
+          },
+          {
+            "index": 6,
+            "kind": "jelly",
+            "accepted": 3,
+            "processed": 3,
+            "phase": "settled"
+          },
+          {
+            "index": 7,
+            "kind": "stick",
+            "accepted": 3,
+            "processed": 3,
+            "phase": "settled"
+          },
+          {
+            "index": 8,
+            "kind": "castella",
+            "accepted": 3,
+            "processed": 3,
+            "phase": "settled"
+          }
+        ],
+        "events": [
+          {
+            "kind": "cookie",
+            "cues": 0,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "choco",
+            "cues": 0,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "candy",
+            "cues": 2,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "gelato",
+            "cues": 0,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "winery",
+            "cues": 2,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "popcorn",
+            "cues": 0,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "jelly",
+            "cues": 0,
+            "rewardBursts": 0
+          },
+          {
+            "kind": "stick",
+            "cues": 0,
+            "rewardBursts": 2
+          },
+          {
+            "kind": "castella",
+            "cues": 1,
+            "rewardBursts": 0
+          }
+        ],
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 43,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 2,
+          "logos": 9
+        },
+        "surfaces": 9,
+        "stageCanCaptureInput": false
+      }
+    },
+    {
+      "test": "CLIENT_BROWSER_V243_PASS",
+      "data": {
+        "version": "20261118-v249-arcade-logos-motion",
+        "clientGames": 9,
+        "forecastChecks": [
+          {
+            "ballCount": 1,
+            "available": 24,
+            "positive": 0,
+            "baseWin": 600
+          },
+          {
+            "ballCount": 2,
+            "available": 23,
+            "positive": 0,
+            "baseWin": 600
+          },
+          {
+            "ballCount": 3,
+            "available": 22,
+            "positive": 0,
+            "baseWin": 1200
+          }
+        ],
+        "monitorTiles": 25,
+        "monitorRatios": true,
+        "normalRoundStarted": true,
+        "forcedRejoined": true,
+        "forcedCountdownStarted": true,
+        "nextBallReceived": true,
+        "forcedRoundBetRequests": 1,
+        "confirmedRefund": 27000,
+        "creditAfterRefundAndNewBet": 973000,
+        "unchangedRefundQueueWrites4500ms": 0,
+        "pageErrors": []
+      }
+    },
+    {
+      "test": "SIXDROP_HUD_READABILITY_V249_PASS",
+      "data": {
+        "surfaceVersion": "v249",
+        "activeGame": "candy",
+        "arcadeTheme": true,
+        "heading": "flex",
+        "background": "rgba(0, 0, 0, 0)",
+        "labelDisplay": "block",
+        "labelColor": "rgb(255, 244, 211)",
+        "amountColor": "rgb(255, 221, 105)",
+        "labelSize": 9,
+        "amountSize": 12,
+        "label": "直線",
+        "roleRows": [
+          {
+            "label": "直線",
+            "background": "linear-gradient(135deg, rgb(98, 75, 139), rgb(50, 40, 72) 78%)",
+            "backgroundStops": 2,
+            "labelVisible": true,
+            "labelSize": 9,
+            "amountSize": 12,
+            "labelContrast": 6.60078286109942,
+            "amountContrast": 5.45044808409336
+          },
+          {
+            "label": "トライアングル",
+            "background": "linear-gradient(135deg, rgb(53, 94, 129), rgb(36, 54, 76) 78%)",
+            "backgroundStops": 2,
+            "labelVisible": true,
+            "labelSize": 9,
+            "amountSize": 12,
+            "labelContrast": 6.233324472733628,
+            "amountContrast": 5.147027579132411
+          },
+          {
+            "label": "ヘキサゴン",
+            "background": "linear-gradient(135deg, rgb(122, 67, 92), rgb(68, 35, 59) 78%)",
+            "backgroundStops": 2,
+            "labelVisible": true,
+            "labelSize": 9,
+            "amountSize": 12,
+            "labelContrast": 6.870184736383456,
+            "amountContrast": 5.672900627358579
+          }
+        ],
+        "headingHeight": 48.75,
+        "bankFont": "ArcadePayout, Georgia, serif",
+        "bankAlignment": "right",
+        "bankWeight": "700",
+        "bankText": "全消し450WIN",
+        "frameBorder": 4,
+        "frameBackground": "linear-gradient(135deg, rgb(73, 48, 81), rgb(39, 26, 54)), repeating-linear-gradient(45deg, rgb(255, 245, 206) 0px, rgb(255, 245, 206) 6px, rgb(251, 135, 187) 6px, rgb(251, 135, 187) 12px, rgb(255, 216, 131) 12px, rgb(255, 216, 131) 18px)",
+        "obsoleteText": false,
+        "frames": 37,
+        "intermediateFrames": 32
+      }
+    },
+    {
+      "test": "CLIENT_BROWSER_V243_PASS",
+      "data": {
+        "version": "20261118-v249-arcade-logos-motion",
+        "clientGames": 9,
+        "forecastChecks": [
+          {
+            "ballCount": 1,
+            "available": 24,
+            "positive": 1,
+            "baseWin": 0
+          },
+          {
+            "ballCount": 2,
+            "available": 23,
+            "positive": 1,
+            "baseWin": 0
+          },
+          {
+            "ballCount": 3,
+            "available": 22,
+            "positive": 7,
+            "baseWin": 480
+          }
+        ],
+        "monitorTiles": 25,
+        "monitorRatios": true,
+        "normalRoundStarted": true,
+        "forcedRejoined": true,
+        "forcedCountdownStarted": true,
+        "nextBallReceived": true,
+        "forcedRoundBetRequests": 1,
+        "confirmedRefund": 27000,
+        "creditAfterRefundAndNewBet": 973000,
+        "unchangedRefundQueueWrites4500ms": 0,
+        "pageErrors": []
+      }
+    },
+    {
+      "test": "CLIENT_BROWSER_V243_PASS",
+      "data": {
+        "version": "20261118-v249-arcade-logos-motion",
+        "hiddenState": {
+          "credit": 1004860,
+          "phases": [
+            "playing",
+            "result",
+            "paying",
+            "complete",
+            "ready"
+          ],
+          "award": {
+            "phase": "complete",
+            "win": 31860,
+            "roundWins": [
+              600,
+              600,
+              0,
+              600,
+              1260,
+              0,
+              2400,
+              26400,
+              0
+            ],
+            "credit": 1004860
+          },
+          "advanceResult": 10
+        },
+        "hiddenNineGameResultAndPayout": true,
+        "clientGames": 9,
+        "forecastChecks": [
+          {
+            "ballCount": 1,
+            "available": 24,
+            "positive": 0,
+            "baseWin": 3300
+          },
+          {
+            "ballCount": 2,
+            "available": 23,
+            "positive": 0,
+            "baseWin": 3300
+          },
+          {
+            "ballCount": 3,
+            "available": 22,
+            "positive": 0,
+            "baseWin": 4500
+          }
+        ],
+        "monitorTiles": 25,
+        "monitorRatios": true,
+        "normalRoundStarted": true,
+        "forcedRejoined": true,
+        "forcedCountdownStarted": true,
+        "nextBallReceived": true,
+        "forcedRoundBetRequests": 1,
+        "confirmedRefund": 27000,
+        "creditAfterRefundAndNewBet": 973000,
+        "unchangedRefundQueueWrites4500ms": 0,
+        "pageErrors": []
+      }
+    }
+  ],
+  "visualReview": {
+    "allNineMobileGamesReviewed": true,
+    "desktopCookieAndMenuReviewed": true,
+    "finalMobileMenuAndSixDropAndCookieReviewed": true,
+    "finalLandscapeReviewed": true,
+    "inactiveNativeCaptions": true,
+    "noConnectedStatusOverlapWithCredit": true,
+    "nativePickerDraft": "3 / 3",
+    "notes": [
+      "All original game names are retained.",
+      "Selected cards use large illustrated logos; inactive cards retain live miniature boards and readable captions.",
+      "Six Drop uses three distinct role gradients; the lowest measured payout-text contrast is 5.147:1.",
+      "Cookie and Six Drop checker wells repeat across the board.",
+      "Host and settlement-worker pages do not install visual decorations."
+    ]
+  },
+  "artifact": {
+    "id": 14417985011,
+    "runId": 44280979200,
+    "sha256": "e55b3277504894bdcdad24463ff4df529c97a1de2cec321f6cbf882db2460cfa",
+    "name": "arcade-v249-visual-verification",
+    "visualReport": "arcade-v249-visual-qa.json"
+  },
+  "preserved": [
+    "Game rules and payout calculations",
+    "Six Drop v248 connected clears, refill, gravity, fixed in-game palettes and progressive carry",
+    "Server per-game 3x, 10x and genuine highest-role highlight rules",
+    "Physical server draw source and no local synthetic draws",
+    "BET, wallet, automatic rebet, reconnection and hidden-game settlement"
+  ],
+  "limits": [
+    "Browser checks ran in Chromium on GitHub Actions.",
+    "Physical iPhone and Windows device operation and speaker listening were not tested.",
+    "The isolated browser fixture uses a test host transport for numbered ball delivery; it does not claim end-to-end physical roulette video playback."
+  ]
+}
