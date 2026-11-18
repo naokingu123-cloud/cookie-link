@@ -1,7 +1,7 @@
 {
   "version": "20261119-v254-sugar-challenge",
   "implementationCommit": "f03c67e0b918d9c1e5002366e89cff11e878e270",
-  "status": "implementation-verified-awaiting-publication",
+  "status": "published-and-verified",
   "probabilities": {
     "model": "uniform without replacement, 8 of 25",
     "combinations": 1081575,
@@ -92,13 +92,50 @@
         "hidden ten-game round"
       ],
       "runtimeChangesSinceRun": "Only tab focus synchronization and Sugar presentation fixes, plus test isolation/diagnostics."
+    },
+    "fullArcadeCandidate": {
+      "commit": "f03c67e0b918d9c1e5002366e89cff11e878e270",
+      "runId": 44422455048,
+      "conclusion": "success",
+      "includes": "All rules/server checks, Sugar, results, tabs, Dango, Castella, Six Drop/client HUD and hidden ten-game settlement/carry."
     }
   },
-  "publicVerification": null,
+  "publicVerification": {
+    "runId": 44423074878,
+    "conclusion": "success",
+    "pagesDeploymentRunId": 44423073847,
+    "record": "docs/sugar-challenge-v254-public-qa.json",
+    "matchingFiles": 74,
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "publicApiAndWebSocketBlocked": true,
+    "publicBetsDrawsSettlementsSent": false,
+    "artifactId": 14484120310,
+    "artifactSha256": "3467cbe0d5f36bcf38ef21446d5e718c1372085eb127223ac048094a3b84f8ae",
+    "pageErrors": [
+      [],
+      [],
+      []
+    ],
+    "visualReview": "Published ready/Dango screens at all three viewports inspected; no clipping or overlaps."
+  },
   "limitations": [
     "Windows and iPhone hardware and speaker listening are not tested.",
     "GitHub Pages publication does not update the separately running Windows server; update its source while preserving .runtime, .tools and data, then restart.",
     "JPC execution is intentionally deferred; earned JPC rights and the preselected JP amount are persisted.",
     "Sugar viewport checks use desktop Chromium user agent; 844x390 is not a measurement of the iPhone mobile-UA landscape layout."
-  ]
+  ],
+  "releaseCommit": "1dba5a4fcfd2acc71c43ae1c376cbdd799971238"
 }
