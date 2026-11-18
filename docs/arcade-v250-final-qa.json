@@ -1,0 +1,237 @@
+{
+  "version": "20261118-v250-tabs-castella61",
+  "baselineCommit": "1c4eb987be12fff02818fb996f9b1523f7281b74",
+  "codeCommit": "6ca4641a3aac68a79ce8a421254fb768ea9bb821",
+  "dateJST": "2026-11-18",
+  "status": "prepublication-verification-passed",
+  "browserWorkflow": {
+    "runId": 44295256144,
+    "jobId": 134770530618,
+    "conclusion": "success",
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44295256144",
+    "artifactId": 14423288150
+  },
+  "unchangedServerWorkflowResults": [
+    {
+      "name": "Shared machine check",
+      "runId": 44292652249,
+      "conclusion": "success"
+    },
+    {
+      "name": "Six station check",
+      "runId": 44292652393,
+      "conclusion": "success"
+    },
+    {
+      "name": "Station detail v238",
+      "runId": 44292652191,
+      "conclusion": "success"
+    },
+    {
+      "name": "Public guest entry check",
+      "runId": 44292652377,
+      "conclusion": "success"
+    }
+  ],
+  "serverWorkflowSourceCommit": "89911a93da1c032e4fe3a60ccb02aa693e53b2aa",
+  "serverWorkflowScopeNote": "Later verification commits changed only tab CSS and browser test/workflow files; game rules, host, server and shared client source stayed unchanged. Final browser workflow reran syntax, Six Drop, Castella, checkpoint, hidden engines, colors and real client regressions.",
+  "tabs": {
+    "viewports": [
+      [
+        320,
+        740
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        430,
+        932
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "games": 9,
+    "miniatureLogicalPixels": 47,
+    "oneSharedBetSwitch": true,
+    "betSwitchDoesNotWager": true,
+    "nativeBet500Plus1AndCredit": true,
+    "flowDirection": "right-to-left",
+    "inactiveAndSelectedFlow": true,
+    "menuPauseAndResume": true,
+    "paidReachNumbersInProbe": 23,
+    "oddsOnlyHidden": true,
+    "emptyWhenNoReach": true,
+    "highUltraAndReappearancePopups": true,
+    "noDuplicatePopup": true,
+    "reducedMotion": true,
+    "sugarBesideWin": true
+  },
+  "castella": {
+    "holes": 61,
+    "edges": 84,
+    "balls": 8,
+    "pourLevels": [
+      1,
+      2,
+      3
+    ],
+    "upgradeAppliesNextBall": true,
+    "fireSwitches": 2,
+    "sugarOnlyAfterBaking": true,
+    "sugarAwards": 1,
+    "legacyHoles": 37,
+    "checkpoints": [
+      "eighth-ball delayed payout and Sugar",
+      "sixth-ball delayed Sugar",
+      "duplicate hook",
+      "already-paid and zero-BET",
+      "foreground cancellation",
+      "legacy37"
+    ]
+  },
+  "sixDrop": {
+    "number": 11,
+    "parts": 3,
+    "fills": [
+      "none",
+      "none",
+      "none"
+    ],
+    "centerOpaquePixels": 0,
+    "sourceFill": "none",
+    "gameStateUnchanged": true
+  },
+  "rules": {
+    "molds": 13,
+    "orientations": 12,
+    "games": 720,
+    "forecastComparisons": 41040,
+    "estimatorVsRulesGames": 1560,
+    "full61BakeWitness": true,
+    "legacyCheckpointReplay": true
+  },
+  "calibration": {
+    "scope": "Ordinary direct medal payouts only. Uniform eight non-repeating numbers out of 25; first five pour in order, last three bake. Shared Sugar/JPC excluded. Independent layout and draw PRNG streams; finite simulation with 95% Monte Carlo intervals.",
+    "samplesPerSetting": 2000000,
+    "settings": 11,
+    "totalGames": 22000000,
+    "reports": [
+      {
+        "target": 50,
+        "returnPercent": 50.02596,
+        "return95": [
+          49.89843204941809,
+          50.153487950581905
+        ],
+        "awardPercent": 80.69665
+      },
+      {
+        "target": 60,
+        "returnPercent": 59.98792,
+        "return95": [
+          59.796269176391846,
+          60.17957082360816
+        ],
+        "awardPercent": 79.15855
+      },
+      {
+        "target": 70,
+        "returnPercent": 69.88117,
+        "return95": [
+          69.64548114691104,
+          70.11685885308896
+        ],
+        "awardPercent": 79.20375
+      },
+      {
+        "target": 80,
+        "returnPercent": 80.09217,
+        "return95": [
+          79.82601244772351,
+          80.35832755227648
+        ],
+        "awardPercent": 79.33664999999999
+      },
+      {
+        "target": 90,
+        "returnPercent": 89.82261,
+        "return95": [
+          89.51729473963104,
+          90.12792526036895
+        ],
+        "awardPercent": 79.3944
+      },
+      {
+        "target": 100,
+        "returnPercent": 99.77625,
+        "return95": [
+          99.43564341869657,
+          100.11685658130344
+        ],
+        "awardPercent": 79.3921
+      },
+      {
+        "target": 110,
+        "returnPercent": 110.10899,
+        "return95": [
+          109.73334773298043,
+          110.48463226701958
+        ],
+        "awardPercent": 79.42405000000001
+      },
+      {
+        "target": 120,
+        "returnPercent": 119.85902,
+        "return95": [
+          119.45148431886453,
+          120.26655568113547
+        ],
+        "awardPercent": 79.5217
+      },
+      {
+        "target": 130,
+        "returnPercent": 129.79036,
+        "return95": [
+          129.35058130594277,
+          130.23013869405722
+        ],
+        "awardPercent": 79.64005
+      },
+      {
+        "target": 140,
+        "returnPercent": 139.85017,
+        "return95": [
+          139.37627578686673,
+          140.32406421313325
+        ],
+        "awardPercent": 79.8432
+      },
+      {
+        "target": 150,
+        "returnPercent": 150.0881,
+        "return95": [
+          149.5863615670311,
+          150.5898384329689
+        ],
+        "awardPercent": 79.94449999999999
+      }
+    ]
+  },
+  "visualReport": "docs/arcade-v250-visual-qa.json",
+  "publicVerification": "Pending main publication; recorded separately in docs/arcade-v250-public-qa.json.",
+  "limitations": [
+    "No Windows hardware execution",
+    "No iPhone hardware execution",
+    "No physical audio listening test",
+    "Calibration uses uniform no-replacement 8/25 draws and excludes shared Sugar/JPC",
+    "Public verification blocks external game transactions"
+  ]
+}

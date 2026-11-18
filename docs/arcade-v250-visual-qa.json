@@ -1,0 +1,4592 @@
+{
+  "version": "20261118-v250-tabs-castella61",
+  "codeCommit": "6ca4641a3aac68a79ce8a421254fb768ea9bb821",
+  "workflowRun": 44295256144,
+  "artifact": 14423288150,
+  "tabs": {
+    "version": 250,
+    "viewports": [
+      {
+        "width": 320,
+        "height": 740,
+        "active": 0,
+        "common": {
+          "bounds": {
+            "left": 258.66668701171875,
+            "top": 383.3333435058594,
+            "right": 314.66668701171875,
+            "bottom": 418.66668701171875,
+            "width": 56,
+            "height": 35.333343505859375
+          },
+          "clickable": true,
+          "outsideTablist": true,
+          "visibleButtons": 1
+        },
+        "slots": [
+          {
+            "kind": "cookie",
+            "active": true,
+            "holder": {
+              "left": 2.6666667461395264,
+              "top": 310.66668701171875,
+              "right": 64.5312488079071,
+              "bottom": 368.66668701171875,
+              "width": 61.86458206176758,
+              "height": 58
+            },
+            "bounds": {
+              "left": 4.6666669845581055,
+              "top": 312,
+              "right": 62.531249046325684,
+              "bottom": 344.66668701171875,
+              "width": 57.86458206176758,
+              "height": 32.66668701171875
+            },
+            "mini": {
+              "left": 6,
+              "top": 314,
+              "right": 61.19791793823242,
+              "bottom": 342,
+              "width": 55.19791793823242,
+              "height": 28
+            },
+            "add": {
+              "left": 4.6666669845581055,
+              "top": 345.3333435058594,
+              "right": 35.697916984558105,
+              "bottom": 357.3333435058594,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 37.69791793823242,
+              "top": 345.3333435058594,
+              "right": 62.53125,
+              "bottom": 357.3333435058594,
+              "width": 24.833332061767578,
+              "height": 12
+            },
+            "backdropVisible": false,
+            "backdropLoaded": true,
+            "miniZ": null,
+            "backdropZ": 0,
+            "logicalMiniWidth": 82.7969,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "choco",
+            "active": false,
+            "holder": {
+              "left": 65.86458587646484,
+              "top": 310.66668701171875,
+              "right": 127.72917175292969,
+              "bottom": 368.66668701171875,
+              "width": 61.864585876464844,
+              "height": 58
+            },
+            "bounds": {
+              "left": 67.86458587646484,
+              "top": 312,
+              "right": 125.72917175292969,
+              "bottom": 344.66668701171875,
+              "width": 57.864585876464844,
+              "height": 32.66668701171875
+            },
+            "mini": {
+              "left": 68.53125,
+              "top": 312.66668701171875,
+              "right": 99.86458587646484,
+              "bottom": 344,
+              "width": 31.333335876464844,
+              "height": 31.33331298828125
+            },
+            "add": {
+              "left": 67.86458587646484,
+              "top": 345.3333435058594,
+              "right": 98.89583587646484,
+              "bottom": 357.3333435058594,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 100.89583587646484,
+              "top": 345.3333435058594,
+              "right": 125.72917175292969,
+              "bottom": 357.3333435058594,
+              "width": 24.833335876464844,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "candy",
+            "active": false,
+            "holder": {
+              "left": 129.0625,
+              "top": 310.66668701171875,
+              "right": 190.92709350585938,
+              "bottom": 368.66668701171875,
+              "width": 61.864593505859375,
+              "height": 58
+            },
+            "bounds": {
+              "left": 131.0625,
+              "top": 312,
+              "right": 188.92709350585938,
+              "bottom": 344.66668701171875,
+              "width": 57.864593505859375,
+              "height": 32.66668701171875
+            },
+            "mini": {
+              "left": 131.7291717529297,
+              "top": 312.66668701171875,
+              "right": 163.0625,
+              "bottom": 344,
+              "width": 31.333328247070312,
+              "height": 31.33331298828125
+            },
+            "add": {
+              "left": 131.0625,
+              "top": 345.3333435058594,
+              "right": 162.09375,
+              "bottom": 357.3333435058594,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 164.09375,
+              "top": 345.3333435058594,
+              "right": 188.92709350585938,
+              "bottom": 357.3333435058594,
+              "width": 24.833343505859375,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "gelato",
+            "active": false,
+            "holder": {
+              "left": 192.2604217529297,
+              "top": 310.66668701171875,
+              "right": 254.125,
+              "bottom": 368.66668701171875,
+              "width": 61.86457824707031,
+              "height": 58
+            },
+            "bounds": {
+              "left": 194.2604217529297,
+              "top": 312,
+              "right": 252.125,
+              "bottom": 344.66668701171875,
+              "width": 57.86457824707031,
+              "height": 32.66668701171875
+            },
+            "mini": {
+              "left": 194.92709350585938,
+              "top": 312.66668701171875,
+              "right": 226.2604217529297,
+              "bottom": 344,
+              "width": 31.333328247070312,
+              "height": 31.33331298828125
+            },
+            "add": {
+              "left": 194.2604217529297,
+              "top": 345.3333435058594,
+              "right": 225.2916717529297,
+              "bottom": 357.3333435058594,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 227.2916717529297,
+              "top": 345.3333435058594,
+              "right": 252.125,
+              "bottom": 357.3333435058594,
+              "width": 24.833328247070312,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "winery",
+            "active": false,
+            "holder": {
+              "left": 255.45834350585938,
+              "top": 310.66668701171875,
+              "right": 317.32293701171875,
+              "bottom": 368.66668701171875,
+              "width": 61.864593505859375,
+              "height": 58
+            },
+            "bounds": {
+              "left": 257.4583435058594,
+              "top": 312,
+              "right": 315.32293701171875,
+              "bottom": 344.66668701171875,
+              "width": 57.864593505859375,
+              "height": 32.66668701171875
+            },
+            "mini": {
+              "left": 258.125,
+              "top": 312.66668701171875,
+              "right": 289.4583435058594,
+              "bottom": 344,
+              "width": 31.333343505859375,
+              "height": 31.33331298828125
+            },
+            "add": {
+              "left": 257.4583435058594,
+              "top": 345.3333435058594,
+              "right": 288.4895935058594,
+              "bottom": 357.3333435058594,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 290.4895935058594,
+              "top": 345.3333435058594,
+              "right": 315.32293701171875,
+              "bottom": 357.3333435058594,
+              "width": 24.833343505859375,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "popcorn",
+            "active": false,
+            "holder": {
+              "left": 2.6666667461395264,
+              "top": 371.3333435058594,
+              "right": 64.5312488079071,
+              "bottom": 429.3333435058594,
+              "width": 61.86458206176758,
+              "height": 58
+            },
+            "bounds": {
+              "left": 4.6666669845581055,
+              "top": 372.66668701171875,
+              "right": 62.531249046325684,
+              "bottom": 405.3333435058594,
+              "width": 57.86458206176758,
+              "height": 32.666656494140625
+            },
+            "mini": {
+              "left": 5.333333492279053,
+              "top": 373.3333435058594,
+              "right": 36.666667461395264,
+              "bottom": 404.66668701171875,
+              "width": 31.33333396911621,
+              "height": 31.333343505859375
+            },
+            "add": {
+              "left": 4.6666669845581055,
+              "top": 406,
+              "right": 35.697916984558105,
+              "bottom": 418,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 37.69791793823242,
+              "top": 406,
+              "right": 62.53125,
+              "bottom": 418,
+              "width": 24.833332061767578,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "jelly",
+            "active": false,
+            "holder": {
+              "left": 65.86458587646484,
+              "top": 371.3333435058594,
+              "right": 127.72917175292969,
+              "bottom": 429.3333435058594,
+              "width": 61.864585876464844,
+              "height": 58
+            },
+            "bounds": {
+              "left": 67.86458587646484,
+              "top": 372.66668701171875,
+              "right": 125.72917175292969,
+              "bottom": 405.3333435058594,
+              "width": 57.864585876464844,
+              "height": 32.666656494140625
+            },
+            "mini": {
+              "left": 68.53125,
+              "top": 373.3333435058594,
+              "right": 99.86458587646484,
+              "bottom": 404.66668701171875,
+              "width": 31.333335876464844,
+              "height": 31.333343505859375
+            },
+            "add": {
+              "left": 67.86458587646484,
+              "top": 406,
+              "right": 98.89583587646484,
+              "bottom": 418,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 100.89583587646484,
+              "top": 406,
+              "right": 125.72917175292969,
+              "bottom": 418,
+              "width": 24.833335876464844,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "stick",
+            "active": false,
+            "holder": {
+              "left": 129.0625,
+              "top": 371.3333435058594,
+              "right": 190.92709350585938,
+              "bottom": 429.3333435058594,
+              "width": 61.864593505859375,
+              "height": 58
+            },
+            "bounds": {
+              "left": 131.0625,
+              "top": 372.66668701171875,
+              "right": 188.92709350585938,
+              "bottom": 405.3333435058594,
+              "width": 57.864593505859375,
+              "height": 32.666656494140625
+            },
+            "mini": {
+              "left": 131.7291717529297,
+              "top": 373.3333435058594,
+              "right": 163.0625,
+              "bottom": 404.66668701171875,
+              "width": 31.333328247070312,
+              "height": 31.333343505859375
+            },
+            "add": {
+              "left": 131.0625,
+              "top": 406,
+              "right": 162.09375,
+              "bottom": 418,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 164.09375,
+              "top": 406,
+              "right": 188.92709350585938,
+              "bottom": 418,
+              "width": 24.833343505859375,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "castella",
+            "active": false,
+            "holder": {
+              "left": 192.2604217529297,
+              "top": 371.3333435058594,
+              "right": 254.125,
+              "bottom": 429.3333435058594,
+              "width": 61.86457824707031,
+              "height": 58
+            },
+            "bounds": {
+              "left": 194.2604217529297,
+              "top": 372.66668701171875,
+              "right": 252.125,
+              "bottom": 405.3333435058594,
+              "width": 57.86457824707031,
+              "height": 32.666656494140625
+            },
+            "mini": {
+              "left": 194.92709350585938,
+              "top": 373.3333435058594,
+              "right": 226.2604217529297,
+              "bottom": 404.66668701171875,
+              "width": 31.333328247070312,
+              "height": 31.333343505859375
+            },
+            "add": {
+              "left": 194.2604217529297,
+              "top": 406,
+              "right": 225.2916717529297,
+              "bottom": 418,
+              "width": 31.03125,
+              "height": 12
+            },
+            "one": {
+              "left": 227.2916717529297,
+              "top": 406,
+              "right": 252.125,
+              "bottom": 418,
+              "width": 24.833328247070312,
+              "height": 12
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          }
+        ]
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "active": 0,
+        "common": {
+          "bounds": {
+            "left": 315.25,
+            "top": 409.3095703125,
+            "right": 383.5,
+            "bottom": 452.3720703125,
+            "width": 68.25,
+            "height": 43.0625
+          },
+          "clickable": true,
+          "outsideTablist": true,
+          "visibleButtons": 1
+        },
+        "slots": [
+          {
+            "kind": "cookie",
+            "active": true,
+            "holder": {
+              "left": 3.25,
+              "top": 320.7470703125,
+              "right": 78.6474609375,
+              "bottom": 391.4345703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 5.6875,
+              "top": 322.3720703125,
+              "right": 76.2099609375,
+              "bottom": 362.1845703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 7.3125,
+              "top": 324.8095703125,
+              "right": 74.5849609375,
+              "bottom": 358.9345703125,
+              "width": 67.2724609375,
+              "height": 34.125
+            },
+            "add": {
+              "left": 5.6875,
+              "top": 362.9970703125,
+              "right": 43.5068359375,
+              "bottom": 377.6220703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 45.9443359375,
+              "top": 362.9970703125,
+              "right": 76.2099609375,
+              "bottom": 377.6220703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": false,
+            "backdropLoaded": true,
+            "miniZ": null,
+            "backdropZ": 0,
+            "logicalMiniWidth": 82.7969,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "choco",
+            "active": false,
+            "holder": {
+              "left": 80.2724609375,
+              "top": 320.7470703125,
+              "right": 155.669921875,
+              "bottom": 391.4345703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 82.7099609375,
+              "top": 322.3720703125,
+              "right": 153.232421875,
+              "bottom": 362.1845703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 83.5224609375,
+              "top": 323.1845703125,
+              "right": 121.7099609375,
+              "bottom": 361.3720703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 82.7099609375,
+              "top": 362.9970703125,
+              "right": 120.529296875,
+              "bottom": 377.6220703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 122.966796875,
+              "top": 362.9970703125,
+              "right": 153.232421875,
+              "bottom": 377.6220703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "candy",
+            "active": false,
+            "holder": {
+              "left": 157.294921875,
+              "top": 320.7470703125,
+              "right": 232.6923828125,
+              "bottom": 391.4345703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 159.732421875,
+              "top": 322.3720703125,
+              "right": 230.2548828125,
+              "bottom": 362.1845703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 160.544921875,
+              "top": 323.1845703125,
+              "right": 198.732421875,
+              "bottom": 361.3720703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 159.732421875,
+              "top": 362.9970703125,
+              "right": 197.5517578125,
+              "bottom": 377.6220703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 199.9892578125,
+              "top": 362.9970703125,
+              "right": 230.2548828125,
+              "bottom": 377.6220703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "gelato",
+            "active": false,
+            "holder": {
+              "left": 234.3173828125,
+              "top": 320.7470703125,
+              "right": 309.71484375,
+              "bottom": 391.4345703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 236.7548828125,
+              "top": 322.3720703125,
+              "right": 307.27734375,
+              "bottom": 362.1845703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 237.5673828125,
+              "top": 323.1845703125,
+              "right": 275.7548828125,
+              "bottom": 361.3720703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 236.7548828125,
+              "top": 362.9970703125,
+              "right": 274.57421875,
+              "bottom": 377.6220703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 277.01171875,
+              "top": 362.9970703125,
+              "right": 307.27734375,
+              "bottom": 377.6220703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "winery",
+            "active": false,
+            "holder": {
+              "left": 311.33984375,
+              "top": 320.7470703125,
+              "right": 386.7373046875,
+              "bottom": 391.4345703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 313.77734375,
+              "top": 322.3720703125,
+              "right": 384.2998046875,
+              "bottom": 362.1845703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 314.58984375,
+              "top": 323.1845703125,
+              "right": 352.77734375,
+              "bottom": 361.3720703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 313.77734375,
+              "top": 362.9970703125,
+              "right": 351.5966796875,
+              "bottom": 377.6220703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 354.0341796875,
+              "top": 362.9970703125,
+              "right": 384.2998046875,
+              "bottom": 377.6220703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "popcorn",
+            "active": false,
+            "holder": {
+              "left": 3.25,
+              "top": 394.6845703125,
+              "right": 78.6474609375,
+              "bottom": 465.3720703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 5.6875,
+              "top": 396.3095703125,
+              "right": 76.2099609375,
+              "bottom": 436.1220703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 6.5,
+              "top": 397.1220703125,
+              "right": 44.6875,
+              "bottom": 435.3095703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 5.6875,
+              "top": 436.9345703125,
+              "right": 43.5068359375,
+              "bottom": 451.5595703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 45.9443359375,
+              "top": 436.9345703125,
+              "right": 76.2099609375,
+              "bottom": 451.5595703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "jelly",
+            "active": false,
+            "holder": {
+              "left": 80.2724609375,
+              "top": 394.6845703125,
+              "right": 155.669921875,
+              "bottom": 465.3720703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 82.7099609375,
+              "top": 396.3095703125,
+              "right": 153.232421875,
+              "bottom": 436.1220703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 83.5224609375,
+              "top": 397.1220703125,
+              "right": 121.7099609375,
+              "bottom": 435.3095703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 82.7099609375,
+              "top": 436.9345703125,
+              "right": 120.529296875,
+              "bottom": 451.5595703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 122.966796875,
+              "top": 436.9345703125,
+              "right": 153.232421875,
+              "bottom": 451.5595703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "stick",
+            "active": false,
+            "holder": {
+              "left": 157.294921875,
+              "top": 394.6845703125,
+              "right": 232.6923828125,
+              "bottom": 465.3720703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 159.732421875,
+              "top": 396.3095703125,
+              "right": 230.2548828125,
+              "bottom": 436.1220703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 160.544921875,
+              "top": 397.1220703125,
+              "right": 198.732421875,
+              "bottom": 435.3095703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 159.732421875,
+              "top": 436.9345703125,
+              "right": 197.5517578125,
+              "bottom": 451.5595703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 199.9892578125,
+              "top": 436.9345703125,
+              "right": 230.2548828125,
+              "bottom": 451.5595703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "castella",
+            "active": false,
+            "holder": {
+              "left": 234.3173828125,
+              "top": 394.6845703125,
+              "right": 309.71484375,
+              "bottom": 465.3720703125,
+              "width": 75.3974609375,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 236.7548828125,
+              "top": 396.3095703125,
+              "right": 307.27734375,
+              "bottom": 436.1220703125,
+              "width": 70.5224609375,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 237.5673828125,
+              "top": 397.1220703125,
+              "right": 275.7548828125,
+              "bottom": 435.3095703125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 236.7548828125,
+              "top": 436.9345703125,
+              "right": 274.57421875,
+              "bottom": 451.5595703125,
+              "width": 37.8193359375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 277.01171875,
+              "top": 436.9345703125,
+              "right": 307.27734375,
+              "bottom": 451.5595703125,
+              "width": 30.265625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          }
+        ]
+      },
+      {
+        "width": 430,
+        "height": 932,
+        "active": 0,
+        "common": {
+          "bounds": {
+            "left": 347.58331298828125,
+            "top": 452.7177734375,
+            "right": 422.83331298828125,
+            "bottom": 500.1969299316406,
+            "width": 75.25,
+            "height": 47.479156494140625
+          },
+          "clickable": true,
+          "outsideTablist": true,
+          "visibleButtons": 1
+        },
+        "slots": [
+          {
+            "kind": "cookie",
+            "active": true,
+            "holder": {
+              "left": 3.5833332538604736,
+              "top": 355.0719299316406,
+              "right": 86.71386456489563,
+              "bottom": 433.0094299316406,
+              "width": 83.13053131103516,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 6.2708330154418945,
+              "top": 356.86358642578125,
+              "right": 84.02636432647705,
+              "bottom": 400.7594299316406,
+              "width": 77.75553131103516,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 8.0625,
+              "top": 359.55108642578125,
+              "right": 82.23469543457031,
+              "bottom": 397.17608642578125,
+              "width": 74.17219543457031,
+              "height": 37.625
+            },
+            "add": {
+              "left": 6.2708330154418945,
+              "top": 401.6552734375,
+              "right": 47.969075202941895,
+              "bottom": 417.7802734375,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 50.65657424926758,
+              "top": 401.6552734375,
+              "right": 84.0263671875,
+              "bottom": 417.7802734375,
+              "width": 33.36979293823242,
+              "height": 16.125
+            },
+            "backdropVisible": false,
+            "backdropLoaded": true,
+            "miniZ": null,
+            "backdropZ": 0,
+            "logicalMiniWidth": 82.7969,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "choco",
+            "active": false,
+            "holder": {
+              "left": 88.50553131103516,
+              "top": 355.0719299316406,
+              "right": 171.6360626220703,
+              "bottom": 433.0094299316406,
+              "width": 83.13053131103516,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 91.19303131103516,
+              "top": 356.86358642578125,
+              "right": 168.9485626220703,
+              "bottom": 400.7594299316406,
+              "width": 77.75553131103516,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 92.0888671875,
+              "top": 357.7594299316406,
+              "right": 134.19302368164062,
+              "bottom": 399.86358642578125,
+              "width": 42.104156494140625,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 91.19303131103516,
+              "top": 401.6552734375,
+              "right": 132.89126586914062,
+              "bottom": 417.7802734375,
+              "width": 41.69823455810547,
+              "height": 16.125
+            },
+            "one": {
+              "left": 135.57876586914062,
+              "top": 401.6552734375,
+              "right": 168.9485626220703,
+              "bottom": 417.7802734375,
+              "width": 33.36979675292969,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "candy",
+            "active": false,
+            "holder": {
+              "left": 173.427734375,
+              "top": 355.0719299316406,
+              "right": 256.5582580566406,
+              "bottom": 433.0094299316406,
+              "width": 83.13052368164062,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 176.115234375,
+              "top": 356.86358642578125,
+              "right": 253.87075805664062,
+              "bottom": 400.7594299316406,
+              "width": 77.75552368164062,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 177.0110626220703,
+              "top": 357.7594299316406,
+              "right": 219.115234375,
+              "bottom": 399.86358642578125,
+              "width": 42.10417175292969,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 176.115234375,
+              "top": 401.6552734375,
+              "right": 217.8134765625,
+              "bottom": 417.7802734375,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 220.5009765625,
+              "top": 401.6552734375,
+              "right": 253.87075805664062,
+              "bottom": 417.7802734375,
+              "width": 33.369781494140625,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "gelato",
+            "active": false,
+            "holder": {
+              "left": 258.34991455078125,
+              "top": 355.0719299316406,
+              "right": 341.48046875,
+              "bottom": 433.0094299316406,
+              "width": 83.13055419921875,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 261.03741455078125,
+              "top": 356.86358642578125,
+              "right": 338.79296875,
+              "bottom": 400.7594299316406,
+              "width": 77.75555419921875,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 261.9332580566406,
+              "top": 357.7594299316406,
+              "right": 304.03741455078125,
+              "bottom": 399.86358642578125,
+              "width": 42.104156494140625,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 261.03741455078125,
+              "top": 401.6552734375,
+              "right": 302.73565673828125,
+              "bottom": 417.7802734375,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 305.42315673828125,
+              "top": 401.6552734375,
+              "right": 338.79296875,
+              "bottom": 417.7802734375,
+              "width": 33.36981201171875,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "winery",
+            "active": false,
+            "holder": {
+              "left": 343.2721252441406,
+              "top": 355.0719299316406,
+              "right": 426.40264892578125,
+              "bottom": 433.0094299316406,
+              "width": 83.13052368164062,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 345.9596252441406,
+              "top": 356.86358642578125,
+              "right": 423.71514892578125,
+              "bottom": 400.7594299316406,
+              "width": 77.75552368164062,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 346.85546875,
+              "top": 357.7594299316406,
+              "right": 388.9596252441406,
+              "bottom": 399.86358642578125,
+              "width": 42.104156494140625,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 345.9596252441406,
+              "top": 401.6552734375,
+              "right": 387.6578674316406,
+              "bottom": 417.7802734375,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 390.3453674316406,
+              "top": 401.6552734375,
+              "right": 423.71514892578125,
+              "bottom": 417.7802734375,
+              "width": 33.369781494140625,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "popcorn",
+            "active": false,
+            "holder": {
+              "left": 3.5833332538604736,
+              "top": 436.5927734375,
+              "right": 86.71386456489563,
+              "bottom": 514.5302734375,
+              "width": 83.13053131103516,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 6.2708330154418945,
+              "top": 438.3844299316406,
+              "right": 84.02636432647705,
+              "bottom": 482.2802734375,
+              "width": 77.75553131103516,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 7.166666507720947,
+              "top": 439.2802734375,
+              "right": 49.2708306312561,
+              "bottom": 481.3844299316406,
+              "width": 42.104164123535156,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 6.2708330154418945,
+              "top": 483.17608642578125,
+              "right": 47.969075202941895,
+              "bottom": 499.30108642578125,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 50.65657424926758,
+              "top": 483.17608642578125,
+              "right": 84.0263671875,
+              "bottom": 499.30108642578125,
+              "width": 33.36979293823242,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "jelly",
+            "active": false,
+            "holder": {
+              "left": 88.50553131103516,
+              "top": 436.5927734375,
+              "right": 171.6360626220703,
+              "bottom": 514.5302734375,
+              "width": 83.13053131103516,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 91.19303131103516,
+              "top": 438.3844299316406,
+              "right": 168.9485626220703,
+              "bottom": 482.2802734375,
+              "width": 77.75553131103516,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 92.0888671875,
+              "top": 439.2802734375,
+              "right": 134.19302368164062,
+              "bottom": 481.3844299316406,
+              "width": 42.104156494140625,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 91.19303131103516,
+              "top": 483.17608642578125,
+              "right": 132.89126586914062,
+              "bottom": 499.30108642578125,
+              "width": 41.69823455810547,
+              "height": 16.125
+            },
+            "one": {
+              "left": 135.57876586914062,
+              "top": 483.17608642578125,
+              "right": 168.9485626220703,
+              "bottom": 499.30108642578125,
+              "width": 33.36979675292969,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "stick",
+            "active": false,
+            "holder": {
+              "left": 173.427734375,
+              "top": 436.5927734375,
+              "right": 256.5582580566406,
+              "bottom": 514.5302734375,
+              "width": 83.13052368164062,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 176.115234375,
+              "top": 438.3844299316406,
+              "right": 253.87075805664062,
+              "bottom": 482.2802734375,
+              "width": 77.75552368164062,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 177.0110626220703,
+              "top": 439.2802734375,
+              "right": 219.115234375,
+              "bottom": 481.3844299316406,
+              "width": 42.10417175292969,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 176.115234375,
+              "top": 483.17608642578125,
+              "right": 217.8134765625,
+              "bottom": 499.30108642578125,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 220.5009765625,
+              "top": 483.17608642578125,
+              "right": 253.87075805664062,
+              "bottom": 499.30108642578125,
+              "width": 33.369781494140625,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "castella",
+            "active": false,
+            "holder": {
+              "left": 258.34991455078125,
+              "top": 436.5927734375,
+              "right": 341.48046875,
+              "bottom": 514.5302734375,
+              "width": 83.13055419921875,
+              "height": 77.9375
+            },
+            "bounds": {
+              "left": 261.03741455078125,
+              "top": 438.3844299316406,
+              "right": 338.79296875,
+              "bottom": 482.2802734375,
+              "width": 77.75555419921875,
+              "height": 43.895843505859375
+            },
+            "mini": {
+              "left": 261.9332580566406,
+              "top": 439.2802734375,
+              "right": 304.03741455078125,
+              "bottom": 481.3844299316406,
+              "width": 42.104156494140625,
+              "height": 42.104156494140625
+            },
+            "add": {
+              "left": 261.03741455078125,
+              "top": 483.17608642578125,
+              "right": 302.73565673828125,
+              "bottom": 499.30108642578125,
+              "width": 41.6982421875,
+              "height": 16.125
+            },
+            "one": {
+              "left": 305.42315673828125,
+              "top": 483.17608642578125,
+              "right": 338.79296875,
+              "bottom": 499.30108642578125,
+              "width": 33.36981201171875,
+              "height": 16.125
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          }
+        ]
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "active": 0,
+        "common": {
+          "bounds": {
+            "left": 374.2578125,
+            "top": 273.8125,
+            "right": 455.6220703125,
+            "bottom": 316.875,
+            "width": 81.3642578125,
+            "height": 43.0625
+          },
+          "clickable": true,
+          "outsideTablist": true,
+          "visibleButtons": 1
+        },
+        "slots": [
+          {
+            "kind": "cookie",
+            "active": true,
+            "holder": {
+              "left": 9.75,
+              "top": 185.25,
+              "right": 98.921875,
+              "bottom": 255.9375,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 12.1875,
+              "top": 186.875,
+              "right": 96.484375,
+              "bottom": 226.6875,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 13.8125,
+              "top": 189.3125,
+              "right": 94.859375,
+              "bottom": 223.4375,
+              "width": 81.046875,
+              "height": 34.125
+            },
+            "add": {
+              "left": 12.1875,
+              "top": 227.5,
+              "right": 57.662109375,
+              "bottom": 242.125,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 60.099609375,
+              "top": 227.5,
+              "right": 96.484375,
+              "bottom": 242.125,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": false,
+            "backdropLoaded": true,
+            "miniZ": null,
+            "backdropZ": 0,
+            "logicalMiniWidth": 99.75,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "choco",
+            "active": false,
+            "holder": {
+              "left": 100.546875,
+              "top": 185.25,
+              "right": 189.71875,
+              "bottom": 255.9375,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 102.984375,
+              "top": 186.875,
+              "right": 187.28125,
+              "bottom": 226.6875,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 103.796875,
+              "top": 187.6875,
+              "right": 141.984375,
+              "bottom": 225.875,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 102.984375,
+              "top": 227.5,
+              "right": 148.458984375,
+              "bottom": 242.125,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 150.896484375,
+              "top": 227.5,
+              "right": 187.28125,
+              "bottom": 242.125,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "candy",
+            "active": false,
+            "holder": {
+              "left": 191.34375,
+              "top": 185.25,
+              "right": 280.515625,
+              "bottom": 255.9375,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 193.78125,
+              "top": 186.875,
+              "right": 278.078125,
+              "bottom": 226.6875,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 194.59375,
+              "top": 187.6875,
+              "right": 232.78125,
+              "bottom": 225.875,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 193.78125,
+              "top": 227.5,
+              "right": 239.255859375,
+              "bottom": 242.125,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 241.693359375,
+              "top": 227.5,
+              "right": 278.078125,
+              "bottom": 242.125,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "gelato",
+            "active": false,
+            "holder": {
+              "left": 282.140625,
+              "top": 185.25,
+              "right": 371.3125,
+              "bottom": 255.9375,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 284.578125,
+              "top": 186.875,
+              "right": 368.875,
+              "bottom": 226.6875,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 285.390625,
+              "top": 187.6875,
+              "right": 323.578125,
+              "bottom": 225.875,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 284.578125,
+              "top": 227.5,
+              "right": 330.052734375,
+              "bottom": 242.125,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 332.490234375,
+              "top": 227.5,
+              "right": 368.875,
+              "bottom": 242.125,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "winery",
+            "active": false,
+            "holder": {
+              "left": 372.9375,
+              "top": 185.25,
+              "right": 462.1220703125,
+              "bottom": 255.9375,
+              "width": 89.1845703125,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 375.375,
+              "top": 186.875,
+              "right": 459.6845703125,
+              "bottom": 226.6875,
+              "width": 84.3095703125,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 376.1875,
+              "top": 187.6875,
+              "right": 414.375,
+              "bottom": 225.875,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 375.375,
+              "top": 227.5,
+              "right": 420.849609375,
+              "bottom": 242.125,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 423.287109375,
+              "top": 227.5,
+              "right": 459.6845703125,
+              "bottom": 242.125,
+              "width": 36.3974609375,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "popcorn",
+            "active": false,
+            "holder": {
+              "left": 9.75,
+              "top": 259.1875,
+              "right": 98.921875,
+              "bottom": 329.875,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 12.1875,
+              "top": 260.8125,
+              "right": 96.484375,
+              "bottom": 300.625,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 13,
+              "top": 261.625,
+              "right": 51.1875,
+              "bottom": 299.8125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 12.1875,
+              "top": 301.4375,
+              "right": 57.662109375,
+              "bottom": 316.0625,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 60.099609375,
+              "top": 301.4375,
+              "right": 96.484375,
+              "bottom": 316.0625,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "jelly",
+            "active": false,
+            "holder": {
+              "left": 100.546875,
+              "top": 259.1875,
+              "right": 189.71875,
+              "bottom": 329.875,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 102.984375,
+              "top": 260.8125,
+              "right": 187.28125,
+              "bottom": 300.625,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 103.796875,
+              "top": 261.625,
+              "right": 141.984375,
+              "bottom": 299.8125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 102.984375,
+              "top": 301.4375,
+              "right": 148.458984375,
+              "bottom": 316.0625,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 150.896484375,
+              "top": 301.4375,
+              "right": 187.28125,
+              "bottom": 316.0625,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "stick",
+            "active": false,
+            "holder": {
+              "left": 191.34375,
+              "top": 259.1875,
+              "right": 280.515625,
+              "bottom": 329.875,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 193.78125,
+              "top": 260.8125,
+              "right": 278.078125,
+              "bottom": 300.625,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 194.59375,
+              "top": 261.625,
+              "right": 232.78125,
+              "bottom": 299.8125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 193.78125,
+              "top": 301.4375,
+              "right": 239.255859375,
+              "bottom": 316.0625,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 241.693359375,
+              "top": 301.4375,
+              "right": 278.078125,
+              "bottom": 316.0625,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "castella",
+            "active": false,
+            "holder": {
+              "left": 282.140625,
+              "top": 259.1875,
+              "right": 371.3125,
+              "bottom": 329.875,
+              "width": 89.171875,
+              "height": 70.6875
+            },
+            "bounds": {
+              "left": 284.578125,
+              "top": 260.8125,
+              "right": 368.875,
+              "bottom": 300.625,
+              "width": 84.296875,
+              "height": 39.8125
+            },
+            "mini": {
+              "left": 285.390625,
+              "top": 261.625,
+              "right": 323.578125,
+              "bottom": 299.8125,
+              "width": 38.1875,
+              "height": 38.1875
+            },
+            "add": {
+              "left": 284.578125,
+              "top": 301.4375,
+              "right": 330.052734375,
+              "bottom": 316.0625,
+              "width": 45.474609375,
+              "height": 14.625
+            },
+            "one": {
+              "left": 332.490234375,
+              "top": 301.4375,
+              "right": 368.875,
+              "bottom": 316.0625,
+              "width": 36.384765625,
+              "height": 14.625
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          }
+        ]
+      },
+      {
+        "width": 1366,
+        "height": 900,
+        "active": 0,
+        "common": {
+          "bounds": {
+            "left": 821.75,
+            "top": 392.8125,
+            "right": 900.5,
+            "bottom": 442.5,
+            "width": 78.75,
+            "height": 49.6875
+          },
+          "clickable": true,
+          "outsideTablist": true,
+          "visibleButtons": 1
+        },
+        "slots": [
+          {
+            "kind": "cookie",
+            "active": true,
+            "holder": {
+              "left": 461.75,
+              "top": 290.625,
+              "right": 548.7470703125,
+              "bottom": 372.1875,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 464.5625,
+              "top": 292.5,
+              "right": 545.9345703125,
+              "bottom": 338.4375,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 466.4375,
+              "top": 295.3125,
+              "right": 544.0595703125,
+              "bottom": 334.6875,
+              "width": 77.6220703125,
+              "height": 39.375
+            },
+            "add": {
+              "left": 464.5625,
+              "top": 339.375,
+              "right": 508.2001953125,
+              "bottom": 356.25,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 511.0126953125,
+              "top": 339.375,
+              "right": 545.9345703125,
+              "bottom": 356.25,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": false,
+            "backdropLoaded": true,
+            "miniZ": null,
+            "backdropZ": 0,
+            "logicalMiniWidth": 82.7969,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "choco",
+            "active": false,
+            "holder": {
+              "left": 550.6220703125,
+              "top": 290.625,
+              "right": 637.619140625,
+              "bottom": 372.1875,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 553.4345703125,
+              "top": 292.5,
+              "right": 634.806640625,
+              "bottom": 338.4375,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 554.3720703125,
+              "top": 293.4375,
+              "right": 598.4345703125,
+              "bottom": 337.5,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 553.4345703125,
+              "top": 339.375,
+              "right": 597.072265625,
+              "bottom": 356.25,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 599.884765625,
+              "top": 339.375,
+              "right": 634.806640625,
+              "bottom": 356.25,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "candy",
+            "active": false,
+            "holder": {
+              "left": 639.494140625,
+              "top": 290.625,
+              "right": 726.4912109375,
+              "bottom": 372.1875,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 642.306640625,
+              "top": 292.5,
+              "right": 723.6787109375,
+              "bottom": 338.4375,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 643.244140625,
+              "top": 293.4375,
+              "right": 687.306640625,
+              "bottom": 337.5,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 642.306640625,
+              "top": 339.375,
+              "right": 685.9443359375,
+              "bottom": 356.25,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 688.7568359375,
+              "top": 339.375,
+              "right": 723.6787109375,
+              "bottom": 356.25,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "gelato",
+            "active": false,
+            "holder": {
+              "left": 728.3662109375,
+              "top": 290.625,
+              "right": 815.36328125,
+              "bottom": 372.1875,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 731.1787109375,
+              "top": 292.5,
+              "right": 812.55078125,
+              "bottom": 338.4375,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 732.1162109375,
+              "top": 293.4375,
+              "right": 776.1787109375,
+              "bottom": 337.5,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 731.1787109375,
+              "top": 339.375,
+              "right": 774.81640625,
+              "bottom": 356.25,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 777.62890625,
+              "top": 339.375,
+              "right": 812.55078125,
+              "bottom": 356.25,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "winery",
+            "active": false,
+            "holder": {
+              "left": 817.23828125,
+              "top": 290.625,
+              "right": 904.2353515625,
+              "bottom": 372.1875,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 820.05078125,
+              "top": 292.5,
+              "right": 901.4228515625,
+              "bottom": 338.4375,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 820.98828125,
+              "top": 293.4375,
+              "right": 865.05078125,
+              "bottom": 337.5,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 820.05078125,
+              "top": 339.375,
+              "right": 863.6884765625,
+              "bottom": 356.25,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 866.5009765625,
+              "top": 339.375,
+              "right": 901.4228515625,
+              "bottom": 356.25,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "popcorn",
+            "active": false,
+            "holder": {
+              "left": 461.75,
+              "top": 375.9375,
+              "right": 548.7470703125,
+              "bottom": 457.5,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 464.5625,
+              "top": 377.8125,
+              "right": 545.9345703125,
+              "bottom": 423.75,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 465.5,
+              "top": 378.75,
+              "right": 509.5625,
+              "bottom": 422.8125,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 464.5625,
+              "top": 424.6875,
+              "right": 508.2001953125,
+              "bottom": 441.5625,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 511.0126953125,
+              "top": 424.6875,
+              "right": 545.9345703125,
+              "bottom": 441.5625,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "jelly",
+            "active": false,
+            "holder": {
+              "left": 550.6220703125,
+              "top": 375.9375,
+              "right": 637.619140625,
+              "bottom": 457.5,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 553.4345703125,
+              "top": 377.8125,
+              "right": 634.806640625,
+              "bottom": 423.75,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 554.3720703125,
+              "top": 378.75,
+              "right": 598.4345703125,
+              "bottom": 422.8125,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 553.4345703125,
+              "top": 424.6875,
+              "right": 597.072265625,
+              "bottom": 441.5625,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 599.884765625,
+              "top": 424.6875,
+              "right": 634.806640625,
+              "bottom": 441.5625,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "stick",
+            "active": false,
+            "holder": {
+              "left": 639.494140625,
+              "top": 375.9375,
+              "right": 726.4912109375,
+              "bottom": 457.5,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 642.306640625,
+              "top": 377.8125,
+              "right": 723.6787109375,
+              "bottom": 423.75,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 643.244140625,
+              "top": 378.75,
+              "right": 687.306640625,
+              "bottom": 422.8125,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 642.306640625,
+              "top": 424.6875,
+              "right": 685.9443359375,
+              "bottom": 441.5625,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 688.7568359375,
+              "top": 424.6875,
+              "right": 723.6787109375,
+              "bottom": 441.5625,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          },
+          {
+            "kind": "castella",
+            "active": false,
+            "holder": {
+              "left": 728.3662109375,
+              "top": 375.9375,
+              "right": 815.36328125,
+              "bottom": 457.5,
+              "width": 86.9970703125,
+              "height": 81.5625
+            },
+            "bounds": {
+              "left": 731.1787109375,
+              "top": 377.8125,
+              "right": 812.55078125,
+              "bottom": 423.75,
+              "width": 81.3720703125,
+              "height": 45.9375
+            },
+            "mini": {
+              "left": 732.1162109375,
+              "top": 378.75,
+              "right": 776.1787109375,
+              "bottom": 422.8125,
+              "width": 44.0625,
+              "height": 44.0625
+            },
+            "add": {
+              "left": 731.1787109375,
+              "top": 424.6875,
+              "right": 774.81640625,
+              "bottom": 441.5625,
+              "width": 43.6376953125,
+              "height": 16.875
+            },
+            "one": {
+              "left": 777.62890625,
+              "top": 424.6875,
+              "right": 812.55078125,
+              "bottom": 441.5625,
+              "width": 34.921875,
+              "height": 16.875
+            },
+            "backdropVisible": true,
+            "backdropLoaded": true,
+            "miniZ": 2,
+            "backdropZ": 0,
+            "logicalMiniWidth": 47,
+            "titleRemoved": true,
+            "buttonFont": 8
+          }
+        ]
+      }
+    ],
+    "selection": [
+      {
+        "active": 0,
+        "selected": [
+          0
+        ],
+        "panels": [
+          0
+        ],
+        "logos": 1
+      },
+      {
+        "active": 1,
+        "selected": [
+          1
+        ],
+        "panels": [
+          1
+        ],
+        "logos": 1
+      },
+      {
+        "active": 2,
+        "selected": [
+          2
+        ],
+        "panels": [
+          2
+        ],
+        "logos": 1
+      },
+      {
+        "active": 3,
+        "selected": [
+          3
+        ],
+        "panels": [
+          3
+        ],
+        "logos": 1
+      },
+      {
+        "active": 4,
+        "selected": [
+          4
+        ],
+        "panels": [
+          4
+        ],
+        "logos": 1
+      },
+      {
+        "active": 5,
+        "selected": [
+          5
+        ],
+        "panels": [
+          5
+        ],
+        "logos": 1
+      },
+      {
+        "active": 6,
+        "selected": [
+          6
+        ],
+        "panels": [
+          6
+        ],
+        "logos": 1
+      },
+      {
+        "active": 7,
+        "selected": [
+          7
+        ],
+        "panels": [
+          7
+        ],
+        "logos": 1
+      },
+      {
+        "active": 8,
+        "selected": [
+          8
+        ],
+        "panels": [
+          8
+        ],
+        "logos": 1
+      }
+    ],
+    "bet": {
+      "before": {
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "credit": 1000000,
+        "unit": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      "afterAdd": {
+        "bets": [
+          3501,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "credit": 999499,
+        "unit": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5,
+          5
+        ]
+      },
+      "restoredCredit": 1000000
+    },
+    "reach": {
+      "input": {
+        "digits": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "caption": "リーチ",
+        "popup": "高額リーチ5",
+        "count": 1
+      },
+      "motion": {
+        "connected": true,
+        "selected": false,
+        "animationName": "v250-reach-marquee",
+        "animationDuration": "17.1s",
+        "animationPlayState": "running",
+        "durationVariable": "17.099999999999998s",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "x": 0,
+        "width": 881.1328125,
+        "hiddenAncestors": [],
+        "reducedMotion": false,
+        "paused": false,
+        "phase": "playing",
+        "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view",
+        "animations": [
+          {
+            "name": "v250-reach-marquee",
+            "playState": "running",
+            "pending": true,
+            "currentTime": 0,
+            "playbackRate": 1
+          }
+        ]
+      },
+      "scrolled": {
+        "connected": true,
+        "selected": false,
+        "animationName": "v250-reach-marquee",
+        "animationDuration": "17.1s",
+        "animationPlayState": "running",
+        "durationVariable": "17.099999999999998s",
+        "transform": "matrix(1, 0, 0, 1, -9.16125, 0)",
+        "x": -9.16125,
+        "width": 881.1328735351562,
+        "hiddenAncestors": [],
+        "reducedMotion": false,
+        "paused": false,
+        "phase": "playing",
+        "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view",
+        "animations": [
+          {
+            "name": "v250-reach-marquee",
+            "playState": "running",
+            "pending": false,
+            "currentTime": 333.35799999999335,
+            "playbackRate": 1
+          }
+        ]
+      },
+      "selectionFlow": [
+        {
+          "selected": true,
+          "before": {
+            "connected": true,
+            "selected": true,
+            "animationName": "v250-reach-marquee",
+            "animationDuration": "17.1s",
+            "animationPlayState": "running",
+            "durationVariable": "17.099999999999998s",
+            "transform": "matrix(1, 0, 0, 1, -10.9915, 0)",
+            "x": -10.9915,
+            "width": 881.1328125,
+            "hiddenAncestors": [],
+            "reducedMotion": false,
+            "paused": false,
+            "phase": "playing",
+            "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view pc-active",
+            "animations": [
+              {
+                "name": "v250-reach-marquee",
+                "playState": "running",
+                "pending": false,
+                "currentTime": 399.9579999999945,
+                "playbackRate": 1
+              }
+            ]
+          },
+          "after": {
+            "connected": true,
+            "selected": true,
+            "animationName": "v250-reach-marquee",
+            "animationDuration": "17.1s",
+            "animationPlayState": "running",
+            "durationVariable": "17.099999999999998s",
+            "transform": "matrix(1, 0, 0, 1, -16.0289, 0)",
+            "x": -16.0289,
+            "width": 881.1328125,
+            "hiddenAncestors": [],
+            "reducedMotion": false,
+            "paused": false,
+            "phase": "playing",
+            "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view pc-active",
+            "animations": [
+              {
+                "name": "v250-reach-marquee",
+                "playState": "running",
+                "pending": false,
+                "currentTime": 583.2579999999937,
+                "playbackRate": 1
+              }
+            ]
+          }
+        },
+        {
+          "selected": false,
+          "before": {
+            "connected": true,
+            "selected": false,
+            "animationName": "v250-reach-marquee",
+            "animationDuration": "17.1s",
+            "animationPlayState": "running",
+            "durationVariable": "17.099999999999998s",
+            "transform": "matrix(1, 0, 0, 1, -18.3209, 0)",
+            "x": -18.3209,
+            "width": 881.1328735351562,
+            "hiddenAncestors": [],
+            "reducedMotion": false,
+            "paused": false,
+            "phase": "playing",
+            "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view",
+            "animations": [
+              {
+                "name": "v250-reach-marquee",
+                "playState": "running",
+                "pending": false,
+                "currentTime": 666.6579999999947,
+                "playbackRate": 1
+              }
+            ]
+          },
+          "after": {
+            "connected": true,
+            "selected": false,
+            "animationName": "v250-reach-marquee",
+            "animationDuration": "17.1s",
+            "animationPlayState": "running",
+            "durationVariable": "17.099999999999998s",
+            "transform": "matrix(1, 0, 0, 1, -22.9021, 0)",
+            "x": -22.9021,
+            "width": 881.1328125,
+            "hiddenAncestors": [],
+            "reducedMotion": false,
+            "paused": false,
+            "phase": "playing",
+            "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view",
+            "animations": [
+              {
+                "name": "v250-reach-marquee",
+                "playState": "running",
+                "pending": false,
+                "currentTime": 833.3579999999934,
+                "playbackRate": 1
+              }
+            ]
+          }
+        }
+      ],
+      "pauseFlow": {
+        "stopped": {
+          "connected": true,
+          "selected": false,
+          "animationName": "v250-reach-marquee",
+          "animationDuration": "17.1s",
+          "animationPlayState": "paused",
+          "durationVariable": "17.099999999999998s",
+          "transform": "matrix(1, 0, 0, 1, -24.2735, 0)",
+          "x": -24.2735,
+          "width": 881.1328125,
+          "hiddenAncestors": [],
+          "reducedMotion": false,
+          "paused": false,
+          "phase": "playing",
+          "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view player-menu-open paused",
+          "animations": [
+            {
+              "name": "v250-reach-marquee",
+              "playState": "paused",
+              "pending": false,
+              "currentTime": 883.2579999999944,
+              "playbackRate": 1
+            }
+          ]
+        },
+        "still": {
+          "connected": true,
+          "selected": false,
+          "animationName": "v250-reach-marquee",
+          "animationDuration": "17.1s",
+          "animationPlayState": "paused",
+          "durationVariable": "17.099999999999998s",
+          "transform": "matrix(1, 0, 0, 1, -24.2735, 0)",
+          "x": -24.2735,
+          "width": 881.1328125,
+          "hiddenAncestors": [],
+          "reducedMotion": false,
+          "paused": false,
+          "phase": "playing",
+          "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view player-menu-open paused",
+          "animations": [
+            {
+              "name": "v250-reach-marquee",
+              "playState": "paused",
+              "pending": false,
+              "currentTime": 883.2579999999944,
+              "playbackRate": 1
+            }
+          ]
+        },
+        "resumeStart": {
+          "connected": true,
+          "selected": false,
+          "animationName": "v250-reach-marquee",
+          "animationDuration": "17.1s",
+          "animationPlayState": "running",
+          "durationVariable": "17.099999999999998s",
+          "transform": "matrix(1, 0, 0, 1, -24.7318, 0)",
+          "x": -24.7318,
+          "width": 881.1328125,
+          "hiddenAncestors": [],
+          "reducedMotion": false,
+          "paused": false,
+          "phase": "playing",
+          "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view",
+          "animations": [
+            {
+              "name": "v250-reach-marquee",
+              "playState": "running",
+              "pending": false,
+              "currentTime": 899.9360000000145,
+              "playbackRate": 1
+            }
+          ]
+        },
+        "resumed": {
+          "connected": true,
+          "selected": false,
+          "animationName": "v250-reach-marquee",
+          "animationDuration": "17.1s",
+          "animationPlayState": "running",
+          "durationVariable": "17.099999999999998s",
+          "transform": "matrix(1, 0, 0, 1, -29.313, 0)",
+          "x": -29.313,
+          "width": 881.1328125,
+          "hiddenAncestors": [],
+          "reducedMotion": false,
+          "paused": false,
+          "phase": "playing",
+          "bodyClass": "six-bottle-v6 gelato-enabled winery-enabled pc-enabled six-v8-art-ready six-v11-slim-ready desktop-view",
+          "animations": [
+            {
+              "name": "v250-reach-marquee",
+              "playState": "running",
+              "pending": false,
+              "currentTime": 1066.6360000000168,
+              "playbackRate": 1
+            }
+          ]
+        }
+      },
+      "upgraded": {
+        "count": 2,
+        "afterRepeated": 2,
+        "text": "超高額リーチ5"
+      },
+      "empty": {
+        "text": "",
+        "captionHidden": true,
+        "empty": "true",
+        "popupHidden": true
+      },
+      "reappeared": {
+        "before": 2,
+        "count": 3,
+        "afterRepeated": 3,
+        "text": "超高額リーチ5"
+      }
+    },
+    "sugar": [
+      {
+        "kind": "cookie",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "choco",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "candy",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "gelato",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "winery",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "popcorn",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "jelly",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "stick",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      },
+      {
+        "kind": "castella",
+        "samePlaque": true,
+        "row": "2",
+        "winRow": "2"
+      }
+    ],
+    "reducedMotion": {
+      "motion": true,
+      "animation": "none",
+      "tabIndex": 0,
+      "overflow": "auto"
+    }
+  },
+  "castella": {
+    "version": "20261118-v250-tabs-castella61",
+    "screens": [
+      {
+        "width": 1366,
+        "height": 900,
+        "file": "castella-initial-1366.png",
+        "data": {
+          "holes": 61,
+          "edges": 84,
+          "stage": "pour",
+          "bounds": {
+            "x": 566.837890625,
+            "y": 476.923828125,
+            "width": 312.626953125,
+            "height": 280.78125,
+            "right": 879.46484375,
+            "bottom": 757.705078125
+          },
+          "canvas": {
+            "x": 566.837890625,
+            "y": 476.923828125,
+            "width": 312.626953125,
+            "height": 280.78125,
+            "right": 879.46484375,
+            "bottom": 757.705078125
+          },
+          "centers": [
+            {
+              "x": 156.3134765625,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 139.57755830099038,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 122.84164003948072,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 139.57755830099038,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 173.04939482400962,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 189.78531308551928,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 173.04939482400962,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 122.84164003948072,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 106.1057217779711,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 89.36980351646146,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 106.1057217779711,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 122.84164003948072,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 156.3134765625,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 189.78531308551928,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 206.5212313470289,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 223.25714960853855,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 206.5212313470289,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 189.78531308551928,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 156.3134765625,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 106.1057217779711,
+              "y": 53.42824277923654,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 89.36980351646146,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 72.63388525495182,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 55.897966993442196,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 72.63388525495182,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 89.36980351646146,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 106.1057217779711,
+              "y": 227.35300722076346,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 139.57755830099038,
+              "y": 227.35300722076346,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 173.04939482400962,
+              "y": 227.35300722076346,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 206.5212313470289,
+              "y": 227.35300722076346,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 223.25714960853855,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 239.99306787004818,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 256.7289861315578,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 239.99306787004818,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 223.25714960853855,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 206.5212313470289,
+              "y": 53.42824277923654,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 173.04939482400962,
+              "y": 53.42824277923654,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 139.57755830099038,
+              "y": 53.42824277923654,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 89.36980351646146,
+              "y": 24.440782038982064,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 72.63388525495182,
+              "y": 53.42824277923654,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 55.897966993442196,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 39.16204873193256,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 22.42613047042292,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 39.16204873193256,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 55.897966993442196,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 72.63388525495182,
+              "y": 227.35300722076346,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 89.36980351646146,
+              "y": 256.3404679610179,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 122.84164003948072,
+              "y": 256.3404679610179,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 156.3134765625,
+              "y": 256.3404679610179,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 189.78531308551928,
+              "y": 256.3404679610179,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 223.25714960853855,
+              "y": 256.3404679610179,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 239.99306787004818,
+              "y": 227.35300722076346,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 256.7289861315578,
+              "y": 198.36554648050895,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 273.46490439306746,
+              "y": 169.37808574025448,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 290.2008226545771,
+              "y": 140.390625,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 273.46490439306746,
+              "y": 111.40316425974552,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 256.7289861315578,
+              "y": 82.41570351949103,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 239.99306787004818,
+              "y": 53.42824277923654,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 223.25714960853855,
+              "y": 24.440782038982064,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 189.78531308551928,
+              "y": 24.440782038982064,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 156.3134765625,
+              "y": 24.440782038982064,
+              "r": 13.556093791822805
+            },
+            {
+              "x": 122.84164003948072,
+              "y": 24.440782038982064,
+              "r": 13.556093791822805
+            }
+          ],
+          "gauges": [
+            {
+              "label": "注入力",
+              "value": 1,
+              "bars": 3,
+              "filled": 1,
+              "bounds": {
+                "x": 615.2802734375,
+                "y": 782.578125,
+                "width": 100.13671875,
+                "height": 9.1259765625,
+                "right": 715.4169921875,
+                "bottom": 791.7041015625
+              }
+            },
+            {
+              "label": "火力",
+              "value": 1,
+              "bars": 3,
+              "filled": 1,
+              "bounds": {
+                "x": 773.7763671875,
+                "y": 782.578125,
+                "width": 100.13671875,
+                "height": 9.1259765625,
+                "right": 873.9130859375,
+                "bottom": 791.7041015625
+              }
+            }
+          ],
+          "markers": {
+            "pour": 2,
+            "fire": 2,
+            "sugar": 1,
+            "odds": 0
+          },
+          "text": "\n \n 前半1〜5球\n 後半6〜8球\n 配当\n 個数WIN61全焼600000WIN58〜300000WIN54〜225000WIN50〜150000WIN46〜90000WIN42〜60000WIN38〜30000WIN34〜15000WIN30〜6000WIN26〜3000WIN22〜1800WIN18〜1200WIN14〜600WIN\n \n \n \n   注入力周囲1マス\n   火力周囲1マス\n \n \n 生地 19個、焼き上がり 0個。",
+          "payoutRows": [
+            {
+              "count": 61,
+              "amount": "600000"
+            },
+            {
+              "count": 58,
+              "amount": "300000"
+            },
+            {
+              "count": 54,
+              "amount": "225000"
+            },
+            {
+              "count": 50,
+              "amount": "150000"
+            },
+            {
+              "count": 46,
+              "amount": "90000"
+            },
+            {
+              "count": 42,
+              "amount": "60000"
+            },
+            {
+              "count": 38,
+              "amount": "30000"
+            },
+            {
+              "count": 34,
+              "amount": "15000"
+            },
+            {
+              "count": 30,
+              "amount": "6000"
+            },
+            {
+              "count": 26,
+              "amount": "3000"
+            },
+            {
+              "count": 22,
+              "amount": "1800"
+            },
+            {
+              "count": 18,
+              "amount": "1200"
+            },
+            {
+              "count": 14,
+              "amount": "600"
+            }
+          ],
+          "canvasLabel": "61個の焼き型。生地 19個、焼き上がり 0個。注入力UPは番号HITで次回から強化。火力スイッチは生地が届くと発動。シュガーの穴が焼き上がると獲得。"
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "file": "castella-initial-390.png",
+        "data": {
+          "holes": 61,
+          "edges": 84,
+          "stage": "pour",
+          "bounds": {
+            "x": 94.326171875,
+            "y": 479.7685546875,
+            "width": 270.943359375,
+            "height": 243.34375,
+            "right": 365.26953125,
+            "bottom": 723.1123046875
+          },
+          "canvas": {
+            "x": 94.326171875,
+            "y": 479.7685546875,
+            "width": 270.943359375,
+            "height": 243.34375,
+            "right": 365.26953125,
+            "bottom": 723.1123046875
+          },
+          "centers": [
+            {
+              "x": 135.4716796875,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 120.96721719419165,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 106.4627547008833,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 120.96721719419165,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 149.97614218080835,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 164.4806046741167,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 149.97614218080835,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 106.4627547008833,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 91.95829220757494,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 77.45382971426659,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 91.95829220757494,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 106.4627547008833,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 135.4716796875,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 164.4806046741167,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 178.98506716742506,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 193.4895296607334,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 178.98506716742506,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 164.4806046741167,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 135.4716796875,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 91.95829220757494,
+              "y": 46.30447707533834,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 77.45382971426659,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 62.94936722095825,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 48.4449047276499,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 62.94936722095825,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 77.45382971426659,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 91.95829220757494,
+              "y": 197.03927292466165,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 120.96721719419165,
+              "y": 197.03927292466165,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 149.97614218080835,
+              "y": 197.03927292466165,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 178.98506716742506,
+              "y": 197.03927292466165,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 193.4895296607334,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 207.99399215404173,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 222.49845464735012,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 207.99399215404173,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 193.4895296607334,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 178.98506716742506,
+              "y": 46.30447707533834,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 149.97614218080835,
+              "y": 46.30447707533834,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 120.96721719419165,
+              "y": 46.30447707533834,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 77.45382971426659,
+              "y": 21.18201110045112,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 62.94936722095825,
+              "y": 46.30447707533834,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 48.4449047276499,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 33.940442234341546,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 19.435979741033194,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 33.940442234341546,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 48.4449047276499,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 62.94936722095825,
+              "y": 197.03927292466165,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 77.45382971426659,
+              "y": 222.16173889954888,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 106.4627547008833,
+              "y": 222.16173889954888,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 135.4716796875,
+              "y": 222.16173889954888,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 164.4806046741167,
+              "y": 222.16173889954888,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 193.4895296607334,
+              "y": 222.16173889954888,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 207.99399215404173,
+              "y": 197.03927292466165,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 222.49845464735012,
+              "y": 171.91680694977444,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 237.00291714065844,
+              "y": 146.79434097488723,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 251.50737963396682,
+              "y": 121.671875,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 237.00291714065844,
+              "y": 96.54940902511278,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 222.49845464735012,
+              "y": 71.42694305022556,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 207.99399215404173,
+              "y": 46.30447707533834,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 193.4895296607334,
+              "y": 21.18201110045112,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 164.4806046741167,
+              "y": 21.18201110045112,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 135.4716796875,
+              "y": 21.18201110045112,
+              "r": 11.748614619579765
+            },
+            {
+              "x": 106.4627547008833,
+              "y": 21.18201110045112,
+              "r": 11.748614619579765
+            }
+          ],
+          "gauges": [
+            {
+              "label": "注入力",
+              "value": 1,
+              "bars": 3,
+              "filled": 1,
+              "bounds": {
+                "x": 135.078125,
+                "y": 744.681640625,
+                "width": 88.0166015625,
+                "height": 7.9091796875,
+                "right": 223.0947265625,
+                "bottom": 752.5908203125
+              }
+            },
+            {
+              "label": "火力",
+              "value": 1,
+              "bars": 3,
+              "filled": 1,
+              "bounds": {
+                "x": 272.44140625,
+                "y": 744.681640625,
+                "width": 88.0166015625,
+                "height": 7.9091796875,
+                "right": 360.4580078125,
+                "bottom": 752.5908203125
+              }
+            }
+          ],
+          "markers": {
+            "pour": 2,
+            "fire": 2,
+            "sugar": 1,
+            "odds": 0
+          },
+          "text": "\n \n 前半1〜5球\n 後半6〜8球\n 配当\n 個数WIN61全焼600000WIN58〜300000WIN54〜225000WIN50〜150000WIN46〜90000WIN42〜60000WIN38〜30000WIN34〜15000WIN30〜6000WIN26〜3000WIN22〜1800WIN18〜1200WIN14〜600WIN\n \n \n \n   注入力周囲1マス\n   火力周囲1マス\n \n \n 生地 19個、焼き上がり 0個。",
+          "payoutRows": [
+            {
+              "count": 61,
+              "amount": "600000"
+            },
+            {
+              "count": 58,
+              "amount": "300000"
+            },
+            {
+              "count": 54,
+              "amount": "225000"
+            },
+            {
+              "count": 50,
+              "amount": "150000"
+            },
+            {
+              "count": 46,
+              "amount": "90000"
+            },
+            {
+              "count": 42,
+              "amount": "60000"
+            },
+            {
+              "count": 38,
+              "amount": "30000"
+            },
+            {
+              "count": 34,
+              "amount": "15000"
+            },
+            {
+              "count": 30,
+              "amount": "6000"
+            },
+            {
+              "count": 26,
+              "amount": "3000"
+            },
+            {
+              "count": 22,
+              "amount": "1800"
+            },
+            {
+              "count": 18,
+              "amount": "1200"
+            },
+            {
+              "count": 14,
+              "amount": "600"
+            }
+          ],
+          "canvasLabel": "61個の焼き型。生地 19個、焼き上がり 0個。注入力UPは番号HITで次回から強化。火力スイッチは生地が届くと発動。シュガーの穴が焼き上がると獲得。"
+        }
+      }
+    ],
+    "balls": [
+      {
+        "processed": 1,
+        "phase": "pour",
+        "pour": 2,
+        "lastPour": 1,
+        "fire": 2,
+        "fireTriggers": 1,
+        "pourTriggers": 1,
+        "wet": 21,
+        "baked": 0,
+        "sugarEarned": false,
+        "collected": false,
+        "roundSteps": 0,
+        "bank": 0,
+        "gauges": [
+          2,
+          2
+        ],
+        "currentRows": [],
+        "total": 0,
+        "paid": false,
+        "stage": "pour"
+      },
+      {
+        "processed": 2,
+        "phase": "pour",
+        "pour": 3,
+        "lastPour": 2,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 25,
+        "baked": 0,
+        "sugarEarned": false,
+        "collected": false,
+        "roundSteps": 0,
+        "bank": 0,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [],
+        "total": 0,
+        "paid": false,
+        "stage": "pour"
+      },
+      {
+        "processed": 3,
+        "phase": "pour",
+        "pour": 3,
+        "lastPour": 3,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 37,
+        "baked": 0,
+        "sugarEarned": false,
+        "collected": false,
+        "roundSteps": 0,
+        "bank": 0,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [],
+        "total": 0,
+        "paid": false,
+        "stage": "pour"
+      },
+      {
+        "processed": 4,
+        "phase": "pour",
+        "pour": 3,
+        "lastPour": 3,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 47,
+        "baked": 0,
+        "sugarEarned": false,
+        "collected": false,
+        "roundSteps": 0,
+        "bank": 0,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [],
+        "total": 0,
+        "paid": false,
+        "stage": "pour"
+      },
+      {
+        "processed": 5,
+        "phase": "bake",
+        "pour": 3,
+        "lastPour": 3,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 59,
+        "baked": 0,
+        "sugarEarned": false,
+        "collected": false,
+        "roundSteps": 0,
+        "bank": 0,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [],
+        "total": 0,
+        "paid": false,
+        "stage": "bake"
+      },
+      {
+        "processed": 6,
+        "phase": "bake",
+        "pour": 3,
+        "lastPour": 3,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 59,
+        "baked": 32,
+        "sugarEarned": true,
+        "collected": true,
+        "roundSteps": 1,
+        "bank": 1,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [
+          30
+        ],
+        "total": 0,
+        "paid": false,
+        "stage": "bake"
+      },
+      {
+        "processed": 7,
+        "phase": "bake",
+        "pour": 3,
+        "lastPour": 3,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 59,
+        "baked": 52,
+        "sugarEarned": true,
+        "collected": true,
+        "roundSteps": 1,
+        "bank": 1,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [
+          50
+        ],
+        "total": 0,
+        "paid": false,
+        "stage": "bake"
+      },
+      {
+        "processed": 8,
+        "phase": "done",
+        "pour": 3,
+        "lastPour": 3,
+        "fire": 3,
+        "fireTriggers": 2,
+        "pourTriggers": 2,
+        "wet": 59,
+        "baked": 56,
+        "sugarEarned": true,
+        "collected": true,
+        "roundSteps": 1,
+        "bank": 1,
+        "gauges": [
+          3,
+          3
+        ],
+        "currentRows": [
+          54
+        ],
+        "total": 7500,
+        "paid": true,
+        "stage": "bake"
+      }
+    ],
+    "waits": [
+      {
+        "count": 1,
+        "number": 2,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:32:58.386Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:00.016Z",
+        "conditions": {
+          "count": 1,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 1,
+            "phase": "pour",
+            "pour": 2,
+            "lastPour": 1,
+            "fire": 2,
+            "fireTriggers": 1,
+            "pourTriggers": 1,
+            "wet": 21,
+            "baked": 0,
+            "sugarEarned": false,
+            "collected": false,
+            "roundSteps": 0,
+            "bank": 0,
+            "gauges": [
+              2,
+              2
+            ],
+            "currentRows": [],
+            "total": 0,
+            "paid": false,
+            "stage": "pour"
+          },
+          "presentation": {
+            "count": 1,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1609
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 2,
+        "number": 4,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:00.066Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:01.649Z",
+        "conditions": {
+          "count": 2,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 2,
+            "phase": "pour",
+            "pour": 3,
+            "lastPour": 2,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 25,
+            "baked": 0,
+            "sugarEarned": false,
+            "collected": false,
+            "roundSteps": 0,
+            "bank": 0,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [],
+            "total": 0,
+            "paid": false,
+            "stage": "pour"
+          },
+          "presentation": {
+            "count": 2,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1571
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 3,
+        "number": 13,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:01.668Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:03.336Z",
+        "conditions": {
+          "count": 3,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 3,
+            "phase": "pour",
+            "pour": 3,
+            "lastPour": 3,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 37,
+            "baked": 0,
+            "sugarEarned": false,
+            "collected": false,
+            "roundSteps": 0,
+            "bank": 0,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [],
+            "total": 0,
+            "paid": false,
+            "stage": "pour"
+          },
+          "presentation": {
+            "count": 3,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1635
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 4,
+        "number": 20,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:03.388Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:05.082Z",
+        "conditions": {
+          "count": 4,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 4,
+            "phase": "pour",
+            "pour": 3,
+            "lastPour": 3,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 47,
+            "baked": 0,
+            "sugarEarned": false,
+            "collected": false,
+            "roundSteps": 0,
+            "bank": 0,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [],
+            "total": 0,
+            "paid": false,
+            "stage": "pour"
+          },
+          "presentation": {
+            "count": 4,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1671
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 5,
+        "number": 22,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:05.144Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:06.833Z",
+        "conditions": {
+          "count": 5,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 5,
+            "phase": "bake",
+            "pour": 3,
+            "lastPour": 3,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 59,
+            "baked": 0,
+            "sugarEarned": false,
+            "collected": false,
+            "roundSteps": 0,
+            "bank": 0,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [],
+            "total": 0,
+            "paid": false,
+            "stage": "bake"
+          },
+          "presentation": {
+            "count": 5,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1671
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 6,
+        "number": 24,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:07.195Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:08.864Z",
+        "conditions": {
+          "count": 6,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 6,
+            "phase": "bake",
+            "pour": 3,
+            "lastPour": 3,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 59,
+            "baked": 32,
+            "sugarEarned": true,
+            "collected": true,
+            "roundSteps": 1,
+            "bank": 1,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [
+              30
+            ],
+            "total": 0,
+            "paid": false,
+            "stage": "bake"
+          },
+          "presentation": {
+            "count": 6,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1636
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 7,
+        "number": 16,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:08.921Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:10.653Z",
+        "conditions": {
+          "count": 7,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 7,
+            "phase": "bake",
+            "pour": 3,
+            "lastPour": 3,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 59,
+            "baked": 52,
+            "sugarEarned": true,
+            "collected": true,
+            "roundSteps": 1,
+            "bank": 1,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [
+              50
+            ],
+            "total": 0,
+            "paid": false,
+            "stage": "bake"
+          },
+          "presentation": {
+            "count": 7,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1717
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      },
+      {
+        "count": 8,
+        "number": 3,
+        "timeoutMs": 15000,
+        "startedAt": "2026-11-18T11:33:10.704Z",
+        "status": "complete",
+        "finishedAt": "2026-11-18T11:33:13.004Z",
+        "conditions": {
+          "count": 8,
+          "checks": {
+            "processed": true,
+            "presentation": true,
+            "gauges": true,
+            "stage": true,
+            "bakedLabel": true,
+            "sugar": true,
+            "settled": true
+          },
+          "observed": {
+            "processed": 8,
+            "phase": "done",
+            "pour": 3,
+            "lastPour": 3,
+            "fire": 3,
+            "fireTriggers": 2,
+            "pourTriggers": 2,
+            "wet": 59,
+            "baked": 56,
+            "sugarEarned": true,
+            "collected": true,
+            "roundSteps": 1,
+            "bank": 1,
+            "gauges": [
+              3,
+              3
+            ],
+            "currentRows": [
+              54
+            ],
+            "total": 7500,
+            "paid": true,
+            "stage": "bake"
+          },
+          "presentation": {
+            "count": 8,
+            "token": 1,
+            "animationMs": 1500,
+            "complete": true,
+            "cancelled": false,
+            "elapsedMs": 1679
+          },
+          "appPhase": "playing",
+          "paused": false
+        }
+      }
+    ],
+    "plan": {
+      "draws": [
+        2,
+        4,
+        13,
+        20,
+        22,
+        24,
+        16,
+        3
+      ],
+      "expectedSugar": true,
+      "expectedFire": 3,
+      "expectedPayout": 7500,
+      "expectedBaked": 56
+    },
+    "current": null,
+    "sugar": {
+      "oneAward": true,
+      "bakedHoleRequired": true,
+      "expected": true
+    },
+    "legacy": {
+      "holes": 37,
+      "geometry": {
+        "radius": 3,
+        "panW": 7.34,
+        "panH": 6.316152422706632
+      },
+      "painted": 87341,
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "rows": 18
+    },
+    "pageErrors": []
+  },
+  "sixDrop": {
+    "number": 11,
+    "parts": 3,
+    "fills": [
+      "none",
+      "none",
+      "none"
+    ],
+    "centerOpaquePixels": 0,
+    "sourceFill": "none",
+    "gameStateUnchanged": true
+  },
+  "sharedClient": {
+    "version": "20261118-v250-tabs-castella61",
+    "hiddenState": {
+      "credit": 988900,
+      "phases": [
+        "playing",
+        "result",
+        "paying",
+        "complete",
+        "ready"
+      ],
+      "award": {
+        "phase": "complete",
+        "win": 15900,
+        "roundWins": [
+          1200,
+          600,
+          0,
+          0,
+          4800,
+          300,
+          2400,
+          600,
+          6000
+        ],
+        "credit": 988900
+      },
+      "advanceResult": 10
+    },
+    "hiddenNineGameResultAndPayout": true,
+    "clientGames": 9,
+    "forecastChecks": [
+      {
+        "ballCount": 1,
+        "available": 24,
+        "positive": 0,
+        "baseWin": 0
+      },
+      {
+        "ballCount": 2,
+        "available": 23,
+        "positive": 0,
+        "baseWin": 0
+      },
+      {
+        "ballCount": 3,
+        "available": 22,
+        "positive": 5,
+        "baseWin": 600
+      }
+    ],
+    "monitorTiles": 25,
+    "monitorRatios": true,
+    "normalRoundStarted": true,
+    "forcedRejoined": true,
+    "forcedCountdownStarted": true,
+    "nextBallReceived": true,
+    "forcedRoundBetRequests": 1,
+    "confirmedRefund": 27000,
+    "creditAfterRefundAndNewBet": 973000,
+    "unchangedRefundQueueWrites4500ms": 0,
+    "pageErrors": []
+  },
+  "screenshots": [
+    {
+      "path": "qa-castella-v250/castella-baked-sugar.png",
+      "sha256": "f1c353b8337f9d021965f60903960db2d0b3d73fb40ba777e90d2ad6b566078e",
+      "bytes": 1062881
+    },
+    {
+      "path": "qa-castella-v250/castella-initial-1366.png",
+      "sha256": "5ee9e41a0dd540098e782096f4343bec564299ee7dad1445d57549463e0ebaf7",
+      "bytes": 1056667
+    },
+    {
+      "path": "qa-castella-v250/castella-initial-390.png",
+      "sha256": "58293a5d84daf11ab9b648777d569e7bd86eeba72d426088d728643cccaaecae",
+      "bytes": 507013
+    },
+    {
+      "path": "qa-castella-v250/castella-levels-and-bake.png",
+      "sha256": "2feac659bebe2a86b2eb6da9238245b9051fd28c75f3fe0a85fe3579792714fd",
+      "bytes": 1071028
+    },
+    {
+      "path": "qa-client-v243/hidden-nine-games-complete.png",
+      "sha256": "a334b173e0a05ce761edf5631a4925355f61e99de2dcd4cddf4b99f282aa6171",
+      "bytes": 1060218
+    },
+    {
+      "path": "qa-client-v243/monitor-forecast.png",
+      "sha256": "365a547300714e9edfc54517669b2e8130d98ff80d162d032bd70d94024843b9",
+      "bytes": 218293
+    },
+    {
+      "path": "qa-client-v243/sixdrop-v247-desktop.png",
+      "sha256": "c05c858dcc1e784aaf2c35abe5dea3e16ba7100a7bb900ea16545293e73fa050",
+      "bytes": 1069625
+    },
+    {
+      "path": "qa-client-v243/sixdrop-v247-mobile.png",
+      "sha256": "3655edaeb4b2e609e93c9c7f177d96709292998192f8501639f734d583ad7d8a",
+      "bytes": 500108
+    },
+    {
+      "path": "qa-sixdrop-v250/allclear-transparent.png",
+      "sha256": "7d3f7e5abe196403e222625ea4d9e1761403523c211181eb21c26a3d6c937383",
+      "bytes": 1229197
+    },
+    {
+      "path": "qa-tabs-v250/reach-popup.png",
+      "sha256": "66f4c6b3a76bb650826297fa431409db8ec908439a9e38d0f488d40da7e8612c",
+      "bytes": 1040333
+    },
+    {
+      "path": "qa-tabs-v250/tabs-1366x900.png",
+      "sha256": "bbd3bba655e6feaca6626f13392cdfee6b2c24e63818216e065a0a969c9c2cbf",
+      "bytes": 887206
+    },
+    {
+      "path": "qa-tabs-v250/tabs-320x740.png",
+      "sha256": "7602a8a41e09463f879ab14e8b3099dd256b979af0ce2658c8ec88b0086ade40",
+      "bytes": 272620
+    },
+    {
+      "path": "qa-tabs-v250/tabs-390x844.png",
+      "sha256": "1b1420182e99e2effd75b58e79ebd0dad60038835e25c3c262a82730aa1f4a77",
+      "bytes": 385330
+    },
+    {
+      "path": "qa-tabs-v250/tabs-430x932.png",
+      "sha256": "19d1af74fe7534754d2ba3f54d547225c0f0b09d7bdd3d74c21b2bbebabfdd4a",
+      "bytes": 448829
+    },
+    {
+      "path": "qa-tabs-v250/tabs-844x390.png",
+      "sha256": "64ce1d94e870ffc1e3b6276a3a8cc2ae4a9efe862ec2c9e07fa837542fafdf2f",
+      "bytes": 367176
+    }
+  ]
+}
