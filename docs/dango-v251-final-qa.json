@@ -1,0 +1,724 @@
+{
+  "version": "20261118-v251-dango-de-bingo",
+  "dateJST": "2026-11-18",
+  "baselineCommit": "77c3a497f314822db59698caabf4c22962b7758f",
+  "codeCommit": "d9fd00cd3be97318fe697a2b3fc4cfcb798a5923",
+  "mainCommit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+  "status": "published-and-verified",
+  "browserWorkflow": {
+    "runId": 44316509323,
+    "jobId": 134843929431,
+    "conclusion": "success",
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44316509323",
+    "artifactId": 14433086954
+  },
+  "sharedWorkflow": {
+    "runId": 44317844302,
+    "codeCommit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+    "conclusion": "success"
+  },
+  "scopeNote": "Feature verification covers the implemented game and browser interactions. Initial main also clarifies the attract-lesson payout sentence and documentation; all 15 main workflows including Pages deployment and read-only public byte/render verification passed.",
+  "dango": {
+    "cells": 25,
+    "rows": [
+      1,
+      3,
+      5,
+      7,
+      9
+    ],
+    "lines": 19,
+    "lineCountsByLength": {
+      "3": 7,
+      "4": 6,
+      "5": 4,
+      "7": 1,
+      "9": 1
+    },
+    "initialFreeMaximum": 3,
+    "placementMaximum": 4,
+    "lineFreeBonus": false,
+    "initialHitOddsBonus": false,
+    "placedFreeLaterHitOnly": true,
+    "colors": {
+      "normal": "white",
+      "initialFree": "green",
+      "placedFree": "red",
+      "oddsActivated": "red with gold leaf and gold rim"
+    },
+    "numberPreserved": true,
+    "miniOddsText": false,
+    "mainTransientOddsText": true,
+    "sharedBalls": 8,
+    "placementTouchAndKeyboard": true,
+    "undoAutoConfirm": true,
+    "noPlacementTimeOdds": true,
+    "goldAndColorPixelChecks": {
+      "skewers": [
+        {
+          "id": 0,
+          "axis": "horizontal",
+          "length": 3,
+          "pixel": [
+            226,
+            183,
+            111,
+            255
+          ]
+        },
+        {
+          "id": 1,
+          "axis": "horizontal",
+          "length": 5,
+          "pixel": [
+            226,
+            183,
+            111,
+            255
+          ]
+        },
+        {
+          "id": 2,
+          "axis": "horizontal",
+          "length": 7,
+          "pixel": [
+            226,
+            183,
+            111,
+            255
+          ]
+        },
+        {
+          "id": 3,
+          "axis": "horizontal",
+          "length": 9,
+          "pixel": [
+            226,
+            183,
+            111,
+            255
+          ]
+        },
+        {
+          "id": 4,
+          "axis": "vertical",
+          "length": 3,
+          "pixel": [
+            148,
+            100,
+            59,
+            255
+          ]
+        },
+        {
+          "id": 5,
+          "axis": "vertical",
+          "length": 4,
+          "pixel": [
+            202,
+            158,
+            94,
+            255
+          ]
+        },
+        {
+          "id": 6,
+          "axis": "vertical",
+          "length": 5,
+          "pixel": [
+            155,
+            108,
+            64,
+            255
+          ]
+        },
+        {
+          "id": 7,
+          "axis": "vertical",
+          "length": 4,
+          "pixel": [
+            125,
+            76,
+            44,
+            255
+          ]
+        },
+        {
+          "id": 8,
+          "axis": "vertical",
+          "length": 3,
+          "pixel": [
+            164,
+            116,
+            69,
+            255
+          ]
+        },
+        {
+          "id": 9,
+          "axis": "diagonal-minus",
+          "length": 3,
+          "pixel": [
+            217,
+            174,
+            105,
+            255
+          ]
+        },
+        {
+          "id": 10,
+          "axis": "diagonal-minus",
+          "length": 3,
+          "pixel": [
+            180,
+            134,
+            80,
+            255
+          ]
+        },
+        {
+          "id": 11,
+          "axis": "diagonal-minus",
+          "length": 4,
+          "pixel": [
+            222,
+            179,
+            108,
+            255
+          ]
+        },
+        {
+          "id": 12,
+          "axis": "diagonal-minus",
+          "length": 4,
+          "pixel": [
+            226,
+            183,
+            111,
+            255
+          ]
+        },
+        {
+          "id": 13,
+          "axis": "diagonal-minus",
+          "length": 5,
+          "pixel": [
+            225,
+            182,
+            110,
+            255
+          ]
+        },
+        {
+          "id": 14,
+          "axis": "diagonal-plus",
+          "length": 5,
+          "pixel": [
+            125,
+            76,
+            44,
+            255
+          ]
+        },
+        {
+          "id": 15,
+          "axis": "diagonal-plus",
+          "length": 4,
+          "pixel": [
+            125,
+            76,
+            44,
+            255
+          ]
+        },
+        {
+          "id": 16,
+          "axis": "diagonal-plus",
+          "length": 4,
+          "pixel": [
+            125,
+            76,
+            44,
+            255
+          ]
+        },
+        {
+          "id": 17,
+          "axis": "diagonal-plus",
+          "length": 3,
+          "pixel": [
+            156,
+            109,
+            64,
+            255
+          ]
+        },
+        {
+          "id": 18,
+          "axis": "diagonal-plus",
+          "length": 3,
+          "pixel": [
+            128,
+            79,
+            46,
+            255
+          ]
+        }
+      ],
+      "painted": 73032,
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "gold": [
+        212,
+        165,
+        45,
+        255
+      ],
+      "red": [
+        206,
+        95,
+        103,
+        255
+      ],
+      "green": [
+        127,
+        161,
+        84,
+        255
+      ],
+      "white": [
+        223,
+        213,
+        198,
+        255
+      ],
+      "odds": 2
+    },
+    "browserPayoutExample": {
+      "phase": "done",
+      "draws": [
+        18,
+        5,
+        21,
+        4,
+        15,
+        9,
+        16,
+        1
+      ],
+      "processed": 8,
+      "initial": [
+        20
+      ],
+      "manual": [
+        3,
+        11
+      ],
+      "budget": 2,
+      "remaining": 0,
+      "bonusHits": [
+        18
+      ],
+      "oddsHits": [
+        9,
+        16
+      ],
+      "multiplier": 3,
+      "lines": [
+        0,
+        9
+      ],
+      "counts": {
+        "3": 2,
+        "4": 0,
+        "5": 0,
+        "7": 0,
+        "9": 0
+      },
+      "total": 300,
+      "engineTotal": 300,
+      "paid": true,
+      "win": 9000,
+      "sugar": false,
+      "sugarCount": 0,
+      "thinking": {
+        "roundId": "public-01-1-61d15c2c",
+        "enabled": false,
+        "active": false,
+        "closesAt": 1795009497341,
+        "remainingMs": 0,
+        "serverNow": 1795009504482,
+        "ballCount": 8
+      }
+    },
+    "pageErrors": [],
+    "viewports": [
+      [
+        1366,
+        900
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "rules": {
+    "molds": 5,
+    "cppAutoplayVectors": 60,
+    "games": 200,
+    "forecastComparisons": 11400,
+    "calibrationTargets": 101,
+    "highest2000xWitness": true
+  },
+  "thinking": {
+    "seconds": 15,
+    "onlyDangoParticipants": true,
+    "physicalLaunchAndRetryBudget": true,
+    "earlySixRejected": true,
+    "fifthRetryDoesNotExtendDeadline": true,
+    "restartPreservesDeadline": true,
+    "durablePlacementCheckpoint": true,
+    "monotonicSnapshots": true,
+    "lateOldHttpSnapshotIgnored": true,
+    "payoutStableStatePreserved": true,
+    "checkpointAcknowledgedBeforeSix": true,
+    "noLocalRandomFallback": true
+  },
+  "records": {
+    "games": 10,
+    "recordId": 10,
+    "monthlyAndAllTime": true,
+    "duplicateRoundGuard": true,
+    "demoRankings": 10
+  },
+  "tabs": {
+    "viewports": [
+      [
+        320,
+        740
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        430,
+        932
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "games": 10,
+    "commonBetOutsideTabs": true,
+    "reachRightToLeft": true,
+    "oddsOnlyHidden": true,
+    "noReachBlank": true,
+    "highUltraReappearancePopups": true,
+    "noDuplicatePopup": true,
+    "sugarBesideWin": true,
+    "reducedMotion": true
+  },
+  "castellaRegression": {
+    "revision": 250,
+    "holes": 61,
+    "edges": 84,
+    "games": 720,
+    "forecastComparisons": 41040,
+    "estimatorComparisons": 1560,
+    "browserBalls": 8,
+    "sugar": {
+      "oneAward": true,
+      "bakedHoleRequired": true,
+      "expected": true
+    },
+    "legacy37": {
+      "holes": 37,
+      "geometry": {
+        "radius": 3,
+        "panW": 7.34,
+        "panH": 6.316152422706632
+      },
+      "painted": 87341,
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "rows": 18
+    },
+    "pageErrors": []
+  },
+  "sixDropTransparency": {
+    "number": 17,
+    "parts": 3,
+    "fills": [
+      "none",
+      "none",
+      "none"
+    ],
+    "centerOpaquePixels": 0,
+    "sourceFill": "none",
+    "gameStateUnchanged": true
+  },
+  "hiddenTenGameRound": {
+    "version": "20261118-v251-dango-de-bingo",
+    "hiddenState": {
+      "credit": 982900,
+      "phases": [
+        "playing",
+        "result",
+        "paying",
+        "complete",
+        "ready"
+      ],
+      "award": {
+        "phase": "complete",
+        "win": 12900,
+        "roundWins": [
+          6000,
+          300,
+          0,
+          0,
+          0,
+          1800,
+          1800,
+          1800,
+          600,
+          600
+        ],
+        "credit": 982900
+      },
+      "advanceResult": 10
+    },
+    "hiddenNineGameResultAndPayout": true,
+    "clientGames": 10,
+    "forecastChecks": [
+      {
+        "ballCount": 1,
+        "available": 24,
+        "positive": 0,
+        "baseWin": 0
+      },
+      {
+        "ballCount": 2,
+        "available": 23,
+        "positive": 9,
+        "baseWin": 1800
+      },
+      {
+        "ballCount": 3,
+        "available": 22,
+        "positive": 3,
+        "baseWin": 1800
+      }
+    ],
+    "monitorTiles": 25,
+    "monitorRatios": true,
+    "normalRoundStarted": true,
+    "forcedRejoined": true,
+    "forcedCountdownStarted": true,
+    "nextBallReceived": true,
+    "forcedRoundBetRequests": 1,
+    "confirmedRefund": 30000,
+    "creditAfterRefundAndNewBet": 970000,
+    "unchangedRefundQueueWrites4500ms": 0,
+    "pageErrors": []
+  },
+  "calibration": {
+    "method": "Exact enumeration; optimal manual placement before observing the last three balls",
+    "firstFiveSets": 53130,
+    "lastThreeSetsPerFirstFive": 1140,
+    "outcomesPerMold": 60568200,
+    "targetRangePercent": [
+      50,
+      150
+    ],
+    "originalPayoutTableRetained": true,
+    "festivalMoldProbability": 0.005,
+    "manualVsAuto": [
+      [
+        50,
+        46.758896
+      ],
+      [
+        75,
+        66.576758
+      ],
+      [
+        100,
+        86.394757
+      ],
+      [
+        125,
+        106.222867
+      ],
+      [
+        150,
+        125.820717
+      ]
+    ],
+    "scope": "Uniform, non-repeating 8/25 numbers and continuous BET units. Integer-medal rounding and shared Sugar/JPC excluded.",
+    "source": "docs/dango-v251-calibration.json",
+    "reproduction": "scripts/dango-v251-calibrate.cpp"
+  },
+  "visualReport": "docs/dango-v251-visual-qa.json",
+  "limitations": [
+    "Windows shared server deployment is separate from Pages and has not been performed here.",
+    "No Windows or iPhone physical-device execution.",
+    "No physical audio listening test.",
+    "Public verification intercepts game API/WebSocket/non-read traffic and sends no public BET or draw."
+  ],
+  "publicVerification": {
+    "report": "docs/dango-v251-public-qa.json",
+    "runId": 44317844892,
+    "jobId": 134848588078,
+    "artifactId": 14433092569,
+    "matchingFiles": 52,
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "uncaughtPageErrors": 0,
+    "publicGameTransactionsSent": 0
+  },
+  "pagesDeployment": {
+    "runId": 44317842496,
+    "conclusion": "success"
+  },
+  "mainWorkflowResults": [
+    {
+      "id": 44317844955,
+      "name": "Client v246 progressive payouts and smooth hidden-safe rendering",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844955"
+    },
+    {
+      "id": 44317845266,
+      "name": "Six Drop v248 connected groups colors and HUD",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317845266"
+    },
+    {
+      "id": 44317844892,
+      "name": "Verify current games and public Pages",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844892"
+    },
+    {
+      "id": 44317844175,
+      "name": "Six station check",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844175"
+    },
+    {
+      "id": 44317844951,
+      "name": "Station detail v238",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844951"
+    },
+    {
+      "id": 44317843979,
+      "name": "Monitor ledger v241",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317843979"
+    },
+    {
+      "id": 44317844302,
+      "name": "Shared machine check",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844302"
+    },
+    {
+      "id": 44317845122,
+      "name": "Public guest entry check",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317845122"
+    },
+    {
+      "id": 44317845080,
+      "name": "Verify Gelato and Winery visuals v76",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317845080"
+    },
+    {
+      "id": 44317845228,
+      "name": "One-line 25-number payout table v244",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317845228"
+    },
+    {
+      "id": 44317844502,
+      "name": "v245 forecast gain graphs, spectral P/O and progress",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844502"
+    },
+    {
+      "id": 44317844137,
+      "name": "Verify Winery main board zoom v77",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844137"
+    },
+    {
+      "id": 44317844797,
+      "name": "Verify final reaches and Six Drop refill v75",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844797"
+    },
+    {
+      "id": 44317844071,
+      "name": "Arcade v251 Dango and ten-game cabinet",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317844071"
+    },
+    {
+      "id": 44317842496,
+      "name": "pages build and deployment",
+      "commit": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44317842496"
+    }
+  ],
+  "mainCommitVerified": "caf9e68ac67430cfcf574fdad295cc91fb59da13",
+  "mainBrowserWorkflow": {
+    "runId": 44317844071,
+    "jobId": 134848585954,
+    "conclusion": "success"
+  },
+  "publicationNote": "The follow-up commit only saves documentation and QA evidence. All 52 publicly verified game files remain byte-identical to caf9e68ac67430cfcf574fdad295cc91fb59da13."
+}
