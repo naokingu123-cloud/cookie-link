@@ -1,10 +1,11 @@
 /* A warm dango stall: numbers and bamboo stay above a quiet festival backdrop. */
 body.dgb-active #screen>.game{background:#f7ead5!important}
-body.dgb-active #screen>.game>.festival-top,body.dgb-active #screen>.game>.statusline,body.dgb-active #screen>.game>.common-odds-heading{display:none!important}
+body.dgb-active #screen>.game>.festival-top,body.dgb-active #screen>.game>.statusline,body.dgb-active :is(#odds-panel,#allclear-award,#carnival-heading,#choco-heading,#carnival-odds){display:none!important}
 body.dgb-active #screen>.game>.field{flex:1 1 auto!important;width:100%!important;height:auto!important;min-height:0!important;grid-template:minmax(0,1fr)/minmax(0,1fr)!important;gap:0!important;background:transparent!important}
 body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-width:none!important}
-#screen #panels>.dgb-panel{position:relative!important;width:100%;height:100%;overflow:hidden;isolation:isolate;background:transparent!important}
+#screen #panels>.dgb-panel{position:relative!important;width:100%!important;height:100%!important;min-height:0!important;overflow:hidden!important;isolation:isolate;background:transparent!important}
 #screen #panels>.dgb-panel>:not(.dgb-scene):not(.v249-event-stage),#screen #panels>.dgb-panel::before,#screen #panels>.dgb-panel::after{display:none!important}
+.dgb-scene,.dgb-scene *{box-sizing:border-box}
 .dgb-scene{--dgb-u:1px;position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,23fr) minmax(0,77fr);gap:1%;padding:1.3% .9%;color:#613b32;font-family:'Yu Gothic',Meiryo,system-ui,sans-serif;isolation:isolate;box-sizing:border-box;overflow:hidden;background:linear-gradient(120deg,#fff8e9e8,#f8e7d9de)}
 .dgb-scene::before{content:'';position:absolute;inset:0;z-index:-1;background:url('dango-art/background.webp') center/cover no-repeat;opacity:.24;pointer-events:none}
 .dgb-pay{display:flex;flex-direction:column;min-height:0;overflow:hidden;border:1px solid #c99a75;border-radius:calc(var(--dgb-u)*10);background:#fff9e9ed;box-shadow:0 2px 5px #71472e20;padding:calc(var(--dgb-u)*5)}

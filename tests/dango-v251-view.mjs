@@ -40,13 +40,16 @@ try{
   const data=await page.evaluate(()=>{
    const s=window.DangoBingo.engine.state,root=document.querySelector('.dgb-scene'),pan=root.querySelector('.dgb-pan'),canvas=pan.querySelector('canvas'),b=pan.getBoundingClientRect(),g=window.DangoBingoView.geometry(b.width,b.height);
    const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let painted=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i])painted++;
-   return {cells:s.cells.length,rows:[0,1,2,3,4].map(row=>s.cells.filter(c=>c.row===row).length),numbers:s.numbers,initial:s.initialFreeCells,phase:root.dataset.phase,painted,bounds:{x:b.x,y:b.y,width:b.width,height:b.height},geometry:g,payRows:[...root.querySelectorAll('tbody tr')].map(row=>({length:Number(row.dataset.length),count:Number(row.dataset.count),label:row.querySelector('th').textContent,win:row.querySelector('td').textContent})),label:canvas.getAttribute('aria-label')};
+   const layout=['#screen>.game','#screen>.game>.field','#panels','.dgb-panel','.dgb-scene','.dgb-stage','.dgb-pan','#odds-panel'].map(selector=>{const el=document.querySelector(selector),rect=el.getBoundingClientRect(),css=getComputedStyle(el);return {selector,width:rect.width,height:rect.height,display:css.display,visibility:css.visibility,opacity:css.opacity,rows:css.gridTemplateRows};});
+   return {cells:s.cells.length,rows:[0,1,2,3,4].map(row=>s.cells.filter(c=>c.row===row).length),numbers:s.numbers,initial:s.initialFreeCells,phase:root.dataset.phase,painted,bounds:{x:b.x,y:b.y,width:b.width,height:b.height},layout,canvasPixels:{width:canvas.width,height:canvas.height},geometry:g,payRows:[...root.querySelectorAll('tbody tr')].map(row=>({length:Number(row.dataset.length),count:Number(row.dataset.count),label:row.querySelector('th').textContent,win:row.querySelector('td').textContent})),label:canvas.getAttribute('aria-label')};
   });
+  report.currentScreen={width,height,data};
+  assert.equal(data.layout.find(item=>item.selector==='#odds-panel').display,'none','legacy cookie odds must not consume a second grid row');
   assert.equal(data.cells,25);assert.deepEqual(data.rows,[1,3,5,7,9]);assert.equal(new Set(data.numbers).size,25);assert.equal(data.payRows.length,13);assert.ok(data.painted>1000);
   assert.equal(data.payRows.filter(r=>r.label.includes('以上')).length,3);assert.match(data.label,/25個のお団子/);
   assert.ok(data.bounds.width>180&&data.bounds.height>100);
   for(const p of data.geometry.centers){const r=data.geometry.radius;assert.ok(p.x-r>=0&&p.x+r<=data.bounds.width&&p.y-r>=0&&p.y+r<=data.bounds.height,'all 25 round dango fit the canvas');}
-  const file='dango-initial-'+width+'.png';await page.screenshot({path:out+'/'+file});report.screens.push({width,height,file,data});
+  const file='dango-initial-'+width+'.png';await page.screenshot({path:out+'/'+file});report.screens.push({width,height,file,data});report.currentScreen=null;
  }
  const plan=await page.evaluate(()=>{
   const s=window.DangoBingo.engine.state,free=3,draws=s.initialFreeCells.map(id=>s.numbers[id]);
