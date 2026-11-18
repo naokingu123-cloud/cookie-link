@@ -3,7 +3,7 @@
   "baselineCommit": "1c4eb987be12fff02818fb996f9b1523f7281b74",
   "codeCommit": "6ca4641a3aac68a79ce8a421254fb768ea9bb821",
   "dateJST": "2026-11-18",
-  "status": "prepublication-verification-passed",
+  "status": "published-and-verified",
   "browserWorkflow": {
     "runId": 44295256144,
     "jobId": 134770530618,
@@ -226,12 +226,141 @@
     ]
   },
   "visualReport": "docs/arcade-v250-visual-qa.json",
-  "publicVerification": "Pending main publication; recorded separately in docs/arcade-v250-public-qa.json.",
+  "publicVerification": {
+    "report": "docs/arcade-v250-public-qa.json",
+    "runId": 44296724502,
+    "matchingFiles": 40,
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "uncaughtPageErrors": 0,
+    "publicGameTransactionsSent": 0
+  },
   "limitations": [
     "No Windows hardware execution",
     "No iPhone hardware execution",
     "No physical audio listening test",
     "Calibration uses uniform no-replacement 8/25 draws and excludes shared Sugar/JPC",
     "Public verification blocks external game transactions"
-  ]
+  ],
+  "mainCommitVerified": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+  "mainWorkflowResults": [
+    {
+      "id": 44296724083,
+      "name": "Verify Gelato and Winery visuals v76",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724083"
+    },
+    {
+      "id": 44296724490,
+      "name": "Verify Winery main board zoom v77",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724490"
+    },
+    {
+      "id": 44296724124,
+      "name": "Verify final reaches and Six Drop refill v75",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724124"
+    },
+    {
+      "id": 44296724358,
+      "name": "One-line 25-number payout table v244",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724358"
+    },
+    {
+      "id": 44296724080,
+      "name": "v245 forecast gain graphs, spectral P/O and progress",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724080"
+    },
+    {
+      "id": 44296724290,
+      "name": "Six station check",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724290"
+    },
+    {
+      "id": 44296724407,
+      "name": "Shared machine check",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724407"
+    },
+    {
+      "id": 44296724338,
+      "name": "Station detail v238",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724338"
+    },
+    {
+      "id": 44296724141,
+      "name": "Public guest entry check",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724141"
+    },
+    {
+      "id": 44296724106,
+      "name": "Monitor ledger v241",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724106"
+    },
+    {
+      "id": 44296724136,
+      "name": "Client v246 progressive payouts and smooth hidden-safe rendering",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724136"
+    },
+    {
+      "id": 44296724176,
+      "name": "Six Drop v248 connected groups colors and HUD",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724176"
+    },
+    {
+      "id": 44296724116,
+      "name": "Arcade v250 tabs Castella61 and game surfaces",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724116"
+    },
+    {
+      "id": 44296724502,
+      "name": "Verify current games and public Pages",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724502"
+    },
+    {
+      "id": 44296723649,
+      "name": "pages build and deployment",
+      "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296723649"
+    }
+  ],
+  "publicationNote": "Final follow-up changes only documentation and QA records. All 40 published game files remain byte-identical to the verified main commit."
 }

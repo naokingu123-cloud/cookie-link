@@ -1,0 +1,542 @@
+{
+  "revision": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040",
+  "appVersion": "20261118-v250-tabs-castella61",
+  "base": "https://naokingu123-cloud.github.io/cookie-link/",
+  "scope": "Published asset hashes and frontend-ready rendering. Public game API and WebSocket traffic is intercepted locally; no session, BET, settlement or draw is sent.",
+  "matchingSha256": {
+    "index.html": "32ca4025a631dedfa4135782c84ed30be4424c4b036c794ef0814d40d5759027",
+    "app-version.json": "6ff407da5b8a72a6fb418c9c05ed2fc7b13271131ceec04c7a447c5eb81d35a6",
+    "optimized/app-01.js": "d9955fec2ae29e23cababf227217bd5b6f011ea4312f37feab9908bde3c8a445",
+    "optimized/style-01.css": "c9dd15b4a066761ad84fb932634321039f52c285a384ea50dbba3dd1c508d6dd",
+    "optimized/media/a73bbbdd98d48aac.woff2": "a73bbbdd98d48aac5df4a5a19ca7583f56e58f08a21046202fb37b467e84802b",
+    "assets/cookie-upgrade-patches.js": "0667b142b2e71154912a15ff3647f401bda0a1f5fd38bdd1871198bfa0eab555",
+    "assets/sixdrop-progressive-core-v247.js": "29de1e013768e77a63f2726ee4e7ad137eeda3df47b478193f6ecc467925771b",
+    "assets/sixdrop-progressive-host-v247.js": "1ea15d717ec81a45f60539ada9a6c2097f9a4d3d169b58367e6cbca80d336d6c",
+    "assets/sixdrop-progressive-v247.css": "06a6a62bf4e5dc1cf094a781ba4aff307766ca5b949c8137bf2845824138f0e1",
+    "assets/shared-machine-v176.js": "8562671e49948cdec4d3377f9f0127e268a71cdee64b7d2757a8c693fc31841e",
+    "assets/shared-client-controller-v224.js": "2106d1d8026237a4e53b5780c54a68023ffe403a376f036ca5c5d9f22d1a2a44",
+    "assets/stations-v235.js": "68d2471750ba44a7547e4489f221cc0375dac1315b7ec8699633c38ad86cba7a",
+    "assets/stations-progressive-v246.js": "467c32ef9a7b32f5eadbbeb4b5af7c1cd8dd08b58a1210c3bb8dde1651dd69b8",
+    "monitor.html": "a0116c6860e362729e8f0919ce59fccb0a239f31d650d866ea4536aeef938280",
+    "assets/monitor-ledger-v241.js": "1620c8e26c6706016d605a599961c619644712a3b6ea60924781cf632f0c8865",
+    "assets/server-monitor-v241.js": "773a658deff0682e4ddd746c0bfe1bfeb3ae7a6c481399a8449e3e7de444e236",
+    "assets/server-monitor-v242.js": "646d1e3b54ee88280076363c666e8d0c0b8673e75018e739a00d55900eb3eba6",
+    "assets/arcade-brand-v249.js": "c5c0df77184ecebb52c0fafacfa2ed6c5fff02a141234db5bae8e49e093a3f8d",
+    "assets/arcade-brand-v249.css": "668ac59bc0aedf7a201403c41a6bb8cabf3891dc879bc80bd048608a494b9f87",
+    "assets/arcade-tabs-v249.js": "d497fad054c9d5432b4a948fbac815be438762341b96a65cd89ba9aab755bbde",
+    "assets/arcade-tabs-v249.css": "538144414e371e072c31fb536d963c7c463cb5479c41c3c3e143fb93441b81e2",
+    "assets/arcade-surfaces-v249.js": "992fe9bc779a6eaecd188ef0dbf2bcbeb26e9d29f6d82cb9b602ed030602a382",
+    "assets/arcade-surfaces-v249.css": "3d745fa076b52b5abb2dd41fe30a94b5336eb485e81ecd008d237b11f89ecfd9",
+    "assets/jelly-view.js": "f7adcf5035de06a7f8055bdb00e7af4b01ebe6e2b624aaf9481b4da102e21238",
+    "assets/game-menu-v91.js": "660a7a3ec51ed7b945d7d201abe8a0a91831f1a409764e946110afba726e0e01",
+    "assets/lineups-v91.js": "1bbedd3f215c07dd89129ac2a2f33e0bc618e78ec7108d64427746f08b98c6af",
+    "assets/arcade-v249/logo-cookie.webp": "bf91df54698cf8534db3308d8e04a1a2d004140ebed00de3f59369e7defacf50",
+    "assets/arcade-v249/logo-choco.webp": "0a559d5b41b3ca83641c85258234e09f5507e84667e4143bd78203dc125be6cb",
+    "assets/arcade-v249/logo-candy.webp": "cacd507e9f9668abe41c888625c5a3c2c04eca828f264d5834d2c493811a7241",
+    "assets/arcade-v249/logo-gelato.webp": "ff859be6ee53bce1405aacd129d3e291ba62ed2b2dfe75c541565b9e07a6420d",
+    "assets/arcade-v249/logo-winery.webp": "f7b772b82e7fd1e7e5e00085c2e9a6ff3a58869dc495b286e4ed667254c5ede2",
+    "assets/arcade-v249/logo-popcorn.webp": "0c2d06a83b1a9746e0354a647cfc9ea89534251e0716ebad0b4267ade2468807",
+    "assets/arcade-v249/logo-jelly.webp": "89abd281440115bcc697efa093351b18d3742b4eb74a85513af6e139bda832da",
+    "assets/arcade-v249/logo-stick.webp": "b5e85a8030507e07501f335b40659c84188e4e663b6bf7adf9e6bfa03c2e723f",
+    "assets/arcade-v249/logo-castella.webp": "2a19f8c680f4f56f2783ab60b6cef26e4113d14adb74cc532b6168af0ba4bb34",
+    "assets/party-castella-rules.js": "0310aabd36770ee968013fdf5f498b48f51c8851dff249ed5402ade0ec452e06",
+    "assets/party-castella-host.js": "493db342d2846ac3c183069b6dae3a95c9cc6dd0c22a03b64b60d36b8365c7cc",
+    "assets/party-castella.js": "393493ca41d3f3c852cbc0f41fe1d8406d2401dcd2cb211fd5438bc6308c7021",
+    "assets/party-castella.css": "bde6766a77143c5442bc78c9d7a49b8b62955e18d7b8cb83027e43af88afd8e5",
+    "assets/castella-lesson.js": "39fe6ad38e915ab35bc4bbfb5cbd2619b66190bf613c6984e0ed01bb8cb888ad"
+  },
+  "screens": [
+    {
+      "width": 390,
+      "height": 844,
+      "rulesRevision": 248,
+      "gameName": "シックスドロップ",
+      "drawMode": "single",
+      "phase": "ready",
+      "accepted": 0,
+      "processed": 0,
+      "serverHost": false,
+      "online": false,
+      "canvas": {
+        "width": 251.875,
+        "height": 260
+      },
+      "bankText": "全消し0WIN",
+      "bankFont": "ArcadePayout, Georgia, serif",
+      "bankAlignment": "right",
+      "roleRows": 3,
+      "obsoleteText": false,
+      "initialColors": [
+        "lime",
+        "green",
+        "aqua",
+        "blue"
+      ],
+      "finalColors": [
+        "violet",
+        "pink",
+        "red",
+        "orange"
+      ],
+      "arcade": {
+        "rootClass": true,
+        "surfaceRevision": "v249",
+        "activeGame": "candy",
+        "landscape": false,
+        "brand": {
+          "games": 9,
+          "titles": 9,
+          "loaded": 9
+        },
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 1,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 0,
+          "reachBursts": 0,
+          "logos": 9,
+          "sharedBetUnit": 100
+        },
+        "surfaces": 9,
+        "catalogKinds": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella"
+        ],
+        "logos": [
+          {
+            "kind": "cookie",
+            "src": "assets/arcade-v249/logo-cookie.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "choco",
+            "src": "assets/arcade-v249/logo-choco.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "candy",
+            "src": "assets/arcade-v249/logo-candy.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "gelato",
+            "src": "assets/arcade-v249/logo-gelato.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "winery",
+            "src": "assets/arcade-v249/logo-winery.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "popcorn",
+            "src": "assets/arcade-v249/logo-popcorn.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "jelly",
+            "src": "assets/arcade-v249/logo-jelly.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "stick",
+            "src": "assets/arcade-v249/logo-stick.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "castella",
+            "src": "assets/arcade-v249/logo-castella.webp",
+            "width": 768,
+            "height": 384
+          }
+        ],
+        "selectedLogo": {
+          "src": "assets/arcade-v249/logo-candy.webp",
+          "width": 67.2724609375,
+          "height": 34.125,
+          "visible": true
+        },
+        "styles": [
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-tabs-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-surfaces-v249.css?v=250"
+        ]
+      },
+      "v250": {
+        "tabsRevision": 250,
+        "backgroundLogos": 9,
+        "visibleBackgrounds": 8,
+        "decodedBackgrounds": 9,
+        "commonBetButtons": 1,
+        "commonBetOutsideTabs": true,
+        "castellaRevision": 250,
+        "castellaHoles": 61,
+        "castellaEdges": 84,
+        "castellaSpecials": {
+          "pour": 2,
+          "fire": 2,
+          "sugar": 1,
+          "odds": 0
+        },
+        "castellaPayoutRows": 13
+      },
+      "blockedServiceRequests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        }
+      ],
+      "blockedWebSockets": [],
+      "pageErrors": []
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "rulesRevision": 248,
+      "gameName": "シックスドロップ",
+      "drawMode": "single",
+      "phase": "ready",
+      "accepted": 0,
+      "processed": 0,
+      "serverHost": false,
+      "online": false,
+      "canvas": {
+        "width": 251.875,
+        "height": 260
+      },
+      "bankText": "全消し0WIN",
+      "bankFont": "ArcadePayout, Georgia, serif",
+      "bankAlignment": "right",
+      "roleRows": 3,
+      "obsoleteText": false,
+      "initialColors": [
+        "lime",
+        "green",
+        "aqua",
+        "blue"
+      ],
+      "finalColors": [
+        "violet",
+        "pink",
+        "red",
+        "orange"
+      ],
+      "arcade": {
+        "rootClass": true,
+        "surfaceRevision": "v249",
+        "activeGame": "candy",
+        "landscape": true,
+        "brand": {
+          "games": 9,
+          "titles": 9,
+          "loaded": 9
+        },
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 1,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 0,
+          "reachBursts": 0,
+          "logos": 9,
+          "sharedBetUnit": 100
+        },
+        "surfaces": 9,
+        "catalogKinds": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella"
+        ],
+        "logos": [
+          {
+            "kind": "cookie",
+            "src": "assets/arcade-v249/logo-cookie.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "choco",
+            "src": "assets/arcade-v249/logo-choco.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "candy",
+            "src": "assets/arcade-v249/logo-candy.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "gelato",
+            "src": "assets/arcade-v249/logo-gelato.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "winery",
+            "src": "assets/arcade-v249/logo-winery.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "popcorn",
+            "src": "assets/arcade-v249/logo-popcorn.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "jelly",
+            "src": "assets/arcade-v249/logo-jelly.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "stick",
+            "src": "assets/arcade-v249/logo-stick.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "castella",
+            "src": "assets/arcade-v249/logo-castella.webp",
+            "width": 768,
+            "height": 384
+          }
+        ],
+        "selectedLogo": {
+          "src": "assets/arcade-v249/logo-candy.webp",
+          "width": 81.046875,
+          "height": 34.125,
+          "visible": true
+        },
+        "styles": [
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-tabs-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-surfaces-v249.css?v=250"
+        ]
+      },
+      "v250": {
+        "tabsRevision": 250,
+        "backgroundLogos": 9,
+        "visibleBackgrounds": 8,
+        "decodedBackgrounds": 9,
+        "commonBetButtons": 1,
+        "commonBetOutsideTabs": true,
+        "castellaRevision": 250,
+        "castellaHoles": 61,
+        "castellaEdges": 84,
+        "castellaSpecials": {
+          "pour": 2,
+          "fire": 2,
+          "sugar": 1,
+          "odds": 0
+        },
+        "castellaPayoutRows": 13
+      },
+      "blockedServiceRequests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        }
+      ],
+      "blockedWebSockets": [],
+      "pageErrors": []
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "rulesRevision": 248,
+      "gameName": "シックスドロップ",
+      "drawMode": "single",
+      "phase": "ready",
+      "accepted": 0,
+      "processed": 0,
+      "serverHost": false,
+      "online": false,
+      "canvas": {
+        "width": 290.625,
+        "height": 300
+      },
+      "bankText": "全消し0WIN",
+      "bankFont": "ArcadePayout, Georgia, serif",
+      "bankAlignment": "right",
+      "roleRows": 3,
+      "obsoleteText": false,
+      "initialColors": [
+        "lime",
+        "green",
+        "aqua",
+        "blue"
+      ],
+      "finalColors": [
+        "violet",
+        "pink",
+        "red",
+        "orange"
+      ],
+      "arcade": {
+        "rootClass": true,
+        "surfaceRevision": "v249",
+        "activeGame": "candy",
+        "landscape": false,
+        "brand": {
+          "games": 9,
+          "titles": 9,
+          "loaded": 9
+        },
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 1,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 0,
+          "reachBursts": 0,
+          "logos": 9,
+          "sharedBetUnit": 100
+        },
+        "surfaces": 9,
+        "catalogKinds": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella"
+        ],
+        "logos": [
+          {
+            "kind": "cookie",
+            "src": "assets/arcade-v249/logo-cookie.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "choco",
+            "src": "assets/arcade-v249/logo-choco.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "candy",
+            "src": "assets/arcade-v249/logo-candy.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "gelato",
+            "src": "assets/arcade-v249/logo-gelato.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "winery",
+            "src": "assets/arcade-v249/logo-winery.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "popcorn",
+            "src": "assets/arcade-v249/logo-popcorn.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "jelly",
+            "src": "assets/arcade-v249/logo-jelly.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "stick",
+            "src": "assets/arcade-v249/logo-stick.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "castella",
+            "src": "assets/arcade-v249/logo-castella.webp",
+            "width": 768,
+            "height": 384
+          }
+        ],
+        "selectedLogo": {
+          "src": "assets/arcade-v249/logo-candy.webp",
+          "width": 77.6220703125,
+          "height": 39.375,
+          "visible": true
+        },
+        "styles": [
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-tabs-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=250",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-surfaces-v249.css?v=250"
+        ]
+      },
+      "v250": {
+        "tabsRevision": 250,
+        "backgroundLogos": 9,
+        "visibleBackgrounds": 8,
+        "decodedBackgrounds": 9,
+        "commonBetButtons": 1,
+        "commonBetOutsideTabs": true,
+        "castellaRevision": 250,
+        "castellaHoles": 61,
+        "castellaEdges": 84,
+        "castellaSpecials": {
+          "pour": 2,
+          "fire": 2,
+          "sugar": 1,
+          "odds": 0
+        },
+        "castellaPayoutRows": 13
+      },
+      "blockedServiceRequests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        }
+      ],
+      "blockedWebSockets": [],
+      "pageErrors": []
+    }
+  ],
+  "verificationWorkflow": {
+    "runId": 44296724502,
+    "jobId": 134775572532,
+    "artifactId": 14423807373,
+    "conclusion": "success",
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44296724502"
+  },
+  "pagesDeployment": {
+    "runId": 44296723649,
+    "conclusion": "success",
+    "commit": "145b178db2c7d58dd6df9ae637b8dcd5d2d9b040"
+  }
+}
