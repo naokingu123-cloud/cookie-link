@@ -1,0 +1,1203 @@
+{
+  "game": "ダンゴデビンゴ",
+  "referencePolicy": "Maximum conditional expected payout after seeing only first5; all legal player FREE subsets considered without future knowledge.",
+  "selectionTiming": "Select initial mold independently after BET lock and before any number is drawn or the mold is shown. Shuffle numbers1..25 once, then keep them. The edge mold independently reflects left/right with probability1/2 before shuffling numbers; no future result is read.",
+  "scope": "Uniform8/25 without replacement; continuous BET units; excludes medal rounding, shared sugar and JPC. Automatic placement deliberately uses line/reach priorities, not expected payout.",
+  "sampling": {
+    "firstFiveSets": 53130,
+    "futureTriplesPerFirstFive": 1140,
+    "outcomeDenominator": 60568200,
+    "payoutNumeratorUnit": "one tenth of BET"
+  },
+  "festivalProbability": 0.005,
+  "festivalPurpose": "Keeps the three5-cell-line2000BET role possible at every payout setting.",
+  "automaticPolicy": {
+    "priority": [
+      "new completed line count",
+      "longest new completed line",
+      "longest new reach",
+      "new reach count",
+      "closest incomplete line",
+      "that line length",
+      "stable uint32 hash"
+    ],
+    "symmetry": "Canonicalize BOTH initial FREE mask and first5 mask under left/right reflection, then reflect selected FREE back.",
+    "hash": "uint32 hash32(h ^ initial*0xc2b2ae35 ^ (cellId+1)*0x9e3779b9 ^ (placementIndex+1)*0x85ebca6b); multiplication wraps32 bits."
+  },
+  "checks": {
+    "meanPlayerFree": "1+initialCount/5",
+    "meanOddsMultiplier": "1.15+0.03*initialCount",
+    "markedCellsAfterPlacement": "6+initialCount",
+    "initialFreeNeverOdds": true,
+    "completedLineNeverGrantsFree": true
+  },
+  "version": "20261119-v253-dango-tsukimi-lines",
+  "rulesRevision": 253,
+  "ruleId": "initial-required-free-v5",
+  "ruleModel": "Initial numbered FREE1..3 always marked. Initial FREE HIT in first5 grants one player FREE; base player FREE1, max4. No line awards. Initial FREE never raises odds. Player FREE placed after5 before unknown last3; only its later raw HIT raises global multiplier by1. Perlength final count payouts are summed, multiplied by1+player FREE hits in last3. No double odds on stacked initial FREE.",
+  "payoutChanges": [
+    {
+      "length": 3,
+      "count": 1,
+      "old": 0.2,
+      "new": 0.1
+    },
+    {
+      "length": 3,
+      "count": 2,
+      "old": 1,
+      "new": 0.5
+    },
+    {
+      "length": 4,
+      "count": 1,
+      "old": 1,
+      "new": 0.4
+    }
+  ],
+  "payouts": {
+    "3": {
+      "1": 0.1,
+      "2": 0.5,
+      "3": 5,
+      "4+": 100
+    },
+    "4": {
+      "1": 0.4,
+      "2": 3,
+      "3": 50,
+      "4+": 500
+    },
+    "5": {
+      "1": 3,
+      "2": 100,
+      "3+": 2000
+    },
+    "7": {
+      "1": 25
+    },
+    "9": {
+      "1": 100
+    }
+  },
+  "compatibility": "Existing revision251 snapshots retain revision251 tiers (including 0-initial-FREE boards); every new revision253 board has 1–3 initial FREE. Draw, place/undo, auto, commit, reaches and pay rows are state-revision aware.",
+  "templates": [
+    {
+      "name": "edge",
+      "initialCellsOneBased": [
+        18
+      ],
+      "mirrorRandomly": true,
+      "optimalRtpPercent": 45.800740652686,
+      "optimalPayoutNumeratorTenths": 277406842,
+      "optimalAwardPercent": 70.280335225415,
+      "autoRtpPercent": 38.937727883609,
+      "autoPayoutNumeratorTenths": 235838809,
+      "autoAwardPercent": 80.165775109711,
+      "enumeration": {
+        "mode": "edge",
+        "initialFreeMask": 131072,
+        "oddsRule": "1 + raw hits on player FREE in last three only; initial FREE hits grant extra player FREE during first five only; no line awards",
+        "payoutVariant": "v253",
+        "payoutTiers": "counts above last defined tier receive that last tier, not a new payout",
+        "symmetryReduced": false,
+        "firstFiveSets": 53130,
+        "representatives": 53130,
+        "freeCandidates": 2826516,
+        "outcomeDenominator": 60568200,
+        "payoutTenthsDenominator": 605682000,
+        "expectedPayoutTenthsNumerator": 277406842,
+        "rtpPercent": 45.800740652686,
+        "basePayoutTenthsNumerator": 237873480,
+        "awardNumerator": 42567534,
+        "awardPercent": 70.280335225415,
+        "elapsedSeconds": 10.518791165,
+        "freeDistribution": [
+          0,
+          42504,
+          10626,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByOriginalF": [
+          0,
+          277406842,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByAwardedF": [
+          0,
+          165656455,
+          111750387,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "overlapDistribution": [
+          49857192,
+          10519740,
+          191268,
+          0
+        ],
+        "maxCountsInOptimalOutcomes": [
+          4,
+          3,
+          2,
+          1,
+          1
+        ],
+        "automaticPayoutTenthsNumerator": 235838809,
+        "automaticRtpPercent": 38.937727883609,
+        "automaticAwardNumerator": 48554967,
+        "automaticAwardPercent": 80.165775109711,
+        "crossLanguageVectors": [
+          {
+            "firstFiveMask": 31,
+            "manualMask": 512,
+            "lastThreeMask": 6208,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 10
+          },
+          {
+            "firstFiveMask": 47,
+            "manualMask": 1024,
+            "lastThreeMask": 8405120,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 310
+          },
+          {
+            "firstFiveMask": 55,
+            "manualMask": 1024,
+            "lastThreeMask": 16809992,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 131087,
+            "manualMask": 1056,
+            "lastThreeMask": 1083392,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 131095,
+            "manualMask": 520,
+            "lastThreeMask": 4259968,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 310
+          },
+          {
+            "firstFiveMask": 131099,
+            "manualMask": 516,
+            "lastThreeMask": 16842756,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 620
+          }
+        ]
+      },
+      "mirroredCellsOneBased": [
+        24
+      ],
+      "reflectionProbability": 0.5
+    },
+    {
+      "name": "one",
+      "initialCellsOneBased": [
+        21
+      ],
+      "mirrorRandomly": false,
+      "optimalRtpPercent": 68.49086550368,
+      "optimalPayoutNumeratorTenths": 414836844,
+      "optimalAwardPercent": 78.461357610099,
+      "autoRtpPercent": 53.601155556876,
+      "autoPayoutNumeratorTenths": 324652551,
+      "autoAwardPercent": 90.840069541443,
+      "enumeration": {
+        "mode": "one",
+        "initialFreeMask": 1048576,
+        "oddsRule": "1 + raw hits on player FREE in last three only; initial FREE hits grant extra player FREE during first five only; no line awards",
+        "payoutVariant": "v253",
+        "payoutTiers": "counts above last defined tier receive that last tier, not a new payout",
+        "symmetryReduced": true,
+        "firstFiveSets": 53130,
+        "representatives": 26728,
+        "freeCandidates": 1425418,
+        "outcomeDenominator": 60568200,
+        "payoutTenthsDenominator": 605682000,
+        "expectedPayoutTenthsNumerator": 414836844,
+        "rtpPercent": 68.49086550368,
+        "basePayoutTenthsNumerator": 356313261,
+        "awardNumerator": 47522632,
+        "awardPercent": 78.461357610099,
+        "elapsedSeconds": 3.66014315,
+        "freeDistribution": [
+          0,
+          42504,
+          10626,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByOriginalF": [
+          0,
+          414836844,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByAwardedF": [
+          0,
+          243119953,
+          171716891,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "overlapDistribution": [
+          49857192,
+          10519740,
+          191268,
+          0
+        ],
+        "maxCountsInOptimalOutcomes": [
+          4,
+          3,
+          2,
+          1,
+          1
+        ],
+        "automaticPayoutTenthsNumerator": 324652551,
+        "automaticRtpPercent": 53.601155556876,
+        "automaticAwardNumerator": 55020195,
+        "automaticAwardPercent": 90.840069541443,
+        "crossLanguageVectors": [
+          {
+            "firstFiveMask": 31,
+            "manualMask": 2048,
+            "lastThreeMask": 16781568,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 47,
+            "manualMask": 4096,
+            "lastThreeMask": 1573888,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 10
+          },
+          {
+            "firstFiveMask": 55,
+            "manualMask": 2048,
+            "lastThreeMask": 2121728,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 10
+          },
+          {
+            "firstFiveMask": 1048591,
+            "manualMask": 4160,
+            "lastThreeMask": 8272,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 620
+          },
+          {
+            "firstFiveMask": 1048599,
+            "manualMask": 2056,
+            "lastThreeMask": 2097696,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 1048603,
+            "manualMask": 2052,
+            "lastThreeMask": 388,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 100
+          }
+        ]
+      }
+    },
+    {
+      "name": "two",
+      "initialCellsOneBased": [
+        20,
+        22
+      ],
+      "mirrorRandomly": false,
+      "optimalRtpPercent": 103.10518423859,
+      "optimalPayoutNumeratorTenths": 624489542,
+      "optimalAwardPercent": 82.962901324457,
+      "autoRtpPercent": 73.864643327687,
+      "autoPayoutNumeratorTenths": 447384849,
+      "autoAwardPercent": 93.177721972916,
+      "enumeration": {
+        "mode": "two",
+        "initialFreeMask": 2621440,
+        "oddsRule": "1 + raw hits on player FREE in last three only; initial FREE hits grant extra player FREE during first five only; no line awards",
+        "payoutVariant": "v253",
+        "payoutTiers": "counts above last defined tier receive that last tier, not a new payout",
+        "symmetryReduced": true,
+        "firstFiveSets": 53130,
+        "representatives": 26728,
+        "freeCandidates": 2860305,
+        "outcomeDenominator": 60568200,
+        "payoutTenthsDenominator": 605682000,
+        "expectedPayoutTenthsNumerator": 624489542,
+        "rtpPercent": 103.10518423859,
+        "basePayoutTenthsNumerator": 523966474,
+        "awardNumerator": 50249136,
+        "awardPercent": 82.962901324457,
+        "elapsedSeconds": 15.107998888,
+        "freeDistribution": [
+          0,
+          33649,
+          17710,
+          1771,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByOriginalF": [
+          0,
+          624489542,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByAwardedF": [
+          0,
+          233384153,
+          314678124,
+          76427265,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "overlapDistribution": [
+          48261521,
+          11895807,
+          409101,
+          1771
+        ],
+        "maxCountsInOptimalOutcomes": [
+          4,
+          4,
+          2,
+          1,
+          1
+        ],
+        "automaticPayoutTenthsNumerator": 447384849,
+        "automaticRtpPercent": 73.864643327687,
+        "automaticAwardNumerator": 56436069,
+        "automaticAwardPercent": 93.177721972916,
+        "crossLanguageVectors": [
+          {
+            "firstFiveMask": 31,
+            "manualMask": 65536,
+            "lastThreeMask": 3145760,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 10
+          },
+          {
+            "firstFiveMask": 47,
+            "manualMask": 2048,
+            "lastThreeMask": 540928,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 55,
+            "manualMask": 2048,
+            "lastThreeMask": 2121728,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 40
+          },
+          {
+            "firstFiveMask": 524303,
+            "manualMask": 8320,
+            "lastThreeMask": 10485792,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 524311,
+            "manualMask": 65544,
+            "lastThreeMask": 2105352,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 20
+          },
+          {
+            "firstFiveMask": 524315,
+            "manualMask": 65540,
+            "lastThreeMask": 8396864,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 10
+          },
+          {
+            "firstFiveMask": 2621447,
+            "manualMask": 2088,
+            "lastThreeMask": 16908320,
+            "budget": 3,
+            "multiplier": 2,
+            "hundredths": 100
+          },
+          {
+            "firstFiveMask": 2621451,
+            "manualMask": 2084,
+            "lastThreeMask": 20972544,
+            "budget": 3,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 2621454,
+            "manualMask": 12416,
+            "lastThreeMask": 266272,
+            "budget": 3,
+            "multiplier": 2,
+            "hundredths": 1080
+          }
+        ]
+      }
+    },
+    {
+      "name": "shoulders",
+      "initialCellsOneBased": [
+        11,
+        15
+      ],
+      "mirrorRandomly": false,
+      "optimalRtpPercent": 174.82568724182,
+      "optimalPayoutNumeratorTenths": 1058887719,
+      "optimalAwardPercent": 79.521894327386,
+      "autoRtpPercent": 104.05874584353,
+      "autoPayoutNumeratorTenths": 630265093,
+      "autoAwardPercent": 95.337515395868,
+      "enumeration": {
+        "mode": "shoulders",
+        "initialFreeMask": 17408,
+        "oddsRule": "1 + raw hits on player FREE in last three only; initial FREE hits grant extra player FREE during first five only; no line awards",
+        "payoutVariant": "v253",
+        "payoutTiers": "counts above last defined tier receive that last tier, not a new payout",
+        "symmetryReduced": true,
+        "firstFiveSets": 53130,
+        "representatives": 26728,
+        "freeCandidates": 2860305,
+        "outcomeDenominator": 60568200,
+        "payoutTenthsDenominator": 605682000,
+        "expectedPayoutTenthsNumerator": 1058887719,
+        "rtpPercent": 174.82568724182,
+        "basePayoutTenthsNumerator": 871577538,
+        "awardNumerator": 48164980,
+        "awardPercent": 79.521894327386,
+        "elapsedSeconds": 16.431372351,
+        "freeDistribution": [
+          0,
+          33649,
+          17710,
+          1771,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByOriginalF": [
+          0,
+          1058887719,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByAwardedF": [
+          0,
+          337881408,
+          559398516,
+          161607795,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "overlapDistribution": [
+          48261521,
+          11895807,
+          409101,
+          1771
+        ],
+        "maxCountsInOptimalOutcomes": [
+          4,
+          3,
+          2,
+          1,
+          1
+        ],
+        "automaticPayoutTenthsNumerator": 630265093,
+        "automaticRtpPercent": 104.05874584353,
+        "automaticAwardNumerator": 57744217,
+        "automaticAwardPercent": 95.337515395868,
+        "crossLanguageVectors": [
+          {
+            "firstFiveMask": 31,
+            "manualMask": 262144,
+            "lastThreeMask": 68608,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 47,
+            "manualMask": 131072,
+            "lastThreeMask": 1408,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 55,
+            "manualMask": 131072,
+            "lastThreeMask": 1048840,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 1039,
+            "manualMask": 8388736,
+            "lastThreeMask": 2621568,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 100
+          },
+          {
+            "firstFiveMask": 1047,
+            "manualMask": 262152,
+            "lastThreeMask": 524552,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 100
+          },
+          {
+            "firstFiveMask": 1051,
+            "manualMask": 262148,
+            "lastThreeMask": 10368,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 17415,
+            "manualMask": 8388744,
+            "lastThreeMask": 360448,
+            "budget": 3,
+            "multiplier": 1,
+            "hundredths": 50
+          },
+          {
+            "firstFiveMask": 17419,
+            "manualMask": 131108,
+            "lastThreeMask": 2099232,
+            "budget": 3,
+            "multiplier": 2,
+            "hundredths": 100
+          },
+          {
+            "firstFiveMask": 17422,
+            "manualMask": 133152,
+            "lastThreeMask": 6324224,
+            "budget": 3,
+            "multiplier": 1,
+            "hundredths": 50
+          }
+        ]
+      }
+    },
+    {
+      "name": "festival",
+      "initialCellsOneBased": [
+        6,
+        7,
+        8
+      ],
+      "mirrorRandomly": false,
+      "optimalRtpPercent": 710.80043488167,
+      "optimalPayoutNumeratorTenths": 4305190290,
+      "optimalAwardPercent": 94.970553854993,
+      "autoRtpPercent": 439.95507064763,
+      "autoPayoutNumeratorTenths": 2664728671,
+      "autoAwardPercent": 98.590856257904,
+      "enumeration": {
+        "mode": "festival",
+        "initialFreeMask": 224,
+        "oddsRule": "1 + raw hits on player FREE in last three only; initial FREE hits grant extra player FREE during first five only; no line awards",
+        "payoutVariant": "v253",
+        "payoutTiers": "counts above last defined tier receive that last tier, not a new payout",
+        "symmetryReduced": true,
+        "firstFiveSets": 53130,
+        "representatives": 26728,
+        "freeCandidates": 4764828,
+        "outcomeDenominator": 60568200,
+        "payoutTenthsDenominator": 605682000,
+        "expectedPayoutTenthsNumerator": 4305190290,
+        "rtpPercent": 710.80043488167,
+        "basePayoutTenthsNumerator": 3488758302,
+        "awardNumerator": 57521955,
+        "awardPercent": 94.970553854993,
+        "elapsedSeconds": 14.245602164,
+        "freeDistribution": [
+          0,
+          26334,
+          21945,
+          4620,
+          231,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByOriginalF": [
+          0,
+          4305190290,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expectedPayoutByAwardedF": [
+          0,
+          1000929430,
+          2151504324,
+          1026177930,
+          126578606,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "overlapDistribution": [
+          46695726,
+          13214124,
+          652806,
+          5544
+        ],
+        "maxCountsInOptimalOutcomes": [
+          4,
+          4,
+          3,
+          1,
+          0
+        ],
+        "automaticPayoutTenthsNumerator": 2664728671,
+        "automaticRtpPercent": 439.95507064763,
+        "automaticAwardNumerator": 59714707,
+        "automaticAwardPercent": 98.590856257904,
+        "crossLanguageVectors": [
+          {
+            "firstFiveMask": 31,
+            "manualMask": 256,
+            "lastThreeMask": 2375680,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 310
+          },
+          {
+            "firstFiveMask": 47,
+            "manualMask": 1052672,
+            "lastThreeMask": 344064,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 310
+          },
+          {
+            "firstFiveMask": 55,
+            "manualMask": 264,
+            "lastThreeMask": 3149824,
+            "budget": 2,
+            "multiplier": 1,
+            "hundredths": 10050
+          },
+          {
+            "firstFiveMask": 59,
+            "manualMask": 260,
+            "lastThreeMask": 6400,
+            "budget": 2,
+            "multiplier": 2,
+            "hundredths": 620
+          },
+          {
+            "firstFiveMask": 103,
+            "manualMask": 1052680,
+            "lastThreeMask": 4261888,
+            "budget": 3,
+            "multiplier": 1,
+            "hundredths": 310
+          },
+          {
+            "firstFiveMask": 107,
+            "manualMask": 1052676,
+            "lastThreeMask": 163844,
+            "budget": 3,
+            "multiplier": 2,
+            "hundredths": 620
+          },
+          {
+            "firstFiveMask": 109,
+            "manualMask": 1052674,
+            "lastThreeMask": 6291584,
+            "budget": 3,
+            "multiplier": 1,
+            "hundredths": 350
+          },
+          {
+            "firstFiveMask": 227,
+            "manualMask": 66320,
+            "lastThreeMask": 20979712,
+            "budget": 4,
+            "multiplier": 1,
+            "hundredths": 10040
+          },
+          {
+            "firstFiveMask": 229,
+            "manualMask": 3674112,
+            "lastThreeMask": 4456960,
+            "budget": 4,
+            "multiplier": 1,
+            "hundredths": 350
+          },
+          {
+            "firstFiveMask": 230,
+            "manualMask": 2328,
+            "lastThreeMask": 25165832,
+            "budget": 4,
+            "multiplier": 2,
+            "hundredths": 620
+          },
+          {
+            "firstFiveMask": 279,
+            "manualMask": 8,
+            "lastThreeMask": 2129952,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 310
+          },
+          {
+            "firstFiveMask": 283,
+            "manualMask": 4,
+            "lastThreeMask": 17440,
+            "budget": 1,
+            "multiplier": 1,
+            "hundredths": 310
+          }
+        ]
+      }
+    }
+  ],
+  "optimalCalibratedRows": [
+    {
+      "targetOptimalPercent": 50,
+      "weights": [
+        0.9564695431642357,
+        0.03853045683576429,
+        0,
+        0,
+        0.005
+      ],
+      "optimalPercent": 50.0,
+      "actualAutoPercent": 41.507803164458196,
+      "lowInitialCells": [
+        18
+      ],
+      "highInitialCells": [
+        21
+      ],
+      "absoluteLowProbability": 0.9564695431642357,
+      "absoluteHighProbability": 0.03853045683576429,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 60,
+      "weights": [
+        0.5157491828458245,
+        0.4792508171541755,
+        0,
+        0,
+        0.005
+      ],
+      "optimalPercent": 60.0,
+      "actualAutoPercent": 47.970274292123605,
+      "lowInitialCells": [
+        18
+      ],
+      "highInitialCells": [
+        21
+      ],
+      "absoluteLowProbability": 0.5157491828458245,
+      "absoluteHighProbability": 0.4792508171541755,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 70,
+      "weights": [
+        0.0750288225274129,
+        0.919971177472587,
+        0,
+        0,
+        0.005
+      ],
+      "optimalPercent": 70.0,
+      "actualAutoPercent": 54.43274541978902,
+      "lowInitialCells": [
+        18
+      ],
+      "highInitialCells": [
+        21
+      ],
+      "absoluteLowProbability": 0.0750288225274129,
+      "absoluteHighProbability": 0.919971177472587,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 75,
+      "weights": [
+        0,
+        0.8997334522258331,
+        0.09526654777416683,
+        0,
+        0.005
+      ],
+      "optimalPercent": 75.0,
+      "actualAutoPercent": 57.46335765811932,
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "absoluteLowProbability": 0.8997334522258331,
+      "absoluteHighProbability": 0.09526654777416683,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 80,
+      "weights": [
+        0,
+        0.7552845598962912,
+        0.23971544010370882,
+        0,
+        0.005
+      ],
+      "optimalPercent": 80.0,
+      "actualAutoPercent": 60.39039602134611,
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "absoluteLowProbability": 0.7552845598962912,
+      "absoluteHighProbability": 0.23971544010370882,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 90,
+      "weights": [
+        0,
+        0.46638677523720684,
+        0.5286132247627932,
+        0,
+        0.005
+      ],
+      "optimalPercent": 90.0,
+      "actualAutoPercent": 66.24447274779969,
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "absoluteLowProbability": 0.46638677523720684,
+      "absoluteHighProbability": 0.5286132247627932,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 100,
+      "weights": [
+        0,
+        0.17748899057812287,
+        0.8175110094218772,
+        0,
+        0.005
+      ],
+      "optimalPercent": 100.0,
+      "actualAutoPercent": 72.09854947425326,
+      "lowInitialCells": [
+        21
+      ],
+      "highInitialCells": [
+        20,
+        22
+      ],
+      "absoluteLowProbability": 0.17748899057812287,
+      "absoluteHighProbability": 0.8175110094218772,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 110,
+      "weights": [
+        0,
+        0,
+        0.9412310030366449,
+        0.05376899696335514,
+        0.005
+      ],
+      "optimalPercent": 110.0,
+      "actualAutoPercent": 77.31860207077206,
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "absoluteLowProbability": 0.9412310030366449,
+      "absoluteHighProbability": 0.05376899696335514,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 120,
+      "weights": [
+        0,
+        0,
+        0.8018008598940323,
+        0.19319914010596773,
+        0.005
+      ],
+      "optimalPercent": 120.0,
+      "actualAutoPercent": 81.52857010661859,
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "absoluteLowProbability": 0.8018008598940323,
+      "absoluteHighProbability": 0.19319914010596773,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 125,
+      "weights": [
+        0,
+        0,
+        0.7320857883227258,
+        0.2629142116772742,
+        0.005
+      ],
+      "optimalPercent": 125.0,
+      "actualAutoPercent": 83.63355412454185,
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "absoluteLowProbability": 0.7320857883227258,
+      "absoluteHighProbability": 0.2629142116772742,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 130,
+      "weights": [
+        0,
+        0,
+        0.6623707167514196,
+        0.3326292832485805,
+        0.005
+      ],
+      "optimalPercent": 130.0,
+      "actualAutoPercent": 85.73853814246512,
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "absoluteLowProbability": 0.6623707167514196,
+      "absoluteHighProbability": 0.3326292832485805,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 140,
+      "weights": [
+        0,
+        0,
+        0.5229405736088065,
+        0.4720594263911934,
+        0.005
+      ],
+      "optimalPercent": 140.0,
+      "actualAutoPercent": 89.94850617831163,
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "absoluteLowProbability": 0.5229405736088065,
+      "absoluteHighProbability": 0.4720594263911934,
+      "festivalProbability": 0.005
+    },
+    {
+      "targetOptimalPercent": 150,
+      "weights": [
+        0,
+        0,
+        0.383510430466194,
+        0.611489569533806,
+        0.005
+      ],
+      "optimalPercent": 150.0,
+      "actualAutoPercent": 94.15847421415816,
+      "lowInitialCells": [
+        20,
+        22
+      ],
+      "highInitialCells": [
+        11,
+        15
+      ],
+      "absoluteLowProbability": 0.383510430466194,
+      "absoluteHighProbability": 0.611489569533806,
+      "festivalProbability": 0.005
+    }
+  ],
+  "feasibility": {
+    "oldTableLowestAutoSingleFreePercent": 69.374130979623,
+    "oldTableEdgeOptimalPercent": 76.108819809735,
+    "newTableMinimumMixOptimalPercent": 49.125739123830655,
+    "newTableMaximumRegularMixOptimalPercent": 177.5055609800192,
+    "highestPayoutPreserved": 2000,
+    "unchangedPayoutEntries": 10,
+    "oldTableAutoEnumerationReference": "v251 analysis of all25 single-initial-FREE positions; new source independently recalculates selected templates with new table"
+  },
+  "reproduction": {
+    "source": "scripts/dango-v253-calibrate.cpp",
+    "sourceSha256": "66d94cc290effe80473f46ef1102a93eb99c41a3b53774f83795b20849e2f1ba",
+    "build": "g++ -O3 -std=c++20 scripts/dango-v253-calibrate.cpp -o /tmp/dango-v253-calibrate",
+    "examples": [
+      "/tmp/dango-v253-calibrate edge /tmp/dango-v253-edge.json full 131072",
+      "/tmp/dango-v253-calibrate one /tmp/dango-v253-one.json symmetry 1048576",
+      "/tmp/dango-v253-calibrate two /tmp/dango-v253-two.json symmetry 2621440",
+      "/tmp/dango-v253-calibrate shoulders /tmp/dango-v253-shoulders.json symmetry 17408",
+      "/tmp/dango-v253-calibrate festival /tmp/dango-v253-festival.json symmetry 224"
+    ],
+    "symmetry": "Exact left/right symmetry reduces symmetric templates to representatives weighted1 or2. Asymmetric edge template enumerates all53130 first-five sets. Mirrored edge has identical expected return and uses canonicalized auto policy."
+  },
+  "verification": {
+    "automaticHistogramIndependentAgreement": true,
+    "comparedTemplates": 5,
+    "priorAutomaticHistogramSha256": "4da355a1749bd37add250f190827f2f022a6d3c5365ead650c45752a9394ec38",
+    "crossLanguageCurrentVectors": 42,
+    "crossLanguageLegacyVectors": 60,
+    "all101SettingsReachRequestedOptimalReturn": true,
+    "initialFreeAlways1To3ForNewGames": true,
+    "legacy251EmptyInitialCheckpointsPreserved": true
+  }
+}

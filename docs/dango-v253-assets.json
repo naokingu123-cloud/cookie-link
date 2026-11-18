@@ -1,0 +1,114 @@
+{
+  "version": "20261119-v253-dango-tsukimi-lines",
+  "generatedAssets": [
+    {
+      "key": "green",
+      "file": "assets/dango-art-v253/dango-green.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: precise-object-edit. Asset type: single transparent 3D Japanese dango sprite for a premium sweets arcade game. Edit target: the supplied white dango. Preserve the single centered round silhouette, soft glutinous mochi texture, subtle flour, slightly glossy surface, camera angle and light from upper left. Change only its dough color to the LIGHT YELLOW-GREEN of traditional three-color hanami dango, a soft fresh pastel spring green approximately #bada7b, bright enough to distinguish it from dark matcha. No filling, no toppings, no holes. No text, number, label, skewer, plate, base or separate objects. Full sphere isolated with a tight but safe transparent margin. Clean soft natural edge, no detached crumbs, no cast shadow outside the object. Actual transparent background, not a checkerboard.",
+      "references": [
+        "assets/dango-art-v252/dango-white.webp"
+      ],
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "bytes": 51260,
+      "sha256": "d84b3cd57169640a41390f501bdf4aa35c058eea6efaf5c38ba39fdbe8e2f722",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only; generated transparency retained."
+    },
+    {
+      "key": "pink",
+      "file": "assets/dango-art-v253/dango-pink.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: precise-object-edit. Asset type: single transparent 3D Japanese dango sprite for a premium sweets arcade game. Edit target: the supplied white dango. Preserve the single centered round silhouette, soft glutinous mochi texture, subtle flour, slightly glossy surface, camera angle and light from upper left. Change only its dough color to the soft SAKURA PINK of traditional three-color hanami dango, a pastel warm pink approximately #f3a8bf with light pink highlights, never red. No filling, no toppings, no holes. No text, number, label, skewer, plate, base or separate objects. Full sphere isolated with a tight but safe transparent margin. Clean soft natural edge, no detached crumbs, no cast shadow outside the object. Actual transparent background, not a checkerboard.",
+      "references": [
+        "assets/dango-art-v252/dango-white.webp"
+      ],
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "bytes": 53326,
+      "sha256": "011f57ad5bdc34f3d1b215aa05a5af8e9e59c8ef79ef09ae8159428c5d80a291",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only; generated transparency retained."
+    },
+    {
+      "key": "yellow",
+      "file": "assets/dango-art-v253/dango-yellow.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: precise-object-edit. Asset type: single transparent 3D Japanese tsukimi dango sprite for a premium sweets arcade game. Edit target: supplied white dango. Preserve the single centered round silhouette, soft glutinous mochi texture, subtle flour, slightly glossy surface, camera angle and upper-left lighting. Change only its dough color to warm MOON YELLOW, the appetizing pale golden yellow of a tsukimi moon dumpling, approximately #f9d76b with creamy highlights. The whole sphere is yellow dough, not a yolk or filling. No text, number, label, skewer, plate, base or separate objects. No gold foil. Full sphere isolated with a tight safe transparent margin. Clean natural edge, no detached crumbs or cast shadow outside the object. Actual transparent background, not checkerboard.",
+      "references": [
+        "assets/dango-art-v252/dango-white.webp"
+      ],
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "bytes": 52530,
+      "sha256": "9a82b5887ba978b43ee00e812b8048a5b80d6f6894eb0e2abc12e334dcac9d80",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only; generated transparency retained."
+    },
+    {
+      "key": "rainbow",
+      "file": "assets/dango-art-v253/dango-rainbow.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: precise-object-edit. Asset type: single transparent 3D rainbow dango reward sprite for a premium sweets arcade game. Edit target: supplied white dango. Keep single centered round silhouette, pillowy glutinous mochi, subtle flour, soft edible gloss and light from upper left. Recolor its entire dough into a clearly visible smooth pastel RAINBOW with red/pink, orange, yellow, green, cyan, blue and violet bands gently curving diagonally around the sphere. It must read as a rainbow-colored edible dumpling, never metallic, no glass, no glitter obscuring shape. Moderate vivid saturation makes each color recognizable on a small board. No text, numbers, labels, skewer, plate, base or separate objects. Full sphere within tight safe transparent margin. Clean edge, no detached crumbs or external shadow. Actual transparent background.",
+      "references": [
+        "assets/dango-art-v252/dango-white.webp"
+      ],
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "bytes": 69684,
+      "sha256": "fabb3f468314608d6f6765434a42112364fda799c47c5db9102bacbb2e1f2b67",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only; generated transparency retained."
+    },
+    {
+      "key": "stand",
+      "file": "assets/dango-art-v253/tsukimi-stand.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: stylized-concept. Asset type: transparent game sprite, a Japanese tsukimi dango offering pedestal to sit beneath a 25-dumpling triangular stack. Subject: ONE empty traditional sanbo/sanpou wooden offering stand, rendered in polished high-quality playful 3D matching a luminous Japanese sweets kingdom arcade. Composition: wide landscape 3:1, centered front view with slight view of the top tray, bilateral symmetry, top tray extremely wide and flat across nearly entire width so it supports a nine-dumpling row, with a low graceful central wooden pedestal below. Warm pale honey hinoki wood grain, subtle golden rim, premium handmade rounded edges. A tiny dark crescent cutout in front of pedestal is acceptable. Tray top is a very shallow horizontal elliptical/rectangular plane (NOT a deep bowl). Keep total stand height low, about 25 percent of its width; wide tabletop above a central narrower box pedestal. No dumplings, no food, no paper covering, no flowers, no grass, no background, no text, no letters, no numbers, no watermark. Entire object visible with small safe transparent margin. Soft warm upper-left studio light, defined texture, bright rim, no floating ornaments, no shadow cast outside the object. Real alpha transparent background.",
+      "references": [],
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "dimensions": [
+        1280,
+        427
+      ],
+      "transparent": true,
+      "bytes": 49172,
+      "sha256": "fe0178e1f0d2d13a43d4f3c6a5ab4c3b868b31c0c71e5e1c492736ca04fb9861",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only; generated transparency retained."
+    }
+  ],
+  "totalNewBytes": 275972,
+  "reusedAssets": [
+    "assets/dango-art-v252/dango-white.webp",
+    "assets/dango-art-v252/bamboo-skewer.webp",
+    "assets/dango-art-v252/scene.webp"
+  ]
+}

@@ -11,7 +11,7 @@ let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTime
 const payoutNote=document.createElement('small');payoutNote.id='dango-payout-status';
 document.getElementById('debug-payout-status')?.after(payoutNote);
 const engine={
- kind:'dango',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'5マス3本',version:0,
+ kind:'dango',gameName:game.name,recordGame:game.record,drawMode:'single',allReachName:'5個ライン3本',version:0,
  maxLink:0,maxChain:0,roundCleared:0,roundHammers:0,idle:true,busy:false,
  get allClears(){return Number(this.liveBoard&&this.state?.highestRole);},
  get totalHundredths(){return this.liveBoard&&this.state?.phase==='done'?this.state.totalHundredths:0;},
@@ -56,7 +56,7 @@ const engine={
    invalidateReach(slot);this.emit('settled');slot.updateDangoReach(app);
    if(!settlementWorker&&active===id)sceneSound(next.lastOddsGain?'bonus':next.newLines.length?'line':'cookie-hit',{volume:next.lastOddsGain ? .55 : .3});
    if(!settlementWorker&&next.lastBonusGain)announceAchievement(game.name+'　初期FREEにHIT！ 配置FREE＋1');
-   if(!settlementWorker&&next.highestRole&&!before.highestRole)announceAchievement(game.name+'　5マスの串3本完成！ '+num(medalWin(app.locked[id],next.totalHundredths))+' WIN');
+   if(!settlementWorker&&next.highestRole&&!before.highestRole)announceAchievement(game.name+'　5個ラインの串3本完成！ '+num(medalWin(app.locked[id],next.totalHundredths))+' WIN');
    if(next.phase==='done')finish(this.version);
   }
  },
@@ -151,10 +151,11 @@ engine.afterCheckpointRestoreV247=function(){
   if(this.state.phase==='done')finish(version,token);
  });return true;
 };
+function presentationPaused(){return app.paused||(typeof menuOpen!=='undefined'&&menuOpen)||(typeof userPaused!=='undefined'&&userPaused);}
 function paint(mini){
  if(!mini&&(active!==id||slot.panel.hidden))return;
  const s=engine.state,t=thinking();
- const opts={time:clock,bet:app.bet(id),paused:app.paused,age:clock-lastHit,lineAge:mini?Infinity:clock-lineStart,
+ const opts={time:clock,bet:app.bet(id),paused:presentationPaused(),age:clock-lastHit,lineAge:mini?Infinity:clock-lineStart,
   animationLines:engine.animationLines,reach:slot.reachResults,demo:!engine.liveBoard,
   placementLocked:!canPlace(),reducedMotion:motionReduced,remainingMs:t.remainingMs};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
@@ -166,13 +167,17 @@ engine.pumpHiddenV246=function(elapsed){
 };
 function wake(){if(reachTimer){clearTimeout(reachTimer);reachTimer=0;}if(!frame&&!document.hidden)frame=requestAnimationFrame(tick);}
 function tick(now){
- frame=0;const moving=!app.paused&&!document.hidden&&inView&&!jpcSession.active;
+ frame=0;const moving=!presentationPaused()&&!document.hidden&&inView&&!jpcSession.active;
  if(moving&&stamp!==null)clock+=Math.max(0,now-stamp);stamp=moving?now:null;
  if(active===id&&clock-lastMain>=(window.SweetsRenderCadenceV246?.activeInterval?.()??32)-.75){const start=performance.now();paint(false);lastMain=clock;window.SweetsRenderCadenceV246?.recordClient?.(performance.now()-start);}
  if(app.phase!=='ready'&&(!allNineMode||active===id)&&clock-lastMini>=120){paint(true);lastMini=clock;}
  const animationLength=Math.max(animationMs,engine.animationLines.length*150+500),animating=clock-Math.max(lastHit,lineStart)<=animationLength;
  const reachAnimation=app.phase==='playing'&&!motionReduced&&slot.reachStatus==='ready'&&slot.reachResults?.length>0&&(!allNineMode||active===id);
- if(moving&&app.phase!=='ready'&&animating)wake();
+ // Mochi breathing and the light along a completed skewer continue while the
+ // visible board waits for its next ball. Hidden games retain their existing
+ // settlement clock; no extra visual loop runs on the worker or hidden tabs.
+ const ambient=!settlementWorker&&engine.liveBoard&&active===id&&!slot.panel.hidden&&!motionReduced&&['playing','result','paying','complete'].includes(app.phase);
+ if(moving&&app.phase!=='ready'&&(animating||ambient))wake();
  else if(moving&&(reachAnimation||engine.state.phase==='placing'))reachTimer=setTimeout(wake,engine.state.phase==='placing'?160:active===id?80:125);
  else stamp=null;
 }
@@ -180,12 +185,13 @@ window.addEventListener('sweets-dango-thinking-v251',event=>{
  const t=event.detail;if(engine.liveBoard&&engine.state?.phase==='placing'){engine.thinkingClosesAt=t?.closesAt||0;lastMain=-Infinity;wake();}
 });
 const oldSelect=select;select=function(i){const result=oldSelect(i);document.body.classList.toggle('dgb-active',active===id);lastMain=lastMini=-Infinity;wake();return result;};
+const oldSyncPause=syncPause;syncPause=function(){const result=oldSyncPause.apply(this,arguments);stamp=null;lastMain=-Infinity;wake();return result;};
 const oldHud=hud;hud=function(a){oldHud(a);if(active===id){const s=engine.state;put('best','完成した串 '+s.completedLines.length+'本 ／ ODDS ×'+s.oddsMultiplier);put('ballinfo',!engine.liveBoard?'5球 → FREE配置 → 3球':s.phase==='placing'?'FREE配置 '+s.manualFreeCells.length+' / '+s.freeBudget:s.phase==='done'?'串の配当を合計':s.draws.length<5?'前半 ／ あと'+(5-s.draws.length)+'球':'後半 ／ あと'+(8-s.draws.length)+'球');}};
 const oldResult=renderRoundResult;renderRoundResult=function(a){
  oldResult(a);if(!a.result)return;const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.dango===String(a.token))return;
  row.dataset.dango=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
- const s=engine.state,lines=[3,4,5,7,9].filter(length=>s.lineCounts[length]).map(length=>length+'マス '+s.lineCounts[length]+'本').join(' ／ ');
- row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+' ／ 配置FREE '+s.manualFreeCells.length+'個 ／ ODDS ×'+s.oddsMultiplier+(s.highestRole?' ／ 5マス3本以上！':''):'参加なし';
+ const s=engine.state,lines=[3,4,5,7,9].filter(length=>s.lineCounts[length]).map(length=>length+'個ライン '+s.lineCounts[length]+'本').join(' ／ ');
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+' ／ 配置FREE '+s.manualFreeCells.length+'個 ／ ODDS ×'+s.oddsMultiplier+(s.highestRole?' ／ 5個ライン3本以上！':''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;lastMain=-Infinity;wake();});

@@ -9,7 +9,7 @@
   if(root)root.DangoBingoRules=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const REVISION=251,ALL=(1<<25)-1,DENOMINATOR=60568200,FESTIVAL_PROBABILITY=.005;
+  const REVISION=253,LEGACY_REVISION=251,ALL=(1<<25)-1,DENOMINATOR=60568200,FESTIVAL_PROBABILITY=.005;
   const LENGTHS=[3,4,5,7,9];
   const freeze=value=>{
     if(value&&typeof value==='object'&&!Object.isFrozen(value)){
@@ -34,20 +34,34 @@
   }
   const mirror=cells.map(c=>cells.find(x=>x.row===c.row&&x.x===-c.x).id);
   const geometry=freeze({cells,lines,mirror,rows:[1,3,5,7,9]});
-  const tiers=freeze({3:[0,20,100,500,10000],4:[0,100,300,5000,50000],5:[0,300,10000,200000],7:[0,2500],9:[0,10000]});
-  const payRows=freeze(LENGTHS.flatMap(length=>tiers[length].slice(1).map((hundredths,index)=>{
-    const count=index+1,atLeast=(length===3||length===4||length===5)&&count===tiers[length].length-1;
-    return {length,count,atLeast,hundredths,label:length+'マス '+count+'本'+(atLeast?'以上':'')};
+  // The three small tiers are adjusted so even the minimum one-FREE mold can
+  // reach a 50% setting. Existing revision251 checkpoints keep their old table.
+  const legacyTiers=freeze({3:[0,20,100,500,10000],4:[0,100,300,5000,50000],5:[0,300,10000,200000],7:[0,2500],9:[0,10000]});
+  const tiers=freeze({3:[0,10,50,500,10000],4:[0,40,300,5000,50000],5:[0,300,10000,200000],7:[0,2500],9:[0,10000]});
+  const rowsFor=table=>freeze(LENGTHS.flatMap(length=>table[length].slice(1).map((hundredths,index)=>{
+    const count=index+1,atLeast=(length===3||length===4||length===5)&&count===table[length].length-1;
+    return {length,count,atLeast,hundredths,label:length+'個ライン '+count+'本'+(atLeast?'以上':'')};
   })));
+  const payRows=rowsFor(tiers),legacyPayRows=rowsFor(legacyTiers);
+  const tiersFor=state=>state?.rulesRevision===LEGACY_REVISION?legacyTiers:tiers;
+  const payRowsBaseFor=state=>state?.rulesRevision===LEGACY_REVISION?legacyPayRows:payRows;
   // Numerators count tenths of BET over C(25,5) * C(20,3) equally likely outcomes.
   // The 0.5% festival mold keeps the three five-cell lines possible at every setting.
-  const molds=freeze([
+  const legacyMolds=freeze([
     {id:'plain',name:'白いおさら',initialFreeCells:[],optimalNumeratorTenths:275113532,automaticNumeratorTenths:264375064},
     {id:'one',name:'ひと粒',initialFreeCells:[20],optimalNumeratorTenths:584311374,automaticNumeratorTenths:509480674},
     {id:'two',name:'ふた粒',initialFreeCells:[19,21],optimalNumeratorTenths:887409084,automaticNumeratorTenths:749874864},
     {id:'shoulders',name:'よりそい',initialFreeCells:[10,14],optimalNumeratorTenths:1285049154,automaticNumeratorTenths:896031148},
     {id:'festival',name:'三色まつり',initialFreeCells:[5,6,7],optimalNumeratorTenths:4454759956,automaticNumeratorTenths:2948678970}
   ].map(m=>({...m,optimalReturnPercent:10*m.optimalNumeratorTenths/DENOMINATOR,automaticReturnPercent:10*m.automaticNumeratorTenths/DENOMINATOR})));
+  const molds=freeze([
+    {id:'edge',name:'すそのひと粒',initialFreeCells:[17],mirrorRandomly:true,optimalNumeratorTenths:277406842,automaticNumeratorTenths:235838809},
+    {id:'one',name:'ひと粒',initialFreeCells:[20],optimalNumeratorTenths:414836844,automaticNumeratorTenths:324652551},
+    {id:'two',name:'ふた粒',initialFreeCells:[19,21],optimalNumeratorTenths:624489542,automaticNumeratorTenths:447384849},
+    {id:'shoulders',name:'よりそい',initialFreeCells:[10,14],optimalNumeratorTenths:1058887719,automaticNumeratorTenths:630265093},
+    {id:'festival',name:'三色まつり',initialFreeCells:[5,6,7],optimalNumeratorTenths:4305190290,automaticNumeratorTenths:2664728671}
+  ].map(m=>({...m,optimalReturnPercent:10*m.optimalNumeratorTenths/DENOMINATOR,automaticReturnPercent:10*m.automaticNumeratorTenths/DENOMINATOR})));
+  const legacy=freeze({revision:LEGACY_REVISION,ruleId:'initial-hit-free-v4',tiers:legacyTiers,payRows:legacyPayRows,molds:legacyMolds});
 
   function effectiveTarget(value){
     const n=Number(value);return Math.max(50,Math.min(150,Number.isFinite(n)?n:90));
@@ -92,7 +106,7 @@
     value>>>=0;value^=value>>>16;value=Math.imul(value,0x7feb352d);value^=value>>>15;
     value=Math.imul(value,0x846ca68b);value^=value>>>16;return value>>>0;
   }
-  function stateOk(state){return !!state&&state.rulesRevision===REVISION&&Array.isArray(state.numbers)&&state.numbers.length===25&&Array.isArray(state.draws);}
+  function stateOk(state){return !!state&&(state.rulesRevision===REVISION||state.rulesRevision===LEGACY_REVISION)&&Array.isArray(state.numbers)&&state.numbers.length===25&&Array.isArray(state.draws);}
   function cellIdOk(id){return Number.isInteger(id)&&id>=0&&id<25;}
   function scoreGreater(a,b){for(let i=0;i<a.length;i++)if(a[i]!==b[i])return a[i]>b[i];return false;}
 
@@ -104,11 +118,12 @@
     const freeBudget=1+bonusHits.length,oddsMultiplier=1+oddsHits.length,markedMask=initialMask|manualMask|hitMask;
     const completedLines=lines.filter(line=>(line.mask&markedMask)===line.mask).map(line=>line.id);
     const lineCounts={3:0,4:0,5:0,7:0,9:0};for(const id of completedLines)lineCounts[lines[id].length]++;
-    const baseHundredths=LENGTHS.reduce((sum,length)=>sum+tiers[length][Math.min(lineCounts[length],tiers[length].length-1)],0);
+    const payoutTable=tiersFor(source);
+    const baseHundredths=LENGTHS.reduce((sum,length)=>sum+payoutTable[length][Math.min(lineCounts[length],payoutTable[length].length-1)],0);
     const previousLines=new Set(previous?.completedLines||[]),newLines=previous?completedLines.filter(id=>!previousLines.has(id)):[];
     const freeCommitted=!!source.freeCommitted;
     const phase=draws.length>=8?'done':draws.length<5?'draw':freeCommitted?'draw-final':'placing';
-    return {...source,rulesRevision:REVISION,numbers,draws,phase,freeCommitted,placementCommitted:freeCommitted,
+    return {...source,rulesRevision:source.rulesRevision,numbers,draws,phase,freeCommitted,placementCommitted:freeCommitted,
       initialFreeCells,manualFreeCells,initialFree:initialFreeCells,manualFree:manualFreeCells,
       freeBudget,freeQuota:freeBudget,freeRemaining:Math.max(0,freeBudget-manualFreeCells.length),bonusHits,oddsHits,
       oddsMultiplier,multiplier:oddsMultiplier,baseHundredths,totalHundredths:baseHundredths*oddsMultiplier,
@@ -124,8 +139,10 @@
     const rng=typeof options.rng==='function'?options.rng:options.seed!==undefined?seededRandom(options.seed):Math.random;
     const moldIndex=options.moldIndex===undefined?pickMold(target,rng):options.moldIndex;
     if(!Number.isInteger(moldIndex)||!molds[moldIndex])throw new RangeError('Unknown Dango mold.');
-    const initialFreeCells=(options.initialFreeCells??molds[moldIndex].initialFreeCells).slice();
-    if(initialFreeCells.length>3||new Set(initialFreeCells).size!==initialFreeCells.length||!initialFreeCells.every(cellIdOk))throw new RangeError('Dango initial FREE must contain 0–3 distinct cells.');
+    let initialFreeCells=(options.initialFreeCells??molds[moldIndex].initialFreeCells).slice();
+    const initialReflected=options.initialFreeCells===undefined&&!!molds[moldIndex].mirrorRandomly&&sample(rng)<.5;
+    if(initialReflected)initialFreeCells=initialFreeCells.map(id=>mirror[id]);
+    if(initialFreeCells.length<1||initialFreeCells.length>3||new Set(initialFreeCells).size!==initialFreeCells.length||!initialFreeCells.every(cellIdOk))throw new RangeError('Dango initial FREE must contain 1–3 distinct cells.');
     let numbers;
     if(options.numbers!==undefined){
       numbers=options.numbers.slice();
@@ -134,8 +151,8 @@
       numbers=Array.from({length:25},(_,i)=>i+1);
       for(let i=24;i>0;i--){const j=Math.floor(sample(rng)*(i+1));[numbers[i],numbers[j]]=[numbers[j],numbers[i]];}
     }
-    return derive({rulesRevision:REVISION,ruleId:'initial-hit-free-v4',numbers,draws:[],initialFreeCells,manualFreeCells:[],freeCommitted:false,
-      target,requestedTarget,moldIndex,moldId:molds[moldIndex].id,moldName:molds[moldIndex].name,seed:options.seed??null,
+    return derive({rulesRevision:REVISION,ruleId:'initial-required-free-v5',numbers,draws:[],initialFreeCells,manualFreeCells:[],freeCommitted:false,
+      target,requestedTarget,moldIndex,moldId:molds[moldIndex].id,moldName:molds[moldIndex].name,initialReflected,seed:options.seed??null,
       calibrationReference:'optimal-manual',lastNumber:null,lastCell:null});
   }
   function draw(state,number){
@@ -197,7 +214,7 @@
   function payout(state){return stateOk(state)?state.totalHundredths:0;}
   function payRowsFor(state){
     const multiplier=stateOk(state)?state.oddsMultiplier:1;
-    return payRows.map(row=>({...row,baseHundredths:row.hundredths,hundredths:row.hundredths*multiplier}));
+    return payRowsBaseFor(state).map(row=>({...row,baseHundredths:row.hundredths,hundredths:row.hundredths*multiplier}));
   }
   function reaches(state){
     if(!stateOk(state)||state.phase==='placing'||state.phase==='done')return [];
@@ -211,7 +228,7 @@
     }
     return result;
   }
-  return freeze({REVISION,version:REVISION,ruleId:'initial-hit-free-v4',geometry,cells,lines,CELLS:cells,LINES:lines,molds,tiers,payRows,
+  return freeze({REVISION,version:REVISION,ruleId:'initial-required-free-v5',geometry,cells,lines,CELLS:cells,LINES:lines,molds,tiers,payRows,tiersFor,payRowsBaseFor,legacy,
     FESTIVAL_PROBABILITY,DENOMINATOR,create,createBoard:create,draw,placeFree,undoFree,autoPlace,commitFree,reaches,
     payout,payoutState:payout,payRowsFor,weightsForTarget,calibrationForTarget,effectiveTarget,seededRandom,
     helpers:{popcount,maskOf,idsOf,reflect,hash32}});

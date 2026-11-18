@@ -3,10 +3,10 @@
 'use strict';
 const R=window.DangoBingoRules,V=window.DangoBingoView;
 const steps=[
- {title:'白いお団子の番号にHIT！',caption:'25個のお団子に1〜25の番号。縦・横・斜めの3マス以上をそろえて、串を通そう。'},
- {title:'緑の初期FREEにHITで配置＋1',caption:'初期FREEは0〜3個。前半5球で緑の番号にHITすると、配置できるFREEが1〜4個になります。'},
- {title:'5球のあと、赤いFREEを配置',caption:'お団子をタップしてFREE配置。もう一度タップで取り消し。未配置分は時間切れでおまかせ配置されます。'},
- {title:'赤いFREEに後半HITでODDS UP！',caption:'後半3球で配置FREEの番号にHITすると、赤い団子に金箔が付きODDS＋1。長さごとの完成本数で配当が決まり、その合計にODDS倍率を掛けます。'}
+ {title:'白いお団子の番号にHIT！',caption:'25個のお団子に1〜25の番号。縦・横・斜めの3個以上をそろえて、串を通そう。'},
+ {title:'黄緑のFREEにHITで配置＋1',caption:'初期FREEは1〜3個。前半5球で黄緑の番号にHITするとピンクに変わり、配置できるFREEが1個増えます。配置は最大4個です。'},
+ {title:'5球のあと、黄色いFREEを配置',caption:'お団子をタップしてFREE配置。もう一度タップで取り消し。未配置分は時間切れでおまかせ配置されます。'},
+ {title:'黄色いFREEにHITで虹色へ！',caption:'後半3球で配置FREEの番号にHITすると虹色になり、ODDS＋1。3・4・5・7・9個ラインの串は青・緑・黄・赤・紫。完成本数で配当が決まります。'}
 ];
 const first=[2,3,5,12,21],last=[4,9,14],numbers=Array.from({length:25},(_,i)=>i+1);
 let buffer,lastLessonFrame;
@@ -15,8 +15,8 @@ const firstFive=()=>first.reduce((s,n)=>R.draw(s,n),start());
 function placed(){let s=firstFive();s=R.placeFree(s,3);return R.placeFree(s,8);}
 function text(c,value,x,y,size,ink='#673d32'){c.font='900 '+size+'px ElixirNumbers,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle=ink;c.fillText(value,x,y);}
 function box(c,x,y,w,h,r,fill){c.fillStyle=fill;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();}
-function ball(c,x,y,r,kind,number,gold=false){
- V.drawLessonDango(c,x,y,r,kind,number,gold);
+function ball(c,x,y,r,kind,number,rainbow=false){
+ V.drawLessonDango(c,x,y,r,kind,number,rainbow);
 }
 function draw(c,scene,t){
  lastLessonFrame={c,scene,t,transform:c.getTransform?.(),width:c.canvas.width,height:c.canvas.height};
@@ -30,13 +30,13 @@ function draw(c,scene,t){
  c.save();c.drawImage(buffer,3,17,324,212);
  box(c,333,19,176,204,17,'#fff6e3');
  if(scene===0){
-  text(c,'前半 5球',421,48,23);ball(c,421,112,34,'plain',first[Math.min(3,Math.floor(t*4))]);text(c,'番号にHIT！',421,175,20,'#a44f55');
+  text(c,'前半 5球',421,48,23);ball(c,421,112,34,'hit',first[Math.min(3,Math.floor(t*4))]);text(c,'番号にHIT！',421,175,20,'#a44f55');
  }else if(scene===1){
   text(c,'初期FREE',421,45,20,'#5c7d37');ball(c,421,102,30,'initial',21);text(c,'配置できるFREE',421,155,15,'#5c7d37');text(c,t>.32?'1 → 2 個':'1 個',421,186,27,'#5c7d37');
  }else if(scene===2){
-  text(c,'FREEを配置',421,46,21,'#ae3f58');ball(c,392,103,24,s.manualFreeCells.includes(3)?'manual':'plain',4);ball(c,450,103,24,s.manualFreeCells.includes(8)?'manual':'plain',9);text(c,'あと'+s.freeRemaining+'個',421,153,25,'#ae3f58');box(c,343,177,156,29,8,'#af4868');text(c,t>.65&&t<.85?'再タップで取り消し':t>.85?'置き直しもOK':'お団子をタップ',421,192,16,'#fff7df');
+  text(c,'FREEを配置',421,46,21,'#8a6512');ball(c,392,103,24,s.manualFreeCells.includes(3)?'manual':'plain',4);ball(c,450,103,24,s.manualFreeCells.includes(8)?'manual':'plain',9);text(c,'あと'+s.freeRemaining+'個',421,153,25,'#8a6512');box(c,343,177,156,29,8,'#93621c');text(c,t>.65&&t<.85?'再タップで取り消し':t>.85?'置き直しもOK':'お団子をタップ',421,192,16,'#fff7df');
  }else{
-  text(c,'後半 3球',421,44,22);ball(c,421,102,32,'manual',s.oddsMultiplier>2?9:4,s.oddsMultiplier>1);text(c,'ODDS ×'+s.oddsMultiplier,421,155,24,'#ac7427');text(c,'金箔が目印！',421,189,17,'#aa772f');
+  text(c,'後半 3球',421,44,22);ball(c,421,102,32,'manual',s.oddsMultiplier>2?9:4,s.oddsMultiplier>1);text(c,'ODDS ×'+s.oddsMultiplier,421,155,24,'#ac7427');text(c,'虹色が目印！',421,189,17,'#8154a9');
  }
  c.restore();
 }
