@@ -1,0 +1,238 @@
+{
+  "version": "20261118-v252-dango-art-reach-pages",
+  "baseCommit": "e6461260021c27c51630225e440a8a31a94aa3ea",
+  "implementationCommit": "161df00db8885f215023e4397cd0e1eb45e88f45",
+  "featureRunId": 44326348441,
+  "status": "passed",
+  "localVerification": {
+    "syntax": true,
+    "dango": {
+      "games": 200,
+      "forecasts": 11400,
+      "targets": 101,
+      "deadlineAndDurableCheckpoint": true
+    },
+    "reachVM": {
+      "cards": 10,
+      "pageSize": 4,
+      "holdMs": 2000,
+      "slideMs": 650,
+      "numbers": 23,
+      "pages": 6,
+      "menuPauseWhileGameplayUnpaused": true
+    }
+  },
+  "assets": {
+    "manifest": "docs/dango-v252-assets.json",
+    "count": 7,
+    "totalBytes": 609856
+  },
+  "resolvedDuringVerification": [
+    "Legacy ALL reach-numbers CSS blocked slide transforms; the new pager uses its own class.",
+    "Shared game progress can stay unpaused under a player menu; the reach display now follows menuOpen and userPaused independently.",
+    "The common 38px header height clipped payout rows; Dango status and payout headers now size to their content.",
+    "FREE UI assertions wait up to 900ms for the next rendered frame while requiring the exact remaining count.",
+    "Payout footnote was consolidated into the heading so it does not touch the gold frame; the final main run passed the updated layout."
+  ],
+  "unchangedRules": [
+    "DangoBingoRules.REVISION=251 and v251 FREE/payout calibration",
+    "Party Castella v250 61 holes, pour/fire gauges and Sugar",
+    "Six Drop v248 connectivity, progressive payouts and carry",
+    "Per-game BET-based server color decisions"
+  ],
+  "limitations": [
+    "Windows and iPhone hardware not tested",
+    "Audio perception not tested",
+    "Public verification was read-only and did not exercise the production server",
+    "GitHub Pages deployment does not update a Windows shared-server checkout"
+  ],
+  "publishedCodeCommit": "cc474292981ddbc4e4caf6584ff90ac51160a92d",
+  "mainVisualRunId": 44328701767,
+  "mainVisualArtifactId": 14439505433,
+  "mainChecks": [
+    {
+      "id": 44328701766,
+      "name": "Verify Gelato and Winery visuals v76",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701766",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328702370,
+      "name": "Verify current games and public Pages",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328702370",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701757,
+      "name": "Monitor ledger v241",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701757",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701666,
+      "name": "Verify final reaches and Six Drop refill v75",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701666",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701693,
+      "name": "Verify Winery main board zoom v77",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701693",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328702259,
+      "name": "One-line 25-number payout table v244",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328702259",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701344,
+      "name": "pages build and deployment",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701344",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701716,
+      "name": "v245 forecast gain graphs, spectral P/O and progress",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701716",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701932,
+      "name": "Shared machine check",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701932",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701819,
+      "name": "Client v246 progressive payouts and smooth hidden-safe rendering",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701819",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328702065,
+      "name": "Station detail v238",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328702065",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328702189,
+      "name": "Public guest entry check",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328702189",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701877,
+      "name": "Six station check",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701877",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701767,
+      "name": "Arcade v252 Dango raster art and four-item reach pages",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701767",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    },
+    {
+      "id": 44328701775,
+      "name": "Six Drop v248 connected groups colors and HUD",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44328701775",
+      "headSha": "cc474292981ddbc4e4caf6584ff90ac51160a92d"
+    }
+  ],
+  "verificationScope": "All 15 workflows passed on the exact main code commit. Feature run is retained as prior evidence; final visual reports use main code. Subsequent final-record commit changes documentation and QA only.",
+  "browserVerification": {
+    "report": "docs/dango-v252-visual-qa.json",
+    "testedCommit": "cc474292981ddbc4e4caf6584ff90ac51160a92d",
+    "generatedRasterAssets": 7,
+    "touchingDango": true,
+    "payoutRows": 5,
+    "validPayoutCells": 13,
+    "payoutFont": "ArcadePayout",
+    "payoutCommas": false,
+    "oddsBesidePayout": true,
+    "confirmButtons": 0,
+    "retouchAtZero": true,
+    "deadlineBeforeSixthBall": true,
+    "balls": 8,
+    "skewerDirections": 19,
+    "tabViewportCount": 5,
+    "gameTabs": 10,
+    "reachPageSize": 4,
+    "reachHoldMs": 2000,
+    "reachSlideMs": 650,
+    "reachNumbers": 23,
+    "reachPages": 6,
+    "pauseResume": true,
+    "reducedMotion": true,
+    "emptyReachBlank": true,
+    "highAndUltraPopups": true,
+    "pageErrors": [],
+    "screenshots": [
+      "qa-dango-v251/dango-initial-390.png",
+      "qa-dango-v251/dango-initial-1366.png",
+      "qa-dango-v251/dango-placement-390.png",
+      "qa-dango-v251/dango-skewers-and-gold-1366.png"
+    ],
+    "screenshotsManuallyReviewed": true
+  },
+  "publicVerification": {
+    "runId": 44328702370,
+    "artifactId": 14437748594,
+    "artifactSha256": "7ec90a878713e5f2d7148f74a31db065db67dc4ead2f62776da6a0fbb11ba890",
+    "report": "docs/dango-v252-public-qa.json",
+    "commit": "cc474292981ddbc4e4caf6584ff90ac51160a92d",
+    "appVersion": "20261118-v252-dango-art-reach-pages",
+    "matchingFiles": 59,
+    "screens": [
+      {
+        "width": 390,
+        "height": 844,
+        "pageErrors": []
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "pageErrors": []
+      },
+      {
+        "width": 1366,
+        "height": 900,
+        "pageErrors": []
+      }
+    ],
+    "allLocalHashesRechecked": true,
+    "scope": "Read-only public rendering, asset decoding and SHA-256 comparison. Game API, WebSockets and non-GET requests blocked in the verification browser. No production BET, draw or payout sent."
+  }
+}

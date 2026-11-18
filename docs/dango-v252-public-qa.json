@@ -1,0 +1,3796 @@
+{
+  "revision": "cc474292981ddbc4e4caf6584ff90ac51160a92d",
+  "appVersion": "20261118-v252-dango-art-reach-pages",
+  "base": "https://naokingu123-cloud.github.io/cookie-link/",
+  "scope": "Published asset hashes and frontend-ready rendering. Public game API and WebSocket traffic is intercepted locally; no session, BET, settlement or draw is sent.",
+  "matchingSha256": {
+    "index.html": "b5ec99d15be63cf4f3aea1937f5e99a961be0771ff7da9444b68d59a7e1fcea6",
+    "app-version.json": "278212205ff0a7602392231bc0f35caf9dfdbad9b7f6420a15f94d945ce5b9cb",
+    "optimized/app-01.js": "a90d075304e801096bc8d4dce42cdc3956587a8b1b9c54ebfee16ff597c55a30",
+    "optimized/style-01.css": "c9dd15b4a066761ad84fb932634321039f52c285a384ea50dbba3dd1c508d6dd",
+    "optimized/media/a73bbbdd98d48aac.woff2": "a73bbbdd98d48aac5df4a5a19ca7583f56e58f08a21046202fb37b467e84802b",
+    "assets/cookie-upgrade-patches.js": "0667b142b2e71154912a15ff3647f401bda0a1f5fd38bdd1871198bfa0eab555",
+    "assets/sixdrop-progressive-core-v247.js": "29de1e013768e77a63f2726ee4e7ad137eeda3df47b478193f6ecc467925771b",
+    "assets/sixdrop-progressive-host-v247.js": "1ea15d717ec81a45f60539ada9a6c2097f9a4d3d169b58367e6cbca80d336d6c",
+    "assets/sixdrop-progressive-v247.css": "06a6a62bf4e5dc1cf094a781ba4aff307766ca5b949c8137bf2845824138f0e1",
+    "assets/shared-machine-v176.js": "92ef3125f30e266037e1dc439ddaeab4463ecfb8ef490e3518c35e01748c0f2d",
+    "assets/shared-client-controller-v224.js": "2106d1d8026237a4e53b5780c54a68023ffe403a376f036ca5c5d9f22d1a2a44",
+    "assets/stations-v235.js": "cde2297aeeb22c5d95570b9380d57e0b302e71d35bfe4edd3ac553e35c4e811a",
+    "assets/stations-progressive-v246.js": "467c32ef9a7b32f5eadbbeb4b5af7c1cd8dd08b58a1210c3bb8dde1651dd69b8",
+    "monitor.html": "a0116c6860e362729e8f0919ce59fccb0a239f31d650d866ea4536aeef938280",
+    "assets/monitor-ledger-v241.js": "1620c8e26c6706016d605a599961c619644712a3b6ea60924781cf632f0c8865",
+    "assets/server-monitor-v241.js": "773a658deff0682e4ddd746c0bfe1bfeb3ae7a6c481399a8449e3e7de444e236",
+    "assets/server-monitor-v242.js": "646d1e3b54ee88280076363c666e8d0c0b8673e75018e739a00d55900eb3eba6",
+    "assets/arcade-brand-v249.js": "b316cadca808ca547ddd8fac0bf97c743dee8246cf762903559806c1f1fe60cb",
+    "assets/arcade-brand-v249.css": "668ac59bc0aedf7a201403c41a6bb8cabf3891dc879bc80bd048608a494b9f87",
+    "assets/arcade-tabs-v249.js": "099cf88da59354f3b333d1f78f829a29b966ba5cdf5e3f86b72ba87ad7407ad2",
+    "assets/arcade-tabs-v249.css": "7c67f3a14c7379af4894ad19f770c0cb71bab2015705a2be62e86a197e84257d",
+    "assets/arcade-surfaces-v249.js": "e00b1c3c8f08f1cb6a50223d0352dc517bf9e60f741c04a1eb54c074a8b7fca4",
+    "assets/arcade-surfaces-v249.css": "5b321373c72280625bd4f50fa501e2b3d27f9068636e012b443e785190dd33ce",
+    "assets/jelly-view.js": "f7adcf5035de06a7f8055bdb00e7af4b01ebe6e2b624aaf9481b4da102e21238",
+    "assets/game-menu-v91.js": "660a7a3ec51ed7b945d7d201abe8a0a91831f1a409764e946110afba726e0e01",
+    "assets/lineups-v91.js": "495f045faa3d06780bcd528d07d5cfdf8f4e3639753fd3f66d6ef0f3a0d45983",
+    "assets/arcade-v249/logo-cookie.webp": "bf91df54698cf8534db3308d8e04a1a2d004140ebed00de3f59369e7defacf50",
+    "assets/arcade-v249/logo-choco.webp": "0a559d5b41b3ca83641c85258234e09f5507e84667e4143bd78203dc125be6cb",
+    "assets/arcade-v249/logo-candy.webp": "cacd507e9f9668abe41c888625c5a3c2c04eca828f264d5834d2c493811a7241",
+    "assets/arcade-v249/logo-gelato.webp": "ff859be6ee53bce1405aacd129d3e291ba62ed2b2dfe75c541565b9e07a6420d",
+    "assets/arcade-v249/logo-winery.webp": "f7b772b82e7fd1e7e5e00085c2e9a6ff3a58869dc495b286e4ed667254c5ede2",
+    "assets/arcade-v249/logo-popcorn.webp": "0c2d06a83b1a9746e0354a647cfc9ea89534251e0716ebad0b4267ade2468807",
+    "assets/arcade-v249/logo-jelly.webp": "89abd281440115bcc697efa093351b18d3742b4eb74a85513af6e139bda832da",
+    "assets/arcade-v249/logo-stick.webp": "b5e85a8030507e07501f335b40659c84188e4e663b6bf7adf9e6bfa03c2e723f",
+    "assets/arcade-v249/logo-castella.webp": "2a19f8c680f4f56f2783ab60b6cef26e4113d14adb74cc532b6168af0ba4bb34",
+    "assets/arcade-v249/logo-dango.webp": "6d33d37c15ce4ce2dab2ebd181066c137784340811a96b8ec52cade88067bbe5",
+    "assets/party-castella-rules.js": "0310aabd36770ee968013fdf5f498b48f51c8851dff249ed5402ade0ec452e06",
+    "assets/party-castella-host.js": "493db342d2846ac3c183069b6dae3a95c9cc6dd0c22a03b64b60d36b8365c7cc",
+    "assets/party-castella.js": "393493ca41d3f3c852cbc0f41fe1d8406d2401dcd2cb211fd5438bc6308c7021",
+    "assets/party-castella.css": "bde6766a77143c5442bc78c9d7a49b8b62955e18d7b8cb83027e43af88afd8e5",
+    "assets/castella-lesson.js": "39fe6ad38e915ab35bc4bbfb5cbd2619b66190bf613c6984e0ed01bb8cb888ad",
+    "assets/dango-bingo-rules.js": "f164cc7a6dbc23b87dde09c5595bbba75bdd45cd20dc035bc135549ba6c9cd2f",
+    "assets/dango-bingo-view.js": "971b78ea6d8098835ac9b0e5b1268a8b16ccdd35eabf705bdf0ec27154ef7318",
+    "assets/dango-bingo-host.js": "e1dc0da944a3d563212abf05073992b36728b461e7face1f4080f2e81a89df0b",
+    "assets/dango-bingo-lesson.js": "390c35a0f42cf887b7a3d977e13a028207e73121c518148981f9d99f7aad920a",
+    "assets/dango-bingo.css": "c98e71390e6f1a92dcedec3352b6235e3cf2d5c612e519cd6d67ca7a8234ff33",
+    "assets/dango-art/background.webp": "9f3733650f8bf62f15cca40dec8a676951ec655084c59602f1697c9379501c9f",
+    "assets/dango-thinking-v251.js": "5d9407b7852a26bb104f1f1dcc266ad945928ae363f566b5463ceb76a2f94b32",
+    "assets/server-payout-control-v3.js": "ed4b16232a79b3670f8c27054f77b553eedaa782f23c1d008869f006dc062fcd",
+    "assets/player-lounge.js": "12f41ae50c36ea3ce1385570eb61b4b221423a3cecc90b06a3fad9e312f115b3",
+    "assets/demo-suite-v91.js": "965a28401554d245a74bdcfd561d7e52ad1534b1fd91693450df946d51bc4511",
+    "assets/arcade-show-v91.js": "37686595465f21890472c599a28e4b5a2d383cfdacb5b4522b68969d0edb71dd",
+    "assets/dango-art-v252/dango-white.webp": "5743b70a4e521a0b01d21679771e6129edd4c8451c52beed4f2f8f3f7c408a68",
+    "assets/dango-art-v252/dango-green.webp": "89e06f8ab4d63f99b4e027d45a211fe86431d36d6d9bdedd35ca28648d2278ea",
+    "assets/dango-art-v252/dango-red.webp": "6a923585a2e47759cb012bb74b2483535ea4c9a387b9a73f9e79d0ebc629b11a",
+    "assets/dango-art-v252/dango-gold.webp": "f804124f28edc08c54338fa0dc6e3739c7d0458066bced18e41edfe2fe9d8b9c",
+    "assets/dango-art-v252/bamboo-skewer.webp": "a50b581576e450c3cd33e0513c1fcd87bbe4d024567b268451e329d0759b2d91",
+    "assets/dango-art-v252/scene.webp": "1553f80488bf1d930882c1f09a9ee702ddb33ec62861d9b7a8c8d69bd3dd60e9",
+    "assets/dango-art-v252/panel-frame.webp": "1712bf5a85d399e998214254a1a7d370b9991342534166bb37e6d555667710c1"
+  },
+  "screens": [
+    {
+      "width": 390,
+      "height": 844,
+      "rulesRevision": 248,
+      "gameName": "シックスドロップ",
+      "drawMode": "single",
+      "phase": "ready",
+      "accepted": 0,
+      "processed": 0,
+      "serverHost": false,
+      "online": false,
+      "canvas": {
+        "width": 251.875,
+        "height": 260
+      },
+      "bankText": "全消し0WIN",
+      "bankFont": "ArcadePayout, Georgia, serif",
+      "bankAlignment": "right",
+      "roleRows": 3,
+      "obsoleteText": false,
+      "initialColors": [
+        "lime",
+        "green",
+        "aqua",
+        "blue"
+      ],
+      "finalColors": [
+        "violet",
+        "pink",
+        "red",
+        "orange"
+      ],
+      "arcade": {
+        "rootClass": true,
+        "surfaceRevision": "v249",
+        "activeGame": "candy",
+        "landscape": false,
+        "brand": {
+          "games": 10,
+          "titles": 10,
+          "loaded": 10
+        },
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 1,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 0,
+          "reachBursts": 0,
+          "logos": 10,
+          "sharedBetUnit": 100,
+          "reachPager": {
+            "pageSize": 4,
+            "holdMs": 2000,
+            "slideMs": 650
+          }
+        },
+        "surfaces": 10,
+        "catalogKinds": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "logos": [
+          {
+            "kind": "cookie",
+            "src": "assets/arcade-v249/logo-cookie.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "choco",
+            "src": "assets/arcade-v249/logo-choco.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "candy",
+            "src": "assets/arcade-v249/logo-candy.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "gelato",
+            "src": "assets/arcade-v249/logo-gelato.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "winery",
+            "src": "assets/arcade-v249/logo-winery.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "popcorn",
+            "src": "assets/arcade-v249/logo-popcorn.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "jelly",
+            "src": "assets/arcade-v249/logo-jelly.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "stick",
+            "src": "assets/arcade-v249/logo-stick.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "castella",
+            "src": "assets/arcade-v249/logo-castella.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "dango",
+            "src": "assets/arcade-v249/logo-dango.webp",
+            "width": 768,
+            "height": 384
+          }
+        ],
+        "selectedLogo": {
+          "src": "assets/arcade-v249/logo-candy.webp",
+          "width": 67.2724609375,
+          "height": 34.125,
+          "visible": true
+        },
+        "styles": [
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-tabs-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-surfaces-v249.css?v=252"
+        ]
+      },
+      "v250": {
+        "tabsRevision": 252,
+        "backgroundLogos": 10,
+        "visibleBackgrounds": 9,
+        "decodedBackgrounds": 10,
+        "commonBetButtons": 1,
+        "commonBetOutsideTabs": true,
+        "castellaRevision": 250,
+        "castellaHoles": 61,
+        "castellaEdges": 84,
+        "castellaSpecials": {
+          "pour": 2,
+          "fire": 2,
+          "sugar": 1,
+          "odds": 0
+        },
+        "castellaPayoutRows": 13
+      },
+      "dango": {
+        "revision": 251,
+        "liveBoard": false,
+        "cells": 25,
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        "initialFree": [],
+        "lines": 19,
+        "payRows": 5,
+        "payCells": [
+          {
+            "win": "600",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "3000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "15000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "3000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "9000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "150000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "1500000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "9000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "6000000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "75000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          }
+        ],
+        "payoutBounds": {
+          "panel": {
+            "x": 36.37110900878906,
+            "y": 682.319580078125,
+            "width": 340.00775146484375,
+            "height": 89.0972900390625,
+            "top": 682.319580078125,
+            "right": 376.3788604736328,
+            "bottom": 771.4168701171875,
+            "left": 36.37110900878906
+          },
+          "rows": [
+            {
+              "length": null,
+              "rect": {
+                "x": 47.42543029785156,
+                "y": 700.1890869140625,
+                "width": 317.899169921875,
+                "height": 9.21612548828125,
+                "top": 700.1890869140625,
+                "right": 365.32460021972656,
+                "bottom": 709.4052124023438,
+                "left": 47.42543029785156
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "マス数",
+                  "rect": {
+                    "x": 47.42543029785156,
+                    "y": 700.1890869140625,
+                    "width": 60.398590087890625,
+                    "height": 9.21612548828125,
+                    "top": 700.1890869140625,
+                    "right": 107.82402038574219,
+                    "bottom": 709.4052124023438,
+                    "left": 47.42543029785156
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "th",
+                  "text": "1本",
+                  "rect": {
+                    "x": 107.82402038574219,
+                    "y": 700.1890869140625,
+                    "width": 64.3751220703125,
+                    "height": 9.21612548828125,
+                    "top": 700.1890869140625,
+                    "right": 172.1991424560547,
+                    "bottom": 709.4052124023438,
+                    "left": 107.82402038574219
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "th",
+                  "text": "2本",
+                  "rect": {
+                    "x": 172.1991424560547,
+                    "y": 700.1890869140625,
+                    "width": 64.37513732910156,
+                    "height": 9.21612548828125,
+                    "top": 700.1890869140625,
+                    "right": 236.57427978515625,
+                    "bottom": 709.4052124023438,
+                    "left": 172.1991424560547
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "th",
+                  "text": "3本",
+                  "rect": {
+                    "x": 236.57427978515625,
+                    "y": 700.1890869140625,
+                    "width": 64.37515258789062,
+                    "height": 9.21612548828125,
+                    "top": 700.1890869140625,
+                    "right": 300.9494323730469,
+                    "bottom": 709.4052124023438,
+                    "left": 236.57427978515625
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "th",
+                  "text": "4本以上",
+                  "rect": {
+                    "x": 300.9494323730469,
+                    "y": 700.1890869140625,
+                    "width": 64.37515258789062,
+                    "height": 9.21612548828125,
+                    "top": 700.1890869140625,
+                    "right": 365.3245849609375,
+                    "bottom": 709.4052124023438,
+                    "left": 300.9494323730469
+                  }
+                }
+              ]
+            },
+            {
+              "length": 3,
+              "rect": {
+                "x": 47.42543029785156,
+                "y": 709.4052124023438,
+                "width": 317.899169921875,
+                "height": 11.491943359375,
+                "top": 709.4052124023438,
+                "right": 365.32460021972656,
+                "bottom": 720.8971557617188,
+                "left": 47.42543029785156
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "3マス",
+                  "rect": {
+                    "x": 47.42543029785156,
+                    "y": 709.4052124023438,
+                    "width": 60.398590087890625,
+                    "height": 11.491943359375,
+                    "top": 709.4052124023438,
+                    "right": 107.82402038574219,
+                    "bottom": 720.8971557617188,
+                    "left": 47.42543029785156
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "600",
+                  "rect": {
+                    "x": 107.82402038574219,
+                    "y": 709.4052124023438,
+                    "width": 64.3751220703125,
+                    "height": 11.491943359375,
+                    "top": 709.4052124023438,
+                    "right": 172.1991424560547,
+                    "bottom": 720.8971557617188,
+                    "left": 107.82402038574219
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "3000",
+                  "rect": {
+                    "x": 172.1991424560547,
+                    "y": 709.4052124023438,
+                    "width": 64.37513732910156,
+                    "height": 11.491943359375,
+                    "top": 709.4052124023438,
+                    "right": 236.57427978515625,
+                    "bottom": 720.8971557617188,
+                    "left": 172.1991424560547
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "15000",
+                  "rect": {
+                    "x": 236.57427978515625,
+                    "y": 709.4052124023438,
+                    "width": 64.37515258789062,
+                    "height": 11.491943359375,
+                    "top": 709.4052124023438,
+                    "right": 300.9494323730469,
+                    "bottom": 720.8971557617188,
+                    "left": 236.57427978515625
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 300.9494323730469,
+                    "y": 709.4052124023438,
+                    "width": 64.37515258789062,
+                    "height": 11.491943359375,
+                    "top": 709.4052124023438,
+                    "right": 365.3245849609375,
+                    "bottom": 720.8971557617188,
+                    "left": 300.9494323730469
+                  }
+                }
+              ]
+            },
+            {
+              "length": 4,
+              "rect": {
+                "x": 47.42543029785156,
+                "y": 720.8971557617188,
+                "width": 317.899169921875,
+                "height": 11.49200439453125,
+                "top": 720.8971557617188,
+                "right": 365.32460021972656,
+                "bottom": 732.38916015625,
+                "left": 47.42543029785156
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "4マス",
+                  "rect": {
+                    "x": 47.42543029785156,
+                    "y": 720.8971557617188,
+                    "width": 60.398590087890625,
+                    "height": 11.49200439453125,
+                    "top": 720.8971557617188,
+                    "right": 107.82402038574219,
+                    "bottom": 732.38916015625,
+                    "left": 47.42543029785156
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "3000",
+                  "rect": {
+                    "x": 107.82402038574219,
+                    "y": 720.8971557617188,
+                    "width": 64.3751220703125,
+                    "height": 11.49200439453125,
+                    "top": 720.8971557617188,
+                    "right": 172.1991424560547,
+                    "bottom": 732.38916015625,
+                    "left": 107.82402038574219
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "9000",
+                  "rect": {
+                    "x": 172.1991424560547,
+                    "y": 720.8971557617188,
+                    "width": 64.37513732910156,
+                    "height": 11.49200439453125,
+                    "top": 720.8971557617188,
+                    "right": 236.57427978515625,
+                    "bottom": 732.38916015625,
+                    "left": 172.1991424560547
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "150000",
+                  "rect": {
+                    "x": 236.57427978515625,
+                    "y": 720.8971557617188,
+                    "width": 64.37515258789062,
+                    "height": 11.49200439453125,
+                    "top": 720.8971557617188,
+                    "right": 300.9494323730469,
+                    "bottom": 732.38916015625,
+                    "left": 236.57427978515625
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "1500000",
+                  "rect": {
+                    "x": 300.9494323730469,
+                    "y": 720.8971557617188,
+                    "width": 64.37515258789062,
+                    "height": 11.49200439453125,
+                    "top": 720.8971557617188,
+                    "right": 365.3245849609375,
+                    "bottom": 732.38916015625,
+                    "left": 300.9494323730469
+                  }
+                }
+              ]
+            },
+            {
+              "length": 5,
+              "rect": {
+                "x": 47.42543029785156,
+                "y": 732.38916015625,
+                "width": 317.899169921875,
+                "height": 11.49200439453125,
+                "top": 732.38916015625,
+                "right": 365.32460021972656,
+                "bottom": 743.8811645507812,
+                "left": 47.42543029785156
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "5マス",
+                  "rect": {
+                    "x": 47.42543029785156,
+                    "y": 732.38916015625,
+                    "width": 60.398590087890625,
+                    "height": 11.49200439453125,
+                    "top": 732.38916015625,
+                    "right": 107.82402038574219,
+                    "bottom": 743.8811645507812,
+                    "left": 47.42543029785156
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "9000",
+                  "rect": {
+                    "x": 107.82402038574219,
+                    "y": 732.38916015625,
+                    "width": 64.3751220703125,
+                    "height": 11.49200439453125,
+                    "top": 732.38916015625,
+                    "right": 172.1991424560547,
+                    "bottom": 743.8811645507812,
+                    "left": 107.82402038574219
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 172.1991424560547,
+                    "y": 732.38916015625,
+                    "width": 64.37513732910156,
+                    "height": 11.49200439453125,
+                    "top": 732.38916015625,
+                    "right": 236.57427978515625,
+                    "bottom": 743.8811645507812,
+                    "left": 172.1991424560547
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "6000000",
+                  "rect": {
+                    "x": 236.57427978515625,
+                    "y": 732.38916015625,
+                    "width": 64.37515258789062,
+                    "height": 11.49200439453125,
+                    "top": 732.38916015625,
+                    "right": 300.9494323730469,
+                    "bottom": 743.8811645507812,
+                    "left": 236.57427978515625
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 300.9494323730469,
+                    "y": 732.38916015625,
+                    "width": 64.37515258789062,
+                    "height": 11.49200439453125,
+                    "top": 732.38916015625,
+                    "right": 365.3245849609375,
+                    "bottom": 743.8811645507812,
+                    "left": 300.9494323730469
+                  }
+                }
+              ]
+            },
+            {
+              "length": 7,
+              "rect": {
+                "x": 47.42543029785156,
+                "y": 743.8811645507812,
+                "width": 317.899169921875,
+                "height": 11.491943359375,
+                "top": 743.8811645507812,
+                "right": 365.32460021972656,
+                "bottom": 755.3731079101562,
+                "left": 47.42543029785156
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "7マス",
+                  "rect": {
+                    "x": 47.42543029785156,
+                    "y": 743.8811645507812,
+                    "width": 60.398590087890625,
+                    "height": 11.491943359375,
+                    "top": 743.8811645507812,
+                    "right": 107.82402038574219,
+                    "bottom": 755.3731079101562,
+                    "left": 47.42543029785156
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "75000",
+                  "rect": {
+                    "x": 107.82402038574219,
+                    "y": 743.8811645507812,
+                    "width": 64.3751220703125,
+                    "height": 11.491943359375,
+                    "top": 743.8811645507812,
+                    "right": 172.1991424560547,
+                    "bottom": 755.3731079101562,
+                    "left": 107.82402038574219
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 172.1991424560547,
+                    "y": 743.8811645507812,
+                    "width": 64.37513732910156,
+                    "height": 11.491943359375,
+                    "top": 743.8811645507812,
+                    "right": 236.57427978515625,
+                    "bottom": 755.3731079101562,
+                    "left": 172.1991424560547
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 236.57427978515625,
+                    "y": 743.8811645507812,
+                    "width": 64.37515258789062,
+                    "height": 11.491943359375,
+                    "top": 743.8811645507812,
+                    "right": 300.9494323730469,
+                    "bottom": 755.3731079101562,
+                    "left": 236.57427978515625
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 300.9494323730469,
+                    "y": 743.8811645507812,
+                    "width": 64.37515258789062,
+                    "height": 11.491943359375,
+                    "top": 743.8811645507812,
+                    "right": 365.3245849609375,
+                    "bottom": 755.3731079101562,
+                    "left": 300.9494323730469
+                  }
+                }
+              ]
+            },
+            {
+              "length": 9,
+              "rect": {
+                "x": 47.42543029785156,
+                "y": 755.3731079101562,
+                "width": 317.899169921875,
+                "height": 11.12933349609375,
+                "top": 755.3731079101562,
+                "right": 365.32460021972656,
+                "bottom": 766.50244140625,
+                "left": 47.42543029785156
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "9マス",
+                  "rect": {
+                    "x": 47.42543029785156,
+                    "y": 755.3731079101562,
+                    "width": 60.398590087890625,
+                    "height": 11.12933349609375,
+                    "top": 755.3731079101562,
+                    "right": 107.82402038574219,
+                    "bottom": 766.50244140625,
+                    "left": 47.42543029785156
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 107.82402038574219,
+                    "y": 755.3731079101562,
+                    "width": 64.3751220703125,
+                    "height": 11.12933349609375,
+                    "top": 755.3731079101562,
+                    "right": 172.1991424560547,
+                    "bottom": 766.50244140625,
+                    "left": 107.82402038574219
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 172.1991424560547,
+                    "y": 755.3731079101562,
+                    "width": 64.37513732910156,
+                    "height": 11.12933349609375,
+                    "top": 755.3731079101562,
+                    "right": 236.57427978515625,
+                    "bottom": 766.50244140625,
+                    "left": 172.1991424560547
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 236.57427978515625,
+                    "y": 755.3731079101562,
+                    "width": 64.37515258789062,
+                    "height": 11.12933349609375,
+                    "top": 755.3731079101562,
+                    "right": 300.9494323730469,
+                    "bottom": 766.50244140625,
+                    "left": 236.57427978515625
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 300.9494323730469,
+                    "y": 755.3731079101562,
+                    "width": 64.37515258789062,
+                    "height": 11.12933349609375,
+                    "top": 755.3731079101562,
+                    "right": 365.3245849609375,
+                    "bottom": 766.50244140625,
+                    "left": 300.9494323730469
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "payHeaders": [
+          "マス数",
+          "1本",
+          "2本",
+          "3本",
+          "4本以上"
+        ],
+        "buttons": 25,
+        "confirmButtons": 0,
+        "oddsByPay": true,
+        "demo": "dango",
+        "odds": 1,
+        "art": {
+          "revision": 252,
+          "ready": true,
+          "failed": [],
+          "images": [
+            {
+              "key": "white",
+              "url": "assets/dango-art-v252/dango-white.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                38,
+                44,
+                430,
+                433
+              ]
+            },
+            {
+              "key": "green",
+              "url": "assets/dango-art-v252/dango-green.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                52,
+                57,
+                399,
+                403
+              ]
+            },
+            {
+              "key": "red",
+              "url": "assets/dango-art-v252/dango-red.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                59,
+                63,
+                392,
+                398
+              ]
+            },
+            {
+              "key": "gold",
+              "url": "assets/dango-art-v252/dango-gold.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                29,
+                30,
+                446,
+                454
+              ]
+            },
+            {
+              "key": "skewer",
+              "url": "assets/dango-art-v252/bamboo-skewer.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 1152,
+              "height": 384,
+              "crop": [
+                21,
+                173,
+                1115,
+                36
+              ]
+            }
+          ],
+          "usage": {
+            "main": 4,
+            "mini": 2,
+            "lesson": 4,
+            "skewers": 0,
+            "cells": 202
+          },
+          "last": {
+            "main": {
+              "width": 340,
+              "height": 147,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 25,
+                "green": 0,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            },
+            "mini": {
+              "width": 240,
+              "height": 154,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 25,
+                "green": 0,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            },
+            "lesson": {
+              "width": 640,
+              "height": 420,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 24,
+                "green": 1,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            }
+          }
+        },
+        "cssAssets": [
+          {
+            "name": "scene",
+            "width": 1279,
+            "height": 853
+          },
+          {
+            "name": "panel-frame",
+            "width": 1278,
+            "height": 426
+          }
+        ],
+        "backdrop": {
+          "image": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/scene.webp\")",
+          "opacity": 1,
+          "display": "block"
+        },
+        "surfaces": [
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "::before",
+            "background": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/scene.webp\")",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "::before",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "",
+            "background": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/panel-frame.webp\")",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "::before",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          }
+        ],
+        "probe": {
+          "calls": {
+            "board": [
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp"
+            ],
+            "lesson": [
+              "bamboo-skewer.webp",
+              "bamboo-skewer.webp",
+              "bamboo-skewer.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-green.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp"
+            ]
+          },
+          "painted": 86956,
+          "clearFraction": 0.6709449404761905,
+          "stateUnchanged": true,
+          "geometry": {
+            "unit": 65.97938144329898,
+            "radius": 32.98969072164949,
+            "width": 640,
+            "height": 420,
+            "centers": [
+              {
+                "id": 0,
+                "x": 320,
+                "y": 78.04123711340205
+              },
+              {
+                "id": 1,
+                "x": 254.02061855670104,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 2,
+                "x": 320,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 3,
+                "x": 385.97938144329896,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 4,
+                "x": 188.04123711340205,
+                "y": 210
+              },
+              {
+                "id": 5,
+                "x": 254.02061855670104,
+                "y": 210
+              },
+              {
+                "id": 6,
+                "x": 320,
+                "y": 210
+              },
+              {
+                "id": 7,
+                "x": 385.97938144329896,
+                "y": 210
+              },
+              {
+                "id": 8,
+                "x": 451.9587628865979,
+                "y": 210
+              },
+              {
+                "id": 9,
+                "x": 122.06185567010306,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 10,
+                "x": 188.04123711340205,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 11,
+                "x": 254.02061855670104,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 12,
+                "x": 320,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 13,
+                "x": 385.97938144329896,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 14,
+                "x": 451.9587628865979,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 15,
+                "x": 517.9381443298969,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 16,
+                "x": 56.082474226804095,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 17,
+                "x": 122.06185567010306,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 18,
+                "x": 188.04123711340205,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 19,
+                "x": 254.02061855670104,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 20,
+                "x": 320,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 21,
+                "x": 385.97938144329896,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 22,
+                "x": 451.9587628865979,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 23,
+                "x": 517.9381443298969,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 24,
+                "x": 583.9175257731958,
+                "y": 341.9587628865979
+              }
+            ]
+          }
+        }
+      },
+      "blockedServiceRequests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        },
+        {
+          "method": "GET",
+          "path": "/api/health"
+        }
+      ],
+      "blockedWebSockets": [],
+      "pageErrors": []
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "rulesRevision": 248,
+      "gameName": "シックスドロップ",
+      "drawMode": "single",
+      "phase": "ready",
+      "accepted": 0,
+      "processed": 0,
+      "serverHost": false,
+      "online": false,
+      "canvas": {
+        "width": 251.875,
+        "height": 260
+      },
+      "bankText": "全消し0WIN",
+      "bankFont": "ArcadePayout, Georgia, serif",
+      "bankAlignment": "right",
+      "roleRows": 3,
+      "obsoleteText": false,
+      "initialColors": [
+        "lime",
+        "green",
+        "aqua",
+        "blue"
+      ],
+      "finalColors": [
+        "violet",
+        "pink",
+        "red",
+        "orange"
+      ],
+      "arcade": {
+        "rootClass": true,
+        "surfaceRevision": "v249",
+        "activeGame": "candy",
+        "landscape": true,
+        "brand": {
+          "games": 10,
+          "titles": 10,
+          "loaded": 10
+        },
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 1,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 0,
+          "reachBursts": 0,
+          "logos": 10,
+          "sharedBetUnit": 100,
+          "reachPager": {
+            "pageSize": 4,
+            "holdMs": 2000,
+            "slideMs": 650
+          }
+        },
+        "surfaces": 10,
+        "catalogKinds": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "logos": [
+          {
+            "kind": "cookie",
+            "src": "assets/arcade-v249/logo-cookie.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "choco",
+            "src": "assets/arcade-v249/logo-choco.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "candy",
+            "src": "assets/arcade-v249/logo-candy.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "gelato",
+            "src": "assets/arcade-v249/logo-gelato.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "winery",
+            "src": "assets/arcade-v249/logo-winery.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "popcorn",
+            "src": "assets/arcade-v249/logo-popcorn.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "jelly",
+            "src": "assets/arcade-v249/logo-jelly.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "stick",
+            "src": "assets/arcade-v249/logo-stick.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "castella",
+            "src": "assets/arcade-v249/logo-castella.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "dango",
+            "src": "assets/arcade-v249/logo-dango.webp",
+            "width": 768,
+            "height": 384
+          }
+        ],
+        "selectedLogo": {
+          "src": "assets/arcade-v249/logo-candy.webp",
+          "width": 81.046875,
+          "height": 34.125,
+          "visible": true
+        },
+        "styles": [
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-tabs-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-surfaces-v249.css?v=252"
+        ]
+      },
+      "v250": {
+        "tabsRevision": 252,
+        "backgroundLogos": 10,
+        "visibleBackgrounds": 9,
+        "decodedBackgrounds": 10,
+        "commonBetButtons": 1,
+        "commonBetOutsideTabs": true,
+        "castellaRevision": 250,
+        "castellaHoles": 61,
+        "castellaEdges": 84,
+        "castellaSpecials": {
+          "pour": 2,
+          "fire": 2,
+          "sugar": 1,
+          "odds": 0
+        },
+        "castellaPayoutRows": 13
+      },
+      "dango": {
+        "revision": 251,
+        "liveBoard": false,
+        "cells": 25,
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        "initialFree": [],
+        "lines": 19,
+        "payRows": 5,
+        "payCells": [
+          {
+            "win": "600",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "3000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "15000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "3000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "9000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "150000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "1500000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "9000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "6000000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "75000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          }
+        ],
+        "payoutBounds": {
+          "panel": {
+            "x": 491.0559387207031,
+            "y": 227.634765625,
+            "width": 338.6322326660156,
+            "height": 89.09725952148438,
+            "top": 227.634765625,
+            "right": 829.6881713867188,
+            "bottom": 316.7320251464844,
+            "left": 491.0559387207031
+          },
+          "rows": [
+            {
+              "length": null,
+              "rect": {
+                "x": 502.1102600097656,
+                "y": 245.50424194335938,
+                "width": 316.5235900878906,
+                "height": 9.216094970703125,
+                "top": 245.50424194335938,
+                "right": 818.6338500976562,
+                "bottom": 254.7203369140625,
+                "left": 502.1102600097656
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "マス数",
+                  "rect": {
+                    "x": 502.1102600097656,
+                    "y": 245.50424194335938,
+                    "width": 60.135955810546875,
+                    "height": 9.216094970703125,
+                    "top": 245.50424194335938,
+                    "right": 562.2462158203125,
+                    "bottom": 254.7203369140625,
+                    "left": 502.1102600097656
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "th",
+                  "text": "1本",
+                  "rect": {
+                    "x": 562.2462158203125,
+                    "y": 245.50424194335938,
+                    "width": 64.0875244140625,
+                    "height": 9.216094970703125,
+                    "top": 245.50424194335938,
+                    "right": 626.333740234375,
+                    "bottom": 254.7203369140625,
+                    "left": 562.2462158203125
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "th",
+                  "text": "2本",
+                  "rect": {
+                    "x": 626.333740234375,
+                    "y": 245.50424194335938,
+                    "width": 64.0875244140625,
+                    "height": 9.216094970703125,
+                    "top": 245.50424194335938,
+                    "right": 690.4212646484375,
+                    "bottom": 254.7203369140625,
+                    "left": 626.333740234375
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "th",
+                  "text": "3本",
+                  "rect": {
+                    "x": 690.4212646484375,
+                    "y": 245.50424194335938,
+                    "width": 64.0875244140625,
+                    "height": 9.216094970703125,
+                    "top": 245.50424194335938,
+                    "right": 754.5087890625,
+                    "bottom": 254.7203369140625,
+                    "left": 690.4212646484375
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "th",
+                  "text": "4本以上",
+                  "rect": {
+                    "x": 754.5087890625,
+                    "y": 245.50424194335938,
+                    "width": 64.12506103515625,
+                    "height": 9.216094970703125,
+                    "top": 245.50424194335938,
+                    "right": 818.6338500976562,
+                    "bottom": 254.7203369140625,
+                    "left": 754.5087890625
+                  }
+                }
+              ]
+            },
+            {
+              "length": 3,
+              "rect": {
+                "x": 502.1102600097656,
+                "y": 254.7203369140625,
+                "width": 316.5235900878906,
+                "height": 11.491973876953125,
+                "top": 254.7203369140625,
+                "right": 818.6338500976562,
+                "bottom": 266.2123107910156,
+                "left": 502.1102600097656
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "3マス",
+                  "rect": {
+                    "x": 502.1102600097656,
+                    "y": 254.7203369140625,
+                    "width": 60.135955810546875,
+                    "height": 11.491973876953125,
+                    "top": 254.7203369140625,
+                    "right": 562.2462158203125,
+                    "bottom": 266.2123107910156,
+                    "left": 502.1102600097656
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "600",
+                  "rect": {
+                    "x": 562.2462158203125,
+                    "y": 254.7203369140625,
+                    "width": 64.0875244140625,
+                    "height": 11.491973876953125,
+                    "top": 254.7203369140625,
+                    "right": 626.333740234375,
+                    "bottom": 266.2123107910156,
+                    "left": 562.2462158203125
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "3000",
+                  "rect": {
+                    "x": 626.333740234375,
+                    "y": 254.7203369140625,
+                    "width": 64.0875244140625,
+                    "height": 11.491973876953125,
+                    "top": 254.7203369140625,
+                    "right": 690.4212646484375,
+                    "bottom": 266.2123107910156,
+                    "left": 626.333740234375
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "15000",
+                  "rect": {
+                    "x": 690.4212646484375,
+                    "y": 254.7203369140625,
+                    "width": 64.0875244140625,
+                    "height": 11.491973876953125,
+                    "top": 254.7203369140625,
+                    "right": 754.5087890625,
+                    "bottom": 266.2123107910156,
+                    "left": 690.4212646484375
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 754.5087890625,
+                    "y": 254.7203369140625,
+                    "width": 64.12506103515625,
+                    "height": 11.491973876953125,
+                    "top": 254.7203369140625,
+                    "right": 818.6338500976562,
+                    "bottom": 266.2123107910156,
+                    "left": 754.5087890625
+                  }
+                }
+              ]
+            },
+            {
+              "length": 4,
+              "rect": {
+                "x": 502.1102600097656,
+                "y": 266.2123107910156,
+                "width": 316.5235900878906,
+                "height": 11.49200439453125,
+                "top": 266.2123107910156,
+                "right": 818.6338500976562,
+                "bottom": 277.7043151855469,
+                "left": 502.1102600097656
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "4マス",
+                  "rect": {
+                    "x": 502.1102600097656,
+                    "y": 266.2123107910156,
+                    "width": 60.135955810546875,
+                    "height": 11.49200439453125,
+                    "top": 266.2123107910156,
+                    "right": 562.2462158203125,
+                    "bottom": 277.7043151855469,
+                    "left": 502.1102600097656
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "3000",
+                  "rect": {
+                    "x": 562.2462158203125,
+                    "y": 266.2123107910156,
+                    "width": 64.0875244140625,
+                    "height": 11.49200439453125,
+                    "top": 266.2123107910156,
+                    "right": 626.333740234375,
+                    "bottom": 277.7043151855469,
+                    "left": 562.2462158203125
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "9000",
+                  "rect": {
+                    "x": 626.333740234375,
+                    "y": 266.2123107910156,
+                    "width": 64.0875244140625,
+                    "height": 11.49200439453125,
+                    "top": 266.2123107910156,
+                    "right": 690.4212646484375,
+                    "bottom": 277.7043151855469,
+                    "left": 626.333740234375
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "150000",
+                  "rect": {
+                    "x": 690.4212646484375,
+                    "y": 266.2123107910156,
+                    "width": 64.0875244140625,
+                    "height": 11.49200439453125,
+                    "top": 266.2123107910156,
+                    "right": 754.5087890625,
+                    "bottom": 277.7043151855469,
+                    "left": 690.4212646484375
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "1500000",
+                  "rect": {
+                    "x": 754.5087890625,
+                    "y": 266.2123107910156,
+                    "width": 64.12506103515625,
+                    "height": 11.49200439453125,
+                    "top": 266.2123107910156,
+                    "right": 818.6338500976562,
+                    "bottom": 277.7043151855469,
+                    "left": 754.5087890625
+                  }
+                }
+              ]
+            },
+            {
+              "length": 5,
+              "rect": {
+                "x": 502.1102600097656,
+                "y": 277.7043151855469,
+                "width": 316.5235900878906,
+                "height": 11.491973876953125,
+                "top": 277.7043151855469,
+                "right": 818.6338500976562,
+                "bottom": 289.1962890625,
+                "left": 502.1102600097656
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "5マス",
+                  "rect": {
+                    "x": 502.1102600097656,
+                    "y": 277.7043151855469,
+                    "width": 60.135955810546875,
+                    "height": 11.491973876953125,
+                    "top": 277.7043151855469,
+                    "right": 562.2462158203125,
+                    "bottom": 289.1962890625,
+                    "left": 502.1102600097656
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "9000",
+                  "rect": {
+                    "x": 562.2462158203125,
+                    "y": 277.7043151855469,
+                    "width": 64.0875244140625,
+                    "height": 11.491973876953125,
+                    "top": 277.7043151855469,
+                    "right": 626.333740234375,
+                    "bottom": 289.1962890625,
+                    "left": 562.2462158203125
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 626.333740234375,
+                    "y": 277.7043151855469,
+                    "width": 64.0875244140625,
+                    "height": 11.491973876953125,
+                    "top": 277.7043151855469,
+                    "right": 690.4212646484375,
+                    "bottom": 289.1962890625,
+                    "left": 626.333740234375
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "6000000",
+                  "rect": {
+                    "x": 690.4212646484375,
+                    "y": 277.7043151855469,
+                    "width": 64.0875244140625,
+                    "height": 11.491973876953125,
+                    "top": 277.7043151855469,
+                    "right": 754.5087890625,
+                    "bottom": 289.1962890625,
+                    "left": 690.4212646484375
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 754.5087890625,
+                    "y": 277.7043151855469,
+                    "width": 64.12506103515625,
+                    "height": 11.491973876953125,
+                    "top": 277.7043151855469,
+                    "right": 818.6338500976562,
+                    "bottom": 289.1962890625,
+                    "left": 754.5087890625
+                  }
+                }
+              ]
+            },
+            {
+              "length": 7,
+              "rect": {
+                "x": 502.1102600097656,
+                "y": 289.1962890625,
+                "width": 316.5235900878906,
+                "height": 11.49200439453125,
+                "top": 289.1962890625,
+                "right": 818.6338500976562,
+                "bottom": 300.68829345703125,
+                "left": 502.1102600097656
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "7マス",
+                  "rect": {
+                    "x": 502.1102600097656,
+                    "y": 289.1962890625,
+                    "width": 60.135955810546875,
+                    "height": 11.49200439453125,
+                    "top": 289.1962890625,
+                    "right": 562.2462158203125,
+                    "bottom": 300.68829345703125,
+                    "left": 502.1102600097656
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "75000",
+                  "rect": {
+                    "x": 562.2462158203125,
+                    "y": 289.1962890625,
+                    "width": 64.0875244140625,
+                    "height": 11.49200439453125,
+                    "top": 289.1962890625,
+                    "right": 626.333740234375,
+                    "bottom": 300.68829345703125,
+                    "left": 562.2462158203125
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 626.333740234375,
+                    "y": 289.1962890625,
+                    "width": 64.0875244140625,
+                    "height": 11.49200439453125,
+                    "top": 289.1962890625,
+                    "right": 690.4212646484375,
+                    "bottom": 300.68829345703125,
+                    "left": 626.333740234375
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 690.4212646484375,
+                    "y": 289.1962890625,
+                    "width": 64.0875244140625,
+                    "height": 11.49200439453125,
+                    "top": 289.1962890625,
+                    "right": 754.5087890625,
+                    "bottom": 300.68829345703125,
+                    "left": 690.4212646484375
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 754.5087890625,
+                    "y": 289.1962890625,
+                    "width": 64.12506103515625,
+                    "height": 11.49200439453125,
+                    "top": 289.1962890625,
+                    "right": 818.6338500976562,
+                    "bottom": 300.68829345703125,
+                    "left": 754.5087890625
+                  }
+                }
+              ]
+            },
+            {
+              "length": 9,
+              "rect": {
+                "x": 502.1102600097656,
+                "y": 300.68829345703125,
+                "width": 316.5235900878906,
+                "height": 11.129364013671875,
+                "top": 300.68829345703125,
+                "right": 818.6338500976562,
+                "bottom": 311.8176574707031,
+                "left": 502.1102600097656
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "9マス",
+                  "rect": {
+                    "x": 502.1102600097656,
+                    "y": 300.68829345703125,
+                    "width": 60.135955810546875,
+                    "height": 11.129364013671875,
+                    "top": 300.68829345703125,
+                    "right": 562.2462158203125,
+                    "bottom": 311.8176574707031,
+                    "left": 502.1102600097656
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 562.2462158203125,
+                    "y": 300.68829345703125,
+                    "width": 64.0875244140625,
+                    "height": 11.129364013671875,
+                    "top": 300.68829345703125,
+                    "right": 626.333740234375,
+                    "bottom": 311.8176574707031,
+                    "left": 562.2462158203125
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 626.333740234375,
+                    "y": 300.68829345703125,
+                    "width": 64.0875244140625,
+                    "height": 11.129364013671875,
+                    "top": 300.68829345703125,
+                    "right": 690.4212646484375,
+                    "bottom": 311.8176574707031,
+                    "left": 626.333740234375
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 690.4212646484375,
+                    "y": 300.68829345703125,
+                    "width": 64.0875244140625,
+                    "height": 11.129364013671875,
+                    "top": 300.68829345703125,
+                    "right": 754.5087890625,
+                    "bottom": 311.8176574707031,
+                    "left": 690.4212646484375
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 754.5087890625,
+                    "y": 300.68829345703125,
+                    "width": 64.12506103515625,
+                    "height": 11.129364013671875,
+                    "top": 300.68829345703125,
+                    "right": 818.6338500976562,
+                    "bottom": 311.8176574707031,
+                    "left": 754.5087890625
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "payHeaders": [
+          "マス数",
+          "1本",
+          "2本",
+          "3本",
+          "4本以上"
+        ],
+        "buttons": 25,
+        "confirmButtons": 0,
+        "oddsByPay": true,
+        "demo": "dango",
+        "odds": 1,
+        "art": {
+          "revision": 252,
+          "ready": true,
+          "failed": [],
+          "images": [
+            {
+              "key": "white",
+              "url": "assets/dango-art-v252/dango-white.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                38,
+                44,
+                430,
+                433
+              ]
+            },
+            {
+              "key": "green",
+              "url": "assets/dango-art-v252/dango-green.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                52,
+                57,
+                399,
+                403
+              ]
+            },
+            {
+              "key": "red",
+              "url": "assets/dango-art-v252/dango-red.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                59,
+                63,
+                392,
+                398
+              ]
+            },
+            {
+              "key": "gold",
+              "url": "assets/dango-art-v252/dango-gold.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                29,
+                30,
+                446,
+                454
+              ]
+            },
+            {
+              "key": "skewer",
+              "url": "assets/dango-art-v252/bamboo-skewer.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 1152,
+              "height": 384,
+              "crop": [
+                21,
+                173,
+                1115,
+                36
+              ]
+            }
+          ],
+          "usage": {
+            "main": 4,
+            "mini": 2,
+            "lesson": 4,
+            "skewers": 0,
+            "cells": 202
+          },
+          "last": {
+            "main": {
+              "width": 339,
+              "height": 145,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 25,
+                "green": 0,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            },
+            "mini": {
+              "width": 240,
+              "height": 154,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 25,
+                "green": 0,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            },
+            "lesson": {
+              "width": 640,
+              "height": 420,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 24,
+                "green": 1,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            }
+          }
+        },
+        "cssAssets": [
+          {
+            "name": "scene",
+            "width": 1279,
+            "height": 853
+          },
+          {
+            "name": "panel-frame",
+            "width": 1278,
+            "height": 426
+          }
+        ],
+        "backdrop": {
+          "image": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/scene.webp\")",
+          "opacity": 1,
+          "display": "block"
+        },
+        "surfaces": [
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "::before",
+            "background": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/scene.webp\")",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "::before",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "",
+            "background": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/panel-frame.webp\")",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "::before",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          }
+        ],
+        "probe": {
+          "calls": {
+            "board": [
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp"
+            ],
+            "lesson": [
+              "bamboo-skewer.webp",
+              "bamboo-skewer.webp",
+              "bamboo-skewer.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-green.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp"
+            ]
+          },
+          "painted": 86956,
+          "clearFraction": 0.6709449404761905,
+          "stateUnchanged": true,
+          "geometry": {
+            "unit": 65.97938144329898,
+            "radius": 32.98969072164949,
+            "width": 640,
+            "height": 420,
+            "centers": [
+              {
+                "id": 0,
+                "x": 320,
+                "y": 78.04123711340205
+              },
+              {
+                "id": 1,
+                "x": 254.02061855670104,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 2,
+                "x": 320,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 3,
+                "x": 385.97938144329896,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 4,
+                "x": 188.04123711340205,
+                "y": 210
+              },
+              {
+                "id": 5,
+                "x": 254.02061855670104,
+                "y": 210
+              },
+              {
+                "id": 6,
+                "x": 320,
+                "y": 210
+              },
+              {
+                "id": 7,
+                "x": 385.97938144329896,
+                "y": 210
+              },
+              {
+                "id": 8,
+                "x": 451.9587628865979,
+                "y": 210
+              },
+              {
+                "id": 9,
+                "x": 122.06185567010306,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 10,
+                "x": 188.04123711340205,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 11,
+                "x": 254.02061855670104,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 12,
+                "x": 320,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 13,
+                "x": 385.97938144329896,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 14,
+                "x": 451.9587628865979,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 15,
+                "x": 517.9381443298969,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 16,
+                "x": 56.082474226804095,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 17,
+                "x": 122.06185567010306,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 18,
+                "x": 188.04123711340205,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 19,
+                "x": 254.02061855670104,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 20,
+                "x": 320,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 21,
+                "x": 385.97938144329896,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 22,
+                "x": 451.9587628865979,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 23,
+                "x": 517.9381443298969,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 24,
+                "x": 583.9175257731958,
+                "y": 341.9587628865979
+              }
+            ]
+          }
+        }
+      },
+      "blockedServiceRequests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        },
+        {
+          "method": "GET",
+          "path": "/api/health"
+        }
+      ],
+      "blockedWebSockets": [],
+      "pageErrors": []
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "rulesRevision": 248,
+      "gameName": "シックスドロップ",
+      "drawMode": "single",
+      "phase": "ready",
+      "accepted": 0,
+      "processed": 0,
+      "serverHost": false,
+      "online": false,
+      "canvas": {
+        "width": 290.625,
+        "height": 300
+      },
+      "bankText": "全消し0WIN",
+      "bankFont": "ArcadePayout, Georgia, serif",
+      "bankAlignment": "right",
+      "roleRows": 3,
+      "obsoleteText": false,
+      "initialColors": [
+        "lime",
+        "green",
+        "aqua",
+        "blue"
+      ],
+      "finalColors": [
+        "violet",
+        "pink",
+        "red",
+        "orange"
+      ],
+      "arcade": {
+        "rootClass": true,
+        "surfaceRevision": "v249",
+        "activeGame": "candy",
+        "landscape": false,
+        "brand": {
+          "games": 10,
+          "titles": 10,
+          "loaded": 10
+        },
+        "tabs": {
+          "activeIndex": 2,
+          "transitions": 1,
+          "runningAnimations": 0,
+          "reducedMotion": false,
+          "rewardBursts": 0,
+          "reachBursts": 0,
+          "logos": 10,
+          "sharedBetUnit": 100,
+          "reachPager": {
+            "pageSize": 4,
+            "holdMs": 2000,
+            "slideMs": 650
+          }
+        },
+        "surfaces": 10,
+        "catalogKinds": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "logos": [
+          {
+            "kind": "cookie",
+            "src": "assets/arcade-v249/logo-cookie.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "choco",
+            "src": "assets/arcade-v249/logo-choco.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "candy",
+            "src": "assets/arcade-v249/logo-candy.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "gelato",
+            "src": "assets/arcade-v249/logo-gelato.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "winery",
+            "src": "assets/arcade-v249/logo-winery.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "popcorn",
+            "src": "assets/arcade-v249/logo-popcorn.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "jelly",
+            "src": "assets/arcade-v249/logo-jelly.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "stick",
+            "src": "assets/arcade-v249/logo-stick.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "castella",
+            "src": "assets/arcade-v249/logo-castella.webp",
+            "width": 768,
+            "height": 384
+          },
+          {
+            "kind": "dango",
+            "src": "assets/arcade-v249/logo-dango.webp",
+            "width": 768,
+            "height": 384
+          }
+        ],
+        "selectedLogo": {
+          "src": "assets/arcade-v249/logo-candy.webp",
+          "width": 77.6220703125,
+          "height": 39.375,
+          "visible": true
+        },
+        "styles": [
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-tabs-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-brand-v249.css?v=252",
+          "https://naokingu123-cloud.github.io/cookie-link/assets/arcade-surfaces-v249.css?v=252"
+        ]
+      },
+      "v250": {
+        "tabsRevision": 252,
+        "backgroundLogos": 10,
+        "visibleBackgrounds": 9,
+        "decodedBackgrounds": 10,
+        "commonBetButtons": 1,
+        "commonBetOutsideTabs": true,
+        "castellaRevision": 250,
+        "castellaHoles": 61,
+        "castellaEdges": 84,
+        "castellaSpecials": {
+          "pour": 2,
+          "fire": 2,
+          "sugar": 1,
+          "odds": 0
+        },
+        "castellaPayoutRows": 13
+      },
+      "dango": {
+        "revision": 251,
+        "liveBoard": false,
+        "cells": 25,
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25
+        ],
+        "initialFree": [],
+        "lines": 19,
+        "payRows": 5,
+        "payCells": [
+          {
+            "win": "600",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "3000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "15000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "3000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "9000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "150000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "1500000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "9000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "6000000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "75000",
+            "font": "ArcadePayout, Georgia, serif"
+          },
+          {
+            "win": "300000",
+            "font": "ArcadePayout, Georgia, serif"
+          }
+        ],
+        "payoutBounds": {
+          "panel": {
+            "x": 500.76025390625,
+            "y": 709.843017578125,
+            "width": 390.7294921875,
+            "height": 102.80450439453125,
+            "top": 709.843017578125,
+            "right": 891.48974609375,
+            "bottom": 812.6475219726562,
+            "left": 500.76025390625
+          },
+          "rows": [
+            {
+              "length": null,
+              "rect": {
+                "x": 513.5151977539062,
+                "y": 730.4616088867188,
+                "width": 365.21954345703125,
+                "height": 10.63397216796875,
+                "top": 730.4616088867188,
+                "right": 878.7347412109375,
+                "bottom": 741.0955810546875,
+                "left": 513.5151977539062
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "マス数",
+                  "rect": {
+                    "x": 513.5151977539062,
+                    "y": 730.4616088867188,
+                    "width": 69.3876953125,
+                    "height": 10.63397216796875,
+                    "top": 730.4616088867188,
+                    "right": 582.9028930664062,
+                    "bottom": 741.0955810546875,
+                    "left": 513.5151977539062
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "th",
+                  "text": "1本",
+                  "rect": {
+                    "x": 582.9028930664062,
+                    "y": 730.4616088867188,
+                    "width": 73.9471435546875,
+                    "height": 10.63397216796875,
+                    "top": 730.4616088867188,
+                    "right": 656.8500366210938,
+                    "bottom": 741.0955810546875,
+                    "left": 582.9028930664062
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "th",
+                  "text": "2本",
+                  "rect": {
+                    "x": 656.8500366210938,
+                    "y": 730.4616088867188,
+                    "width": 73.9471435546875,
+                    "height": 10.63397216796875,
+                    "top": 730.4616088867188,
+                    "right": 730.7971801757812,
+                    "bottom": 741.0955810546875,
+                    "left": 656.8500366210938
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "th",
+                  "text": "3本",
+                  "rect": {
+                    "x": 730.7971801757812,
+                    "y": 730.4616088867188,
+                    "width": 73.9471435546875,
+                    "height": 10.63397216796875,
+                    "top": 730.4616088867188,
+                    "right": 804.7443237304688,
+                    "bottom": 741.0955810546875,
+                    "left": 730.7971801757812
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "th",
+                  "text": "4本以上",
+                  "rect": {
+                    "x": 804.7443237304688,
+                    "y": 730.4616088867188,
+                    "width": 73.99041748046875,
+                    "height": 10.63397216796875,
+                    "top": 730.4616088867188,
+                    "right": 878.7347412109375,
+                    "bottom": 741.0955810546875,
+                    "left": 804.7443237304688
+                  }
+                }
+              ]
+            },
+            {
+              "length": 3,
+              "rect": {
+                "x": 513.5151977539062,
+                "y": 741.0955810546875,
+                "width": 365.21954345703125,
+                "height": 13.260009765625,
+                "top": 741.0955810546875,
+                "right": 878.7347412109375,
+                "bottom": 754.3555908203125,
+                "left": 513.5151977539062
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "3マス",
+                  "rect": {
+                    "x": 513.5151977539062,
+                    "y": 741.0955810546875,
+                    "width": 69.3876953125,
+                    "height": 13.260009765625,
+                    "top": 741.0955810546875,
+                    "right": 582.9028930664062,
+                    "bottom": 754.3555908203125,
+                    "left": 513.5151977539062
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "600",
+                  "rect": {
+                    "x": 582.9028930664062,
+                    "y": 741.0955810546875,
+                    "width": 73.9471435546875,
+                    "height": 13.260009765625,
+                    "top": 741.0955810546875,
+                    "right": 656.8500366210938,
+                    "bottom": 754.3555908203125,
+                    "left": 582.9028930664062
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "3000",
+                  "rect": {
+                    "x": 656.8500366210938,
+                    "y": 741.0955810546875,
+                    "width": 73.9471435546875,
+                    "height": 13.260009765625,
+                    "top": 741.0955810546875,
+                    "right": 730.7971801757812,
+                    "bottom": 754.3555908203125,
+                    "left": 656.8500366210938
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "15000",
+                  "rect": {
+                    "x": 730.7971801757812,
+                    "y": 741.0955810546875,
+                    "width": 73.9471435546875,
+                    "height": 13.260009765625,
+                    "top": 741.0955810546875,
+                    "right": 804.7443237304688,
+                    "bottom": 754.3555908203125,
+                    "left": 730.7971801757812
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 804.7443237304688,
+                    "y": 741.0955810546875,
+                    "width": 73.99041748046875,
+                    "height": 13.260009765625,
+                    "top": 741.0955810546875,
+                    "right": 878.7347412109375,
+                    "bottom": 754.3555908203125,
+                    "left": 804.7443237304688
+                  }
+                }
+              ]
+            },
+            {
+              "length": 4,
+              "rect": {
+                "x": 513.5151977539062,
+                "y": 754.3555908203125,
+                "width": 365.21954345703125,
+                "height": 13.25994873046875,
+                "top": 754.3555908203125,
+                "right": 878.7347412109375,
+                "bottom": 767.6155395507812,
+                "left": 513.5151977539062
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "4マス",
+                  "rect": {
+                    "x": 513.5151977539062,
+                    "y": 754.3555908203125,
+                    "width": 69.3876953125,
+                    "height": 13.25994873046875,
+                    "top": 754.3555908203125,
+                    "right": 582.9028930664062,
+                    "bottom": 767.6155395507812,
+                    "left": 513.5151977539062
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "3000",
+                  "rect": {
+                    "x": 582.9028930664062,
+                    "y": 754.3555908203125,
+                    "width": 73.9471435546875,
+                    "height": 13.25994873046875,
+                    "top": 754.3555908203125,
+                    "right": 656.8500366210938,
+                    "bottom": 767.6155395507812,
+                    "left": 582.9028930664062
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "9000",
+                  "rect": {
+                    "x": 656.8500366210938,
+                    "y": 754.3555908203125,
+                    "width": 73.9471435546875,
+                    "height": 13.25994873046875,
+                    "top": 754.3555908203125,
+                    "right": 730.7971801757812,
+                    "bottom": 767.6155395507812,
+                    "left": 656.8500366210938
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "150000",
+                  "rect": {
+                    "x": 730.7971801757812,
+                    "y": 754.3555908203125,
+                    "width": 73.9471435546875,
+                    "height": 13.25994873046875,
+                    "top": 754.3555908203125,
+                    "right": 804.7443237304688,
+                    "bottom": 767.6155395507812,
+                    "left": 730.7971801757812
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "1500000",
+                  "rect": {
+                    "x": 804.7443237304688,
+                    "y": 754.3555908203125,
+                    "width": 73.99041748046875,
+                    "height": 13.25994873046875,
+                    "top": 754.3555908203125,
+                    "right": 878.7347412109375,
+                    "bottom": 767.6155395507812,
+                    "left": 804.7443237304688
+                  }
+                }
+              ]
+            },
+            {
+              "length": 5,
+              "rect": {
+                "x": 513.5151977539062,
+                "y": 767.6155395507812,
+                "width": 365.21954345703125,
+                "height": 13.260009765625,
+                "top": 767.6155395507812,
+                "right": 878.7347412109375,
+                "bottom": 780.8755493164062,
+                "left": 513.5151977539062
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "5マス",
+                  "rect": {
+                    "x": 513.5151977539062,
+                    "y": 767.6155395507812,
+                    "width": 69.3876953125,
+                    "height": 13.260009765625,
+                    "top": 767.6155395507812,
+                    "right": 582.9028930664062,
+                    "bottom": 780.8755493164062,
+                    "left": 513.5151977539062
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "9000",
+                  "rect": {
+                    "x": 582.9028930664062,
+                    "y": 767.6155395507812,
+                    "width": 73.9471435546875,
+                    "height": 13.260009765625,
+                    "top": 767.6155395507812,
+                    "right": 656.8500366210938,
+                    "bottom": 780.8755493164062,
+                    "left": 582.9028930664062
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 656.8500366210938,
+                    "y": 767.6155395507812,
+                    "width": 73.9471435546875,
+                    "height": 13.260009765625,
+                    "top": 767.6155395507812,
+                    "right": 730.7971801757812,
+                    "bottom": 780.8755493164062,
+                    "left": 656.8500366210938
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "6000000",
+                  "rect": {
+                    "x": 730.7971801757812,
+                    "y": 767.6155395507812,
+                    "width": 73.9471435546875,
+                    "height": 13.260009765625,
+                    "top": 767.6155395507812,
+                    "right": 804.7443237304688,
+                    "bottom": 780.8755493164062,
+                    "left": 730.7971801757812
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 804.7443237304688,
+                    "y": 767.6155395507812,
+                    "width": 73.99041748046875,
+                    "height": 13.260009765625,
+                    "top": 767.6155395507812,
+                    "right": 878.7347412109375,
+                    "bottom": 780.8755493164062,
+                    "left": 804.7443237304688
+                  }
+                }
+              ]
+            },
+            {
+              "length": 7,
+              "rect": {
+                "x": 513.5151977539062,
+                "y": 780.8755493164062,
+                "width": 365.21954345703125,
+                "height": 13.25994873046875,
+                "top": 780.8755493164062,
+                "right": 878.7347412109375,
+                "bottom": 794.135498046875,
+                "left": 513.5151977539062
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "7マス",
+                  "rect": {
+                    "x": 513.5151977539062,
+                    "y": 780.8755493164062,
+                    "width": 69.3876953125,
+                    "height": 13.25994873046875,
+                    "top": 780.8755493164062,
+                    "right": 582.9028930664062,
+                    "bottom": 794.135498046875,
+                    "left": 513.5151977539062
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "75000",
+                  "rect": {
+                    "x": 582.9028930664062,
+                    "y": 780.8755493164062,
+                    "width": 73.9471435546875,
+                    "height": 13.25994873046875,
+                    "top": 780.8755493164062,
+                    "right": 656.8500366210938,
+                    "bottom": 794.135498046875,
+                    "left": 582.9028930664062
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 656.8500366210938,
+                    "y": 780.8755493164062,
+                    "width": 73.9471435546875,
+                    "height": 13.25994873046875,
+                    "top": 780.8755493164062,
+                    "right": 730.7971801757812,
+                    "bottom": 794.135498046875,
+                    "left": 656.8500366210938
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 730.7971801757812,
+                    "y": 780.8755493164062,
+                    "width": 73.9471435546875,
+                    "height": 13.25994873046875,
+                    "top": 780.8755493164062,
+                    "right": 804.7443237304688,
+                    "bottom": 794.135498046875,
+                    "left": 730.7971801757812
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 804.7443237304688,
+                    "y": 780.8755493164062,
+                    "width": 73.99041748046875,
+                    "height": 13.25994873046875,
+                    "top": 780.8755493164062,
+                    "right": 878.7347412109375,
+                    "bottom": 794.135498046875,
+                    "left": 804.7443237304688
+                  }
+                }
+              ]
+            },
+            {
+              "length": 9,
+              "rect": {
+                "x": 513.5151977539062,
+                "y": 794.135498046875,
+                "width": 365.21954345703125,
+                "height": 12.84161376953125,
+                "top": 794.135498046875,
+                "right": 878.7347412109375,
+                "bottom": 806.9771118164062,
+                "left": 513.5151977539062
+              },
+              "cells": [
+                {
+                  "column": 0,
+                  "kind": "th",
+                  "text": "9マス",
+                  "rect": {
+                    "x": 513.5151977539062,
+                    "y": 794.135498046875,
+                    "width": 69.3876953125,
+                    "height": 12.84161376953125,
+                    "top": 794.135498046875,
+                    "right": 582.9028930664062,
+                    "bottom": 806.9771118164062,
+                    "left": 513.5151977539062
+                  }
+                },
+                {
+                  "column": 1,
+                  "kind": "td",
+                  "text": "300000",
+                  "rect": {
+                    "x": 582.9028930664062,
+                    "y": 794.135498046875,
+                    "width": 73.9471435546875,
+                    "height": 12.84161376953125,
+                    "top": 794.135498046875,
+                    "right": 656.8500366210938,
+                    "bottom": 806.9771118164062,
+                    "left": 582.9028930664062
+                  }
+                },
+                {
+                  "column": 2,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 656.8500366210938,
+                    "y": 794.135498046875,
+                    "width": 73.9471435546875,
+                    "height": 12.84161376953125,
+                    "top": 794.135498046875,
+                    "right": 730.7971801757812,
+                    "bottom": 806.9771118164062,
+                    "left": 656.8500366210938
+                  }
+                },
+                {
+                  "column": 3,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 730.7971801757812,
+                    "y": 794.135498046875,
+                    "width": 73.9471435546875,
+                    "height": 12.84161376953125,
+                    "top": 794.135498046875,
+                    "right": 804.7443237304688,
+                    "bottom": 806.9771118164062,
+                    "left": 730.7971801757812
+                  }
+                },
+                {
+                  "column": 4,
+                  "kind": "td",
+                  "text": "—",
+                  "rect": {
+                    "x": 804.7443237304688,
+                    "y": 794.135498046875,
+                    "width": 73.99041748046875,
+                    "height": 12.84161376953125,
+                    "top": 794.135498046875,
+                    "right": 878.7347412109375,
+                    "bottom": 806.9771118164062,
+                    "left": 804.7443237304688
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "payHeaders": [
+          "マス数",
+          "1本",
+          "2本",
+          "3本",
+          "4本以上"
+        ],
+        "buttons": 25,
+        "confirmButtons": 0,
+        "oddsByPay": true,
+        "demo": "dango",
+        "odds": 1,
+        "art": {
+          "revision": 252,
+          "ready": true,
+          "failed": [],
+          "images": [
+            {
+              "key": "white",
+              "url": "assets/dango-art-v252/dango-white.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                38,
+                44,
+                430,
+                433
+              ]
+            },
+            {
+              "key": "green",
+              "url": "assets/dango-art-v252/dango-green.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                52,
+                57,
+                399,
+                403
+              ]
+            },
+            {
+              "key": "red",
+              "url": "assets/dango-art-v252/dango-red.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                59,
+                63,
+                392,
+                398
+              ]
+            },
+            {
+              "key": "gold",
+              "url": "assets/dango-art-v252/dango-gold.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 512,
+              "height": 512,
+              "crop": [
+                29,
+                30,
+                446,
+                454
+              ]
+            },
+            {
+              "key": "skewer",
+              "url": "assets/dango-art-v252/bamboo-skewer.webp?v=252",
+              "loaded": true,
+              "failed": false,
+              "width": 1152,
+              "height": 384,
+              "crop": [
+                21,
+                173,
+                1115,
+                36
+              ]
+            }
+          ],
+          "usage": {
+            "main": 4,
+            "mini": 2,
+            "lesson": 4,
+            "skewers": 0,
+            "cells": 202
+          },
+          "last": {
+            "main": {
+              "width": 391,
+              "height": 168,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 25,
+                "green": 0,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            },
+            "mini": {
+              "width": 240,
+              "height": 154,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 25,
+                "green": 0,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            },
+            "lesson": {
+              "width": 640,
+              "height": 420,
+              "cells": 25,
+              "imageCells": 25,
+              "skewers": 0,
+              "imageSkewers": 0,
+              "kinds": {
+                "white": 24,
+                "green": 1,
+                "red": 0,
+                "gold": 0
+              },
+              "transparentBackground": true
+            }
+          }
+        },
+        "cssAssets": [
+          {
+            "name": "scene",
+            "width": 1279,
+            "height": 853
+          },
+          {
+            "name": "panel-frame",
+            "width": 1278,
+            "height": 426
+          }
+        ],
+        "backdrop": {
+          "image": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/scene.webp\")",
+          "opacity": 1,
+          "display": "block"
+        },
+        "surfaces": [
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "::before",
+            "background": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/scene.webp\")",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-scene",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "::before",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pan",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "",
+            "background": "url(\"https://naokingu123-cloud.github.io/cookie-link/assets/dango-art-v252/panel-frame.webp\")",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "::before",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          },
+          {
+            "selector": ".dgb-pay",
+            "pseudo": "::after",
+            "background": "none",
+            "border": "none",
+            "opacity": "1"
+          }
+        ],
+        "probe": {
+          "calls": {
+            "board": [
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp"
+            ],
+            "lesson": [
+              "bamboo-skewer.webp",
+              "bamboo-skewer.webp",
+              "bamboo-skewer.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-green.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-white.webp",
+              "dango-gold.webp"
+            ]
+          },
+          "painted": 86956,
+          "clearFraction": 0.6709449404761905,
+          "stateUnchanged": true,
+          "geometry": {
+            "unit": 65.97938144329898,
+            "radius": 32.98969072164949,
+            "width": 640,
+            "height": 420,
+            "centers": [
+              {
+                "id": 0,
+                "x": 320,
+                "y": 78.04123711340205
+              },
+              {
+                "id": 1,
+                "x": 254.02061855670104,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 2,
+                "x": 320,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 3,
+                "x": 385.97938144329896,
+                "y": 144.02061855670104
+              },
+              {
+                "id": 4,
+                "x": 188.04123711340205,
+                "y": 210
+              },
+              {
+                "id": 5,
+                "x": 254.02061855670104,
+                "y": 210
+              },
+              {
+                "id": 6,
+                "x": 320,
+                "y": 210
+              },
+              {
+                "id": 7,
+                "x": 385.97938144329896,
+                "y": 210
+              },
+              {
+                "id": 8,
+                "x": 451.9587628865979,
+                "y": 210
+              },
+              {
+                "id": 9,
+                "x": 122.06185567010306,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 10,
+                "x": 188.04123711340205,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 11,
+                "x": 254.02061855670104,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 12,
+                "x": 320,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 13,
+                "x": 385.97938144329896,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 14,
+                "x": 451.9587628865979,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 15,
+                "x": 517.9381443298969,
+                "y": 275.97938144329896
+              },
+              {
+                "id": 16,
+                "x": 56.082474226804095,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 17,
+                "x": 122.06185567010306,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 18,
+                "x": 188.04123711340205,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 19,
+                "x": 254.02061855670104,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 20,
+                "x": 320,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 21,
+                "x": 385.97938144329896,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 22,
+                "x": 451.9587628865979,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 23,
+                "x": 517.9381443298969,
+                "y": 341.9587628865979
+              },
+              {
+                "id": 24,
+                "x": 583.9175257731958,
+                "y": 341.9587628865979
+              }
+            ]
+          }
+        }
+      },
+      "blockedServiceRequests": [
+        {
+          "method": "GET",
+          "path": "/api/health"
+        },
+        {
+          "method": "GET",
+          "path": "/api/health"
+        }
+      ],
+      "blockedWebSockets": [],
+      "pageErrors": []
+    }
+  ],
+  "currentScreen": null
+}
