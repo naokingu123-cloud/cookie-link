@@ -1,0 +1,205 @@
+{
+  "version": "20261118-v248-sixdrop-connected-colors",
+  "testedCommit": "e348a752f1bda15aba5d74e6d47903ca448d23ea",
+  "testedTree": "900b599e3b58946691dd95ef808705e3265716d9",
+  "checkedDate": "2026-11-18",
+  "dateTimezone": "Asia/Tokyo",
+  "result": "passed",
+  "ci": [
+    {
+      "name": "Six Drop v248 connected groups colors and HUD",
+      "run": 44250598901,
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44250598901"
+    },
+    {
+      "name": "Shared machine check",
+      "run": 44250599093,
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44250599093"
+    },
+    {
+      "name": "Six station check",
+      "run": 44250598910,
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44250598910"
+    }
+  ],
+  "core": {
+    "rulesRevision": 248,
+    "serializationVersion": 247,
+    "progressive": {
+      "games": 300,
+      "positive": 105,
+      "allClears": 20,
+      "movableLow": 435,
+      "movableHigh": 1372
+    },
+    "connected": {
+      "games": 288,
+      "hits": 2304,
+      "refills": 1463,
+      "survivorChecks": 87716
+    },
+    "gravity": {
+      "fixtures": 29,
+      "boards": 120,
+      "frames": 764,
+      "samples": 19100,
+      "gapMoves": 525
+    },
+    "assertions": [
+      "Connected same-color components of four or more clear, including non-geometric forms.",
+      "Geometric roles retain whole-color clearing; duplicate cells accrue once.",
+      "Refill has no pre-existing connected four or geometric role; stable survivors keep color and number.",
+      "A pocket surrounded by four distinct color triples cannot freeze refill or produce an immediate clear.",
+      "The game-start palette is fixed through all hits and refills; the next game advances at each 100 cleared drops, capped at orange/red/pink/violet.",
+      "Each removed drop adds current game BET times 0.05 without repricing prior balance.",
+      "All-clear collects the balance without consuming it; own-game zero WIN resets it; inactive Six Drop does not reset."
+    ]
+  },
+  "server": {
+    "carry": "passed",
+    "assertions": [
+      "Existing balances preserved, including fractional units.",
+      "Independent-player carry, exactly-once settlement, forced-cancel rollback and own-zero reset verified.",
+      "Palette/checkpoint restored in the payout worker and after cold restart.",
+      "Newer public WebSocket state cannot discard an exact current own-token reservation ACK or trigger a duplicate forced BET request."
+    ],
+    "monitorColors": {
+      "producerCases": 13,
+      "malformedMetadataCases": 9,
+      "individualGameBet": true,
+      "incrementalAwardOnly": true,
+      "newHighestRoleOnly": true,
+      "confirmedPartialColors": true,
+      "legacyMetadataNeutral": true,
+      "adminPrivacy": true,
+      "staleAndRoundGuards": true
+    },
+    "monitorRule": "Maximum confirmed tier across participating games: >=3 times that game's BET red, >=10 times purple, explicit newly achieved highest role rainbow. Monetary 50x alone is not a highest role. Displayed amounts, ratios and bar heights retain combined-game totals."
+  },
+  "browser": {
+    "engine": "Chromium in GitHub Actions, actual application plus local HTTP/WebSocket server",
+    "clientViewports": [
+      [
+        390,
+        844
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "monitorViewports": [
+      [
+        1920,
+        1080
+      ],
+      [
+        1366,
+        768
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "hud": {
+      "font": "ArcadePayout, Georgia, serif",
+      "weight": "700",
+      "alignment": "right",
+      "text": "全消し450WIN",
+      "candyFrameBorderPx": 4,
+      "obsoleteText": false,
+      "observedCounterFrames": 26,
+      "intermediateCounterFrames": 21
+    },
+    "liveClient": {
+      "games": 9,
+      "forecastNumbers": 25,
+      "forcedRoundBetRequests": 1,
+      "confirmedRefund": 27000,
+      "creditAfterRefundAndNewBet": 973000,
+      "pageErrors": []
+    },
+    "hiddenPayout": {
+      "complete": true,
+      "phases": [
+        "playing",
+        "result",
+        "paying",
+        "complete",
+        "ready"
+      ],
+      "win": 7200,
+      "roundWins": [
+        600,
+        1200,
+        0,
+        0,
+        0,
+        2400,
+        0,
+        1200,
+        1800
+      ],
+      "credit": 980200
+    },
+    "monitor": {
+      "numberColumns": 25,
+      "playersAndTotalRows": 7,
+      "amountAndRatioRendering": true,
+      "perGameColorClasses": true,
+      "noPageScrollAtTestedSizes": true
+    },
+    "screenshotsVisuallyReviewed": [
+      "qa-client-v243/sixdrop-v247-mobile.png",
+      "qa-monitor-v242/monitor-1366.png"
+    ],
+    "artifact": {
+      "id": 14404385544,
+      "name": "sixdrop-v248-final-hud",
+      "sha256": "f264ad74afd0dea0140f1b09de131bbefb311fc7969283a529cbd56599b179d5",
+      "expiresAt": "2026-11-25T06:23:08Z"
+    }
+  },
+  "payoutSampling": {
+    "source": "docs/sixdrop-v248-samples.jsonl",
+    "productionGeometry": "CookieUpgradePatch applied before geometry extraction",
+    "independentValidationGamesPerSetting": 2000,
+    "samples": [
+      {
+        "setting": 50,
+        "actualPercent": 49.01,
+        "blockStandardError": 5.723022705606618
+      },
+      {
+        "setting": 90,
+        "actualPercent": 83.195,
+        "blockStandardError": 7.55758338800616
+      },
+      {
+        "setting": 150,
+        "actualPercent": 153.4475,
+        "blockStandardError": 11.12249125895613
+      }
+    ],
+    "scope": "Direct Six Drop payouts with carry across positive games; shared Sugar/JPC excluded. Finite stochastic samples do not guarantee an exact payout rate.",
+    "timing": "Full calibration samples preceded the rare impossible-pocket fallback fix, which was not exercised in those samples. The successful refill path and rates are unchanged. Final regression tests exercise the fallback."
+  },
+  "limitations": [
+    "No physical Windows host or iPhone device was available. PowerShell syntax and Windows encoding guards passed in CI.",
+    "The server on the user's Windows PC requires installing this source update and restarting. Existing client/monitor pages need reload.",
+    "CI screenshot artifact has a seven-day retention period; this JSON and the reproducible tests remain in source control."
+  ],
+  "sourceIntegrity": {
+    "filesComparedAgainstCandidateTree": 931,
+    "mismatches": 0,
+    "missing": 0
+  }
+}
