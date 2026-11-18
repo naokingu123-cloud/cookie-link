@@ -13,7 +13,7 @@ const allocator=net.createServer();allocator.listen(0,'127.0.0.1');await once(al
 const base='http://127.0.0.1:'+port,admin='v243-isolated-admin';
 const server=spawn(process.execPath,['server.mjs'],{cwd:process.cwd(),env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:path.join(temp,'core.json'),SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:admin,SWEETS_PLAYER_STABLE_MS:'500',SWEETS_BET_DURATION_MS:'15000',SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_RESULT_GRACE_MS:'8000'},stdio:['ignore','pipe','pipe']});
 let logs='',browser,context,page,monitor,ws;server.stdout.on('data',b=>logs+=b);server.stderr.on('data',b=>logs+=b);
-const errors=[],warnings=[],joins=[],forecastChecks=[];
+const errors=[],warnings=[],joins=[],joinResponses=[],forecastChecks=[];
 async function call(route,{session,body,adminOnly=false}={}){const response=await fetch(base+route+(adminOnly?'?adminToken='+admin:''),{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(session?{'X-Player-Id':session.player.id,Authorization:'Bearer '+session.token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(8000)});const data=await response.json();assert.equal(response.ok,true,route+' '+JSON.stringify(data));return data;}
 async function until(fn,label,ms=40000){const end=Date.now()+ms;while(Date.now()<end){const v=await fn();if(v)return v;await sleep(300);}throw Error(label);}
 try{
@@ -28,6 +28,7 @@ try{
  });
  page=await context.newPage();page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(['error','warning'].includes(m.type()))warnings.push(m.text().slice(0,350));});
  page.on('request',r=>{if(new URL(r.url()).pathname.endsWith('/round/join'))try{joins.push(r.postDataJSON());}catch{}});
+ page.on('response',async r=>{if(!new URL(r.url()).pathname.endsWith('/round/join'))return;try{const data=await r.json(),request=r.request().postDataJSON();joinResponses.push({at:Date.now(),status:r.status(),roundId:request?.roundId,token:request?.clientRoundToken,error:data.error||null,serverTime:data.serverTime,phase:data.round?.phase,participantToken:data.round?.participant?.clientRoundToken,wallet:data.payoutControlV3?.wallet});}catch{}});
  await page.route('**/assets/shared-machine-v176.js*',async route=>{
   const code=await fs.readFile('assets/shared-machine-v176.js','utf8');
   // Observation only: all runtime source above this reference is exact.
@@ -91,6 +92,7 @@ try{
  await fs.writeFile('docs/client-v243-qa.json',JSON.stringify(report,null,2)+'\n');await fs.writeFile(out+'/result.json',JSON.stringify(report,null,2));console.log('CLIENT_BROWSER_V243_PASS',JSON.stringify(report));
 }catch(error){
  console.error('CLIENT_BROWSER_V243_FAIL',error);
+ console.error('CLIENT_JOIN_REQUESTS',JSON.stringify(joins));console.error('CLIENT_JOIN_RESPONSES',JSON.stringify(joinResponses));console.error('CLIENT_WARNINGS',JSON.stringify(warnings));
  if(page){try{
   const state=await page.evaluate(()=>({phase:window.__client243?.app.phase,draws:window.__client243?.app.draws,controller:window.SweetsSharedControllerV224?.describe(),slots:window.__client243?.slots.map(s=>({kind:s.engine?.kind,phase:s.engine?.phase,processed:s.engine?.processed,accepted:s.engine?.accepted,busy:s.engine?.busy,fx:!!s.engine?.fx,idle:s.engine?.idle,queue:s.engine?.queue?.length,reach:s.reachStatus,base:s.tabReachBase,cacheVersion:s.tabReachVersion,engineVersion:s.engine?.version}))}));
   console.error('CLIENT_STATE',JSON.stringify(state));

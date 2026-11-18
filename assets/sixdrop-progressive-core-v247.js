@@ -66,30 +66,51 @@ function create(geometry){
   }
   if(!fillable.length)return {grid,added:[],holes:[],mobility:0};
   const target=Math.max(50,Math.min(150,state.target));
-  const knots=[[50,.270],[75,.315],[90,.355],[100,.372],[125,.398],[150,.415]];
-  let k=1;while(k<knots.length-1&&target>knots[k][0])k++;
-  const lo=knots[k-1],hi=knots[k],ratio=lo[1]+(hi[1]-lo[1])*(target-lo[0])/(hi[0]-lo[0]);
+  // Connected-four clears and 0.05 BET per drop need fewer pre-clustered
+  // colors. P/O continues to control the share of movable support pockets.
   const prepared=.35+.55*(target-50)/100,templates=G.gapTemplates||[];
   const holes=templates.length&&nextRandom(state)<prepared?templates[Math.floor(nextRandom(state)*templates.length)]:[];
   const missing=new Set(fillable.map(([r,c])=>r*16+c)),chosen=new Set(holes.filter(([r,c])=>missing.has(r*16+c)).map(([r,c])=>r*16+c));
   let id=state.uid;
-  const layout=()=>{const out=G.clone(before);let uid=id;for(const [r,c]of fillable)if(!chosen.has(r*16+c))out[r][c]={id:++uid,color:0,number:null};return out;};
+  const layout=(places=fillable.filter(([r,c])=>!chosen.has(r*16+c)))=>{const out=G.clone(before);let uid=id;for(const [r,c]of places)out[r][c]={id:++uid,color:0,number:null};return out;};
   if(chosen.size&&G.drop(layout()).moves.length)chosen.clear();
-  const positions=fillable.filter(([r,c])=>!chosen.has(r*16+c)),startFeed=state.feed;
+  let positions=fillable.filter(([r,c])=>!chosen.has(r*16+c));const startFeed=state.feed,blocked=new Set();
   // Every refill in this game uses the palette locked at newGame(). Crossing
   // a 100-clear threshold only changes the next game's four-color window.
-  const choices=positions.map(()=>shuffle([...colorsThisGame],state));
-  let visits=0;
+  let choices=positions.map(()=>shuffle([...colorsThisGame],state)),visits=0,failedCell=null,furthest=0;
   function place(index){
    if(index===positions.length)return true;if(++visits>16000)return false;
+   furthest=Math.max(furthest,index);
    const [r,c]=positions[index],colors=[...choices[index]];
    const nearby=color=>G.neighbors(r,c,ROWS).filter(([y,x])=>grid[y]?.[x]?.color===color).length;
-   const cluster=nextRandom(state)<(.12+.50*ratio);
+   const cluster=nextRandom(state)<.04;
    colors.sort((a,b)=>(nearby(a)-nearby(b))*(cluster?-1:1));
-   for(const color of colors){if(formsAt(grid,r,c,color))continue;grid[r][c]={id:id+index+1,color,number:null,feedRow:Math.floor((startFeed+index)*ROWS/CAPACITY)};if(place(index+1))return true;}
+   let fits=false;
+   for(const color of colors){if(formsAt(grid,r,c,color))continue;fits=true;grid[r][c]={id:id+index+1,color,number:null,feedRow:Math.floor((startFeed+index)*ROWS/CAPACITY)};if(place(index+1))return true;}
+   if(!fits&&!failedCell)failedCell=[r,c];
    grid[r][c]=null;return false;
   }
-  if(!place(0))throw Error('Six Drop stable refill coloring exhausted');
+  while(!place(0)){
+   // Four surviving triples can forbid every color at one exposed pocket.
+   // Keep that pocket open instead of recoloring survivors or auto-clearing a
+   // refill. Remove only NEW candies that would fall into the open pocket;
+   // the original settled board is never moved or changed by this fallback.
+   // Each retry removes at least one position, so there are at most 75 tries.
+   const [r,c]=failedCell||positions[Math.min(furthest,positions.length-1)],key=r*16+c;
+   // Prefer retaining the original height over adding optional template gaps
+   // when a mandatory color pocket has already removed some upper supports.
+   blocked.add(key);chosen.clear();positions=fillable.filter(([y,x])=>!blocked.has(y*16+x));
+   for(;;){
+    const result=G.drop(layout(positions));if(!result.moves.length)break;
+    const addedIds=new Set(positions.map((_,i)=>id+i+1)),moving=new Set(result.moves.filter(m=>addedIds.has(m.id)).map(m=>m.id));
+    // The input was stable. If an unexpected old-only motion is ever found,
+    // restoring it without additions is the conservative finite fallback.
+    if(!moving.size){for(const [y,x]of positions)blocked.add(y*16+x);positions=[];break;}
+    positions=positions.filter(([y,x],i)=>{if(!moving.has(id+i+1))return true;blocked.add(y*16+x);return false;});
+   }
+   for(let y=0;y<grid.length;y++)grid[y]=before[y].map(t=>t?{...t}:null);
+   choices=positions.map(()=>shuffle([...colorsThisGame],state));visits=0;failedCell=null;furthest=0;
+  }
   state.uid=id+positions.length;state.feed=startFeed+(initial?CAPACITY:positions.length);
   const drawn=new Set(state.draws),present=new Set(grid.flat().filter(t=>t?.number!=null).map(t=>t.number));
   const numbers=shuffle(Array.from({length:25},(_,i)=>i+1).filter(n=>!drawn.has(n)&&!present.has(n)),state);
@@ -101,7 +122,7 @@ function create(geometry){
   if(connectedGroups(grid).length||G.findShapes(grid).length)throw Error('Six Drop refill created a connected group or paid role');
   if(G.drop(G.clone(grid)).moves.length)throw Error('Six Drop refill left unsupported candies');
   state.grid=grid;
-  return {grid,added:positions.map(([r,c])=>({r,c,tile:{...grid[r][c]}})),holes:[...chosen],mobility:targets.filter(([r,c])=>grid[r][c].number!=null&&mobility(grid,r,c)>0).length};
+  return {grid,added:positions.map(([r,c])=>({r,c,tile:{...grid[r][c]}})),holes:[...new Set([...chosen,...blocked])],mobility:targets.filter(([r,c])=>grid[r][c].number!=null&&mobility(grid,r,c)>0).length};
  }
  function newGame({bet=100,rate=90,seed=1,carry=null}={}){
   bet=integer(bet);if(!bet||bet>1e10)throw Error('Six Drop invalid BET');

@@ -32,8 +32,18 @@ function createMonitorForecastsV241({connected,now}){
   const used=new Set((r.balls||[]).map(b=>Number(b.number)));
   const gains=d.numberGains.map((n,i)=>used.has(i+1)?null:n);
   if(gains.some((n,i)=>!used.has(i+1)&&!valid(n))){map.delete(id);return false;}
+  // Colors are independent of aggregate amounts: a confirmed individual
+  // game supplies its new 3x/10x award, or a newly completed highest role.
+  // Old clients may still send numbers, but never regain the old 50x colors.
+  let colorTiers=null;
+  const colorBasis=d.colorBasis==='per-game-new-award-v248'?d.colorBasis:null;
+  if(colorBasis){
+   if(!Array.isArray(d.numberColorTiers)||d.numberColorTiers.length!==25||d.numberColorTiers.some((n,i)=>!used.has(i+1)&&(!Number.isInteger(n)||n<0||n>3))){map.delete(id);return false;}
+   const highest=new Set(Array.isArray(d.highestReachNumbers)?d.highestReachNumbers:[]);
+   colorTiers=d.numberColorTiers.map((n,i)=>used.has(i+1)?null:gains[i]>0?(n===3&&!highest.has(i+1)?0:n):0);
+  }
   for(const key of map.keys())if(!eligible(m,key))map.delete(key);
-  map.set(id,{roundId:r.id,ballCount:count,baseWin:d.predictionBaseWin,gains,partial:isPartial,readyGames:isPartial?readyGames:totalGames||0,totalGames:totalGames||0,at:now()});return true;
+  map.set(id,{roundId:r.id,ballCount:count,baseWin:d.predictionBaseWin,gains,colorTiers,colorBasis,partial:isPartial,readyGames:isPartial?readyGames:totalGames||0,totalGames:totalGames||0,at:now()});return true;
  }
  function snapshot(m){
   const result={},map=rooms.get(m),r=m.round;
@@ -41,7 +51,7 @@ function createMonitorForecastsV241({connected,now}){
   for(const [id,value] of map){
    const p=r?.participants?.[id];
    if(!eligible(m,id)||!p||!connected(m.id,id)||r.phase!=='PLAYING'||p.settlement||(r.balls||[]).length>=8||value.roundId!==r.id||value.ballCount!==r.balls.length||now()-value.at>12000){map.delete(id);continue;}
-   result[id]={roundId:r.id,ballCount:value.ballCount,baseWin:value.baseWin,gains:[...value.gains],partial:value.partial===true,readyGames:value.readyGames,totalGames:value.totalGames,bet:Number(p.totalBet)||0,at:value.at};
+   result[id]={roundId:r.id,ballCount:value.ballCount,baseWin:value.baseWin,gains:[...value.gains],colorTiers:value.colorTiers?[...value.colorTiers]:null,colorBasis:value.colorBasis,partial:value.partial===true,readyGames:value.readyGames,totalGames:value.totalGames,bet:Number(p.totalBet)||0,at:value.at};
   }
   return result;
  }

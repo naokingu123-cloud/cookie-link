@@ -39,7 +39,8 @@ function metrics(tr,r){
 }
 function forecasts(tr,r,data){
  const cell=td(tr,'forecast-cell-v242',''),grid=node('div','forecast-grid-v242');
- // Reuse the authoritative 25-number gain cache; drawing a bar never predicts a new outcome.
+ // Bar heights and labels are aggregate medal gains. Their shared color is
+ // separately derived from a confirmed individual game's incremental award.
  const values=Array.from({length:25},(_,i)=>model.numberCell(r,data,i+1));
  const maxGain=Math.max(0,...values.map(v=>Number.isFinite(v.gain)?v.gain:0));
  for(let n=1;n<=25;n++){

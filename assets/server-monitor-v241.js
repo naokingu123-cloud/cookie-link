@@ -29,7 +29,7 @@ function metricCells(tr,row){
 }
 function numberCells(tr,row,data){
  for(let n=1;n<=25;n++){
-  const value=model.numberCell(row,data,n),td=cell(tr,'gain-cell','',value.hint);td.dataset.number=String(n);td.dataset.tier=value.color;
+  const value=model.numberCell(row,data,n),td=cell(tr,'gain-cell','',value.hint);td.dataset.number=String(n);td.dataset.tier=value.color;td.dataset.partial=value.partial?'1':'0';
   td.append(el('b','gain-value',value.text));if(value.ratio)td.append(el('small','gain-ratio',value.ratio));
   td.setAttribute('aria-label',n+'番 '+value.text+(value.ratio?'、'+value.ratio:''));
  }
@@ -38,7 +38,7 @@ function render(data,{tbody,empty,openDetails,detail,refresh}){
  if(root.SweetsMonitorCompactV242)return root.SweetsMonitorCompactV242.render(data,{tbody,empty,openDetails,detail,refresh});
  const rows=model.rows(data),total=model.total(rows,data);
  header(tbody);
- const signature=JSON.stringify([rows.map(r=>[r.id,r.player.displayName,r.connected,r.bet,r.win,r.credit,r.input,r.output,r.setting,r.corrected,r.ballCount,r.state,r.forecast?.baseWin,r.forecast?.gains,openDetails.has(r.id)?r.control:null]),data.round?.phase,data.round?.balls,total.setting,total.corrected,[...openDetails]]);
+ const signature=JSON.stringify([rows.map(r=>[r.id,r.player.displayName,r.connected,r.bet,r.win,r.credit,r.input,r.output,r.setting,r.corrected,r.ballCount,r.state,r.forecast&&[r.forecast.baseWin,r.forecast.gains,r.forecast.colorTiers,r.forecast.colorBasis,r.forecast.partial,r.forecast.readyGames,r.forecast.totalGames],openDetails.has(r.id)?r.control:null]),data.round?.phase,data.round?.balls,total.setting,total.corrected,[...openDetails]]);
  if(signatures.get(tbody)===signature)return;
  signatures.set(tbody,signature);const fragment=document.createDocumentFragment();
  const summary=el('tr','player-total-v241'),name=cell(summary,'total-name','');

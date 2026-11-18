@@ -1,5 +1,5 @@
-/* v246: stream already-computed per-game next-HIT increases without
- * treating unfinished game boards as 0 or inventing any future draw. */
+/* v248: stream already-computed per-game next-HIT increases and their
+ * own-BET award tiers, without treating unfinished boards as zero. */
 (()=>{
 'use strict';
 function patch(source){
@@ -14,7 +14,7 @@ function currentDetail(a,round,active,boardSlots,readCache,calculate){
  const localDraws=Array.isArray(a.draws)?a.draws:[],count=balls.length;
  const aligned=localDraws.length===count&&localDraws.every(n=>used.has(Number(n)))&&!a.paused;
  const detail={version:238,roundId:round.id,ballCount:count,prediction:'updating',best:null,
-  numberGains:null,predictionBaseWin:null,readyGames:0,totalGames:0,
+  numberGains:null,numberColorTiers:null,colorBasis:'per-game-new-award-v248',predictionBaseWin:null,readyGames:0,totalGames:0,
   highestReachNumbers:[],achievedTier:0,highestGames:[],paused:!!a.paused};
  const sums=new Map(),highestReach=new Set();
  let eligible=0,ready=0,baseWin=0;
@@ -51,8 +51,13 @@ function currentDetail(a,round,active,boardSlots,readCache,calculate){
    if(!Number.isFinite(after)||after<0){valid=false;break;}
    const gain=Math.max(0,after-before);
    if(!(gain>0))continue;
-   const tier=Math.min(3,Math.max(0,Math.floor(Number(hit.tier)||0))),old=perGame.get(n);
-   if(!old||gain>old.gain)perGame.set(n,{gain,tier});
+   // Each known predictor marks a NEW all-clear/reversal/full-board role.
+   // Canyon instead supplies the newly resolved depth bonus explicitly.
+   // Never promote an already-earned total, or infer highest role from 50x.
+   const bonusDepth=Number(hit.bonusDepth),resolvedDepth=Number(e.bonusResolvedDepth)||0;
+   const highest=hit.allClear===true||(e.kind==='choco'&&hit.highestRole==='canyonBonus'&&Number.isInteger(bonusDepth)&&bonusDepth>=500&&bonusDepth>resolvedDepth&&bonusDepth%100===0);
+   const tier=highest?3:gain>=bet*10?2:gain>=bet*3?1:0,old=perGame.get(n);
+   perGame.set(n,{gain:Math.max(gain,old?.gain||0),tier:Math.max(tier,old?.tier||0)});
   }
   if(!valid)continue;
   ready++;baseWin+=amount(before);
@@ -69,6 +74,7 @@ function currentDetail(a,round,active,boardSlots,readCache,calculate){
  // games are explicitly flagged as pending on the server and in the monitor.
  detail.predictionBaseWin=Math.floor(Math.min(1e12,amount(baseWin)));
  detail.numberGains=Array.from({length:25},(_,i)=>used.has(i+1)?null:Math.floor(amount(sums.get(i+1)?.gain)));
+ detail.numberColorTiers=Array.from({length:25},(_,i)=>used.has(i+1)?null:sums.get(i+1)?.tier||0);
  detail.highestReachNumbers=[...highestReach].sort((a,b)=>a-b);
  if(ready<eligible){detail.prediction='partial';return detail;}
  const largest=Math.max(0,...[...sums.values()].map(v=>v.gain));

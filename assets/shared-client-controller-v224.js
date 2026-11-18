@@ -383,14 +383,21 @@ function applyParticipant(participant){
  lastParticipant=participant;try{app.onChange?.(app);}catch{}refreshBetControls(app);
 }
 function confirmBet(round,attempt=betAttempt,directResponse=false){
- const c=client(),id=String(round?.id||''),participant=round?.participant;
+ const c=client(),id=String(round?.id||''),participant=round?.participant,latest=c?.round;
  if(!attempt||betAttempt!==attempt||attempt.epoch!==connectionEpoch||attempt.socket!==c?.ws||!wsOpen(c))return false;
- if(id!==attempt.roundId||c?.round?.id!==id||!['BETTING','PLAYING'].includes(round.phase)||!participant?.playerId||participant.settlement||abandonedRounds.has(id))return false;
+ if(id!==attempt.roundId||latest?.id!==id||!['BETTING','PLAYING'].includes(round.phase)||!['BETTING','PLAYING'].includes(latest.phase)||!participant?.playerId||participant.settlement||latest.participant?.settlement||abandonedRounds.has(id))return false;
  if(c.playerId&&participant.playerId!==c.playerId)return false;
+ if(latest.participant?.playerId&&c.playerId&&latest.participant.playerId!==c.playerId)return false;
+ if(latest.participant?.clientRoundToken&&latest.participant.clientRoundToken!==attempt.payload.clientRoundToken)return false;
  // Only a reservation submitted by this live controller can replace a lost
  // HTTP ACK. An old page, interrupted round or unrelated participant cannot.
  if(participant.clientRoundToken!==attempt.payload.clientRoundToken&&(!directResponse||participant.clientRoundToken))return false;
- joinedRounds.add(id);joinedRoundId=id;if(pendingFunds===attempt.funds)pendingFunds=null;betAttempt=null;manualBetRoundId='';applyParticipant(participant);status('BET','BET登録済み');return true;
+ // Public WS notices can be newer than the personalized POST response. Keep
+ // their round/phase watermark and merge only our confirmed participant;
+ // otherwise the next poll can resend an already accepted reservation.
+ if(directResponse&&!latest.participant)c.round={...latest,participant:{...participant,...(lastServerWallet?.lastRoundId===id?{creditAfterBet:lastServerWallet.credit}:{})}};
+ const confirmed=c.round?.participant||participant;
+ joinedRounds.add(id);joinedRoundId=id;if(pendingFunds===attempt.funds)pendingFunds=null;betAttempt=null;manualBetRoundId='';applyParticipant(confirmed);status('BET','BET登録済み');return true;
 }
 function betStatus(round=client()?.round){
  if(round?.phase!=='BETTING')return null;
@@ -469,7 +476,8 @@ async function joinBet(round){
  try{
   const response=await client().join(attempt.payload);
   const accepted=client().accept?.(response);if(accepted!==false)rememberWallet(response?.payoutControlV3);
-  if((accepted!==false&&confirmBet(response?.round,attempt,true))||confirmBet(client()?.round,attempt))return true;
+  const ownAck=accepted!==false||response?.round?.participant?.clientRoundToken===attempt.payload.clientRoundToken;
+  if((ownAck&&confirmBet(response?.round,attempt,true))||confirmBet(client()?.round,attempt))return true;
  }catch(error){
   if(error?.data?.round){const accepted=client()?.accept?.(error.data);if(accepted!==false)rememberWallet(error.data.payoutControlV3);}
   if(confirmBet(client()?.round,attempt))return true;

@@ -34,10 +34,11 @@ try{
  const playing=(await until(async()=>{const d=await state(a);return d.round?.phase==='PLAYING'?d:null;},'PLAYING')).round;await sleep(Math.max(0,playing.drawStartsAt-Date.now()+30));
  async function ball(index,number){await request('/api/machines/public-01/round/ball',{session:host,body:{roundId:bet.id,ballIndex:index,number,eventId:bet.id+':'+index}});}
  await ball(1,1);
- const gains=Array.from({length:25},()=>0);gains[0]=null;gains[6]=27000;gains[7]=216000;gains[8]=1296000;gains[9]=2700;
- const detail={version:238,roundId:bet.id,ballCount:1,phase:'PLAYING',paused:false,prediction:'ready',predictionBaseWin:54000,numberGains:gains,highestReachNumbers:[]};
+ const gains=Array.from({length:25},()=>0);gains[0]=null;gains[6]=81000;gains[7]=270000;gains[8]=100;gains[9]=2700;
+ const tiers=Array(25).fill(0);tiers[0]=null;tiers[6]=1;tiers[7]=2;tiers[8]=3;
+ const detail={version:238,roundId:bet.id,ballCount:1,phase:'PLAYING',paused:false,prediction:'ready',predictionBaseWin:54000,numberGains:gains,colorBasis:'per-game-new-award-v248',numberColorTiers:tiers,highestReachNumbers:[9]};
  sa.send(JSON.stringify({type:'station_progress',roundId:bet.id,win:54000,detail}));
- sb.send(JSON.stringify({type:'station_progress',roundId:bet.id,win:1000,detail:{...detail,predictionBaseWin:1000,numberGains:gains.map((v,i)=>i===0?null:100)}}));
+ sb.send(JSON.stringify({type:'station_progress',roundId:bet.id,win:1000,detail:{...detail,predictionBaseWin:1000,numberGains:gains.map((v,i)=>i===0?null:100),numberColorTiers:tiers.map((v,i)=>i===0?null:0),highestReachNumbers:[]}}));
  const d=await until(async()=>{const d=await monitor();return d.hitForecasts?.[a.player.id]&&d.hitForecasts?.[b.player.id]?d:null;},'both forecasts');
  const rows=model.rows(d),ar=rows.find(r=>r.id===a.player.id);assert.ok(ar);
  assert.equal(model.numberCell(ar,d,7).color,'red');assert.equal(model.numberCell(ar,d,8).color,'purple');assert.equal(model.numberCell(ar,d,9).color,'rainbow');assert.equal(model.numberCell(ar,d,10).ratio,'+0.10倍');
@@ -53,5 +54,5 @@ try{
  const end=await monitor(),final=model.rows(end),total=model.total(final,end);
  assert.deepEqual(end.hitForecasts,{});assert.equal(final.find(r=>r.id===b.player.id).win,0,'zero settlement overrides provisional WIN');
  assert.equal(total.input,37000);assert.equal(total.output,60000);assert.equal(total.hg,-23000);assert.equal(total.credit,2023000);assert.equal(total.win,60000);
- console.log('MONITOR_LEDGER_V241_INTEGRATION_PASS: two players, 25 gains, admin privacy, invalidation, 3/10/50 crossing, exact zero settlement and negative H/G');
+ console.log('MONITOR_LEDGER_V241_INTEGRATION_PASS: two players,25 gains,admin privacy,invalidation,per-game3x/10x/new-highest colors,exact zero settlement and negative H/G');
 }finally{for(const ws of sockets)try{ws.terminate();}catch{}if(child.exitCode===null){const ended=once(child,'exit');child.kill('SIGTERM');await ended;}await rm(temp,{recursive:true,force:true});}

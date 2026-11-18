@@ -16,7 +16,7 @@ const model={phase:'playing',token:1,draws:[3,7],locked:[100,200],bets:[100,200]
 const round={id:'progressive-246',phase:'PLAYING',balls:[{number:3,index:1},{number:7,index:2}],participant:{totalBet:300}};
 const view=stationView(patched,{id:'p',model,round});
 const slots=engines.map((engine,i)=>({engine,tabReachVersion:1,reachStatus:i===0?'ready':'pending',tabReachBase:engine.totalHundredths,tabReachResults:[]}));
-slots[0].tabReachResults=[{number:12,total:300,tier:3},{number:13,total:120,tier:0}];
+slots[0].tabReachResults=[{number:12,total:300,tier:3,allClear:true},{number:13,total:120,tier:0}];
 slots[1].tabReachResults=[{number:12,total:100,tier:0},{number:13,total:150,tier:0}];
 let reads=0;const cache=s=>{reads++;return s.tabReachResults;};
 const detail=()=>JSON.parse(JSON.stringify(view.api.currentDetail(model,round,view.shared.active,slots,cache,calc)));
@@ -57,7 +57,7 @@ const modelCtx={};modelCtx.window=modelCtx;vm.createContext(modelCtx);vm.runInCo
 const L=modelCtx.SweetsMonitorLedgerV241;
 const live={serverTime:now,machine:{hostPlayerId:'host',hostConnected:true},round:{id:round.id,phase:'PLAYING',balls:round.balls,players:[{playerId:'p',displayName:'P',connected:true,totalBet:300,roundWin:200},{playerId:'q',displayName:'Q',connected:true,totalBet:500,roundWin:100}]},stations:{seats:[{station:1,playerId:'p',roundId:round.id,connected:true},{station:2,playerId:'q',roundId:round.id,connected:true}]},payoutControlV3:{config:{targetRate:90},players:[{playerId:'p',currentRoundId:round.id,currentRoundBet:300,wallet:{credit:999700}},{playerId:'q',currentRoundId:round.id,currentRoundBet:500,wallet:{credit:999500}}]},hitForecasts:{p:{...snap,partial:true,readyGames:1,totalGames:2}}};
 const rows=L.rows(live),row=rows.find(r=>r.id==='p'),cell=L.numberCell(row,live,12);
-assert.equal(cell.text,'+300');assert.equal(cell.partial,true);assert.match(cell.hint,/暫定/);assert.equal(cell.color,'');
+assert.equal(cell.text,'+300');assert.equal(cell.partial,true);assert.match(cell.hint,/暫定/);assert.equal(cell.color,'rainbow','confirmed new highest role colors a partial forecast');
 const total=L.total(rows,live),totalCell=L.numberCell(total,live,12);
 assert.equal(total.forecast.partial,true,'unreported second player cannot be treated as zero');
 assert.equal(totalCell.text,'+300');assert.equal(totalCell.partial,true);

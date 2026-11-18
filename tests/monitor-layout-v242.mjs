@@ -9,6 +9,8 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.
 const now=Date.now(),round='public-01-50-test';
 const ids=Array.from({length:6},(_,i)=>'00000000-0000-4000-8000-'+String(i+1).padStart(12,'0'));
 const data={serverTime:now,machine:{hostPlayerId:'HOST',hostConnected:true},round:{id:round,sequence:50,phase:'PLAYING',balls:[{number:1,index:1}],players:ids.map((id,i)=>({playerId:id,displayName:['もちうさぎ','チョコくま','ミントねこ','プリンひつじ','シュガー','こはく'][i],connected:true,totalBet:27000,roundWin:[78300,243000,1323000,90000,2700,7000][i],checkpointBall:1}))},stations:{seats:ids.map((id,i)=>({playerId:id,station:i+1,connected:true,roundId:round,win:[78300,243000,1323000,90000,2700,7000][i],ballCount:1}))},payoutControlV3:{config:{targetRate:90},players:ids.map((id,i)=>({playerId:id,mode:i===1?'manual':'auto',manualRate:95,effectiveRate:i===0?50:i===1?150:87+i,currentRoundId:round,currentRoundBet:27000,currentRoundWin:[78300,243000,1323000,90000,2700,7000][i],lifetimeBet:1000000*(i+1),lifetimeWin:900000*(i+1),lastBall:1,wallet:{credit:973000},games:{}}))},hitForecasts:Object.fromEntries(ids.map((id,i)=>[id,{roundId:round,ballCount:1,baseWin:[78300,243000,1323000,90000,2700,7000][i],bet:27000,at:now,gains:Array.from({length:25},(_,n)=>n===0?null:n===1?2700:n===2?27000:n===3?1350000:(n+1)*500)}])),payoutTrendV242:{points:Array.from({length:30},(_,i)=>({game:i+1,at:now-(29-i)*40000,input:(i+1)*162000,output:(i+1)*143000+(i%3)*9000,hg:(i+1)*19000,po:88+i%3,rollingPo:86+i%7,roundIn:162000,roundOut:143000,partial:false}))}};
+// Forecast color metadata is independent of the aggregate gain/total-BET ratio.
+for(const forecast of Object.values(data.hitForecasts)){forecast.colorBasis='per-game-new-award-v248';forecast.colorTiers=Array.from({length:25},(_,n)=>n===0?null:n===1?1:n===2?2:n===3?3:0);}
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});await fs.mkdir('qa-monitor-v242',{recursive:true});
 try{
  for(const [width,height] of [[1920,1080],[1366,768],[1280,720],[390,844]]){
@@ -30,8 +32,9 @@ try{
  const rateStyle=[...document.querySelectorAll('#players>tr.compact-player-v242')].map(tr=>tr.querySelectorAll('td.money.po')[2]?.style.color||'');
  const barHeight=[...tiles].map(tile=>tile.querySelector('.forecast-bar-v245')?.style.height||'');
  const trendPO=document.querySelector('#trend-summary-v242 strong')?.style.color||'';
+ const colorClasses=tiles.map(tile=>tile.dataset.tier),forecastInk=tiles.map(tile=>getComputedStyle(tile.querySelector('.forecast-value-v242')).color),barPaint=tiles.map(tile=>getComputedStyle(tile.querySelector('.forecast-bar-v245')).backgroundImage);
  
- return {forecastColumns,forecastRows,forecastSameLine,forecastLabels,forecastBars,progressHeaders,progressTexts,forecastRaw,ratioRaw,rateStyle,barHeight,trendPO,viewport:[innerWidth,innerHeight],page:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],wrap:[w.clientWidth,w.clientHeight,w.scrollWidth,w.scrollHeight],table:table.getBoundingClientRect().toJSON(),main:m.getBoundingClientRect().toJSON(),rows:document.querySelectorAll('#players>tr').length,tiles:document.querySelectorAll('.forecast-tile-v242').length,inputs:document.querySelectorAll('#global-controls input').length,red:document.querySelectorAll('[data-tier=red]').length,purple:document.querySelectorAll('[data-tier=purple]').length,rainbow:document.querySelectorAll('[data-tier=rainbow]').length};});
+ return {forecastColumns,forecastRows,forecastSameLine,forecastLabels,forecastBars,progressHeaders,progressTexts,forecastRaw,ratioRaw,rateStyle,barHeight,trendPO,colorClasses,forecastInk,barPaint,viewport:[innerWidth,innerHeight],page:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],wrap:[w.clientWidth,w.clientHeight,w.scrollWidth,w.scrollHeight],table:table.getBoundingClientRect().toJSON(),main:m.getBoundingClientRect().toJSON(),rows:document.querySelectorAll('#players>tr').length,tiles:document.querySelectorAll('.forecast-tile-v242').length,inputs:document.querySelectorAll('#global-controls input').length,red:document.querySelectorAll('[data-tier=red]').length,purple:document.querySelectorAll('[data-tier=purple]').length,rainbow:document.querySelectorAll('[data-tier=rainbow]').length};});
   assert.equal(metrics.forecastBars,175,'25 bars in each of 7 rows');
   assert.equal(metrics.progressHeaders,1);
   assert.ok(metrics.progressTexts.every(x=>/^\d+$/.test(x)),'progress is a single number');
@@ -41,6 +44,9 @@ try{
   assert.equal(metrics.rateStyle[1],'rgb(255, 77, 77)','150 percent is red');
   assert.ok(metrics.barHeight.some(x=>parseFloat(x)>0),'gain bars must render');
   assert.ok(metrics.trendPO,'the graph summary P/O is also spectrum colored');
+  assert.deepEqual(metrics.colorClasses.slice(0,5),['','red','purple','rainbow',''],'all labels and bars use per-game semantic tiers');
+  assert.equal(metrics.forecastInk[1],'rgb(255, 126, 135)');assert.equal(metrics.forecastInk[2],'rgb(216, 160, 255)');assert.equal(metrics.forecastInk[3],'rgba(0, 0, 0, 0)');
+  assert.match(metrics.barPaint[1],/rgb\(197, 34, 59\)/);assert.match(metrics.barPaint[2],/rgb\(112, 34, 174\)/);assert.match(metrics.barPaint[3],/rgb\(255, 98, 117\)/);
   assert.equal(metrics.forecastColumns,25,'all 25 numbers must be arranged horizontally');
   assert.equal(metrics.forecastRows,1,'no second forecast row');
   assert.ok(metrics.forecastSameLine,'all 25 number tiles must share one Y position');

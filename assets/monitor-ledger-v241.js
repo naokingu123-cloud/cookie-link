@@ -18,14 +18,12 @@ function configured(control,config){
  if(control.mode==='manual'&&present(control.manualRate))return Number(control.manualRate);
  return present(config.targetRate)?Number(config.targetRate):present(control.targetRate)?Number(control.targetRate):null;
 }
-function tier(base,gain,bet){
- if(!(bet>0&&gain>0))return '';
- const after=base+gain;
- if(base<50*bet&&after>=50*bet)return 'rainbow';
- if(base<10*bet&&after>=10*bet&&after<50*bet)return 'purple';
- if(base<3*bet&&after>=3*bet&&after<10*bet)return 'red';
- return '';
-}
+// A tier is produced from each participating game's own BET and this HIT's
+// incremental award. Never reconstruct it from the aggregate WIN or BET.
+const validTier=value=>Number.isInteger(value)&&value>=0&&value<=3?value:0;
+const tier=value=>['','red','purple','rainbow'][validTier(value)];
+const COLOR_BASIS='per-game-new-award-v248';
+const colorTier=(forecast,index)=>forecast?.colorBasis===COLOR_BASIS&&Array.isArray(forecast.colorTiers)&&forecast.colorTiers.length===25?validTier(forecast.colorTiers[index]):0;
 function status(row,data){
  const round=data.round||{},phase=String(round.phase||'WAITING').toUpperCase();
  if(row.control.offlinePending)return row.connected?'サーバー精算中':'切断・サーバー精算中';
@@ -38,7 +36,8 @@ function status(row,data){
  if(phase==='COMPLETE')return row.ballCount>=8?'WIN確定・精算待ち':'最終球の反映待ち';
  if(data.machine?.hostConnected===false)return '抽選機の再接続待ち';
  if(row.seat?.detail?.paused)return '演出一時停止';
- const suffix=row.seat?.detail?.achievedTier===3?'・最高役獲得':row.win>=10*row.bet?'・超高配当獲得':row.win>=3*row.bet?'・高配当獲得':'';
+ const achieved=validTier(row.seat?.detail?.achievedTier);
+ const suffix=achieved===3?'・最高役獲得':achieved===2?'・超高配当獲得':achieved===1?'・高配当獲得':'';
  if(row.ballCount<(round.balls||[]).length)return '入賞反映中'+suffix;
  return '抽選中'+suffix;
 }
@@ -71,11 +70,12 @@ function numberCell(row,data,n){
  if(!(row.bet>0))return {text:'—',hint:'このラウンドはBETしていません',ratio:'',color:''};
  const gain=row.forecast?.gains?.[n-1];
  if(!present(gain)||Number(gain)<0)return {text:'—',hint:'予測の更新待ち（旧クライアントは再読み込みしてください）',ratio:'更新待ち',color:''};
- const base=money(row.forecast.baseWin),amount=money(gain);
+ const amount=money(gain),semantic=colorTier(row.forecast,n-1);
  const partial=row.forecast?.partial===true;
  const coverage=partial?('　【暫定 '+(row.forecast.readyGames||0)+'/'+(row.forecast.totalGames||'?')+'ゲーム確定、残り更新中】'):'';
- return {text:'+'+fmt(amount),ratio:multiple(amount,row.bet),color:partial?'':tier(base,amount,row.bet),gain:amount,partial,
-  hint:n+'番入賞で確認済み増加WIN '+fmt(amount)+'／合計BET '+fmt(row.bet)+'に対して増加 '+multiple(amount,row.bet)+coverage};
+ const reason=semantic===3?'いずれかのゲームで最高役を新規獲得':semantic===2?'いずれかのゲームの増加WINがそのゲームのBETの10倍以上':semantic===1?'いずれかのゲームの増加WINがそのゲームのBETの3倍以上':'色は各ゲームの増加WIN／そのゲームのBET・新規最高役で判定';
+ return {text:'+'+fmt(amount),ratio:multiple(amount,row.bet),color:tier(semantic),colorTier:semantic,gain:amount,partial,
+  hint:n+'番入賞で確認済み増加WIN '+fmt(amount)+'／合計BET '+fmt(row.bet)+'に対して増加 '+multiple(amount,row.bet)+coverage+'　【色：'+reason+'】'};
 }
 function total(list,data){
  const sum=key=>list.reduce((a,r)=>a+finite(r[key]),0),bet=sum('bet'),input=sum('input'),output=sum('output');
@@ -84,17 +84,19 @@ function total(list,data){
  const active=list.filter(r=>r.bet>0&&!r.settled);
  const available=active.filter(r=>r.forecast);
  // The aggregate shares confirmed per-game subtotals immediately, even when
- // another player or game remains pending. 'partial' forbids a final claim.
+ // another player or game remains pending. A known individual-game threshold
+ // remains true even while other contributions are pending.
  if(data.round?.phase==='PLAYING'&&row.ballCount<8&&available.length){
   const partial=available.length!==active.length||available.some(r=>r.forecast.partial);
   const readyGames=available.reduce((n,r)=>n+(r.forecast.readyGames||0),0);
   const totalGames=active.reduce((n,r)=>n+(r.forecast?.totalGames||0),0);
-  row.forecast={partial,readyGames,totalGames,
+  row.forecast={partial,readyGames,totalGames,colorBasis:COLOR_BASIS,
    baseWin:list.reduce((a,r)=>a+(r.forecast?money(r.forecast.baseWin):r.win),0),
    gains:Array.from({length:25},(_,i)=>{
     const values=available.map(r=>r.forecast.gains[i]);
     return values.every(present)?values.reduce((a,n)=>a+money(n),0):null;
-   })};
+   }),
+   colorTiers:Array.from({length:25},(_,i)=>available.every(r=>present(r.forecast.gains[i]))?Math.max(0,...available.map(r=>colorTier(r.forecast,i))):null)};
  }
 
  return row;

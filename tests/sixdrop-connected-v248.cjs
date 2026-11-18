@@ -87,6 +87,31 @@ const oldTriple=new Map(refillTriple.grid.flat().filter(Boolean).map(t=>[t.id,{.
 R.refill(refillTriple);stable(refillTriple.grid,'explicit refill beside existing three');
 for(const tile of refillTriple.grid.flat().filter(Boolean))if(oldTriple.has(tile.id))assert.deepEqual(tile,oldTriple.get(tile.id));
 
+// A legal settled remnant can forbid all four colors at one exposed cell:
+// each choice at row5/column3 would touch an existing triple. Keep a supported
+// pocket open; never recolor a survivor, crash, or create an automatic refill
+// clear. New candies above that pocket must remain physically supported.
+const trapped=R.newGame({bet:100,seed:123});trapped.grid=G.empty(10);trapped.uid=0;
+const put=(r,c,color)=>trapped.grid[r][c]={id:++trapped.uid,color,number:null};
+for(let r=7;r<10;r++)for(let c=0;c<trapped.grid[r].length;c++)put(r,c,(r===8?2:0)+(c%2));
+for(let c=0;c<7;c++)put(6,c,c<3?2:c<6?3:2);
+for(const c of [0,1,2])put(5,c,0);for(const c of [4,5,6])put(5,c,1);
+stable(trapped.grid,'four-color blocked remnant');
+const trappedSurvivors=new Map(trapped.grid.flat().filter(Boolean).map(t=>[t.id,{...t}]));
+const trappedBefore=G.clone(trapped.grid),trappedBank=trapped.bankUnits;
+const partial=R.refill(trapped);
+assert.ok(partial.added.length,'safe exposed positions still refill');
+assert.equal(trapped.grid[5][3],null,'uncolorable pocket stays open');
+assert.ok(trapped.grid[0].some(Boolean),'safe refill reaches the original ten-row height');
+assert.equal(trapped.bankUnits,trappedBank,'refill never manufactures progressive credits');
+for(const tile of trapped.grid.flat().filter(Boolean))if(trappedSurvivors.has(tile.id))assert.deepEqual(tile,trappedSurvivors.get(tile.id));
+for(const {r,c}of partial.added){
+ const x=G.point(r,c,10).x;
+ assert.ok(!trappedBefore.slice(0,r).some((row,y)=>row.some((t,k)=>t&&Math.abs(G.point(y,k,10).x-x)<.999)),'every new candy is reachable from above');
+}
+stable(trapped.grid,'refill with a blocked color pocket');
+R.refill(trapped);stable(trapped.grid,'a second refill leaves the blocked pocket stable');
+
 // A geometric line retains the earlier rule: all candies of its color clear,
 // including a disconnected candy, and it earns the normal line payout.
 const line=fixture([0,0,0,0,2,3,0,1]);const farLineId=line.grid[9][6].id;
