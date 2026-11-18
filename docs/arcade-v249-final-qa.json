@@ -437,5 +437,28 @@
     "Browser checks ran in Chromium on GitHub Actions.",
     "Physical iPhone and Windows device operation and speaker listening were not tested.",
     "The isolated browser fixture uses a test host transport for numbered ball delivery; it does not claim end-to-end physical roulette video playback."
-  ]
+  ],
+  "publishedVerification": {
+    "releaseCommit": "f73001b3b1bf791595a633d7701663f6d09ae2d1",
+    "runId": 44282137714,
+    "conclusion": "success",
+    "sha256MatchingFiles": 35,
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "decodedLogosPerViewport": 9,
+    "pageErrors": 0,
+    "report": "arcade-v249-public-qa.json"
+  }
 }
