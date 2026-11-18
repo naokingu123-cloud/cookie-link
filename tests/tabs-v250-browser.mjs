@@ -17,7 +17,7 @@ async function readReachMotion(){
    return {connected:node.isConnected,digits:[...node.children].map(n=>Number(n.textContent)),animationName:style.animationName,animationDuration:style.animationDuration,animationPlayState:style.animationPlayState,transform:style.transform,x:style.transform==='none'?0:new DOMMatrixReadOnly(style.transform).m41,width:rect.width,left:rect.left,right:rect.right,animations:node.getAnimations().map(animation=>({name:animation.animationName||'',playState:animation.playState,pending:animation.pending,currentTime:animation.currentTime}))};
   };
   const hiddenAncestors=[];for(let node=current;node;node=node.parentElement){const css=getComputedStyle(node);if(css.display==='none'||css.visibility==='hidden')hiddenAncestors.push({tag:node.tagName,id:node.id,className:node.className,display:css.display,visibility:css.visibility});}
-  return {now:performance.now(),selected:slot.tab.getAttribute('aria-selected')==='true',index:slot.reachPage,phase:slot.reachStrip.dataset.pagePhase,pageCount:Number(slot.reachStrip.dataset.pageCount),pageSize:Number(slot.reachStrip.dataset.pageSize),pagerPaused:slot.reachStrip.dataset.pagerPaused==='true',current:inspect(current),incoming:inspect(incoming),hiddenAncestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,documentHidden:document.hidden,gamePhase:window.__qa250.app.phase};
+  return {now:performance.now(),selected:slot.tab.getAttribute('aria-selected')==='true',index:slot.reachPage,phase:slot.reachStrip.dataset.pagePhase,pageCount:Number(slot.reachStrip.dataset.pageCount),pageSize:Number(slot.reachStrip.dataset.pageSize),pagerPaused:slot.reachStrip.dataset.pagerPaused==='true',current:inspect(current),incoming:inspect(incoming),hiddenAncestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,presentationPaused:document.body.classList.contains('paused'),menuOpen:document.body.classList.contains('player-menu-open'),documentHidden:document.hidden,gamePhase:window.__qa250.app.phase};
  });
 }
 async function waitForReachPage(index){
@@ -150,7 +150,7 @@ try{
  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  const stopped=await readReachMotion();await sleep(900);const still=await readReachMotion();
  const pauseFlow={stopped,still};report.reach.pauseFlow=pauseFlow;
- assert.equal(stopped.phase,'slide');assert.equal(still.pagerPaused,true);assert.equal(still.current.animationPlayState,'paused');assert.equal(still.incoming.animationPlayState,'paused');
+ assert.equal(stopped.phase,'slide');assert.equal(stopped.menuOpen,true);assert.equal(still.presentationPaused,true,'record-menu presentation pause is independent of shared gameplay');assert.equal(still.pagerPaused,true);assert.equal(still.current.animationPlayState,'paused');assert.equal(still.incoming.animationPlayState,'paused');
  assert.equal(still.index,stopped.index);assert.equal(still.current.x,stopped.current.x);assert.equal(still.incoming.x,stopped.incoming.x,'menu pause freezes both pages');
  await page.locator('#record-close-top').click();await page.waitForFunction(()=>!document.body.classList.contains('paused'));
  const resumed=await waitForReachPage(stopped.index);pauseFlow.resumed=resumed;

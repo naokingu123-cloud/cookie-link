@@ -8,6 +8,20 @@ const out='qa-dango-v251',fixture=await createUiFixture({startRound:false,output
 const {page,context,call,host,errors}=fixture;
 const report={version:fixture.version,ready:null,art:null,screens:[],balls:[],placement:null,mini:null};
 let round;
+function assertPayoutContained(bounds){
+ const panel=bounds.panel,tolerance=1;
+ assert.ok(panel.width>0&&panel.height>0,'the payout panel has a visible area');
+ assert.equal(bounds.rows.length,6,'the payout matrix contains its header and all five payout rows');
+ assert.equal(bounds.rows.flatMap(row=>row.cells).length,30,'the payout matrix exposes every header and data cell');
+ const contained=(rect,label)=>{
+  assert.ok(rect.width>0&&rect.height>0,label+' has a visible area');
+  assert.ok(rect.left>=panel.left-tolerance&&rect.top>=panel.top-tolerance&&rect.right<=panel.right+tolerance&&rect.bottom<=panel.bottom+tolerance,label+' is fully within .dgb-pay: '+JSON.stringify({rect,panel}));
+ };
+ for(const row of bounds.rows){
+  const label='payout '+(row.length===null?'header':row.length+'-cell line')+' row';contained(row.rect,label);
+  for(const cell of row.cells)contained(cell.rect,label+' column '+cell.column);
+ }
+}
 async function snapshot(){
  return page.evaluate(()=>{
   const e=window.DangoBingo.engine,s=e.state,a=window.__qa250.app,id=a.engines.indexOf(e);
@@ -58,8 +72,10 @@ try{
    const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let painted=0,clear=0;for(let i=3;i<pixels.length;i+=4){if(pixels[i])painted++;if(pixels[i]<24)clear++;}
    const backdrop=getComputedStyle(root,'::before'),surfaces=['.dgb-scene','.dgb-pan','.dgb-pay'].flatMap(selector=>['','::before','::after'].map(pseudo=>{const css=getComputedStyle(document.querySelector(selector),pseudo||null);return {selector,pseudo,background:css.backgroundImage,border:css.borderImageSource,opacity:css.opacity};}));
    const layout=['#screen>.game','#screen>.game>.field','#panels','.dgb-panel','.dgb-scene','.dgb-stage','.dgb-pan','#odds-panel'].map(selector=>{const el=document.querySelector(selector),rect=el.getBoundingClientRect(),css=getComputedStyle(el);return {selector,width:rect.width,height:rect.height,display:css.display,visibility:css.visibility,opacity:css.opacity,rows:css.gridTemplateRows};});
+   const rectOf=node=>{const {x,y,width,height,top,right,bottom,left}=node.getBoundingClientRect();return {x,y,width,height,top,right,bottom,left};};
+   const payoutBounds={panel:rectOf(root.querySelector('.dgb-pay')),rows:[...root.querySelectorAll('.dgb-pay tr')].map(row=>({length:Number(row.dataset.length)||null,rect:rectOf(row),cells:[...row.children].map((cell,column)=>({column,kind:cell.tagName.toLowerCase(),text:cell.textContent,rect:rectOf(cell)}))}))};
    const payRows=[...root.querySelectorAll('.dgb-pay tbody tr')].map(row=>({length:Number(row.dataset.length),label:row.querySelector('th').textContent,cells:[...row.querySelectorAll('td')].map(td=>({count:Number(td.dataset.count)||null,valid:td.dataset.valid==='true',atLeast:td.dataset.atLeast==='true',win:td.textContent,font:getComputedStyle(td.querySelector('.gold-number')||td).fontFamily}))}));
-   return {cells:s.cells.length,rows:[0,1,2,3,4].map(row=>s.cells.filter(c=>c.row===row).length),numbers:s.numbers,initial:s.initialFreeCells,phase:root.dataset.phase,painted,clearFraction:clear/(pixels.length/4),backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,bounds:{x:b.x,y:b.y,width:b.width,height:b.height},layout,canvasPixels:{width:canvas.width,height:canvas.height},geometry:g,payRows,payCells:payRows.flatMap(row=>row.cells.filter(cell=>cell.valid)),payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),oddsInStatus:!!root.querySelector('.dgb-status .dgb-odds-value'),confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,undoButtons:root.querySelectorAll('[data-action="undo"]').length,label:canvas.getAttribute('aria-label')};
+   return {cells:s.cells.length,rows:[0,1,2,3,4].map(row=>s.cells.filter(c=>c.row===row).length),numbers:s.numbers,initial:s.initialFreeCells,phase:root.dataset.phase,painted,clearFraction:clear/(pixels.length/4),backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,bounds:{x:b.x,y:b.y,width:b.width,height:b.height},layout,canvasPixels:{width:canvas.width,height:canvas.height},geometry:g,payRows,payCells:payRows.flatMap(row=>row.cells.filter(cell=>cell.valid)),payoutBounds,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),oddsInStatus:!!root.querySelector('.dgb-status .dgb-odds-value'),confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,undoButtons:root.querySelectorAll('[data-action="undo"]').length,label:canvas.getAttribute('aria-label')};
   });
   report.currentScreen={width,height,data};
   assert.equal(data.layout.find(item=>item.selector==='#odds-panel').display,'none','legacy cookie odds must not consume a second grid row');
@@ -69,6 +85,7 @@ try{
   assert.ok(data.surfaces.some(surface=>(surface.background+' '+surface.border).includes('dango-art-v252/panel-frame.webp')),'generated frame is used by the visible scene');
   assert.deepEqual(data.payRows.map(row=>row.length),[3,4,5,7,9]);assert.deepEqual(data.payHeaders,['マス数','1本','2本','3本','4本以上']);assert.equal(data.payCells.filter(cell=>cell.atLeast).length,3);
   for(const cell of data.payCells){assert.match(cell.font,/ArcadePayout/);assert.doesNotMatch(cell.win,/[,，]/,'payout numbers have no thousands separator');}
+  assertPayoutContained(data.payoutBounds);
   assert.equal(data.oddsByPay,true);assert.equal(data.oddsInStatus,false);assert.equal(data.confirmButtons,0);assert.equal(data.undoButtons,0);assert.match(data.label,/25個のお団子/);
   assert.ok(data.bounds.width>180&&data.bounds.height>100);
   for(const p of data.geometry.centers){const r=data.geometry.radius;assert.ok(p.x-r>=0&&p.x+r<=data.bounds.width&&p.y-r>=0&&p.y+r<=data.bounds.height,'all 25 round dango fit the canvas');}
@@ -98,10 +115,10 @@ try{
  if((await snapshot()).remaining)await page.locator('.dgb-actions [data-action="auto"]').click();
  observed=await snapshot();assert.equal(observed.remaining,0);assert.equal(observed.multiplier,1,'placing red FREE alone never raises odds');
  assert.equal(await chosen.isEnabled(),true,'a placed dango remains editable when no FREE remains');
- assert.equal(await page.locator('.dgb-free-value').textContent(),'あと0個');
+ await page.waitForFunction(text=>document.querySelector('.dgb-free-value')?.textContent===text,'あと0個',{timeout:900});
  await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[placementGeometry.tap]});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  await page.waitForFunction(()=>!window.DangoBingo.engine.state.manualFreeCells.includes(3));assert.equal((await snapshot()).remaining,1,'retouch restores one placeable FREE after all have been used');
- assert.equal(await page.locator('.dgb-free-value').textContent(),'あと1個');
+ await page.waitForFunction(text=>document.querySelector('.dgb-free-value')?.textContent===text,'あと1個',{timeout:900});
  await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[placementGeometry.tap]});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  await page.waitForFunction(()=>window.DangoBingo.engine.state.manualFreeCells.includes(3));observed=await snapshot();assert.equal(observed.remaining,0);
  assert.ok(observed.lines.includes(0),'placing a FREE can complete the three-cell horizontal skewer');

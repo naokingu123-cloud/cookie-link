@@ -193,7 +193,10 @@ const actualTabReaches=(slot,a)=>nativeVisibleTabReach(slot,a).filter(hit=>Numbe
 // from the right. One timer serves every card, including nonselected games.
 const REACH_HOLD_MS=REACH_PAGE_MS,REACH_SLIDE_MS=650;
 let pagerTimerDue=0;
-const pagerRunning=()=>!disposed&&app&&!app.paused&&!document.hidden&&inView;
+// Server-driven gameplay can remain unpaused while the record menu is open.
+// These presentation flags are the source used by syncPause before its body class changes.
+const pagerRunning=()=>!disposed&&app&&!app.paused&&!document.hidden&&inView&&
+ !(typeof menuOpen!=='undefined'&&menuOpen)&&!(typeof userPaused!=='undefined'&&userPaused);
 function pageMeta(slot,record){
  slot.reachStrip.dataset.pageSize=String(REACH_PAGE_SIZE);
  slot.reachStrip.dataset.pageIndex=String(slot.reachPage||0);

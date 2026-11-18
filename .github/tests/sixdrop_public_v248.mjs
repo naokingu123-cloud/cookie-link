@@ -7,6 +7,20 @@ import {createRequire} from 'node:module';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const base=new URL(process.env.SIXDROP_PUBLIC_BASE||'https://naokingu123-cloud.github.io/cookie-link/');
 const revision=process.env.GITHUB_SHA||'local-verification',out='qa-six-v248-public';
+function assertPayoutContained(bounds){
+ const panel=bounds.panel,tolerance=1;
+ assert.ok(panel.width>0&&panel.height>0,'the published payout panel has a visible area');
+ assert.equal(bounds.rows.length,6,'the published payout matrix contains its header and all five payout rows');
+ assert.equal(bounds.rows.flatMap(row=>row.cells).length,30,'the published payout matrix exposes every header and data cell');
+ const contained=(rect,label)=>{
+  assert.ok(rect.width>0&&rect.height>0,label+' has a visible area');
+  assert.ok(rect.left>=panel.left-tolerance&&rect.top>=panel.top-tolerance&&rect.right<=panel.right+tolerance&&rect.bottom<=panel.bottom+tolerance,label+' is fully within .dgb-pay: '+JSON.stringify({rect,panel}));
+ };
+ for(const row of bounds.rows){
+  const label='published payout '+(row.length===null?'header':row.length+'-cell line')+' row';contained(row.rect,label);
+  for(const cell of row.cells)contained(cell.rect,label+' column '+cell.column);
+ }
+}
 const gameKinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const arcadeFiles=['assets/arcade-brand-v249.js','assets/arcade-brand-v249.css','assets/arcade-tabs-v249.js','assets/arcade-tabs-v249.css','assets/arcade-surfaces-v249.js','assets/arcade-surfaces-v249.css','assets/jelly-view.js','assets/game-menu-v91.js','assets/lineups-v91.js',...gameKinds.map(kind=>'assets/arcade-v249/logo-'+kind+'.webp')];
 arcadeFiles.push('assets/party-castella-rules.js','assets/party-castella-host.js','assets/party-castella.js','assets/party-castella.css','assets/castella-lesson.js');
@@ -111,12 +125,16 @@ try{
     for(let i=3;i<pixels.length;i+=4){if(pixels[i]<24)clear++;if(pixels[i]>100)painted++;}
     scope='lesson';c.clearRect(0,0,640,420);window.SweetsAttractLessons.dango.draw(c,3,.9);
    }finally{prototype.drawImage=native;}
+   const rectOf=node=>{const {x,y,width,height,top,right,bottom,left}=node.getBoundingClientRect();return {x,y,width,height,top,right,bottom,left};};
+   const payoutBounds={panel:rectOf(root.querySelector('.dgb-pay')),rows:[...root.querySelectorAll('.dgb-pay tr')].map(row=>({length:Number(row.dataset.length)||null,rect:rectOf(row),cells:[...row.children].map((cell,column)=>({column,kind:cell.tagName.toLowerCase(),text:cell.textContent,rect:rectOf(cell)}))}))};
    const payCells=[...root.querySelectorAll('.dgb-pay td[data-valid="true"]')].map(td=>({win:td.textContent,font:getComputedStyle(td.querySelector('.gold-number')||td).fontFamily})),geometry=V.geometry(640,420);
-   return {revision:R.REVISION,liveBoard:e.liveBoard,cells:e.state.cells.length,numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.lines.length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
+   return {revision:R.REVISION,liveBoard:e.liveBoard,cells:e.state.cells.length,numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.lines.length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
   });
+  report.currentScreen={width,height,...info};
   assert.equal(info.dango.revision,251);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,25);assert.equal(info.dango.lines,19);assert.equal(info.dango.payRows,5);assert.equal(info.dango.payCells.length,13);assert.equal(info.dango.buttons,25);
   assert.deepEqual(info.dango.payHeaders,['マス数','1本','2本','3本','4本以上']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);
   for(const cell of info.dango.payCells){assert.match(cell.font,/ArcadePayout/);assert.doesNotMatch(cell.win,/[,，]/);}
+  assertPayoutContained(info.dango.payoutBounds);
   assert.deepEqual(info.dango.numbers,Array.from({length:25},(_,i)=>i+1));assert.deepEqual(info.dango.initialFree,[]);assert.equal(info.dango.odds,1);
   assert.equal(info.dango.art.revision,252);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
   assert.deepEqual(info.dango.art.images.map(image=>image.key).sort(),['gold','green','red','skewer','white']);
@@ -131,8 +149,13 @@ try{
   assert.deepEqual(errors,[],'published Dango initialization has no uncaught errors');
   await page.screenshot({path:out+'/public-dango-ready-'+width+'.png'});
   report.screens.push({width,height,...info,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
+  report.currentScreen=null;
   await context.close();
  }
+}catch(error){
+ report.failure={message:String(error),stack:error.stack};
+ await fs.writeFile(out+'/partial-result.json',JSON.stringify(report,null,2)+'\n');
+ throw error;
 }finally{await browser.close();}
 await fs.writeFile(out+'/public-deployment.json',JSON.stringify(report,null,2)+'\n');
 console.log('SIXDROP_PUBLIC_V248_READ_ONLY_PASS',JSON.stringify(report));
