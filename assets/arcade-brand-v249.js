@@ -75,7 +75,9 @@ function refreshResults(){
   const old=row.querySelector('.result-game-emblem');if(!old)continue;
   if(old.tagName==='IMG'){
    if(old.getAttribute('src')!==game.logo)old.src=game.logo;
-   old.alt='';old.dataset.logoKind=game.kind;old.classList.add('v249-result-logo');
+   if(old.alt!=='')old.alt='';
+   if(old.dataset.logoKind!==game.kind)old.dataset.logoKind=game.kind;
+   if(!old.classList.contains('v249-result-logo'))old.classList.add('v249-result-logo');
   }else old.replaceWith(illustration(game,'result-game-emblem v249-result-logo'));
  }
 }

@@ -45,15 +45,37 @@ replaceOnce(beforeBalls,String.raw`
    const visible=slots.filter(s=>!s.panel.hidden);
    const current=slots[active],image=current.tab.querySelector('img.v249-selected-logo');
    const visibleImage=image&&getComputedStyle(image).display!=='none'&&getComputedStyle(image).visibility!=='hidden'&&Number(getComputedStyle(image).opacity)>0;
-   const native=current.miniCanvas,style=getComputedStyle(native);
+   // Gelato intentionally retires the generic canvas. Its actual renderer is
+   // the raster canvas inside .gp-mini, with a numbered SVG fallback while
+   // its artwork loads. All other current games paint slot.miniCanvas.
+   const previewOf=slot=>{
+    const gelato=slot.tab.querySelector('.gp-mini');
+    const node=slot.engine.kind==='gelato'?(gelato?.classList.contains('gp-raster-ready')?gelato.querySelector('canvas.gp-raster-board'):gelato?.querySelector('svg.gp-board-svg')):slot.miniCanvas;
+    if(!node)return {kind:slot.engine.kind,exists:false};
+    const rect=node.getBoundingClientRect();let shown=rect.width>0&&rect.height>0;
+    for(let ancestor=node;ancestor&&ancestor!==slot.holder;ancestor=ancestor.parentElement){const style=getComputedStyle(ancestor);if(style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0){shown=false;break;}}
+    let paint;
+    if(node instanceof HTMLCanvasElement){
+     const probe=document.createElement('canvas');probe.width=probe.height=24;
+     const context=probe.getContext('2d');context.drawImage(node,0,0,24,24);
+     const pixels=context.getImageData(0,0,24,24).data,colors=new Set();let visiblePixels=0;
+     for(let n=0;n<pixels.length;n+=4)if(pixels[n+3]>0){visiblePixels++;colors.add(pixels[n]+','+pixels[n+1]+','+pixels[n+2]+','+pixels[n+3]);}
+     paint={kind:'canvas',visiblePixels,colors:colors.size,buffer:[node.width,node.height]};
+    }else{
+     const digits=[...node.querySelectorAll('[data-node] .gp-digit')].map(n=>n.textContent.trim());
+     paint={kind:'svg',geometry:node.querySelectorAll('path,polygon,circle').length,numberedNodes:digits.filter(n=>/^\d+$/.test(n)).length};
+    }
+    return {kind:slot.engine.kind,exists:true,renderer:node.className?.baseVal??node.className,width:rect.width,height:rect.height,previewVisible:shown,paint};
+   };
+   const selectedPreview=previewOf(current);
    const center=current.tab.getBoundingClientRect(),hit=document.elementFromPoint(center.x+center.width/2,center.y+center.height/2);
    const rect=current.panel.getBoundingClientRect();
-   return {active,selected:selected.map(s=>s.i),visible:visible.map(s=>s.i),kind:app.engines[active].kind,surfaceKind:document.body.dataset.v249Game,logoVisible:visibleImage,selectedCanvasHidden:style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0,tabReceivesPointer:!!hit&&(current.tab===hit||current.tab.contains(hit)),panel:{width:rect.width,height:rect.height},diagnostics:window.SweetsArcadeTabsV249.describe(),inactivePreviews:slots.filter(s=>s.i!==active).map(s=>{const rect=s.miniCanvas.getBoundingClientRect(),style=getComputedStyle(s.miniCanvas),image=s.tab.querySelector('img.v249-selected-logo');return {kind:s.engine.kind,width:rect.width,height:rect.height,canvasVisible:style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)>0,logoHidden:getComputedStyle(image).display==='none'||getComputedStyle(image).visibility==='hidden'||Number(getComputedStyle(image).opacity)===0};})};
+   return {active,selected:selected.map(s=>s.i),visible:visible.map(s=>s.i),kind:app.engines[active].kind,surfaceKind:document.body.dataset.v249Game,logoVisible:visibleImage,selectedPreview,tabReceivesPointer:!!hit&&(current.tab===hit||current.tab.contains(hit)),panel:{width:rect.width,height:rect.height},diagnostics:window.SweetsArcadeTabsV249.describe(),inactivePreviews:slots.filter(s=>s.i!==active).map(s=>{const image=s.tab.querySelector('img.v249-selected-logo');return {...previewOf(s),logoHidden:getComputedStyle(image).display==='none'||getComputedStyle(image).visibility==='hidden'||Number(getComputedStyle(image).opacity)===0};})};
   });
   assert.equal(result.active,expected);assert.deepEqual(result.selected,[expected]);assert.deepEqual(result.visible,[expected]);
-  assert.equal(result.surfaceKind,result.kind);assert.equal(result.logoVisible,true,'selected card presents its game logo');assert.equal(result.selectedCanvasHidden,true,'selected card does not duplicate its live main board');assert.equal(result.tabReceivesPointer,true,'decorations do not intercept the tab center');
+  assert.equal(result.surfaceKind,result.kind);assert.equal(result.logoVisible,true,'selected card presents its game logo');assert.equal(result.selectedPreview.exists,true);assert.equal(result.selectedPreview.previewVisible,false,'selected card does not duplicate its live main board');assert.equal(result.tabReceivesPointer,true,'decorations do not intercept the tab center');
   assert.ok(result.panel.width>150&&result.panel.height>150,'active board remains readable');
-  for(const preview of result.inactivePreviews){assert.equal(preview.canvasVisible,true,preview.kind+' keeps a live miniature');assert.equal(preview.logoHidden,true,preview.kind+' switches from logo to preview');assert.ok(preview.width>=20&&preview.height>=20);}
+  for(const preview of result.inactivePreviews){assert.equal(preview.exists,true);assert.equal(preview.previewVisible,true,preview.kind+' keeps a live miniature');assert.equal(preview.logoHidden,true,preview.kind+' switches from logo to preview');assert.ok(preview.width>=20&&preview.height>=20);if(preview.paint.kind==='canvas'){assert.ok(preview.paint.visiblePixels>20&&preview.paint.colors>4,preview.kind+' miniature contains painted game pixels');}else{assert.ok(preview.paint.geometry>20&&preview.paint.numberedNodes===19,'Gelato SVG fallback has the actual numbered board');}}
   return result;
  }
  await page.evaluate(()=>{
