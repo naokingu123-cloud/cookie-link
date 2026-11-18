@@ -1,0 +1,43 @@
+{
+  "version": "20261119-v253-dango-tsukimi-lines",
+  "userReference": "ScreenRecording_11-19-2026 00-36-47_1.mp4, 15.481667 seconds; result reveal around3.3–5.5s and transition around10.5–11s. Original artwork uses sweets theme rather than reproducing reference characters.",
+  "generatedAssets": [
+    {
+      "key": "frame",
+      "file": "assets/results-art-v253/result-frame.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: stylized-concept. Asset type: square nine-slice game UI result frame, original premium sweets kingdom arcade art. ONE ornate edible scroll / confectioner's parchment frame, straight front view, perfectly bilateral and clean. The outer 13 percent of each side contains narrow cylindrical rolled wafer scroll ends, honey-gold baked biscuit trim, tiny pastel pink/cream/mint candies and restrained icing ornaments. Corners are rich but compact rounded shortbread curls, not characters. At top center is a blank pink satin-like sugar ribbon edged in gold, contained within the top 13 percent edge so live RESULT lettering can be drawn there. Inner 74 percent width by 72 percent height is a completely BLANK smooth warm cream parchment field with minimal texture, no gradients hiding later text, no ornament entering it. The framing must work as a nine-sliced UI image: four corners and side strips coherent, the large central area flat and unobstructed. Thick luxurious 3D texture, soft bakery glow, glossy candy accents, highly detailed but readable at phone size. Square composition with just a small transparent exterior margin and REAL alpha transparent outside the frame. No text, letters, numbers, logos, watermark, coins, food on the central paper, mascots or symbols. Friendly sweets world atmosphere, warm cream, strawberry pink, honey gold, tiny mint accents. No castle filling the center.",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "transparentExterior": true,
+      "bytes": 219908,
+      "sha256": "5bfe5bb0bbd3cd17c73e274cab8d3340d62e32f6175077c3cf1af8eb82bff772",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only."
+    },
+    {
+      "key": "wipe",
+      "file": "assets/results-art-v253/sweets-wipe.webp",
+      "generator": "image_gen.imagegen (built-in)",
+      "prompt": "Use case: stylized-concept. Asset type: wide 3:1 transparent decorative transition banner for an original sweets kingdom arcade game, shown briefly between result and next game. Whimsical premium polished 3D confectionery festival. At lower left a friendly round original shortbread-cookie chef with a tiny cream toque waves beside a pastel pink macaron and golden wafer roll. At lower right a joyful tiny yellow dango character and mint candy bounce beside a strawberry cream puff. They must be original simple food characters, not existing entertainment characters. Across the outer edges, flowing cream ribbons, candy stars, pastel sugar confetti and a few small golden biscuits create a celebratory sweeping arc. Upper corners may have very small candy-castle towers, but THE CENTRAL 55 PERCENT OF THE IMAGE MUST REMAIN OPEN AND TRANSPARENT for live game title lettering. All illustrated elements stay concentrated along left/right edges and bottom edge, no text area obstruction. Cohesive sweets kingdom 3D style with tactile baked surfaces, glossy candy highlights, bright cream, honey-gold, strawberry pink, mint and aqua. Warm top-left studio light. Entire design visible with safe margins, transparent outside and THROUGH CENTER, no flat colored background, no checkerboard, no words, letters, numbers, logos or watermark.",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "dimensions": [
+        1280,
+        427
+      ],
+      "transparentExterior": true,
+      "bytes": 184002,
+      "sha256": "1c347115116784739be00f0a1ad25268651812ab6872facdb75405dce68c2ac2",
+      "preparation": "Aspect-ratio-preserving resize and WebP encoding only."
+    }
+  ],
+  "totalBytes": 403910
+}

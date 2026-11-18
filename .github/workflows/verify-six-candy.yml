@@ -17,6 +17,8 @@ on:
       - 'assets/dango-art/**'
       - 'assets/dango-art-v252/**'
       - 'assets/dango-art-v253/**'
+      - 'assets/sweets-results-v253*'
+      - 'assets/results-art-v253/**'
       - 'assets/jelly-view.js'
       - 'assets/game-menu-v91.js'
       - 'assets/lineups-v91.js'

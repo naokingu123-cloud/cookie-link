@@ -412,6 +412,7 @@ Copyright 2016 The Rounded M+ Project Authors.
 <link rel="stylesheet" href="assets/sixdrop-progressive-v247.css?v=248">
 <link rel="stylesheet" href="assets/arcade-brand-v249.css?v=253">
 <link rel="stylesheet" href="assets/arcade-surfaces-v249.css?v=253">
+<link rel="stylesheet" href="assets/sweets-results-v253.css?v=253">
 <script src="assets/cookie-upgrade-patches.js?v=232"></script>
 <script src="assets/client-render-patch-v246.js?v=246"></script>
 <script>
@@ -442,6 +443,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   // intercept rouletteDrawSource/Arcade without exposing game internals globally.
   if(has('candy'))extras.push('assets/sixdrop-progressive-core-v247.js?v=248','assets/sixdrop-progressive-host-v247.js?v=248');
   extras.push('assets/arcade-brand-v249.js?v=253','assets/arcade-surfaces-v249.js?v=253','assets/arcade-tabs-v249.js?v=253');
+  extras.push('assets/sweets-results-v253.js?v=253');
   extras.push('assets/shared-machine-v176.js?v=253');
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');

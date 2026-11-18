@@ -1,4 +1,4 @@
-name: Arcade v253 Dango tsukimi layout, colors and minimum FREE
+name: Arcade v253 Dango tsukimi and sweets result presentation
 on:
   workflow_dispatch:
   push:
@@ -19,6 +19,8 @@ on:
       - 'assets/dango-art/**'
       - 'assets/dango-art-v252/**'
       - 'assets/dango-art-v253/**'
+      - 'assets/sweets-results-v253*'
+      - 'assets/results-art-v253/**'
       - 'server-thinking-v251.mjs'
       - 'tests/*v251*'
       - 'tests/*v252*'
@@ -56,6 +58,17 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
+      - name: Sweets result scroll, rows and transition without payout changes
+        id: results
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/results-v253-browser.mjs
+      - name: Retain result diagnostics immediately on failure
+        if: ${{ !cancelled() && steps.results.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-v253-results-diagnostics
+          path: qa-results-v253/
+          retention-days: 3
       - name: Ten tabs, shared BET and four-item reach pages
         id: tabs
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
@@ -108,6 +121,7 @@ jobs:
           path: |
             qa-v250/
             qa-dango-v251/
+            qa-results-v253/
             qa-tabs-v250/
             qa-castella-v250/
             qa-sixdrop-v250/

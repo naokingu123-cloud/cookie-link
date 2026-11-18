@@ -1,0 +1,163 @@
+/* Native result DOM and native result/payout phases against an isolated server.
+ * Controlled per-game result values exercise presentation only. The fixture
+ * never starts a physical round or contacts the published game server.
+ */
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {createUiFixture,sleep} from './ui-v250-fixture.mjs';
+
+const output='qa-results-v253',fixture=await createUiFixture({startRound:false,output});
+const {page,context,errors}=fixture;
+const report={version:fixture.version,scope:'Controlled result records rendered by the shipped native result UI; native result, payout and prepare functions remain in charge. Isolated local server only.',cases:[],lifecycle:null,zero:null,reduced:null};
+const wins=[12000,0,450,1234567,5,7600,8800,0,600,100000];
+let caseSerial=0;
+
+async function observe(){
+ return page.evaluate(()=>{
+  const a=window.__qa250.app,layer=document.getElementById('round-result-layer'),panel=layer.querySelector('.round-result'),rows=[...layer.querySelectorAll('.result-game[data-game-index]')];
+  const bounds=node=>{if(!node)return null;const r=node.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
+  const visible=node=>{if(!node)return false;for(let p=node;p&&p.nodeType===1;p=p.parentElement){const css=getComputedStyle(p);if(p.hidden||css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)return false;}const r=node.getBoundingClientRect();return r.width>0&&r.height>0;};
+  const wipe=document.querySelector('.sr253-wipe');
+  return {
+   presentation:window.SweetsResultsV253.describe(),phase:a.phase,token:a.token,credit:a.credit,displayCredit:a.displayCredit,totalWin:a.totalWin,roundWins:a.roundWins.slice(),enabled:a.enabled.slice(),locked:a.locked.slice(),draws:a.draws.slice(),sugarBank:a.wonderBank.length,
+   resultDuration:a.result?.duration??null,payoutDuration:a.payout?.duration??null,layerHidden:layer.hidden,layer:bounds(layer),panel:bounds(panel),console:bounds(document.getElementById('console')),
+   total:{text:document.getElementById('result-total-win').textContent,font:getComputedStyle(document.querySelector('#result-total-win .gold-number')||document.getElementById('result-total-win')).fontFamily,rect:bounds(document.getElementById('result-total-win'))},
+   rows:rows.map(row=>{const value=row.querySelector('.result-value'),logo=row.querySelector('.result-game-emblem'),award=row.querySelector('.result-game-award'),sugar=row.querySelector('.sr253-row-sugar');return {index:Number(row.dataset.gameIndex),kind:row.dataset.gameKind,visible:visible(row),rect:bounds(row),logo:{src:logo?.getAttribute('src')||'',loaded:!!logo?.complete&&logo?.naturalWidth>0,rect:bounds(logo)},win:value?.textContent||'',font:getComputedStyle(value?.querySelector('.gold-number')||value||row).fontFamily,award:bounds(award),sugar:{text:sugar?.textContent||'',visible:visible(sugar)},scrollWidth:row.scrollWidth,clientWidth:row.clientWidth};}),
+   wipe:wipe?{visible:visible(wipe),hidden:wipe.hidden,pointerEvents:getComputedStyle(wipe).pointerEvents,opacity:Number(getComputedStyle(wipe).opacity),rect:bounds(wipe),animations:wipe.getAnimations({subtree:true}).map(animation=>({playState:animation.playState,currentTime:animation.currentTime}))}:null,
+   menu:document.body.classList.contains('player-menu-open'),documentHidden:document.hidden,beginCount:window.__resultsTest253?.beginCount||0,acceptedBeginCount:window.__resultsTest253?.acceptedBeginCount||0
+  };
+ });
+}
+async function present(indexes,{zero=false,sugar=[0,6],width=390,height=844}={}){
+ caseSerial++;
+ await page.setViewportSize({width,height});
+ await sleep(120);
+ const data=await page.evaluate(({indexes,zero,sugar,wins,caseSerial})=>{
+  const q=window.__qa250,a=q.app;
+  if(document.body.classList.contains('player-menu-open'))document.getElementById('record-close-top')?.click();
+  // The normal prepare path closes the previous result and advances its token.
+  // It does not charge BET or invent lottery numbers.
+  a.prepare();
+  const before={credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),draws:a.draws.slice(),sugarBank:a.wonderBank.length,acceptedBeginCount:window.__resultsTest253.acceptedBeginCount};
+  const enabled=a.engines.map((_,i)=>indexes.includes(i)),locked=enabled.map(on=>on?100:0),values=a.engines.map((_,i)=>enabled[i]&&!zero?wins[i]:0);
+  a.enabled=enabled;a.locked=locked;a.roundWins=values;a.paid=enabled.map(()=>true);
+  a.engines.forEach((engine,i)=>{engine.wonderCollected=enabled[i]&&sugar.includes(i);engine.wonderToken=engine.wonderCollected?{game:i,value:100,directJpc:false}:null;});
+  a.phase='playing';a.result=null;a.payout=null;a.finishRound();q.scheduleUI(a);
+  window.__resultsTest253.current={caseSerial,token:a.token,before,indexes,values,sugar:sugar.filter(i=>enabled[i]),total:values.reduce((sum,n)=>sum+n,0)};
+  return window.__resultsTest253.current;
+ },{indexes,zero,sugar,wins,caseSerial});
+ await page.waitForFunction(token=>window.SweetsResultsV253.describe().active&&String(window.SweetsResultsV253.describe().token)===String(token),data.token,{timeout:5000});
+ return {...data,width,height};
+}
+function contained(inner,outer,label,tolerance=2){
+ assert.ok(inner&&outer&&inner.width>0&&inner.height>0,label+' has visible bounds');
+ assert.ok(inner.left>=outer.left-tolerance&&inner.top>=outer.top-tolerance&&inner.right<=outer.right+tolerance&&inner.bottom<=outer.bottom+tolerance,label+' fits: '+JSON.stringify({inner,outer}));
+}
+function verifyRows(state,expected){
+ const shown=state.rows.filter(row=>row.visible),actualIndexes=shown.map(row=>row.index).sort((a,b)=>a-b);
+ assert.deepEqual(actualIndexes,[...expected.indexes].sort((a,b)=>a-b),'only the games participating in this result are visible');
+ assert.equal(state.total.text,String(expected.total),'TOTAL displays the real sum without punctuation');assert.match(state.total.font,/ArcadePayout/);assert.doesNotMatch(state.total.text,/[,，]/);
+ assert.equal(state.presentation.assets.length,2);assert.ok(state.presentation.assets.every(asset=>asset.loaded&&!asset.failed),'generated frame and sweets cut-in both decode');
+ contained(state.panel,state.layer,'result panel');contained(state.total.rect,state.panel,'total WIN');
+ for(const row of shown){
+  assert.equal(row.win,String(expected.values[row.index]),'per-game WIN is unchanged');assert.doesNotMatch(row.win,/[,，]/);assert.match(row.font,/ArcadePayout/);
+  assert.equal(row.logo.loaded,true,'game logo decodes');assert.ok(row.logo.src.includes('assets/arcade-v249/logo-'),'existing game identity is used');
+  contained(row.rect,state.panel,'result row '+row.index);contained(row.logo.rect,row.rect,'row logo '+row.index);contained(row.award,row.rect,'row award '+row.index);
+  assert.ok(row.logo.rect.right<=row.award.left+3,'each game has a horizontal logo/result row');
+  assert.ok(row.scrollWidth<=row.clientWidth+3,'result row does not overflow horizontally');
+  assert.equal(row.sugar.visible,expected.sugar.includes(row.index),'Sugar badge comes only from this game result');
+ }
+ assert.equal(state.sugarBank,expected.before.sugarBank,'presentation does not add Sugar tokens');assert.deepEqual(state.draws,expected.before.draws,'presentation never generates lottery numbers');
+}
+async function complete(expected){
+ await page.waitForFunction(()=>window.__qa250.app.phase==='complete',null,{timeout:8000});
+ const done=await observe();assert.equal(done.credit,expected.before.credit+expected.total,'native payout credits the total exactly once');assert.equal(done.displayCredit,done.credit);assert.equal(done.acceptedBeginCount,expected.before.acceptedBeginCount+1,'one accepted native payout transition per result');
+ const repeated=await page.evaluate(()=>{const a=window.__qa250.app,before=a.credit;for(let i=0;i<5;i++){a.beginPayout();a.advanceResult(2000);a.advancePayout(3000);a.onChange?.(a);}return {before,after:a.credit,phase:a.phase};});
+ assert.equal(repeated.after,repeated.before,'repeat result/payout callbacks cannot duplicate CREDIT');assert.equal(repeated.phase,'complete');
+ return done;
+}
+async function closeNative({direct=false}={}){
+ const closed=await page.evaluate(direct=>{const a=window.__qa250.app;if(direct){a.result=null;a.payout=null;a.phase='ready';document.getElementById('round-result-layer').hidden=true;a.onChange?.(a);}else a.prepare();window.__qa250.scheduleUI(a);return {phase:a.phase,credit:a.credit,token:a.token};},direct);
+ assert.equal(closed.phase,'ready','next BET is ready immediately, without waiting for visual exit');
+ await page.waitForFunction(()=>document.getElementById('round-result-layer').hidden,null,{timeout:2000});
+ return closed;
+}
+try{
+ await page.waitForFunction(()=>window.SweetsResultsV253?.describe&&[...document.styleSheets].some(sheet=>sheet.href?.includes('sweets-results-v253.css')),null,{timeout:15000});
+ await page.evaluate(async()=>{await window.SweetsResultsV253.assetsReady;});
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{
+  const a=window.__qa250.app,original=a.beginPayout;
+  window.__resultsTest253={beginCount:0,acceptedBeginCount:0};
+  a.beginPayout=function(...args){const q=window.__resultsTest253,prior=this.phase;q.beginCount++;const result=original.apply(this,args);if(prior==='result'&&this.phase!=='result')q.acceptedBeginCount++;return result;};
+ });
+ const touch=await context.newCDPSession(page);
+ const configs=[{indexes:Array.from({length:10},(_,i)=>i),width:390,height:844},{indexes:[0,6,9],width:844,height:390},{indexes:[0],width:1366,height:900},{indexes:Array.from({length:10},(_,i)=>i),width:844,height:390}];
+ for(const config of configs){
+  await touch.send('Emulation.setTouchEmulationEnabled',{enabled:config.width<900,maxTouchPoints:1});
+  const expected=await present(config.indexes,config),entry=await observe();
+  assert.equal(entry.resultDuration,1800,'existing native result duration is preserved');assert.equal(entry.credit,expected.before.credit,'displaying the result cannot pay early');
+  const prefix='results-'+config.width+'x'+config.height+'-'+config.indexes.length;
+  await page.screenshot({path:output+'/'+prefix+'-entry.png'});
+  await page.waitForFunction(()=>window.SweetsResultsV253.describe().elapsed>=650,null,{timeout:3000});
+  const middle=await observe();await page.screenshot({path:output+'/'+prefix+'-middle.png'});
+  await page.waitForFunction(()=>window.SweetsResultsV253.describe().phase==='hold'||window.SweetsResultsV253.describe().elapsed>=1400,null,{timeout:3000});
+  const shown=await observe();verifyRows(shown,expected);await page.screenshot({path:output+'/'+prefix+'-final.png'});
+  const before=shown.presentation.startCount;
+  const stable=await page.evaluate(()=>{const a=window.__qa250.app,nodes=[...document.querySelectorAll('#result-games .result-game')];for(let i=0;i<12;i++)a.onChange?.(a);window.__qa250.scheduleUI(a);return nodes.map(node=>node.dataset.gameIndex);});
+  await sleep(60);const repeated=await observe();assert.equal(repeated.presentation.startCount,before,'same-token rerender does not replay entrance');assert.ok(repeated.presentation.elapsed>=shown.presentation.elapsed,'same-token rerender does not rewind presentation');assert.equal(new Set(repeated.rows.map(row=>row.index)).size,repeated.rows.length,'no duplicate game rows');
+  const done=await complete(expected),closed=await closeNative();await sleep(160);const cutin=await observe();
+  assert.equal(cutin.phase,'ready');assert.equal(cutin.layerHidden,true);assert.equal(cutin.credit,done.credit,'cut-in does not change payout');
+  if(cutin.wipe?.visible){assert.equal(cutin.wipe.pointerEvents,'none','outro never captures next-game input');await page.screenshot({path:output+'/'+prefix+'-cutin.png'});}
+  else throw new Error('Normal completed result should show the short sweets cut-in after native closure');
+  await sleep(650);const after=await observe();assert.ok(!after.wipe?.visible,'cut-in removes itself without delaying ready state');assert.equal(after.phase,'ready');
+  report.cases.push({expected,entry,middle,shown,rerender:{startCount:before,after:repeated.presentation.startCount,indexes:stable},done,closed,cutin,after});
+ }
+ // Menu and hidden-document events stop only the presentation clock. Native
+ // state remains authoritative, and a hidden close must not queue a late wipe.
+ await touch.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+ const pausedExpected=await present([0,6,9],{width:390,height:844});
+ await page.waitForFunction(()=>window.SweetsResultsV253.describe().elapsed>=280,null,{timeout:2000});
+ await page.locator('#open-record-menu').click();await page.waitForFunction(()=>document.body.classList.contains('player-menu-open'));
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const menuStart=await observe();await sleep(420);const menuEnd=await observe();
+ assert.equal(menuEnd.presentation.paused,true);assert.equal(menuEnd.presentation.elapsed,menuStart.presentation.elapsed,'menu stops result entrance clock');
+ await page.locator('#record-close-top').click();await page.waitForFunction(()=>!document.body.classList.contains('player-menu-open'));
+ await page.waitForFunction(at=>window.SweetsResultsV253.describe().elapsed>at,menuStart.presentation.elapsed,{timeout:2000});
+ const resumed=await observe();assert.equal(resumed.presentation.startCount,menuStart.presentation.startCount,'closing menu resumes the existing entrance');
+ await page.evaluate(()=>{window.__resultHidden253=Object.getOwnPropertyDescriptor(document,'hidden');Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
+ await sleep(60);const hiddenStart=await observe();await sleep(300);const hiddenEnd=await observe();
+ assert.equal(hiddenEnd.presentation.paused,true);assert.equal(hiddenEnd.presentation.elapsed,hiddenStart.presentation.elapsed,'hidden document stops presentation time');
+ await page.evaluate(()=>{const a=window.__qa250.app;a.advanceResult(2500);if(a.phase==='paying')a.advancePayout(a.payout.duration+1);});
+ const hiddenPaid=await observe();assert.equal(hiddenPaid.credit,pausedExpected.before.credit+pausedExpected.total);
+ await closeNative({direct:true});await sleep(80);const hiddenClosed=await observe();assert.ok(!hiddenClosed.wipe?.visible,'hidden controller cleanup skips the outgoing cut-in');
+ await page.evaluate(()=>{const descriptor=window.__resultHidden253;if(descriptor)Object.defineProperty(document,'hidden',descriptor);else delete document.hidden;delete window.__resultHidden253;document.dispatchEvent(new Event('visibilitychange'));});
+ await sleep(120);const returned=await observe();assert.equal(returned.layerHidden,true);assert.ok(!returned.wipe?.visible,'returning to the tab does not replay an old cut-in');
+ report.lifecycle={expected:pausedExpected,menuStart,menuEnd,resumed,hiddenStart,hiddenEnd,hiddenPaid,hiddenClosed,returned};
+ // Even the shortest normal-motion result exposes every zero-WIN row and its
+ // total before the native 1.8s result phase can finish.
+ const zeroExpected=await present([0,6,9],{zero:true,sugar:[],width:390,height:844});
+ await page.waitForFunction(()=>window.SweetsResultsV253.describe().phase==='hold',null,{timeout:2500});
+ const zeroShown=await observe();verifyRows(zeroShown,zeroExpected);assert.equal(zeroShown.phase,'result','normal zero-WIN total is visible before the shortest native completion');
+ await page.screenshot({path:output+'/results-zero-normal-390.png'});
+ const normalZeroDone=await complete(zeroExpected);assert.equal(normalZeroDone.payoutDuration,null);assert.equal(normalZeroDone.credit,zeroExpected.before.credit);
+ await closeNative();await sleep(810);report.zero={expected:zeroExpected,shown:zeroShown,done:normalZeroDone};
+ // A zero-WIN round reaches native complete at 1.8s. Reduced motion must show
+ // its rows and TOTAL immediately, and must not pay or animate an exit.
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const reducedExpected=await present([0,6,9],{zero:true,sugar:[],width:844,height:390});
+ const reduced=await observe();assert.equal(reduced.presentation.reducedMotion,true);verifyRows(reduced,reducedExpected);assert.equal(reduced.total.text,'0');
+ await page.screenshot({path:output+'/results-zero-reduced-844.png'});
+ const zeroDone=await complete(reducedExpected);assert.equal(zeroDone.payoutDuration,null);assert.equal(zeroDone.credit,reducedExpected.before.credit);
+ await closeNative();await sleep(100);const zeroClosed=await observe();assert.ok(!zeroClosed.wipe?.visible,'reduced motion omits outgoing wipe');
+ report.reduced={expected:reducedExpected,shown:reduced,done:zeroDone,closed:zeroClosed};
+ const starts=report.cases.map(item=>item.entry.presentation.startCount);assert.ok(starts.every((count,index)=>!index||count>starts[index-1]),'new native tokens replay the entrance once');
+ assert.deepEqual(errors,[]);report.pageErrors=errors;
+ await fs.writeFile(output+'/result.json',JSON.stringify(report,null,2)+'\n');
+ console.log('RESULTS_V253_BROWSER_PASS',JSON.stringify({viewports:report.cases.length,gameCounts:report.cases.map(item=>item.expected.indexes.length),nativeDuration:1800,exactPayout:true,sameTokenNoReplay:true,nextTokenReplay:true,menuPause:true,hiddenCleanup:true,reducedMotion:true,zeroWin:true,errors}));
+}catch(error){
+ report.failure={message:String(error),stack:error.stack,errors,warnings:fixture.warnings};
+ try{report.failure.current=await observe();await page.screenshot({path:output+'/failure.png'});}catch(captureError){report.failure.captureError=String(captureError);}
+ await fs.writeFile(output+'/partial-result.json',JSON.stringify(report,null,2)+'\n');await fs.writeFile(output+'/failure-server.log',fixture.logs.slice(-16000));
+ console.error('RESULTS_V253_BROWSER_FAIL',error,JSON.stringify(errors),fixture.logs.slice(-2500));throw error;
+}finally{await fixture.close();}

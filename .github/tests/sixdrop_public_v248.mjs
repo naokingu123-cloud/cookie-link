@@ -28,6 +28,7 @@ arcadeFiles.push('assets/party-castella-rules.js','assets/party-castella-host.js
 arcadeFiles.push('assets/dango-bingo-rules.js','assets/dango-bingo-view.js','assets/dango-bingo-host.js','assets/dango-bingo-lesson.js','assets/dango-bingo.css','assets/dango-art/background.webp','assets/dango-thinking-v251.js','assets/server-payout-control-v3.js','assets/player-lounge.js','assets/demo-suite-v91.js','assets/arcade-show-v91.js');
 arcadeFiles.push(...['dango-white','bamboo-skewer','scene'].map(name=>'assets/dango-art-v252/'+name+'.webp'));
 arcadeFiles.push(...['dango-green','dango-pink','dango-yellow','dango-rainbow','tsukimi-stand'].map(name=>'assets/dango-art-v253/'+name+'.webp'));
+arcadeFiles.push('assets/sweets-results-v253.js','assets/sweets-results-v253.css','assets/results-art-v253/result-frame.webp','assets/results-art-v253/sweets-wipe.webp');
 const files=['index.html','app-version.json','optimized/app-01.js','optimized/style-01.css','optimized/media/a73bbbdd98d48aac.woff2','assets/cookie-upgrade-patches.js','assets/sixdrop-progressive-core-v247.js','assets/sixdrop-progressive-host-v247.js','assets/sixdrop-progressive-v247.css','assets/shared-machine-v176.js','assets/shared-client-controller-v224.js','assets/stations-v235.js','assets/stations-progressive-v246.js','monitor.html','assets/monitor-ledger-v241.js','assets/server-monitor-v241.js','assets/server-monitor-v242.js',...arcadeFiles];
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=Object.fromEntries(await Promise.all(files.map(async name=>[name,digest(await fs.readFile(name))])));
@@ -159,6 +160,13 @@ try{
   assert.ok(info.dango.probe.calls.board.includes('dango-white.webp'),'published board uses generated white dango');assert.ok(info.dango.probe.calls.board.includes('tsukimi-stand.webp'),'published dango sit on the generated offering stand');
   assert.ok(info.dango.probe.calls.lesson.includes('dango-rainbow.webp'));assert.ok(info.dango.probe.calls.lesson.includes('bamboo-skewer.webp'),'published lesson uses generated bamboo');
   assert.deepEqual(errors,[],'published Dango initialization has no uncaught errors');
+  info.results=await page.evaluate(async()=>{
+   const assets=await Promise.all(['result-frame','sweets-wipe'].map(async name=>{const image=new Image();image.src='assets/results-art-v253/'+name+'.webp?v=253';await image.decode();return {name,width:image.naturalWidth,height:image.naturalHeight};}));
+   return {installed:typeof window.SweetsResultsV253?.describe==='function',stylesheet:[...document.styleSheets].some(sheet=>sheet.href?.includes('sweets-results-v253.css')),assets,resultHidden:document.getElementById('round-result-layer').hidden};
+  });
+  assert.equal(info.results.installed,true);assert.equal(info.results.stylesheet,true);assert.equal(info.results.resultHidden,true);
+  assert.equal(info.results.assets.length,2);for(const asset of info.results.assets)assert.ok(asset.width>0&&asset.height>0);
+  assert.deepEqual(errors,[],'published result module initializes without errors');
   await page.screenshot({path:out+'/public-dango-ready-'+width+'.png'});
   report.screens.push({width,height,...info,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
   report.currentScreen=null;
