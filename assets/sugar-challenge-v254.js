@@ -39,7 +39,7 @@ function restore(raw){const next=raw?.version===254?raw:null;if(!next)return fal
   const opened=Number(next.startedAt||next.openedAt||next.challenge?.openedAt||next.challenge?.startedAt)||Date.now();
   intro=challenge.draws.length?5400:clamp(Date.now()+(Number(client?.clockOffset)||0)-opened,0,5400);fillSum=fromSum=0;fillAge=900;expanded=true;paintKey='';
  }
- if(challenge&&challenge.sum!==(old?.sum||0)){fromSum=fillSum;fillAge=0;}
+ if(challenge&&(challenge.sum!==(old?.sum||0)||challenge.id!==old?.id&&challenge.draws.length>0)){fromSum=fillSum;fillAge=0;}
  if(challenge?.phase==='complete'&&challenge.jpcQualified&&!celebrated.has(challenge.id)){celebrated.add(challenge.id);celebrateAge=0;try{sceneSound('bonus',{volume:.65});}catch{}}
  if(!challenge&&old){expanded=false;paintKey='';}
  if(next.queued&&next.bank?.length>=5)stampBank();
