@@ -7,7 +7,17 @@ import {createUiFixture,sleep,until} from './ui-v250-fixture.mjs';
 const fixture=await createUiFixture({startRound:false,output:'qa-tabs-v250'});
 const {page,context,call,host,errors,output}=fixture;
 const report={version:250,viewports:[],selection:[],bet:null,reach:null,sugar:null,reducedMotion:null};
+async function readReachMotion(){
+ return page.evaluate(()=>{
+  const slot=window.__tabPreview250?.slot,track=slot?.reachNumbers.querySelector('.v250-reach-track');
+  if(!track)return {missing:true};
+  const style=getComputedStyle(track),ancestors=[];
+  for(let node=track;node;node=node.parentElement){const css=getComputedStyle(node);if(css.display==='none'||css.visibility==='hidden')ancestors.push({tag:node.tagName,id:node.id,className:node.className,display:css.display,visibility:css.visibility});}
+  return {connected:track.isConnected,animationName:style.animationName,animationDuration:style.animationDuration,animationPlayState:style.animationPlayState,durationVariable:style.getPropertyValue('--v250-reach-duration'),transform:style.transform,x:style.transform==='none'?0:new DOMMatrixReadOnly(style.transform).m41,width:track.getBoundingClientRect().width,hiddenAncestors:ancestors,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:window.__qa250.app.paused,phase:window.__qa250.app.phase,bodyClass:document.body.className,animations:track.getAnimations().map(animation=>({name:animation.animationName||'',playState:animation.playState,pending:animation.pending,currentTime:animation.currentTime,playbackRate:animation.playbackRate}))};
+ });
+}
 try{
+ await page.emulateMedia({reducedMotion:'no-preference'});
  await page.waitForFunction(()=>window.SweetsArcadeTabsV249?.version===250&&document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});
  await page.evaluate(()=>Promise.all([...document.querySelectorAll('.v250-background-logo')].map(image=>image.decode())));
  const firstBet=await page.evaluate(()=>({bets:[...window.__qa250.app.bets],credit:window.__qa250.app.credit,unit:[...window.__qa250.unit]}));
@@ -84,14 +94,25 @@ try{
   Object.assign(slot.tabReachResults.find(p=>p.number===5),{gain:300,total:slot.engine.totalHundredths+300});
   q.updateReachUI();
   const digits=[...slot.reachNumbers.querySelector('.v250-reach-sequence:not([aria-hidden])').children].map(n=>Number(n.textContent));
-  const track=slot.reachNumbers.querySelector('.v250-reach-track');
-  return {digits,caption:slot.reachCaption.textContent,popup:slot.holder.querySelector('.v250-reach-pop').textContent,count:Number(slot.holder.dataset.v250ReachPopCount),transform:getComputedStyle(track).transform,animations:track.getAnimations().map(a=>a.playState)};
+  return {digits,caption:slot.reachCaption.textContent,popup:slot.holder.querySelector('.v250-reach-pop').textContent,count:Number(slot.holder.dataset.v250ReachPopCount)};
  });
+ report.reach={input};
  assert.deepEqual(input.digits,Array.from({length:25},(_,i)=>i+1).filter(n=>![3,25].includes(n)),'all paid reach numbers are retained, odds-only number is excluded');
- assert.equal(input.caption,'リーチ');assert.match(input.popup,/高額リーチ/);assert.ok(input.animations.includes('running'));
+ assert.equal(input.caption,'リーチ');assert.match(input.popup,/高額リーチ/);
+ // CSS animation creation is observed after rendering, not in the same task
+ // that inserted/replaced the track. Retain strict elapsed-time/direction checks.
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const motion=await readReachMotion();report.reach.motion=motion;
+ assert.equal(motion.connected,true);assert.deepEqual(motion.hiddenAncestors,[]);assert.equal(motion.reducedMotion,false);assert.equal(motion.paused,false);
+ assert.equal(motion.animationName,'v250-reach-marquee','the scrolling track retains its CSS animation');
+ const running=motion.animations.find(animation=>animation.name==='v250-reach-marquee');
+ assert.equal(running?.playState,'running','the reach marquee runs after the rendering frame');
  await sleep(330);
- const scrolled=await page.evaluate(()=>getComputedStyle(window.__tabPreview250.slot.reachNumbers.querySelector('.v250-reach-track')).transform);
- assert.notEqual(scrolled,input.transform,'reach strip moves without an old !important transform reset');
+ const scrolled=await readReachMotion();report.reach.scrolled=scrolled;
+ const continued=scrolled.animations.find(animation=>animation.name==='v250-reach-marquee');
+ assert.ok(continued?.currentTime>running.currentTime,'the reach animation clock advances');
+ assert.ok(scrolled.x<motion.x,'reach numbers move from right to left');
+ assert.notEqual(scrolled.transform,motion.transform,'reach strip moves without an old !important transform reset');
  const upgraded=await page.evaluate(()=>{
   const q=window.__qa250,slot=window.__tabPreview250.slot;
   Object.assign(slot.tabReachResults.find(p=>p.number===5),{gain:1000,total:slot.engine.totalHundredths+1000});q.updateReachUI();
@@ -120,12 +141,12 @@ try{
  assert.equal(reappeared.count,reappeared.before+1,'the same high reach announces once after disappearing');
  assert.equal(reappeared.afterRepeated,reappeared.count,'repainting an unchanged reappeared reach does not announce again');
  assert.match(reappeared.text,/超高額リーチ/);
- report.reach={input,scrolled,upgraded,empty,reappeared};
+ report.reach={input,motion,scrolled,upgraded,empty,reappeared};
  report.sugar=await page.evaluate(()=>window.__qa250.slots.map(slot=>({kind:slot.engine.kind,samePlaque:slot.tabSugar.parentElement===slot.tabWin.parentElement,row:getComputedStyle(slot.tabSugar).gridRowStart,winRow:getComputedStyle(slot.tabWin.parentElement.querySelector('.win-word')).gridRowStart})));
  for(const sugar of report.sugar){assert.equal(sugar.samePlaque,true);assert.equal(sugar.row,sugar.winRow,'sugar GET belongs beside WIN');}
  await page.evaluate(()=>{const q=window.__qa250,fixture=window.__tabPreview250;fixture.slot.tabReachResults=fixture.original;q.updateReachUI();if(fixture.before!==JSON.stringify({bets:q.app.bets,credit:q.app.credit,draws:q.app.draws,win:q.app.totalWin}))throw Error('UI reach previews changed gameplay state');delete window.__tabPreview250;});
  assert.deepEqual(errors,[],'no page exceptions');
  await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));
  console.log('TABS_V250_OK',JSON.stringify({viewports:report.viewports.length,selections:report.selection.length,miniatureLogicalPx:47,sharedBet:true,allReachNumbers:input.digits.length,highPopup:true,ultraPopup:true,reappearedPopup:true,empty:true,reducedMotion:true,errors:errors.length}));
-}catch(error){await page.screenshot({path:output+'/failure.png'}).catch(()=>{});throw error;}
+}catch(error){report.failure={message:String(error),stack:error.stack,motion:await readReachMotion().catch(e=>({error:String(e)}))};await fs.writeFile(output+'/report.json',JSON.stringify(report,null,2));await page.screenshot({path:output+'/failure.png'}).catch(()=>{});throw error;}
 finally{await fixture.close();}

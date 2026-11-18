@@ -43,15 +43,26 @@ jobs:
           node tests/monitor-game-colors-v248.mjs
           node tests/client-join-ack-v248.mjs
       - name: Install browser
+        id: browser
         run: |
           npm install --no-save --ignore-scripts --no-audit --no-fund playwright
           npx playwright install --with-deps chromium
-      - name: Nine actual games, responsive art and fast card selection
+      - name: Nine tabs, shared BET and continuous reach strip
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/tabs-v250-browser.mjs
+      - name: Castella61 real eight-ball round, gauges and Sugar
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/castella-v250-view.mjs
+      - name: Transparent Six Drop all-clear reach
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/sixdrop-reach-v250.mjs
+      - name: Existing client and progressive HUD
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: |
-          npm run test:arcade
           node tests/client-browser-v243.mjs
           node tests/sixdrop-hud-v247.mjs
       - name: Full hidden nine-game round, payout and carry
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/client-hidden-browser-v246.mjs
       - name: Retain every game screenshot and behavior report
         if: always()
