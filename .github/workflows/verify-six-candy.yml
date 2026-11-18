@@ -1,16 +1,25 @@
-name: Verify Six Candy Stage v5 and public Pages
+name: Verify current Six Drop and public Pages
 on:
+  workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, feature/sixdrop-v248]
     paths:
       - index.html
       - 'assets/six-candy*'
+      - 'assets/sixdrop-progressive*'
       - 'assets/choco-dig*'
       - 'assets/manual-numbers*'
       - '.github/tests/manual_numbers_browser.py'
       - '.github/tests/canyon*'
       - 'assets/six-candy-png/**'
       - '.github/tests/six_stage_v5*'
+      - '.github/tests/sixdrop_public_v248.mjs'
+      - 'tests/sixdrop-*'
+      - 'tests/client-no-local-eight.mjs'
+      - 'app-version.json'
+      - 'monitor.html'
+      - 'assets/monitor-ledger-v241.js'
+      - 'assets/server-monitor-v24*.js'
       - .github/tests/run_with_system_chrome.py
       - .github/workflows/verify-six-candy.yml
       - docs/six-v5-release.md
@@ -19,37 +28,36 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 14
     steps:
       - uses: actions/checkout@v4
-      - name: Verify symmetric gaps, motion and retained payouts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Verify current Six Drop, Canyon rules and client number guards
         run: |
-          node .github/tests/six_rounds_v4.cjs
+          npm run test:sixdrop
           node .github/tests/canyon_rules.cjs
           node .github/tests/canyon_shapes.cjs
+          node tests/client-no-local-eight.mjs
+      # Archived v5 browser scripts assume an inline bundle, five stages,
+      # fixed all-clear awards and player-side manual/local draws. Current
+      # equivalent behavior is checked through the real isolated shared client.
       - name: Prepare browser
         run: |
-          timeout 120 python3 -m pip install --disable-pip-version-check --timeout 20 playwright
-          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)"
-          if [ -n "$CHROME_PATH" ]; then
-            echo "SIX_BROWSER_EXECUTABLE=$CHROME_PATH" >> "$GITHUB_ENV"
-          else
-            timeout 150 python3 -m playwright install chromium
-          fi
-          mkdir -p "$HOME/.local/share/fonts"
-          curl --fail --location --max-time 75 'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/Japanese/NotoSansCJKjp-Regular.otf' --output "$HOME/.local/share/fonts/NotoSansCJKjp-Regular.otf"
-          fc-cache -f "$HOME/.local/share/fonts"
-      - name: Verify tutorial isolation, transitions and mobile/desktop layouts
-        run: |
-          python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_browser.py
-          python3 .github/tests/run_with_system_chrome.py .github/tests/canyon_drill_browser.py
-          python3 .github/tests/run_with_system_chrome.py .github/tests/manual_numbers_browser.py
-      - name: Verify the real public Pages site and automatic BET start
-        run: python3 .github/tests/run_with_system_chrome.py .github/tests/six_stage_v5_public.py
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Verify current HUD and nine-game automatic BET on an isolated server
+        run: node tests/sixdrop-hud-v247.mjs
+      - name: Verify published hashes and frontend without public game actions
+        run: node .github/tests/sixdrop_public_v248.mjs
       - name: Retain screenshots and deployment hashes
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: six-stage-v5-verified-pages
-          path: qa-six-v5/
+          name: sixdrop-current-verified-pages
+          path: |
+            qa-client-v243/
+            qa-six-v248-public/
           retention-days: 3
