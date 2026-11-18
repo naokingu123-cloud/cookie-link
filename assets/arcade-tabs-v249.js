@@ -202,7 +202,7 @@ function pageMeta(slot,record){
 }
 function completeReachPage(slot,record,now=Date.now()){
  if(slot.reachIncoming){slot.reachNumbers.remove();slot.reachNumbers=slot.reachIncoming;slot.reachIncoming=null;}
- slot.reachNumbers.className='reach-numbers v252-reach-page';
+ slot.reachNumbers.className='v252-reach-page';
  slot.reachNumbers.style.removeProperty('transform');slot.reachNumbers.setAttribute('aria-hidden','false');
  record.reachPhase='hold';record.reachRemaining=REACH_HOLD_MS;
  slot.reachPageDue=pagerRunning()?now+REACH_HOLD_MS:0;pageMeta(slot,record);
@@ -210,7 +210,7 @@ function completeReachPage(slot,record,now=Date.now()){
 function paintFourReaches(slot,record,{slide=false,now=Date.now()}={}){
  if(slot.reachIncoming)completeReachPage(slot,record,now);
  const results=slot.reachPageResults||[],page=results.slice((slot.reachPage||0)*REACH_PAGE_SIZE,((slot.reachPage||0)+1)*REACH_PAGE_SIZE);
- const next=document.createElement('div');next.className='reach-numbers v252-reach-page';next.setAttribute('aria-hidden','false');
+ const next=document.createElement('div');next.className='v252-reach-page';next.setAttribute('aria-hidden','false');
  for(const hit of page){
   const digit=document.createElement('span');digit.className='reach-num';digit.dataset.reachTier=String(hit.tier);digit.textContent=String(hit.number);
   digit.setAttribute('aria-label',hit.number+'番、'+(hit.tier===3?(slot.engine?.allReachName||'最高役'):hit.tier===2?'超高額':hit.tier===1?'高額':'')+'リーチ');next.append(digit);
