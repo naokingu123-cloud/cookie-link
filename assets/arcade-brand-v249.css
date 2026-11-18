@@ -1,0 +1,91 @@
+/* The illustrated names are their own artwork, without any older title sprite
+   beneath them. Layout dimensions belong to the existing cabinet/tab modules. */
+html.arcade-brand-v249 #screen #tabs .tab-game-name{
+ display:grid!important;place-items:center!important;background:none!important;
+ padding:0!important;text-indent:0!important;border:0!important;
+ text-shadow:none!important;-webkit-text-stroke:0!important;box-shadow:none!important;
+}
+html.arcade-brand-v249 #screen #tabs .tab-game-name::before,
+html.arcade-brand-v249 #screen #tabs .tab-game-name::after{content:none!important;display:none!important}
+html.arcade-brand-v249 #screen #tabs .tab-game-name>.v249-game-logo{
+ display:block!important;width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;min-width:0!important;min-height:0!important;
+ margin:0!important;padding:0!important;object-fit:contain!important;
+ object-position:center!important;transform:none!important;opacity:1!important;visibility:visible!important;
+ filter:none!important;pointer-events:none!important;user-select:none!important;
+}
+html.arcade-brand-v249 .gp-head>.v249-main-logo{
+ display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;
+ pointer-events:none;user-select:none;
+}
+html.arcade-brand-v249 #result-games .v249-result-logo{object-fit:contain!important;object-position:center!important}
+
+/* The existing selection dialog becomes a shelf of collectible game cards. */
+html.arcade-brand-v249 .lineup-picker{
+ width:min(450px,calc(100vw - 24px));border:3px solid #fff2c4;border-radius:15px;
+ background:#b97a42;box-shadow:0 0 0 2px #a65f2f,0 14px 38px #291b3c99;
+}
+html.arcade-brand-v249 .lineup-picker::backdrop{background:rgba(31,24,45,.72)}
+html.arcade-brand-v249 .lineup-paper{
+ padding:12px 13px 14px;
+ background:radial-gradient(circle at 6px 6px,#fff6 1px,transparent 1.7px) 0 0/12px 12px,linear-gradient(145deg,#fff6d2,#f8dca6 70%,#efc27c);
+}
+html.arcade-brand-v249 .lineup-paper header{
+ padding:3px 5px 5px;border-bottom:1px solid #d4a35d;
+}
+html.arcade-brand-v249 .lineup-paper header>span{
+ font:900 11px/1.2 Georgia,serif;letter-spacing:.14em;color:#8d5025;text-shadow:0 1px #fff9df;
+}
+html.arcade-brand-v249 .lineup-close{
+ border:1px solid #fff4d0;background:linear-gradient(#f7cc76,#dc923d);box-shadow:0 1px 0 #a66530,inset 0 1px 0 #fff9;
+ color:#6a3925;font-weight:900;
+}
+html.arcade-brand-v249 .lineup-paper h2{
+ margin-top:6px;font-size:23px;color:#713f23;text-shadow:0 1px #fffbe6;
+}
+html.arcade-brand-v249 .lineup-paper p{color:#815532;font-size:12px;margin-bottom:11px}
+html.arcade-brand-v249 .lineup-grid{gap:8px;margin-bottom:13px}
+html.arcade-brand-v249 .lineup-grid button{
+ min-height:88px;padding:5px 7px 7px;border:2px solid #fff9e4;border-radius:9px;
+ background:linear-gradient(135deg,#fff6 25%,transparent 25% 50%,#fff3 50% 75%,transparent 75%) 0 0/14px 14px,linear-gradient(var(--v249-brand-pale,#fff0bb),var(--v249-brand-accent,#efb75b));
+ box-shadow:0 0 0 1px var(--v249-brand-ink,#89552b),inset 0 2px 0 #fff9,0 3px 0 #985a3855;
+ color:var(--v249-brand-ink,#6b4028);font-size:11px;line-height:1.25;
+}
+html.arcade-brand-v249 .lineup-grid .v249-menu-logo{
+ display:block;width:100%;height:56px;max-width:100%;margin:0 auto 3px;
+ object-fit:contain;object-position:center;pointer-events:none;
+}
+html.arcade-brand-v249 .lineup-grid button>span{
+ display:block;max-width:100%;font-size:11px;font-weight:850;line-height:1.25;
+ color:var(--v249-brand-ink,#6b4028);text-shadow:0 1px #fff8;
+}
+html.arcade-brand-v249 .lineup-grid button[aria-pressed="true"]{
+ border-color:#fffce8;
+ box-shadow:0 0 0 2px #dc9e32,inset 0 0 0 2px #ffe982,inset 0 2px 0 #fff,0 3px 0 #985a3855;
+}
+html.arcade-brand-v249 .lineup-grid button[aria-pressed="true"]::after{
+ right:4px;top:4px;width:20px;height:20px;line-height:18px;border:1px solid #fffbd1;
+ background:linear-gradient(#81e8b5,#30aa80);color:#fff9bc;text-shadow:0 1px #236b50;
+ box-shadow:0 1px 2px #3a745166;
+}
+html.arcade-brand-v249 .lineup-grid button:focus-visible{outline:3px solid #5e8ddd;outline-offset:2px}
+html.arcade-brand-v249 .lineup-grid button:disabled{opacity:.56;filter:saturate(.65)}
+html.arcade-brand-v249 .lineup-play{
+ border:2px solid #fff4cf;border-radius:18px;
+ background:linear-gradient(#ff9ed6,#e84b9c 52%,#b82d77);box-shadow:0 2px 0 #773d5f,inset 0 1px 0 #ffdeef;
+ color:#fff9e5;font-weight:900;text-shadow:0 1px #842e5b;
+}
+html.arcade-brand-v249 .lineup-count{color:#85542c;font-weight:900}
+@media(max-width:360px){
+ html.arcade-brand-v249 .lineup-paper{padding-inline:10px}
+ html.arcade-brand-v249 .lineup-grid{gap:7px}
+ html.arcade-brand-v249 .lineup-grid button{padding-inline:4px}
+ html.arcade-brand-v249 .lineup-grid button>span{font-size:10px}
+}
+@media(forced-colors:active){
+ html.arcade-brand-v249 .lineup-picker,
+ html.arcade-brand-v249 .lineup-paper,
+ html.arcade-brand-v249 .lineup-grid button,
+ html.arcade-brand-v249 .lineup-play{background:Canvas!important;color:CanvasText!important;box-shadow:none!important;border-color:CanvasText!important}
+ html.arcade-brand-v249 .lineup-grid button[aria-pressed="true"]{outline:2px solid Highlight!important;outline-offset:-4px}
+}

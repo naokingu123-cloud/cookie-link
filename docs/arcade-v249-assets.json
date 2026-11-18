@@ -1,0 +1,134 @@
+{
+  "version": 249,
+  "tool": "image_gen built-in",
+  "reference": "User-provided arcade game-selection screenshot; original SWEETS LINK game names and confection motifs",
+  "assetFormat": "WebP with alpha, resized for UI without artwork changes",
+  "assets": [
+    {
+      "kind": "cookie",
+      "path": "assets/arcade-v249/logo-cookie.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 85254,
+      "sha256": "bf91df54698cf8534db3308d8e04a1a2d004140ebed00de3f59369e7defacf50",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "2c7064ee30e065503a97aa664937cabc8baa73cb28abf5255ee0d76ac8e02b78",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, one line): 「クッキーリンク」. Warm honey-gold and biscuit-cream letters with chocolate edging, subtle cookie crumbs and chocolate-chip cookies at the lower corners; two cookies link together behind the central lettering. Rich amber highlights, friendly toy-like gloss, memorable clean silhouette. The words are the main subject."
+    },
+    {
+      "kind": "choco",
+      "path": "assets/arcade-v249/logo-choco.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 104986,
+      "sha256": "0a559d5b41b3ca83641c85258234e09f5507e84667e4143bd78203dc125be6cb",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "bc5854063d8ba1f2642eab04f83f5e9371506f8d50f184b6f35d659f59726a1f",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, two tightly stacked lines): 「チョコレート」 above 「キャニオン」. The lower word is slightly larger. Milk chocolate and copper-gold letters with ivory highlights, bold deep brown extrusion. A small layered chocolate canyon rock, a tiny gold pickaxe, and one bright cyan candy crystal flank the text. Adventure/excavation energy, refined rich materials, compact shape."
+    },
+    {
+      "kind": "candy",
+      "path": "assets/arcade-v249/logo-candy.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 104164,
+      "sha256": "cacd507e9f9668abe41c888625c5a3c2c04eca828f264d5834d2c493811a7241",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "26da36ed0bf119dd530e11f0ef0e63820e2ae3b04788696c7a29b68a8548bd75",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, one line): 「シックスドロップ」. Glossy candy lettering alternating saturated strawberry pink, turquoise, lime, lemon gold and lavender, with cream highlights and an elegant gold/dark-berry outline. Six small spherical striped candy drops clustered below the title, one tiny star glint. Cheerful jewel-bright original arcade emblem. Spell シックスドロップ exactly."
+    },
+    {
+      "kind": "gelato",
+      "path": "assets/arcade-v249/logo-gelato.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 149528,
+      "sha256": "ff859be6ee53bce1405aacd129d3e291ba62ed2b2dfe75c541565b9e07a6420d",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "5ee251e91ce9c0aa8d7928e85548c9f24007bcaee52040b93266083f5d2b297f",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, two tightly stacked lines): 「ジェラート」 above 「プリズム」. Luminous ice-blue, lavender and rose-pink glassy lettering, ivory-white inner lines and royal sapphire outline with a gold rim. Small appetizing three-scoop gelato cones and a faceted rainbow prism tucked behind the corners. Cool refreshing ice-cream jewel kingdom, crystalline glints, elegant playful arrangement. The Japanese title dominates."
+    },
+    {
+      "kind": "winery",
+      "path": "assets/arcade-v249/logo-winery.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 116670,
+      "sha256": "f7b772b82e7fd1e7e5e00085c2e9a6ff3a58869dc495b286e4ed667254c5ede2",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "74eff278751950f7957ac3e3355e0b983665bd59035e9a490576f0335846be2f",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, two tightly stacked lines): 「ワイナリー」 above 「ピラミッド」. Deep grape-purple and ruby-magenta candy-glass lettering, pale blush highlights, dark plum outline and bright gold rim. A compact pyramid of three little crystal dessert goblets filled with purple and pink grape juice behind the top, clusters of purple grapes and one emerald grape leaf at the lower corners. Rich jewel-like fruit-parlor atmosphere. Japanese title dominates."
+    },
+    {
+      "kind": "popcorn",
+      "path": "assets/arcade-v249/logo-popcorn.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 130136,
+      "sha256": "0c2d06a83b1a9746e0354a647cfc9ea89534251e0716ebad0b4267ade2468807",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "6f2bb7b4b3bd7dc56e17387332191da7bc117aaf7c93de723cdd469716e1ae38",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, two tightly stacked lines): 「ポップコーン」 above 「スプラッシュ」. Big buttery yellow and tangerine-orange letterforms, deep red outline, cream inner keyline, bright gold rim; a few turquoise splash highlights. Small red-and-cream striped popcorn carton behind the top, several plump glossy golden popcorn pieces bouncing around the ends with tiny star glints. Energetic festive candy arcade identity. Spell スプラッシュ exactly; no extra writing."
+    },
+    {
+      "kind": "jelly",
+      "path": "assets/arcade-v249/logo-jelly.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 82902,
+      "sha256": "89abd281440115bcc697efa093351b18d3742b4eb74a85513af6e139bda832da",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "320e5707996ffc47e05a7a2bef1323643c976fa67cb671e5079cc29da822d2b5",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, one line): 「ジェリービンゴ」. Translucent bright mint-green, cherry-pink and lemon-yellow gummy lettering, deep teal outline, cream inner keyline and gold rim. Several small jewel-like jelly cubes and round jelly beans nestle beneath the title; a small star-shaped jelly at one corner. Juicy soft gelatin with glossy highlights and crisp dark contours, vibrant playful bingo-candy identity."
+    },
+    {
+      "kind": "stick",
+      "path": "assets/arcade-v249/logo-stick.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 127628,
+      "sha256": "b5e85a8030507e07501f335b40659c84188e4e663b6bf7adf9e6bfa03c2e723f",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "e97dc44d58815d0bfeeb9418cba8921b66bc62c0c253993eb4befb93f3ea59c9",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, two tightly stacked lines): 「ワッフル」 above 「リバーシ」. Golden toasted waffle and warm cream letters, subtle waffle-grid texture inside the thick letter faces, dark chocolate outline and bright gold rim. Two square golden waffle tiles showing one chocolate-coated side and one vanilla-cream side sit behind the corners, a thin strawberry-jam ribbon curl and tiny maple-syrup highlights. Cheerful polished arcade-puzzle logo. Exact bottom word is リバーシ, not リバーサル."
+    },
+    {
+      "kind": "castella",
+      "path": "assets/arcade-v249/logo-castella.webp",
+      "width": 768,
+      "height": 384,
+      "bytes": 113806,
+      "sha256": "2a19f8c680f4f56f2783ab60b6cef26e4113d14adb74cc532b6168af0ba4bb34",
+      "originalDimensions": [
+        1774,
+        887
+      ],
+      "originalSha256": "49d21662d6d0a2b2b0c39f52ab21731d18765c9af2d700321b5a3a87c3cbb2de",
+      "prompt": "Use case: logo-brand. Create one finished production logo asset for an original Japanese arcade candy game, not a mockup. Transparent background with real alpha. Wide compact logo, roughly 2:1 silhouette, centered and fully inside the canvas. The Japanese title must dominate and be easy to read when small. Exuberant Japanese medal-game typography: very thick rounded individually shaped lettering, shiny hard-candy highlights, bright creamy inner keyline, deep cocoa/ink outline, gold outer rim, short crisp dimensional extrusion underneath. Slight playful arc, polished hand-painted 3D illustration. A few small illustrated confection props hug the edges; do not obscure letters. Tight composition with generous safe edge margin, no rectangular background, no tile/card/badge, no watermark, no Latin subtitle, no extra writing. Exact Japanese spelling is essential. This is a game logo, not a photograph.\nTitle (verbatim, one line or two compact stacked lines if required): 「パーティカステラ」. Puffy honey-yellow and coral-orange letterforms with creamy white highlights, deep orange-chocolate outline and a gold rim. A few tiny sponge-cake castella cubes with caramel-brown tops, a festive candy-striped party hat, little pink/teal confetti stars hugging the title. Warm celebratory bakery party, bright appetizing toy-like polish. Text remains dominant, no extra words."
+    }
+  ]
+}

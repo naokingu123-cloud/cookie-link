@@ -1,0 +1,173 @@
+/* v249: bright Japanese arcade confectionery, lacquer + enamel + glass.
+   Geometry, physical pieces, readable live amounts, and custom artwork stay
+   owned by their original renderers. These surfaces do not resize a board. */
+html.arcade-v249 body[data-v249-game],html.arcade-v249 .v249-game-surface{
+ --v249-light:#fff5ce;--v249-gold:#ffd46d;--v249-accent:#ffb34b;--v249-mid:#bc6130;--v249-deep:#4c2431;--v249-edge:#6f3028;
+ --v249-check-a:#322532;--v249-check-b:#44313d;--v249-world:url('arcade-show-v91/cookie.webp');
+}
+html.arcade-v249 :is(body[data-v249-game="cookie"],.v249-game-surface[data-v249-kind="cookie"]){--v249-accent:#ffbd4f;--v249-mid:#e88a32;--v249-deep:#713245;--v249-edge:#813827;--v249-check-a:#3a242c;--v249-check-b:#51303a;--v249-world:url('arcade-show-v91/cookie.webp')}
+html.arcade-v249 :is(body[data-v249-game="choco"],.v249-game-surface[data-v249-kind="choco"]){--v249-accent:#57e2cb;--v249-mid:#178e94;--v249-deep:#352f43;--v249-edge:#533925;--v249-check-a:#222c36;--v249-check-b:#343e49;--v249-world:url('arcade-show-v91/choco.webp')}
+html.arcade-v249 :is(body[data-v249-game="candy"],.v249-game-surface[data-v249-kind="candy"]){--v249-accent:#ff77bb;--v249-mid:#df499e;--v249-deep:#4a244e;--v249-edge:#82315f;--v249-check-a:#263445;--v249-check-b:#334957;--v249-world:url('sixdrop-candy-kingdom-20261031.webp')}
+html.arcade-v249 :is(body[data-v249-game="gelato"],.v249-game-surface[data-v249-kind="gelato"]){--v249-accent:#62e8ff;--v249-mid:#238cd3;--v249-deep:#26386c;--v249-edge:#27547e;--v249-check-a:#233757;--v249-check-b:#314c6b;--v249-world:url('gelato-ice-candy-kingdom-v41.webp')}
+html.arcade-v249 :is(body[data-v249-game="winery"],.v249-game-surface[data-v249-kind="winery"]){--v249-accent:#d993ff;--v249-mid:#9d44c9;--v249-deep:#4c245b;--v249-edge:#71375b;--v249-check-a:#382b44;--v249-check-b:#4d3957;--v249-world:url('winery-juice-river-v62.webp')}
+html.arcade-v249 :is(body[data-v249-game="popcorn"],.v249-game-surface[data-v249-kind="popcorn"]){--v249-accent:#fff36e;--v249-mid:#f5a52e;--v249-deep:#7e2d3c;--v249-edge:#91352c;--v249-check-a:#383047;--v249-check-b:#4c3b54;--v249-world:url('popcorn-art/popcorn-stage-v81.webp')}
+html.arcade-v249 :is(body[data-v249-game="jelly"],.v249-game-surface[data-v249-kind="jelly"]){--v249-accent:#73f3cb;--v249-mid:#17b59c;--v249-deep:#15546a;--v249-edge:#216e6c;--v249-check-a:#193f50;--v249-check-b:#285767;--v249-world:url('jelly-backdrop.webp')}
+html.arcade-v249 :is(body[data-v249-game="stick"],.v249-game-surface[data-v249-kind="stick"]){--v249-accent:#ffcb69;--v249-mid:#dc624a;--v249-deep:#6e283f;--v249-edge:#783b29;--v249-check-a:#452635;--v249-check-b:#603245;--v249-world:url('waffle-backdrop.webp')}
+html.arcade-v249 :is(body[data-v249-game="castella"],.v249-game-surface[data-v249-kind="castella"]){--v249-accent:#ffc850;--v249-mid:#f37b28;--v249-deep:#713d30;--v249-edge:#91442b;--v249-check-a:#513725;--v249-check-b:#6c4b30;--v249-world:url('party-castella-bg.webp')}
+
+/* One clear world behind the playfield, framed like an enamel cabinet. */
+html.arcade-v249 body[data-v249-game] #screen>.game{
+ background-color:var(--v249-mid)!important;
+ background-image:linear-gradient(180deg,#ffffff0a 0%,#fff3cc00 55%,#19223438),var(--v249-world)!important;
+ background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;
+ border-color:var(--v249-gold)!important;
+ box-shadow:inset 0 0 0 1px #fff9df,inset 0 0 0 3px var(--v249-edge),inset 0 0 0 5px #ffe29d,0 2px 0 #4c253b!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface{isolation:isolate;box-shadow:inset 0 0 0 1px #fff9dc70;--v249-checker:repeating-conic-gradient(from 45deg,var(--v249-check-a) 0% 25%,var(--v249-check-b) 0% 50%)}
+html.arcade-v249 body[data-v249-game] #screen .ds91-lesson{outline:2px solid var(--v249-gold)!important;outline-offset:-2px;box-shadow:inset 0 0 0 1px white,0 1px 0 var(--v249-edge);border-radius:10px!important}
+html.arcade-v249 #panels>.v249-game-surface>.v91-board-show{display:none!important}
+
+/* Cookie: a deep cocoa harlequin tray with a piped golden biscuit rim. */
+html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="cookie"] .biscuit-frame{
+ background:linear-gradient(135deg,#fff7cc 0%,#f7ca71 12%,#d57732 40%,#ffe4a1 59%,#fff4bd 78%,#ba5d2f 100%)!important;
+ border-color:#71372b!important;box-shadow:inset 0 0 0 1px #fffce2,inset 0 0 0 3px #d99747,0 2px 0 #71372b!important;
+}
+html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="cookie"] .board{
+ background-color:var(--v249-check-a)!important;background-image:var(--v249-checker)!important;background-size:28px 28px!important;
+ border-color:#fff0ba!important;box-shadow:inset 0 1px 5px #1f122967,0 0 0 1px #884a32,0 0 0 3px #f7bf66!important;
+}
+html.arcade-v249 .v249-game-surface[data-v249-kind="cookie"] .tray-seams{opacity:.18}
+html.arcade-v249 .v249-game-surface[data-v249-kind="cookie"] .tile .cookie-face{filter:drop-shadow(0 1px 0 #281426b0)}
+html.arcade-v249 .v249-game-surface[data-v249-kind="cookie"] .basket-count:not(:empty){color:#fff1bc!important;background:linear-gradient(#b84b58,#72293c)!important;border:1px solid #ffe5a1;border-radius:7px;box-shadow:inset 0 1px #fff5d185}
+
+/* Canyon: turquoise enamel around rich cacao strata, bright brass studs. */
+html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="choco"] .choco-surface{
+ background:linear-gradient(145deg,#126c79,#263344)!important;border-radius:9px!important;
+ box-shadow:inset 0 0 0 1px #fff4c8,inset 0 0 0 3px #34bdbb,inset 0 0 0 4px #255363!important;
+}
+html.arcade-v249 .v249-game-surface[data-v249-kind="choco"] .choco-surface::after{
+ border:1px solid #f9d77e!important;border-radius:8px!important;
+ background:radial-gradient(circle at 5px 5px,#fff9dd 0 1px,#e8a73e 1.5px 3px,#6f4426 3.4px,transparent 4px),radial-gradient(circle at calc(100% - 5px) 5px,#fff9dd 0 1px,#e8a73e 1.5px 3px,#6f4426 3.4px,transparent 4px),radial-gradient(circle at 5px calc(100% - 5px),#fff9dd 0 1px,#e8a73e 1.5px 3px,#6f4426 3.4px,transparent 4px),radial-gradient(circle at calc(100% - 5px) calc(100% - 5px),#fff9dd 0 1px,#e8a73e 1.5px 3px,#6f4426 3.4px,transparent 4px)!important;
+ box-shadow:inset 0 0 0 2px #40cbce,inset 0 0 0 3px #fff2c581!important;
+}
+
+/* Six Drop keeps its approved candy bottle. The glass has a recessed well;
+   the full-clear counter and original amount font remain untouched. */
+html.arcade-v249 #panels>.v249-game-surface[data-v249-kind="candy"] .six-board-viewport{
+ background-color:var(--v249-check-a)!important;background-image:linear-gradient(135deg,#89f0ff0f,transparent 32%,#e4a7ff13 75%),var(--v249-checker)!important;background-size:auto,26px 26px!important;
+ box-shadow:inset 0 0 0 1px #c2fcff,inset 0 0 0 3px #467b92,inset 0 0 12px #0c1a385e!important;border-radius:10px!important;
+}
+html.arcade-v249 body[data-v249-game="candy"] .sd247-roles section{
+ background:linear-gradient(135deg,#624b8b,#322848 78%)!important;border-color:#edc884!important;border-radius:8px!important;
+ box-shadow:inset 0 1px #fff6dc80,inset 0 0 0 1px #724d64,0 1px 0 #47263d!important;
+}
+html.arcade-v249 body[data-v249-game="candy"] .sd247-roles section:nth-child(2){background:linear-gradient(135deg,#355e81,#24364c 78%)!important}
+html.arcade-v249 body[data-v249-game="candy"] .sd247-roles section:nth-child(3){background:linear-gradient(135deg,#7a435c,#44233b 78%)!important}
+
+/* Gelato: an ice-blue confectionery shop, frosted bevels and jewel labels. */
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-scene{
+ background:linear-gradient(180deg,#66dfff18,#2980bd20),var(--v249-world) center/cover!important;
+ border-color:#f8f4c8!important;box-shadow:inset 0 0 0 2px #4fcde5,inset 0 0 0 4px #1b7495,0 2px #1d3b62!important;
+}
+html.arcade-v249 .v249-game-surface[data-v249-kind="gelato"] .gp-scene::after{background:radial-gradient(ellipse at center,#ccf4ff1f,transparent 76%)!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-collector-panel{
+ background:linear-gradient(90deg,#2a496aee,#195075d9 50%,#253e67ee)!important;border:1px solid #fff1bd!important;border-radius:8px!important;
+ box-shadow:inset 0 0 0 2px #62c9d9,inset 0 0 0 3px #1e5a83,0 2px 0 #21364f!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-collector-row{background:linear-gradient(110deg,#216e95,#155064)!important;border-color:#bdf9f8!important;box-shadow:inset 0 1px #e8ffff80!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-collector-row[data-grade="2"]{background:linear-gradient(110deg,#b7478c,#753766)!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-collector-row[data-grade="3"]{background:linear-gradient(110deg,#ad7b29,#805119)!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-collector-row[data-grade="4"]{background:linear-gradient(110deg,#8558ba,#50387b)!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-payout-window{background:linear-gradient(#183953,#112c48)!important;border-color:#91e7e7!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] :is(.gp-pay-row.gp-pay-fixed,.gp-pay-row.gp-current){background:linear-gradient(#ffe8a5,#eaa54c)!important;border-color:#fff5cf!important;color:#673626!important;text-shadow:0 1px #fff3cc!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="gelato"] .gp-highest-frame{background:linear-gradient(135deg,#774598,#423468)!important;border-color:#fff1a9!important;box-shadow:inset 0 1px #f7e7ffb3,inset 0 0 0 2px #a46bb3!important}
+
+/* Winery: ruby/grape enamel, crystal glass and pale-gold pay rails. */
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene{
+ border-color:#fff1bd!important;box-shadow:inset 0 0 0 2px #c177d2,inset 0 0 0 4px #783e89!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-sidebar{
+ background:linear-gradient(100deg,#5d2854f5,#3e234bef 55%,#642b61f2)!important;border:1px solid #ffe3a0!important;border-radius:8px!important;
+ box-shadow:inset 0 0 0 2px #a95d8e,inset 0 0 0 3px #ffebad89,0 2px 0 #3c1939!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene :is(.wp-score,.wp-pay-fixed){background:linear-gradient(#ffe7a4,#e2a34b)!important;border-color:#fff4c4!important;color:#592344!important;text-shadow:0 1px #fff2c5!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-pay-fixed :is(span,small,b){color:#592344!important;text-shadow:0 1px #fff2c5!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-pay-window{background:linear-gradient(#332343,#4d284b)!important;border-color:#dd8cce!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-pay-row{border-color:#edb4d33d!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-pay-row.current{background:linear-gradient(90deg,#a0528c,#6e366d)!important;box-shadow:inset 3px 0 #ffe6a0!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene :is(.wp-power-left,.wp-mix){background:linear-gradient(140deg,#75428dee,#3d315aef)!important;border-color:#f9d99b!important;box-shadow:inset 0 1px #f4d5f1,0 2px 0 #3f2147!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-amount-gauge{background:linear-gradient(#251e3de8,#543054ed)!important;border-color:#d89ac9!important}
+
+/* Popcorn: carnival red and butter-gold cinema trim. The native theatrical
+   background and every bomb/pop sprite retain their original pixels. */
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="popcorn"] .pc-scene{
+ outline:2px solid #fff1bd!important;outline-offset:-2px;border-radius:10px!important;
+ box-shadow:inset 0 0 0 2px #df5a55,0 0 0 1px #873c41!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="popcorn"]{background:repeating-linear-gradient(90deg,#c6404d 0 12px,#f58f6b 12px 24px)!important;border-radius:10px}
+
+/* Jelly: polished mint glass in a clean checkerboard display case. */
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="jelly"] .jb-scene{
+ background:linear-gradient(160deg,#62e1d01a,#1f587940),var(--v249-world) center/cover!important;
+ outline:2px solid #edffe0!important;outline-offset:-2px;border-radius:10px!important;
+ box-shadow:inset 0 0 0 2px #60dbc1,inset 0 0 0 4px #155268!important;
+}
+
+/* Waffle: cream and cocoa biscuits in strawberry-jam enamel. */
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="stick"] .bs-scene{
+ background:linear-gradient(140deg,#ffd58712,#c338531a),var(--v249-world) center/cover!important;
+ border-color:#fff1c2!important;box-shadow:inset 0 0 0 2px #f6bb6b,inset 0 0 0 3px #9d4851!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="stick"] .bs-pay{
+ background:linear-gradient(100deg,#6c2939ee,#462133ef 75%,#753344ee)!important;border-color:#ffe9ad!important;
+ box-shadow:inset 0 0 0 1px #a95b60,inset 0 1px #fff4cf,0 2px 0 #4c243b!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="stick"] .bs-pay tbody{background:linear-gradient(90deg,#703947 25%,#412032 27%,#693044 97%)!important;border-color:#d99478!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="stick"] .bs-board{background:linear-gradient(135deg,#fff0bc,#e7ae5c 50%,#fff0b5)!important;box-shadow:0 2px 0 #562f36,inset 0 0 0 1px #fff8d6,0 0 0 2px #c36d55!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="stick"] :is(.bs-bonus,.bs-earned,.bs-guide){background:linear-gradient(#8a3b5c,#4b2442)!important;border-color:#ffe3a4!important;box-shadow:inset 0 1px #f4b5bca1!important}
+
+/* Castella: an orange bakery cabinet and lacquered gold payout plates. */
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-scene{
+ border-color:#fff0b9!important;box-shadow:inset 0 0 0 2px #edab50,inset 0 0 0 3px #ba6040!important;
+}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-phase{background:linear-gradient(130deg,#b24b36,#783243)!important;box-shadow:inset 0 1px #ffe7b8,inset 0 0 0 1px #f1b26e,0 2px #693033!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-phase>div{background:#813749!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-phase:not(.pct-after) .pct-phase-first,
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-phase.pct-after .pct-phase-second{background:linear-gradient(#fff1b1,#f0bb5d)!important;color:#663522!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-pay-label span{background:linear-gradient(#cf5d3b,#8f2c3f)!important;border-color:#ffefab!important;box-shadow:inset 0 1px #ffe8ad,0 1px 0 #64283a!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-pay tbody tr.current{background:linear-gradient(100deg,#c2572d,#953143)!important;box-shadow:inset 0 1px #fff0a7,inset 0 -1px #e8b353!important}
+html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-status>div{background:linear-gradient(130deg,#ba5d28,#be423a 50%,#713043)!important;border-color:#ffefb4!important;box-shadow:inset 0 1px #ffe29a,inset 0 0 0 1px #eaa56a,0 2px 0 #70313c!important}
+
+/* Bounded edge effects: white/chromatic stars and material-specific chips.
+   A single reused stage per game; no permanent shimmer or blurred overlays. */
+html.arcade-v249 body #screen #panels>.panel.v249-game-surface>.v249-event-stage{
+ display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:35!important;overflow:hidden!important;
+ pointer-events:none!important;border-radius:inherit;opacity:0;contain:layout paint;isolation:isolate;
+}
+html.arcade-v249 body #screen #panels>.panel.v249-game-surface>.v249-event-stage[hidden]{display:none!important}
+.v249-event-stage *{pointer-events:none!important;box-sizing:border-box}
+.v249-event-rim,.v249-event-bloom,.v249-event-sparks{position:absolute;inset:0;display:block;border-radius:inherit}
+.v249-event-rim{border:2px solid #fff6cc;box-shadow:inset 0 0 0 2px var(--v249-accent),inset 0 0 0 4px #ffffff4d}
+.v249-event-bloom{opacity:0;background:radial-gradient(ellipse at 50% 100%,#fff2ac30,transparent 67%)}
+.v249-event-stage[data-level="3"] .v249-event-bloom,.v249-event-stage[data-level="4"] .v249-event-bloom{opacity:1}
+.v249-event-stage[data-level="4"] .v249-event-rim{border-color:#fffbe4;box-shadow:inset 0 0 0 2px #ffe48d,inset 0 0 0 4px var(--v249-accent),inset 0 0 0 6px #fff9de8c}
+.v249-event-sparks>i{position:absolute;display:block;width:9px;height:9px;opacity:0;background:var(--v249-accent);border:1px solid #fff4c6;box-shadow:0 1px 0 #4026458c;border-radius:50%}
+.v249-event-stage[data-level="1"] .v249-event-sparks{display:none}
+.v249-game-surface[data-v249-kind="cookie"] .v249-event-sparks>i{border-radius:35% 43% 34% 46%;background:radial-gradient(circle at 28% 22%,#fff5cb 0 14%,#f6be69 23% 70%,#bc713d 86%)}
+.v249-game-surface:is([data-v249-kind="choco"],[data-v249-kind="gelato"]) .v249-event-sparks>i{border-radius:0;clip-path:polygon(50% 0,100% 35%,72% 100%,26% 90%,0 35%);background:linear-gradient(130deg,white 0 18%,var(--v249-accent) 20% 54%,#ffffd9 56% 68%,var(--v249-mid) 70%)}
+.v249-game-surface[data-v249-kind="candy"] .v249-event-sparks>i{background:repeating-linear-gradient(135deg,#fff4d7 0 3px,var(--v249-accent) 3px 6px);border-color:#fff0c7}
+.v249-game-surface[data-v249-kind="winery"] .v249-event-sparks>i{border-radius:50% 50% 46% 46%;background:radial-gradient(circle at 32% 25%,#fff3fb 0 12%,#e7b4ff 22%,#a14fd2 69%,#69377d 90%)}
+.v249-game-surface[data-v249-kind="popcorn"] .v249-event-sparks>i{border-radius:42% 60% 38% 55%;background:radial-gradient(circle at 30% 20%,#ffffe0,#fff0ae 60%,#dba440 85%);border-color:#fffbd0}
+.v249-game-surface[data-v249-kind="jelly"] .v249-event-sparks>i{border-radius:40%;background:radial-gradient(circle at 30% 22%,#ecfff8 0 15%,#72f1cb 25%,#1bbaa1 75%)}
+.v249-game-surface[data-v249-kind="stick"] .v249-event-sparks>i{border-radius:2px;background:repeating-linear-gradient(0deg,transparent 0 3px,#a76b3c 3px 4px),repeating-linear-gradient(90deg,#f8d78f 0 3px,#d9954f 3px 4px)}
+.v249-game-surface[data-v249-kind="castella"] .v249-event-sparks>i{border-radius:35%;background:radial-gradient(circle at 30% 20%,#fff9d1 0 17%,#ffd46f 35%,#d98135 84%)}
+.v249-game-surface .v249-event-sparks>i:nth-child(3n){border:0;border-radius:0;background:#fff8d4;clip-path:polygon(50% 0,62% 35%,100% 50%,64% 62%,50% 100%,36% 64%,0 50%,35% 36%);box-shadow:none;width:11px;height:11px}
+.v249-game-surface .v249-event-stage[data-level="4"] .v249-event-sparks>i{width:13px;height:13px}
+@media(prefers-reduced-motion:reduce){
+ .v249-event-stage .v249-event-sparks,.v249-event-stage .v249-event-bloom{display:none!important}
+ .v249-event-rim{box-shadow:inset 0 0 0 1px var(--v249-accent)!important}
+}
+@media(forced-colors:active){
+ html.arcade-v249 body[data-v249-game] #screen>.game,html.arcade-v249 #screen #panels>.v249-game-surface{background:Canvas!important;box-shadow:none!important}
+ .v249-event-stage{display:none!important}
+}

@@ -26,7 +26,7 @@ const laneColors=['#ffbc7c','#ffda97','#ffb1ba','#a4ffeb','#a9dfff','#c7b3ff'];
 const tiers=[1,2,3,4,5,6,7,8,9,10,12];
 const oddsPopupMs=1600;
 const oddsText='#93ffab';
-const emblem=new Image();emblem.src='assets/sweet-skins/jelly-emblem.webp';
+const emblem=new Image();emblem.src='assets/arcade-v249/logo-jelly.webp';
 const jellySkin=new Image();jellySkin.src='assets/sweet-skins/jelly.webp';
 const center=i=>[50+i%5*100,50+Math.floor(i/5)*100];
 function gradient(c,x,y,x2,y2,stops){

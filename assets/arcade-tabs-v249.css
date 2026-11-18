@@ -1,0 +1,210 @@
+/* Compact enamel game cards. The existing nine-game grid, live miniatures,
+   native tab controls, reach digits and BET rows keep their original owners. */
+html.arcade-v249 #screen #tabs .v249-selected-logo,
+html.arcade-v249 #screen #tabs .v249-tab-reward{pointer-events:none!important;user-select:none!important}
+html.arcade-v249 #screen #tabs .v249-selected-logo{display:none!important}
+html.arcade-v249 #screen #tabs>.tab-slot.selected>.tab[aria-selected="true"] .mini-wrap::after{
+ content:none!important;display:none!important;
+}
+html.arcade-v249 #screen #tabs>.tab-slot.selected>.tab[aria-selected="true"] .mini-wrap>.v249-selected-logo{
+ display:block!important;position:absolute!important;inset:0!important;
+ width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;opacity:1!important;visibility:visible!important;
+ margin:0!important;padding:0!important;transform:none!important;z-index:8!important;
+ filter:drop-shadow(0 1px 0 rgba(85,30,15,.18));
+}
+html.arcade-v249 #screen #tabs>.tab-slot.selected>.tab[aria-selected="true"] .mini-wrap>:not(.v249-selected-logo){
+ opacity:0!important;visibility:hidden!important;
+}
+html.arcade-v249 #screen #tabs>.tab-slot>.tab:focus-visible{
+ outline:2px solid #fffde5!important;outline-offset:-3px!important;
+}
+html.arcade-v249 #screen #tabs>.tab-slot.v249-pressed>.tab{
+ scale:.96;translate:0 1px;
+}
+html.arcade-v249 #screen #tabs .tab-win-bubble{animation:none!important}
+html.arcade-v249 #screen #tabs .tab-win-bubble[hidden]{display:none!important}
+
+/* One burst per actual displayed award increase, never an idle-loop animation. */
+html.arcade-v249 #screen #tabs>.tab-slot>.v249-tab-reward{
+ display:none;position:absolute!important;left:6px!important;right:6px!important;top:12px!important;
+ height:40px!important;z-index:95!important;box-sizing:border-box!important;
+ padding:4px 2px 2px!important;border:1px solid #fff6c2!important;border-radius:9px!important;
+ background:radial-gradient(ellipse at 50% 0%,#fffce2cc,transparent 60%),linear-gradient(#a85c1fe8,#5b281ee8 60%,#8c471ae8)!important;
+ box-shadow:inset 0 0 0 1px #f7b954,0 1px 5px #5b2e25aa!important;
+ text-align:center!important;transform-origin:50% 60%!important;overflow:visible!important;
+}
+html.arcade-v249 #screen #tabs>.tab-slot>.v249-tab-reward:not([hidden]){display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+html.arcade-v249 #screen #tabs .v249-reward-sum{display:flex!important;align-items:center;justify-content:center;gap:1px;position:relative;z-index:1;max-width:100%;height:21px}
+html.arcade-v249 #screen #tabs .v249-reward-sum>small{font:900 13px/1 system-ui,sans-serif;color:#fff3ab;text-shadow:0 1px 1px #532211}
+html.arcade-v249 #screen #tabs .v249-reward-amount{display:block;min-width:0;max-width:65px;height:21px;line-height:21px}
+html.arcade-v249 #screen #tabs .v249-reward-amount>.gold-number{font-family:ArcadePayout,Georgia,serif;font-weight:700;line-height:21px;color:#fff2a5}
+html.arcade-v249 #screen #tabs .v249-tab-reward>em{font:900 8px/1 Georgia,serif;color:#fff3bd;letter-spacing:1px;text-shadow:0 1px #6c3219;z-index:1}
+html.arcade-v249 #screen #tabs .v249-reward-stars{position:absolute;inset:0;overflow:visible}
+html.arcade-v249 #screen #tabs .v249-reward-stars>i{position:absolute;font:900 11px/1 Georgia,serif;color:#fff7b0;font-style:normal;text-shadow:0 0 3px #f8cb54}
+html.arcade-v249 #screen #tabs .v249-reward-stars>i:nth-child(1){left:-4px;top:3px}
+html.arcade-v249 #screen #tabs .v249-reward-stars>i:nth-child(2){right:-3px;top:-3px;font-size:14px}
+html.arcade-v249 #screen #tabs .v249-reward-stars>i:nth-child(3){left:7px;bottom:-3px;font-size:8px}
+html.arcade-v249 #screen #tabs .v249-reward-stars>i:nth-child(4){right:5px;bottom:2px;font-size:8px}
+
+html.arcade-v249[data-lineup="all"] #screen>.games-deck,
+html.arcade-v249[data-lineup="all"] #screen>.games-deck:has(.tab-win-bubble:not([hidden])){
+ height:178px!important;flex-basis:178px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs,
+html.arcade-v249[data-lineup="all"] #screen #tabs:has(.tab-win-bubble:not([hidden])){
+ height:178px!important;grid-template-rows:repeat(2,87px)!important;row-gap:4px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs::before{
+ inset:-3px -4px!important;border:1px solid #d8a759!important;border-radius:10px!important;
+ background:linear-gradient(180deg,#fff4cd,#e6b46c 46%,#bb713f)!important;
+ box-shadow:inset 0 1px 0 #fff,0 2px 3px #6c3b3066!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs::after{display:none!important}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot,
+html.arcade-v249[data-lineup="all"] #screen #tabs:has(.tab-win-bubble:not([hidden]))>.tab-slot{
+ height:87px!important;min-height:87px!important;max-height:87px!important;
+ grid-template-rows:51px 20px 16px!important;padding:0!important;gap:0!important;
+ overflow:hidden!important;clip-path:inset(0 round 8px)!important;border-radius:8px!important;
+ box-shadow:0 1px 2px #54283750!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="cookie"]{--v249-card-light:#fff6ba;--v249-card-mid:#f8cb56;--v249-card-edge:#bd6c21}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="choco"]{--v249-card-light:#ffe0bb;--v249-card-mid:#db9360;--v249-card-edge:#813d26}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="candy"]{--v249-card-light:#ffdfef;--v249-card-mid:#ff98cb;--v249-card-edge:#cf4f98}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="gelato"]{--v249-card-light:#dffcff;--v249-card-mid:#7fddf7;--v249-card-edge:#287cbe}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="winery"]{--v249-card-light:#f5e3ff;--v249-card-mid:#b9a0ef;--v249-card-edge:#7043ab}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="popcorn"]{--v249-card-light:#fff8bb;--v249-card-mid:#f7d864;--v249-card-edge:#d28a29}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="jelly"]{--v249-card-light:#e5ffde;--v249-card-mid:#9ce39d;--v249-card-edge:#3a9d78}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="stick"]{--v249-card-light:#ffe7bd;--v249-card-mid:#f3b879;--v249-card-edge:#bd6c3e}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="castella"]{--v249-card-light:#ffe8c2;--v249-card-mid:#ffc171;--v249-card-edge:#dd7138}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot>.all-tab-frame-overlay{
+ inset:0!important;border:2px solid #fff9e8!important;border-radius:8px!important;
+ background:linear-gradient(160deg,#fffde8 0 4%,var(--v249-card-mid,#efb977) 48%,var(--v249-card-edge,#b97346) 100%)!important;
+ box-shadow:inset 0 0 0 1px var(--v249-card-edge,#b97346),inset 0 2px 0 #fff9,inset 0 -2px 0 #542c4d55!important;
+ opacity:1!important;filter:none!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot>.all-tab-frame-overlay::before{
+ background:none!important;box-shadow:none!important;border:0!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot>.all-tab-frame-overlay::after{
+ inset:1px!important;border:1px solid #fff8cb99!important;border-radius:5px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected>.all-tab-frame-overlay,
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.v249-earned>.all-tab-frame-overlay{
+ border-color:#fffbe5!important;
+ box-shadow:inset 0 0 0 2px #ffda57,inset 0 0 8px #fff9cf,0 0 0 1px #b96629!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot>.tab,
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot>.tab[aria-selected="true"]{
+ width:86.8px!important;min-width:86.8px!important;max-width:86.8px!important;
+ height:49px!important;min-height:49px!important;max-height:49px!important;
+ margin:2px 3px 0!important;padding:1px 2px!important;
+ grid-template-columns:32px minmax(0,1fr)!important;grid-template-rows:18px 28px!important;gap:0 3px!important;
+ border:0!important;border-radius:5px!important;
+ background:linear-gradient(135deg,#fff7 25%,transparent 25% 50%,#fff3 50% 75%,transparent 75%) 0 0/12px 12px,linear-gradient(160deg,var(--v249-card-light),var(--v249-card-mid))!important;
+ box-shadow:inset 0 1px 1px #fff,inset 0 -1px 2px var(--v249-card-edge)!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name{
+ height:18px!important;min-height:18px!important;max-height:18px!important;line-height:18px!important;
+ background-size:contain!important;overflow:visible!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name img,
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-game-name svg{
+ height:18px!important;max-height:18px!important;max-width:100%!important;object-fit:contain!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .mini-wrap{
+ width:31px!important;min-width:31px!important;height:28px!important;min-height:28px!important;
+ border-radius:4px!important;box-shadow:inset 0 0 0 1px #fff9!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .mini-wrap canvas,
+html.arcade-v249[data-lineup="all"] #screen #tabs .mini-wrap .gp-mini{
+ width:28px!important;height:28px!important;left:1px!important;top:0!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab .tab-game-name{visibility:hidden!important}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected>.tab .mini-wrap{
+ grid-column:1/3!important;grid-row:1/3!important;
+ position:absolute!important;inset:3px 2px 4px!important;
+ width:calc(100% - 4px)!important;min-width:0!important;height:calc(100% - 7px)!important;min-height:0!important;
+ margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-slot .tab-win-bubble{
+ position:relative!important;grid-column:2!important;grid-row:2!important;
+ height:26px!important;min-height:26px!important;max-height:26px!important;
+ width:100%!important;min-width:0!important;max-width:100%!important;
+ grid-template-rows:17px 7px!important;gap:0!important;padding:1px!important;
+ border:1px solid #f8d98b!important;border-radius:5px!important;
+ background:linear-gradient(#82502f,#4e2b24 65%,#6d3c22)!important;
+ box-shadow:inset 0 1px 0 #eaba74,0 1px 1px #76432155!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-win-bubble .tabwin{
+ height:17px!important;line-height:17px!important;text-align:right!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-win-bubble .tabwin .gold-number{
+ font-size:var(--v249-tab-win-size,14px)!important;line-height:16px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-win-bubble .win-word,
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-win-bubble .win-word>.gold-word{
+ height:7px!important;font-size:5.8px!important;line-height:7px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected .tab-win-bubble{
+ position:absolute!important;top:auto!important;bottom:2px!important;left:auto!important;right:3px!important;
+ width:40px!important;height:18px!important;min-height:18px!important;max-height:18px!important;
+ grid-template-rows:11px 4px!important;border-radius:4px!important;padding:1px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected .tab-win-bubble .tabwin{
+ height:11px!important;line-height:11px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected .tabwin .gold-number{
+ font-size:var(--v249-tab-win-size,11px)!important;line-height:11px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected .tab-win-bubble .win-word,
+html.arcade-v249[data-lineup="all"] #screen #tabs>.tab-slot.selected .tab-win-bubble .win-word>.gold-word{
+ height:4px!important;font-size:4px!important;line-height:4px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-sugar{
+ top:2px!important;right:2px!important;width:12px!important;min-width:12px!important;height:12px!important;
+ border-radius:4px!important;box-shadow:0 1px 2px #5b304766!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-sugar .sugar-gem{width:9px!important;height:9px!important}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-bets,
+html.arcade-v249[data-lineup="all"] #screen #tabs .reach-strip,
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-locked-bet{
+ width:86.8px!important;min-width:86.8px!important;max-width:86.8px!important;
+ margin-left:3px!important;margin-right:3px!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-bets button{
+ border-color:#fff0c2!important;background:linear-gradient(#fff4bc,#e8b962)!important;
+ color:#643c24!important;text-shadow:0 1px #fff7d3!important;
+ box-shadow:inset 0 1px 0 #fff9,0 1px 1px #713b2c55!important;
+}
+html.arcade-v249[data-lineup="all"] #screen #tabs .tab-locked-bet{
+ background:linear-gradient(#a66836,#704127)!important;border:1px solid #f2cc82!important;border-radius:4px!important;
+ box-shadow:inset 0 1px 0 #edc078!important;padding:0 4px!important;
+}
+/* The landscape rack uses a flexible left column in the native cabinet. */
+html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs>.tab-slot{
+ width:100%!important;min-width:0!important;max-width:100%!important;
+}
+html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs>.tab-slot>.tab,
+html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs>.tab-slot>.tab[aria-selected="true"],
+html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs .tab-bets,
+html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs .reach-strip,
+html.arcade-v249[data-lineup="all"] body.mobile-landscape #screen #tabs .tab-locked-bet{
+ width:calc(100% - 6px)!important;min-width:0!important;max-width:calc(100% - 6px)!important;
+}
+@media(hover:hover) and (pointer:fine){
+ html.arcade-v249 #screen #tabs>.tab-slot>.tab:hover{filter:brightness(1.04)}
+}
+@media(prefers-reduced-motion:reduce){
+ html.arcade-v249 #screen #tabs>.tab-slot.v249-pressed>.tab{scale:1;translate:0 0}
+ html.arcade-v249 #screen #tabs .v249-selected-logo{filter:none}
+}
+@media(forced-colors:active){
+ html.arcade-v249 #screen #tabs>.tab-slot>.tab,
+ html.arcade-v249 #screen #tabs>.tab-slot>.all-tab-frame-overlay,
+ html.arcade-v249 #screen #tabs .tab-win-bubble,
+ html.arcade-v249 #screen #tabs .tab-locked-bet{
+  background:Canvas!important;border:1px solid CanvasText!important;box-shadow:none!important;
+ }
+ html.arcade-v249 #screen #tabs>.tab-slot.selected>.tab{outline:2px solid Highlight!important;outline-offset:-3px!important}
+}

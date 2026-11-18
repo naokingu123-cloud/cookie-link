@@ -1,0 +1,56 @@
+name: Arcade v249 logos cards and game surfaces
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main', 'feature/arcade-v249']
+    paths:
+      - 'index.html'
+      - 'app-version.json'
+      - 'assets/arcade-v249/**'
+      - 'assets/arcade-brand-v249*'
+      - 'assets/arcade-tabs-v249*'
+      - 'assets/arcade-surfaces-v249*'
+      - 'assets/shared-machine-v176.js'
+      - 'tests/arcade-visual-v249.mjs'
+      - '.github/workflows/arcade-visual-v249.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax and unchanged game, color and payout behavior
+        run: |
+          npm run check
+          npm run test:sixdrop
+          node tests/client-smooth-v246.mjs
+          node tests/hidden-engine-clocks-v246.mjs
+          node tests/hidden-results-v246.mjs
+          node tests/monitor-game-colors-v248.mjs
+          node tests/client-join-ack-v248.mjs
+      - name: Install browser
+        run: |
+          npm install --no-save --ignore-scripts --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Nine actual games, responsive art and fast card selection
+        run: |
+          node tests/arcade-visual-v249.mjs
+          node tests/sixdrop-hud-v247.mjs
+      - name: Full hidden nine-game round, payout and carry
+        run: node tests/client-hidden-browser-v246.mjs
+      - name: Retain every game screenshot and behavior report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-v249-visual-verification
+          path: |
+            qa-arcade-v249/
+            qa-client-v243/
+            docs/client-v246-qa.json
+          retention-days: 7
