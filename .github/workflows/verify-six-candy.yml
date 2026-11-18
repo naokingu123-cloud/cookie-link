@@ -1,4 +1,4 @@
-name: Verify current Six Drop and public Pages
+name: Verify current games and public Pages
 on:
   workflow_dispatch:
   push:
@@ -11,6 +11,8 @@ on:
       - 'assets/arcade-brand-v249*'
       - 'assets/arcade-tabs-v249*'
       - 'assets/arcade-surfaces-v249*'
+      - 'assets/party-castella*'
+      - 'assets/castella-lesson.js'
       - 'assets/jelly-view.js'
       - 'assets/game-menu-v91.js'
       - 'assets/lineups-v91.js'

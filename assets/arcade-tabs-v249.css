@@ -235,3 +235,195 @@ html.arcade-v249 body.mobile-landscape>.shared-v179-badge[data-role="player"]{di
  }
  html.arcade-v249 #screen #tabs>.tab-slot.selected>.tab{outline:2px solid Highlight!important;outline-offset:-3px!important}
 }
+
+/* v250: the existing illustrated logo becomes the inactive card's background.
+   The real miniature is above it; the separate selected logo remains opaque. */
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-game-name{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.tab{
+ display:block!important;position:relative!important;isolation:isolate!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-background-logo{
+ display:block!important;position:absolute!important;inset:1px!important;width:calc(100% - 2px)!important;height:calc(100% - 2px)!important;
+ object-fit:contain!important;object-position:center!important;opacity:.6!important;z-index:0!important;
+ filter:drop-shadow(0 1px 0 #fff8)!important;pointer-events:none!important;user-select:none!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot.selected .v250-background-logo{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot.selected .mini-wrap{
+ position:absolute!important;inset:3px 2px 4px!important;width:calc(100% - 4px)!important;height:calc(100% - 7px)!important;
+ min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot:not(.selected) .mini-wrap{
+ position:absolute!important;top:3px!important;left:3px!important;bottom:auto!important;right:auto!important;
+ width:116px!important;min-width:0!important;height:116px!important;min-height:0!important;
+ margin:0!important;padding:0!important;border:0!important;border-radius:3px!important;
+ background:transparent!important;box-shadow:none!important;overflow:hidden!important;z-index:2!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot:not(.selected) .mini-wrap::before{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot:not(.selected) .mini-wrap canvas,
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot:not(.selected) .mini-wrap .gp-mini{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;margin:0!important;transform:none!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot:not(.selected) .mini-wrap .gp-mini canvas,
+html.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot:not(.selected) .mini-wrap .gp-mini svg{
+ width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs>.tab-slot:not(.selected) .mini-wrap{
+ width:47px!important;height:47px!important;top:1px!important;left:1px!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs>.tab-slot>.tab{
+ padding:0!important;grid-template-columns:none!important;grid-template-rows:none!important;
+}
+
+/* Actual WIN and the acquired sugar share one compact plaque. */
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-slot .tab-win-bubble{
+ position:absolute!important;left:auto!important;right:2px!important;top:auto!important;bottom:2px!important;
+ width:50px!important;min-width:0!important;max-width:50px!important;height:28px!important;min-height:28px!important;max-height:28px!important;
+ grid-template-columns:1fr auto!important;grid-template-rows:17px 7px!important;align-items:center!important;
+ gap:0 1px!important;padding:1px 2px!important;z-index:12!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tabwin{
+ grid-column:1/-1!important;grid-row:1!important;height:17px!important;line-height:17px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tabwin .gold-number{
+ font-size:var(--v249-tab-win-size,12px)!important;line-height:17px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .win-word{
+ grid-column:1!important;grid-row:2!important;justify-self:center!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .win-word,
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .win-word>.gold-word{
+ height:7px!important;line-height:7px!important;font-size:6px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tab-sugar{
+ display:none!important;position:static!important;inset:auto!important;grid-column:2!important;grid-row:2!important;
+ width:auto!important;min-width:0!important;height:8px!important;min-height:0!important;
+ margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+ background:none!important;box-shadow:none!important;transform:none!important;gap:1px!important;align-items:center!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tab-sugar[data-get="true"]{display:flex!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tab-sugar::before,
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tab-sugar::after{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tab-sugar .sugar-gem{
+ display:block!important;position:relative!important;inset:auto!important;width:8px!important;height:8px!important;
+ transform:none!important;flex:none!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-win-bubble .tab-sugar .sugar-get{
+ display:block!important;position:static!important;inset:auto!important;margin:0!important;padding:0!important;
+ font:900 5px/7px system-ui,sans-serif!important;color:#fff5a6!important;-webkit-text-fill-color:#fff5a6!important;
+ border:0!important;background:none!important;text-shadow:0 1px #49301b!important;transform:none!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .sugar-award-mini{display:none!important}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .tab-slot .tab-win-bubble{
+ width:37px!important;max-width:37px!important;right:1px!important;bottom:2px!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs>.tab-slot.selected .tab-win-bubble{
+ width:40px!important;max-width:40px!important;
+}
+
+/* Two larger add-BET buttons replace the former three-way squeeze. */
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-bets{
+ grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)!important;gap:3px!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-bets .bet-cycle{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-bets[hidden]{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .tab-bets button{font-size:11px!important}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .tab-bets{
+ height:20px!important;min-height:20px!important;max-height:20px!important;padding:1px 0!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .tab-bets button{
+ height:18px!important;min-height:18px!important;max-height:18px!important;padding:0 2px!important;
+ font-size:8px!important;line-height:16px!important;letter-spacing:0!important;-webkit-text-stroke:0!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch{
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;height:100%!important;min-width:0!important;margin:0!important;padding:3px!important;
+ border:2px solid #fff4c8!important;border-radius:10px!important;
+ background:linear-gradient(#fff4b4,#e6b252 55%,#bd7a31)!important;
+ box-shadow:inset 0 0 0 1px #ae7432,0 2px 3px #6c3b4666!important;
+ color:#683e22!important;text-shadow:0 1px #fff7c9!important;cursor:pointer!important;
+ font-family:system-ui,sans-serif!important;line-height:1.15!important;letter-spacing:0!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch>span{font-size:11px;font-weight:900}
+html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch>strong{font-size:17px;font-weight:900}
+html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch small{font-size:8px}
+html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch:focus-visible{outline:3px solid #fff!important;outline-offset:1px!important}
+html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch:disabled{opacity:.45!important;cursor:default!important}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen>.games-deck>.v250-common-bet{
+ position:absolute!important;right:8px!important;bottom:16px!important;width:84px!important;height:53px!important;z-index:60!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] body.mobile-landscape #screen>.games-deck>.v250-common-bet{
+ width:calc((100% - 16px) / 5 - 8px)!important;right:8px!important;
+}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .drawline{
+ grid-template-columns:minmax(0,1fr) 73px!important;grid-template-rows:23px 22px!important;height:46px!important;
+}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .balls{grid-column:1/-1!important}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console #ballinfo{grid-column:1!important;grid-row:1!important}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-common-bet{
+ grid-column:2!important;grid-row:1!important;width:73px!important;height:23px!important;
+}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch{
+ flex-direction:row!important;gap:3px!important;padding:0!important;border-width:1px!important;border-radius:4px!important;
+}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch>span{font-size:7px}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch>strong{font-size:9px}
+html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch small{font-size:5px}
+
+/* A single repeated strip exposes every reach; no four-item page truncation.
+   Only this inner track moves, avoiding the old important transform reset. */
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-strip[data-empty="true"]{
+ border-color:transparent!important;background:none!important;box-shadow:none!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-strip[data-empty="true"]::before{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-caption[hidden]{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-clip{
+ top:0!important;bottom:auto!important;transform:none!important;overflow:hidden!important;align-self:center!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-numbers{
+ position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:100%!important;
+ transform:none!important;animation:none!important;overflow:visible!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-track{
+ position:relative;display:flex;width:max-content;min-width:200%;height:100%;align-items:center;
+ animation:v250-reach-marquee var(--v250-reach-duration,6s) linear infinite;will-change:transform;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence{
+ display:flex;flex:0 0 auto;justify-content:space-around;align-items:center;width:max-content;min-width:50%;height:100%;
+ padding-right:14px;box-sizing:border-box;gap:5px;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence .reach-num{
+ flex:0 0 auto!important;display:grid!important;place-items:center!important;width:auto!important;min-width:15px!important;
+ max-width:none!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+ line-height:1!important;transform:none!important;align-items:center!important;justify-items:center!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .reach-strip{
+ height:20px!important;min-height:20px!important;padding:1px 2px!important;align-items:center!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .reach-clip{height:18px!important}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .reach-caption{
+ height:17px!important;transform:none!important;align-self:center!important;line-height:17px!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs .v250-reach-sequence .reach-num{
+ font-size:12.5px!important;line-height:17px!important;
+}
+@keyframes v250-reach-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+html.arcade-v249.arcade-tabs-v250 body.paused #tabs .v250-reach-track{animation-play-state:paused}
+
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop{
+ position:absolute!important;left:4px!important;right:4px!important;top:13px!important;height:32px!important;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;z-index:100!important;
+ padding:2px!important;box-sizing:border-box;border:1px solid #fff6c4;border-radius:6px;
+ background:linear-gradient(#ff7974,#b3223c 65%,#8f2034);box-shadow:0 0 5px #ffad7a,inset 0 0 0 1px #ffd59a;
+ color:#fff8cc;text-shadow:0 1px #6d1d36;pointer-events:none!important;user-select:none;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop[hidden]{display:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop[data-tier="2"]{background:linear-gradient(#e59aff,#9c42d1 60%,#5b217e);box-shadow:0 0 6px #dfadff,inset 0 0 0 1px #f1d5ff}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop[data-tier="3"]{background:linear-gradient(120deg,#a3404f,#846025,#2a816b,#375c99,#9150a0)}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop strong{font:900 10px/13px system-ui,sans-serif;white-space:nowrap}
+html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop small{font:800 9px/11px system-ui,sans-serif}
+@media(prefers-reduced-motion:reduce){
+ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-track{animation:none!important;transform:none!important;min-width:0;will-change:auto}
+ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-sequence[aria-hidden="true"]{display:none}
+ html.arcade-v249.arcade-tabs-v250 #screen #tabs .reach-clip{overflow-x:auto!important;scrollbar-width:none}
+}

@@ -1,8 +1,8 @@
-name: Arcade v249 logos cards and game surfaces
+name: Arcade v250 tabs Castella61 and game surfaces
 on:
   workflow_dispatch:
   push:
-    branches: ['main', 'feature/arcade-v249']
+    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61']
     paths:
       - 'index.html'
       - 'app-version.json'
@@ -13,6 +13,11 @@ on:
       - 'assets/game-menu-v91.js'
       - 'assets/lineups-v91.js'
       - 'assets/shared-machine-v176.js'
+      - 'assets/party-castella*'
+      - 'assets/castella-lesson.js'
+      - 'optimized/app-01.js'
+      - 'optimized/style-01.css'
+      - 'tests/*v250*'
       - 'tests/arcade-visual-v249.mjs'
       - '.github/workflows/arcade-visual-v249.yml'
 permissions:
@@ -31,6 +36,7 @@ jobs:
         run: |
           npm run check
           npm run test:sixdrop
+          npm run test:castella
           node tests/client-smooth-v246.mjs
           node tests/hidden-engine-clocks-v246.mjs
           node tests/hidden-results-v246.mjs
@@ -42,7 +48,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Nine actual games, responsive art and fast card selection
         run: |
-          node tests/arcade-visual-v249.mjs
+          npm run test:arcade
+          node tests/client-browser-v243.mjs
           node tests/sixdrop-hud-v247.mjs
       - name: Full hidden nine-game round, payout and carry
         run: node tests/client-hidden-browser-v246.mjs
@@ -50,9 +57,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: arcade-v249-visual-verification
+          name: arcade-v250-visual-verification
           path: |
-            qa-arcade-v249/
+            qa-v250/
+            qa-tabs-v250/
+            qa-castella-v250/
+            qa-sixdrop-v250/
             qa-client-v243/
             docs/client-v246-qa.json
           retention-days: 7

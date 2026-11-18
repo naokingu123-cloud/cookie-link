@@ -87,3 +87,21 @@ body.pct-active .board-area,body.pct-active #panels{width:100%!important;max-wid
 .pct-pay tbody td small{display:inline!important;font-family:ElixirNumbers,'Arial Rounded MT Bold',system-ui,sans-serif!important;font-size:.65em!important;color:inherit!important;letter-spacing:0!important;margin-inline-start:.08em!important}
 .pct-pay tbody tr.current td{font-size:calc(var(--pct-unit)*9.5)!important}
 @media(max-width:440px){.pct-pay tbody td,.pct-pay tbody tr.current td{font-size:calc(var(--pct-unit)*8.9)!important;letter-spacing:-.045em!important}.pct-pay tbody td small{font-size:.61em!important}}
+
+/* v250: the bigger griddle keeps its gauges outside the numbered wells. */
+#screen #panels>.pct-panel .pct-scene{grid-template-columns:minmax(0,20fr) minmax(0,80fr);gap:.55%;padding:1.1% .8%}
+.pct-status{gap:1.4%;height:calc(var(--pct-unit)*45);min-height:calc(var(--pct-unit)*34)}
+.pct-status>div{padding:1.5% 3%;gap:4%;border-width:1px}
+.pct-status .pct-power-icon{display:block;position:static;inset:auto;width:26%;height:auto;aspect-ratio:1;max-height:100%;flex:0 0 26%;object-fit:contain;filter:drop-shadow(0 1px 1px #321b15)}
+.pct-status .pct-stat-line{gap:calc(var(--pct-unit)*2);align-items:stretch}
+.pct-status small,.pct-status span{text-align:center;font-size:calc(var(--pct-unit)*9)}
+.pct-status small{color:#fff5d0;letter-spacing:.08em}
+.pct-status-pour,html.arcade-v249 #screen #panels>.v249-game-surface[data-v249-kind="castella"] .pct-status>.pct-status-pour{background:linear-gradient(125deg,#17485a,#28687b 52%,#163f52)!important;border-color:#9de6f6!important;box-shadow:inset 0 0 0 1px #2c94b3,0 2px 3px #4827139c!important}
+.pct-gauge{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(var(--pct-unit)*2);width:100%;height:calc(var(--pct-unit)*8);min-height:4px}
+.pct-gauge i{display:block;border-radius:2px;box-shadow:inset 0 1px 2px #150e11b3,0 0 0 1px #fff7c338;background:#251d22}
+.pct-pour-gauge i.filled{background:linear-gradient(#d2ffff,#5edbef 48%,#259bc9);box-shadow:inset 0 1px #fff,0 0 3px #62f0ff9c}
+.pct-fire-gauge i.filled{background:linear-gradient(#fff4af,#ffbe50 48%,#f06727);box-shadow:inset 0 1px #fff8ce,0 0 3px #ff994da6}
+.pct-scene[data-pour-level="3"] .pct-status-pour{box-shadow:inset 0 0 0 1px #b9f8ff,0 0 7px #5ee2ff9c!important}
+.pct-scene[data-fire-level="3"] .pct-status-fire{box-shadow:inset 0 0 0 1px #fff5ac,0 0 7px #ff9146b3}
+.pct-pay tbody tr.current{outline:1px solid #ffe88a;outline-offset:-1px}
+@media(max-width:440px){.pct-status .pct-stat-line{gap:calc(var(--pct-unit)*1.5)}.pct-status .pct-power-icon{width:25%;flex-basis:25%}.pct-status small,.pct-status span{font-size:calc(var(--pct-unit)*8.5)}}

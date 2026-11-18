@@ -1,4 +1,4 @@
-/* v249: arcade logo faces, immediate tab selection and bounded visual feedback.
+/* v250: illustrated preview cards, one shared BET unit and flowing reach rows.
    This extension runs in the existing game scope. It never changes a board,
    wager, RNG, draw, payout, game clock or the server's current round. */
 (()=>{
@@ -8,14 +8,14 @@ const params=new URLSearchParams(location.search);
 if(params.get('serverHost')==='1'||params.get('serverSettlementWorker')==='1')return;
 const root=document.documentElement,deck=document.getElementById('tabs');
 if(!deck||typeof select!=='function'||typeof paintTabWin!=='function')return;
-root.classList.add('arcade-v249');
+root.classList.add('arcade-v249','arcade-tabs-v250');
 if(!document.getElementById('arcade-tabs-v249-css')){
  const link=document.createElement('link');link.id='arcade-tabs-v249-css';
- link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=249';document.head.append(link);
+ link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=250';document.head.append(link);
 }
 const media=matchMedia('(prefers-reduced-motion: reduce)');
-const records=new Map(),selectionAnimations=new Set(),rewardAnimations=new Map();
-let transitions=0,rewardBursts=0,serial=0,disposed=false;
+const records=new Map(),selectionAnimations=new Set(),rewardAnimations=new Map(),reachAnimations=new Map();
+let transitions=0,rewardBursts=0,reachBursts=0,serial=0,disposed=false;
 const canMove=()=>!disposed&&!media.matches&&!document.hidden;
 const scope=slot=>String(app?.token??'')+'/'+String(slot.engine?.version??'');
 const labelFor=key=>window.SweetsArcadeBrandV249?.catalog?.[key]?.name||window.SweetsLineup?.catalog?.[key]?.name||key;
@@ -39,7 +39,7 @@ function stopReward(slot){
  record.reward.hidden=true;slot.holder.classList.remove('v249-earned');
 }
 function fitTabAmount(slot,win){
- const selected=slot.i===active,width=selected?37:39,size=selected?11:14;
+ const selected=slot.i===active,width=selected?36:33,size=selected?11:12;
  const face=fitGoldenNumber(slot.tabWin,num(win),size,width);
  const fontSize=face.style.fontSize||size+'px';
  if(slot.tabWin.style.getPropertyValue('--v249-tab-win-size')!==fontSize)slot.tabWin.style.setProperty('--v249-tab-win-size',fontSize);
@@ -100,12 +100,20 @@ for(const slot of slots){
  const logo=new Image();logo.className='v249-selected-logo';logo.src=logoFor(key);
  logo.alt='';logo.setAttribute('aria-hidden','true');logo.decoding='async';logo.draggable=false;
  logo.width=160;logo.height=80;logo.dataset.gameKind=key;wrap.append(logo);
+ const backdrop=new Image();backdrop.className='v250-background-logo';backdrop.src=logoFor(key);
+ backdrop.alt='';backdrop.setAttribute('aria-hidden','true');backdrop.decoding='async';backdrop.draggable=false;
+ backdrop.width=768;backdrop.height=384;slot.tab.insertBefore(backdrop,wrap);
+ // The native sugar element remains the single owner of tier/GET state.
+ // Place it next to WIN instead of covering the miniature's top-right corner.
+ slot.tabWin.parentElement.append(slot.tabSugar);
  const rewardBox=document.createElement('span');rewardBox.className='v249-tab-reward';rewardBox.hidden=true;
  rewardBox.setAttribute('aria-hidden','true');
  rewardBox.innerHTML='<span class="v249-reward-stars"><i>✦</i><i>✦</i><i>✦</i><i>✧</i></span><span class="v249-reward-sum"><small>+</small><b class="v249-reward-amount"></b></span><em>WIN</em>';
  slot.holder.append(rewardBox);
  const shown=Number(slot.tabWin.textContent.replace(/[^0-9.\-]/g,''))||0;
- records.set(slot.i,{logo,reward:rewardBox,amount:rewardBox.querySelector('.v249-reward-amount'),win:shown,scope:scope(slot),rewardCount:0});
+ const reachPop=document.createElement('span');reachPop.className='v250-reach-pop';reachPop.hidden=true;
+ reachPop.setAttribute('role','status');reachPop.setAttribute('aria-live','polite');slot.holder.append(reachPop);
+ records.set(slot.i,{logo,reward:rewardBox,amount:rewardBox.querySelector('.v249-reward-amount'),win:shown,scope:scope(slot),rewardCount:0,reachPop,reachSeen:new Map(),reachScope:scope(slot),reachKey:null});
  slot.holder.dataset.v249RewardCount='0';slot.holder.dataset.v249GameLabel=labelFor(key);
  slot.tab.addEventListener('pointerdown',event=>{
   if(event.button!==0)return;slot.holder.classList.add('v249-pressed');
@@ -115,6 +123,117 @@ for(const slot of slots){
  });
  slot.tab.addEventListener('blur',()=>slot.holder.classList.remove('v249-pressed'));
 }
+
+// Retain the native cycle button (including shared-server edit restrictions)
+// but show exactly one of them, outside every game's miniature and tab button.
+const firstVisible=slots.find(slot=>!slot.holder.hidden&&records.has(slot.i));
+const commonBet=firstVisible?.cycle;
+const commonBetHost=document.createElement('div');commonBetHost.className='v250-common-bet';
+if(commonBet){
+ const selectedUnit=unit[firstVisible.i]??4;unit.fill(selectedUnit);
+ for(const slot of slots)if(slot.cycle!==commonBet){slot.cycle.hidden=true;slot.cycle.tabIndex=-1;slot.cycle.setAttribute('aria-hidden','true');}
+ commonBet.classList.add('v250-shared-bet-switch');commonBetHost.append(commonBet);
+ if(allNineMode)document.querySelector('#screen>.games-deck')?.append(commonBetHost);
+ else document.querySelector('#console .drawline')?.append(commonBetHost);
+ commonBet.onclick=()=>{
+  if(commonBet.disabled||app?.phase!=='ready')return;
+  const next=((unit[firstVisible.i]??4)+1)%units.length;unit.fill(next);
+  syncCommonBet();scheduleUI(app);
+ };
+}
+function syncCommonBet(){
+ if(!commonBet)return;
+ const amount=units[unit[firstVisible.i]];
+ if(commonBet.dataset.amount!==String(amount)){
+  commonBet.dataset.amount=String(amount);
+  commonBet.innerHTML='<span>BET切替</span><strong>'+amount+'<small> BET</small></strong>';
+  commonBet.setAttribute('aria-label','全ゲーム共通のBET追加数を切り替え。現在 '+amount+' BET');
+ }
+}
+function syncSugar(){
+ for(const slot of slots){
+  if(!records.has(slot.i))continue;
+  const collected=app?.bet(slot.i)>0&&!!slot.engine?.wonderCollected;
+  if(slot.tabSugar.dataset.get!==String(collected))slot.tabSugar.dataset.get=String(collected);
+  if(collected&&slot.tabWin.parentElement.hidden)slot.tabWin.parentElement.hidden=false;
+ }
+}
+const nativeTabs=tabs;
+tabs=function(...args){const result=nativeTabs.apply(this,args);syncSugar();syncCommonBet();return result;};
+syncCommonBet();syncSugar();
+
+function stopReach(slot){
+ const record=records.get(slot.i);if(!record)return;
+ const animation=reachAnimations.get(slot.i);if(animation)animation.cancel();reachAnimations.delete(slot.i);
+ record.reachPop.hidden=true;
+}
+function popupReach(slot,tier,numbers){
+ const record=records.get(slot.i);if(!record||disposed||document.hidden||app?.paused||app?.phase!=='playing')return;
+ stopReach(slot);
+ const name=tier===3?(slot.engine?.allReachName||'最高役'):tier===2?'超高額':'高額';
+ const label=name+'リーチ';
+ const title=document.createElement('strong');title.textContent=label;
+ const detail=document.createElement('small');detail.textContent=numbers.slice(0,4).join('・')+(numbers.length>4?' …':'');
+ record.reachPop.replaceChildren(title,detail);record.reachPop.dataset.tier=String(tier);
+ record.reachPop.hidden=false;reachBursts++;slot.holder.dataset.v250ReachPopCount=String((Number(slot.holder.dataset.v250ReachPopCount)||0)+1);
+ if(typeof record.reachPop.animate!=='function'){record.reachPop.hidden=true;return;}
+ const animation=record.reachPop.animate(media.matches?[
+  {opacity:0},{opacity:1,offset:.08},{opacity:1,offset:.9},{opacity:0}
+ ]:[
+  {opacity:0,scale:'.8',translate:'0 4px'},{opacity:1,scale:'1.05',translate:'0 0',offset:.16},
+  {opacity:1,scale:'1',translate:'0 0',offset:.84},{opacity:0,scale:'1',translate:'0 -3px'}
+ ],{duration:1600,easing:'ease-out'});
+ reachAnimations.set(slot.i,animation);
+ animation.finished.then(()=>{if(reachAnimations.get(slot.i)===animation)stopReach(slot);},()=>{});
+}
+const nativeVisibleTabReach=visibleTabReachResults;
+const actualTabReaches=(slot,a)=>nativeVisibleTabReach(slot,a).filter(hit=>Number(hit.gain)>0).map(hit=>({
+ ...hit,oddsUp:false,tier:hit.allClear?3:Number(hit.gain)>=1000?2:Number(hit.gain)>=300?1:0
+})).sort((a,b)=>a.number-b.number);
+function flowReach(slot,results,a){
+ const record=records.get(slot.i);if(!record)return;
+ const currentScope=scope(slot);
+ if(record.reachScope!==currentScope){record.reachScope=currentScope;record.reachSeen.clear();record.reachKey=null;stopReach(slot);}
+ const hidden=a.phase==='ready';if(slot.reachStrip.hidden!==hidden)slot.reachStrip.hidden=hidden;
+ if(slot.reachStrip.dataset.empty!==String(!results.length))slot.reachStrip.dataset.empty=String(!results.length);
+ slot.reachPageDue=0;slot.reachPage=0;slot.reachPageResults=results;
+ const key=hidden?'ready':results.map(hit=>hit.number+':'+hit.tier+':'+hit.gain).join(',');
+ if(key===record.reachKey)return;record.reachKey=key;
+ if(slot.reachIncoming){slot.reachIncoming.remove();slot.reachIncoming=null;}
+ slot.reachNumbers.className='reach-numbers v250-reach-numbers';slot.reachNumbers.style.transform='none';slot.reachNumbers.replaceChildren();
+ slot.reachNumbers.removeAttribute('aria-hidden');
+ slot.reachCaption.hidden=hidden||!results.length;slot.reachCaption.classList.remove('odds-up');slot.reachCaption.replaceChildren();
+ const maxTier=Math.max(0,...results.map(hit=>hit.tier));slot.reachCaption.dataset.tier=String(maxTier);
+ slot.reachClip.tabIndex=media.matches&&results.length?0:-1;
+ if(hidden||!results.length){record.reachSeen.clear();slot.reachStrip.setAttribute('aria-label','ゲーム'+(slot.i+1));stopReach(slot);return;}
+ const badge=document.createElement('span');badge.className='reach-badge-label';badge.textContent='リーチ';slot.reachCaption.append(badge);
+ slot.reachCaption.setAttribute('aria-label',maxTier===2?'超高額リーチ':maxTier===1?'高額リーチ':'リーチ');
+ const track=document.createElement('span');track.className='v250-reach-track';
+ track.style.setProperty('--v250-reach-duration',Math.max(4,results.length*.7+1)+'s');
+ for(let copy=0;copy<2;copy++){
+  const sequence=document.createElement('span');sequence.className='v250-reach-sequence';if(copy)sequence.setAttribute('aria-hidden','true');
+  for(const hit of results){
+   const digit=document.createElement('span');digit.className='reach-num';digit.dataset.reachTier=String(hit.tier);digit.textContent=String(hit.number);
+   digit.setAttribute('aria-label',hit.number+'番、'+(hit.tier===3?(slot.engine?.allReachName||'最高役'):hit.tier===2?'超高額':hit.tier===1?'高額':'')+'リーチ');sequence.append(digit);
+  }
+  track.append(sequence);
+ }
+ slot.reachNumbers.append(track);
+ slot.reachStrip.setAttribute('aria-label','ゲーム'+(slot.i+1)+' リーチ '+results.map(hit=>hit.number+'番').join('、'));
+ const newlyHigh=results.filter(hit=>hit.tier>0&&hit.tier>(record.reachSeen.get(hit.number)||0));
+ // Remember the latest stable preview, not a lifetime maximum. A reach that
+ // genuinely drops away and later returns can announce its new appearance.
+ record.reachSeen=new Map(results.map(hit=>[hit.number,hit.tier]));
+ if(newlyHigh.length){const tier=Math.max(...newlyHigh.map(hit=>hit.tier));popupReach(slot,tier,newlyHigh.filter(hit=>hit.tier===tier).map(hit=>hit.number));}
+}
+// Remove the former page timer. CSS scrolls all current numbers on every card,
+// including nonselected games, without waking a JS timer for each miniature.
+syncReachPager=function(){if(reachPageTimer!==null)clearTimeout(reachPageTimer);reachPageTimer=null;};
+syncReachPager();
+updateReachUI=function(a){
+ for(const slot of slots)if(slot.engine&&records.has(slot.i))flowReach(slot,actualTabReaches(slot,a),a);
+ const current=slots[active];if(current?.engine)updateReachBoard(current,a);
+};
 const releasePress=()=>{for(const slot of slots)slot.holder?.classList.remove('v249-pressed');};
 document.addEventListener('pointerup',releasePress,{passive:true});
 document.addEventListener('pointercancel',releasePress,{passive:true});
@@ -133,14 +252,16 @@ paintTabWin=function(slot,value){
  if(!record)return nativePaintWin.apply(this,arguments);
  const win=Math.max(0,Number(value)||0),nextScope=scope(slot);
  const sameRound=record.scope===nextScope,gain=win-record.win;
+ const hidePlaque=win<=0&&!(app?.bet(slot.i)>0&&slot.engine?.wonderCollected);
  const face=slot.tabWin.querySelector('.gold-number');
  let result;
  // The older painter fits to a larger bay. Do not bounce between its old fit
  // and this card's fit on every HUD tick when the displayed amount is stable.
  if(record.paintedWin!==win||record.paintedSelected!==(slot.i===active)||
-    slot.tabWin.parentNode.hidden!==(win<=0)||!face||face.textContent!==num(win)||
+    slot.tabWin.parentNode.hidden!==hidePlaque||!face||face.textContent!==num(win)||
     face.dataset.fit!==record.paintedFitKey||face.style.fontSize!==record.paintedFontSize||face.style.transform!==record.paintedTransform){
   result=nativePaintWin.apply(this,arguments);fitTabAmount(slot,win);
+  if(slot.tabWin.parentNode.hidden!==hidePlaque)slot.tabWin.parentNode.hidden=hidePlaque;
  }
  record.win=win;record.scope=nextScope;
  if(!sameRound||win===0)stopReward(slot);
@@ -148,16 +269,17 @@ paintTabWin=function(slot,value){
  return result;
 };
 function quiet(){
- stopSelection();releasePress();for(const slot of slots)stopReward(slot);
+ stopSelection();releasePress();for(const slot of slots){stopReward(slot);stopReach(slot);}
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden)quiet();});
-if(typeof media.addEventListener==='function')media.addEventListener('change',quiet);
-else if(typeof media.addListener==='function')media.addListener(quiet);
+const motionChanged=()=>{quiet();for(const record of records.values())record.reachKey=null;if(app)updateReachUI(app);};
+if(typeof media.addEventListener==='function')media.addEventListener('change',motionChanged);
+else if(typeof media.addListener==='function')media.addListener(motionChanged);
 window.addEventListener('pagehide',()=>{disposed=true;quiet();});
 window.addEventListener('pageshow',event=>{if(event.persisted){disposed=false;syncFace();}});
 syncFace();
 window.SweetsArcadeTabsV249={
- version:249,
- describe(){return {activeIndex:active,transitions,runningAnimations:selectionAnimations.size+rewardAnimations.size,reducedMotion:media.matches,rewardBursts,logos:records.size};}
+ version:250,
+ describe(){return {activeIndex:active,transitions,runningAnimations:selectionAnimations.size+rewardAnimations.size+reachAnimations.size,reducedMotion:media.matches,rewardBursts,reachBursts,logos:records.size,sharedBetUnit:commonBet?units[unit[firstVisible.i]]:null};}
 };
 })();

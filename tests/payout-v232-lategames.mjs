@@ -83,7 +83,9 @@ for(let seed=1;seed<=120;seed++){
 for(const rate of [50,90,150]){assert.equal(context.WafflePowV159.expectedPowCount(rate),.95);assert(Math.abs(R.balance(rate).totalPercent-rate)<1e-8);}
 assert.deepEqual(plain(R.payRows.map(row=>row.hundredths)),[20,20,40,40,100,100,150,200,300,400,500,1000,1500]);
 
-const C=context.PartyCastellaRules;
+// Keep the v232 37-hole oracle as an in-flight checkpoint compatibility check.
+// The 61-hole v250 generator and payout have their own current-rule regression.
+const C=context.PartyCastellaRules.legacy||context.PartyCastellaRules;
 const distance=(a,b)=>Math.max(Math.abs(a.q-b.q),Math.abs(a.r-b.r),Math.abs(a.q+a.r-b.q-b.r));
 const edgeKey=(a,b)=>Math.min(a,b)+':'+Math.max(a,b);
 function castellaOracle(start,draws){

@@ -9,8 +9,9 @@ honeyCrumb.src='assets/sweet-skins/castella.webp';
 const bottleTip=[.954,.971];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const tau=Math.PI*2,clamp=v=>Math.max(0,Math.min(1,v));
-const panW=7.34,panH=6.32;
-const fillStart=[165,435,895],pourDuration=320,ovenSwitch=1340;
+// A live legacy round keeps its 37-hole geometry; newly dealt griddles have 61.
+const geometry=s=>{const radius=Math.max(1,...s.cells.map(c=>c.ring??Math.max(Math.abs(c.q),Math.abs(c.r),Math.abs(c.q+c.r))));return {radius,panW:radius*2+1.34,panH:radius*Math.sqrt(3)+1.12};};
+const fillStart=[145,375,655,935],pourDuration=320,ovenSwitch=1340;
 const history=new WeakMap(),maskCache=new WeakMap();
 const winFor=typeof medalWin==='function'?medalWin:(bet,rate)=>Math.floor(bet*rate/100);
 const showOven=(s,age)=>s.draws.length>5||s.draws.length===5&&(reduced.matches||age>=ovenSwitch);
@@ -70,34 +71,47 @@ function number(ctx,n,x,y,size,filled){
  }
  ctx.restore();
 }
-function idless(kind){return kind==='fire'?.6:1.8;}
-function specialMarker(ctx,x,y,rr,kind,on,age,unit){
- ctx.save();
- const g=ctx.createRadialGradient(x,y,unit*.04,x,y,rr*1.1);
- if(kind==='fire'){
-   g.addColorStop(0,on?'#fff0a8':'#ffe39b');g.addColorStop(.52,on?'#ff974c':'#d9823c');
-   g.addColorStop(1,'#802a16');
+const specialColors={pour:['#b9f7ff','#26b7df','#125e89'],fire:['#fff0a3','#ff8c39','#8a2b19'],sugar:['#ffe8fa','#ed94d5','#8d4389'],odds:['#fff5b7','#e7b552','#87532c']};
+// Small code-native marks stay crisp at both live-board and miniature sizes.
+// The drop + rising arrow means injection; a flame above a switch means heat.
+function powerGlyph(ctx,x,y,r,kind){
+ ctx.save();ctx.translate(x,y);ctx.scale(r,r);ctx.lineJoin=ctx.lineCap='round';
+ const colors=specialColors[kind]||specialColors.sugar;
+ ctx.lineWidth=.11;ctx.strokeStyle=colors[2];ctx.fillStyle=colors[1];
+ if(kind==='pour'||kind==='odds'){
+  ctx.beginPath();ctx.moveTo(-.12,-.9);ctx.bezierCurveTo(-.35,-.48,-.77,-.09,-.71,.30);ctx.bezierCurveTo(-.64,.96,.44,.99,.5,.27);ctx.bezierCurveTo(.55,-.12,.1,-.58,-.12,-.9);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.strokeStyle=colors[0];ctx.lineWidth=.14;ctx.beginPath();ctx.moveTo(-.40,.06);ctx.quadraticCurveTo(-.55,.43,-.25,.53);ctx.stroke();
+  if(kind==='pour'){
+   ctx.strokeStyle='#fff5bf';ctx.lineWidth=.22;ctx.beginPath();ctx.moveTo(.54,.39);ctx.lineTo(.54,-.54);ctx.moveTo(.24,-.26);ctx.lineTo(.54,-.59);ctx.lineTo(.84,-.26);ctx.stroke();
+  }
+ }else if(kind==='fire'){
+  ctx.beginPath();ctx.moveTo(-.12,-.93);ctx.bezierCurveTo(.22,-.52,.02,-.29,.31,-.22);ctx.lineTo(.52,-.56);ctx.bezierCurveTo(.98,.19,.62,.73,.03,.76);ctx.bezierCurveTo(-.63,.8,-.88,.23,-.47,-.31);ctx.bezierCurveTo(-.47,-.03,-.21,.03,-.19,-.19);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff0a3';ctx.beginPath();ctx.moveTo(.04,-.19);ctx.bezierCurveTo(-.40,.28,-.24,.57,.07,.58);ctx.bezierCurveTo(.45,.54,.34,.22,.04,-.19);ctx.fill();
+  ctx.fillStyle='#33494f';ctx.strokeStyle='#fff1b3';ctx.lineWidth=.07;ctx.beginPath();ctx.roundRect(-.5,.69,1,.26,.12);ctx.fill();ctx.stroke();circle(ctx,.24,.82,.12,'#fff2ab');
  }else{
-   g.addColorStop(0,'#fff5b7');g.addColorStop(.53,on?'#fbd05f':'#bd9441');
-   g.addColorStop(1,'#87532c');
+  ctx.beginPath();ctx.moveTo(0,-.87);ctx.lineTo(.63,-.23);ctx.lineTo(.4,.65);ctx.lineTo(-.4,.65);ctx.lineTo(-.63,-.23);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.strokeStyle='#fff6ff';ctx.lineWidth=.075;ctx.beginPath();ctx.moveTo(0,-.87);ctx.lineTo(-.2,-.12);ctx.lineTo(.4,.65);ctx.moveTo(-.63,-.23);ctx.lineTo(.63,-.23);ctx.moveTo(.63,-.23);ctx.lineTo(-.4,.65);ctx.stroke();
+  ctx.strokeStyle='#fff7ce';ctx.lineWidth=.11;ctx.beginPath();ctx.moveTo(.73,-.75);ctx.lineTo(.73,-.28);ctx.moveTo(.5,-.52);ctx.lineTo(.96,-.52);ctx.stroke();
  }
- circle(ctx,x,y,rr*.93,g);
- outline(ctx,x,y,rr*.94,on?'#fff6c0':'#e1bc75',unit*.039);
- const tick=Number.isFinite(age)?age:0,glow=(Math.sin(tick*.007+idless(kind))*.5+.5);
- ctx.shadowColor=kind==='fire'?'#ff873e':'#ffda65';
- ctx.shadowBlur=unit*(on?.28:.14)*(0.7+glow*.5);
- ctx.globalAlpha=on?.84+.16*glow:.58+.22*glow;
- outline(ctx,x,y,rr*(on?1.13:1.08),kind==='fire'?'#ffb768':'#fff0a1',unit*(on?.075:.060));
- ctx.setLineDash([unit*.16,unit*.08]);ctx.lineDashOffset=-(tick/75)*unit*.015;
- ctx.globalAlpha=on?1:.78;
- outline(ctx,x,y,rr*.985,on?'#fff9d0':'#ffe8a0',unit*.038);
- ctx.setLineDash([]);ctx.shadowBlur=0;
- ctx.globalAlpha=1;
- ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 '+unit*.40+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';
- ctx.fillText(kind==='fire'?'🔥':'🍯',x,y+unit*.014);
- ctx.font='1000 '+unit*.14+'px system-ui,sans-serif';
- ctx.fillStyle=on?'#fff9cc':'#ffdfa5';
- ctx.fillText(on?'UP!':kind==='fire'?'FIRE':'ODDS',x,y+unit*.29);
+ ctx.restore();
+}
+function specialMarker(ctx,x,y,rr,kind,on,age,unit,compact=false){
+ ctx.save();
+ const colors=specialColors[kind],radius=compact?rr*.31:rr*.91;
+ if(compact){x+=rr*.82;y+=rr*.70;}
+ const g=ctx.createRadialGradient(x-radius*.25,y-radius*.28,0,x,y,radius);
+ g.addColorStop(0,colors[0]);g.addColorStop(.56,colors[1]);g.addColorStop(1,colors[2]);
+ const t=Number.isFinite(age)?age:0,glow=reduced.matches?1:.75+.25*Math.sin(t*.006)**2;
+ ctx.shadowColor=colors[1];ctx.shadowBlur=on?radius*.36*glow:0;
+ circle(ctx,x,y,radius,g);outline(ctx,x,y,radius,on?'#fffbd9':'#ffe8b6',Math.max(1,unit*.03));ctx.shadowBlur=0;
+ powerGlyph(ctx,x,y-radius*(compact?0:.08),radius*(compact?.76:.66),kind);
+ if(!compact){
+  ctx.font='1000 '+unit*.135+'px "Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.lineWidth=unit*.035;ctx.strokeStyle=colors[2];ctx.fillStyle='#fff9da';
+  const label=kind==='sugar'?(on?'GET':'SUGAR'):on?'UP!':kind==='pour'?'注入力':kind==='fire'?'火力':'はちみつ';
+  ctx.strokeText(label,x,y+radius*.67);ctx.fillText(label,x,y+radius*.67);
+ }
+ if(on){outline(ctx,x,y,radius*1.10,colors[0],unit*.025);}
  ctx.restore();
 }
 const reachBadges=new WeakMap();
@@ -274,7 +288,7 @@ function paint(ctx,s,opts={},mini=false){
   frame={wave,arrival,inlets,labels,layer:last?.frame.layer,legend:last?.frame.legend};
  }
  history.set(ctx,{s,key,frame,reach:opts.reach});
- const unit=Math.min(w/panW,h/panH),X=x=>w/2+x*unit,Y=y=>h/2+y*unit,rr=unit*.405,mats=makeMaterials();
+ const {panW,panH}=geometry(s),unit=Math.min(w/panW,h/panH),X=x=>w/2+x*unit,Y=y=>h/2+y*unit,rr=unit*.405,mats=makeMaterials();
  ctx.save();ctx.clearRect(0,0,w,h);
  ctx.lineJoin=ctx.lineCap='round';
  const px=X(-panW/2),py=Y(-panH/2);
@@ -388,16 +402,17 @@ function paint(ctx,s,opts={},mini=false){
  function drawMark(ctx,cell,u){
   const {id}=cell,n=oven?frame.labels[id]:cell.number,x=X(cell.x),y=Y(cell.y);
   const depth=frame.wave[id],stage=s.wet[id]||s.baked[id];
-  if(!n&&s.specials){
-   const kind=s.specials.fire.includes(id)?'fire':s.specials.odds.includes(id)?'odds':null;
-   if(kind)specialMarker(ctx,x,y,rr,kind,!!s.wet[id],play&&!bake?age:Infinity,unit);
-  }
+  const specials=s.specials||{},kind=specials.pour?.includes(id)?'pour':specials.fire?.includes(id)?'fire':specials.sugar?.includes(id)?'sugar':specials.odds?.includes(id)?'odds':null;
+  const newlyReached=play&&depth>=0&&u<.98;
+  const on=kind==='pour'?s.pourTriggered?.includes(id):kind==='fire'?(s.rulesRevision>=250?s.fireTriggered?.includes(id):s.wet[id])&&!newlyReached:kind==='sugar'?s.baked[id]&&(!play||depth<0||opts.sugarCollected):s.wet[id];
+  if(kind&&!n)specialMarker(ctx,x,y,rr,kind,on,play?age:Infinity,unit);
   if(n){
    const hit=s.draws.includes(n),active=hit&&n===s.lastNumber;
    if(hit)outline(ctx,x,y,rr*(active?1.035:.96),active?'#fff2a0':'#efb162',unit*(active?.060:.035));
-   number(ctx,n,x,y+(hit?unit*.105:0),unit*(hit?.50:.575),stage&&(depth<0||u>.5||bake));
+   number(ctx,n,x-(kind?unit*.025:0),y+(hit?unit*.105:kind?-unit*.055:0),unit*(hit?.50:kind?.535:.575),stage&&(depth<0||u>.5||bake));
    if(hit)hitLabel(ctx,x,y-unit*.18,unit);
   }
+  if(kind&&n)specialMarker(ctx,x,y,rr,kind,on,play?age:Infinity,unit,true);
  }
  if(reachShown){
   for(const hit of opts.reach){
@@ -418,34 +433,45 @@ function mount(panel){
  <aside class="pct-side"><div class="pct-phase" role="group" aria-label="前半・後半">
  <div class="pct-phase-first"><strong>前半</strong><span>1〜5球</span></div>
  <div class="pct-phase-second"><strong>後半</strong><span>6〜8球</span></div></div>
- <div class="pct-pay"><div class="pct-pay-label"><span>ODDS</span></div>
+ <div class="pct-pay"><div class="pct-pay-label"><span>配当</span></div>
  <table aria-label="焼けた個数と現在のBETでの獲得WIN"><thead><tr><th scope="col">個数</th><th scope="col">WIN</th></tr></thead><tbody></tbody></table></div></aside>
  <div class="pct-tray"><div class="pct-pan"><canvas role="img"></canvas>
  <div class="pct-anchors" role="group" aria-label="番号を選ぶと焼き範囲を表示"></div></div>
- <div class="pct-status" role="status" aria-label="火力・オッズアップ状況" aria-live="polite">
-   <div class="pct-status-fire"><div class="pct-icon-fire" aria-hidden="true"></div><div class="pct-stat-line"><small>火力 LEVEL</small><strong class="pct-fire-value">Lv.1</strong><span class="pct-fire-radius">周囲1マス</span></div></div>
-   <div class="pct-status-odds"><div class="pct-icon-odds" aria-hidden="true"></div><div class="pct-stat-line"><small>ODDS UP</small><strong class="pct-odds-value">×1.0</strong><span class="pct-odds-hit">0/${R.ODDS_COUNT??2}</span></div></div>
+ <div class="pct-status" role="group" aria-label="注入力・火力ゲージ">
+   <div class="pct-status-pour"><canvas class="pct-power-icon" data-power="pour" width="72" height="72" aria-hidden="true"></canvas><div class="pct-stat-line"><small>注入力</small><div class="pct-gauge pct-pour-gauge" role="meter" aria-label="注入力" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"><i></i><i></i><i></i></div><span class="pct-pour-radius">周囲1マス</span></div></div>
+   <div class="pct-status-fire"><canvas class="pct-power-icon" data-power="fire" width="72" height="72" aria-hidden="true"></canvas><div class="pct-stat-line"><small>火力</small><div class="pct-gauge pct-fire-gauge" role="meter" aria-label="火力" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"><i></i><i></i><i></i></div><span class="pct-fire-radius">周囲1マス</span></div></div>
  </div>
  <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true"></div>
  <div class="pct-caption" role="status" aria-live="polite"></div>`;
  panel.append(root);
- const q=k=>root.querySelector(k),phase=q('.pct-phase'),pan=q('.pct-pan'),canvas=q('canvas'),ctx=canvas.getContext('2d');
+ const q=k=>root.querySelector(k),phase=q('.pct-phase'),pan=q('.pct-pan'),canvas=q('.pct-pan>canvas'),ctx=canvas.getContext('2d');
+ for(const icon of root.querySelectorAll('.pct-power-icon'))powerGlyph(icon.getContext('2d'),36,34,30,icon.dataset.power);
  const legend=q('.pct-anchors'),caption=q('.pct-caption'),table=q('tbody');
- const rows=R.payRows.map(({count,hundredths})=>{
-  const row=table.insertRow(0),th=document.createElement('th');
-  row.dataset.prize=count===37?'feast':count>=35?'ruby':count>=30?'honey':count>=25?'mint':'vanilla';
-  th.scope='row';th.textContent=count+'';
-  if(count===37){const mark=document.createElement('small');mark.textContent='全焼';th.append(mark);}
-  row.append(th);const cell=row.insertCell(),value=document.createElement('span'),unit=document.createElement('small');
-  value.className='pct-win-value';unit.textContent='WIN';cell.append(value,unit);
-  return {count,hundredths,row,cell,value};
- });
- let shown=null,shownOven=false,previewZone=null,lastOpts={},shownBet=null,shownBoost=null;
- function updateWins(bet,oddsHits=0){
+ let rows=[],rowRevision=null,shown=null,shownOven=false,previewZone=null,lastOpts={},shownBet=null,shownBoost=null;
+ function buildRows(s){
+  const revision=String(s.rulesRevision||0)+'/'+s.cells.length;if(revision===rowRevision)return;
+  rowRevision=revision;table.replaceChildren();shownBet=shownBoost=null;
+  const payRows=R.payRowsFor?R.payRowsFor(s):R.payRows,top=s.cells.length;
+  rows=payRows.map(({count,hundredths},index)=>{
+   const row=table.insertRow(0),th=document.createElement('th');
+   const upper=(payRows[index+1]?.count??top+1)-1;
+   row.dataset.prize=count===top?'feast':hundredths>=1000?'ruby':hundredths>=300?'honey':hundredths>=100?'mint':'vanilla';
+   row.dataset.count=String(count);th.scope='row';th.textContent=count+'';
+   if(count===top){const mark=document.createElement('small');mark.textContent='全焼';th.append(mark);}
+   else if(upper>count){const mark=document.createElement('small');mark.textContent='〜';th.append(mark);}
+   row.append(th);const cell=row.insertCell(),value=document.createElement('span'),unit=document.createElement('small');
+   value.className='pct-win-value';unit.textContent='WIN';cell.append(value,unit);
+   return {count,upper,hundredths,row,cell,value};
+  });
+  root.dataset.payRows=String(rows.length);
+ }
+ function updateWins(bet,s){
+  buildRows(s);
+  const oddsHits=s.rulesRevision>=250?0:s.oddsHits||0;
   if(shownBet===bet&&shownBoost===oddsHits)return;
   shownBet=bet;shownBoost=oddsHits;
-  for(const {count,hundredths,row,cell,value} of rows){
-   const win=winFor(bet,R.payout(count,oddsHits));
+  for(const {count,upper,hundredths,row,cell,value} of rows){
+   const rate=R.payoutState?R.payoutState(s,count):R.payout(count,oddsHits),win=winFor(bet,rate);
    let label=String(win);
    // Keep the amount exact. Multiples of a large Japanese unit fit the narrow plaque.
    if(label.length>6){
@@ -454,15 +480,14 @@ function mount(panel){
     }
    }
    value.textContent=label;
-   // All ODDS figures retain the same font size, even when the amount is long.
-   row.title=count+'個　基本'+(hundredths/100).toFixed(1)+'倍 × ODDS UP '+(1+oddsHits*.5).toFixed(1)+'倍 ＝ '+(R.payout(count,oddsHits)/100).toFixed(1)+'倍　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
+   row.title=count+(upper>count?'〜'+upper:'')+'個　'+(rate/100).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')+'倍　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
    cell.setAttribute('aria-label',win.toLocaleString('ja-JP')+' WIN');
   }
  }
  function repaint(){if(shown)paint(ctx,shown,previewZone?{...lastOpts,previewZone}:lastOpts);}
  function placeButtons(){
   if(!shown||!shownOven)return;
-  const w=pan.clientWidth,h=pan.clientHeight,unit=Math.min(w/panW,h/panH);
+  const {panW,panH}=geometry(shown),w=pan.clientWidth,h=pan.clientHeight,unit=Math.min(w/panW,h/panH);
   for(const [i,btn] of Array.from(legend.children).entries()){
    const z=shown.zones[i],c=shown.cells[z.anchor];
    Object.assign(btn.style,{left:w/2+c.x*unit+'px',top:h/2+c.y*unit+'px',width:unit*.85+'px',height:unit*.85+'px'});
@@ -497,23 +522,32 @@ function mount(panel){
   if(!s)return;
   const oven=showOven(s,o.age??Infinity),last=shown;
   if(s!==last)previewZone=null;
-  lastOpts=o;updateWins(o.bet??0,s.oddsHits||0);
+  lastOpts=o;updateWins(o.bet??0,s);
+  let shownFire=s.fireLevel||1;
+  if(s.rulesRevision>=250&&!reduced.matches&&s.draws.length<=5){
+   const age=o.age??Infinity;
+   for(const id of s.newFireTriggers||[]){const depth=s.wave.findIndex(layer=>layer.includes(id));if(depth>=0&&age<fillStart[depth]+pourDuration)shownFire--;}
+  }
+  for(const [kind,level] of [['pour',s.rulesRevision>=250?s.pourLevel||1:2],['fire',shownFire]]){
+   const gauge=q('.pct-'+kind+'-gauge');if(gauge.dataset.value===String(level))continue;
+   gauge.dataset.value=String(level);gauge.setAttribute('aria-valuenow',String(level));gauge.setAttribute('aria-valuetext','レベル'+level+'、周囲'+level+'マス');
+   for(const [i,bar]of [...gauge.children].entries())bar.classList.toggle('filled',i<level);
+   q('.pct-'+kind+'-radius').textContent='周囲'+level+'マス';root.dataset[kind+'Level']=String(level);
+  }
+  root.dataset.flame=String(shownFire);
   if(s!==last){
-   q('.pct-fire-value').textContent='Lv.'+(s.fireLevel||1);
-   q('.pct-fire-radius').textContent='周囲'+(s.fireLevel||1)+'マス';
-   q('.pct-odds-value').textContent='×'+(1+(s.oddsHits||0)*.5).toFixed(1);
-   q('.pct-odds-hit').textContent=(s.oddsHits||0)+'/'+(s.specials?.odds?.length??R.ODDS_COUNT??2);
-   root.dataset.flame=String(s.fireLevel||1);
-   root.dataset.odds=String(s.oddsHits||0);
+   root.dataset.holes=String(s.cells.length);root.dataset.rulesRevision=String(s.rulesRevision||0);
+   root.dataset.pourMarkers=String(s.specials?.pour?.length||0);root.dataset.fireMarkers=String(s.specials?.fire?.length||0);root.dataset.sugarMarkers=String(s.specials?.sugar?.length||0);
   }
   if(s!==last||oven!==shownOven){
    const turn=s.draws.length;
    shown=s;shownOven=oven;root.dataset.stage=oven?'bake':'pour';
    root.classList.toggle('pct-sweep',!!s.highestRole);
    phase.classList.toggle('pct-after',oven);phase.setAttribute('aria-label',oven?'後半 6〜8球':'前半 1〜5球');
-   rows.forEach(({count,row})=>row.classList.toggle('current',turn>=6&&count===s.bakedCount));
+   rows.forEach(({count,upper,row})=>row.classList.toggle('current',turn>=6&&count<=s.bakedCount&&upper>=s.bakedCount));
    const status='生地 '+s.wetCount+'個、焼き上がり '+s.bakedCount+'個。'+(s.lastNumber?s.lastNumber+'番 HIT!':'');
-   caption.textContent=status;canvas.setAttribute('aria-label','37個の焼き型。'+status);
+   const specialInfo=s.rulesRevision>=250?'注入力UPは番号HITで次回から強化。火力スイッチは生地が届くと発動。シュガーの穴が焼き上がると獲得。':'';
+   caption.textContent=status;canvas.setAttribute('aria-label',s.cells.length+'個の焼き型。'+status+specialInfo);
    if((oven?s.zones:null)!==(legend.children.length?last?.zones:null))makeButtons(s);
    else for(const btn of legend.children)btn.setAttribute('aria-pressed','false');
   }
@@ -522,5 +556,5 @@ function mount(panel){
  fit();return {draw,drawMini};
 }
 function drawMini(ctx,s,o){paint(ctx,s,o,true);}
-window.PartyCastellaView={mount,drawMini};
+window.PartyCastellaView={mount,drawMini,geometry,powerGlyph};
 })();

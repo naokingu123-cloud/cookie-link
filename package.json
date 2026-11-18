@@ -10,9 +10,10 @@
     "tunnel:windows": "powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-shared-machine-v205.ps1",
     "test:light": "node tests/client-no-local-eight.mjs && node tests/shared-v224-core-video-guards.mjs && node tests/shared-v224-normal-cycle-loss.mjs",
     "test:sync": "node tests/shared-client-http-backoff.mjs && node tests/shared-v225-host-recovery.mjs && node tests/shared-v225-video-reconnect.mjs && node tests/shared-v225-payout-lifecycle.mjs && node tests/server-rate-limit-v225.mjs && node tests/shared-v225-end-to-end.mjs && node tests/shared-v226-host-start.mjs && node tests/shared-v226-client-start.mjs && node tests/shared-v227-registration.mjs && node tests/shared-v227-bet-reservation.mjs && node tests/shared-v227-client-install.mjs && node tests/client-join-ack-v248.mjs && node tests/shared-v228-wallet-hydration.mjs && node tests/shared-v228-credit-rebet.mjs && node tests/server-wallet-v228.mjs && node tests/shared-v229-immediate-bet.mjs && node tests/shared-v229-video-display.mjs && node tests/shared-v230-client-lifecycle.mjs && node tests/shared-v230-video-lifecycle.mjs && node tests/shared-v231-remote-display.mjs",
-    "test:payout": "node tests/payout-v232-bootstrap.mjs && node tests/payout-v232-classic-rules.cjs && node tests/payout-v232-midgames.mjs && node tests/payout-v232-lategames.mjs",
+    "test:payout": "node tests/payout-v232-bootstrap.mjs && node tests/payout-v232-classic-rules.cjs && node tests/payout-v232-midgames.mjs && node tests/payout-v232-lategames.mjs && npm run test:castella",
     "test:sixdrop": "node tests/sixdrop-progressive-v247.cjs && node tests/sixdrop-connected-v248.cjs && node tests/sixdrop-gravity-v247.cjs && node tests/sixdrop-carry-v247.mjs && node tests/sixdrop-server-v248.mjs",
-    "test:arcade": "node tests/arcade-visual-v249.mjs"
+    "test:arcade": "node tests/tabs-v250-browser.mjs && node tests/castella-v250-view.mjs && node tests/sixdrop-reach-v250.mjs",
+    "test:castella": "node tests/castella-v250-rules.mjs && node tests/castella-v250-checkpoint.mjs"
   },
   "engines": {
     "node": ">=20"

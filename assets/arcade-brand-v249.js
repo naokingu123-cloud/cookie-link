@@ -28,7 +28,7 @@ const catalog=Object.fromEntries(Object.entries(palettes).map(([kind,[accent,pal
 }));
 const titleImages=[];
 window.SweetsArcadeBrandV249=Object.freeze({
- version:249,catalog:Object.freeze(catalog),
+ version:250,catalog:Object.freeze(catalog),
  describe(){return {games:Object.keys(catalog).length,titles:titleImages.length,loaded:titleImages.filter(img=>img.complete&&img.naturalWidth>0).length};}
 });
 const params=new URLSearchParams(location.search);
@@ -36,7 +36,7 @@ if(params.get('serverHost')==='1'||params.get('serverSettlementWorker')==='1')re
 document.documentElement.classList.add('arcade-brand-v249');
 if(!document.getElementById('arcade-brand-v249-css')){
  const link=document.createElement('link');link.id='arcade-brand-v249-css';link.rel='stylesheet';
- link.href='assets/arcade-brand-v249.css?v=249';document.head.append(link);
+ link.href='assets/arcade-brand-v249.css?v=250';document.head.append(link);
 }
 function tint(element,game){
  if(!element||!game)return;

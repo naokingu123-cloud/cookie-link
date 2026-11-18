@@ -1,12 +1,12 @@
-/* Enlarged details of the Party Castella griddle for the BET tutorial. */
+/* v250 BET lesson: real ring-and-spoke passages, two distinct powers, baked Sugar. */
 (()=>{
 'use strict';
 const R=window.PartyCastellaRules,TAU=Math.PI*2;
 const steps=[
  {title:'当たった穴に生地を注ぐ',caption:'前半の5球は、出た番号の穴にカステラ液を注ぎます。'},
- {title:'溝を伝って、2マス先まで',caption:'生地は六角形の辺と対角線の溝を通り、枝分かれして広がります。'},
- {title:'後半の3球は、周りを焼く',caption:'火は溝を越えて広がります。生地がある穴だけが焼けます。'},
- {title:'焼けた個数で配当が決まる',caption:'20個から配当。はちみつ1個で、基本配当の1.5倍。'}
+ {title:'注入力UPにHIT！ 次から広く注ぐ',caption:'注入力は周囲1マスから、UP番号を当てるたび2・3マスへ。強化は次の球から。'},
+ {title:'スイッチに生地が届くと火力UP',caption:'2個の火力スイッチで周囲1→2→3マスへ。後半3球は生地のある穴を焼きます。'},
+ {title:'焼けた個数でWIN！ シュガーもGET',caption:'配当は焼き上がり個数で決定。シュガーの印がある穴を焼くとシュガーGET！'}
 ];
 const origin=26,oven=27,detail=[24,11,12,13,29,25,26,27,28],spots=new Set(detail);
 // A top-down crop along the outer ring. Both 26 and 27 are numbered in the 雪風 mold.
@@ -14,11 +14,10 @@ const links=R.originalEdges.filter(([a,b])=>spots.has(a)&&spots.has(b));
 const xy=R.cells.map(({x,y})=>[241+(x+.5)*83,157+(y-3*Math.sqrt(3)/2)*83]);
 const connections=id=>R.originalEdges.flatMap(([a,b])=>a===id?[b]:b===id?[a]:[]);
 const depth=new Map([[origin,0]]);
-for(let d=1;d<=2;d++)for(const [id,n] of [...depth])if(n===d-1){
+for(let d=1;d<=3;d++)for(const [id,n] of [...depth])if(n===d-1){
  for(const dst of connections(id))if(!depth.has(dst))depth.set(dst,d);
 }
-const hot=id=>{const q=R.cells[id].q-R.cells[oven].q,r=R.cells[id].r-R.cells[oven].r;return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r))<=1;};
-const honeyWin=R.payout(24,1);
+const hot=(id,radius=1)=>{const q=R.cells[id].q-R.cells[oven].q,r=R.cells[id].r-R.cells[oven].r;return Math.max(Math.abs(q),Math.abs(r),Math.abs(q+r))<=radius;};
 const unit=(t,a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a)));
 const smooth=(t,a,b)=>{const x=unit(t,a,b);return x*x*(3-2*x);};
 let art,faces;
@@ -46,6 +45,15 @@ function text(c,s,x,y,size,color){
 }
 function badge(c,s,x,y,w,fill='#442a20',ink='#ffe3a4'){
  box(c,x-w/2,y-15,w,30,14,fill);text(c,s,x,y+1,19,ink);
+}
+function power(c,kind,x,y,r){
+ const glyph=window.PartyCastellaView?.powerGlyph;
+ if(glyph)glyph(c,x,y,r,kind);
+ else{disc(c,x,y,r,kind==='pour'?'#6bd6eb':kind==='fire'?'#f7aa54':'#eaa8dc');text(c,kind==='pour'?'↑':kind==='fire'?'火':'◆',x,y,r*1.4,'#fff7d1');}
+}
+function gauge(c,kind,level,x,y){
+ power(c,kind,x-25,y,13);
+ for(let i=0;i<3;i++)box(c,x+i*20,y-7,16,14,3,i<level?(kind==='pour'?'#79e8f6':'#ffc164'):'#41332d');
 }
 function well(c,x,y,r,state){
  disc(c,x,y+2,r+1,'#331d19');
@@ -92,7 +100,8 @@ function channels(c){for(const [a,b] of links){
 }}
 function flow(c,t){
  plate(c,15,15,490,211);channels(c);
- const amount=d=>d===0?1:smooth(t,d===1?.17:.53,d===1?.43:.78);
+ const level=t<.39?1:t<.72?2:3;
+ const amount=d=>d===0?1:d>level?0:smooth(t,d===1?.10:d===2?.42:.74,d===1?.30:d===2?.64:.91);
  for(const [a,b] of links){
   const da=depth.get(a),db=depth.get(b);if(da===undefined||db===undefined||da===db)continue;
   const [start,end]=da<db?[xy[a],xy[b]]:[xy[b],xy[a]],p=amount(Math.max(da,db));
@@ -102,40 +111,41 @@ function flow(c,t){
   const [x,y]=xy[id],d=depth.get(id);well(c,x,y,25,id===12?1:0);
   if(d!==undefined)filling(c,x,y,25,amount(d));if(id===origin)text(c,'7',x,y+1,22,'#683720');
  }
- badge(c,'HIT',241,199,57,'#742d46','#fff1bc');
- if(t>.22)badge(c,'1マス',324,199,67);
- if(t>.58)badge(c,'2マス',407,199,67);
+ badge(c,'注入力',95,47,93,'#205d73','#e9fcff');gauge(c,'pour',level,172,47);
+ power(c,'pour',451,88,21);power(c,'pour',451,151,21);
+ badge(c,'次から周囲'+level+'マス',365,199,185,'#205d73','#f1feff');
 }
 function bake(c,t){
  plate(c,15,15,490,211);channels(c);
- const [ox,oy]=xy[oven],p=smooth(t,.17,.57);
- if(p){c.save();c.beginPath();c.roundRect(18,18,484,205,20);c.clip();c.beginPath();c.arc(ox,oy,100*p,0,TAU);c.fillStyle='#ffad4a43';c.fill();c.strokeStyle='#ffb64e';c.lineWidth=3;c.stroke();c.restore();}
+ const [ox,oy]=xy[oven],p=smooth(t,.32,.68),level=t<.19?1:t<.37?2:3;
+ if(p){c.save();c.beginPath();c.roundRect(18,18,484,205,20);c.clip();c.beginPath();c.arc(ox,oy,83*level*p,0,TAU);c.fillStyle='#ffad4a43';c.fill();c.strokeStyle='#ffb64e';c.lineWidth=3;c.stroke();c.restore();}
  for(const id of detail){
   const [x,y]=xy[id],wet=depth.has(id)||id===12;
   well(c,x,y,25,wet?1:0);
-  if(hot(id)&&wet){
-   const brown=id===oven?smooth(t,.25,.51):smooth(t,.45,.76);
+  if(hot(id,level)&&wet){
+   const brown=id===oven?smooth(t,.41,.66):smooth(t,.56,.86);
    if(brown){c.save();c.globalAlpha=brown;well(c,x,y,25,2);c.restore();}
   }
  }
  text(c,'15',ox,oy+1,22,'#59301b');
  badge(c,'15  HIT!',ox,201,105,'#742d46','#fff1bc');
- badge(c,'火力 Lv.1',94,47,115);
+ badge(c,'火力',78,47,75);gauge(c,'fire',level,139,47);
+ power(c,'fire',430,75,18);power(c,'fire',472,75,18);
  if(t>.67){const [x,y]=xy[13];badge(c,'生地なし',x,48,96);}
 }
 function payout(c,t){
  plate(c,13,19,265,201);
- const count=21+Math.floor(smooth(t,.09,.54)*3);
- for(let k=0;k<24;k++){
-  const x=46+(k%6)*39,y=51+Math.floor(k/6)*39;well(c,x,y,15,k<count?2:1);
+ const count=18+Math.floor(smooth(t,.09,.54)*8);
+ for(let k=0;k<30;k++){
+  const x=46+(k%6)*39,y=45+Math.floor(k/6)*32;well(c,x,y,13,k<count?2:1);
+  if(k===24)power(c,'sugar',x,y,10);
  }
  badge(c,'焼き上がり '+count+'個',145,202,195);
  box(c,289,20,218,199,18,'#412923');
  text(c,'100 BET',398,44,22,'#ffe0a4');
- text(c,'基本 '+R.payout(count,0)+' WIN',398,82,24,'#fff3cf');
- badge(c,'はちみつ1個  ×1.5',398,123,206,'#78431e','#ffeab1');
- c.save();c.globalAlpha=smooth(t,.54,.71);
- text(c,honeyWin+' WIN',398,180,41,'#ffe08a');c.restore();
+ text(c,R.payout(count)+' WIN',398,96,40,'#ffe08a');
+ c.save();c.globalAlpha=smooth(t,.51,.72);
+ power(c,'sugar',346,160,21);text(c,'シュガーGET!',420,160,23,'#ffe3f9');c.restore();
 }
 const scenes=[pour,flow,bake,payout];
 (window.SweetsAttractLessons??={}).castella={steps,draw(c,scene,t){loadArt();c.save();scenes[scene](c,t);c.restore();}};

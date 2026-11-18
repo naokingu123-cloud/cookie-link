@@ -9,6 +9,7 @@ const base=new URL(process.env.SIXDROP_PUBLIC_BASE||'https://naokingu123-cloud.g
 const revision=process.env.GITHUB_SHA||'local-verification',out='qa-six-v248-public';
 const gameKinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella'];
 const arcadeFiles=['assets/arcade-brand-v249.js','assets/arcade-brand-v249.css','assets/arcade-tabs-v249.js','assets/arcade-tabs-v249.css','assets/arcade-surfaces-v249.js','assets/arcade-surfaces-v249.css','assets/jelly-view.js','assets/game-menu-v91.js','assets/lineups-v91.js',...gameKinds.map(kind=>'assets/arcade-v249/logo-'+kind+'.webp')];
+arcadeFiles.push('assets/party-castella-rules.js','assets/party-castella-host.js','assets/party-castella.js','assets/party-castella.css','assets/castella-lesson.js');
 const files=['index.html','app-version.json','optimized/app-01.js','optimized/style-01.css','optimized/media/a73bbbdd98d48aac.woff2','assets/cookie-upgrade-patches.js','assets/sixdrop-progressive-core-v247.js','assets/sixdrop-progressive-host-v247.js','assets/sixdrop-progressive-v247.css','assets/shared-machine-v176.js','assets/shared-client-controller-v224.js','assets/stations-v235.js','assets/stations-progressive-v246.js','monitor.html','assets/monitor-ledger-v241.js','assets/server-monitor-v241.js','assets/server-monitor-v242.js',...arcadeFiles];
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=Object.fromEntries(await Promise.all(files.map(async name=>[name,digest(await fs.readFile(name))])));
@@ -77,6 +78,18 @@ try{
   for(const logo of arcade.logos){assert.ok(logo.src.split('?')[0].endsWith('assets/arcade-v249/logo-'+logo.kind+'.webp'));assert.ok(logo.width>=100&&logo.height>=30,logo.kind+' published logo decodes');}
   assert.ok(arcade.selectedLogo.visible&&arcade.selectedLogo.width>30&&arcade.selectedLogo.height>20,'published selected card displays the logo face');assert.ok(arcade.selectedLogo.src.split('?')[0].endsWith('assets/arcade-v249/logo-candy.webp'));
   assert.ok(['brand','tabs','surfaces'].every(name=>arcade.styles.some(href=>href.includes('arcade-'+name+'-v249.css'))),'all three published presentation styles are loaded');
+  const current=await page.evaluate(()=>{
+   const rules=window.PartyCastellaRules,state=window.PartyCastella.engine.state;
+   const visible=node=>{const s=getComputedStyle(node),r=node.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)>0&&r.width>0&&r.height>0;};
+   const backgrounds=[...document.querySelectorAll('#tabs .v250-background-logo')];
+   const bet=[...document.querySelectorAll('.v250-shared-bet-switch')];
+   return {tabsRevision:window.SweetsArcadeTabsV249.version,backgroundLogos:backgrounds.length,visibleBackgrounds:backgrounds.filter(visible).length,decodedBackgrounds:backgrounds.filter(n=>n.complete&&n.naturalWidth===768).length,commonBetButtons:bet.length,commonBetOutsideTabs:bet.every(n=>!document.getElementById('tabs').contains(n)),castellaRevision:rules.REVISION,castellaHoles:state.cells.length,castellaEdges:state.edges.length,castellaSpecials:{pour:state.specials.pour.length,fire:state.specials.fire.length,sugar:state.specials.sugar.length,odds:state.specials.odds.length},castellaPayoutRows:rules.payRows.length};
+  });
+  assert.equal(current.tabsRevision,250);assert.equal(current.backgroundLogos,9);assert.equal(current.visibleBackgrounds,8);assert.equal(current.decodedBackgrounds,9);
+  assert.equal(current.commonBetButtons,1);assert.equal(current.commonBetOutsideTabs,true);
+  assert.equal(current.castellaRevision,250);assert.equal(current.castellaHoles,61);assert.equal(current.castellaEdges,84);
+  assert.deepEqual(current.castellaSpecials,{pour:2,fire:2,sugar:1,odds:0});assert.equal(current.castellaPayoutRows,13);
+  info.v250=current;
   assert.deepEqual(errors,[],'published frontend has no uncaught JavaScript errors');
   await page.screenshot({path:out+'/public-ready-'+width+'.png'});
   report.screens.push({width,height,...info,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
@@ -86,3 +99,4 @@ try{
 await fs.writeFile(out+'/public-deployment.json',JSON.stringify(report,null,2)+'\n');
 console.log('SIXDROP_PUBLIC_V248_READ_ONLY_PASS',JSON.stringify(report));
 console.log('ARCADE_PUBLIC_V249_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,logos:gameKinds.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,landscape:screen.arcade.landscape,loadedLogos:screen.arcade.brand.loaded,pageErrors:screen.pageErrors.length}))}));
+console.log('ARCADE_PUBLIC_V250_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,...screen.v250,pageErrors:screen.pageErrors.length}))}));

@@ -1268,7 +1268,7 @@ body{--sweet-console-frame:url("media/682e2c3453e9b451.webp");--history-candy:ur
 .allclear-reach-aura{inset:-1px;z-index:3;border-radius:6px}
 .allclear-reach-aura:before,.allclear-reach-aura:after,.allclear-reach-sweep,.allclear-reach-orbit{display:none}
 .allclear-reach-perimeter{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.allclear-reach-perimeter rect{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.allclear-reach-perimeter rect,.allclear-reach-perimeter circle{fill:none;stroke-linecap:round;stroke-linejoin:round}
 .perimeter-rail{stroke:url(#reach-rainbow-edge);stroke-width:2;opacity:.5}
 .perimeter-trail,.perimeter-core{stroke-dasharray:20 80;animation:rainbow-perimeter 2.6s linear infinite}
 .perimeter-trail{stroke:url(#reach-rainbow-edge);stroke-width:10;filter:drop-shadow(0 0 2px #ffcbf5);opacity:.9}
