@@ -197,6 +197,27 @@
     "The server on the user's Windows PC requires installing this source update and restarting. Existing client/monitor pages need reload.",
     "CI screenshot artifact has a seven-day retention period; this JSON and the reproducible tests remain in source control."
   ],
+  "publication": {
+    "deployedRuntimeCommit": "7b841af9f0f3aa04b5f5bc1f1cf14bfa0215c95b",
+    "pagesDeploymentRun": 44251614120,
+    "pagesConclusion": "success",
+    "verificationCommit": "f3f9a0ce67c6552b4a3e7a274d7e148fe8943f70",
+    "verificationRun": 44252610176,
+    "verifiedPublishedFiles": 17,
+    "publicFrontendViewports": [
+      [
+        390,
+        844
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "publicPageErrors": 0,
+    "report": "docs/sixdrop-v248-public-qa.json",
+    "note": "The archived v5 browser gate assumed an inline implementation, old rounds, fixed 100x all-clear and player-side local draws. It was replaced by current rule/HUD checks and read-only published asset and frontend verification. Application runtime files did not change."
+  },
   "sourceIntegrity": {
     "filesComparedAgainstCandidateTree": 931,
     "mismatches": 0,
