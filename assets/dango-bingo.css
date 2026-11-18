@@ -31,7 +31,6 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 .dgb-pay tbody th{font-size:calc(var(--dgb-u)*10);text-align:left;white-space:nowrap;font-weight:900}.dgb-pay tbody th b{font-family:ElixirNumbers,system-ui,sans-serif;font-size:1.16em;color:#8c4e23;margin-right:calc(var(--dgb-u)*2)}
 .dgb-pay td{text-align:right;font-family:ArcadePayout,Georgia,serif;font-size:calc(var(--dgb-u)*14);font-weight:700;white-space:nowrap;overflow:hidden;color:#a68e65}.dgb-pay td .gold-number{vertical-align:middle;font-size:calc(var(--dgb-u)*14);line-height:1.05}
 .dgb-pay tbody tr{border-bottom:1px solid #b88b4e40}.dgb-pay tbody tr:last-child{border-bottom:0}.dgb-pay td.current{background:#ffcf64a8;box-shadow:inset 0 0 0 1px #cd6d35}.dgb-pay td.current .gold-number{filter:drop-shadow(0 0 1px #9b4127) drop-shadow(0 0 2px #fff6bc)}
-.dgb-pay p{flex:none;font-size:calc(var(--dgb-u)*8);font-weight:800;line-height:1.1;text-align:center;margin:calc(var(--dgb-u)*3) 0 0;color:#8f6235}
 .dgb-live{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .dgb-scene[data-phase=placing] .dgb-placement{background:#fff3df;border-color:#c58640}.dgb-scene[data-phase=placing] .dgb-status>div:first-child{background:linear-gradient(#ffe5e7f5,#f8becce8);border-color:#cc8ea4;color:#963b4d}
 @media(max-width:600px){.dgb-scene{padding:.6%;gap:calc(var(--dgb-u)*3)}.dgb-legend{gap:calc(var(--dgb-u)*2) calc(var(--dgb-u)*5)}.dgb-prompt{font-size:calc(var(--dgb-u)*9.5)}}
