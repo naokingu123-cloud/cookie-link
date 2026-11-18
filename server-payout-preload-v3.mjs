@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {WebSocketServer} from 'ws';
+import {isStaleCheckpointV251} from './server-thinking-v251.mjs';
 
 const VERSION=3;
 // v247 storage is retained by v248: bankUnits are hundredths of already-earned
@@ -179,6 +180,7 @@ function processTelemetry(machineId,playerId,payload){
  const telemetry=telemetryFrom(payload);if(!telemetry)return null;
  const roundId=safeId(payload.roundId),ball=Math.max(0,Math.min(8,Number(payload.ballIndex)||Number(telemetry.ball)||0)),p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);
  if(round.cancelledV242||operatorCancelledV242(machineId,roundId))return publicControl(machineId,playerId);
+ if(isStaleCheckpointV251(ball,payload.state,round.stableBall,round.stableState))return publicControl(machineId,playerId);
  round.phase=telemetry.phase||round.phase;round.lastBall=Math.max(round.lastBall,ball);round.win=Math.max(0,finite(telemetry.roundWin));round.updatedAt=now();
  p.currentRoundId=roundId;p.currentRoundBet=Math.max(0,finite(telemetry.roundBet||round.bet));p.currentRoundWin=round.win;p.lastBall=ball;p.currentCredit=finite(telemetry.credit);p.updatedAt=now();
  const games={};for(const item of Array.isArray(telemetry.games)?telemetry.games:[]){
@@ -341,7 +343,7 @@ http.ServerResponse.prototype.end=function(chunk,encoding,callback){
  try{if(url&&this.statusCode<400){
   const checkpoint=url.pathname.match(/^\/api\/machines\/([^/]+)\/round\/checkpoint$/),settle=url.pathname.match(/^\/api\/machines\/([^/]+)\/round\/settle$/),join=url.pathname.match(/^\/api\/machines\/([^/]+)\/round\/join$/),state=url.pathname.match(/^\/api\/machines\/([^/]+)\/state$/),admin=url.pathname.match(/^\/api\/admin\/machines\/([^/]+)$/);
   const payload=parseJson(requestBodies.get(req)),response=parseJson(chunk),playerId=safeId(req.headers['x-player-id']);
-  if(response&&checkpoint){response.payoutControlV3=processTelemetry(decodeURIComponent(checkpoint[1]),playerId,payload);output=JSON.stringify(response);}
+  if(response&&checkpoint){response.payoutControlV3=response.checkpointIgnoredV251?publicControl(decodeURIComponent(checkpoint[1]),playerId):processTelemetry(decodeURIComponent(checkpoint[1]),playerId,payload);output=JSON.stringify(response);}
   else if(response&&settle){response.payoutControlV3=processSettle(decodeURIComponent(settle[1]),playerId,payload,response);output=JSON.stringify(response);}
   else if(response&&join){response.payoutControlV3=processJoin(decodeURIComponent(join[1]),playerId,payload,response);output=JSON.stringify(response);}
   else if(response&&state){output=JSON.stringify(overlayPlayerState(decodeURIComponent(state[1]),playerId,response));}

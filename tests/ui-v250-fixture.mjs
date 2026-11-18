@@ -49,7 +49,7 @@ export async function createUiFixture({startRound=true,viewport={width:1366,heig
    if(/^https?:$/.test(url.protocol)&&url.origin!==base)return route.abort('blockedbyclient');
    return route.continue();
   });
-  page=await context.newPage();page.on('pageerror',error=>errors.push(String(error)));
+  page=await context.newPage();page.on('pageerror',error=>errors.push(String(error.stack||error)));
   page.on('console',message=>{if(['error','warning'].includes(message.type()))warnings.push(message.text().slice(0,400));});
   page.on('request',request=>{const url=new URL(request.url());if(url.pathname.includes('/api/'))requests.push({path:url.pathname,method:request.method()});});
   await page.route('**/assets/shared-machine-v176.js*',async route=>{

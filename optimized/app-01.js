@@ -3173,7 +3173,7 @@ function drawBetPreview(d){
 
 function pendingCellNumbers(e){return e&&['waiting','settled','ready'].includes(e.phase)?e.pendingDraws:new Set();}
 function syncPendingHitTiles(s){
- if(['popcorn','jelly','stick','castella'].includes(s.engine?.kind))return;
+ if(['popcorn','jelly','stick','castella','dango'].includes(s.engine?.kind))return;
  const pending=app?.phase==='playing'&&app.enabled[s.i]?pendingCellNumbers(s.engine):new Set();
  const ids=new Set();if(pending?.size)for(const row of s.engine.board)for(const t of row)if(t&&pending.has(t.number))ids.add(t.id);
  for(const [id,el] of s.tiles)el.classList.toggle('pending-hit',ids.has(id));
@@ -3256,10 +3256,10 @@ function tabs(a){
  for(const s of slots){
   if(!s.engine)continue;const e=s.engine,b=a.bet(s.i),win=medalWin(b,e.totalHundredths);
   const state=b===0?'参加なし':e.phase==='complete'?(a.phase==='playing'?'終了・集計待ち':a.phase==='paying'?'払い出し中':'払い出し済'):e.phase==='allclear'?'全消し！':a.phase==='ready'?'準備OK':e.phase==='link'?(s.event.newRecord?'最大LINK更新！':s.event.depth+'連鎖'):e.busy?'進行中 · 待ち'+e.queue.length:'次の球を待機';
-  if(['popcorn','jelly','stick','castella'].includes(e.kind)){
+  if(['popcorn','jelly','stick','castella','dango'].includes(e.kind)){
    fitGoldenNumber(s.tabBet,num(b),14,76);paintTabWin(s,win);
    const tier=sugarVisualTier(e.wonderToken||b);applySugarTier(s.tabSugar.querySelector('.sugar-gem'),tier);
-   s.tabSugar.hidden=b<=0;s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.classList.toggle('collected',e.wonderCollected);
+   s.tabSugar.hidden=b<=0||e.kind==='dango';s.sugarGet.hidden=!e.wonderCollected;s.tabSugar.classList.toggle('collected',e.wonderCollected);
    s.tabSugar.setAttribute('aria-label',e.wonderCollected?'シュガー獲得済み':'シュガー未獲得');
    s.tab.setAttribute('aria-label',(e.gameName||'ポップコーンスプラッシュ')+'・'+state);s.tab.classList.toggle('off',b===0);continue;
   }
@@ -3303,7 +3303,7 @@ function syncPayClimb(){
 
 const PAY_ROW_HEIGHT=19,PAY_TOP=67;
 function updatePayTable(e,bet){
- if(['gelato','winery','popcorn','jelly','stick','castella'].includes(e.kind))return;
+ if(['gelato','winery','popcorn','jelly','stick','castella','dango'].includes(e.kind))return;
  const shown=slots[active].payDisplayedLink??e.maxLink,track=$('pay'),top=linkRows(shown)[0],key=active+'/'+bet+'/'+shown;
  if(payKey===key)return;payKey=key;track.dataset.hasWin=String(shown>=MIN_PAID_LINK);
  const switched=track.dataset.game!==String(active),first=!track.children.length;
@@ -3437,7 +3437,7 @@ function updateWonderHud(a,s,e,bet){
   bank.setAttribute('aria-label','ワンダーシュガー '+count+'個獲得'+(a.wonderReady?'、チャレンジ条件達成':'')+'、合計 '+tokens.length+'個獲得');
   [...$('sugar-slots').children].forEach((slot,i)=>{const token=tokens[i];slot.classList.toggle('filled',!!token);applySugarTier(slot.querySelector('.sugar-gem'),sugarVisualTier(token));slot.setAttribute('aria-label',token?WONDER_NAMES[sugarVisualTier(token)]+' 獲得、価値 '+num(token.value):'未獲得');});
  }
- if(['choco','candy','gelato','winery','popcorn','jelly','stick','castella'].includes(e.kind))return;
+ if(['choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'].includes(e.kind))return;
  const concealed=a.phase==='ready';
   const showingChain=!concealed&&!['ready','waiting','hit','settled','complete'].includes(e.phase),depth=showingChain?e.lastChain||0:0,key=active+'/'+depth+'/'+e.hammerPreviewVersion+'/'+(concealed?'hidden':'shown');
  if($('hammer-pay').dataset.key!==key){$('hammer-pay').dataset.key=key;
@@ -3809,7 +3809,7 @@ function requestReach(s,e,a=app){
 function reachAvailable(s,a){return a.bet(s.i)>0&&s.reachStatus==='ready'&&!!reachContext(s.engine,a)&&s.reachBoardKey===reachContextKey(s.engine,a);}
 function visibleReachResults(s,a){return reachAvailable(s,a)?s.reachResults:[];}
 function updateReachBoard(s,a){
- if(['popcorn','jelly','stick','castella'].includes(s.engine?.kind))return;
+ if(['popcorn','jelly','stick','castella','dango'].includes(s.engine?.kind))return;
  if(!s.engine)return;
  const results=visibleReachResults(s,a),byNumber=new Map(results.map(p=>[p.number,p])),tilesById=new Map(s.engine.board.flat().filter(Boolean).map(t=>[t.id,t]));
  for(const [id,el] of s.tiles){

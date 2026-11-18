@@ -3,11 +3,12 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
+import http from 'node:http';
 import vm from 'node:vm';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {WebSocket} from 'ws';
-import {createThinkingServiceV251} from '../server-thinking-v251.mjs';
+import {createThinkingServiceV251,isStaleCheckpointV251} from '../server-thinking-v251.mjs';
 
 const root=new URL('..',import.meta.url).pathname;
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -48,6 +49,21 @@ const patched=patchContext.window.SweetsDangoThinkingV251.patch(
  patchContext.window.SweetsGuestEntryV237.patch(patchContext.window.SweetsSharedCorePatchV224.patch(coreSource)));
 new vm.Script(patched);
 assert.ok(patched.includes('if(item.index===6)await window.SweetsDangoThinkingV251?.beforeSix?.'));
+const clockStart=patched.indexOf('let lastCheckpointSavedAtV251=0;'),clockEnd=patched.indexOf('\nfunction restore(a,state){',clockStart);
+assert.ok(clockStart>=0&&clockEnd>clockStart);
+let snapshotNow=123456;
+const clockContext={Date:class extends Date{static now(){return snapshotNow;}},clone:value=>value===undefined?undefined:JSON.parse(JSON.stringify(value)),engineSnapshot:value=>value};
+vm.createContext(clockContext);vm.runInContext(patched.slice(clockStart,clockEnd)+'\nglobalThis.makeCheckpoint=checkpoint;',clockContext);
+const clockApp={phase:'playing',engines:[]};
+const clockOne=clockContext.makeCheckpoint(clockApp),clockTwo=clockContext.makeCheckpoint(clockApp);
+assert.equal(clockOne.savedAt,123456);assert.equal(clockTwo.savedAt,123457,'two snapshots in one millisecond retain their creation order');
+snapshotNow=100000;assert.equal(clockContext.makeCheckpoint(clockApp).savedAt,123458,'a wall-clock correction cannot reverse checkpoint order');
+assert.equal(isStaleCheckpointV251(5,{savedAt:20},5,{savedAt:21}),true);
+assert.equal(isStaleCheckpointV251(5,{savedAt:21},5,{savedAt:21}),true,'duplicate timestamps are idempotent');
+assert.equal(isStaleCheckpointV251(5,{},5,{savedAt:21}),true);
+assert.equal(isStaleCheckpointV251(5,{savedAt:22},5,{savedAt:21}),false);
+assert.equal(isStaleCheckpointV251(6,{savedAt:20},5,{savedAt:21}),false,'ball advancement takes priority over a timestamp');
+assert.equal(isStaleCheckpointV251(4,{savedAt:22},5,{savedAt:21}),true);
 
 // The launch budget includes real in-flight balls and unacknowledged results.
 // Exercise the actual DrawController launch entry, including its retry path.
@@ -113,6 +129,15 @@ async function call(route,{session,body,expect=200,token=false}={}){
  const response=await fetch(base+route+(token?(route.includes('?')?'&':'?')+'adminToken='+admin:''),{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(session?{'X-Player-Id':session.player.id,Authorization:'Bearer '+session.token}:{})},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(5000)});
  const data=await response.json();assert.equal(response.status,expect,route+' '+JSON.stringify(data));return data;
 }
+function delayedCheckpoint(session,body){
+ const bytes=Buffer.from(JSON.stringify(body)),split=Math.floor(bytes.length/2);let request;
+ const response=new Promise((resolve,reject)=>{
+  request=http.request(base+'/api/machines/public-01/round/checkpoint',{method:'POST',headers:{'Content-Type':'application/json','Content-Length':bytes.length,'X-Player-Id':session.player.id,Authorization:'Bearer '+session.token}},res=>{
+   const chunks=[];res.on('data',chunk=>chunks.push(chunk));res.on('end',()=>{try{assert.equal(res.statusCode,200);resolve(JSON.parse(Buffer.concat(chunks).toString()));}catch(error){reject(error);}});res.on('error',reject);
+  });request.on('error',reject);request.write(bytes.subarray(0,split));
+ });
+ return {response,finish:()=>request.end(bytes.subarray(split))};
+}
 const state=session=>call('/api/machines/public-01/state',{session});
 const session=displayName=>call('/api/session',{body:{displayName},expect:201});
 async function connect(session){
@@ -139,10 +164,24 @@ try{
  await until(()=>pw.messages.some(message=>message.type==='thinking_started'&&message.roundId===round.id),'thinking notification');
  assert.equal(pw.messages.filter(message=>message.type==='thinking_started'&&message.roundId===round.id).length,1);
  const fifthMessage=pw.messages.find(message=>message.type==='ball_result'&&message.ball?.index===5);assert.equal(fifthMessage.round.thinkingClosesAt,deadline);
- const placement={draws:[1,2,3,4,5],engines:[{kind:'dango',state:{free:[7,11],freeConfirmed:true}}]};
+ const placement={savedAt:Date.now(),draws:[1,2,3,4,5],engines:[{kind:'dango',state:{free:[7,11],freeConfirmed:true}}],payoutV3:{version:3,ball:5,complete:true,phase:'PLAYING',credit:999900,roundBet:100,roundWin:12,games:[{id:'dango',bet:100,win:12,appliedRate:90}]}};
+ const stalePlacement=JSON.parse(JSON.stringify(placement));stalePlacement.savedAt--;stalePlacement.engines[0].state={free:[],freeConfirmed:false};stalePlacement.payoutV3.roundWin=0;stalePlacement.payoutV3.games[0].win=0;
+ // Start an older automatic request first, but leave its body in flight. A
+ // timeout/proxy delay can allow the newer manual save to arrive and ACK first.
+ const lateAutomatic=delayedCheckpoint(player,{roundId:round.id,ballIndex:5,state:stalePlacement});
  await call('/api/machines/public-01/round/checkpoint',{session:player,body:{roundId:round.id,ballIndex:5,state:placement,dangoPlacementV251:true}});
  const persisted=JSON.parse(await fs.readFile(dbFile,'utf8')).machines['public-01'].round;
  assert.equal(persisted.thinkingClosesAt,deadline);assert.deepEqual(persisted.participants[player.player.id].checkpoint,placement,'checkpoint ACK follows durable save');
+ lateAutomatic.finish();const ignored=await lateAutomatic.response;
+ assert.equal(ignored.checkpointIgnoredV251,true,'a delayed old automatic save cannot undo manual FREE placement');
+ assert.equal(ignored.payoutControlV3.currentRoundWin,12,'old telemetry cannot roll the displayed WIN back');
+ assert.deepEqual((await state(player)).round.participant.checkpoint,placement);
+ const duplicatePlacement=await call('/api/machines/public-01/round/checkpoint',{session:player,body:{roundId:round.id,ballIndex:5,state:placement,dangoPlacementV251:true}});
+ assert.equal(duplicatePlacement.checkpointIgnoredV251,true);
+ const savedPayout=await until(async()=>{
+  try{const record=JSON.parse(await fs.readFile(path.join(temp,'payout-control-v3.json'),'utf8')).machines['public-01'].players[player.player.id].rounds[round.id];return record.stableState?.savedAt===placement.savedAt?record:null;}catch{return null;}
+ },'payout stable checkpoint');
+ assert.deepEqual(savedPayout.stableState,placement);assert.equal(savedPayout.win,12);
  // Host fallback requests remain disabled both during and after the window.
  hw.ws.send(JSON.stringify({type:'host_fallback_request',roundId:round.id}));await sleep(60);
  assert.equal((await state(player)).round.drawSource,'physical');
@@ -164,5 +203,5 @@ try{
  const replacement=await force(round.id,'cancel-active-thinking');const replacementState=(await state(player)).round;
  assert.equal(replacementState.id,replacement.roundId);assert.equal(replacementState.thinkingClosesAt,null);assert.equal(replacementState.thinkingEnabled,false);
  const stale=await ball(host,round,6,409);assert.equal(stale.error,'round_mismatch');
- console.log('DANGO_V251_THINKING_PASS',JSON.stringify({serverDeadline:true,defaultSeconds:15,earlySixRejected:true,fifthIdempotent:true,physicalLaunchBudget:true,retryGate:true,durablePlacement:true,sixthCheckpointBarrier:true,restartSameDeadline:true,noSyntheticFallback:true,noDangoUnchanged:true,cancelResets:true}));
+ console.log('DANGO_V251_THINKING_PASS',JSON.stringify({serverDeadline:true,defaultSeconds:15,earlySixRejected:true,fifthIdempotent:true,physicalLaunchBudget:true,retryGate:true,durablePlacement:true,monotonicSnapshots:true,delayedOldSnapshotIgnored:true,payoutCheckpointPreserved:true,sixthCheckpointBarrier:true,restartSameDeadline:true,noSyntheticFallback:true,noDangoUnchanged:true,cancelResets:true}));
 }finally{await stop();await fs.rm(temp,{recursive:true,force:true});}

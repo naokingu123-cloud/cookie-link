@@ -67,6 +67,13 @@ jobs:
         id: dango
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/dango-v251-view.mjs
+      - name: Retain Dango diagnostics immediately on failure
+        if: ${{ !cancelled() && steps.dango.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-v251-dango-diagnostics
+          path: qa-dango-v251/
+          retention-days: 3
       - name: Castella61 real eight-ball round, gauges and Sugar
         id: castella
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}

@@ -92,6 +92,8 @@ function allowHostLaunchV251(){
 }
 function patch(source){
  function once(from,to,label){const count=source.split(from).length-1;if(count!==1)throw Error('[DangoThinking251] '+label+' matches='+count);source=source.replace(from,to);}
+ once('function checkpoint(a){','let lastCheckpointSavedAtV251=0;\nfunction checkpoint(a){','monotonic checkpoint clock');
+ once('version:176,savedAt:Date.now(),phase:a.phase,','version:176,savedAt:(lastCheckpointSavedAtV251=Math.max(Date.now(),lastCheckpointSavedAtV251+1)),phase:a.phase,','checkpoint timestamp');
  once('function saveLater(ballIndex){',checkpointNowV251.toString()+'\nfunction saveLater(ballIndex){','checkpoint API');
  once('   const item=session.queue.get(session.delivered+1);if(!item)break;', '   const item=session.queue.get(session.delivered+1);if(!item)break;\n   if(item.index===6)await window.SweetsDangoThinkingV251?.beforeSix?.({roundId:session.roundId});','sixth-ball checkpoint barrier');
  once('get pendingStart(){return pendingStart;},state:()=>client.getState()};','get pendingStart(){return pendingStart;},state:()=>client.getState(),checkpointNowV251};','export checkpoint API');

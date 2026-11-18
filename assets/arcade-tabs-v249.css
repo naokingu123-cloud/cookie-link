@@ -452,6 +452,8 @@ html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch small
 html.arcade-v249.arcade-tabs-v250 #screen #console .drawline{
  grid-column:2/4!important;grid-row:1!important;display:grid!important;width:100%!important;
  height:24px!important;grid-template-columns:146px minmax(0,1fr)!important;grid-template-rows:24px!important;gap:0 5px!important;
+ position:relative!important;z-index:3!important;isolation:isolate;
+ padding:0 4px!important;box-sizing:border-box!important;border-radius:5px!important;background:#3b291deb!important;
 }
 html.arcade-v249.arcade-tabs-v250 #screen #console .history-label{display:none!important}
 html.arcade-v249.arcade-tabs-v250 #screen #console .balls{grid-column:1!important;grid-row:1!important;width:146px!important;height:24px!important}
