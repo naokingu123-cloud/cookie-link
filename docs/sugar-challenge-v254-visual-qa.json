@@ -1,0 +1,6253 @@
+{
+  "version": "20261119-v254-sugar-challenge",
+  "scope": "Rule-derived server snapshots injected only into the Sugar presentation API; real server ownership and settlement are tested separately.",
+  "intro": {
+    "early": {
+      "api": {
+        "version": 254,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 254,
+          "id": "sugar-intro",
+          "roundId": "isolated-sugar-view",
+          "station": 1,
+          "sugarValues": [
+            1000,
+            1100,
+            950,
+            1050,
+            900
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 254,
+          "draws": [],
+          "type": "sugar-challenge",
+          "phase": "ready",
+          "drawCount": 0,
+          "remaining": 8,
+          "sum": 0,
+          "jpBase": 5000,
+          "jpAmount": 15000,
+          "award": null,
+          "cashWin": 0,
+          "jpcQualified": false,
+          "jpcTicket": null
+        },
+        "bankCount": 0,
+        "revision": 100002,
+        "intro": 900,
+        "paused": false,
+        "announceAge": 1416.6000000000004,
+        "celebrateAge": 6616.600000000002,
+        "artLoaded": true
+      },
+      "phase": "ready",
+      "credit": 1000000,
+      "displayCredit": 1000000,
+      "bets": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "draws": [],
+      "totalWin": 0,
+      "token": 0,
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "screen": {
+        "left": 458,
+        "top": 0,
+        "right": 908,
+        "bottom": 900,
+        "width": 450,
+        "height": 900
+      },
+      "game": {
+        "left": 469.25,
+        "top": 456.5625,
+        "right": 896.75,
+        "bottom": 822.1875,
+        "width": 427.5,
+        "height": 365.625
+      },
+      "overlay": {
+        "visible": true,
+        "rect": {
+          "left": 472.0625,
+          "top": 459.375,
+          "right": 893.9375,
+          "bottom": 819.375,
+          "width": 421.875,
+          "height": 360
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      },
+      "bottle": {
+        "visible": false,
+        "pouring": "false",
+        "fill": 0,
+        "sum": 0,
+        "label": "0 / 8球"
+      },
+      "scale": {
+        "visible": true,
+        "amount": 1423,
+        "pouring": "true",
+        "gems": [
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "false",
+            "active": "true"
+          },
+          {
+            "poured": "false",
+            "active": "false"
+          },
+          {
+            "poured": "false",
+            "active": "false"
+          },
+          {
+            "poured": "false",
+            "active": "false"
+          }
+        ]
+      },
+      "jp": {
+        "value": 1423,
+        "text": "1423",
+        "font": "ArcadePayout, Georgia, serif",
+        "rect": {
+          "left": 782.375,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 90,
+          "height": 22.5
+        },
+        "face": {
+          "left": 804.875,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 67.5,
+          "height": 22.5
+        }
+      },
+      "sumFont": "ArcadePayout, Georgia, serif",
+      "multiplier": "×?",
+      "phaseText": "5個のシュガーを魔法の秤へ…",
+      "cardName": "シュガーカード",
+      "lucky": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "extremes": "JPC合計 70 以下または138 以上",
+      "reach": "",
+      "history": [
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        }
+      ],
+      "payouts": [
+        {
+          "range": "71〜74 / 134〜137",
+          "fraction": "JP ×0.2",
+          "value": 3000,
+          "text": "3000",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 608.6279296875,
+            "right": 877.9853515625,
+            "bottom": 631.1279296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 611.4404296875,
+            "right": 873.2978515625,
+            "bottom": 628.3154296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 611.4404296875,
+            "right": 873.2978515625,
+            "bottom": 628.3154296875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+          "fraction": "JP ×0.1",
+          "value": 1500,
+          "text": "1500",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 633.0029296875,
+            "right": 877.9853515625,
+            "bottom": 661.1279296875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 638.6279296875,
+            "right": 873.2978515625,
+            "bottom": 655.5029296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 638.6279296875,
+            "right": 873.2978515625,
+            "bottom": 655.5029296875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "81〜86 / 122〜127",
+          "fraction": "JP ×0.05",
+          "value": 750,
+          "text": "750",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 663.0029296875,
+            "right": 877.9853515625,
+            "bottom": 685.5029296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 665.8154296875,
+            "right": 873.2978515625,
+            "bottom": 682.6904296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 665.8154296875,
+            "right": 873.2978515625,
+            "bottom": 682.6904296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "87 / 89〜92 / 116〜119 / 121",
+          "fraction": "JP ×0.03",
+          "value": 450,
+          "text": "450",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 687.3779296875,
+            "right": 877.9853515625,
+            "bottom": 715.5029296875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 693.0029296875,
+            "right": 873.2978515625,
+            "bottom": 709.8779296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 693.0029296875,
+            "right": 873.2978515625,
+            "bottom": 709.8779296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "93〜98 / 110〜115",
+          "fraction": "JP ×0.02",
+          "value": 300,
+          "text": "300",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 717.3779296875,
+            "right": 877.9853515625,
+            "bottom": 739.8779296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 720.1904296875,
+            "right": 873.2978515625,
+            "bottom": 737.0654296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 720.1904296875,
+            "right": 873.2978515625,
+            "bottom": 737.0654296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "99〜109",
+          "fraction": "JP ×0.01",
+          "value": 150,
+          "text": "150",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 741.7529296875,
+            "right": 877.9853515625,
+            "bottom": 764.2529296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 744.5654296875,
+            "right": 873.2978515625,
+            "bottom": 761.4404296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 744.5654296875,
+            "right": 873.2978515625,
+            "bottom": 761.4404296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        }
+      ],
+      "table": {
+        "left": 643.244140625,
+        "top": 591.7529296875,
+        "right": 877.9853515625,
+        "bottom": 766.1279296875,
+        "width": 234.7412109375,
+        "height": 174.375
+      },
+      "targets": {
+        "left": 643.244140625,
+        "top": 525.0146484375,
+        "right": 877.9853515625,
+        "bottom": 588.9404296875,
+        "width": 234.7412109375,
+        "height": 63.92578125
+      },
+      "footer": {
+        "left": 486.125,
+        "top": 800.91796875,
+        "right": 879.875,
+        "bottom": 811.875,
+        "width": 393.75,
+        "height": 10.95703125
+      },
+      "dock": {
+        "visible": false,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 472.0625,
+          "top": 8.4375,
+          "right": 893.9375,
+          "bottom": 277.5,
+          "width": 421.875,
+          "height": 269.0625
+        },
+        "text": "シュガーチャレンジ00 / 8球 · JP 15000",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "announcement": {
+        "visible": false,
+        "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+        "pointerEvents": "none",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "badge": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "celebration": {
+        "visible": false,
+        "text": "JACKPOT15000JPC挑戦権を獲得！",
+        "pointerEvents": "none",
+        "image": "assets/sugar-art-v254/jpc-title.webp",
+        "alt": "JACKPOT CHANCE獲得",
+        "loaded": true,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "title": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "animations": [
+        {
+          "name": "sc254-gem",
+          "state": "running",
+          "time": 216.7160000000079
+        },
+        {
+          "name": "sugar-halo",
+          "state": "running",
+          "time": 766.6940000000037
+        },
+        {
+          "name": "sugar-halo",
+          "state": "running",
+          "time": 766.6940000000037
+        },
+        {
+          "name": "sugar-orbit",
+          "state": "running",
+          "time": 766.6940000000037
+        },
+        {
+          "name": "sc254-pour",
+          "state": "running",
+          "time": 766.6940000000037
+        }
+      ]
+    },
+    "roulette": {
+      "api": {
+        "version": 254,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 254,
+          "id": "sugar-intro",
+          "roundId": "isolated-sugar-view",
+          "station": 1,
+          "sugarValues": [
+            1000,
+            1100,
+            950,
+            1050,
+            900
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 254,
+          "draws": [],
+          "type": "sugar-challenge",
+          "phase": "ready",
+          "drawCount": 0,
+          "remaining": 8,
+          "sum": 0,
+          "jpBase": 5000,
+          "jpAmount": 15000,
+          "award": null,
+          "cashWin": 0,
+          "jpcQualified": false,
+          "jpcTicket": null
+        },
+        "bankCount": 0,
+        "revision": 100002,
+        "intro": 3366.435999999999,
+        "paused": false,
+        "announceAge": 3883.035999999999,
+        "celebrateAge": 9083.036000000007,
+        "artLoaded": true
+      },
+      "phase": "ready",
+      "credit": 1000000,
+      "displayCredit": 1000000,
+      "bets": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "draws": [],
+      "totalWin": 0,
+      "token": 0,
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "screen": {
+        "left": 458,
+        "top": 0,
+        "right": 908,
+        "bottom": 900,
+        "width": 450,
+        "height": 900
+      },
+      "game": {
+        "left": 469.25,
+        "top": 456.5625,
+        "right": 896.75,
+        "bottom": 822.1875,
+        "width": 427.5,
+        "height": 365.625
+      },
+      "overlay": {
+        "visible": true,
+        "rect": {
+          "left": 472.0625,
+          "top": 459.375,
+          "right": 893.9375,
+          "bottom": 819.375,
+          "width": 421.875,
+          "height": 360
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      },
+      "bottle": {
+        "visible": false,
+        "pouring": "false",
+        "fill": 0,
+        "sum": 0,
+        "label": "0 / 8球"
+      },
+      "scale": {
+        "visible": true,
+        "amount": 5000,
+        "pouring": "false",
+        "gems": [
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          }
+        ]
+      },
+      "jp": {
+        "value": 5000,
+        "text": "5000",
+        "font": "ArcadePayout, Georgia, serif",
+        "rect": {
+          "left": 782.375,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 90,
+          "height": 22.5
+        },
+        "face": {
+          "left": 804.875,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 67.5,
+          "height": 22.5
+        }
+      },
+      "sumFont": "ArcadePayout, Georgia, serif",
+      "multiplier": "×3",
+      "phaseText": "デジタルルーレットでJP倍率決定！",
+      "cardName": "シュガーカード",
+      "lucky": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "extremes": "JPC合計 70 以下または138 以上",
+      "reach": "",
+      "history": [
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        }
+      ],
+      "payouts": [
+        {
+          "range": "71〜74 / 134〜137",
+          "fraction": "JP ×0.2",
+          "value": 3000,
+          "text": "3000",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 608.6279296875,
+            "right": 877.9853515625,
+            "bottom": 631.1279296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 611.4404296875,
+            "right": 873.2978515625,
+            "bottom": 628.3154296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 611.4404296875,
+            "right": 873.2978515625,
+            "bottom": 628.3154296875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+          "fraction": "JP ×0.1",
+          "value": 1500,
+          "text": "1500",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 633.0029296875,
+            "right": 877.9853515625,
+            "bottom": 661.1279296875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 638.6279296875,
+            "right": 873.2978515625,
+            "bottom": 655.5029296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 638.6279296875,
+            "right": 873.2978515625,
+            "bottom": 655.5029296875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "81〜86 / 122〜127",
+          "fraction": "JP ×0.05",
+          "value": 750,
+          "text": "750",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 663.0029296875,
+            "right": 877.9853515625,
+            "bottom": 685.5029296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 665.8154296875,
+            "right": 873.2978515625,
+            "bottom": 682.6904296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 665.8154296875,
+            "right": 873.2978515625,
+            "bottom": 682.6904296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "87 / 89〜92 / 116〜119 / 121",
+          "fraction": "JP ×0.03",
+          "value": 450,
+          "text": "450",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 687.3779296875,
+            "right": 877.9853515625,
+            "bottom": 715.5029296875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 693.0029296875,
+            "right": 873.2978515625,
+            "bottom": 709.8779296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 693.0029296875,
+            "right": 873.2978515625,
+            "bottom": 709.8779296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "93〜98 / 110〜115",
+          "fraction": "JP ×0.02",
+          "value": 300,
+          "text": "300",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 717.3779296875,
+            "right": 877.9853515625,
+            "bottom": 739.8779296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 720.1904296875,
+            "right": 873.2978515625,
+            "bottom": 737.0654296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 720.1904296875,
+            "right": 873.2978515625,
+            "bottom": 737.0654296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "99〜109",
+          "fraction": "JP ×0.01",
+          "value": 150,
+          "text": "150",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 741.7529296875,
+            "right": 877.9853515625,
+            "bottom": 764.2529296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 744.5654296875,
+            "right": 873.2978515625,
+            "bottom": 761.4404296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 744.5654296875,
+            "right": 873.2978515625,
+            "bottom": 761.4404296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        }
+      ],
+      "table": {
+        "left": 643.244140625,
+        "top": 591.7529296875,
+        "right": 877.9853515625,
+        "bottom": 766.1279296875,
+        "width": 234.7412109375,
+        "height": 174.375
+      },
+      "targets": {
+        "left": 643.244140625,
+        "top": 525.0146484375,
+        "right": 877.9853515625,
+        "bottom": 588.9404296875,
+        "width": 234.7412109375,
+        "height": 63.92578125
+      },
+      "footer": {
+        "left": 486.125,
+        "top": 800.91796875,
+        "right": 879.875,
+        "bottom": 811.875,
+        "width": 393.75,
+        "height": 10.95703125
+      },
+      "dock": {
+        "visible": false,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 472.0625,
+          "top": 8.4375,
+          "right": 893.9375,
+          "bottom": 277.5,
+          "width": 421.875,
+          "height": 269.0625
+        },
+        "text": "シュガーチャレンジ00 / 8球 · JP 15000",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "announcement": {
+        "visible": false,
+        "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+        "pointerEvents": "none",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "badge": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "celebration": {
+        "visible": false,
+        "text": "JACKPOT15000JPC挑戦権を獲得！",
+        "pointerEvents": "none",
+        "image": "assets/sugar-art-v254/jpc-title.webp",
+        "alt": "JACKPOT CHANCE獲得",
+        "loaded": true,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "title": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "animations": [
+        {
+          "name": "sugar-halo",
+          "state": "running",
+          "time": 3166.378000000008
+        },
+        {
+          "name": "sugar-halo",
+          "state": "running",
+          "time": 3166.378000000008
+        },
+        {
+          "name": "sugar-orbit",
+          "state": "running",
+          "time": 3166.378000000008
+        }
+      ]
+    },
+    "settled": {
+      "api": {
+        "version": 254,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 254,
+          "id": "sugar-intro",
+          "roundId": "isolated-sugar-view",
+          "station": 1,
+          "sugarValues": [
+            1000,
+            1100,
+            950,
+            1050,
+            900
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 254,
+          "draws": [],
+          "type": "sugar-challenge",
+          "phase": "ready",
+          "drawCount": 0,
+          "remaining": 8,
+          "sum": 0,
+          "jpBase": 5000,
+          "jpAmount": 15000,
+          "award": null,
+          "cashWin": 0,
+          "jpcQualified": false,
+          "jpcTicket": null
+        },
+        "bankCount": 0,
+        "revision": 100002,
+        "intro": 5400,
+        "paused": false,
+        "announceAge": 5933.036,
+        "celebrateAge": 11133.036000000013,
+        "artLoaded": true
+      },
+      "phase": "ready",
+      "credit": 1000000,
+      "displayCredit": 1000000,
+      "bets": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "draws": [],
+      "totalWin": 0,
+      "token": 0,
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "screen": {
+        "left": 458,
+        "top": 0,
+        "right": 908,
+        "bottom": 900,
+        "width": 450,
+        "height": 900
+      },
+      "game": {
+        "left": 469.25,
+        "top": 456.5625,
+        "right": 896.75,
+        "bottom": 822.1875,
+        "width": 427.5,
+        "height": 365.625
+      },
+      "overlay": {
+        "visible": true,
+        "rect": {
+          "left": 472.0625,
+          "top": 459.375,
+          "right": 893.9375,
+          "bottom": 819.375,
+          "width": 421.875,
+          "height": 360
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      },
+      "bottle": {
+        "visible": true,
+        "pouring": "false",
+        "fill": 0,
+        "sum": 0,
+        "label": "0 / 8球"
+      },
+      "scale": {
+        "visible": false,
+        "amount": 5000,
+        "pouring": "false",
+        "gems": [
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          }
+        ]
+      },
+      "jp": {
+        "value": 15000,
+        "text": "15000",
+        "font": "ArcadePayout, Georgia, serif",
+        "rect": {
+          "left": 782.375,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 90,
+          "height": 22.5
+        },
+        "face": {
+          "left": 788,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 84.375,
+          "height": 22.5
+        }
+      },
+      "sumFont": "ArcadePayout, Georgia, serif",
+      "multiplier": "×3",
+      "phaseText": "HITした数字の量だけシュガーを投入！",
+      "cardName": "シュガーカード",
+      "lucky": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "extremes": "JPC合計 70 以下または138 以上",
+      "reach": "",
+      "history": [
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        },
+        {
+          "hit": "false",
+          "text": "·"
+        }
+      ],
+      "payouts": [
+        {
+          "range": "71〜74 / 134〜137",
+          "fraction": "JP ×0.2",
+          "value": 3000,
+          "text": "3000",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 608.6279296875,
+            "right": 877.9853515625,
+            "bottom": 631.1279296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 611.4404296875,
+            "right": 873.2978515625,
+            "bottom": 628.3154296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 611.4404296875,
+            "right": 873.2978515625,
+            "bottom": 628.3154296875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+          "fraction": "JP ×0.1",
+          "value": 1500,
+          "text": "1500",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 633.0029296875,
+            "right": 877.9853515625,
+            "bottom": 661.1279296875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 638.6279296875,
+            "right": 873.2978515625,
+            "bottom": 655.5029296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 638.6279296875,
+            "right": 873.2978515625,
+            "bottom": 655.5029296875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "81〜86 / 122〜127",
+          "fraction": "JP ×0.05",
+          "value": 750,
+          "text": "750",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 663.0029296875,
+            "right": 877.9853515625,
+            "bottom": 685.5029296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 665.8154296875,
+            "right": 873.2978515625,
+            "bottom": 682.6904296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 665.8154296875,
+            "right": 873.2978515625,
+            "bottom": 682.6904296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "87 / 89〜92 / 116〜119 / 121",
+          "fraction": "JP ×0.03",
+          "value": 450,
+          "text": "450",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 687.3779296875,
+            "right": 877.9853515625,
+            "bottom": 715.5029296875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 693.0029296875,
+            "right": 873.2978515625,
+            "bottom": 709.8779296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 693.0029296875,
+            "right": 873.2978515625,
+            "bottom": 709.8779296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "93〜98 / 110〜115",
+          "fraction": "JP ×0.02",
+          "value": 300,
+          "text": "300",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 717.3779296875,
+            "right": 877.9853515625,
+            "bottom": 739.8779296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 720.1904296875,
+            "right": 873.2978515625,
+            "bottom": 737.0654296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 720.1904296875,
+            "right": 873.2978515625,
+            "bottom": 737.0654296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "99〜109",
+          "fraction": "JP ×0.01",
+          "value": 150,
+          "text": "150",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 741.7529296875,
+            "right": 877.9853515625,
+            "bottom": 764.2529296875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 744.5654296875,
+            "right": 873.2978515625,
+            "bottom": 761.4404296875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 744.5654296875,
+            "right": 873.2978515625,
+            "bottom": 761.4404296875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        }
+      ],
+      "table": {
+        "left": 643.244140625,
+        "top": 591.7529296875,
+        "right": 877.9853515625,
+        "bottom": 766.1279296875,
+        "width": 234.7412109375,
+        "height": 174.375
+      },
+      "targets": {
+        "left": 643.244140625,
+        "top": 525.0146484375,
+        "right": 877.9853515625,
+        "bottom": 588.9404296875,
+        "width": 234.7412109375,
+        "height": 63.92578125
+      },
+      "footer": {
+        "left": 486.125,
+        "top": 800.91796875,
+        "right": 879.875,
+        "bottom": 811.875,
+        "width": 393.75,
+        "height": 10.95703125
+      },
+      "dock": {
+        "visible": false,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 472.0625,
+          "top": 8.4375,
+          "right": 893.9375,
+          "bottom": 277.5,
+          "width": 421.875,
+          "height": 269.0625
+        },
+        "text": "シュガーチャレンジ00 / 8球 · JP 15000",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "announcement": {
+        "visible": false,
+        "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+        "pointerEvents": "none",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "badge": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "celebration": {
+        "visible": false,
+        "text": "JACKPOT15000JPC挑戦権を獲得！",
+        "pointerEvents": "none",
+        "image": "assets/sugar-art-v254/jpc-title.webp",
+        "alt": "JACKPOT CHANCE獲得",
+        "loaded": true,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "title": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "animations": [
+        {
+          "name": "sc254-sugar-glint",
+          "state": "running",
+          "time": 0
+        }
+      ]
+    },
+    "repeated": {
+      "before": {
+        "version": 254,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 254,
+          "id": "sugar-intro",
+          "roundId": "isolated-sugar-view",
+          "station": 1,
+          "sugarValues": [
+            1000,
+            1100,
+            950,
+            1050,
+            900
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 254,
+          "draws": [],
+          "type": "sugar-challenge",
+          "phase": "ready",
+          "drawCount": 0,
+          "remaining": 8,
+          "sum": 0,
+          "jpBase": 5000,
+          "jpAmount": 15000,
+          "award": null,
+          "cashWin": 0,
+          "jpcQualified": false,
+          "jpcTicket": null
+        },
+        "bankCount": 0,
+        "revision": 100002,
+        "intro": 5400,
+        "paused": false,
+        "announceAge": 5933.036,
+        "celebrateAge": 11133.036000000013,
+        "artLoaded": true
+      },
+      "after": {
+        "version": 254,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 254,
+          "id": "sugar-intro",
+          "roundId": "isolated-sugar-view",
+          "station": 1,
+          "sugarValues": [
+            1000,
+            1100,
+            950,
+            1050,
+            900
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 254,
+          "draws": [],
+          "type": "sugar-challenge",
+          "phase": "ready",
+          "drawCount": 0,
+          "remaining": 8,
+          "sum": 0,
+          "jpBase": 5000,
+          "jpAmount": 15000,
+          "award": null,
+          "cashWin": 0,
+          "jpcQualified": false,
+          "jpcTicket": null
+        },
+        "bankCount": 0,
+        "revision": 100003,
+        "intro": 5400,
+        "paused": false,
+        "announceAge": 5933.036,
+        "celebrateAge": 11133.036000000013,
+        "artLoaded": true
+      }
+    }
+  },
+  "screens": [
+    {
+      "width": 390,
+      "height": 844,
+      "state": {
+        "api": {
+          "version": 254,
+          "expanded": true,
+          "challenge": {
+            "rulesRevision": 254,
+            "id": "sugar-view-2",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "sugarValues": [
+              1000,
+              1100,
+              950,
+              1050,
+              900
+            ],
+            "cardId": "standard",
+            "multiplier": 3,
+            "seed": 254,
+            "draws": [
+              1,
+              2,
+              3,
+              10
+            ],
+            "type": "sugar-challenge",
+            "phase": "drawing",
+            "drawCount": 4,
+            "remaining": 4,
+            "sum": 16,
+            "jpBase": 5000,
+            "jpAmount": 15000,
+            "award": null,
+            "cashWin": 0,
+            "jpcQualified": false,
+            "jpcTicket": null
+          },
+          "bankCount": 0,
+          "revision": 100004,
+          "intro": 5400,
+          "paused": false,
+          "announceAge": 6866.335999999999,
+          "celebrateAge": 12066.336000000012,
+          "artLoaded": true
+        },
+        "phase": "ready",
+        "credit": 1000000,
+        "displayCredit": 1000000,
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "draws": [],
+        "totalWin": 0,
+        "token": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "screen": {
+          "left": 0,
+          "top": 32,
+          "right": 390,
+          "bottom": 812,
+          "width": 390,
+          "height": 780
+        },
+        "game": {
+          "left": 9.75,
+          "top": 427.6875,
+          "right": 380.25,
+          "bottom": 744.5625,
+          "width": 370.5,
+          "height": 316.875
+        },
+        "overlay": {
+          "visible": true,
+          "rect": {
+            "left": 12.1875,
+            "top": 430.125,
+            "right": 377.8125,
+            "bottom": 742.125,
+            "width": 365.625,
+            "height": 312
+          },
+          "role": "button",
+          "expanded": true,
+          "paused": "false",
+          "reduced": "false",
+          "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+          "overflowing": []
+        },
+        "bottle": {
+          "visible": true,
+          "pouring": "false",
+          "fill": 9.302,
+          "sum": 16,
+          "label": "4 / 8球"
+        },
+        "scale": {
+          "visible": false,
+          "amount": 5000,
+          "pouring": "false",
+          "gems": [
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            }
+          ]
+        },
+        "jp": {
+          "value": 15000,
+          "text": "15000",
+          "font": "ArcadePayout, Georgia, serif",
+          "rect": {
+            "left": 284.375,
+            "top": 446.78125,
+            "right": 364,
+            "bottom": 466.28125,
+            "width": 79.625,
+            "height": 19.5
+          },
+          "face": {
+            "left": 290.875,
+            "top": 446.78125,
+            "right": 364,
+            "bottom": 466.28125,
+            "width": 73.125,
+            "height": 19.5
+          }
+        },
+        "sumFont": "ArcadePayout, Georgia, serif",
+        "multiplier": "×3",
+        "phaseText": "HITした数字の量だけシュガーを投入！",
+        "cardName": "シュガーカード",
+        "lucky": [
+          77,
+          88,
+          120,
+          131
+        ],
+        "extremes": "JPC合計 70 以下または138 以上",
+        "reach": "",
+        "history": [
+          {
+            "hit": "true",
+            "text": "1"
+          },
+          {
+            "hit": "true",
+            "text": "2"
+          },
+          {
+            "hit": "true",
+            "text": "3"
+          },
+          {
+            "hit": "true",
+            "text": "10"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          }
+        ],
+        "payouts": [
+          {
+            "range": "71〜74 / 134〜137",
+            "fraction": "JP ×0.2",
+            "value": 3000,
+            "text": "3000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 558.1318359375,
+              "right": 368.0498046875,
+              "bottom": 577.6318359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 560.5693359375,
+              "right": 363.9873046875,
+              "bottom": 575.1943359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 328.2373046875,
+              "top": 560.5693359375,
+              "right": 363.9873046875,
+              "bottom": 575.1943359375,
+              "width": 35.75,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+            "fraction": "JP ×0.1",
+            "value": 1500,
+            "text": "1500",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 579.2568359375,
+              "right": 368.0498046875,
+              "bottom": 603.6318359375,
+              "width": 210.919921875,
+              "height": 24.375
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 584.1318359375,
+              "right": 363.9873046875,
+              "bottom": 598.7568359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 328.2373046875,
+              "top": 584.1318359375,
+              "right": 363.9873046875,
+              "bottom": 598.7568359375,
+              "width": 35.75,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "81〜86 / 122〜127",
+            "fraction": "JP ×0.05",
+            "value": 750,
+            "text": "750",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 605.2568359375,
+              "right": 368.0498046875,
+              "bottom": 624.7568359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 607.6943359375,
+              "right": 363.9873046875,
+              "bottom": 622.3193359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 337.1748046875,
+              "top": 607.6943359375,
+              "right": 363.9873046875,
+              "bottom": 622.3193359375,
+              "width": 26.8125,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "87 / 89〜92 / 116〜119 / 121",
+            "fraction": "JP ×0.03",
+            "value": 450,
+            "text": "450",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 626.3818359375,
+              "right": 368.0498046875,
+              "bottom": 650.7568359375,
+              "width": 210.919921875,
+              "height": 24.375
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 631.2568359375,
+              "right": 363.9873046875,
+              "bottom": 645.8818359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 337.1748046875,
+              "top": 631.2568359375,
+              "right": 363.9873046875,
+              "bottom": 645.8818359375,
+              "width": 26.8125,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "93〜98 / 110〜115",
+            "fraction": "JP ×0.02",
+            "value": 300,
+            "text": "300",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 652.3818359375,
+              "right": 368.0498046875,
+              "bottom": 671.8818359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 654.8193359375,
+              "right": 363.9873046875,
+              "bottom": 669.4443359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 337.1748046875,
+              "top": 654.8193359375,
+              "right": 363.9873046875,
+              "bottom": 669.4443359375,
+              "width": 26.8125,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "99〜109",
+            "fraction": "JP ×0.01",
+            "value": 150,
+            "text": "150",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 673.5068359375,
+              "right": 368.0498046875,
+              "bottom": 693.0068359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 675.9443359375,
+              "right": 363.9873046875,
+              "bottom": 690.5693359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 337.1748046875,
+              "top": 675.9443359375,
+              "right": 363.9873046875,
+              "bottom": 690.5693359375,
+              "width": 26.8125,
+              "height": 14.625
+            }
+          }
+        ],
+        "table": {
+          "left": 157.1298828125,
+          "top": 543.5068359375,
+          "right": 368.0498046875,
+          "bottom": 694.6318359375,
+          "width": 210.919921875,
+          "height": 151.125
+        },
+        "targets": {
+          "left": 157.1298828125,
+          "top": 488.9169921875,
+          "right": 368.0498046875,
+          "bottom": 541.0693359375,
+          "width": 210.919921875,
+          "height": 52.15234375
+        },
+        "footer": {
+          "left": 20.3125,
+          "top": 726.94140625,
+          "right": 369.6875,
+          "bottom": 736.4375,
+          "width": 349.375,
+          "height": 9.49609375
+        },
+        "dock": {
+          "visible": false,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "parent": "cookie-roulette",
+          "parentRect": {
+            "left": 12.1875,
+            "top": 39.3125,
+            "right": 377.8125,
+            "bottom": 272.5,
+            "width": 365.625,
+            "height": 233.1875
+          },
+          "text": "シュガーチャレンジ164 / 8球 · JP 15000",
+          "paused": "false",
+          "animationPlayState": "running"
+        },
+        "announcement": {
+          "visible": false,
+          "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+          "pointerEvents": "none",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "badge": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "celebration": {
+          "visible": false,
+          "text": "JACKPOT15000JPC挑戦権を獲得！",
+          "pointerEvents": "none",
+          "image": "assets/sugar-art-v254/jpc-title.webp",
+          "alt": "JACKPOT CHANCE獲得",
+          "loaded": true,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "title": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "animations": [
+          {
+            "name": "sc254-sugar-glint",
+            "state": "running",
+            "time": 1016.6000000000004
+          }
+        ]
+      },
+      "pouring": {
+        "visible": true,
+        "pouring": "true",
+        "fill": 0,
+        "sum": 0,
+        "label": "4 / 8球"
+      },
+      "folded": {
+        "visible": true,
+        "rect": {
+          "left": 257.5625,
+          "top": 218.875,
+          "right": 372.125,
+          "bottom": 266.8125,
+          "width": 114.5625,
+          "height": 47.9375
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 12.1875,
+          "top": 39.3125,
+          "right": 377.8125,
+          "bottom": 272.5,
+          "width": 365.625,
+          "height": 233.1875
+        },
+        "text": "シュガーチャレンジ164 / 8球 · JP 15000",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "expanded": {
+        "visible": true,
+        "rect": {
+          "left": 12.1875,
+          "top": 430.125,
+          "right": 377.8125,
+          "bottom": 742.125,
+          "width": 365.625,
+          "height": 312
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "state": {
+        "api": {
+          "version": 254,
+          "expanded": true,
+          "challenge": {
+            "rulesRevision": 254,
+            "id": "sugar-view-3",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "sugarValues": [
+              1000,
+              1100,
+              950,
+              1050,
+              900
+            ],
+            "cardId": "standard",
+            "multiplier": 3,
+            "seed": 254,
+            "draws": [
+              1,
+              2,
+              3,
+              10
+            ],
+            "type": "sugar-challenge",
+            "phase": "drawing",
+            "drawCount": 4,
+            "remaining": 4,
+            "sum": 16,
+            "jpBase": 5000,
+            "jpAmount": 15000,
+            "award": null,
+            "cashWin": 0,
+            "jpcQualified": false,
+            "jpcTicket": null
+          },
+          "bankCount": 0,
+          "revision": 100005,
+          "intro": 5400,
+          "paused": false,
+          "announceAge": 8032.936,
+          "celebrateAge": 13232.936000000012,
+          "artLoaded": true
+        },
+        "phase": "ready",
+        "credit": 1000000,
+        "displayCredit": 1000000,
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "draws": [],
+        "totalWin": 0,
+        "token": 0,
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "screen": {
+          "left": 324.5,
+          "top": 0,
+          "right": 519.5,
+          "bottom": 390,
+          "width": 195,
+          "height": 390
+        },
+        "game": {
+          "left": 329.375,
+          "top": 197.84375,
+          "right": 514.625,
+          "bottom": 356.28125,
+          "width": 185.25,
+          "height": 158.4375
+        },
+        "overlay": {
+          "visible": true,
+          "rect": {
+            "left": 330.59375,
+            "top": 199.0625,
+            "right": 513.40625,
+            "bottom": 355.0625,
+            "width": 182.8125,
+            "height": 156
+          },
+          "role": "button",
+          "expanded": true,
+          "paused": "false",
+          "reduced": "false",
+          "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+          "overflowing": []
+        },
+        "bottle": {
+          "visible": true,
+          "pouring": "false",
+          "fill": 9.302,
+          "sum": 16,
+          "label": "4 / 8球"
+        },
+        "scale": {
+          "visible": false,
+          "amount": 5000,
+          "pouring": "false",
+          "gems": [
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            }
+          ]
+        },
+        "jp": {
+          "value": 15000,
+          "text": "15000",
+          "font": "ArcadePayout, Georgia, serif",
+          "rect": {
+            "left": 465.0625,
+            "top": 208.609375,
+            "right": 504.0625,
+            "bottom": 218.359375,
+            "width": 39,
+            "height": 9.75
+          },
+          "face": {
+            "left": 467.5,
+            "top": 208.609375,
+            "right": 504.0625,
+            "bottom": 218.359375,
+            "width": 36.5625,
+            "height": 9.75
+          }
+        },
+        "sumFont": "ArcadePayout, Georgia, serif",
+        "multiplier": "×3",
+        "phaseText": "HITした数字の量だけシュガーを投入！",
+        "cardName": "シュガーカード",
+        "lucky": [
+          77,
+          88,
+          120,
+          131
+        ],
+        "extremes": "JPC合計 70 以下または138 以上",
+        "reach": "",
+        "history": [
+          {
+            "hit": "true",
+            "text": "1"
+          },
+          {
+            "hit": "true",
+            "text": "2"
+          },
+          {
+            "hit": "true",
+            "text": "3"
+          },
+          {
+            "hit": "true",
+            "text": "10"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          }
+        ],
+        "payouts": [
+          {
+            "range": "71〜74 / 134〜137",
+            "fraction": "JP ×0.2",
+            "value": 3000,
+            "text": "3000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 263.73876953125,
+              "right": 506.49365234375,
+              "bottom": 273.48876953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 264.95751953125,
+              "right": 504.46240234375,
+              "bottom": 272.27001953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 486.58740234375,
+              "top": 264.95751953125,
+              "right": 504.46240234375,
+              "bottom": 272.27001953125,
+              "width": 17.875,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+            "fraction": "JP ×0.1",
+            "value": 1500,
+            "text": "1500",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 274.30126953125,
+              "right": 506.49365234375,
+              "bottom": 286.48876953125,
+              "width": 101.72119140625,
+              "height": 12.1875
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 276.73876953125,
+              "right": 504.46240234375,
+              "bottom": 284.05126953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 486.58740234375,
+              "top": 276.73876953125,
+              "right": 504.46240234375,
+              "bottom": 284.05126953125,
+              "width": 17.875,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "81〜86 / 122〜127",
+            "fraction": "JP ×0.05",
+            "value": 750,
+            "text": "750",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 287.30126953125,
+              "right": 506.49365234375,
+              "bottom": 297.05126953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 288.52001953125,
+              "right": 504.46240234375,
+              "bottom": 295.83251953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 491.05615234375,
+              "top": 288.52001953125,
+              "right": 504.46240234375,
+              "bottom": 295.83251953125,
+              "width": 13.40625,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "87 / 89〜92 / 116〜119 / 121",
+            "fraction": "JP ×0.03",
+            "value": 450,
+            "text": "450",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 297.86376953125,
+              "right": 506.49365234375,
+              "bottom": 310.05126953125,
+              "width": 101.72119140625,
+              "height": 12.1875
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 300.30126953125,
+              "right": 504.46240234375,
+              "bottom": 307.61376953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 491.05615234375,
+              "top": 300.30126953125,
+              "right": 504.46240234375,
+              "bottom": 307.61376953125,
+              "width": 13.40625,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "93〜98 / 110〜115",
+            "fraction": "JP ×0.02",
+            "value": 300,
+            "text": "300",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 310.86376953125,
+              "right": 506.49365234375,
+              "bottom": 320.61376953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 312.08251953125,
+              "right": 504.46240234375,
+              "bottom": 319.39501953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 491.05615234375,
+              "top": 312.08251953125,
+              "right": 504.46240234375,
+              "bottom": 319.39501953125,
+              "width": 13.40625,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "99〜109",
+            "fraction": "JP ×0.01",
+            "value": 150,
+            "text": "150",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 321.42626953125,
+              "right": 506.49365234375,
+              "bottom": 331.17626953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 322.64501953125,
+              "right": 504.46240234375,
+              "bottom": 329.95751953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 491.05615234375,
+              "top": 322.64501953125,
+              "right": 504.46240234375,
+              "bottom": 329.95751953125,
+              "width": 13.40625,
+              "height": 7.3125
+            }
+          }
+        ],
+        "table": {
+          "left": 404.7724609375,
+          "top": 256.42626953125,
+          "right": 506.49365234375,
+          "bottom": 331.98876953125,
+          "width": 101.72119140625,
+          "height": 75.5625
+        },
+        "targets": {
+          "left": 404.7724609375,
+          "top": 227.50634765625,
+          "right": 506.49365234375,
+          "bottom": 255.20751953125,
+          "width": 101.72119140625,
+          "height": 27.701171875
+        },
+        "footer": {
+          "left": 336.6875,
+          "top": 347.064453125,
+          "right": 507.3125,
+          "bottom": 351.8125,
+          "width": 170.625,
+          "height": 4.748046875
+        },
+        "dock": {
+          "visible": false,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "parent": "cookie-roulette",
+          "parentRect": {
+            "left": 330.59375,
+            "top": 3.65625,
+            "right": 513.40625,
+            "bottom": 120.25,
+            "width": 182.8125,
+            "height": 116.59375
+          },
+          "text": "シュガーチャレンジ164 / 8球 · JP 15000",
+          "paused": "false",
+          "animationPlayState": "running"
+        },
+        "announcement": {
+          "visible": false,
+          "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+          "pointerEvents": "none",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "badge": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "celebration": {
+          "visible": false,
+          "text": "JACKPOT15000JPC挑戦権を獲得！",
+          "pointerEvents": "none",
+          "image": "assets/sugar-art-v254/jpc-title.webp",
+          "alt": "JACKPOT CHANCE獲得",
+          "loaded": true,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "title": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "animations": [
+          {
+            "name": "sc254-sugar-glint",
+            "state": "running",
+            "time": 1116.6999999999998
+          }
+        ]
+      },
+      "pouring": {
+        "visible": true,
+        "pouring": "true",
+        "fill": 3.444,
+        "sum": 5,
+        "label": "4 / 8球"
+      },
+      "folded": {
+        "visible": true,
+        "rect": {
+          "left": 447.1875,
+          "top": 90.59375,
+          "right": 510.5625,
+          "bottom": 117.40625,
+          "width": 63.375,
+          "height": 26.8125
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 330.59375,
+          "top": 3.65625,
+          "right": 513.40625,
+          "bottom": 120.25,
+          "width": 182.8125,
+          "height": 116.59375
+        },
+        "text": "シュガーチャレンジ164 / 8球 · JP 15000",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "expanded": {
+        "visible": true,
+        "rect": {
+          "left": 330.59375,
+          "top": 199.0625,
+          "right": 513.40625,
+          "bottom": 355.0625,
+          "width": 182.8125,
+          "height": 156
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      }
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "state": {
+        "api": {
+          "version": 254,
+          "expanded": true,
+          "challenge": {
+            "rulesRevision": 254,
+            "id": "sugar-view-4",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "sugarValues": [
+              1000,
+              1100,
+              950,
+              1050,
+              900
+            ],
+            "cardId": "standard",
+            "multiplier": 3,
+            "seed": 254,
+            "draws": [
+              1,
+              2,
+              3,
+              10
+            ],
+            "type": "sugar-challenge",
+            "phase": "drawing",
+            "drawCount": 4,
+            "remaining": 4,
+            "sum": 16,
+            "jpBase": 5000,
+            "jpAmount": 15000,
+            "award": null,
+            "cashWin": 0,
+            "jpcQualified": false,
+            "jpcTicket": null
+          },
+          "bankCount": 0,
+          "revision": 100006,
+          "intro": 5400,
+          "paused": false,
+          "announceAge": 9199.536,
+          "celebrateAge": 14399.536000000013,
+          "artLoaded": true
+        },
+        "phase": "ready",
+        "credit": 1000000,
+        "displayCredit": 1000000,
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "draws": [],
+        "totalWin": 0,
+        "token": 0,
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "screen": {
+          "left": 458,
+          "top": 0,
+          "right": 908,
+          "bottom": 900,
+          "width": 450,
+          "height": 900
+        },
+        "game": {
+          "left": 469.25,
+          "top": 456.5625,
+          "right": 896.75,
+          "bottom": 822.1875,
+          "width": 427.5,
+          "height": 365.625
+        },
+        "overlay": {
+          "visible": true,
+          "rect": {
+            "left": 472.0625,
+            "top": 459.375,
+            "right": 893.9375,
+            "bottom": 819.375,
+            "width": 421.875,
+            "height": 360
+          },
+          "role": "button",
+          "expanded": true,
+          "paused": "false",
+          "reduced": "false",
+          "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+          "overflowing": []
+        },
+        "bottle": {
+          "visible": true,
+          "pouring": "false",
+          "fill": 9.302,
+          "sum": 16,
+          "label": "4 / 8球"
+        },
+        "scale": {
+          "visible": false,
+          "amount": 5000,
+          "pouring": "false",
+          "gems": [
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            }
+          ]
+        },
+        "jp": {
+          "value": 15000,
+          "text": "15000",
+          "font": "ArcadePayout, Georgia, serif",
+          "rect": {
+            "left": 782.375,
+            "top": 481.40625,
+            "right": 872.375,
+            "bottom": 503.90625,
+            "width": 90,
+            "height": 22.5
+          },
+          "face": {
+            "left": 788,
+            "top": 481.40625,
+            "right": 872.375,
+            "bottom": 503.90625,
+            "width": 84.375,
+            "height": 22.5
+          }
+        },
+        "sumFont": "ArcadePayout, Georgia, serif",
+        "multiplier": "×3",
+        "phaseText": "HITした数字の量だけシュガーを投入！",
+        "cardName": "シュガーカード",
+        "lucky": [
+          77,
+          88,
+          120,
+          131
+        ],
+        "extremes": "JPC合計 70 以下または138 以上",
+        "reach": "",
+        "history": [
+          {
+            "hit": "true",
+            "text": "1"
+          },
+          {
+            "hit": "true",
+            "text": "2"
+          },
+          {
+            "hit": "true",
+            "text": "3"
+          },
+          {
+            "hit": "true",
+            "text": "10"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          }
+        ],
+        "payouts": [
+          {
+            "range": "71〜74 / 134〜137",
+            "fraction": "JP ×0.2",
+            "value": 3000,
+            "text": "3000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 608.6279296875,
+              "right": 877.9853515625,
+              "bottom": 631.1279296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 611.4404296875,
+              "right": 873.2978515625,
+              "bottom": 628.3154296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 832.0478515625,
+              "top": 611.4404296875,
+              "right": 873.2978515625,
+              "bottom": 628.3154296875,
+              "width": 41.25,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+            "fraction": "JP ×0.1",
+            "value": 1500,
+            "text": "1500",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 633.0029296875,
+              "right": 877.9853515625,
+              "bottom": 661.1279296875,
+              "width": 234.7412109375,
+              "height": 28.125
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 638.6279296875,
+              "right": 873.2978515625,
+              "bottom": 655.5029296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 832.0478515625,
+              "top": 638.6279296875,
+              "right": 873.2978515625,
+              "bottom": 655.5029296875,
+              "width": 41.25,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "81〜86 / 122〜127",
+            "fraction": "JP ×0.05",
+            "value": 750,
+            "text": "750",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 663.0029296875,
+              "right": 877.9853515625,
+              "bottom": 685.5029296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 665.8154296875,
+              "right": 873.2978515625,
+              "bottom": 682.6904296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 842.3603515625,
+              "top": 665.8154296875,
+              "right": 873.2978515625,
+              "bottom": 682.6904296875,
+              "width": 30.9375,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "87 / 89〜92 / 116〜119 / 121",
+            "fraction": "JP ×0.03",
+            "value": 450,
+            "text": "450",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 687.3779296875,
+              "right": 877.9853515625,
+              "bottom": 715.5029296875,
+              "width": 234.7412109375,
+              "height": 28.125
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 693.0029296875,
+              "right": 873.2978515625,
+              "bottom": 709.8779296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 842.3603515625,
+              "top": 693.0029296875,
+              "right": 873.2978515625,
+              "bottom": 709.8779296875,
+              "width": 30.9375,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "93〜98 / 110〜115",
+            "fraction": "JP ×0.02",
+            "value": 300,
+            "text": "300",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 717.3779296875,
+              "right": 877.9853515625,
+              "bottom": 739.8779296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 720.1904296875,
+              "right": 873.2978515625,
+              "bottom": 737.0654296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 842.3603515625,
+              "top": 720.1904296875,
+              "right": 873.2978515625,
+              "bottom": 737.0654296875,
+              "width": 30.9375,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "99〜109",
+            "fraction": "JP ×0.01",
+            "value": 150,
+            "text": "150",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 741.7529296875,
+              "right": 877.9853515625,
+              "bottom": 764.2529296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 744.5654296875,
+              "right": 873.2978515625,
+              "bottom": 761.4404296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 842.3603515625,
+              "top": 744.5654296875,
+              "right": 873.2978515625,
+              "bottom": 761.4404296875,
+              "width": 30.9375,
+              "height": 16.875
+            }
+          }
+        ],
+        "table": {
+          "left": 643.244140625,
+          "top": 591.7529296875,
+          "right": 877.9853515625,
+          "bottom": 766.1279296875,
+          "width": 234.7412109375,
+          "height": 174.375
+        },
+        "targets": {
+          "left": 643.244140625,
+          "top": 525.0146484375,
+          "right": 877.9853515625,
+          "bottom": 588.9404296875,
+          "width": 234.7412109375,
+          "height": 63.92578125
+        },
+        "footer": {
+          "left": 486.125,
+          "top": 800.91796875,
+          "right": 879.875,
+          "bottom": 811.875,
+          "width": 393.75,
+          "height": 10.95703125
+        },
+        "dock": {
+          "visible": false,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "parent": "cookie-roulette",
+          "parentRect": {
+            "left": 472.0625,
+            "top": 8.4375,
+            "right": 893.9375,
+            "bottom": 277.5,
+            "width": 421.875,
+            "height": 269.0625
+          },
+          "text": "シュガーチャレンジ164 / 8球 · JP 15000",
+          "paused": "false",
+          "animationPlayState": "running"
+        },
+        "announcement": {
+          "visible": false,
+          "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+          "pointerEvents": "none",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "badge": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "celebration": {
+          "visible": false,
+          "text": "JACKPOT15000JPC挑戦権を獲得！",
+          "pointerEvents": "none",
+          "image": "assets/sugar-art-v254/jpc-title.webp",
+          "alt": "JACKPOT CHANCE獲得",
+          "loaded": true,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "title": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "animations": [
+          {
+            "name": "sc254-sugar-glint",
+            "state": "running",
+            "time": 1033.2000000000007
+          }
+        ]
+      },
+      "pouring": {
+        "visible": true,
+        "pouring": "true",
+        "fill": 0,
+        "sum": 0,
+        "label": "4 / 8球"
+      },
+      "folded": {
+        "visible": true,
+        "rect": {
+          "left": 741.125,
+          "top": 209.0625,
+          "right": 887.375,
+          "bottom": 270.9375,
+          "width": 146.25,
+          "height": 61.875
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 472.0625,
+          "top": 8.4375,
+          "right": 893.9375,
+          "bottom": 277.5,
+          "width": 421.875,
+          "height": 269.0625
+        },
+        "text": "シュガーチャレンジ164 / 8球 · JP 15000",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "expanded": {
+        "visible": true,
+        "rect": {
+          "left": 472.0625,
+          "top": 459.375,
+          "right": 893.9375,
+          "bottom": 819.375,
+          "width": 421.875,
+          "height": 360
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      }
+    }
+  ],
+  "highAmounts": [
+    {
+      "width": 390,
+      "height": 844,
+      "state": {
+        "api": {
+          "version": 254,
+          "expanded": true,
+          "challenge": {
+            "rulesRevision": 254,
+            "id": "sugar-large-jp",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "sugarValues": [
+              30000,
+              30000,
+              30000,
+              30000,
+              30000
+            ],
+            "cardId": "standard",
+            "multiplier": 10,
+            "seed": 254,
+            "draws": [
+              1,
+              2,
+              3,
+              10
+            ],
+            "type": "sugar-challenge",
+            "phase": "drawing",
+            "drawCount": 4,
+            "remaining": 4,
+            "sum": 16,
+            "jpBase": 150000,
+            "jpAmount": 1500000,
+            "award": null,
+            "cashWin": 0,
+            "jpcQualified": false,
+            "jpcTicket": null
+          },
+          "bankCount": 0,
+          "revision": 100007,
+          "intro": 5400,
+          "paused": false,
+          "announceAge": 9749.536,
+          "celebrateAge": 14949.536000000013,
+          "artLoaded": true
+        },
+        "phase": "ready",
+        "credit": 1000000,
+        "displayCredit": 1000000,
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "draws": [],
+        "totalWin": 0,
+        "token": 0,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "screen": {
+          "left": 0,
+          "top": 32,
+          "right": 390,
+          "bottom": 812,
+          "width": 390,
+          "height": 780
+        },
+        "game": {
+          "left": 9.75,
+          "top": 427.6875,
+          "right": 380.25,
+          "bottom": 744.5625,
+          "width": 370.5,
+          "height": 316.875
+        },
+        "overlay": {
+          "visible": true,
+          "rect": {
+            "left": 12.1875,
+            "top": 430.125,
+            "right": 377.8125,
+            "bottom": 742.125,
+            "width": 365.625,
+            "height": 312
+          },
+          "role": "button",
+          "expanded": true,
+          "paused": "false",
+          "reduced": "false",
+          "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+          "overflowing": []
+        },
+        "bottle": {
+          "visible": true,
+          "pouring": "true",
+          "fill": 8.14,
+          "sum": 14,
+          "label": "4 / 8球"
+        },
+        "scale": {
+          "visible": false,
+          "amount": 5000,
+          "pouring": "false",
+          "gems": [
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            }
+          ]
+        },
+        "jp": {
+          "value": 1500000,
+          "text": "1500000",
+          "font": "ArcadePayout, Georgia, serif",
+          "rect": {
+            "left": 284.375,
+            "top": 446.78125,
+            "right": 364,
+            "bottom": 466.28125,
+            "width": 79.625,
+            "height": 19.5
+          },
+          "face": {
+            "left": 286.3895263671875,
+            "top": 446.78125,
+            "right": 364,
+            "bottom": 466.28125,
+            "width": 77.6104736328125,
+            "height": 19.5
+          }
+        },
+        "sumFont": "ArcadePayout, Georgia, serif",
+        "multiplier": "×10",
+        "phaseText": "HITした数字の量だけシュガーを投入！",
+        "cardName": "シュガーカード",
+        "lucky": [
+          77,
+          88,
+          120,
+          131
+        ],
+        "extremes": "JPC合計 70 以下または138 以上",
+        "reach": "",
+        "history": [
+          {
+            "hit": "true",
+            "text": "1"
+          },
+          {
+            "hit": "true",
+            "text": "2"
+          },
+          {
+            "hit": "true",
+            "text": "3"
+          },
+          {
+            "hit": "true",
+            "text": "10"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          }
+        ],
+        "payouts": [
+          {
+            "range": "71〜74 / 134〜137",
+            "fraction": "JP ×0.2",
+            "value": 300000,
+            "text": "300000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 558.1318359375,
+              "right": 368.0498046875,
+              "bottom": 577.6318359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 560.5693359375,
+              "right": 363.9873046875,
+              "bottom": 575.1943359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 315.0169372558594,
+              "top": 560.5693359375,
+              "right": 363.9873046875,
+              "bottom": 575.1943359375,
+              "width": 48.970367431640625,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+            "fraction": "JP ×0.1",
+            "value": 150000,
+            "text": "150000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 579.2568359375,
+              "right": 368.0498046875,
+              "bottom": 603.6318359375,
+              "width": 210.919921875,
+              "height": 24.375
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 584.1318359375,
+              "right": 363.9873046875,
+              "bottom": 598.7568359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 315.0169372558594,
+              "top": 584.1318359375,
+              "right": 363.9873046875,
+              "bottom": 598.7568359375,
+              "width": 48.970367431640625,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "81〜86 / 122〜127",
+            "fraction": "JP ×0.05",
+            "value": 75000,
+            "text": "75000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 605.2568359375,
+              "right": 368.0498046875,
+              "bottom": 624.7568359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 607.6943359375,
+              "right": 363.9873046875,
+              "bottom": 622.3193359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 319.2998046875,
+              "top": 607.6943359375,
+              "right": 363.9873046875,
+              "bottom": 622.3193359375,
+              "width": 44.6875,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "87 / 89〜92 / 116〜119 / 121",
+            "fraction": "JP ×0.03",
+            "value": 45000,
+            "text": "45000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 626.3818359375,
+              "right": 368.0498046875,
+              "bottom": 650.7568359375,
+              "width": 210.919921875,
+              "height": 24.375
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 631.2568359375,
+              "right": 363.9873046875,
+              "bottom": 645.8818359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 319.2998046875,
+              "top": 631.2568359375,
+              "right": 363.9873046875,
+              "bottom": 645.8818359375,
+              "width": 44.6875,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "93〜98 / 110〜115",
+            "fraction": "JP ×0.02",
+            "value": 30000,
+            "text": "30000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 652.3818359375,
+              "right": 368.0498046875,
+              "bottom": 671.8818359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 654.8193359375,
+              "right": 363.9873046875,
+              "bottom": 669.4443359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 319.2998046875,
+              "top": 654.8193359375,
+              "right": 363.9873046875,
+              "bottom": 669.4443359375,
+              "width": 44.6875,
+              "height": 14.625
+            }
+          },
+          {
+            "range": "99〜109",
+            "fraction": "JP ×0.01",
+            "value": 15000,
+            "text": "15000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 157.1298828125,
+              "top": 673.5068359375,
+              "right": 368.0498046875,
+              "bottom": 693.0068359375,
+              "width": 210.919921875,
+              "height": 19.5
+            },
+            "valueRect": {
+              "left": 312.9267578125,
+              "top": 675.9443359375,
+              "right": 363.9873046875,
+              "bottom": 690.5693359375,
+              "width": 51.060546875,
+              "height": 14.625
+            },
+            "valueFace": {
+              "left": 319.2998046875,
+              "top": 675.9443359375,
+              "right": 363.9873046875,
+              "bottom": 690.5693359375,
+              "width": 44.6875,
+              "height": 14.625
+            }
+          }
+        ],
+        "table": {
+          "left": 157.1298828125,
+          "top": 543.5068359375,
+          "right": 368.0498046875,
+          "bottom": 694.6318359375,
+          "width": 210.919921875,
+          "height": 151.125
+        },
+        "targets": {
+          "left": 157.1298828125,
+          "top": 488.9169921875,
+          "right": 368.0498046875,
+          "bottom": 541.0693359375,
+          "width": 210.919921875,
+          "height": 52.15234375
+        },
+        "footer": {
+          "left": 20.3125,
+          "top": 726.94140625,
+          "right": 369.6875,
+          "bottom": 736.4375,
+          "width": 349.375,
+          "height": 9.49609375
+        },
+        "dock": {
+          "visible": false,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "parent": "cookie-roulette",
+          "parentRect": {
+            "left": 12.1875,
+            "top": 39.3125,
+            "right": 377.8125,
+            "bottom": 272.5,
+            "width": 365.625,
+            "height": 233.1875
+          },
+          "text": "シュガーチャレンジ164 / 8球 · JP 1500000",
+          "paused": "false",
+          "animationPlayState": "running"
+        },
+        "announcement": {
+          "visible": false,
+          "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+          "pointerEvents": "none",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "badge": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "celebration": {
+          "visible": false,
+          "text": "JACKPOT1500000JPC挑戦権を獲得！",
+          "pointerEvents": "none",
+          "image": "assets/sugar-art-v254/jpc-title.webp",
+          "alt": "JACKPOT CHANCE獲得",
+          "loaded": true,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "title": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "animations": [
+          {
+            "name": "sc254-sugar-glint",
+            "state": "running",
+            "time": 350.10000000000116
+          },
+          {
+            "name": "sc254-pour",
+            "state": "running",
+            "time": 200.05799999999851
+          },
+          {
+            "name": "sc254-hit",
+            "state": "running",
+            "time": 200.05799999999851
+          }
+        ]
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "state": {
+        "api": {
+          "version": 254,
+          "expanded": true,
+          "challenge": {
+            "rulesRevision": 254,
+            "id": "sugar-large-jp",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "sugarValues": [
+              30000,
+              30000,
+              30000,
+              30000,
+              30000
+            ],
+            "cardId": "standard",
+            "multiplier": 10,
+            "seed": 254,
+            "draws": [
+              1,
+              2,
+              3,
+              10
+            ],
+            "type": "sugar-challenge",
+            "phase": "drawing",
+            "drawCount": 4,
+            "remaining": 4,
+            "sum": 16,
+            "jpBase": 150000,
+            "jpAmount": 1500000,
+            "award": null,
+            "cashWin": 0,
+            "jpcQualified": false,
+            "jpcTicket": null
+          },
+          "bankCount": 0,
+          "revision": 100007,
+          "intro": 5400,
+          "paused": false,
+          "announceAge": 10116.136,
+          "celebrateAge": 15316.136000000013,
+          "artLoaded": true
+        },
+        "phase": "ready",
+        "credit": 1000000,
+        "displayCredit": 1000000,
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "draws": [],
+        "totalWin": 0,
+        "token": 0,
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "screen": {
+          "left": 324.5,
+          "top": 0,
+          "right": 519.5,
+          "bottom": 390,
+          "width": 195,
+          "height": 390
+        },
+        "game": {
+          "left": 329.375,
+          "top": 197.84375,
+          "right": 514.625,
+          "bottom": 356.28125,
+          "width": 185.25,
+          "height": 158.4375
+        },
+        "overlay": {
+          "visible": true,
+          "rect": {
+            "left": 330.59375,
+            "top": 199.0625,
+            "right": 513.40625,
+            "bottom": 355.0625,
+            "width": 182.8125,
+            "height": 156
+          },
+          "role": "button",
+          "expanded": true,
+          "paused": "false",
+          "reduced": "false",
+          "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+          "overflowing": []
+        },
+        "bottle": {
+          "visible": true,
+          "pouring": "true",
+          "fill": 9.302,
+          "sum": 16,
+          "label": "4 / 8球"
+        },
+        "scale": {
+          "visible": false,
+          "amount": 5000,
+          "pouring": "false",
+          "gems": [
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            }
+          ]
+        },
+        "jp": {
+          "value": 1500000,
+          "text": "1500000",
+          "font": "ArcadePayout, Georgia, serif",
+          "rect": {
+            "left": 465.0625,
+            "top": 208.609375,
+            "right": 504.0625,
+            "bottom": 218.359375,
+            "width": 39,
+            "height": 9.75
+          },
+          "face": {
+            "left": 466.0660400390625,
+            "top": 208.609375,
+            "right": 504.0625,
+            "bottom": 218.359375,
+            "width": 37.9964599609375,
+            "height": 9.75
+          }
+        },
+        "sumFont": "ArcadePayout, Georgia, serif",
+        "multiplier": "×10",
+        "phaseText": "HITした数字の量だけシュガーを投入！",
+        "cardName": "シュガーカード",
+        "lucky": [
+          77,
+          88,
+          120,
+          131
+        ],
+        "extremes": "JPC合計 70 以下または138 以上",
+        "reach": "",
+        "history": [
+          {
+            "hit": "true",
+            "text": "1"
+          },
+          {
+            "hit": "true",
+            "text": "2"
+          },
+          {
+            "hit": "true",
+            "text": "3"
+          },
+          {
+            "hit": "true",
+            "text": "10"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          }
+        ],
+        "payouts": [
+          {
+            "range": "71〜74 / 134〜137",
+            "fraction": "JP ×0.2",
+            "value": 300000,
+            "text": "300000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 263.73876953125,
+              "right": 506.49365234375,
+              "bottom": 273.48876953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 264.95751953125,
+              "right": 504.46240234375,
+              "bottom": 272.27001953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 481.58331298828125,
+              "top": 264.95751953125,
+              "right": 504.46240234375,
+              "bottom": 272.27001953125,
+              "width": 22.87908935546875,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+            "fraction": "JP ×0.1",
+            "value": 150000,
+            "text": "150000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 274.30126953125,
+              "right": 506.49365234375,
+              "bottom": 286.48876953125,
+              "width": 101.72119140625,
+              "height": 12.1875
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 276.73876953125,
+              "right": 504.46240234375,
+              "bottom": 284.05126953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 481.58331298828125,
+              "top": 276.73876953125,
+              "right": 504.46240234375,
+              "bottom": 284.05126953125,
+              "width": 22.87908935546875,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "81〜86 / 122〜127",
+            "fraction": "JP ×0.05",
+            "value": 75000,
+            "text": "75000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 287.30126953125,
+              "right": 506.49365234375,
+              "bottom": 297.05126953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 288.52001953125,
+              "right": 504.46240234375,
+              "bottom": 295.83251953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 482.11865234375,
+              "top": 288.52001953125,
+              "right": 504.46240234375,
+              "bottom": 295.83251953125,
+              "width": 22.34375,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "87 / 89〜92 / 116〜119 / 121",
+            "fraction": "JP ×0.03",
+            "value": 45000,
+            "text": "45000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 297.86376953125,
+              "right": 506.49365234375,
+              "bottom": 310.05126953125,
+              "width": 101.72119140625,
+              "height": 12.1875
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 300.30126953125,
+              "right": 504.46240234375,
+              "bottom": 307.61376953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 482.11865234375,
+              "top": 300.30126953125,
+              "right": 504.46240234375,
+              "bottom": 307.61376953125,
+              "width": 22.34375,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "93〜98 / 110〜115",
+            "fraction": "JP ×0.02",
+            "value": 30000,
+            "text": "30000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 310.86376953125,
+              "right": 506.49365234375,
+              "bottom": 320.61376953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 312.08251953125,
+              "right": 504.46240234375,
+              "bottom": 319.39501953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 482.11865234375,
+              "top": 312.08251953125,
+              "right": 504.46240234375,
+              "bottom": 319.39501953125,
+              "width": 22.34375,
+              "height": 7.3125
+            }
+          },
+          {
+            "range": "99〜109",
+            "fraction": "JP ×0.01",
+            "value": 15000,
+            "text": "15000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 404.7724609375,
+              "top": 321.42626953125,
+              "right": 506.49365234375,
+              "bottom": 331.17626953125,
+              "width": 101.72119140625,
+              "height": 9.75
+            },
+            "valueRect": {
+              "left": 480.43017578125,
+              "top": 322.64501953125,
+              "right": 504.46240234375,
+              "bottom": 329.95751953125,
+              "width": 24.0322265625,
+              "height": 7.3125
+            },
+            "valueFace": {
+              "left": 482.11865234375,
+              "top": 322.64501953125,
+              "right": 504.46240234375,
+              "bottom": 329.95751953125,
+              "width": 22.34375,
+              "height": 7.3125
+            }
+          }
+        ],
+        "table": {
+          "left": 404.7724609375,
+          "top": 256.42626953125,
+          "right": 506.49365234375,
+          "bottom": 331.98876953125,
+          "width": 101.72119140625,
+          "height": 75.5625
+        },
+        "targets": {
+          "left": 404.7724609375,
+          "top": 227.50634765625,
+          "right": 506.49365234375,
+          "bottom": 255.20751953125,
+          "width": 101.72119140625,
+          "height": 27.701171875
+        },
+        "footer": {
+          "left": 336.6875,
+          "top": 347.064453125,
+          "right": 507.3125,
+          "bottom": 351.8125,
+          "width": 170.625,
+          "height": 4.748046875
+        },
+        "dock": {
+          "visible": false,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "parent": "cookie-roulette",
+          "parentRect": {
+            "left": 330.59375,
+            "top": 3.65625,
+            "right": 513.40625,
+            "bottom": 120.25,
+            "width": 182.8125,
+            "height": 116.59375
+          },
+          "text": "シュガーチャレンジ164 / 8球 · JP 1500000",
+          "paused": "false",
+          "animationPlayState": "running"
+        },
+        "announcement": {
+          "visible": false,
+          "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+          "pointerEvents": "none",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "badge": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "celebration": {
+          "visible": false,
+          "text": "JACKPOT1500000JPC挑戦権を獲得！",
+          "pointerEvents": "none",
+          "image": "assets/sugar-art-v254/jpc-title.webp",
+          "alt": "JACKPOT CHANCE獲得",
+          "loaded": true,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "title": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "animations": [
+          {
+            "name": "sc254-sugar-glint",
+            "state": "running",
+            "time": 716.6999999999995
+          },
+          {
+            "name": "sc254-pour",
+            "state": "running",
+            "time": 566.6579999999967
+          },
+          {
+            "name": "sc254-hit",
+            "state": "running",
+            "time": 566.6579999999967
+          }
+        ]
+      }
+    },
+    {
+      "width": 1366,
+      "height": 900,
+      "state": {
+        "api": {
+          "version": 254,
+          "expanded": true,
+          "challenge": {
+            "rulesRevision": 254,
+            "id": "sugar-large-jp",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "sugarValues": [
+              30000,
+              30000,
+              30000,
+              30000,
+              30000
+            ],
+            "cardId": "standard",
+            "multiplier": 10,
+            "seed": 254,
+            "draws": [
+              1,
+              2,
+              3,
+              10
+            ],
+            "type": "sugar-challenge",
+            "phase": "drawing",
+            "drawCount": 4,
+            "remaining": 4,
+            "sum": 16,
+            "jpBase": 150000,
+            "jpAmount": 1500000,
+            "award": null,
+            "cashWin": 0,
+            "jpcQualified": false,
+            "jpcTicket": null
+          },
+          "bankCount": 0,
+          "revision": 100007,
+          "intro": 5400,
+          "paused": false,
+          "announceAge": 10349.436,
+          "celebrateAge": 15549.436000000012,
+          "artLoaded": true
+        },
+        "phase": "ready",
+        "credit": 1000000,
+        "displayCredit": 1000000,
+        "bets": [
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000,
+          3000
+        ],
+        "draws": [],
+        "totalWin": 0,
+        "token": 0,
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "screen": {
+          "left": 458,
+          "top": 0,
+          "right": 908,
+          "bottom": 900,
+          "width": 450,
+          "height": 900
+        },
+        "game": {
+          "left": 469.25,
+          "top": 456.5625,
+          "right": 896.75,
+          "bottom": 822.1875,
+          "width": 427.5,
+          "height": 365.625
+        },
+        "overlay": {
+          "visible": true,
+          "rect": {
+            "left": 472.0625,
+            "top": 459.375,
+            "right": 893.9375,
+            "bottom": 819.375,
+            "width": 421.875,
+            "height": 360
+          },
+          "role": "button",
+          "expanded": true,
+          "paused": "false",
+          "reduced": "false",
+          "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+          "overflowing": []
+        },
+        "bottle": {
+          "visible": true,
+          "pouring": "false",
+          "fill": 9.302,
+          "sum": 16,
+          "label": "4 / 8球"
+        },
+        "scale": {
+          "visible": false,
+          "amount": 5000,
+          "pouring": "false",
+          "gems": [
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            },
+            {
+              "poured": "true",
+              "active": "false"
+            }
+          ]
+        },
+        "jp": {
+          "value": 1500000,
+          "text": "1500000",
+          "font": "ArcadePayout, Georgia, serif",
+          "rect": {
+            "left": 782.375,
+            "top": 481.40625,
+            "right": 872.375,
+            "bottom": 503.90625,
+            "width": 90,
+            "height": 22.5
+          },
+          "face": {
+            "left": 784.6907958984375,
+            "top": 481.40625,
+            "right": 872.375,
+            "bottom": 503.90625,
+            "width": 87.6842041015625,
+            "height": 22.5
+          }
+        },
+        "sumFont": "ArcadePayout, Georgia, serif",
+        "multiplier": "×10",
+        "phaseText": "HITした数字の量だけシュガーを投入！",
+        "cardName": "シュガーカード",
+        "lucky": [
+          77,
+          88,
+          120,
+          131
+        ],
+        "extremes": "JPC合計 70 以下または138 以上",
+        "reach": "",
+        "history": [
+          {
+            "hit": "true",
+            "text": "1"
+          },
+          {
+            "hit": "true",
+            "text": "2"
+          },
+          {
+            "hit": "true",
+            "text": "3"
+          },
+          {
+            "hit": "true",
+            "text": "10"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          },
+          {
+            "hit": "false",
+            "text": "·"
+          }
+        ],
+        "payouts": [
+          {
+            "range": "71〜74 / 134〜137",
+            "fraction": "JP ×0.2",
+            "value": 300000,
+            "text": "300000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 608.6279296875,
+              "right": 877.9853515625,
+              "bottom": 631.1279296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 611.4404296875,
+              "right": 873.2978515625,
+              "bottom": 628.3154296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 820.4998779296875,
+              "top": 611.4404296875,
+              "right": 873.2978515625,
+              "bottom": 628.3154296875,
+              "width": 52.7979736328125,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+            "fraction": "JP ×0.1",
+            "value": 150000,
+            "text": "150000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 633.0029296875,
+              "right": 877.9853515625,
+              "bottom": 661.1279296875,
+              "width": 234.7412109375,
+              "height": 28.125
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 638.6279296875,
+              "right": 873.2978515625,
+              "bottom": 655.5029296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 820.4998779296875,
+              "top": 638.6279296875,
+              "right": 873.2978515625,
+              "bottom": 655.5029296875,
+              "width": 52.7979736328125,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "81〜86 / 122〜127",
+            "fraction": "JP ×0.05",
+            "value": 75000,
+            "text": "75000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 663.0029296875,
+              "right": 877.9853515625,
+              "bottom": 685.5029296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 665.8154296875,
+              "right": 873.2978515625,
+              "bottom": 682.6904296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 821.7353515625,
+              "top": 665.8154296875,
+              "right": 873.2978515625,
+              "bottom": 682.6904296875,
+              "width": 51.5625,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "87 / 89〜92 / 116〜119 / 121",
+            "fraction": "JP ×0.03",
+            "value": 45000,
+            "text": "45000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 687.3779296875,
+              "right": 877.9853515625,
+              "bottom": 715.5029296875,
+              "width": 234.7412109375,
+              "height": 28.125
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 693.0029296875,
+              "right": 873.2978515625,
+              "bottom": 709.8779296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 821.7353515625,
+              "top": 693.0029296875,
+              "right": 873.2978515625,
+              "bottom": 709.8779296875,
+              "width": 51.5625,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "93〜98 / 110〜115",
+            "fraction": "JP ×0.02",
+            "value": 30000,
+            "text": "30000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 717.3779296875,
+              "right": 877.9853515625,
+              "bottom": 739.8779296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 720.1904296875,
+              "right": 873.2978515625,
+              "bottom": 737.0654296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 821.7353515625,
+              "top": 720.1904296875,
+              "right": 873.2978515625,
+              "bottom": 737.0654296875,
+              "width": 51.5625,
+              "height": 16.875
+            }
+          },
+          {
+            "range": "99〜109",
+            "fraction": "JP ×0.01",
+            "value": 15000,
+            "text": "15000",
+            "font": "ArcadePayout, Georgia, serif",
+            "current": false,
+            "rect": {
+              "left": 643.244140625,
+              "top": 741.7529296875,
+              "right": 877.9853515625,
+              "bottom": 764.2529296875,
+              "width": 234.7412109375,
+              "height": 22.5
+            },
+            "valueRect": {
+              "left": 817.8388671875,
+              "top": 744.5654296875,
+              "right": 873.2978515625,
+              "bottom": 761.4404296875,
+              "width": 55.458984375,
+              "height": 16.875
+            },
+            "valueFace": {
+              "left": 821.7353515625,
+              "top": 744.5654296875,
+              "right": 873.2978515625,
+              "bottom": 761.4404296875,
+              "width": 51.5625,
+              "height": 16.875
+            }
+          }
+        ],
+        "table": {
+          "left": 643.244140625,
+          "top": 591.7529296875,
+          "right": 877.9853515625,
+          "bottom": 766.1279296875,
+          "width": 234.7412109375,
+          "height": 174.375
+        },
+        "targets": {
+          "left": 643.244140625,
+          "top": 525.0146484375,
+          "right": 877.9853515625,
+          "bottom": 588.9404296875,
+          "width": 234.7412109375,
+          "height": 63.92578125
+        },
+        "footer": {
+          "left": 486.125,
+          "top": 800.91796875,
+          "right": 879.875,
+          "bottom": 811.875,
+          "width": 393.75,
+          "height": 10.95703125
+        },
+        "dock": {
+          "visible": false,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "parent": "cookie-roulette",
+          "parentRect": {
+            "left": 472.0625,
+            "top": 8.4375,
+            "right": 893.9375,
+            "bottom": 277.5,
+            "width": 421.875,
+            "height": 269.0625
+          },
+          "text": "シュガーチャレンジ164 / 8球 · JP 1500000",
+          "paused": "false",
+          "animationPlayState": "running"
+        },
+        "announcement": {
+          "visible": false,
+          "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+          "pointerEvents": "none",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "badge": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "celebration": {
+          "visible": false,
+          "text": "JACKPOT1500000JPC挑戦権を獲得！",
+          "pointerEvents": "none",
+          "image": "assets/sugar-art-v254/jpc-title.webp",
+          "alt": "JACKPOT CHANCE獲得",
+          "loaded": true,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "title": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          }
+        },
+        "animations": [
+          {
+            "name": "sc254-sugar-glint",
+            "state": "running",
+            "time": 1000
+          }
+        ]
+      }
+    }
+  ],
+  "cards": [
+    {
+      "cardId": "standard",
+      "lucky": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "extremes": "JPC合計 70 以下または138 以上",
+      "name": "シュガーカード"
+    },
+    {
+      "cardId": "lucky",
+      "lucky": [
+        77,
+        88,
+        99,
+        109,
+        120,
+        131
+      ],
+      "extremes": "JPC合計 70 以下または138 以上",
+      "name": "★ RARE CARD ★　ラッキーシュガーカード"
+    },
+    {
+      "cardId": "wide",
+      "lucky": [
+        88,
+        120
+      ],
+      "extremes": "JPC合計 78 以下または130 以上",
+      "name": "★ RARE CARD ★　ワイドシュガーカード"
+    }
+  ],
+  "awards": [
+    {
+      "sum": 74,
+      "win": 3000,
+      "phaseText": "3000 WIN GET!",
+      "current": {
+        "range": "71〜74 / 134〜137",
+        "fraction": "JP ×0.2",
+        "value": 3000,
+        "text": "3000",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": true,
+        "rect": {
+          "left": 643.244140625,
+          "top": 615.6591796875,
+          "right": 877.9853515625,
+          "bottom": 638.1591796875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 618.4716796875,
+          "right": 873.2978515625,
+          "bottom": 635.3466796875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 832.0478515625,
+          "top": 618.4716796875,
+          "right": 873.2978515625,
+          "bottom": 635.3466796875,
+          "width": 41.25,
+          "height": 16.875
+        }
+      }
+    },
+    {
+      "sum": 80,
+      "win": 1500,
+      "phaseText": "1500 WIN GET!",
+      "current": {
+        "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+        "fraction": "JP ×0.1",
+        "value": 1500,
+        "text": "1500",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": true,
+        "rect": {
+          "left": 643.244140625,
+          "top": 640.0341796875,
+          "right": 877.9853515625,
+          "bottom": 668.1591796875,
+          "width": 234.7412109375,
+          "height": 28.125
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 645.6591796875,
+          "right": 873.2978515625,
+          "bottom": 662.5341796875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 832.0478515625,
+          "top": 645.6591796875,
+          "right": 873.2978515625,
+          "bottom": 662.5341796875,
+          "width": 41.25,
+          "height": 16.875
+        }
+      }
+    },
+    {
+      "sum": 86,
+      "win": 750,
+      "phaseText": "750 WIN GET!",
+      "current": {
+        "range": "81〜86 / 122〜127",
+        "fraction": "JP ×0.05",
+        "value": 750,
+        "text": "750",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": true,
+        "rect": {
+          "left": 643.244140625,
+          "top": 670.0341796875,
+          "right": 877.9853515625,
+          "bottom": 692.5341796875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 672.8466796875,
+          "right": 873.2978515625,
+          "bottom": 689.7216796875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 672.8466796875,
+          "right": 873.2978515625,
+          "bottom": 689.7216796875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      }
+    },
+    {
+      "sum": 92,
+      "win": 450,
+      "phaseText": "450 WIN GET!",
+      "current": {
+        "range": "87 / 89〜92 / 116〜119 / 121",
+        "fraction": "JP ×0.03",
+        "value": 450,
+        "text": "450",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": true,
+        "rect": {
+          "left": 643.244140625,
+          "top": 694.4091796875,
+          "right": 877.9853515625,
+          "bottom": 722.5341796875,
+          "width": 234.7412109375,
+          "height": 28.125
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 700.0341796875,
+          "right": 873.2978515625,
+          "bottom": 716.9091796875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 700.0341796875,
+          "right": 873.2978515625,
+          "bottom": 716.9091796875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      }
+    },
+    {
+      "sum": 98,
+      "win": 300,
+      "phaseText": "300 WIN GET!",
+      "current": {
+        "range": "93〜98 / 110〜115",
+        "fraction": "JP ×0.02",
+        "value": 300,
+        "text": "300",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": true,
+        "rect": {
+          "left": 643.244140625,
+          "top": 724.4091796875,
+          "right": 877.9853515625,
+          "bottom": 746.9091796875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 727.2216796875,
+          "right": 873.2978515625,
+          "bottom": 744.0966796875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 727.2216796875,
+          "right": 873.2978515625,
+          "bottom": 744.0966796875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      }
+    },
+    {
+      "sum": 104,
+      "win": 150,
+      "phaseText": "150 WIN GET!",
+      "current": {
+        "range": "99〜109",
+        "fraction": "JP ×0.01",
+        "value": 150,
+        "text": "150",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": true,
+        "rect": {
+          "left": 643.244140625,
+          "top": 748.7841796875,
+          "right": 877.9853515625,
+          "bottom": 771.2841796875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 751.5966796875,
+          "right": 873.2978515625,
+          "bottom": 768.4716796875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 751.5966796875,
+          "right": 873.2978515625,
+          "bottom": 768.4716796875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      }
+    }
+  ],
+  "lifecycle": {
+    "menuBefore": {
+      "version": 254,
+      "expanded": true,
+      "challenge": {
+        "rulesRevision": 254,
+        "id": "sugar-intro",
+        "roundId": "isolated-sugar-view",
+        "station": 1,
+        "sugarValues": [
+          1000,
+          1100,
+          950,
+          1050,
+          900
+        ],
+        "cardId": "standard",
+        "multiplier": 3,
+        "seed": 254,
+        "draws": [],
+        "type": "sugar-challenge",
+        "phase": "ready",
+        "drawCount": 0,
+        "remaining": 8,
+        "sum": 0,
+        "jpBase": 5000,
+        "jpAmount": 15000,
+        "award": null,
+        "cashWin": 0,
+        "jpcQualified": false,
+        "jpcTicket": null
+      },
+      "bankCount": 0,
+      "revision": 100002,
+      "intro": 1449.8999999999996,
+      "paused": true,
+      "announceAge": 1966.5,
+      "celebrateAge": 7166.500000000002,
+      "artLoaded": true
+    },
+    "menuAfter": {
+      "version": 254,
+      "expanded": true,
+      "challenge": {
+        "rulesRevision": 254,
+        "id": "sugar-intro",
+        "roundId": "isolated-sugar-view",
+        "station": 1,
+        "sugarValues": [
+          1000,
+          1100,
+          950,
+          1050,
+          900
+        ],
+        "cardId": "standard",
+        "multiplier": 3,
+        "seed": 254,
+        "draws": [],
+        "type": "sugar-challenge",
+        "phase": "ready",
+        "drawCount": 0,
+        "remaining": 8,
+        "sum": 0,
+        "jpBase": 5000,
+        "jpAmount": 15000,
+        "award": null,
+        "cashWin": 0,
+        "jpcQualified": false,
+        "jpcTicket": null
+      },
+      "bankCount": 0,
+      "revision": 100002,
+      "intro": 1449.8999999999996,
+      "paused": true,
+      "announceAge": 1966.5,
+      "celebrateAge": 7166.500000000002,
+      "artLoaded": true
+    },
+    "hiddenBefore": {
+      "version": 254,
+      "expanded": true,
+      "challenge": {
+        "rulesRevision": 254,
+        "id": "sugar-intro",
+        "roundId": "isolated-sugar-view",
+        "station": 1,
+        "sugarValues": [
+          1000,
+          1100,
+          950,
+          1050,
+          900
+        ],
+        "cardId": "standard",
+        "multiplier": 3,
+        "seed": 254,
+        "draws": [],
+        "type": "sugar-challenge",
+        "phase": "ready",
+        "drawCount": 0,
+        "remaining": 8,
+        "sum": 0,
+        "jpBase": 5000,
+        "jpAmount": 15000,
+        "award": null,
+        "cashWin": 0,
+        "jpcQualified": false,
+        "jpcTicket": null
+      },
+      "bankCount": 0,
+      "revision": 100002,
+      "intro": 1483.199999999999,
+      "paused": true,
+      "announceAge": 1999.7999999999993,
+      "celebrateAge": 7199.800000000001,
+      "artLoaded": true
+    },
+    "hiddenAfter": {
+      "version": 254,
+      "expanded": true,
+      "challenge": {
+        "rulesRevision": 254,
+        "id": "sugar-intro",
+        "roundId": "isolated-sugar-view",
+        "station": 1,
+        "sugarValues": [
+          1000,
+          1100,
+          950,
+          1050,
+          900
+        ],
+        "cardId": "standard",
+        "multiplier": 3,
+        "seed": 254,
+        "draws": [],
+        "type": "sugar-challenge",
+        "phase": "ready",
+        "drawCount": 0,
+        "remaining": 8,
+        "sum": 0,
+        "jpBase": 5000,
+        "jpAmount": 15000,
+        "award": null,
+        "cashWin": 0,
+        "jpcQualified": false,
+        "jpcTicket": null
+      },
+      "bankCount": 0,
+      "revision": 100002,
+      "intro": 1483.199999999999,
+      "paused": true,
+      "announceAge": 1999.7999999999993,
+      "celebrateAge": 7199.800000000001,
+      "artLoaded": true
+    }
+  },
+  "lucky": {
+    "reach": "JPCリーチ　6・17",
+    "state": {
+      "api": {
+        "version": 254,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 254,
+          "id": "sugar-lucky-jpc",
+          "roundId": "isolated-sugar-view",
+          "station": 1,
+          "sugarValues": [
+            1000,
+            1100,
+            950,
+            1050,
+            900
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 254,
+          "draws": [
+            1,
+            2,
+            3,
+            10,
+            15,
+            19,
+            21,
+            6
+          ],
+          "type": "sugar-challenge",
+          "phase": "complete",
+          "drawCount": 8,
+          "remaining": 0,
+          "sum": 77,
+          "jpBase": 5000,
+          "jpAmount": 15000,
+          "award": {
+            "sum": 77,
+            "cardId": "standard",
+            "jpc": true,
+            "reason": "lucky",
+            "payoutHundredths": 0,
+            "payoutFraction": 0,
+            "jpAmount": 15000,
+            "cashWin": 0,
+            "qualifyingNumber": 6
+          },
+          "cashWin": 0,
+          "jpcQualified": true,
+          "jpcTicket": {
+            "id": "sugar-lucky-jpc:jpc",
+            "challengeId": "sugar-lucky-jpc",
+            "roundId": "isolated-sugar-view",
+            "station": 1,
+            "jpAmount": 15000,
+            "sum": 77,
+            "number": 6,
+            "reason": "lucky",
+            "status": "pending-implementation"
+          }
+        },
+        "bankCount": 0,
+        "revision": 100018,
+        "intro": 5400,
+        "paused": false,
+        "announceAge": 12116.036,
+        "celebrateAge": 966.6000000000004,
+        "artLoaded": true
+      },
+      "phase": "ready",
+      "credit": 1000000,
+      "displayCredit": 1000000,
+      "bets": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "draws": [],
+      "totalWin": 0,
+      "token": 0,
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "screen": {
+        "left": 458,
+        "top": 0,
+        "right": 908,
+        "bottom": 900,
+        "width": 450,
+        "height": 900
+      },
+      "game": {
+        "left": 469.25,
+        "top": 456.5625,
+        "right": 896.75,
+        "bottom": 822.1875,
+        "width": 427.5,
+        "height": 365.625
+      },
+      "overlay": {
+        "visible": true,
+        "rect": {
+          "left": 472.0625,
+          "top": 459.375,
+          "right": 893.9375,
+          "bottom": 819.375,
+          "width": 421.875,
+          "height": 360
+        },
+        "role": "button",
+        "expanded": true,
+        "paused": "false",
+        "reduced": "false",
+        "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+        "overflowing": []
+      },
+      "bottle": {
+        "visible": true,
+        "pouring": "false",
+        "fill": 44.767,
+        "sum": 77,
+        "label": "8 / 8球"
+      },
+      "scale": {
+        "visible": false,
+        "amount": 5000,
+        "pouring": "false",
+        "gems": [
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          },
+          {
+            "poured": "true",
+            "active": "false"
+          }
+        ]
+      },
+      "jp": {
+        "value": 15000,
+        "text": "15000",
+        "font": "ArcadePayout, Georgia, serif",
+        "rect": {
+          "left": 782.375,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 90,
+          "height": 22.5
+        },
+        "face": {
+          "left": 788,
+          "top": 481.40625,
+          "right": 872.375,
+          "bottom": 503.90625,
+          "width": 84.375,
+          "height": 22.5
+        }
+      },
+      "sumFont": "ArcadePayout, Georgia, serif",
+      "multiplier": "×3",
+      "phaseText": "JACKPOT CHANCE 獲得！",
+      "cardName": "シュガーカード",
+      "lucky": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "extremes": "JPC合計 70 以下または138 以上",
+      "reach": "合計 77 → JPC獲得！",
+      "history": [
+        {
+          "hit": "true",
+          "text": "1"
+        },
+        {
+          "hit": "true",
+          "text": "2"
+        },
+        {
+          "hit": "true",
+          "text": "3"
+        },
+        {
+          "hit": "true",
+          "text": "10"
+        },
+        {
+          "hit": "true",
+          "text": "15"
+        },
+        {
+          "hit": "true",
+          "text": "19"
+        },
+        {
+          "hit": "true",
+          "text": "21"
+        },
+        {
+          "hit": "true",
+          "text": "6"
+        }
+      ],
+      "payouts": [
+        {
+          "range": "71〜74 / 134〜137",
+          "fraction": "JP ×0.2",
+          "value": 3000,
+          "text": "3000",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 615.6591796875,
+            "right": 877.9853515625,
+            "bottom": 638.1591796875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 618.4716796875,
+            "right": 873.2978515625,
+            "bottom": 635.3466796875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 618.4716796875,
+            "right": 873.2978515625,
+            "bottom": 635.3466796875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+          "fraction": "JP ×0.1",
+          "value": 1500,
+          "text": "1500",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 640.0341796875,
+            "right": 877.9853515625,
+            "bottom": 668.1591796875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 645.6591796875,
+            "right": 873.2978515625,
+            "bottom": 662.5341796875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 832.0478515625,
+            "top": 645.6591796875,
+            "right": 873.2978515625,
+            "bottom": 662.5341796875,
+            "width": 41.25,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "81〜86 / 122〜127",
+          "fraction": "JP ×0.05",
+          "value": 750,
+          "text": "750",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 670.0341796875,
+            "right": 877.9853515625,
+            "bottom": 692.5341796875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 672.8466796875,
+            "right": 873.2978515625,
+            "bottom": 689.7216796875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 672.8466796875,
+            "right": 873.2978515625,
+            "bottom": 689.7216796875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "87 / 89〜92 / 116〜119 / 121",
+          "fraction": "JP ×0.03",
+          "value": 450,
+          "text": "450",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 694.4091796875,
+            "right": 877.9853515625,
+            "bottom": 722.5341796875,
+            "width": 234.7412109375,
+            "height": 28.125
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 700.0341796875,
+            "right": 873.2978515625,
+            "bottom": 716.9091796875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 700.0341796875,
+            "right": 873.2978515625,
+            "bottom": 716.9091796875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "93〜98 / 110〜115",
+          "fraction": "JP ×0.02",
+          "value": 300,
+          "text": "300",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 724.4091796875,
+            "right": 877.9853515625,
+            "bottom": 746.9091796875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 727.2216796875,
+            "right": 873.2978515625,
+            "bottom": 744.0966796875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 727.2216796875,
+            "right": 873.2978515625,
+            "bottom": 744.0966796875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        },
+        {
+          "range": "99〜109",
+          "fraction": "JP ×0.01",
+          "value": 150,
+          "text": "150",
+          "font": "ArcadePayout, Georgia, serif",
+          "current": false,
+          "rect": {
+            "left": 643.244140625,
+            "top": 748.7841796875,
+            "right": 877.9853515625,
+            "bottom": 771.2841796875,
+            "width": 234.7412109375,
+            "height": 22.5
+          },
+          "valueRect": {
+            "left": 817.8388671875,
+            "top": 751.5966796875,
+            "right": 873.2978515625,
+            "bottom": 768.4716796875,
+            "width": 55.458984375,
+            "height": 16.875
+          },
+          "valueFace": {
+            "left": 842.3603515625,
+            "top": 751.5966796875,
+            "right": 873.2978515625,
+            "bottom": 768.4716796875,
+            "width": 30.9375,
+            "height": 16.875
+          }
+        }
+      ],
+      "table": {
+        "left": 643.244140625,
+        "top": 598.7841796875,
+        "right": 877.9853515625,
+        "bottom": 773.1591796875,
+        "width": 234.7412109375,
+        "height": 174.375
+      },
+      "targets": {
+        "left": 643.244140625,
+        "top": 517.9833984375,
+        "right": 877.9853515625,
+        "bottom": 581.9091796875,
+        "width": 234.7412109375,
+        "height": 63.92578125
+      },
+      "footer": {
+        "left": 486.125,
+        "top": 800.91796875,
+        "right": 879.875,
+        "bottom": 811.875,
+        "width": 393.75,
+        "height": 10.95703125
+      },
+      "dock": {
+        "visible": false,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "parent": "cookie-roulette",
+        "parentRect": {
+          "left": 472.0625,
+          "top": 8.4375,
+          "right": 893.9375,
+          "bottom": 277.5,
+          "width": 421.875,
+          "height": 269.0625
+        },
+        "text": "シュガーチャレンジ77JPC獲得！",
+        "paused": "false",
+        "animationPlayState": "running"
+      },
+      "announcement": {
+        "visible": false,
+        "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+        "pointerEvents": "none",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "badge": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "celebration": {
+        "visible": true,
+        "text": "JACKPOT15000JPC挑戦権を獲得！",
+        "pointerEvents": "none",
+        "image": "assets/sugar-art-v254/jpc-title.webp",
+        "alt": "JACKPOT CHANCE獲得",
+        "loaded": true,
+        "rect": {
+          "left": 458,
+          "top": 35.9912109375,
+          "right": 908,
+          "bottom": 837.01171875,
+          "width": 450,
+          "height": 801.0205078125
+        },
+        "title": {
+          "left": 497.0814208984375,
+          "top": 291.8386535644531,
+          "right": 868.9039306640625,
+          "bottom": 490.1974792480469,
+          "width": 371.822509765625,
+          "height": 198.35882568359375
+        }
+      },
+      "animations": [
+        {
+          "name": "sc254-sugar-glint",
+          "state": "running",
+          "time": 3199.8999999999996
+        }
+      ]
+    },
+    "repeated": {
+      "before": 1399.8999999999996,
+      "after": 1399.8999999999996
+    },
+    "pausedDock": {
+      "visible": true,
+      "rect": {
+        "left": 741.125,
+        "top": 209.0625,
+        "right": 887.375,
+        "bottom": 270.9375,
+        "width": 146.25,
+        "height": 61.875
+      },
+      "parent": "cookie-roulette",
+      "parentRect": {
+        "left": 472.0625,
+        "top": 8.4375,
+        "right": 893.9375,
+        "bottom": 277.5,
+        "width": 421.875,
+        "height": 269.0625
+      },
+      "text": "シュガーチャレンジ77JPC獲得！",
+      "paused": "true",
+      "animationPlayState": "paused"
+    }
+  },
+  "nativeBefore": {
+    "credit": 1000000,
+    "bets": [
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000
+    ],
+    "draws": [],
+    "totalWin": 0,
+    "phase": "ready"
+  },
+  "announcement": {
+    "visible": true,
+    "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+    "pointerEvents": "none",
+    "rect": {
+      "left": 458,
+      "top": 161.9970703125,
+      "right": 908,
+      "bottom": 810,
+      "width": 450,
+      "height": 648.0029296875
+    },
+    "badge": {
+      "left": 605.51708984375,
+      "top": 489.5761413574219,
+      "right": 760.48291015625,
+      "bottom": 557.4063110351562,
+      "width": 154.9658203125,
+      "height": 67.83016967773438
+    }
+  },
+  "reduced": {
+    "api": {
+      "version": 254,
+      "expanded": true,
+      "challenge": {
+        "rulesRevision": 254,
+        "id": "sugar-reduced",
+        "roundId": "isolated-sugar-view",
+        "station": 1,
+        "sugarValues": [
+          1000,
+          1100,
+          950,
+          1050,
+          900
+        ],
+        "cardId": "standard",
+        "multiplier": 3,
+        "seed": 254,
+        "draws": [],
+        "type": "sugar-challenge",
+        "phase": "ready",
+        "drawCount": 0,
+        "remaining": 8,
+        "sum": 0,
+        "jpBase": 5000,
+        "jpAmount": 15000,
+        "award": null,
+        "cashWin": 0,
+        "jpcQualified": false,
+        "jpcTicket": null
+      },
+      "bankCount": 0,
+      "revision": 100020,
+      "intro": 33.400000000001455,
+      "paused": false,
+      "announceAge": 12865.936000000002,
+      "celebrateAge": 1716.5000000000018,
+      "artLoaded": true
+    },
+    "phase": "ready",
+    "credit": 1000000,
+    "displayCredit": 1000000,
+    "bets": [
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000
+    ],
+    "draws": [],
+    "totalWin": 0,
+    "token": 0,
+    "viewport": {
+      "width": 1366,
+      "height": 900
+    },
+    "screen": {
+      "left": 458,
+      "top": 0,
+      "right": 908,
+      "bottom": 900,
+      "width": 450,
+      "height": 900
+    },
+    "game": {
+      "left": 469.25,
+      "top": 456.5625,
+      "right": 896.75,
+      "bottom": 822.1875,
+      "width": 427.5,
+      "height": 365.625
+    },
+    "overlay": {
+      "visible": true,
+      "rect": {
+        "left": 472.0625,
+        "top": 459.375,
+        "right": 893.9375,
+        "bottom": 819.375,
+        "width": 421.875,
+        "height": 360
+      },
+      "role": "button",
+      "expanded": true,
+      "paused": "false",
+      "reduced": "true",
+      "background": "radial-gradient(at 28% 55%, rgba(52, 32, 71, 0.66), rgba(0, 0, 0, 0) 58%), linear-gradient(145deg, rgba(5, 3, 10, 0.94), rgba(16, 8, 23, 0.91) 65%, rgba(2, 3, 11, 0.94))",
+      "overflowing": []
+    },
+    "bottle": {
+      "visible": true,
+      "pouring": "false",
+      "fill": 0,
+      "sum": 0,
+      "label": "0 / 8球"
+    },
+    "scale": {
+      "visible": false,
+      "amount": 5000,
+      "pouring": "false",
+      "gems": [
+        {
+          "poured": "true",
+          "active": "false"
+        },
+        {
+          "poured": "true",
+          "active": "false"
+        },
+        {
+          "poured": "true",
+          "active": "false"
+        },
+        {
+          "poured": "true",
+          "active": "false"
+        },
+        {
+          "poured": "true",
+          "active": "false"
+        }
+      ]
+    },
+    "jp": {
+      "value": 15000,
+      "text": "15000",
+      "font": "ArcadePayout, Georgia, serif",
+      "rect": {
+        "left": 782.375,
+        "top": 481.40625,
+        "right": 872.375,
+        "bottom": 503.90625,
+        "width": 90,
+        "height": 22.5
+      },
+      "face": {
+        "left": 788,
+        "top": 481.40625,
+        "right": 872.375,
+        "bottom": 503.90625,
+        "width": 84.375,
+        "height": 22.5
+      }
+    },
+    "sumFont": "ArcadePayout, Georgia, serif",
+    "multiplier": "×3",
+    "phaseText": "HITした数字の量だけシュガーを投入！",
+    "cardName": "シュガーカード",
+    "lucky": [
+      77,
+      88,
+      120,
+      131
+    ],
+    "extremes": "JPC合計 70 以下または138 以上",
+    "reach": "",
+    "history": [
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      },
+      {
+        "hit": "false",
+        "text": "·"
+      }
+    ],
+    "payouts": [
+      {
+        "range": "71〜74 / 134〜137",
+        "fraction": "JP ×0.2",
+        "value": 3000,
+        "text": "3000",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": false,
+        "rect": {
+          "left": 643.244140625,
+          "top": 608.6279296875,
+          "right": 877.9853515625,
+          "bottom": 631.1279296875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 611.4404296875,
+          "right": 873.2978515625,
+          "bottom": 628.3154296875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 832.0478515625,
+          "top": 611.4404296875,
+          "right": 873.2978515625,
+          "bottom": 628.3154296875,
+          "width": 41.25,
+          "height": 16.875
+        }
+      },
+      {
+        "range": "75〜76 / 78〜80 / 128〜130 / 132〜133",
+        "fraction": "JP ×0.1",
+        "value": 1500,
+        "text": "1500",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": false,
+        "rect": {
+          "left": 643.244140625,
+          "top": 633.0029296875,
+          "right": 877.9853515625,
+          "bottom": 661.1279296875,
+          "width": 234.7412109375,
+          "height": 28.125
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 638.6279296875,
+          "right": 873.2978515625,
+          "bottom": 655.5029296875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 832.0478515625,
+          "top": 638.6279296875,
+          "right": 873.2978515625,
+          "bottom": 655.5029296875,
+          "width": 41.25,
+          "height": 16.875
+        }
+      },
+      {
+        "range": "81〜86 / 122〜127",
+        "fraction": "JP ×0.05",
+        "value": 750,
+        "text": "750",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": false,
+        "rect": {
+          "left": 643.244140625,
+          "top": 663.0029296875,
+          "right": 877.9853515625,
+          "bottom": 685.5029296875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 665.8154296875,
+          "right": 873.2978515625,
+          "bottom": 682.6904296875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 665.8154296875,
+          "right": 873.2978515625,
+          "bottom": 682.6904296875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      },
+      {
+        "range": "87 / 89〜92 / 116〜119 / 121",
+        "fraction": "JP ×0.03",
+        "value": 450,
+        "text": "450",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": false,
+        "rect": {
+          "left": 643.244140625,
+          "top": 687.3779296875,
+          "right": 877.9853515625,
+          "bottom": 715.5029296875,
+          "width": 234.7412109375,
+          "height": 28.125
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 693.0029296875,
+          "right": 873.2978515625,
+          "bottom": 709.8779296875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 693.0029296875,
+          "right": 873.2978515625,
+          "bottom": 709.8779296875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      },
+      {
+        "range": "93〜98 / 110〜115",
+        "fraction": "JP ×0.02",
+        "value": 300,
+        "text": "300",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": false,
+        "rect": {
+          "left": 643.244140625,
+          "top": 717.3779296875,
+          "right": 877.9853515625,
+          "bottom": 739.8779296875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 720.1904296875,
+          "right": 873.2978515625,
+          "bottom": 737.0654296875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 720.1904296875,
+          "right": 873.2978515625,
+          "bottom": 737.0654296875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      },
+      {
+        "range": "99〜109",
+        "fraction": "JP ×0.01",
+        "value": 150,
+        "text": "150",
+        "font": "ArcadePayout, Georgia, serif",
+        "current": false,
+        "rect": {
+          "left": 643.244140625,
+          "top": 741.7529296875,
+          "right": 877.9853515625,
+          "bottom": 764.2529296875,
+          "width": 234.7412109375,
+          "height": 22.5
+        },
+        "valueRect": {
+          "left": 817.8388671875,
+          "top": 744.5654296875,
+          "right": 873.2978515625,
+          "bottom": 761.4404296875,
+          "width": 55.458984375,
+          "height": 16.875
+        },
+        "valueFace": {
+          "left": 842.3603515625,
+          "top": 744.5654296875,
+          "right": 873.2978515625,
+          "bottom": 761.4404296875,
+          "width": 30.9375,
+          "height": 16.875
+        }
+      }
+    ],
+    "table": {
+      "left": 643.244140625,
+      "top": 591.7529296875,
+      "right": 877.9853515625,
+      "bottom": 766.1279296875,
+      "width": 234.7412109375,
+      "height": 174.375
+    },
+    "targets": {
+      "left": 643.244140625,
+      "top": 525.0146484375,
+      "right": 877.9853515625,
+      "bottom": 588.9404296875,
+      "width": 234.7412109375,
+      "height": 63.92578125
+    },
+    "footer": {
+      "left": 486.125,
+      "top": 800.91796875,
+      "right": 879.875,
+      "bottom": 811.875,
+      "width": 393.75,
+      "height": 10.95703125
+    },
+    "dock": {
+      "visible": false,
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "parent": "cookie-roulette",
+      "parentRect": {
+        "left": 472.0625,
+        "top": 8.4375,
+        "right": 893.9375,
+        "bottom": 277.5,
+        "width": 421.875,
+        "height": 269.0625
+      },
+      "text": "シュガーチャレンジ00 / 8球 · JP 15000",
+      "paused": "false",
+      "animationPlayState": "running"
+    },
+    "announcement": {
+      "visible": false,
+      "text": "5 SUGAR GET!シュガーチャレンジ次のゲームでスタート！",
+      "pointerEvents": "none",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "badge": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    "celebration": {
+      "visible": false,
+      "text": "JACKPOT15000JPC挑戦権を獲得！",
+      "pointerEvents": "none",
+      "image": "assets/sugar-art-v254/jpc-title.webp",
+      "alt": "JACKPOT CHANCE獲得",
+      "loaded": true,
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "title": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    "animations": []
+  },
+  "nativeAfter": {
+    "credit": 1000000,
+    "bets": [
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000,
+      3000
+    ],
+    "draws": [],
+    "totalWin": 0,
+    "phase": "ready"
+  },
+  "errors": []
+}

@@ -1,0 +1,104 @@
+{
+  "version": "20261119-v254-sugar-challenge",
+  "implementationCommit": "f03c67e0b918d9c1e5002366e89cff11e878e270",
+  "status": "implementation-verified-awaiting-publication",
+  "probabilities": {
+    "model": "uniform without replacement, 8 of 25",
+    "combinations": 1081575,
+    "jpcPercent": 9.997938191988535,
+    "jpcExecutionImplemented": false
+  },
+  "verified": {
+    "rulesAndServer": "All nonbrowser Arcade checks passed on f03c67e, including exact distributions, Sugar receipts, source BET, offline worker settlement, server restart and JPC persistence.",
+    "sharedMachine": {
+      "commit": "1af4e7804a0a8e496665c0e08fb8b38e4f705fde",
+      "runId": 44421559368,
+      "conclusion": "success",
+      "runtimeUnchangedInF03": true
+    },
+    "sugarBrowser": {
+      "commit": "f03c67e0b918d9c1e5002366e89cff11e878e270",
+      "runId": 44422455048,
+      "stepConclusion": "success",
+      "viewports": [
+        [
+          390,
+          844
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          1366,
+          900
+        ]
+      ],
+      "largeJp": 1500000,
+      "largeTopCash": 300000,
+      "artifactId": 14482243404,
+      "artifactSha256": "080400b50cfee4d5e364251987887852229edf232b3eb09942f263c0f3e316f3",
+      "record": "docs/sugar-challenge-v254-visual-qa.json",
+      "visualReview": "Normal portrait, scale pour, 1500000 JP and JPC award screenshots reviewed; no clipping or overlaps."
+    },
+    "tabsBrowser": {
+      "commit": "1af4e7804a0a8e496665c0e08fb8b38e4f705fde",
+      "runId": 44421559586,
+      "stepConclusion": "success",
+      "runtimeUnchangedInF03": true,
+      "artifactId": 14481139345,
+      "artifactSha256": "156e93d8bd55d5bf609c33a3ad0229e6471d83827daa81c65b60f6b69eb5f969",
+      "record": "docs/tabs-v254-visual-qa.json",
+      "visualReview": "Super-high and highest-role toasts visibly captured with opacity 1 and no number nodes."
+    },
+    "dangoBrowser": {
+      "commit": "e2c64db015f8f0287a3eec56e42838a045aae7c4",
+      "runId": 44419943784,
+      "stepConclusion": "success",
+      "runtimeUnchangedInF03": true,
+      "viewports": [
+        [
+          320,
+          740
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          430,
+          932
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          1366,
+          900
+        ]
+      ],
+      "rainbowPayoutCells": 7,
+      "errors": [],
+      "record": "docs/dango-v254-visual-qa.json"
+    },
+    "otherBrowserRegressions": {
+      "runId": 44419943784,
+      "passed": [
+        "results",
+        "castella61",
+        "sixdrop reach",
+        "client/progressive HUD",
+        "hidden ten-game round"
+      ],
+      "runtimeChangesSinceRun": "Only tab focus synchronization and Sugar presentation fixes, plus test isolation/diagnostics."
+    }
+  },
+  "publicVerification": null,
+  "limitations": [
+    "Windows and iPhone hardware and speaker listening are not tested.",
+    "GitHub Pages publication does not update the separately running Windows server; update its source while preserving .runtime, .tools and data, then restart.",
+    "JPC execution is intentionally deferred; earned JPC rights and the preselected JP amount are persisted.",
+    "Sugar viewport checks use desktop Chromium user agent; 844x390 is not a measurement of the iPhone mobile-UA landscape layout."
+  ]
+}
