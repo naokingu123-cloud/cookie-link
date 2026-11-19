@@ -124,6 +124,22 @@ try{
  report.initial=await state();assert.equal(report.initial.streamingClientPresent,false);assert.deepEqual(report.initial.bets,Array(10).fill(0));
  identity=await page.evaluate(base=>window.SweetsGuestEntryV237.readSession('sweets-shared-session-v176',base),server.base);
  assert.equal(identity.playerId,report.initial.playerId);assert.ok(identity.token);
+ // Reproduce a previously saved playerId whose token is no longer accepted.
+ // A static asset download is not proof of player ownership. Never create
+ // another account or change the server wallet because of this mismatch.
+ const sessionsBeforeMismatch=report.requests.filter(request=>request.path==='/api/session').length;
+ await page.evaluate(base=>{const G=window.SweetsGuestEntryV237,old=G.readSession('sweets-shared-session-v176',base);G.writeSession('sweets-shared-session-v176',base,{...old,token:'invalid-download-v257-token'});},server.base);
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().identityConflict===true,null,{timeout:30000});
+ const rejected=await state();
+ assert.equal(rejected.playerId,identity.playerId,'client must preserve the old player identity');
+ assert.match(rejected.error,/CREDIT/,'client must explain the protected account');
+ assert.equal(await page.locator('[data-dl-action="fresh"]').isVisible(),true,'explicit alternate-account recovery is available');
+ assert.equal(report.requests.filter(request=>request.path==='/api/session').length,sessionsBeforeMismatch,'invalid old token must not create another server player');
+ await page.evaluate(({base,identity})=>window.SweetsGuestEntryV237.writeSession('sweets-shared-session-v176',base,identity),{base:server.base,identity});
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().hydrated,null,{timeout:30000});
+ assert.equal((await state()).playerId,identity.playerId,'correct stored credentials restore original CREDIT');
  const initialProfile=await call('profile');
  const profile={...initialProfile.profile,name:'サーバーQA'};
  await call('profile',{body:{profile}});
