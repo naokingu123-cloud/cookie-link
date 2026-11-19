@@ -1,6 +1,11 @@
 'use strict';
 const assert=require('node:assert/strict');
-const R=require('../../assets/bingo-stick-rules.js');
+const fs=require('node:fs'),vm=require('node:vm');
+// The browser UMD source lives in a type=module package. Load its actual
+// CommonJS branch explicitly; require(.js) returns an empty ESM namespace.
+const filename=require.resolve('../../assets/bingo-stick-rules.js'),rulesModule={exports:{}};
+vm.compileFunction(fs.readFileSync(filename,'utf8'),['module'],{filename})(rulesModule);
+const R=rulesModule.exports;
 const rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32);
 const cells=Array.from({length:64},(_,i)=>i),labels=Array.from({length:25},(_,i)=>i+1);
 const base=[0,...R.payRows.filter(row=>row.count>0).map(row=>row.hundredths)];
