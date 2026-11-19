@@ -1243,8 +1243,8 @@
     },
     {
       "path": "assets/download-mode-v255.js",
-      "bytes": 36431,
-      "sha256": "a27d96770912f066a7a23120787469ea72456bc231057a121e412344a93d8755"
+      "bytes": 36548,
+      "sha256": "c63a08724c08893bb0795e0c039d9997795f6daf65291dc1f827af84082b26a3"
     },
     {
       "path": "assets/download-roulette-v255.js",
@@ -1798,8 +1798,8 @@
     },
     {
       "path": "assets/server-monitor-download-v255.css",
-      "bytes": 4882,
-      "sha256": "0aa08583bddd6b80bccf24a076f846316d23a6145ccd5dd51b1fcb07bfccb52e"
+      "bytes": 4883,
+      "sha256": "822a5819d40aaed90d9515fd4b49acd7004ffd241beb3666f91d5ab0874bd5d9"
     },
     {
       "path": "assets/server-monitor-download-v255.js",
@@ -3207,5 +3207,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127763803
+  "totalBytes": 127763921
 }

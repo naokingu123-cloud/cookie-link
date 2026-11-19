@@ -77,6 +77,22 @@ async function capture(name){
  if(details.panel)assert.ok(details.panel.x>=-1&&details.panel.right<=details.width+1,name+' playback panel must fit the viewport');
  await page.screenshot({path:path.join(output,name+'.png'),fullPage:true});report.screens.push({file:name+'.png',...details});return details;
 }
+async function completionPanel(pending){
+ const expected=pending?'8/8球 · 同期待ち':'8/8球 · 完了';
+ await page.waitForFunction(label=>document.querySelector('#download-v255-panel [data-dl-balls]')?.textContent===label,expected,{timeout:5000});
+ const view=await page.evaluate(()=>{
+  const panel=document.getElementById('download-v255-panel'),toggle=panel.querySelector('[data-dl-action="toggle"]'),p=panel.getBoundingClientRect();
+  const rows=[...document.querySelectorAll('#result-games .result-game[data-game-index]')].filter(row=>!row.hidden).map(row=>{
+   const r=row.getBoundingClientRect(),style=getComputedStyle(row);
+   return {index:Number(row.dataset.gameIndex),visible:r.width>0&&r.height>0&&style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)>.99,inside:r.left>=-1&&r.right<=innerWidth+1&&r.top>=-1&&r.bottom<=innerHeight+1,overlap:Math.min(r.right,p.right)>Math.max(r.left,p.left)+.5&&Math.min(r.bottom,p.bottom)>Math.max(r.top,p.top)+.5};
+  });
+  return {collapsed:panel.dataset.collapsed,expanded:toggle.getAttribute('aria-expanded'),toggle:toggle.textContent,header:panel.querySelector('[data-dl-balls]').textContent,panel:{x:p.x,y:p.y,width:p.width,height:p.height},rows};
+ });
+ assert.equal(view.collapsed,'true');assert.equal(view.expanded,'false');assert.match(view.toggle,/^[+＋]$/);assert.equal(view.header,expected);
+ assert.deepEqual(view.rows.map(row=>row.index),Array.from({length:10},(_,i)=>i),'the result contains every participating game');
+ assert.ok(view.rows.every(row=>row.visible&&row.inside&&!row.overlap),'all ten result rows remain visible and clear of the collapsed Download panel');
+ return view;
+}
 async function secureContext(viewport){
  const result=await browser.newContext({viewport,serviceWorkers:'allow'});
  await result.route('**/*',route=>{
@@ -208,9 +224,12 @@ try{
  await waitPlayback(s=>s?.localComplete,'offline recorded playback and native payout complete',Math.max(180000,pack.playback.recording.durationMs+180000));
  report.offlineComplete=await state();assert.equal(report.offlineComplete.pendingComplete,true);assert.equal(report.offlineComplete.stableBall,8);assert.deepEqual(report.offlineComplete.draws,pack.numbers);
  milestone('offline-complete',{ball:report.offlineComplete.stableBall});
+ report.completionPanel={offline:await completionPanel(true)};
  await capture('download-offline-complete-390');
  await context.setOffline(false);await page.evaluate(()=>window.SweetsDownloadV255.sync());
  await page.waitForFunction(()=>!window.SweetsDownloadV255.describe().pendingComplete&&window.SweetsDownloadV255.describe().session.status==='complete',null,{timeout:30000});
+ report.completionPanel.synced=await completionPanel(false);
+ await capture('download-synced-complete-390');
  const completed=await call('active');report.completed={session:completed.session,wallet:completed.wallet,stats:completed.stats};
  assert.equal(completed.wallet.credit,active.wallet.credit,'presentation completion does not credit a second payout');
  assert.equal(completed.stats.rounds,1);
@@ -234,13 +253,20 @@ try{
  assert.equal(adminRequests.some(r=>r.serverHost==='1'||r.settlement==='1'),false,'Download administration must not load either roulette/settlement iframe');
  await adminPage.locator('.download-v255-player-detail summary').click();
  report.admin.layout=await adminPage.evaluate(()=>{
-  const card=document.getElementById('download-v255-admin').getBoundingClientRect(),detail=document.querySelector('.download-v255-player-detail').getBoundingClientRect(),wrap=document.querySelector('.download-v255-table-wrap');
-  return {viewport:innerWidth,pageWidth:document.documentElement.scrollWidth,card:{left:card.left,right:card.right,bottom:card.bottom,width:card.width},detailBottom:detail.bottom,tableHeight:wrap.clientHeight,tableScrollHeight:wrap.scrollHeight};
+  const card=document.getElementById('download-v255-admin').getBoundingClientRect(),detail=document.querySelector('.download-v255-player-detail').getBoundingClientRect(),wrap=document.querySelector('.download-v255-table-wrap'),payout=document.querySelector('.payout-card').getBoundingClientRect(),trend=document.querySelector('.trend-card-v242').getBoundingClientRect(),players=document.querySelector('.players-card').getBoundingClientRect();
+  return {viewport:innerWidth,pageWidth:document.documentElement.scrollWidth,pageHeight:document.documentElement.scrollHeight,card:{left:card.left,right:card.right,bottom:card.bottom,width:card.width},detailBottom:detail.bottom,tableHeight:wrap.clientHeight,tableScrollHeight:wrap.scrollHeight,payoutHeight:payout.height,trendHeight:trend.height,playersHeight:players.height,playersBottom:players.bottom+scrollY,inputs:[...document.querySelectorAll('#global-controls input')].map(input=>{const r=input.getBoundingClientRect();return {height:r.height,inside:r.top>=payout.top&&r.bottom<=payout.bottom&&r.left>=payout.left&&r.right<=payout.right};})};
  });
+ await adminPage.screenshot({path:path.join(output,'download-admin-1366.png'),fullPage:true});
  assert.ok(report.admin.layout.pageWidth<=report.admin.layout.viewport+1,'Download admin page remains within the viewport');
  assert.ok(report.admin.layout.card.width>report.admin.layout.viewport*.85,'Download records use the full dashboard width');
  assert.ok(report.admin.layout.detailBottom<=report.admin.layout.card.bottom+1,'expanded profile and saved progress are not clipped by the old Streaming grid');
- await adminPage.screenshot({path:path.join(output,'download-admin-1366.png'),fullPage:true});
+ assert.ok(report.admin.layout.payoutHeight>=250&&report.admin.layout.payoutHeight<=310&&report.admin.layout.trendHeight<=310,'the P/O and chart row has a finite height independent of its canvas');
+ assert.equal(report.admin.layout.inputs.length,7);assert.ok(report.admin.layout.inputs.every(input=>input.inside&&input.height>=29),'all existing P/O inputs fit their card');
+ assert.ok(report.admin.layout.pageHeight<2000&&report.admin.layout.playersBottom<=report.admin.layout.pageHeight+1,'the complete dashboard fits a finite scrollable document');
+ await adminPage.locator('.players-card').scrollIntoViewIfNeeded();
+ report.admin.scrolledPlayers=await adminPage.evaluate(()=>{const r=document.querySelector('.players-card').getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height,viewport:innerHeight};});
+ assert.ok(report.admin.scrolledPlayers.top>=-1&&report.admin.scrolledPlayers.bottom<=report.admin.scrolledPlayers.viewport+1,'the existing players section is fully reachable by scrolling');
+ await adminPage.screenshot({path:path.join(output,'download-admin-controls-1366.png')});
  report.admin.players=(await call('',{admin:true})).players.length;
  assert.equal(report.webSockets.length,0,'Download playback never opens the Streaming WebSocket');
  assert.equal(report.requests.some(r=>/\/round\/(?:join|ball|checkpoint|settle)/.test(r.path)),false,'Download playback never sends Streaming round actions');

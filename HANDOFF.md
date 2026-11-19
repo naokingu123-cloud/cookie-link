@@ -1,6 +1,19 @@
 # CookieLink 開発引き継ぎ
 
-## 最新更新: 2026-11-19 — v254 シュガーチャレンジ・ダンゴ最高役
+## 最新更新: 2026-11-19 — v255 ダウンロード版・サーバー確定録画
+
+- 版 `20261119-v255-download-edition`。起動時に「ストリーミング版」「ダウンロード版」を選択する。仕様・Windows起動手順は `docs/download-v255.md`。既存10ゲームとv254 Sugar/Dangoのルールは維持する。
+- ダウンロード版は、認証済みプレイヤーのプロフィール・wallet・前回のtrusted game stateをサーバーから読み、BETを固定してから1ラウンドを作る。既存Cannon物理を120Hzで計算し、30fpsの球・ローター姿勢と実入賞時刻を保存。通常10ゲームは隔離したPlaywright headless browserで既存の実エンジンを実行する。番号の単純ランダム置換や端末の新規抽選はしない。
+- `machineId + playerId` のwalletごとにactive1件。requestId・seed・準備入力を保存し、失敗/再起動で同一ゲームを再計算する。wallet、Sugar、carry、配当・累計、package参照は同じpayout DB transactionで確定。端末から受け取る完了はACKのみで、client WIN/CREDIT/final checkpointは精算入力として受け取らない。準備/再生中は同walletの旧Streaming精算・関係する管理者取消を排他する。
+- ダンゴデビンゴのDownloadはサーバーのおまかせ配置。先読み可能な録画を受信してから手動配置で結果を変える経路を作らず、前半5球だけで自動配置を決める。従来Streamingの手動配置は維持する。
+- 素材641ファイル、約128MBを版別Service Worker cacheへ保存し、録画と球ごとの安定checkpoint・再生時刻はplayer/server別IndexedDBへ保存。APIや管理tokenはSW cacheへ入れない。SHA-256とサイズを検証し、完全受信後に再生を許可する。再開は最大保存位置を採り、ball1/2/4の途中batch、RNG stream offsets、Sugar途中表示を保持する。低FPSでも次HITを飛ばさず実経過時間で録画を進め、同じ30fps frameは二重描画しない。
+- 一時停止/非表示/メニューでは録画時計を止める。球間の再生位置も保存する。サーバーだけが停止しnavigator.onLineがtrueのままでも20秒ごとに未同期位置/完了を再試行する。未完了のcached packageはendpoint discoveryより先に検証し、元server/identityに固定する。次のラウンド取得には接続と前ラウンドの完了ACKが必要。
+- 名前・写真・アバターをサーバーに保存し、両版で利用する。Downloadの成績と全10ゲームの継続状態もサーバー保存。Streamingの任意client checkpointをtrusted Download stateへ移さない。Six Dropのcarryは現行server値を優先する。
+- `start-download-server.cmd` はDownload計算workerの準備を確認してからREADYを表示する。ルーレット用browser windowやmonitorは自動で開かない。monitorのDownload欄はプロフィール、wallet、準備/再生状態、保存球数/時刻、累計・ゲーム別成績を表示し、physical host/旧精算iframeを起動しない。従来のCMDはStreamingが標準。
+- Windows側の全ソース更新はPages公開とは別。`.runtime`・`.tools`・`data`を保持する。通常の保存用browserが保持されていれば、サーバー再起動や再読込でも同じ録画を再取得できる。端末の未同期保存を消した場合はサーバーに最後に届いた位置へ戻る。
+
+
+## 前回更新: 2026-11-19 — v254 シュガーチャレンジ・ダンゴ最高役
 
 - 版 `20261119-v254-sugar-challenge`。仕様は `docs/sugar-challenge-v254.md` と `docs/dango-v254.md`。実装コードは `f03c67e0b918d9c1e5002366e89cff11e878e270`。検証の対応関係は `docs/sugar-challenge-v254-final-qa.json`。この記述は旧v253の対称FREE配置・最高役条件より優先する。
 - ダンゴの初期FREEは1〜3個、校正済み41配置からランダムに選択し、対称性を必須にしない。現行配当のままP/O50〜150%へ候補比率を校正。最高役は3個4本／4個3本／5個2本／7個1本／9個1本以上。対象7セルの虹枠、成立セルの明滅と左上GET!、数字上HIT!、盤面に重ならない配当表拡大を実装。旧251/253の途中保存盤面・配当を保持する。
