@@ -2019,7 +2019,7 @@
     {
       "path": "assets/shared-machine-v176.js",
       "bytes": 3101,
-      "sha256": "d3138738060bc89008cf7dfe502e1d3d8f119e7bf5052e32db6d9875d972168a"
+      "sha256": "ccef94ad5b586f028f18fa237e7559fc5e87afb548204e5279744f0d81f3091a"
     },
     {
       "path": "assets/shared-next-bet-join-v214.js",
@@ -2984,7 +2984,7 @@
     {
       "path": "index.html",
       "bytes": 83992,
-      "sha256": "0af5e2f0b9790341adcbe0e3faa9682b17a19203126eb01828d55780c2bbc87e"
+      "sha256": "ec8bb10b674858d6b260426ac25ab723639f7bb7e94578f203bbdd80810fc9a2"
     },
     {
       "path": "optimized/achievements-v3.css",

@@ -455,7 +455,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(downloadWorker)extras.push('assets/recorded-round-v255.js?v=255','assets/download-worker-v255.js?v=255');
   else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=255','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=255','assets/download-mode-v255.js?v=255');
   else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=258');
-  else extras.push('assets/player-profile-v255.js?v=255','assets/shared-machine-v176.js?v=255');
+  else extras.push('assets/player-profile-v255.js?v=255','assets/shared-machine-v176.js?v=262');
   const responses=await Promise.all(common.concat(extras).map(p=>fetch(p,{cache:'no-store'})));
   if(responses.some(r=>!r.ok))throw new Error('ゲームファイル取得に失敗');
   let [game,...extensions]=await Promise.all(responses.map(r=>r.text()));
