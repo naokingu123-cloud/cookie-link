@@ -39,4 +39,5 @@ record=structuredClone(active);record.progress.complete=true;assert.equal(await 
 record.progress.pendingComplete=true;assert.equal((await readVerifiedCache(identity,{unfinishedOnly:true})).progress.pendingComplete,true,'an unsent completion ACK keeps its original server');
 record=null;assert.equal(await readVerifiedCache(identity,{unfinishedOnly:true}),null);
 assert.ok(source.indexOf('readVerifiedCache(identity,{unfinishedOnly:true})')<source.indexOf('base=await G.discover'), 'verified local recovery must precede online discovery');
+assert(source.indexOf('if(playerId&&!pack)try{const identity={...saved,base},local=await readVerifiedCache(identity);')<source.indexOf('await confirmDownloadServer();'),'a saved same-origin round must load before health checks even when navigator.onLine is stale');
 console.log('download-resume-scope-v255: online-but-unreachable discovery, identity scope, pending ACK and corrupt-cache rejection PASS');

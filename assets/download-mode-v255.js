@@ -155,10 +155,10 @@ async function initialize(){
    if(!navigator.onLine&&!explicitServer&&!sameOrigin)base=G.DEFAULT_SERVER;
    else base=await G.discover({explicit:explicitServer,sameOrigin,origin:location.origin,machine});
   }
-  if(navigator.onLine){setConnectStep('サーバーの対応状況を確認しています');await confirmDownloadServer();}
   const saved=pack?{playerId,token,displayName:pack.profile?.name||''}:G.readSession('sweets-shared-session-v176',base);playerId=String(saved.playerId||'');token=String(saved.token||'');
   if(playerId&&!pack)try{const identity={...saved,base},local=await readVerifiedCache(identity);if(local)await restoreCached(local,identity);}catch(problem){console.warn('[DownloadV255] local cache',problem?.message||problem);}
   if(pack&&responseCache)await window.SweetsPlayerProfileV255?.setTransport((method,body)=>api('profile',{method,body}),{id:playerId,base,response:responseCache});
+  if(navigator.onLine){setConnectStep('サーバーの対応状況を確認しています');await confirmDownloadServer();}
   if(!navigator.onLine)throw Error('offline');
   setConnectStep('プレイヤー認証中');
   const identity=await api('',{method:'POST',sessionEndpoint:true,timeout:11000,body:{playerId,displayName:initialProfile.name||saved.displayName||'PLAYER'}});
