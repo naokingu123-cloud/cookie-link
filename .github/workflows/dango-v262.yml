@@ -72,6 +72,8 @@ jobs:
         run: node tests/dango-v264-view.mjs
       - name: Interactive v265 FREE placements, undo, grade badges and mobile UI
         run: node tests/dango-v265-view.mjs
+      - name: v266 six-row payout display, individual FREE and mobile layout
+        run: node tests/dango-v266-view.mjs
       - name: Actual server recording, native ten-game calculation and deterministic retry
         run: node tests/download-v255-compute.mjs
       - name: Download offline playback and server-owned credit resume
@@ -85,6 +87,7 @@ jobs:
             qa-dango-v262-view/
             qa-dango-v264-view/
             qa-dango-v265-view/
+            qa-dango-v266-view/
             qa-download-v255/
             /tmp/dango-v262-independent.json
             /tmp/dango-v263-independent.json
