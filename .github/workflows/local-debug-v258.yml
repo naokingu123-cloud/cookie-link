@@ -1,0 +1,45 @@
+name: Local Debug v258 - native roulette and manual numbers
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feature/v258-local-debug]
+    paths:
+      - '**/*v258*'
+      - 'index.html'
+      - 'assets/player-lounge.js'
+      - 'assets/sugar-challenge-v254.js'
+      - 'assets/edition-choice-v255.js'
+      - 'assets/download-mode-v255.css'
+      - 'app-version.json'
+      - 'download-sw-v255.js'
+      - '.github/workflows/local-debug-v258.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax and static edition/storage isolation
+        run: |
+          node --check assets/local-debug-v258.js
+          node --check assets/local-debug-game-v258.js
+          node tests/local-debug-v258.mjs
+          node tests/edition-choice-v255.mjs
+          node tests/download-v255-cache.mjs
+      - name: Install Chromium for native roulette
+        run: npx playwright install --with-deps chromium
+      - name: Local 3D physics, 25 manual numbers and server isolation
+        run: node tests/local-debug-v258-browser.mjs
+      - name: Store screenshots and browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-debug-v258-qa
+          path: qa-local-debug-v258/
+          retention-days: 7
