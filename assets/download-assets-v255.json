@@ -1468,13 +1468,13 @@
     },
     {
       "path": "assets/local-debug-game-v258.js",
-      "bytes": 3045,
-      "sha256": "0d72b50a98e6a39a02f923920f5faefc05756dcdc8f5b6c2dca659bcbaca30ea"
+      "bytes": 3031,
+      "sha256": "3a9f114fe1cabfd28ff39836edde935bc4d405acd544c7acfe4b2461dac2b761"
     },
     {
       "path": "assets/local-debug-v258.css",
-      "bytes": 1147,
-      "sha256": "40f6a93c9fa5be2c5bea222d99e91fca9324c0a600d66cf5f404f212ff9967d4"
+      "bytes": 1194,
+      "sha256": "7f04a5a5cb04e545bba3cc960f19c2ef2d493ca6aad777cd712aff4a020399ee"
     },
     {
       "path": "assets/local-debug-v258.js",
@@ -3222,5 +3222,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127780160
+  "totalBytes": 127780193
 }

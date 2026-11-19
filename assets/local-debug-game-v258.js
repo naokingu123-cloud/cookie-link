@@ -24,7 +24,7 @@
   persist();scheduleUI(app);return true;
  }
  const banner=document.createElement('aside');banner.id='local-debug-v258';banner.className='local-debug-banner';banner.setAttribute('aria-label','ローカルデバッグ版');
- banner.innerHTML='<strong>LOCAL DEBUG</strong><span>仮CREDIT・サーバー精算なし</span><button type="button" data-local-action="reset-credit">仮CREDITリセット</button><button type="button" data-local-action="chooser">版を選び直す</button>';
+ banner.innerHTML='<strong>LOCAL DEBUG</strong><span>仮CREDIT · 精算なし</span><button type="button" data-local-action="reset-credit">仮CREDIT初期化</button><button type="button" data-local-action="chooser">版を選び直す</button>';
  banner.addEventListener('click',event=>{
   const action=event.target.closest('button')?.dataset.localAction;
   if(action==='chooser'){window.SweetsEditionV255?.show();return;}
