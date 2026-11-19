@@ -95,9 +95,11 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 .dgb-scene[data-presentation="268"] .dgb-pay th,.dgb-scene[data-presentation="268"] .dgb-pay td{height:calc(var(--dgb-pay-unit)*.60);padding-left:calc(var(--dgb-pay-unit)*.035);padding-right:calc(var(--dgb-pay-unit)*.035)}
 .dgb-scene[data-presentation="268"] .dgb-pay thead th{height:calc(var(--dgb-pay-unit)*.32);font-size:max(11px,calc(var(--dgb-pay-unit)*.23))}
 .dgb-scene[data-presentation="268"] .dgb-pay tbody th{font-size:max(12px,calc(var(--dgb-pay-unit)*.26));border-left-width:calc(var(--dgb-pay-unit)*.035)}
-.dgb-scene[data-presentation="268"][data-first-half="true"] .dgb-pay tbody th{font-size:max(12px,calc(var(--dgb-pay-unit)*.21))}
+.dgb-scene[data-presentation="268"][data-first-half="true"] .dgb-pay tbody th{font-size:max(12px,calc(var(--dgb-pay-unit)*.18))}
+.dgb-scene[data-presentation="268"] .dgb-line-heading{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--dgb-pay-unit)*.035);width:100%;white-space:nowrap}
+.dgb-scene[data-presentation="268"] .dgb-line-name{flex:none;line-height:1}
 .dgb-scene[data-presentation="268"] .dgb-free-grant{display:none}
-.dgb-scene[data-presentation="268"][data-first-half="true"] .dgb-free-grant{display:inline-block;float:right;margin-top:calc(var(--dgb-pay-unit)*.015);font:900 max(10px,calc(var(--dgb-pay-unit)*.17))/1.25 ElixirNumbers,'Yu Gothic',system-ui,sans-serif;color:#f0ffc6;letter-spacing:-.035em}
+.dgb-scene[data-presentation="268"][data-first-half="true"] .dgb-free-grant{display:block;flex:none;float:none;margin:0;font:900 max(9px,calc(var(--dgb-pay-unit)*.145))/1 ElixirNumbers,'Yu Gothic',system-ui,sans-serif;color:#f0ffc6;letter-spacing:-.035em}
 .dgb-scene[data-presentation="268"] .dgb-pay tbody tr[data-length="2"]{--dgb-row-background:#081c38}
 .dgb-scene[data-presentation="268"] .dgb-pay tbody tr[data-length="3"]{--dgb-row-background:#082b31}
 .dgb-scene[data-presentation="268"] .dgb-pay tbody td{padding-top:calc(var(--dgb-pay-unit)*.16);padding-bottom:calc(var(--dgb-pay-unit)*.01);font-size:calc(var(--dgb-pay-unit)*.40)}

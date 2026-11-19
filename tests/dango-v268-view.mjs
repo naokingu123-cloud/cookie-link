@@ -40,6 +40,21 @@ try{
  assert.deepEqual(report.initial.highest,[{length:4,count:3},{length:5,count:3},{length:6,count:2},{length:6,count:3},{length:7,count:2},{length:7,count:3}]);
  assert.equal(report.initial.zero,'-');assert.equal(report.initial.zeroCurrent,false);assert.equal(report.initial.oddsHidden,true);assert.equal(report.initial.idleMotion,false);
  assert.deepEqual(report.initial.freeGrants,['FREE×2','FREE×3','FREE×4','FREE×5','FREE×6','FREE×7']);assert.equal(report.initial.colors[2],'#269eff');assert.equal(report.initial.colors[3],'#4ee3f5');
+ report.firstHalfLabels=[];
+ for(const [width,height]of [[1366,750],[844,340],[390,844],[320,480]]){
+  await page.setViewportSize({width,height});await page.evaluate(()=>qa268.render());await page.waitForFunction(()=>document.querySelector('canvas').width===innerWidth);
+  const labels=await page.evaluate(()=>{
+   const rect=node=>{const r=node.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height,centerY:(r.top+r.bottom)/2};};
+   return [...document.querySelectorAll('.dgb-pay tbody th')].map(th=>({length:th.parentElement.dataset.length,cell:rect(th),name:rect(th.querySelector('.dgb-line-name')),grant:rect(th.querySelector('.dgb-free-grant')),scroll:th.scrollWidth,width:th.clientWidth}));
+  });
+  for(const row of labels){
+   assert.ok(row.grant.left>=row.name.right-1,'FREE grant stays to the right of the Japanese line label '+JSON.stringify({width,height,row}));
+   assert.ok(Math.abs(row.grant.centerY-row.name.centerY)<=1,'line name and FREE grant stay on one centered row '+JSON.stringify({width,height,row}));
+   assert.ok(row.scroll<=row.width+1&&row.grant.right<=row.cell.right+1,'Japanese labels fit without horizontal overflow '+JSON.stringify({width,height,row}));
+  }
+  report.firstHalfLabels.push({width,height,labels});await page.screenshot({path:output+'/v268-first-half-'+width+'x'+height+'.png'});
+ }
+ await page.setViewportSize({width:1366,height:750});await page.evaluate(()=>qa268.render());await page.waitForFunction(()=>document.querySelector('canvas').width===innerWidth);
  await page.screenshot({path:output+'/v268-first-half-desktop.png'});
  await page.evaluate(()=>qa268.seven());
  assert.equal(await page.evaluate(()=>qa268.state.freeBudget),7);
@@ -70,7 +85,7 @@ try{
    return {width:innerWidth,height:innerHeight,table,free,unit:g.unit,
     tableClearance:Math.min(...g.centers.map(p=>distance(table,p))),freeClearance:Math.min(...g.centers.map(p=>distance(free,p))),
     numeralFont:parseFloat(getComputedStyle(document.querySelector('.gold-number')).fontSize),
-    overflow:[...document.querySelectorAll('.dgb-pay td')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>({length:e.parentElement.dataset.length,count:e.dataset.count,width:e.clientWidth,scroll:e.scrollWidth})),
+    overflow:[...document.querySelectorAll('.dgb-pay td,.dgb-pay tbody th')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>({length:e.parentElement.dataset.length,count:e.dataset.count,width:e.clientWidth,scroll:e.scrollWidth})),
     inside:g.centers.every(p=>p.x-g.radius>=0&&p.x+g.radius<=innerWidth&&p.y-g.radius>=0&&p.y+g.radius<=innerHeight)
    };
   });

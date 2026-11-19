@@ -321,7 +321,7 @@ function mount(panel){
   find('thead').innerHTML='<tr><th scope="col"><span class="dgb-live">ライン</span></th>'+Array.from({length:columns},(_,i)=>'<th scope="col">'+(i+1)+'本'+(!modern&&i+1===columns?'以上':'')+'</th>').join('')+'</tr>';
   for(const length of lengths){
    const tr=document.createElement('tr');tr.dataset.length=String(length);tr.style.setProperty('--dgb-line-color',lineColor(length,next));
-   const th=document.createElement('th');th.scope='row';th.innerHTML='<span class="dgb-line-name"><b>'+length+'</b>個ライン</span>'+(isCurrent(next)?'<span class="dgb-free-grant">FREE×'+length+'</span>':'');tr.append(th);
+   const th=document.createElement('th');th.scope='row';th.innerHTML=(isCurrent(next)?'<span class="dgb-line-heading">':'')+'<span class="dgb-line-name"><b>'+length+'</b>個ライン</span>'+(isCurrent(next)?'<span class="dgb-free-grant">FREE×'+length+'</span></span>':'');tr.append(th);
    for(const row of baseRows.filter(item=>item.length===length)){
     const td=document.createElement('td');td.dataset.valid='true';td.dataset.column=td.dataset.count=String(row.count);td.dataset.atLeast=String(row.atLeast);td.dataset.highestRole=String(highestRoleCell(row.length,row.count,next));td.innerHTML='<span class="gold-number">0</span>';rows.push({row,tr,td,value:'0'});tr.append(td);
    }
