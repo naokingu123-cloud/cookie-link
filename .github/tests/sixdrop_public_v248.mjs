@@ -11,7 +11,7 @@ function assertPayoutContained(bounds){
  const panel=bounds.panel,tolerance=1;
  assert.ok(panel.width>0&&panel.height>0,'the published payout panel has a visible area');
  assert.equal(bounds.rows.length,7,'the published payout matrix contains its header and all six payout rows');
- assert.equal(bounds.rows.flatMap(row=>row.cells).length,28,'four header cells, five row labels and fifteen valid values exist');
+ assert.equal(bounds.rows.flatMap(row=>row.cells).length,28,'four header cells, six row labels and eighteen valid values exist');
  assert.deepEqual(bounds.rows.filter(row=>row.length!==null).map(row=>row.cells.length-1),[3,3,3,3,3,3],'each line length has exactly three payout values');
  const contained=(rect,label)=>{
   assert.ok(rect.width>0&&rect.height>0,label+' has a visible area');
@@ -154,18 +154,23 @@ try{
    const distance=(rect,point)=>{const x=panRect.x+point.x,y=panRect.y+point.y;return Math.hypot(x-Math.max(rect.left,Math.min(rect.right,x)),y-Math.max(rect.top,Math.min(rect.bottom,y)));};
    positions.minimumPayoutClearance=Math.min(...payoutBounds.rows.flatMap(row=>row.cells.flatMap(cell=>mainGeometry.centers.map(point=>distance(cell.rect,point)))));
    positions.minimumFreeClearance=Math.min(...mainGeometry.centers.map(point=>distance(positions.free,point)));
-   const payRowLabels=[...root.querySelectorAll('.dgb-pay tbody th')].map(th=>th.textContent),payBackgrounds=[...root.querySelectorAll('.dgb-pay tbody tr')].map(row=>({length:Number(row.dataset.length),row:getComputedStyle(row).backgroundColor,cell:getComputedStyle(row.querySelector('td')).backgroundColor}));
-   return {revision:R.REVISION,highestRoleMinimums:R.highestRoleMinimums,liveBoard:e.liveBoard,cells:e.state.cells.length,rows:Array.from({length:7},(_,row)=>e.state.cells.filter(cell=>cell.row===row).length),numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.linesFor(e.state).length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,payBackgrounds,positions,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
+   const payRowLabels=[...root.querySelectorAll('.dgb-pay tbody .dgb-line-name')].map(label=>label.textContent),freeGrants=[...root.querySelectorAll('.dgb-pay tbody .dgb-free-grant')].map(label=>({text:label.textContent,visible:getComputedStyle(label).display!=='none'})),payBackgrounds=[...root.querySelectorAll('.dgb-pay tbody tr')].map(row=>({length:Number(row.dataset.length),row:getComputedStyle(row).backgroundColor,cell:getComputedStyle(row.querySelector('td')).backgroundColor}));
+   return {revision:R.REVISION,highestRoleMinimums:R.highestRoleMinimums,liveBoard:e.liveBoard,cells:e.state.cells.length,rows:Array.from({length:7},(_,row)=>e.state.cells.filter(cell=>cell.row===row).length),numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.linesFor(e.state).length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,freeGrants,payBackgrounds,positions,paytableHundredths:[2,3,4,5,6,7].map(length=>R.tiersFor(e.state)[length].slice(1)),validInitialFree:R.isValidInitialFree(e.state.initialFreeCells),initialCompletedLines:R.gradeLines.filter(line=>line.cells.every(id=>e.state.initialFreeCells.includes(id))).length,lineColors:{2:V.lineColors[2],3:V.lineColors[3]},payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),oddsHidden:root.querySelector('.dgb-pay-odds').hidden,freeRemainingLabel:root.querySelector('.dgb-free-value').textContent,demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
   });
   report.currentScreen={width,height,...info};
-  assert.equal(info.dango.revision,266);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,28);assert.deepEqual(info.dango.rows,[1,2,3,4,5,6,7]);assert.equal(info.dango.lines,15);assert.equal(info.dango.payRows,6);assert.equal(info.dango.payCells.length,18);assert.equal(info.dango.buttons,28);
-  assert.deepEqual(info.dango.highestRoleMinimums,{3:3,4:3,5:3,6:3,7:3});
-  assert.deepEqual(info.dango.payCells.filter(cell=>cell.highest).map(cell=>[cell.length,cell.count]),[[3,3],[4,3],[5,3],[6,3],[7,3]]);
+  assert.equal(info.dango.revision,268);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,28);assert.deepEqual(info.dango.rows,[1,2,3,4,5,6,7]);assert.equal(info.dango.lines,15);assert.equal(info.dango.payRows,6);assert.equal(info.dango.payCells.length,18);assert.equal(info.dango.buttons,28);
+  assert.deepEqual(info.dango.highestRoleMinimums,{4:3,5:3,6:2,7:2});
+  assert.deepEqual(info.dango.payCells.filter(cell=>cell.highest).map(cell=>[cell.length,cell.count]),[[4,3],[5,3],[6,2],[6,3],[7,2],[7,3]]);
   for(const cell of info.dango.payCells.filter(cell=>cell.highest))assert.equal(cell.rainbowAnimation,'dgb-pay-rainbow');
-  assert.deepEqual(info.dango.payHeaders.slice(1),['1本','2本','3本']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);
+  assert.deepEqual(info.dango.payHeaders.slice(1),['1本','2本','3本']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);assert.equal(info.dango.oddsHidden,true,'ODDS 1 is hidden');
+  assert.deepEqual(info.dango.paytableHundredths,[[0,20,1000],[20,80,2000],[40,120,5000],[80,300,10000],[150,3000,50000],[200,5000,200000]]);
+  assert.equal(info.dango.payCells.find(cell=>cell.length===2&&cell.count===1).win,'-','zero payout is displayed as a dash');
   for(const cell of info.dango.payCells){assert.match(cell.font,/ArcadePayout/);assert.doesNotMatch(cell.win,/[,，]/);}
   assertPayoutContained(info.dango.payoutBounds);
   assert.deepEqual(info.dango.payRowLabels,['2個ライン','3個ライン','4個ライン','5個ライン','6個ライン','7個ライン']);
+  assert.deepEqual(info.dango.freeGrants,[2,3,4,5,6,7].map(length=>({text:'FREE×'+length,visible:true})));
+  assert.deepEqual(info.dango.lineColors,{2:'#269eff',3:'#4ee3f5'});assert.equal(info.dango.freeRemainingLabel,'あと 1個');
+  assert.equal(info.dango.validInitialFree,true);assert.equal(info.dango.initialCompletedLines,0);
   assert.equal(info.dango.positions.oldTopText,0);assert.equal(info.dango.positions.invalidPayoutCells,0);
   const {scene,payout,free,pan,geometry:mainGeometry}=info.dango.positions;
   assert.ok(payout.left<scene.left+scene.width*.08&&payout.top<scene.top+scene.height*.1,'published payout sits in the upper left');
@@ -176,7 +181,7 @@ try{
   assert.ok(mainGeometry.centers.every(point=>point.x-mainGeometry.radius>=-.75&&point.x+mainGeometry.radius<=pan.width+.75&&point.y-mainGeometry.radius>=-.75&&point.y+mainGeometry.radius<=pan.height+.75),'all 28 published dango fit the canvas');
   for(const row of info.dango.payBackgrounds){const bg=[row.cell,row.row].find(color=>color&&!color.endsWith(', 0)')&&color!=='transparent'),rgb=bg?.match(/[\d.]+/g)?.slice(0,3).map(Number);assert.ok(rgb&&Math.max(...rgb)<110,'published payout uses a dark tinted background');}
   assert.equal(info.dango.numbers.length,28);assert.deepEqual(info.dango.numbers.filter(n=>n>0),Array.from({length:25},(_,i)=>i+1));assert.equal(info.dango.numbers.filter(n=>n===0).length,3);assert.equal(info.dango.initialFree.length,3);assert.ok(info.dango.initialFree.every(id=>info.dango.numbers[id]===0));assert.equal(info.dango.odds,1);
-  assert.equal(info.dango.art.revision,253);assert.equal(info.dango.art.presentationRevision,262);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
+  assert.equal(info.dango.art.revision,253);assert.equal(info.dango.art.presentationRevision,268);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
   assert.deepEqual(info.dango.art.images.map(image=>image.key).sort(),['green','pink','rainbow','skewer','stand','white','yellow']);
   for(const image of info.dango.art.images){assert.equal(image.loaded,true);assert.ok(image.width>=64&&image.height>=16);assert.match(image.url,/\/dango-art-v25[23]\//);const version=['white','skewer'].includes(image.key)?252:253;assert.ok(image.url.includes('/dango-art-v'+version+'/'));}
   for(const image of info.dango.cssAssets)assert.ok(image.width>=256&&image.height>=256);
@@ -196,7 +201,7 @@ try{
   assert.equal(info.results.installed,true);assert.equal(info.results.stylesheet,true);assert.equal(info.results.resultHidden,true);
   assert.equal(info.results.assets.length,2);for(const asset of info.results.assets)assert.ok(asset.width>0&&asset.height>0);
   assert.deepEqual(errors,[],'published result module initializes without errors');
-  await page.waitForFunction(()=>window.SugarChallengeRulesV254?.REVISION===254&&window.SweetsSugarChallengeV254?.version===254&&document.querySelector('.sc254-overlay'),null,{timeout:10000});
+  await page.waitForFunction(()=>window.SugarChallengeRulesV254?.REVISION===268&&window.SweetsSugarChallengeV254?.version===254&&document.querySelector('.sc254-overlay'),null,{timeout:10000});
   info.sugar=await page.evaluate(async()=>{
    const R=window.SugarChallengeRulesV254,ui=window.SweetsSugarChallengeV254,assets=await Promise.all(['scale','bottle','jpc-title'].map(async name=>{const image=new Image();image.src='assets/sugar-art-v254/'+name+'.webp?v=254';await image.decode();return {name,width:image.naturalWidth,height:image.naturalHeight};}));
    await Promise.all([...document.querySelectorAll('.sc254-overlay img,.sc254-celebration img,.sc254-dock img')].map(image=>image.decode()));
@@ -207,7 +212,7 @@ try{
     reachPopups:[...document.querySelectorAll('.v250-reach-pop')].map(node=>({game:node.dataset.gameKind,image:getComputedStyle(node,'::before').backgroundImage,hidden:node.hidden,numberNodes:node.querySelectorAll('small').length})),
     serverRouletteInstalled:!!window.SweetsSugarRouletteV254};
   });
-  assert.equal(info.sugar.revision,254);assert.equal(info.sugar.ui.version,254);assert.equal(info.sugar.ui.challenge,null);assert.equal(info.sugar.ui.bankCount,0);assert.equal(info.sugar.ui.artLoaded,true);
+  assert.equal(info.sugar.revision,268);assert.equal(info.sugar.ui.version,254);assert.equal(info.sugar.ui.challenge,null);assert.equal(info.sugar.ui.bankCount,0);assert.equal(info.sugar.ui.artLoaded,true);
   assert.equal(info.sugar.stylesheet,true);assert.equal(info.sugar.overlayHidden,true);assert.equal(info.sugar.dockHidden,true);assert.equal(info.sugar.dockParent,'cookie-roulette');
   assert.equal(info.sugar.serverRouletteInstalled,false,'published player does not install a second local roulette');
   assert.equal(info.sugar.assets.length,3);for(const asset of info.sugar.assets)assert.ok(asset.width>=100&&asset.height>=100,'published '+asset.name+' artwork decodes');
@@ -230,6 +235,6 @@ await fs.writeFile(out+'/public-deployment.json',JSON.stringify(report,null,2)+'
 console.log('SIXDROP_PUBLIC_V248_READ_ONLY_PASS',JSON.stringify(report));
 console.log('ARCADE_PUBLIC_V249_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,logos:gameKinds.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,landscape:screen.arcade.landscape,loadedLogos:screen.arcade.brand.loaded,pageErrors:screen.pageErrors.length}))}));
 console.log('ARCADE_PUBLIC_V250_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,...screen.v250,pageErrors:screen.pageErrors.length}))}));
-console.log('DANGO_PUBLIC_V266_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,cells:screen.dango.cells,lines:screen.dango.lines,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
-console.log('SUGAR_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,rulesRevision:screen.sugar.revision,decodedSugarAssets:screen.sugar.assets.length,reachFrameDecoded:screen.sugar.reachFrame.loaded,overlayHidden:screen.sugar.overlayHidden,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));
+console.log('DANGO_PUBLIC_V268_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,cells:screen.dango.cells,lines:screen.dango.lines,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
+console.log('SUGAR_PUBLIC_V268_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,rulesRevision:screen.sugar.revision,decodedSugarAssets:screen.sugar.assets.length,reachFrameDecoded:screen.sugar.reachFrame.loaded,overlayHidden:screen.sugar.overlayHidden,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));
 console.log('DOWNLOAD_PUBLIC_V255_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,editionChoices:screen.chooser.options.map(option=>option.name),downloadEntry:screen.download.state.edition,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));
