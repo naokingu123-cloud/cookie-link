@@ -2212,21 +2212,6 @@
       "sha256": "4d52250c393bbb2b8824f1014e93a33ced1cd97184f2e9d414869716df23568c"
     },
     {
-      "path": "assets/sixdrop_candy_lid.png",
-      "bytes": 480881,
-      "sha256": "9dd16a4fec99f6fd650e27662ba88ce24332a38a015f1c5ea5fbebaedfa5ccd3"
-    },
-    {
-      "path": "assets/sixdrop_glass_sideframe_slim.png",
-      "bytes": 381500,
-      "sha256": "57ee51172f635556625e00cd3589895ec29e21c731bf79f75e832bb08e150b56"
-    },
-    {
-      "path": "assets/sixdrop_glass_sideframe.png",
-      "bytes": 954925,
-      "sha256": "f694e355fec4bba7c373d04554a25e16a30ddee527a442c4bed8671bf8f6d72f"
-    },
-    {
       "path": "assets/sixdrop-allclear-candy-v14.svg",
       "bytes": 2912,
       "sha256": "99bc0a4ada05365152496512d70a8d18360d610b6580fa07f54d196cf07905db"
@@ -2345,6 +2330,21 @@
       "path": "assets/sixdrop-thinframe-v11.css",
       "bytes": 2505,
       "sha256": "412129e4e2f676123506d6b0333ca1e957327ce6636a0fa8da4a0bcde62860a2"
+    },
+    {
+      "path": "assets/sixdrop_candy_lid.png",
+      "bytes": 480881,
+      "sha256": "9dd16a4fec99f6fd650e27662ba88ce24332a38a015f1c5ea5fbebaedfa5ccd3"
+    },
+    {
+      "path": "assets/sixdrop_glass_sideframe.png",
+      "bytes": 954925,
+      "sha256": "f694e355fec4bba7c373d04554a25e16a30ddee527a442c4bed8671bf8f6d72f"
+    },
+    {
+      "path": "assets/sixdrop_glass_sideframe_slim.png",
+      "bytes": 381500,
+      "sha256": "57ee51172f635556625e00cd3589895ec29e21c731bf79f75e832bb08e150b56"
     },
     {
       "path": "assets/stations-number-preview-v241.js",
