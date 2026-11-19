@@ -9,7 +9,7 @@ const [html,bootstrap,extension,choice,service,profile,sugar,versionText]=await 
  read('assets/player-lounge.js'),read('assets/sugar-challenge-v254.js'),read('app-version.json')
 ]);
 const version=JSON.parse(versionText).version;
-assert.ok(version.includes('v258'));
+assert.ok(Number(/-v(\d+)-/.exec(version)?.[1])>=258,'the local edition remains available in later builds');
 assert.ok(html.includes('<script src="assets/local-debug-v258.js?v=258"></script>'));
 assert.ok(html.includes("else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=258');"));
 assert.ok(html.includes('if(edition===\'local\')'));

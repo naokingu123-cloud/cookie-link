@@ -1,48 +1,61 @@
-/* BET-time teaching only. These fixed examples never reveal a live board. */
+/* Fixed BET examples. The lesson never reads a live board or a future ball. */
 (()=>{
 'use strict';
 const R=window.DangoBingoRules,V=window.DangoBingoView;
 const steps=[
- {title:'白いお団子の番号にHIT！',caption:'25個のお団子に1〜25の番号。縦・横・斜めの3個以上をそろえて、串を通そう。'},
- {title:'黄緑のFREEにHITで配置＋1',caption:'初期FREEは1〜3個。前半5球で黄緑の番号にHITするとピンクに変わり、配置できるFREEが1個増えます。配置は最大4個です。'},
- {title:'5球のあと、黄色いFREEを配置',caption:'お団子をタップしてFREE配置。もう一度タップで取り消し。未配置分は時間切れでおまかせ配置されます。'},
- {title:'黄色いFREEにHITで虹色へ！',caption:'後半3球で配置FREEの番号にHITすると虹色になり、ODDS＋1。3・4・5・7・9個ラインの串は青・緑・黄・赤・紫。完成本数で配当が決まります。'}
+ {title:'7段・28個のお団子をそろえよう',caption:'上から1〜7個の7段。番号1〜25が1個ずつと、最初からHIT扱いのFREEが3個。3〜7個のまっすぐなラインを完成させよう。'},
+ {title:'前半5球でFREEの範囲が決まる',caption:'3つの拡張番号に前半5球でHIT。1個なら1マス、2個なら中心＋周辺6マス、3個なら中心＋周辺16マスをFREEにできます。'},
+ {title:'中心を選んで、まとめてFREE！',caption:'中心を1つタップすると範囲全体をFREEに。中心も含みます。同じ中心を再タップで取り消し、別の中心へ置き直しもできます。初期FREEに重なった分はODDS＋1。'},
+ {title:'配置FREEへの後半HITでODDS UP',caption:'後半3球で配置したFREEの番号にHITすると、1個につきODDS＋1。長さごとの完成本数で配当を選び、合計にODDSを反映します。'}
 ];
-const first=[2,3,5,12,21],last=[4,9,14],numbers=Array.from({length:25},(_,i)=>i+1);
 let buffer,lastLessonFrame;
-const start=()=>R.create({moldIndex:1,initialFreeCells:[20],numbers,seed:251});
-const firstFive=()=>first.reduce((s,n)=>R.draw(s,n),start());
-function placed(){let s=firstFive();s=R.placeFree(s,3);return R.placeFree(s,8);}
+const start=()=>R.create({seed:262,target:90});
+function firstFor(state,count=2){const trigger=state.triggerNumbers||[];return [...trigger.slice(0,count),...Array.from({length:25},(_,i)=>i+1).filter(n=>!trigger.includes(n)).slice(0,5-count)];}
+function firstFive(count=2){let state=start();for(const n of firstFor(state,count))state=R.draw(state,n);return state;}
+function centerFor(state){
+ const initial=new Set(state.initialFreeCells),centers=R.availableCenters?.(state)||[],footprint=id=>R.expansionCellsFor?.(state,id)||[id];
+ return centers.slice().sort((a,b)=>footprint(b).filter(id=>initial.has(id)).length-footprint(a).filter(id=>initial.has(id)).length||a-b)[0];
+}
+function placed(){const state=firstFive(),center=centerFor(state);return Number.isInteger(center)?R.placeFree(state,center):state;}
 function text(c,value,x,y,size,ink='#673d32'){c.font='900 '+size+'px ElixirNumbers,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle=ink;c.fillText(value,x,y);}
 function box(c,x,y,w,h,r,fill){c.fillStyle=fill;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();}
-function ball(c,x,y,r,kind,number,rainbow=false){
- V.drawLessonDango(c,x,y,r,kind,number,rainbow);
-}
+const ball=(c,x,y,r,kind,number,rainbow=false)=>V.drawLessonDango(c,x,y,r,kind,number,rainbow);
 function draw(c,scene,t){
  lastLessonFrame={c,scene,t,transform:c.getTransform?.(),width:c.canvas.width,height:c.canvas.height};
  buffer??=Object.assign(document.createElement('canvas'),{width:640,height:420});
- const g=buffer.getContext('2d');let s=start(),age=Infinity;
- if(scene===0){for(let i=0;i<Math.min(4,Math.floor(t*5));i++)s=R.draw(s,first[i]);}
- if(scene===1){s=first.slice(0,4).reduce((state,n)=>R.draw(state,n),s);if(t>.32){s=R.draw(s,21);age=(t-.32)*2600;}}
- if(scene===2){s=firstFive();if(t>.18)s=R.placeFree(s,3);if(t>.4)s=R.placeFree(s,8);if(t>.65)s=R.undoFree(s,3);if(t>.85)s=R.placeFree(s,3);}
- if(scene===3){s=R.commitFree(placed(),{autoFill:false});for(let i=0;i<3;i++)if(t>.18+i*.25){s=R.draw(s,last[i]);age=(t-(.18+i*.25))*2200;}}
- V.paint(g,s,{time:t*3500,age,lineAge:t*2200,animationLines:scene===3?s.completedLines:s.newLines,bet:100,reach:[],artUsage:'lesson'},false);
- c.save();c.drawImage(buffer,3,17,324,212);
- box(c,333,19,176,204,17,'#fff6e3');
+ const g=buffer.getContext('2d');let state=start(),age=Infinity,center=null,lastNumber=null;
+ if(scene===0){for(const n of firstFor(state,0).slice(0,Math.min(4,Math.floor(t*5))))state=R.draw(state,n);}
+ if(scene===1)state=firstFive(Math.min(3,1+Math.floor(t*3)));
+ if(scene===2){
+  state=firstFive();center=centerFor(state);
+  if(t>.20&&Number.isInteger(center))state=R.placeFree(state,center);
+  if(t>.67&&t<.85&&Number.isInteger(center))state=R.undoFree(state,center);
+ }
+ if(scene===3){
+  state=R.commitFree(placed(),{autoFill:false});
+  const remaining=Array.from({length:25},(_,i)=>i+1).filter(n=>!state.draws.includes(n));
+  const expansion=state.manualFreeCells.map(id=>state.numbers[id]).filter(n=>n>0&&remaining.includes(n));
+  const final=[...new Set([...expansion,...remaining])].slice(0,3);
+  for(let i=0;i<3;i++)if(t>.18+i*.25){state=R.draw(state,final[i]);lastNumber=final[i];age=(t-(.18+i*.25))*2200;}
+ }
+ V.paint(g,state,{time:t*3500,age,lineAge:t*2200,animationLines:scene===3?state.completedLines:state.newLines,bet:100,reach:[],artUsage:'lesson',previewCells:scene===2&&t<=.2&&Number.isInteger(center)?R.expansionCellsFor(state,center):[]},false);
+ c.save();c.drawImage(buffer,3,17,324,212);box(c,333,19,176,204,17,'#fff6e3');
  if(scene===0){
-  text(c,'前半 5球',421,48,23);ball(c,421,112,34,'hit',first[Math.min(3,Math.floor(t*4))]);text(c,'番号にHIT！',421,175,20,'#a44f55');
+  text(c,'番号25 ＋ FREE3',421,45,17);ball(c,392,103,27,'plain',12);ball(c,450,103,27,'initial',0);text(c,'1・2・3・4・5・6・7段',421,163,14);text(c,'3方向に串を通そう',421,190,16,'#a44f55');
  }else if(scene===1){
-  text(c,'初期FREE',421,45,20,'#5c7d37');ball(c,421,102,30,'initial',21);text(c,'配置できるFREE',421,155,15,'#5c7d37');text(c,t>.32?'1 → 2 個':'1 個',421,186,27,'#5c7d37');
+  text(c,'拡張番号にHIT',421,45,19,'#5c7d37');
+  const trigger=state.triggerNumbers||[],level=state.expansionLevel||0;
+  for(let i=0;i<trigger.length;i++)ball(c,370+i*51,94,20,i<level?'hit':'plain',trigger[i]);
+  text(c,level+' HIT → '+[0,1,7,17][level]+'マス',421,151,22,'#5c7d37');text(c,level===1?'中心1マス':level===2?'中心 ＋ 周辺6':'中心 ＋ 周辺16',421,185,17,'#5c7d37');
  }else if(scene===2){
-  text(c,'FREEを配置',421,46,21,'#8a6512');ball(c,392,103,24,s.manualFreeCells.includes(3)?'manual':'plain',4);ball(c,450,103,24,s.manualFreeCells.includes(8)?'manual':'plain',9);text(c,'あと'+s.freeRemaining+'個',421,153,25,'#8a6512');box(c,343,177,156,29,8,'#93621c');text(c,t>.65&&t<.85?'再タップで取り消し':t>.85?'置き直しもOK':'お団子をタップ',421,192,16,'#fff7df');
+  text(c,'中心から広がる',421,46,20,'#8a6512');ball(c,421,103,31,'manual',state.cells[center]?.number||1);text(c,'中心 ＋ 周辺6マス',421,153,17,'#8a6512');
+  box(c,342,177,158,30,8,'#93621c');text(c,t>.67&&t<.85?'再タップで取り消し':t>.85?'置き直しもOK':'中心もFREE',421,192,16,'#fff7df');
  }else{
-  text(c,'後半 3球',421,44,22);ball(c,421,102,32,'manual',s.oddsMultiplier>2?9:4,s.oddsMultiplier>1);text(c,'ODDS ×'+s.oddsMultiplier,421,155,24,'#ac7427');text(c,'虹色が目印！',421,189,17,'#8154a9');
+  text(c,'後半 3球',421,44,22);ball(c,421,102,32,'manual',lastNumber||state.cells[state.manualFreeCells[0]]?.number||1,!!lastNumber);text(c,'ODDS ×'+state.oddsMultiplier,421,155,24,'#ac7427');text(c,'重なり・後半HITで＋1',421,190,14,'#8154a9');
  }
  c.restore();
 }
-// A paused BET lesson may have painted while images were still decoding. Paint
-// that same fixed example again once the art is ready, preserving the diagram's
-// responsive transform and never advancing a live game or the lesson clock.
+// Repaint paused examples after their art decodes; never advance lesson time.
 V.onAssetsChanged(()=>{
  const frame=lastLessonFrame,status=window.SweetsDemoSuite?.status;
  if(!frame?.transform||!frame.c.canvas.isConnected||status?.kind!=='dango'||!status.active||frame.c.canvas.width!==frame.width||frame.c.canvas.height!==frame.height)return;

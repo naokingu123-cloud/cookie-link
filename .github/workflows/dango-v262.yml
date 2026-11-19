@@ -1,0 +1,49 @@
+name: Dango v262 trial - exact RTP, ODDS and download resume
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/v262-dango-calibration]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax, current rules and preserved legacy settlements
+        run: |
+          npm run check
+          npm run test:dango
+          node tests/recorded-round-v255.mjs
+          node tests/download-v255-ledger.mjs
+          node tests/download-v255-cache.mjs
+          node tests/local-debug-v258.mjs
+          node tests/edition-choice-v255.mjs
+      - name: Reproduce exact independent calibration
+        run: |
+          g++ -std=c++20 -O3 scripts/dango-v262-calibrate.cpp -o /tmp/dango-v262-calibrate
+          /tmp/dango-v262-calibrate > /tmp/dango-v262-independent.json
+          node tests/dango-v262-calibration.mjs /tmp/dango-v262-independent.json
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Triangle, payout table, FREE overlap and legacy view
+        run: node tests/dango-v262-view.mjs
+      - name: Actual server recording, native ten-game calculation and deterministic retry
+        run: node tests/download-v255-compute.mjs
+      - name: Download offline playback and server-owned credit resume
+        run: node tests/download-v255-browser.mjs
+      - name: Preserve review screenshots and verification results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dango-v262-trial-verification
+          path: |
+            qa-dango-v262-view/
+            qa-download-v255/
+            /tmp/dango-v262-independent.json
+          retention-days: 7

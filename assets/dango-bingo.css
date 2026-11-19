@@ -60,3 +60,22 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 .dgb-scene[data-motion-reduced="true"] .dgb-pay td,.dgb-scene[data-motion-reduced="true"] .dgb-pay td::before,.dgb-scene[data-motion-reduced="true"] .dgb-pay td::after{animation:none!important}
 @media(prefers-reduced-motion:reduce){.dgb-scene *{scroll-behavior:auto!important}.dgb-pay td,.dgb-pay td::before,.dgb-pay td::after{animation:none!important}}
 @media(forced-colors:active){.dgb-scene::before{display:none}.dgb-scene,.dgb-free-stat,.dgb-pay-odds,.dgb-pay tbody th,.dgb-pay tbody td,.dgb-pay thead th{background:Canvas;color:CanvasText}.dgb-pay th,.dgb-pay td{border-color:CanvasText}.dgb-pay td[data-highest-role="true"]{outline:2px solid Highlight;outline-offset:-2px}.dgb-pay td.current::after{color:Highlight}.dgb-pay td::before{display:none}.dgb-cell:focus-visible{outline-color:Highlight}}
+
+/* v262: 28-site triangle, three count tiers and one expansion center. */
+.dgb-scene[data-modern="true"] .dgb-pay{width:var(--dgb-pay-width)}
+.dgb-scene[data-modern="true"] .dgb-pay col.dgb-row-label{width:30%}
+.dgb-scene[data-modern="true"] .dgb-pay col{width:23.333333%}
+.dgb-scene[data-modern="true"] .dgb-pay tbody tr[data-length="6"]{--dgb-row-background:#260c16}
+.dgb-scene[data-modern="true"] .dgb-pay tbody tr[data-length="7"]{--dgb-row-background:#1c102b}
+.dgb-scene[data-modern="true"] .dgb-free-stat{--dgb-unit:var(--dgb-free-unit);top:var(--dgb-free-top);left:var(--dgb-free-left);right:auto;width:var(--dgb-free-width);max-height:var(--dgb-free-height);gap:calc(var(--dgb-unit)*.035)}
+.dgb-scene[data-modern="true"] .dgb-free-stat>small{font-size:max(10px,calc(var(--dgb-unit)*.17))}
+.dgb-scene[data-modern="true"] .dgb-free-stat>b{font-size:max(14px,calc(var(--dgb-unit)*.30))}
+.dgb-scene[data-modern="true"] .dgb-free-detail{font-size:max(9px,calc(var(--dgb-unit)*.15))}
+.dgb-trigger-numbers{display:flex;justify-content:center;gap:calc(var(--dgb-unit)*.09);width:100%;min-height:calc(var(--dgb-unit)*.34)}
+.dgb-trigger{display:grid;place-items:center;min-width:calc(var(--dgb-unit)*.37);height:calc(var(--dgb-unit)*.34);padding:0 calc(var(--dgb-unit)*.035);border:1px solid #d1ed8c;border-radius:calc(var(--dgb-unit)*.08);background:#29432b;color:#fff9d2;font:900 calc(var(--dgb-unit)*.24)/1 ElixirNumbers,system-ui,sans-serif}
+.dgb-trigger.hit{border-color:#ffe085;background:#f7cd68;color:#4d2f20;box-shadow:0 0 calc(var(--dgb-unit)*.10) #fff19088}
+.dgb-trigger-numbers[hidden],.dgb-pay-odds[hidden]{display:none}
+.dgb-scene[data-modern="true"] .dgb-cell.placed:not(:disabled){outline:2px solid #fff9ad;box-shadow:0 0 0 4px #7148b7a6}
+
+.dgb-scene[data-modern="true"] .dgb-actions{flex-basis:calc(var(--dgb-unit)*1.13)}
+.dgb-scene[data-modern="true"] .dgb-actions button{min-height:max(28px,calc(var(--dgb-unit)*.42));font-size:max(11px,calc(var(--dgb-unit)*.17))}

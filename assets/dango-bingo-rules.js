@@ -311,3 +311,216 @@
     payout,payoutState:payout,payRowsFor,weightsForTarget,calibrationForTarget,effectiveTarget,seededRandom,
     helpers:{popcount,maskOf,idsOf,reflect,hash32}});
 });
+
+/* v262: 28-site triangle, three independent expansion triggers, and explicit
+ * FREE overlap / later-HIT ODDS. Old revisions above remain executable for
+ * already-started rounds; all new rounds use this revision. */
+(function(root,factory){
+  'use strict';
+  const api=factory(root.DangoBingoRules);
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  root.DangoBingoRules=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(legacy254){
+  'use strict';
+  const REVISION=262,LENGTHS=[3,4,5,6,7],DENOMINATOR=60568200;
+  const {popcount,maskOf,hash32}=legacy254.helpers;
+  const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const item of Object.values(value))freeze(item);Object.freeze(value);}return value;};
+  const modern=state=>!state||state.rulesRevision===REVISION;
+  const cells=[];
+  for(let row=0;row<7;row++)for(let col=0;col<=row;col++)cells.push({id:cells.length,row,col,x:col-row/2,y:row});
+  const lines=[];
+  for(const axis of ['horizontal','diagonal-minus','diagonal-plus']){
+    const groups=new Map();
+    for(const cell of cells){const key=axis==='horizontal'?cell.row:axis==='diagonal-minus'?cell.col:cell.row-cell.col;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(cell.id);}
+    for(const [key,ids] of [...groups].sort((a,b)=>a[0]-b[0]))if(ids.length>=3)lines.push({id:lines.length,length:ids.length,cells:ids,mask:maskOf(ids),axis,key});
+  }
+  const mirror=cells.map(c=>cells.find(other=>other.row===c.row&&other.col===c.row-c.col).id);
+  const geometry=freeze({cells,lines,mirror,rows:[1,2,3,4,5,6,7]});
+  const distance=(a,b)=>Math.max(Math.abs(a.row-b.row),Math.abs(a.col-b.col),Math.abs((a.row-a.col)-(b.row-b.col)));
+  const sixNeighbors=cells.map(c=>cells.filter(other=>other.id!==c.id&&distance(c,other)===1).map(other=>other.id));
+  // This is the same deterministic nearest-16 shape as the probability model.
+  // A boundary keeps 16 distinct neighbors; equal distances use the fixed key.
+  const sixteenNeighbors=cells.map(c=>cells.filter(other=>other.id!==c.id).sort((a,b)=>distance(c,a)-distance(c,b)||((a.id*13+c.id*7)%29)-((b.id*13+c.id*7)%29)).slice(0,16).map(other=>other.id));
+  const regions=[[],cells.map(c=>[c.id]),cells.map(c=>sixNeighbors[c.id].length===6?[c.id,...sixNeighbors[c.id]]:[]),cells.map(c=>[c.id,...sixteenNeighbors[c.id]])];
+  const regionMasks=regions.map(level=>level.map(ids=>maskOf(ids)));
+  const unions=LENGTHS.map(length=>{
+    const masks=lines.filter(line=>line.length===length).map(line=>line.mask);
+    return [masks,[masks[0]|masks[1],masks[0]|masks[2],masks[1]|masks[2]],[masks[0]|masks[1]|masks[2]]];
+  });
+  const requestedTiers=freeze({3:[0,40,200,5000],4:[0,200,1000,5000],5:[0,500,2500,20000],6:[0,1000,10000,50000],7:[0,3000,25000,2000000]});
+  // Calibrated candidate table. All values are explicit hundredths of BET;
+  // no hidden payout multiplier or post-draw rejection changes the result.
+  const tiers=freeze({3:[0,10,30,750],4:[0,30,150,750],5:[0,80,400,3000],6:[0,150,1500,7500],7:[0,450,4000,2000000]});
+  const payRows=freeze(LENGTHS.flatMap(length=>tiers[length].slice(1).map((hundredths,i)=>({length,count:i+1,atLeast:false,hundredths,label:length+'個ライン '+(i+1)+'本'}))));
+  const highestRoleMinimums=freeze({3:3,4:3,5:3,6:3,7:3});
+  const molds=freeze([
+    {id:'triangle-edge',name:'すその三粒',initialFreeCells:[0,20,22],triggerCells:[8,11,12],optimalNumerator:2878969530,optimalReturnPercent:2878969530/DENOMINATOR,automaticReturnPercent:2878969530/DENOMINATOR},
+    {id:'triangle-festival',name:'三色まつり',initialFreeCells:[6,9,24],triggerCells:[10,23,25],optimalNumerator:14953066540,optimalReturnPercent:14953066540/DENOMINATOR,automaticReturnPercent:14953066540/DENOMINATOR}
+  ]);
+  const effectiveTarget=legacy254.effectiveTarget,seededRandom=legacy254.seededRandom;
+  const geometryFor=state=>modern(state)?geometry:legacy254.geometry;
+  const linesFor=state=>geometryFor(state).lines;
+  const lengthsFor=state=>modern(state)?LENGTHS:[3,4,5,7,9];
+  const tiersFor=state=>modern(state)?tiers:legacy254.tiersFor(state);
+  const payRowsBaseFor=state=>modern(state)?payRows:legacy254.payRowsBaseFor(state);
+  const isHighestRole=(length,count,state)=>modern(state)?Number.isFinite(count)&&count>=highestRoleMinimums[length]:legacy254.isHighestRole(length,count);
+  const highestRolesFor=state=>modern(state)?LENGTHS.filter(length=>isHighestRole(length,state?.lineCounts?.[length]??state?.counts?.[length]??0,state)):legacy254.highestRolesFor(state);
+  const idsOf=mask=>cells.filter(c=>mask&(1<<c.id)).map(c=>c.id);
+  const cellIdOk=id=>Number.isInteger(id)&&id>=0&&id<28;
+  const sample=rng=>{const n=Number(rng());if(!Number.isFinite(n)||n<0||n>1)throw new RangeError('Dango RNG must return a value in [0,1].');return Math.min(1-Number.EPSILON,n);};
+  function calibrationForTarget(value=90){
+    const target=effectiveTarget(value),low=molds[0].optimalReturnPercent,high=molds[1].optimalReturnPercent;
+    if(!(low<=50&&high>=150))throw new RangeError('Dango calibration does not cover 50–150%.');
+    const share=(target-low)/(high-low),weights=[{moldIndex:0,weight:1-share},{moldIndex:1,weight:share}];
+    return {target,reference:'optimal-manual-and-auto',weights,optimalReturnPercent:low*(1-share)+high*share,automaticReturnPercent:low*(1-share)+high*share,
+      minimumReturnPercent:low,maximumReturnPercent:high,uniformDraws:true,includesFreeOverlapOdds:true,includesLateHitOdds:true,includesSugar:false};
+  }
+  const weightsForTarget=value=>calibrationForTarget(value).weights;
+  function stateOk(state){
+    return !!state&&state.rulesRevision===REVISION&&Array.isArray(state.numbers)&&state.numbers.length===28&&Array.isArray(state.draws)&&
+      Array.isArray(state.initialFreeCells)&&state.initialFreeCells.length===3&&Array.isArray(state.triggerNumbers)&&state.triggerNumbers.length===3;
+  }
+  function expansionCellsFor(state,centerId){
+    if(!modern(state)||!state||!cellIdOk(centerId))return [];
+    const level=state.expansionLevel??state.draws.slice(0,5).filter(n=>state.triggerNumbers.includes(n)).length;
+    return regions[level]?.[centerId]?.slice()||[];
+  }
+  function availableCenters(state){
+    if(!stateOk(state))return [];
+    const level=state.draws.slice(0,5).filter(n=>state.triggerNumbers.includes(n)).length;
+    if(!level)return [];
+    const earlyHits=maskOf(state.draws.slice(0,5).map(n=>state.numbers.indexOf(n)));
+    // Existing FREE is deliberately eligible: covering it earns one ODDS UP.
+    // A previous number HIT is not a new FREE placement or an ODDS source.
+    return cells.filter(c=>!(earlyHits&(1<<c.id))&&regions[level][c.id].length).map(c=>c.id);
+  }
+  function derive(source,previous){
+    const numbers=source.numbers.slice(),draws=source.draws.slice(),initialFreeCells=source.initialFreeCells.slice(),triggerNumbers=source.triggerNumbers.slice();
+    const triggerHits=draws.slice(0,5).filter(n=>triggerNumbers.includes(n)),expansionLevel=triggerHits.length;
+    const expansionCenter=cellIdOk(source.expansionCenter)&&expansionLevel?source.expansionCenter:null;
+    const expansionCells=expansionCenter===null?[]:regions[expansionLevel][expansionCenter].slice();
+    const initialMask=maskOf(initialFreeCells),manualMask=maskOf(expansionCells),hitCells=draws.map(n=>numbers.indexOf(n)),hitMask=maskOf(hitCells),markedMask=initialMask|manualMask|hitMask;
+    const overlapFreeCells=initialFreeCells.filter(id=>manualMask&(1<<id));
+    const oddsHits=draws.slice(5).filter(n=>manualMask&(1<<numbers.indexOf(n)));
+    const oddsMultiplier=1+overlapFreeCells.length+oddsHits.length;
+    const completedLines=lines.filter(line=>(markedMask&line.mask)===line.mask).map(line=>line.id),lineCounts=Object.fromEntries(LENGTHS.map(length=>[length,0]));
+    for(const id of completedLines)lineCounts[lines[id].length]++;
+    const highestRoles=highestRolesFor({rulesRevision:REVISION,lineCounts}),previousRoles=highestRolesFor(previous);
+    const newHighestRoles=previous?highestRoles.filter(length=>!previousRoles.includes(length)):[];
+    const baseHundredths=LENGTHS.reduce((sum,length)=>sum+tiers[length][lineCounts[length]],0);
+    const freeCommitted=!!source.freeCommitted,phase=draws.length>=8?'done':draws.length<5?'draw':freeCommitted?'draw-final':'placing';
+    const freeBudget=expansionLevel?1:0,freeRemaining=expansionLevel&&expansionCenter===null?1:0;
+    const previousLines=new Set(previous?.completedLines||[]);
+    return {...source,rulesRevision:REVISION,numbers,draws,initialFreeCells,triggerNumbers,triggerHits,bonusHits:triggerHits,expansionLevel,expansionCenter,expansionCells,expansionFootprint:expansionCells,
+      manualFreeCells:expansionCells,initialFree:initialFreeCells,manualFree:expansionCells,overlapFreeCells,overlapOdds:overlapFreeCells.length,oddsHits,
+      freeBudget,freeQuota:freeBudget,freeRemaining,freeCommitted,placementCommitted:freeCommitted,phase,
+      oddsMultiplier,multiplier:oddsMultiplier,baseHundredths,totalHundredths:baseHundredths*oddsMultiplier,
+      lineCounts,counts:lineCounts,completedLines,newLines:previous?completedLines.filter(id=>!previousLines.has(id)):[],
+      highestRoles,highestRole:highestRoles.length>0,newHighestRoles,hitCells,markedCells:idsOf(markedMask),initialMask,manualMask,hitMask,markedMask,
+      lineMasks:lines.map(line=>line.mask),lastBonusGain:previous?Math.max(0,expansionLevel-(previous.expansionLevel||0)):0,lastOddsGain:previous?Math.max(0,oddsMultiplier-previous.oddsMultiplier):0,
+      cells:cells.map(c=>({...c,number:numbers[c.id],hit:!!(hitMask&(1<<c.id)),initialFree:!!(initialMask&(1<<c.id)),manualFree:!!(manualMask&(1<<c.id)),marked:!!(markedMask&(1<<c.id)),
+        expansionCenter:c.id===expansionCenter,overlapFree:overlapFreeCells.includes(c.id),trigger:triggerNumbers.includes(numbers[c.id])}))};
+  }
+  function create(options={}){
+    if(options.rulesRevision!==undefined&&options.rulesRevision!==REVISION){
+      if(options.rulesRevision!==254)throw new RangeError('Create only current or revision254 rounds; restore older rounds from their saved state.');
+      return legacy254.create(options);
+    }
+    const requestedTarget=options.target??90,target=effectiveTarget(requestedTarget),rng=typeof options.rng==='function'?options.rng:options.seed!==undefined?seededRandom(options.seed):Math.random;
+    let moldIndex=options.moldIndex;
+    if(moldIndex===undefined){const roll=sample(rng);moldIndex=roll<weightsForTarget(target)[0].weight?0:1;}
+    if(!Number.isInteger(moldIndex)||!molds[moldIndex])throw new RangeError('Unknown Dango triangle layout.');
+    const mold=molds[moldIndex],initialFreeCells=(options.initialFreeCells??mold.initialFreeCells).slice();
+    if(initialFreeCells.length!==3||new Set(initialFreeCells).size!==3||!initialFreeCells.every(cellIdOk))throw new RangeError('Dango triangle requires exactly three distinct FREE cells.');
+    const initialMask=maskOf(initialFreeCells),numberedCells=cells.filter(c=>!(initialMask&(1<<c.id))).map(c=>c.id);
+    let numbers;
+    if(options.numbers!==undefined&&options.numbers.length===28)numbers=options.numbers.slice();
+    else{
+      const sequence=options.numbers!==undefined?options.numbers.slice():Array.from({length:25},(_,i)=>i+1);
+      if(options.numbers===undefined)for(let i=24;i>0;i--){const j=Math.floor(sample(rng)*(i+1));[sequence[i],sequence[j]]=[sequence[j],sequence[i]];}
+      if(sequence.length!==25)throw new RangeError('Dango requires 25 numbers or a 28-position board.');
+      numbers=Array(28).fill(0);numberedCells.forEach((id,i)=>{numbers[id]=sequence[i];});
+    }
+    const values=numbers.filter(n=>n!==0);
+    if(numbers.length!==28||values.length!==25||new Set(values).size!==25||!values.every(n=>Number.isInteger(n)&&n>=1&&n<=25)||!initialFreeCells.every(id=>numbers[id]===0))throw new RangeError('Dango board must contain 1–25 once and zero only at its three FREE cells.');
+    let triggerCells=(options.triggerCells??mold.triggerCells).slice();
+    if(options.triggerNumbers!==undefined)triggerCells=options.triggerNumbers.map(n=>numbers.indexOf(n));
+    else if(options.initialFreeCells!==undefined&&options.triggerCells===undefined&&triggerCells.some(id=>initialFreeCells.includes(id)))triggerCells=numberedCells.slice(0,3);
+    if(triggerCells.length!==3||new Set(triggerCells).size!==3||!triggerCells.every(id=>cellIdOk(id)&&numbers[id]>0))throw new RangeError('Expansion triggers must identify three distinct numbered cells.');
+    const triggerNumbers=triggerCells.map(id=>numbers[id]);
+    return derive({rulesRevision:REVISION,ruleId:'triangle-free-expansion-v262',numbers,draws:[],initialFreeCells,triggerCells,triggerNumbers,expansionCenter:null,freeCommitted:false,
+      requestedTarget,target,moldIndex,moldId:mold.id,moldName:mold.name,initialLayoutId:mold.id,initialVariantIndex:0,seed:options.seed??null,
+      calibrationReference:'optimal-manual-and-auto',calibratedLayout:options.initialFreeCells===undefined&&options.triggerCells===undefined&&options.triggerNumbers===undefined,lastNumber:null,lastCell:null});
+  }
+  function draw(state,number){
+    if(!modern(state))return legacy254.draw(state,number);
+    if(!stateOk(state)||!Number.isInteger(number)||number<1||number>25)return null;
+    if(state.draws.includes(number))return state;
+    if(state.phase==='placing'||state.phase==='done'||state.draws.length>=8||state.draws.length>=5&&!state.freeCommitted)return null;
+    return derive({...state,draws:[...state.draws,number],lastNumber:number,lastCell:state.numbers.indexOf(number)},state);
+  }
+  function placeFree(state,cellId){
+    if(!modern(state))return legacy254.placeFree(state,cellId);
+    if(!stateOk(state)||state.phase!=='placing'||state.freeCommitted||!availableCenters(state).includes(cellId))return null;
+    if(state.expansionCenter===cellId)return state;
+    return derive({...state,expansionCenter:cellId},state);
+  }
+  function undoFree(state,cellId){
+    if(!modern(state))return legacy254.undoFree(state,cellId);
+    if(!stateOk(state)||state.phase!=='placing'||state.freeCommitted||!cellIdOk(cellId))return null;
+    return state.expansionCenter===cellId?derive({...state,expansionCenter:null},state):state;
+  }
+  // Exact conditional mean over C(20,3)=1140 remaining triples, represented by
+  // seven line unions per length. It reads only the first five actual hits.
+  // Integers count ODDS-weighted event outcomes, including overlap and late HIT.
+  function expectedNumeratorForCenter(state,centerId){
+    if(!stateOk(state)||state.draws.length!==5)return null;
+    const firstMask=maskOf(state.draws.map(n=>state.numbers.indexOf(n))),initialMask=maskOf(state.initialFreeCells);
+    const level=state.draws.filter(n=>state.triggerNumbers.includes(n)).length;
+    let region=0;
+    if(level){if(!availableCenters(state).includes(centerId))return null;region=regionMasks[level][centerId];}
+    const marked=initialMask|firstMask|region,overlapOdds=1+popcount(region&initialMask),q=popcount(region&~(initialMask|firstMask));
+    const combinations=[1140,171,18,1],oddsCombinations=[171,18,1,0];
+    const event=union=>{const missing=popcount(union&~marked);return missing>3?0:overlapOdds*combinations[missing]+q*oddsCombinations[missing];};
+    let numerator=0;
+    for(let li=0;li<LENGTHS.length;li++){
+      const t=tiers[LENGTHS[li]],coefficients=[t[1],t[2]-2*t[1],t[3]-3*t[2]+3*t[1]];
+      for(let order=0;order<3;order++)for(const union of unions[li][order])numerator+=coefficients[order]*event(union);
+    }
+    return numerator;
+  }
+  function autoPlace(state){
+    if(!modern(state))return legacy254.autoPlace(state);
+    if(!stateOk(state)||state.phase!=='placing'||state.freeCommitted)return null;
+    if(!state.expansionLevel)return state;
+    let best=null,bestValue=-1;
+    for(const center of availableCenters(state)){const value=expectedNumeratorForCenter(state,center);if(value>bestValue){bestValue=value;best=center;}}
+    return best===null?null:placeFree(state,best);
+  }
+  function commitFree(state,{autoFill=true}={}){
+    if(!modern(state))return legacy254.commitFree(state,{autoFill});
+    if(!stateOk(state))return null;
+    if(state.freeCommitted&&(state.phase==='draw-final'||state.phase==='done'))return state;
+    if(state.phase!=='placing')return null;
+    let next=state;if(next.freeRemaining){if(!autoFill)return null;next=autoPlace(next);}
+    return next&&!next.freeRemaining?derive({...next,freeCommitted:true},state):null;
+  }
+  const payout=state=>modern(state)?stateOk(state)?state.totalHundredths:0:legacy254.payout(state);
+  function payRowsFor(state){return modern(state)?payRows.map(row=>({...row,baseHundredths:row.hundredths,hundredths:row.hundredths*(state?.oddsMultiplier||1)})):legacy254.payRowsFor(state);}
+  function reaches(state){
+    if(!modern(state))return legacy254.reaches(state);
+    if(!stateOk(state)||state.phase==='placing'||state.phase==='done')return [];
+    const result=[];
+    for(let n=1;n<=25;n++)if(!state.draws.includes(n)){
+      const next=draw(state,n);if(!next)continue;
+      const gainHundredths=next.totalHundredths-state.totalHundredths,oddsUp=next.oddsMultiplier>state.oddsMultiplier,allClear=next.newHighestRoles.length>0;
+      if(gainHundredths>0||oddsUp||allClear)result.push({n,number:n,totalHundredths:next.totalHundredths,gainHundredths,total:next.totalHundredths/100,gain:gainHundredths/100,
+        oddsUp,allClear,highestRole:next.highestRole,highestRoles:next.highestRoles.slice(),newHighestRoles:next.newHighestRoles.slice(),newLines:next.newLines.slice()});
+    }
+    return result;
+  }
+  return freeze({REVISION,version:REVISION,ruleId:'triangle-free-expansion-v262',geometry,cells,lines,CELLS:cells,LINES:lines,geometryFor,linesFor,lengthsFor,molds,tiers,requestedTiers,payRows,tiersFor,payRowsBaseFor,
+    legacy:legacy254.legacy,legacy253:legacy254.legacy253,legacy254,highestRoleMinimums,isHighestRole,highestRolesFor,DENOMINATOR,
+    create,createBoard:create,draw,placeFree,undoFree,autoPlace,commitFree,reaches,payout,payoutState:payout,payRowsFor,expansionCellsFor,availableCenters,expectedNumeratorForCenter,
+    calibrationForTarget,weightsForTarget,effectiveTarget,seededRandom,helpers:{popcount,maskOf,idsOf,hash32},expansionGeometry:{sixNeighbors,sixteenNeighbors}});
+});

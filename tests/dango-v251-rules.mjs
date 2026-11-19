@@ -4,7 +4,8 @@ import vm from 'node:vm';
 
 const context=vm.createContext({Math,console});
 vm.runInContext(fs.readFileSync(new URL('../assets/dango-bingo-rules.js',import.meta.url),'utf8'),context);
-const R=context.DangoBingoRules,plain=value=>JSON.parse(JSON.stringify(value));
+// Preserve the complete historical regression suite against the frozen v254 API.
+const R=context.DangoBingoRules.legacy254,plain=value=>JSON.parse(JSON.stringify(value));
 const calibration=JSON.parse(fs.readFileSync(new URL('../docs/dango-v253-calibration.json',import.meta.url),'utf8'));
 const legacySnapshots=JSON.parse(fs.readFileSync(new URL('./dango-v251-checkpoints.json',import.meta.url),'utf8'));
 const identity=Array.from({length:25},(_,i)=>i+1);

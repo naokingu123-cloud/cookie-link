@@ -6,6 +6,10 @@ const slot=slots[id],game=SweetsLineup.catalog.dango,R=window.DangoBingoRules;
 const view=window.DangoBingoView.mount(slot.panel);
 const settlementWorker=new URLSearchParams(location.search).get('serverSettlementWorker')==='1';
 const demoNumbers=Array.from({length:25},(_,i)=>i+1),animationMs=1500;
+const expansionRules=state=>Number(state?.rulesRevision)>=262;
+const boardGeometry=state=>typeof R.geometryFor==='function'?R.geometryFor(state):R.geometry;
+const lineLengths=state=>[...new Set(boardGeometry(state).lines.map(line=>line.length))].sort((a,b)=>a-b);
+const expansionSize=state=>[0,1,7,17][Number(state?.expansionLevel)||0]||0;
 let clock=0,lastHit=-Infinity,lineStart=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,reachTimer=0,paused=false;
 let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTimer=0;
 const payoutNote=document.createElement('small');payoutNote.id='dango-payout-status';
@@ -22,7 +26,7 @@ const engine={
   clearTimeout(checkpointTimer);checkpointTimer=0;
   this.version++;this.liveBoard=false;
   // This fixed demonstration is unrelated to the next mold and uses no live RNG.
-  this.state=R.create({moldIndex:0,numbers:demoNumbers,seed:251});
+  this.state=R.create({moldIndex:0,numbers:demoNumbers,seed:262});
   this.drawn=new Set();this.queue=[];this.processed=this.accepted=0;this.running=false;
   this.roundSteps=0;this.wonderCollected=false;this.wonderToken=null;this.presentationRate=1;
   this.animationLines=[];this.placementStartLines=[];this.placementReason=null;this.thinkingClosesAt=0;
@@ -36,7 +40,9 @@ const engine={
   this.state=R.create({rng:app.random,target:debugPayoutTarget});this.liveBoard=true;
   this.running=true;this.animationLines=[];this.placementStartLines=[];this.thinkingClosesAt=0;
   const calibration=R.calibrationForTarget(this.state.target),percent=new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2});
-  payoutNote.textContent='ダンゴデビンゴ：設定 '+percent.format(calibration.target)+'%（後半3球を知らずに最適なFREE配置をした場合）。おまかせ配置の理論値 '+percent.format(calibration.automaticReturnPercent)+'%。初期FREEの配置で調整します。';
+  payoutNote.textContent=expansionRules(this.state)
+   ? 'ダンゴデビンゴ：設定 '+percent.format(calibration.target)+'%（おまかせ・最適な手動配置を基準とした理論値）。配当とODDSのルールを固定し、開始時の盤面で調整します。'
+   : 'ダンゴデビンゴ：設定 '+percent.format(calibration.target)+'%（後半3球を知らずに最適なFREE配置をした場合）。おまかせ配置の理論値 '+percent.format(calibration.automaticReturnPercent)+'%。初期FREEの配置で調整します。';
   this.emit('waiting');slot.updateDangoReach(app);
  },
  previewDraw(n){this.drawn.add(n);},
@@ -55,7 +61,7 @@ const engine={
    }
    invalidateReach(slot);this.emit('settled');slot.updateDangoReach(app);
    if(!settlementWorker&&active===id)sceneSound(next.lastOddsGain?'bonus':next.newLines.length?'line':'cookie-hit',{volume:next.lastOddsGain ? .55 : .3});
-   if(!settlementWorker&&next.lastBonusGain)announceAchievement(game.name+'　初期FREEにHIT！ 配置FREE＋1');
+   if(!settlementWorker&&next.lastBonusGain)announceAchievement(game.name+(expansionRules(next)?'　拡張番号にHIT！ FREE範囲 '+expansionSize(next)+'マス':'　初期FREEにHIT！ 配置FREE＋1'));
    announceHighestRoles(next,R.highestRolesFor(before));
    if(next.phase==='done')finish(this.version);
   }
@@ -77,8 +83,8 @@ const engine={
  emit(phase){this.phase=phase;slot.event={phase};slot.dirtyMain=slot.dirtyMini=true;lastMain=lastMini=-Infinity;wake();scheduleUI(app);}
 };
 app.engines[id]=slot.engine=engine;slot.holder.classList.add('dgb-slot');slot.panel.classList.add('dgb-panel');
-// The nine-dango bottom row needs a wide mini canvas. Only this game's
-// instance changes size; DangoBingoView.drawMini still accepts any resolution.
+// Keep a wide mini canvas for both new and restored legacy boards.
+// DangoBingoView.drawMini still accepts any resolution.
 if(slot.mini?.canvas){slot.mini.canvas.width=240;slot.mini.canvas.height=154;}
 function roleLabel(state,roles=R.highestRolesFor(state)){
  return roles.map(length=>length+'個ライン '+state.lineCounts[length]+'本').join('・');
@@ -90,9 +96,9 @@ function announceHighestRoles(state,previousRoles){
 }
 function rolesBeforePlacement(state){
  const marked=new Set([...state.initialFreeCells,...state.draws.slice(0,5).map(n=>state.numbers.indexOf(n))]);
- const lineCounts={3:0,4:0,5:0,7:0,9:0};
- for(const line of R.lines)if(line.cells.every(cellId=>marked.has(cellId)))lineCounts[line.length]++;
- return R.highestRolesFor({lineCounts});
+ const lineCounts=Object.fromEntries(lineLengths(state).map(length=>[length,0]));
+ for(const line of boardGeometry(state).lines)if(line.cells.every(cellId=>marked.has(cellId)))lineCounts[line.length]++;
+ return R.highestRolesFor({...state,lineCounts,counts:lineCounts});
 }
 function thinking(){
  const state=window.SweetsDangoThinkingV251?.state?.();
@@ -118,7 +124,7 @@ function changePlacement(next){
  invalidateReach(slot);engine.emit('settled');slot.updateDangoReach(app);savePlacementSoon();
 }
 view.setCallbacks({
- onCell(cellId){if(!canPlace())return;const s=engine.state;changePlacement(s.manualFreeCells.includes(cellId)?R.undoFree(s,cellId):R.placeFree(s,cellId));},
+ onCell(cellId){if(!canPlace())return;const s=engine.state,selected=expansionRules(s)?s.expansionCenter===cellId:s.manualFreeCells.includes(cellId);changePlacement(selected?R.undoFree(s,cellId):R.placeFree(s,cellId));},
  onAuto(){if(canPlace())changePlacement(R.autoPlace(engine.state));}
 });
 function projectReaches(state){
@@ -157,6 +163,7 @@ function finish(version,token=app.token){
 engine.afterCheckpointRestoreV247=function(){
  const state=this.state;
  if(!state?.draws||app.enabled[id]===false||app.paid[id])return false;
+ if(!expansionRules(state))payoutNote.textContent='ダンゴデビンゴ：前回のルールで再開しています。配当とFREE配置は保存時のままです。';
  if(lastRestoredState!==state){presentationEpoch++;pendingFinish=null;lastRestoredState=state;}
  this.liveBoard=true;this.processed=this.accepted=state.draws.length;this.drawn=new Set(state.draws);this.running=true;
  this.busy=false;this.queue=[];paused=false;stamp=null;lastHit=lineStart=-Infinity;lastMain=lastMini=-Infinity;
@@ -204,15 +211,22 @@ window.addEventListener('sweets-dango-thinking-v251',event=>{
 });
 const oldSelect=select;select=function(i){const result=oldSelect(i);document.body.classList.toggle('dgb-active',active===id);lastMain=lastMini=-Infinity;wake();return result;};
 const oldSyncPause=syncPause;syncPause=function(){const result=oldSyncPause.apply(this,arguments);stamp=null;lastMain=-Infinity;wake();return result;};
-const oldHud=hud;hud=function(a){oldHud(a);if(active===id){const s=engine.state;put('best','完成した串 '+s.completedLines.length+'本 ／ ODDS ×'+s.oddsMultiplier);put('ballinfo',!engine.liveBoard?'5球 → FREE配置 → 3球':s.phase==='placing'?'FREE配置 '+s.manualFreeCells.length+' / '+s.freeBudget:s.phase==='done'?'串の配当を合計':s.draws.length<5?'前半 ／ あと'+(5-s.draws.length)+'球':'後半 ／ あと'+(8-s.draws.length)+'球');}};
+const oldHud=hud;hud=function(a){oldHud(a);if(active===id){
+ const s=engine.state,isExpansion=expansionRules(s);
+ put('best','完成した串 '+s.completedLines.length+'本 ／ ODDS ×'+s.oddsMultiplier+(isExpansion?' ／ 拡張HIT '+s.expansionLevel+' / 3':''));
+ const placement=isExpansion?'FREE範囲 '+expansionSize(s)+'マス ／ 中心を選択':'FREE配置 '+s.manualFreeCells.length+' / '+s.freeBudget;
+ put('ballinfo',!engine.liveBoard?'5球 → FREE配置 → 3球':s.phase==='placing'?placement:s.phase==='done'?'串の配当を合計':s.draws.length<5?'前半 ／ あと'+(5-s.draws.length)+'球':'後半 ／ あと'+(8-s.draws.length)+'球');
+}};
 const oldResult=renderRoundResult;renderRoundResult=function(a){
  oldResult(a);if(!a.result)return;const row=$('result-games').querySelector('[data-game-index="'+id+'"]');if(!row||row.dataset.dango===String(a.token))return;
  row.dataset.dango=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
- const s=engine.state,lines=[3,4,5,7,9].filter(length=>s.lineCounts[length]).map(length=>length+'個ライン '+s.lineCounts[length]+'本').join(' ／ ');
+ const s=engine.state,lines=lineLengths(s).filter(length=>s.lineCounts[length]).map(length=>length+'個ライン '+s.lineCounts[length]+'本').join(' ／ ');
  const highestRoles=R.highestRolesFor(s);
- row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+' ／ 配置FREE '+s.manualFreeCells.length+'個 ／ ODDS ×'+s.oddsMultiplier+(highestRoles.length?' ／ 最高役：'+roleLabel(s,highestRoles):''):'参加なし';
+ const freeDetail=(expansionRules(s)?' ／ 拡張HIT '+s.expansionLevel+'個 ／ FREE範囲 '+expansionSize(s)+'マス':' ／ 配置FREE '+s.manualFreeCells.length+'個')+' ／ ODDS ×'+s.oddsMultiplier;
+ row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+freeDetail+(highestRoles.length?' ／ 最高役：'+roleLabel(s,highestRoles):''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);
 document.addEventListener('visibilitychange',()=>{stamp=null;lastMain=-Infinity;wake();});
 window.DangoBingo={engine,core:R,view};engine.reset();select(active);
 })();
+

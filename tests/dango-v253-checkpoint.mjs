@@ -104,7 +104,7 @@ for(let i=0;i<snapshots253.committed.length;i++){
 
 // A new board remains revision254 through the same shared serializer/worker,
 // has at least one initial FREE, and uses the adjusted table when settled.
-const current=fixture();let s=current.R.create({moldIndex:0,initialFreeCells:[17],numbers:Array.from({length:25},(_,i)=>i+1)});
+const current=fixture();let s=current.R.create({rulesRevision:254,moldIndex:0,initialFreeCells:[17],numbers:Array.from({length:25},(_,i)=>i+1)});
 s=[2,3,4,10,17].reduce((state,n)=>current.R.draw(state,n),s);
 s=current.R.commitFree(current.R.placeFree(s,5),{autoFill:false});
 current.restore(s);await flush();const currentSaved=current.checkpoint();

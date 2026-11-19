@@ -1,10 +1,10 @@
 {
-  "version": "20261119-v258-local-debug-edition",
+  "version": "20261119-v262-dango-trial",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 49,
-      "sha256": "b65e8aee59613829bb391c042584545c17acede893d4f926bd17032c80302899"
+      "bytes": 41,
+      "sha256": "49bcae6f08c8be77381d4ac4593685769ed6a3ede48c366a9ffa7e60b6f27340"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1188,28 +1188,28 @@
     },
     {
       "path": "assets/dango-bingo-host.js",
-      "bytes": 15819,
-      "sha256": "41f316460cbaac981161a60c2e042b4393deaedb79584b78a085f7151a964225"
+      "bytes": 17142,
+      "sha256": "4d6a54e444f2846853e9e4402e2410cac56b8297e222ba1a50c60b7b352667d0"
     },
     {
       "path": "assets/dango-bingo-lesson.js",
-      "bytes": 4475,
-      "sha256": "75a7fd989b4912120ac82171669c325f700367cd0e32024c059b16cb8013b520"
+      "bytes": 5654,
+      "sha256": "83463ee4f18a761c9924248997482a2bee32e22eacc3570321ea95e07eaa94ff"
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 25723,
-      "sha256": "ca8990006980a86f8233710b6bd3a48c3675cd2a7476576b809e5ca7f87cca74"
+      "bytes": 44011,
+      "sha256": "f85dd8eb67e3b3714e1c13fc080cbe5ca8b235e2ff621257e3dd3e63b728d088"
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 26987,
-      "sha256": "b8bdd0fc48181ae568a2b56f4fac1d4e3abe401cb0bae25c0528da8e2e4b60fd"
+      "bytes": 36436,
+      "sha256": "49e632a914776ec8b554d787ecf73a45ad4b8afe23193fb0262afbd28d0aa9d0"
     },
     {
       "path": "assets/dango-bingo.css",
-      "bytes": 11022,
-      "sha256": "f6f717910d42476b4d917cd9f136646fc3ecd9e3c0d71a5e5d557e9f84d9acfe"
+      "bytes": 13005,
+      "sha256": "ab0b8317d1bb5963e0f418a156c4ce87e596d45e7c24aa98498f0f31f69d7631"
     },
     {
       "path": "assets/dango-thinking-v251.js",
@@ -1233,8 +1233,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4359,
-      "sha256": "d3df99fc91d456182dcf61b65c0d2b40c25044169cec06e449118fd65f3cee74"
+      "bytes": 4351,
+      "sha256": "bcf309fa25136bb806ef02c0480b1e9b6aca0fdf77efeb6cdbdcf69812694186"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3770,
-      "sha256": "62096719194f2611c0ae5d51d95aa8d971680ced1f82db0818c59c1d1d8a65b0"
+      "bytes": 3762,
+      "sha256": "817c9dbf76a70459fe706877c74c80a004855c3258f0577a583ca6a98f85be1f"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2984,7 +2984,7 @@
     {
       "path": "index.html",
       "bytes": 83992,
-      "sha256": "207d27378b76df419d8d1650bdd2ad62c00fd92ab80fce79e8f79ea9b3b3a3d4"
+      "sha256": "0af5e2f0b9790341adcbe0e3faa9682b17a19203126eb01828d55780c2bbc87e"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3222,5 +3222,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127780193
+  "totalBytes": 127812391
 }

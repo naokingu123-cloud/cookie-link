@@ -8,7 +8,8 @@ import crypto from 'node:crypto';
 const read=file=>fs.readFileSync(new URL('../'+file,import.meta.url),'utf8');
 const context=vm.createContext({Math,console});
 vm.runInContext(read('assets/dango-bingo-rules.js'),context);
-const R=context.DangoBingoRules,plain=value=>JSON.parse(JSON.stringify(value));
+// This suite validates saved v254 rules; v262 has its own geometry/calibration tests.
+const R=context.DangoBingoRules.legacy254,plain=value=>JSON.parse(JSON.stringify(value));
 const calibration=JSON.parse(read('docs/dango-v254-calibration.json'));
 const saved253=JSON.parse(read('tests/dango-v253-checkpoints.json'));
 const identity=Array.from({length:25},(_,i)=>i+1),decode=mask=>R.helpers.idsOf(mask);

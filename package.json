@@ -14,10 +14,11 @@
     "test:sixdrop": "node tests/sixdrop-progressive-v247.cjs && node tests/sixdrop-connected-v248.cjs && node tests/sixdrop-gravity-v247.cjs && node tests/sixdrop-carry-v247.mjs && node tests/sixdrop-server-v248.mjs",
     "test:arcade": "node tests/tabs-v250-browser.mjs && node tests/castella-v250-view.mjs && node tests/sixdrop-reach-v250.mjs && node tests/dango-v251-view.mjs",
     "test:castella": "node tests/castella-v250-rules.mjs && node tests/castella-v250-checkpoint.mjs",
-    "test:dango": "node tests/dango-v251-rules.mjs && node tests/dango-v251-thinking.mjs && node tests/dango-v251-records.mjs && node tests/dango-v253-checkpoint.mjs && node tests/dango-v254-rules.mjs",
+    "test:dango": "node tests/dango-v251-rules.mjs && node tests/dango-v251-thinking.mjs && node tests/dango-v251-records.mjs && node tests/dango-v253-checkpoint.mjs && node tests/dango-v254-rules.mjs && npm run test:dango:current",
     "test:sugar": "node tests/sugar-challenge-v254-rules.mjs && node scripts/sugar-challenge-v254-probabilities.mjs --check && node tests/sugar-challenge-v254-ledger.mjs && node tests/sugar-challenge-v254-server.mjs && node tests/sugar-roulette-v254.mjs",
     "test:download:recording": "node tests/download-v255-recording.mjs",
-    "test:download": "node tests/download-v255-server.mjs && node tests/download-v255-recording.mjs"
+    "test:download": "node tests/download-v255-server.mjs && node tests/download-v255-recording.mjs",
+    "test:dango:current": "node tests/dango-v262-rules.mjs && node tests/dango-v262-calibration.mjs && node tests/dango-v262-integration.mjs"
   },
   "engines": {
     "node": ">=20"
