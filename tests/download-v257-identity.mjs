@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const source=await fs.readFile(new URL('../assets/download-mode-v255.js',import.meta.url),'utf8');
 const helper=source.slice(source.indexOf('async function negotiateSession('),source.indexOf('async function initialize('));
 assert(helper.startsWith('async function negotiateSession('));
-let legacy={playerId:'legacy-player',token:'legacy-token'},calls=[];
+let legacy={playerId:'original-player',token:'legacy-token'},calls=[];
 const replies=new Map();
 const context={
  playerId:'original-player',token:'original-secret',pack:null,base:'https://sweets.sweetslink-game.com',
@@ -29,13 +29,17 @@ let result=await negotiate({playerId:'original-player',token:'original-secret'})
 assert.equal(result.identity.player.id,'original-player');assert.equal(result.profile.wallet.credit,6789);
 assert.equal(calls.some(c=>c.options.sessionEndpoint),false,'existing login never creates another player');
 replies.delete('original-player:original-secret');
-replies.set('legacy-player:legacy-token',{playerId:'legacy-player',profile:{name:'LEGACY'},wallet:{credit:1234}});
+replies.set('original-player:legacy-token',{playerId:'original-player',profile:{name:'LEGACY'},wallet:{credit:1234}});
 result=await negotiate({playerId:'original-player',token:'original-secret'});
-assert.equal(result.identity.player.id,'legacy-player');assert.equal(result.profile.wallet.credit,1234);
-assert.equal(context.playerId,'legacy-player');assert.equal(calls.some(c=>c.options.sessionEndpoint),false);
-context.playerId='original-player';context.token='original-secret';replies.delete('legacy-player:legacy-token');
+assert.equal(result.identity.player.id,'original-player');assert.equal(result.profile.wallet.credit,1234);
+assert.equal(context.playerId,'original-player');assert.equal(context.token,'legacy-token');assert.equal(calls.some(c=>c.options.sessionEndpoint),false);
+context.playerId='original-player';context.token='original-secret';replies.delete('original-player:legacy-token');
 await assert.rejects(negotiate({playerId:'original-player',token:'original-secret'}),/download_identity_invalid/);
 assert.equal(context.playerId,'original-player');assert.equal(context.token,'original-secret');assert.equal(calls.some(c=>c.options.sessionEndpoint),false);
+legacy={playerId:'different-player',token:'different-token'};
+replies.set('different-player:different-token',{playerId:'different-player',wallet:{credit:9999}});
+await assert.rejects(negotiate({playerId:'original-player',token:'original-secret'}),/download_identity_invalid/);
+assert.equal(context.playerId,'original-player','different valid player must not be silently substituted');
 await assert.rejects(negotiate({playerId:'original-player',token:''}),/download_identity_incomplete/);
 context.playerId='';context.token='';
 result=await negotiate({});assert.equal(result.identity.player.id,'new-player');

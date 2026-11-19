@@ -157,7 +157,7 @@ async function negotiateSession(saved){
    // An existing Streaming credential may still be valid for the same
    // public server; do not send it to any new or arbitrary origin.
    const previous=base===G.DEFAULT_SERVER?G.read('sweets-shared-session-v176',null):null;
-   if(previous?.playerId&&previous?.token&&(previous.playerId!==remembered||previous.token!==secret)){
+   if(previous?.playerId===remembered&&previous?.token&&previous.token!==secret){
     const formerId=playerId,formerToken=token;
     playerId=String(previous.playerId);token=String(previous.token);
     try{
