@@ -1,4 +1,4 @@
-name: Dango v265 - individual FREE, exact role frequency and legacy checkpoints
+name: Dango v266 - contested FREE payouts, independent RTP and local Sugar
 on:
   workflow_dispatch:
   push:
@@ -48,6 +48,12 @@ jobs:
           g++ -std=c++20 -O3 scripts/dango-v265-enumerate.cpp -o /tmp/dango-v265-enumerate
           /tmp/dango-v265-enumerate > /tmp/dango-v265-independent.json
           node tests/dango-v265-calibration.mjs /tmp/dango-v265-independent.json
+      - name: Enumerate v266 payouts independently and check local Sugar
+        run: |
+          g++ -std=c++20 -O3 scripts/dango-v266-enumerate.cpp -o /tmp/dango-v266-enumerate
+          /tmp/dango-v266-enumerate > /tmp/dango-v266-independent.json
+          node tests/dango-v266-calibration.mjs /tmp/dango-v266-independent.json
+          node tests/local-sugar-v267.mjs
       - name: Install Chromium
         timeout-minutes: 4
         run: |
@@ -84,4 +90,5 @@ jobs:
             /tmp/dango-v263-independent.json
             /tmp/dango-v264-independent.json
             /tmp/dango-v265-independent.json
+            /tmp/dango-v266-independent.json
           retention-days: 7

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const ctx=vm.createContext({console});
 vm.runInContext(await fs.readFile(new URL('../assets/dango-bingo-rules.js',import.meta.url),'utf8'),ctx);
-const R=ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x));
+const R=ctx.DangoBingoRules.legacy265,P=x=>JSON.parse(JSON.stringify(x));
 const numbers=Array.from({length:25},(_,i)=>i+1),bit=id=>1<<id,maskOf=ids=>ids.reduce((m,id)=>m|bit(id),0),lengths=[3,4,5,6,7];
 assert.equal(R.REVISION,265);assert.equal(R.legacy264.REVISION,264);
 assert.equal(R.shortLines.length,3);assert.equal(R.gradeLines.length,18);assert.equal(R.lines.length,15);

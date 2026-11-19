@@ -58,11 +58,18 @@ try{
   const sound=document.getElementById('sound');sound.checked=false;sound.dispatchEvent(new Event('change',{bubbles:true}));
   if(!window.SweetsLocalDebugV258.setBets([100,0,0,0,0,0,0,0,0,0]))throw Error('local BET setup failed');
  });
+ // Five simulated local-only Sugars start a real UI challenge on the same eight balls.
+ await page.locator('#local-debug-v258 [data-local-action="sugar-five"]').click();
+ assert.equal(await page.evaluate(()=>window.SweetsLocalSugarV267?.describe().bankCount),5);
  await page.locator('#manual-number-toggle').click();
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().manualNumbers===true,null,{timeout:5000});
  await capture('local-manual');
  await page.locator('#manual-start').click();
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().phase==='playing',null,{timeout:20000});
+ await page.waitForFunction(()=>window.SweetsLocalSugarV267?.describe()?.active===true,null,{timeout:10000});
+ const opened=await page.evaluate(()=>({challenge:window.SweetsSugarChallengeV254?.describe()?.challenge,local:window.SweetsLocalSugarV267.describe()}));
+ assert.ok(opened.challenge);assert.equal(opened.local.bankCount,0);
+ await capture('local-sugar-challenge-open');
  const draws=[25,3,6,10,13,22,24,2];
  for(let i=0;i<draws.length;i++){
   const n=draws[i];
@@ -74,6 +81,10 @@ try{
  current=await state();assert.deepEqual(current.draws,draws);
  await page.waitForFunction(()=>['result','paying','complete'].includes(window.SweetsLocalDebugV258?.describe?.().phase),null,{timeout:150000});
  milestone('manual-complete',{phase:(await state()).phase});
+ const sugarDone=await page.evaluate(()=>({local:window.SweetsLocalSugarV267?.describe?.(),ui:window.SweetsSugarChallengeV254?.describe?.()}));
+ assert.equal(sugarDone.local.draws.length,8);assert.equal(sugarDone.local.phase,'complete');assert.equal(sugarDone.local.settled,true);
+ assert.equal(sugarDone.ui.challenge?.draws?.length,8);
+ await capture('local-sugar-challenge-complete');
  assert.equal(report.api.length,0,'number input must not submit to an API');
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().ready===true,null,{timeout:90000});

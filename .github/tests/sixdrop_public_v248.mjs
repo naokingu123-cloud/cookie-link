@@ -10,9 +10,9 @@ const revision=process.env.GITHUB_SHA||'local-verification',out='qa-six-v248-pub
 function assertPayoutContained(bounds){
  const panel=bounds.panel,tolerance=1;
  assert.ok(panel.width>0&&panel.height>0,'the published payout panel has a visible area');
- assert.equal(bounds.rows.length,6,'the published payout matrix contains its header and all five payout rows');
- assert.equal(bounds.rows.flatMap(row=>row.cells).length,24,'four header cells, five row labels and fifteen valid values exist');
- assert.deepEqual(bounds.rows.filter(row=>row.length!==null).map(row=>row.cells.length-1),[3,3,3,3,3],'each line length has exactly three payout values');
+ assert.equal(bounds.rows.length,7,'the published payout matrix contains its header and all six payout rows');
+ assert.equal(bounds.rows.flatMap(row=>row.cells).length,28,'four header cells, five row labels and fifteen valid values exist');
+ assert.deepEqual(bounds.rows.filter(row=>row.length!==null).map(row=>row.cells.length-1),[3,3,3,3,3,3],'each line length has exactly three payout values');
  const contained=(rect,label)=>{
   assert.ok(rect.width>0&&rect.height>0,label+' has a visible area');
   assert.ok(rect.left>=panel.left-tolerance&&rect.top>=panel.top-tolerance&&rect.right<=panel.right+tolerance&&rect.bottom<=panel.bottom+tolerance,label+' is fully within .dgb-pay: '+JSON.stringify({rect,panel}));
@@ -158,14 +158,14 @@ try{
    return {revision:R.REVISION,highestRoleMinimums:R.highestRoleMinimums,liveBoard:e.liveBoard,cells:e.state.cells.length,rows:Array.from({length:7},(_,row)=>e.state.cells.filter(cell=>cell.row===row).length),numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.linesFor(e.state).length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,payBackgrounds,positions,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
   });
   report.currentScreen={width,height,...info};
-  assert.equal(info.dango.revision,265);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,28);assert.deepEqual(info.dango.rows,[1,2,3,4,5,6,7]);assert.equal(info.dango.lines,15);assert.equal(info.dango.payRows,5);assert.equal(info.dango.payCells.length,15);assert.equal(info.dango.buttons,28);
+  assert.equal(info.dango.revision,266);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,28);assert.deepEqual(info.dango.rows,[1,2,3,4,5,6,7]);assert.equal(info.dango.lines,15);assert.equal(info.dango.payRows,6);assert.equal(info.dango.payCells.length,18);assert.equal(info.dango.buttons,28);
   assert.deepEqual(info.dango.highestRoleMinimums,{3:3,4:3,5:3,6:3,7:3});
   assert.deepEqual(info.dango.payCells.filter(cell=>cell.highest).map(cell=>[cell.length,cell.count]),[[3,3],[4,3],[5,3],[6,3],[7,3]]);
   for(const cell of info.dango.payCells.filter(cell=>cell.highest))assert.equal(cell.rainbowAnimation,'dgb-pay-rainbow');
   assert.deepEqual(info.dango.payHeaders.slice(1),['1本','2本','3本']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);
   for(const cell of info.dango.payCells){assert.match(cell.font,/ArcadePayout/);assert.doesNotMatch(cell.win,/[,，]/);}
   assertPayoutContained(info.dango.payoutBounds);
-  assert.deepEqual(info.dango.payRowLabels,['3個ライン','4個ライン','5個ライン','6個ライン','7個ライン']);
+  assert.deepEqual(info.dango.payRowLabels,['2個ライン','3個ライン','4個ライン','5個ライン','6個ライン','7個ライン']);
   assert.equal(info.dango.positions.oldTopText,0);assert.equal(info.dango.positions.invalidPayoutCells,0);
   const {scene,payout,free,pan,geometry:mainGeometry}=info.dango.positions;
   assert.ok(payout.left<scene.left+scene.width*.08&&payout.top<scene.top+scene.height*.1,'published payout sits in the upper left');
@@ -230,6 +230,6 @@ await fs.writeFile(out+'/public-deployment.json',JSON.stringify(report,null,2)+'
 console.log('SIXDROP_PUBLIC_V248_READ_ONLY_PASS',JSON.stringify(report));
 console.log('ARCADE_PUBLIC_V249_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,logos:gameKinds.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,landscape:screen.arcade.landscape,loadedLogos:screen.arcade.brand.loaded,pageErrors:screen.pageErrors.length}))}));
 console.log('ARCADE_PUBLIC_V250_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,...screen.v250,pageErrors:screen.pageErrors.length}))}));
-console.log('DANGO_PUBLIC_V265_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,cells:screen.dango.cells,lines:screen.dango.lines,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
+console.log('DANGO_PUBLIC_V266_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,cells:screen.dango.cells,lines:screen.dango.lines,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
 console.log('SUGAR_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,rulesRevision:screen.sugar.revision,decodedSugarAssets:screen.sugar.assets.length,reachFrameDecoded:screen.sugar.reachFrame.loaded,overlayHidden:screen.sugar.overlayHidden,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));
 console.log('DOWNLOAD_PUBLIC_V255_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,editionChoices:screen.chooser.options.map(option=>option.name),downloadEntry:screen.download.state.edition,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));

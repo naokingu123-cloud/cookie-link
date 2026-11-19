@@ -83,3 +83,6 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 /* v265: six compact grade indicators for individual FREE placement. */
 .dgb-trigger-numbers.dgb-grade-individual{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(var(--dgb-unit)*.025);max-width:100%;}
 .dgb-grade-individual .dgb-trigger{min-width:0;width:100%;height:calc(var(--dgb-unit)*.23);font-size:max(8px,calc(var(--dgb-unit)*.145));padding:0;}
+
+/* v266 six-tier table; short two-cell lines are amber. */
+.dgb-scene[data-modern="true"] .dgb-pay tbody tr[data-length="2"]{--dgb-row-background:#312012}

@@ -3,9 +3,9 @@
 'use strict';
 const R=window.DangoBingoRules,V=window.DangoBingoView,individual=R.REVISION>=265;
 const steps=[
- {title:'7段・28個のお団子をそろえよう',caption:'上から1〜7個の7段。番号1〜25が1個ずつと、最初からHIT扱いのFREEが3個。3〜7個のまっすぐなラインを完成させよう。'},
+ {title:'7段・28個のお団子をそろえよう',caption:'上から1〜7個の7段。番号1〜25が1個ずつと初期FREEが3個。2〜7個のラインから、どの長さを完成させるか考えよう。'},
  {title:'前半5球でFREEの範囲が決まる',caption:individual?'前半5球で完成した最長2～7個ラインと同じ数のFREEを1個ずつ配置。役がなければ1個。初期FREE3個も判定に含みます。':'前半5球で3個ラインなら中心1マス、4個ラインなら周囲1マス、5個ラインなら周囲2マスをFREEにできます。複数成立時は長いラインを優先。'},
- {title:'中心を選んで、まとめてFREE！',caption:individual?'FREEはどのマスにも個別配置できます（前半HIT済みマスを除く）。配置FREEを再タップすれば取消し。初期FREEに重ねるとODDS＋1。':'中心を1つタップすると範囲全体をFREEに。中心も含みます。同じ中心を再タップで取り消し、別の中心へ置き直しもできます。初期FREEに重なった分はODDS＋1。'},
+ {title:'中心を選んで、まとめてFREE！',caption:individual?'FREEは1粒ずつ自由に置く。短い3本と長い1〜2本が互角の局面もあります。初期FREEへの重ね置きでODDS＋1。':'中心を1つタップすると範囲全体をFREEに。中心も含みます。同じ中心を再タップで取り消し、別の中心へ置き直しもできます。初期FREEに重なった分はODDS＋1。'},
  {title:'配置FREEへの後半HITでODDS UP',caption:'後半3球で配置したFREEの番号にHITすると、1個につきODDS＋1。長さごとの完成本数で配当を選び、合計にODDSを反映します。'}
 ];
 let buffer,lastLessonFrame;

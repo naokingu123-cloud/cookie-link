@@ -8,7 +8,7 @@ const settlementWorker=new URLSearchParams(location.search).get('serverSettlemen
 const demoNumbers=Array.from({length:25},(_,i)=>i+1),animationMs=1500;
 const expansionRules=state=>Number(state?.rulesRevision)>=262;
 const boardGeometry=state=>typeof R.geometryFor==='function'?R.geometryFor(state):R.geometry;
-const lineLengths=state=>[...new Set(boardGeometry(state).lines.map(line=>line.length))].sort((a,b)=>a-b);
+const lineLengths=state=>typeof R.lengthsFor==='function'?R.lengthsFor(state):[...new Set(boardGeometry(state).lines.map(line=>line.length))].sort((a,b)=>a-b);
 const expansionSize=state=>Number(state?.rulesRevision)>=265?(Number(state?.freeBudget)||1):Number(state?.rulesRevision)>=264&&Number.isInteger(state?.expansionCenter)?state.expansionCells.length:([0,1,7,Number(state?.rulesRevision)>=264?19:17][Number(state?.expansionLevel)||0]||0);
 const gradeLabel=state=>Number(state?.rulesRevision)>=265?(state?.qualifiedEarlyLengths?.length?String(state.expansionLevel)+'個ライン':'ライン未成立'):Number(state?.rulesRevision)>=264?([null,'3個','4個','5個'][Number(state?.expansionLevel)||0]||'未成立')+'ライン':'拡張HIT '+(state?.expansionLevel||0)+'/3';
 let clock=0,lastHit=-Infinity,lineStart=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,reachTimer=0,paused=false;

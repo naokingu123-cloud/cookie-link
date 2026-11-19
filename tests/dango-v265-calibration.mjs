@@ -5,7 +5,7 @@ const root=new URL('..',import.meta.url);
 const data=JSON.parse(await fs.readFile(new URL('docs/dango-v265-calibration.json',root),'utf8'));
 const ctx=vm.createContext({console});
 vm.runInContext(await fs.readFile(new URL('assets/dango-bingo-rules.js',root),'utf8'),ctx);
-const R=ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x)),D=BigInt(data.model.denominator),N=data.profiles.map(p=>BigInt(p.optimalNumerator));
+const R=ctx.DangoBingoRules.legacy265,P=x=>JSON.parse(JSON.stringify(x)),D=BigInt(data.model.denominator),N=data.profiles.map(p=>BigInt(p.optimalNumerator));
 assert.equal(R.REVISION,265);assert.equal(data.rulesRevision,265);
 assert.equal(data.status,'approved-for-production');assert.equal(data.profiles.length,3);
 assert.deepEqual([3,4,5,6,7].map(l=>P(R.tiers[l].slice(1))),data.paytableHundredths);

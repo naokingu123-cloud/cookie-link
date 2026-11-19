@@ -6,6 +6,8 @@ on:
     paths:
       - '**/*v258*'
       - 'index.html'
+      - 'assets/local-sugar-v267.js'
+      - 'tests/local-sugar-v267.mjs'
       - 'assets/player-lounge.js'
       - 'assets/sugar-challenge-v254.js'
       - 'assets/edition-choice-v255.js'
@@ -30,6 +32,7 @@ jobs:
           node --check assets/local-debug-v258.js
           node --check assets/local-debug-game-v258.js
           node tests/local-debug-v258.mjs
+          node tests/local-sugar-v267.mjs
           node tests/edition-choice-v255.mjs
           node tests/download-v255-cache.mjs
       - name: Install Chromium for native roulette

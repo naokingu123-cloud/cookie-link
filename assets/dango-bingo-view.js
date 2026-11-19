@@ -3,7 +3,7 @@
 'use strict';
 const R=window.DangoBingoRules,TAU=Math.PI*2,clamp=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{x=clamp(x);return x*x*(3-2*x);};
-const LINE_COLORS=Object.freeze({3:'#269eff',4:'#42e57c',5:'#ffe34b',6:'#ff4667',7:'#bf6bff',9:'#bf6bff'});
+const LINE_COLORS=Object.freeze({2:'#ffac63',3:'#269eff',4:'#42e57c',5:'#ffe34b',6:'#ff4667',7:'#bf6bff',9:'#bf6bff'});
 const isModern=state=>state?Number(state.rulesRevision)>=262||state.cells?.length===28:Number(R.REVISION)>=262;
 const cellsFor=state=>R.geometryFor?.(state)?.cells||state?.cells||R.cells;
 const linesFor=state=>R.linesFor?.(state)||R.geometryFor?.(state)?.lines||R.lines;
@@ -111,11 +111,11 @@ function geometry(width,height,{layout='main',state=null}={}){
 }
 function payoutLayout(width,height,state=null){
  if(!isModern(state))return legacyPayoutLayout(width,height,state);
- const g=geometry(width,height,{state}),p=PAY_LAYOUT,anchor=g.unit*.08,totalHeight=p.header+p.row*5+p.oddsGap+p.oddsHeight;
+ const g=geometry(width,height,{state}),p=PAY_LAYOUT,anchor=g.unit*.08,rows=[...new Set((R.payRowsBaseFor?.(state)||R.payRows).map(row=>row.length))],rowCount=rows.length,totalHeight=p.header+p.row*rowCount+p.oddsGap+p.oddsHeight;
  const rectsAt=unit=>{
   const width=g.portrait?g.width-anchor*2:unit*3.43,rects=[{kind:'header',x:anchor,y:anchor,width,height:p.header*unit}];
-  for(let i=0;i<5;i++)rects.push({kind:'row',length:i+3,x:anchor,y:anchor+(p.header+i*p.row)*unit,width,height:p.row*unit});
-  rects.push({kind:'odds',x:anchor,y:anchor+(p.header+p.row*5+p.oddsGap)*unit,width:p.oddsWidth*unit,height:p.oddsHeight*unit});return rects;
+  for(let i=0;i<rowCount;i++)rects.push({kind:'row',length:rows[i],x:anchor,y:anchor+(p.header+i*p.row)*unit,width,height:p.row*unit});
+  rects.push({kind:'odds',x:anchor,y:anchor+(p.header+p.row*rowCount+p.oddsGap)*unit,width:p.oddsWidth*unit,height:p.oddsHeight*unit});return rects;
  };
  const distance=(rect,point)=>Math.hypot(point.x-Math.max(rect.x,Math.min(rect.x+rect.width,point.x)),point.y-Math.max(rect.y,Math.min(rect.y+rect.height,point.y)));
  let unit=Math.max(.01,(g.tableReserve-anchor*2)/totalHeight);
@@ -232,6 +232,11 @@ function paint(ctx,state,options={},mini=false){
   const line=linesFor(state)[lineId];if(!line)continue;
   const order=animation.indexOf(lineId),progress=still||order<0?1:smooth((age-order*150)/490);
   if(progress<=0)continue;skewers.push({line,z:skewer(c,line,g,progress)});
+ }
+ // Payable two-cell lines use the same amber bamboo and glowing completion cues.
+ if(Number(state.rulesRevision)>=266&&Array.isArray(R.shortLines))for(const line of R.shortLines){
+  if((Number(state.markedMask)&line.mask)!==line.mask)continue;
+  skewers.push({line,z:skewer(c,line,g,1)});
  }
  const reaches=new Map((options.reach||[]).filter(x=>x.gain>0||x.gainHundredths>0).map(x=>[x.n??x.number,x])),oddsHits=new Set(state.oddsHits||[]);
  const expanded=new Set(state.expansionCells||state.expansionFootprint||(Number.isInteger(state.expansionCenter)?R.expansionCellsFor?.(state,state.expansionCenter):[])||[]);

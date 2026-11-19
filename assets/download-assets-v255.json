@@ -1,10 +1,10 @@
 {
-  "version": "20261119-v265-individual-free",
+  "version": "20261119-v266-contested-free",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 45,
-      "sha256": "f73a6599d57fbea5408e36082d72db45ac249ab1bfb467e6f306d6cb8d592868"
+      "bytes": 44,
+      "sha256": "b8972dca49f2d5fb9ace6295857d624a9c78a976485f612308b0da01c9790954"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1188,28 +1188,28 @@
     },
     {
       "path": "assets/dango-bingo-host.js",
-      "bytes": 18178,
-      "sha256": "0c73ecd71c463690142489da42bc6d4773b009d3f1952000e082d5b757354893"
+      "bytes": 18231,
+      "sha256": "70d7c803999686f5986a4afbdf1063783c885348ca3e99f4f97d86f6fb0e4451"
     },
     {
       "path": "assets/dango-bingo-lesson.js",
-      "bytes": 7040,
-      "sha256": "ee85a85b21021f8eeadd2282b6801b84e1dce6e1e749fb98a87140ddd1d14d22"
+      "bytes": 7007,
+      "sha256": "d2fe32806629de73ba613f8ce1590ec6df4a5706e233a2e2a18ff152223b7211"
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 100159,
-      "sha256": "190fe72b68fe88bf9cccab28766799118ae1d272694a775cf39b4db0b7ca8d7d"
+      "bytes": 116793,
+      "sha256": "f2e4dc7b8538df7e27395f2b82892f33ed0726383c4299c88a59dd2502b9355c"
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 40324,
-      "sha256": "29e4bee4cb745c0f2756a7bedfa47aceb12660f551a4f719f1ecc2adf7ae063d"
+      "bytes": 40754,
+      "sha256": "83fa8de909a549ac515154ff13753cd325f75a23628211add34e5d9285abb0d1"
     },
     {
       "path": "assets/dango-bingo.css",
-      "bytes": 13376,
-      "sha256": "85f0aac4fadfa283849eb06b7219111dd38e3a387a1b8f2c1339858d87501200"
+      "bytes": 13532,
+      "sha256": "e238b9e9ec2eeb8ee93dc4943651159cc7ec6c51bf0ea91c5db2b3009d9e4c14"
     },
     {
       "path": "assets/dango-thinking-v251.js",
@@ -1233,8 +1233,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4355,
-      "sha256": "8186ed8439ab39fc3f5540d98c0a7adf14c482e9b10092dadaa64ea12d912fb4"
+      "bytes": 4354,
+      "sha256": "902ac5f2a46b69184de191c193ad79b38a33a42f534fdc9a550169c637d14b9d"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3766,
-      "sha256": "c5e3542cd46b078cdb3c33708111dd53a422bffc2f2e1a0e0a4948b5d57c0109"
+      "bytes": 3765,
+      "sha256": "da25bb0a2ac5a3c55bbad276532ba68b863f3857682f8cf9a1a32e1ba9a44503"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1480,6 +1480,11 @@
       "path": "assets/local-debug-v258.js",
       "bytes": 1236,
       "sha256": "2164340c078d2a8641dd6764222def25ceb43568c1369534e179c20b1bf59c0e"
+    },
+    {
+      "path": "assets/local-sugar-v267.js",
+      "bytes": 6025,
+      "sha256": "7011dbc32c7167b1c23acff22518be726705f8c3cea8eb4e64e4bca94af8ddca"
     },
     {
       "path": "assets/manual-numbers.css",
@@ -2212,6 +2217,21 @@
       "sha256": "4d52250c393bbb2b8824f1014e93a33ced1cd97184f2e9d414869716df23568c"
     },
     {
+      "path": "assets/sixdrop_candy_lid.png",
+      "bytes": 480881,
+      "sha256": "9dd16a4fec99f6fd650e27662ba88ce24332a38a015f1c5ea5fbebaedfa5ccd3"
+    },
+    {
+      "path": "assets/sixdrop_glass_sideframe_slim.png",
+      "bytes": 381500,
+      "sha256": "57ee51172f635556625e00cd3589895ec29e21c731bf79f75e832bb08e150b56"
+    },
+    {
+      "path": "assets/sixdrop_glass_sideframe.png",
+      "bytes": 954925,
+      "sha256": "f694e355fec4bba7c373d04554a25e16a30ddee527a442c4bed8671bf8f6d72f"
+    },
+    {
       "path": "assets/sixdrop-allclear-candy-v14.svg",
       "bytes": 2912,
       "sha256": "99bc0a4ada05365152496512d70a8d18360d610b6580fa07f54d196cf07905db"
@@ -2330,21 +2350,6 @@
       "path": "assets/sixdrop-thinframe-v11.css",
       "bytes": 2505,
       "sha256": "412129e4e2f676123506d6b0333ca1e957327ce6636a0fa8da4a0bcde62860a2"
-    },
-    {
-      "path": "assets/sixdrop_candy_lid.png",
-      "bytes": 480881,
-      "sha256": "9dd16a4fec99f6fd650e27662ba88ce24332a38a015f1c5ea5fbebaedfa5ccd3"
-    },
-    {
-      "path": "assets/sixdrop_glass_sideframe.png",
-      "bytes": 954925,
-      "sha256": "f694e355fec4bba7c373d04554a25e16a30ddee527a442c4bed8671bf8f6d72f"
-    },
-    {
-      "path": "assets/sixdrop_glass_sideframe_slim.png",
-      "bytes": 381500,
-      "sha256": "57ee51172f635556625e00cd3589895ec29e21c731bf79f75e832bb08e150b56"
     },
     {
       "path": "assets/stations-number-preview-v241.js",
@@ -2983,8 +2988,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 83995,
-      "sha256": "b2cf9a89d6dcd0114d4e1a0f73c8894a5bcc86e48f8d96700ba4c1b820c4ca26"
+      "bytes": 84033,
+      "sha256": "9ceac0b4dff4ce814fd5f3e30762be15c203bc675c04829a3c0a05c1695966dd"
     },
     {
       "path": "optimized/achievements-v3.css",
