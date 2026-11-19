@@ -5,6 +5,7 @@ on:
     branches: [main, feature/v255-download, fix/v256-download-connect]
     paths:
       - '**/*v255*'
+      - '**/*v257*'
       - 'server.mjs'
       - 'server-core-loader-v220.mjs'
       - 'server-payout-preload-v3.mjs'
@@ -70,6 +71,9 @@ jobs:
       - name: Download v256 connection diagnostics
         if: ${{ !cancelled() }}
         run: node tests/download-v256-connect.mjs
+      - name: Download v257 player account protection
+        if: ${{ !cancelled() }}
+        run: node tests/download-v257-identity.mjs
       - name: Install recording and verification browser
         id: browser
         if: ${{ !cancelled() }}

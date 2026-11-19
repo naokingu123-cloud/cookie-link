@@ -8,6 +8,10 @@ const downloadServiceV255=createDownloadServiceV255({wallet:payoutWallet,
  listMachines:()=>Object.keys(db.machines)
 });`,'download initialization');
  once("source:'physical-host',time:now(),betDurationMs:BET_DURATION_MS});","source:'physical-host',time:now(),betDurationMs:BET_DURATION_MS,serverEdition:downloadServiceV255.serverEdition,download:downloadServiceV255.status()});",'readiness');
+ once("  const id=randomUUID(),token=randomUUID()+randomUUID();",`  // Reject a stale saved Download identity instead of silently creating
+  // another player. Streaming clients retain their existing session semantics.
+  if(input.strictIdentity===true)return reply(res,401,{ok:false,error:'download_identity_invalid'});
+  const id=randomUUID(),token=randomUUID()+randomUUID();`,'strict download player identity');
  once(" const p=parts(url.pathname);",` const p=parts(url.pathname);
  if(req.method==='GET'&&p[0]==='api'&&p[1]==='admin'&&p[2]==='machines'&&p[4]==='download-v255'){
   if(!adminAllowed(req,url))return reply(res,403,{ok:false,error:'admin_required'});

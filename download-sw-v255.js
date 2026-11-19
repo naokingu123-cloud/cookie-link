@@ -1,7 +1,7 @@
 /* Only public, version-verified app files are stored here. Never cache APIs,
  * authorization, profile data, admin pages, or prepared private game packages. */
 'use strict';
-const VERSION='20261119-v256-download-connect',LEGACY_VERSION='20261119-v255-download-edition',CACHE='sweets-download-assets-'+VERSION;
+const VERSION='20261119-v257-download-identity',LEGACY_VERSIONS=['20261119-v255-download-edition','20261119-v256-download-connect'],CACHE='sweets-download-assets-'+VERSION;
 const base=new URL('./',self.location.href),marker=new URL('__download_ready_v255__',base).href;
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
@@ -28,13 +28,13 @@ self.addEventListener('fetch',event=>{
   const download=pageUrl.searchParams.get('edition')==='download';
   const version=pageUrl.searchParams.get('appv');
   // Existing v255 games keep their own shell; v256 has a separate cache.
-  const cacheVersion=version===LEGACY_VERSION?LEGACY_VERSION:VERSION;
+  const cacheVersion=LEGACY_VERSIONS.includes(version)?version:VERSION;
   const cache=await caches.open('sweets-download-assets-'+cacheVersion);
-  const pinned=download&&(!version||version===VERSION||version===LEGACY_VERSION)&&!!await cache.match(marker);
+  const pinned=download&&(!version||version===VERSION||LEGACY_VERSIONS.includes(version))&&!!await cache.match(marker);
   if(pinned&&request.cache!=='reload'){const cached=await cache.match(key);if(cached)return range(cached,request.headers.get('range'));}
   try{return await fetch(request);}
   catch(error){
-   if(version&&version!==VERSION&&version!==LEGACY_VERSION)throw error;
+   if(version&&version!==VERSION&&!LEGACY_VERSIONS.includes(version))throw error;
    const cached=await cache.match(key);if(cached)return range(cached,request.headers.get('range'));throw error;
   }
  })());

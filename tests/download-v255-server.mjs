@@ -65,6 +65,12 @@ await import('./server.mjs');
 `);
  await start();
  const alice=await register('ALICE'),bob=await register('BOB');
+ // A stale Download ID/token must not create a replacement player.
+ const denied=await request('/api/session',{session:{...alice,token:'invalid-token'},body:{playerId:alice.player.id,displayName:'ALICE',strictIdentity:true}});
+ assert.equal(denied.status,401);assert.equal(denied.data.error,'download_identity_invalid');
+ const acceptedId=await request('/api/session',{session:alice,body:{playerId:alice.player.id,displayName:'ALICE',strictIdentity:true}});
+ assert.equal(acceptedId.status,200);assert.equal(acceptedId.data.player.id,alice.player.id);
+ assert.equal((await json('/api/admin/machines/'+machine+'/download-v255/state',{admin:true})).players.length,0,'rejected session must not create a player wallet');
  const empty=await json(prefix+'profile',{session:alice});assert.equal(empty.profileReady,false);assert.equal(empty.wallet.credit,1000000);assert.equal(empty.session,null);
  assert.equal((await prepare(alice,'request-alice-profile')).data.error,'download_profile_required');
  assert.equal((await request(prefix+'profile')).status,401);assert.equal((await request(prefix+'profile',{session:{...alice,token:'forged'}})).status,401);
