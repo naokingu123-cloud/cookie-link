@@ -11,12 +11,35 @@ const initialProfile={name:playerLounge.store.data.name,pet:JSON.parse(JSON.stri
 let base='',playerId='',token='',profileReady=false,online=false,connecting=false,busy=false,pack=null,session=null,wallet=null,responseCache=null;
 let callbacks=null,started=false,playing=false,localComplete=false,pendingComplete=false,cursor=0,stableBall=0,playbackMs=0,stableMs=0,seq=0,ackSeq=0,frame=0,lastFrame=null,settling=false,settleStamp=0;
 const playbackTiming={frames:0,activeMs:0,settlingMs:0,maxFrameMs:0};
-let rng=null,error='',message='サーバーからプレイヤー情報を取得しています…',assetsReady=false,assetsProgress=null,assetsTask=null,pollTimer=0,progressTask=null,syncTask=null,saveTask=Promise.resolve(),requestId='';
+let rng=null,error='',message='接続先サーバーを確認しています…',connectStep='接続先確認',assetsReady=false,assetsProgress=null,assetsTask=null,pollTimer=0,progressTask=null,syncTask=null,saveTask=Promise.resolve(),requestId='';
 const number=value=>Math.max(0,Math.floor(Number(value)||0)),path=action=>`/api/machines/${encodeURIComponent(machine)}/download-v255/${action}`;
 const scoped=()=>`${base}@${machine}@${playerId}`,draftKey=()=>`sweets-download-bets-v255@${scoped()}`,requestKey=()=>`sweets-download-request-v255@${scoped()}`;
 const locked=()=>!!session&&!localComplete&&['preparing','ready','failed'].includes(session.status);
 const bankAfterBet=()=>Math.max(0,Number(session?.creditBefore??pack?.creditBefore??wallet?.credit??0)-Number(session?.totalBet??pack?.totalBet??0));
-const safeError=problem=>({download_server_unavailable:'このサーバーではダウンロード版の準備ができていません。',download_worker_not_ready:'サーバーの準備中です。しばらくして再試行してください。',download_insufficient_credit:'CREDITが足りません。BETを減らしてください。',insufficient_credit:'CREDITが足りません。BETを減らしてください。',download_profile_required:'プロフィールの取得を再試行してください。',download_wallet_locked:'別のゲームの同期が終わるまでお待ちください。'}[problem?.message]||(/401|unauthorized|invalid.*token/.test(String(problem?.message))?'プレイヤー情報を確認できませんでした。接続を再試行してください。':'接続または保存が完了していません。再試行すると同じゲームから続けます。'));
+const safeError=problem=>{
+ const issue=String(problem?.message||problem||'');
+ const known={
+  download_server_not_updated:'接続先サーバーが旧版、またはダウンロード版が無効です。Windows側を最新版に更新し、start-download-server.cmd で起動してください。',
+  download_server_unavailable:'ダウンロード版サーバーが停止しています。Windows側で start-download-server.cmd を起動してください。',
+  download_server_unreachable:'サーバーに接続できません。Windows側の起動状態・トンネル・接続先URLを確認してください。',
+  download_server_timeout:'サーバーから応答がありません。Windows側とトンネルの接続を確認してください。',
+  download_server_missing:'接続先サーバーを特定できません。Windowsのサーバーが表示したプレイヤーURLから開いてください。',
+  download_worker_not_ready:'録画処理がまだ準備できていません。サーバーの状態を確認して再試行してください。',
+  download_insufficient_credit:'CREDITが足りません。BETを減らしてください。',
+  insufficient_credit:'CREDITが足りません。BETを減らしてください。',
+  download_profile_required:'プロフィールの取得を再試行してください。',
+  download_wallet_locked:'別のゲームの同期が終わるまでお待ちください。',
+  rate_limited:'サーバーへのアクセスが集中しています。しばらくして再試行してください。',
+  offline:'通信が切れています。未取得のゲームを始めるにはサーバーへの接続が必要です。'
+ };
+ if(known[issue])return known[issue];
+ if(/^download_health_(?:404|405|501)$/.test(issue))return known.download_server_not_updated;
+ if(/^download_health_/.test(issue))return 'サーバーの状態確認に失敗しました（'+issue.replace('download_health_','HTTP ')+ '）。Windows側のサーバーを確認してください。';
+ if(/401|403|unauthorized|invalid.*token/i.test(issue))return 'プレイヤー認証に失敗しました。接続先を確認して再試行してください（保存データは削除しないでください）。';
+ if(/Failed to fetch|NetworkError|fetch failed|Load failed|AbortError/i.test(issue))return known.download_server_unreachable;
+ return 'サーバー接続またはデータ取得に失敗しました（'+issue.slice(0,90)+'）。再試行してください。';
+};
+function setConnectStep(value){connectStep=value;message=value+'…';render();}
 function resumeIdentity(pointer){
  if(pointer?.machine!==machine||typeof pointer.playerId!=='string')return null;
  try{
@@ -50,6 +73,23 @@ async function api(action,{method='GET',body,sessionEndpoint=false,timeout=18000
  if(!base)throw Error('download_server_missing');const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
  const headers={'Content-Type':'application/json'};if(token){headers.Authorization='Bearer '+token;headers['X-Player-Id']=playerId;}
  try{const response=await fetch(base+(sessionEndpoint?'/api/session':path(action)),{method,headers,cache:'no-store',credentials:'omit',signal:controller.signal,...(body?{body:JSON.stringify(body)}:{})}),value=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(Error(value.error||'HTTP '+response.status),{status:response.status});online=true;return value;}catch(problem){online=false;throw problem;}finally{clearTimeout(timer);}
+}
+// GitHub Pages provides the shell; the Windows service must provide the Download API.
+async function confirmDownloadServer(){
+ if(!base)throw Error('download_server_missing');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),7000);
+ try{
+  const response=await fetch(base+'/api/health',{cache:'no-store',credentials:'omit',signal:controller.signal});
+  if(response.status===429)throw Error('rate_limited');
+  if(!response.ok)throw Error('download_health_'+response.status);
+  const value=await response.json().catch(()=>null);
+  if(value?.ok!==true||!value.download||value.download.enabled!==true)throw Error('download_server_not_updated');
+  return value;
+ }catch(problem){
+  if(problem?.name==='AbortError')throw Error('download_server_timeout');
+  if(problem?.name==='TypeError')throw Error('download_server_unreachable');
+  throw problem;
+ }finally{clearTimeout(timer);}
 }
 async function validatePackage(value,expectedSession=session){
  if(value?.version!==255||value.sessionId!==expectedSession?.id||!Array.isArray(value.numbers)||value.numbers.length!==8||new Set(value.numbers).size!==8||value.numbers.some(n=>!Number.isInteger(n)||n<1||n>25))throw Error('download_package_invalid');
@@ -100,7 +140,7 @@ async function restoreCached(local,identity){
  assetsReady=await cache.ready();message=localComplete?'前のゲームは再生済みです。接続後に次のBETへ進めます。':'保存したゲームがあります。通信がなくても再開できます。';render();
 }
 async function initialize(){
- if(connecting)return;connecting=true;error='';render();
+ if(connecting)return;connecting=true;error='';setConnectStep('接続先サーバーを確認しています');
  try{
   // First recover a verified unfinished package locally, even if the browser
   // still reports online while the discovery route is unavailable. An absent,
@@ -115,23 +155,27 @@ async function initialize(){
    if(!navigator.onLine&&!explicitServer&&!sameOrigin)base=G.DEFAULT_SERVER;
    else base=await G.discover({explicit:explicitServer,sameOrigin,origin:location.origin,machine});
   }
+  if(navigator.onLine){setConnectStep('サーバーの対応状況を確認しています');await confirmDownloadServer();}
   const saved=pack?{playerId,token,displayName:pack.profile?.name||''}:G.readSession('sweets-shared-session-v176',base);playerId=String(saved.playerId||'');token=String(saved.token||'');
   if(playerId&&!pack)try{const identity={...saved,base},local=await readVerifiedCache(identity);if(local)await restoreCached(local,identity);}catch(problem){console.warn('[DownloadV255] local cache',problem?.message||problem);}
   if(pack&&responseCache)await window.SweetsPlayerProfileV255?.setTransport((method,body)=>api('profile',{method,body}),{id:playerId,base,response:responseCache});
   if(!navigator.onLine)throw Error('offline');
-  const identity=await api('',{method:'POST',sessionEndpoint:true,body:{playerId,displayName:initialProfile.name||saved.displayName||'PLAYER'}});
+  setConnectStep('プレイヤー認証中');
+  const identity=await api('',{method:'POST',sessionEndpoint:true,timeout:11000,body:{playerId,displayName:initialProfile.name||saved.displayName||'PLAYER'}});
   if(playerId&&identity.player?.id!==playerId)throw Error('download_player_mismatch');
   playerId=String(identity.player?.id||'');token=String(identity.token||'');if(!playerId||!token)throw Error('download_session_invalid');
   G.writeSession('sweets-shared-session-v176',base,{playerId,token,displayName:identity.player.displayName});G.set('sweets-shared-server-v176',base);
-  let profile=await api('profile');if(!profile.profileReady)profile=await api('profile',{method:'POST',body:{profile:initialProfile}});
+  setConnectStep('プロフィールとCREDITを取得しています');
+  let profile=await api('profile',{timeout:11000});if(!profile.profileReady){setConnectStep('プロフィールを初期登録しています');profile=await api('profile',{method:'POST',timeout:11000,body:{profile:initialProfile}});}
+  setConnectStep('取得したプレイヤー情報を反映しています');
   await window.SweetsPlayerProfileV255?.setTransport((method,body)=>api('profile',{method,body}),{id:playerId,base,response:profile});
-  await acceptResponse(profile);
+  await acceptResponse(profile);connectStep='接続完了';
   if(!pack&&!locked()){const savedDraft=G.read(draftKey(),null);app.bets=Array.isArray(savedDraft)&&savedDraft.length===10&&savedDraft.every(n=>Number.isSafeInteger(n)&&n>=0)?savedDraft:Array(10).fill(0);app.enabled=app.bets.map(n=>n>0);}
   if(session&&['ready','preparing'].includes(session.status)&&!started)await acceptResponse(await api('active'));
   if(!locked()&&!pack)message='各ゲームのBETを選んで、1ゲーム分をダウンロードしてください。';
   requestId=G.get(requestKey(),'');error='';if(pendingComplete)await sync();
  }catch(problem){if(!pack)error=safeError(problem);else message='保存したゲームを再生できます。進み具合は接続後に同期します。';console.warn('[DownloadV255] connect',problem?.message||problem);}
- finally{connecting=false;prepareAssets();render();scheduleUI(app);}
+ finally{connecting=false;if(profileReady||pack)prepareAssets();render();scheduleUI(app);}
 }
 async function prepare(){
  if(busy||connecting||started&&!localComplete)return false;
@@ -250,6 +294,7 @@ function render(){
  if(!error&&assetsProgress&&!assetsReady)text+=(text?'\n':'')+`ゲーム素材 ${Math.floor((assetsProgress.bytes||0)/1048576)} / ${Math.ceil((assetsProgress.totalBytes||0)/1048576)} MB を保存中（${assetsProgress.done||0} / ${assetsProgress.total||0}）`;
  if(!error&&started&&!localComplete)text=(stopped()?'一時停止中。':'再生中。')+`${cursor} / 8球`;
  if(!online&&pack)text+='\n端末の録画を使用中・接続後に進み具合を同期';
+ if(!profileReady&&!pack&&base)text+='\n接続先: '+base;
  if(status.textContent!==text)status.textContent=text;status.classList.toggle('dl255-error',!!error);status.classList.toggle('dl255-offline',!online&&!!pack);
  const putText=(selector,value)=>{const node=panel.querySelector(selector);if(node.textContent!==value)node.textContent=value;};
  putText('[data-dl-balls]',localComplete?'8/8球 · '+(pendingComplete?'同期待ち':'完了'):started?cursor+'/8球':'ダウンロード版');
@@ -290,6 +335,8 @@ window.addEventListener('pagehide',()=>{persist().catch(()=>{});});window.addEve
 // A failed route or a restarted server does not necessarily change the browser's
 // online flag. Retry only unsent progress/ACKs, with one request chain in flight.
 setInterval(()=>{if(navigator.onLine&&playerId&&token&&(pendingComplete||pack&&seq>ackSeq))sync().catch(()=>{});},20000);
-window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,online,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],timing:{...playbackTiming},error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
+// Reprobe a restarted server even when navigator.onLine never changes.
+setInterval(()=>{if(navigator.onLine&&!connecting&&!profileReady&&!pack)initialize().catch(()=>{});},20000);
+window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,server:base,connectStep,online,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],timing:{...playbackTiming},error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
 render();scheduleUI(app);initialize();
 })();

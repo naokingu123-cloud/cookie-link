@@ -1,7 +1,7 @@
 /* Versioned offline shell. Private API replies and tickets never enter this cache. */
 (()=>{
 'use strict';
-const VERSION='20261119-v255-download-edition',CACHE='sweets-download-assets-'+VERSION;
+const VERSION='20261119-v256-download-connect',CACHE='sweets-download-assets-'+VERSION;
 const base=new URL('./',location.href),manifestUrl=new URL('assets/download-assets-v255.json',base),marker=new URL('__download_ready_v255__',base).href;
 let task=null,progress={ready:false,done:0,total:0,bytes:0,totalBytes:0,version:VERSION};
 const hex=buffer=>[...new Uint8Array(buffer)].map(value=>value.toString(16).padStart(2,'0')).join('');

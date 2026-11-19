@@ -2,7 +2,7 @@ name: Download v255 server recording and offline playback
 on:
   workflow_dispatch:
   push:
-    branches: [main, feature/v255-download]
+    branches: [main, feature/v255-download, fix/v256-download-connect]
     paths:
       - '**/*v255*'
       - 'server.mjs'
@@ -67,6 +67,9 @@ jobs:
       - name: Saved resume identity, scope and pending acknowledgements
         if: ${{ !cancelled() }}
         run: node tests/download-resume-scope-v255.mjs
+      - name: Download v256 connection diagnostics
+        if: ${{ !cancelled() }}
+        run: node tests/download-v256-connect.mjs
       - name: Install recording and verification browser
         id: browser
         if: ${{ !cancelled() }}

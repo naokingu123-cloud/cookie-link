@@ -1,7 +1,7 @@
 /* Only public, version-verified app files are stored here. Never cache APIs,
  * authorization, profile data, admin pages, or prepared private game packages. */
 'use strict';
-const VERSION='20261119-v255-download-edition',CACHE='sweets-download-assets-'+VERSION;
+const VERSION='20261119-v256-download-connect',LEGACY_VERSION='20261119-v255-download-edition',CACHE='sweets-download-assets-'+VERSION;
 const base=new URL('./',self.location.href),marker=new URL('__download_ready_v255__',base).href;
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
@@ -22,16 +22,19 @@ self.addEventListener('fetch',event=>{
  if(relative==='app-version.json'||relative==='shared-endpoint.json'||relative.startsWith('api/')||relative.startsWith('ws')||relative.includes('monitor')||relative.includes('server')||relative.endsWith('.mjs'))return;
  const allowed=relative===''||relative==='index.html'||relative.startsWith('assets/')||relative.startsWith('optimized/');if(!allowed)return;
  event.respondWith((async()=>{
-  const cache=await caches.open(CACHE),key=new URL(relative===''?'index.html':relative,base).href;
+  const key=new URL(relative===''?'index.html':relative,base).href;
   const client=event.clientId?await self.clients.get(event.clientId):null;
   const pageUrl=new URL(request.mode==='navigate'?request.url:client?.url||base.href);
   const download=pageUrl.searchParams.get('edition')==='download';
   const version=pageUrl.searchParams.get('appv');
-  const pinned=download&&(!version||version===VERSION)&&!!await cache.match(marker);
+  // Existing v255 games keep their own shell; v256 has a separate cache.
+  const cacheVersion=version===LEGACY_VERSION?LEGACY_VERSION:VERSION;
+  const cache=await caches.open('sweets-download-assets-'+cacheVersion);
+  const pinned=download&&(!version||version===VERSION||version===LEGACY_VERSION)&&!!await cache.match(marker);
   if(pinned&&request.cache!=='reload'){const cached=await cache.match(key);if(cached)return range(cached,request.headers.get('range'));}
   try{return await fetch(request);}
   catch(error){
-   if(version&&version!==VERSION)throw error;
+   if(version&&version!==VERSION&&version!==LEGACY_VERSION)throw error;
    const cached=await cache.match(key);if(cached)return range(cached,request.headers.get('range'));throw error;
   }
  })());

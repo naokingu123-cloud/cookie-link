@@ -1,0 +1,27 @@
+/* Verify startup errors without contacting the real player service. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import vm from 'node:vm';
+const source=await fs.readFile(new URL('../assets/download-mode-v255.js',import.meta.url),'utf8');
+const err=source.slice(source.indexOf('const safeError='),source.indexOf('function resumeIdentity('));
+const probe=source.slice(source.indexOf('async function confirmDownloadServer('),source.indexOf('async function validatePackage('));
+let reply={status:200,ok:true,value:{ok:true,download:{enabled:true,ready:false}}},url='';
+const context={AbortController,setTimeout,clearTimeout,console,base:'https://server.test',render(){},fetch:async address=>{url=address;if(reply.throw)throw reply.throw;return {ok:reply.ok,status:reply.status,json:async()=>reply.value};}};
+vm.runInNewContext(err+probe+';globalThis.diagnostics={safeError,confirmDownloadServer}',context);
+const {safeError,confirmDownloadServer}=context.diagnostics;
+assert.equal((await confirmDownloadServer()).download.enabled,true);
+assert.equal(url,'https://server.test/api/health');
+reply={status:200,ok:true,value:{ok:true,version:204}};
+await assert.rejects(confirmDownloadServer(),/download_server_not_updated/);
+assert.match(safeError(Error('download_server_not_updated')),/旧版/);
+reply={status:404,ok:false,value:{}};
+await assert.rejects(confirmDownloadServer(),/download_health_404/);
+assert.match(safeError(Error('download_health_404')),/旧版/);
+reply={throw:new TypeError('Failed to fetch')};
+await assert.rejects(confirmDownloadServer(),/download_server_unreachable/);
+assert.match(safeError(Error('download_server_unreachable')),/接続できません/);
+reply={status:200,ok:true,value:{ok:true,download:{enabled:false}}};
+await assert.rejects(confirmDownloadServer(),/download_server_not_updated/);
+assert.match(source,/setInterval\(\(\)=>\{if\(navigator.onLine&&!connecting&&!profileReady&&!pack\)initialize/);
+assert.match(source,/if\(profileReady\|\|pack\)prepareAssets\(\)/);
+console.log('v256: legacy server, unreachable endpoint, disabled worker and auto-retry PASS');

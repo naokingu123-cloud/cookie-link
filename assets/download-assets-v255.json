@@ -1,10 +1,10 @@
 {
-  "version": "20261119-v255-download-edition",
+  "version": "20261119-v256-download-connect",
   "files": [
     {
       "path": "app-version.json",
       "bytes": 46,
-      "sha256": "87e63c29227066ea897acd5c987f81c2157dca8d9fa566e8a859258b4a65d378"
+      "sha256": "fcbe5b7917266cdb3cef72054fe306c2de4aae4ee40401d7bc5426b35cc964da"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1234,7 +1234,7 @@
     {
       "path": "assets/download-cache-v255.js",
       "bytes": 4356,
-      "sha256": "c8cefd90583d6ecf1fbfdd42f796f4e64d0dafedb7a2b0d74ec431c7828d9644"
+      "sha256": "0de03793739a633dd5d7b2fe783d383bbc1feb1e90d757737603c228db76d580"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1243,8 +1243,8 @@
     },
     {
       "path": "assets/download-mode-v255.js",
-      "bytes": 36548,
-      "sha256": "c63a08724c08893bb0795e0c039d9997795f6daf65291dc1f827af84082b26a3"
+      "bytes": 39967,
+      "sha256": "594c2e5004d6e03fde8764cfad9f1d0296174f899b8a01a85ceb3d92c6f8f5f4"
     },
     {
       "path": "assets/download-roulette-v255.js",
@@ -1259,7 +1259,7 @@
     {
       "path": "assets/edition-choice-v255.js",
       "bytes": 3284,
-      "sha256": "74ca628b7888a2769d3ad5d402e4c9abf1970225a50e524f752756623caac9fd"
+      "sha256": "aa05580125d37a9400ca280613eab3663c48135661f355014efdd120ffeb3367"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -3207,5 +3207,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127763921
+  "totalBytes": 127767340
 }
