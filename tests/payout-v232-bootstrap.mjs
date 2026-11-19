@@ -23,14 +23,14 @@ const ALL=['cookie','choco','candy','gelato','winery','popcorn','stick','castell
 const deferred=()=>{let resolve;const promise=new Promise(done=>{resolve=done;});return {promise,resolve};};
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 
-function fixture({chosen=ALL,search='?set=all',holdWaffle=false,failWaffle=false}={}){
+function fixture({chosen=ALL,search='?set=all',edition='streaming',holdWaffle=false,failWaffle=false}={}){
  const fetchGate=deferred(),bodyGate=deferred();
  const requests=[],scripts=[],alerts=[],errors=[],warnings=[];
  let waffleTextCalls=0;
  const element=tag=>({tagName:tag.toUpperCase(),style:{},textContent:'',setAttribute(){},remove(){}});
  const switcher=element('a');
  const location=new URL('https://fixture.invalid/'+search);
- const context={URL,URLSearchParams,location,SweetsLineup:{mode:'all',chosen:[...chosen]},
+ const context={URL,URLSearchParams,location,SweetsLineup:{mode:'all',chosen:[...chosen]},SweetsEditionV255:{value:edition},
   console:{info(){},warn:(...args)=>warnings.push(args),error:(...args)=>errors.push(args)},
   document:{
    getElementById:id=>{assert.equal(id,'lineup-link');return switcher;},
@@ -90,6 +90,12 @@ function validateAssembly(fixture,{withWaffle=true}={}){
   assert(!assembled.includes(source(WAFFLE)));
  }
  return assembled;
+}
+
+// Choosing an edition is an intentional boot boundary, not a failed fetch.
+{
+ const f=fixture({edition:null});await f.done;
+ assert.deepEqual(f.requests,[]);assert.deepEqual(f.scripts,[]);assert.deepEqual(f.errors,[]);assert.deepEqual(f.alerts,[]);
 }
 
 for(const [name,search] of [['client','?set=all'],['settlement worker','?set=all&serverSettlementWorker=1']]){

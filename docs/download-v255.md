@@ -72,15 +72,19 @@ HTTP サーバーが応答していても、録画処理が準備できていな
 
 ダウンロード版のダンゴデビンゴは、サーバーが最初の 5 球の配置を自動で確定します。記録を受け取ったあとに配置を変えて精算結果を変える操作はありません。端末には確定済みの配置と抽選経過を再生します。
 
-端末は取得済み記録と再生位置を保存し、通信が途切れたときも保存済みの再生を続けられるようにします。次の録画の準備やサーバーへの進行同期には通信が必要です。再接続時には同じ録画 ID と保存位置を照合します。
+最初の利用時は、ゲーム素材を約 128 MB（約 122 MiB、v255 の資産一覧で 641 ファイル）保存します。録画 JSON、プロフィールのキャッシュ、再生位置の保存には別途空き容量を使います。素材の保存が完了してから再生ボタンが使えます。初回は通信と空き容量を確保して、保存完了まで待ってください。
+
+端末は取得済みの 1 ラウンド分の記録と再生位置を保存します。素材と記録を保存し終われば、通信が切れてもそのラウンドを再生でき、同じブラウザでページを開き直して途中から再開できます。再生完了の同期と次のラウンドの準備には再接続が必要です。再接続時には同じ録画 ID と保存位置を照合し、同じ WIN を再加算しません。
 
 サーバーを更新するときは .runtime、.tools、data の保存内容を残してください。端末に保存した記録を削除した場合、未同期の再生位置も失われる可能性があります。
 
 ### 配信データの確認
 
-記録のハッシュや署名を確認する場合も、サーバーの精算記録を基準にします。署名検証が成功することと、未消化の BET や二重精算を管理することは別の検証事項です。署名・ハッシュ処理には [Node.js 20 の crypto](https://nodejs.org/docs/latest-v20.x/api/crypto.html) と [Web Cryptography API](https://www.w3.org/TR/2017/REC-WebCryptoAPI-20170126/) の標準機能を利用できます。
+静的なゲーム素材は、assets/download-assets-v255.json にあるファイルサイズと SHA-256 を照合してからキャッシュへ保存します。サーバーは録画 JSON のサイズと SHA-256 を台帳に保存し、配信時に保存ファイルを再照合します。端末も受信した録画 JSON の SHA-256 を、認証済み API が返した台帳の値と照合します。サーバーの計算には [Node.js の crypto](https://nodejs.org/docs/latest-v20.x/api/crypto.html)、端末の計算には [Web Cryptography API](https://www.w3.org/TR/2017/REC-WebCryptoAPI-20170126/) を使います。
 
-Service Worker を利用するキャッシュは origin と scope ごとに管理します。GitHub Pages の /cookie-link/ と Named Tunnel の / は別の保存領域です。[Service Workers の仕様](https://w3c.github.io/ServiceWorker/)に従い、HTTPS または開発用 localhost で登録します。ゲーム API や管理トークン付き URL を静的アプリのキャッシュに含めません。
+SHA-256 の一致は受信データが台帳の記録と一致することを確認するために使います。残高と成績の確定はサーバーの台帳で行い、端末が送った WIN や残高は精算に使いません。ゲーム素材、録画 JSON、再生位置の保存先は分かれており、認証 API の応答や管理 URL は公開素材のキャッシュに入れません。
+
+オフライン保存には HTTPS が必要です。開発用 localhost は例外として利用できます。通常の http://192.168... のような LAN アドレスではオフライン保存を利用できないため、配布用にはランチャーが表示する HTTPS の PLAYER GAME URL を使ってください。Service Worker のキャッシュは origin と scope ごとに管理するため、GitHub Pages の /cookie-link/ と Named Tunnel の / は別の保存領域になります。[Service Workers の仕様](https://w3c.github.io/ServiceWorker/)に従って登録します。
 
 ## 動作確認
 
@@ -91,7 +95,10 @@ GitHub Actions の Download v255 server recording and offline playback は main 
 | Windows PowerShell 5.1 の構文・文字コード、起動版、ブラウザ抑止、録画未準備の拒否 | tests/download-v255-launcher.ps1 |
 | プレイヤー所有権、残高、重複要求、再起動からの復元 | tests/download-v255-server.mjs |
 | 物理抽選の再現性、記録の適用順序、再開位置 | tests/download-v255-recording.mjs、tests/recorded-round-v255.mjs |
+| 旧版 URL からの選択、保存素材と起動版の一致 | tests/edition-choice-v255.mjs |
+| ルートと /cookie-link/ のオフライン素材保存、API 除外、音声の部分取得 | tests/download-v255-cache.mjs |
+| 回線が弱い場合の保存先復元、プレイヤー・台・サーバーの照合、未同期進行の維持 | tests/download-resume-scope-v255.mjs |
 | 実際の物理計算・ゲーム計算を行うヘッドレス録画 | tests/download-v255-compute.mjs |
 | 版の選択、ダウンロード、通信切断中の再生、再開、管理画面 | tests/download-v255-browser.mjs |
 
-ブラウザ検証は隔離したローカルサーバーで実行し、公開ゲームの BET や精算には触れません。画面・結果・診断は Actions artifact download-v255-verification に保存します。
+ブラウザ検証は隔離したローカルサーバーで実行し、公開ゲームの BET や精算には触れません。ブラウザがオンラインと認識したままサーバーだけを停止・再起動する検証と、ブラウザをオフラインにしてページを再読み込みする検証を行います。前者はオンラインイベントや同期ボタンに頼らない進行保存の自動再試行、後者は素材・録画・再生位置の端末保存を確認します。画面・結果・診断は Actions artifact download-v255-verification に保存します。

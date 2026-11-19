@@ -23,6 +23,8 @@ on:
       - 'assets/sugar-roulette-v254.js'
       - 'assets/sugar-art-v254/**'
       - 'assets/reach-art-v254/**'
+      - 'assets/*v255*'
+      - 'download-sw-v255.js'
       - 'assets/shared-machine-core-v196.js'
       - 'assets/server-offline-settlement-worker-v3.js'
       - 'assets/jelly-view.js'

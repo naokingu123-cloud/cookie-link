@@ -1,16 +1,21 @@
 /* Select a transport before any player session or round controller is started. */
 (()=>{
 'use strict';
+// This constant travels with the cached shell. It must not follow a newer
+// online version while an older, already downloaded game is being resumed.
+const BUILD_VERSION='20261119-v255-download-edition';
 const query=new URLSearchParams(location.search);
 const internal=['serverHost','serverSettlementWorker','downloadWorker','admin'].some(key=>query.get(key)==='1');
 let edition=query.get('edition');
 if(!['download','streaming'].includes(edition))edition=internal?'streaming':'';
-if((edition==='download'||query.get('downloadWorker')==='1')&&(query.has('games')||query.has('set'))){
- const url=new URL(location.href);url.searchParams.delete('games');url.searchParams.delete('set');history.replaceState(null,'',url.href);
+if(edition==='download'||query.get('downloadWorker')==='1'){
+ const url=new URL(location.href);url.searchParams.delete('games');url.searchParams.delete('set');url.searchParams.delete('pick');
+ if(edition==='download')url.searchParams.set('appv',BUILD_VERSION);
+ if(url.href!==location.href)history.replaceState(null,'',url.href);
 }
 document.documentElement.dataset.edition=edition||'choice';
-function editionUrl(value){const url=new URL(location.href);url.searchParams.delete('edition');if(value)url.searchParams.set('edition',value);if(value==='download'){url.searchParams.delete('games');url.searchParams.delete('set');url.searchParams.delete('pick');}return url.href;}
-window.SweetsEditionV255={version:255,value:edition,internal,url:editionUrl,choose:value=>{if(['download','streaming'].includes(value))location.assign(editionUrl(value));},show:()=>location.assign(editionUrl(''))};
+function editionUrl(value){const url=new URL(location.href);url.searchParams.delete('edition');if(value)url.searchParams.set('edition',value);if(value==='download'){url.searchParams.delete('games');url.searchParams.delete('set');url.searchParams.delete('pick');url.searchParams.set('appv',BUILD_VERSION);}return url.href;}
+window.SweetsEditionV255={version:255,buildVersion:BUILD_VERSION,value:edition,internal,url:editionUrl,choose:value=>{if(['download','streaming'].includes(value))location.assign(editionUrl(value));},show:()=>location.assign(editionUrl(''))};
 if(edition||internal)return;
 function mount(){
  const page=document.createElement('main');page.id='edition-choice-v255';page.className='edition255';

@@ -14,8 +14,9 @@ const output='qa-download-v255',adminToken='download-v255-isolated-admin';
 await fs.mkdir(output,{recursive:true});
 const temporary=await fs.mkdtemp(path.join(os.tmpdir(),'sweets-download-browser-v255-'));
 const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
-const report={version,scope:'Isolated real server preparation, offline local playback, persisted resume, authoritative wallet and download-only administration',screens:[],pageErrors:[],warnings:[],requests:[],webSockets:[],externalRequests:[]};
+const report={version,scope:'Isolated real server preparation, offline local playback, persisted resume, authoritative wallet and download-only administration',screens:[],pageErrors:[],warnings:[],requests:[],webSockets:[],externalRequests:[],milestones:[]};
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function milestone(stage,details={}){const entry={stage,...details};report.milestones.push(entry);console.log('DOWNLOAD_BROWSER_STAGE',JSON.stringify(entry));}
 async function until(fn,label,timeout=60000){
  const deadline=Date.now()+timeout;
  while(Date.now()<deadline){const result=await fn();if(result)return result;await sleep(200);}
@@ -60,6 +61,13 @@ async function call(action,{body,admin=false,sessionId}={}){
  const value=await response.json();assert.equal(response.ok,true,route+' '+JSON.stringify(value).slice(0,500));return value;
 }
 async function state(){return page.evaluate(()=>window.SweetsDownloadV255?.describe());}
+async function waitPlayback(predicate,label,timeout){
+ return until(async()=>{
+  const current=await state();
+  if(current&&!current.started&&/保存したゲームを再開できませんでした|再生を一時停止しました。保存した位置から再開できます/.test(current.error||''))throw Error(label+': '+current.error);
+  return predicate(current)?current:false;
+ },label,timeout);
+}
 async function capture(name){
  const details=await page.evaluate(()=>{
   const panel=document.getElementById('download-v255-panel'),r=panel?.getBoundingClientRect();
@@ -111,6 +119,7 @@ try{
  assert.equal((await state()).playerId,identity.playerId,'reloading preserves the authenticated player');
  await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().assetsReady,null,{timeout:240000});
  await page.waitForFunction(()=>!!navigator.serviceWorker.controller,null,{timeout:15000});
+ milestone('assets-ready');
  const before=await call('profile');report.creditBefore=before.wallet.credit;
  for(let i=0;i<10;i++)await page.locator('#addbet'+i).click();
  const draft=await state();assert.ok(draft.bets.every(bet=>bet>0),'all ten games have a real native BET');
@@ -120,6 +129,7 @@ try{
  await page.waitForFunction(()=>{const s=window.SweetsDownloadV255?.describe();return s?.session?.status==='failed'||s?.packageReady&&s.assetsReady;},null,{timeout:300000});
  const prepared=await state();assert.notEqual(prepared.session?.status,'failed',prepared.error||prepared.message);assert.equal(prepared.packageReady,true);
  const active=await call('active'),pack=active.package;assert.ok(pack);report.prepared={session:prepared.session,credit:active.wallet.credit,numbers:pack.numbers,totalBet:pack.totalBet,totalWin:pack.totalWin,sugarWin:pack.sugarWin||0,recordingDurationMs:pack.playback.recording.durationMs,frames:pack.playback.recording.frames.length};
+ milestone('prepared',{frames:pack.playback.recording.frames.length,durationMs:pack.playback.recording.durationMs});
  assert.equal(active.wallet.credit,before.wallet.credit-pack.totalBet+pack.totalWin+(pack.sugarWin||0));
  assert.deepEqual(pack.bets,draft.bets);assert.equal(pack.games.length,10);assert.equal(active.stats.rounds,1);
  await fs.writeFile(path.join(output,'api-package.json'),JSON.stringify(pack));
@@ -133,34 +143,71 @@ try{
  }
  await page.setViewportSize({width:390,height:844});
  await page.locator('[data-dl-action="play"]').click();
- await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().started&&window.SweetsDownloadRouletteV255?.driver,null,{timeout:30000});
+ await waitPlayback(s=>s?.started,'recorded playback starts',30000);
+ assert.equal(await page.evaluate(()=>!!window.SweetsDownloadRouletteV255?.driver),true);
  await page.evaluate(()=>{
   const physics=window.SweetsDownloadRouletteV255.driver.physics;
   window.__downloadPhysicsSteps=0;
   if(physics.world?.step){const original=physics.world.step;physics.world.step=function(...args){window.__downloadPhysicsSteps++;return original.apply(this,args);};}
  });
- await page.waitForFunction(()=>window.SweetsDownloadV255.describe().stableBall>=1,null,{timeout:Math.max(90000,pack.playback.recording.durationMs+60000)});
+ await waitPlayback(s=>s?.stableBall>=1&&s.stableBall<7&&s.cursor===s.stableBall&&pack.playback.recording.hits[s.stableBall].atMs-s.playbackMs>=1000,'stable pause between recorded hits',Math.max(90000,pack.playback.recording.durationMs+60000));
  await page.evaluate(async()=>{window.SweetsDownloadV255.pause();await window.SweetsDownloadV255.checkpoint();});
- const paused=await state();assert.ok(paused.stableBall>=1&&paused.stableBall<8,'pause while the recorded round is unfinished');
+ let paused=await state();assert.ok(paused.stableBall>=1&&paused.stableBall<8,'pause while the recorded round is unfinished');
  assert.deepEqual(paused.draws,pack.numbers.slice(0,paused.draws.length));
  report.paused=paused;
+ milestone('paused',{ball:paused.stableBall,playbackMs:paused.playbackMs});
+ const pausedCheckpoint=pack.playback.checkpoints[paused.stableBall],cookieState=(pausedCheckpoint.state||pausedCheckpoint).engines[0];
+ const expectedCookieTiles=cookieState.board.flat().filter(Boolean).length;
+ await until(async()=>{
+  const visual=await page.evaluate(()=>{
+   const board=document.querySelector('#panel0 .board'),bounds=board.getBoundingClientRect(),tiles=[...board.querySelectorAll('.tile')];
+   const visible=tiles.filter(tile=>{
+    const rect=tile.getBoundingClientRect();if(!rect.width||!rect.height||rect.right<=bounds.left||rect.left>=bounds.right||rect.bottom<=bounds.top||rect.top>=bounds.bottom)return false;
+    for(let node=tile;node&&node!==board.parentElement;node=node.parentElement){const style=getComputedStyle(node);if(style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0)return false;}
+    return true;
+   });
+   return {tiles:tiles.length,visible:visible.length};
+  });
+  report.pausedBoard={expected:expectedCookieTiles,...visual};return visual.tiles===expectedCookieTiles&&visual.visible===expectedCookieTiles?visual:false;
+ },'stable paused Cookie board remains visibly painted',8000);
  report.recordedDisplay=await page.evaluate(()=>{const driver=window.SweetsDownloadRouletteV255.driver,canvas=driver.mirrorCanvas,r=canvas.getBoundingClientRect();return {source:document.getElementById('cookie-roulette').dataset.rouletteSource,state:driver.draw.state,localPhysicsSteps:window.__downloadPhysicsSteps,canvas:{width:r.width,height:r.height},time:driver.physics.time};});
  assert.equal(report.recordedDisplay.source,'download-recording');assert.equal(report.recordedDisplay.state,'external');assert.equal(report.recordedDisplay.localPhysicsSteps,0);
  assert.ok(report.recordedDisplay.canvas.width>100&&report.recordedDisplay.canvas.height>100);
  await capture('download-paused-390');
+ // A broken route/server restart does not emit the browser's online event.
+ // Generate real unsent playback progress and let the background retry recover.
+ await page.waitForFunction(()=>{const s=window.SweetsDownloadV255.describe();return s.seq===s.ackSeq;},null,{timeout:30000});
+ await page.evaluate(()=>{window.__downloadNetworkEvents=[];for(const type of ['online','offline'])addEventListener(type,()=>window.__downloadNetworkEvents.push(type));});
+ await stopServer(server);previousServerLogs+=server.logs+'\n--- transient restart ---\n';
+ assert.equal(await page.evaluate(()=>navigator.onLine),true,'an unreachable server must not be simulated by an offline browser');
+ await page.evaluate(()=>window.SweetsDownloadV255.play());
+ await waitPlayback(s=>s?.playbackMs>=paused.playbackMs+200,'recorded playback advances during transient disconnection',10000);
+ await page.evaluate(async()=>{window.SweetsDownloadV255.pause();await window.SweetsDownloadV255.checkpoint();});
+ await page.waitForFunction(()=>{const s=window.SweetsDownloadV255.describe();return !s.online&&s.seq>s.ackSeq;},null,{timeout:30000});
+ const unsent=await state();assert.equal(unsent.stableBall,paused.stableBall,'the checkpoint remains between the same two recorded hits');
+ server=await launchServer({port:server.port,directory:server.directory});await waitReady(server);
+ await page.waitForFunction(()=>{const s=window.SweetsDownloadV255.describe();return s.online&&s.ackSeq===s.seq;},null,{timeout:45000});
+ paused=await state();
+ const connection=await page.evaluate(()=>({online:navigator.onLine,events:window.__downloadNetworkEvents}));
+ assert.equal(connection.online,true);assert.deepEqual(connection.events,[],'automatic ACK recovery must not depend on an online event or manual sync');
+ const recovered=await call('active');assert.equal(recovered.session.progress.seq,paused.seq);assert.equal(recovered.wallet.credit,active.wallet.credit);assert.equal(recovered.stats.rounds,1);
+ report.transientConnection={before:unsent,after:paused,navigatorOnline:connection.online,networkEvents:connection.events,serverProgress:recovered.session.progress,manualSync:false};
+ milestone('transient-auto-recovered',{seq:paused.seq,ackSeq:paused.ackSeq});
  const savedBeforeOffline=await call('active');
- await context.setOffline(true);await stopServer(server);previousServerLogs=server.logs;
+ await context.setOffline(true);await stopServer(server);previousServerLogs+=server.logs;
  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().packageReady&&window.SweetsDownloadV255.describe().assetsReady,null,{timeout:60000});
  const restored=await state();report.offlineRestored=restored;
+ milestone('offline-restored',{ball:restored.stableBall,playbackMs:restored.playbackMs});
  assert.equal(restored.session.id,prepared.session.id);assert.equal(restored.stableBall,paused.stableBall);assert.equal(restored.playerId,identity.playerId);assert.equal(restored.online,false);
  await capture('download-offline-restored-390');
  await page.locator('[data-dl-action="play"]').click();
- await page.waitForFunction(old=>window.SweetsDownloadV255.describe().stableBall>old,paused.stableBall,{timeout:Math.max(90000,pack.playback.recording.durationMs+60000)});
+ await waitPlayback(s=>s?.stableBall>paused.stableBall,'offline playback advances beyond the saved hit',Math.max(90000,pack.playback.recording.durationMs+60000));
  server=await launchServer({port:server.port,directory:server.directory});report.restartedHealth=await waitReady(server);
  const resumedServer=await call('active');assert.equal(resumedServer.session.id,prepared.session.id);assert.equal(resumedServer.wallet.credit,active.wallet.credit);assert.equal(resumedServer.stats.rounds,1);
- await page.waitForFunction(()=>window.SweetsDownloadV255.describe().localComplete,null,{timeout:Math.max(180000,pack.playback.recording.durationMs+180000)});
+ await waitPlayback(s=>s?.localComplete,'offline recorded playback and native payout complete',Math.max(180000,pack.playback.recording.durationMs+180000));
  report.offlineComplete=await state();assert.equal(report.offlineComplete.pendingComplete,true);assert.equal(report.offlineComplete.stableBall,8);assert.deepEqual(report.offlineComplete.draws,pack.numbers);
+ milestone('offline-complete',{ball:report.offlineComplete.stableBall});
  await capture('download-offline-complete-390');
  await context.setOffline(false);await page.evaluate(()=>window.SweetsDownloadV255.sync());
  await page.waitForFunction(()=>!window.SweetsDownloadV255.describe().pendingComplete&&window.SweetsDownloadV255.describe().session.status==='complete',null,{timeout:30000});
@@ -198,6 +245,7 @@ try{
  assert.equal(report.missingBrowser.download.ready,false);assert.equal(report.missingBrowser.serverEdition,'download');
  assert.deepEqual(report.pageErrors,[],'no uncaught page exceptions');
  report.ok=true;
+ milestone('complete',{screens:report.screens.length,pageErrors:report.pageErrors.length});
  await fs.writeFile(path.join(output,'browser.json'),JSON.stringify(report,null,2)+'\n');
  console.log('DOWNLOAD_V255_BROWSER_PASS',JSON.stringify({session:prepared.session.id,offlineResume:true,serverRestart:true,credit:completed.wallet.credit,recordingFrames:pack.playback.recording.frames.length,cacheEntries:report.cacheEntries,noServerWindow:true,pageErrors:report.pageErrors.length}));
 }catch(error){

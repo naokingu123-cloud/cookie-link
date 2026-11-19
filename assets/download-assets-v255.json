@@ -1243,13 +1243,13 @@
     },
     {
       "path": "assets/download-mode-v255.js",
-      "bytes": 32335,
-      "sha256": "57a9d5543345cc92f3c41bd57161610a28baf92fcb46a563ee45d61a1fe1bf14"
+      "bytes": 36431,
+      "sha256": "a27d96770912f066a7a23120787469ea72456bc231057a121e412344a93d8755"
     },
     {
       "path": "assets/download-roulette-v255.js",
-      "bytes": 2132,
-      "sha256": "3cd4eca3503a3fb5dd42b47d59bc6c7ba4dce41193b485ba40fd44b83e9f3670"
+      "bytes": 2397,
+      "sha256": "d65be671ffb388d905981bb04944f7bb321d640b0b5c5eaef29194e1700f454c"
     },
     {
       "path": "assets/download-worker-v255.js",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 2920,
-      "sha256": "18e628880cae5edbdef997259cdfb3409c0b02a80729233a943524acbac9fee1"
+      "bytes": 3284,
+      "sha256": "74ca628b7888a2769d3ad5d402e4c9abf1970225a50e524f752756623caac9fd"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -3207,5 +3207,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127756172
+  "totalBytes": 127760897
 }

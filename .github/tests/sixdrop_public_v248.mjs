@@ -31,6 +31,7 @@ arcadeFiles.push(...['dango-green','dango-pink','dango-yellow','dango-rainbow','
 arcadeFiles.push('assets/sweets-results-v253.js','assets/sweets-results-v253.css','assets/results-art-v253/result-frame.webp','assets/results-art-v253/sweets-wipe.webp');
 arcadeFiles.push('assets/sugar-challenge-rules-v254.js','assets/sugar-challenge-v254.js','assets/sugar-challenge-v254.css','assets/sugar-roulette-v254.js','assets/reach-art-v254/reach-common.webp','assets/shared-machine-core-v196.js','assets/server-offline-settlement-worker-v3.js');
 arcadeFiles.push(...['scale','bottle','jpc-title'].map(name=>'assets/sugar-art-v254/'+name+'.webp'));
+arcadeFiles.push('assets/edition-choice-v255.js','assets/download-mode-v255.js','assets/download-mode-v255.css','assets/download-cache-v255.js','assets/download-assets-v255.json','assets/download-roulette-v255.js','assets/recorded-round-v255.js','assets/player-profile-v255.js','assets/download-worker-v255.js','download-sw-v255.js','assets/server-monitor-download-v255.js','assets/server-monitor-download-v255.css');
 const files=['index.html','app-version.json','optimized/app-01.js','optimized/style-01.css','optimized/media/a73bbbdd98d48aac.woff2','assets/cookie-upgrade-patches.js','assets/sixdrop-progressive-core-v247.js','assets/sixdrop-progressive-host-v247.js','assets/sixdrop-progressive-v247.css','assets/shared-machine-v176.js','assets/shared-client-controller-v224.js','assets/stations-v235.js','assets/stations-progressive-v246.js','monitor.html','assets/monitor-ledger-v241.js','assets/server-monitor-v241.js','assets/server-monitor-v242.js',...arcadeFiles];
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=Object.fromEntries(await Promise.all(files.map(async name=>[name,digest(await fs.readFile(name))])));
@@ -71,6 +72,21 @@ try{
   });
   await context.routeWebSocket('**/*',socket=>{sockets.push(socket.url());socket.close();});
   const page=await context.newPage();page.on('pageerror',error=>errors.push(String(error)));
+  const chooserUrl=new URL(base);chooserUrl.searchParams.set('appv',appVersion);chooserUrl.searchParams.set('verify',revision);
+  await page.goto(chooserUrl.href,{waitUntil:'domcontentloaded',timeout:60000});
+  await page.waitForSelector('#edition-choice-v255');
+  const chooser=await page.evaluate(()=>({edition:window.SweetsEditionV255.value,streaming:!!window.SweetsSharedMachine,download:!!window.SweetsDownloadV255,overflow:document.documentElement.scrollWidth>innerWidth+1,options:[...document.querySelectorAll('[data-edition-choice]')].map(link=>({edition:link.dataset.editionChoice,name:link.querySelector('strong').textContent,url:link.href}))}));
+  assert.equal(chooser.edition,'');assert.equal(chooser.streaming,false);assert.equal(chooser.download,false);assert.equal(chooser.overflow,false);
+  assert.deepEqual(chooser.options.map(option=>[option.edition,option.name]),[['streaming','ストリーミング版'],['download','ダウンロード版']]);
+  assert.equal(blocked.length,0,'the published chooser creates no player or game request');
+  await page.screenshot({path:out+'/public-edition-choice-'+width+'.png'});
+  await page.locator('[data-edition-choice="download"]').click();
+  await page.waitForFunction(()=>window.SweetsDownloadV255?.version===255,null,{timeout:60000});
+  const download=await page.evaluate(()=>{const node=document.getElementById('download-v255-panel'),rect=node.getBoundingClientRect();return {state:window.SweetsDownloadV255.describe(),streaming:!!window.SweetsSharedMachine,roulette:!!window.SweetsDownloadRouletteV255.driver,overflow:document.documentElement.scrollWidth>innerWidth+1,panel:{left:rect.left,right:rect.right,width:rect.width},prepareDisabled:node.querySelector('[data-dl-action="prepare"]').disabled};});
+  assert.equal(download.state.edition,'download');assert.equal(download.streaming,false);assert.equal(download.roulette,false);assert.equal(download.state.packageReady,false);assert.equal(download.prepareDisabled,true);
+  assert.equal(download.overflow,false);assert.ok(download.panel.left>=-1&&download.panel.right<=width+1,'the published Download panel fits the viewport');
+  assert.deepEqual(errors,[],'the published Download entry handles its unavailable server without uncaught errors');
+  await page.screenshot({path:out+'/public-download-entry-'+width+'.png'});
   const url=new URL(base);url.searchParams.set('appv',appVersion);url.searchParams.set('edition','streaming');url.searchParams.set('verify',revision);
   const response=await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:60000});assert.equal(response.status(),200);
   await page.waitForFunction(()=>window.SixDropV247?.engine&&window.SweetsSharedMachine&&window.SweetsStationsV235&&document.querySelector('#sd247-bank .gold-number'),null,{timeout:60000});
@@ -194,7 +210,7 @@ try{
   assert.equal(info.sugar.reachPopups.length,10);for(const pop of info.sugar.reachPopups){assert.match(pop.image,/reach-art-v254\/reach-common\.webp/);assert.equal(pop.hidden,true);assert.equal(pop.numberNodes,0);}
   assert.deepEqual(errors,[],'published Sugar and reach modules initialize without errors');
   await page.screenshot({path:out+'/public-dango-ready-'+width+'.png'});
-  report.screens.push({width,height,...info,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
+  report.screens.push({width,height,...info,chooser,download,blockedServiceRequests:blocked,blockedWebSockets:sockets,pageErrors:errors});
   report.currentScreen=null;
   await context.close();
  }
@@ -209,3 +225,4 @@ console.log('ARCADE_PUBLIC_V249_READ_ONLY_PASS',JSON.stringify({revision,appVers
 console.log('ARCADE_PUBLIC_V250_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,...screen.v250,pageErrors:screen.pageErrors.length}))}));
 console.log('DANGO_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
 console.log('SUGAR_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,rulesRevision:screen.sugar.revision,decodedSugarAssets:screen.sugar.assets.length,reachFrameDecoded:screen.sugar.reachFrame.loaded,overlayHidden:screen.sugar.overlayHidden,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));
+console.log('DOWNLOAD_PUBLIC_V255_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,editionChoices:screen.chooser.options.map(option=>option.name),downloadEntry:screen.download.state.edition,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));

@@ -58,6 +58,15 @@ jobs:
       - name: Recorded playback ordering and resume
         if: ${{ !cancelled() }}
         run: node tests/recorded-round-v255.mjs
+      - name: Edition version pin and disconnected choice
+        if: ${{ !cancelled() }}
+        run: node tests/edition-choice-v255.mjs
+      - name: Offline asset cache, API exclusions and media ranges
+        if: ${{ !cancelled() }}
+        run: node tests/download-v255-cache.mjs
+      - name: Saved resume identity, scope and pending acknowledgements
+        if: ${{ !cancelled() }}
+        run: node tests/download-resume-scope-v255.mjs
       - name: Install recording and verification browser
         id: browser
         if: ${{ !cancelled() }}
