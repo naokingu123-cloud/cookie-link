@@ -24,3 +24,39 @@ html[data-server-edition="download"] #settlement-worker,
 #download-v255-empty{padding:18px;text-align:center;color:#a7bccd}
 #download-v255-empty[hidden]{display:none}
 @media(max-width:600px){.download-v255-stats{gap:6px}.download-v255-stats div{padding:9px}.download-v255-stats dd{font-size:20px}}
+
+/* The Download table has expandable records. It cannot occupy the old host's
+   small fixed grid cell or inherit the Streaming dashboard's hidden overflow. */
+html[data-server-edition="download"]{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
+html[data-server-edition="download"] body{height:auto;min-height:100dvh;overflow:visible}
+html[data-server-edition="download"] main{
+ height:auto;min-height:calc(100dvh - 34px);padding:12px;gap:12px;overflow:visible;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:auto auto 380px;align-items:stretch;
+}
+html[data-server-edition="download"] .download-v255-card{grid-column:1/-1;grid-row:1;overflow:visible}
+html[data-server-edition="download"] .download-v255-card h2{font-size:17px;min-height:40px;padding:12px 16px;white-space:normal}
+html[data-server-edition="download"] .download-v255-note{margin:0 16px 14px}
+html[data-server-edition="download"] .download-v255-stats{margin:0 16px 14px}
+html[data-server-edition="download"] .download-v255-table-wrap{flex:0 0 auto;border-top:1px solid #294452}
+html[data-server-edition="download"] .payout-card{grid-column:1;grid-row:2;min-height:270px}
+html[data-server-edition="download"] .trend-card-v242{grid-column:2;grid-row:2;min-height:270px}
+html[data-server-edition="download"] .players-card{grid-column:1/-1!important;grid-row:3}
+html[data-server-edition="download"] .payout-card h2,
+html[data-server-edition="download"] .trend-card-v242 h2{font-size:13px;min-height:32px;padding:8px}
+html[data-server-edition="download"] .payout-card .controls{padding:8px;gap:7px}
+html[data-server-edition="download"] .payout-card .field span{font-size:11px}
+html[data-server-edition="download"] .payout-card .field input{font-size:13px;height:30px;min-height:30px}
+html[data-server-edition="download"] .payout-card .primary{font-size:12px;min-height:30px}
+html[data-server-edition="download"] .payout-card .message{font-size:11px;padding:4px 8px}
+html[data-server-edition="download"] .trend-controls-v242{font-size:11px;padding:6px 8px;gap:8px}
+html[data-server-edition="download"] .trend-controls-v242 select{font-size:11px;max-width:100px}
+@media(max-width:700px){
+ html[data-server-edition="download"] main{padding:6px;gap:8px;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto 260px 340px}
+ html[data-server-edition="download"] .payout-card{grid-column:1;grid-row:2}
+ html[data-server-edition="download"] .trend-card-v242{grid-column:1;grid-row:3;min-height:0}
+ html[data-server-edition="download"] .players-card{grid-column:1!important;grid-row:4}
+ html[data-server-edition="download"] .download-v255-card h2{padding:10px;font-size:16px}
+ html[data-server-edition="download"] .download-v255-note{margin:0 10px 12px}
+ html[data-server-edition="download"] .download-v255-stats{margin:0 10px 12px;grid-template-columns:repeat(3,minmax(0,1fr))}
+}

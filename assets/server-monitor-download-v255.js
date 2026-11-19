@@ -12,12 +12,12 @@ let downloadOnly=explicitDownload,prepared=null,timer=null,inFlight=false,dispos
 function applyEdition(value){
  downloadOnly=!!value;
  document.documentElement.dataset.serverEdition=downloadOnly?'download':'streaming';
+ if(card)card.hidden=!downloadOnly;
  if(downloadOnly){
   const host=byId('host-frame'),worker=byId('settlement-worker');
   host?.removeAttribute('src');worker?.removeAttribute('src');
   if(host)host.hidden=true;if(worker)worker.hidden=true;
   const hostCard=host?.closest('.host-card');if(hostCard)hostCard.hidden=true;
-  if(card)card.hidden=false;
  }
 }
 function writeStatus(download,error){
@@ -26,7 +26,7 @@ function writeStatus(download,error){
  state.textContent=error||download?.error||(ready?'録画の準備完了':download?.enabled===false?'ダウンロード機能は停止中':'録画の準備を待っています');
  state.dataset.state=error||download?.error?'error':ready?'ready':'waiting';
  byId('download-v255-active-jobs').textContent=String(number(download?.activeJobs));
- if(downloadOnly||download?.enabled)card.hidden=false;
+ card.hidden=!downloadOnly;
 }
 async function getJson(path,authenticated=false){
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),6000);
@@ -81,10 +81,10 @@ function render(data){
 }
 function schedule(){
  clearTimeout(timer);timer=null;
- if(!disposed&&!document.hidden)timer=setTimeout(refresh,4000);
+ if(downloadOnly&&!disposed&&!document.hidden)timer=setTimeout(refresh,4000);
 }
 async function refresh(){
- if(disposed||inFlight)return;
+ if(!downloadOnly||disposed||inFlight)return;
  inFlight=true;
  try{
   const data=await getJson('/api/admin/machines/'+encodeURIComponent(machine)+'/download-v255/state',true);

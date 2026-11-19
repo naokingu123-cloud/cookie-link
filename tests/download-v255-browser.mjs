@@ -233,6 +233,13 @@ try{
  assert.ok(report.admin.text.includes(profile.name));assert.ok(report.admin.text.includes(active.wallet.credit.toLocaleString('ja-JP')));
  assert.equal(adminRequests.some(r=>r.serverHost==='1'||r.settlement==='1'),false,'Download administration must not load either roulette/settlement iframe');
  await adminPage.locator('.download-v255-player-detail summary').click();
+ report.admin.layout=await adminPage.evaluate(()=>{
+  const card=document.getElementById('download-v255-admin').getBoundingClientRect(),detail=document.querySelector('.download-v255-player-detail').getBoundingClientRect(),wrap=document.querySelector('.download-v255-table-wrap');
+  return {viewport:innerWidth,pageWidth:document.documentElement.scrollWidth,card:{left:card.left,right:card.right,bottom:card.bottom,width:card.width},detailBottom:detail.bottom,tableHeight:wrap.clientHeight,tableScrollHeight:wrap.scrollHeight};
+ });
+ assert.ok(report.admin.layout.pageWidth<=report.admin.layout.viewport+1,'Download admin page remains within the viewport');
+ assert.ok(report.admin.layout.card.width>report.admin.layout.viewport*.85,'Download records use the full dashboard width');
+ assert.ok(report.admin.layout.detailBottom<=report.admin.layout.card.bottom+1,'expanded profile and saved progress are not clipped by the old Streaming grid');
  await adminPage.screenshot({path:path.join(output,'download-admin-1366.png'),fullPage:true});
  report.admin.players=(await call('',{admin:true})).players.length;
  assert.equal(report.webSockets.length,0,'Download playback never opens the Streaming WebSocket');

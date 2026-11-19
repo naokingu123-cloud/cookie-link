@@ -1798,13 +1798,13 @@
     },
     {
       "path": "assets/server-monitor-download-v255.css",
-      "bytes": 1985,
-      "sha256": "45a54556f84a5b72d960df0a78f89b5a0b24a0d626df1a2479d021660d3a2b92"
+      "bytes": 4882,
+      "sha256": "0aa08583bddd6b80bccf24a076f846316d23a6145ccd5dd51b1fcb07bfccb52e"
     },
     {
       "path": "assets/server-monitor-download-v255.js",
-      "bytes": 7159,
-      "sha256": "4bbf91aa3a72a62e46d94ebf0e0544c0ac1ab4294fff408d1c2e1b26ef0922d5"
+      "bytes": 7168,
+      "sha256": "43ccb195f4912451aabd8422c941d09a6436f8152c0178ce5771f8c3e2d4c0b4"
     },
     {
       "path": "assets/server-monitor-host-stability-v217.js",
@@ -3207,5 +3207,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127760897
+  "totalBytes": 127763803
 }
