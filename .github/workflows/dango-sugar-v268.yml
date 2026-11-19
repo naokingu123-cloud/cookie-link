@@ -39,6 +39,7 @@ jobs:
           /tmp/dango-v268-enumerate > /tmp/dango-v268-independent.json
           node tests/dango-v268-calibration.mjs /tmp/dango-v268-independent.json
       - name: Use Chromium
+        if: ${{ !cancelled() }}
         run: |
           browser_path="$(command -v google-chrome || command -v chromium || true)"
           if [ -n "$browser_path" ]; then
@@ -78,6 +79,7 @@ jobs:
           node tests/local-sugar-v268-native.mjs
           node tests/local-debug-v258.mjs
       - name: Use Chromium
+        if: ${{ !cancelled() }}
         run: |
           browser_path="$(command -v google-chrome || command -v chromium || true)"
           if [ -n "$browser_path" ]; then
@@ -109,6 +111,7 @@ jobs:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Use Chromium
+        if: ${{ !cancelled() }}
         run: |
           browser_path="$(command -v google-chrome || command -v chromium || true)"
           if [ -n "$browser_path" ]; then
