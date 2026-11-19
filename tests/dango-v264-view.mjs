@@ -23,7 +23,7 @@ try{
  const first=await page.evaluate(()=>qa.choose(2,[13,14]));assert.equal(first,3);
  let ui=await page.evaluate(()=>({grade:qa.state.expansionLevel,detail:document.querySelector('.dgb-free-detail').textContent,value:document.querySelector('.dgb-free-value').textContent,badges:[...document.querySelectorAll('.dgb-trigger')].map(x=>({label:x.textContent,hit:x.classList.contains('hit')})),buttons:document.querySelectorAll('.dgb-cell').length,rows:[...document.querySelectorAll('.dgb-pay tbody tr')].length}));
  assert.equal(ui.grade,3);assert.ok(ui.detail.includes('周囲2マス'));assert.ok(ui.value.includes('19'));
- assert.deepEqual(ui.badges.map(b=>b.label),['3個','4個','5個']);assert.ok(ui.badges[2].hit);assert.equal(ui.buttons,28);assert.equal(ui.rows.length,5);
+ assert.deepEqual(ui.badges.map(b=>b.label),['3個','4個','5個']);assert.ok(ui.badges[2].hit);assert.equal(ui.buttons,28);assert.equal(ui.rows,5);
  const visible=await page.locator('.dgb-cell[data-cell-id="12"]').boundingBox();assert.ok(visible&&visible.width>1);
  await page.locator('.dgb-cell[data-cell-id="12"]').click();
  let placed=await page.evaluate(()=>({center:qa.state.expansionCenter,footprint:qa.state.expansionCells.length,odds:qa.state.oddsMultiplier,value:document.querySelector('.dgb-free-value').textContent}));
