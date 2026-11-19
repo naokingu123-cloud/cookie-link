@@ -9,8 +9,8 @@ const demoNumbers=Array.from({length:25},(_,i)=>i+1),animationMs=1500;
 const expansionRules=state=>Number(state?.rulesRevision)>=262;
 const boardGeometry=state=>typeof R.geometryFor==='function'?R.geometryFor(state):R.geometry;
 const lineLengths=state=>[...new Set(boardGeometry(state).lines.map(line=>line.length))].sort((a,b)=>a-b);
-const expansionSize=state=>Number(state?.rulesRevision)>=264&&Number.isInteger(state?.expansionCenter)?state.expansionCells.length:([0,1,7,Number(state?.rulesRevision)>=264?19:17][Number(state?.expansionLevel)||0]||0);
-const gradeLabel=state=>Number(state?.rulesRevision)>=264?([null,'3個','4個','5個'][Number(state?.expansionLevel)||0]||'未成立')+'ライン':'拡張HIT '+(state?.expansionLevel||0)+'/3';
+const expansionSize=state=>Number(state?.rulesRevision)>=265?(Number(state?.freeBudget)||1):Number(state?.rulesRevision)>=264&&Number.isInteger(state?.expansionCenter)?state.expansionCells.length:([0,1,7,Number(state?.rulesRevision)>=264?19:17][Number(state?.expansionLevel)||0]||0);
+const gradeLabel=state=>Number(state?.rulesRevision)>=265?(state?.qualifiedEarlyLengths?.length?String(state.expansionLevel)+'個ライン':'ライン未成立'):Number(state?.rulesRevision)>=264?([null,'3個','4個','5個'][Number(state?.expansionLevel)||0]||'未成立')+'ライン':'拡張HIT '+(state?.expansionLevel||0)+'/3';
 let clock=0,lastHit=-Infinity,lineStart=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,reachTimer=0,paused=false;
 let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTimer=0;
 const payoutNote=document.createElement('small');payoutNote.id='dango-payout-status';
@@ -62,7 +62,7 @@ const engine={
    }
    invalidateReach(slot);this.emit('settled');slot.updateDangoReach(app);
    if(!settlementWorker&&active===id)sceneSound(next.lastOddsGain?'bonus':next.newLines.length?'line':'cookie-hit',{volume:next.lastOddsGain ? .55 : .3});
-   if(!settlementWorker&&next.lastBonusGain)announceAchievement(game.name+(expansionRules(next)?(Number(next.rulesRevision)>=264?'　前半ライン成立！ '+gradeLabel(next)+' → FREE最大 '+expansionSize(next)+'マス':'　拡張番号にHIT！ FREE範囲 '+expansionSize(next)+'マス'):'　初期FREEにHIT！ 配置FREE＋1'));
+   if(!settlementWorker&&next.lastBonusGain)announceAchievement(game.name+(expansionRules(next)?(Number(next.rulesRevision)>=265?'　前半ライン成立！ '+gradeLabel(next)+' → FREE '+expansionSize(next)+'個':Number(next.rulesRevision)>=264?'　前半ライン成立！ '+gradeLabel(next)+' → FREE最大 '+expansionSize(next)+'マス':'　拡張番号にHIT！ FREE範囲 '+expansionSize(next)+'マス'):'　初期FREEにHIT！ 配置FREE＋1'));
    announceHighestRoles(next,R.highestRolesFor(before));
    if(next.phase==='done')finish(this.version);
   }
@@ -125,7 +125,7 @@ function changePlacement(next){
  invalidateReach(slot);engine.emit('settled');slot.updateDangoReach(app);savePlacementSoon();
 }
 view.setCallbacks({
- onCell(cellId){if(!canPlace())return;const s=engine.state,selected=expansionRules(s)?s.expansionCenter===cellId:s.manualFreeCells.includes(cellId);changePlacement(selected?R.undoFree(s,cellId):R.placeFree(s,cellId));},
+ onCell(cellId){if(!canPlace())return;const s=engine.state,selected=Number(s.rulesRevision)>=265?s.manualFreeCells.includes(cellId):expansionRules(s)?s.expansionCenter===cellId:s.manualFreeCells.includes(cellId);changePlacement(selected?R.undoFree(s,cellId):R.placeFree(s,cellId));},
  onAuto(){if(canPlace())changePlacement(R.autoPlace(engine.state));}
 });
 function projectReaches(state){
@@ -215,7 +215,7 @@ const oldSyncPause=syncPause;syncPause=function(){const result=oldSyncPause.appl
 const oldHud=hud;hud=function(a){oldHud(a);if(active===id){
  const s=engine.state,isExpansion=expansionRules(s);
  put('best','完成した串 '+s.completedLines.length+'本 ／ ODDS ×'+s.oddsMultiplier+(isExpansion?' ／ '+gradeLabel(s):''));
- const placement=isExpansion?'FREE範囲 '+expansionSize(s)+'マス ／ 中心を選択':'FREE配置 '+s.manualFreeCells.length+' / '+s.freeBudget;
+ const placement=Number(s.rulesRevision)>=265?'FREE '+s.manualFreeCells.length+'/'+s.freeBudget+'個 ／ 個別配置':isExpansion?'FREE範囲 '+expansionSize(s)+'マス ／ 中心を選択':'FREE配置 '+s.manualFreeCells.length+' / '+s.freeBudget;
  put('ballinfo',!engine.liveBoard?'5球 → FREE配置 → 3球':s.phase==='placing'?placement:s.phase==='done'?'串の配当を合計':s.draws.length<5?'前半 ／ あと'+(5-s.draws.length)+'球':'後半 ／ あと'+(8-s.draws.length)+'球');
 }};
 const oldResult=renderRoundResult;renderRoundResult=function(a){
@@ -223,7 +223,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.dango=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state,lines=lineLengths(s).filter(length=>s.lineCounts[length]).map(length=>length+'個ライン '+s.lineCounts[length]+'本').join(' ／ ');
  const highestRoles=R.highestRolesFor(s);
- const freeDetail=(expansionRules(s)?' ／ '+gradeLabel(s)+' ／ FREE範囲 '+expansionSize(s)+'マス':' ／ 配置FREE '+s.manualFreeCells.length+'個')+' ／ ODDS ×'+s.oddsMultiplier;
+ const freeDetail=(Number(s.rulesRevision)>=265?' ／ '+gradeLabel(s)+' ／ 配置FREE '+s.manualFreeCells.length+'/'+s.freeBudget+'個':expansionRules(s)?' ／ '+gradeLabel(s)+' ／ FREE範囲 '+expansionSize(s)+'マス':' ／ 配置FREE '+s.manualFreeCells.length+'個')+' ／ ODDS ×'+s.oddsMultiplier;
  row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+freeDetail+(highestRoles.length?' ／ 最高役：'+roleLabel(s,highestRoles):''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);

@@ -18,7 +18,7 @@
     "test:sugar": "node tests/sugar-challenge-v254-rules.mjs && node scripts/sugar-challenge-v254-probabilities.mjs --check && node tests/sugar-challenge-v254-ledger.mjs && node tests/sugar-challenge-v254-server.mjs && node tests/sugar-roulette-v254.mjs",
     "test:download:recording": "node tests/download-v255-recording.mjs",
     "test:download": "node tests/download-v255-server.mjs && node tests/download-v255-recording.mjs",
-    "test:dango:current": "node tests/dango-v262-rules.mjs && node tests/dango-v262-calibration.mjs && node tests/dango-v263-rules.mjs && node tests/dango-v263-calibration.mjs && node tests/dango-v264-rules.mjs && node tests/dango-v264-calibration.mjs && node tests/dango-v262-integration.mjs"
+    "test:dango:current": "node tests/dango-v262-rules.mjs && node tests/dango-v262-calibration.mjs && node tests/dango-v263-rules.mjs && node tests/dango-v263-calibration.mjs && node tests/dango-v264-rules.mjs && node tests/dango-v264-calibration.mjs && node tests/dango-v265-rules.mjs && node tests/dango-v265-calibration.mjs && node tests/dango-v262-integration.mjs && node tests/dango-v265-integration.mjs"
   },
   "engines": {
     "node": ">=20"

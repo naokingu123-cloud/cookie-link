@@ -79,3 +79,7 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 
 .dgb-scene[data-modern="true"] .dgb-actions{flex-basis:calc(var(--dgb-unit)*1.13)}
 .dgb-scene[data-modern="true"] .dgb-actions button{min-height:max(28px,calc(var(--dgb-unit)*.42));font-size:max(11px,calc(var(--dgb-unit)*.17))}
+
+/* v265: six compact grade indicators for individual FREE placement. */
+.dgb-trigger-numbers.dgb-grade-individual{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(var(--dgb-unit)*.025);max-width:100%;}
+.dgb-grade-individual .dgb-trigger{min-width:0;width:100%;height:calc(var(--dgb-unit)*.23);font-size:max(8px,calc(var(--dgb-unit)*.145));padding:0;}

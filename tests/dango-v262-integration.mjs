@@ -36,7 +36,7 @@ function host({worker=false,target=90,seed=26201}={}){
  context.DangoBingoView={mount:()=>({setCallbacks(value){Object.assign(callbacks,value);},draw:noop,drawMini:noop})};
  context.SweetsDangoThinkingV251={state:()=>({enabled:true,active:true,ballCount:5,remainingMs:15000,closesAt:Date.now()+15000}),checkpointPlacement:async()=>({ok:true})};
  vm.runInContext(rulesSource,context);
- const native=context.DangoBingoRules;
+ const native=context.DangoBingoRules.legacy264;
  app.random=native.seededRandom(seed);
  context.DangoBingoRules={...native,commitFree(state,options){events.push({type:'commit',draws:plain(state.draws)});return native.commitFree(state,options);}};
  vm.runInContext(hostSource,context);

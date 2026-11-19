@@ -33,7 +33,30 @@ function assertDangoCompletion(result){
   const overlap=state.initialFreeCells.filter(cell=>state.manualFreeCells.includes(cell)).length;
   const lateHits=result.numbers.slice(5).filter(number=>state.manualFreeCells.includes(state.numbers.indexOf(number))).length;
   assert.equal(state.oddsMultiplier,1+overlap+lateHits,'only placed FREE overlaps and later hits raise ODDS');
- }else if(state.rulesRevision>=264){
+ }else if(state.rulesRevision>=265){
+  const start=result.initialState.engines[9].state,early=result.numbers.slice(0,5);
+  const hits=early.map(n=>state.numbers.indexOf(n)),covered=new Set([...state.initialFreeCells,...hits]);
+  assert.deepEqual(state.initialFreeCells,start.initialFreeCells);
+  assert.deepEqual(state.numbers,start.numbers);
+  assert.deepEqual(state.triggerNumbers,[],'v265 is not based on special trigger numbers');
+  let longest=1,twoLineCount=0;
+  for(let axis=0;axis<3;axis++)for(let key=0;key<7;key++){
+   const cellIds=state.cells.filter(c=>(axis===0?c.row:axis===1?c.col:c.row-c.col)===key).map(c=>c.id);
+   if(cellIds.length>=2&&cellIds.length<=7&&cellIds.every(id=>covered.has(id))){
+    longest=Math.max(longest,cellIds.length);if(cellIds.length===2)twoLineCount++;
+   }
+  }
+  assert.equal(state.expansionLevel,longest,'longest completed early line determines individual FREE quota');
+  assert.equal(state.freeBudget,longest);
+  assert.equal(state.manualFreeCells.length,longest,'AUTO completes all allowed individual FREE cells');
+  assert.equal(new Set(state.manualFreeCells).size,longest);
+  assert.equal(state.expansionCenter,null,'v265 no longer has a radius-based placement center');
+  for(const id of state.manualFreeCells)assert.ok(!hits.includes(id),'never manually FREE an already-drawn number');
+  assert.ok(twoLineCount>=0&&twoLineCount<=3);
+  const overlap=state.initialFreeCells.filter(id=>state.manualFreeCells.includes(id)).length;
+  const hitLater=result.numbers.slice(5).filter(n=>state.manualFreeCells.includes(state.numbers.indexOf(n))).length;
+  assert.equal(state.oddsMultiplier,1+overlap+hitLater);
+ }else if(state.rulesRevision===264){
   const initial=result.initialState.engines[9].state;
   const firstFive=result.numbers.slice(0,5);
   const earlyHits=firstFive.map(n=>state.numbers.indexOf(n));

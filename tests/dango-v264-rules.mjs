@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';import vm from 'node:vm';
 const context=vm.createContext({console});
 vm.runInContext(await fs.readFile(new URL('../assets/dango-bingo-rules.js',import.meta.url),'utf8'),context);
-const R=context.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x));
+const R=context.DangoBingoRules.legacy264,P=x=>JSON.parse(JSON.stringify(x));
 const bit=id=>1<<id,mask=ids=>ids.reduce((m,id)=>m|bit(id),0),L=[3,4,5,6,7],numbers=Array.from({length:25},(_,i)=>i+1);
 assert.equal(R.REVISION,264);assert.equal(R.legacy263.REVISION,263);assert.equal(R.legacy262.REVISION,262);
 assert.equal(Math.min(...R.payRows.map(row=>row.hundredths)),20);
