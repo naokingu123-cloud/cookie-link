@@ -1,11 +1,12 @@
-name: Dango v262 trial - exact RTP, ODDS and download resume
+name: Dango v262 - exact RTP, ODDS and download resume
 on:
   workflow_dispatch:
   push:
-    branches: [feature/v262-dango-calibration]
+    branches: [main, feature/v262-dango-calibration]
     paths-ignore:
       - 'docs/dango-v262-layout-proof*.json'
       - 'docs/dango-v262-trial.md'
+      - 'docs/dango-v262.md'
 permissions:
   contents: read
 jobs:
@@ -54,7 +55,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dango-v262-trial-verification
+          name: dango-v262-verification
           path: |
             qa-dango-v262-view/
             qa-download-v255/

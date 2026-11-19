@@ -1,7 +1,7 @@
 /* Only public, version-verified app files are stored here. Never cache APIs,
  * authorization, profile data, admin pages, or prepared private game packages. */
 'use strict';
-const VERSION='20261119-v262-dango-trial',LEGACY_VERSIONS=['20261119-v258-local-debug-edition','20261119-v255-download-edition','20261119-v256-download-connect','20261119-v257-download-identity'],CACHE='sweets-download-assets-'+VERSION;
+const VERSION='20261119-v262-dango-payout',LEGACY_VERSIONS=['20261119-v262-dango-trial','20261119-v258-local-debug-edition','20261119-v255-download-edition','20261119-v256-download-connect','20261119-v257-download-identity'],CACHE='sweets-download-assets-'+VERSION;
 const base=new URL('./',self.location.href),marker=new URL('__download_ready_v255__',base).href;
 self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));

@@ -109,7 +109,7 @@ jobs:
           name: arcade-v254-tabs-diagnostics
           path: qa-tabs-v250/
           retention-days: 3
-      - name: Dango placement, thinking deadline, skewers and payout
+      - name: Restored legacy Dango placement, thinking deadline, skewers and payout
         id: dango
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/dango-v251-view.mjs

@@ -30,7 +30,8 @@ for(let target=50;target<=150;target++){
  assert.ok(Math.abs(c.weights.reduce((sum,w)=>sum+w.weight,0)-1)<1e-14);
  assert.ok(Math.abs(c.optimalReturnPercent-target)<1e-10);
  assert.ok(Math.abs(c.automaticReturnPercent-target)<1e-10);
- for(let moldIndex=0;moldIndex<2;moldIndex++){
+ assert.equal(c.weights[2].weight,3/200,'the AUTO-reachable jackpot layout remains available at every target');
+ for(let moldIndex=0;moldIndex<R.molds.length;moldIndex++){
   const s=R.create({target,moldIndex,seed:262000+target});
   assert.equal(s.numbers.length,28);assert.equal(s.numbers.filter(n=>n===0).length,3);
   assert.deepEqual([...s.numbers.filter(n=>n>0)].sort((a,b)=>a-b),Array.from({length:25},(_,i)=>i+1));
@@ -45,6 +46,20 @@ assert.equal(R.calibrationForTarget(73.5).target,73.5);
 const boundary=R.weightsForTarget(90)[0].weight;
 assert.equal(R.create({target:90,rng:()=>boundary-1e-12}).moldIndex,0);
 assert.equal(R.create({target:90,rng:()=>boundary}).moldIndex,1);
+assert.equal(R.create({target:90,rng:()=>1}).moldIndex,2);
+
+// This production layout must reach the advertised 2,000x role with AUTO,
+// using only the first five hits, including at the lowest payout setting.
+let jackpot=R.create({target:50,moldIndex:2,numbers:Array.from({length:25},(_,i)=>i+1)});
+for(const number of [1,2,5,9,14])jackpot=R.draw(jackpot,number);
+jackpot=R.autoPlace(jackpot);
+assert.equal(jackpot.expansionCenter,27);
+assert.equal(jackpot.lineCounts[7],3);
+assert.ok(jackpot.baseHundredths>=200000);
+jackpot=R.commitFree(jackpot,{autoFill:false});
+for(const number of [3,4,6])jackpot=R.draw(jackpot,number);
+assert.equal(jackpot.phase,'done');assert.equal(jackpot.lineCounts[7],3);
+assert.ok(jackpot.totalHundredths>=200000,'the 2,000x role remains payable after all eight balls');
 assert.throws(()=>R.create({initialFreeCells:[0,1]}),/three/);
 assert.throws(()=>R.create({triggerNumbers:[1,1,2]}),/distinct/);
 assert.throws(()=>R.create({numbers:Array(25).fill(1)}),/1–25/);

@@ -348,15 +348,19 @@
     return [masks,[masks[0]|masks[1],masks[0]|masks[2],masks[1]|masks[2]],[masks[0]|masks[1]|masks[2]]];
   });
   const requestedTiers=freeze({3:[0,40,200,5000],4:[0,200,1000,5000],5:[0,500,2500,20000],6:[0,1000,10000,50000],7:[0,3000,25000,200000]});
-  // Calibrated candidate table. All values are explicit hundredths of BET;
+  // Approved calibrated table. All values are explicit hundredths of BET;
   // no hidden payout multiplier or post-draw rejection changes the result.
   const tiers=freeze({3:[0,10,30,750],4:[0,30,150,750],5:[0,80,400,3000],6:[0,150,1500,7500],7:[0,450,4000,200000]});
   const payRows=freeze(LENGTHS.flatMap(length=>tiers[length].slice(1).map((hundredths,i)=>({length,count:i+1,atLeast:false,hundredths,label:length+'個ライン '+(i+1)+'本'}))));
   const highestRoleMinimums=freeze({3:3,4:3,5:3,6:3,7:3});
   const molds=freeze([
     {id:'triangle-edge',name:'すその三粒',initialFreeCells:[0,20,22],triggerCells:[8,11,12],optimalNumerator:2878969530,optimalReturnPercent:2878969530/DENOMINATOR,automaticReturnPercent:2878969530/DENOMINATOR},
-    {id:'triangle-festival',name:'三色まつり',initialFreeCells:[6,9,24],triggerCells:[10,23,25],optimalNumerator:14951305100,optimalReturnPercent:14951305100/DENOMINATOR,automaticReturnPercent:14951305100/DENOMINATOR}
+    {id:'triangle-festival',name:'三色まつり',initialFreeCells:[6,9,24],triggerCells:[10,23,25],optimalNumerator:14951305100,optimalReturnPercent:14951305100/DENOMINATOR,automaticReturnPercent:14951305100/DENOMINATOR},
+    {id:'triangle-jackpot',name:'三角の祝宴',initialFreeCells:[0,2,21],triggerCells:[3,10,15],optimalNumerator:11937213470,optimalReturnPercent:11937213470/DENOMINATOR,automaticReturnPercent:11937213470/DENOMINATOR}
   ]);
+  // Keep the 2,000x role reachable under the same first-five-only AUTO policy
+  // at every setting. This layout is selected before any actual draws occur.
+  const JACKPOT_LAYOUT_PROBABILITY=3/200;
   const effectiveTarget=legacy254.effectiveTarget,seededRandom=legacy254.seededRandom;
   const geometryFor=state=>modern(state)?geometry:legacy254.geometry;
   const linesFor=state=>geometryFor(state).lines;
@@ -370,10 +374,14 @@
   const sample=rng=>{const n=Number(rng());if(!Number.isFinite(n)||n<0||n>1)throw new RangeError('Dango RNG must return a value in [0,1].');return Math.min(1-Number.EPSILON,n);};
   function calibrationForTarget(value=90){
     const target=effectiveTarget(value),low=molds[0].optimalReturnPercent,high=molds[1].optimalReturnPercent;
-    if(!(low<=50&&high>=150))throw new RangeError('Dango calibration does not cover 50–150%.');
-    const share=(target-low)/(high-low),weights=[{moldIndex:0,weight:1-share},{moldIndex:1,weight:share}];
-    return {target,reference:'optimal-manual-and-auto',weights,optimalReturnPercent:low*(1-share)+high*share,automaticReturnPercent:low*(1-share)+high*share,
-      minimumReturnPercent:low,maximumReturnPercent:high,uniformDraws:true,includesFreeOverlapOdds:true,includesLateHitOdds:true,includesSugar:false};
+    const jackpotWeight=JACKPOT_LAYOUT_PROBABILITY,remaining=1-jackpotWeight,fixedReturn=jackpotWeight*molds[2].optimalReturnPercent;
+    const minimumReturnPercent=remaining*low+fixedReturn,maximumReturnPercent=remaining*high+fixedReturn;
+    if(!(minimumReturnPercent<=50&&maximumReturnPercent>=150))throw new RangeError('Dango calibration does not cover 50–150%.');
+    const share=((target-fixedReturn)/remaining-low)/(high-low);
+    const weights=[{moldIndex:0,weight:remaining*(1-share)},{moldIndex:1,weight:remaining*share},{moldIndex:2,weight:jackpotWeight}];
+    const expectedReturn=weights.reduce((sum,item)=>sum+item.weight*molds[item.moldIndex].optimalReturnPercent,0);
+    return {target,reference:'optimal-manual-and-auto',weights,optimalReturnPercent:expectedReturn,automaticReturnPercent:expectedReturn,
+      minimumReturnPercent,maximumReturnPercent,jackpotLayoutProbability:jackpotWeight,uniformDraws:true,includesFreeOverlapOdds:true,includesLateHitOdds:true,includesSugar:false};
   }
   const weightsForTarget=value=>calibrationForTarget(value).weights;
   function stateOk(state){
@@ -428,7 +436,10 @@
     }
     const requestedTarget=options.target??90,target=effectiveTarget(requestedTarget),rng=typeof options.rng==='function'?options.rng:options.seed!==undefined?seededRandom(options.seed):Math.random;
     let moldIndex=options.moldIndex;
-    if(moldIndex===undefined){const roll=sample(rng);moldIndex=roll<weightsForTarget(target)[0].weight?0:1;}
+    if(moldIndex===undefined){
+      const roll=sample(rng);let cumulative=0;moldIndex=molds.length-1;
+      for(const item of weightsForTarget(target)){cumulative+=item.weight;if(roll<cumulative){moldIndex=item.moldIndex;break;}}
+    }
     if(!Number.isInteger(moldIndex)||!molds[moldIndex])throw new RangeError('Unknown Dango triangle layout.');
     const mold=molds[moldIndex],initialFreeCells=(options.initialFreeCells??mold.initialFreeCells).slice();
     if(initialFreeCells.length!==3||new Set(initialFreeCells).size!==3||!initialFreeCells.every(cellIdOk))throw new RangeError('Dango triangle requires exactly three distinct FREE cells.');

@@ -1,10 +1,10 @@
 {
-  "version": "20261119-v262-dango-trial",
+  "version": "20261119-v262-dango-payout",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 41,
-      "sha256": "49bcae6f08c8be77381d4ac4593685769ed6a3ede48c366a9ffa7e60b6f27340"
+      "bytes": 42,
+      "sha256": "a2703b0acf5aa39ba8ae2c523cee12599798d4cbb3cc06a6a8b007926ca56170"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1198,8 +1198,8 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 44009,
-      "sha256": "f1997156bad23c61ad1e6671a12174e1713f73f835b130140f5e778d85877a50"
+      "bytes": 45047,
+      "sha256": "9a65c4240410cd7097c477215c9db04eddfe0405ae942dd59a4f5df8f45a23f2"
     },
     {
       "path": "assets/dango-bingo-view.js",
@@ -1233,8 +1233,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4351,
-      "sha256": "bcf309fa25136bb806ef02c0480b1e9b6aca0fdf77efeb6cdbdcf69812694186"
+      "bytes": 4352,
+      "sha256": "fa68e8d5f132ac384b93629c09a409066a144a21f8c966cb74d2788083fd2c43"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3762,
-      "sha256": "817c9dbf76a70459fe706877c74c80a004855c3258f0577a583ca6a98f85be1f"
+      "bytes": 3763,
+      "sha256": "83742c6dc70acb669c3c357cbacde8636d1aad273d504f7b1b7a9d5e4a197dcd"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2983,8 +2983,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 83992,
-      "sha256": "ec8bb10b674858d6b260426ac25ab723639f7bb7e94578f203bbdd80810fc9a2"
+      "bytes": 83995,
+      "sha256": "3b705a3b719b7362c493527e033abbb1f6ce4062b4c497dfad6d7195b50307fd"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3222,5 +3222,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127812389
+  "totalBytes": 127813433
 }

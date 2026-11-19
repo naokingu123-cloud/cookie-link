@@ -1,5 +1,6 @@
-/* Real isolated-server round: BET lock, mobile hit targets, FREE placement,
-   server thinking deadline, raster dango and bamboo on all nineteen lines. */
+/* Real isolated-server legacy round: current BET demonstration, restored
+   revision254 mobile hit targets, FREE placement, thinking deadline and all
+   nineteen legacy lines. New 28-cell presentation is covered by v262-view. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {createUiFixture,sleep,until} from './ui-v250-fixture.mjs';
@@ -49,19 +50,28 @@ try{
   window.__dangoRasterProbe={calls,restore:()=>{CanvasRenderingContext2D.prototype.drawImage=native;}};
   return {sprites:V.describeAssets(),cssAssets};
  });
- assert.equal(report.art.sprites.revision,253);assert.equal(report.art.sprites.presentationRevision,254);assert.equal(report.art.sprites.ready,true);assert.deepEqual(report.art.sprites.failed,[]);
+ assert.equal(report.art.sprites.revision,253);assert.equal(report.art.sprites.presentationRevision,262);assert.equal(report.art.sprites.ready,true);assert.deepEqual(report.art.sprites.failed,[]);
  assert.deepEqual(report.art.sprites.images.map(image=>image.key).sort(),['green','pink','rainbow','skewer','stand','white','yellow']);
  for(const image of report.art.sprites.images){assert.equal(image.loaded,true);assert.ok(image.width>=64&&image.height>=16,'decoded raster '+image.key);assert.match(image.url,/\/dango-art-v25[23]\//); const revision=['white','skewer'].includes(image.key)?252:253;assert.ok(image.url.includes('/dango-art-v'+revision+'/')); }
  for(const image of report.art.cssAssets)assert.ok(image.width>=256&&image.height>=256,'generated scene is decoded');
  await page.evaluate(()=>window.__qa250.select(window.__qa250.app.engines.findIndex(e=>e.kind==='dango')));
- report.ready=await page.evaluate(()=>{const e=window.DangoBingo.engine;return {live:e.liveBoard,draws:e.state.draws,numbers:e.state.numbers,initial:e.state.initialFreeCells,phase:window.__qa250.app.phase};});
+ report.ready=await page.evaluate(()=>{const e=window.DangoBingo.engine;return {live:e.liveBoard,rulesRevision:e.state.rulesRevision,draws:e.state.draws,numbers:e.state.numbers,initial:e.state.initialFreeCells,phase:window.__qa250.app.phase};});
  assert.equal(report.ready.phase,'ready');assert.equal(report.ready.live,false,'BET time only exposes a separate fixed demonstration');
- assert.deepEqual(report.ready.numbers,Array.from({length:25},(_,i)=>i+1));assert.ok(report.ready.initial.length>=1&&report.ready.initial.length<=3,'fixed nonlive demonstration also shows at least one initial FREE');
+ assert.equal(report.ready.rulesRevision,262);assert.equal(report.ready.numbers.length,28);assert.deepEqual(report.ready.numbers.filter(n=>n>0),Array.from({length:25},(_,i)=>i+1));assert.equal(report.ready.initial.length,3,'the current fixed demonstration has three unnumbered FREE cells');
  await sleep(1200);
  await call('/api/admin/machines/public-01/host/register',{session:host,body:{},adminOnly:true});
  round=await until(async()=>{const s=await call('/api/machines/public-01/state',{session:host});return s.round?.phase==='PLAYING'?s.round:null;},'Dango real round starts');
  await page.waitForFunction(id=>window.SweetsSharedMachine.active?.roundId===id&&window.__qa250.app.phase==='playing'&&window.DangoBingo.engine.liveBoard,round.id,{timeout:30000});
  await page.waitForFunction(()=>window.__qa250.app.engines.every(e=>!e.opening&&!e.busy&&!(e.queue?.length)),null,{timeout:30000});
+ // Restore an already-started legacy board through the real host hook. Do not
+ // make the current constructor pretend that newly started games use 25 cells.
+ report.legacyRound=await page.evaluate(()=>{
+  const e=window.DangoBingo.engine,R=window.DangoBingoRules;
+  e.state=R.create({rulesRevision:254,seed:254,target:90});
+  const restored=e.afterCheckpointRestoreV247();
+  return {restored,revision:e.state.rulesRevision,cells:e.state.cells.length};
+ });
+ assert.deepEqual(report.legacyRound,{restored:true,revision:254,cells:25});
  await page.evaluate(()=>window.SweetsSharedControllerV224.setAutoRebet(false));
  await sleep(Math.max(0,Number(round.drawStartsAt)-Date.now()+20));
  const touch=await context.newCDPSession(page);
@@ -69,7 +79,7 @@ try{
   await touch.send('Emulation.setTouchEmulationEnabled',{enabled:width<900,maxTouchPoints:width<900?5:1});
   await page.setViewportSize({width,height});await sleep(220);
   const data=await page.evaluate(()=>{
-   const s=window.DangoBingo.engine.state,root=document.querySelector('.dgb-scene'),pan=root.querySelector('.dgb-pan'),canvas=pan.querySelector('canvas'),b=pan.getBoundingClientRect(),g=window.DangoBingoView.geometry(b.width,b.height);
+   const s=window.DangoBingo.engine.state,root=document.querySelector('.dgb-scene'),pan=root.querySelector('.dgb-pan'),canvas=pan.querySelector('canvas'),b=pan.getBoundingClientRect(),g=window.DangoBingoView.geometry(b.width,b.height,{state:s});
    const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;let painted=0,clear=0;for(let i=3;i<pixels.length;i+=4){if(pixels[i])painted++;if(pixels[i]<24)clear++;}
    const backdrop=getComputedStyle(root,'::before'),surfaces=['.dgb-scene','.dgb-pan','.dgb-pay'].flatMap(selector=>['','::before','::after'].map(pseudo=>{const css=getComputedStyle(document.querySelector(selector),pseudo||null);return {selector,pseudo,background:css.backgroundImage,border:css.borderImageSource,opacity:css.opacity};}));
    const layout=['#screen>.game','#screen>.game>.field','#panels','.dgb-panel','.dgb-scene','.dgb-stage','.dgb-pan','#odds-panel'].map(selector=>{const el=document.querySelector(selector),rect=el.getBoundingClientRect(),css=getComputedStyle(el);return {selector,width:rect.width,height:rect.height,display:css.display,visibility:css.visibility,opacity:css.opacity,rows:css.gridTemplateRows};});
@@ -121,7 +131,7 @@ try{
  assert.notEqual(idleAfter.pixels,idleBefore.pixels,'the active host keeps drawing soft mochi motion before any hit or reach');report.idleHost={animated:true,gameStateUnchanged:true};
  const plan=await page.evaluate(()=>{
   const s=window.DangoBingo.engine.state,R=window.DangoBingoRules;
-  const line=R.lines.find(line=>line.length===3&&line.cells.some(id=>!s.initialFreeCells.includes(id)));
+  const line=R.linesFor(s).find(line=>line.length===3&&line.cells.some(id=>!s.initialFreeCells.includes(id)));
   const free=line.cells.findLast(id=>!s.initialFreeCells.includes(id)),draws=s.initialFreeCells.map(id=>s.numbers[id]);
   for(const id of [...line.cells,...Array.from({length:25},(_,i)=>i)]){const n=s.numbers[id];if(id!==free&&!draws.includes(n)&&draws.length<5)draws.push(n);}
   return {first:draws,cell:free,number:s.numbers[free],initial:s.initialFreeCells.length,lineId:line.id};
@@ -130,7 +140,7 @@ try{
  await page.waitForFunction(id=>window.DangoBingo.engine.state.phase==='placing'&&!document.querySelector('.dgb-cell[data-cell-id="'+id+'"]').disabled,plan.cell,{timeout:10000});
  let observed=await snapshot();assert.equal(observed.budget,1+plan.initial);assert.equal(observed.multiplier,1,'initial FREE hits only grant placements');
  const placementGeometry=await page.evaluate(cellId=>{
-  const p=document.querySelector('.dgb-pan'),b=p.getBoundingClientRect(),g=window.DangoBingoView.geometry(b.width,b.height),s=window.DangoBingo.engine.state;
+  const p=document.querySelector('.dgb-pan'),b=p.getBoundingClientRect(),s=window.DangoBingo.engine.state,g=window.DangoBingoView.geometry(b.width,b.height,{state:s});
   const centers=s.cells.map(cell=>{const box=document.querySelector('.dgb-cell[data-cell-id="'+cell.id+'"]').getBoundingClientRect(),point=g.centers[cell.id];return {id:cell.id,dx:Math.abs(box.x+box.width/2-b.x-point.x),dy:Math.abs(box.y+box.height/2-b.y-point.y)};});
   return {centers,tap:{x:b.x+g.centers[cellId].x,y:b.y+g.centers[cellId].y},thinking:window.SweetsDangoThinkingV251.state()};
  },plan.cell);
@@ -175,8 +185,8 @@ try{
  assert.equal(paidAgain.sameWin,true);assert.equal(paidAgain.restored,false);assert.equal(paidAgain.processed,8);
  await page.screenshot({path:out+'/dango-skewers-and-rainbow-1366.png'});
  report.mini=await page.evaluate(()=>{
-  const R=window.DangoBingoRules,V=window.DangoBingoView,canvas=document.createElement('canvas');canvas.width=600;canvas.height=400;const c=canvas.getContext('2d'),g=V.geometry(600,400,{layout:'compact'}),numbers=Array.from({length:25},(_,i)=>i+1);
-  const base=R.create({initialFreeCells:[20],numbers,seed:253}),skewers=[],outsideDango=new Uint8Array(600*400);
+  const R=window.DangoBingoRules,V=window.DangoBingoView,canvas=document.createElement('canvas');canvas.width=600;canvas.height=400;const c=canvas.getContext('2d'),numbers=Array.from({length:25},(_,i)=>i+1);
+  const base=R.create({rulesRevision:254,initialFreeCells:[20],numbers,seed:253}),g=V.geometry(600,400,{layout:'compact',state:base}),skewers=[],outsideDango=new Uint8Array(600*400);
   const expectedHue=(length,r,g,b)=>{
    const maximum=Math.max(r,g,b),minimum=Math.min(r,g,b),delta=maximum-minimum;if(maximum<85||delta/maximum<.2)return false;
    let h=maximum===r?60*((g-b)/delta%6):maximum===g?60*((b-r)/delta+2):60*((r-g)/delta+4);if(h<0)h+=360;
@@ -186,7 +196,7 @@ try{
   // The wide colored glow is intentionally allowed around the bamboo. Pixels
   // outside every dango still have to follow the actual skewer direction.
   for(let y=0;y<400;y++)for(let x=0;x<600;x++)outsideDango[y*600+x]=g.centers.every(p=>(x-p.x)**2+(y-p.y)**2>(g.radius*1.12)**2)?1:0;
-  for(const line of R.lines){
+  for(const line of R.linesFor(base)){
    const state={...base,completedLines:[],newLines:[],cells:base.cells.map(cell=>({...cell,marked:line.cells.includes(cell.id)}))};V.drawMini(c,state,{age:Infinity,time:0,reducedMotion:true});const before=c.getImageData(0,0,600,400).data;
    V.drawMini(c,{...state,completedLines:[line.id]},{age:Infinity,time:0,reducedMotion:true});const after=c.getImageData(0,0,600,400).data;
    const a=g.centers[line.cells[0]],b=g.centers[line.cells.at(-1)],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d;let changedOutside=0,skewerOnLine=0,colorPixels=0;
@@ -201,7 +211,7 @@ try{
   // Use a deterministic independent rule state for each requested color. Cell20
   // is an initial FREE that was hit; cell22 stays green, cell3 becomes rainbow,
   // cell8 is a still-unhit yellow manual FREE and cell24 is ordinary white.
-  let s=R.create({initialFreeCells:[20,22],numbers,seed:253});for(const n of [2,3,5,12,21])s=R.draw(s,n);for(const id of [3,8])s=R.placeFree(s,id);s=R.commitFree(s);s=R.draw(s,4);V.drawMini(c,s,{age:Infinity,time:0,reducedMotion:true});
+  let s=R.create({rulesRevision:254,initialFreeCells:[20,22],numbers,seed:253});for(const n of [2,3,5,12,21])s=R.draw(s,n);for(const id of [3,8])s=R.placeFree(s,id);s=R.commitFree(s);s=R.draw(s,4);V.drawMini(c,s,{age:Infinity,time:0,reducedMotion:true});
   const rendered=V.describeAssets().last.mini,pixels=c.getImageData(0,0,600,400).data;let painted=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i])painted++;
   const region=id=>{const p=g.centers[id],counts={opaque:0,pink:0,green:0,white:0,yellow:0,hueBins:Array(6).fill(0)};for(let y=Math.floor(p.y-g.radius*.96);y<=p.y+g.radius*.96;y++)for(let x=Math.floor(p.x-g.radius*.96);x<=p.x+g.radius*.96;x++){
    const distance=Math.hypot(x-p.x,y-p.y);if(distance<g.radius*.4||distance>g.radius*.96||x<0||x>=600||y<0||y>=400)continue;
@@ -223,16 +233,16 @@ try{
  assert.ok(yellow.yellow>yellow.opaque*.12,'unhit manual FREE is moon-yellow');assert.ok(pink.pink>pink.opaque*.1,'HIT becomes tricolor-dango pink');assert.ok(green.green>green.opaque*.15,'unhit initial FREE is yellow-green');assert.ok(white.white>white.opaque*.3,'ordinary dango is white');
  for(const key of ['white','green','pink','yellow','rainbow'])assert.ok(report.mini.rendered.kinds[key]>=1,'requested state uses the '+key+' raster');
  report.motion=await page.evaluate(()=>{
-  const R=window.DangoBingoRules,V=window.DangoBingoView,canvas=Object.assign(document.createElement('canvas'),{width:640,height:440}),c=canvas.getContext('2d'),base=R.create({initialFreeCells:[20],numbers:Array.from({length:25},(_,i)=>i+1),seed:253});
+  const R=window.DangoBingoRules,V=window.DangoBingoView,canvas=Object.assign(document.createElement('canvas'),{width:640,height:440}),c=canvas.getContext('2d'),base=R.create({rulesRevision:254,initialFreeCells:[20],numbers:Array.from({length:25},(_,i)=>i+1),seed:253});
   const frame=(state,time,options={})=>{V.paint(c,state,{time,age:Infinity,lineAge:Infinity,...options},false);return c.getImageData(0,0,640,440).data;};
   const difference=(a,b,mask)=>{let count=0;for(let k=0;k<a.length;k+=4){if(mask&&!mask(k/4))continue;if(Math.abs(a[k]-b[k])+Math.abs(a[k+1]-b[k+1])+Math.abs(a[k+2]-b[k+2])+Math.abs(a[k+3]-b[k+3])>24)count++;}return count;};
   const idlePixels=difference(frame(base,0),frame(base,600));
   const reducedPixels=difference(frame(base,0,{reducedMotion:true}),frame(base,600,{reducedMotion:true}));
   const pausedPixels=difference(frame(base,0,{paused:true}),frame(base,600,{paused:true}));
-  const line=R.lines.find(line=>line.length===5),onlyLine={...base,cells:[],completedLines:[line.id],newLines:[]};
+  const line=R.linesFor(base).find(line=>line.length===5),onlyLine={...base,cells:[],completedLines:[line.id],newLines:[]};
   const movingSkewerPixels=difference(frame(onlyLine,0),frame(onlyLine,600));
   const stillSkewerPixels=difference(frame(onlyLine,0,{reducedMotion:true}),frame(onlyLine,600,{reducedMotion:true}));
-  const g=V.geometry(640,440),cell=base.cells.find(cell=>!cell.initialFree&&cell.id===12),point=g.centers[cell.id];
+  const g=V.geometry(640,440,{state:base}),cell=base.cells.find(cell=>!cell.initialFree&&cell.id===12),point=g.centers[cell.id];
   const nearOutline=i=>{const x=i%640,y=Math.floor(i/640),distance=Math.hypot(x-point.x,y-point.y);return distance>g.radius*1.07&&distance<g.radius*1.5;};
   const reach=[];
   for(let tier=0;tier<4;tier++){
@@ -275,10 +285,10 @@ try{
  assert.equal(report.legacyPreview.values.find(row=>row.length===4&&row.count===1).text,'200','legacy 4-cell payout remains 1×2');assert.equal(report.legacyPreview.mainGameUnchanged,true);
  assert.equal(errors.length,0,JSON.stringify(errors));report.pageErrors=errors;
  await fs.writeFile(out+'/result.json',JSON.stringify(report,null,2)+'\n');
- console.log('DANGO_V253_VIEW_PASS',JSON.stringify({screens:report.screens.length,balls:report.balls.length,manual:final.manual,multiplier:final.multiplier,skewers:report.mini.skewers.length,rasterAssets:report.art.sprites.images.length+report.art.cssAssets.length,errors}));
+ console.log('DANGO_LEGACY_VIEW_PASS',JSON.stringify({currentDemonstration:report.ready.rulesRevision,restoredRule:report.legacyRound.revision,screens:report.screens.length,balls:report.balls.length,manual:final.manual,multiplier:final.multiplier,skewers:report.mini.skewers.length,rasterAssets:report.art.sprites.images.length+report.art.cssAssets.length,errors}));
 }catch(error){
  report.failure={message:String(error),stack:error.stack,errors,warnings:fixture.warnings};
  try{report.failure.state=await snapshot();await page.screenshot({path:out+'/failure.png'});}catch(captureError){report.failure.captureError=String(captureError);}
  await fs.writeFile(out+'/partial-result.json',JSON.stringify(report,null,2)+'\n');await fs.writeFile(out+'/failure-server.log',fixture.logs.slice(-20000));
- console.error('DANGO_V253_VIEW_FAIL',error,JSON.stringify(errors),fixture.logs.slice(-4000));throw error;
+ console.error('DANGO_LEGACY_VIEW_FAIL',error,JSON.stringify(errors),fixture.logs.slice(-4000));throw error;
 }finally{await fixture.close();}

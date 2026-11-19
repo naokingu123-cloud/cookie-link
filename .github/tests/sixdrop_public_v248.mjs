@@ -11,8 +11,8 @@ function assertPayoutContained(bounds){
  const panel=bounds.panel,tolerance=1;
  assert.ok(panel.width>0&&panel.height>0,'the published payout panel has a visible area');
  assert.equal(bounds.rows.length,6,'the published payout matrix contains its header and all five payout rows');
- assert.equal(bounds.rows.flatMap(row=>row.cells).length,23,'only five row labels, five column labels and thirteen valid values exist');
- assert.deepEqual(bounds.rows.filter(row=>row.length!==null).map(row=>row.cells.length-1),[4,4,3,1,1],'invalid payout cells are absent');
+ assert.equal(bounds.rows.flatMap(row=>row.cells).length,24,'four header cells, five row labels and fifteen valid values exist');
+ assert.deepEqual(bounds.rows.filter(row=>row.length!==null).map(row=>row.cells.length-1),[3,3,3,3,3],'each line length has exactly three payout values');
  const contained=(rect,label)=>{
   assert.ok(rect.width>0&&rect.height>0,label+' has a visible area');
   assert.ok(rect.left>=panel.left-tolerance&&rect.top>=panel.top-tolerance&&rect.right<=panel.right+tolerance&&rect.bottom<=panel.bottom+tolerance,label+' is fully within .dgb-pay: '+JSON.stringify({rect,panel}));
@@ -77,7 +77,7 @@ try{
   await page.waitForSelector('#edition-choice-v255');
   const chooser=await page.evaluate(()=>({edition:window.SweetsEditionV255.value,streaming:!!window.SweetsSharedMachine,download:!!window.SweetsDownloadV255,overflow:document.documentElement.scrollWidth>innerWidth+1,options:[...document.querySelectorAll('[data-edition-choice]')].map(link=>({edition:link.dataset.editionChoice,name:link.querySelector('strong').textContent,url:link.href}))}));
   assert.equal(chooser.edition,'');assert.equal(chooser.streaming,false);assert.equal(chooser.download,false);assert.equal(chooser.overflow,false);
-  assert.deepEqual(chooser.options.map(option=>[option.edition,option.name]),[['streaming','ストリーミング版'],['download','ダウンロード版']]);
+  assert.deepEqual(chooser.options.map(option=>[option.edition,option.name]),[['streaming','ストリーミング版'],['download','ダウンロード版'],['local','ローカルデバッグ版']]);
   assert.equal(blocked.length,0,'the published chooser creates no player or game request');
   await page.screenshot({path:out+'/public-edition-choice-'+width+'.png'});
   await page.locator('[data-edition-choice="download"]').click();
@@ -148,37 +148,44 @@ try{
    }finally{prototype.drawImage=native;}
    const rectOf=node=>{const {x,y,width,height,top,right,bottom,left}=node.getBoundingClientRect();return {x,y,width,height,top,right,bottom,left};};
    const payoutBounds={panel:rectOf(root.querySelector('.dgb-pay')),rows:[...root.querySelectorAll('.dgb-pay tr')].map(row=>({length:Number(row.dataset.length)||null,rect:rectOf(row),cells:[...row.children].map((cell,column)=>({column,kind:cell.tagName.toLowerCase(),text:cell.textContent,rect:rectOf(cell)}))}))};
-   const payCells=[...root.querySelectorAll('.dgb-pay td[data-valid="true"]')].map(td=>({length:Number(td.closest('tr').dataset.length),count:Number(td.dataset.count),highest:td.dataset.highestRole==='true',rainbowAnimation:getComputedStyle(td,'::before').animationName,win:td.textContent,font:getComputedStyle(td.querySelector('.gold-number')||td).fontFamily})),geometry=V.geometry(640,420);
-   const panRect=rectOf(root.querySelector('.dgb-pan')),mainGeometry=V.geometry(panRect.width,panRect.height);
+   const payCells=[...root.querySelectorAll('.dgb-pay td[data-valid="true"]')].map(td=>({length:Number(td.closest('tr').dataset.length),count:Number(td.dataset.count),highest:td.dataset.highestRole==='true',rainbowAnimation:getComputedStyle(td,'::before').animationName,win:td.textContent,font:getComputedStyle(td.querySelector('.gold-number')||td).fontFamily})),geometry=V.geometry(640,420,{state:e.state});
+   const panRect=rectOf(root.querySelector('.dgb-pan')),mainGeometry=V.geometry(panRect.width,panRect.height,{state:e.state});
    const positions={scene:rectOf(root),pan:panRect,geometry:mainGeometry,payout:rectOf(root.querySelector('.dgb-pay')),free:rectOf(root.querySelector('.dgb-free-stat')),oldTopText:root.querySelectorAll('.dgb-status,.dgb-phase-label,.dgb-phase-value,.dgb-pay-title').length,invalidPayoutCells:root.querySelectorAll('.dgb-pay td:not([data-valid="true"])').length};
+   const distance=(rect,point)=>{const x=panRect.x+point.x,y=panRect.y+point.y;return Math.hypot(x-Math.max(rect.left,Math.min(rect.right,x)),y-Math.max(rect.top,Math.min(rect.bottom,y)));};
+   positions.minimumPayoutClearance=Math.min(...payoutBounds.rows.flatMap(row=>row.cells.flatMap(cell=>mainGeometry.centers.map(point=>distance(cell.rect,point)))));
+   positions.minimumFreeClearance=Math.min(...mainGeometry.centers.map(point=>distance(positions.free,point)));
    const payRowLabels=[...root.querySelectorAll('.dgb-pay tbody th')].map(th=>th.textContent),payBackgrounds=[...root.querySelectorAll('.dgb-pay tbody tr')].map(row=>({length:Number(row.dataset.length),row:getComputedStyle(row).backgroundColor,cell:getComputedStyle(row.querySelector('td')).backgroundColor}));
-   return {revision:R.REVISION,highestRoleMinimums:R.highestRoleMinimums,liveBoard:e.liveBoard,cells:e.state.cells.length,numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.lines.length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,payBackgrounds,positions,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
+   return {revision:R.REVISION,highestRoleMinimums:R.highestRoleMinimums,liveBoard:e.liveBoard,cells:e.state.cells.length,rows:Array.from({length:7},(_,row)=>e.state.cells.filter(cell=>cell.row===row).length),numbers:e.state.numbers,initialFree:e.state.initialFreeCells,lines:R.linesFor(e.state).length,payRows:root.querySelectorAll('.dgb-pay tbody tr').length,payCells,payoutBounds,payRowLabels,payBackgrounds,positions,payHeaders:[...root.querySelectorAll('.dgb-pay thead th')].map(th=>th.textContent),buttons:root.querySelectorAll('.dgb-cell').length,confirmButtons:root.querySelectorAll('[data-action="confirm"]').length,oddsByPay:!!root.querySelector('.dgb-pay .dgb-pay-odds .dgb-odds-value'),demo:window.SweetsDemoSuite.status.kind,odds:e.state.oddsMultiplier,art,cssAssets,backdrop:{image:backdrop.backgroundImage,opacity:Number(backdrop.opacity),display:backdrop.display},surfaces,probe:{calls,painted,clearFraction:clear/(640*420),stateUnchanged:stateBefore===JSON.stringify(e.state),geometry}};
   });
   report.currentScreen={width,height,...info};
-  assert.equal(info.dango.revision,254);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,25);assert.equal(info.dango.lines,19);assert.equal(info.dango.payRows,5);assert.equal(info.dango.payCells.length,13);assert.equal(info.dango.buttons,25);
-  assert.deepEqual(info.dango.highestRoleMinimums,{3:4,4:3,5:2,7:1,9:1});
-  assert.deepEqual(info.dango.payCells.filter(cell=>cell.highest).map(cell=>[cell.length,cell.count]),[[3,4],[4,3],[4,4],[5,2],[5,3],[7,1],[9,1]]);
+  assert.equal(info.dango.revision,262);assert.equal(info.dango.liveBoard,false);assert.equal(info.dango.cells,28);assert.deepEqual(info.dango.rows,[1,2,3,4,5,6,7]);assert.equal(info.dango.lines,15);assert.equal(info.dango.payRows,5);assert.equal(info.dango.payCells.length,15);assert.equal(info.dango.buttons,28);
+  assert.deepEqual(info.dango.highestRoleMinimums,{3:3,4:3,5:3,6:3,7:3});
+  assert.deepEqual(info.dango.payCells.filter(cell=>cell.highest).map(cell=>[cell.length,cell.count]),[[3,3],[4,3],[5,3],[6,3],[7,3]]);
   for(const cell of info.dango.payCells.filter(cell=>cell.highest))assert.equal(cell.rainbowAnimation,'dgb-pay-rainbow');
-  assert.deepEqual(info.dango.payHeaders.slice(1),['1本','2本','3本','4本以上']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);
+  assert.deepEqual(info.dango.payHeaders.slice(1),['1本','2本','3本']);assert.equal(info.dango.confirmButtons,0);assert.equal(info.dango.oddsByPay,true);
   for(const cell of info.dango.payCells){assert.match(cell.font,/ArcadePayout/);assert.doesNotMatch(cell.win,/[,，]/);}
   assertPayoutContained(info.dango.payoutBounds);
-  assert.deepEqual(info.dango.payRowLabels,['3個ライン','4個ライン','5個ライン','7個ライン','9個ライン']);
+  assert.deepEqual(info.dango.payRowLabels,['3個ライン','4個ライン','5個ライン','6個ライン','7個ライン']);
   assert.equal(info.dango.positions.oldTopText,0);assert.equal(info.dango.positions.invalidPayoutCells,0);
   const {scene,payout,free,pan,geometry:mainGeometry}=info.dango.positions;
-  assert.ok(payout.width>=mainGeometry.unit*4.36*1.22,'published payout is enlarged without changing the dango geometry');
   assert.ok(payout.left<scene.left+scene.width*.08&&payout.top<scene.top+scene.height*.1,'published payout sits in the upper left');
-  assert.ok(free.left>pan.x+mainGeometry.centers[0].x+mainGeometry.radius*.4,'published remaining FREE is right of the dango apex');
-  assert.ok(free.right<=scene.right+1&&free.bottom<=scene.bottom+1);
+  assert.ok(payout.right<=scene.right+1&&payout.bottom<=scene.bottom+1,'published payout fits inside its scene');
+  assert.ok(free.left>=scene.left-1&&free.top>=scene.top-1&&free.right<=scene.right+1&&free.bottom<=scene.bottom+1,'published FREE controls fit inside their scene');
+  assert.ok(info.dango.positions.minimumPayoutClearance>=mainGeometry.radius-.75,'published payout avoids every dango');
+  assert.ok(info.dango.positions.minimumFreeClearance>=mainGeometry.radius-.75,'published FREE controls avoid every dango');
+  assert.ok(mainGeometry.centers.every(point=>point.x-mainGeometry.radius>=-.75&&point.x+mainGeometry.radius<=pan.width+.75&&point.y-mainGeometry.radius>=-.75&&point.y+mainGeometry.radius<=pan.height+.75),'all 28 published dango fit the canvas');
   for(const row of info.dango.payBackgrounds){const bg=[row.cell,row.row].find(color=>color&&!color.endsWith(', 0)')&&color!=='transparent'),rgb=bg?.match(/[\d.]+/g)?.slice(0,3).map(Number);assert.ok(rgb&&Math.max(...rgb)<110,'published payout uses a dark tinted background');}
-  for(const row of info.dango.payoutBounds.rows)for(const cell of row.cells)for(const point of mainGeometry.centers){const rect=cell.rect,x=pan.x+point.x,y=pan.y+point.y,dx=x-Math.max(rect.left,Math.min(rect.right,x)),dy=y-Math.max(rect.top,Math.min(rect.bottom,y));assert.ok(Math.hypot(dx,dy)>=mainGeometry.radius*.85,'published payout avoids the dango core');}
-  assert.deepEqual(info.dango.numbers,Array.from({length:25},(_,i)=>i+1));assert.ok(info.dango.initialFree.length>=1&&info.dango.initialFree.length<=3);assert.equal(info.dango.odds,1);
-  assert.equal(info.dango.art.revision,253);assert.equal(info.dango.art.presentationRevision,254);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
+  assert.equal(info.dango.numbers.length,28);assert.deepEqual(info.dango.numbers.filter(n=>n>0),Array.from({length:25},(_,i)=>i+1));assert.equal(info.dango.numbers.filter(n=>n===0).length,3);assert.equal(info.dango.initialFree.length,3);assert.ok(info.dango.initialFree.every(id=>info.dango.numbers[id]===0));assert.equal(info.dango.odds,1);
+  assert.equal(info.dango.art.revision,253);assert.equal(info.dango.art.presentationRevision,262);assert.equal(info.dango.art.ready,true);assert.deepEqual(info.dango.art.failed,[]);
   assert.deepEqual(info.dango.art.images.map(image=>image.key).sort(),['green','pink','rainbow','skewer','stand','white','yellow']);
   for(const image of info.dango.art.images){assert.equal(image.loaded,true);assert.ok(image.width>=64&&image.height>=16);assert.match(image.url,/\/dango-art-v25[23]\//);const version=['white','skewer'].includes(image.key)?252:253;assert.ok(image.url.includes('/dango-art-v'+version+'/'));}
   for(const image of info.dango.cssAssets)assert.ok(image.width>=256&&image.height>=256);
   assert.match(info.dango.backdrop.image,/dango-art-v252\/scene\.webp/);assert.ok(info.dango.backdrop.opacity>=.65);assert.notEqual(info.dango.backdrop.display,'none');
   assert.ok(info.dango.probe.painted>1000);assert.ok(info.dango.probe.clearFraction>.2,'generated scene remains visible through the main canvas');assert.equal(info.dango.probe.stateUnchanged,true);
-  const geometry=info.dango.probe.geometry;assert.ok(Math.abs(geometry.centers[2].x-geometry.centers[1].x-geometry.radius*2)<.01);assert.ok(Math.abs(geometry.centers[2].y-geometry.centers[0].y-geometry.radius*2)<.01);
+  const geometry=info.dango.probe.geometry,diameter=geometry.radius*2;
+  assert.ok(Math.abs(geometry.centers[2].x-geometry.centers[1].x-diameter)<.01,'horizontal neighbors follow the triangular lattice');
+  assert.ok(Math.abs(geometry.centers[1].y-geometry.centers[0].y-Math.sqrt(3)*diameter/2)<.01,'rows use the equilateral-triangle height');
+  assert.ok(Math.abs(Math.hypot(geometry.centers[1].x-geometry.centers[0].x,geometry.centers[1].y-geometry.centers[0].y)-diameter)<.01,'diagonal neighbors are one dango diameter apart');
   assert.ok(info.dango.probe.calls.board.includes('dango-white.webp'),'published board uses generated white dango');assert.ok(info.dango.probe.calls.board.includes('tsukimi-stand.webp'),'published dango sit on the generated offering stand');
   assert.ok(info.dango.probe.calls.lesson.includes('dango-rainbow.webp'));assert.ok(info.dango.probe.calls.lesson.includes('bamboo-skewer.webp'),'published lesson uses generated bamboo');
   assert.deepEqual(errors,[],'published Dango initialization has no uncaught errors');
@@ -223,6 +230,6 @@ await fs.writeFile(out+'/public-deployment.json',JSON.stringify(report,null,2)+'
 console.log('SIXDROP_PUBLIC_V248_READ_ONLY_PASS',JSON.stringify(report));
 console.log('ARCADE_PUBLIC_V249_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,logos:gameKinds.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,landscape:screen.arcade.landscape,loadedLogos:screen.arcade.brand.loaded,pageErrors:screen.pageErrors.length}))}));
 console.log('ARCADE_PUBLIC_V250_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,...screen.v250,pageErrors:screen.pageErrors.length}))}));
-console.log('DANGO_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
+console.log('DANGO_PUBLIC_V262_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,cells:screen.dango.cells,lines:screen.dango.lines,decodedSprites:screen.dango.art.images.length,highestCells:screen.dango.payCells.filter(cell=>cell.highest).length,backgroundOpacity:screen.dango.backdrop.opacity,clearCanvasFraction:screen.dango.probe.clearFraction,pageErrors:screen.pageErrors.length}))}));
 console.log('SUGAR_PUBLIC_V254_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,rulesRevision:screen.sugar.revision,decodedSugarAssets:screen.sugar.assets.length,reachFrameDecoded:screen.sugar.reachFrame.loaded,overlayHidden:screen.sugar.overlayHidden,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));
 console.log('DOWNLOAD_PUBLIC_V255_READ_ONLY_PASS',JSON.stringify({revision,appVersion,verifiedFiles:files.length,viewports:report.screens.map(screen=>({width:screen.width,height:screen.height,editionChoices:screen.chooser.options.map(option=>option.name),downloadEntry:screen.download.state.edition,publicGameplayActions:0,pageErrors:screen.pageErrors.length}))}));

@@ -1,7 +1,8 @@
 // Dango v262 independent integer calibration and cross-language fixtures.
 // Build: c++ -O3 -std=c++17 scripts/dango-v262-calibrate.cpp -o /tmp/dango-v262-calibrate
 // Run:   /tmp/dango-v262-calibrate > docs/dango-v262-calibration.json
-// Default jackpot: 2,000x. Reproduce the earlier table with --jackpot 20000.
+// Production calibration uses the approved 2,000x jackpot and fixed 3/200 mix.
+// The companion layout-search program accepts --jackpot 20000 for historical proofs.
 // No game JavaScript is imported: geometry, payout events and final rounds are
 // independently reconstructed below. A round's first five and last three sets
 // have C(25,5)*C(20,3) = 60,568,200 equiprobable possibilities.
@@ -129,12 +130,18 @@ Best bestCenter(Mask free,Mask early,int level,const Table& table) {
   assert(best.center>=0);return best;
 }
 struct Profile { std::string id;std::vector<int> free,trigger; };
-const std::array<Profile,2> PROFILES={{{"triangle-edge",{0,20,22},{8,11,12}},
-                                    {"triangle-festival",{6,9,24},{10,23,25}}}};
+const std::array<Profile,3> PROFILES={{{"triangle-edge",{0,20,22},{8,11,12}},
+                                    {"triangle-festival",{6,9,24},{10,23,25}},
+                                    {"triangle-jackpot",{0,2,21},{3,10,15}}}};
+// Reserve a draw-independent 1.5% for a layout on which optimal AUTO can
+// actually complete all three 7-cell lines. The other two weights remain
+// adjustable across the complete requested 50--150% range.
+constexpr Integer JACKPOT_WEIGHT_NUMERATOR=3, JACKPOT_WEIGHT_DENOMINATOR=200;
 std::uint32_t hash32(std::uint32_t x){x^=x>>16;x*=0x7feb352du;x^=x>>15;x*=0x846ca68bu;x^=x>>16;return x;}
 struct Sample { bool set=false;Mask early=0;Integer score=0;std::uint32_t key=0; };
 struct Result {
   Integer total=0,randomScaledTotal=0;
+  Integer jackpotOutcomeCount=0,jackpotOddsWeightedCount=0;
   std::array<Integer,4> byLevel{},count{};
   std::array<std::array<Sample,4>,4> samples{};
 };
@@ -147,6 +154,14 @@ Result enumerate(const Profile& p,const Table& table) {
     Mask early=bit(pool[a])|bit(pool[b])|bit(pool[c])|bit(pool[d])|bit(pool[e]);
     int level=popcount(early&trigger);auto best=bestCenter(free,early,level,table);
     result.total+=best.numerator;result.byLevel[level]+=best.numerator;result.count[level]++;
+    const Mask chosenFootprint=level?GEO.regions[level][best.center]:0;
+    const int jackpotMissing=popcount(GEO.unions[4][7]&~(free|early|chosenFootprint));
+    if(jackpotMissing<=3){
+      const std::array<Integer,4> completions={1140,171,18,1},extraOdds={171,18,1,0};
+      const int odds=1+popcount(free&chosenFootprint),q=popcount(chosenFootprint&~(free|early));
+      result.jackpotOutcomeCount+=completions[jackpotMissing];
+      result.jackpotOddsWeightedCount+=odds*completions[jackpotMissing]+q*extraOdds[jackpotMissing];
+    }
     Integer averageNumerator=0;
     if(!level)averageNumerator=best.numerator*CENTER_LCM;
     else{
@@ -240,38 +255,49 @@ void table(const Table&t){std::cout<<'[';for(int l=0;l<5;l++){if(l)std::cout<<',
 int main(int argc,char**argv){
   configureJackpot(argc,argv);
   std::cout<<std::setprecision(17);
-  std::array<Result,2> results={enumerate(PROFILES[0],CANDIDATE),enumerate(PROFILES[1],CANDIDATE)};
+  std::array<Result,PROFILES.size()> results;
+  for(std::size_t i=0;i<PROFILES.size();i++)results[i]=enumerate(PROFILES[i],CANDIDATE);
   const Profile minOptimal={"original-global-min-optimal",{20,21,22},{8,12,17}};
   const Profile minRandom={"original-global-min-random",{0,20,26},{8,11,12}};
   auto originalOptimal=enumerate(minOptimal,REQUESTED),originalRandom=enumerate(minRandom,REQUESTED);
-  std::cout<<"{\n\"schemaVersion\":1,\"rulesRevision\":262,\"status\":\"review-candidate-not-approved-for-main\",\n";
+  std::cout<<"{\n\"schemaVersion\":1,\"rulesRevision\":262,\"status\":\"approved-for-production\",\n";
   std::cout<<"\"jackpotMultiplier\":"<<jackpotHundredths/100<<",\n";
   std::cout<<"\"model\":{\"rows\":[1,2,3,4,5,6,7],\"cellCount\":28,\"numberCount\":25,\"initialFreeCount\":3,\"triggerCount\":3,\"firstDrawCount\":5,\"finalDrawCount\":3,\"expansionSizes\":[0,1,7,17],\"lineLengths\":[3,4,5,6,7],\"linesPerLength\":3,\"centerMayOverlapInitialFree\":true,\"centerMayOverlapFirstFiveHit\":false,\"odds\":\"1 + initial FREE sites covered by the expansion + final-three hits on the expansion\",\"nearest16TieRule\":\"hex distance, then (neighborId*13+centerId*7)%29\",\"placementPolicy\":\"maximum exact conditional expected payout after first five; smallest ID wins ties\",\"draws\":\"uniform without replacement\",\"includesSugar\":false,\"includesCreditRounding\":false},\n";
   std::cout<<"\"requestedPaytableHundredths\":";table(REQUESTED);std::cout<<",\"candidatePaytableHundredths\":";table(CANDIDATE);
   std::cout<<",\n\"integerMethod\":{\"earlySets\":"<<EARLY_SETS<<",\"lateSets\":"<<LATE_SETS<<",\"drawSpaceDenominator\":"<<DRAW_SPACE<<",\"centerCountLcm\":"<<CENTER_LCM<<",\"eventCounts\":[1140,171,18,1],\"extraOddsCounts\":[171,18,1,0],\"lineUnionCount\":35},\n\"profiles\":[";
-  for(int i=0;i<2;i++){
+  for(std::size_t i=0;i<PROFILES.size();i++){
     if(i)std::cout<<',';const auto&p=PROFILES[i];const auto&r=results[i];
     std::cout<<"{\"id\":\""<<p.id<<"\",\"initialFreeCells\":";list(p.free);std::cout<<",\"triggerCells\":";list(p.trigger);
     std::cout<<",\"optimalNumerator\":"<<r.total<<",\"denominator\":"<<DRAW_SPACE<<",\"optimalReturnPercent\":"<<double(r.total)/DRAW_SPACE;
     std::cout<<",\"randomNumerator\":"<<r.randomScaledTotal<<",\"randomDenominator\":"<<DRAW_SPACE*CENTER_LCM<<",\"randomReturnPercent\":"<<double(r.randomScaledTotal)/(DRAW_SPACE*CENTER_LCM);
+    std::cout<<",\"jackpotOutcomeCount\":"<<r.jackpotOutcomeCount<<",\"jackpotOddsWeightedCount\":"<<r.jackpotOddsWeightedCount<<",\"jackpotProbability\":"<<double(r.jackpotOutcomeCount)/DRAW_SPACE;
     std::cout<<",\"activationSetCounts\":";integerList(r.count);std::cout<<",\"activationOptimalNumerators\":";integerList(r.byLevel);std::cout<<'}';
   }
-  const Integer low=results[0].total,high=results[1].total,delta=high-low;
-  assert(low<50*DRAW_SPACE&&high>150*DRAW_SPACE);
-  std::cout<<"],\n\"settings\":[";
+  const Integer low=results[0].total,high=results[1].total,jackpot=results[2].total,delta=high-low;
+  const Integer fixedN=JACKPOT_WEIGHT_NUMERATOR,fixedD=JACKPOT_WEIGHT_DENOMINATOR;
+  const Integer remainingN=fixedD-fixedN,weightD=fixedD*delta,jn=fixedN*delta;
+  assert(remainingN*low+fixedN*jackpot<50*DRAW_SPACE*fixedD);
+  assert(remainingN*high+fixedN*jackpot>150*DRAW_SPACE*fixedD);
+  assert(results[2].jackpotOutcomeCount>0);
+  const Integer jackpotProbabilityN=fixedN*results[2].jackpotOutcomeCount,jackpotProbabilityD=fixedD*DRAW_SPACE;
+  const Integer probabilityGcd=std::gcd(jackpotProbabilityN,jackpotProbabilityD);
+  std::cout<<"],\n\"fixedJackpotProfile\":{\"moldIndex\":2,\"weightNumerator\":"<<fixedN<<",\"weightDenominator\":"<<fixedD<<",\"weight\":"<<double(fixedN)/fixedD;
+  std::cout<<",\"minimumMixedReturnPercent\":"<<double(remainingN*low+fixedN*jackpot)/(fixedD*DRAW_SPACE)<<",\"maximumMixedReturnPercent\":"<<double(remainingN*high+fixedN*jackpot)/(fixedD*DRAW_SPACE);
+  std::cout<<",\"allSettingsJackpotProbabilityNumerator\":"<<jackpotProbabilityN/probabilityGcd<<",\"allSettingsJackpotProbabilityDenominator\":"<<jackpotProbabilityD/probabilityGcd<<",\"allSettingsJackpotProbability\":"<<double(jackpotProbabilityN)/jackpotProbabilityD<<"},\n\"settings\":[";
   for(int target=50;target<=150;target++){
-    Integer hn=target*DRAW_SPACE-low,ln=high-target*DRAW_SPACE;
-    assert(hn>=0&&ln>=0&&hn+ln==delta);
-    assert(__int128(low)*ln+__int128(high)*hn==__int128(target)*DRAW_SPACE*delta);
+    Integer hn=fixedD*target*DRAW_SPACE-remainingN*low-fixedN*jackpot;
+    Integer ln=remainingN*high+fixedN*jackpot-fixedD*target*DRAW_SPACE;
+    assert(hn>0&&ln>0&&hn+ln+jn==weightD);
+    assert(__int128(low)*ln+__int128(high)*hn+__int128(jackpot)*jn==__int128(target)*DRAW_SPACE*weightD);
     if(target>50)std::cout<<',';
-    std::cout<<"{\"targetPercent\":"<<target<<",\"lowWeightNumerator\":"<<ln<<",\"highWeightNumerator\":"<<hn<<",\"weightDenominator\":"<<delta<<",\"highWeight\":"<<double(hn)/delta<<",\"exactReturnPercent\":"<<target<<'}';
+    std::cout<<"{\"targetPercent\":"<<target<<",\"lowWeightNumerator\":"<<ln<<",\"highWeightNumerator\":"<<hn<<",\"jackpotWeightNumerator\":"<<jn<<",\"weightDenominator\":"<<weightD<<",\"highWeight\":"<<double(hn)/weightD<<",\"jackpotWeight\":"<<double(jn)/weightD<<",\"exactReturnPercent\":"<<target<<'}';
   }
   const Integer cutN=originalOptimal.total-50*DRAW_SPACE,cutD=originalOptimal.total,gcd=std::gcd(cutN,cutD);
   std::cout<<"],\n\"originalPaytableLayoutSearch\":{\"freeTriplets\":3276,\"triggerTripletsPerFree\":2300,\"totalProfiles\":7534800,\"method\":\"For each FREE triplet enumerate all first-five sets, evaluate each activation level, and accumulate singleton/pair/triple trigger-intersection moments. Recover all 2300 trigger triplet expectations from these moments. Minimum over all layouts bounds every draw-independent layout mixture.\",\"source\":\"scripts/dango-v262-layout-search.cpp\",\"globalMinimumOptimal\":{\"free\":";list(minOptimal.free);std::cout<<",\"trigger\":";list(minOptimal.trigger);
   std::cout<<",\"numerator\":"<<originalOptimal.total<<",\"denominator\":"<<DRAW_SPACE<<",\"returnPercent\":"<<double(originalOptimal.total)/DRAW_SPACE<<"},\"globalMinimumRandom\":{\"free\":";list(minRandom.free);std::cout<<",\"trigger\":";list(minRandom.trigger);
   std::cout<<",\"numerator\":"<<originalRandom.randomScaledTotal<<",\"denominator\":"<<DRAW_SPACE*CENTER_LCM<<",\"returnPercent\":"<<double(originalRandom.randomScaledTotal)/(DRAW_SPACE*CENTER_LCM)<<"},\"necessaryAtLeastOneTierCutFor50\":{\"numerator\":"<<cutN/gcd<<",\"denominator\":"<<cutD/gcd<<",\"percent\":"<<100.*double(cutN)/cutD<<",\"argument\":\"If every payout retains fraction r or more of its original value, every policy expectation is at least r times its original value. The optimal-layout minimum therefore remains at least r times the reported global minimum. Reaching 50% requires r <= 50/globalMinimum. This is a necessary bound, not a sufficient payout adjustment.\"}},\n";
   std::cout<<"\"crossLanguageVectors\":[";
-  bool comma=false;for(int p=0;p<2;p++)for(int k=0;k<4;k++)for(int v=0;v<4;v++){if(comma)std::cout<<",\n";comma=true;emitVector(p,k,v,results[p].samples[k][v]);}
+  bool comma=false;for(std::size_t p=0;p<PROFILES.size();p++)for(int k=0;k<4;k++)for(int v=0;v<4;v++){if(comma)std::cout<<",\n";comma=true;emitVector(p,k,v,results[p].samples[k][v]);}
   std::cout<<"]\n}\n";
 }
 
