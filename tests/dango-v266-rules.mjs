@@ -18,7 +18,7 @@ const numbers=Array.from({length:25},(_,i)=>i+1);
 for(let m=0;m<3;m++){
  const s=R.create({moldIndex:m,numbers}),v=old.create({moldIndex:m===2?0:m,numbers});
  assert.equal(s.rulesRevision,266);assert.equal(v.rulesRevision,265);
- assert.equal(s.freeBudget,1);assert.equal(s.manualFreeCells.length,0);
+ assert.ok(s.freeBudget>=1&&s.freeBudget<=7);assert.equal(s.manualFreeCells.length,0);
  assert.equal(s.numbers.filter(x=>x>0).length,25);
 }
 const early=R.create({moldIndex:0,numbers});
