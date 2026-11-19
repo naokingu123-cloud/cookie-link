@@ -20,5 +20,13 @@ assert.equal(new URL(direct.location.href).searchParams.has('set'),false);assert
 assert.equal(new URL(load('https://example.test/game/?edition=download').location.href).searchParams.get('appv'),version);
 assert.equal(load('https://example.test/game/?serverHost=1').api.internal,true);
 assert.equal(load('https://example.test/game/?downloadWorker=1').api.internal,true);
+const debugLink=new URL(old.api.url('local'));
+assert.equal(debugLink.searchParams.get('edition'),'local');
+assert.equal(debugLink.searchParams.get('appv'),version);
+assert.equal(debugLink.searchParams.get('machine'),'room-2');
+assert.equal(debugLink.searchParams.has('sharedServer'),false,'local mode never shares a configured server endpoint');
+assert.equal(load(debugLink.href).api.value,'local');
+const local=load('https://example.test/game/?edition=local&appv='+version);assert.equal(local.dataset.edition,'local');
+assert.equal(local.navigations.length,0);
 const streaming=load('https://example.test/game/?edition=streaming&appv=old');assert.equal(new URL(streaming.location.href).searchParams.get('appv'),'old');
 console.log('edition-choice-v255: old-version launch, download pin, chooser isolation and internal bypass PASS');

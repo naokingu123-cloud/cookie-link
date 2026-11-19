@@ -90,7 +90,7 @@ function render(){
 function wake(){if(!worker&&!frame)frame=requestAnimationFrame(tick);}
 function tick(now){frame=0;const blocked=paused();if(!blocked){const dt=lastStamp===null?0:Math.min(100,Math.max(0,now-lastStamp));intro=Math.min(5400,intro+dt);fillAge=Math.min(900,fillAge+dt);announceAge+=dt;celebrateAge+=dt;if(challenge){const p=clamp(fillAge/700);fillSum=fromSum+(challenge.sum-fromSum)*(1-(1-p)**3);}}lastStamp=blocked?null:now;render();if(!blocked&&(challenge&&intro<5400||fillAge<900||announceAge<3700||celebrateAge<4400))wake();}
 function bind(){
- if(worker||query.get('edition')==='download')return;
+ if(worker||query.get('edition')==='download'||query.get('edition')==='local')return;
  const c=window.SweetsSharedMachine?.client;if(!c){setTimeout(bind,80);return;}client=c;
  c.on(message=>{if(message?.sugarV254)restore(message.sugarV254);else if(message?.payoutControlV3?.sugarV254)restore(message.payoutControlV3.sugarV254);});
  c.getState?.().then(msg=>{const data=msg?.sugarV254||msg?.payoutControlV3?.sugarV254;if(data)restore(data);}).catch(()=>{});

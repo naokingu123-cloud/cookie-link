@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 
 const source=await fs.readFile(new URL('../download-sw-v255.js',import.meta.url),'utf8');
 const build=JSON.parse(await fs.readFile(new URL('../app-version.json',import.meta.url),'utf8')).version;
-for(const pathname of ['/','/cookie-link/'])for(const version of [build,'20261119-v256-download-connect','20261119-v255-download-edition']){
+for(const pathname of ['/','/cookie-link/'])for(const version of [build,'20261119-v257-download-identity','20261119-v256-download-connect','20261119-v255-download-edition']){
  const origin='https://offline.fixture',base=origin+pathname,cache=new Map(),events={},network=[],opened=[];
  const pageUrl=base+'?edition=download&appv='+version;
  const put=(relative,body,type='text/plain')=>cache.set(base+relative,new Response(body,{headers:{'content-type':type}}));

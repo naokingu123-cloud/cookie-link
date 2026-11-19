@@ -56,9 +56,9 @@
   return {canvas,renderer,draw(p,yaw=-.18,time=0){build(p);if(lost)return false;rootPet.rotation.y=yaw;rootPet.position.y=Math.sin(time*1.7)*.035;rootPet.rotation.z=Math.sin(time)*.018;for(const side of [-1,1])parts['arm'+side].rotation.z=side*(.12+Math.sin(time*2)*.08);renderer.render(scene,camera);return true;}};
  }
  function boot(options){
-  const {$,THREE,recordBook,navigate,isMenuOpen}=options;let storage;try{storage=localStorage;}catch{}const store=new PlayerStore(storage);store.migrate(recordBook.data.records);
+  const {$,THREE,recordBook,navigate,isMenuOpen}=options;let storage;try{storage=root.SweetsLocalDebugV258?.storage||localStorage;}catch{}const store=new PlayerStore(storage);store.migrate(recordBook.data.records);
   root.addEventListener('storage',event=>{
-   if(event.key!==KEY||!event.newValue)return;
+   if(event.key!==(storage?.keyFor?.(KEY)||KEY)||!event.newValue)return;
    try{const raw=JSON.parse(event.newValue);if(raw.id===store.data.id)store.load(raw,()=>store.data.id);}catch{}
   });
   const photo='assets/pets/strawberry-mochi.png',fallback=new Image();fallback.src=photo;let petRenderer=null,failed=false,raf=0,last=0,angle=-.18,drag=null,currentPage='',thumb='',thumbKey='';const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
