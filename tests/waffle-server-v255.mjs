@@ -20,7 +20,7 @@ function observe(){
   processed:e.processed,running:e.running,idle:e.idle,draws:a.draws.slice(),
   state:{draws:s.draws,colors:s.colors,rack:s.rack,grade:s.grade,total:s.totalHundredths,flips:s.lastFlips,pow:s.lastPowActive,knockRows:s.lastKnockRows,reversal:s.reversalThisMove,phase:s.phase},
   grade:Number(pay.dataset.grade),win:Number(root.querySelector('.bs-total').textContent),bonus:root.querySelector('.bs-bonus strong').textContent,
-  rows:[...pay.querySelectorAll('tr[data-count]')].map(row=>({count:Number(row.dataset.count),value:Number(row.querySelector('.bs-block:not(.bs-incoming) span').getAttribute('aria-label').replace(' WIN','')),rect:rect(row)})),
+  rows:[...pay.querySelectorAll('tr[data-count]')].map(row=>({count:Number(row.dataset.count),value:Number(row.querySelector('.bs-block:not(.bs-incoming) span').getAttribute('aria-label')?.replace(' WIN','')),rect:rect(row)})),
   scene:rect(root),board:rect(grid),pay:rect(pay),painted,boardLabel:grid.getAttribute('aria-label'),width:innerWidth};
 }
 function contained(inner,outer,label){
@@ -43,7 +43,7 @@ for(const [bet,width] of [[7,320],[100,390]]){
  const {page,context,call,host,base,errors}=fixture,report={bet,width,version:fixture.version,balls:[]},external=[];
  context.on('request',request=>{const url=new URL(request.url());if(/^https?:$/.test(url.protocol)&&url.origin!==base)external.push(url.origin+url.pathname);});
  try{
-  await page.waitForFunction(()=>window.WafflePowV159?.version===232&&window.SweetsSharedControllerV224?.stable()&&window.SweetsSharedControllerV224.canEditBets(window.__qa250.app));
+  await page.waitForFunction(()=>window.WafflePowV159?.version==='v232'&&window.SweetsSharedControllerV224?.stable()&&window.SweetsSharedControllerV224.canEditBets(window.__qa250.app));
   const session=await page.evaluate(()=>{const c=window.SweetsSharedMachine.client;return {player:{id:c.playerId},token:c.token};});
   const before=(await call('/api/machines/public-01/state',{session})).payoutControlV3;
   const selected=await page.evaluate(bet=>{
