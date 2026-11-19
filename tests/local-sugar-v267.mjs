@@ -7,7 +7,7 @@ const app={
  random:()=>.25,
  onChange(){},start(){if(this.phase!=='ready')return false;this.phase='playing';this.token++;this.locked=this.bets.slice();this.draws=[];return true;},
  acceptNumber(n){if(this.phase!=='playing'||this.draws.length>=8||this.draws.includes(n))return false;this.draws.push(n);if(this.draws.length===8)this.finishRound();return true;},
- finishRound(){this.totalWin=25;this.phase='result';},
+ finishRound(){if(this.phase!=='playing')return;this.totalWin=25;this.phase='result';},
  prepare(){this.phase='ready';this.draws=[];this.totalWin=0;},
  resetDebug(){this.wonderBank=[];this.phase='ready';this.draws=[];}
 };
