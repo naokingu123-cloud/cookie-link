@@ -35,7 +35,7 @@ for(const entry of data.settings){
 }
 for(const t of [50,90,150]){
  const reported=data.probabilityAtTargets[t],w=R.weightsForTarget(t).map(x=>x.weight);
- assert.deepEqual(w.map(x=>+x.toPrecision(12)),reported.profileWeights.map(x=>+x.toPrecision(12)));
+ assert.deepEqual(P(w.map(x=>+x.toPrecision(12))),reported.profileWeights.map(x=>+x.toPrecision(12)));
  for(let len=2;len<=7;len++){
   const row=reported.finalLineCountProbability.find(r=>r.length===len);
   assert.ok(row);assert.equal(row.exactCountProbabilities.length,4);
