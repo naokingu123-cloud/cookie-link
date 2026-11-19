@@ -8,7 +8,7 @@ const query=new URLSearchParams(location.search),sameOrigin=!/\.github\.io$/i.te
 const pageBase=new URL('./',location.href),pointerKey='sweets-download-resume-v255@'+pageBase.origin+pageBase.pathname+'@'+machine;
 const nativeStart=Arcade.prototype.start,nativePrepare=Arcade.prototype.prepare,nativeSetBet=Arcade.prototype.setBet,nativeFinish=Arcade.prototype.finishRound,nativeHud=hud;
 const initialProfile={name:playerLounge.store.data.name,pet:JSON.parse(JSON.stringify(playerLounge.store.data.pet)),photo:playerLounge.store.data.photo||''};
-let base='',playerId='',token='',profileReady=false,online=false,connecting=false,busy=false,pack=null,session=null,wallet=null,responseCache=null;
+let base='',playerId='',token='',profileReady=false,online=false,connecting=false,busy=false,pack=null,session=null,wallet=null,responseCache=null,identityConflict=false;
 let callbacks=null,started=false,playing=false,localComplete=false,pendingComplete=false,cursor=0,stableBall=0,playbackMs=0,stableMs=0,seq=0,ackSeq=0,frame=0,lastFrame=null,settling=false,settleStamp=0;
 const playbackTiming={frames:0,activeMs:0,settlingMs:0,maxFrameMs:0};
 let rng=null,error='',message='接続先サーバーを確認しています…',connectStep='接続先確認',assetsReady=false,assetsProgress=null,assetsTask=null,pollTimer=0,progressTask=null,syncTask=null,saveTask=Promise.resolve(),requestId='';
@@ -30,7 +30,10 @@ const safeError=problem=>{
   download_profile_required:'プロフィールの取得を再試行してください。',
   download_wallet_locked:'別のゲームの同期が終わるまでお待ちください。',
   rate_limited:'サーバーへのアクセスが集中しています。しばらくして再試行してください。',
-  offline:'通信が切れています。未取得のゲームを始めるにはサーバーへの接続が必要です。'
+  offline:'通信が切れています。未取得のゲームを始めるにはサーバーへの接続が必要です。',
+  download_identity_invalid:'保存したプレイヤー認証がサーバーと一致しません。元のCREDITや録画を保護するため停止しました。Windows側のサーバー保存データと認証を確認してください。',
+  download_identity_incomplete:'プレイヤーIDまたは認証情報が欠けています。既存のCREDITを保護するため自動で新規登録しません。',
+  download_player_mismatch:'異なるプレイヤーのデータが返されました。既存のCREDITを保護するため停止しました。'
  };
  if(known[issue])return known[issue];
  if(/^download_health_(?:404|405|501)$/.test(issue))return known.download_server_not_updated;
@@ -139,8 +142,40 @@ async function restoreCached(local,identity){
  const p=local.progress||{};stableBall=cursor=Math.max(stableBall,Math.min(8,number(p.ballIndex)));stableMs=playbackMs=Math.max(stableMs,Number(p.playbackMs)||0);seq=Math.max(seq,number(p.seq));ackSeq=Math.max(ackSeq,number(p.ackSeq));localComplete=!!p.complete||session?.status==='complete';pendingComplete=!!p.pendingComplete&&session?.status!=='complete';
  assetsReady=await cache.ready();message=localComplete?'前のゲームは再生済みです。接続後に次のBETへ進めます。':'保存したゲームがあります。通信がなくても再開できます。';render();
 }
+async function negotiateSession(saved){
+ const remembered=String(saved?.playerId||''),secret=String(saved?.token||'');
+ if(remembered||secret){
+  if(!remembered||!secret)throw Error('download_identity_incomplete');
+  // Never register a different player automatically when a saved token fails.
+  try{
+   const response=await api('profile',{timeout:11000});
+   if(response.playerId!==remembered)throw Error('download_player_mismatch');
+   return {identity:{player:{id:remembered,displayName:response.profile?.name||saved.displayName||'PLAYER'},token:secret},profile:response};
+  }catch(problem){
+   const unauthorized=problem?.status===401||String(problem?.message)==='unauthorized';
+   if(!unauthorized||pack)throw problem;
+   // An existing Streaming credential may still be valid for the same
+   // public server; do not send it to any new or arbitrary origin.
+   const previous=base===G.DEFAULT_SERVER?G.read('sweets-shared-session-v176',null):null;
+   if(previous?.playerId&&previous?.token&&(previous.playerId!==remembered||previous.token!==secret)){
+    const formerId=playerId,formerToken=token;
+    playerId=String(previous.playerId);token=String(previous.token);
+    try{
+     const response=await api('profile',{timeout:11000});
+     if(response.playerId!==playerId)throw Error('download_player_mismatch');
+     return {identity:{player:{id:playerId,displayName:response.profile?.name||previous.displayName||'PLAYER'},token},profile:response};
+    }catch{playerId=formerId;token=formerToken;}
+   }
+   throw Error('download_identity_invalid');
+  }
+ }
+ // No previous account: this is the only automatic registration path.
+ const identity=await api('',{method:'POST',sessionEndpoint:true,timeout:11000,body:{displayName:initialProfile.name||saved?.displayName||'PLAYER'}});
+ if(!identity.player?.id||!identity.token)throw Error('download_session_invalid');
+ return {identity,profile:null};
+}
 async function initialize(){
- if(connecting)return;connecting=true;error='';setConnectStep('接続先サーバーを確認しています');
+ if(connecting)return;connecting=true;error='';identityConflict=false;setConnectStep('接続先サーバーを確認しています');
  try{
   // First recover a verified unfinished package locally, even if the browser
   // still reports online while the discovery route is unavailable. An absent,
@@ -161,12 +196,12 @@ async function initialize(){
   if(navigator.onLine){setConnectStep('サーバーの対応状況を確認しています');await confirmDownloadServer();}
   if(!navigator.onLine)throw Error('offline');
   setConnectStep('プレイヤー認証中');
-  const identity=await api('',{method:'POST',sessionEndpoint:true,timeout:11000,body:{playerId,displayName:initialProfile.name||saved.displayName||'PLAYER'}});
-  if(playerId&&identity.player?.id!==playerId)throw Error('download_player_mismatch');
+  const established=await negotiateSession(saved),identity=established.identity;
+  if(playerId&&identity.player?.id!==playerId&&!established.profile)throw Error('download_player_mismatch');
   playerId=String(identity.player?.id||'');token=String(identity.token||'');if(!playerId||!token)throw Error('download_session_invalid');
   G.writeSession('sweets-shared-session-v176',base,{playerId,token,displayName:identity.player.displayName});G.set('sweets-shared-server-v176',base);
   setConnectStep('プロフィールとCREDITを取得しています');
-  let profile=await api('profile',{timeout:11000});if(!profile.profileReady){setConnectStep('プロフィールを初期登録しています');profile=await api('profile',{method:'POST',timeout:11000,body:{profile:initialProfile}});}
+  let profile=established.profile||await api('profile',{timeout:11000});if(!profile.profileReady){setConnectStep('プロフィールを初期登録しています');profile=await api('profile',{method:'POST',timeout:11000,body:{profile:initialProfile}});}
   setConnectStep('取得したプレイヤー情報を反映しています');
   await window.SweetsPlayerProfileV255?.setTransport((method,body)=>api('profile',{method,body}),{id:playerId,base,response:profile});
   await acceptResponse(profile);connectStep='接続完了';
@@ -174,8 +209,26 @@ async function initialize(){
   if(session&&['ready','preparing'].includes(session.status)&&!started)await acceptResponse(await api('active'));
   if(!locked()&&!pack)message='各ゲームのBETを選んで、1ゲーム分をダウンロードしてください。';
   requestId=G.get(requestKey(),'');error='';if(pendingComplete)await sync();
- }catch(problem){if(!pack)error=safeError(problem);else message='保存したゲームを再生できます。進み具合は接続後に同期します。';console.warn('[DownloadV255] connect',problem?.message||problem);}
+ }catch(problem){identityConflict=['download_identity_invalid','download_identity_incomplete','download_player_mismatch'].includes(String(problem?.message||''));if(!pack)error=safeError(problem);else message='保存したゲームを再生できます。進み具合は接続後に同期します。';console.warn('[DownloadV255] connect',problem?.message||problem);}
  finally{connecting=false;if(profileReady||pack)prepareAssets();render();scheduleUI(app);}
+}
+async function createFreshPlayer(){
+ if(connecting||busy||pack||locked()||!identityConflict||!base||!navigator.onLine)return false;
+ if(!confirm('これまでのCREDIT・成績・録画は新規IDへ引き継がれません。元のアカウントは保持したまま、別の新規プレイヤーとして開始しますか？'))return false;
+ const original=G.readSession('sweets-shared-session-v176',base),oldId=playerId,oldToken=token;
+ busy=true;error='';message='別のプレイヤーを登録しています…';render();
+ try{
+  // Never delete old credentials or IndexedDB; store a recoverable identity
+  // reference and create a fresh user only after the explicit confirmation.
+  playerId='';token='';
+  const identity=await api('',{method:'POST',sessionEndpoint:true,timeout:11000,body:{displayName:initialProfile.name||'PLAYER'}});
+  if(!identity.player?.id||!identity.token||identity.player.id===oldId)throw Error('download_session_invalid');
+  if(original?.playerId&&original?.token)G.write('sweets-download-previous-identity-v257@'+base,original);
+  G.writeSession('sweets-shared-session-v176',base,{playerId:identity.player.id,token:identity.token,displayName:identity.player.displayName});
+  playerId=String(identity.player.id);token=String(identity.token);identityConflict=false;
+  return true;
+ }catch(problem){playerId=oldId;token=oldToken;error=safeError(problem);return false;}
+ finally{busy=false;render();if(!identityConflict)initialize().catch(console.error);}
 }
 async function prepare(){
  if(busy||connecting||started&&!localComplete)return false;
@@ -309,6 +362,7 @@ function render(){
  progress.hidden=!started&&!assetsProgress;progress.max=started?8:Math.max(1,assetsProgress?.total||1);progress.value=started?cursor:assetsProgress?.done||0;
  const button=name=>panel.querySelector(`[data-dl-action="${name}"]`);
  const collapsed=panel.dataset.collapsed==='true';putText('[data-dl-action="toggle"]',collapsed?'+':'−');button('toggle').setAttribute('aria-expanded',String(!collapsed));
+ button('fresh').hidden=!identityConflict||!!pack||!!session;button('fresh').disabled=busy||connecting||!navigator.onLine;
  button('prepare').hidden=!!pack&&!localComplete||session?.status==='preparing'||localComplete;button('prepare').disabled=busy||connecting||!profileReady;button('prepare').textContent=session?.status==='failed'?'準備を再試行':'1ゲーム分をダウンロード';
  button('play').hidden=!pack||localComplete||started&&playing;button('play').disabled=!ready||busy;button('play').textContent=started||stableBall?'続きから再生':'録画を再生';
  button('pause').hidden=!started||localComplete;button('pause').textContent=playing&&!stopped()?'一時停止':'再開';
@@ -318,10 +372,10 @@ function render(){
  window.__sweetsDownloadActive=!!pack&&!localComplete;
 }
 const panel=document.createElement('aside');panel.id='download-v255-panel';panel.className='dl255-panel';panel.dataset.collapsed='false';panel.setAttribute('aria-label','ダウンロード版の再生');
-panel.innerHTML='<header><strong data-dl-balls>ダウンロード版</strong><button type="button" data-dl-action="pause" hidden>一時停止</button><button type="button" data-dl-action="toggle" aria-label="再生パネルを開閉" aria-expanded="true">−</button></header><div class="dl255-body"><p id="download-v255-status" class="dl255-status" role="status" aria-live="polite"></p><progress class="dl255-progress" max="8" value="0" aria-label="ダウンロードと再生の進み具合" hidden></progress><div class="dl255-wallet"><span>CREDIT <b data-dl-wallet>確認中</b></span><span>BET <b data-dl-bet>0</b></span></div><div class="dl255-actions"><button type="button" data-dl-action="prepare">1ゲーム分をダウンロード</button><button type="button" data-dl-action="play" hidden>録画を再生</button><button type="button" data-dl-action="next" hidden>次のBETへ</button><button type="button" data-dl-action="sync">接続を再試行</button><button type="button" data-dl-action="edition">版を選び直す</button></div><p class="dl255-note">BETと結果はサーバーで確定します。<br>ダンゴデビンゴはおまかせ配置です。</p></div>';
+panel.innerHTML='<header><strong data-dl-balls>ダウンロード版</strong><button type="button" data-dl-action="pause" hidden>一時停止</button><button type="button" data-dl-action="toggle" aria-label="再生パネルを開閉" aria-expanded="true">−</button></header><div class="dl255-body"><p id="download-v255-status" class="dl255-status" role="status" aria-live="polite"></p><progress class="dl255-progress" max="8" value="0" aria-label="ダウンロードと再生の進み具合" hidden></progress><div class="dl255-wallet"><span>CREDIT <b data-dl-wallet>確認中</b></span><span>BET <b data-dl-bet>0</b></span></div><div class="dl255-actions"><button type="button" data-dl-action="prepare">1ゲーム分をダウンロード</button><button type="button" data-dl-action="play" hidden>録画を再生</button><button type="button" data-dl-action="next" hidden>次のBETへ</button><button type="button" data-dl-action="sync">接続を再試行</button><button type="button" data-dl-action="fresh" hidden>別の新規プレイヤーで開始</button><button type="button" data-dl-action="edition">版を選び直す</button></div><p class="dl255-note">BETと結果はサーバーで確定します。<br>ダンゴデビンゴはおまかせ配置です。</p></div>';
 document.body.append(panel);
 const rouletteLoading=document.querySelector('#cookie-roulette .a8-loading');if(rouletteLoading)rouletteLoading.textContent='録画を再生すると抽選が始まります';
-panel.addEventListener('click',event=>{const action=event.target.closest('[data-dl-action]')?.dataset.dlAction;if(!action)return;if(action==='prepare')prepare();else if(action==='play')play();else if(action==='pause')playing&&!stopped()?pause():play();else if(action==='next')nextRound();else if(action==='edition')chooseEdition();else if(action==='sync'){if(!assetsReady)prepareAssets();if(pendingComplete)sync();else initialize();}else if(action==='toggle'){panel.dataset.collapsed=String(panel.dataset.collapsed!=='true');render();}});
+panel.addEventListener('click',event=>{const action=event.target.closest('[data-dl-action]')?.dataset.dlAction;if(!action)return;if(action==='prepare')prepare();else if(action==='play')play();else if(action==='pause')playing&&!stopped()?pause():play();else if(action==='next')nextRound();else if(action==='fresh')createFreshPlayer();else if(action==='edition')chooseEdition();else if(action==='sync'){if(!assetsReady)prepareAssets();if(pendingComplete)sync();else initialize();}else if(action==='toggle'){panel.dataset.collapsed=String(panel.dataset.collapsed!=='true');render();}});
 // All native BET controls remain, with a clear button for each game's draft.
 for(const slot of slots){const clear=document.createElement('button');clear.type='button';clear.className='dl255-clear-bet';clear.textContent='0 BET';clear.setAttribute('aria-label',SweetsLineup.catalog[SweetsLineup.ids[slot.i]].name+'のBETを0にする');clear.onclick=()=>app.setBet(slot.i,0);slot.controls.append(clear);}
 Arcade.prototype.setBet=function(index,value){if(this!==app)return nativeSetBet.call(this,index,value);if(!profileReady||locked()||busy||!wallet||!Number.isSafeInteger(value)||value<0||this.bets.reduce((sum,n,i)=>sum+(i===index?value:n),0)>wallet.credit)return false;const result=nativeSetBet.call(this,index,value);if(result){G.write(draftKey(),this.bets);render();}return result;};
@@ -344,6 +398,6 @@ window.addEventListener('pagehide',()=>{persist().catch(()=>{});});window.addEve
 setInterval(()=>{if(navigator.onLine&&playerId&&token&&(pendingComplete||pack&&seq>ackSeq))sync().catch(()=>{});},20000);
 // Reprobe a restarted server even when navigator.onLine never changes.
 setInterval(()=>{if(navigator.onLine&&!connecting&&!profileReady&&!pack)initialize().catch(()=>{});},20000);
-window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,server:base,connectStep,online,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],timing:{...playbackTiming},error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
+window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,server:base,connectStep,online,identityConflict,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],timing:{...playbackTiming},error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
 render();scheduleUI(app);initialize();
 })();
