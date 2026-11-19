@@ -446,6 +446,13 @@ function operatorCancelWalletV242(machineId,coreRound,requestId){
  const m=machine(machineId),id=String(coreRound.id),prior=m.operatorVoidsV242?.[id];
  if(prior)return {...prior,idempotent:true};
  for(const pid of Object.keys(coreRound.participants||{}))guardStreamingWalletV255(machineId,pid,id);
+ // Sugar can belong to a seated non-bettor, or a later challenge can have
+ // consumed tokens from the cancelled source. Check those dependent wallets
+ // without cancelling their live Download state or blocking unrelated players.
+ for(const p of Object.values(m.players||{}))if(downloadLedgerV255?.locked(machineId,p.playerId)){
+  const preview=sugarLedgerV254.cancel(JSON.parse(JSON.stringify(p)),id);
+  if(preview.cashReversed||preview.restoredCount||preview.removedCount||preview.cancelledChallenges?.length)throw walletError(machineId,p.playerId,'download_session_active');
+ }
  // Initialize the trend BEFORE reversing lifetime totals so its baseline stays valid.
  operatorTrendStateV242(machineId);
  const before=JSON.parse(JSON.stringify(m)),at=now(),refunds={};let total=0;

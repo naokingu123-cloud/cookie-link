@@ -29,7 +29,6 @@ for(const engine of app.engines){
  if('sleep' in engine)engine.sleep=()=>Promise.resolve();
  if(typeof engine.visualWait==='function')engine.visualWait=async function(ms,token){return token===this.version;};
 }
-const nativeWait=app.wait;
 app.wait=async function(ms,token){return token===this.token;};
 window.SweetsDownloadWorkerV255={version:255,ready:true,describe:pending,async compute(input){
  if(busy)throw Error('download_worker_busy');busy=true;
@@ -50,7 +49,7 @@ window.SweetsDownloadWorkerV255={version:255,ready:true,describe:pending,async c
    engine.roundBet=input.bets[i];
    // Brand-new accounts must not inherit the unseeded preview's carry state.
    if(!input.previousState){
-    if(engine.kind==='choco'){engine.checkpoint=null;engine.depth=0;engine.strata=[];engine.freshBoard?.();}
+    if(engine.kind==='choco'){engine.checkpoint=null;engine.strata=null;engine.phase='ready';}
     engine.reset?.({keepWonder:false,keepHammers:false});
    }
   }

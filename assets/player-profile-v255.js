@@ -5,6 +5,7 @@ if(window.SweetsPlayerProfileV255||new URLSearchParams(location.search).get('ser
 let transport=null,playerId='',server='',hydrated=false,applying=false,sending=false,timer=0,last='',pending=null,stats=null,error='';
 const store=playerLounge?.store;if(!store)return;
 const nativeSave=store.save.bind(store),copy=value=>JSON.parse(JSON.stringify(value));
+const initialLocal={name:store.data.name,pet:copy(store.data.pet),photo:String(store.data.photo||'')};
 const queueKey=()=>`sweets-profile-pending-v255@${server}@${playerId}`;
 function readPending(){try{return JSON.parse(localStorage.getItem(queueKey())||'null');}catch{return null;}}
 function writePending(){try{if(pending)localStorage.setItem(queueKey(),JSON.stringify(pending));else localStorage.removeItem(queueKey());}catch{}}
@@ -25,7 +26,8 @@ function hydrate(response,{keepPending=true}={}){
   const name=store.validName?.(profile.name);if(name)store.data.name=name;
   if(profile.pet&&typeof profile.pet==='object')store.data.pet={...store.data.pet,...profile.pet};
   store.data.photo=typeof profile.photo==='string'?profile.photo:'';nativeSave();last=JSON.stringify(current());
-  stats=response.stats||stats;hydrated=true;error='';
+  const futureDownload=window.SweetsEditionV255?.value==='download'&&response.session?.status==='ready'&&!window.SweetsDownloadV255?.describe?.().localComplete;
+  if(!futureDownload)stats=response.stats||stats;hydrated=true;error='';
   if(keepPending&&pending){store.data.name=pending.name;store.data.pet=copy(pending.pet);store.data.photo=pending.photo||'';nativeSave();}
  }finally{applying=false;}
  refresh();return true;
@@ -43,12 +45,13 @@ async function flush(){
 store.save=function(){const result=nativeSave();if(hydrated&&!applying){const value=current();if(JSON.stringify(value)!==last){pending=value;writePending();clearTimeout(timer);timer=setTimeout(flush,500);refresh();}}return result;};
 async function setTransport(fn,{id='',base='',response=null}={}){
  transport=fn;playerId=String(id);server=String(base);pending=readPending();
- if(response)hydrate(response);else try{hydrate(await transport('GET'));}catch(problem){error=String(problem?.message||problem);refresh();}
+ try{let value=response||await transport('GET');if(value.profileReady===false&&navigator.onLine)value=await transport('POST',{profile:initialLocal});hydrate(value);}catch(problem){error=String(problem?.message||problem);refresh();}
  if(hydrated&&pending)flush();return hydrated;
 }
 function mountProfileExtras(){
  const page=document.getElementById('record-page'),form=document.getElementById('player-form');
  if(form&&!page.querySelector('.profile255-sync')){
+  const help=page.querySelector('.settings-help');if(help)help.textContent='名前・写真・きせかえはサーバーに保存し、どちらの版でも同じプロフィールを使えます。';
   const line=document.createElement('p');line.className='profile255-sync';line.setAttribute('role','status');form.after(line);
   const label=document.createElement('label');label.textContent='プロフィール写真 ';label.className='profile255-photo-label';
   const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';input.className='profile255-photo-input';input.setAttribute('aria-label','プロフィール写真を選ぶ');

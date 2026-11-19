@@ -12,6 +12,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'index.html'
+      - 'optimized/app-01.js'
       - 'monitor.html'
       - 'assets/shared-machine-v176.js'
       - 'assets/shared-machine-core-v196.js'
@@ -48,13 +49,19 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Syntax
         run: npm run check
+      - name: Server ownership, credit, idempotency and restart
+        if: ${{ !cancelled() }}
+        run: node tests/download-v255-server.mjs
+      - name: Repeatable physical recording and pocket hits
+        if: ${{ !cancelled() }}
+        run: node tests/download-v255-recording.mjs
+      - name: Recorded playback ordering and resume
+        if: ${{ !cancelled() }}
+        run: node tests/recorded-round-v255.mjs
       - name: Install recording and verification browser
         id: browser
         if: ${{ !cancelled() }}
         run: npx playwright install --with-deps chromium
-      - name: Server ownership, credit, idempotency and restart
-        if: ${{ !cancelled() }}
-        run: node tests/download-v255-server.mjs
       - name: Headless physical recording and actual game computation
         if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
         run: node tests/download-v255-compute.mjs

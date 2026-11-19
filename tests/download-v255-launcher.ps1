@@ -31,10 +31,10 @@ Assert-True $Ready.Ready 'The actual ready Download recorder must be accepted.'
 $Temp = Join-Path ([IO.Path]::GetTempPath()) ('sweets-launcher-v255-' + [guid]::NewGuid().ToString('N'))
 $TestScripts = Join-Path $Temp 'scripts'
 $PreviousCapture = $env:SWEETS_LAUNCHER_TEST_CAPTURE
-$script:Starts = @()
+$global:SweetsLauncherV255Starts = @()
 function Start-Process {
   param($FilePath,$ArgumentList,$WindowStyle)
-  $script:Starts += [pscustomobject]@{FilePath=$FilePath;Arguments=$ArgumentList;WindowStyle=$WindowStyle}
+  $global:SweetsLauncherV255Starts += [pscustomobject]@{FilePath=$FilePath;Arguments=$ArgumentList;WindowStyle=$WindowStyle}
 }
 try {
   New-Item -ItemType Directory -Force -Path $TestScripts | Out-Null
@@ -48,15 +48,16 @@ exit 0
   $env:SWEETS_LAUNCHER_TEST_CAPTURE = Join-Path $Temp 'captured.json'
   & (Join-Path $TestScripts 'start-shared-machine-v205.ps1') -Edition Download -Port 3123 -Machine 'qa-download'
   $Captured = Get-Content -Raw $env:SWEETS_LAUNCHER_TEST_CAPTURE | ConvertFrom-Json
-  Assert-True ($script:Starts.Count -eq 0) 'Download startup must not spawn the visible host browser helper.'
+  Assert-True ($global:SweetsLauncherV255Starts.Count -eq 0) 'Download startup must not spawn the visible host browser helper.'
   Assert-True ($Captured.Edition -eq 'Download' -and $Captured.NoBrowser -and $Captured.Port -eq 3123 -and $Captured.Machine -eq 'qa-download') 'Download arguments must reach the server launcher.'
   & (Join-Path $TestScripts 'start-shared-machine-v205.ps1')
   $Captured = Get-Content -Raw $env:SWEETS_LAUNCHER_TEST_CAPTURE | ConvertFrom-Json
-  Assert-True ($script:Starts.Count -eq 1 -and $Captured.Edition -eq 'Streaming') 'The existing launcher must still default to Streaming and its host helper.'
+  Assert-True ($global:SweetsLauncherV255Starts.Count -eq 1 -and $Captured.Edition -eq 'Streaming') 'The existing launcher must still default to Streaming and its host helper.'
   & (Join-Path $TestScripts 'start-shared-machine-v205.ps1') -NoBrowser
-  Assert-True ($script:Starts.Count -eq 1) 'Explicit NoBrowser must continue to suppress the Streaming helper.'
+  Assert-True ($global:SweetsLauncherV255Starts.Count -eq 1) 'Explicit NoBrowser must continue to suppress the Streaming helper.'
   Write-Output 'DOWNLOAD_V255_LAUNCHER_PASS'
 } finally {
   $env:SWEETS_LAUNCHER_TEST_CAPTURE = $PreviousCapture
+  Remove-Variable -Name SweetsLauncherV255Starts -Scope Global -ErrorAction SilentlyContinue
   Remove-Item -Recurse -Force $Temp -ErrorAction SilentlyContinue
 }

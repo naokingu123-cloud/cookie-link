@@ -71,7 +71,7 @@ try{
   });
   await context.routeWebSocket('**/*',socket=>{sockets.push(socket.url());socket.close();});
   const page=await context.newPage();page.on('pageerror',error=>errors.push(String(error)));
-  const url=new URL(base);url.searchParams.set('appv',appVersion);url.searchParams.set('verify',revision);
+  const url=new URL(base);url.searchParams.set('appv',appVersion);url.searchParams.set('edition','streaming');url.searchParams.set('verify',revision);
   const response=await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:60000});assert.equal(response.status(),200);
   await page.waitForFunction(()=>window.SixDropV247?.engine&&window.SweetsSharedMachine&&window.SweetsStationsV235&&document.querySelector('#sd247-bank .gold-number'),null,{timeout:60000});
   await page.waitForFunction(()=>window.SweetsArcadeBrandV249?.catalog&&window.SweetsArcadeTabsV249&&window.SweetsArcadeSurfacesV249&&document.querySelectorAll('#tabs img.v249-selected-logo').length===10&&['arcade-brand-v249.css','arcade-tabs-v249.css','arcade-surfaces-v249.css'].every(name=>[...document.styleSheets].some(sheet=>sheet.href?.includes(name))),null,{timeout:30000});

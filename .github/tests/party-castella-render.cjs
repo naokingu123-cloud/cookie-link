@@ -17,7 +17,7 @@ const root=path.join(__dirname,'../..'),origin='http://castella.test';
    }
    return r.fulfill({path:file});
   });
-  await p.goto(origin+'/?games=castella',{waitUntil:'domcontentloaded'});
+  await p.goto(origin+'/?edition=streaming&games=castella',{waitUntil:'domcontentloaded'});
   await p.waitForFunction(()=>window.castellaTest&&document.querySelector('.pct-pan canvas').width>100);
   if(process.argv.includes('--profile')){
    await p.evaluate(()=>document.fonts.ready);

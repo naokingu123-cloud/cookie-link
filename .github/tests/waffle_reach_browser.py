@@ -153,7 +153,7 @@ with sync_playwright() as pw:
         page.add_init_script(trace)
         page.route("**/bingo-stick-host.js*", lambda route: route.fulfill(
             content_type="text/javascript", body=host.replace(marker, test_setup + marker)))
-        page.goto(f"{origin}/?games=waffle&appv={version}", wait_until="domcontentloaded")
+        page.goto(f"{origin}/?edition=streaming&games=waffle&appv={version}", wait_until="domcontentloaded")
         page.wait_for_function("() => window.BingoStick && window.waffleFixture")
         recommended = page.evaluate("""([bet,demo]) => {
           document.querySelector('#sound').checked=false;

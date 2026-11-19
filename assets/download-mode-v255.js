@@ -17,8 +17,15 @@ const bankAfterBet=()=>Math.max(0,Number(session?.creditBefore??pack?.creditBefo
 const safeError=problem=>({download_server_unavailable:'このサーバーではダウンロード版の準備ができていません。',download_worker_not_ready:'サーバーの準備中です。しばらくして再試行してください。',download_insufficient_credit:'CREDITが足りません。BETを減らしてください。',insufficient_credit:'CREDITが足りません。BETを減らしてください。',download_profile_required:'プロフィールの取得を再試行してください。',download_wallet_locked:'別のゲームの同期が終わるまでお待ちください。'}[problem?.message]||(/401|unauthorized|invalid.*token/.test(String(problem?.message))?'プレイヤー情報を確認できませんでした。接続を再試行してください。':'接続または保存が完了していません。再試行すると同じゲームから続けます。'));
 function openDatabase(){return new Promise((resolve,reject)=>{const request=indexedDB.open('sweets-download-v255',1);request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('players'))request.result.createObjectStore('players');};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||Error('download_storage_unavailable'));});}
 async function stored(operation,value){const db=await openDatabase();try{return await new Promise((resolve,reject)=>{const tx=db.transaction('players',operation==='get'?'readonly':'readwrite'),store=tx.objectStore('players'),request=operation==='get'?store.get(scoped()):store.put(value,scoped());let result;request.onsuccess=()=>result=request.result;request.onerror=()=>reject(request.error);tx.oncomplete=()=>resolve(result);tx.onerror=tx.onabort=()=>reject(tx.error||Error('download_storage_failed'));});}finally{db.close();}}
+function rememberPlaybackPosition(){
+ if(!pack||!started||localComplete||settling||cursor!==stableBall)return false;
+ const next=pack.playback.recording.hits[cursor],limit=next?Math.max(0,next.atMs-.001):pack.playback.recording.durationMs;
+ const safe=Math.max(stableMs,Math.min(playbackMs,limit));if(safe<=stableMs)return false;
+ stableMs=safe;seq++;return true;
+}
 function persist(){
  if(!playerId||!pack)return Promise.resolve();
+ rememberPlaybackPosition();
  const value={version:255,base,machine,playerId,session,package:pack,response:responseCache,progress:{ballIndex:stableBall,playbackMs:stableMs,seq,ackSeq,complete:localComplete,pendingComplete},savedAt:Date.now()};
  saveTask=saveTask.catch(()=>{}).then(()=>stored('put',value)).catch(problem=>{error='この端末への保存に失敗しました。空き容量を確認して再試行してください。';render();throw problem;});return saveTask;
 }
@@ -27,29 +34,41 @@ async function api(action,{method='GET',body,sessionEndpoint=false,timeout=18000
  const headers={'Content-Type':'application/json'};if(token){headers.Authorization='Bearer '+token;headers['X-Player-Id']=playerId;}
  try{const response=await fetch(base+(sessionEndpoint?'/api/session':path(action)),{method,headers,cache:'no-store',credentials:'omit',signal:controller.signal,...(body?{body:JSON.stringify(body)}:{})}),value=await response.json().catch(()=>({}));if(!response.ok)throw Object.assign(Error(value.error||'HTTP '+response.status),{status:response.status});online=true;return value;}catch(problem){online=false;throw problem;}finally{clearTimeout(timer);}
 }
-function validatePackage(value){
+async function validatePackage(value){
  if(value?.version!==255||value.sessionId!==session?.id||!Array.isArray(value.numbers)||value.numbers.length!==8||new Set(value.numbers).size!==8||value.numbers.some(n=>!Number.isInteger(n)||n<1||n>25))throw Error('download_package_invalid');
  if(JSON.stringify(value.gameIds||value.initialState?.gameIds)!==JSON.stringify(SweetsLineup.ids))throw Error('download_lineup_mismatch');
  const timeline=value.playback;if(!timeline?.rngTapes||!Array.isArray(timeline.checkpoints)||timeline.checkpoints.length<9||!value.initialState||!value.finalState)throw Error('download_checkpoint_missing');
  renderer.validate(timeline.recording);if(timeline.recording.hits.some((hit,i)=>hit.number!==value.numbers[i]))throw Error('download_recording_mismatch');
+ if(session?.package?.sha256){const encoded=new TextEncoder().encode(JSON.stringify(value)),digest=await crypto.subtle.digest('SHA-256',encoded),actual=[...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');if(actual!==session.package.sha256)throw Error('download_package_integrity_error');}
  return value;
 }
-function checkpointAt(ball){const checkpoint=pack?.playback?.checkpoints?.[ball];return checkpoint?.state||checkpoint|| (ball===0?pack?.initialState:ball===8?pack?.finalState:null);}
+function checkpointAt(ball){if(ball===8)return pack?.finalState;const checkpoint=pack?.playback?.checkpoints?.[ball];return checkpoint?.state||checkpoint|| (ball===0?pack?.initialState:null);}
 function applyWallet(next){if(!next||!Number.isSafeInteger(next.credit)||next.credit<0)return;if(wallet&&Number(next.revision)<Number(wallet.revision))return;wallet={...next};if(!started||localComplete){app.credit=wallet.credit;app.displayCredit=wallet.credit;}scheduleUI(app);}
 async function acceptResponse(value,{cached=false}={}){
  if(value.playerId&&value.playerId!==playerId)throw Error('download_player_mismatch');
  applyWallet(value.wallet);profileReady=value.profileReady===true||profileReady;
  window.SweetsPlayerProfileV255?.hydrate(value);responseCache={...value};delete responseCache.package;
- const next=value.session;
+ const next=value.session,wasComplete=localComplete;
  if(next&&(!session||next.id!==session.id)){
   if(started&&!localComplete)throw Error('download_session_changed');
-  session=next;cursor=stableBall=0;playbackMs=stableMs=0;seq=number(next.progress?.seq);ackSeq=seq;localComplete=next.status==='complete';pendingComplete=false;started=false;
+  session=next;cursor=stableBall=Math.min(8,number(next.progress?.ballIndex));playbackMs=stableMs=Number(next.progress?.playbackMs)||0;seq=number(next.progress?.seq);ackSeq=seq;localComplete=next.status==='complete';pendingComplete=false;started=false;
  }else if(next)session=next;
- if(value.package){pack=validatePackage(value.package);requestId=session.requestId||requestId;app.bets=[...session.bets];if(!started&&session.status!=='complete')message='録画を保存しました。再生準備を確認しています…';if(!cached)await persist();}
- if(!started&&value.sugarState&&!pack)window.SweetsSugarChallengeV254?.accept(value.sugarState);
+ if(next&&!started){const incomingBall=Math.min(8,number(next.progress?.ballIndex)),incomingSeq=number(next.progress?.seq);if(incomingBall>stableBall||incomingBall===stableBall&&incomingSeq>seq){cursor=stableBall=incomingBall;playbackMs=stableMs=Math.max(stableMs,Number(next.progress?.playbackMs)||0);}seq=Math.max(seq,incomingSeq);ackSeq=Math.max(ackSeq,incomingSeq);}
+ if(value.package){pack=await validatePackage(value.package);requestId=session.requestId||requestId;app.bets=[...session.bets];if(!started){const hits=pack.playback.recording.hits,min=stableBall?hits[stableBall-1].atMs:0,max=stableBall<8?hits[stableBall].atMs:pack.playback.recording.durationMs;stableMs=playbackMs=Math.max(min,Math.min(max,stableMs));}if(!started&&session.status!=='complete')message='録画を保存しました。再生準備を確認しています…';}
+ if(next?.status==='complete'){
+  localComplete=true;pendingComplete=false;playing=false;cursor=stableBall=8;seq=Math.max(seq,number(next.progress?.seq));
+  if(pack){stableMs=playbackMs=pack.playback.recording.durationMs;if(started&&!wasComplete){R.restore(app,pack.finalState,{wallet:false,notify:false});app.phase='complete';app.result={elapsed:1800,duration:1800};app.payout=null;renderer.renderAt(playbackMs);repaint();}}
+  if(wallet){app.credit=app.displayCredit=wallet.credit;}message='再生完了を同期しました。次のBETへ進めます。';
+ }
+ // A ready package is already settled on the server. Its final Sugar snapshot
+ // must wait for playback; publishing it here would reveal the future result
+ // and make the presentation reject its older, recorded intermediate states.
+ if(!started&&value.sugarState&&!pack&&!['preparing','ready'].includes(session?.status))window.SweetsSugarChallengeV254?.accept(value.sugarState);
  if(session?.status==='preparing'){message='サーバーで1ゲーム分を準備中です。1分ほどかかる場合があります。';schedulePoll();}
  if(session?.status==='failed'){error='ゲームの準備が中断しました。「準備を再試行」で同じゲームを再開します。';}
  if(pack&&assetsReady&&!started&&!localComplete)message=stableBall?'保存した '+stableBall+' 球目の続きから再生できます。':'ダウンロード完了。圏外でも1ゲームを再生できます。';
+ if(!started&&locked()){app.credit=app.displayCredit=bankAfterBet();scheduleUI(app);}
+ if(!cached&&pack&&(value.package||next?.status==='complete'))await persist();
  render();
 }
 function schedulePoll(){clearTimeout(pollTimer);pollTimer=setTimeout(async()=>{if(session?.status!=='preparing')return;try{await acceptResponse(await api('active'));error='';}catch(problem){error=safeError(problem);render();}if(session?.status==='preparing')schedulePoll();},2200);}
@@ -62,7 +81,8 @@ async function initialize(){
  try{
   base=await G.discover({explicit:query.get('sharedServer')||query.get('server')||'',sameOrigin,origin:location.origin,machine});
   const saved=G.readSession('sweets-shared-session-v176',base);playerId=String(saved.playerId||'');token=String(saved.token||'');
-  if(playerId&&!pack){try{const local=await stored('get');if(local?.version===255&&local.playerId===playerId&&local.base===base&&local.machine===machine&&local.package){session=local.session;await acceptResponse({...local.response,session,package:local.package},{cached:true});const p=local.progress||{};stableBall=cursor=Math.min(8,number(p.ballIndex));stableMs=playbackMs=Number(p.playbackMs)||0;seq=Math.max(seq,number(p.seq));ackSeq=number(p.ackSeq);localComplete=!!p.complete;pendingComplete=!!p.pendingComplete;assetsReady=await cache.ready();message=localComplete?'前のゲームは再生済みです。接続後に次のBETへ進めます。':'保存したゲームがあります。通信がなくても再開できます。';render();}}catch(problem){console.warn('[DownloadV255] local cache',problem?.message||problem);}}
+  if(playerId&&!pack){try{const local=await stored('get');if(local?.version===255&&local.playerId===playerId&&local.base===base&&local.machine===machine&&local.package){session=local.session;await acceptResponse({...local.response,session,package:local.package},{cached:true});const p=local.progress||{};stableBall=cursor=Math.max(stableBall,Math.min(8,number(p.ballIndex)));stableMs=playbackMs=Math.max(stableMs,Number(p.playbackMs)||0);seq=Math.max(seq,number(p.seq));ackSeq=Math.max(ackSeq,number(p.ackSeq));localComplete=!!p.complete||session?.status==='complete';pendingComplete=!!p.pendingComplete&&session?.status!=='complete';assetsReady=await cache.ready();message=localComplete?'前のゲームは再生済みです。接続後に次のBETへ進めます。':'保存したゲームがあります。通信がなくても再開できます。';render();}}catch(problem){console.warn('[DownloadV255] local cache',problem?.message||problem);}}
+  if(pack&&responseCache)await window.SweetsPlayerProfileV255?.setTransport((method,body)=>api('profile',{method,body}),{id:playerId,base,response:responseCache});
   if(!navigator.onLine)throw Error('offline');
   const identity=await api('',{method:'POST',sessionEndpoint:true,body:{playerId,displayName:initialProfile.name||saved.displayName||'PLAYER'}});
   if(playerId&&identity.player?.id!==playerId)throw Error('download_player_mismatch');
@@ -116,15 +136,14 @@ async function play(){
   playing=true;userPaused=false;syncPause();lastFrame=null;panel.dataset.collapsed='true';message='録画を再生しています。';wake();activateGameAudio({gesture:true});render();return true;
  }catch(problem){error='保存したゲームを再開できませんでした。接続して同じ録画を再取得してください。';playing=false;console.error('[DownloadV255] replay',problem);render();return false;}
 }
-function pause(){playing=false;userPaused=true;syncPause();lastFrame=null;persist().catch(()=>{});render();return true;}
+function pause(){playing=false;userPaused=true;syncPause();lastFrame=null;persist().then(syncProgress).catch(()=>{});render();return true;}
 function stopped(){return !playing||app.paused||document.hidden||menuOpen||userPaused||!inView;}
 function reconcile(ball){
  const state=checkpointAt(ball);if(!state)return;
  const phase=app.phase;R.restore(app,state,{wallet:false,notify:false});
  app.credit=bankAfterBet();if(phase==='playing'&&ball<8)app.phase='playing';
- app.paused=false;for(const engine of app.engines){engine.paused=false;engine.presentationRate=1;}
- if(ball===5){const dango=app.engines.find(engine=>engine.kind==='dango');if(dango?.state?.phase==='placing')dango.finishThinkingV251({reason:'download-auto'});}
- if(ball===8&&['playing','result'].includes(app.phase)){app.phase='playing';app.finishRound();}
+ app.paused=false;app.fastForward=false;for(const engine of app.engines){engine.paused=false;engine.presentationRate=1;}
+ if(ball===8){app.phase='playing';app.credit=app.displayCredit=bankAfterBet();app.finishRound();}
  repaint();
 }
 function tick(now){
@@ -135,12 +154,12 @@ function tick(now){
   if(app.phase==='error')throw Error(app.drawError||'download_native_error');
   if(settling){
    if(R.stable(app,cursor)&&(cursor<8||app.enabled.every((yes,i)=>!yes||app.paid[i]))){reconcile(cursor);settling=false;stableBall=cursor;stableMs=playbackMs;seq++;persist().catch(()=>{});syncProgress();}
-   else if(now-settleStamp>90000)throw Error('download_native_settlement_timeout');
+   else if((settleStamp+=elapsed)>90000)throw Error('download_native_settlement_timeout');
   }else if(cursor<8){
    const hit=pack.playback.recording.hits[cursor];playbackMs=Math.min(hit.atMs,playbackMs+elapsed);renderer.renderAt(playbackMs);
-   if(playbackMs>=hit.atMs&&!app.drawHeld&&callbacks?.onNumber(hit.number)!==false){cursor++;settling=true;settleStamp=now;}
+   if(playbackMs>=hit.atMs&&!app.drawHeld&&typeof callbacks?.onNumber==='function'&&callbacks.onNumber(hit.number)!==false){cursor++;if(pack.playback.sugarStates?.[cursor])window.SweetsSugarChallengeV254?.accept(pack.playback.sugarStates[cursor]);settling=true;settleStamp=0;}
   }else{playbackMs=Math.min(pack.playback.recording.durationMs,playbackMs+elapsed);renderer.renderAt(playbackMs);}
-  if(cursor===8&&app.phase==='complete'&&!settling){finishLocal();return;}
+  if(cursor===8&&app.phase==='complete'&&!settling&&playbackMs>=pack.playback.recording.durationMs){finishLocal();return;}
   render();wake();
  }catch(problem){playing=false;userPaused=true;syncPause();error='再生を一時停止しました。保存した位置から再開できます。';started=false;cursor=stableBall;playbackMs=stableMs;console.error('[DownloadV255] playback',problem);persist().catch(()=>{});render();}
 }
@@ -176,9 +195,10 @@ function render(){
  if(!error&&assetsProgress&&!assetsReady)text+=(text?'\n':'')+`ゲーム素材 ${Math.floor((assetsProgress.bytes||0)/1048576)} / ${Math.ceil((assetsProgress.totalBytes||0)/1048576)} MB を保存中（${assetsProgress.done||0} / ${assetsProgress.total||0}）`;
  if(!error&&started&&!localComplete)text=(stopped()?'一時停止中。':'再生中。')+`${cursor} / 8球`;
  if(!online&&pack)text+='\n端末の録画を使用中・接続後に進み具合を同期';
- status.textContent=text;status.classList.toggle('dl255-error',!!error);status.classList.toggle('dl255-offline',!online&&!!pack);
- panel.querySelector('[data-dl-balls]').textContent=started?cursor+'/8球':'ダウンロード版';
- panel.querySelector('[data-dl-wallet]').textContent=wallet?number(wallet.credit).toLocaleString('ja-JP'):'確認中';panel.querySelector('[data-dl-bet]').textContent=number(locked()?session.totalBet:total).toLocaleString('ja-JP');
+ if(status.textContent!==text)status.textContent=text;status.classList.toggle('dl255-error',!!error);status.classList.toggle('dl255-offline',!online&&!!pack);
+ const putText=(selector,value)=>{const node=panel.querySelector(selector);if(node.textContent!==value)node.textContent=value;};
+ putText('[data-dl-balls]',started?cursor+'/8球':'ダウンロード版');
+ putText('[data-dl-wallet]',wallet?number(started?app.displayCredit:locked()?bankAfterBet():wallet.credit).toLocaleString('ja-JP'):'確認中');putText('[data-dl-bet]',number(locked()?session.totalBet:total).toLocaleString('ja-JP'));
  progress.hidden=!started&&!assetsProgress;progress.max=started?8:Math.max(1,assetsProgress?.total||1);progress.value=started?cursor:assetsProgress?.done||0;
  const button=name=>panel.querySelector(`[data-dl-action="${name}"]`);
  button('prepare').hidden=!!pack&&!localComplete||session?.status==='preparing'||localComplete;button('prepare').disabled=busy||connecting||!profileReady;button('prepare').textContent=session?.status==='failed'?'準備を再試行':'1ゲーム分をダウンロード';
@@ -190,7 +210,7 @@ function render(){
  window.__sweetsDownloadActive=!!pack&&!localComplete;
 }
 const panel=document.createElement('aside');panel.id='download-v255-panel';panel.className='dl255-panel';panel.dataset.collapsed='false';panel.setAttribute('aria-label','ダウンロード版の再生');
-panel.innerHTML='<header><strong data-dl-balls>ダウンロード版</strong><button type="button" data-dl-action="pause" hidden>一時停止</button><button type="button" data-dl-action="toggle" aria-label="再生パネルを開閉" aria-expanded="true">−</button></header><div class="dl255-body"><p id="download-v255-status" class="dl255-status" role="status" aria-live="polite"></p><progress class="dl255-progress" max="8" value="0" aria-label="ダウンロードと再生の進み具合" hidden></progress><div class="dl255-wallet"><span>保存済CREDIT <b data-dl-wallet>確認中</b></span><span>BET <b data-dl-bet>0</b></span></div><div class="dl255-actions"><button type="button" data-dl-action="prepare">1ゲーム分をダウンロード</button><button type="button" data-dl-action="play" hidden>録画を再生</button><button type="button" data-dl-action="next" hidden>次のBETへ</button><button type="button" data-dl-action="sync">接続を再試行</button><button type="button" data-dl-action="edition">版を選び直す</button></div><p class="dl255-note">BETと結果はサーバーで確定します。<br>ダンゴデビンゴはおまかせ配置です。</p></div>';
+panel.innerHTML='<header><strong data-dl-balls>ダウンロード版</strong><button type="button" data-dl-action="pause" hidden>一時停止</button><button type="button" data-dl-action="toggle" aria-label="再生パネルを開閉" aria-expanded="true">−</button></header><div class="dl255-body"><p id="download-v255-status" class="dl255-status" role="status" aria-live="polite"></p><progress class="dl255-progress" max="8" value="0" aria-label="ダウンロードと再生の進み具合" hidden></progress><div class="dl255-wallet"><span>CREDIT <b data-dl-wallet>確認中</b></span><span>BET <b data-dl-bet>0</b></span></div><div class="dl255-actions"><button type="button" data-dl-action="prepare">1ゲーム分をダウンロード</button><button type="button" data-dl-action="play" hidden>録画を再生</button><button type="button" data-dl-action="next" hidden>次のBETへ</button><button type="button" data-dl-action="sync">接続を再試行</button><button type="button" data-dl-action="edition">版を選び直す</button></div><p class="dl255-note">BETと結果はサーバーで確定します。<br>ダンゴデビンゴはおまかせ配置です。</p></div>';
 document.body.append(panel);
 panel.addEventListener('click',event=>{const action=event.target.closest('[data-dl-action]')?.dataset.dlAction;if(!action)return;if(action==='prepare')prepare();else if(action==='play')play();else if(action==='pause')playing&&!stopped()?pause():play();else if(action==='next')nextRound();else if(action==='edition')chooseEdition();else if(action==='sync'){if(!assetsReady)prepareAssets();if(pendingComplete)sync();else initialize();}else if(action==='toggle'){const collapsed=panel.dataset.collapsed!=='true';panel.dataset.collapsed=String(collapsed);const button=panel.querySelector('[data-dl-action="toggle"]');button.textContent=collapsed?'+':'−';button.setAttribute('aria-expanded',String(!collapsed));}});
 // All native BET controls remain, with a clear button for each game's draft.
@@ -208,7 +228,7 @@ hud=function(value){nativeHud(value);const editable=profileReady&&!locked()&&!bu
 recordBook.capture=()=>({changed:false,unlocked:[],round:false});playerLounge.capture=()=>false;
 window.SweetsDangoThinkingV251={state:()=>({enabled:false,active:false,ballCount:cursor,remainingMs:0,closesAt:0,roundId:session?.id||''}),checkpointPlacement:async()=>false,beforeSix:async()=>true};
 stopAutoRound();stopResultAuto();app.bets=Array(10).fill(0);app.enabled=Array(10).fill(false);app.credit=app.displayCredit=0;
-document.addEventListener('visibilitychange',()=>{lastFrame=null;if(document.hidden)persist().catch(()=>{});else wake();render();});
+document.addEventListener('visibilitychange',()=>{lastFrame=null;if(document.hidden)persist().then(syncProgress).catch(()=>{});else wake();render();});
 window.addEventListener('pagehide',()=>{persist().catch(()=>{});});window.addEventListener('online',()=>{online=true;if(pendingComplete)sync();else if(session?.status==='preparing')schedulePoll();else if(!profileReady)initialize();else syncProgress();prepareAssets();render();});window.addEventListener('offline',()=>{online=false;render();});
 window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,online,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
 render();scheduleUI(app);initialize();

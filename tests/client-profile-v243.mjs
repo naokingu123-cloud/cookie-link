@@ -36,7 +36,7 @@ async function run(mode){
   page=await context.newPage();page.on('pageerror',e=>errors.push(String(e)));page.on('console',m=>{if(['error','warning'].includes(m.type()))messages.push(m.text().slice(0,400));});page.on('request',r=>{const u=new URL(r.url());if(u.pathname.startsWith('/api/'))requests[u.pathname]=(requests[u.pathname]||0)+1;});
   await page.route('**/assets/shared-machine-v176.js*',async route=>{let code=await fs.readFile('assets/shared-machine-v176.js','utf8');if(mode==='loader-fixed')code=code.replace('SweetsStationNumbersV242','SweetsStationNumbersV241');await route.fulfill({contentType:'application/javascript',body:code+probe});});
   const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
-  await page.goto(base+'/?appv='+version,{waitUntil:'domcontentloaded',timeout:60000});
+  await page.goto(base+'/?edition=streaming&appv='+version,{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>window.__perfV243&&window.SweetsSharedMachine?.client?.online,{timeout:60000});
   await sleep(5500);
   const snapshot=label=>page.evaluate(label=>{const p=window.__perfV243,c=window.SweetsSharedMachine?.client;return {label,measurement:window.__measureV243,calls:p.calls,phase:p.app.phase,draws:p.app.draws,controller:window.SweetsSharedControllerV224?.describe(),stations:!!window.SweetsStationsV235,round:{id:c.round?.id,phase:c.round?.phase,participant:!!c.round?.participant},slots:p.slots.map(s=>({kind:s.engine?.kind,version:s.engine?.version,reachVersion:s.tabReachVersion,status:s.reachStatus,busy:s.engine?.busy,results:s.tabReachResults?.length}))};},label);

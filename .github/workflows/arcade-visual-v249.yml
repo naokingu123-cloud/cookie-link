@@ -2,7 +2,7 @@ name: Arcade v254 Sugar Challenge and Dango reach presentation
 on:
   workflow_dispatch:
   push:
-    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo', 'feature/v252-dango-art-reach-pages', 'feature/v253-dango-tsukimi-lines', 'feature/v254-sugar-challenge']
+    branches: ['main', 'feature/arcade-v249', 'feature/v250-tabs-castella61', 'feature/v251-dango-de-bingo', 'feature/v252-dango-art-reach-pages', 'feature/v253-dango-tsukimi-lines', 'feature/v254-sugar-challenge', 'feature/v255-download']
     paths:
       - 'index.html'
       - 'app-version.json'

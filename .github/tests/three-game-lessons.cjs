@@ -11,7 +11,7 @@ async function check(browser,width){
    const url=new URL(route.request().url()),file=path.join(root,url.pathname==='/'?'index.html':decodeURIComponent(url.pathname));
    return fs.existsSync(file)?route.fulfill({path:file}):route.fulfill({status:404,body:''});
   });
-  await page.goto(origin+'?games=jelly,stick,castella&appv='+version,{waitUntil:'domcontentloaded',timeout:90000});
+  await page.goto(origin+'?edition=streaming&games=jelly,stick,castella&appv='+version,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(()=>window.SweetsDemoSuite?.version>=139);
   await page.locator('#manual-number-toggle').evaluate(b=>{if(!document.body.classList.contains('manual-number-mode'))b.click();});
   await page.locator('#sound').evaluate(b=>{b.checked=false;});

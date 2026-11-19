@@ -59,7 +59,7 @@ export async function createUiFixture({startRound=true,viewport={width:1366,heig
 `});
   });
   const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
-  const url=new URL('/'+(search.startsWith('?')?search:'?'+search),base);url.searchParams.set('appv',version);
+  const url=new URL('/'+(search.startsWith('?')?search:'?'+search),base);url.searchParams.set('appv',version);if(!url.searchParams.has('edition'))url.searchParams.set('edition','streaming');
   await page.goto(url.href,{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>window.__qa250&&window.SweetsSharedMachine?.client?.online&&window.SweetsStationsV235,null,{timeout:60000});
   await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('#tabs img.v249-selected-logo')].map(image=>image.decode().catch(()=>{})));});

@@ -35,7 +35,7 @@ try{
   await route.fulfill({contentType:'application/javascript',body:code+'\n;window.__client243={app,slots};\n'});
  });
  const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
- await page.goto(base+'/?appv='+version,{waitUntil:'domcontentloaded',timeout:60000});
+ await page.goto(base+'/?edition=streaming&appv='+version,{waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.__client243&&window.SweetsSharedMachine?.client?.online&&window.SweetsStationsV235,{timeout:60000});
  await sleep(5500);
  assert.equal(await page.evaluate(()=>window.__client243.app.engines.length),10);

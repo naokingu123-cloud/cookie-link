@@ -25,7 +25,7 @@ async function play(browser,lineup){
   if(name==='optimized/app-01.js')return route.fulfill({body:instrumented,contentType:'application/javascript'});
   const file=path.resolve(root,name);return file.startsWith(root+path.sep)&&fs.existsSync(file)?route.fulfill({path:file}):route.fulfill({status:404,body:''});
  });
- await page.goto(base+'?games='+lineup+'&appv='+version,{waitUntil:'domcontentloaded'});
+ await page.goto(base+'?edition=streaming&games='+lineup+'&appv='+version,{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.finalRoundSnapshot&&document.querySelector('#manual-number-toggle'));
  await page.evaluate(()=>{document.querySelector('#sound').checked=false;document.querySelector('#manual-number-toggle').click();document.querySelector('#manual-start').click();});
  try{

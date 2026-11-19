@@ -17,7 +17,7 @@ try{
   // Only network/lifecycle is a fixture. The page, game bundle, nine game
   // styles, renderer layout and station script are the production files.
   await page.route('**/assets/shared-machine-v176.js*',route=>route.fulfill({contentType:'text/javascript',body:`window.SweetsSharedMachine={client:{playerId:'self',online:true,ws:{readyState:1},round:null,on(){},send(){return true;}}};window.SweetsRouletteClientV224={retry(){}};const qaStyle=document.createElement('link');qaStyle.rel='stylesheet';qaStyle.href='assets/stations-v235.css?v=238';document.head.append(qaStyle);\n${source}\nwindow.SweetsStationsV235.accept(${JSON.stringify(roster)});`}));
-  await page.goto(base+'/?set=all&appv='+version,{waitUntil:'networkidle'});
+  await page.goto(base+'/?edition=streaming&set=all&appv='+version,{waitUntil:'networkidle'});
   await page.waitForSelector('.stations-strip-v235 .station-card-v235');await page.waitForTimeout(1200);
   const current=await page.evaluate(()=>{
    const box=s=>{const el=typeof s==='string'?document.querySelector(s):s;const b=el.getBoundingClientRect();return {x:b.x,y:b.y,w:b.width,h:b.height,bottom:b.bottom,right:b.right};};

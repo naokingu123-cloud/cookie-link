@@ -1,4 +1,4 @@
-import {randomBytes,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 
 export const DOWNLOAD_GAME_IDS_V255=Object.freeze(['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango']);
 const copy=value=>value==null?value:JSON.parse(JSON.stringify(value));
@@ -56,7 +56,8 @@ export function createDownloadLedgerV255({getPlayer,getMachine,listMachineIds=()
    // The existing bank may open one Sugar challenge for this private round.
    // Its random card/multiplier is persisted before any worker computation.
    sugarLedger.start(p,{roundId:id,station:1,openedAt:at});
-   const input={version:255,sessionId:id,machineId,playerId,requestId,seed,createdAt:at,bets:[...bets],gameIds:[...DOWNLOAD_GAME_IDS_V255],rate,creditBefore:p.wallet.credit,totalBet,previousState:copy(d.gameState),sixDropCarry:copy(p.sixDropV247),sugarState:sugarLedger.publicState(p),profile:copy(profile)};
+   const previousState=copy(d.gameState),previousStateHash=previousState?createHash('sha256').update(JSON.stringify(previousState)).digest('hex'):null;
+   const input={version:255,sessionId:id,machineId,playerId,requestId,seed,createdAt:at,bets:[...bets],gameIds:[...DOWNLOAD_GAME_IDS_V255],rate,creditBefore:p.wallet.credit,totalBet,previousSessionId:d.lastId,previousStateHash,previousState,sixDropCarry:copy(p.sixDropV247),sugarState:sugarLedger.publicState(p),profile:copy(profile)};
    const record={id,status:'preparing',requestId,input,walletRevisionBefore:p.wallet.revision,createdAt:at,updatedAt:at,progress:{seq:0,ballIndex:0,playbackMs:0},attempts:0,error:null,package:null};
    Object.defineProperty(d.sessions,id,{value:record,enumerable:true,writable:true,configurable:true});Object.defineProperty(d.requests,requestId,{value:id,enumerable:true,writable:true,configurable:true});
    d.activeId=id;d.revision++;p.updatedAt=at;
@@ -84,6 +85,16 @@ export function createDownloadLedgerV255({getPlayer,getMachine,listMachineIds=()
   for(let i=0;i<input.bets.length;i++)if(input.bets[i]>0&&!seen.has(DOWNLOAD_GAME_IDS_V255[i]))fail('download_missing_computed_game',500);
   const draws=result.finalState.draws;
   if(!Array.isArray(draws)||JSON.stringify(draws)!==JSON.stringify(result.numbers))fail('download_state_draw_mismatch',500);
+  if(result.sessionId!==input.sessionId||result.totalWin!==undefined&&result.totalWin!==totalWin)fail('download_computed_receipt_mismatch',500);
+  const recording=result.playback.recording,checkpoints=result.playback.checkpoints;
+  if(recording?.version!==255||recording.kind!=='production-physics-frames'||recording.physicsHz!==120||!/^[a-f0-9]{64}$/.test(recording.sourceHash||'')||!Number.isFinite(recording.fps)||recording.fps<=0||recording.fps>120||!Number.isFinite(recording.durationMs)||recording.durationMs<=0||!Array.isArray(recording.frames)||recording.frames.length<2)fail('download_invalid_recording',500);
+  if(!Array.isArray(recording.hits)||recording.hits.length!==8||recording.hits.some((hit,i)=>hit.index!==i+1||hit.number!==result.numbers[i]||!Number.isFinite(hit.atMs)||hit.atMs<0||hit.atMs>recording.durationMs||i>0&&hit.atMs<recording.hits[i-1].atMs))fail('download_recording_draw_mismatch',500);
+  let previousTime=-1;
+  for(const frame of recording.frames){
+   if(!Array.isArray(frame)||![3,4].includes(frame.length)||!Number.isFinite(frame[0])||frame[0]<previousTime||frame[0]<0||frame[0]>recording.durationMs||!Number.isFinite(frame[1])||!Array.isArray(frame[2])||frame[2].some(ball=>!Array.isArray(ball)||ball.length!==10||ball.some(n=>!Number.isFinite(n)))||frame.length===4&&(!Array.isArray(frame[3])||frame[3].length!==4||frame[3].some(n=>!Number.isFinite(n))))fail('download_invalid_recording_frame',500);
+   previousTime=frame[0];
+  }
+  if(previousTime!==recording.durationMs||!Array.isArray(checkpoints)||checkpoints.length!==9||checkpoints.some((state,i)=>state?.ballIndex!==i||JSON.stringify(state.draws)!==JSON.stringify(result.numbers.slice(0,i))))fail('download_invalid_checkpoints',500);
   return {games,totalWin};
  }
  function finish(machineId,playerId,sessionId,result,storePackage){
@@ -94,8 +105,11 @@ export function createDownloadLedgerV255({getPlayer,getMachine,listMachineIds=()
   const checked=validateOutput(s.input,result);
   transaction(machineId,()=>{
    if(p.wallet.revision!==s.walletRevisionBefore||p.wallet.credit!==s.input.creditBefore)fail('download_wallet_changed');
-   const at=now(),before=p.wallet.credit,oldSugar=sugarLedger.publicState(p),sugar=sugarLedger.advance(p,{roundId:sessionId,balls:result.numbers});
-   const sugarWin=sugar.cashPaid||0;
+   const at=now(),before=p.wallet.credit,oldSugar=sugarLedger.publicState(p),sugarStates=[copy(s.input.sugarState)];let sugarWin=0;
+   for(let count=1;count<=8;count++){
+    const sugar=sugarLedger.advance(p,{roundId:sessionId,balls:result.numbers.slice(0,count)});
+    sugarWin=add(sugarWin,sugar.cashPaid||0);sugarStates.push(sugarLedger.publicState(p));
+   }
    const accepted=new Set(oldSugar.acceptedIds||[]),tokens=(Array.isArray(result.sugarTokens)?result.sugarTokens:[]).filter(t=>t&&(!t.sugarId||!accepted.has(t.sugarId))&&(!t.sourceRoundId||t.sourceRoundId===sessionId)).map((t,i)=>({...copy(t),sugarId:typeof t.sugarId==='string'?t.sugarId:sessionId+':'+String(t.game)+':'+i,sourceRoundId:sessionId}));
    if(tokens.length){const ingested=sugarLedger.ingest(p,{roundId:sessionId,tokens,locked:s.input.bets,bets:s.input.bets,games:checked.games,payoutRate:s.input.rate});if(ingested.rejectedCount)fail('download_invalid_computed_sugar',500);}
    const credit=amount(p.wallet.credit-s.input.totalBet+checked.totalWin),roundWin=add(checked.totalWin,sugarWin);
@@ -108,13 +122,20 @@ export function createDownloadLedgerV255({getPlayer,getMachine,listMachineIds=()
    const candy=checked.games.candy;
    if(candy?.bet>0&&candy.rulesVersion===247&&candy.carryV247){const c=candy.win>0?candy.carryV247:{};p.sixDropV247={version:247,revision:(p.sixDropV247?.revision||0)+1,roundId:sessionId,bankUnits:amount(c.bankUnits||0),removed:amount(c.removed||0),feed:amount(c.feed||0)};}
    p.wallet={...p.wallet,credit,revision:(p.wallet.revision||0)+1,lastRoundId:sessionId,source:'download-v255',reservedRoundId:null,updatedAt:at};p.currentRoundId=sessionId;p.currentRoundBet=s.input.totalBet;p.currentRoundWin=checked.totalWin;p.lastBall=8;p.updatedAt=at;
-   const sugarState=sugarLedger.publicState(p),finalState={...copy(result.finalState),credit,displayCredit:credit,wonderBank:copy(sugarState.bank),wonderSteps:sugarState.bank.length,wonderValue:sugarState.bank.reduce((sum,t)=>sum+Number(t.value||0),0)};
+   const sugarState=sugarLedger.publicState(p),finalState={...copy(result.finalState),credit,displayCredit:credit,sugarV254:copy(sugarState),wonderBank:copy(sugarState.bank),wonderSteps:sugarState.bank.length,wonderValue:sugarState.bank.reduce((sum,t)=>sum+Number(t.value||0),0)};
    d.gameState=copy(finalState);d.stats.rounds=add(d.stats.rounds,1);d.stats.bet=add(d.stats.bet,s.input.totalBet);d.stats.win=add(d.stats.win,roundWin);d.stats.sugarWin=add(d.stats.sugarWin,sugarWin);d.stats.maxRoundWin=Math.max(d.stats.maxRoundWin,roundWin);
-   const saved={...copy(result),sessionId,requestId:s.requestId,seed:s.input.seed,bets:[...s.input.bets],gameIds:[...DOWNLOAD_GAME_IDS_V255],profile:copy(s.input.profile),rate:s.input.rate,creditBefore:before,creditAfter:credit,totalBet:s.input.totalBet,totalWin:checked.totalWin,sugarWin,finalState,sugarState,wallet:copy(p.wallet),stats:copy(d.stats)};
-   if(Array.isArray(saved.playback.checkpoints)&&saved.playback.checkpoints.length===9)saved.playback.checkpoints[8]=copy(finalState);
+   const saved={...copy(result),sessionId,requestId:s.requestId,seed:s.input.seed,previousSessionId:s.input.previousSessionId,previousStateHash:s.input.previousStateHash,bets:[...s.input.bets],gameIds:[...DOWNLOAD_GAME_IDS_V255],profile:copy(s.input.profile),rate:s.input.rate,creditBefore:before,creditAfter:credit,totalBet:s.input.totalBet,totalWin:checked.totalWin,sugarWin,finalState,sugarState,wallet:copy(p.wallet),stats:copy(d.stats)};
+   sugarStates[8]=copy(sugarState);saved.playback.sugarStates=sugarStates;
+   for(let index=0;index<8;index++)saved.playback.checkpoints[index].sugarV254=copy(sugarStates[index]);
+   saved.playback.checkpoints[8]=copy(finalState);
    const packageInfo=storePackage(saved);
    if(!packageInfo||typeof packageInfo.file!=='string'||typeof packageInfo.sha256!=='string'||!money(packageInfo.bytes))fail('download_package_not_saved',500);
    s.package=packageInfo;s.status='ready';s.preparedAt=at;s.updatedAt=at;s.totalWin=checked.totalWin;s.sugarWin=sugarWin;s.creditAfter=credit;s.durationMs=Math.max(0,Number(result.playback.recording?.durationMs)||Number(result.playback.durationMs)||0);s.error=null;d.lastId=sessionId;d.revision++;
+   // Full retry inputs remain durable until this settlement commits. Once
+   // ready, the immutable package carries every playback state and the prior
+   // package/hash identifies its trusted continuation; do not duplicate full
+   // game boards and ever-growing receipt lists in every wallet-DB receipt.
+   delete s.input.previousState;delete s.input.sugarState;
    const record={id:sessionId,bet:s.input.totalBet,win:checked.totalWin,games:copy(checked.games),phase:'COMPLETE',lastBall:8,balls:result.numbers.map((number,index)=>({index:index+1,number})),committed:true,updatedAt:at,reservation:{roundId:sessionId,status:'settled',bet:s.input.totalBet,creditBefore:before,creditAfterBet:before-s.input.totalBet},settlement:{totalWin:checked.totalWin,creditAfter:credit,source:'download-v255',settledAt:at},wasOffline:false};
    p.rounds=p.rounds||{};p.rounds[sessionId]=record;
   });
