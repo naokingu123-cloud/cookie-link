@@ -1243,8 +1243,8 @@
     },
     {
       "path": "assets/download-mode-v255.js",
-      "bytes": 44667,
-      "sha256": "59b129d79427b4a72f2407659a13c3f67c69ab46e9ef6cc8497f24d38784f8e5"
+      "bytes": 44646,
+      "sha256": "30c2fd74fe4693b9852741ab7fcaf29bcaaf4cfc4e252da8d9acda928bc23048"
     },
     {
       "path": "assets/download-roulette-v255.js",
@@ -3207,5 +3207,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127772043
+  "totalBytes": 127772022
 }
