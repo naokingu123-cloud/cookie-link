@@ -140,3 +140,33 @@
  .sc254-payouts td>b>.gold-number{line-height:20px}.sc268-gauge{height:17px}.sc254-reach{font-size:11px}.sc254-rule{font-size:9px}
  .sc254-digital{left:1%;right:1%;bottom:68px;gap:4px}.sc254-digital>span{font-size:8px;max-width:48px}.sc254-digital>b{font-size:24px}.sc254-phase{bottom:26px;font-size:10px}
 }
+
+/* The actual game panel is shallow even on a wide desktop. Keep all six
+   bands and their awards visible together instead of stacking each fraction. */
+.sc254-overlay>.sc254-head{flex-basis:32px;height:32px}
+.sc254-head small{font-size:8px;line-height:9px}.sc254-head h2{font-size:18px;margin:1px 0}
+.sc254-jp{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:5px;flex-basis:142px;padding:2px 6px;height:29px}
+.sc254-jp>span{font-size:8px;line-height:9px}.sc254-jp>b{height:23px;line-height:23px}
+.sc254-content{grid-template-columns:minmax(0,35%) minmax(0,65%)}
+.sc254-card{gap:2px;padding-top:2px;padding-bottom:2px}
+.sc254-card-name{font-size:10px;line-height:11px}
+.sc254-targets{padding:3px 4px}
+.sc254-extremes{font-size:10px;gap:2px 4px;line-height:12px}
+.sc254-extremes>small{font-size:9px;padding:1px 4px;line-height:12px}
+.sc254-extremes>.sc268-gauge{height:8px}
+.sc254-lucky{gap:3px;margin-top:3px;flex-wrap:nowrap}
+.sc254-lucky>small{flex:1;min-width:0;max-width:72px;font-size:8px;line-height:1.1;letter-spacing:0}
+.sc254-lucky>b{font-size:13px;min-width:20px;line-height:16px;padding:0 3px}
+.sc268-gauge-caption{font-size:10px;line-height:12px;margin-top:1px}.sc268-gauge-caption>span{font-size:11px}
+.sc254-payouts{border-spacing:0 2px;line-height:1}
+.sc254-payouts th{padding:0 3px;line-height:11px;font-size:10px}.sc254-payouts th:first-child{width:53%}
+.sc254-payouts td{height:23px;padding:1px 3px}
+.sc254-payouts td:first-child{padding:1px 3px}
+.sc254-payouts td>span{display:inline-block;width:32px;vertical-align:middle;font-size:8px;line-height:9px;text-align:left;white-space:normal}
+.sc254-payouts td>b{display:inline-block;width:calc(100% - 32px);vertical-align:middle;height:20px;line-height:20px;font-size:18px}
+.sc254-payouts td>b>.gold-number{line-height:20px}
+.sc268-gauge{height:15px}
+.sc254-rule{font-size:9px;line-height:1.2;margin:1px 0 0}
+.sc254-reach{font-size:11px;line-height:1.15}
+.sc254-overlay>footer{font-size:8px;line-height:10px;margin-top:3px}
+@media(max-width:620px){.sc254-head h2{font-size:16px}.sc254-jp{flex-basis:133px}.sc254-lucky>b{font-size:12px;min-width:18px;padding:0 2px}.sc254-lucky>small{font-size:7.5px}.sc254-rule{font-size:8.5px}}

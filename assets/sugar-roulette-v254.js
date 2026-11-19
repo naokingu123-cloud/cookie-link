@@ -64,7 +64,9 @@ function bindDriver(){
     }
     gl_FragColor=vec4(sugarColor,1.0);`);
   material.needsUpdate=true;
-  const native=mesh.onBeforeRender;mesh.onBeforeRender=function(...args){native?.apply(this,args);const row=colorFor(number);u.sugarModeV254.value=row?(row.status==='acquired'?2:1):0;u.sugarTimeV254.value=Date.now()/1000;if(row)u.sugarFrameV254.value.set(row.color);};
+  // Keep the shader clock small: epoch seconds lose sub-second precision in
+  // WebGL float32. The 720s wrap is a whole number of both color cycles.
+  const native=mesh.onBeforeRender;mesh.onBeforeRender=function(...args){native?.apply(this,args);const row=colorFor(number);u.sugarModeV254.value=row?(row.status==='acquired'?2:1):0;u.sugarTimeV254.value=(Date.now()%720000)/1000;if(row)u.sugarFrameV254.value.set(row.color);};
  }
  driver=current;faces=found;
 }

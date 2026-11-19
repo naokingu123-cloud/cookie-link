@@ -92,7 +92,7 @@ function render(){
  cardName.textContent=(card.rarity==='rare'?'★ RARE CARD ★　':'')+card.name;
  targets.replaceChildren();const low=document.createElement('div'),lucky=document.createElement('div');low.className='sc254-extremes';low.innerHTML='<small>8球後 JPC</small><b>LOW '+card.lowMax+'</b><b>HIGH '+card.highMin+'</b>'+gaugeMarkup([{min:R.MIN_SUM,max:card.lowMax},{min:card.highMin,max:R.MAX_SUM}],{lucky:card.luckySums});lucky.className='sc254-lucky';lucky.innerHTML='<small>途中の一致でもJPC確定</small>'+card.luckySums.map(n=>'<b data-acquired="'+String(s.jpcQualified&&s.qualifyingSum===n)+'">'+n+'</b>').join('');targets.append(low,lucky);
  table.innerHTML=R.payoutRows(s.cardId).map(row=>'<tr data-current="'+String(s.phase==='complete'&&!s.jpcQualified&&s.award?.payoutHundredths===row.hundredths)+'" data-hundredths="'+row.hundredths+'"><td>'+gaugeMarkup(row.ranges)+'</td><td><span>JP ×'+row.fraction+'</span><b data-sc-win="'+R.cashFor(s.jpAmount,row.hundredths)+'"></b></td></tr>').join('');
- table.querySelectorAll('[data-sc-win]').forEach(node=>num(node,Number(node.dataset.scWin),20,112));
+ table.querySelectorAll('[data-sc-win]').forEach(node=>num(node,Number(node.dataset.scWin),18,112));
  history.innerHTML=Array.from({length:8},(_,i)=>'<span data-hit="'+String(i<s.draws.length)+'">'+(s.draws[i]??'·')+'</span>').join('');
  const reaches=R.reaches(s);reachText.textContent=s.jpcQualified?'合計 '+(s.qualifyingSum??s.sum)+' でJPC確定！'+(s.qualifyingDrawCount?'（'+s.qualifyingDrawCount+'球目）':''):reaches.length?'JPCリーチ　'+reaches.map(r=>r.number).join('・'):s.phase==='complete'?'合計 '+s.sum+' → JP ×'+s.award.payoutFraction:'';
  overlay.setAttribute('aria-label','シュガーチャレンジ 合計'+s.sum+'、JP '+s.jpAmount+'。タップで小さく表示');

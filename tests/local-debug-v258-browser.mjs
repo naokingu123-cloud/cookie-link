@@ -65,6 +65,7 @@ try{
  assert.equal((await state()).phase,'ready');assert.equal(betQuote.local.bankCount,0);assert.equal(betQuote.local.phase,'ready');assert.ok(betQuote.local.jpAmount>0);assert.ok(betQuote.local.multiplier>=1);assert.ok(betQuote.ui.challenge);
  milestone('sugar-bet-quote',{jpAmount:betQuote.local.jpAmount,multiplier:betQuote.local.multiplier});
  await capture('local-sugar-bet-quote');
+ milestone('before-manual-switch',{native:await state(),sugar:await page.evaluate(()=>window.SweetsLocalSugarV267.describe())});
  await page.locator('#manual-number-toggle').click();
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().manualNumbers===true,null,{timeout:5000});
  await capture('local-manual');

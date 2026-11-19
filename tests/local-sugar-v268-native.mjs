@@ -20,7 +20,14 @@ let {app,L,V}=boot();
 L.grantTestSugar();const quote=L.describe();assert.equal(app.phase,'ready');assert.equal(quote.active,true);assert.equal(quote.draws.length,0);assert.equal(quote.bankCount,0);assert.equal(V.snapshot().challenge.jpAmount,quote.jpAmount);
 const calls=rngCalls;({app,L,V}=boot());assert.equal(rngCalls,calls,'BET reload never draws a new quote');assert.equal(L.describe().jpAmount,quote.jpAmount);assert.equal(L.describe().roundId,quote.roundId);
 app.prepare();assert.equal(L.describe().roundId,quote.roundId,'harmless native prepare retains a BET preview');
-assert.equal(app.start(),true);assert.equal(L.describe().jpAmount,quote.jpAmount);assert.equal(L.describe().roundId,quote.roundId);
+// The real UI's auto countdown can start the native controller before ball 1.
+// Toggling manual mode then calls debugResetRound -> app.prepare. The same
+// consumed five Sugar and preannounced quote must survive this zero-ball reset.
+assert.equal(app.start(),true);assert.equal(app.phase,'playing');assert.equal(app.draws.length,0);
+const beforeModeSwitch=JSON.parse(JSON.stringify(V.snapshot().challenge)),beforeModeRng=rngCalls;
+app.prepare();assert.equal(app.phase,'ready');assert.equal(rngCalls,beforeModeRng,'controller reset never quotes Sugar or rerolls card/multiplier');
+assert.equal(L.describe().bankCount,0);assert.equal(L.describe().roundId,quote.roundId);assert.deepEqual(V.snapshot().challenge,beforeModeSwitch);
+assert.equal(app.start(),true);assert.equal(L.describe().jpAmount,quote.jpAmount);assert.equal(L.describe().roundId,quote.roundId);assert.equal(L.describe().multiplier,quote.multiplier);
 for(const n of [20,19,18,15,5])app.drawSource.onNumber(n);
 assert.equal(L.describe().jpcQualified,true);assert.equal(L.describe().qualifyingDrawCount,5);assert.equal(L.describe().phase,'drawing');assert.equal(V.snapshot().challenge.jpcQualified,true);
 for(const n of [3,7,17])app.drawSource.onNumber(n);
@@ -31,4 +38,4 @@ app.prepare();assert.equal(L.describe().active,false);
 app.wonderBank.push({sugarId:'rainbow',id:'rainbow',game:0,value:100,directJpc:true});L.grantTestSugar();assert.equal(L.describe().bankCount,1);assert.equal(app.wonderBank[0].sugarId,'rainbow');
 assert.equal(app.start(),true);for(const n of [2,5,8,10,12,14,17,22])app.drawSource.onNumber(n);app.roundWins=[25];app.finishRound();
 assert.equal(L.describe().jpcQualified,false);assert.equal(L.describe().cashWin,135);assert.equal(app.totalWin,160);const count=L.describe().awardCount;app.finishRound();assert.equal(L.describe().awardCount,count);assert.equal(app.totalWin,160);
-console.log('LOCAL_SUGAR_V268_NATIVE_PASS: real Arcade class, ready quote, reload preservation, native callbacks, early JPC, no duplicate cash and rainbow exclusion');
+console.log('LOCAL_SUGAR_V268_NATIVE_PASS: real Arcade class, ready quote, reload/manual-controller preservation, native callbacks, early JPC, no duplicate cash and rainbow exclusion');

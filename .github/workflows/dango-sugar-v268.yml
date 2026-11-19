@@ -38,6 +38,9 @@ jobs:
           g++ -std=c++20 -O3 scripts/dango-v268-enumerate.cpp -o /tmp/dango-v268-enumerate
           /tmp/dango-v268-enumerate > /tmp/dango-v268-independent.json
           node tests/dango-v268-calibration.mjs /tmp/dango-v268-independent.json
+      - name: Japanese fonts for actual text fitting
+        if: ${{ !cancelled() }}
+        run: sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
       - name: Use Chromium
         if: ${{ !cancelled() }}
         run: |
@@ -78,6 +81,9 @@ jobs:
           node tests/local-sugar-v267.mjs
           node tests/local-sugar-v268-native.mjs
           node tests/local-debug-v258.mjs
+      - name: Japanese fonts for actual text fitting
+        if: ${{ !cancelled() }}
+        run: sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
       - name: Use Chromium
         if: ${{ !cancelled() }}
         run: |
@@ -90,6 +96,12 @@ jobs:
           fi
       - name: BET-time JP and multiplier, gauges, early lucky JPC and responsive display
         run: node tests/sugar-challenge-v254-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sugar-v268-panel-diagnostics
+          path: qa-sugar-v254/
+          retention-days: 7
       - name: Local native roulette, BET-time Sugar and actual eight-ball settlement
         if: ${{ !cancelled() }}
         run: node tests/local-debug-v258-browser.mjs
@@ -110,6 +122,9 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts for actual text fitting
+        if: ${{ !cancelled() }}
+        run: sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
       - name: Use Chromium
         if: ${{ !cancelled() }}
         run: |

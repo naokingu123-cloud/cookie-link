@@ -91,10 +91,13 @@ app.finishRound=function(...args){
 };
 const nativePrepare=app.prepare;
 app.prepare=function(...args){
- // Complete or interrupted native rounds move to a fresh BET. A ready preview
- // is retained across harmless prepare/reset-board calls during the same BET.
+ // The native countdown may already be 'playing' while the physical first
+ // ball has not landed. Switching to manual mode calls prepare() in that gap.
+ // Keep the fixed BET quote until a ball has actually entered the challenge;
+ // changing the draw controller must not consume/requote the same five Sugar.
  V.stampBank();
- if(challenge&&this.phase!=='ready'){
+ const unstarted=challenge&&!settled&&challenge.draws.length===0&&(!Array.isArray(this.draws)||this.draws.length===0);
+ if(challenge&&this.phase!=='ready'&&!unstarted){
   if(challenge.phase!=='complete'){
    const bank=app.wonderBank||[],ids=new Set(bank.map(t=>t.sugarId));
    for(const token of consumed)if(!ids.has(token.sugarId)){bank.push(copy(token));ids.add(token.sugarId);}
