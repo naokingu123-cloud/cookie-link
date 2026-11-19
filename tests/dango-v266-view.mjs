@@ -39,7 +39,7 @@ try{
    onAuto(){qa.state=R.autoPlace(qa.state);qa.render();}});
   qa.new(0);return R.REVISION;
  });
- assert.equal(ready,265);
+ assert.equal(ready,266);
  const seven=await page.evaluate(()=>qa.earlyByIds([1,3,6,10,15]));assert.equal(seven,7);
  const first=await page.evaluate(()=>({
   title:document.querySelector('.dgb-free-title').textContent,
