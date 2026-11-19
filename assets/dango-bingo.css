@@ -94,7 +94,7 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 .dgb-scene[data-presentation="268"][data-first-half="true"] .dgb-pay col{width:19.333333%}
 .dgb-scene[data-presentation="268"] .dgb-pay th,.dgb-scene[data-presentation="268"] .dgb-pay td{height:calc(var(--dgb-pay-unit)*.60);padding-left:calc(var(--dgb-pay-unit)*.035);padding-right:calc(var(--dgb-pay-unit)*.035)}
 .dgb-scene[data-presentation="268"] .dgb-pay thead th{height:calc(var(--dgb-pay-unit)*.32);font-size:max(11px,calc(var(--dgb-pay-unit)*.23))}
-.dgb-scene[data-presentation="268"] .dgb-pay tbody th{font-size:max(12px,calc(var(--dgb-pay-unit)*.26));border-left-width:calc(var(--dgb-pay-unit)*.035)}
+.dgb-scene[data-presentation="268"] .dgb-pay tbody th{font-size:max(12px,calc(var(--dgb-pay-unit)*.23));border-left-width:calc(var(--dgb-pay-unit)*.035)}
 .dgb-scene[data-presentation="268"][data-first-half="true"] .dgb-pay tbody th{font-size:max(12px,calc(var(--dgb-pay-unit)*.18))}
 .dgb-scene[data-presentation="268"] .dgb-line-heading{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--dgb-pay-unit)*.035);width:100%;white-space:nowrap}
 .dgb-scene[data-presentation="268"] .dgb-line-name{flex:none;line-height:1}

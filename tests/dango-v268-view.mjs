@@ -89,9 +89,10 @@ try{
     inside:g.centers.every(p=>p.x-g.radius>=0&&p.x+g.radius<=innerWidth&&p.y-g.radius>=0&&p.y+g.radius<=innerHeight)
    };
   });
-  assert.equal(measure.inside,true);assert.equal(measure.overflow.length,0);assert.ok(measure.numeralFont>=14);assert.ok(measure.table.right<=width+1&&measure.table.bottom<=height+1);assert.ok(measure.free.right<=width+1&&measure.free.bottom<=height+1);
+  report.screens.push(measure);
+  assert.equal(measure.inside,true);assert.equal(measure.overflow.length,0,'table text must fit: '+JSON.stringify(measure));assert.ok(measure.numeralFont>=14);assert.ok(measure.table.right<=width+1&&measure.table.bottom<=height+1);assert.ok(measure.free.right<=width+1&&measure.free.bottom<=height+1);
   assert.ok(measure.tableClearance>=measure.unit*.5-.5,'payout/mochi overlap '+JSON.stringify(measure));assert.ok(measure.freeClearance>=measure.unit*.5-.5,'FREE/mochi overlap '+JSON.stringify(measure));
-  await page.screenshot({path:output+'/v268-get-and-reach-'+width+'x'+height+'.png'});report.screens.push(measure);
+  await page.screenshot({path:output+'/v268-get-and-reach-'+width+'x'+height+'.png'});
  }
  await page.evaluate(()=>{qa268.bet=1000000000;qa268.render();});
  report.longNumbers=await page.evaluate(()=>[...document.querySelectorAll('.dgb-pay td .gold-number')].map(e=>({text:e.textContent,scale:+e.dataset.horizontalScale,font:parseFloat(getComputedStyle(e).fontSize),width:e.getBoundingClientRect().width,cell:e.parentElement.clientWidth})));
