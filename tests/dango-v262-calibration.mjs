@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const root=new URL('..',import.meta.url),data=JSON.parse(await fs.readFile(new URL('docs/dango-v262-calibration.json',root),'utf8'));
 const context=vm.createContext({console});vm.runInContext(await fs.readFile(new URL('assets/dango-bingo-rules.js',root),'utf8'),context);
-const R=context.DangoBingoRules,plain=value=>JSON.parse(JSON.stringify(value)),lengths=[3,4,5,6,7];
+const R=context.DangoBingoRules.legacy262,plain=value=>JSON.parse(JSON.stringify(value)),lengths=[3,4,5,6,7];
 assert.equal(data.rulesRevision,R.REVISION);
 assert.equal(data.integerMethod.drawSpaceDenominator,R.DENOMINATOR);
 assert.deepEqual(lengths.map(length=>plain(R.tiers[length].slice(1))),data.candidatePaytableHundredths);

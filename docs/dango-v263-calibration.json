@@ -1,0 +1,1099 @@
+{
+  "schemaVersion": 1,
+  "rulesRevision": 263,
+  "status": "approved-for-production",
+  "buildVersion": "20261119-v263-dango-balanced",
+  "drawSpaceDenominator": 60568200,
+  "paytableHundredths": [
+    [
+      20,
+      80,
+      1200
+    ],
+    [
+      30,
+      120,
+      600
+    ],
+    [
+      40,
+      400,
+      3000
+    ],
+    [
+      100,
+      2000,
+      20000
+    ],
+    [
+      200,
+      5000,
+      500000
+    ]
+  ],
+  "minimumPayoutMultiplier": 0.2,
+  "profiles": [
+    {
+      "id": "triangle-edge",
+      "initialFreeCells": [
+        0,
+        20,
+        22
+      ],
+      "triggerCells": [
+        8,
+        11,
+        12
+      ],
+      "optimalNumerator": 2728703720,
+      "optimalReturnPercent": 45.05175521148061,
+      "lineOutcomeCounts": [
+        [
+          46485441,
+          13745415,
+          332813,
+          4531
+        ],
+        [
+          56177193,
+          4107526,
+          189137,
+          94344
+        ],
+        [
+          58328898,
+          2093935,
+          134743,
+          10624
+        ],
+        [
+          58853595,
+          1669600,
+          41809,
+          3196
+        ],
+        [
+          60149078,
+          402300,
+          16822,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "triangle-festival",
+      "initialFreeCells": [
+        6,
+        9,
+        24
+      ],
+      "triggerCells": [
+        10,
+        23,
+        25
+      ],
+      "optimalNumerator": 13762004440,
+      "optimalReturnPercent": 227.21501447954537,
+      "lineOutcomeCounts": [
+        [
+          53256699,
+          6899776,
+          166662,
+          245063
+        ],
+        [
+          26659895,
+          25983283,
+          3071914,
+          4853108
+        ],
+        [
+          57443370,
+          2502455,
+          354217,
+          268158
+        ],
+        [
+          60384051,
+          170382,
+          13588,
+          179
+        ],
+        [
+          60477189,
+          90997,
+          14,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "triangle-jackpot",
+      "initialFreeCells": [
+        0,
+        2,
+        21
+      ],
+      "triggerCells": [
+        3,
+        10,
+        15
+      ],
+      "optimalNumerator": 20548603960,
+      "optimalReturnPercent": 339.2639035005168,
+      "lineOutcomeCounts": [
+        [
+          45997734,
+          13874196,
+          619080,
+          77190
+        ],
+        [
+          56764550,
+          3666127,
+          108475,
+          29048
+        ],
+        [
+          58197357,
+          2090744,
+          261420,
+          18679
+        ],
+        [
+          59722654,
+          825124,
+          20055,
+          367
+        ],
+        [
+          58941086,
+          1364238,
+          252106,
+          10770
+        ]
+      ]
+    }
+  ],
+  "fixedJackpotProfile": {
+    "moldIndex": 2,
+    "weightNumerator": 3,
+    "weightDenominator": 200,
+    "weight": 0.015,
+    "perJackpotLayoutOutcomeCount": 10770,
+    "allSettingsJackpotProbability": 0.0000026672412255936282,
+    "minimumMixedReturnPercent": 49.464937435816154,
+    "maximumMixedReturnPercent": 228.89574781485996
+  },
+  "settings": [
+    {
+      "targetPercent": 50,
+      "lowWeightNumerator": "2167078686560",
+      "highWeightNumerator": "6481555280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.0029372693831551796,
+      "exactReturnPercent": 50
+    },
+    {
+      "targetPercent": 51,
+      "lowWeightNumerator": "2154965046560",
+      "highWeightNumerator": "18595195280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.008426850564442877,
+      "exactReturnPercent": 51
+    },
+    {
+      "targetPercent": 52,
+      "lowWeightNumerator": "2142851406560",
+      "highWeightNumerator": "30708835280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.013916431745730574,
+      "exactReturnPercent": 52
+    },
+    {
+      "targetPercent": 53,
+      "lowWeightNumerator": "2130737766560",
+      "highWeightNumerator": "42822475280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.01940601292701827,
+      "exactReturnPercent": 53
+    },
+    {
+      "targetPercent": 54,
+      "lowWeightNumerator": "2118624126560",
+      "highWeightNumerator": "54936115280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.02489559410830597,
+      "exactReturnPercent": 54
+    },
+    {
+      "targetPercent": 55,
+      "lowWeightNumerator": "2106510486560",
+      "highWeightNumerator": "67049755280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.030385175289593665,
+      "exactReturnPercent": 55
+    },
+    {
+      "targetPercent": 56,
+      "lowWeightNumerator": "2094396846560",
+      "highWeightNumerator": "79163395280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.03587475647088136,
+      "exactReturnPercent": 56
+    },
+    {
+      "targetPercent": 57,
+      "lowWeightNumerator": "2082283206560",
+      "highWeightNumerator": "91277035280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.04136433765216906,
+      "exactReturnPercent": 57
+    },
+    {
+      "targetPercent": 58,
+      "lowWeightNumerator": "2070169566560",
+      "highWeightNumerator": "103390675280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.046853918833456756,
+      "exactReturnPercent": 58
+    },
+    {
+      "targetPercent": 59,
+      "lowWeightNumerator": "2058055926560",
+      "highWeightNumerator": "115504315280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.05234350001474446,
+      "exactReturnPercent": 59
+    },
+    {
+      "targetPercent": 60,
+      "lowWeightNumerator": "2045942286560",
+      "highWeightNumerator": "127617955280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.05783308119603215,
+      "exactReturnPercent": 60
+    },
+    {
+      "targetPercent": 61,
+      "lowWeightNumerator": "2033828646560",
+      "highWeightNumerator": "139731595280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.06332266237731984,
+      "exactReturnPercent": 61
+    },
+    {
+      "targetPercent": 62,
+      "lowWeightNumerator": "2021715006560",
+      "highWeightNumerator": "151845235280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.06881224355860754,
+      "exactReturnPercent": 62
+    },
+    {
+      "targetPercent": 63,
+      "lowWeightNumerator": "2009601366560",
+      "highWeightNumerator": "163958875280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.07430182473989524,
+      "exactReturnPercent": 63
+    },
+    {
+      "targetPercent": 64,
+      "lowWeightNumerator": "1997487726560",
+      "highWeightNumerator": "176072515280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.07979140592118295,
+      "exactReturnPercent": 64
+    },
+    {
+      "targetPercent": 65,
+      "lowWeightNumerator": "1985374086560",
+      "highWeightNumerator": "188186155280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.08528098710247063,
+      "exactReturnPercent": 65
+    },
+    {
+      "targetPercent": 66,
+      "lowWeightNumerator": "1973260446560",
+      "highWeightNumerator": "200299795280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.09077056828375833,
+      "exactReturnPercent": 66
+    },
+    {
+      "targetPercent": 67,
+      "lowWeightNumerator": "1961146806560",
+      "highWeightNumerator": "212413435280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.09626014946504603,
+      "exactReturnPercent": 67
+    },
+    {
+      "targetPercent": 68,
+      "lowWeightNumerator": "1949033166560",
+      "highWeightNumerator": "224527075280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.10174973064633373,
+      "exactReturnPercent": 68
+    },
+    {
+      "targetPercent": 69,
+      "lowWeightNumerator": "1936919526560",
+      "highWeightNumerator": "236640715280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.10723931182762142,
+      "exactReturnPercent": 69
+    },
+    {
+      "targetPercent": 70,
+      "lowWeightNumerator": "1924805886560",
+      "highWeightNumerator": "248754355280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.11272889300890912,
+      "exactReturnPercent": 70
+    },
+    {
+      "targetPercent": 71,
+      "lowWeightNumerator": "1912692246560",
+      "highWeightNumerator": "260867995280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.11821847419019682,
+      "exactReturnPercent": 71
+    },
+    {
+      "targetPercent": 72,
+      "lowWeightNumerator": "1900578606560",
+      "highWeightNumerator": "272981635280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.12370805537148452,
+      "exactReturnPercent": 72
+    },
+    {
+      "targetPercent": 73,
+      "lowWeightNumerator": "1888464966560",
+      "highWeightNumerator": "285095275280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.12919763655277222,
+      "exactReturnPercent": 73
+    },
+    {
+      "targetPercent": 74,
+      "lowWeightNumerator": "1876351326560",
+      "highWeightNumerator": "297208915280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.13468721773405992,
+      "exactReturnPercent": 74
+    },
+    {
+      "targetPercent": 75,
+      "lowWeightNumerator": "1864237686560",
+      "highWeightNumerator": "309322555280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.14017679891534762,
+      "exactReturnPercent": 75
+    },
+    {
+      "targetPercent": 76,
+      "lowWeightNumerator": "1852124046560",
+      "highWeightNumerator": "321436195280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1456663800966353,
+      "exactReturnPercent": 76
+    },
+    {
+      "targetPercent": 77,
+      "lowWeightNumerator": "1840010406560",
+      "highWeightNumerator": "333549835280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.151155961277923,
+      "exactReturnPercent": 77
+    },
+    {
+      "targetPercent": 78,
+      "lowWeightNumerator": "1827896766560",
+      "highWeightNumerator": "345663475280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1566455424592107,
+      "exactReturnPercent": 78
+    },
+    {
+      "targetPercent": 79,
+      "lowWeightNumerator": "1815783126560",
+      "highWeightNumerator": "357777115280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1621351236404984,
+      "exactReturnPercent": 79
+    },
+    {
+      "targetPercent": 80,
+      "lowWeightNumerator": "1803669486560",
+      "highWeightNumerator": "369890755280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1676247048217861,
+      "exactReturnPercent": 80
+    },
+    {
+      "targetPercent": 81,
+      "lowWeightNumerator": "1791555846560",
+      "highWeightNumerator": "382004395280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1731142860030738,
+      "exactReturnPercent": 81
+    },
+    {
+      "targetPercent": 82,
+      "lowWeightNumerator": "1779442206560",
+      "highWeightNumerator": "394118035280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1786038671843615,
+      "exactReturnPercent": 82
+    },
+    {
+      "targetPercent": 83,
+      "lowWeightNumerator": "1767328566560",
+      "highWeightNumerator": "406231675280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.1840934483656492,
+      "exactReturnPercent": 83
+    },
+    {
+      "targetPercent": 84,
+      "lowWeightNumerator": "1755214926560",
+      "highWeightNumerator": "418345315280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.18958302954693687,
+      "exactReturnPercent": 84
+    },
+    {
+      "targetPercent": 85,
+      "lowWeightNumerator": "1743101286560",
+      "highWeightNumerator": "430458955280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.19507261072822457,
+      "exactReturnPercent": 85
+    },
+    {
+      "targetPercent": 86,
+      "lowWeightNumerator": "1730987646560",
+      "highWeightNumerator": "442572595280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.20056219190951227,
+      "exactReturnPercent": 86
+    },
+    {
+      "targetPercent": 87,
+      "lowWeightNumerator": "1718874006560",
+      "highWeightNumerator": "454686235280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.20605177309079997,
+      "exactReturnPercent": 87
+    },
+    {
+      "targetPercent": 88,
+      "lowWeightNumerator": "1706760366560",
+      "highWeightNumerator": "466799875280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.21154135427208767,
+      "exactReturnPercent": 88
+    },
+    {
+      "targetPercent": 89,
+      "lowWeightNumerator": "1694646726560",
+      "highWeightNumerator": "478913515280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.21703093545337537,
+      "exactReturnPercent": 89
+    },
+    {
+      "targetPercent": 90,
+      "lowWeightNumerator": "1682533086560",
+      "highWeightNumerator": "491027155280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.22252051663466307,
+      "exactReturnPercent": 90
+    },
+    {
+      "targetPercent": 91,
+      "lowWeightNumerator": "1670419446560",
+      "highWeightNumerator": "503140795280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.22801009781595077,
+      "exactReturnPercent": 91
+    },
+    {
+      "targetPercent": 92,
+      "lowWeightNumerator": "1658305806560",
+      "highWeightNumerator": "515254435280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.23349967899723847,
+      "exactReturnPercent": 92
+    },
+    {
+      "targetPercent": 93,
+      "lowWeightNumerator": "1646192166560",
+      "highWeightNumerator": "527368075280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.23898926017852615,
+      "exactReturnPercent": 93
+    },
+    {
+      "targetPercent": 94,
+      "lowWeightNumerator": "1634078526560",
+      "highWeightNumerator": "539481715280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.24447884135981385,
+      "exactReturnPercent": 94
+    },
+    {
+      "targetPercent": 95,
+      "lowWeightNumerator": "1621964886560",
+      "highWeightNumerator": "551595355280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.24996842254110155,
+      "exactReturnPercent": 95
+    },
+    {
+      "targetPercent": 96,
+      "lowWeightNumerator": "1609851246560",
+      "highWeightNumerator": "563708995280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.25545800372238925,
+      "exactReturnPercent": 96
+    },
+    {
+      "targetPercent": 97,
+      "lowWeightNumerator": "1597737606560",
+      "highWeightNumerator": "575822635280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.2609475849036769,
+      "exactReturnPercent": 97
+    },
+    {
+      "targetPercent": 98,
+      "lowWeightNumerator": "1585623966560",
+      "highWeightNumerator": "587936275280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.26643716608496465,
+      "exactReturnPercent": 98
+    },
+    {
+      "targetPercent": 99,
+      "lowWeightNumerator": "1573510326560",
+      "highWeightNumerator": "600049915280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.2719267472662523,
+      "exactReturnPercent": 99
+    },
+    {
+      "targetPercent": 100,
+      "lowWeightNumerator": "1561396686560",
+      "highWeightNumerator": "612163555280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.27741632844754005,
+      "exactReturnPercent": 100
+    },
+    {
+      "targetPercent": 101,
+      "lowWeightNumerator": "1549283046560",
+      "highWeightNumerator": "624277195280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.2829059096288277,
+      "exactReturnPercent": 101
+    },
+    {
+      "targetPercent": 102,
+      "lowWeightNumerator": "1537169406560",
+      "highWeightNumerator": "636390835280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.28839549081011545,
+      "exactReturnPercent": 102
+    },
+    {
+      "targetPercent": 103,
+      "lowWeightNumerator": "1525055766560",
+      "highWeightNumerator": "648504475280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.2938850719914031,
+      "exactReturnPercent": 103
+    },
+    {
+      "targetPercent": 104,
+      "lowWeightNumerator": "1512942126560",
+      "highWeightNumerator": "660618115280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.29937465317269085,
+      "exactReturnPercent": 104
+    },
+    {
+      "targetPercent": 105,
+      "lowWeightNumerator": "1500828486560",
+      "highWeightNumerator": "672731755280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3048642343539785,
+      "exactReturnPercent": 105
+    },
+    {
+      "targetPercent": 106,
+      "lowWeightNumerator": "1488714846560",
+      "highWeightNumerator": "684845395280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3103538155352662,
+      "exactReturnPercent": 106
+    },
+    {
+      "targetPercent": 107,
+      "lowWeightNumerator": "1476601206560",
+      "highWeightNumerator": "696959035280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3158433967165539,
+      "exactReturnPercent": 107
+    },
+    {
+      "targetPercent": 108,
+      "lowWeightNumerator": "1464487566560",
+      "highWeightNumerator": "709072675280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3213329778978416,
+      "exactReturnPercent": 108
+    },
+    {
+      "targetPercent": 109,
+      "lowWeightNumerator": "1452373926560",
+      "highWeightNumerator": "721186315280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3268225590791293,
+      "exactReturnPercent": 109
+    },
+    {
+      "targetPercent": 110,
+      "lowWeightNumerator": "1440260286560",
+      "highWeightNumerator": "733299955280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.332312140260417,
+      "exactReturnPercent": 110
+    },
+    {
+      "targetPercent": 111,
+      "lowWeightNumerator": "1428146646560",
+      "highWeightNumerator": "745413595280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3378017214417047,
+      "exactReturnPercent": 111
+    },
+    {
+      "targetPercent": 112,
+      "lowWeightNumerator": "1416033006560",
+      "highWeightNumerator": "757527235280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3432913026229924,
+      "exactReturnPercent": 112
+    },
+    {
+      "targetPercent": 113,
+      "lowWeightNumerator": "1403919366560",
+      "highWeightNumerator": "769640875280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.34878088380428013,
+      "exactReturnPercent": 113
+    },
+    {
+      "targetPercent": 114,
+      "lowWeightNumerator": "1391805726560",
+      "highWeightNumerator": "781754515280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3542704649855678,
+      "exactReturnPercent": 114
+    },
+    {
+      "targetPercent": 115,
+      "lowWeightNumerator": "1379692086560",
+      "highWeightNumerator": "793868155280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3597600461668555,
+      "exactReturnPercent": 115
+    },
+    {
+      "targetPercent": 116,
+      "lowWeightNumerator": "1367578446560",
+      "highWeightNumerator": "805981795280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3652496273481432,
+      "exactReturnPercent": 116
+    },
+    {
+      "targetPercent": 117,
+      "lowWeightNumerator": "1355464806560",
+      "highWeightNumerator": "818095435280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3707392085294309,
+      "exactReturnPercent": 117
+    },
+    {
+      "targetPercent": 118,
+      "lowWeightNumerator": "1343351166560",
+      "highWeightNumerator": "830209075280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3762287897107186,
+      "exactReturnPercent": 118
+    },
+    {
+      "targetPercent": 119,
+      "lowWeightNumerator": "1331237526560",
+      "highWeightNumerator": "842322715280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3817183708920063,
+      "exactReturnPercent": 119
+    },
+    {
+      "targetPercent": 120,
+      "lowWeightNumerator": "1319123886560",
+      "highWeightNumerator": "854436355280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.387207952073294,
+      "exactReturnPercent": 120
+    },
+    {
+      "targetPercent": 121,
+      "lowWeightNumerator": "1307010246560",
+      "highWeightNumerator": "866549995280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3926975332545817,
+      "exactReturnPercent": 121
+    },
+    {
+      "targetPercent": 122,
+      "lowWeightNumerator": "1294896606560",
+      "highWeightNumerator": "878663635280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.3981871144358694,
+      "exactReturnPercent": 122
+    },
+    {
+      "targetPercent": 123,
+      "lowWeightNumerator": "1282782966560",
+      "highWeightNumerator": "890777275280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4036766956171571,
+      "exactReturnPercent": 123
+    },
+    {
+      "targetPercent": 124,
+      "lowWeightNumerator": "1270669326560",
+      "highWeightNumerator": "902890915280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.40916627679844475,
+      "exactReturnPercent": 124
+    },
+    {
+      "targetPercent": 125,
+      "lowWeightNumerator": "1258555686560",
+      "highWeightNumerator": "915004555280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4146558579797325,
+      "exactReturnPercent": 125
+    },
+    {
+      "targetPercent": 126,
+      "lowWeightNumerator": "1246442046560",
+      "highWeightNumerator": "927118195280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.42014543916102015,
+      "exactReturnPercent": 126
+    },
+    {
+      "targetPercent": 127,
+      "lowWeightNumerator": "1234328406560",
+      "highWeightNumerator": "939231835280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4256350203423079,
+      "exactReturnPercent": 127
+    },
+    {
+      "targetPercent": 128,
+      "lowWeightNumerator": "1222214766560",
+      "highWeightNumerator": "951345475280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.43112460152359555,
+      "exactReturnPercent": 128
+    },
+    {
+      "targetPercent": 129,
+      "lowWeightNumerator": "1210101126560",
+      "highWeightNumerator": "963459115280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4366141827048833,
+      "exactReturnPercent": 129
+    },
+    {
+      "targetPercent": 130,
+      "lowWeightNumerator": "1197987486560",
+      "highWeightNumerator": "975572755280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.44210376388617095,
+      "exactReturnPercent": 130
+    },
+    {
+      "targetPercent": 131,
+      "lowWeightNumerator": "1185873846560",
+      "highWeightNumerator": "987686395280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4475933450674586,
+      "exactReturnPercent": 131
+    },
+    {
+      "targetPercent": 132,
+      "lowWeightNumerator": "1173760206560",
+      "highWeightNumerator": "999800035280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.45308292624874635,
+      "exactReturnPercent": 132
+    },
+    {
+      "targetPercent": 133,
+      "lowWeightNumerator": "1161646566560",
+      "highWeightNumerator": "1011913675280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.458572507430034,
+      "exactReturnPercent": 133
+    },
+    {
+      "targetPercent": 134,
+      "lowWeightNumerator": "1149532926560",
+      "highWeightNumerator": "1024027315280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.46406208861132175,
+      "exactReturnPercent": 134
+    },
+    {
+      "targetPercent": 135,
+      "lowWeightNumerator": "1137419286560",
+      "highWeightNumerator": "1036140955280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4695516697926094,
+      "exactReturnPercent": 135
+    },
+    {
+      "targetPercent": 136,
+      "lowWeightNumerator": "1125305646560",
+      "highWeightNumerator": "1048254595280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.47504125097389716,
+      "exactReturnPercent": 136
+    },
+    {
+      "targetPercent": 137,
+      "lowWeightNumerator": "1113192006560",
+      "highWeightNumerator": "1060368235280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.48053083215518483,
+      "exactReturnPercent": 137
+    },
+    {
+      "targetPercent": 138,
+      "lowWeightNumerator": "1101078366560",
+      "highWeightNumerator": "1072481875280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.48602041333647256,
+      "exactReturnPercent": 138
+    },
+    {
+      "targetPercent": 139,
+      "lowWeightNumerator": "1088964726560",
+      "highWeightNumerator": "1084595515280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.49150999451776023,
+      "exactReturnPercent": 139
+    },
+    {
+      "targetPercent": 140,
+      "lowWeightNumerator": "1076851086560",
+      "highWeightNumerator": "1096709155280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.4969995756990479,
+      "exactReturnPercent": 140
+    },
+    {
+      "targetPercent": 141,
+      "lowWeightNumerator": "1064737446560",
+      "highWeightNumerator": "1108822795280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5024891568803356,
+      "exactReturnPercent": 141
+    },
+    {
+      "targetPercent": 142,
+      "lowWeightNumerator": "1052623806560",
+      "highWeightNumerator": "1120936435280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5079787380616233,
+      "exactReturnPercent": 142
+    },
+    {
+      "targetPercent": 143,
+      "lowWeightNumerator": "1040510166560",
+      "highWeightNumerator": "1133050075280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.513468319242911,
+      "exactReturnPercent": 143
+    },
+    {
+      "targetPercent": 144,
+      "lowWeightNumerator": "1028396526560",
+      "highWeightNumerator": "1145163715280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5189579004241988,
+      "exactReturnPercent": 144
+    },
+    {
+      "targetPercent": 145,
+      "lowWeightNumerator": "1016282886560",
+      "highWeightNumerator": "1157277355280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5244474816054864,
+      "exactReturnPercent": 145
+    },
+    {
+      "targetPercent": 146,
+      "lowWeightNumerator": "1004169246560",
+      "highWeightNumerator": "1169390995280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5299370627867741,
+      "exactReturnPercent": 146
+    },
+    {
+      "targetPercent": 147,
+      "lowWeightNumerator": "992055606560",
+      "highWeightNumerator": "1181504635280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5354266439680618,
+      "exactReturnPercent": 147
+    },
+    {
+      "targetPercent": 148,
+      "lowWeightNumerator": "979941966560",
+      "highWeightNumerator": "1193618275280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5409162251493494,
+      "exactReturnPercent": 148
+    },
+    {
+      "targetPercent": 149,
+      "lowWeightNumerator": "967828326560",
+      "highWeightNumerator": "1205731915280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5464058063306372,
+      "exactReturnPercent": 149
+    },
+    {
+      "targetPercent": 150,
+      "lowWeightNumerator": "955714686560",
+      "highWeightNumerator": "1217845555280",
+      "jackpotWeightNumerator": "33099902160",
+      "weightDenominator": "2206660144000",
+      "highWeight": 0.5518953875119249,
+      "exactReturnPercent": 150
+    }
+  ]
+}

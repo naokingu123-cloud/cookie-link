@@ -48,7 +48,7 @@ function host({worker=false,target=90,seed=26201}={}){
 }
 
 const live=host();
-assert.equal(live.R.REVISION,262);
+assert.equal(live.R.REVISION,263);
 live.engine.start();
 const ready=live.engine.state;
 assert.equal(ready.numbers.length,28);
@@ -72,7 +72,7 @@ live.callbacks.onCell(centers[0]);
 const snapshot=plain(live.recording.capture(live.app,{ballIndex:5}));
 assert.equal(snapshot.engines[0].state.expansionCenter,centers[0]);
 assert.deepEqual(snapshot.engines[0].state.triggerNumbers,triggers);
-assert.equal(snapshot.engines[0].state.rulesRevision,262);
+assert.equal(snapshot.engines[0].state.rulesRevision,263);
 const resumed=host();resumed.engine.start();
 resumed.recording.restore(resumed.app,snapshot,{notify:false,random:false});
 await flush();
