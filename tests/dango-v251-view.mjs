@@ -57,7 +57,7 @@ try{
  await page.evaluate(()=>window.__qa250.select(window.__qa250.app.engines.findIndex(e=>e.kind==='dango')));
  report.ready=await page.evaluate(()=>{const e=window.DangoBingo.engine;return {live:e.liveBoard,rulesRevision:e.state.rulesRevision,draws:e.state.draws,numbers:e.state.numbers,initial:e.state.initialFreeCells,phase:window.__qa250.app.phase};});
  assert.equal(report.ready.phase,'ready');assert.equal(report.ready.live,false,'BET time only exposes a separate fixed demonstration');
- assert.equal(report.ready.rulesRevision,265);assert.equal(report.ready.numbers.length,28);assert.deepEqual(report.ready.numbers.filter(n=>n>0),Array.from({length:25},(_,i)=>i+1));assert.equal(report.ready.initial.length,3,'the current fixed demonstration has three unnumbered FREE cells');
+ assert.equal(report.ready.rulesRevision,266);assert.equal(report.ready.numbers.length,28);assert.deepEqual(report.ready.numbers.filter(n=>n>0),Array.from({length:25},(_,i)=>i+1));assert.equal(report.ready.initial.length,3,'the current fixed demonstration has three unnumbered FREE cells');
  await sleep(1200);
  await call('/api/admin/machines/public-01/host/register',{session:host,body:{},adminOnly:true});
  round=await until(async()=>{const s=await call('/api/machines/public-01/state',{session:host});return s.round?.phase==='PLAYING'?s.round:null;},'Dango real round starts');
