@@ -347,15 +347,15 @@
     const masks=lines.filter(line=>line.length===length).map(line=>line.mask);
     return [masks,[masks[0]|masks[1],masks[0]|masks[2],masks[1]|masks[2]],[masks[0]|masks[1]|masks[2]]];
   });
-  const requestedTiers=freeze({3:[0,40,200,5000],4:[0,200,1000,5000],5:[0,500,2500,20000],6:[0,1000,10000,50000],7:[0,3000,25000,2000000]});
+  const requestedTiers=freeze({3:[0,40,200,5000],4:[0,200,1000,5000],5:[0,500,2500,20000],6:[0,1000,10000,50000],7:[0,3000,25000,200000]});
   // Calibrated candidate table. All values are explicit hundredths of BET;
   // no hidden payout multiplier or post-draw rejection changes the result.
-  const tiers=freeze({3:[0,10,30,750],4:[0,30,150,750],5:[0,80,400,3000],6:[0,150,1500,7500],7:[0,450,4000,2000000]});
+  const tiers=freeze({3:[0,10,30,750],4:[0,30,150,750],5:[0,80,400,3000],6:[0,150,1500,7500],7:[0,450,4000,200000]});
   const payRows=freeze(LENGTHS.flatMap(length=>tiers[length].slice(1).map((hundredths,i)=>({length,count:i+1,atLeast:false,hundredths,label:length+'個ライン '+(i+1)+'本'}))));
   const highestRoleMinimums=freeze({3:3,4:3,5:3,6:3,7:3});
   const molds=freeze([
     {id:'triangle-edge',name:'すその三粒',initialFreeCells:[0,20,22],triggerCells:[8,11,12],optimalNumerator:2878969530,optimalReturnPercent:2878969530/DENOMINATOR,automaticReturnPercent:2878969530/DENOMINATOR},
-    {id:'triangle-festival',name:'三色まつり',initialFreeCells:[6,9,24],triggerCells:[10,23,25],optimalNumerator:14953066540,optimalReturnPercent:14953066540/DENOMINATOR,automaticReturnPercent:14953066540/DENOMINATOR}
+    {id:'triangle-festival',name:'三色まつり',initialFreeCells:[6,9,24],triggerCells:[10,23,25],optimalNumerator:14951305100,optimalReturnPercent:14951305100/DENOMINATOR,automaticReturnPercent:14951305100/DENOMINATOR}
   ]);
   const effectiveTarget=legacy254.effectiveTarget,seededRandom=legacy254.seededRandom;
   const geometryFor=state=>modern(state)?geometry:legacy254.geometry;

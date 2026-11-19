@@ -14,7 +14,7 @@ for(const length of lengths){
  assert.equal(R.lines.filter(line=>line.length===length).length,3);
  assert.deepEqual(plain(R.payRows.filter(row=>row.length===length).map(row=>row.count)),[1,2,3]);
 }
-assert.equal(R.tiers[7][3],2000000,'the 20,000x base jackpot is retained');
+assert.equal(R.tiers[7][3],200000,'the user-approved 2,000x base jackpot is applied');
 
 // The full line geometry is independently reconstructed from row/column axes.
 const expectedLines=[];

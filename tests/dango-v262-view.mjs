@@ -10,7 +10,7 @@ import {chromium} from 'playwright';
 const root=path.resolve(fileURLToPath(new URL('..',import.meta.url))),out=path.resolve(process.env.DANGO_V262_VIEW_OUT||'qa-dango-v262-view');
 await fs.mkdir(out,{recursive:true});
 const mime={'.js':'text/javascript','.css':'text/css','.webp':'image/webp','.woff2':'font/woff2','.json':'application/json'};
-const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango v262 isolated view</title><style>html,body{margin:0;padding:0}#fixture{position:relative;width:100vw;height:100vh}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2);font-weight:400}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></html>';
+const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango v262 isolated view</title><style>html,body,#screen,#panels{width:100%;height:100%;margin:0;padding:0}#fixture{position:relative;width:100%;height:100%}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2);font-weight:400}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></html>';
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(html);return;}
@@ -21,7 +21,17 @@ const server=http.createServer(async(req,res)=>{
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 let browser,page;
-const report={revision:262,errors:[],failedRequests:[],art:null,screens:[],interaction:null,legacy:[],lessons:[]};
+const report={revision:262,stage:'initialization',errors:[],failedRequests:[],art:null,screens:[],interaction:null,legacy:[],lessons:[]};
+async function diagnostics(){
+ if(!page)return null;
+ try{return await page.evaluate(()=>{
+  const rect=element=>{if(!element)return null;const r=element.getBoundingClientRect(),style=getComputedStyle(element);return {x:r.x,y:r.y,width:r.width,height:r.height,display:style.display,visibility:style.visibility,position:style.position,overflow:style.overflow};};
+  const selectors=['html','body','#screen','#panels','#fixture','.dgb-scene','.dgb-pan','.dgb-cell-controls','.dgb-pay','.dgb-free-stat'];
+  return {viewport:{width:innerWidth,height:innerHeight},elements:Object.fromEntries(selectors.map(selector=>[selector,rect(document.querySelector(selector))])),canvas:document.querySelector('canvas')?{width:document.querySelector('canvas').width,height:document.querySelector('canvas').height}:null,
+   controls:[...document.querySelectorAll('.dgb-cell')].map(button=>({id:+button.dataset.cellId,disabled:button.disabled,hidden:button.hidden,tabIndex:button.tabIndex,...rect(button)})),state:window.qa262?{revision:qa262.state?.rulesRevision,phase:qa262.state?.phase,expansionLevel:qa262.state?.expansionLevel,center:qa262.state?.expansionCenter}:null,
+   lastRender:window.DangoBingoView?.describeAssets?.().last.main||null};
+ });}catch(error){return {diagnosticError:String(error)};}
+}
 try{
  const executablePath=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
  browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox']});
@@ -51,9 +61,14 @@ try{
   q.view.setCallbacks({onCell(id){const s=q.state;q.state=s.rulesRevision>=262?(s.expansionCenter===id?R.undoFree(s,id):R.placeFree(s,id)):(s.manualFreeCells.includes(id)?R.undoFree(s,id):R.placeFree(s,id));if(q.state)q.draw();},onAuto(){q.state=R.autoPlace(q.state);q.draw();}});
   q.state=q.firstFive(2);q.draw();
  });
+ report.initialLayout=await diagnostics();
+ assert.ok(report.initialLayout.elements['.dgb-scene'].width>100&&report.initialLayout.elements['.dgb-scene'].height>100,'fixture must have a nonzero viewport-sized scene: '+JSON.stringify(report.initialLayout.elements));
+ report.stage='center-interaction';
  const center=await page.evaluate(()=>{
   const {state}=qa262,R=DangoBingoRules;return R.availableCenters(state).sort((a,b)=>R.expansionCellsFor(state,b).filter(id=>state.initialFreeCells.includes(id)).length-R.expansionCellsFor(state,a).filter(id=>state.initialFreeCells.includes(id)).length)[0];
  });
+ const centerBounds=await page.locator('.dgb-cell[data-cell-id="'+center+'"]').boundingBox();
+ assert.ok(centerBounds&&centerBounds.width>1&&centerBounds.height>1,'center target must have a visible area: '+JSON.stringify(centerBounds));
  await page.locator('.dgb-cell[data-cell-id="'+center+'"]').focus();
  const preview=await page.evaluate(()=>DangoBingoView.describeAssets().last.main.previewCount);assert.equal(preview,7);
  await page.locator('.dgb-cell[data-cell-id="'+center+'"]').click();
@@ -64,7 +79,7 @@ try{
  await page.locator('.dgb-cell[data-cell-id="'+center+'"]').click();
  report.interaction={preview,selected,undoRestoredOdds:true};
  for(const [width,height]of [[390,540],[844,340],[1366,650],[375,667],[768,650]]){
-  await page.setViewportSize({width,height});await page.evaluate(()=>qa262.draw());
+  report.stage='viewport-'+width+'x'+height;await page.setViewportSize({width,height});await page.evaluate(()=>qa262.draw());
   await page.waitForFunction(()=>document.querySelector('canvas').width===innerWidth);
   const measured=await page.evaluate(()=>{
    const s=qa262.state,root=document.querySelector('.dgb-scene'),w=root.clientWidth,h=root.clientHeight,g=DangoBingoView.geometry(w,h,{state:s}),p=DangoBingoView.payoutLayout(w,h,s);
@@ -79,6 +94,7 @@ try{
   assert.ok(measured.table.right<=width+1&&measured.table.bottom<=height+1);assert.equal(measured.rendered.imageCells,28);assert.equal(measured.rendered.standRendered,true);
   await page.screenshot({path:path.join(out,'modern-'+width+'x'+height+'.png')});report.screens.push(measured);
  }
+ report.stage='seventeen-cell-overlap';
  // A permanently FREE center is legal, and all 17 sites preview together.
  await page.setViewportSize({width:844,height:540});
  const freeCenter=await page.evaluate(()=>{qa262.state=qa262.firstFive(3);qa262.draw();return qa262.state.initialFreeCells[0];});
@@ -97,7 +113,7 @@ try{
  const legacy251=JSON.parse(await fs.readFile(path.join(root,'tests/dango-v251-checkpoints.json'),'utf8')).committed;
  const legacy253=JSON.parse(await fs.readFile(path.join(root,'tests/dango-v253-checkpoints.json'),'utf8')).committed[0];
  for(const state of [legacy251,legacy253]){
-  await page.evaluate(state=>{qa262.state=state;qa262.draw();},state);
+  report.stage='legacy-'+state.rulesRevision;await page.evaluate(state=>{qa262.state=state;qa262.draw();},state);
   const legacy=await page.evaluate(()=>({revision:qa262.state.rulesRevision,cells:document.querySelectorAll('.dgb-cell').length,payCells:document.querySelectorAll('.dgb-pay tbody td').length,lengths:[...document.querySelectorAll('.dgb-pay tbody tr')].map(tr=>+tr.dataset.length),modern:qa262.view.describe().modern,rendered:DangoBingoView.describeAssets().last.main}));
   assert.equal(legacy.cells,25);assert.equal(legacy.payCells,13);assert.deepEqual(legacy.lengths,[3,4,5,7,9]);assert.equal(legacy.modern,false);assert.equal(legacy.rendered.imageCells,25);report.legacy.push(legacy);
   await page.screenshot({path:path.join(out,'legacy-'+state.rulesRevision+'.png')});
@@ -105,10 +121,10 @@ try{
  await page.evaluate(()=>{qa262.state=qa262.firstFive(2);qa262.draw();});assert.equal(await page.locator('.dgb-cell').count(),28);
  await page.evaluate(()=>{const canvas=document.createElement('canvas');canvas.id='qa-lesson';canvas.width=512;canvas.height=250;canvas.style.cssText='position:fixed;inset:0;z-index:99;background:#fff7e4';document.body.append(canvas);});
  for(let scene=0;scene<4;scene++){
-  const lesson=await page.evaluate(scene=>{const canvas=document.getElementById('qa-lesson'),ctx=canvas.getContext('2d');ctx.clearRect(0,0,512,250);SweetsAttractLessons.dango.draw(ctx,scene,.92);return {scene,title:SweetsAttractLessons.dango.steps[scene].title,rendered:DangoBingoView.describeAssets().last.lesson};},scene);
+  report.stage='lesson-'+scene;const lesson=await page.evaluate(scene=>{const canvas=document.getElementById('qa-lesson'),ctx=canvas.getContext('2d');ctx.clearRect(0,0,512,250);SweetsAttractLessons.dango.draw(ctx,scene,.92);return {scene,title:SweetsAttractLessons.dango.steps[scene].title,rendered:DangoBingoView.describeAssets().last.lesson};},scene);
   assert.equal(lesson.rendered.cells,28);assert.equal(lesson.rendered.imageCells,28);report.lessons.push(lesson);await page.locator('#qa-lesson').screenshot({path:path.join(out,'lesson-'+(scene+1)+'.png')});
  }
- assert.deepEqual(report.errors,[]);assert.deepEqual(report.failedRequests,[]);report.success=true;
+ assert.deepEqual(report.errors,[]);assert.deepEqual(report.failedRequests,[]);report.success=true;report.stage='complete';
  await fs.writeFile(path.join(out,'result.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({success:true,viewports:report.screens.length,legacy:report.legacy.map(x=>x.revision),lessons:report.lessons.length,images:report.art.images.length,errors:report.errors}));
-}catch(error){report.failure=String(error.stack||error);await fs.writeFile(path.join(out,'partial-result.json'),JSON.stringify(report,null,2)+'\n');if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});throw error;}
+}catch(error){report.failure=String(error.stack||error);report.failureLayout=await diagnostics();await fs.writeFile(path.join(out,'partial-result.json'),JSON.stringify(report,null,2)+'\n');if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});throw error;}
 finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

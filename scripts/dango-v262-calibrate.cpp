@@ -1,6 +1,7 @@
 // Dango v262 independent integer calibration and cross-language fixtures.
 // Build: c++ -O3 -std=c++17 scripts/dango-v262-calibrate.cpp -o /tmp/dango-v262-calibrate
 // Run:   /tmp/dango-v262-calibrate > docs/dango-v262-calibration.json
+// Default jackpot: 2,000x. Reproduce the earlier table with --jackpot 20000.
 // No game JavaScript is imported: geometry, payout events and final rounds are
 // independently reconstructed below. A round's first five and last three sets
 // have C(25,5)*C(20,3) = 60,568,200 equiprobable possibilities.
@@ -24,10 +25,23 @@ constexpr Integer DRAW_SPACE = EARLY_SETS * LATE_SETS;
 // Legal center counts: 23 for levels 1/3; 5 through 10 for level 2.
 constexpr Integer CENTER_LCM = 57960;
 constexpr Mask ALL = (Mask(1) << 28) - 1;
-const Table CANDIDATE = {{{0,10,30,750},{0,30,150,750},{0,80,400,3000},
-                          {0,150,1500,7500},{0,450,4000,2000000}}};
-const Table REQUESTED = {{{0,40,200,5000},{0,200,1000,5000},{0,500,2500,20000},
-                          {0,1000,10000,50000},{0,3000,25000,2000000}}};
+Table CANDIDATE = {{{0,10,30,750},{0,30,150,750},{0,80,400,3000},
+                          {0,150,1500,7500},{0,450,4000,200000}}};
+Table REQUESTED = {{{0,40,200,5000},{0,200,1000,5000},{0,500,2500,20000},
+                          {0,1000,10000,50000},{0,3000,25000,200000}}};
+Integer jackpotHundredths=200000;
+void configureJackpot(int argc,char**argv){
+  for(int i=1;i<argc;i++){
+    const std::string arg=argv[i];
+    if(arg=="--jackpot"){
+      if(++i>=argc)throw std::invalid_argument("--jackpot requires an integer multiplier");
+      const Integer multiplier=std::stoll(argv[i]);
+      if(multiplier<0||multiplier>20000)throw std::invalid_argument("jackpot must be between 0 and 20000");
+      jackpotHundredths=multiplier*100;
+    }else if(arg!="--all"&&arg!="--zero-bound")throw std::invalid_argument("unknown argument: "+arg);
+  }
+  CANDIDATE[4][3]=REQUESTED[4][3]=jackpotHundredths;
+}
 int popcount(Mask m) { return __builtin_popcount(m); }
 Mask bit(int id) { return Mask(1) << id; }
 Mask mask(const std::vector<int>& ids) { Mask m=0; for(int i:ids)m|=bit(i); return m; }
@@ -223,13 +237,15 @@ void emitVector(int profileIndex,int level,int variant,const Sample& sample){
 }
 void table(const Table&t){std::cout<<'[';for(int l=0;l<5;l++){if(l)std::cout<<',';std::cout<<'[';for(int n=1;n<4;n++){if(n>1)std::cout<<',';std::cout<<t[l][n];}std::cout<<']';}std::cout<<']';}
 #ifndef DANGO_V262_CALIBRATION_LIBRARY
-int main(){
+int main(int argc,char**argv){
+  configureJackpot(argc,argv);
   std::cout<<std::setprecision(17);
   std::array<Result,2> results={enumerate(PROFILES[0],CANDIDATE),enumerate(PROFILES[1],CANDIDATE)};
   const Profile minOptimal={"original-global-min-optimal",{20,21,22},{8,12,17}};
   const Profile minRandom={"original-global-min-random",{0,20,26},{8,11,12}};
   auto originalOptimal=enumerate(minOptimal,REQUESTED),originalRandom=enumerate(minRandom,REQUESTED);
   std::cout<<"{\n\"schemaVersion\":1,\"rulesRevision\":262,\"status\":\"review-candidate-not-approved-for-main\",\n";
+  std::cout<<"\"jackpotMultiplier\":"<<jackpotHundredths/100<<",\n";
   std::cout<<"\"model\":{\"rows\":[1,2,3,4,5,6,7],\"cellCount\":28,\"numberCount\":25,\"initialFreeCount\":3,\"triggerCount\":3,\"firstDrawCount\":5,\"finalDrawCount\":3,\"expansionSizes\":[0,1,7,17],\"lineLengths\":[3,4,5,6,7],\"linesPerLength\":3,\"centerMayOverlapInitialFree\":true,\"centerMayOverlapFirstFiveHit\":false,\"odds\":\"1 + initial FREE sites covered by the expansion + final-three hits on the expansion\",\"nearest16TieRule\":\"hex distance, then (neighborId*13+centerId*7)%29\",\"placementPolicy\":\"maximum exact conditional expected payout after first five; smallest ID wins ties\",\"draws\":\"uniform without replacement\",\"includesSugar\":false,\"includesCreditRounding\":false},\n";
   std::cout<<"\"requestedPaytableHundredths\":";table(REQUESTED);std::cout<<",\"candidatePaytableHundredths\":";table(CANDIDATE);
   std::cout<<",\n\"integerMethod\":{\"earlySets\":"<<EARLY_SETS<<",\"lateSets\":"<<LATE_SETS<<",\"drawSpaceDenominator\":"<<DRAW_SPACE<<",\"centerCountLcm\":"<<CENTER_LCM<<",\"eventCounts\":[1140,171,18,1],\"extraOddsCounts\":[171,18,1,0],\"lineUnionCount\":35},\n\"profiles\":[";

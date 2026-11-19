@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "rulesRevision": 262,
+  "status": "historical-completed-independent-integer-proof",
+  "subject": "Feasibility of the originally requested fixed payout table under the confirmed FREE overlap and later-HIT ODDS rules.",
+  "calibrationReference": "optimal placement after the first five; the separate random result means uniform legal-center selection",
+  "modelReference": "docs/dango-v262-calibration.json",
+  "sources": [
+    {
+      "path": "scripts/dango-v262-layout-search.cpp",
+      "bytes": 4646,
+      "sha256": "9a79e01ddd7be55b755e4e4b8b8893dbdfd3713fd7124808f54ed0e62c7d88e8",
+      "revision": "c34fc2c8"
+    },
+    {
+      "path": "scripts/dango-v262-calibrate.cpp",
+      "bytes": 16335,
+      "sha256": "c5811458aa013f0c202a5786e962d51a1b0ea5a2585cc38ce7edc6b25cf3ba3e",
+      "revision": "c34fc2c8"
+    }
+  ],
+  "enumeration": {
+    "freeTriplets": 3276,
+    "triggerTripletsPerFree": 2300,
+    "totalLayouts": 7534800,
+    "firstFiveSetsPerFreeTriplet": 53130,
+    "lateDrawSetsIntegratedPerFirstFive": 1140,
+    "optimalDenominator": 60568200,
+    "randomCenterCountLcm": 57960,
+    "randomDenominator": 3510532872000,
+    "method": "Integer finite differences of expansion-level expectations, accumulated over singleton/pair/triple intersections with the three trigger positions. This recovers every trigger triplet exactly from every possible first-five set.",
+    "allArithmetic": "signed 64-bit integers; no Monte Carlo and no floating-point payout or center-ranking comparisons"
+  },
+  "evidence": {
+    "format": "Canonical UTF-8 JSON Lines, one row per FREE triplet in lexicographic order; LF endings.",
+    "rowCount": 3276,
+    "bytes": 1234083,
+    "sha256": "1650742dbde32ccfec504db863cf74f3c64dbf4aa1f26fd3b76c9ad7c4f388c3",
+    "regenerate": [
+      "g++ -std=c++20 -O3 scripts/dango-v262-layout-search.cpp -o /tmp/dango-v262-layout-search",
+      "/tmp/dango-v262-layout-search --all > /tmp/dango-v262-layout-search.jsonl",
+      "sha256sum /tmp/dango-v262-layout-search.jsonl"
+    ],
+    "parallelization": "The run used independent batches of FREE triplets on stdin. Concatenating their outputs in the same lexicographic triplet order gives the identical --all output.",
+    "regenerateWithCurrentParameterizedSources": [
+      "g++ -std=c++20 -O3 scripts/dango-v262-layout-search.cpp -o /tmp/dango-v262-layout-search",
+      "/tmp/dango-v262-layout-search --jackpot 20000 --all > /tmp/dango-v262-layout-search.jsonl",
+      "sha256sum /tmp/dango-v262-layout-search.jsonl"
+    ]
+  },
+  "globalMinimumOptimal": {
+    "initialFreeCells": [
+      20,
+      21,
+      22
+    ],
+    "triggerCells": [
+      8,
+      12,
+      17
+    ],
+    "numerator": 18082343560,
+    "denominator": 60568200,
+    "returnPercent": 298.5451699076413
+  },
+  "globalMinimumUniformCenter": {
+    "initialFreeCells": [
+      0,
+      20,
+      26
+    ],
+    "triggerCells": [
+      8,
+      11,
+      12
+    ],
+    "numerator": 460834674737220,
+    "denominator": 3510532872000,
+    "returnPercent": 131.27200101524073
+  },
+  "necessaryPayoutChangeForOptimalReference50": {
+    "atLeastOneTierCutFractionNumerator": 376348339,
+    "atLeastOneTierCutFractionDenominator": 452058589,
+    "atLeastOneTierCutPercent": 83.25211557920427,
+    "statement": "At least one payout tier must be reduced by at least this fraction to make 50% possible under the optimal-play reference. This is a necessary lower bound; it does not mean reducing one arbitrary tier by this amount is sufficient.",
+    "proof": "If every nonzero payout is at least r times the original payout, every fixed placement policy pays at least r times its original expected amount. Maximizing over legal placement policies preserves that inequality. Every draw-independent mixture of layouts therefore has optimal-play RTP at least r times the globally minimal original RTP. To reach 50%, r must be at most 50 divided by that minimum."
+  },
+  "checks": {
+    "allFreeTripletsPresentExactlyOnce": true,
+    "allOutputsInCanonicalOrder": true,
+    "totalLayouts": 7534800,
+    "matchedPreviouslyIndependentFloatingPointFullEnumeration": true,
+    "maximumDifferenceFromPriorEnumerationPercentagePoints": 1.6825651982799172e-11,
+    "candidateCalibrationVectors": 32,
+    "candidateIntegerCenterScoreCrossChecks": 438,
+    "candidateTargetSettings": 101,
+    "vectorsCoverActivationCounts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "vectorsCoverInitialFreeOverlapCounts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "vectorsCoverLaterOddsHitCounts": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "maximumVectorOdds": 7
+  },
+  "scope": [
+    "The originally requested payout table remains unchanged throughout this feasibility search.",
+    "The board has 25 distinct numbered cells and three permanently marked FREE cells.",
+    "A draw-independent layout may choose any three FREE sites and any three distinct trigger-number positions among the other 25 sites.",
+    "For level 2 the center has six on-board neighbors; level 3 uses the documented nearest-16 tie rule.",
+    "The center may be an existing FREE but may not be a first-five number HIT.",
+    "Extra ODDS is awarded once per covered initial FREE and once per final-three hit on the expansion footprint. First-five HIT overlaps earn no ODDS.",
+    "An arbitrary manual player can choose less profitable centers; the optimal-play result is the stated calibration reference, not a guaranteed realized return.",
+    "Credit rounding, Sugar awards and other external rewards are outside this base-game calculation."
+  ],
+  "jackpotMultiplier": 20000,
+  "sourceRevision": "c34fc2c8",
+  "historicalNote": "This proof used the earlier 20,000x jackpot. The user later approved 2,000x. See dango-v262-layout-proof.json for the current proof."
+}

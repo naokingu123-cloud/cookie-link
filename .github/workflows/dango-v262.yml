@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   push:
     branches: [feature/v262-dango-calibration]
+    paths-ignore:
+      - 'docs/dango-v262-layout-proof*.json'
+      - 'docs/dango-v262-trial.md'
 permissions:
   contents: read
 jobs:
@@ -30,7 +33,17 @@ jobs:
           /tmp/dango-v262-calibrate > /tmp/dango-v262-independent.json
           node tests/dango-v262-calibration.mjs /tmp/dango-v262-independent.json
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        timeout-minutes: 4
+        run: |
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -n "$browser_path" ]; then
+            "$browser_path" --version
+            echo "PLAYWRIGHT_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+            echo "SWEETS_DOWNLOAD_BROWSER_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
       - name: Triangle, payout table, FREE overlap and legacy view
         run: node tests/dango-v262-view.mjs
       - name: Actual server recording, native ten-game calculation and deterministic retry
