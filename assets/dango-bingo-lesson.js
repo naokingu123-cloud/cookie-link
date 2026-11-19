@@ -4,13 +4,13 @@
 const R=window.DangoBingoRules,V=window.DangoBingoView;
 const steps=[
  {title:'7段・28個のお団子をそろえよう',caption:'上から1〜7個の7段。番号1〜25が1個ずつと、最初からHIT扱いのFREEが3個。3〜7個のまっすぐなラインを完成させよう。'},
- {title:'前半5球でFREEの範囲が決まる',caption:'3つの拡張番号に前半5球でHIT。1個なら1マス、2個なら中心＋周辺6マス、3個なら中心＋周辺16マスをFREEにできます。'},
+ {title:'前半5球でFREEの範囲が決まる',caption:'前半5球で3個ラインなら中心1マス、4個ラインなら周囲1マス、5個ラインなら周囲2マスをFREEにできます。複数成立時は長いラインを優先。'},
  {title:'中心を選んで、まとめてFREE！',caption:'中心を1つタップすると範囲全体をFREEに。中心も含みます。同じ中心を再タップで取り消し、別の中心へ置き直しもできます。初期FREEに重なった分はODDS＋1。'},
  {title:'配置FREEへの後半HITでODDS UP',caption:'後半3球で配置したFREEの番号にHITすると、1個につきODDS＋1。長さごとの完成本数で配当を選び、合計にODDSを反映します。'}
 ];
 let buffer,lastLessonFrame;
-const start=()=>R.create({seed:262,target:90});
-function firstFor(state,count=2){const trigger=state.triggerNumbers||[];return [...trigger.slice(0,count),...Array.from({length:25},(_,i)=>i+1).filter(n=>!trigger.includes(n)).slice(0,5-count)];}
+const start=()=>R.create({seed:264,moldIndex:2,target:90});
+function firstFor(state,count=2){const rowFive=state.cells.filter(cell=>cell.row===4&&cell.number>0).map(cell=>cell.number),line=state.rulesRevision>=264?rowFive:state.triggerNumbers||[];return [...line.slice(0,count),...Array.from({length:25},(_,i)=>i+1).filter(n=>!line.includes(n)).slice(0,5-count)];}
 function firstFive(count=2){let state=start();for(const n of firstFor(state,count))state=R.draw(state,n);return state;}
 function centerFor(state){
  const initial=new Set(state.initialFreeCells),centers=R.availableCenters?.(state)||[],footprint=id=>R.expansionCellsFor?.(state,id)||[id];
@@ -43,12 +43,12 @@ function draw(c,scene,t){
  if(scene===0){
   text(c,'番号25 ＋ FREE3',421,45,17);ball(c,392,103,27,'plain',12);ball(c,450,103,27,'initial',0);text(c,'1・2・3・4・5・6・7段',421,163,14);text(c,'3方向に串を通そう',421,190,16,'#a44f55');
  }else if(scene===1){
-  text(c,'拡張番号にHIT',421,45,19,'#5c7d37');
-  const trigger=state.triggerNumbers||[],level=state.expansionLevel||0;
-  for(let i=0;i<trigger.length;i++)ball(c,370+i*51,94,20,i<level?'hit':'plain',trigger[i]);
-  text(c,level+' HIT → '+[0,1,7,17][level]+'マス',421,151,22,'#5c7d37');text(c,level===1?'中心1マス':level===2?'中心 ＋ 周辺6':'中心 ＋ 周辺16',421,185,17,'#5c7d37');
+  text(c,'ライン完成でFREE昇格',421,45,17,'#5c7d37');
+  const grade=state.expansionLevel||0,completed=new Set(state.qualifiedEarlyLengths||[]);
+  for(const [i,length] of [3,4,5].entries())ball(c,370+i*51,94,20,completed.has(length)?'hit':'plain',length);
+  text(c,grade?([null,'3個','4個','5個'][grade]+'ライン成立'):'成立なし',421,151,20,'#5c7d37');text(c,['FREEなし','中心のみ','周囲1マス','周囲2マス'][grade],421,185,17,'#5c7d37');
  }else if(scene===2){
-  text(c,'中心から広がる',421,46,20,'#8a6512');ball(c,421,103,31,'manual',state.cells[center]?.number||1);text(c,'中心 ＋ 周辺6マス',421,153,17,'#8a6512');
+  text(c,'中心から広がる',421,46,20,'#8a6512');ball(c,421,103,31,'manual',state.cells[center]?.number||1);text(c,'周囲2マス（最大19個）',421,153,17,'#8a6512');
   box(c,342,177,158,30,8,'#93621c');text(c,t>.67&&t<.85?'再タップで取り消し':t>.85?'置き直しもOK':'中心もFREE',421,192,16,'#fff7df');
  }else{
   text(c,'後半 3球',421,44,22);ball(c,421,102,32,'manual',lastNumber||state.cells[state.manualFreeCells[0]]?.number||1,!!lastNumber);text(c,'ODDS ×'+state.oddsMultiplier,421,155,24,'#ac7427');text(c,'重なり・後半HITで＋1',421,190,14,'#8154a9');

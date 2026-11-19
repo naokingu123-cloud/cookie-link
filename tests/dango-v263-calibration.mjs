@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import vm from 'node:vm';
 const root=new URL('..',import.meta.url),data=JSON.parse(await fs.readFile(new URL('docs/dango-v263-calibration.json',root),'utf8'));
 const ctx=vm.createContext({console});vm.runInContext(await fs.readFile(new URL('assets/dango-bingo-rules.js',root),'utf8'),ctx);
-const R=ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x)),D=BigInt(data.drawSpaceDenominator),nums=data.profiles.map(p=>BigInt(p.optimalNumerator));
+const R=ctx.DangoBingoRules.legacy263,P=x=>JSON.parse(JSON.stringify(x)),D=BigInt(data.drawSpaceDenominator),nums=data.profiles.map(p=>BigInt(p.optimalNumerator));
 assert.equal(R.REVISION,263);assert.deepEqual([3,4,5,6,7].map(n=>P(R.tiers[n].slice(1))),data.paytableHundredths);
 assert.equal(data.profiles.length,3);assert.equal(data.settings.length,101);
 for(let i=0;i<3;i++){const m=R.molds[i],p=data.profiles[i];assert.equal(m.id,p.id);assert.deepEqual(P(m.initialFreeCells),p.initialFreeCells);assert.equal(m.optimalNumerator,p.optimalNumerator);assert.equal(m.optimalReturnPercent,p.optimalNumerator/Number(D));for(const row of p.lineOutcomeCounts)assert.equal(row.reduce((a,b)=>a+b),Number(D));}

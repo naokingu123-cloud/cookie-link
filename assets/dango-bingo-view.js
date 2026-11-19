@@ -337,14 +337,23 @@ function mount(panel){
   root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);
   find('.dgb-pay-odds').hidden=false;find('.dgb-odds-value').textContent='×'+(state.oddsMultiplier||1);find('.dgb-trigger-numbers').hidden=!modern;
   if(modern){
-   const level=Number(state.expansionLevel)||0,area=[0,1,7,17][level]||0,chosen=Number.isInteger(state.expansionCenter),hits=new Set(state.triggerHits||state.draws.slice(0,5)),triggerBox=find('.dgb-trigger-numbers');
-   find('.dgb-free-title').textContent='前半5球の拡張';find('.dgb-free-value').textContent=area?area+'マスFREE':'拡張 '+level+' / 3';
-   find('.dgb-free-detail').textContent=level===0?'1 HITで1マス':level===1?(chosen?'中心を配置済み':'中心を1つ選ぶ'):level===2?'中心＋周辺6マス':'中心＋周辺16マス';
-   triggerBox.replaceChildren();for(const n of state.triggerNumbers||[]){const badge=document.createElement('span');badge.className='dgb-trigger'+(hits.has(n)?' hit':'');badge.textContent=String(n);badge.setAttribute('aria-label',n+'番'+(hits.has(n)?' HIT済み':''));triggerBox.append(badge);}
+   const level=Number(state.expansionLevel)||0,chosen=Number.isInteger(state.expansionCenter),graded=Number(state.rulesRevision)>=264;
+   const area=graded?(chosen?state.expansionCells.length:[0,1,7,19][level]||0):[0,1,7,17][level]||0,triggerBox=find('.dgb-trigger-numbers');
+   if(graded){
+    find('.dgb-free-title').textContent='前半5球のライン';find('.dgb-free-value').textContent=area?(chosen?area+'マスFREE':'最大'+area+'マスFREE'):'FREE獲得なし';
+    find('.dgb-free-detail').textContent=level===0?'3・4・5個ラインで昇格':level===1?'3個ライン：中心のみ':level===2?'4個ライン：周囲1マス':'5個ライン：周囲2マス';
+    const grades=new Set(state.qualifiedEarlyLengths||[]);triggerBox.setAttribute('aria-label','前半5球で成立したライン');triggerBox.replaceChildren();
+    for(const length of [3,4,5]){const badge=document.createElement('span');badge.className='dgb-trigger'+(grades.has(length)?' hit':'');badge.textContent=length+'個';badge.setAttribute('aria-label',length+'個ライン'+(grades.has(length)?' 成立済み':' 未成立'));triggerBox.append(badge);}
+   }else{
+    const hits=new Set(state.triggerHits||state.draws.slice(0,5));
+    find('.dgb-free-title').textContent='前半5球の拡張';find('.dgb-free-value').textContent=area?area+'マスFREE':'拡張 '+level+' / 3';
+    find('.dgb-free-detail').textContent=level===0?'1 HITで1マス':level===1?(chosen?'中心を配置済み':'中心を1つ選ぶ'):level===2?'中心＋周辺6マス':'中心＋周辺16マス';
+    triggerBox.setAttribute('aria-label','前半5球の拡張番号');triggerBox.replaceChildren();for(const n of state.triggerNumbers||[]){const badge=document.createElement('span');badge.className='dgb-trigger'+(hits.has(n)?' hit':'');badge.textContent=String(n);badge.setAttribute('aria-label',n+'番'+(hits.has(n)?' HIT済み':''));triggerBox.append(badge);}
+   }
    const eligible=new Set(R.availableCenters?.(state)||state.cells.filter(cell=>!cell.initialFree&&!cell.hit).map(cell=>cell.id));
    for(const cell of state.cells){const button=buttons[cell.id],selected=chosen&&cell.id===state.expansionCenter;button.disabled=!editable||(!eligible.has(cell.id)&&!selected);button.setAttribute('aria-pressed',String(selected));button.classList.toggle('placed',selected);button.setAttribute('aria-label',(cell.initialFree?'初期FREE':cell.number+'番')+(selected?' 選択した中心・取り消す':cell.hit&&!cell.initialFree?' HIT済み':eligible.has(cell.id)?' FREE範囲の中心に選ぶ':'この範囲の中心には選べません'));}
    find('[data-action="auto"]').disabled=!editable||level===0;
-   find('.dgb-prompt').textContent=o.demo?'前半5球の拡張番号にHIT。1個で1マス、2個で中心を含む7マス、3個で中心を含む17マスFREE。':placing?(chosen?'選択した中心を再タップすると取り消せます。別の中心への置き直しもできます。':'お団子を1つ選び、FREEにする範囲の中心を置いてください。'):state.phase==='done'?'長さごとの完成本数の配当を合計し、ODDSを反映':second?'配置FREEへの後半HITで ODDS UP！':'拡張番号への前半HITで、置けるFREEの範囲が広がります';
+   find('.dgb-prompt').textContent=graded?(o.demo?'前半5球で3・4・5個ラインが成立すると、中心のみ・周囲1・周囲2マスをFREEにできます。':placing?(level===0?'前半5球でライン未成立。今回は追加FREEなし':chosen?'同じ中心で取消し、別の中心で置き直しできます。':'成立したラインに応じたFREE範囲の中心を選んでください。'):state.phase==='done'?'長さ別の配当を合計してODDSを反映':second?'配置FREEへの後半HITで ODDS UP！':'前半5球で3・4・5個ラインを完成させてFREEを強化！'):(o.demo?'前半5球の拡張番号にHIT。1個で1マス、2個で中心を含む7マス、3個で中心を含む17マスFREE。':placing?(chosen?'選択した中心を再タップすると取り消せます。別の中心への置き直しもできます。':'お団子を1つ選び、FREEにする範囲の中心を置いてください。'):state.phase==='done'?'長さごとの完成本数の配当を合計し、ODDSを反映':second?'配置FREEへの後半HITで ODDS UP！':'拡張番号への前半HITで、置けるFREEの範囲が広がります');
   }else{
    find('.dgb-free-title').textContent='置けるFREE';find('.dgb-free-value').textContent='あと'+state.freeRemaining+'個';find('.dgb-free-detail').textContent='配置'+state.manualFreeCells.length+' / '+state.freeBudget+'個';find('.dgb-odds-value').textContent='×'+state.oddsMultiplier;
    for(const cell of state.cells){const button=buttons[cell.id];button.disabled=!editable||cell.initialFree||cell.hit||(!cell.manualFree&&!state.freeRemaining);button.setAttribute('aria-pressed',String(cell.manualFree));button.classList.toggle('placed',cell.manualFree);button.setAttribute('aria-label',cell.number+'番'+(cell.initialFree?' 初期FREE':cell.hit?' HIT済み':cell.manualFree?' 配置したFREE・取り消す':' FREEを置く'));}
@@ -358,7 +367,7 @@ function mount(panel){
    const row=payRows.find(row=>row.length===item.row.length&&row.count===item.row.count)||item.row,count=state.lineCounts[row.length]||0,current=row.atLeast?count>=row.count:count===row.count;
    item.tr.dataset.completed=String(count);item.td.classList.toggle('current',current);item.td.setAttribute('aria-current',current?'true':'false');item.value=formatWin(Number(o.bet)||0,row.hundredths);item.td.setAttribute('aria-label',row.length+'個ライン '+row.count+'本'+(row.atLeast?'以上':'')+' '+item.value+' WIN'+(highestRoleCell(row.length,row.count,state)?' 最高役':'')+(current?' GET!':''));
   }
-  canvas.setAttribute('aria-label',state.cells.length+'個のお団子。'+drawCount+'球、完成した串'+state.completedLines.length+'本、初期FREE'+state.initialFreeCells.length+'個、配置FREE'+state.manualFreeCells.length+'個'+(modern?'。番号1から25は各1個。拡張番号のHIT '+(state.expansionLevel||0)+'個、ODDS'+(state.oddsMultiplier||1)+'倍。':'、ODDS'+state.oddsMultiplier+'倍。'));
+  canvas.setAttribute('aria-label',state.cells.length+'個のお団子。'+drawCount+'球、完成した串'+state.completedLines.length+'本、初期FREE'+state.initialFreeCells.length+'個、配置FREE'+state.manualFreeCells.length+'個'+(Number(state.rulesRevision)>=264?'。番号1から25は各1個。前半ラインのFREEグレード'+(state.expansionLevel||0)+'、ODDS'+(state.oddsMultiplier||1)+'倍。':modern?'。番号1から25は各1個。拡張番号のHIT '+(state.expansionLevel||0)+'個、ODDS'+(state.oddsMultiplier||1)+'倍。':'、ODDS'+state.oddsMultiplier+'倍。'));
   const live=[state.phase,drawCount,state.freeBudget,state.freeRemaining,state.expansionLevel,state.expansionCenter,state.completedLines.length,state.oddsMultiplier].join('/');
   if(live!==lastLive){lastLive=live;find('.dgb-announcement').textContent=find('.dgb-prompt').textContent+'。完成した串'+state.completedLines.length+'本'+'、ODDS'+(state.oddsMultiplier||1)+'倍。';}
   fit();

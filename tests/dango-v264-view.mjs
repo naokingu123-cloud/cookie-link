@@ -1,0 +1,41 @@
+/* Read-only local Playwright fixture for Dango v264 line-grade FREE UI. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';import http from 'node:http';import path from 'node:path';
+import {fileURLToPath} from 'node:url';import {chromium} from 'playwright';
+const root=path.resolve(fileURLToPath(new URL('..',import.meta.url))),out=path.resolve('qa-dango-v264-view');
+await fs.mkdir(out,{recursive:true});
+const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>html,body,#screen,#panels{width:100%;height:100%;margin:0;padding:0}#fixture{position:relative;width:100%;height:100%}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script></html>';
+const mime={'.js':'text/javascript','.css':'text/css','.webp':'image/webp','.woff2':'font/woff2'};
+const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http://127.0.0.1');if(url.pathname==='/'){res.end(html);return;}const p=path.resolve(root,'.'+url.pathname);if(!p.startsWith(root+path.sep)){res.statusCode=403;res.end();return;}try{const body=await fs.readFile(p);res.setHeader('Content-Type',mime[path.extname(p)]||'application/octet-stream');res.end(body);}catch{res.statusCode=404;res.end();}});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+let browser;const failures=[];
+try{
+ const binary=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
+ browser=await chromium.launch({headless:true,...(binary?{executablePath:binary}:{}),args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:1366,height:780}});
+ page.on('pageerror',e=>failures.push(e.message));
+ await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'networkidle'});
+ await page.evaluate(async()=>{await DangoBingoView.assetsReady;await document.fonts.ready;const R=DangoBingoRules;window.qa={R,view:DangoBingoView.mount(document.getElementById('fixture')),state:null};
+  qa.choose=(moldIndex,ids)=>{const R=qa.R;let s=R.create({moldIndex,numbers:Array.from({length:25},(_,i)=>i+1)}),numbers=ids.map(id=>s.numbers[id]);numbers.push(...Array.from({length:25},(_,i)=>i+1).filter(n=>!numbers.includes(n)));for(const n of numbers.slice(0,5))s=R.draw(s,n);qa.state=s;qa.render();return s.expansionLevel;};
+  qa.render=()=>qa.view.draw(qa.state,{bet:100,remainingMs:12000,reducedMotion:true});
+  qa.view.setCallbacks({onCell(id){const state=qa.state;qa.state=state.expansionCenter===id?R.undoFree(state,id):R.placeFree(state,id);qa.render();},onAuto(){qa.state=R.autoPlace(qa.state);qa.render();}});
+ });
+ const first=await page.evaluate(()=>qa.choose(2,[13,14]));assert.equal(first,3);
+ let ui=await page.evaluate(()=>({grade:qa.state.expansionLevel,detail:document.querySelector('.dgb-free-detail').textContent,value:document.querySelector('.dgb-free-value').textContent,badges:[...document.querySelectorAll('.dgb-trigger')].map(x=>({label:x.textContent,hit:x.classList.contains('hit')})),buttons:document.querySelectorAll('.dgb-cell').length,rows:[...document.querySelectorAll('.dgb-pay tbody tr')].length}));
+ assert.equal(ui.grade,3);assert.ok(ui.detail.includes('周囲2マス'));assert.ok(ui.value.includes('19'));
+ assert.deepEqual(ui.badges.map(b=>b.label),['3個','4個','5個']);assert.ok(ui.badges[2].hit);assert.equal(ui.buttons,28);assert.equal(ui.rows.length,5);
+ const visible=await page.locator('.dgb-cell[data-cell-id="12"]').boundingBox();assert.ok(visible&&visible.width>1);
+ await page.locator('.dgb-cell[data-cell-id="12"]').click();
+ let placed=await page.evaluate(()=>({center:qa.state.expansionCenter,footprint:qa.state.expansionCells.length,odds:qa.state.oddsMultiplier,value:document.querySelector('.dgb-free-value').textContent}));
+ assert.equal(placed.center,12);assert.equal(placed.footprint,19);assert.ok(placed.value.includes('19'));
+ await page.screenshot({path:out+'/v264-five-line-radius2.png'});
+ await page.locator('.dgb-cell[data-cell-id="12"]').click();assert.equal(await page.evaluate(()=>qa.state.expansionCenter),null);
+ await page.evaluate(()=>qa.choose(1,[9]));let mid=await page.evaluate(()=>({grade:qa.state.expansionLevel,detail:document.querySelector('.dgb-free-detail').textContent,central:qa.R.expansionCellsFor(qa.state,12).length,apex:qa.R.expansionCellsFor(qa.state,0).length}));
+ assert.equal(mid.grade,2);assert.equal(mid.central,7);assert.equal(mid.apex,3);assert.ok(mid.detail.includes('周囲1マス'));
+ await page.evaluate(()=>qa.choose(0,[3,4,5]));let low=await page.evaluate(()=>({grade:qa.state.expansionLevel,length:qa.R.expansionCellsFor(qa.state,12).length}));
+ assert.equal(low.grade,1);assert.equal(low.length,1);
+ await page.evaluate(()=>{let s=qa.R.create({moldIndex:0,numbers:Array.from({length:25},(_,i)=>i+1)});for(const n of [20,21,22,23,24])s=qa.R.draw(s,n);qa.state=s;qa.render();});
+ assert.equal(await page.evaluate(()=>qa.state.expansionLevel),0);assert.equal(await page.locator('.dgb-free-value').textContent(),'FREE獲得なし');
+ assert.deepEqual(failures,[]);
+ console.log('DANGO_V264_VIEW_PASS',JSON.stringify({fiveLine:ui,placed,mid,low,noLine:true,errors:failures}));
+}finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

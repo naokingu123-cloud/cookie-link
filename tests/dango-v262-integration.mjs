@@ -48,13 +48,16 @@ function host({worker=false,target=90,seed=26201}={}){
 }
 
 const live=host();
-assert.equal(live.R.REVISION,263);
+assert.equal(live.R.REVISION,264);
 live.engine.start();
+// Use a controlled five-cell line to make the new second-ring grade deterministic.
+live.engine.state=live.R.create({moldIndex:2,numbers:Array.from({length:25},(_,i)=>i+1)});
 const ready=live.engine.state;
 assert.equal(ready.numbers.length,28);
 assert.equal(new Set(ready.numbers.filter(n=>n>0)).size,25);
-const triggers=plain(ready.triggerNumbers),ordinary=Array.from({length:25},(_,i)=>i+1).filter(n=>!triggers.includes(n));
-const firstFive=[...triggers,...ordinary.slice(0,2)],lastThree=ordinary.slice(2,5);
+const triggers=plain(ready.triggerNumbers),rowFive=ready.cells.filter(c=>c.row===4&&c.number>0).map(c=>c.number);
+const ordinary=Array.from({length:25},(_,i)=>i+1).filter(n=>!rowFive.includes(n));
+const firstFive=[...rowFive,...ordinary.slice(0,3)],lastThree=ordinary.slice(3,6);
 live.draw(firstFive);
 assert.equal(live.engine.state.phase,'placing');
 assert.equal(live.engine.state.expansionLevel,3);
@@ -72,7 +75,7 @@ live.callbacks.onCell(centers[0]);
 const snapshot=plain(live.recording.capture(live.app,{ballIndex:5}));
 assert.equal(snapshot.engines[0].state.expansionCenter,centers[0]);
 assert.deepEqual(snapshot.engines[0].state.triggerNumbers,triggers);
-assert.equal(snapshot.engines[0].state.rulesRevision,263);
+assert.equal(snapshot.engines[0].state.rulesRevision,264);
 const resumed=host();resumed.engine.start();
 resumed.recording.restore(resumed.app,snapshot,{notify:false,random:false});
 await flush();
@@ -93,8 +96,9 @@ assert.equal(live.finished(),1,'repeated last ball or completed checkpoint never
 // Restoring an unfinished recording into the headless worker resolves its
 // unselected center using only the stored first five, then resumes normally.
 const source=host({seed:26290});source.engine.start();
-const sourceTriggers=plain(source.engine.state.triggerNumbers),sourceOthers=Array.from({length:25},(_,i)=>i+1).filter(n=>!sourceTriggers.includes(n));
-const prefix=[...sourceTriggers.slice(0,2),...sourceOthers.slice(0,3)],suffix=sourceOthers.slice(3,6);
+source.engine.state=source.R.create({moldIndex:1,numbers:Array.from({length:25},(_,i)=>i+1)});
+const singleHit=source.engine.state.numbers[9],sourceOthers=Array.from({length:25},(_,i)=>i+1).filter(n=>n!==singleHit);
+const prefix=[singleHit,...sourceOthers.slice(0,4)],suffix=sourceOthers.slice(4,7);
 source.draw(prefix);assert.equal(source.engine.state.expansionLevel,2);
 const unfinished=plain(source.recording.capture(source.app,{ballIndex:5}));
 const expected=source.R.commitFree(source.engine.state,{autoFill:true});
