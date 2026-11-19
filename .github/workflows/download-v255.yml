@@ -2,7 +2,7 @@ name: Download v255 server recording and offline playback
 on:
   workflow_dispatch:
   push:
-    branches: [main, feature/v255-download, fix/v256-download-connect]
+    branches: [main, feature/v255-download, fix/v256-download-connect, fix/v257-download-player-identity]
     paths:
       - '**/*v255*'
       - '**/*v257*'
