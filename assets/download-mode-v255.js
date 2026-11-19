@@ -228,7 +228,14 @@ async function play(){
   playing=true;userPaused=false;syncPause();lastFrame=null;panel.dataset.collapsed='true';message='録画を再生しています。';wake();activateGameAudio({gesture:true});render();return true;
  }catch(problem){error='保存したゲームを再開できませんでした。接続して同じ録画を再取得してください。';playing=false;console.error('[DownloadV255] replay',problem);render();return false;}
 }
-function pause(){playing=false;userPaused=true;syncPause();lastFrame=null;persist().then(syncProgress).catch(()=>{});render();return true;}
+function pause(){
+ playing=false;userPaused=true;syncPause();lastFrame=null;
+ // An in-flight hit is not an authoritative checkpoint. Nevertheless record
+ // a fresh sequence at the last stable ball so a server restart/reconnect can
+ // acknowledge a real pause without accepting or reapplying a partial hit.
+ if(pack&&started&&!localComplete&&(settling||cursor!==stableBall))seq++;
+ persist().then(syncProgress).catch(()=>{});render();return true;
+}
 function stopped(){return !playing||app.paused||document.hidden||menuOpen||userPaused||!inView;}
 function reconcile(ball){
  const state=checkpointAt(ball);if(!state)return;
