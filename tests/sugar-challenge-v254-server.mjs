@@ -118,16 +118,20 @@ try{
  assert.equal(settledA.sugarV254.bank.length,5);
  aw=await connect(a);bw=await connect(b);await sleep(550);
 
- // A third no-new-BET round resolves to JPC for every card. No cash or JPC
+ // A third no-new-BET round qualifies JPC on its fourth ball for every card. No cash or JPC
  // game is fabricated; the persisted ticket carries the predetermined JP.
  const jpcNext=await nextBet(a,round.id);round=await playing(host,jpcNext.round.id);const jc=jpcNext.sugarV254.challenge;
  assert.equal(jc.roundId,round.id);assert.equal(jpcNext.sugarV254.bank.length,0);
- for(let i=1;i<=7;i++)await ball(host,round,i,i);
- const hostSeven=await state(host);assert.equal(hostSeven.sugarV254,null);
- const reaches=hostSeven.sugarReachesV254;assert(reaches.some(row=>row.station===jc.station&&row.number===8&&row.status==='reach'));
+ const earlyDraws=[25,24,23,16,1,2,3,4]; // 88 on ball 4 qualifies every card; final 98 is ordinary cash.
+ for(let i=0;i<3;i++)await ball(host,round,i+1,earlyDraws[i]);
+ const hostThree=await state(host);assert.equal(hostThree.sugarV254,null);
+ const reaches=hostThree.sugarReachesV254;assert(reaches.some(row=>row.station===jc.station&&row.number===16&&row.status==='reach'),'lucky reach is published before ball 8');
  assert(reaches.every(row=>!('jpAmount' in row)&&!('playerId' in row)&&!('sugarTokens' in row)),'shared roulette receives station/number only');
- await ball(host,round,8,8);const qualified=await state(a);
- assert.equal(qualified.sugarV254.challenge.sum,36);assert.equal(qualified.sugarV254.challenge.jpcQualified,true);assert.equal(qualified.sugarV254.challenge.cashPaid,0);
+ await ball(host,round,4,16);const early=await state(a),earlyHost=await state(host);
+ assert.equal(early.sugarV254.challenge.phase,'drawing');assert.equal(early.sugarV254.challenge.jpcQualified,true);assert.equal(early.sugarV254.challenge.qualifyingDrawCount,4);assert.equal(early.sugarV254.jpcTickets.length,1);assert.equal(early.sugarV254.jpcTickets[0].number,16);assert.equal(early.sugarV254.jpcTickets[0].sum,88);assert.equal(early.sugarV254.challenge.cashPaid,0);
+ assert(earlyHost.sugarReachesV254.some(row=>row.station===jc.station&&row.number===16&&row.status==='acquired'),'early acquisition reaches the physical roulette');
+ for(let i=4;i<8;i++)await ball(host,round,i+1,earlyDraws[i]);const qualified=await state(a);
+ assert.equal(qualified.sugarV254.challenge.sum,98);assert.equal(qualified.sugarV254.challenge.jpcQualified,true);assert.equal(qualified.sugarV254.challenge.cashPaid,0);assert.deepEqual(qualified.sugarV254.jpcTickets,early.sugarV254.jpcTickets);
  assert.equal(qualified.sugarV254.jpcTickets.length,1);assert.equal(qualified.sugarV254.jpcTickets[0].jpAmount,jc.jpAmount);assert.equal(qualified.sugarV254.jpcTickets[0].status,'pending-implementation');
  assert.equal(qualified.payoutControlV3.wallet.credit,999841+aCash);
  assert(aw.messages.filter(m=>m.type==='sugar_challenge_v254').every(m=>m.payoutControlV3?.playerId===a.player.id));

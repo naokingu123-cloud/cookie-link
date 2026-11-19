@@ -28,24 +28,24 @@ async function read(){
    bottle:{visible:visible(overlay.querySelector('.sc254-bottle')),pouring:overlay.querySelector('.sc254-bottle').dataset.pouring,fill:Number.parseFloat(overlay.querySelector('.sc254-fill').style.height),sum:num('[data-sc-sum]'),label:text('[data-sc-ball-count]')},
    scale:{visible:visible(overlay.querySelector('.sc254-scale')),amount:num('[data-sc-scale-amount]'),pouring:overlay.querySelector('.sc254-scale').dataset.pouring,gems:[...overlay.querySelectorAll('.sc254-five .sugar-gem')].map(node=>({poured:node.dataset.poured,active:node.dataset.active}))},
    jp:{value:num('[data-sc-amount]'),text:jp.textContent,font:getComputedStyle(jp.querySelector('.gold-number')||jp).fontFamily,rect:rect(jp),face:rect(jp.querySelector('.gold-number'))},sumFont:getComputedStyle(sumNode.querySelector('.gold-number')||sumNode).fontFamily,multiplier:text('[data-sc-multiplier]'),phaseText:text('.sc254-phase'),cardName:text('.sc254-card-name'),lucky:[...overlay.querySelectorAll('.sc254-lucky>b')].map(node=>Number(node.textContent)),extremes:text('.sc254-extremes'),reach:text('.sc254-reach'),history:[...overlay.querySelectorAll('.sc254-history>span')].map(node=>({hit:node.dataset.hit,text:node.textContent})),
-   payouts:[...overlay.querySelectorAll('.sc254-payouts tbody tr')].map(node=>({range:node.firstElementChild.textContent,fraction:node.querySelector('td>span').textContent,value:Number(node.querySelector('b').textContent),text:node.querySelector('b').textContent,font:getComputedStyle(node.querySelector('b')).fontFamily,current:node.dataset.current==='true',rect:rect(node),valueRect:rect(node.querySelector('b')),valueFace:rect(node.querySelector('b>.gold-number'))})),table:rect(overlay.querySelector('.sc254-payouts')),targets:rect(overlay.querySelector('.sc254-targets')),footer:rect(overlay.querySelector('footer')),
+   payouts:[...overlay.querySelectorAll('.sc254-payouts tbody tr')].map(node=>({range:node.querySelector('.sc268-gauge')?.getAttribute('aria-label')||'',visibleRange:node.firstElementChild.textContent,gauge:node.querySelectorAll('.sc268-gauge').length,bands:[...node.querySelectorAll('.sc268-gauge-band')].map(n=>({min:Number(n.dataset.min),max:Number(n.dataset.max)})),fraction:node.querySelector('td>span').textContent,value:Number(node.querySelector('b').textContent),text:node.querySelector('b').textContent,font:getComputedStyle(node.querySelector('b')).fontFamily,current:node.dataset.current==='true',rect:rect(node),valueRect:rect(node.querySelector('b')),valueFace:rect(node.querySelector('b>.gold-number'))})),table:rect(overlay.querySelector('.sc254-payouts')),targets:rect(overlay.querySelector('.sc254-targets')),footer:rect(overlay.querySelector('footer')),
    dock:{visible:visible(dock),rect:rect(dock),parent:dock.parentElement.id,parentRect:rect(dock.parentElement),text:dock.textContent,paused:dock.dataset.paused,animationPlayState:getComputedStyle(dock).animationPlayState},
    announcement:{visible:visible(announcement),text:announcement.textContent,pointerEvents:getComputedStyle(announcement).pointerEvents,rect:rect(announcement),badge:rect(announcement.querySelector('.sc254-announcement-badge'))},
    celebration:{visible:visible(celebration),text:celebration.textContent,pointerEvents:getComputedStyle(celebration).pointerEvents,image:celebration.querySelector('img').getAttribute('src'),alt:celebration.querySelector('img').alt,loaded:celebration.querySelector('img').complete&&celebration.querySelector('img').naturalWidth>0,rect:rect(celebration),title:rect(celebration.querySelector('img'))},
    animations:overlay.getAnimations({subtree:true}).map(animation=>({name:animation.animationName||'',state:animation.playState,time:Number(animation.currentTime)}))};
  });
 }
-async function inject({id='sugar-view-'+(++serial),draws=[],cardId='standard',multiplier=3,values=sugarValues,queued=false,bank=[],challenge=true,startedAgo=0}={}){
- return page.evaluate(({id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues})=>{
+async function inject({rulesRevision=254,id='sugar-view-'+(++serial),draws=[],cardId='standard',multiplier=3,values=sugarValues,queued=false,bank=[],challenge=true,startedAgo=0}={}){
+ return page.evaluate(({rulesRevision,id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues})=>{
   const ui=window.SweetsSugarChallengeV254,R=window.SugarChallengeRulesV254,a=window.__qa250.app;
   const native=()=>({credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),locked:a.locked.slice(),draws:a.draws.slice(),totalWin:a.totalWin,token:a.token,phase:a.phase});
   const before=native();let state=null;
-  if(challenge){state=R.create({id,roundId:'isolated-sugar-view',station:1,sugarValues,cardId,multiplier,seed:254});for(const number of draws)state=R.advance(state,number,{roundId:state.roundId,ballIndex:state.draws.length+1});}
+  if(challenge){state=R.create({rulesRevision,id,roundId:'isolated-sugar-view',station:1,sugarValues,cardId,multiplier,seed:254});for(const number of draws)state=R.advance(state,number,{roundId:state.roundId,ballIndex:state.draws.length+1});}
   const known=new Set([...(window.__sugarView254.acceptedIds||[]),...(a.wonderBank||[]).map(token=>token.sugarId).filter(Boolean),...bank.map(token=>token.sugarId)]);window.__sugarView254.acceptedIds=[...known];
   const raw={version:254,revision:++window.__sugarView254.revision,bank,acceptedIds:[...known],queued,challenge:state,startedAt:Date.now()-startedAgo};
   const accepted=ui.accept(raw),after=native();window.__sugarView254.last=raw;
   return {id,accepted,before,after,challenge:state,raw};
- },{id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues:values});
+ },{rulesRevision,id,draws,cardId,multiplier,queued,bank,challenge,startedAgo,sugarValues:values});
 }
 function preserved(record){assert.equal(record.accepted,true);assert.deepEqual(record.after,record.before,'accepting a Sugar display snapshot cannot change native CREDIT, BET, draw history or settlement');}
 function verifyPanel(state,{jp=jpAmount,multiplier=3}={}){
@@ -53,7 +53,7 @@ function verifyPanel(state,{jp=jpAmount,multiplier=3}={}){
  for(const row of state.payouts)contained(row.rect,state.table,'payout row '+row.fraction);
  assert.deepEqual(state.overlay.overflowing,[],'Sugar content has no horizontal overflow');assert.ok(state.api.artLoaded,'scale, bottle and JPC artwork decode');
  assert.equal(state.payouts.length,6);assert.deepEqual(state.payouts.map(row=>row.fraction),['JP ×0.2','JP ×0.1','JP ×0.05','JP ×0.03','JP ×0.02','JP ×0.01']);assert.deepEqual(state.payouts.map(row=>row.value),[20,10,5,3,2,1].map(percent=>Math.floor(jp*percent/100)));
- for(const row of state.payouts){assert.match(row.font,/ArcadePayout/);assert.doesNotMatch(row.text,/[,，]/);assert.ok(row.range.length>0);}
+ for(const row of state.payouts){assert.match(row.font,/ArcadePayout/);assert.doesNotMatch(row.text,/[,，]/);assert.ok(row.range.length>0);assert.equal(row.gauge,1);assert.ok(row.bands.length);assert.doesNotMatch(row.visibleRange,/[~〜～]/,'award ranges use a gauge, not textual ranges');}
  assert.equal(state.jp.value,jp);assert.match(state.jp.font,/ArcadePayout/);assert.match(state.sumFont,/ArcadePayout/);assert.doesNotMatch(state.jp.text,/[,，]/);assert.equal(state.multiplier,'×'+multiplier);
 }
 function numbersForSum(sum){
@@ -62,7 +62,7 @@ function numbersForSum(sum){
  assert.equal(extra,0);assert.equal(new Set(numbers).size,8);assert.equal(numbers.reduce((n,v)=>n+v,0),sum);return numbers;
 }
 try{
- await page.waitForFunction(()=>window.SweetsSugarChallengeV254?.describe&&window.SugarChallengeRulesV254?.REVISION===254&&document.querySelector('.sc254-overlay'),null,{timeout:20000});
+ await page.waitForFunction(()=>window.SweetsSugarChallengeV254?.describe&&window.SugarChallengeRulesV254?.REVISION===268&&document.querySelector('.sc254-overlay'),null,{timeout:20000});
  await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('.sc254-overlay img,.sc254-celebration img,.sc254-dock img')].map(image=>image.decode()));window.__sugarView254={revision:100000,acceptedIds:[]};});
  await page.emulateMedia({reducedMotion:'no-preference'});await sleep(150);
  report.nativeBefore=await page.evaluate(()=>{const a=window.__qa250.app;return {credit:a.credit,bets:a.bets.slice(),draws:a.draws.slice(),totalWin:a.totalWin,phase:a.phase};});
@@ -70,7 +70,7 @@ try{
  const bank=sugarValues.map((value,i)=>({id:'sugar-'+i,sugarId:'isolated-sugar-view:token:'+i,game:i,value,challengeValue:value,sourceBet:100,sourceGame:['cookie','choco','candy','gelato','winery'][i],sourceRoundId:'isolated-sugar-prior',directJpc:false}));
  preserved(await inject({challenge:false,queued:true,bank}));
  await page.waitForFunction(()=>!document.querySelector('.sc254-announcement').hidden);
- const announce=await read();report.announcement=announce.announcement;assert.equal(announce.api.bankCount,5);assert.match(announce.announcement.text,/5 SUGAR GET!/);assert.match(announce.announcement.text,/次のゲームでスタート/);assert.equal(announce.announcement.pointerEvents,'none');
+ const announce=await read();report.announcement=announce.announcement;assert.equal(announce.api.bankCount,5);assert.match(announce.announcement.text,/5 SUGAR GET!/);assert.match(announce.announcement.text,/BETタイムでJP・倍率を決定/);assert.equal(announce.announcement.pointerEvents,'none');
  await page.screenshot({path:output+'/five-sugar-announcement.png'});
 
  const introRecord=await inject({id:'sugar-intro'});preserved(introRecord);
@@ -107,19 +107,25 @@ try{
   await page.screenshot({path:output+'/sugar-large-jp-'+width+'x'+height+'.png'});report.highAmounts.push({width,height,state});
  }
  for(const [cardId,lucky,low,high]of [['standard',[77,88,120,131],70,138],['lucky',[77,88,99,109,120,131],70,138],['wide',[88,120],78,130]]){
-  preserved(await inject({cardId,draws:[1,2,3,10]}));const state=await read();verifyPanel(state);assert.deepEqual(state.lucky,lucky);assert.match(state.extremes,new RegExp(low+' 以下'));assert.match(state.extremes,new RegExp(high+' 以上'));assert.equal(state.cardName.includes('RARE CARD'),cardId!=='standard');report.cards.push({cardId,lucky:state.lucky,extremes:state.extremes,name:state.cardName});
+  preserved(await inject({cardId,draws:[1,2,3,10]}));const state=await read();verifyPanel(state);assert.deepEqual(state.lucky,lucky);assert.match(state.extremes,new RegExp('LOW '+low));assert.match(state.extremes,new RegExp('HIGH '+high));assert.equal(state.cardName.includes('RARE CARD'),cardId!=='standard');report.cards.push({cardId,lucky:state.lucky,extremes:state.extremes,name:state.cardName});
  }
  for(const [sum,win]of [[74,3000],[80,1500],[86,750],[92,450],[98,300],[104,150]]){
   const record=await inject({draws:numbersForSum(sum)});preserved(record);const state=await read();assert.equal(record.challenge.cashWin,win);assert.equal(record.challenge.jpcQualified,false);assert.equal(state.payouts.filter(row=>row.current).length,1);assert.equal(state.payouts.find(row=>row.current).value,win);assert.match(state.phaseText,new RegExp(win+' WIN GET!'));assert.equal(state.celebration.visible,false);report.awards.push({sum,win,phaseText:state.phaseText,current:state.payouts.find(row=>row.current)});
  }
 
  const seven=[1,2,3,10,15,19,21],luckyId='sugar-lucky-jpc';preserved(await inject({id:luckyId,draws:seven}));const reach=await read();assert.match(reach.reach,/JPCリーチ/);assert.ok(reach.reach.includes('6・17'));
- const luckyRecord=await inject({id:luckyId,draws:[...seven,6]});preserved(luckyRecord);await sleep(900);const lucky=await read();assert.equal(luckyRecord.challenge.sum,77);assert.equal(luckyRecord.challenge.award.reason,'lucky');assert.equal(luckyRecord.challenge.cashWin,0);assert.equal(lucky.api.challenge.jpcQualified,true);assert.match(lucky.reach,/合計 77 → JPC獲得/);assert.equal(lucky.celebration.visible,true);assert.equal(lucky.celebration.loaded,true);assert.match(lucky.celebration.image,/sugar-art-v254\/jpc-title\.webp/);assert.match(lucky.celebration.alt,/JACKPOT CHANCE/);assert.equal(lucky.celebration.pointerEvents,'none');contained(lucky.celebration.title,lucky.celebration.rect,'illustrated JACKPOT CHANCE title');
+ const luckyRecord=await inject({id:luckyId,draws:[...seven,6]});preserved(luckyRecord);await sleep(900);const lucky=await read();assert.equal(luckyRecord.challenge.sum,77);assert.equal(luckyRecord.challenge.award.reason,'lucky');assert.equal(luckyRecord.challenge.cashWin,0);assert.equal(lucky.api.challenge.jpcQualified,true);assert.match(lucky.reach,/合計 77 でJPC確定/);assert.equal(lucky.celebration.visible,true);assert.equal(lucky.celebration.loaded,true);assert.match(lucky.celebration.image,/sugar-art-v254\/jpc-title\.webp/);assert.match(lucky.celebration.alt,/JACKPOT CHANCE/);assert.equal(lucky.celebration.pointerEvents,'none');contained(lucky.celebration.title,lucky.celebration.rect,'illustrated JACKPOT CHANCE title');
  await page.screenshot({path:output+'/lucky-jpc.png'});
  const luckyRepeat=await page.evaluate(()=>{const ui=window.SweetsSugarChallengeV254,before=ui.describe().celebrateAge;ui.accept({...window.__sugarView254.last,revision:++window.__sugarView254.revision});return {before,after:ui.describe().celebrateAge};});assert.equal(luckyRepeat.after,luckyRepeat.before,'JPC artwork never replays for duplicate server snapshots');
  await page.locator('.sc254-overlay').click();await page.locator('#open-record-menu').click();await page.waitForFunction(()=>window.SweetsSugarChallengeV254.describe().paused);const pausedDock=await read();assert.equal(pausedDock.dock.paused,'true');assert.equal(pausedDock.dock.animationPlayState,'paused','the folded JPC glow pauses along with the expanded UI');await page.locator('#record-close-top').click();
  report.lucky={reach:reach.reach,state:lucky,repeated:luckyRepeat,pausedDock:pausedDock.dock};
 
+ // Current rules qualify at the first lucky prefix, before the final ball.
+ const earlyJpc=await inject({id:'sugar-early-v268',rulesRevision:268,draws:[25,24,20,8]});preserved(earlyJpc);
+ const earlyView=await read();assert.equal(earlyJpc.challenge.draws.length,4);assert.equal(earlyJpc.challenge.sum,77);assert.equal(earlyJpc.challenge.jpcQualified,true);assert.equal(earlyView.celebration.visible,true);assert.match(earlyView.reach,/77.*4球目/);
+ const heldJpc=await inject({id:'sugar-early-v268',rulesRevision:268,draws:[25,24,20,8,1,2,3,4]});preserved(heldJpc);
+ const heldView=await read();assert.equal(heldJpc.challenge.sum,87);assert.equal(heldJpc.challenge.jpcQualified,true);assert.equal(heldJpc.challenge.cashWin,0);assert.match(heldView.reach,/77.*4球目/);assert.equal(heldView.payouts.filter(row=>row.current).length,0);
+ report.earlyJpc={first:earlyView,final:heldView};await page.screenshot({path:output+'/early-lucky-jpc-v268.png'});
  await page.emulateMedia({reducedMotion:'reduce'});preserved(await inject({id:'sugar-reduced'}));const reduced=await read();verifyPanel(reduced);assert.equal(reduced.overlay.reduced,'true');assert.equal(reduced.scale.visible,false);assert.equal(reduced.bottle.visible,true);assert.equal(reduced.bottle.pouring,'false');assert.ok(reduced.animations.every(animation=>animation.state==='finished'));report.reduced=reduced;
  const reducedHit=await inject({id:'sugar-reduced',draws:[25]});preserved(reducedHit);const hit=await read();assert.equal(hit.bottle.sum,25,'reduced motion presents the exact sum immediately');assert.equal(hit.bottle.pouring,'false');assert.ok(Math.abs(hit.bottle.fill-25/172*100)<.01);
  const finalNative=await page.evaluate(()=>{const a=window.__qa250.app;return {credit:a.credit,bets:a.bets.slice(),draws:a.draws.slice(),totalWin:a.totalWin,phase:a.phase};});assert.deepEqual(finalNative,report.nativeBefore,'all purely visual scenarios preserve native wallet, bets and lottery history');report.nativeAfter=finalNative;

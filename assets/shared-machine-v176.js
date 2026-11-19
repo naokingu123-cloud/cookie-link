@@ -21,7 +21,7 @@ try{
    eval(load('assets/shared-host-speed-v219.js?v=262')+'\n//# sourceURL=shared-host-speed-v219.js');
    eval(load('assets/shared-roulette-webrtc-host-v224.js?v=262')+'\n//# sourceURL=shared-roulette-webrtc-host-v224.js');
    eval(load('assets/stations-reach-host-v239.js?v=262')+'\n//# sourceURL=stations-reach-host-v239.js');
-   eval(load('assets/sugar-roulette-v254.js?v=262')+'\n//# sourceURL=sugar-roulette-v254.js');
+   eval(load('assets/sugar-roulette-v254.js?v=268')+'\n//# sourceURL=sugar-roulette-v254.js');
   }else{
    eval(load('assets/server-payout-control-v3.js?v=262')+'\n//# sourceURL=server-payout-control-v3.js');
    eval(load('assets/shared-roulette-client-v224.js?v=262')+'\n//# sourceURL=shared-roulette-client-v224.js');

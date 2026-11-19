@@ -7,7 +7,7 @@ import {buildReport} from '../scripts/sugar-challenge-v254-probabilities.mjs';
 const R=globalThis.SugarChallengeRulesV254,plain=value=>JSON.parse(JSON.stringify(value));
 const source=fs.readFileSync(new URL('../assets/sugar-challenge-rules-v254.js',import.meta.url),'utf8');
 const freezeDeep=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freezeDeep);Object.freeze(value);}return value;};
-const options={id:'challenge:r42:st2',roundId:'r42',station:2,sugarValues:[100,110,95,105,90],cardId:'standard',multiplier:2,seed:254};
+const options={rulesRevision:254,id:'challenge:r42:st2',roundId:'r42',station:2,sugarValues:[100,110,95,105,90],cardId:'standard',multiplier:2,seed:254};
 const create=overrides=>R.create({...options,...overrides});
 const advanceAll=(state,draws)=>draws.reduce((s,n)=>R.advance(s,n,{roundId:s.roundId,ballIndex:s.draws.length+1}),state);
 const combinations=(values,k,visit,start=0,chosen=[])=>{
@@ -128,6 +128,6 @@ assert.deepEqual(report,saved);assert.equal(report.mixture.jpcProbability.numera
 assert(Math.abs(report.mixture.jpcPercent-10)<.02);assert.equal(report.multiplier.mean.value,1.275);
 const browser=vm.createContext({}),common=vm.createContext({module:{exports:{}}});
 vm.runInContext(source,browser);vm.runInContext(source,common);
-assert.deepEqual(plain(browser.SugarChallengeRulesV254.create(options)),create());assert.equal(common.module.exports.REVISION,254);
+assert.deepEqual(plain(browser.SugarChallengeRulesV254.create(options)),create());assert.equal(common.module.exports.REVISION,268);assert.equal(common.module.exports.LEGACY_REVISION,254);
 assert(Object.isFrozen(R));assert(Object.isFrozen(R.cards[0].luckySums));
 console.log(`Sugar Challenge v254: ${visited} combinations, ${R.cards.length} cards, exact 9.997938191988535% JPC, persisted input validation, conditional reach and integer cash checks passed.`);

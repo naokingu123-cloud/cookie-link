@@ -16,9 +16,10 @@ const ctx=vm.createContext({console,window:{SweetsEditionV255:{value:'local'},Sw
 vm.runInContext(rules,ctx);ctx.window.SugarChallengeRulesV254=ctx.SugarChallengeRulesV254;ctx.window.SweetsSugarChallengeV254=V;
 vm.runInContext(bridge,ctx);
 const L=ctx.window.SweetsLocalSugarV267;
-assert.equal(L.version,267);assert.equal(L.describe().bankCount,0);
-assert.equal(L.grantTestSugar(5),true);assert.equal(L.describe().bankCount,5);
-assert.equal(app.start(),true);let now=L.describe();assert.equal(now.active,true);assert.equal(now.bankCount,0);assert.equal(now.phase,'ready');assert.deepEqual(rounds.at(-1),['expanded',true]);
+assert.equal(L.version,268);assert.equal(L.describe().bankCount,0);
+assert.equal(L.grantTestSugar(5),true);assert.equal(L.describe().bankCount,0);assert.equal(L.describe().active,true);assert.equal(app.phase,'ready');
+const betQuote=L.describe();assert.ok(betQuote.jpAmount>0);assert.ok(betQuote.multiplier>0);
+assert.equal(app.start(),true);let now=L.describe();assert.equal(now.jpAmount,betQuote.jpAmount);assert.equal(now.roundId,betQuote.roundId);assert.equal(now.active,true);assert.equal(now.bankCount,0);assert.equal(now.phase,'ready');assert.deepEqual(rounds.at(-1),['expanded',true]);
 for(const n of [2,5,8,10,12,14,17,22])assert.equal(app.acceptNumber(n),true);
 now=L.describe();assert.equal(now.phase,'complete');assert.equal(now.draws.length,8);assert.equal(now.settled,true);assert.equal(app.phase,'result');
 const p=ctx.window.SugarChallengeRulesV254.evaluate('standard',90);assert.equal(p.jpc,false);

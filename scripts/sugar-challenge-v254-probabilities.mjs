@@ -33,7 +33,7 @@ export function buildReport(){
  const multiplierNumerator=R.multipliers.reduce((n,row)=>n+row.multiplier*row.weightBps,0);
  const mixedJpc=mixedJpcNumerator/weightedDenominator,meanMultiplier=multiplierNumerator/10000;
  return {
-  schema:'sweets-link-sugar-challenge-probabilities-v254',rulesRevision:R.REVISION,
+  schema:'sweets-link-sugar-challenge-probabilities-v254',rulesRevision:254,
   reproduction:'node scripts/sugar-challenge-v254-probabilities.mjs',verification:'node tests/sugar-challenge-v254-rules.mjs',
   method:'Exact integer dynamic programming for 8 distinct uniform numbers from 1..25. The native test independently enumerates every 8-number combination.',
   assumptions:[

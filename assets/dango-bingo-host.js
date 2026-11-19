@@ -42,7 +42,7 @@ const engine={
   this.running=true;this.animationLines=[];this.placementStartLines=[];this.thinkingClosesAt=0;
   const calibration=R.calibrationForTarget(this.state.target),percent=new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2});
   payoutNote.textContent=expansionRules(this.state)
-   ? 'ダンゴデビンゴ：設定 '+percent.format(calibration.target)+'%（おまかせ・最適な手動配置を基準とした理論値）。配当とODDSのルールを固定し、開始時の盤面で調整します。'
+   ? 'ダンゴデビンゴ：設定 '+percent.format(calibration.target)+'%（'+(Number(this.state.rulesRevision)>=265?'おまかせ配置':'最適なFREE配置')+'を基準とした理論値）。配当とODDSのルールを固定し、開始時の盤面で調整します。'
    : 'ダンゴデビンゴ：設定 '+percent.format(calibration.target)+'%（後半3球を知らずに最適なFREE配置をした場合）。おまかせ配置の理論値 '+percent.format(calibration.automaticReturnPercent)+'%。初期FREEの配置で調整します。';
   this.emit('waiting');slot.updateDangoReach(app);
  },
@@ -92,7 +92,8 @@ function roleLabel(state,roles=R.highestRolesFor(state)){
 }
 function announceHighestRoles(state,previousRoles){
  if(settlementWorker||!engine.liveBoard)return;
- const added=R.highestRolesFor(state).filter(length=>!previousRoles.includes(length));
+ const newlyCompleted=R.highestRolesFor(state).filter(length=>!previousRoles.includes(length));
+ const added=[...new Set([...newlyCompleted,...(Number(state.rulesRevision)>=268?state.newHighestRoles||[]:[])])];
  if(added.length)announceAchievement(game.name+'　最高役！ '+roleLabel(state,added)+'完成！ '+num(medalWin(app.locked[id],state.totalHundredths))+' WIN');
 }
 function rolesBeforePlacement(state){
@@ -164,7 +165,7 @@ function finish(version,token=app.token){
 engine.afterCheckpointRestoreV247=function(){
  const state=this.state;
  if(!state?.draws||app.enabled[id]===false||app.paid[id])return false;
- if(!expansionRules(state))payoutNote.textContent='ダンゴデビンゴ：前回のルールで再開しています。配当とFREE配置は保存時のままです。';
+ if(state.rulesRevision!==R.REVISION)payoutNote.textContent='ダンゴデビンゴ：前回のルールで再開しています。配当とFREE配置は保存時のままです。';
  if(lastRestoredState!==state){presentationEpoch++;pendingFinish=null;lastRestoredState=state;}
  this.liveBoard=true;this.processed=this.accepted=state.draws.length;this.drawn=new Set(state.draws);this.running=true;
  this.busy=false;this.queue=[];paused=false;stamp=null;lastHit=lineStart=-Infinity;lastMain=lastMini=-Infinity;
@@ -199,7 +200,7 @@ function tick(now){
  if(app.phase!=='ready'&&(!allNineMode||active===id)&&clock-lastMini>=120){paint(true);lastMini=clock;}
  const animationLength=Math.max(animationMs,engine.animationLines.length*150+500),animating=clock-Math.max(lastHit,lineStart)<=animationLength;
  const reachAnimation=app.phase==='playing'&&!motionReduced&&slot.reachStatus==='ready'&&slot.reachResults?.length>0&&(!allNineMode||active===id);
- // Mochi breathing and the light along a completed skewer continue while the
+ // Paid dango sparkles and the light along a completed skewer continue while the
  // visible board waits for its next ball. Hidden games retain their existing
  // settlement clock; no extra visual loop runs on the worker or hidden tabs.
  const ambient=!settlementWorker&&engine.liveBoard&&active===id&&!slot.panel.hidden&&!motionReduced&&['playing','result','paying','complete'].includes(app.phase);
@@ -214,7 +215,7 @@ const oldSelect=select;select=function(i){const result=oldSelect(i);document.bod
 const oldSyncPause=syncPause;syncPause=function(){const result=oldSyncPause.apply(this,arguments);stamp=null;lastMain=-Infinity;wake();return result;};
 const oldHud=hud;hud=function(a){oldHud(a);if(active===id){
  const s=engine.state,isExpansion=expansionRules(s);
- put('best','完成した串 '+s.completedLines.length+'本 ／ ODDS ×'+s.oddsMultiplier+(isExpansion?' ／ '+gradeLabel(s):''));
+ put('best','完成した串 '+s.completedLines.length+'本'+(s.oddsMultiplier>=2?' ／ Odds UP! '+s.oddsMultiplier+'倍':'')+(isExpansion?' ／ '+gradeLabel(s):''));
  const placement=Number(s.rulesRevision)>=265?'FREE '+s.manualFreeCells.length+'/'+s.freeBudget+'個 ／ 個別配置':isExpansion?'FREE範囲 '+expansionSize(s)+'マス ／ 中心を選択':'FREE配置 '+s.manualFreeCells.length+' / '+s.freeBudget;
  put('ballinfo',!engine.liveBoard?'5球 → FREE配置 → 3球':s.phase==='placing'?placement:s.phase==='done'?'串の配当を合計':s.draws.length<5?'前半 ／ あと'+(5-s.draws.length)+'球':'後半 ／ あと'+(8-s.draws.length)+'球');
 }};
@@ -223,7 +224,7 @@ const oldResult=renderRoundResult;renderRoundResult=function(a){
  row.dataset.dango=String(a.token);row.querySelector('.result-game-name').innerHTML=game.name+' <small>'+(a.enabled[id]?num(a.locked[id])+' BET':'NO BET')+'</small>';
  const s=engine.state,lines=lineLengths(s).filter(length=>s.lineCounts[length]).map(length=>length+'個ライン '+s.lineCounts[length]+'本').join(' ／ ');
  const highestRoles=R.highestRolesFor(s);
- const freeDetail=(Number(s.rulesRevision)>=265?' ／ '+gradeLabel(s)+' ／ 配置FREE '+s.manualFreeCells.length+'/'+s.freeBudget+'個':expansionRules(s)?' ／ '+gradeLabel(s)+' ／ FREE範囲 '+expansionSize(s)+'マス':' ／ 配置FREE '+s.manualFreeCells.length+'個')+' ／ ODDS ×'+s.oddsMultiplier;
+ const freeDetail=(Number(s.rulesRevision)>=265?' ／ '+gradeLabel(s)+' ／ 配置FREE '+s.manualFreeCells.length+'/'+s.freeBudget+'個':expansionRules(s)?' ／ '+gradeLabel(s)+' ／ FREE範囲 '+expansionSize(s)+'マス':' ／ 配置FREE '+s.manualFreeCells.length+'個')+(s.oddsMultiplier>=2?' ／ Odds UP! '+s.oddsMultiplier+'倍':'');
  row.querySelector('.result-game-details').textContent=a.enabled[id]?(lines||'完成した串なし')+freeDetail+(highestRoles.length?' ／ 最高役：'+roleLabel(s,highestRoles):''):'参加なし';
 };
 new ResizeObserver(()=>{lastMain=-Infinity;wake();}).observe(slot.panel);

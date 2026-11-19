@@ -26,7 +26,7 @@ const milestone=(name,extra={})=>{const data={name,...extra};report.steps.push(d
 const state=()=>page.evaluate(()=>window.SweetsLocalDebugV258?.describe?.());
 async function capture(name){await page.screenshot({path:path.join(out,name+'.png')});report.screens.push(name+'.png');}
 try{
- browser=await chromium.launch({headless:true,args:['--enable-unsafe-swiftshader']});
+ browser=await chromium.launch({...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||process.env.PLAYWRIGHT_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||process.env.PLAYWRIGHT_EXECUTABLE_PATH}:{}),headless:true,args:['--enable-unsafe-swiftshader']});
  context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
  await context.route('**/*',route=>{const url=new URL(route.request().url());if(url.origin!==base){report.external.push(url.href);return route.abort();}return route.continue();});
  page=await context.newPage();
@@ -58,9 +58,13 @@ try{
   const sound=document.getElementById('sound');sound.checked=false;sound.dispatchEvent(new Event('change',{bubbles:true}));
   if(!window.SweetsLocalDebugV258.setBets([100,0,0,0,0,0,0,0,0,0]))throw Error('local BET setup failed');
  });
- // Five simulated local-only Sugars start a real UI challenge on the same eight balls.
+ // Five local-only Sugars freeze JP/card/multiplier during BET, before any start.
  await page.locator('#local-debug-v258 [data-local-action="sugar-five"]').click();
- assert.equal(await page.evaluate(()=>window.SweetsLocalSugarV267?.describe().bankCount),5);
+ await page.waitForFunction(()=>window.SweetsLocalSugarV267?.describe()?.active===true,null,{timeout:10000});
+ const betQuote=await page.evaluate(()=>({local:window.SweetsLocalSugarV267.describe(),ui:window.SweetsSugarChallengeV254.describe()}));
+ assert.equal((await state()).phase,'ready');assert.equal(betQuote.local.bankCount,0);assert.equal(betQuote.local.phase,'ready');assert.ok(betQuote.local.jpAmount>0);assert.ok(betQuote.local.multiplier>=1);assert.ok(betQuote.ui.challenge);
+ milestone('sugar-bet-quote',{jpAmount:betQuote.local.jpAmount,multiplier:betQuote.local.multiplier});
+ await capture('local-sugar-bet-quote');
  await page.locator('#manual-number-toggle').click();
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().manualNumbers===true,null,{timeout:5000});
  await capture('local-manual');
@@ -68,20 +72,22 @@ try{
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().phase==='playing',null,{timeout:20000});
  await page.waitForFunction(()=>window.SweetsLocalSugarV267?.describe()?.active===true,null,{timeout:10000});
  const opened=await page.evaluate(()=>({challenge:window.SweetsSugarChallengeV254?.describe()?.challenge,local:window.SweetsLocalSugarV267.describe()}));
- assert.ok(opened.challenge);assert.equal(opened.local.bankCount,0);
+ assert.ok(opened.challenge);assert.equal(opened.local.bankCount,0);assert.equal(opened.local.roundId,betQuote.local.roundId);assert.equal(opened.local.jpAmount,betQuote.local.jpAmount);assert.equal(opened.local.multiplier,betQuote.local.multiplier);
  await capture('local-sugar-challenge-open');
- const draws=[25,3,6,10,13,22,24,2];
+ const draws=[25,24,23,16,1,2,3,4];
  for(let i=0;i<draws.length;i++){
   const n=draws[i];
   await page.waitForFunction(n=>{const s=window.SweetsLocalDebugV258?.describe?.(),el=document.querySelector('#manual-number-grid button[data-number="'+n+'"]');return s?.phase==='playing'&&s?.drawHeld===false&&el&&!el.disabled;},n,{timeout:45000});
   await page.locator('#manual-number-grid button[data-number="'+n+'"]').click();
   await page.waitForFunction(n=>window.SweetsLocalDebugV258?.describe?.().draws.includes(n),n,{timeout:5000});
   milestone('manual-hit',{ball:i+1,number:n});
+  if(i===3){const early=await page.evaluate(()=>({local:window.SweetsLocalSugarV267.describe(),ui:window.SweetsSugarChallengeV254.describe()}));assert.equal(early.local.jpcQualified,true);assert.equal(early.local.qualifyingDrawCount,4);assert.equal(early.local.phase,'drawing');assert.equal(early.ui.challenge.jpcQualified,true);milestone('early-lucky-jpc',{ball:4,sum:88});await capture('local-sugar-early-jpc');}
  }
  current=await state();assert.deepEqual(current.draws,draws);
  await page.waitForFunction(()=>['result','paying','complete'].includes(window.SweetsLocalDebugV258?.describe?.().phase),null,{timeout:150000});
  milestone('manual-complete',{phase:(await state()).phase});
  const sugarDone=await page.evaluate(()=>({local:window.SweetsLocalSugarV267?.describe?.(),ui:window.SweetsSugarChallengeV254?.describe?.()}));
+ assert.equal(sugarDone.local.jpcQualified,true);assert.equal(sugarDone.local.qualifyingDrawCount,4);assert.equal(sugarDone.local.cashWin,0);
  assert.equal(sugarDone.local.draws.length,8);assert.equal(sugarDone.local.phase,'complete');assert.equal(sugarDone.local.settled,true);
  assert.equal(sugarDone.ui.challenge?.draws?.length,8);
  await capture('local-sugar-challenge-complete');

@@ -15,7 +15,7 @@ const keyHash=value=>createHash('sha256').update(value).digest('hex').slice(0,24
 const ordinarySugar=token=>token.directJpc!==true&&token.kind!=='direct-jpc'&&token.jpcRedeemed!==true;
 
 export function createSugarChallengeLedger({rules=globalThis.SugarChallengeRulesV254,randomSeed=()=>randomBytes(4).readUInt32LE(0),now=Date.now}={}){
- if(rules?.REVISION!==254)throw new Error('Sugar Challenge v254 rules are required.');
+ if(![254,268].includes(rules?.REVISION))throw new Error('Compatible Sugar Challenge rules are required.');
  const timestamp=()=>{const value=Number(now());if(!Number.isSafeInteger(value)||value<0)throw new RangeError('Invalid Sugar Challenge server time.');return value;};
  const seed=()=>{const value=Number(randomSeed());if(!Number.isSafeInteger(value)||value<0||value>0xffffffff)throw new RangeError('Sugar Challenge seed must be a uint32.');return value;};
 
@@ -45,7 +45,7 @@ export function createSugarChallengeLedger({rules=globalThis.SugarChallengeRules
  function publicState(player){
   const ledger=normalize(player),current=challengeView(activeRecord(ledger)),last=challengeView(getRound(ledger,ledger.lastRoundId)),challenge=current||last;
   return {version:254,revision:ledger.revision,bank:clone(ledger.bank),acceptedIds:Object.keys(ledger.receipts),queued:ledger.bank.filter(ordinarySugar).length>=rules.SUGAR_COUNT,legacyImported:ledger.legacyImported,
-   challenge,current,last,startedAt:challenge?.startedAt??null,openedAt:challenge?.openedAt??null,jpcTickets:Object.values(ledger.rounds).filter(record=>record.status!=='cancelled'&&record.paid).map(record=>rules.restore(record.state)?.jpcTicket).filter(Boolean).map(clone)};
+   challenge,current,last,startedAt:challenge?.startedAt??null,openedAt:challenge?.openedAt??null,jpcTickets:Object.values(ledger.rounds).filter(record=>record.status!=='cancelled').map(record=>rules.restore(record.state)?.jpcTicket).filter(Boolean).map(clone)};
  }
  const result=(player,changed,extra={})=>({changed,...publicState(player),...extra});
  function commit(player,draft,{delta=0,roundId=null,at=timestamp(),source='sugar-challenge',settlement=false}={}){

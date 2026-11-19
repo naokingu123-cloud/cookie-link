@@ -3,12 +3,14 @@
 'use strict';
 const R=window.DangoBingoRules,TAU=Math.PI*2,clamp=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{x=clamp(x);return x*x*(3-2*x);};
-const LINE_COLORS=Object.freeze({2:'#ffac63',3:'#269eff',4:'#42e57c',5:'#ffe34b',6:'#ff4667',7:'#bf6bff',9:'#bf6bff'});
+const LINE_COLORS=Object.freeze({2:'#269eff',3:'#4ee3f5',4:'#42e57c',5:'#ffe34b',6:'#ff4667',7:'#bf6bff',9:'#bf6bff'});
+const isCurrent=state=>Number(state?.rulesRevision??R.REVISION)>=268;
 const isModern=state=>state?Number(state.rulesRevision)>=262||state.cells?.length===28:Number(R.REVISION)>=262;
 const cellsFor=state=>R.geometryFor?.(state)?.cells||state?.cells||R.cells;
 const linesFor=state=>R.linesFor?.(state)||R.geometryFor?.(state)?.lines||R.lines;
-const lineColor=(length,state)=>!isModern(state)&&length===7?'#ff4667':LINE_COLORS[length];
+const lineColor=(length,state)=>!isCurrent(state)&&length===2?'#ffac63':!isCurrent(state)&&length===3?'#269eff':!isModern(state)&&length===7?'#ff4667':LINE_COLORS[length];
 const PAY_LAYOUT=Object.freeze({label:1.03,column:.8,header:.27,row:.46,oddsWidth:1.55,oddsHeight:.46,oddsGap:.10,anchor:.08});
+const CURRENT_PAY_LAYOUT=Object.freeze({label:1.77,column:.82,header:.32,row:.60,oddsWidth:3.3,oddsHeight:.54,oddsGap:.07,anchor:.08});
 const highestRoleCell=(length,count,state)=>typeof R.isHighestRole==='function'?R.isHighestRole(length,count,state):count>=(isModern(state)?3:({3:4,4:3,5:2,7:1,9:1}[length]??Infinity));
 const tierInk=['#21ddd5','#ff3c66','#bc58ff','#ffe383'];
 const assetFiles={white:'dango-art-v252/dango-white.webp',green:'dango-art-v253/dango-green.webp',pink:'dango-art-v253/dango-pink.webp',yellow:'dango-art-v253/dango-yellow.webp',rainbow:'dango-art-v253/dango-rainbow.webp',skewer:'dango-art-v252/bamboo-skewer.webp',stand:'dango-art-v253/tsukimi-stand.webp'};
@@ -44,7 +46,7 @@ function spriteBounds(image,key){
  return [0,0,width,height];
 }
 function describeAssets(){
- return {revision:253,presentationRevision:262,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
+ return {revision:253,presentationRevision:268,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS}};
 }
@@ -98,34 +100,34 @@ function legacyPayoutLayout(width,height,state){
 function geometry(width,height,{layout='main',state=null}={}){
  if(!isModern(state))return legacyGeometry(width,height,{layout,state});
  const main=layout==='main',portrait=main&&width/height<1.45;
- const tableReserve=portrait?Math.min(height*.30,width*.40):0;
+ const tableReserve=portrait?Math.min(height*(isCurrent(state)?.39:.30),width*(isCurrent(state)?.56:.40)):0;
  const unit=Math.max(.01,Math.min(width/(main?(portrait?7.7:10.9):7.65),(height-tableReserve)/(main?7.25:6.9)));
  const cx=main&&!portrait?Math.min(width*.64,width-unit*3.9):width/2,top=tableReserve+(height-tableReserve-unit*6.85)/2+unit*.5;
  const source=cellsFor(state),centers=source.map(cell=>{
   const row=cell.row??Math.floor((Math.sqrt(8*cell.id+1)-1)/2),column=cell.col??cell.column??cell.id-row*(row+1)/2;
   return {id:cell.id,x:cx+(column-row/2)*unit,y:top+row*Math.sqrt(3)/2*unit};
  });
- const freeUnit=Math.max(40,unit),free={unit:freeUnit,x:width-freeUnit*2.27,y:tableReserve+freeUnit*.10,width:freeUnit*2.15,height:freeUnit*2.4};
+ const freeUnit=Math.max(40,unit),free={unit:freeUnit,x:width-freeUnit*2.27,y:tableReserve+freeUnit*.10,width:freeUnit*2.15,height:freeUnit*(isCurrent(state)?1.72:2.4)};
  return {layout:main?'main':'compact',modern:true,portrait,unit,radius:unit/2,width,height,cx,top,tableReserve,free,centers,
   stand:{x:cx-unit*3.64,y:top+unit*5.39,width:unit*7.28,height:unit*1.08}};
 }
 function payoutLayout(width,height,state=null){
  if(!isModern(state))return legacyPayoutLayout(width,height,state);
- const g=geometry(width,height,{state}),p=PAY_LAYOUT,anchor=g.unit*.08,rows=[...new Set((R.payRowsBaseFor?.(state)||R.payRows).map(row=>row.length))],rowCount=rows.length,totalHeight=p.header+p.row*rowCount+p.oddsGap+p.oddsHeight;
+ const g=geometry(width,height,{state}),p=isCurrent(state)?CURRENT_PAY_LAYOUT:PAY_LAYOUT,tableWidth=p.label+p.column*3,anchor=g.unit*.08,rows=[...new Set((R.payRowsBaseFor?.(state)||R.payRows).map(row=>row.length))],rowCount=rows.length,totalHeight=p.header+p.row*rowCount+p.oddsGap+p.oddsHeight;
  const rectsAt=unit=>{
-  const width=g.portrait?g.width-anchor*2:unit*3.43,rects=[{kind:'header',x:anchor,y:anchor,width,height:p.header*unit}];
+  const width=g.portrait?g.width-anchor*2:unit*tableWidth,rects=[{kind:'header',x:anchor,y:anchor,width,height:p.header*unit}];
   for(let i=0;i<rowCount;i++)rects.push({kind:'row',length:rows[i],x:anchor,y:anchor+(p.header+i*p.row)*unit,width,height:p.row*unit});
   rects.push({kind:'odds',x:anchor,y:anchor+(p.header+p.row*rowCount+p.oddsGap)*unit,width:p.oddsWidth*unit,height:p.oddsHeight*unit});return rects;
  };
  const distance=(rect,point)=>Math.hypot(point.x-Math.max(rect.x,Math.min(rect.x+rect.width,point.x)),point.y-Math.max(rect.y,Math.min(rect.y+rect.height,point.y)));
  let unit=Math.max(.01,(g.tableReserve-anchor*2)/totalHeight);
  if(!g.portrait){
-  let lo=.01,hi=Math.max(.01,Math.min((width-anchor*2)/3.43,(height-anchor*2)/totalHeight));
+  let lo=.01,hi=Math.max(.01,Math.min((width-anchor*2)/tableWidth,(height-anchor*2)/totalHeight));
   const fits=value=>rectsAt(value).every(rect=>!(rect.x<g.free.x+g.free.width&&rect.x+rect.width>g.free.x&&rect.y<g.free.y+g.free.height&&rect.y+rect.height>g.free.y)&&g.centers.every(point=>distance(rect,point)>=g.unit*.58));
   for(let i=0;i<22;i++){const mid=(lo+hi)/2;if(fits(mid))lo=mid;else hi=mid;}unit=lo;
  }
  const rects=rectsAt(unit);
- return {scale:unit/g.unit,unit,anchor,width:g.portrait?width-anchor*2:unit*3.43,height:totalHeight*unit,clearance:g.unit*.58,rects,minClearance:Math.min(...rects.flatMap(rect=>g.centers.map(point=>distance(rect,point))))};
+ return {scale:unit/g.unit,unit,anchor,width:g.portrait?width-anchor*2:unit*tableWidth,height:totalHeight*unit,clearance:g.unit*.58,rects,minClearance:Math.min(...rects.flatMap(rect=>g.centers.map(point=>distance(rect,point))))};
 }
 function disc(c,x,y,r,fill){c.beginPath();c.arc(x,y,r,0,TAU);c.fillStyle=fill;c.fill();}
 function roundBox(c,x,y,w,h,r,fill){c.beginPath();c.roundRect(x,y,w,h,r);c.fillStyle=fill;c.fill();}
@@ -141,7 +143,7 @@ function star(c,x,y,r,ink){
 function ambientTime(options){return options.reducedMotion||options.paused?0:Number(options.time)||0;}
 function dangoKind(cell,oddsActivated){return oddsActivated?'rainbow':cell.manualFree?'yellow':cell.initialFree&&!(cell.number>0)?'green':cell.hit?'pink':cell.initialFree?'green':'white';}
 function dangoBody(c,cell,p,r,options){
- const kind=dangoKind(cell,options.oddsActivated),still=options.reducedMotion||options.paused;
+ const kind=dangoKind(cell,options.oddsActivated),still=options.staticDango||options.reducedMotion||options.paused;
  const cycle=still?0:(1-Math.cos(ambientTime(options)/2700*TAU+cell.id*.41))/2;
  // The main silhouette never shrinks below the cell diameter. A tiny overlap
  // keeps the piled sweets touching throughout their slow, soft compression.
@@ -155,7 +157,7 @@ function dangoLabels(c,cell,p,r,o){
   c.save();c.font='1000 '+r*.60+'px ElixirNumbers,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=Math.max(.8,r*.065);c.strokeStyle='#fffad8';c.strokeText('FREE',p.x,p.y);c.fillStyle=o.oddsActivated?'#693b93':'#315d16';c.fillText('FREE',p.x,p.y);c.restore();
   return;
  }
- if(cell.hit){
+ if(cell.hit&&!o.staticDango){
   const y=p.y-r*(label?.73:.66),size=r*(label?.34:.40);
   c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
   c.lineWidth=Math.max(.7,r*.08);c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#ad245b';c.fillText('HIT!',p.x,y);c.restore();
@@ -169,6 +171,12 @@ function dangoLabels(c,cell,p,r,o){
  }
  const numberY=cell.hit?(label?-.06:.13):label?-.10:0,numberSize=cell.hit?(label?(cell.number>=10?.88:1):(cell.number>=10?1:1.16)):(cell.number>=10?1.07:1.21);
  number(c,cell.number,p.x,p.y+r*numberY,r*numberSize);
+ if(cell.hit&&o.staticDango){
+  // Draw HIT after the numeral at the same center, deliberately covering it.
+  const y=p.y+r*numberY,size=r*.76;
+  c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
+  c.lineWidth=Math.max(1.4,r*.16);c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#a91650';c.fillText('HIT!',p.x,y);c.restore();
+ }
  if(cell.id===o.lastCell&&Number.isFinite(o.age)&&o.age<500){
   const t=clamp(o.age/500);c.save();c.globalAlpha=1-t;c.beginPath();c.arc(p.x,p.y,r*(1.05+.6*t),0,TAU);c.lineWidth=r*.08;c.strokeStyle='#fff5ad';c.stroke();c.restore();
  }
@@ -219,6 +227,17 @@ function reachOrbit(c,cell,p,r,hit,time,still,mini){
  }
  c.restore();
 }
+function paidSparkle(c,p,r,id,time,still){
+ // Fixed mochi silhouettes; only payout-bearing sweets sparkle.
+ c.save();
+ for(let k=0;k<3;k++){
+  const phase=(time/1100+id*.173+k*.31)%1,alpha=still?.82:Math.pow(Math.sin(phase*Math.PI),2);
+  const angle=-Math.PI*.8+k*Math.PI*.64+id*.33,x=p.x+Math.cos(angle)*r*.72,y=p.y+Math.sin(angle)*r*.70;
+  c.globalAlpha=.2+alpha*.8;c.shadowColor='#fff4a6';c.shadowBlur=r*.21;
+  star(c,x,y,r*(.08+alpha*.09),'#fffde5');
+ }
+ c.restore();
+}
 function paint(ctx,state,options={},mini=false){
  if(!ctx||!state?.cells)return;
  const c=ctx,w=c.canvas.width,h=c.canvas.height,mode=options.artUsage==='lesson'?'lesson':mini?'mini':'main',g=geometry(w,h,{layout:mode==='main'?'main':'compact',state}),u=g.unit,r=g.radius;
@@ -233,16 +252,22 @@ function paint(ctx,state,options={},mini=false){
   const order=animation.indexOf(lineId),progress=still||order<0?1:smooth((age-order*150)/490);
   if(progress<=0)continue;skewers.push({line,z:skewer(c,line,g,progress)});
  }
- // Payable two-cell lines use the same amber bamboo and glowing completion cues.
+ // Two-cell lines share the same blue bamboo and completion cues.
  if(Number(state.rulesRevision)>=266&&Array.isArray(R.shortLines))for(const line of R.shortLines){
   if((Number(state.markedMask)&line.mask)!==line.mask)continue;
   skewers.push({line,z:skewer(c,line,g,1)});
  }
  const reaches=new Map((options.reach||[]).filter(x=>x.gain>0||x.gainHundredths>0).map(x=>[x.n??x.number,x])),oddsHits=new Set(state.oddsHits||[]);
  const expanded=new Set(state.expansionCells||state.expansionFootprint||(Number.isInteger(state.expansionCenter)?R.expansionCellsFor?.(state,state.expansionCenter):[])||[]);
- const cellOptions=cell=>({...options,lastCell:state.lastCell,oddsActivated:isModern(state)&&cell.initialFree&&expanded.has(cell.id)||cell.manualFree&&!cell.initialFree&&oddsHits.has(cell.number)});
+ const cellOptions=cell=>({...options,staticDango:isCurrent(state),lastCell:state.lastCell,oddsActivated:isModern(state)&&cell.initialFree&&expanded.has(cell.id)||cell.manualFree&&!cell.initialFree&&oddsHits.has(cell.number)});
  for(const cell of state.cells){const kind=dangoBody(c,cell,g.centers[cell.id],r,cellOptions(cell));if(kind){imageCells++;kinds[kind]++;}}
  for(const {line,z}of skewers)luminousSkewer(c,line,g,z,time,still,state);
+ const paidCells=new Set();
+ if(isCurrent(state)){
+  const payable=new Set((R.payRowsFor?.(state)||[]).filter(row=>row.hundredths>0&&(row.atLeast?(state.lineCounts[row.length]||0)>=row.count:(state.lineCounts[row.length]||0)===row.count)).map(row=>row.length));
+  for(const {line}of skewers)if(payable.has(line.length))for(const id of line.cells)paidCells.add(id);
+  for(const id of paidCells)paidSparkle(c,g.centers[id],r,id,time,still);
+ }
  if(!mini&&isModern(state)){
   const preview=new Set(options.previewCells||[]),selected=state.expansionCenter;
   c.save();c.lineWidth=Math.max(1,u*.045);c.strokeStyle='#fffbe8';c.setLineDash([u*.075,u*.055]);
@@ -260,7 +285,7 @@ function paint(ctx,state,options={},mini=false){
   const p=g.centers[state.lastCell],t=clamp(options.age/1400),x=Math.max(u*1.12,Math.min(w-u*1.12,p.x)),y=Math.max(u*.31,p.y-u*(.69+.34*t));
   c.save();c.globalAlpha=Math.min(1,(1-t)*3);roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
  }
- last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,ambientTime:time,idleMotion:!still,hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
+ last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitLabelPosition:isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
  c.restore();
 }
 function drawMini(context,state,options={}){const ctx=typeof context?.getContext==='function'?context.getContext('2d'):context;if(ctx&&!allAssetsReady())pendingMinis.set(ctx,{state,options});paint(ctx,state,options,true);}
@@ -271,7 +296,7 @@ function drawLessonDango(ctx,x,y,r,kind,value,rainbow=false){
 function formatWin(bet,hundredths){const value=typeof medalWin==='function'?medalWin(bet,hundredths):Math.floor(Math.max(0,bet)*hundredths/100);return String(value);}
 function mount(panel){
  const root=document.createElement('section');root.className='dgb-scene';root.setAttribute('aria-label','ダンゴデビンゴ');
- root.innerHTML='<div class="dgb-stage"><div class="dgb-pan"><canvas role="img"></canvas><div class="dgb-cell-controls" role="group" aria-label="FREEの中心を選ぶお団子"></div></div></div><aside class="dgb-pay"><table aria-label="ラインの長さと完成本数による配当"><colgroup></colgroup><thead></thead><tbody></tbody></table><div class="dgb-pay-odds"><small>ODDS</small><b class="dgb-odds-value">×1</b></div></aside><div class="dgb-free-stat"><small class="dgb-free-title">置けるFREE</small><div class="dgb-trigger-numbers" role="group" aria-label="前半5球の拡張番号" hidden></div><b class="dgb-free-value">あと1個</b><span class="dgb-free-detail">配置0 / 1個</span><div class="dgb-placement"><span class="dgb-countdown"></span><div class="dgb-actions"><button type="button" data-action="auto">おまかせ</button></div></div></div><div class="dgb-prompt dgb-live"></div><div class="dgb-live dgb-announcement" role="status" aria-live="polite" aria-atomic="true"></div>';
+ root.innerHTML='<div class="dgb-stage"><div class="dgb-pan"><canvas role="img"></canvas><div class="dgb-cell-controls" role="group" aria-label="FREEの中心を選ぶお団子"></div></div></div><aside class="dgb-pay"><table aria-label="ラインの長さと完成本数による配当"><colgroup></colgroup><thead></thead><tbody></tbody></table><div class="dgb-pay-odds"><small class="dgb-odds-title">ODDS</small><b class="dgb-odds-value">×1</b></div></aside><div class="dgb-free-stat"><small class="dgb-free-title">置けるFREE</small><div class="dgb-trigger-numbers" role="group" aria-label="前半5球の拡張番号" hidden></div><b class="dgb-free-value">あと1個</b><span class="dgb-free-detail">配置0 / 1個</span><div class="dgb-placement"><span class="dgb-countdown"></span><div class="dgb-actions"><button type="button" data-action="auto">おまかせ</button></div></div></div><div class="dgb-prompt dgb-live"></div><div class="dgb-live dgb-announcement" role="status" aria-live="polite" aria-atomic="true"></div>';
  panel.append(root);
  const find=selector=>root.querySelector(selector),pan=find('.dgb-pan'),canvas=pan.querySelector('canvas'),ctx=canvas.getContext('2d'),controls=find('.dgb-cell-controls');
  let rows=[],buttons=[],state=null,options={},callbacks={},focusId=0,lastLive='',domKey='',sizeKey='',structureKey='',payGeometry=null,previewCenter=null;
@@ -288,15 +313,15 @@ function mount(panel){
   for(const button of buttons)button.tabIndex=Number(button.dataset.cellId)===focusId&&!button.disabled?0:-1;
  }
  function rebuild(next){
-  const modern=isModern(next),baseRows=R.payRowsBaseFor?.(next)||R.payRows,key=[modern,next.cells.length,baseRows.map(row=>row.length+':'+row.count).join(',')].join('/');
+  const modern=isModern(next),baseRows=R.payRowsBaseFor?.(next)||R.payRows,key=[modern,next.rulesRevision,next.cells.length,baseRows.map(row=>row.length+':'+row.count).join(',')].join('/');
   if(key===structureKey)return;
-  structureKey=key;sizeKey='';previewCenter=null;rows=[];buttons=[];controls.replaceChildren();find('tbody').replaceChildren();root.dataset.modern=String(modern);
+  structureKey=key;sizeKey='';previewCenter=null;rows=[];buttons=[];controls.replaceChildren();find('tbody').replaceChildren();root.dataset.modern=String(modern);root.dataset.presentation=String(isCurrent(next)?268:262);
   const lengths=[...new Set(baseRows.map(row=>row.length))],columns=Math.max(...baseRows.map(row=>row.count));
   find('colgroup').innerHTML='<col class="dgb-row-label">'+'<col>'.repeat(columns);
   find('thead').innerHTML='<tr><th scope="col"><span class="dgb-live">ライン</span></th>'+Array.from({length:columns},(_,i)=>'<th scope="col">'+(i+1)+'本'+(!modern&&i+1===columns?'以上':'')+'</th>').join('')+'</tr>';
   for(const length of lengths){
    const tr=document.createElement('tr');tr.dataset.length=String(length);tr.style.setProperty('--dgb-line-color',lineColor(length,next));
-   const th=document.createElement('th');th.scope='row';th.innerHTML='<b>'+length+'</b>個ライン';tr.append(th);
+   const th=document.createElement('th');th.scope='row';th.innerHTML='<span class="dgb-line-name"><b>'+length+'</b>個ライン</span>'+(isCurrent(next)?'<span class="dgb-free-grant">FREE×'+length+'</span>':'');tr.append(th);
    for(const row of baseRows.filter(item=>item.length===length)){
     const td=document.createElement('td');td.dataset.valid='true';td.dataset.column=td.dataset.count=String(row.count);td.dataset.atLeast=String(row.atLeast);td.dataset.highestRole=String(highestRoleCell(row.length,row.count,next));td.innerHTML='<span class="gold-number">0</span>';rows.push({row,tr,td,value:'0'});tr.append(td);
    }
@@ -329,8 +354,15 @@ function mount(panel){
    for(const point of g.centers){const button=buttons[point.id];if(!button)continue;button.style.left=point.x+'px';button.style.top=point.y+'px';button.style.width=g.unit*.94+'px';button.style.height=g.unit*.94+'px';}
   }
   for(const item of rows){
-   const u=payGeometry?.unit||g.unit,available=Math.max(8,(item.td.clientWidth||u*PAY_LAYOUT.column)-u*.12);
-   if(typeof fitGoldenNumber==='function')fitGoldenNumber(item.td,item.value,u*.28,available);else{const label=item.td.querySelector('.gold-number');label.textContent=item.value;ctx.save();ctx.font='700 '+u*.28+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;label.style.fontSize=(u*.28*Math.min(1,available/Math.max(1,measured)))+'px';ctx.restore();}
+   const u=payGeometry?.unit||g.unit,available=Math.max(8,(item.td.clientWidth||u*PAY_LAYOUT.column)-u*(isCurrent(state)?.10:.12));
+   if(isCurrent(state)){
+    const label=item.td.querySelector('.gold-number'),size=Math.max(14,u*.40);label.textContent=item.value;
+    // Keep numeral height consistent even for a large BET: squeeze only X.
+    label.style.fontSize=size+'px';label.style.transform='none';label.style.marginLeft='0';
+    ctx.save();ctx.font='700 '+size+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;ctx.restore();
+    const scale=Math.min(1,available/Math.max(1,measured));label.style.transform='scaleX('+scale+')';label.style.marginLeft=(-(measured*(1-scale)))+'px';
+    label.dataset.horizontalScale=String(scale);
+   }else if(typeof fitGoldenNumber==='function')fitGoldenNumber(item.td,item.value,u*.28,available);else{const label=item.td.querySelector('.gold-number');label.textContent=item.value;ctx.save();ctx.font='700 '+u*.28+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;label.style.fontSize=(u*.28*Math.min(1,available/Math.max(1,measured)))+'px';ctx.restore();}
   }
   paintLive();
  }
@@ -339,8 +371,8 @@ function mount(panel){
   if(state===next&&key===domKey){paintLive();return;}
   state=next;options=o;domKey=key;rebuild(state);
   const modern=isModern(state),placing=!o.demo&&state.phase==='placing',editable=placing&&!o.placementLocked,drawCount=state.draws.length,second=state.phase==='draw-final'||state.phase==='done';
-  root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);
-  find('.dgb-pay-odds').hidden=false;find('.dgb-odds-value').textContent='×'+(state.oddsMultiplier||1);find('.dgb-trigger-numbers').hidden=!modern;
+  root.dataset.firstHalf=String(drawCount<=5&&state.phase!=='draw-final'&&state.phase!=='done');root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);
+  find('.dgb-pay-odds').hidden=isCurrent(state)&&(state.oddsMultiplier||1)<2;find('.dgb-odds-title').textContent=isCurrent(state)?'Odds UP!':'ODDS';find('.dgb-odds-value').textContent=isCurrent(state)?(state.oddsMultiplier||1)+'倍':'×'+(state.oddsMultiplier||1);find('.dgb-trigger-numbers').hidden=!modern;
   if(modern){
    const level=Number(state.expansionLevel)||0,chosen=Number.isInteger(state.expansionCenter),graded=Number(state.rulesRevision)>=264,individual=Number(state.rulesRevision)>=265;
    const area=individual?Number(state.freeBudget)||1:graded?(chosen?state.expansionCells.length:[0,1,7,19][level]||0):[0,1,7,17][level]||0,triggerBox=find('.dgb-trigger-numbers');
@@ -349,6 +381,12 @@ function mount(panel){
     find('.dgb-free-title').textContent='前半ライン・FREE配置';
     find('.dgb-free-value').textContent=state.draws.length<5?'最大FREE '+area+'個':'あと'+state.freeRemaining+'個';
     find('.dgb-free-detail').textContent='配置'+state.manualFreeCells.length+'/'+state.freeBudget+'個 ／ '+(state.qualifiedEarlyLengths?.length?level+'個ライン':'ライン未成立');
+    if(isCurrent(state)){
+     find('.dgb-free-title').textContent='配置できるFREE';
+     find('.dgb-free-value').textContent='あと '+state.freeRemaining+'個';
+     find('.dgb-free-detail').textContent=drawCount<5?'前半5球で確定':'配置 '+state.manualFreeCells.length+' / '+state.freeBudget+'個';
+     triggerBox.hidden=true;
+    }
     const grades=new Set(state.qualifiedEarlyLengths||[]);
     triggerBox.setAttribute('aria-label','前半5球で成立した2〜7個ライン');triggerBox.replaceChildren();
     for(const length of [2,3,4,5,6,7]){const badge=document.createElement('span');badge.className='dgb-trigger'+(grades.has(length)?' hit':'');badge.textContent=length+'個';badge.setAttribute('aria-label',length+'個ライン'+(grades.has(length)?' 成立済み':' 未成立'));triggerBox.append(badge);}
@@ -380,9 +418,10 @@ function mount(panel){
   controls.hidden=!placing;find('.dgb-placement').hidden=!placing;find('.dgb-actions').hidden=!placing;refreshFocus();
   const seconds=Number(o.remainingMs);find('.dgb-countdown').textContent=placing&&Number.isFinite(seconds)?Math.max(0,Math.ceil(seconds/1000))+'秒':placing?'後半待ち':'';find('.dgb-countdown').classList.toggle('urgent',placing&&Number.isFinite(seconds)&&seconds<=5000);
   const payRows=typeof R.payRowsFor==='function'?R.payRowsFor(state):R.payRows.map(row=>({...row,hundredths:row.hundredths*state.oddsMultiplier}));
+  const nextCounts=isCurrent(state)?(o.reach||R.reaches?.(state)||[]).map(hit=>hit.lineCounts||((state.phase==='draw'||state.phase==='draw-final')?R.draw(state,hit.n??hit.number)?.lineCounts:null)).filter(Boolean):[];
   for(const item of rows){
-   const row=payRows.find(row=>row.length===item.row.length&&row.count===item.row.count)||item.row,count=state.lineCounts[row.length]||0,current=row.atLeast?count>=row.count:count===row.count;
-   item.tr.dataset.completed=String(count);item.td.classList.toggle('current',current);item.td.setAttribute('aria-current',current?'true':'false');item.value=formatWin(Number(o.bet)||0,row.hundredths);item.td.setAttribute('aria-label',row.length+'個ライン '+row.count+'本'+(row.atLeast?'以上':'')+' '+item.value+' WIN'+(highestRoleCell(row.length,row.count,state)?' 最高役':'')+(current?' GET!':''));
+   const row=payRows.find(row=>row.length===item.row.length&&row.count===item.row.count)||item.row,count=state.lineCounts[row.length]||0,current=(row.atLeast?count>=row.count:count===row.count)&&(!isCurrent(state)||row.hundredths>0),reach=isCurrent(state)&&!current&&row.hundredths>0&&nextCounts.some(counts=>counts[row.length]>count&&(row.atLeast?counts[row.length]>=row.count:counts[row.length]===row.count));
+   item.tr.dataset.completed=String(count);item.td.classList.toggle('current',current);item.td.classList.toggle('reach',reach);item.td.setAttribute('aria-current',current?'true':'false');item.value=isCurrent(state)&&row.hundredths===0?'-':formatWin(Number(o.bet)||0,row.hundredths);item.td.setAttribute('aria-label',row.length+'個ライン '+row.count+'本'+(row.atLeast?'以上':'')+' '+item.value+' WIN'+(highestRoleCell(row.length,row.count,state)?' 最高役':'')+(current?' GET!':reach?' リーチ!':''));
   }
   canvas.setAttribute('aria-label',state.cells.length+'個のお団子。'+drawCount+'球、完成した串'+state.completedLines.length+'本、初期FREE'+state.initialFreeCells.length+'個、配置FREE'+state.manualFreeCells.length+'個'+(Number(state.rulesRevision)>=265?'。番号1から25は各1個。前半最長ライン'+(state.qualifiedEarlyLengths?.length?state.expansionLevel+'個':'なし')+'、FREE配置'+state.manualFreeCells.length+'/'+state.freeBudget+'個、ODDS'+(state.oddsMultiplier||1)+'倍。':Number(state.rulesRevision)>=264?'。番号1から25は各1個。前半ラインのFREEグレード'+(state.expansionLevel||0)+'、ODDS'+(state.oddsMultiplier||1)+'倍。':modern?'。番号1から25は各1個。拡張番号のHIT '+(state.expansionLevel||0)+'個、ODDS'+(state.oddsMultiplier||1)+'倍。':'、ODDS'+state.oddsMultiplier+'倍。'));
   const live=[state.phase,drawCount,state.freeBudget,state.freeRemaining,state.expansionLevel,state.expansionCenter,state.completedLines.length,state.oddsMultiplier].join('/');
@@ -390,9 +429,9 @@ function mount(panel){
   fit();
  }
  const refreshArt=()=>{root.dataset.artReady=String(allAssetsReady());root.dataset.artFailed=String(Object.values(art).some(asset=>asset.failed));fit();};
- const offArt=onAssetsChanged(refreshArt),observer=new ResizeObserver(fit);observer.observe(root);observer.observe(pan);document.addEventListener('visibilitychange',syncMotion);motionMedia.addEventListener?.('change',syncMotion);syncMotion();refreshArt();
- return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:262,modern:isModern(state),payout:payGeometry,highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);root.remove();}};
+ const offArt=onAssetsChanged(refreshArt),observer=new ResizeObserver(fit);observer.observe(root);observer.observe(pan);document.addEventListener('visibilitychange',syncMotion);motionMedia.addEventListener?.('change',syncMotion);syncMotion();refreshArt();document.fonts?.ready?.then(()=>{if(root.isConnected)fit();});
+ return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isCurrent(state)?268:262,modern:isModern(state),payout:payGeometry,highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);root.remove();}};
 }
-const hasAmbientMotion=(state,options={})=>!!state?.cells&&!options.reducedMotion&&!options.paused;
+const hasAmbientMotion=(state,options={})=>!!state?.cells&&!options.reducedMotion&&!options.paused&&(!isCurrent(state)||state.completedLines?.length>0||Number(state.lineCounts?.[2])>=2||options.reach?.length>0);
 window.DangoBingoView={mount,drawMini,paint,geometry,payoutLayout,drawLessonDango,assetsReady,describeAssets,onAssetsChanged,hasAmbientMotion,lineColors:LINE_COLORS};
 })();

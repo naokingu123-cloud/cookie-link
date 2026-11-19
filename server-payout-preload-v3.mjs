@@ -556,7 +556,7 @@ Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
   for(const p of Object.values(machine(machineId).players||{})){
    for(const row of sugarLedgerV254.publicReach(p,roundId))output.push({station:row.station,roundId,number:row.number,sum:row.sum,status:'reach'});
    const state=sugarLedgerV254.publicState(p).challenge;
-   if(state?.roundId===roundId&&state.phase==='complete'&&state.jpcQualified)output.push({station:state.station,roundId,number:state.draws[7],sum:state.sum,status:'acquired'});
+   if(state?.roundId===roundId&&state.jpcQualified)output.push({station:state.station,roundId,number:state.jpcTicket.number,sum:state.jpcTicket.sum,status:'acquired'});
   }return output;
  }
 });

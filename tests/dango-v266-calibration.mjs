@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import vm from 'node:vm';
 const root=new URL('..',import.meta.url),data=JSON.parse(await fs.readFile(new URL('docs/dango-v266-calibration.json',root),'utf8'));
 const ctx=vm.createContext({console});vm.runInContext(await fs.readFile(new URL('assets/dango-bingo-rules.js',root),'utf8'),ctx);
-const R=ctx.DangoBingoRules,D=BigInt(data.probabilityDenominator),N=data.profiles.map(p=>BigInt(p.optimalNumerator)),P=x=>JSON.parse(JSON.stringify(x));
+const R=ctx.DangoBingoRules.legacy266,D=BigInt(data.probabilityDenominator),N=data.profiles.map(p=>BigInt(p.optimalNumerator)),P=x=>JSON.parse(JSON.stringify(x));
 assert.equal(R.REVISION,266);assert.equal(data.revision,266);assert.equal(data.profiles.length,3);
 assert.deepEqual([2,3,4,5,6,7].map(l=>P(R.tiers[l].slice(1))),data.approvedPaytableHundredths);
 for(let i=0;i<3;i++){const p=data.profiles[i],m=R.molds[i];assert.equal(m.id,p.id);assert.equal(m.optimalNumerator,p.optimalNumerator);assert.deepEqual(P(m.initialFreeCells),p.initialFreeCells);

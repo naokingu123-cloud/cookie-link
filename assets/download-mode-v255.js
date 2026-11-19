@@ -124,6 +124,13 @@ async function acceptResponse(value,{cached=false}={}){
  // must wait for playback; publishing it here would reveal the future result
  // and make the presentation reject its older, recorded intermediate states.
  if(!started&&value.sugarState&&!pack&&!['preparing','ready'].includes(session?.status))window.SweetsSugarChallengeV254?.accept(value.sugarState);
+ // JP, card and multiplier are already fixed when this BET is accepted. Show
+ // only the zero-ball (or already viewed resume) record, never the final award.
+ if(!started&&!localComplete){
+  const preview=pack?.playback?.sugarStates?.[stableBall];
+  const betting=!pack&&session?.status==='preparing'&&value.sugarState?.challenge?.roundId===session.id&&value.sugarState.challenge.draws?.length===0?value.sugarState:null;
+  if(preview||betting)window.SweetsSugarChallengeV254?.accept(preview||betting);
+ }
  if(session?.status==='preparing'){message='サーバーで1ゲーム分を準備中です。1分ほどかかる場合があります。';schedulePoll();}
  if(session?.status==='failed'){error='ゲームの準備が中断しました。「準備を再試行」で同じゲームを再開します。';}
  if(pack&&assetsReady&&!started&&!localComplete)message=stableBall?'保存した '+stableBall+' 球目の続きから再生できます。':'ダウンロード完了。圏外でも1ゲームを再生できます。';

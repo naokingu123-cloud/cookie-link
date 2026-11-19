@@ -1,0 +1,3021 @@
+{
+  "schema": "sweets-link-sugar-challenge-probabilities-v268",
+  "rulesRevision": 268,
+  "reproduction": "node scripts/sugar-challenge-v268-probabilities.mjs",
+  "method": "Exact subset dynamic programming counts all ordered eight-number draws without replacement. For each subset, sum safe permutations from its one-number-smaller predecessors, excluding any lucky cumulative total. At ball 8, final low/high tails also qualify.",
+  "assumptions": [
+    "The shared physical draw is modeled as uniform without replacement; no draw is generated or changed by these rules.",
+    "JP, card and multiplier are fixed in BET time before any shared ball.",
+    "A lucky cumulative total on any ball immediately and permanently qualifies JPC; low/high tails qualify only after ball 8.",
+    "The previous final-sum-only approximately 10% target does not apply to v268. Card targets and selection weights were kept while adding the requested early qualification.",
+    "These probabilities are per started Sugar Challenge. Future JPC execution/value and the cost/frequency of earning five Sugars are excluded.",
+    "Cash fractions are before per-award integer flooring. Cash is zero whenever JPC qualifies."
+  ],
+  "drawModel": {
+    "population": 25,
+    "draws": 8,
+    "replacement": false,
+    "orderMatters": true,
+    "outcomeCount": 43609104000
+  },
+  "multipliers": [
+    {
+      "multiplier": 1,
+      "weightBps": 8000
+    },
+    {
+      "multiplier": 2,
+      "weightBps": 1500
+    },
+    {
+      "multiplier": 3,
+      "weightBps": 400
+    },
+    {
+      "multiplier": 5,
+      "weightBps": 90
+    },
+    {
+      "multiplier": 10,
+      "weightBps": 10
+    }
+  ],
+  "meanMultiplier": 1.275,
+  "cards": [
+    {
+      "id": "standard",
+      "weightBps": 9000,
+      "luckySums": [
+        77,
+        88,
+        120,
+        131
+      ],
+      "lowMax": 70,
+      "highMin": 138,
+      "outcomeCount": 43609104000,
+      "jpcOutcomes": 9107092848,
+      "jpcProbability": {
+        "numerator": "9107092848",
+        "denominator": "43609104000",
+        "value": 0.20883467011842297
+      },
+      "jpcPercent": 20.883467011842296,
+      "cashHundredthsNumerator": "132052251312",
+      "expectedCashFractionOfFinalJp": {
+        "numerator": "132052251312",
+        "denominator": "4360910400000",
+        "value": 0.03028089073143993
+      },
+      "rows": [
+        {
+          "sum": 36,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 37,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 38,
+          "count": 80640,
+          "jpcOutcomes": 80640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 39,
+          "count": 120960,
+          "jpcOutcomes": 120960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 40,
+          "count": 201600,
+          "jpcOutcomes": 201600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 41,
+          "count": 282240,
+          "jpcOutcomes": 282240,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 42,
+          "count": 443520,
+          "jpcOutcomes": 443520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 43,
+          "count": 604800,
+          "jpcOutcomes": 604800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 44,
+          "count": 887040,
+          "jpcOutcomes": 887040,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 45,
+          "count": 1169280,
+          "jpcOutcomes": 1169280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 46,
+          "count": 1612800,
+          "jpcOutcomes": 1612800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 47,
+          "count": 2096640,
+          "jpcOutcomes": 2096640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 48,
+          "count": 2822400,
+          "jpcOutcomes": 2822400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 49,
+          "count": 3588480,
+          "jpcOutcomes": 3588480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 50,
+          "count": 4677120,
+          "jpcOutcomes": 4677120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 51,
+          "count": 5886720,
+          "jpcOutcomes": 5886720,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 52,
+          "count": 7499520,
+          "jpcOutcomes": 7499520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 53,
+          "count": 9273600,
+          "jpcOutcomes": 9273600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 54,
+          "count": 11571840,
+          "jpcOutcomes": 11571840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 55,
+          "count": 14112000,
+          "jpcOutcomes": 14112000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 56,
+          "count": 17337600,
+          "jpcOutcomes": 17337600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 57,
+          "count": 20885760,
+          "jpcOutcomes": 20885760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 58,
+          "count": 25240320,
+          "jpcOutcomes": 25240320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 59,
+          "count": 30038400,
+          "jpcOutcomes": 30038400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 60,
+          "count": 35844480,
+          "jpcOutcomes": 35844480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 61,
+          "count": 42134400,
+          "jpcOutcomes": 42134400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 62,
+          "count": 49633920,
+          "jpcOutcomes": 49633920,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 63,
+          "count": 57778560,
+          "jpcOutcomes": 57778560,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 64,
+          "count": 67294080,
+          "jpcOutcomes": 67294080,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 65,
+          "count": 77535360,
+          "jpcOutcomes": 77535360,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 66,
+          "count": 89349120,
+          "jpcOutcomes": 89349120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 67,
+          "count": 101969280,
+          "jpcOutcomes": 101969280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 68,
+          "count": 116363520,
+          "jpcOutcomes": 116363520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 69,
+          "count": 131604480,
+          "jpcOutcomes": 131604480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 70,
+          "count": 148740480,
+          "jpcOutcomes": 148740480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 71,
+          "count": 166803840,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 166803840,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 72,
+          "count": 186883200,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 186883200,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 73,
+          "count": 207809280,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 207809280,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 74,
+          "count": 230832000,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 230832000,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 75,
+          "count": 254661120,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 254661120,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 76,
+          "count": 280586880,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 280586880,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 77,
+          "count": 307157760,
+          "jpcOutcomes": 307157760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 78,
+          "count": 335784960,
+          "jpcOutcomes": 24393600,
+          "cashOutcomes": 311391360,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 79,
+          "count": 364855680,
+          "jpcOutcomes": 24801840,
+          "cashOutcomes": 340053840,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 80,
+          "count": 395861760,
+          "jpcOutcomes": 28817280,
+          "cashOutcomes": 367044480,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 81,
+          "count": 427029120,
+          "jpcOutcomes": 29203920,
+          "cashOutcomes": 397825200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 82,
+          "count": 459889920,
+          "jpcOutcomes": 33156720,
+          "cashOutcomes": 426733200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 83,
+          "count": 492629760,
+          "jpcOutcomes": 34078320,
+          "cashOutcomes": 458551440,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 84,
+          "count": 526821120,
+          "jpcOutcomes": 38016000,
+          "cashOutcomes": 488805120,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 85,
+          "count": 560407680,
+          "jpcOutcomes": 38904480,
+          "cashOutcomes": 521503200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 86,
+          "count": 595123200,
+          "jpcOutcomes": 43351200,
+          "cashOutcomes": 551772000,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 87,
+          "count": 628830720,
+          "jpcOutcomes": 44273952,
+          "cashOutcomes": 584556768,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 88,
+          "count": 663264000,
+          "jpcOutcomes": 663264000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 89,
+          "count": 696165120,
+          "jpcOutcomes": 87560304,
+          "cashOutcomes": 608604816,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 90,
+          "count": 729388800,
+          "jpcOutcomes": 91901808,
+          "cashOutcomes": 637486992,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 91,
+          "count": 760596480,
+          "jpcOutcomes": 96839568,
+          "cashOutcomes": 663756912,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 92,
+          "count": 791723520,
+          "jpcOutcomes": 101727264,
+          "cashOutcomes": 689996256,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 93,
+          "count": 820270080,
+          "jpcOutcomes": 106616928,
+          "cashOutcomes": 713653152,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 94,
+          "count": 848292480,
+          "jpcOutcomes": 111826416,
+          "cashOutcomes": 736466064,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 95,
+          "count": 873331200,
+          "jpcOutcomes": 117125904,
+          "cashOutcomes": 756205296,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 96,
+          "count": 897442560,
+          "jpcOutcomes": 122388672,
+          "cashOutcomes": 775053888,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 97,
+          "count": 918086400,
+          "jpcOutcomes": 127905120,
+          "cashOutcomes": 790181280,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 98,
+          "count": 937480320,
+          "jpcOutcomes": 133670400,
+          "cashOutcomes": 803809920,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 99,
+          "count": 953084160,
+          "jpcOutcomes": 140750400,
+          "cashOutcomes": 812333760,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 100,
+          "count": 967155840,
+          "jpcOutcomes": 145250208,
+          "cashOutcomes": 821905632,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 101,
+          "count": 977114880,
+          "jpcOutcomes": 151165008,
+          "cashOutcomes": 825949872,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 102,
+          "count": 985340160,
+          "jpcOutcomes": 157363344,
+          "cashOutcomes": 827976816,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 103,
+          "count": 989331840,
+          "jpcOutcomes": 127785216,
+          "cashOutcomes": 861546624,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 104,
+          "count": 991509120,
+          "jpcOutcomes": 129844848,
+          "cashOutcomes": 861664272,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 105,
+          "count": 989331840,
+          "jpcOutcomes": 131451120,
+          "cashOutcomes": 857880720,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 106,
+          "count": 985340160,
+          "jpcOutcomes": 133352160,
+          "cashOutcomes": 851988000,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 107,
+          "count": 977114880,
+          "jpcOutcomes": 134870592,
+          "cashOutcomes": 842244288,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 108,
+          "count": 967155840,
+          "jpcOutcomes": 136386384,
+          "cashOutcomes": 830769456,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 109,
+          "count": 953084160,
+          "jpcOutcomes": 137651520,
+          "cashOutcomes": 815432640,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 110,
+          "count": 937480320,
+          "jpcOutcomes": 139014432,
+          "cashOutcomes": 798465888,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 111,
+          "count": 918086400,
+          "jpcOutcomes": 139947408,
+          "cashOutcomes": 778138992,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 112,
+          "count": 897442560,
+          "jpcOutcomes": 141275760,
+          "cashOutcomes": 756166800,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 113,
+          "count": 873331200,
+          "jpcOutcomes": 141979008,
+          "cashOutcomes": 731352192,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 114,
+          "count": 848292480,
+          "jpcOutcomes": 101915712,
+          "cashOutcomes": 746376768,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 115,
+          "count": 820270080,
+          "jpcOutcomes": 98877648,
+          "cashOutcomes": 721392432,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 116,
+          "count": 791723520,
+          "jpcOutcomes": 96281712,
+          "cashOutcomes": 695441808,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 117,
+          "count": 760596480,
+          "jpcOutcomes": 92643264,
+          "cashOutcomes": 667953216,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 118,
+          "count": 729388800,
+          "jpcOutcomes": 89720640,
+          "cashOutcomes": 639668160,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 119,
+          "count": 696165120,
+          "jpcOutcomes": 85851696,
+          "cashOutcomes": 610313424,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 120,
+          "count": 663264000,
+          "jpcOutcomes": 663264000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 121,
+          "count": 628830720,
+          "jpcOutcomes": 89267376,
+          "cashOutcomes": 539563344,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 122,
+          "count": 595123200,
+          "jpcOutcomes": 85537008,
+          "cashOutcomes": 509586192,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 123,
+          "count": 560407680,
+          "jpcOutcomes": 80659344,
+          "cashOutcomes": 479748336,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 124,
+          "count": 526821120,
+          "jpcOutcomes": 76594848,
+          "cashOutcomes": 450226272,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 125,
+          "count": 492629760,
+          "jpcOutcomes": 71338416,
+          "cashOutcomes": 421291344,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 126,
+          "count": 459889920,
+          "jpcOutcomes": 66782112,
+          "cashOutcomes": 393107808,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 127,
+          "count": 427029120,
+          "jpcOutcomes": 61240512,
+          "cashOutcomes": 365788608,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 128,
+          "count": 395861760,
+          "jpcOutcomes": 56540640,
+          "cashOutcomes": 339321120,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 129,
+          "count": 364855680,
+          "jpcOutcomes": 54236160,
+          "cashOutcomes": 310619520,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 130,
+          "count": 335784960,
+          "jpcOutcomes": 49609104,
+          "cashOutcomes": 286175856,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 131,
+          "count": 307157760,
+          "jpcOutcomes": 307157760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 132,
+          "count": 280586880,
+          "jpcOutcomes": 45393600,
+          "cashOutcomes": 235193280,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 133,
+          "count": 254661120,
+          "jpcOutcomes": 43288128,
+          "cashOutcomes": 211372992,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 134,
+          "count": 230832000,
+          "jpcOutcomes": 38872128,
+          "cashOutcomes": 191959872,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 135,
+          "count": 207809280,
+          "jpcOutcomes": 36681312,
+          "cashOutcomes": 171127968,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 136,
+          "count": 186883200,
+          "jpcOutcomes": 32336976,
+          "cashOutcomes": 154546224,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 137,
+          "count": 166803840,
+          "jpcOutcomes": 30410688,
+          "cashOutcomes": 136393152,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 138,
+          "count": 148740480,
+          "jpcOutcomes": 148740480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 139,
+          "count": 131604480,
+          "jpcOutcomes": 131604480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 140,
+          "count": 116363520,
+          "jpcOutcomes": 116363520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 141,
+          "count": 101969280,
+          "jpcOutcomes": 101969280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 142,
+          "count": 89349120,
+          "jpcOutcomes": 89349120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 143,
+          "count": 77535360,
+          "jpcOutcomes": 77535360,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 144,
+          "count": 67294080,
+          "jpcOutcomes": 67294080,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 145,
+          "count": 57778560,
+          "jpcOutcomes": 57778560,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 146,
+          "count": 49633920,
+          "jpcOutcomes": 49633920,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 147,
+          "count": 42134400,
+          "jpcOutcomes": 42134400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 148,
+          "count": 35844480,
+          "jpcOutcomes": 35844480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 149,
+          "count": 30038400,
+          "jpcOutcomes": 30038400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 150,
+          "count": 25240320,
+          "jpcOutcomes": 25240320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 151,
+          "count": 20885760,
+          "jpcOutcomes": 20885760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 152,
+          "count": 17337600,
+          "jpcOutcomes": 17337600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 153,
+          "count": 14112000,
+          "jpcOutcomes": 14112000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 154,
+          "count": 11571840,
+          "jpcOutcomes": 11571840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 155,
+          "count": 9273600,
+          "jpcOutcomes": 9273600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 156,
+          "count": 7499520,
+          "jpcOutcomes": 7499520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 157,
+          "count": 5886720,
+          "jpcOutcomes": 5886720,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 158,
+          "count": 4677120,
+          "jpcOutcomes": 4677120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 159,
+          "count": 3588480,
+          "jpcOutcomes": 3588480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 160,
+          "count": 2822400,
+          "jpcOutcomes": 2822400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 161,
+          "count": 2096640,
+          "jpcOutcomes": 2096640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 162,
+          "count": 1612800,
+          "jpcOutcomes": 1612800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 163,
+          "count": 1169280,
+          "jpcOutcomes": 1169280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 164,
+          "count": 887040,
+          "jpcOutcomes": 887040,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 165,
+          "count": 604800,
+          "jpcOutcomes": 604800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 166,
+          "count": 443520,
+          "jpcOutcomes": 443520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 167,
+          "count": 282240,
+          "jpcOutcomes": 282240,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 168,
+          "count": 201600,
+          "jpcOutcomes": 201600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 169,
+          "count": 120960,
+          "jpcOutcomes": 120960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 170,
+          "count": 80640,
+          "jpcOutcomes": 80640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 171,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 172,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        }
+      ]
+    },
+    {
+      "id": "lucky",
+      "weightBps": 500,
+      "luckySums": [
+        77,
+        88,
+        99,
+        109,
+        120,
+        131
+      ],
+      "lowMax": 70,
+      "highMin": 138,
+      "outcomeCount": 43609104000,
+      "jpcOutcomes": 12407934888,
+      "jpcProbability": {
+        "numerator": "12407934888",
+        "denominator": "43609104000",
+        "value": 0.2845262513992491
+      },
+      "jpcPercent": 28.45262513992491,
+      "cashHundredthsNumerator": "123357657720",
+      "expectedCashFractionOfFinalJp": {
+        "numerator": "123357657720",
+        "denominator": "4360910400000",
+        "value": 0.028287134200234886
+      },
+      "rows": [
+        {
+          "sum": 36,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 37,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 38,
+          "count": 80640,
+          "jpcOutcomes": 80640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 39,
+          "count": 120960,
+          "jpcOutcomes": 120960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 40,
+          "count": 201600,
+          "jpcOutcomes": 201600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 41,
+          "count": 282240,
+          "jpcOutcomes": 282240,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 42,
+          "count": 443520,
+          "jpcOutcomes": 443520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 43,
+          "count": 604800,
+          "jpcOutcomes": 604800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 44,
+          "count": 887040,
+          "jpcOutcomes": 887040,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 45,
+          "count": 1169280,
+          "jpcOutcomes": 1169280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 46,
+          "count": 1612800,
+          "jpcOutcomes": 1612800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 47,
+          "count": 2096640,
+          "jpcOutcomes": 2096640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 48,
+          "count": 2822400,
+          "jpcOutcomes": 2822400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 49,
+          "count": 3588480,
+          "jpcOutcomes": 3588480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 50,
+          "count": 4677120,
+          "jpcOutcomes": 4677120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 51,
+          "count": 5886720,
+          "jpcOutcomes": 5886720,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 52,
+          "count": 7499520,
+          "jpcOutcomes": 7499520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 53,
+          "count": 9273600,
+          "jpcOutcomes": 9273600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 54,
+          "count": 11571840,
+          "jpcOutcomes": 11571840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 55,
+          "count": 14112000,
+          "jpcOutcomes": 14112000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 56,
+          "count": 17337600,
+          "jpcOutcomes": 17337600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 57,
+          "count": 20885760,
+          "jpcOutcomes": 20885760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 58,
+          "count": 25240320,
+          "jpcOutcomes": 25240320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 59,
+          "count": 30038400,
+          "jpcOutcomes": 30038400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 60,
+          "count": 35844480,
+          "jpcOutcomes": 35844480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 61,
+          "count": 42134400,
+          "jpcOutcomes": 42134400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 62,
+          "count": 49633920,
+          "jpcOutcomes": 49633920,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 63,
+          "count": 57778560,
+          "jpcOutcomes": 57778560,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 64,
+          "count": 67294080,
+          "jpcOutcomes": 67294080,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 65,
+          "count": 77535360,
+          "jpcOutcomes": 77535360,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 66,
+          "count": 89349120,
+          "jpcOutcomes": 89349120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 67,
+          "count": 101969280,
+          "jpcOutcomes": 101969280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 68,
+          "count": 116363520,
+          "jpcOutcomes": 116363520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 69,
+          "count": 131604480,
+          "jpcOutcomes": 131604480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 70,
+          "count": 148740480,
+          "jpcOutcomes": 148740480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 71,
+          "count": 166803840,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 166803840,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 72,
+          "count": 186883200,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 186883200,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 73,
+          "count": 207809280,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 207809280,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 74,
+          "count": 230832000,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 230832000,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 75,
+          "count": 254661120,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 254661120,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 76,
+          "count": 280586880,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 280586880,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 77,
+          "count": 307157760,
+          "jpcOutcomes": 307157760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 78,
+          "count": 335784960,
+          "jpcOutcomes": 24393600,
+          "cashOutcomes": 311391360,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 79,
+          "count": 364855680,
+          "jpcOutcomes": 24801840,
+          "cashOutcomes": 340053840,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 80,
+          "count": 395861760,
+          "jpcOutcomes": 28817280,
+          "cashOutcomes": 367044480,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 81,
+          "count": 427029120,
+          "jpcOutcomes": 29203920,
+          "cashOutcomes": 397825200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 82,
+          "count": 459889920,
+          "jpcOutcomes": 33156720,
+          "cashOutcomes": 426733200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 83,
+          "count": 492629760,
+          "jpcOutcomes": 34078320,
+          "cashOutcomes": 458551440,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 84,
+          "count": 526821120,
+          "jpcOutcomes": 38016000,
+          "cashOutcomes": 488805120,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 85,
+          "count": 560407680,
+          "jpcOutcomes": 38904480,
+          "cashOutcomes": 521503200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 86,
+          "count": 595123200,
+          "jpcOutcomes": 43351200,
+          "cashOutcomes": 551772000,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 87,
+          "count": 628830720,
+          "jpcOutcomes": 44273952,
+          "cashOutcomes": 584556768,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 88,
+          "count": 663264000,
+          "jpcOutcomes": 663264000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 89,
+          "count": 696165120,
+          "jpcOutcomes": 87560304,
+          "cashOutcomes": 608604816,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 90,
+          "count": 729388800,
+          "jpcOutcomes": 91901808,
+          "cashOutcomes": 637486992,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 91,
+          "count": 760596480,
+          "jpcOutcomes": 96839568,
+          "cashOutcomes": 663756912,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 92,
+          "count": 791723520,
+          "jpcOutcomes": 101727264,
+          "cashOutcomes": 689996256,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 93,
+          "count": 820270080,
+          "jpcOutcomes": 106616928,
+          "cashOutcomes": 713653152,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 94,
+          "count": 848292480,
+          "jpcOutcomes": 111826416,
+          "cashOutcomes": 736466064,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 95,
+          "count": 873331200,
+          "jpcOutcomes": 117125904,
+          "cashOutcomes": 756205296,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 96,
+          "count": 897442560,
+          "jpcOutcomes": 122388672,
+          "cashOutcomes": 775053888,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 97,
+          "count": 918086400,
+          "jpcOutcomes": 127905120,
+          "cashOutcomes": 790181280,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 98,
+          "count": 937480320,
+          "jpcOutcomes": 133670400,
+          "cashOutcomes": 803809920,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 99,
+          "count": 953084160,
+          "jpcOutcomes": 953084160,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 100,
+          "count": 967155840,
+          "jpcOutcomes": 181303392,
+          "cashOutcomes": 785852448,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 101,
+          "count": 977114880,
+          "jpcOutcomes": 186690096,
+          "cashOutcomes": 790424784,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 102,
+          "count": 985340160,
+          "jpcOutcomes": 194547648,
+          "cashOutcomes": 790792512,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 103,
+          "count": 989331840,
+          "jpcOutcomes": 164476704,
+          "cashOutcomes": 824855136,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 104,
+          "count": 991509120,
+          "jpcOutcomes": 168173040,
+          "cashOutcomes": 823336080,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 105,
+          "count": 989331840,
+          "jpcOutcomes": 169356912,
+          "cashOutcomes": 819974928,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 106,
+          "count": 985340160,
+          "jpcOutcomes": 172850928,
+          "cashOutcomes": 812489232,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 107,
+          "count": 977114880,
+          "jpcOutcomes": 173963232,
+          "cashOutcomes": 803151648,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 108,
+          "count": 967155840,
+          "jpcOutcomes": 177062832,
+          "cashOutcomes": 790093008,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 109,
+          "count": 953084160,
+          "jpcOutcomes": 953084160,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 110,
+          "count": 937480320,
+          "jpcOutcomes": 206540520,
+          "cashOutcomes": 730939800,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 111,
+          "count": 918086400,
+          "jpcOutcomes": 205427760,
+          "cashOutcomes": 712658640,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 112,
+          "count": 897442560,
+          "jpcOutcomes": 208657008,
+          "cashOutcomes": 688785552,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 113,
+          "count": 873331200,
+          "jpcOutcomes": 208542600,
+          "cashOutcomes": 664788600,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 114,
+          "count": 848292480,
+          "jpcOutcomes": 170291784,
+          "cashOutcomes": 678000696,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 115,
+          "count": 820270080,
+          "jpcOutcomes": 166459008,
+          "cashOutcomes": 653811072,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 116,
+          "count": 791723520,
+          "jpcOutcomes": 165732312,
+          "cashOutcomes": 625991208,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 117,
+          "count": 760596480,
+          "jpcOutcomes": 161279592,
+          "cashOutcomes": 599316888,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 118,
+          "count": 729388800,
+          "jpcOutcomes": 159974928,
+          "cashOutcomes": 569413872,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 119,
+          "count": 696165120,
+          "jpcOutcomes": 156033384,
+          "cashOutcomes": 540131736,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 120,
+          "count": 663264000,
+          "jpcOutcomes": 663264000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 121,
+          "count": 628830720,
+          "jpcOutcomes": 159701160,
+          "cashOutcomes": 469129560,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 122,
+          "count": 595123200,
+          "jpcOutcomes": 155779464,
+          "cashOutcomes": 439343736,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 123,
+          "count": 560407680,
+          "jpcOutcomes": 149985000,
+          "cashOutcomes": 410422680,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 124,
+          "count": 526821120,
+          "jpcOutcomes": 147238104,
+          "cashOutcomes": 379583016,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 125,
+          "count": 492629760,
+          "jpcOutcomes": 111961920,
+          "cashOutcomes": 380667840,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 126,
+          "count": 459889920,
+          "jpcOutcomes": 107555280,
+          "cashOutcomes": 352334640,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 127,
+          "count": 427029120,
+          "jpcOutcomes": 99903888,
+          "cashOutcomes": 327125232,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 128,
+          "count": 395861760,
+          "jpcOutcomes": 95140080,
+          "cashOutcomes": 300721680,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 129,
+          "count": 364855680,
+          "jpcOutcomes": 90729480,
+          "cashOutcomes": 274126200,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 130,
+          "count": 335784960,
+          "jpcOutcomes": 87064320,
+          "cashOutcomes": 248720640,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 131,
+          "count": 307157760,
+          "jpcOutcomes": 307157760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 132,
+          "count": 280586880,
+          "jpcOutcomes": 79081320,
+          "cashOutcomes": 201505560,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 133,
+          "count": 254661120,
+          "jpcOutcomes": 74835600,
+          "cashOutcomes": 179825520,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 134,
+          "count": 230832000,
+          "jpcOutcomes": 70054920,
+          "cashOutcomes": 160777080,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 135,
+          "count": 207809280,
+          "jpcOutcomes": 51224688,
+          "cashOutcomes": 156584592,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 136,
+          "count": 186883200,
+          "jpcOutcomes": 46522968,
+          "cashOutcomes": 140360232,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 137,
+          "count": 166803840,
+          "jpcOutcomes": 42698280,
+          "cashOutcomes": 124105560,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 138,
+          "count": 148740480,
+          "jpcOutcomes": 148740480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 139,
+          "count": 131604480,
+          "jpcOutcomes": 131604480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 140,
+          "count": 116363520,
+          "jpcOutcomes": 116363520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 141,
+          "count": 101969280,
+          "jpcOutcomes": 101969280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 142,
+          "count": 89349120,
+          "jpcOutcomes": 89349120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 143,
+          "count": 77535360,
+          "jpcOutcomes": 77535360,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 144,
+          "count": 67294080,
+          "jpcOutcomes": 67294080,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 145,
+          "count": 57778560,
+          "jpcOutcomes": 57778560,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 146,
+          "count": 49633920,
+          "jpcOutcomes": 49633920,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 147,
+          "count": 42134400,
+          "jpcOutcomes": 42134400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 148,
+          "count": 35844480,
+          "jpcOutcomes": 35844480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 149,
+          "count": 30038400,
+          "jpcOutcomes": 30038400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 150,
+          "count": 25240320,
+          "jpcOutcomes": 25240320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 151,
+          "count": 20885760,
+          "jpcOutcomes": 20885760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 152,
+          "count": 17337600,
+          "jpcOutcomes": 17337600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 153,
+          "count": 14112000,
+          "jpcOutcomes": 14112000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 154,
+          "count": 11571840,
+          "jpcOutcomes": 11571840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 155,
+          "count": 9273600,
+          "jpcOutcomes": 9273600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 156,
+          "count": 7499520,
+          "jpcOutcomes": 7499520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 157,
+          "count": 5886720,
+          "jpcOutcomes": 5886720,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 158,
+          "count": 4677120,
+          "jpcOutcomes": 4677120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 159,
+          "count": 3588480,
+          "jpcOutcomes": 3588480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 160,
+          "count": 2822400,
+          "jpcOutcomes": 2822400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 161,
+          "count": 2096640,
+          "jpcOutcomes": 2096640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 162,
+          "count": 1612800,
+          "jpcOutcomes": 1612800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 163,
+          "count": 1169280,
+          "jpcOutcomes": 1169280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 164,
+          "count": 887040,
+          "jpcOutcomes": 887040,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 165,
+          "count": 604800,
+          "jpcOutcomes": 604800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 166,
+          "count": 443520,
+          "jpcOutcomes": 443520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 167,
+          "count": 282240,
+          "jpcOutcomes": 282240,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 168,
+          "count": 201600,
+          "jpcOutcomes": 201600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 169,
+          "count": 120960,
+          "jpcOutcomes": 120960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 170,
+          "count": 80640,
+          "jpcOutcomes": 80640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 171,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 172,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        }
+      ]
+    },
+    {
+      "id": "wide",
+      "weightBps": 500,
+      "luckySums": [
+        88,
+        120
+      ],
+      "lowMax": 78,
+      "highMin": 130,
+      "outcomeCount": 43609104000,
+      "jpcOutcomes": 9621106416,
+      "jpcProbability": {
+        "numerator": "9621106416",
+        "denominator": "43609104000",
+        "value": 0.2206215109578954
+      },
+      "jpcPercent": 22.062151095789538,
+      "cashHundredthsNumerator": "150236019888",
+      "expectedCashFractionOfFinalJp": {
+        "numerator": "150236019888",
+        "denominator": "4360910400000",
+        "value": 0.034450609186558845
+      },
+      "rows": [
+        {
+          "sum": 36,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 37,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 38,
+          "count": 80640,
+          "jpcOutcomes": 80640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 39,
+          "count": 120960,
+          "jpcOutcomes": 120960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 40,
+          "count": 201600,
+          "jpcOutcomes": 201600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 41,
+          "count": 282240,
+          "jpcOutcomes": 282240,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 42,
+          "count": 443520,
+          "jpcOutcomes": 443520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 43,
+          "count": 604800,
+          "jpcOutcomes": 604800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 44,
+          "count": 887040,
+          "jpcOutcomes": 887040,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 45,
+          "count": 1169280,
+          "jpcOutcomes": 1169280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 46,
+          "count": 1612800,
+          "jpcOutcomes": 1612800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 47,
+          "count": 2096640,
+          "jpcOutcomes": 2096640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 48,
+          "count": 2822400,
+          "jpcOutcomes": 2822400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 49,
+          "count": 3588480,
+          "jpcOutcomes": 3588480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 50,
+          "count": 4677120,
+          "jpcOutcomes": 4677120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 51,
+          "count": 5886720,
+          "jpcOutcomes": 5886720,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 52,
+          "count": 7499520,
+          "jpcOutcomes": 7499520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 53,
+          "count": 9273600,
+          "jpcOutcomes": 9273600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 54,
+          "count": 11571840,
+          "jpcOutcomes": 11571840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 55,
+          "count": 14112000,
+          "jpcOutcomes": 14112000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 56,
+          "count": 17337600,
+          "jpcOutcomes": 17337600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 57,
+          "count": 20885760,
+          "jpcOutcomes": 20885760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 58,
+          "count": 25240320,
+          "jpcOutcomes": 25240320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 59,
+          "count": 30038400,
+          "jpcOutcomes": 30038400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 60,
+          "count": 35844480,
+          "jpcOutcomes": 35844480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 61,
+          "count": 42134400,
+          "jpcOutcomes": 42134400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 62,
+          "count": 49633920,
+          "jpcOutcomes": 49633920,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 63,
+          "count": 57778560,
+          "jpcOutcomes": 57778560,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 64,
+          "count": 67294080,
+          "jpcOutcomes": 67294080,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 65,
+          "count": 77535360,
+          "jpcOutcomes": 77535360,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 66,
+          "count": 89349120,
+          "jpcOutcomes": 89349120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 67,
+          "count": 101969280,
+          "jpcOutcomes": 101969280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 68,
+          "count": 116363520,
+          "jpcOutcomes": 116363520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 69,
+          "count": 131604480,
+          "jpcOutcomes": 131604480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 70,
+          "count": 148740480,
+          "jpcOutcomes": 148740480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 71,
+          "count": 166803840,
+          "jpcOutcomes": 166803840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 72,
+          "count": 186883200,
+          "jpcOutcomes": 186883200,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 73,
+          "count": 207809280,
+          "jpcOutcomes": 207809280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 74,
+          "count": 230832000,
+          "jpcOutcomes": 230832000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 75,
+          "count": 254661120,
+          "jpcOutcomes": 254661120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 76,
+          "count": 280586880,
+          "jpcOutcomes": 280586880,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 77,
+          "count": 307157760,
+          "jpcOutcomes": 307157760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 78,
+          "count": 335784960,
+          "jpcOutcomes": 335784960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 79,
+          "count": 364855680,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 364855680,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 80,
+          "count": 395861760,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 395861760,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 81,
+          "count": 427029120,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 427029120,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 82,
+          "count": 459889920,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 459889920,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 83,
+          "count": 492629760,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 492629760,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 84,
+          "count": 526821120,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 526821120,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 85,
+          "count": 560407680,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 560407680,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 86,
+          "count": 595123200,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 595123200,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 87,
+          "count": 628830720,
+          "jpcOutcomes": 0,
+          "cashOutcomes": 628830720,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 88,
+          "count": 663264000,
+          "jpcOutcomes": 663264000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 89,
+          "count": 696165120,
+          "jpcOutcomes": 39901680,
+          "cashOutcomes": 656263440,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 90,
+          "count": 729388800,
+          "jpcOutcomes": 39785760,
+          "cashOutcomes": 689603040,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 91,
+          "count": 760596480,
+          "jpcOutcomes": 43460640,
+          "cashOutcomes": 717135840,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 92,
+          "count": 791723520,
+          "jpcOutcomes": 43367040,
+          "cashOutcomes": 748356480,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 93,
+          "count": 820270080,
+          "jpcOutcomes": 46953360,
+          "cashOutcomes": 773316720,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 94,
+          "count": 848292480,
+          "jpcOutcomes": 47172240,
+          "cashOutcomes": 801120240,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 95,
+          "count": 873331200,
+          "jpcOutcomes": 50659200,
+          "cashOutcomes": 822672000,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 96,
+          "count": 897442560,
+          "jpcOutcomes": 50881680,
+          "cashOutcomes": 846560880,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 97,
+          "count": 918086400,
+          "jpcOutcomes": 54572400,
+          "cashOutcomes": 863514000,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 98,
+          "count": 937480320,
+          "jpcOutcomes": 54793584,
+          "cashOutcomes": 882686736,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 99,
+          "count": 953084160,
+          "jpcOutcomes": 58388544,
+          "cashOutcomes": 894695616,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 100,
+          "count": 967155840,
+          "jpcOutcomes": 58870368,
+          "cashOutcomes": 908285472,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 101,
+          "count": 977114880,
+          "jpcOutcomes": 62389872,
+          "cashOutcomes": 914725008,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 102,
+          "count": 985340160,
+          "jpcOutcomes": 62899920,
+          "cashOutcomes": 922440240,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 103,
+          "count": 989331840,
+          "jpcOutcomes": 66595824,
+          "cashOutcomes": 922736016,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 104,
+          "count": 991509120,
+          "jpcOutcomes": 67059216,
+          "cashOutcomes": 924449904,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 105,
+          "count": 989331840,
+          "jpcOutcomes": 70684704,
+          "cashOutcomes": 918647136,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 106,
+          "count": 985340160,
+          "jpcOutcomes": 71414640,
+          "cashOutcomes": 913925520,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 107,
+          "count": 977114880,
+          "jpcOutcomes": 74949552,
+          "cashOutcomes": 902165328,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 108,
+          "count": 967155840,
+          "jpcOutcomes": 75682512,
+          "cashOutcomes": 891473328,
+          "payoutHundredths": 1
+        },
+        {
+          "sum": 109,
+          "count": 953084160,
+          "jpcOutcomes": 79415568,
+          "cashOutcomes": 873668592,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 110,
+          "count": 937480320,
+          "jpcOutcomes": 80138160,
+          "cashOutcomes": 857342160,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 111,
+          "count": 918086400,
+          "jpcOutcomes": 83814624,
+          "cashOutcomes": 834271776,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 112,
+          "count": 897442560,
+          "jpcOutcomes": 84801888,
+          "cashOutcomes": 812640672,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 113,
+          "count": 873331200,
+          "jpcOutcomes": 88435296,
+          "cashOutcomes": 784895904,
+          "payoutHundredths": 2
+        },
+        {
+          "sum": 114,
+          "count": 848292480,
+          "jpcOutcomes": 45863424,
+          "cashOutcomes": 802429056,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 115,
+          "count": 820270080,
+          "jpcOutcomes": 46026720,
+          "cashOutcomes": 774243360,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 116,
+          "count": 791723520,
+          "jpcOutcomes": 43365168,
+          "cashOutcomes": 748358352,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 117,
+          "count": 760596480,
+          "jpcOutcomes": 43347168,
+          "cashOutcomes": 717249312,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 118,
+          "count": 729388800,
+          "jpcOutcomes": 40771872,
+          "cashOutcomes": 688616928,
+          "payoutHundredths": 3
+        },
+        {
+          "sum": 119,
+          "count": 696165120,
+          "jpcOutcomes": 40575600,
+          "cashOutcomes": 655589520,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 120,
+          "count": 663264000,
+          "jpcOutcomes": 663264000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 121,
+          "count": 628830720,
+          "jpcOutcomes": 49624752,
+          "cashOutcomes": 579205968,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 122,
+          "count": 595123200,
+          "jpcOutcomes": 46654464,
+          "cashOutcomes": 548468736,
+          "payoutHundredths": 5
+        },
+        {
+          "sum": 123,
+          "count": 560407680,
+          "jpcOutcomes": 46284816,
+          "cashOutcomes": 514122864,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 124,
+          "count": 526821120,
+          "jpcOutcomes": 43358064,
+          "cashOutcomes": 483463056,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 125,
+          "count": 492629760,
+          "jpcOutcomes": 42801408,
+          "cashOutcomes": 449828352,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 126,
+          "count": 459889920,
+          "jpcOutcomes": 39729840,
+          "cashOutcomes": 420160080,
+          "payoutHundredths": 10
+        },
+        {
+          "sum": 127,
+          "count": 427029120,
+          "jpcOutcomes": 39204096,
+          "cashOutcomes": 387825024,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 128,
+          "count": 395861760,
+          "jpcOutcomes": 36026208,
+          "cashOutcomes": 359835552,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 129,
+          "count": 364855680,
+          "jpcOutcomes": 35295264,
+          "cashOutcomes": 329560416,
+          "payoutHundredths": 20
+        },
+        {
+          "sum": 130,
+          "count": 335784960,
+          "jpcOutcomes": 335784960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 131,
+          "count": 307157760,
+          "jpcOutcomes": 307157760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 132,
+          "count": 280586880,
+          "jpcOutcomes": 280586880,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 133,
+          "count": 254661120,
+          "jpcOutcomes": 254661120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 134,
+          "count": 230832000,
+          "jpcOutcomes": 230832000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 135,
+          "count": 207809280,
+          "jpcOutcomes": 207809280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 136,
+          "count": 186883200,
+          "jpcOutcomes": 186883200,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 137,
+          "count": 166803840,
+          "jpcOutcomes": 166803840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 138,
+          "count": 148740480,
+          "jpcOutcomes": 148740480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 139,
+          "count": 131604480,
+          "jpcOutcomes": 131604480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 140,
+          "count": 116363520,
+          "jpcOutcomes": 116363520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 141,
+          "count": 101969280,
+          "jpcOutcomes": 101969280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 142,
+          "count": 89349120,
+          "jpcOutcomes": 89349120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 143,
+          "count": 77535360,
+          "jpcOutcomes": 77535360,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 144,
+          "count": 67294080,
+          "jpcOutcomes": 67294080,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 145,
+          "count": 57778560,
+          "jpcOutcomes": 57778560,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 146,
+          "count": 49633920,
+          "jpcOutcomes": 49633920,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 147,
+          "count": 42134400,
+          "jpcOutcomes": 42134400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 148,
+          "count": 35844480,
+          "jpcOutcomes": 35844480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 149,
+          "count": 30038400,
+          "jpcOutcomes": 30038400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 150,
+          "count": 25240320,
+          "jpcOutcomes": 25240320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 151,
+          "count": 20885760,
+          "jpcOutcomes": 20885760,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 152,
+          "count": 17337600,
+          "jpcOutcomes": 17337600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 153,
+          "count": 14112000,
+          "jpcOutcomes": 14112000,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 154,
+          "count": 11571840,
+          "jpcOutcomes": 11571840,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 155,
+          "count": 9273600,
+          "jpcOutcomes": 9273600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 156,
+          "count": 7499520,
+          "jpcOutcomes": 7499520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 157,
+          "count": 5886720,
+          "jpcOutcomes": 5886720,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 158,
+          "count": 4677120,
+          "jpcOutcomes": 4677120,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 159,
+          "count": 3588480,
+          "jpcOutcomes": 3588480,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 160,
+          "count": 2822400,
+          "jpcOutcomes": 2822400,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 161,
+          "count": 2096640,
+          "jpcOutcomes": 2096640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 162,
+          "count": 1612800,
+          "jpcOutcomes": 1612800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 163,
+          "count": 1169280,
+          "jpcOutcomes": 1169280,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 164,
+          "count": 887040,
+          "jpcOutcomes": 887040,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 165,
+          "count": 604800,
+          "jpcOutcomes": 604800,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 166,
+          "count": 443520,
+          "jpcOutcomes": 443520,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 167,
+          "count": 282240,
+          "jpcOutcomes": 282240,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 168,
+          "count": 201600,
+          "jpcOutcomes": 201600,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 169,
+          "count": 120960,
+          "jpcOutcomes": 120960,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 170,
+          "count": 80640,
+          "jpcOutcomes": 80640,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 171,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        },
+        {
+          "sum": 172,
+          "count": 40320,
+          "jpcOutcomes": 40320,
+          "cashOutcomes": 0,
+          "payoutHundredths": 0
+        }
+      ]
+    }
+  ],
+  "mixture": {
+    "jpcProbability": {
+      "numerator": "92978356284000",
+      "denominator": "436091040000000",
+      "value": 0.21320859122443792
+    },
+    "jpcPercent": 21.32085912244379,
+    "expectedCashFractionOfFinalJp": {
+      "numerator": "1325267100612000",
+      "denominator": "43609104000000000",
+      "value": 0.030389688827635625
+    },
+    "jpcFutureValueIncluded": false
+  }
+}

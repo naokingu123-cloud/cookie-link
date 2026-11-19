@@ -16,7 +16,10 @@ const row=(station,number,status='reach')=>({station,number,status,roundId:'live
 ui.accept({roundId:'live',serverTime:100,sugarReachesV254:[row(1,12),row(2,12),row(3,15),row(4,18),row(5,22),row(6,25),row(0,16),row(7,17),row(1,0),row(1,26),{...row(1,8),roundId:'old'}]});
 assert.equal(ui.colorFor(12,0).station,1);assert.equal(ui.colorFor(12,950).station,2);assert.equal(ui.colorFor(15,0).station,3);assert.equal(ui.describe().rows.length,6);
 for(const [station,number,time] of [[1,12,0],[2,12,950],[3,15,0],[4,18,0],[5,22,0],[6,25,0]])assert.equal(ui.colorFor(number,time).color,ui.describe().colors[station-1]);
-const seventh=client.round.balls.pop();assert.equal(ui.colorFor(12,0),null,'reach starts at exactly seven server balls');client.round.balls.push(seventh);
+const seventh=client.round.balls.pop();assert.equal(ui.colorFor(12,0)?.status,'reach','authoritative lucky reaches are visible before ball seven');client.round.balls.push(seventh);
+assert.equal(ui.spectrumPeriodMs,720);
+assert.match(panels[0].material.fragmentShader,/spectrumPhase=sugarTimeV254\/0\.72/);
+assert.match(panels[0].material.fragmentShader,/sugarFrameV254\*4\.2,outerFrame/);
 for(const p of panels)p.onBeforeRender();
 assert.equal(panels[11].material.uniforms.sugarModeV254.value,1);assert.equal(panels[14].material.uniforms.sugarModeV254.value,1);assert.equal(panels[0].material.uniforms.sugarModeV254.value,0);assert.ok(panels.every(p=>p.nativeCalls===1));
 const nativeShader=panels[0].material.fragmentShader;ui.pulse();assert.equal(panels[0].material.fragmentShader,nativeShader);
@@ -29,4 +32,4 @@ ui.accept({roundId:'next',serverTime:300,sugarReachesV254:[]});
 ui.accept({roundId:'live',serverTime:400,sugarReachesV254:[row(1,12,'acquired')]});
 assert.equal(ui.describe().roundId,'next');assert.equal(ui.describe().rows.length,0);assert.equal(ui.colorFor(12),null,'a late old-round snapshot cannot restore the prior award');
 assert.deepEqual(driver.physics.hits,[],'presentation never enters a physical ball');
-console.log('SUGAR_ROULETTE_V254_PASS: 25 production panel shaders, six seat colors, overlap cycling, invalid/stale rejection, native hooks retained, exact seven-ball reach, confirmed-only rainbow and next-round clear');
+console.log('SUGAR_ROULETTE_V254_PASS: 25 production panel shaders, six seat colors, overlap cycling, invalid/stale rejection, native hooks retained, early lucky reaches, station outer edge plus720ms spectrum, confirmed JPC and next-round clear');
