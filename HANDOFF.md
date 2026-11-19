@@ -10,7 +10,13 @@
 - 一時停止/非表示/メニューでは録画時計を止める。球間の再生位置も保存する。サーバーだけが停止しnavigator.onLineがtrueのままでも20秒ごとに未同期位置/完了を再試行する。未完了のcached packageはendpoint discoveryより先に検証し、元server/identityに固定する。次のラウンド取得には接続と前ラウンドの完了ACKが必要。
 - 名前・写真・アバターをサーバーに保存し、両版で利用する。Downloadの成績と全10ゲームの継続状態もサーバー保存。Streamingの任意client checkpointをtrusted Download stateへ移さない。Six Dropのcarryは現行server値を優先する。
 - `start-download-server.cmd` はDownload計算workerの準備を確認してからREADYを表示する。ルーレット用browser windowやmonitorは自動で開かない。monitorのDownload欄はプロフィール、wallet、準備/再生状態、保存球数/時刻、累計・ゲーム別成績を表示し、physical host/旧精算iframeを起動しない。従来のCMDはStreamingが標準。
-- Windows側の全ソース更新はPages公開とは別。`.runtime`・`.tools`・`data`を保持する。通常の保存用browserが保持されていれば、サーバー再起動や再読込でも同じ録画を再取得できる。端末の未同期保存を消した場合はサーバーに最後に届いた位置へ戻る。
+- Windows側の全ソース更新はPages公開とは別。`.runtime`・`.tools`・`data`を保持する。同じブラウザーの保存データを保持していれば、サーバー再起動や再読込でも同じ録画を再取得できる。端末の未同期保存を消した場合はサーバーに最後に届いた位置へ戻る。
+
+
+- 実装コード `12d9aba8e85b6615b18b67b590ea5e060a520a0f` のDownload最終検証run `44436897226` はLinux実ブラウザーとWindows PowerShell 5.1起動契約の両方が成功。実サーバー認証/所有権/二重精算/再起動、実Cannon録画、10ゲームのheadless計算、旧URL版固定、SW root/subpath/media range、cached identity復元を確認。実ブラウザーは64/64 Cookie表示、オンライン表示のままサーバー断から自動ACK、完全オフラインreloadから8球完走、再接続完了ACK、同session/同creditを確認。JavaScript例外0、Streaming WS0、端末物理抽選0。詳細は `docs/download-v255-final-qa.json`。
+- 完了パネルは結果表示時に折りたたみ、10ゲームのWIN/TOTALを隠さない。見出しは同期待ち/完了を表示し、＋で操作を開ける。Download管理は全幅詳細表と有限高のP/O/グラフ/players欄をスクロールでき、物理hostや旧精算iframeを読まない。390×844/844×390/1366×900の選択/準備画面、390px完了と1366px管理を目視確認した。
+- 同コードはmainに保存しPages配信済み。公開検証run `44438255590` が成功し、86ファイルのSHA-256一致、3画面サイズの選択/Download入口/既存Streaming初期化、画像decodeと例外0を確認。公開API/WS/非GETをテスト内で遮断し、公開サーバーにBET/抽選/精算を送っていない。記録は `docs/download-v255-public-qa.json`。後続の保存は旧テストの互換修正と文書のみで、公開ゲームファイルは同一。
+- Windows側は最新mainの全ソースを別途反映し、`.runtime`・`.tools`・`data`を保持して `start-download-server.cmd` を実行する。従来CMDはStreaming用。ユーザーのWindows実機/iPhone実機/音の聴感は未検証。オフライン保存にはHTTPSまたはlocalhost、同じブラウザーの保存データが必要。
 
 
 ## 前回更新: 2026-11-19 — v254 シュガーチャレンジ・ダンゴ最高役

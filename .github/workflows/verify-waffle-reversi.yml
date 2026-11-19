@@ -5,8 +5,11 @@ on:
     paths:
       - 'assets/bingo-stick*'
       - 'assets/waffle-reversi-*'
+      - 'assets/waffle-pow-v159.js'
       - '.github/tests/bingo-stick.cjs'
-      - '.github/tests/waffle_reach_browser.py'
+      - 'tests/waffle-server-v255.mjs'
+      - 'tests/ui-v250-fixture.mjs'
+      - 'tests/payout-v232-lategames.mjs'
       - '.github/workflows/verify-waffle-reversi.yml'
 permissions:
   contents: read
@@ -21,9 +24,18 @@ jobs:
           node-version: '22'
       - name: Check openings, flips and awards
         run: node .github/tests/bingo-stick.cjs
-      - name: Check turns, reachable payouts and small-screen layout in Chrome
+      - name: Check current POW and 3000x reversal rules
+        run: node tests/payout-v232-lategames.mjs
+      - name: Install server and browser test dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Check server-controlled eight-ball rounds and narrow-screen payouts in Chrome
         run: |
-          python3 -m pip install --disable-pip-version-check playwright
           CHROME_PATH="$(command -v google-chrome || command -v chromium || true)"
-          if [ -z "$CHROME_PATH" ]; then python3 -m playwright install chromium; fi
-          CHROME_PATH="$CHROME_PATH" python3 .github/tests/waffle_reach_browser.py
+          if [ -z "$CHROME_PATH" ]; then npx playwright install chromium; fi
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$CHROME_PATH" node tests/waffle-server-v255.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: waffle-server-v255
+          path: qa-waffle-v255/
+          if-no-files-found: ignore

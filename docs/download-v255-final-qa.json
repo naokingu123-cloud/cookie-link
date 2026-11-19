@@ -1,0 +1,358 @@
+{
+  "version": "20261119-v255-download-edition",
+  "repository": "naokingu123-cloud/cookie-link",
+  "implementationCommit": "12d9aba8e85b6615b18b67b590ea5e060a520a0f",
+  "previousMainCommit": "c30fd5f6f03ccc51f255e58b0b0b25d49a03aff0",
+  "recordedAt": "2026-11-19T10:41:18.342686+09:00",
+  "scope": "Authoritative Download server, real native physical recording and ten-game calculation, disconnected browser replay, persisted resume and administration. All game actions run against isolated local test servers.",
+  "verification": [
+    {
+      "name": "Download server, native recording, offline browser and Windows launcher",
+      "run": 44436897226,
+      "commit": "12d9aba8e85b6615b18b67b590ea5e060a520a0f",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44436897226",
+      "status": "success"
+    },
+    {
+      "name": "Existing ten-game rules and visual regressions on published implementation",
+      "run": 44438255820,
+      "commit": "12d9aba8e85b6615b18b67b590ea5e060a520a0f",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44438255820",
+      "status": "success"
+    },
+    {
+      "name": "Shared machine regression on published implementation",
+      "run": 44438255530,
+      "commit": "12d9aba8e85b6615b18b67b590ea5e060a520a0f",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44438255530",
+      "status": "success"
+    },
+    {
+      "name": "Download suite repeated on main after publication",
+      "run": 44438255436,
+      "commit": "12d9aba8e85b6615b18b67b590ea5e060a520a0f",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44438255436",
+      "status": "success"
+    }
+  ],
+  "browser": {
+    "engine": "Playwright Chromium on Ubuntu GitHub Actions",
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        1366,
+        900
+      ]
+    ],
+    "uncaughtPageErrors": 0,
+    "streamingWebSocketConnections": 0,
+    "clientPhysicsSteps": 0,
+    "cookiePausedBoard": {
+      "expected": 64,
+      "tiles": 64,
+      "visible": 64
+    },
+    "cachedEntries": 643,
+    "serverOnlyOutage": {
+      "navigatorOnline": true,
+      "networkEvents": [],
+      "manualSync": false,
+      "sequence": 3,
+      "ackBefore": 2,
+      "ackAfter": 3
+    },
+    "offlineReload": {
+      "samePlayer": true,
+      "sameSession": true,
+      "sameStableBall": true
+    },
+    "offlineCompletion": {
+      "balls": 8,
+      "phase": "complete",
+      "pendingAcknowledgement": true,
+      "playbackMs": 106208.33333
+    },
+    "settlement": {
+      "creditBefore": 1000000,
+      "bet": 1000,
+      "win": 618,
+      "sugarWin": 0,
+      "creditAfter": 999618,
+      "countedRounds": 1,
+      "repeatedCompletionCreditUnchanged": true
+    },
+    "serverRestart": {
+      "sameSession": true,
+      "creditUnchanged": true
+    },
+    "completionPanel": {
+      "offline": {
+        "collapsed": "true",
+        "expanded": "false",
+        "toggle": "+",
+        "header": "8/8球 · 同期待ち",
+        "panel": {
+          "x": 164,
+          "y": 8,
+          "width": 218,
+          "height": 40
+        },
+        "rows": [
+          {
+            "index": 0,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 1,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 2,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 3,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 4,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 5,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 6,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 7,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 8,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 9,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          }
+        ]
+      },
+      "synced": {
+        "collapsed": "true",
+        "expanded": "false",
+        "toggle": "+",
+        "header": "8/8球 · 完了",
+        "panel": {
+          "x": 164,
+          "y": 8,
+          "width": 218,
+          "height": 40
+        },
+        "rows": [
+          {
+            "index": 0,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 1,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 2,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 3,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 4,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 5,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 6,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 7,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 8,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          },
+          {
+            "index": 9,
+            "visible": true,
+            "inside": true,
+            "overlap": false
+          }
+        ]
+      }
+    },
+    "admin": {
+      "downloadOnly": true,
+      "rouletteIframeLoaded": false,
+      "settlementIframeLoaded": false,
+      "layout": {
+        "viewport": 1366,
+        "pageWidth": 1366,
+        "pageHeight": 1490,
+        "card": {
+          "left": 12,
+          "right": 1354,
+          "bottom": 773.828125,
+          "width": 1342
+        },
+        "detailBottom": 761.828125,
+        "tableHeight": 559,
+        "tableScrollHeight": 559,
+        "payoutHeight": 300,
+        "trendHeight": 300,
+        "playersHeight": 380,
+        "playersBottom": 1477.828125,
+        "inputs": [
+          {
+            "height": 30,
+            "inside": true
+          },
+          {
+            "height": 30,
+            "inside": true
+          },
+          {
+            "height": 30,
+            "inside": true
+          },
+          {
+            "height": 30,
+            "inside": true
+          },
+          {
+            "height": 30,
+            "inside": true
+          },
+          {
+            "height": 30,
+            "inside": true
+          },
+          {
+            "height": 30,
+            "inside": true
+          }
+        ]
+      },
+      "scrolledPlayers": {
+        "top": 507.828125,
+        "bottom": 887.828125,
+        "height": 380,
+        "viewport": 900
+      }
+    },
+    "missingBrowserReadiness": false,
+    "screenshots": [
+      "edition-choice-390.png",
+      "edition-choice-844.png",
+      "edition-choice-1366.png",
+      "download-ready-390.png",
+      "download-ready-844.png",
+      "download-ready-1366.png",
+      "download-paused-390.png",
+      "download-offline-restored-390.png",
+      "download-offline-complete-390.png",
+      "download-synced-complete-390.png",
+      "download-admin-1366.png",
+      "download-admin-controls-1366.png"
+    ]
+  },
+  "nativeCompute": {
+    "completedJobs": 3,
+    "fixedSeed": 25519,
+    "repeatedNumbers": [
+      25,
+      3,
+      6,
+      10,
+      13,
+      22,
+      24,
+      2
+    ],
+    "frames": 3345,
+    "recordingDurationMs": 111466.66667,
+    "sourceSha256": "5d25ae0abe0ac5ec682a423c54d696fd9e40b34a5a3244e73eb3396399ce32c8",
+    "repeatedNativePayoutsEqual": true,
+    "carryRoundCompleted": true
+  },
+  "assets": {
+    "count": 641,
+    "bytes": 127763921,
+    "manifestSha256": "28a50bd1ca3c7424fca95fb11692983bb6decc30b995e442d98dcd1d7b9dcd96"
+  },
+  "limits": [
+    "One fully downloaded round can play offline; acknowledgement and the next round require reconnection.",
+    "Download Dango uses server-selected automatic placement from the first five hits.",
+    "The Windows launcher contract is tested on GitHub Actions Windows PowerShell 5.1; the user's Windows server and iPhone hardware are not exercised.",
+    "The local browser display can be changed by its owner; the Download ledger does not trust client-supplied balances, payouts or final game states.",
+    "Public Pages deployment verification is recorded separately in docs/download-v255-public-qa.json."
+  ],
+  "artifact": {
+    "run": 44436897226,
+    "id": 14489483379,
+    "name": "download-v255-verification",
+    "bytes": 5882690,
+    "sha256": "4c352c4eb09bfaf46396b7655daa3a04e6b1f1bf15a5d269ba7ddb60ff295904"
+  }
+}

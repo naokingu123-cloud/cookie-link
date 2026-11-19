@@ -1,4 +1,4 @@
-"""Exercise grade-dependent reach, physical row drops and actual small-bet settlement."""
+"""Historical manual-control fixture. Current server-controlled CI: tests/waffle-server-v255.mjs."""
 import json
 import os
 import threading
