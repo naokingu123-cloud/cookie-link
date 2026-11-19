@@ -5,9 +5,11 @@ import {randomUUID} from 'node:crypto';
 import {WebSocketServer} from 'ws';
 import {isStaleCheckpointV251} from './server-thinking-v251.mjs';
 import {createSugarChallengeLedger} from './server-sugar-challenge-v254.mjs';
+import {createDownloadLedgerV255} from './server-download-ledger-v255.mjs';
 
 const VERSION=3;
 const sugarLedgerV254=createSugarChallengeLedger();
+let downloadLedgerV255=null;
 // v247 storage is retained by v248: bankUnits are hundredths of already-earned
 // medals, never a count to reprice when BET or the per-drop accrual rate changes.
 // Normal wallet settlement commits once; operator cancellation restores the
@@ -92,7 +94,16 @@ const db=load();
 function scheduleSave(){dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(save,100);saveTimer.unref?.();}
 function save(required=false){if(!dirty)return;dirty=false;db.updatedAt=now();try{fs.mkdirSync(DATA_DIR,{recursive:true});const temporary=DATA_FILE+'.tmp';fs.writeFileSync(temporary,JSON.stringify(db,null,2));fs.renameSync(temporary,DATA_FILE);}catch(error){dirty=true;console.error('[PayoutV3] save',error);if(required)throw Object.assign(Error('wallet_persist_failed'),{status:503});}}
 function persistWallet(){dirty=true;clearTimeout(saveTimer);saveTimer=null;save(true);}
-process.on('exit',()=>save());process.on('SIGINT',()=>{save();process.exit(0);});process.on('SIGTERM',()=>{save();process.exit(0);});
+process.on('exit',()=>save());
+let stoppingV255=false;
+function shutdownV255(){
+ if(stoppingV255)return;stoppingV255=true;save();
+ const computer=globalThis[Symbol.for('sweets-link.download-v255.computer')];
+ if(!computer?.close){process.exit(0);return;}
+ const deadline=setTimeout(()=>process.exit(0),4000);deadline.unref?.();
+ Promise.resolve(computer.close()).catch(()=>{}).finally(()=>process.exit(0));
+}
+process.on('SIGINT',shutdownV255);process.on('SIGTERM',shutdownV255);
 
 function machine(id){id=safeId(id)||'public-01';return db.machines[id]||(db.machines[id]={id,players:{},updatedAt:now()});}
 function player(machineId,playerId){const m=machine(machineId);playerId=safeId(playerId);const p=m.players[playerId]||(m.players[playerId]={playerId,games:{},rounds:{}});return normalizePlayer(p,db.config);}
@@ -112,7 +123,13 @@ function walletError(machineId,playerId,code,status=409){return Object.assign(Er
 function requireAmount(value,label,machineId,playerId){
  const amount=Number(value);if(!Number.isSafeInteger(amount)||amount<0)throw walletError(machineId,playerId,label,400);return amount;
 }
+function guardStreamingWalletV255(machineId,playerId,roundId){
+ const p=player(machineId,playerId);
+ if(roundId&&Object.prototype.hasOwnProperty.call(p.downloadV255?.sessions||{},roundId))throw walletError(machineId,playerId,'download_session_result_forbidden');
+ if(downloadLedgerV255?.locked(machineId,playerId))throw walletError(machineId,playerId,'download_session_active');
+}
 function reserveWallet(machineId,playerId,coreRound,body){
+ guardStreamingWalletV255(machineId,playerId,coreRound.id);
  const p=player(machineId,playerId),ready=ensureWallet(machineId,playerId,p),id=safeId(coreRound.id),record=roundRecord(machineId,playerId,id);
  const bet=requireAmount(body.totalBet,'invalid_bet',machineId,playerId);
  for(const name of ['creditBefore','creditAfterBet'])if(body[name]!=null)requireAmount(body[name],'invalid_credit',machineId,playerId);
@@ -203,6 +220,7 @@ function finalGames(payload,round){
  return out;
 }
 function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games,source='client',digest=null}={}){
+ guardStreamingWalletV255(machineId,playerId,roundId);
  const cancelled=operatorCancelledV242(machineId,roundId);if(cancelled?.refunds?.[playerId])return cancelled.refunds[playerId].settlement;
  const p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);if(round.committed)return round.settlement;
  operatorTrendStateV242(machineId);
@@ -293,6 +311,7 @@ globalThis[Symbol.for('sweets-link.payout-v3.wallet')]={
  reserve:reserveWallet,
  release:releaseWallet,
  settle(machineId,playerId,coreRound,body){
+  guardStreamingWalletV255(machineId,playerId,coreRound.id);
   const record=roundRecord(machineId,playerId,coreRound.id);if(!record.bet)record.bet=Number(coreRound.participants?.[playerId]?.totalBet)||0;
   ingestSugarV254(machineId,playerId,coreRound.id,body);
   return commitSettlement(machineId,playerId,coreRound.id,{totalWin:body.totalWin,creditAfter:body.creditAfter,games:finalGames(body,record),source:'client',digest:body.digest});
@@ -426,6 +445,7 @@ function operatorCancelWalletV242(machineId,coreRound,requestId){
  if(!coreRound?.id)throw Object.assign(Error('round_required'),{status:400});
  const m=machine(machineId),id=String(coreRound.id),prior=m.operatorVoidsV242?.[id];
  if(prior)return {...prior,idempotent:true};
+ for(const pid of Object.keys(coreRound.participants||{}))guardStreamingWalletV255(machineId,pid,id);
  // Initialize the trend BEFORE reversing lifetime totals so its baseline stays valid.
  operatorTrendStateV242(machineId);
  const before=JSON.parse(JSON.stringify(m)),at=now(),refunds={};let total=0;
@@ -475,11 +495,13 @@ function sugarStationV254(core,playerId){
  return index<0?null:index+1;
 }
 function startSugarInBetV254(machineId,p){
+ if(downloadLedgerV255?.locked(machineId,p.playerId))return false;
  const core=coreDatabase?.machines?.[machineId],round=core?.round,station=sugarStationV254(core,p.playerId);
  if(!round||round.phase!=='BETTING'||!station||!(round.eligiblePlayerIds||[]).includes(p.playerId))return false;
  return sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed;
 }
 function ingestSugarV254(machineId,playerId,roundId,payload,{startInBet=true}={}){
+ if(downloadLedgerV255?.locked(machineId,playerId))return false;
  const tokens=payload?.sugarV254?.tokens||payload?.state?.wonderBank;
  if(!Array.isArray(tokens))return false;
  const p=player(machineId,playerId),groups=new Map();let changed=false;
@@ -498,6 +520,7 @@ function ingestSugarV254(machineId,playerId,roundId,payload,{startInBet=true}={}
 function hydrateSugarV254(){
  let changed=false;
  for(const [machineId,m] of Object.entries(db.machines||{}))for(const p of Object.values(m.players||{})){
+  if(downloadLedgerV255?.locked(machineId,p.playerId))continue;
   const candidates=coreRounds(machineId).map(r=>({time:Number(r.completedAt||r.startedAt||r.betOpenedAt),state:r.participants?.[p.playerId]?.checkpoint||r.participants?.[p.playerId]?.initialState})).concat(Object.values(p.rounds||{}).map(r=>({time:Number(r.updatedAt),state:r.stableState}))).filter(r=>Array.isArray(r.state?.wonderBank)).sort((a,b)=>b.time-a.time);
   // A checkpoint can be durable just before its wallet receipt is saved.
   // Recover v254 tokens through their real source round/BET checks; only
@@ -513,12 +536,12 @@ Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
  sugarState:(machineId,playerId)=>sugarLedgerV254.publicState(player(machineId,playerId)),
  sugarBetting(core,round){
   let changed=false;
-  for(const id of round.eligiblePlayerIds||[]){const station=sugarStationV254(core,id);if(!station)continue;const p=player(core.id,id);ensureWallet(core.id,id,p);changed=sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed||changed;}
+  for(const id of round.eligiblePlayerIds||[]){if(downloadLedgerV255?.locked(core.id,id))continue;const station=sugarStationV254(core,id);if(!station)continue;const p=player(core.id,id);ensureWallet(core.id,id,p);changed=sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed||changed;}
   if(changed)persistWallet();
  },
  sugarBall(core,round){
   let changed=false;
-  for(const p of Object.values(machine(core.id).players||{}))if(p.sugarV254?.rounds?.[round.id])changed=sugarLedgerV254.advance(p,{roundId:round.id,balls:round.balls||[]}).changed||changed;
+  for(const p of Object.values(machine(core.id).players||{}))if(!downloadLedgerV255?.locked(core.id,p.playerId)&&p.sugarV254?.rounds?.[round.id])changed=sugarLedgerV254.advance(p,{roundId:round.id,balls:round.balls||[]}).changed||changed;
   if(changed)persistWallet();
  },
  sugarReaches(machineId,roundId){
@@ -530,3 +553,16 @@ Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
   }return output;
  }
 });
+
+// Download sessions use the SAME atomic document as Streaming reservations,
+// wallet balances and Sugar receipts. A crash cannot leave a settled package
+// with a second debit waiting in a separate store.
+downloadLedgerV255=createDownloadLedgerV255({
+ getPlayer:player,getMachine:machine,listMachineIds:()=>Object.keys(db.machines),ensureWallet,quoteRate,coreRounds,sugarLedger:sugarLedgerV254,
+ transaction(machineId,change){
+  const id=safeId(machineId)||'public-01',before=JSON.parse(JSON.stringify(machine(id)));
+  try{const result=change();persistWallet();return result;}
+  catch(error){db.machines[id]=before;dirty=true;throw error;}
+ }
+});
+globalThis[Symbol.for('sweets-link.payout-v3.wallet')].downloadV255=downloadLedgerV255;

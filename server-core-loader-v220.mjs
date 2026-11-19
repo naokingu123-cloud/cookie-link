@@ -4,6 +4,7 @@ import {pathToFileURL} from 'node:url';
 import {patchStationCore} from './server-stations-v235.mjs';
 import {patchThinkingCoreV251} from './server-thinking-v251.mjs';
 import {patchSugarCoreV254} from './server-sugar-core-v254.mjs';
+import {patchDownloadCoreV255} from './server-download-core-v255.mjs';
 
 const ROOT=process.cwd();
 const SOURCE=path.join(ROOT,'server-core.mjs');
@@ -154,6 +155,7 @@ source=once(source,'stations:stationView};','stations:stationView,operatorRefund
 source=once(source,'hitForecasts:monitorForecastsV241.snapshot(m),machine:{','hitForecasts:monitorForecastsV241.snapshot(m),payoutTrendV242:payoutWallet?.operatorTrend?.(m.id)||null,machine:{','operator trend');
 source=patchThinkingCoreV251(source);
 source=patchSugarCoreV254(source);
+source=patchDownloadCoreV255(source);
 
 await fs.mkdir(OUTPUT_DIR,{recursive:true});
 await fs.writeFile(OUTPUT,source,'utf8');

@@ -7,6 +7,8 @@ param(
   [string]$Machine = 'public-01',
 
   [string]$PublicHost = '',
+  [ValidateSet('Streaming','Download')]
+  [string]$Edition = 'Streaming',
   [switch]$QuickTunnel,
   [switch]$NoBrowser,
   [switch]$NoDownload,
@@ -23,7 +25,7 @@ $BrowserHelper = Join-Path $PSScriptRoot 'launch-host-browser-v205.ps1'
 New-Item -ItemType Directory -Force -Path $Runtime | Out-Null
 Remove-Item -Force -ErrorAction SilentlyContinue $UrlFile
 
-if (-not $NoBrowser) {
+if (-not $NoBrowser -and $Edition -eq 'Streaming') {
   $HelperArgs = @(
     '-NoLogo','-NoProfile','-ExecutionPolicy','Bypass','-WindowStyle','Hidden',
     '-File',$BrowserHelper,
@@ -38,6 +40,7 @@ if (-not $NoBrowser) {
   -Port $Port `
   -Machine $Machine `
   -PublicHost $PublicHost `
+  -Edition $Edition `
   -QuickTunnel:$QuickTunnel `
   -NoBrowser `
   -NoDownload:$NoDownload `

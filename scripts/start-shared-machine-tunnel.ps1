@@ -7,6 +7,8 @@ param(
   [string]$Machine = 'public-01',
 
   [string]$PublicHost = '',
+  [ValidateSet('Streaming','Download')]
+  [string]$Edition = 'Streaming',
   [switch]$QuickTunnel,
   [switch]$NoBrowser,
   [switch]$NoDownload,
@@ -29,6 +31,7 @@ $DataFile = Join-Path $Runtime 'shared-machine.json'
 $NamedHostFile = Join-Path $Runtime 'named-tunnel-host.txt'
 $EndpointFile = Join-Path $Root 'shared-endpoint.json'
 $AdminToken = [guid]::NewGuid().ToString('N')
+. (Join-Path $PSScriptRoot 'download-readiness-v255.ps1')
 
 function Normalize-PublicHost([string]$Value) {
   if ([string]::IsNullOrWhiteSpace($Value)) { return '' }
@@ -66,10 +69,18 @@ function Read-Log([string]$Path) {
   return ''
 }
 
-function Stop-Child($Process) {
+function Stop-Child($Process, [bool]$ProcessTree = $false) {
   if ($null -eq $Process) { return }
   try {
     if (-not $Process.HasExited) {
+      if ($ProcessTree) {
+        # Only the Node process started by this launcher and its children.
+        # A forced Node exit on Windows does not run browser.close() handlers.
+        $TaskKill = Join-Path $env:SystemRoot 'System32\taskkill.exe'
+        if (Test-Path $TaskKill) {
+          & $TaskKill /PID ([string]$Process.Id) /T /F 2>&1 | Out-Null
+        }
+      }
       Stop-Process -Id $Process.Id -Force -ErrorAction SilentlyContinue
       $Process.WaitForExit(3000) | Out-Null
     }
@@ -107,8 +118,8 @@ try {
   }
   Write-Step "Node.js $NodeVersion"
 
-  if (-not (Test-Path (Join-Path $Root 'node_modules\ws\package.json'))) {
-    Write-Step 'First setup: installing WebSocket dependency'
+  if (-not (Test-Path (Join-Path $Root 'node_modules\ws\package.json')) -or -not (Test-Path (Join-Path $Root 'node_modules\playwright\package.json'))) {
+    Write-Step 'Installing server dependencies'
     & $Npm install --omit=dev --no-audit --no-fund
     if ($LASTEXITCODE -ne 0) { throw 'npm install failed.' }
   }
@@ -161,34 +172,53 @@ try {
     Remove-Item -Force -ErrorAction SilentlyContinue $Log
   }
 
-  Write-Step "Starting shared server (port $Port)"
+  Write-Step "Starting $Edition server (port $Port)"
   $OldPort = $env:PORT
   $OldData = $env:SWEETS_DATA_FILE
   $OldAdmin = $env:SWEETS_ADMIN_TOKEN
+  $OldEdition = $env:SWEETS_SERVER_EDITION
+  $OldDownload = $env:SWEETS_DOWNLOAD_ENABLED
   $env:PORT = [string]$Port
   $env:SWEETS_DATA_FILE = $DataFile
   $env:SWEETS_ADMIN_TOKEN = $AdminToken
+  $env:SWEETS_SERVER_EDITION = $Edition.ToLowerInvariant()
+  if ($Edition -eq 'Download') { $env:SWEETS_DOWNLOAD_ENABLED = '1' }
   try {
     $ServerProcess = Start-Process -FilePath $Node -ArgumentList @('server.mjs') -WorkingDirectory $Root -PassThru -NoNewWindow -RedirectStandardOutput $ServerOut -RedirectStandardError $ServerErr
   } finally {
     $env:PORT = $OldPort
     $env:SWEETS_DATA_FILE = $OldData
     $env:SWEETS_ADMIN_TOKEN = $OldAdmin
+    $env:SWEETS_SERVER_EDITION = $OldEdition
+    $env:SWEETS_DOWNLOAD_ENABLED = $OldDownload
   }
 
   $HealthUrl = "http://127.0.0.1:$Port/api/health"
   $Healthy = $false
-  for ($i=0; $i -lt 120; $i++) {
+  $DownloadStartupError = ''
+  $ReadinessAttempts = if ($Edition -eq 'Download') { 480 } else { 120 }
+  for ($i=0; $i -lt $ReadinessAttempts; $i++) {
     if ($ServerProcess.HasExited) {
       throw "Shared server exited unexpectedly.`n$(Read-Log $ServerErr)"
     }
     try {
       $Health = Invoke-RestMethod -UseBasicParsing -Uri $HealthUrl -TimeoutSec 2
-      if ($Health.ok) { $Healthy = $true; break }
+      if ($Health.ok) {
+        if ($Edition -eq 'Streaming') { $Healthy = $true; break }
+        $DownloadState = Get-SweetsDownloadStartupState $Health
+        if ($DownloadState.Ready) { $Healthy = $true; break }
+        if (-not [string]::IsNullOrWhiteSpace($DownloadState.Error)) {
+          $DownloadStartupError = $DownloadState.Error
+          break
+        }
+      }
     } catch {}
     Start-Sleep -Milliseconds 250
   }
   if (-not $Healthy) {
+    if ($Edition -eq 'Download') {
+      throw "Download recorder is not ready. $DownloadStartupError`nSet SWEETS_DOWNLOAD_BROWSER_PATH to an installed Edge/Chrome executable, or run: npx playwright install chromium`n$(Read-Log $ServerErr)"
+    }
     throw "Shared server health check failed.`n$(Read-Log $ServerErr)"
   }
 
@@ -240,7 +270,8 @@ try {
     }
     try {
       $Health = Invoke-RestMethod -UseBasicParsing -Uri $PublicHealth -TimeoutSec 4
-      if ($Health.ok -eq $true -and $Health.source -eq 'physical-host') {
+      $EditionReady = if ($Edition -eq 'Download') { (Get-SweetsDownloadStartupState $Health).Ready } else { $Health.source -eq 'physical-host' }
+      if ($Health.ok -eq $true -and $EditionReady) {
         $PublicReady = $true
         break
       }
@@ -268,12 +299,18 @@ try {
 
   $ServerManageUrl = "$TunnelBase/?machine=$EncodedMachine&adminToken=$AdminToken"
   $LocalMonitorUrl = "http://127.0.0.1:$Port/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken"
+  if ($Edition -eq 'Download') {
+    $ServerManageUrl = "$TunnelBase/monitor.html?machine=$EncodedMachine&adminToken=$AdminToken&edition=download"
+    $LocalMonitorUrl += '&edition=download'
+    $Separator = if ($ClientUrl.Contains('?')) { '&' } else { '?' }
+    $ClientUrl += $Separator + 'edition=download'
+  }
   Set-Content -LiteralPath $PublicUrlFile -Value $ServerManageUrl -Encoding UTF8
   try { Set-Clipboard -Value $ClientUrl } catch {}
 
   Write-Host ''
   Write-Host '============================================================' -ForegroundColor Green
-  Write-Host ' SWEETS LINK SHARED MACHINE READY' -ForegroundColor Green
+  Write-Host " SWEETS LINK $($Edition.ToUpperInvariant()) SERVER READY" -ForegroundColor Green
   Write-Host '============================================================' -ForegroundColor Green
   Write-Host 'SERVER MANAGEMENT (open on this PC):' -ForegroundColor White
   Write-Host $ServerManageUrl -ForegroundColor Yellow
@@ -292,9 +329,13 @@ try {
   Write-Host "Public health: $PublicHealth" -ForegroundColor DarkGray
   Write-Host 'Keep this window open. Closing it stops the shared server and tunnel.' -ForegroundColor White
   Write-Host 'Round state is saved in .runtime\shared-machine.json.' -ForegroundColor DarkGray
+  if ($Edition -eq 'Download') {
+    Write-Host 'The recorder runs headlessly. No roulette browser window is opened.' -ForegroundColor White
+    Write-Host 'Download management is optional and does not start a streaming host.' -ForegroundColor White
+  }
   Write-Host ''
 
-  if (-not $NoBrowser) {
+  if (-not $NoBrowser -and $Edition -eq 'Streaming') {
     try { Start-Process $ServerManageUrl | Out-Null } catch {
       try { Start-Process $LocalMonitorUrl | Out-Null } catch {}
     }
@@ -326,5 +367,5 @@ catch {
 }
 finally {
   Stop-Child $TunnelProcess
-  Stop-Child $ServerProcess
+  Stop-Child $ServerProcess ($Edition -eq 'Download')
 }

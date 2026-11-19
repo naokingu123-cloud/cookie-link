@@ -1,0 +1,72 @@
+name: Download v255 server recording and offline playback
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feature/v255-download]
+    paths:
+      - '**/*v255*'
+      - 'server.mjs'
+      - 'server-core-loader-v220.mjs'
+      - 'server-payout-preload-v3.mjs'
+      - 'server-stations-v235.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'index.html'
+      - 'monitor.html'
+      - 'assets/shared-machine-v176.js'
+      - 'assets/shared-machine-core-v196.js'
+      - 'assets/server-monitor*'
+      - 'assets/cookie-roulette*'
+      - 'scripts/start-shared-machine-tunnel.ps1'
+      - 'scripts/start-shared-machine-v205.ps1'
+      - 'scripts/launch-host-browser-v205.ps1'
+      - 'start-download-server.cmd'
+      - 'start-shared-machine-tunnel.cmd'
+      - 'docs/SHARED_MACHINE_TUNNEL.md'
+      - '.github/workflows/download-v255.yml'
+permissions:
+  contents: read
+jobs:
+  launcher:
+    name: Windows PowerShell 5.1 launch modes and readiness
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute launcher contracts without opening a browser
+        shell: powershell
+        run: ./tests/download-v255-launcher.ps1
+  verify:
+    name: Authoritative download, physical recording and offline resume
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax
+        run: npm run check
+      - name: Install recording and verification browser
+        id: browser
+        if: ${{ !cancelled() }}
+        run: npx playwright install --with-deps chromium
+      - name: Server ownership, credit, idempotency and restart
+        if: ${{ !cancelled() }}
+        run: node tests/download-v255-server.mjs
+      - name: Headless physical recording and actual game computation
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/download-v255-compute.mjs
+      - name: Edition selection, offline playback, resume and administration
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node tests/download-v255-browser.mjs
+      - name: Retain download evidence and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: download-v255-verification
+          path: |
+            qa-download-v255/
+            qa-download-compute-v255/
+          retention-days: 7

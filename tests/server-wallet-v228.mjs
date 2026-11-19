@@ -47,7 +47,7 @@ async function finish(host,roundId,machine='public-01'){
 const settle=(session,roundId,totalWin=0,machine='public-01',creditAfter=123)=>json('/api/machines/{machine}/round/settle',{session,machine,body:{roundId,totalWin,creditAfter,digest:'wallet-test',payoutV3:{version:3,games:[{id:'cookie',bet:27000,win:totalWin}]}}});
 
 try{
- for(const name of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-thinking-v251.mjs','server-sugar-core-v254.mjs','server-sugar-challenge-v254.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json'])await fs.copyFile(path.join(ROOT,name),path.join(temporary,name));
+ for(const name of ['server.mjs','server-core.mjs','server-core-loader-v220.mjs','server-thinking-v251.mjs','server-sugar-core-v254.mjs','server-sugar-challenge-v254.mjs','server-download-core-v255.mjs','server-download-ledger-v255.mjs','server-download-v255.mjs','server-startup-sanitize-v217.mjs','server-rtc-preload.mjs','server-payout-preload-v3.mjs','server-stations-v235.mjs','package.json'])await fs.copyFile(path.join(ROOT,name),path.join(temporary,name));
  await fs.mkdir(path.join(temporary,'assets'),{recursive:true});
  await fs.copyFile(path.join(ROOT,'assets','jelly-rules.js'),path.join(temporary,'assets','jelly-rules.js'));
  await fs.copyFile(path.join(ROOT,'assets','sugar-challenge-rules-v254.js'),path.join(temporary,'assets','sugar-challenge-rules-v254.js'));

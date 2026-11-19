@@ -5550,6 +5550,27 @@ function startAnima8(){
   get ledState(){return {label:centerDisplay.userData.counter,board:centerDisplay.userData.board,reachTiers:panels.map(p=>p.normalReachTier||0),reachColors:panels.flatMap((p,i)=>p.normalReachTier?[{number:i+1,tier:p.normalReachTier,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[]),betLetters:panels.map(p=>p.betLetter||' '),betIcons:panels.map(p=>p.betIcon??null),highestSlope:root.dataset.highestReach==='true',stage:normalStage().name,rainbow:panels.flatMap((p,i)=>p.normalRainbow?[i+1]:[]),centerPosition:centerDisplay.position.toArray(),centerTilt:centerDisplay.rotation.x,centerBlend:ledTransitionProgress(centerTransitionStart),slopeBlend:ledTransitionProgress(slopeTransitionStart),rainbowColors:panels.flatMap((p,i)=>p.normalRainbow?[{number:i+1,color:p.material.uniforms.lightTint.value.getHexString(),brightness:p.material.uniforms.brightness.value}]:[])};},
   get jpcCounts(){return [...jpcCounts];},
   get status(){return status.textContent;}};
+ // Download edition is a display of server-recorded transforms. This entry
+ // never calls world.step(), launch(), DrawController.start() or onNumber().
+ root.anima8.applyRecordedFrame=function(recorded,hits=[]){
+  if(new URLSearchParams(location.search).get('edition')!=='download')throw Error('recorded_display_requires_download_edition');
+  if(!Array.isArray(recorded)||!Number.isFinite(recorded[0])||!Number.isFinite(recorded[1])||!Array.isArray(recorded[2]))throw Error('invalid_recorded_frame');
+  setPaused(true);draw.mode='eight';draw.state='external';
+  physics.time=recorded[0]/1000;physics.angle=recorded[1];
+  if(recorded[3]?.length===4)physics.rotor.quaternion.set(...recorded[3]);
+  else physics.rotor.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0),physics.angle);
+  const next=recorded[2].map(values=>({id:values[0],radius:DIM.ball,resolved:!!values[8],dead:!!values[9],body:{position:new CANNON.Vec3(values[1],values[2],values[3]),quaternion:new CANNON.Quaternion(values[4],values[5],values[6],values[7])}}));
+  const live=new Set(next.map(ball=>ball.id));
+  for(const [id,view] of ballViews)if(!live.has(id)){scene.remove(view.mesh,view.trail);view.mesh.geometry.dispose();view.trail.geometry.dispose();view.trail.material.dispose();ballViews.delete(id);}
+  physics.balls=next;physics.serial=next.reduce((n,ball)=>Math.max(n,ball.id),0);
+  physics.hits=hits.map(hit=>({ball:hit.ball,pocket:hit.number,time:hit.atMs/1000,held:true}));
+  hitTimes.fill(-100);physics.occupied.fill(false);
+  for(const hit of hits){hitTimes[hit.number-1]=hit.atMs/1000;physics.occupied[hit.number-1]=true;}
+  for(const ball of next)if(!ballViews.has(ball.id))addBallView(ball);
+  for(let i=0;i<25;i++)updatePocketBadge(i);
+  updateCount();status.textContent='ダウンロード済みの抽選を再生中';
+  paintStamp=-Infinity;render(performance.now());return true;
+ };
  function dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(frame);frame=0;observer.disconnect();cleanup.disconnect();renderer.dispose();renderer.domElement.remove();scene.traverse(o=>{if(o.geometry)o.geometry.dispose();});materials.forEach(m=>m.dispose());panels.forEach(p=>p.texture.dispose());centerTexture.dispose();}
  const cleanup=new MutationObserver(()=>{if(!root.isConnected)dispose();});cleanup.observe(document.documentElement,{childList:true,subtree:true});
  return root.anima8;

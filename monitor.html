@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/assets/stations-v235.css?v=240">
 <link rel="stylesheet" href="/assets/server-monitor-v241.css?v=241">
 <link rel="stylesheet" href="/assets/server-monitor-v242.css?v=248">
+<link rel="stylesheet" href="/assets/server-monitor-download-v255.css?v=255">
 </head>
 <body>
 <!-- One physical-host iframe stays alive across all rounds. -->
@@ -19,6 +20,19 @@
  <section class="card host-card">
   <h2><span>現在の物理抽選機（標準1倍速）</span><div class="server-bet-actions"><button type="button" id="server-bet-now">強制BET・全額返却</button><span id="server-bet-now-status" role="status" aria-live="polite"></span><span id="host-state" class="host-state">抽選機を起動中…</span></div></h2>
   <iframe id="host-frame" class="host-frame" title="SWEETS LINK 物理抽選機"></iframe>
+ </section>
+ <section class="card download-v255-card" id="download-v255-admin" hidden>
+  <h2><span>ダウンロード版</span><span id="download-v255-worker-state" role="status" aria-live="polite">録画の準備を確認中…</span></h2>
+  <p class="download-v255-note">サーバーで抽選と各ゲームを計算し、録画データを作成します。保存済みのクレジット・成績・再生位置を確認できます。</p>
+  <dl class="download-v255-stats">
+   <div><dt>処理中の録画</dt><dd id="download-v255-active-jobs">0</dd></div>
+   <div><dt>プレイヤー</dt><dd id="download-v255-player-count">0</dd></div>
+   <div><dt>再生中・準備中</dt><dd id="download-v255-session-count">0</dd></div>
+  </dl>
+  <div class="download-v255-table-wrap" tabindex="0" aria-label="ダウンロード版のプレイヤーと保存位置">
+   <table class="download-v255-table"><thead><tr><th>プレイヤー・詳細</th><th>CREDIT</th><th>状態</th><th>BET</th><th>WIN</th><th>進行</th><th>再生位置</th></tr></thead><tbody id="download-v255-players"></tbody></table>
+  </div>
+  <div id="download-v255-empty">ダウンロード版のプレイヤー待ち</div>
  </section>
  <section class="card payout-card" id="payout-card">
   <h2><span>ペイアウト管理</span><span class="host-state">プレイヤー単位・全ゲーム共通設定</span></h2>
@@ -48,6 +62,7 @@
  </section>
 </main>
 <iframe id="settlement-worker" class="settlement-worker" title="切断時自動精算"></iframe>
+<script src="/assets/server-monitor-download-v255.js?v=255"></script>
 <script src="/assets/server-monitor-host-stability-v217.js?v=217"></script>
 <script src="/assets/monitor-ledger-v241.js?v=248"></script>
 <script src="/assets/server-monitor-v242.js?v=248"></script>

@@ -87,6 +87,7 @@ function patch(source){
 }
 async function boot(){
  try{
+  await root.SweetsDownloadMonitorV255?.prepare();
   const response=await fetch('/assets/server-monitor-payout-v3.js?v=241',{cache:'no-store'});
   if(!response.ok)throw Error('monitor source HTTP '+response.status);
   const script=el('script');script.textContent=patch(await response.text())+'\n//# sourceURL=server-monitor-payout-v3-v241.js';document.body.append(script);
