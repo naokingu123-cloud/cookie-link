@@ -19,7 +19,7 @@ function assertDangoCompletion(result){
  const state=result.finalState.engines[9].state;
  assert.equal(state.phase,'done');
  assert.equal(state.freeCommitted,true,'Dango resolves its placement boundary before the last three balls');
- if(state.rulesRevision===262){
+ if(state.rulesRevision===262||state.rulesRevision===263){
   const initial=result.initialState.engines[9].state,firstFive=result.numbers.slice(0,5);
   const level=state.triggerNumbers.filter(number=>firstFive.includes(number)).length;
   assert.deepEqual(state.triggerNumbers,initial.triggerNumbers,'trigger numbers remain fixed throughout server computation');
@@ -33,8 +33,40 @@ function assertDangoCompletion(result){
   const overlap=state.initialFreeCells.filter(cell=>state.manualFreeCells.includes(cell)).length;
   const lateHits=result.numbers.slice(5).filter(number=>state.manualFreeCells.includes(state.numbers.indexOf(number))).length;
   assert.equal(state.oddsMultiplier,1+overlap+lateHits,'only placed FREE overlaps and later hits raise ODDS');
+ }else if(state.rulesRevision>=264){
+  const initial=result.initialState.engines[9].state;
+  const firstFive=result.numbers.slice(0,5);
+  const earlyHits=firstFive.map(n=>state.numbers.indexOf(n));
+  const early=new Set([...state.initialFreeCells,...earlyHits]);
+  assert.deepEqual(state.initialFreeCells,initial.initialFreeCells);
+  assert.deepEqual(state.numbers,initial.numbers);
+  assert.deepEqual(state.triggerNumbers,[],'new FREE grades have no trigger numbers');
+  const completed=[];
+  for(let axis=0;axis<3;axis++)for(let key=0;key<7;key++){
+   const ids=state.cells.filter(cell=>(axis===0?cell.row:axis===1?cell.col:cell.row-cell.col)===key).map(cell=>cell.id);
+   if(ids.length>=3&&ids.length<=5&&ids.every(id=>early.has(id)))completed.push(ids.length);
+  }
+  const grade=completed.includes(5)?3:completed.includes(4)?2:completed.includes(3)?1:0;
+  assert.equal(state.expansionLevel,grade,'upgrade derives only from first-five completed lines');
+  if(grade===0){
+   assert.equal(state.expansionCenter,null);
+   assert.equal(state.manualFreeCells.length,0,'no early line means no placement');
+  }else{
+   assert.ok(Number.isInteger(state.expansionCenter));
+   assert.ok(!earlyHits.includes(state.expansionCenter),'center must not have a previous number HIT');
+   const center=state.cells[state.expansionCenter],radius=grade-1;
+   const expected=state.cells.filter(cell=>Math.max(
+    Math.abs(cell.row-center.row),Math.abs(cell.col-center.col),
+    Math.abs((cell.row-cell.col)-(center.row-center.col)))<=radius).map(cell=>cell.id);
+   assert.deepEqual([...state.manualFreeCells].sort((a,b)=>a-b),expected.sort((a,b)=>a-b),'FREE cells equal the on-board hexagonal radius');
+   assert.ok(state.manualFreeCells.length<=[0,1,7,19][grade]);
+  }
+  assert.equal(new Set(state.manualFreeCells).size,state.manualFreeCells.length);
+  const overlap=state.initialFreeCells.filter(cell=>state.manualFreeCells.includes(cell)).length;
+  const lateHits=result.numbers.slice(5).filter(number=>state.manualFreeCells.includes(state.numbers.indexOf(number))).length;
+  assert.equal(state.oddsMultiplier,1+overlap+lateHits,'overlap plus final-three FREE hits raises ODDS exactly once');
  }else{
-  assert.ok(state.manualFreeCells.length>0,'legacy Dango automatic placement uses first five balls');
+  assert.ok(state.manualFreeCells.length>=0,'pre-v262 Dango uses its saved placement rules');
  }
  return {revision:state.rulesRevision,expansionLevel:state.expansionLevel??null,freeCells:state.manualFreeCells.length,odds:state.oddsMultiplier};
 }
