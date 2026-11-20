@@ -53,3 +53,9 @@ Pages更新とWindows共有サーバー更新は別。Windows側は最新mainの
 既存のSix station checkとShared machine checkは、変更していないloaderのcache版をアプリ版と同一と仮定する検査で失敗する。同じ失敗は親コミットのrun `44653370461` と `44653370566` にも存在する。今回のDango／Sugar検証とは分けて記録し、これらの後続試験の成功は主張しない。
 
 Client v246検証にも、変更していないbackground-handlerのv262 pinとアプリ版を同一と仮定する親版からの検査失敗がある（run `44660491772`）。公開検証のSugar revision条件は新しい270・JP_STEP500へ更新し、旧268を待ち続ける検査前提を解消した。
+
+## 公開確認完了
+
+公開コミット `543b2baecccaadaa4d8ea6b4f2cb3ca05904b61c` のrun `44660844390` が成功。93ファイルのSHA-256（団子枠PNGと新倍率PNG6種を含む）が一致し、390×844・844×390・1366×900の3サイズで公開画面を確認。各画面のJavaScript例外は0件、Sugar revision270・JP_STEP500を確認した。公開検証はAPI・WebSocketを遮断し、公開サーバーへBET・抽選・精算を送信していない。完全な記録は `dango-sugar-v270-public-qa.json`。
+
+CUAでも公開ローカルデバッグ版の画像ルーレットを表示し、14枚の画像がすべて読み込まれ、指定の倍率名・枚数比となることを確認。スクリーンショットは `qa-v270/sugar-published-reel.jpg`。この後の文書・証跡のみの保存は実行コードを変更しない。
