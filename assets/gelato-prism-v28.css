@@ -1857,15 +1857,18 @@ body.gelato-active #panel0 .gp-collector-grid .gp-collector-row strong.gp-collec
  align-self:stretch!important;width:100%!important;min-width:0!important;
 }
 body.gelato-active #panel0 .gp-collector-grid .gp-collector-win .gp-win-number{
- width:100%!important;min-width:0!important;text-align:center!important;
+ width:100%!important;min-width:0!important;display:flex!important;
+ flex-direction:row!important;align-items:center!important;justify-content:center!important;
 }
 body.gelato-active #panel0 .gp-pay-row .gp-pay-win{
- flex:1 1 auto!important;display:block!important;
+ flex:1 1 auto!important;display:flex!important;flex-direction:row!important;
+ align-items:center!important;justify-content:flex-end!important;
 }
 body.gelato-active #panel0 .gp-highest-win{
- flex:1 1 0!important;min-width:0!important;text-align:right!important;
+ flex:1 1 0!important;min-width:0!important;display:flex!important;
+ flex-direction:row!important;align-items:center!important;justify-content:flex-end!important;
 }
 body.gelato-active #panel0 .gp-fit-amount{
- display:inline-block;white-space:nowrap;transform-origin:right center;
+ display:block;flex:0 0 auto;white-space:nowrap;transform-origin:right center;
 }
 body.gelato-active #panel0 .gp-win-number .gp-fit-amount{transform-origin:center center}

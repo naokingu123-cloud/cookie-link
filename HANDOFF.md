@@ -1,6 +1,6 @@
 # v276 — HIT演出・上下オートタイル・ルーレット調整（2026-11-20）
 
-- Build: `20261120-v276-hit-and-roulette-polish`。概要 `docs/game-polish-v276.md`。本記録作成時点ではローカル検査成功、ブラウザーCIと公開確認は待機中。公開完了扱いにしない。
+- Build: `20261120-v276-hit-and-roulette-polish-r2`。概要 `docs/game-polish-v276.md`。本記録作成時点ではローカル検査成功、ブラウザーCIと公開確認は待機中。公開完了扱いにしない。
 - Canyon: v275画像の深いクリーム上面に合う本体範囲を指定し、上下/T/L接続を実画像で連続化。PNG・47マスク・既存キャッシュを保持。5120組の上下境界差0。`docs/canyon-autotile-v276.md`、`tests/canyon-autotile-v276.mjs`（QA依存 `@napi-rs/canvas@0.1.100`）。
 - 全10ゲームの実HITイベントへテーマ別の光・粒・波紋・反転軌跡を追加。miniも対応、動きを減らす設定では飛び散りなしの短い輪郭光。ゲームRNG不使用、復元・FREE再描画では再演しない。`assets/hit-presentation-v276.js/css`、`tests/hit-presentation-v276.mjs`。
 - Gelato: 長い配当数字を実際の枠幅に合わせて横縮小。数字の高さ・行構成・配当は保持。

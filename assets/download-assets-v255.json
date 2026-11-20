@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v276-hit-and-roulette-polish",
+  "version": "20261120-v276-hit-and-roulette-polish-r2",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 53,
-      "sha256": "d510f11fc942d484f695596aa461b5bc45fface62eedfa71be85bf340a20a4f5"
+      "bytes": 56,
+      "sha256": "935e1946673da9982db957ad18a45cba23a181bb421684bc959e3f9e4e0dc5ea"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1293,8 +1293,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4363,
-      "sha256": "3a628e67c1779083ecd6d623649d4fc750918a4c2c3e8e65eb18af66e293a658"
+      "bytes": 4366,
+      "sha256": "60b78343f1e711aea59e16de51f0b20137a9c7dc174b76ca44a2727b4bc467ee"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1318,8 +1318,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3774,
-      "sha256": "cb0281ce4d771410dd863975f21caf0aa729ff884cb47a49081a6e08077e35a5"
+      "bytes": 3777,
+      "sha256": "c7c9e16850634ee290c8536ce4c06ba2ff78d12538d1f3f364d697ceb6ebebb5"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1453,8 +1453,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.css",
-      "bytes": 75313,
-      "sha256": "683de07f6d940ee14c882d20d9294d24d03bfa5cd8406f96bcce2fc7b6a29b76"
+      "bytes": 75593,
+      "sha256": "705b4e5dc55003967ba3e4317947bdb5b4953c2a18bb4f2f7be36889250e6f1f"
     },
     {
       "path": "assets/gelato-prism-v28.js",
@@ -1488,8 +1488,8 @@
     },
     {
       "path": "assets/hit-presentation-v276.js",
-      "bytes": 19447,
-      "sha256": "41376763321bf5ce1176174988a4aca8d64c46949b89181ccc1a5c95adec368d"
+      "bytes": 19453,
+      "sha256": "718441f9991c4963d863b017577b1f594c5f5ae58e3543335b1ee749eccec534"
     },
     {
       "path": "assets/illustrated-art-v275.js",
@@ -3178,8 +3178,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85219,
-      "sha256": "72e69e2b1e92017c8874db069fbb635fb24eeff0438ac2127b34fd3a9240b861"
+      "bytes": 85230,
+      "sha256": "d66c1c7976d22e8c3256e60a39cca7acae1eede36caf9836585fc33c69606ab0"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3417,5 +3417,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 172471034
+  "totalBytes": 172471340
 }

@@ -1,6 +1,6 @@
 # v276 — 盤面の比較調整・HIT演出・ルーレットの動き
 
-Version: `20261120-v276-hit-and-roulette-polish`  
+Version: `20261120-v276-hit-and-roulette-polish-r2`
 Base: `6e820baba805ea41c2875e277fbab7de81131a04`（v275）
 
 ## 目的と進捗
