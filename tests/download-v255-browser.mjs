@@ -79,6 +79,21 @@ async function waitPlayback(predicate,label,timeout){
   return predicate(current)?current:false;
  },label,timeout);
 }
+async function pausePlaybackWhen(condition,label,timeout){
+ return until(()=>page.evaluate(async({stableHits,minimumMs})=>{
+  const playback=window.SweetsDownloadV255,current=playback?.describe();
+  if(current&&!current.started&&/保存したゲームを再開できませんでした|再生を一時停止しました。保存した位置から再開できます/.test(current.error||''))throw Error(current.error);
+  if(!current?.started||!current.playing)return false;
+  if(stableHits){
+   if(current.stableBall<1||current.stableBall>=7||current.cursor!==current.stableBall||current.wait.settling||stableHits[current.stableBall].atMs-current.playbackMs<1000)return false;
+  }else if(current.playbackMs<minimumMs)return false;
+  // Observe and pause in the same browser task: a separate automation call
+  // can otherwise cross the next HIT before the pause reaches the page.
+  playback.pause();
+  await playback.checkpoint();
+  return playback.describe();
+ },condition),label,timeout);
+}
 async function waitForPlaybackComplete(recording){
  const initial=await state(),nativeLimit=Number(initial.wait?.nativeTimeoutMs)||90000;
  // Every recorded HIT has its own native-animation wait. The old whole-round
@@ -224,9 +239,12 @@ try{
   window.__downloadPhysicsSteps=0;
   if(physics.world?.step){const original=physics.world.step;physics.world.step=function(...args){window.__downloadPhysicsSteps++;return original.apply(this,args);};}
  });
- await waitPlayback(s=>s?.stableBall>=1&&s.stableBall<7&&s.cursor===s.stableBall&&pack.playback.recording.hits[s.stableBall].atMs-s.playbackMs>=1000,'stable pause between recorded hits',Math.max(90000,pack.playback.recording.durationMs+60000));
- await page.evaluate(async()=>{window.SweetsDownloadV255.pause();await window.SweetsDownloadV255.checkpoint();});
- let paused=await state();assert.ok(paused.stableBall>=1&&paused.stableBall<8,'pause while the recorded round is unfinished');
+ let paused=await pausePlaybackWhen({stableHits:pack.playback.recording.hits},'stable pause between recorded hits',Math.max(90000,pack.playback.recording.durationMs+60000));
+ assert.ok(paused.stableBall>=1&&paused.stableBall<7,'pause while the recorded round is unfinished');
+ assert.equal(paused.cursor,paused.stableBall,'the initial pause stays at a fully settled HIT');
+ assert.equal(paused.wait.settling,false,'the initial pause does not leave native HIT animation in flight');
+ assert.equal(paused.playing,false);
+ assert.ok(pack.playback.recording.hits[paused.stableBall].atMs-paused.playbackMs>=1000,'the pause preserves room for the disconnection progress check');
  assert.deepEqual(paused.draws,pack.numbers.slice(0,paused.draws.length));
  report.paused=paused;
  milestone('paused',{ball:paused.stableBall,playbackMs:paused.playbackMs});
@@ -255,8 +273,8 @@ try{
  await stopServer(server);previousServerLogs+=server.logs+'\n--- transient restart ---\n';
  assert.equal(await page.evaluate(()=>navigator.onLine),true,'an unreachable server must not be simulated by an offline browser');
  await page.evaluate(()=>window.SweetsDownloadV255.play());
- await waitPlayback(s=>s?.playbackMs>=paused.playbackMs+200,'recorded playback advances during transient disconnection',10000);
- await page.evaluate(async()=>{window.SweetsDownloadV255.pause();await window.SweetsDownloadV255.checkpoint();});
+ const transientPaused=await pausePlaybackWhen({minimumMs:paused.playbackMs+200},'recorded playback advances during transient disconnection',10000);
+ assert.equal(transientPaused.playing,false,'the observed disconnected progress is paused in the same browser task');
  await page.waitForFunction(()=>{const s=window.SweetsDownloadV255.describe();return !s.online&&s.seq>s.ackSeq;},null,{timeout:30000});
  const unsent=await state();assert.equal(unsent.stableBall,paused.stableBall,'the checkpoint remains between the same two recorded hits');
  server=await launchServer({port:server.port,directory:server.directory});await waitReady(server);
