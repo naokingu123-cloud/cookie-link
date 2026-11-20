@@ -1,0 +1,578 @@
+[
+  {
+    "file": "biscuits-cakes.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2897678,
+    "sha256": "237615f6151c4df80a4d694be7fbef7f4b035d84caab1fe246db6c5cf08dad89",
+    "alpha0": 431329,
+    "alpha_lt32": 584408,
+    "alpha255": 0,
+    "sample_corner": [
+      203,
+      152,
+      77,
+      0
+    ],
+    "cells": [
+      {
+        "name": "cookie-berry",
+        "bounds": [
+          51,
+          12,
+          363,
+          315
+        ]
+      },
+      {
+        "name": "cookie-honey",
+        "bounds": [
+          40,
+          7,
+          351,
+          341
+        ]
+      },
+      {
+        "name": "cookie-pistachio",
+        "bounds": [
+          28,
+          12,
+          342,
+          315
+        ]
+      },
+      {
+        "name": "cookie-soda",
+        "bounds": [
+          19,
+          7,
+          332,
+          315
+        ]
+      },
+      {
+        "name": "cookie-grape",
+        "bounds": [
+          53,
+          9,
+          365,
+          320
+        ]
+      },
+      {
+        "name": "hammer",
+        "bounds": [
+          63,
+          0,
+          329,
+          328
+        ]
+      },
+      {
+        "name": "choco-milk",
+        "bounds": [
+          22,
+          3,
+          342,
+          318
+        ]
+      },
+      {
+        "name": "choco-berry",
+        "bounds": [
+          13,
+          6,
+          334,
+          319
+        ]
+      },
+      {
+        "name": "choco-ivory",
+        "bounds": [
+          47,
+          4,
+          365,
+          323
+        ]
+      },
+      {
+        "name": "choco-dark",
+        "bounds": [
+          31,
+          9,
+          355,
+          323
+        ]
+      },
+      {
+        "name": "sugar-star",
+        "bounds": [
+          28,
+          1,
+          335,
+          333
+        ]
+      },
+      {
+        "name": "gold-medal",
+        "bounds": [
+          12,
+          8,
+          333,
+          330
+        ]
+      }
+    ]
+  },
+  {
+    "file": "sugar-drops.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2741607,
+    "sha256": "25667ceffe2618d29a54ab8c720dfd3ce8e56ab4e881e935b77d04d40c8d90ed",
+    "alpha0": 437969,
+    "alpha_lt32": 526569,
+    "alpha255": 0,
+    "sample_corner": [
+      45,
+      80,
+      174,
+      0
+    ],
+    "cells": [
+      {
+        "name": "candy-blue",
+        "bounds": [
+          34,
+          5,
+          368,
+          333
+        ]
+      },
+      {
+        "name": "candy-aqua",
+        "bounds": [
+          25,
+          5,
+          360,
+          334
+        ]
+      },
+      {
+        "name": "candy-green",
+        "bounds": [
+          20,
+          5,
+          354,
+          334
+        ]
+      },
+      {
+        "name": "candy-lime",
+        "bounds": [
+          15,
+          5,
+          349,
+          333
+        ]
+      },
+      {
+        "name": "candy-yellow",
+        "bounds": [
+          32,
+          2,
+          369,
+          342
+        ]
+      },
+      {
+        "name": "candy-orange",
+        "bounds": [
+          24,
+          2,
+          360,
+          342
+        ]
+      },
+      {
+        "name": "candy-red",
+        "bounds": [
+          18,
+          2,
+          354,
+          342
+        ]
+      },
+      {
+        "name": "candy-violet",
+        "bounds": [
+          15,
+          2,
+          351,
+          342
+        ]
+      },
+      {
+        "name": "candy-pink",
+        "bounds": [
+          32,
+          0,
+          369,
+          329
+        ]
+      },
+      {
+        "name": "candy-gold",
+        "bounds": [
+          19,
+          0,
+          361,
+          332
+        ]
+      },
+      {
+        "name": "candy-silver",
+        "bounds": [
+          12,
+          0,
+          354,
+          333
+        ]
+      },
+      {
+        "name": "candy-diamond",
+        "bounds": [
+          10,
+          0,
+          352,
+          332
+        ]
+      }
+    ]
+  },
+  {
+    "file": "crystals-glass.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2467885,
+    "sha256": "af830ae3149c5213d61d222ddb56a47452c5f52d806f8fe07a8b3b895d10e5bd",
+    "alpha0": 36709,
+    "alpha_lt32": 816083,
+    "alpha255": 0,
+    "sample_corner": [
+      102,
+      100,
+      96,
+      0
+    ],
+    "cells": [
+      {
+        "name": "gelato-blue",
+        "bounds": [
+          29,
+          13,
+          355,
+          311
+        ]
+      },
+      {
+        "name": "gelato-green",
+        "bounds": [
+          29,
+          12,
+          356,
+          314
+        ]
+      },
+      {
+        "name": "gelato-yellow",
+        "bounds": [
+          30,
+          12,
+          356,
+          313
+        ]
+      },
+      {
+        "name": "gelato-red",
+        "bounds": [
+          30,
+          12,
+          355,
+          312
+        ]
+      },
+      {
+        "name": "gelato-purple",
+        "bounds": [
+          32,
+          12,
+          354,
+          311
+        ]
+      },
+      {
+        "name": "gelato-socket",
+        "bounds": [
+          22,
+          0,
+          361,
+          323
+        ]
+      },
+      {
+        "name": "wine-glass",
+        "bounds": [
+          4,
+          8,
+          384,
+          322
+        ]
+      },
+      {
+        "name": "wine-plaque",
+        "bounds": [
+          0,
+          61,
+          379,
+          342
+        ]
+      },
+      {
+        "name": "jelly-surface",
+        "bounds": [
+          33,
+          5,
+          352,
+          320
+        ]
+      },
+      {
+        "name": "jelly-rib",
+        "bounds": [
+          1,
+          110,
+          382,
+          214
+        ]
+      },
+      {
+        "name": "popcorn-liner",
+        "bounds": [
+          30,
+          13,
+          353,
+          313
+        ]
+      },
+      {
+        "name": "jelly-mold",
+        "bounds": [
+          12,
+          0,
+          370,
+          325
+        ]
+      }
+    ]
+  },
+  {
+    "file": "popcorn-kernels.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2807618,
+    "sha256": "e8e2bbb1c443f956ba27233f1e12767e13eb7dba89a71001376620fb6f757429",
+    "alpha0": 489812,
+    "alpha_lt32": 558492,
+    "alpha255": 0,
+    "sample_corner": [
+      114,
+      89,
+      47,
+      0
+    ],
+    "cells": [
+      {
+        "name": "popcorn-cream",
+        "bounds": [
+          16,
+          9,
+          487,
+          476
+        ]
+      },
+      {
+        "name": "popcorn-gold",
+        "bounds": [
+          18,
+          1,
+          490,
+          474
+        ]
+      },
+      {
+        "name": "popcorn-red",
+        "bounds": [
+          13,
+          9,
+          490,
+          477
+        ]
+      },
+      {
+        "name": "popcorn-purple",
+        "bounds": [
+          16,
+          0,
+          492,
+          474
+        ]
+      },
+      {
+        "name": "popcorn-blue",
+        "bounds": [
+          16,
+          0,
+          490,
+          479
+        ]
+      },
+      {
+        "name": "popcorn-rainbow",
+        "bounds": [
+          11,
+          8,
+          489,
+          488
+        ]
+      }
+    ]
+  },
+  {
+    "file": "bakery-mochi.png",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2902913,
+    "sha256": "705fafe7ce90101e3e1c5c857b3e4e3147d9a0c235a656b38b8d8c14fa5adcf7",
+    "alpha0": 448523,
+    "alpha_lt32": 525589,
+    "alpha255": 0,
+    "sample_corner": [
+      216,
+      141,
+      52,
+      0
+    ],
+    "cells": [
+      {
+        "name": "waffle-cell",
+        "bounds": [
+          40,
+          8,
+          363,
+          331
+        ]
+      },
+      {
+        "name": "waffle-black",
+        "bounds": [
+          22,
+          5,
+          362,
+          333
+        ]
+      },
+      {
+        "name": "waffle-white",
+        "bounds": [
+          0,
+          4,
+          384,
+          330
+        ]
+      },
+      {
+        "name": "castella-hole",
+        "bounds": [
+          0,
+          5,
+          372,
+          335
+        ]
+      },
+      {
+        "name": "castella-raw",
+        "bounds": [
+          25,
+          4,
+          367,
+          322
+        ]
+      },
+      {
+        "name": "castella-baked",
+        "bounds": [
+          15,
+          4,
+          357,
+          323
+        ]
+      },
+      {
+        "name": "dango-white",
+        "bounds": [
+          5,
+          10,
+          352,
+          315
+        ]
+      },
+      {
+        "name": "dango-green",
+        "bounds": [
+          8,
+          9,
+          350,
+          342
+        ]
+      },
+      {
+        "name": "dango-pink",
+        "bounds": [
+          17,
+          2,
+          376,
+          325
+        ]
+      },
+      {
+        "name": "dango-yellow",
+        "bounds": [
+          11,
+          3,
+          384,
+          323
+        ]
+      },
+      {
+        "name": "dango-rainbow",
+        "bounds": [
+          0,
+          2,
+          365,
+          324
+        ]
+      },
+      {
+        "name": "castella-dispenser",
+        "bounds": [
+          16,
+          0,
+          337,
+          331
+        ]
+      }
+    ]
+  }
+]

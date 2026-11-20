@@ -96,6 +96,7 @@
     for(const {x,y} of K.cells)drawPaperLiner(ctx,x,y);
   }
   function drawPaperLiner(ctx,x,y) {
+    if(window.SweetsIllustratedBoardsBV275?.popcornLiner(ctx,x,y))return;
     ctx.save();ctx.translate(x,y+.055);ctx.lineJoin='round';
     const paper=ctx.createLinearGradient(0,-.27,0,.28);
     paper.addColorStop(0,'#e8c6a4');paper.addColorStop(.43,'#c39379');paper.addColorStop(1,'#e2b594');
@@ -153,7 +154,7 @@
     ctx.beginPath();for(let j=0;j<8;j++){const a=j*Math.PI/4;const d=r*(j%2?.24:1);const xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d;if(j)ctx.lineTo(xx,yy);else ctx.moveTo(xx,yy);}ctx.closePath();ctx.fillStyle=fill;ctx.fill();
   }
   function spriteAtlas(mini) {
-    const illustrated=window.SweetsCartoonBoardsB?.popcornAtlas(mini);if(illustrated)return illustrated;
+    const illustrated=window.SweetsIllustratedBoardsBV275?.popcornAtlas(mini);if(illustrated)return illustrated;
     if(!art.pieces) return null;
     const tile=mini?18:54;
     if(!sprites[tile]) {
@@ -205,11 +206,12 @@
   ];
   const popSheets=new Map();
   function popSheet(power,mini){
-    if(!art.pieces)return null;
+    const pieces=window.SweetsIllustratedBoardsBV275?.popcornSource()||art.pieces;
+    if(!pieces)return null;
     const key=2*power+Number(mini);if(popSheets.has(key))return popSheets.get(key);
     const px=mini?54:146,n=mini?6:14,cols=n/2;
     const sheet=document.createElement('canvas');sheet.width=cols*px;sheet.height=px*2;
-    const c=sheet.getContext('2d'),tile=art.pieces.width/kernelColors.length,zoom=px/3.55;
+    const c=sheet.getContext('2d'),tile=pieces.width/kernelColors.length,zoom=px/3.55;
     for(let i=0;i<n;i++){
       const t=i/(n-1),travel=1-(1-t)**1.65,shrink=1-.40*t;
       c.save();c.translate((i%cols+.5)*px,(Math.floor(i/cols)+.5)*px);c.scale(zoom,zoom);
@@ -221,7 +223,7 @@
         c.translate((cx-.5)*start+vx*travel*flight,(cy-.53)*start+vy*travel*flight-.18+.87*t*t);
         c.rotate(lobe.spin*t);c.scale(shrink*start,shrink*start);c.translate(-cx,-cy);
         c.beginPath();lobe.shape.forEach(([x,y],j)=>j?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();
-        c.drawImage(art.pieces,tile*power,0,tile,tile,0,0,1,1);c.restore();
+        c.drawImage(pieces,tile*power,0,tile,tile,0,0,1,1);c.restore();
       }
       c.restore();
     }

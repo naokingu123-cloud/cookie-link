@@ -1,10 +1,12 @@
-name: Ornate game artwork v274
+name: Illustrated game cells v275
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'assets/ornate-*'
+      - 'assets/illustrated-*'
+      - 'assets/illustrated-art-v275/**'
       - 'assets/ornate-art-v274/**'
       - 'assets/sweet-skins/**'
       - 'assets/six-candy-png/**'
@@ -25,7 +27,7 @@ on:
       - 'assets/download-assets-v255.json'
       - 'index.html'
       - 'app-version.json'
-      - 'tests/ornate-art-v274-browser.mjs'
+      - 'tests/illustrated-art-v275-browser.mjs'
       - '.github/workflows/cartoon-art-v272.yml'
 permissions:
   contents: read
@@ -42,8 +44,12 @@ jobs:
       - name: Syntax, preserved payouts, and current Sugar rules
         run: |
           node --check assets/ornate-art-v274.js
+          node --check assets/illustrated-art-v275.js
+          node --check assets/illustrated-boards-a-v275.js
+          node --check assets/illustrated-boards-b-v275.js
+          node --check assets/illustrated-boards-c-v275.js
           node --check assets/ornate-boards-a-v274.js
-          node --check tests/ornate-art-v274-browser.mjs
+          node --check tests/illustrated-art-v275-browser.mjs
           node --check assets/demo-suite-v91.js
           node --check assets/jelly-lesson.js
           node --check assets/waffle-lesson.js
@@ -71,11 +77,11 @@ jobs:
           else
             npx playwright install --with-deps chromium
           fi
-      - name: All ten native boards, ornate frames, original backgrounds, and stable state
-        run: node tests/ornate-art-v274-browser.mjs
+      - name: All ten illustrated boards, ornate frames, original backgrounds, and stable state
+        run: node tests/illustrated-art-v275-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ornate-v274-ten-games
-          path: qa-ornate-v274/
+          name: illustrated-v275-ten-games
+          path: qa-illustrated-v275/
           retention-days: 7

@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v274-ornate-game-art",
+  "version": "20261120-v275-illustrated-board-pieces",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 45,
-      "sha256": "2d4fde8311a0df28e64af53b96913ec22ad9d23a7a0b78cd2de34da0181d7d56"
+      "bytes": 54,
+      "sha256": "b23ed604195dd6925249ede84a632ec5e010df096d34b66da0af538c99dc388e"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -898,8 +898,8 @@
     },
     {
       "path": "assets/bingo-stick-view.js",
-      "bytes": 16386,
-      "sha256": "b5301832d3800023ec485f87aa5c597b5d28f4882a6c4c568feb374c19bd1b45"
+      "bytes": 16703,
+      "sha256": "a855799ab9e4db747a8660e58359ac6af1442147ae883c1e5249d683e82f81c4"
     },
     {
       "path": "assets/bingo-stick.css",
@@ -1128,8 +1128,8 @@
     },
     {
       "path": "assets/castella-lesson.js",
-      "bytes": 8451,
-      "sha256": "148edad9c348fba99b45d183bd9a39dd4c7666a9a8ef472e6247becda0c51526"
+      "bytes": 8598,
+      "sha256": "c1d2c358706cd7e5504c0331c749dfb44ab44ee29badd36098315c1daaf82793"
     },
     {
       "path": "assets/choco-dig.css",
@@ -1263,8 +1263,8 @@
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 57894,
-      "sha256": "e9dc879365ce29d30fea1bad263851eab4f958fcca1b5b6ed5bb919b0b84275c"
+      "bytes": 58050,
+      "sha256": "4dda968e31a0f4b6d5dc9f85b1c1ae1193b744e3e8fecf47147a34dfa20eb376"
     },
     {
       "path": "assets/dango-bingo.css",
@@ -1288,13 +1288,13 @@
     },
     {
       "path": "assets/demo-suite-v91.js",
-      "bytes": 20196,
-      "sha256": "4d0391fd44125658a5faa098f706a06be2ec4d6f15b63fa062646d68d85aa4e4"
+      "bytes": 20290,
+      "sha256": "defc71507fc374a6a20aa8ca27b68f041c6f5d5f336e7ea7b13c71416655e43c"
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4355,
-      "sha256": "cecac0e2eaf6eec045711bbdb746c9231a6a3fd2e64411f68ca7908af6b8bf65"
+      "bytes": 4364,
+      "sha256": "19e24c44d1773ff957607db596f850c5b9f2ca380f36aef16f7b07aaa34e7721"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1318,8 +1318,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3766,
-      "sha256": "0426bc74a8acaceec2275dfeac2a86ade49a55ac1b70e03b7ec57c47cea99e8d"
+      "bytes": 3775,
+      "sha256": "1a7a3234643791c2cd2b45915fd4a7299b1eda2051fcf5a7fe03aef150ed4f24"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1458,8 +1458,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 69677,
-      "sha256": "1c9e7be1aa25d8434e216b2cc95c4896a6e5b5fa06b6a8f2b3cb410d2d65233c"
+      "bytes": 69693,
+      "sha256": "428ea8ecf5b14936f5935de77948898cf0287b3b92a6f821a96da737f0392806"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -1480,6 +1480,51 @@
       "path": "assets/highest-role-reach-v18.js",
       "bytes": 4347,
       "sha256": "fc0fb5c5438284efaa731d8dc099ddf27e3d6571bf67d2dab3f31be3a7034118"
+    },
+    {
+      "path": "assets/illustrated-art-v275.js",
+      "bytes": 7228,
+      "sha256": "d0f6c81d0530fade36bc04d4419cff23c66776392205f01625c9369fd48180fe"
+    },
+    {
+      "path": "assets/illustrated-art-v275/bakery-mochi.png",
+      "bytes": 2902913,
+      "sha256": "705fafe7ce90101e3e1c5c857b3e4e3147d9a0c235a656b38b8d8c14fa5adcf7"
+    },
+    {
+      "path": "assets/illustrated-art-v275/biscuits-cakes.png",
+      "bytes": 2897678,
+      "sha256": "237615f6151c4df80a4d694be7fbef7f4b035d84caab1fe246db6c5cf08dad89"
+    },
+    {
+      "path": "assets/illustrated-art-v275/crystals-glass.png",
+      "bytes": 2467885,
+      "sha256": "af830ae3149c5213d61d222ddb56a47452c5f52d806f8fe07a8b3b895d10e5bd"
+    },
+    {
+      "path": "assets/illustrated-art-v275/popcorn-kernels.png",
+      "bytes": 2807618,
+      "sha256": "e8e2bbb1c443f956ba27233f1e12767e13eb7dba89a71001376620fb6f757429"
+    },
+    {
+      "path": "assets/illustrated-art-v275/sugar-drops.png",
+      "bytes": 2741607,
+      "sha256": "25667ceffe2618d29a54ab8c720dfd3ce8e56ab4e881e935b77d04d40c8d90ed"
+    },
+    {
+      "path": "assets/illustrated-boards-a-v275.js",
+      "bytes": 6624,
+      "sha256": "ac47bd72e1988c55cfba61fa13b64b3b7e02c634739b03b80d0d5efceab5bb0c"
+    },
+    {
+      "path": "assets/illustrated-boards-b-v275.js",
+      "bytes": 7288,
+      "sha256": "6be4b96feb8ac1b01f7916bff23d09a5511215fa35a961d3b515afcdc59ac971"
+    },
+    {
+      "path": "assets/illustrated-boards-c-v275.js",
+      "bytes": 1956,
+      "sha256": "8180c30b9fe6f1eef0c5afa85f97fc1dd971f8c8d41d472a064ffa63435dcd7f"
     },
     {
       "path": "assets/jelly-backdrop.webp",
@@ -1513,8 +1558,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 37667,
-      "sha256": "e6a0019fa4c76539d9d48bb4a13b4b93a67b8358a0bc1a463d9bdfc889f7dc14"
+      "bytes": 37916,
+      "sha256": "944b2cb6e71eb7a89567775ed69aec8791e0e3e4fe33f2443a4c7c0c2d9d75c0"
     },
     {
       "path": "assets/jelly.css",
@@ -1598,8 +1643,8 @@
     },
     {
       "path": "assets/ornate-boards-a-v274.js",
-      "bytes": 3341,
-      "sha256": "8acb6d7198a1701745865418dded65390ed07ea4637efa7e218d651e8383a111"
+      "bytes": 3474,
+      "sha256": "5867ad01d20a1116c03e0e88ba1f7de6e9a28802c366b187319eda603c614895"
     },
     {
       "path": "assets/ornate-boards-b-v274.css",
@@ -1683,8 +1728,8 @@
     },
     {
       "path": "assets/party-castella.js",
-      "bytes": 31742,
-      "sha256": "c3f9942f194d30eb6f3cca7cfaf716c9c6f178fb71120e59a77412c63873e699"
+      "bytes": 32008,
+      "sha256": "5939138b79ea4fa289d1dd20ea657a8d69c7e808041d12147509a699ad58448d"
     },
     {
       "path": "assets/payout-trend-v242.js",
@@ -1803,8 +1848,8 @@
     },
     {
       "path": "assets/popcorn-view.js",
-      "bytes": 65897,
-      "sha256": "99634354a5d5383124f6d247f94f479e2f145007adbc193e413bcbcfa35a68bb"
+      "bytes": 66050,
+      "sha256": "f415d281d093f0ea4450c5ba04758e023121630149d64235332a5f9a53503a5d"
     },
     {
       "path": "assets/popcorn.css",
@@ -2428,8 +2473,8 @@
     },
     {
       "path": "assets/sixdrop-progressive-host-v247.js",
-      "bytes": 17655,
-      "sha256": "1ea15d717ec81a45f60539ada9a6c2097f9a4d3d169b58367e6cbca80d336d6c"
+      "bytes": 17954,
+      "sha256": "11be639691b758bdbae0a692403b8aa76cd5a40b29204f22276e03f5f103bd26"
     },
     {
       "path": "assets/sixdrop-progressive-v247.css",
@@ -2838,8 +2883,8 @@
     },
     {
       "path": "assets/waffle-lesson.js",
-      "bytes": 7001,
-      "sha256": "4c14f647a7b242d0a967ccc05264e7c3b88ab6ae013e236c1a3b1d7fc897e5a4"
+      "bytes": 7195,
+      "sha256": "c00078e381462f9829761f6285909112ce1f8547bd912ec31700468d0083b26e"
     },
     {
       "path": "assets/waffle-ogura.webp",
@@ -3083,8 +3128,8 @@
     },
     {
       "path": "assets/winery-pyramid-v1.js",
-      "bytes": 50394,
-      "sha256": "29c29731e0f088bbdd71423c2870242334e05b5cb5bdbf46ffb34af76a77e163"
+      "bytes": 50418,
+      "sha256": "506d162de39ef381fdb07d5c6e7e03406e1707797cb03d762a8dd81b989d2090"
     },
     {
       "path": "assets/winery-pyramid-validation-v1.json",
@@ -3123,8 +3168,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 84810,
-      "sha256": "d051a204c48fa8da62b8356ba5800883baa8358c7889c21b5eb7c16d401c793a"
+      "bytes": 85093,
+      "sha256": "938950be60db9c18061646fae7781676450772b0aebce759be70f6536d7af16b"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3138,8 +3183,8 @@
     },
     {
       "path": "optimized/app-01.js",
-      "bytes": 1171832,
-      "sha256": "165fe3e436a214836ba7a3546460ddae7b578bb8ecdab093564ac0336420d1fb"
+      "bytes": 1172007,
+      "sha256": "005ac6bb0d54865b1e364c28f03544e7ac3069f1aa1ddd1147bb4d4e5c358d34"
     },
     {
       "path": "optimized/cookie-20261031.css",
@@ -3362,5 +3407,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 158598295
+  "totalBytes": 172441625
 }

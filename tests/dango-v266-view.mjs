@@ -6,9 +6,10 @@ const root=path.resolve(fileURLToPath(new URL('..',import.meta.url))),output=pat
 await fs.mkdir(output,{recursive:true});
 const mime={'.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.json':'application/json'};
 const baseHtml='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>html,body,#screen,#panels{width:100%;height:100%;margin:0;padding:0}#fixture{position:relative;width:100%;height:100%}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><script src="/assets/dango-bingo-rules.js"></script><script>window.DangoBingoRules=window.DangoBingoRules.legacy266;</script><script src="/assets/dango-bingo-view.js"></script></html>';
-// Use the restored production artwork while keeping the isolated game fixture.
+// Load the production illustrated cells while retaining this isolated game fixture.
 const html=baseHtml
- .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css">');
+ .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css">')
+ .replace('<script src="/assets/dango-bingo-view.js"></script>','<script src="/assets/illustrated-art-v275.js"></script><script src="/assets/illustrated-boards-c-v275.js"></script><script src="/assets/dango-bingo-view.js"></script>');
 const server=http.createServer(async(req,res)=>{
  const u=new URL(req.url,'http://localhost');if(u.pathname==='/'){res.end(html);return;}
  const file=path.resolve(root,'.'+u.pathname);if(!file.startsWith(root+path.sep)){res.statusCode=403;res.end();return;}
@@ -23,7 +24,7 @@ try{
  page.on('pageerror',error=>errors.push(String(error)));
  await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'networkidle'});
  const ready=await page.evaluate(async()=>{
-  await Promise.all([DangoBingoView.assetsReady,document.fonts.ready]);
+  await Promise.all([DangoBingoView.assetsReady,SweetsBoardArtV275.ready,document.fonts.ready]);
   const R=DangoBingoRules;
   window.qa={R,view:DangoBingoView.mount(document.getElementById('fixture')),state:null};
   qa.render=()=>qa.view.draw(qa.state,{bet:100,remainingMs:9000,reducedMotion:true});
@@ -55,9 +56,9 @@ try{
   const mini=document.createElement('canvas');mini.width=220;mini.height=150;const before=JSON.stringify(qa.state),used=DangoBingoView.describeAssets().usage.cells;
   DangoBingoView.drawMini(mini.getContext('2d'),qa.state,{reducedMotion:true});
   const visual=DangoBingoView.describeAssets();
-  return {ready:visual.ready,cartoonAdapter:visual.cartoon,sources,frameSource,payoutPNG:{source:payoutImage.src,width:payoutImage.naturalWidth,height:payoutImage.naturalHeight},mainImageCells:visual.last.main.imageCells,mainStandRendered:visual.last.main.standRendered,miniImageCells:visual.last.mini.imageCells,miniGeneratedCells:visual.usage.cells-used,miniStandRendered:visual.last.mini.standRendered,cells:qa.state.cells.length,generatedCells:visual.usage.cells,generatedStands:visual.usage.stands,stateUnchanged:before===JSON.stringify(qa.state)};
+  return {ready:visual.ready,cartoonAdapter:visual.cartoon,illustratedAdapter:visual.illustrated,sources,frameSource,payoutPNG:{source:payoutImage.src,width:payoutImage.naturalWidth,height:payoutImage.naturalHeight},mainImageCells:visual.last.main.imageCells,mainStandRendered:visual.last.main.standRendered,miniImageCells:visual.last.mini.imageCells,miniGeneratedCells:visual.usage.cells-used,miniStandRendered:visual.last.mini.standRendered,cells:qa.state.cells.length,generatedCells:visual.usage.cells,generatedStands:visual.usage.stands,stateUnchanged:before===JSON.stringify(qa.state)};
  });
- assert.equal(artwork.ready,true);assert.equal(artwork.cartoonAdapter,null,'saved boards use the native mochi painter');
+ assert.equal(artwork.ready,true);assert.equal(artwork.cartoonAdapter,null,'saved boards never use the old flat painter');assert.equal(artwork.illustratedAdapter.ready,true);assert.ok(artwork.illustratedAdapter.usage.dangoCells>=artwork.cells*2,'new mochi are drawn on main and mini saved boards');
  assert.deepEqual(artwork.sources.map(source=>source.key),['white','green','pink','yellow','rainbow','skewer','stand']);
  for(const source of artwork.sources){assert.match(source.file,/dango-art-v25[23]\/[^/]+\.webp\?v=253$/);assert.ok(source.width>0&&source.height>0,'generated native source decodes: '+source.file);}
  assert.match(artwork.frameSource,/dango-art-v270\/payout-table\.png/,'legacy boards retain the v270 frame material with their zero-width layout');

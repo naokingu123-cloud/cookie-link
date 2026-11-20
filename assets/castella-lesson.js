@@ -59,7 +59,9 @@ function gauge(c,kind,level,x,y){
 function well(c,x,y,r,state){
  const cartoon=window.SweetsCartoonArt;
  disc(c,x,y+2,r+1,cartoon?.loaded?'#87452c':'#331d19');
- if(cartoon?.loaded)cartoon.draw(c,['castella-hole','castella-raw','castella-baked'][state],x-r,y-r,r*2,r*2);
+ const illustrated=window.SweetsIllustratedBoardsCV275?.castellaMaterials();
+ if(illustrated)c.drawImage(illustrated[state],x-r,y-r,r*2,r*2);
+ else if(cartoon?.loaded)cartoon.draw(c,['castella-hole','castella-raw','castella-baked'][state],x-r,y-r,r*2,r*2);
  else if(faces)c.drawImage(faces[state],x-r,y-r,r*2,r*2);
  else disc(c,x,y,r,['#192426','#ffcf69','#bf6b2a'][state]);
 }

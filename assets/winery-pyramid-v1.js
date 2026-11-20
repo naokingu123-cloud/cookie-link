@@ -443,7 +443,7 @@ function premiumGlass(x,i,g,t){
   rad.addColorStop(1,'#ffffff00');
   x.fillStyle=rad;x.beginPath();x.arc(cx,cy+43,fresh?92:73,0,Math.PI*2);x.fill();
  }
-  if(window.SweetsCartoonBoardsB?.wineryGlass(x,cx,cy,full)){
+  if(window.SweetsIllustratedBoardsBV275?.wineryGlass(x,cx,cy,full)){
    // Generated cup artwork surrounds the existing live liquid window.
   }else if(rasterCupReady&&rasterCup.naturalWidth){
   // EXCLUDE the source PNG's printed red juice and digit 1 from the upper
@@ -477,7 +477,7 @@ function premiumGlass(x,i,g,t){
  // The photo is clipped to the silhouette of the coupe, stem and foot. Its
  // backdrop, adjacent glasses, printed numbers and scenery are excluded.
  // Screen blending removes dark photographic tones and reveals live juice below.
-  if(!window.SweetsCartoonBoardsB?.active&&photoReady&&!rasterCupReady){
+  if(!window.SweetsIllustratedBoardsBV275?.active&&photoReady&&!rasterCupReady){
   const {r,c}=K.CELLS[i],oldX=692+(c-r/2)*150,oldY=38+r*133;
   x.save();x.beginPath();
   x.moveTo(cx-65,cy+4);
@@ -502,7 +502,7 @@ function premiumGlass(x,i,g,t){
  x.shadowColor='#ffe7bb';x.shadowBlur=4;
  x.beginPath();x.moveTo(cx+25,cy+76);x.quadraticCurveTo(cx+30,cy+84,cx+28,badgeY-11);x.stroke();
  x.shadowBlur=0;
-  if(window.SweetsCartoonBoardsB?.wineryPlaque(x,cx,badgeY,full)){
+  if(window.SweetsIllustratedBoardsBV275?.wineryPlaque(x,cx,badgeY,full)){
    // Number and FULL/MIX state continue to use the actual engine values.
   }else if(priceTagArt.naturalWidth){
   x.drawImage(confectionTags||priceTagArt,full?200:0,0,200,100,cx-42,badgeY-22,84,44);

@@ -40,8 +40,8 @@ const art={},images={
 for(const [key,urls] of Object.entries(images))art[key]=urls.map(src=>{const im=new Image();im.decoding='async';im.src=src;return im;});
 // Lessons are a separate foreground canvas. Resolve their own illustration
 // sources as well as the live board caches; keep every example and coordinate.
-const illustrated={cakes:['choco-ivory','choco-berry','choco-milk','choco-dark'],ore:['ore-diamond'],prism:['gelato-blue'],glass:['wine-glass'],popcorn:['popcorn-cream'],jelly:['jelly-blue'],stick:['waffle-cell'],castella:['castella-baked']};
-function lessonArt(key,index=0){const A=window.SweetsCartoonArt,name=illustrated[key]?.[index];return A?.loaded&&name?A.sprite(name)||art[key]?.[index]:art[key]?.[index];}
+const illustrated={cakes:['choco-ivory','choco-berry','choco-milk','choco-dark'],ore:['ore-diamond'],prism:['gelato-blue'],glass:['wine-glass'],popcorn:['popcorn-cream'],jelly:['jelly-surface'],stick:['waffle-cell'],castella:['castella-baked']};
+function lessonArt(key,index=0){const A=window.SweetsBoardArtV275||window.SweetsCartoonArt,name=illustrated[key]?.[index];return A?.loaded&&name?A.sprite(name)||art[key]?.[index]:art[key]?.[index];}
 const loaded=im=>im&&(im.naturalWidth||im.width)>0&&im.complete!==false;
 function rect(c,x,y,w,h,r,fill,stroke,lw=1){c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.lineWidth=lw;c.strokeStyle=stroke;c.stroke();}}
 function dot(c,x,y,r,fill,stroke,lw=1){c.beginPath();c.arc(x,y,r,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw;c.stroke();}}
@@ -135,7 +135,7 @@ function gelatoDiagram(c,stage,t){
   if(!tri.every(i=>present.has(i)))continue;c.beginPath();tri.forEach((i,j)=>j?c.lineTo(...prismPoints[i]):c.moveTo(...prismPoints[i]));c.closePath();c.fillStyle='rgba(121,224,242,.63)';c.fill();
  }
  for(const [a,b] of prismLines){const hot=present.has(a)&&present.has(b);line(c,[prismPoints[a],prismPoints[b]],hot?'#f3ffff':'#557c8b',hot?5:2);}
- prismPoints.forEach(([x,y],i)=>{const on=present.has(i),painted=window.SweetsCartoonBoardsB?.gelatoSocket(c,on,x,y,32);if(!painted)dot(c,x,y,15,on?'#86dfea':'#3f5b71',on?'#f7ffff':'#70929c',2.5);text(c,['7','12','3','19'][i],x,y,16,painted?'#49305c':on?'#325973':'#e3edf1',26);});
+ prismPoints.forEach(([x,y],i)=>{const on=present.has(i),painted=window.SweetsIllustratedBoardsBV275?.gelatoSocket(c,on,x,y,32)||window.SweetsCartoonBoardsB?.gelatoSocket(c,on,x,y,32);if(!painted)dot(c,x,y,15,on?'#86dfea':'#3f5b71',on?'#f7ffff':'#70929c',2.5);text(c,['7','12','3','19'][i],x,y,16,painted?'#fff4bc':on?'#325973':'#e3edf1',26);});
  tag(c,['7 HIT','2点を結ぶ','1枚 GET','2枚 GET'][stage],100,198,136,'#adf0ff');
 }
 function glass(c,x,y,red,orange){

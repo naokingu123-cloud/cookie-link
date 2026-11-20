@@ -1,0 +1,102 @@
+{
+  "version": "20261120-v275-illustrated-board-pieces",
+  "mode": "built-in image_gen",
+  "artDirection": "Detailed hand-painted Animarotta-like sweets board pieces; preserve original worlds and v274 ornate frames.",
+  "assets": [
+    {
+      "file": "biscuits-cakes.png",
+      "cols": 4,
+      "rows": 3,
+      "names": [
+        "cookie-berry",
+        "cookie-honey",
+        "cookie-pistachio",
+        "cookie-soda",
+        "cookie-grape",
+        "hammer",
+        "choco-milk",
+        "choco-berry",
+        "choco-ivory",
+        "choco-dark",
+        "sugar-star",
+        "gold-medal"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite atlas for SWEETS LINK, a Japanese sweets fantasy medal arcade game. Art direction: elaborate hand-painted 2.5D Japanese family arcade game illustrations, inspired by the colorful, rounded, jewel-like visual touch of Animarotta. Rich crafted details, layered bevels, controlled saturated candy colors, pearly highlights, soft illustrated shading, fine cream piping, tiny embossed sweets/star motifs near edges. This must look lovingly rendered and substantial, not flat vector clipart, not simplified icons, not photorealistic food. No existing characters or logos. All elements face straight toward the viewer or straight overhead as specified; no isometric cubes. Lighting consistently upper-left. Transparent RGBA background; isolated individual sprites, no scene, no labels, no letters or numbers, no grid lines, no drop shadows extending into neighboring cells. Preserve each silhouette fully with generous transparent gutters. Broad quiet center areas must remain legible under live game numbers. Exactly 12 distinct sprites arranged on a strict 4-column by 3-row equal cell atlas. Suggested canvas1536x1024. One centered sprite per cell, about78% of cell width/height. Row1 left to right: (1) rounded-square golden biscuit with rich strawberry-pink icing, subtle tiny pale star emboss at the lower edge, scalloped fine piped cream rim, thick baked edge, broad pink central field; (2) same biscuit with amber honey icing and little lower-edge honeycomb detail; (3) same biscuit with pistachio green icing, minute mint leaf rim ornaments; (4) same biscuit with sky-blue soda icing, fine silver-white bead rim and tiny bubble details. Row2: (1) same biscuit with saturated grape-purple icing and fine lavender cream rim; (2) small deluxe sweet golden hammer, thick carved biscuit handle, candy-enamel gold head with pink cream filigree, clear hammer silhouette; (3) square milk chocolate cake stratum seen FRONT ON, almost square full front face, top30% creamy white icing band with gentle drips, lower70% detailed dense cocoa sponge with fine drawn pores and chocolate layers; (4) square strawberry cream cake stratum FRONT ON, top30% pale pink cream drips, lower70% raspberry/pink sponge with fine illustrated pores. Row3: (1) square ivory vanilla cake stratum FRONT ON, top30% shiny pale yellow custard icing, lower70% pale golden sponge, fine drawn texture; (2) square dark chocolate cake stratum FRONT ON, top30% glossy dark ganache drips, lower70% deep cocoa sponge with purple-brown shading; (3) six-point pearly sugar crystal with candy-rose center and gold rim; (4) golden round medal with embossed candy star, layered pearl rim, no text. Cakes must be square front faces without visible side perspective, icing band near top and coherent broad center texture suitable for seamless connected neighboring cells. Biscuits have nearly square silhouettes with dimensional rounded corners. Detailed painted arcade UI materials, no broad black comic outlines."
+    },
+    {
+      "file": "sugar-drops.png",
+      "cols": 4,
+      "rows": 3,
+      "names": [
+        "candy-blue",
+        "candy-aqua",
+        "candy-green",
+        "candy-lime",
+        "candy-yellow",
+        "candy-orange",
+        "candy-red",
+        "candy-violet",
+        "candy-pink",
+        "candy-gold",
+        "candy-silver",
+        "candy-diamond"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite atlas for SWEETS LINK, a Japanese sweets fantasy medal arcade game. Art direction: elaborate hand-painted 2.5D Japanese family arcade game illustrations, inspired by the colorful, rounded, jewel-like visual touch of Animarotta. Rich crafted details, layered bevels, controlled saturated candy colors, pearly highlights, soft illustrated shading, fine cream piping, tiny embossed sweets/star motifs near edges. This must look lovingly rendered and substantial, not flat vector clipart, not simplified icons, not photorealistic food. No existing characters or logos. All elements face straight toward the viewer or straight overhead as specified; no isometric cubes. Lighting consistently upper-left. Transparent RGBA background; isolated individual sprites, no scene, no labels, no letters or numbers, no grid lines, no drop shadows extending into neighboring cells. Preserve each silhouette fully with generous transparent gutters. Broad quiet center areas must remain legible under live game numbers. Exactly12 circular thick sugar-glass drops arranged in strict4columns by3rows equalcells, suggested1536x1024. Each one is a nearly perfectly ROUND, front-facing glass-candy medallion, all same diameter about76% ofcellshortside. Rich transparent candy body, double raised sparkling rim, internal colored refraction, tiny molded star and petal details tucked into lower outer rim, white curved highlights top-left, detailed sparkles embedded in the circumference. Central65% is a deep saturated but calm translucent field suitable for white and gold game numbers; avoid prominent white star or fruit over the center. Candy thickness and concentric rims must read at small sizes. Subtle gently curling tinted candy ribbon visible within body but never flatten to a simple gradient disk. Row1: cobaltBLUE, turquoiseAQUA, emeraldGREEN, freshLIME. Row2: goldenYELLOW, tangerineORANGE, rubyRED, amethystVIOLET. Row3: rosePINK, special elaborate metallicGOLD candy with star-cutrim, special pearlescentSILVER candy with frosted rim, special crystalDIAMOND candy with rainbow refraction inside clear pale-blue body. Colors all stronglydistinct. Transparent surroundings, not colored square backplates. Meticulous rich polished Japanese arcade fantasy illustration, preserveclearround silhouette and consistent size, no words."
+    },
+    {
+      "file": "crystals-glass.png",
+      "cols": 4,
+      "rows": 3,
+      "names": [
+        "gelato-blue",
+        "gelato-green",
+        "gelato-yellow",
+        "gelato-red",
+        "gelato-purple",
+        "gelato-socket",
+        "wine-glass",
+        "wine-plaque",
+        "jelly-surface",
+        "jelly-rib",
+        "popcorn-liner",
+        "jelly-mold"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite atlas for SWEETS LINK, a Japanese sweets fantasy medal arcade game. Art direction: elaborate hand-painted 2.5D Japanese family arcade game illustrations, inspired by the colorful, rounded, jewel-like visual touch of Animarotta. Rich crafted details, layered bevels, controlled saturated candy colors, pearly highlights, soft illustrated shading, fine cream piping, tiny embossed sweets/star motifs near edges. This must look lovingly rendered and substantial, not flat vector clipart, not simplified icons, not photorealistic food. No existing characters or logos. All elements face straight toward the viewer or straight overhead as specified; no isometric cubes. Lighting consistently upper-left. Transparent RGBA background; isolated individual sprites, no scene, no labels, no letters or numbers, no grid lines, no drop shadows extending into neighboring cells. Preserve each silhouette fully with generous transparent gutters. Broad quiet center areas must remain legible under live game numbers. Exactly12 individual game material sprites in strict4columns by3rows equalcells, suggested1536x1024. Row1: 4upward-pointing equilateral triangular thick gelato/candy crystal pieces, colors icyBLUE, mintGREEN, lemonYELLOW, strawberryRED. Each is one solid triangular colored jewel with roundedcorners, fine double frosty cream/gold bevel, luminous large centralfacet, delicate frosted sugar flakes at rim, center otherwise clear; fully symmetrical straight-on triangle oneapex above two bottomcorners. Row2: (1) the matching PURPLE upward triangular gelato jewel; (2) a small circular ornate icyblue socket bezel, concentric crystal petals and delicate silver stars at circumference, verydark navy flat calm centraldisc for white numbers; (3) an EMPTY elaborate grape-fantasy coupe glass, fullglass approximatelysquare, wide veryshallow flared bowl at top occupying upper60%, purple gold vine engraved rim, thin jewel-decoratedstem and roundflared foot below, transparent empty bowl with only pale transparent highlights, no liquid, no grapes inside, no numbers; (4) horizontal blank ornate grape-and-gold nameplate, violet enamel center, green leaf flourishes and gold pearl beveled edge, widequietempty center. Row3: (1) square translucent AQUA jelly-candy surface, FRONT ON and edge-to-edge square, flowing internal light ripples and delicate specular highlights mostlyat edges, veryfine air bubbles nearcorners, no frame, not a cube; (2) horizontal sugar-glass divider bar, longnarrowrectangular, ribbed pearlycandy flutes with tiny diamond-faceted endcaps, translucentblue-white with rich warmgoldline; (3) top-down small flattenedround scalloped popcorn-paper nest, cream-and-coral stripes around ruffled rim, golden trim, recessed amber calmcenter, rich illustrative folds; (4) square open jelly-glass frame with thick roundedcorners, aqua andpink opalescent layered sugar glass bevel, delicate tiny diamond/pearl studs, transparent completelyemptycenter occupying at least70%widthandheight. All 12 isolated ontrue transparentbackground, no lettering, no numbers."
+    },
+    {
+      "file": "popcorn-kernels.png",
+      "cols": 3,
+      "rows": 2,
+      "names": [
+        "popcorn-cream",
+        "popcorn-gold",
+        "popcorn-red",
+        "popcorn-purple",
+        "popcorn-blue",
+        "popcorn-rainbow"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite atlas for SWEETS LINK, a Japanese sweets fantasy medal arcade game. Art direction: elaborate hand-painted 2.5D Japanese family arcade game illustrations, inspired by the colorful, rounded, jewel-like visual touch of Animarotta. Rich crafted details, layered bevels, controlled saturated candy colors, pearly highlights, soft illustrated shading, fine cream piping, tiny embossed sweets/star motifs near edges. This must look lovingly rendered and substantial, not flat vector clipart, not simplified icons, not photorealistic food. No existing characters or logos. All elements face straight toward the viewer or straight overhead as specified; no isometric cubes. Lighting consistently upper-left. Transparent RGBA background; isolated individual sprites, no scene, no labels, no letters or numbers, no grid lines, no drop shadows extending into neighboring cells. Preserve each silhouette fully with generous transparent gutters. Broad quiet center areas must remain legible under live game numbers. Exactly6 richly detailed popcorn game pieces in a strict3column by2rowequalcellatlas, landscape1536x1024. One BIG front-facing nearly round puffedpopcorn cluster percell, about78%shortside, same friendly five-lobed organic silhouette acrossall6. Multiple billowing kernels combined into onepiece, richcream puff contours, caramel folds, clearlylayered browned rims and dimensionalsoft shadows, glossy candy-glazeonraisedouterlobes, pearlyhighlightlike a jeweled arcade gamepiece; keepmediumsizedsoftcenter clearforgamestateicons. Eachlooksfun andfairytale, notfoodphotography. Row1lefttoright: (1) original sweetBUTTERCREAM with warm goldenbrown crinkles and subtle gleaming goldenrim; (2) prestigious goldenHONEY glaze, delicate goldpearl studs and small crown-likecrest incorporatedat the topouterrim, no freefloatingobjects; (3) strawberryRUBY RED glaze, caramel folds, finegoldrim, subtle tiny raisedstar onlowerlobe. Row2: (1) royalVIOLET grape glaze withlavenderhighlights and tiny purplejewelattoprim; (2) brightSAPPHIRE blue soda glaze with turquoisehighlight and tiny silverstarattoprim; (3) spectacular RAINBOW glazedmulticolorkernel, sixbrightcoloredlobesaroundcreamcenter, layeredgoldcandybevel, subtlesparklingstars nearouteredge. Rich handpainted 2.5D Japanese medal arcade illustration. No separate bombs,fusesoricons; runtime drawsstate overlays. Clean transparent pixels surround eachfullsilhouette, no panelsorbackground."
+    },
+    {
+      "file": "bakery-mochi.png",
+      "cols": 4,
+      "rows": 3,
+      "names": [
+        "waffle-cell",
+        "waffle-black",
+        "waffle-white",
+        "castella-hole",
+        "castella-raw",
+        "castella-baked",
+        "dango-white",
+        "dango-green",
+        "dango-pink",
+        "dango-yellow",
+        "dango-rainbow",
+        "castella-dispenser"
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite atlas for SWEETS LINK, a Japanese sweets fantasy medal arcade game. Art direction: elaborate hand-painted 2.5D Japanese family arcade game illustrations, inspired by the colorful, rounded, jewel-like visual touch of Animarotta. Rich crafted details, layered bevels, controlled saturated candy colors, pearly highlights, soft illustrated shading, fine cream piping, tiny embossed sweets/star motifs near edges. This must look lovingly rendered and substantial, not flat vector clipart, not simplified icons, not photorealistic food. No existing characters or logos. All elements face straight toward the viewer or straight overhead as specified; no isometric cubes. Lighting consistently upper-left. Transparent RGBA background; isolated individual sprites, no scene, no labels, no letters or numbers, no grid lines, no drop shadows extending into neighboring cells. Preserve each silhouette fully with generous transparent gutters. Broad quiet center areas must remain legible under live game numbers. Exactly12 individual game sprites arrangedstrict4columns by3rowsequalcells, suggested1536x1024. Row1: (1) square WAFFLE CELL viewedstraightoverhead, thickraisedgoldenbakedrim, tinyfloweremboss atcorners, warmamber recessedquietsquarecenter, deeplytoasted finecrumbtexture with richgolden highlights, no toppings; (2) round darkOGURA redbean/chocolate toppingdisc viewedoverhead, puffedsilhouette, deeppurple-brown glossybeanpaste swirl, tinyrichlydrawnredbeans atouterrim and a verysubtle goldstarfleck, centerdarkclear; (3) round whiteBUTTER/cream toppingdisc viewedoverhead, paleivory petaledmound, delicatelyfoldedcream and butteryshine, centerlightclear, notanegg; (4) darkemptycastellaGRIDDLE WELL viewedoverhead, perfectlyround bowl, caramelgold metallicsculptedrim anddarkcocoa recessedinterior, tiny flourishtwo sides, centerplain. Row2: (1) RAWcastellabatter pool perfectlyround overhead, palegold custard, thickroundedcreamrim withsubtle swirls and tinyairbubbles atedges, calmcenter; (2) BAKEDcastella puffyroundbun overhead, warmdeepgold bakedcrust, scallopedfatsoftedge, rich amber shading and tinybakedstar motifonlowerrim, calmwidecenter; (3) round WHITE mochi dango sphere, straight-on, slightlysquashed, layeredsoftshadow, ivory pearl sheen andveryfaintdelicate flourgrain, subtlewhitecreamornamentalonglowerrim, noplateorstick; (4) matching GREEN mochi, richmatchagreen withpalegreenglow anddarkgreenunderside, no stick. Row3: (1) matching PINK strawberrymochi withroseyshading and pearlyhighlights,nostick; (2) matching YELLOW goldenmochi withtinygoldstar emboss tuckedintoloweredge andfinegleamingrim, centerplain; (3) matching special RAINBOW mochi withcreamcenter, softcandycolorediridescentrim and smallinlaidstarsnearouteredge, nostick; (4) a small whimsicalcastellabatterDISPENSER bottle, cleargoldenfilledglass, ornate cream-andgold cap, delicate pastry-crowncrest, narrowanglednozzle, no label. All12 are highlydetailed roundedhandpainted Japanesefantasyarcadeillustrations; objects centeredseparate, substantialdepth andminutepaintedmaterialdetails, no text,noenvironment."
+    }
+  ]
+}
+

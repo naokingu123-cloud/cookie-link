@@ -1,3 +1,15 @@
+# v275 — 盤面マス・駒の詳細イラスト化（2026-11-20）
+
+- Build: `20261120-v275-illustrated-board-pieces`。v274の背景・外枠・配当表を維持し、全10ゲームの実際のマス／駒を描き込まれたアニマロッタ調の画像に更新。
+- 新規5画像シート54素材: `assets/illustrated-art-v275/`。PNGそのものは不変。全体座標で切り出し、隣の飾りの混入を除去。
+- 共通 `SweetsBoardArtV275` + `SweetsIllustratedBoards{A,B,C}V275`。旧v272の平坦化API/CSSは引き続き読み込まない。
+- Aはv247固定パレット後、v274の役アイコン前に読み込む。B/Cは共通APIが存在した後、盤面モジュールより前。両共通API readyを待ってbootstrap。
+- 背景、配置、数字フォント、ルール、RNG、配当、Sugar9.949938%／JP×n／はずれ倍率非適用は不変。
+- 詳細: `docs/illustrated-art-v275.md`。プロンプト・素材検査・切り出し座標も同ディレクトリ。
+- CI: `tests/illustrated-art-v275-browser.mjs`、workflow名 Illustrated game cells v275、artifact `illustrated-v275-ten-games`。公開後の結果は同版QA記録を参照。
+
+---
+
 # CookieLink 開発引き継ぎ
 
 ## 最新更新: 2026-11-20 — v274 元の質感と背景を復帰、描き込んだ装飾枠

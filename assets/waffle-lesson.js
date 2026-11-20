@@ -5,6 +5,7 @@ const font='"Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif'
 const files={black:'waffle-reversi-ogura-v128.png',white:'waffle-reversi-butter-v128.png',wafer:'waffle-tier.webp',rail:'waffle-turn-rail.webp'};
 const images={};
 function sprite(c,key,x,y,w,h){
+ if((key==='black'||key==='white')&&window.SweetsIllustratedBoardsCV275?.wafflePiece(c,key,x,y,w,h))return true;
  const cartoon=window.SweetsCartoonArt;
  if(cartoon?.loaded){
   if(key==='black'||key==='white')return cartoon.draw(c,'waffle-'+key,x,y,w,h);
@@ -36,7 +37,8 @@ function stone(c,color,x,y,size){
 }
 function pocket(c,x,y,size,num){
  const r=size/2,cartoon=window.SweetsCartoonArt;
- if(cartoon?.loaded)cartoon.draw(c,'waffle-cell',x-r,y-r,size,size);
+ if(window.SweetsIllustratedBoardsCV275?.waffleCell(c,x-r,y-r,size,size)){}
+ else if(cartoon?.loaded)cartoon.draw(c,'waffle-cell',x-r,y-r,size,size);
  else{
   box(c,x-r,y-r,size,size,8,'#c97f37','#f4bc6e',2);
   box(c,x-r+3,y-r+3,size-6,size-6,6,'#df9b50','#945624',2);

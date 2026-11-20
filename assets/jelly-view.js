@@ -116,6 +116,7 @@ function cell(c,i,color,time,mini,paints){
  // Use one continuous hue across adjoining compartments. The open seams have no tile edges.
  const g=paints[color]??=gradient(c,0,0,160,510,[[0,p[0]],[.2,p[1]],[.62,p[2]],[1,p[3]]]);
  c.fillStyle=g;c.fillRect(x-.12,y-.12,100.24,100.24);
+ window.SweetsIllustratedBoardsBV275?.jellyTexture(c,x,y,100,100,mini);
  if(mini)return;
  c.drawImage(refractionArt(),x,y,100,100,x,y,100,100);
  const drift=Math.sin(time*.0015+i*1.71)*2;
@@ -188,6 +189,7 @@ function cleanMoldFloor(){
  const light=g.createRadialGradient(95,38,0,95,38,400);
  light.addColorStop(0,'#b5fff21a');light.addColorStop(1,'#4ef5d000');
  g.fillStyle=light;g.fillRect(0,0,500,500);
+ window.SweetsIllustratedBoardsBV275?.jellyTexture(g,0,0,500,500,false,true);
  floorSprite=canvas;return canvas;
 }
 let lastGlazedState,glaze;
@@ -239,6 +241,7 @@ function glazeCells(c,state,turn,elapsed){
 // follow the same three seams in both the crack and the separated fragments.
 let ribSprite;
 function ribArt(){
+  const painted=window.SweetsIllustratedBoardsBV275?.jellyRib();if(painted)return painted;
   const illustrated=window.SweetsCartoonBoardsB?.jellyRib();if(illustrated)return illustrated;
  if(ribSprite)return ribSprite;
  const img=document.createElement('canvas');img.width=208;img.height=32;
@@ -547,7 +550,7 @@ function reachFrame(c,loops,id,item,t,mini){
 function board(c,state,o,x,y,side){
  const {time=0,elapsed=0,turn,mini}=o,scale=side/moldSize;
  c.save();c.translate(x+moldRim*scale,y+moldRim*scale);c.scale(scale,scale);
-  if(window.SweetsCartoonBoardsB?.jellyRim(c)){
+  if(window.SweetsIllustratedBoardsBV275?.jellyRim(c)){
    // The generated bezel stays outside the same 500 x 500 live compartments.
   }else if(mold.complete&&mold.naturalWidth)c.drawImage(mold,-moldRim,-moldRim,moldSize,moldSize);
  else rect(c,0,0,500,500,9,'#244b54','#9ae3da',5);

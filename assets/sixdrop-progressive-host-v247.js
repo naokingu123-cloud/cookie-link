@@ -13,6 +13,11 @@ const spriteMap=[[3,1],[2,1],[1,1],[0,1],[0,2],[0,3],[0,4],[0,5],[0,4]],spriteCa
 // candy texture; distinguish true red from the newly introduced pink.
 function paletteSprite(color,sugar=false){
  const index=Math.max(0,Math.min(spriteMap.length-1,Number(color)|0)),pair=spriteMap[index];
+ // v275 changes only the painted candy source. Keep the absolute color
+ // order and share it with this closure's tutorial and live miniatures.
+ const illustrated=window.SweetsBoardArtV275;
+ const painted=illustrated?.loaded&&illustrated.sprite('candy-'+R.RING[index]);
+ if(painted)return painted;
  if(![0,6,8].includes(index))return nativeSprite(pair[0],pair[1],sugar,false);
  const key=index+'/'+Number(sugar)+'/'+Number(!!sixCandyPngState.loaded);if(spriteCache.has(key))return spriteCache.get(key);
  const source=nativeSprite(pair[0],pair[1],sugar,false),cv=document.createElement('canvas');cv.width=cv.height=128;

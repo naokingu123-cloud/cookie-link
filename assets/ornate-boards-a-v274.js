@@ -29,15 +29,16 @@ if(selected.has('choco')&&typeof chocoOreTable==='function'){
  };
 }
 
-/* Role diagrams share the v247 palette and the original PNG-backed candy
- * cache with both the live board and its miniature. Use the existing role
- * layout too, rather than introducing a second set of candy illustrations.
- * Wait for the PNG so a temporary vector fallback cannot become the icon. */
+/* Role diagrams share the v247 palette with the live board and miniature.
+ * v275 supplies its painted drops to that same palette; otherwise wait for
+ * the original PNG so a temporary vector fallback cannot become the icon.
+ * In both cases retain the existing role positions and number-free layout. */
 const roleURLs=new Map();
 function roleURL(type){
  if(!['line','triangle','hexagon'].includes(type)||
     typeof sixDrawRoleIcon!=='function'||
-    typeof sixCandyPngState==='undefined'||!sixCandyPngState.loaded)return '';
+    (!window.SweetsBoardArtV275?.loaded&&
+     (typeof sixCandyPngState==='undefined'||!sixCandyPngState.loaded)))return '';
  if(roleURLs.has(type))return roleURLs.get(type);
  const canvas=document.createElement('canvas');canvas.width=120;canvas.height=80;
  sixDrawRoleIcon(canvas,type,1);
@@ -52,13 +53,13 @@ function refreshRoleImages(node){
   const url=roleURL(type);
   if(url&&image.getAttribute('src')!==url){
    image.setAttribute('src',url);
-   image.dataset.ornateRole='native-v247';
+   image.dataset.ornateRole=window.SweetsBoardArtV275?.loaded?'painted-v275':'native-v247';
   }
  }
 }
 if(selected.has('candy')){
  refreshRoleImages(document.body);
- if(typeof sixCandyPng!=='undefined'&&typeof sixCandyPngState!=='undefined'&&!sixCandyPngState.loaded)
+ if(!window.SweetsBoardArtV275?.loaded&&typeof sixCandyPng!=='undefined'&&typeof sixCandyPngState!=='undefined'&&!sixCandyPngState.loaded)
   sixCandyPng.addEventListener('load',()=>refreshRoleImages(document.body),{once:true});
  const observer=new MutationObserver(records=>{
   for(const record of records)for(const node of record.addedNodes)refreshRoleImages(node);

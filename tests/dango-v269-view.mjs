@@ -13,9 +13,10 @@ const circularBuilder=nativeSource.match(/function sixDropReachCometMarkup\(tier
 assert.ok(circularBuilder,'production circular Six Drop builder exists');
 const nativeReach=nativeSource.slice(cometStart,cometEnd)+'\n'+circularBuilder+'\n'+nativeSource.match(/const REACH_WORDS=\[[^;]+;/)[0]+'\n'+nativeSource.match(/const reachTier=[^\n]+;/)[0];
 const baseHtml='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango current presentation</title><link rel="stylesheet" href="/optimized/style-01.css"><link rel="stylesheet" href="/optimized/style-03.css"><style>html,body,#screen,#panels{width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;transform:none!important}#screen{position:fixed!important;inset:0!important}#panels,#fixture{position:relative!important;width:100%!important;height:100%!important}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><body class="dgb-active"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="reach-rainbow-edge"><stop stop-color="#ff487d"/><stop offset=".5" stop-color="#59efb6"/><stop offset="1" stop-color="#bb78ff"/></linearGradient></defs></svg><script>'+nativeReach+'</script><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></body></html>';
-// Use the restored production artwork while keeping the isolated game fixture.
+// Load the production illustrated cells while retaining this isolated game fixture.
 const html=baseHtml
- .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css">');
+ .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css">')
+ .replace('<script src="/assets/dango-bingo-view.js"></script>','<script src="/assets/illustrated-art-v275.js"></script><script src="/assets/illustrated-boards-c-v275.js"></script><script src="/assets/dango-bingo-view.js"></script>');
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');if(url.pathname==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(html);return;}
  if(url.pathname==='/favicon.ico'){res.statusCode=204;res.end();return;}
@@ -29,7 +30,7 @@ async function setup(target){
  target.on('pageerror',error=>report.errors.push(String(error)));
  await target.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'networkidle'});
  return target.evaluate(async()=>{
-  await Promise.all([DangoBingoView.assetsReady,document.fonts.ready]);
+  await Promise.all([DangoBingoView.assetsReady,SweetsBoardArtV275.ready,document.fonts.ready]);
   const R=DangoBingoRules,qa=window.qa269={R,view:DangoBingoView.mount(document.getElementById('fixture')),state:null,bet:100};
   qa.render=(options={})=>qa.view.draw(qa.state,{bet:qa.bet,remainingMs:9000,time:1200,reach:R.reaches(qa.state),...options});
   qa.new=(mold=0)=>{qa.state=R.create({moldIndex:mold,numbers:Array.from({length:25},(_,i)=>i+1)});qa.render();};
@@ -50,7 +51,7 @@ async function setup(target){
    return {width:scene.clientWidth,height:scene.clientHeight,table,frame,matrix,odds,free,rail,railVisible:!railElement.hidden,unit:g.unit,payout,labels,rows,draw,
     tableClearance:Math.min(...[frame,odds].filter(Boolean).flatMap(rect=>g.centers.map(p=>distance(rect,p)))),freeClearance:Math.min(...g.centers.map(p=>distance(free,p))),railClearance:railElement.hidden?null:Math.min(...g.centers.map(p=>distance(rail,p))),
     numeralFont:parseFloat(getComputedStyle(document.querySelector('.gold-number')).fontSize),
-    payoutSvgCount:document.querySelectorAll('.dgb-pay svg').length,payoutArtwork:payoutSource,nativeArtworkReady:DangoBingoView.describeAssets().ready,cartoonAdapter:DangoBingoView.describeAssets().cartoon,frameBackground:getComputedStyle(document.querySelector('.dgb-pay-matrix')).backgroundColor,frameInsets:Object.fromEntries(['Top','Right','Bottom','Left'].map(side=>[side.toLowerCase(),parseFloat(getComputedStyle(document.querySelector('.dgb-pay-matrix'))['border'+side+'Width'])])),
+    payoutSvgCount:document.querySelectorAll('.dgb-pay svg').length,payoutArtwork:payoutSource,nativeArtworkReady:DangoBingoView.describeAssets().ready,cartoonAdapter:DangoBingoView.describeAssets().cartoon,illustratedAdapter:DangoBingoView.describeAssets().illustrated,frameBackground:getComputedStyle(document.querySelector('.dgb-pay-matrix')).backgroundColor,frameInsets:Object.fromEntries(['Top','Right','Bottom','Left'].map(side=>[side.toLowerCase(),parseFloat(getComputedStyle(document.querySelector('.dgb-pay-matrix'))['border'+side+'Width'])])),
     numerals:[...document.querySelectorAll('.dgb-pay td .gold-number')].map(el=>({text:el.textContent,value:box(el),cell:box(el.parentElement)})),
     overflow:cells.filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>({length:e.parentElement.dataset.length,count:e.dataset.count,width:e.clientWidth,scroll:e.scrollWidth})),
     inside:g.centers.every(p=>p.x-g.radius>=0&&p.x+g.radius<=scene.clientWidth&&p.y-g.radius>=0&&p.y+g.radius<=scene.clientHeight),
@@ -78,7 +79,7 @@ function checkLayout(m,{rail=false}={}){
  assert.ok(m.tableClearance>=m.unit*.5-.5,'payout/mochi overlap '+detail);assert.ok(m.freeClearance>=m.unit*.5-.5,'FREE card/mochi overlap '+detail);
  assert.ok(m.table.width<=m.oldTableWidth*.83+1,'compact matrix removes unused width '+detail);
  assert.equal(m.payoutSvgCount,0,'payout skin contains no SVG');assert.match(m.payoutArtwork,/dango-art-v270\/payout-table\.png/);assert.equal(m.frameBackground,'rgb(0, 0, 0)');
- assert.equal(m.nativeArtworkReady,true);assert.equal(m.cartoonAdapter,null,'the native mochi painter is active');assert.equal(m.draw.imageCells,m.draw.cells,'every dango body is drawn from its generated bitmap');assert.equal(m.draw.standRendered,true,'the generated tsukimi stand is drawn');
+ assert.equal(m.nativeArtworkReady,true);assert.equal(m.cartoonAdapter,null,'the old flat painter stays disabled');assert.equal(m.illustratedAdapter.ready,true,'rich illustrated mochi are ready');assert.ok(m.illustratedAdapter.usage.dangoCells>0,'new mochi are actually drawn');assert.equal(m.draw.imageCells,m.draw.cells,'every dango body is drawn from its generated bitmap');assert.equal(m.draw.standRendered,true,'the generated tsukimi stand is drawn');
  assert.ok(Math.abs(m.frame.width-m.matrix.width-m.frameInsets.left-m.frameInsets.right)<1,'the inner table leaves the measured raster-frame inset '+detail);
  assert.ok(Object.values(m.frameInsets).every(inset=>Math.abs(inset-m.payout.frameInset)<1.01),'raster border respects the fitted inset after device-pixel rounding '+detail);
  assert.ok(m.frame.x>=m.table.x-.5&&m.frame.right<=m.table.right+.5&&m.frame.bottom<=m.table.bottom+.5,'the generated frame is contained by the payout panel '+detail);
@@ -126,9 +127,10 @@ try{
   const image=new Image();image.src=document.querySelector('.dgb-scene').dataset.payoutArt;await image.decode();
   const mini=document.createElement('canvas');mini.width=220;mini.height=150;const before=JSON.stringify(qa269.state),used=DangoBingoView.describeAssets().usage.cells;
   DangoBingoView.drawMini(mini.getContext('2d'),qa269.state,{reducedMotion:true});
-  const visual=DangoBingoView.describeAssets();
-  return {payoutSource:image.src,width:image.naturalWidth,height:image.naturalHeight,files,miniImageCells:visual.last.mini.imageCells,miniGeneratedCells:visual.usage.cells-used,miniStandRendered:visual.last.mini.standRendered,cells:qa269.state.cells.length,stateUnchanged:before===JSON.stringify(qa269.state)};
+  const visual=DangoBingoView.describeAssets(),illustrated=visual.illustrated,cellImages=['white','green','pink','yellow','rainbow'].map(color=>{const image=SweetsBoardArtV275.sprite('dango-'+color);return {name:color,width:image?.width,height:image?.height};});
+  return {illustrated,cellImages,payoutSource:image.src,width:image.naturalWidth,height:image.naturalHeight,files,miniImageCells:visual.last.mini.imageCells,miniGeneratedCells:visual.usage.cells-used,miniStandRendered:visual.last.mini.standRendered,cells:qa269.state.cells.length,stateUnchanged:before===JSON.stringify(qa269.state)};
  });
+ assert.equal(report.artwork.illustrated.ready,true);assert.ok(report.artwork.illustrated.usage.dangoCells>0);for(const image of report.artwork.cellImages)assert.ok(image.width>32&&image.height>32,'new illustrated mochi decoded: '+image.name);
  assert.match(report.artwork.payoutSource,/dango-art-v270\/payout-table\.png$/);assert.ok(report.artwork.width>0&&report.artwork.height>0,'generated payout PNG decodes');
  assert.deepEqual(report.artwork.files.map(source=>source.key),['white','green','pink','yellow','rainbow','skewer','stand']);
  for(const source of report.artwork.files){assert.match(source.file,/dango-art-v25[23]\/[^/]+\.webp\?v=253$/);assert.ok(source.width>0&&source.height>0,'generated native source decodes: '+source.file);}

@@ -47,6 +47,7 @@ function outline(ctx,x,y,r,color,width){
 let materials;
 honeyCrumb.addEventListener('load',()=>{materials=null;browning=null;});
 function makeMaterials(){
+ const illustrated=window.SweetsIllustratedBoardsCV275?.castellaMaterials();if(illustrated)return illustrated;
  if(window.SweetsCartoonBoardsC)return window.SweetsCartoonBoardsC.castellaMaterials();
  if(materials||!tiles.naturalWidth)return materials;
  const sw=tiles.naturalWidth/3,sh=tiles.naturalHeight;
@@ -186,9 +187,10 @@ function pool(ctx,x,y,r,u,inlets,cell,stamp){
  ctx.restore();
 }
 // A softened, uneven caramel front travels in from the hot rim of the mould.
-let browning;
+let browning,browningMaterials;
 function bakeFaces(mats){
- if(browning)return browning;
+ if(browning&&browningMaterials===mats)return browning;
+ browningMaterials=mats;
  const mask=document.createElement('canvas');mask.width=mask.height=160;
  const m=mask.getContext('2d'),spots=[[43,55,24],[114,61,32],[58,103,35],[95,120,23]];
  browning=Array.from({length:19},(_,i)=>{
@@ -277,7 +279,7 @@ function paint(ctx,s,opts={},mini=false){
  const age=reduced.matches?Infinity:Math.max(0,opts.age??Infinity),oven=showOven(s,age);
  const bake=s.draws.length>=6,play=s.draws.length>0&&age<1500,zoneId=opts.previewZone||s.lastZone;
  const reachShown=Array.isArray(opts.reach)&&opts.reach.length>0&&(s.phase==='pour'||oven);
- const key=[w,h,oven,play?Math.floor(age/30):-1,tiles.naturalWidth,panArt.naturalWidth,bottle.naturalWidth,window.SweetsCartoonBoardsC?.epoch,opts.previewZone,zoneId,
+ const key=[w,h,oven,play?Math.floor(age/30):-1,tiles.naturalWidth,panArt.naturalWidth,bottle.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch,opts.previewZone,zoneId,
    reachShown&&!reduced.matches?Math.floor((opts.time||0)/80):-1].join('/');
  const last=history.get(ctx);
  if(last?.s===s&&last.key===key&&last.reach===opts.reach)return;
@@ -297,7 +299,7 @@ function paint(ctx,s,opts={},mini=false){
  const px=X(-panW/2),py=Y(-panH/2);
  const firing=bake?s.zones[s.lastZone-1]:null,zone=zoneId?s.zones[zoneId-1]:null;
  const bakeOverlay=bake&&play;
- const baseKey=[w,h,oven,play,opts.previewZone,zoneId,tiles.naturalWidth,panArt.naturalWidth,honeyCrumb.naturalWidth,window.SweetsCartoonBoardsC?.epoch].join('/');
+ const baseKey=[w,h,oven,play,opts.previewZone,zoneId,tiles.naturalWidth,panArt.naturalWidth,honeyCrumb.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch].join('/');
  if(frame.baseKey!==baseKey){
   const movingCell=c=>play&&(bake?firing.cells.includes(c.id):frame.arrival[c.id]!==undefined);
   frame.moving=s.cells.filter(movingCell);

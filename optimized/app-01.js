@@ -411,7 +411,7 @@ function drawElixirNumber(ctx,value,x,y,size,fill,stroke,lineWidth){
  for(const digit of text){const [advance,d]=elixirGlyphs[digit],path=elixirCanvasPaths[digit]||(elixirCanvasPaths[digit]=new Path2D(d));if(lineWidth)ctx.stroke(path);ctx.fill(path);ctx.translate(advance,0);}ctx.restore();
 }
 const cookieFlavors=['berry','honey','pistachio','soda','grape'];
-const cookieFaceSrc=(color,special=false)=>'assets/sweet-skins/'+(special?'hammer-':'cookie-')+cookieFlavors[color]+'.webp';
+const cookieFaceSrc=(color,special=false)=>window.SweetsIllustratedBoardsAV275?.cookieURL(color,special)||(!special&&window.SweetsBoardArtV275?.loaded?window.SweetsBoardArtV275.url('cookie-'+cookieFlavors[color]):'')||'assets/sweet-skins/'+(special?'hammer-':'cookie-')+cookieFlavors[color]+'.webp';
 const recordGroups=(ev,e)=>ev.newRecord&&e.maxLink>=MIN_PAID_LINK?(ev.groups||[]).filter(g=>g.size===e.maxLink):[];
 
 function borderPath(cells){
