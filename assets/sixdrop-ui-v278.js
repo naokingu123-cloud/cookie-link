@@ -1,0 +1,190 @@
+/* Six Drop v278 cabinet. Observes the shared rule adapter; never computes a
+ * result, advances an engine, changes a carry, or samples game randomness. */
+(()=>{
+'use strict';
+if(window.SixDropUiV278)return;
+const query=new URLSearchParams(location.search);
+if(query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1')return;
+const id=window.SweetsLineup?.ids?.indexOf('candy');if(!(id>=0)||!window.SixDropV247)return;
+const slot=slots[id],engine=app.engines[id],rules=window.SixDropV247.rules;
+const ART_ROOT='assets/sixdrop-art-v278/';
+const ART_FILES=['bottle','allclear-logo','progressive-frame','payout-frame','allclear-award'];
+const roles=['line','triangle','hexagon'],labels={line:'直線',triangle:'三角',hexagon:'ヘキサゴン'};
+const images=new Map(),errors=[],stats={mainPaints:0,miniPaints:0,receiptEvents:0,allClearBadgePaints:0};
+const nodes={roles:new Map()};
+let receipt={epoch:'',count:0,win:0,lastWin:0},lastInfo=null,lastRows={};
+const money=value=>Math.floor(Math.max(0,Number(value)||0)).toLocaleString('ja-JP',{useGrouping:false});
+const putText=(node,text)=>{if(node&&node.textContent!==String(text))node.textContent=String(text);};
+const epoch=()=>String(app.token)+'/'+String(engine.version);
+const image=id=>{const im=images.get(id);return im?.complete&&im.naturalWidth>0?im:null;};
+function info(){
+ const shared=window.SixDropV247.describeV278?.();if(shared)return shared;
+ const s=engine.state;
+ return {rulesRevision:s?.rulesRevision||247,batchSizes:rules.BATCH_SIZES||[3,2,1,1,1],receivedBalls:app.draws?.length||0,
+  processedBalls:engine.processed||0,pendingNumbers:[],bankUnits:s?.bankUnits??window.SixDropV247.carry?.bankUnits??0,
+  inheritedContinuation:false,earnedContinuation:false,continuationActive:false,
+  allClearCount:s?.allClears||0,allClearWin:s?.bonusMedals||0,lastAllClearWin:s?.lastAllClearWin||0,counts:s?.counts||{}};
+}
+function resetReceipt(){receipt={epoch:epoch(),count:0,win:0,lastWin:0};}
+function canonicalReceipt(d){
+ if(receipt.epoch!==epoch())resetReceipt();
+ receipt.count=Math.max(0,Number(d.allClearCount)||0);receipt.win=Math.max(0,Number(d.allClearWin)||0);
+ receipt.lastWin=Math.max(0,Number(d.lastAllClearWin)||0);
+}
+function observe(event){
+ if(receipt.epoch!==epoch())resetReceipt();
+ if(event.phase==='ready'){resetReceipt();return;}
+ if(event.phase==='pyramidAllClear'){
+  receipt.count=Math.max(receipt.count,Number(event.allClears)||receipt.count+1);
+  receipt.win=Number.isFinite(event.bonusMedals)?event.bonusMedals:receipt.win+Math.max(0,Number(event.winMedals)||0);
+  receipt.lastWin=Math.max(0,Number(event.winMedals)||0);stats.receiptEvents++;
+ }else if(['waiting','settled','complete'].includes(event.phase)&&!engine.fx)canonicalReceipt(info());
+}
+function makeImage(name,className,alt=''){
+ const im=document.createElement('img');im.className=className;im.src=ART_ROOT+name+'.png?v=278';im.alt=alt;im.decoding='async';return im;
+}
+function ensure(){
+ if(nodes.heading)return;
+ setupCarnivalSlot(slot);document.body.classList.add('sixdrop-v278');slot.panel.classList.add('sd278-surface');
+ const heading=document.getElementById('carnival-heading');heading.dataset.ui278='1';
+ const hud=document.createElement('div');hud.className='sd278-hud';
+ hud.innerHTML='<div class="sd278-progressive"><canvas class="sd278-progressive-frame" width="1720" height="216" aria-hidden="true"></canvas><span class="sd278-bank-logo"></span><strong id="sd278-bank" aria-label="全消し獲得可能金額"></strong><em>WIN</em><b id="sd278-continuation" hidden>継続</b></div><div class="sd278-underbar"><div id="sd278-clear-earned" role="status" hidden><b>全消し獲得済み</b><span>今回 <strong class="sd278-earned-win"></strong> WIN<span class="sd278-earned-count"></span></span></div><div id="sd278-batches" aria-label="抽選は3球、2球、1球、1球、1球"></div></div>';
+ hud.querySelector('.sd278-bank-logo').append(makeImage('allclear-logo','sd278-clear-logo','全消し'));
+ heading.append(hud);
+ nodes.heading=heading;nodes.hud=hud;nodes.frame=hud.querySelector('canvas');nodes.bank=hud.querySelector('#sd278-bank');
+ nodes.continuation=hud.querySelector('#sd278-continuation');nodes.earned=hud.querySelector('#sd278-clear-earned');nodes.earnedWin=hud.querySelector('.sd278-earned-win');
+ nodes.earnedCount=hud.querySelector('.sd278-earned-count');nodes.batches=hud.querySelector('#sd278-batches');
+ const odds=document.createElement('div');odds.id='sd278-payouts';odds.className='sd278-payouts';odds.setAttribute('aria-label','シックスドロップの成立個数別累計配当');
+ for(const role of roles){
+  const section=document.createElement('section');section.className='sd278-payout-card';section.dataset.role=role;
+  section.append(makeImage('payout-frame','sd278-payout-frame'));
+  const content=document.createElement('div');content.className='sd278-payout-content';
+  content.innerHTML='<header><img class="sd278-role-icon" src="assets/sweet-skins/six-'+role+'.webp" alt=""><b>'+labels[role]+'</b><span class="sd278-role-count">0個</span></header><table><thead><tr><th scope="col">個数</th><th scope="col">累計配当</th></tr></thead><tbody></tbody></table>';
+  section.append(content);odds.append(section);nodes.roles.set(role,{section,body:content.querySelector('tbody'),count:content.querySelector('.sd278-role-count'),key:''});
+ }
+ slot.sixOdds.append(odds);slot.sixOdds.dataset.ui278='1';nodes.odds=odds;
+ const viewport=slot.candyCanvas.parentElement;viewport.classList.add('sd278-bottle');
+ const bottle=makeImage('bottle','sd278-bottle-art');viewport.append(bottle);nodes.bottle=bottle;
+ const mini=slot.tab.querySelector('.mini-wrap'),badge=document.createElement('span');badge.className='sd278-mini-earned';badge.hidden=true;mini.append(badge);nodes.miniBadge=badge;
+}
+function amount(node,value,size,width){
+ const text=money(value),fitWidth=Math.max(14,Number(width)||node.clientWidth||120),key=text+'/'+size+'/'+Math.floor(fitWidth);
+ if(node.dataset.amountFit!==key){node.dataset.amountFit=key;fitGoldenNumber(node,text,size,fitWidth);}
+}
+function paintFrame(){
+ const art=image('progressive-frame');if(!art||nodes.frame.dataset.painted==='1')return;
+ const x=nodes.frame.getContext('2d');x.clearRect(0,0,nodes.frame.width,nodes.frame.height);
+ // Keep the generated pixels intact; omit only the transparent top/bottom
+ // margins from the source rectangle when fitting the cabinet's long strip.
+ x.drawImage(art,0,160,art.naturalWidth,395,0,0,nodes.frame.width,nodes.frame.height);nodes.frame.dataset.painted='1';
+}
+function paintBank(d){
+ const source=document.getElementById('sd247-bank'),animated=Number(source?.dataset.displayUnits);
+ // A completed zero-WIN game relinquishes its meter. Preserve the canonical
+ // state for result/checkpoint records while showing the committed reset.
+ const resetAtEnd=Number(engine.processed)>=8&&!engine.running&&!d.earnedContinuation;
+ const target=resetAtEnd?0:d.bankUnits,units=resetAtEnd?0:Number.isFinite(animated)?animated:target;
+ nodes.bank.dataset.units=String(units);nodes.bank.dataset.targetUnits=String(target);
+ nodes.continuation.hidden=!d.continuationActive;
+ nodes.continuation.dataset.inherited=String(!!d.inheritedContinuation);nodes.continuation.dataset.earned=String(!!d.earnedContinuation);
+ amount(nodes.bank,units/100,29,nodes.bank.clientWidth||225);
+ nodes.bank.parentElement.setAttribute('aria-label','全消し獲得可能 '+money(target/100)+' WIN'+(d.continuationActive?' 継続':''));
+}
+function paintReceipt(){
+ const earned=receipt.count>0;nodes.earned.hidden=!earned;
+ nodes.earned.dataset.count=String(receipt.count);nodes.earned.dataset.win=String(receipt.win);nodes.earned.dataset.lastWin=String(receipt.lastWin);
+ amount(nodes.earnedWin,receipt.win,12,nodes.earnedWin.clientWidth||78);putText(nodes.earnedCount,'・'+receipt.count+'回');
+ nodes.earned.setAttribute('aria-label',earned?'全消し獲得済み。今回 '+money(receipt.win)+' WIN、'+receipt.count+'回':'全消し未獲得');
+ nodes.hud.classList.toggle('has-clear',earned);
+ nodes.miniBadge.hidden=!earned;putText(nodes.miniBadge,'全消し獲得'+(receipt.count>1?' ×'+receipt.count:''));
+ nodes.miniBadge.dataset.count=String(receipt.count);nodes.miniBadge.dataset.win=String(receipt.win);
+ nodes.miniBadge.title='全消し獲得済み '+money(receipt.win)+' WIN・'+receipt.count+'回';
+}
+function paintBatches(d){
+ const batches=d.batchSizes||[3,2,1,1,1],key=batches.join(',');
+ if(nodes.batches.dataset.schedule!==key){
+  nodes.batches.dataset.schedule=key;nodes.batches.replaceChildren();let end=0;
+  batches.forEach((size,index)=>{const node=document.createElement('span'),start=end;end+=size;node.dataset.batch=String(index+1);node.dataset.size=String(size);node.dataset.start=String(start);node.dataset.end=String(end);node.textContent=size+'球';nodes.batches.append(node);});
+ }
+ const received=d.receivedBalls||0,processed=d.processedBalls||0;
+ for(const node of nodes.batches.children){
+  const start=Number(node.dataset.start),end=Number(node.dataset.end),current=processed<end&&processed>=start;
+  node.classList.toggle('is-done',processed>=end);node.classList.toggle('is-active',current);node.classList.toggle('is-received',received>=end);
+  if(current)node.setAttribute('aria-current','step');else node.removeAttribute('aria-current');
+  node.setAttribute('aria-label','第'+node.dataset.batch+'段階 '+node.dataset.size+'球、'+Math.max(0,Math.min(end-start,received-start))+'球受信');
+ }
+ nodes.batches.dataset.received=String(received);nodes.batches.dataset.processed=String(processed);
+}
+function paintTables(d){
+ const counts=engine.fx?.counts||d.counts||{},bet=app.bet(id)||0;
+ for(const role of roles){
+  const record=nodes.roles.get(role),count=Math.max(0,Math.floor(Number(counts[role])||0));
+  const first=count<5?1:count-3,list=Array.from({length:5},(_,i)=>first+i);
+  const rows=list.map(n=>{const hundredths=typeof rules.roleTotal==='function'?rules.roleTotal(role,n,engine.state||278):rules.roleAward(role,0,n);return {count:n,hundredths,win:Math.floor(bet*hundredths/100)};});
+  const key=[bet,count,engine.state?.rulesRevision||278,record.section.clientWidth,...rows.map(row=>row.hundredths)].join('/');
+  if(record.key===key)continue;record.key=key;record.section.dataset.earnedCount=String(count);putText(record.count,count+'個');record.body.replaceChildren();
+  for(const row of rows){
+   const tr=document.createElement('tr');tr.dataset.count=String(row.count);tr.dataset.payoutHundredths=String(row.hundredths);tr.dataset.win=String(row.win);
+   tr.classList.toggle('is-earned',row.count<=count);tr.classList.toggle('is-current',row.count===count);tr.classList.toggle('is-next',row.count===count+1);
+   if(row.count===count)tr.setAttribute('aria-current','true');
+   const number=document.createElement('th');number.scope='row';number.textContent=row.count+'個';
+   const value=document.createElement('td'),span=document.createElement('span');span.className='sd278-table-amount';value.append(span);tr.append(number,value);record.body.append(tr);
+   amount(span,row.win,11,span.clientWidth||62);
+  }
+  lastRows[role]={count,rows};
+ }
+}
+function refresh(){
+ ensure();const d=info();lastInfo=d;
+ if(receipt.epoch!==epoch())resetReceipt();
+ if(!engine.fx&&!engine.busy)canonicalReceipt(d);
+ paintFrame();paintBank(d);paintReceipt();paintBatches(d);paintTables(d);stats.mainPaints++;
+ slot.candyCanvas.dataset.presentation='v278';
+ slot.candyCanvas.setAttribute('aria-label','シックスドロップ・3球、2球、1球、1球、1球抽選。'+(d.receivedBalls||0)+'球受信、'+(d.processedBalls||0)+'球処理済み。'+(receipt.count?'全消し獲得済み '+money(receipt.win)+' WIN。':''));
+}
+
+// Fit the existing candies inside the generated bottle's clear window. Every
+// renderer, fall path, reach and award uses these same native coordinates.
+sixLayout=function(rows=SIX_ROWS){
+ const count=Math.max(1,Number(rows)||SIX_ROWS),step=Math.min(28,244/(1+(count-1)*SIX_SQRT3_2));
+ return {step,top:166-(count-1)*step*SIX_SQRT3_2/2,radius:step*.5};
+};
+const previousHud=carnivalHud,previousDraw=drawCarnival,previousEvent=carnivalEvent,previousThumbnail=paintSixThumbnail;
+carnivalHud=function(a){const result=Reflect.apply(previousHud,this,arguments);refresh();return result;};
+drawCarnival=function(s,now){const result=Reflect.apply(previousDraw,this,arguments);if(s?.i===id)refresh();return result;};
+carnivalEvent=function(s,event,e,a){
+ if(s?.i===id)observe(event);
+ const result=Reflect.apply(previousEvent,this,arguments);if(s?.i===id)refresh();return result;
+};
+paintSixThumbnail=function(s,rows){
+ const result=Reflect.apply(previousThumbnail,this,arguments),art=image('bottle');
+ if(s?.i===id&&art){
+  const ctx=s.mini,w=ctx.canvas.width,h=ctx.canvas.height,edge=Math.min(w,h)*.045;
+  // Compress the generated glass border into the miniature's outer rim.
+  // This retains its ribbon/candy ornaments without moving native numbers,
+  // HIT projections or award paths, and adds no miniature scene background.
+  const sx=[0,art.naturalWidth*.14,art.naturalWidth*.86,art.naturalWidth],sy=[0,art.naturalHeight*.14,art.naturalHeight*.90,art.naturalHeight];
+  const dx=[0,edge,w-edge,w],dy=[0,edge,h-edge,h];
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++)if(r!==1||c!==1)ctx.drawImage(art,sx[c],sy[r],sx[c+1]-sx[c],sy[r+1]-sy[r],dx[c],dy[r],dx[c+1]-dx[c],dy[r+1]-dy[r]);
+  ctx.restore();stats.miniPaints++;
+ }
+ return result;
+};
+const api={version:278,ready:null,
+ awardArt:()=>({image:image('allclear-award'),logo:image('allclear-logo'),layout:{x:.19,y:.34,w:.62,h:.36,ribbonY:.79,ribbonWidth:.40},onPaint:()=>{stats.allClearBadgePaints++;}}),
+ describe:()=>({version:278,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:ART_FILES.map(name=>ART_ROOT+name+'.png'),errors:errors.slice(),
+  receipt:{...receipt},progressive:{units:Number(nodes.bank?.dataset.units)||0,targetUnits:Number(nodes.bank?.dataset.targetUnits)||0},
+  continuation:!!lastInfo?.continuationActive,batchSizes:(lastInfo?.batchSizes||[3,2,1,1,1]).slice(),receivedBalls:lastInfo?.receivedBalls||0,processedBalls:lastInfo?.processedBalls||0,
+  roles:JSON.parse(JSON.stringify(lastRows)),geometry:{...sixLayout(engine.rows||10)},...stats})};
+window.SixDropUiV278=api;
+api.ready=Promise.all(ART_FILES.map(name=>new Promise(resolve=>{
+ const im=new Image();im.decoding='async';images.set(name,im);
+ im.onload=()=>resolve(true);im.onerror=()=>{errors.push('Missing '+ART_ROOT+name+'.png');resolve(false);};im.src=ART_ROOT+name+'.png?v=278';
+}))).then(()=>{refresh();slot.candyKey='';slot.sixReachKey='';slot.dirtyMain=slot.dirtyMini=true;carnivalQueueFrame(slot);return ART_FILES.every(name=>!!image(name));});
+Object.freeze(api);
+window.addEventListener('resize',()=>{for(const item of nodes.roles.values())item.key='';refresh();});
+document.fonts?.ready?.then(()=>{for(const item of nodes.roles.values())item.key='';refresh();});
+refresh();slot.candyKey='';slot.sixReachKey='';slot.dirtyMain=slot.dirtyMini=true;carnivalQueueFrame(slot);scheduleUI(app);
+if(typeof requestFit==='function')requestFit();
+})();

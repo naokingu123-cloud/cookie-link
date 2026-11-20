@@ -31,25 +31,31 @@ function installDrawCapture(){
  try{Object.defineProperty(rouletteDrawSource,'ready',{configurable:true,get:()=>true});}catch{}
  rouletteDrawSource.start=callbacks=>{drawCallbacks=callbacks;};rouletteDrawSource.reset=()=>{};
 }
-function processed(engine,ball){return Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length))>=ball;}
+function processed(engine,ball){
+ if(engine?.rulesVersion===247&&engine.drawMode==='grouped'){
+  const boundary=ball<3?0:ball<5?3:ball;
+  return finite(engine.processed)>=boundary&&!engine.busy&&!engine.opening&&!engine.fx&&!engine.queue?.length;
+ }
+ return Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length))>=ball;
+}
 async function waitProcessed(ball,timeout=25000){
  const start=Date.now();while(Date.now()-start<timeout){if((app.engines||[]).every((engine,index)=>app.enabled?.[index]===false||processed(engine,ball)))return true;await sleep(20);}return false;
 }
 function prepareWork(work){
  app.__sugarWorkRoundId=work.roundId;
  const state=work.state||{},totalBet=(state.locked||state.bets||[]).reduce((sum,value,index)=>sum+(state.enabled?.[index]===false?0:finite(value)),0);
- app.phase='ready';app.paused=false;app.fastForward=true;app.drawHeld=false;app.bets=[...(state.bets||[])];app.locked=[...(state.locked||state.bets||[])];app.enabled=[...(state.enabled||[])];
+ app.phase='ready';app.paused=false;app.fastForward=true;app.bets=[...(state.bets||[])];app.locked=[...(state.locked||state.bets||[])];app.enabled=[...(state.enabled||[])];
  app.credit=finite(state.credit)+totalBet;app.displayCredit=app.credit;debugPayoutTarget=finite(work.rate)||90;drawCallbacks=null;
  const started=app.start();if(started===false)throw Error('worker_game_start_rejected');
 }
 async function settleWork(work){
  prepareWork(work);const waitStart=Date.now();while(!drawCallbacks&&Date.now()-waitStart<8000)await sleep(20);if(!drawCallbacks)throw Error('worker_draw_callbacks_missing');
- restore(app,work.state);app.phase='playing';app.paused=false;app.dealing=true;app.fastForward=true;app.drawHeld=false;
+ restore(app,work.state);app.phase='playing';app.paused=false;app.dealing=true;app.fastForward=true;
  for(const engine of app.engines||[]){try{engine.paused=false;engine.presentationRate=100;}catch{}}
  const startBall=Math.max(0,Number(work.stableBall)||0),balls=[...(work.balls||[])].sort((a,b)=>Number(a.index)-Number(b.index));
  for(const ball of balls){
   const index=Number(ball.index);if(index<=startBall)continue;let accepted=false,started=Date.now();
-  while(!accepted&&Date.now()-started<12000){app.paused=false;app.drawHeld=false;try{accepted=drawCallbacks.onNumber?.(Number(ball.number))!==false;}catch{}if(!accepted)await sleep(20);}
+  while(!accepted&&Date.now()-started<12000){app.paused=false;try{accepted=drawCallbacks.onNumber?.(Number(ball.number))!==false;}catch{}if(!accepted)await sleep(20);}
   if(!accepted)throw Error('worker_ball_rejected_'+index);if(!await waitProcessed(index))throw Error('worker_ball_timeout_'+index);
  }
  const finishStart=Date.now();while(app.phase==='playing'&&Date.now()-finishStart<10000){const allPaid=(app.enabled||[]).every((yes,index)=>!yes||app.paid?.[index]);if(allPaid)break;await sleep(25);}

@@ -238,7 +238,8 @@ function goldText(ctx,text,x,y,size,maxWidth,ink='#fff2a0'){
  const gold=ctx.createLinearGradient(0,-size/2,0,size/2);gold.addColorStop(0,'#ffffff');gold.addColorStop(.35,ink);gold.addColorStop(.72,'#ffcb47');gold.addColorStop(1,'#ffebad');ctx.fillStyle=gold;ctx.fillText(text,0,0);ctx.restore();
 }
 function paintBadge(ctx,r,c,w,h,mini,ox,oy){
- const badge=art(TIER_ART[c.tier]);if(!badge)return 0;
+ const custom=c.game==='candy'&&c.kind==='clear'?window.SixDropUiV278?.awardArt?.():null;
+ const badge=custom?.image||art(TIER_ART[c.tier]);if(!badge)return 0;
  const start=quiet()?0:170,age=c.age-start;if(age<0)return 0;
  const rise=quiet()?1:clamp(age/260),leave=clamp((c.duration-c.age)/350),ease=quiet()?1:rise<1?1-Math.pow(1-rise,3):1;
  const aspect=(badge.naturalWidth||badge.width)/(badge.naturalHeight||badge.height);
@@ -257,11 +258,15 @@ function paintBadge(ctx,r,c,w,h,mini,ox,oy){
   }
  }
  ctx.drawImage(badge,-bw/2,-bh/2,bw,bh);
+ if(custom?.image)custom.onPaint?.();
  // Art defines a safe dark middle; numeric values always come from the event.
- const content=window.SweetsAwardArtV277.layout?.(TIER_ART[c.tier])||{x:.17,y:.34,w:.66,h:.40};
+ const content=custom?.image?custom.layout:window.SweetsAwardArtV277.layout?.(TIER_ART[c.tier])||{x:.17,y:.34,w:.66,h:.40};
  const box={x:(content.x-.5)*bw,y:(content.y-.5)*bh,w:content.w*bw,h:content.h*bh},x=box.x+box.w/2;
  const titleSize=Math.min(bw*(mini?.108:.105),box.h*(c.win>0?.43:.55));
- goldText(ctx,c.label,x,box.y+box.h*(c.win>0?.25:.40),Math.max(mini?10:15,titleSize),box.w);
+ if(custom?.image&&custom.logo){
+  const height=box.h*(c.win>0?.48:.7),width=Math.min(box.w, height*custom.logo.naturalWidth/custom.logo.naturalHeight),logoHeight=width*custom.logo.naturalHeight/custom.logo.naturalWidth;
+  ctx.drawImage(custom.logo,x-width/2,box.y+box.h*(c.win>0?.25:.40)-logoHeight/2,width,logoHeight);
+ }else goldText(ctx,c.label,x,box.y+box.h*(c.win>0?.25:.40),Math.max(mini?10:15,titleSize),box.w);
  if(c.win>0){
   const label=(c.total?'':'＋')+pretty(c.win)+' WIN';goldText(ctx,label,x,box.y+box.h*.77,Math.max(mini?12:20,Math.min(bw*(mini?.15:.14),box.h*.48)),box.w,'#fffac8');
  }else if(!mini)goldText(ctx,c.detail,x,box.y+box.h*.86,Math.max(10,bw*.037),box.w,'#d8fbff');

@@ -1,13 +1,17 @@
-/* Six Drop v248: deterministic single-HIT rules. No DOM, wallet or network writes.
+/* Six Drop: deterministic legacy single-HIT and v278 grouped rules.
+   No DOM, wallet or network writes.
    Inject the existing staggered-grid gravity and role geometry to retain the
    approved board mechanics. A prediction clones the exact serialized RNG. */
 (function(root){
 'use strict';
 // Keep the v247 serialization and color IDs readable by existing checkpoints.
-const VERSION=247,REVISION=248,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5;
+const VERSION=247,REVISION=248,CURRENT_REVISION=278,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5;
+const BATCH_SIZES=Object.freeze([3,2,1,1,1]);
 const RING=['blue','aqua','green','lime','yellow','orange','red','violet','pink'];
 const COLOR_PROGRESS=[0,1,2,3,4,5,6,8,7];
 const BASE_PAY=Object.freeze({line:10,triangle:30,hexagon:60});
+const BASE_PAY_V278=Object.freeze({line:20,triangle:60,hexagon:120});
+const SUPPORT_TABLE_V278=Object.freeze([[50,.23],[90,.57],[100,.615],[150,.9]].map(row=>Object.freeze(row)));
 const LIMIT=Number.MAX_SAFE_INTEGER;
 const integer=(n,fallback=0)=>Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):fallback;
 const copy=x=>JSON.parse(JSON.stringify(x));
@@ -24,8 +28,26 @@ function gamePalette(state){
 function nextRandom(state){let n=state.rng|0;n^=n<<13;n^=n>>>17;n^=n<<5;state.rng=n>>>0||0x6d2b79f5;return state.rng/4294967296;}
 function shuffle(values,state){for(let i=values.length-1;i>0;i--){const j=Math.floor(nextRandom(state)*(i+1));[values[i],values[j]]=[values[j],values[i]];}return values;}
 function asHundredths(medals,bet){if(!(bet>0))return 0;let value=medals*100/bet;if(Math.floor(bet*value/100)<medals)value+=Math.max(1,Math.abs(value))*Number.EPSILON*4;return value;}
-function totalMedals(s){return Math.floor(s.bet*s.normalHundredths/100)+s.bonusMedals;}
-function roleAward(type,oldCount,count=1){const base=BASE_PAY[type]||0;return base*(count*oldCount+count*(count+1)/2);}
+function totalMedals(s){
+ const normal=modernRules(s)?Object.keys(BASE_PAY).reduce((sum,type)=>sum+Math.floor(s.bet*roleTotal(type,s.counts[type],s)/100),0):Math.floor(s.bet*s.normalHundredths/100);
+ return normal+s.bonusMedals;
+}
+const modernRules=value=>Number(typeof value==='object'?value?.rulesRevision:value)>=CURRENT_REVISION;
+function roleTotal(type,count,stateOrRevision=CURRENT_REVISION){
+ const n=integer(count),base=(modernRules(stateOrRevision)?BASE_PAY_V278:BASE_PAY)[type]||0;
+ return base*(n*(n+1)/2+(modernRules(stateOrRevision)&&n>0?Math.floor((n-1)*(n-1)/4):0));
+}
+function roleAward(type,oldCount,count=1,stateOrRevision=REVISION){return roleTotal(type,integer(oldCount)+integer(count),stateOrRevision)-roleTotal(type,integer(oldCount),stateOrRevision);}
+function batchSize(processed){let end=0;for(const size of BATCH_SIZES){if(processed===end)return size;end+=size;}return 0;}
+function supportProbability(rate,stateOrRevision=CURRENT_REVISION){
+ const target=Math.max(50,Math.min(150,Number(rate)||90));
+ if(!modernRules(stateOrRevision))return .35+.55*(target-50)/100;
+ for(let index=1;index<SUPPORT_TABLE_V278.length;index++){
+  const [low,from]=SUPPORT_TABLE_V278[index-1],[high,to]=SUPPORT_TABLE_V278[index];
+  if(target<=high)return from+(to-from)*(target-low)/(high-low);
+ }
+ return SUPPORT_TABLE_V278.at(-1)[1];
+}
 function create(geometry){
  const G=geometry;
  for(const k of ['empty','clone','count','valid','step','neighbors','patterns','findShapes','drop','point'])if(typeof G[k]!=='function')throw Error('Six Drop geometry missing '+k);
@@ -68,7 +90,7 @@ function create(geometry){
   const target=Math.max(50,Math.min(150,state.target));
   // Connected-four clears and 0.05 BET per drop need fewer pre-clustered
   // colors. P/O continues to control the share of movable support pockets.
-  const prepared=.35+.55*(target-50)/100,templates=G.gapTemplates||[];
+  const prepared=supportProbability(target,state),templates=G.gapTemplates||[];
   const holes=templates.length&&nextRandom(state)<prepared?templates[Math.floor(nextRandom(state)*templates.length)]:[];
   const missing=new Set(fillable.map(([r,c])=>r*16+c)),chosen=new Set(holes.filter(([r,c])=>missing.has(r*16+c)).map(([r,c])=>r*16+c));
   let id=state.uid;
@@ -124,16 +146,25 @@ function create(geometry){
   state.grid=grid;
   return {grid,added:positions.map(([r,c])=>({r,c,tile:{...grid[r][c]}})),holes:[...new Set([...chosen,...blocked])],mobility:targets.filter(([r,c])=>grid[r][c].number!=null&&mobility(grid,r,c)>0).length};
  }
- function newGame({bet=100,rate=90,seed=1,carry=null}={}){
+ function newGame({bet=100,rate=90,seed=1,carry=null,rulesRevision=REVISION}={}){
   bet=integer(bet);if(!bet||bet>1e10)throw Error('Six Drop invalid BET');
-  const saved=cleanCarry(carry),state={version:VERSION,rulesRevision:REVISION,palette:palette(saved.removed),bet,target:Math.max(50,Math.min(150,Number(rate)||90)),rng:(seed>>>0)||1,uid:0,grid:G.empty(ROWS),draws:[],processed:0,
+  const saved=cleanCarry(carry),state={version:VERSION,rulesRevision:modernRules(rulesRevision)?CURRENT_REVISION:REVISION,palette:palette(saved.removed),bet,target:Math.max(50,Math.min(150,Number(rate)||90)),rng:(seed>>>0)||1,uid:0,grid:G.empty(ROWS),draws:[],processed:0,
    feed:saved.feed,removedTotal:saved.removed,bankUnits:saved.bankUnits,roundRemoved:0,normalHundredths:0,bonusMedals:0,counts:{line:0,triangle:0,hexagon:0},allClears:0,maxChain:0,sugarAwarded:false,sugarTarget:95+((seed>>>8)%36)};
+  if(modernRules(state)){state.carryAtStart={...saved};state.lastAllClearWin=0;}
   refill(state,{initial:true});return state;
  }
  function hit(original,number,{trace=false,preview=false}={}){
-  if(original?.version!==VERSION||!Number.isInteger(number)||number<1||number>25||original.draws.includes(number)||original.draws.length>=8)return null;
+  if(modernRules(original))return null;
+  return resolveHits(original,[number],{trace,preview});
+ }
+ function hitBatch(original,numbers,{trace=false,preview=false}={}){
+  if(!modernRules(original)||!Array.isArray(numbers)||numbers.length!==batchSize(original?.draws?.length))return null;
+  return resolveHits(original,numbers,{trace,preview});
+ }
+ function resolveHits(original,numbers,{trace=false,preview=false}={}){
+  if(original?.version!==VERSION||!Array.isArray(original.draws)||!numbers.length||original.draws.length+numbers.length>8||new Set(numbers).size!==numbers.length||numbers.some(number=>!Number.isInteger(number)||number<1||number>25||original.draws.includes(number)))return null;
   const s=copy(original),timeline=[],startWin=totalMedals(s),startRemoved=s.roundRemoved;
-  gamePalette(s);s.rulesRevision=REVISION;s.draws.push(number);let chain=0,sugar=false;
+  gamePalette(s);s.rulesRevision=modernRules(s)?CURRENT_REVISION:REVISION;s.draws.push(...numbers);let chain=0,sugar=false;
   const push=(phase,extra={},ms=100)=>{if(trace)timeline.push({phase,...extra,ms,grid:G.clone(s.grid),bankUnits:s.bankUnits,normalHundredths:s.normalHundredths,bonusMedals:s.bonusMedals,counts:{...s.counts},allClears:s.allClears});};
   function remove(cells){const removed=[],progressiveCredits=[],bankUnitsBefore=s.bankUnits;for(const [r,c]of cells){
    const t=s.grid[r]?.[c];if(!t)continue;removed.push({r,c,tile:{...t}});s.grid[r][c]=null;
@@ -147,8 +178,10 @@ function create(geometry){
    const steps=result.steps.map(x=>({...x,ms:x.ms*scale})),motionMs=steps.reduce((n,x)=>n+x.ms,0)||80;
    push('pyramidFall',{moves:result.moves,steps,motionMs,chain},Math.min(350,motionMs+35));
   }
-  const cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<s.grid[r].length;c++)if(s.grid[r][c]?.number===number)cells.push([r,c]);
-  push(cells.length?'pyramidHit':'pyramidMiss',{cells,numbers:[number]},70);
+  // Every received number in this group hits the same board. Only after all
+  // matching candies are removed do gravity, cascades and one refill run.
+  const hits=new Set(numbers),cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<s.grid[r].length;c++)if(hits.has(s.grid[r][c]?.number))cells.push([r,c]);
+  push(cells.length?'pyramidHit':'pyramidMiss',{cells,numbers:[...numbers]},70);
   if(cells.length){push('pyramidBreak',remove(cells),80);fall();}
   for(;;){
    const forms=G.findShapes(s.grid),groups=connectedGroups(s.grid);if(!forms.length&&!groups.length)break;
@@ -158,13 +191,13 @@ function create(geometry){
    const before=totalMedals(s),counts={line:0,triangle:0,hexagon:0};for(const f of forms)counts[f.type]++;
    push('pyramidShape',{forms,groups,cells:cleared,colors:[...colors],chain},counts.hexagon?260:counts.triangle?220:180);
    const removal=remove(cleared);
-   for(const type of Object.keys(BASE_PAY)){s.normalHundredths+=roleAward(type,s.counts[type],counts[type]);s.counts[type]+=counts[type];}
+   for(const type of Object.keys(BASE_PAY)){s.normalHundredths+=roleAward(type,s.counts[type],counts[type],s);s.counts[type]+=counts[type];}
    const won=totalMedals(s)-before;
    push('pyramidAward',{forms,groups,...removal,chain,gain:asHundredths(won,s.bet),winMedals:won,triangles:counts.triangle,hexagons:counts.hexagon,lines:counts.line,colors:[...colors]},130);
    fall();
   }
   const allClear=s.roundRemoved>startRemoved&&G.count(s.grid)===0;
-  if(allClear){const prize=Math.floor(s.bankUnits/UNIT);s.bonusMedals+=prize;s.allClears++;push('pyramidAllClear',{chain,gain:asHundredths(prize,s.bet),winMedals:prize,forms:[]},720);}
+  if(allClear){const prize=Math.floor(s.bankUnits/UNIT);s.bonusMedals+=prize;s.allClears++;if(modernRules(s))s.lastAllClearWin=prize;push('pyramidAllClear',{chain,gain:asHundredths(prize,s.bet),winMedals:prize,forms:[]},720);}
   s.maxChain=Math.max(s.maxChain,chain);s.processed=s.draws.length;
   if(!s.sugarAwarded&&s.roundRemoved>=s.sugarTarget){s.sugarAwarded=true;sugar=true;}
   const fill=preview?{added:[]}:refill(s);
@@ -172,8 +205,13 @@ function create(geometry){
   const win=totalMedals(s);
   return {state:s,timeline,chain,allClear,sugarAward:sugar,removed:s.roundRemoved-startRemoved,gain:win-startWin,totalWin:win,counts:{line:s.counts.line-original.counts.line,triangle:s.counts.triangle-original.counts.triangle,hexagon:s.counts.hexagon-original.counts.hexagon}};
  }
- function carryOut(s,roundId=''){return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});}
- return {VERSION,REVISION,ROWS,CAPACITY,RING,BASE_PAY,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleAward,newGame,hit,refill,carryOut,mobility,connectedGroups};
+ function carryOut(s,roundId=''){
+  // An interrupted v278 round is not a completed zero-WIN game. Only its
+  // already committed starting meter may be carried into another round.
+  if(modernRules(s)&&s.draws.length<8)return cleanCarry(s.carryAtStart);
+  return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});
+ }
+ return {VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,SUPPORT_TABLE_V278,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
 }
-root.SweetsSixDropV247={VERSION,REVISION,create,BASE_PAY,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleAward};
+root.SweetsSixDropV247={VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,SUPPORT_TABLE_V278,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,batchSize,supportProbability};
 })(typeof window!=='undefined'?window:globalThis);
