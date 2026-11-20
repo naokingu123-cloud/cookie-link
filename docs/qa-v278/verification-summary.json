@@ -1,0 +1,377 @@
+{
+  "version": "20261120-v278-sixdrop-bottle-and-carry",
+  "recordedOn": "2026-11-20",
+  "status": "published-assets-verified-download-investigation-open",
+  "repository": "naokingu123-cloud/cookie-link",
+  "pullRequest": {
+    "number": 3,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/pull/3",
+    "status": "merged",
+    "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+    "mergeSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9"
+  },
+  "sourceIdentity": {
+    "localHeadSha": "d985b430e278729e9ce7ac071a7f900d0a96d3c2",
+    "prHeadSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+    "treeSha": "4347ea2c6c080da058badbcb42bfae9983667fd8",
+    "localAndPrTreeIdentical": true
+  },
+  "ci": {
+    "sixDropV278": {
+      "runId": 44738198360,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360",
+      "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+      "status": "success",
+      "rulesAndContinuation": "passed",
+      "browserShards": 3,
+      "browserCases": 4,
+      "publicAssets": "skipped-on-pull_request"
+    },
+    "celebrationV277Regression": {
+      "runId": 44738198352,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198352",
+      "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+      "status": "success"
+    },
+    "postMerge": {
+      "runId": 44743092484,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092484",
+      "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+      "status": "success",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "environment-setup-failure",
+          "failure": {
+            "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+            "runId": 44743092484,
+            "jobId": 136311413815,
+            "jobName": "native-browser-display (2)",
+            "runnerImage": "ubuntu-26.04",
+            "runnerImageVersion": "20261111.196.1",
+            "classification": "environment setup timeout before application test",
+            "failedStep": "Japanese fonts and Chromium",
+            "package": "fonts-noto-cjk",
+            "packageBytesApprox": 61200000,
+            "mirror": "http://azure.archive.ubuntu.com/ubuntu",
+            "timeoutSeconds": 150,
+            "exitCode": 124,
+            "testStep": "skipped",
+            "artifact": "none; upload then failed because qa-sixdrop-v278 directory did not exist",
+            "evidence": [
+              "2026-11-20T13:19:09.4169654Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/main amd64v3 fonts-noto-cjk all 1:20240730+repack1-1build1 [61.2 MB]",
+              "2026-11-20T13:21:40.4968183Z ##[error]Process completed with exit code 124."
+            ],
+            "mutationsPerformed": false
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "success",
+          "scope": "Failed jobs only",
+          "environmentSetup": "passed",
+          "nativeBrowserShard2": "passed",
+          "publicAssets": "passed"
+        }
+      ],
+      "completedAt": "2026-11-20T13:34:16Z",
+      "successfulAttempt": 2,
+      "publicJobId": 136319256084
+    },
+    "legacyWorkflows": {
+      "status": "16-failed-jobs-in-15-workflow-runs",
+      "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+      "report": "legacy-workflow-failures.json",
+      "classifications": [
+        {
+          "count": 6,
+          "issue": "release 278 incorrectly required to equal unchanged module cache pin 262",
+          "sameGatePreviouslyDocumented": 2,
+          "samePatternWithoutPriorGateEvidence": 4
+        },
+        {
+          "count": 2,
+          "issue": "local-debug loader pin changed from 269 to 278 in PR3 while old tests require 269",
+          "preexistingFailureClaimed": false
+        },
+        {
+          "count": 2,
+          "issue": "old Six HUD expects single-ball mode; requested v278 mode is grouped",
+          "preexistingFailureClaimed": false
+        },
+        {
+          "count": 4,
+          "issue": "Legacy isolated Sugar presentation VM fixture lacks window required by the preexisting v277 audio hook"
+        }
+      ],
+      "scope": "Read-only first-failure triage; downstream checks after a failed assertion are not claimed to pass. The v278 dedicated suite covers new grouped rules, carry, settlement, legacy restore and the current UI. Full migration of the old HUD suite is outside this release; no runtime changes were made for this triage.",
+      "allWorkflowsSucceeded": false,
+      "unclassified": {
+        "jobs": 2,
+        "failure": "Legacy Download browser offline completion timeout",
+        "status": "investigating-playback-deadline-and-cumulative-animation-time",
+        "notAssumedToBeStaleAssertion": true,
+        "observation": {
+          "runId": 44743092162,
+          "jobId": 136311411162,
+          "cursor": 7,
+          "stableBall": 7,
+          "playbackMs": 101516.46667,
+          "eighthHitAtMs": 120933.33333,
+          "cumulativeSettlingMs": 227890.80000000002,
+          "activeMs": 312970.8,
+          "interpretation": "The replay had not reached hit 8; settlingMs is cumulative across all previous native animations, not a measured stall at ball 7. Completion remains unverified."
+        }
+      },
+      "failedJobs": 16,
+      "workflowRuns": 15
+    },
+    "pagesDeploy": {
+      "runId": 44743091387,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743091387",
+      "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+      "status": "success",
+      "completedAt": "2026-11-20T13:20:08Z"
+    },
+    "celebrationV277PostMerge": {
+      "runId": 44743092481,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092481",
+      "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+      "status": "success",
+      "publicAssets": {
+        "status": "passed",
+        "expectedFiles": 64,
+        "matchedFiles": 64,
+        "completedAt": "2026-11-20T13:23:09.336Z",
+        "httpStatus": 200,
+        "bytesMatched": true,
+        "sha256Matched": true,
+        "scope": "Static GET and SHA-256 only: changed runtime, all v277 art, all 41 original sounds and manifests. No gameplay, API, wallet or BET operations."
+      }
+    }
+  },
+  "browser": {
+    "status": "passed",
+    "shards": 3,
+    "cases": [
+      {
+        "shard": 0,
+        "id": "desktop-cycle",
+        "status": "passed",
+        "durationMs": 351414
+      },
+      {
+        "shard": 0,
+        "id": "download-worker",
+        "status": "passed",
+        "durationMs": 121135
+      },
+      {
+        "shard": 1,
+        "id": "mobile-high-amount",
+        "status": "passed",
+        "durationMs": 165798
+      },
+      {
+        "shard": 2,
+        "id": "mini-allclear",
+        "status": "passed",
+        "durationMs": 122676
+      }
+    ],
+    "screens": 26,
+    "failures": 0,
+    "pageErrors": 0,
+    "assetFailures": 0,
+    "apiRequests": 0,
+    "externalRequests": 0,
+    "scope": "Real manual number buttons; production grouped rules, native payout, local continuation and download worker; isolated virtual CREDIT",
+    "visuallyInspectedScreens": [
+      "shard0/desktop-cycle-allclear-earned.png",
+      "shard0/desktop-carried-bet-change.png",
+      "shard0/desktop-after-own-zero.png",
+      "shard1/mobile-high-amount-allclear-earned.png",
+      "shard1/mobile-high-amount-completed.png",
+      "shard2/mini-allclear-allclear-live.png",
+      "shard2/mini-allclear-allclear-overlay.png"
+    ],
+    "reviewNotes": [
+      "All three artifact ZIP SHA256 values matched the GitHub Actions artifact metadata.",
+      "All four browser cases passed. Three reports contain ok:true with no failures, page errors, asset failures, API requests or external requests.",
+      "Visual check confirmed generated bottle art, count payout tables, continuation and persistent all-clear earned amount on desktop and mobile.",
+      "Visual check confirmed carried amount survives BET change; own zero-WIN round clears continuation and progressive amount.",
+      "Visual check confirmed large mobile result amount fits within result panel, and mini all-clear badge paints.",
+      "Public asset verification is intentionally skipped on pull_request; it must run after main publication."
+    ],
+    "artifacts": [
+      {
+        "id": 14630415416,
+        "name": "sixdrop-v278-display-1",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360/artifacts/14630415416",
+        "sha256": "e9e896cb68028b7fa2646379b2abdda9ec72f6f5230b0dc934a8ad850c20abaa",
+        "bytes": 3701061,
+        "sha256MatchedActionsMetadata": true
+      },
+      {
+        "id": 14630375522,
+        "name": "sixdrop-v278-display-2",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360/artifacts/14630375522",
+        "sha256": "0b47ddf2c158999e535ca8b87c15eb0c8057785b36671e4309f0db6735620cb1",
+        "bytes": 3280213,
+        "sha256MatchedActionsMetadata": true
+      },
+      {
+        "id": 14629897907,
+        "name": "sixdrop-v278-display-0",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360/artifacts/14629897907",
+        "sha256": "cfeaefabc8222cae3311380dcd1bd60b67237e28076a06d008b2fc37c5085eba",
+        "bytes": 10930970,
+        "sha256MatchedActionsMetadata": true
+      }
+    ],
+    "evidenceManifest": "browser-evidence-manifest.json",
+    "retainedReports": [
+      "browser-shard-0.json",
+      "browser-shard-1.json",
+      "browser-shard-2.json"
+    ],
+    "retainedScreens": 6,
+    "retainedEvidenceFilesMatchOriginalBytes": true
+  },
+  "localRegression": {
+    "status": "passed",
+    "testedHeadSha": "d985b430e278729e9ce7ac071a7f900d0a96d3c2",
+    "tests": [
+      {
+        "file": "tests/sixdrop-v278-rules.cjs",
+        "status": "passed",
+        "rounds": 108,
+        "groups": 540,
+        "positiveRounds": 64,
+        "zeroRounds": 44,
+        "allClears": 16
+      },
+      {
+        "file": "tests/sixdrop-v278-host.cjs",
+        "status": "passed",
+        "checkpointBalls": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "pendingBalls": [
+          1,
+          2,
+          4
+        ],
+        "queuedGroupSizes": [
+          3,
+          2
+        ],
+        "offlineWorkerStartingBalls": [
+          0,
+          2,
+          4
+        ],
+        "legacyMissingRng": "verified replay and four rejection cases"
+      },
+      {
+        "file": "tests/sixdrop-v278-settlement.mjs",
+        "status": "passed",
+        "scope": [
+          "authoritative interrupted-round detection",
+          "eight-ball own-zero reset",
+          "nonparticipation",
+          "operator cancellation",
+          "idempotent retry",
+          "download BET change",
+          "download cold restart"
+        ]
+      },
+      {
+        "file": "tests/sixdrop-server-v248.mjs",
+        "status": "passed"
+      },
+      {
+        "file": "tests/recorded-round-v255.mjs",
+        "status": "passed"
+      },
+      {
+        "file": "tests/download-v255-cache.mjs",
+        "status": "passed"
+      }
+    ],
+    "witness": {
+      "seed": 9,
+      "bet": 3000,
+      "initialBankUnits": 123456,
+      "totalWin": 56618,
+      "roleCounts": {
+        "line": 7,
+        "triangle": 1,
+        "hexagon": 0
+      },
+      "allClearWins": [
+        11284,
+        21334
+      ],
+      "allClearTotalWin": 32618,
+      "carry": {
+        "bankUnits": 2148456,
+        "removed": 234,
+        "feed": 671
+      }
+    }
+  },
+  "payoutValidation": {
+    "status": "passed",
+    "report": "sixdrop-payout-validation.json",
+    "games": 32000,
+    "independentSeeds": 2,
+    "gamesPerRate": 8000,
+    "bet": 100,
+    "observedPercentByRate": {
+      "50": 49.18,
+      "90": 90.2,
+      "100": 97.81,
+      "150": 151.47
+    },
+    "scope": "Direct Six Drop awards under uniform eight-of-twenty-five sampling; excludes Sugar/JPC, physical roulette distribution and server feedback",
+    "coreSha256": "a6596177ea77f1686a8117c1730cb3ba63108f18375c11c35543b0fc5be397dd"
+  },
+  "publicVerification": {
+    "status": "passed",
+    "runtimeCommit": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+    "url": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v278-sixdrop-bottle-and-carry",
+    "verifiedFiles": 24,
+    "expectedFiles": 24,
+    "completedAt": "2026-11-20T13:34:10.966Z",
+    "httpStatus": 200,
+    "bytesMatched": true,
+    "sha256Matched": true,
+    "report": "public-verification.json",
+    "runId": 44743092484,
+    "workflowAttempt": 2,
+    "jobId": 136319256084,
+    "artifactId": 14632722120,
+    "artifactZipSha256": "82ad21075b2fb06ae884ad1dc6a7eec9aee6e616deb64a8a1abf145c46097a79",
+    "artifactZipDigestMatched": true,
+    "scope": "Static GET and SHA-256 only: Six Drop grouped rules and carry, generated candy images, dynamic payout UI, cache and manifests. No gameplay, API, wallet or BET operations.",
+    "note": "Static publication verification passed. This does not close the separate legacy Download-browser completion-timeout investigation."
+  },
+  "windowsServer": {
+    "sourceUpdated": false,
+    "restarted": false,
+    "status": "not-performed",
+    "preserveDirectories": [
+      ".runtime",
+      ".tools",
+      "data"
+    ],
+    "note": "Web publication does not update the running Windows server; the changed settlement worker requires source update and restart."
+  }
+}

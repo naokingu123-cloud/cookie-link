@@ -1,12 +1,15 @@
 # v278 — シックスドロップの全消し・継続・3/2球進行（2026-11-20）
 
-- Build: `20261120-v278-sixdrop-bottle-and-carry`。実装済み、[PR #3](https://github.com/naokingu123-cloud/cookie-link/pull/3) の最終検査中。仕様と再検証は [v278記録](docs/sixdrop-v278.md)。
+- Build: `20261120-v278-sixdrop-bottle-and-carry`。[PR #3](https://github.com/naokingu123-cloud/cookie-link/pull/3) をマージし、公開ファイル照合済み。main/runtimeコミットは `c5510fa5ec37a0677ef1ee47cc759016c49bf7f9`。PR検証HEAD `db1ed0d1369b87cb88bfbe05625df291cf32cd48` とローカル検証HEAD `d985b430e278729e9ce7ac071a7f900d0a96d3c2` はtree `4347ea2c6c080da058badbcb42bfae9983667fd8` が一致。仕様・検証範囲と残る調査は [v278記録](docs/sixdrop-v278.md)。
 - 新ゲームはrevision278、3・2・1・1・1球の5群。各群の番号を同じ盤面へ同時HITし、落下・連鎖・補充は群ごと。旧revision248保存は単球と旧配当を維持。
 - ローカル版の継続未保存を修正。全消し取得後も蓄積額を保持、Six自身の正常8球終了WIN0のみリセット。非参加・未完了中断は開始carryを保持。streaming中断はserver実ラウンドで確認し、フラグだけでは8球0WINリセットを回避できない。
 - 全消し獲得済み/今回WIN/回数を常設し、全消し蓄積額の横に継続を表示。新生成PNG5点でボトル・全消しロゴ・配当3表・全消し特別演出を実装。元のキャンディと世界背景は維持。
 - 成立n個の係数は n(n+1)/2+floor((n-1)^2/4)、基礎倍率は直線.2/三角.6/ヘキサゴン1.2。各役の表の整数累計WINを合算＋全消し、少額BETでも表示合計一致。旧248の丸めは維持。
 - recorded保存で消えていた数値state.rngを保持。旧欠落snapshotはシード等からの再演完全一致でのみ復旧し、不一致は明示停止。streaming restoreでもSixの復元hookを適用。offline workerはgroup境界待ち/派生drawHeldを使用。
 - 未使用2seedの計32,000ゲーム（50/90/100/150各8,000）で49.18/90.20/97.81/151.47%を観測。固定BET100、均等8/25、Six直接配当のみ。近似区間と較正履歴は [検証JSON](docs/qa-v278/sixdrop-payout-validation.json)。短期/理論一致は保証しない。
+- PRのv278検査 [44738198360](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360) とv277回帰検査 [44738198352](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198352) が成功。v278はルール・継続検査と実ブラウザー3 shard・4ケース（PC継続/Download worker/高額スマホ/mini）を通過。PNG26枚を生成し、うち7枚でボトル・配当表・全消し獲得表示・BET変更後の継続・WIN0リセットを視認。例外・素材失敗・API/外部要求0。ルール/host/精算/旧server/録画/cacheの既存6テストも再実行して全成功。[検証集計](docs/qa-v278/verification-summary.json)、[CI原本と保存証跡の対応](docs/qa-v278/browser-evidence-manifest.json)。
+- Pages deploy [44743091387](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743091387) は2026-11-20 13:20:08 UTCに成功。マージ後v277回帰 [44743092481](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092481) と公開64ファイルの照合も成功。v278 CI [44743092484](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092484) は初回shard2の日本語フォント取得timeout（150秒・exit124、本テスト未実行）後、失敗ジョブを一度再試行したattempt2で成功。2026-11-20 22:34:10 JSTの公開確認は24/24ファイルのHTTP200・bytes・SHA-256が一致。[公開照合原本](docs/qa-v278/public-verification.json)。
+- mainの別workflow15 runには16 failed jobがあり、全workflow成功ではない。6件は変更していないcache pin `262`とrelease `278`の同値要求（同一gateの過去記録あり2件）、2件は今回のlocal-debug pin `269→278`と旧値の不一致、2件は旧Six HUDの`single`と現行`grouped`の不一致、4件はv277音声hookが使う`window`を旧VM fixtureが用意していない問題。残るDownload browserのoffline完了timeout 2 jobは調査中で、旧assertionや無害な失敗とは断定していない。記録時間に累積演出時間を足す旧テストの予算不足が疑われるが、完走は未確認。各runと最初の失敗は [記録](docs/qa-v278/legacy-workflow-failures.json)。専用v278の成功を全runtime経路の成功とは扱わない。
 - Windows稼働サーバーの更新・再起動は未実施。精算workerにも変更があるため適用には最新ソースと再起動が必要。`.runtime`・`.tools`・`data`を保持する。
 
 ---

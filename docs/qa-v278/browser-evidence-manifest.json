@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-20T13:19:27.644890Z",
+  "source": {
+    "repository": "naokingu123-cloud/cookie-link",
+    "runId": 44738198360,
+    "runUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360",
+    "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+    "localHeadAtCapture": "d985b43",
+    "treeSha": "4347ea2c6c080da058badbcb42bfae9983667fd8",
+    "localAndRemoteTreeIdentical": true,
+    "downloadManifestSha256": "51f12ccc1d7b350c55fa12bd27aec029ba89a7a3f76fc8a369e8970c9bac91dd"
+  },
+  "artifacts": [
+    {
+      "id": 14629897907,
+      "name": "sixdrop-v278-display-0",
+      "runId": 44738198360,
+      "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+      "archive": "shard0.zip",
+      "sha256": "cfeaefabc8222cae3311380dcd1bd60b67237e28076a06d008b2fc37c5085eba",
+      "bytes": 10930970,
+      "archiveDigestVerified": true
+    },
+    {
+      "id": 14630415416,
+      "name": "sixdrop-v278-display-1",
+      "runId": 44738198360,
+      "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+      "archive": "shard1.zip",
+      "sha256": "e9e896cb68028b7fa2646379b2abdda9ec72f6f5230b0dc934a8ad850c20abaa",
+      "bytes": 3701061,
+      "archiveDigestVerified": true
+    },
+    {
+      "id": 14630375522,
+      "name": "sixdrop-v278-display-2",
+      "runId": 44738198360,
+      "headSha": "db1ed0d1369b87cb88bfbe05625df291cf32cd48",
+      "archive": "shard2.zip",
+      "sha256": "0b47ddf2c158999e535ca8b87c15eb0c8057785b36671e4309f0db6735620cb1",
+      "bytes": 3280213,
+      "archiveDigestVerified": true
+    }
+  ],
+  "files": [
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14629897907,
+      "sourceArtifactName": "sixdrop-v278-display-0",
+      "sourceArchivePath": "report.json",
+      "sourceExtractedPath": "shard0/report.json",
+      "savedPath": "docs/qa-v278/browser-shard-0.json",
+      "sha256": "af4832869450e01189aad5a26336b93392e80b0744ef085104b3f3a8f376ebb9",
+      "bytes": 98447
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14630415416,
+      "sourceArtifactName": "sixdrop-v278-display-1",
+      "sourceArchivePath": "report.json",
+      "sourceExtractedPath": "shard1/report.json",
+      "savedPath": "docs/qa-v278/browser-shard-1.json",
+      "sha256": "4eb60f8bdd822a813d90737e923e677dd499e97abca7ac5f1397b394f5529a87",
+      "bytes": 35621
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14630375522,
+      "sourceArtifactName": "sixdrop-v278-display-2",
+      "sourceArchivePath": "report.json",
+      "sourceExtractedPath": "shard2/report.json",
+      "savedPath": "docs/qa-v278/browser-shard-2.json",
+      "sha256": "cb7404bd5b683e023c0e015725b0010cadcb22588411f44aa898346ae1ec1b02",
+      "bytes": 32756
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14629897907,
+      "sourceArtifactName": "sixdrop-v278-display-0",
+      "sourceArchivePath": "desktop-cycle-allclear-earned.png",
+      "sourceExtractedPath": "shard0/desktop-cycle-allclear-earned.png",
+      "savedPath": "docs/qa-v278/desktop-allclear-earned.png",
+      "sha256": "8b405c63e41d0ea7ea1417c167e412d058cf141c42b0865510de8f27eb35e846",
+      "bytes": 1113042
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14630415416,
+      "sourceArtifactName": "sixdrop-v278-display-1",
+      "sourceArchivePath": "mobile-high-amount-allclear-earned.png",
+      "sourceExtractedPath": "shard1/mobile-high-amount-allclear-earned.png",
+      "savedPath": "docs/qa-v278/mobile-allclear-earned.png",
+      "sha256": "3fc7d5f407de51ef7b794ec0b94d556c06a5c1e1c9144ce91ba289b11f486857",
+      "bytes": 539134
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14630375522,
+      "sourceArtifactName": "sixdrop-v278-display-2",
+      "sourceArchivePath": "mini-allclear-allclear-live.png",
+      "sourceExtractedPath": "shard2/mini-allclear-allclear-live.png",
+      "savedPath": "docs/qa-v278/mini-allclear-earned.png",
+      "sha256": "bc8575972e18a4310e506dfacc2ae2c0b3a603ea4cfb874063ac269cb40a95df",
+      "bytes": 488842
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14629897907,
+      "sourceArtifactName": "sixdrop-v278-display-0",
+      "sourceArchivePath": "desktop-cycle-allclear-overlay.png",
+      "sourceExtractedPath": "shard0/desktop-cycle-allclear-overlay.png",
+      "savedPath": "docs/qa-v278/allclear-award.png",
+      "sha256": "22b2ae7a19347ff98a591145a2899b8e7d56bc9275cad7fb78f3876a05bfa705",
+      "bytes": 112471
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14629897907,
+      "sourceArtifactName": "sixdrop-v278-display-0",
+      "sourceArchivePath": "desktop-carried-bet-change.png",
+      "sourceExtractedPath": "shard0/desktop-carried-bet-change.png",
+      "savedPath": "docs/qa-v278/desktop-carried-bet-change.png",
+      "sha256": "210ebe6210e78188a21ec83e1cb67dcc70423b0734a68a0012966a2824a39414",
+      "bytes": 1108097
+    },
+    {
+      "sourceRunId": 44738198360,
+      "sourceArtifactId": 14629897907,
+      "sourceArtifactName": "sixdrop-v278-display-0",
+      "sourceArchivePath": "desktop-after-own-zero.png",
+      "sourceExtractedPath": "shard0/desktop-after-own-zero.png",
+      "savedPath": "docs/qa-v278/desktop-after-own-zero.png",
+      "sha256": "3430c3a85c00dbe4bcca73d56a7645715509ffc07adea225b96c06be8bf71eda",
+      "bytes": 1112079
+    }
+  ],
+  "copiedFileCount": 9,
+  "copiedFilesTotalBytes": 4640489,
+  "notes": [
+    "All retained files are byte-for-byte copies from the listed successful CI artifacts.",
+    "mini-allclear-earned.png intentionally uses the live all-clear capture so the miniature earned badge is visible.",
+    "Checksums cover the nine retained evidence files; this manifest is not self-hashed."
+  ]
+}

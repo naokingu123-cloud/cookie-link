@@ -1,0 +1,500 @@
+{
+  "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+  "baseSha": "65f1bdd57400132521b26b8b047bf2af0e9f978f",
+  "pr": 3,
+  "v276Baseline": "40b912f0bc33b614ea8ecec23d54adcc137eef46",
+  "scope": "Read-only first-failure triage. Distinguishes documented version-pin assertions, stale tests for intentional changes, older VM fixture failures, and unresolved offline playback timeouts. Do not classify all old workflows as harmless. Later behavior may be unexecuted after the first assertion. No legacy reruns or runtime edits.",
+  "failures": [
+    {
+      "run": 44743092548,
+      "job": 136311413747,
+      "name": "Local Debug v258",
+      "test": "tests/local-debug-v258.mjs",
+      "line": 14,
+      "runtime": "index.html",
+      "module": "assets/local-debug-game-v258.js",
+      "expected": "v=269",
+      "actual": "v=278",
+      "classification": "stale fixed cache pin after intentional v278 loader update",
+      "record": "not covered; this loader pin was changed by PR3",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(html.includes(\"else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=269','assets/local-sugar-v267.js?v=268');\"))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/local-debug-v258.mjs:14:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v22.23.5\n##[error]Process completed with exit code 1.\n##[group]Run actions/upload-artifact@v4\nwith:\n  name: local-debug-v258-qa",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": true,
+        "referencedPinChanged": true
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; this loader pin was changed by PR3"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "269"
+      ],
+      "currentModulePins": [
+        "278"
+      ]
+    },
+    {
+      "run": 44743092504,
+      "job": 136311413679,
+      "name": "Shared machine check",
+      "test": "tests/roulette-hd60-v234.mjs",
+      "line": 21,
+      "runtime": "assets/shared-machine-v176.js",
+      "module": "assets/shared-roulette-webrtc-host-v224.js",
+      "expected": "v=278",
+      "actual": "v=262",
+      "classification": "preexisting release-equals-cache-pin assumption",
+      "record": "same exact gate documented at v275 and v276",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/roulette-hd60-v234.mjs:21:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '=='\n}\n\nNode.js v20.20.2\n##[error]Process completed with exit code 1.\nPost job cleanup.\n[command]/usr/bin/git version\ngit version 2.56.1\nTemporarily overriding HOME='/home/runner/work/_temp/374a3521-d0c5-4e9c-96ef-52a0dc999666' before making global git config changes",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": false,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "same exact gate documented at v275 and v276"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "262"
+      ],
+      "currentModulePins": [
+        "262"
+      ]
+    },
+    {
+      "run": 44743092582,
+      "job": 136311413272,
+      "name": "Six station check",
+      "test": "tests/stations-highlight-v239.mjs",
+      "line": 14,
+      "runtime": "assets/shared-machine-v176.js",
+      "module": "assets/stations-reach-host-v239.js",
+      "expected": "v=278",
+      "actual": "v=262",
+      "classification": "preexisting release-equals-cache-pin assumption",
+      "record": "same exact gate documented at v275 and v276",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('stations-reach-host-v239.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/stations-highlight-v239.mjs:14:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '=='\n}\n\nNode.js v20.20.2\n##[error]Process completed with exit code 1.\nPost job cleanup.\n[command]/usr/bin/git version\ngit version 2.56.1\nTemporarily overriding HOME='/home/runner/work/_temp/138436ee-31ab-4376-b345-37f63a097f8d' before making global git config changes",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": false,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "same exact gate documented at v275 and v276"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "262"
+      ],
+      "currentModulePins": [
+        "262"
+      ]
+    },
+    {
+      "run": 44743092350,
+      "job": 136311412203,
+      "name": "Monitor ledger v241",
+      "test": "tests/shared-v224-core-video-guards.mjs",
+      "line": 23,
+      "runtime": "assets/shared-machine-v176.js",
+      "module": "assets/shared-core-patch-v224.js",
+      "expected": "v=278",
+      "actual": "v=262",
+      "classification": "release-equals-cache-pin assumption with unchanged pin",
+      "record": "not covered by v276 artifact; same pattern, separate test",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-core-patch-v224.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/shared-v224-core-video-guards.mjs:23:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '=='\n}\n\nNode.js v20.20.2\n##[error]Process completed with exit code 1.\n##[group]Run python - <<'PY'\n\u001b[36;1mpython - <<'PY'\u001b[0m\n\u001b[36;1mimport pathlib,zipfile\u001b[0m\n\u001b[36;1mroot=pathlib.Path('.')\u001b[0m",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": false,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered by v276 artifact; same pattern, separate test"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "262"
+      ],
+      "currentModulePins": [
+        "262"
+      ]
+    },
+    {
+      "run": 44743092546,
+      "job": 136311413197,
+      "name": "Public guest entry check",
+      "test": "tests/guest-entry-v237.mjs",
+      "line": 58,
+      "runtime": "assets/shared-machine-v176.js",
+      "module": "assets/guest-entry-v237.js",
+      "expected": "v=278",
+      "actual": "v=262",
+      "classification": "release-equals-cache-pin assumption with unchanged pin",
+      "record": "not covered by v276 artifact; same pattern, separate test",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('guest-entry-v237.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/guest-entry-v237.mjs:58:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '=='\n}\n\nNode.js v20.20.2\n##[error]Process completed with exit code 1.\n##[group]Run node tests/guest-public-probe-v237.mjs\n\u001b[36;1mnode tests/guest-public-probe-v237.mjs\u001b[0m\nshell: /usr/bin/bash -e {0}\n##[endgroup]",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": false,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered by v276 artifact; same pattern, separate test"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "262"
+      ],
+      "currentModulePins": [
+        "262"
+      ]
+    },
+    {
+      "run": 44743092232,
+      "job": 136311412333,
+      "name": "Client v246",
+      "test": "tests/background-continuity-v240.mjs",
+      "line": 13,
+      "runtime": "assets/shared-machine-v176.js",
+      "module": "assets/shared-client-background-v240.js",
+      "expected": "v=278",
+      "actual": "v=262",
+      "classification": "release-equals-cache-pin assumption with unchanged pin",
+      "record": "not covered by v276 artifact; same pattern, separate test",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: extra background handler loaded with current release cache key\n    at file:///home/runner/work/cookie-link/cookie-link/tests/background-continuity-v240.mjs:13:8 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v22.23.5\n##[error]Process completed with exit code 1.\n##[group]Run actions/upload-artifact@v4\nwith:\n  name: client-v246-browser-qa\n  path: qa-client-v243\nqa-monitor-v242\n",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": false,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered by v276 artifact; same pattern, separate test"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "262"
+      ],
+      "currentModulePins": [
+        "262"
+      ]
+    },
+    {
+      "run": 44743092267,
+      "job": 136311411603,
+      "name": "Station detail v238",
+      "test": "tests/shared-v224-core-video-guards.mjs",
+      "line": 23,
+      "runtime": "assets/shared-machine-v176.js",
+      "module": "assets/shared-core-patch-v224.js",
+      "expected": "v=278",
+      "actual": "v=262",
+      "classification": "release-equals-cache-pin assumption with unchanged pin",
+      "record": "not covered by v276 artifact; same pattern, separate test",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-core-patch-v224.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/shared-v224-core-video-guards.mjs:23:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v22.23.5\n##[error]Process completed with exit code 1.\nPost job cleanup.\n[command]/usr/bin/git version\ngit version 2.56.1",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": false,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered by v276 artifact; same pattern, separate test"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "262"
+      ],
+      "currentModulePins": [
+        "262"
+      ]
+    },
+    {
+      "run": 44743092306,
+      "job": 136311411755,
+      "name": "Six Drop v248",
+      "test": "tests/client-browser-v243.mjs",
+      "line": 60,
+      "ciSource": "tests/.sixdrop-hud-run-v247.mjs:75 (generated by tests/sixdrop-hud-v247.mjs)",
+      "runtime": "assets/sixdrop-progressive-host-v247.js",
+      "module": null,
+      "expected": "single",
+      "actual": "grouped",
+      "classification": "old single-ball expectation superseded by requested v278 grouped rules",
+      "record": "not covered; this behavior intentionally changed in v278",
+      "firstFailure": "CLIENT_BROWSER_V243_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'grouped'\n- 'single'\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/.sixdrop-hud-run-v247.mjs:75:46 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'grouped',\n  expected: 'single',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\nCLIENT_WARNINGS [\"[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)\",\"[.WebGL-0x11940103fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\",\"[.WebGL-0x11940103fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\",\"[.WebGL-0x11940103fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\",\"[.WebGL-0x11940103fa00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\",\"Failed to load resource: the server responded with a status of 401 (Unauthorized)\"]\nCLIENT_STATE {\"phase\":\"playing\",\"draws\":[3],\"controller\":{\"connectionEpoch\":1,\"onlineSince\":1795180741635,\"firstSnapshotAt\":1795180742633,\"lastSnapshotAt\":1795180770319,\"snapshotCount\":21,\"autoRebet\":true,\"joinedRoundId\":\"public-01-1-aecfba0d\",\"startedRoundId\":\"public-01-1-aecfba0d\",\"pendingBetRoundId\":null,\"draftReserved\":0,\"pendingDebitRoundId\":null,\"localReserved\":0,\"activeRound\":\"public-01-1-aecfba0d\",\"losses\":[],\"pendingSettlements\":[],\"settlementReview\":[],\"generation\":0,\"resetBusy\":false},\"slots\":[{\"kind\":\"cookie\",\"phase\":\"refill\",\"processed\":0,\"accepted\":0,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"choco\",\"phase\":\"waiting\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"pending\",\"engineVersion\":1},{\"kind\":\"candy\",\"phase\":\"waiting\",\"processed\":0,\"accepted\":0,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":2},{\"kind\":\"gelato\",\"phase\":\"gelatoHit\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"winery\",\"phase\":\"wineryPour\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":true,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":2},{\"kind\":\"popcorn\",\"phase\":\"popcornDraw\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"busy\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"jelly\",\"phase\":\"jellyPour\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"busy\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"stick\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":2,\"engineVersion\":2},{\"kind\":\"castella\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":1,\"engineVersion\":1},{\"kind\":\"dango\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":1,\"engineVersion\":1}]}",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": null,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; this behavior intentionally changed in v278"
+      },
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092492,
+      "job": 136311413501,
+      "name": "Dango v266",
+      "test": "tests/local-debug-v258.mjs",
+      "line": 14,
+      "runtime": "index.html",
+      "module": "assets/local-debug-game-v258.js",
+      "expected": "v=269",
+      "actual": "v=278",
+      "classification": "stale fixed cache pin after intentional v278 loader update",
+      "record": "not covered; this loader pin was changed by PR3",
+      "firstFailure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(html.includes(\"else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=269','assets/local-sugar-v267.js?v=268');\"))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/local-debug-v258.mjs:14:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v22.23.5\n##[error]Process completed with exit code 1.\n##[group]Run actions/upload-artifact@v4\nwith:\n  name: dango-v262-verification",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": true,
+        "referencedPinChanged": true
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; this loader pin was changed by PR3"
+      },
+      "testIdenticalToV276": true,
+      "v276ModulePins": [
+        "269"
+      ],
+      "currentModulePins": [
+        "278"
+      ]
+    },
+    {
+      "run": 44743092459,
+      "job": 136311412966,
+      "name": "Verify current games and public Pages",
+      "test": "tests/client-browser-v243.mjs",
+      "line": 60,
+      "ciSource": "tests/.sixdrop-hud-run-v247.mjs:75 (generated by tests/sixdrop-hud-v247.mjs)",
+      "runtime": "assets/sixdrop-progressive-host-v247.js",
+      "module": null,
+      "expected": "single",
+      "actual": "grouped",
+      "classification": "old single-ball expectation superseded by requested v278 grouped rules",
+      "record": "not covered; this behavior intentionally changed in v278",
+      "firstFailure": "CLIENT_BROWSER_V243_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'grouped'\n- 'single'\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/.sixdrop-hud-run-v247.mjs:75:46 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'grouped',\n  expected: 'single',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\nCLIENT_WARNINGS [\"[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)\",\"[.WebGL-0x256401168000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\",\"[.WebGL-0x256401168000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\",\"[.WebGL-0x256401168000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\",\"[.WebGL-0x256401168000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\",\"Failed to load resource: the server responded with a status of 401 (Unauthorized)\"]\nCLIENT_STATE {\"phase\":\"playing\",\"draws\":[3],\"controller\":{\"connectionEpoch\":1,\"onlineSince\":1795180772526,\"firstSnapshotAt\":1795180774432,\"lastSnapshotAt\":1795180802789,\"snapshotCount\":19,\"autoRebet\":true,\"joinedRoundId\":\"public-01-1-ba5e3803\",\"startedRoundId\":\"public-01-1-ba5e3803\",\"pendingBetRoundId\":null,\"draftReserved\":0,\"pendingDebitRoundId\":null,\"localReserved\":0,\"activeRound\":\"public-01-1-ba5e3803\",\"losses\":[],\"pendingSettlements\":[],\"settlementReview\":[],\"generation\":0,\"resetBusy\":false},\"slots\":[{\"kind\":\"cookie\",\"phase\":\"refill\",\"processed\":0,\"accepted\":0,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"choco\",\"phase\":\"canyonDigFinish\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":true,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"engineVersion\":1},{\"kind\":\"candy\",\"phase\":\"waiting\",\"processed\":0,\"accepted\":0,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":2},{\"kind\":\"gelato\",\"phase\":\"gelatoHit\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"winery\",\"phase\":\"wineryPour\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":true,\"idle\":false,\"queue\":0,\"reach\":\"inactive\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":2},{\"kind\":\"popcorn\",\"phase\":\"popcornDraw\",\"processed\":0,\"accepted\":1,\"busy\":true,\"fx\":false,\"idle\":false,\"queue\":0,\"reach\":\"busy\",\"base\":0,\"cacheVersion\":null,\"engineVersion\":1},{\"kind\":\"jelly\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":1,\"engineVersion\":1},{\"kind\":\"stick\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":2,\"engineVersion\":2},{\"kind\":\"castella\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":1,\"engineVersion\":1},{\"kind\":\"dango\",\"phase\":\"settled\",\"processed\":1,\"accepted\":1,\"busy\":false,\"fx\":false,\"idle\":true,\"queue\":0,\"reach\":\"ready\",\"base\":0,\"cacheVersion\":1,\"engineVersion\":1}]}",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": true,
+        "referencedModule": null,
+        "referencedPinChanged": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; this behavior intentionally changed in v278"
+      },
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092477,
+      "job": 136311413374,
+      "name": "Illustrated game cells v275",
+      "failedJob": "art-and-cache",
+      "test": "tests/sugar-v270-presentation.mjs",
+      "line": 36,
+      "runtime": "assets/sugar-challenge-v254.js",
+      "runtimeLine": 138,
+      "expected": "VM context contains browser window used by optional v277 audio hook",
+      "actual": "ReferenceError: window is not defined",
+      "firstFailure": "ReferenceError: window is not defined\n    at Object.paintReel (evalmachine.<anonymous>:31:2)\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-v270-presentation.mjs:36:29\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n",
+      "classification": "legacy isolated VM fixture lacks window required by preexisting v277 audio integration",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": false,
+        "referencedModule": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; v277 audio integration was introduced after v276"
+      },
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092437,
+      "job": 136311412833,
+      "name": "Dango and Sugar presentation v271",
+      "failedJob": "rules-and-cache",
+      "test": "tests/sugar-v270-presentation.mjs",
+      "line": 36,
+      "runtime": "assets/sugar-challenge-v254.js",
+      "runtimeLine": 138,
+      "expected": "VM context contains browser window used by optional v277 audio hook",
+      "actual": "ReferenceError: window is not defined",
+      "firstFailure": "ReferenceError: window is not defined\n    at Object.paintReel (evalmachine.<anonymous>:31:2)\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-v270-presentation.mjs:36:29\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n",
+      "classification": "legacy isolated VM fixture lacks window required by preexisting v277 audio integration",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": false,
+        "referencedModule": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; v277 audio integration was introduced after v276"
+      },
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092516,
+      "job": 136311412358,
+      "name": "Arcade v254",
+      "test": "tests/sugar-v270-presentation.mjs",
+      "line": 36,
+      "runtime": "assets/sugar-challenge-v254.js",
+      "runtimeLine": 138,
+      "expected": "VM context provides browser window",
+      "actual": "ReferenceError: window is not defined",
+      "classification": "legacy isolated VM fixture missing window for preexisting v277 audio hook",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; v277 audio hook added after v276"
+      },
+      "firstFailure": "ReferenceError: window is not defined\n    at Object.paintReel (evalmachine.<anonymous>:31:2)\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-v270-presentation.mjs:36:29\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.5",
+      "additionalFailureHeaders": [
+        "ReferenceError: window is not defined",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-v270-presentation.mjs:36:29",
+        "SUGAR_V254_BROWSER_FAIL AssertionError [ERR_ASSERTION]: illustrated JACKPOT CHANCE title fits its container: {\"inner\":{\"left\":236.95709228515625,\"top\":101.70896911621094,\"right\":1129.04296875,\"bottom\":680.3417816162109,\"width\":892.085876464",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-challenge-v254-browser.mjs:145:637 {",
+        "AssertionError [ERR_ASSERTION]: illustrated JACKPOT CHANCE title fits its container: {\"inner\":{\"left\":236.95709228515625,\"top\":101.70896911621094,\"right\":1129.04296875,\"bottom\":680.3417816162109,\"width\":892.0858764648438,\"height\":578.632812",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-challenge-v254-browser.mjs:145:637 {",
+        "RESULTS_V253_BROWSER_FAIL AssertionError [ERR_ASSERTION]: displaying the result cannot pay early",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/results-v253-browser.mjs:148:97",
+        "AssertionError [ERR_ASSERTION]: displaying the result cannot pay early",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/results-v253-browser.mjs:148:97",
+        "AssertionError [ERR_ASSERTION]: the old four move left",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/tabs-v250-browser.mjs:151:9 {",
+        "DANGO_LEGACY_VIEW_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/dango-v251-view.mjs:53:55 {",
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/dango-v251-view.mjs:53:55 {",
+        "CLIENT_BROWSER_V243_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/client-browser-v243.mjs:60:46",
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/client-browser-v243.mjs:60:46",
+        "CLIENT_BROWSER_V243_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/client-hidden-browser-v246.mjs:59:46 {",
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+        "    at file:///home/runner/work/cookie-link/cookie-link/tests/client-hidden-browser-v246.mjs:59:46 {"
+      ],
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092503,
+      "job": 136311413259,
+      "name": "Dango and Sugar v268 - sugar",
+      "test": "tests/sugar-v270-presentation.mjs",
+      "line": 36,
+      "runtime": "assets/sugar-challenge-v254.js",
+      "runtimeLine": 138,
+      "expected": "VM context provides browser window",
+      "actual": "ReferenceError: window is not defined",
+      "classification": "legacy isolated VM fixture missing window for preexisting v277 audio hook",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": false
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered; v277 audio hook added after v276"
+      },
+      "firstFailure": "ReferenceError: window is not defined\n    at Object.paintReel (evalmachine.<anonymous>:31:2)\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-v270-presentation.mjs:36:29\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)\n\nNode.js v22.23.5",
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092503,
+      "job": 136311412749,
+      "name": "Dango and Sugar v268 - download",
+      "test": "tests/download-v255-browser.mjs",
+      "line": 256,
+      "runtime": "assets/download-mode-v255.js",
+      "expected": "localComplete true before timeout after offline restore",
+      "actual": "Timed out: offline recorded playback and native payout complete",
+      "classification": "unresolved offline playback completion timeout; not proven preexisting or harmless",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": false,
+        "changedDependencies": [
+          "assets/recorded-round-v255.js",
+          "assets/sixdrop-progressive-core-v247.js",
+          "assets/sixdrop-progressive-host-v247.js"
+        ]
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered"
+      },
+      "firstFailure": "Error: Timed out: offline recorded playback and native payout complete\n    at until (file:///home/runner/work/cookie-link/cookie-link/tests/download-v255-browser.mjs:23:8)\n    at async file:///home/runner/work/cookie-link/cookie-link/tests/download-v255-browser.mjs:256:2\n\nNode.js v22.23.5\n##[error]Process completed with exit code 1.\n##[group]Run actions/upload-artifact@v4\nwith:",
+      "testIdenticalToV276": true
+    },
+    {
+      "run": 44743092162,
+      "job": 136311411162,
+      "name": "Download v255",
+      "test": "tests/download-v255-browser.mjs",
+      "line": 256,
+      "runtime": "assets/download-mode-v255.js",
+      "expected": "localComplete true before timeout after offline restore",
+      "actual": "Timed out: offline recorded playback and native payout complete",
+      "classification": "unresolved deadline expiry before ball8 recorded hit; cumulative settling may exceed old wall-clock budget; under investigation",
+      "changedInPR3": {
+        "test": false,
+        "runtimeFile": false,
+        "changedDependencies": [
+          "assets/recorded-round-v255.js",
+          "assets/sixdrop-progressive-core-v247.js",
+          "assets/sixdrop-progressive-host-v247.js"
+        ]
+      },
+      "v276Record": {
+        "path": "docs/qa-v276/legacy-version-gates.json",
+        "correspondence": "not covered"
+      },
+      "artifact": {
+        "id": 14632526935,
+        "sha256": "c7e2b245c9108f39a0f971df936d2f5f06d3cac0bf7b590deddcad22a65388b9",
+        "report": "download-v255-failure/qa-download-v255/browser.json",
+        "zipDigestVerified": true
+      },
+      "failureState": {
+        "pageErrors": [],
+        "cursor": 7,
+        "stableBall": 7,
+        "playing": true,
+        "localComplete": false,
+        "phase": "playing",
+        "settlingMs": 227890.8,
+        "activeMs": 312970.8,
+        "settlingMsMeaning": "Cumulative settling time across the entire playback; this is not evidence that ball7 alone was stalled for this duration.",
+        "playbackMs": 101516.46667,
+        "nextRecordedHitMs": 120933.33333
+      },
+      "firstFailure": "Error: Timed out: offline recorded playback and native payout complete\n    at until (file:///home/runner/work/cookie-link/cookie-link/tests/download-v255-browser.mjs:23:8)\n    at async file:///home/runner/work/cookie-link/cookie-link/tests/download-v255-browser.mjs:256:2\n\nNode.js v22.23.5\n##[error]Process completed with exit code 1.\n##[group]Run actions/upload-artifact@v4\nwith:",
+      "testIdenticalToV276": true
+    }
+  ],
+  "snapshotFinal": true,
+  "additionalInvestigationDelegatedTo": "core_review: offline playback timeout classification"
+}

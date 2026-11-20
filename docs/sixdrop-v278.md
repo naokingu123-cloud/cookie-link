@@ -83,9 +83,45 @@ v278のWINは各役の累計配当をそれぞれ整数へ切り捨て、その3
 
 ## 検証と公開
 
-実装時の検証PRは[#3](https://github.com/naokingu123-cloud/cookie-link/pull/3)。純ルール・実Arcade/host・保存復元・streaming/download精算の検査を実施し、ブラウザー検査と配当率の最終試算を進めている。最終のCI・公開照合結果は公開時に追記する。
+実装時の検証PRは[#3](https://github.com/naokingu123-cloud/cookie-link/pull/3)。2026-11-20にマージし、main/runtimeコミットは`c5510fa5ec37a0677ef1ee47cc759016c49bf7f9`。PR検証対象HEADは`db1ed0d1369b87cb88bfbe05625df291cf32cd48`。ローカルで再検証した`d985b430e278729e9ce7ac071a7f900d0a96d3c2`とはコミットIDが異なるが、PRとローカルのtreeは`4347ea2c6c080da058badbcb42bfae9983667fd8`で完全一致している。
 
-Windows側の稼働サーバーの更新・再起動はこのリポジトリのWeb公開とは別。サーバー側の精算workerにも変更があるため、Windowsへ適用する際は最新ソースを使用し、既存の`.runtime`・`.tools`・`data`を保持する。
+| 検証 | 結果 |
+|---|---|
+| v278 CI [44738198360](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360) | 成功。ルール・継続検査と実ブラウザー3 shardを通過 |
+| v277回帰 CI [44738198352](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198352) | 成功 |
+| 実ブラウザー | PCの8球進行・継続・BET変更・WIN0、実Download worker、高額スマホ表示、miniの計4ケースすべて成功 |
+| 画像確認 | PNG26枚を生成。うち7枚を視認し、ボトル・個数別配当・全消し獲得済み・継続・高額表示を確認 |
+| ブラウザーエラー等 | JavaScript例外・素材失敗・API要求・外部要求はすべて0 |
+| ローカル再検証 | 純ルール、実Arcade/host、streaming/download精算、旧server互換、録画、Download cacheの既存6テストがすべて成功 |
+| 配当率 | 上記の独立2seed・計32,000ゲームの検証を完了 |
+| Pages deploy [44743091387](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743091387) | 2026-11-20 13:20:08 UTCに成功 |
+| マージ後v277回帰 [44743092481](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092481) | 全job成功。v277対象の公開64ファイルはHTTP200・bytes・SHA-256すべて一致 |
+| マージ後v278 CI [44743092484](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092484) | 初回shard2はフォント取得timeoutにより本テスト未実行。失敗ジョブを一度再試行したattempt2が2026-11-20 13:34:16 UTCに成功 |
+| v278公開照合 | 2026-11-20 13:34:10.966 UTC（22:34 JST）に24/24ファイルのHTTP200・bytes・SHA-256がすべて一致。[照合原本](qa-v278/public-verification.json) |
+
+純ルール検査は108ラウンド・540群を通過し、正配当64件、WIN0の44件、全消し16回を含む。保存復元検査は1〜7球目、保留中の1・2・4球目、3球/2球キュー、旧ゲームのRNG回復、オフライン精算を含む。全消し2回の再現ケースではBET3,000に対しWIN56,618、次ゲームの持越し21,484.56となり、BET変更でも持越し額を再換算しないことを確認した。
+
+CIの3つのartifact ZIPはGitHub Actions側のSHA-256と一致した。[検証集計](qa-v278/verification-summary.json)に結果と視認した画面を、[保存証跡manifest](qa-v278/browser-evidence-manifest.json)にartifact ID・ハッシュ・保存先の対応を記録している。3件のブラウザーreportと代表画面6枚を原本と同じbytesで保存済み。公開照合jobは`136319256084`、artifactは`14632722120`、ZIPのSHA-256は`82ad21075b2fb06ae884ad1dc6a7eec9aee6e616deb64a8a1abf145c46097a79`で照合済み。公開確認は静的GETのみで、公開ゲームのBET・wallet・API操作は行っていない。
+
+マージ後v278 CIの初回実行では、shard2の環境準備で`fonts-noto-cjk`約61.2MBの取得が150秒の上限に達し、exit124となった。アプリのブラウザー検査はそのジョブでは開始されていない。失敗ジョブを一度再試行したattempt2では環境準備・実テスト・公開照合が成功した。この環境準備の問題に対するruntimeの追加変更は行っていない。PR上でskipされた`public-assets`は、マージ後の実行で検証済み。
+
+### 別workflowの失敗と検証限界
+
+mainの別workflow15 runには16 failed jobがあり、全workflowが成功したとは扱わない。[最初の失敗と差分の記録](qa-v278/legacy-workflow-failures.json)を次の分類で保存した。
+
+| 件数 | 最初の失敗 | 過去記録との関係 |
+|---:|---|---|
+| 6 | 変更していないモジュールのcache pin `262`がrelease `278`と等しいというassertion | Shared machine/Six stationの2件はv275/v276に同一gateの失敗記録あり。他4件は同じ同値要求だが、v276証跡に当該検査の記録はない |
+| 2 | local-debugの読込pinを`269`に固定したassertionに対し、実際は`278` | PR #3で変更した読込pinに旧検査が追従していない。v276から同じ失敗だったとは扱わない |
+| 2 | 旧Six HUD検査の`single`要求に対し、実際は`grouped` | ユーザー指定によるv278の新進行への変更。旧検査は単球版の前提を保持している |
+| 4 | Sugar presentationの独立VM fixtureで`window is not defined` | 既存v277音声hookが使う`window`をfixtureが用意していない。cache pin不一致とは別の問題 |
+| 2 | Download browserのoffline完了待ちがtimeout | 実再生経路の調査中。旧assertionの不一致、既知問題、無害とは断定していない |
+
+Downloadの1件は失敗時`cursor=stableBall=7`、録画時刻101,516msに対して8球目HITは120,933msで、8球目を渡す境界へまだ到達していなかった。`settlingMs=227,891`は各HIT演出中の累積時間であり、「7球目で227秒止まった」という記録ではない。録画時間に加えて必要な演出時間に対し、旧検査の全体待ち時間が不足した可能性を調査しているが、その実再生の8球完走は未確認。
+
+専用v278検査は、新しい組進行、継続・精算、旧ゲームの保存復元を含む既存6テストと現行UIを検査している。その成功だけで全runtime経路が成功したとは扱わない。旧HUD検査全体を新仕様へ移す作業は今回の対象外で、この調査に伴うv278 runtimeの追加変更は行っていない。上の分類は各workflowの最初の失敗を確認した結果であり、そこで停止した後の検査も成功したという意味ではない。
+
+**Windows側の稼働サーバーの更新・再起動は未実施。** このリポジトリのWeb公開とは別の作業となる。サーバー側の精算workerにも変更があるため、Windowsへ適用する際は最新ソースを使用し、既存の`.runtime`・`.tools`・`data`を保持する。
 
 ### 再検証
 
