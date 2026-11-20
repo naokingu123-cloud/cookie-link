@@ -363,6 +363,11 @@ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-swit
 /* Shared AUTO REBET and registration have their own column between the
    200px sugar tray and the pet/status rail. Keeping them out of the countdown
    flow leaves the native debug/JPC buttons below that status, with no overlap. */
+html.arcade-v249.arcade-tabs-v250 #screen>.arena #sugar-collection{
+ /* cookie-20261031.css retained a 240px minimum for its old horizontal row;
+    the current caption/slots and 200px background no longer use that space. */
+ width:200px!important;min-width:0!important;
+}
 html.arcade-v249.arcade-tabs-v250 #screen #bet-countdown .shared-auto-rebet-label{
  position:absolute!important;right:136px!important;top:20px!important;box-sizing:border-box!important;
  width:102px!important;height:20px!important;min-height:20px!important;margin:0!important;padding:1px 3px!important;
