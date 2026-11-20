@@ -28,14 +28,16 @@ async function inspect(target,label){
   const shown=node=>{if(!node)return false;for(let p=node;p?.nodeType===1;p=p.parentElement){const css=getComputedStyle(p);if(p.hidden||css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)return false;}return node.getBoundingClientRect().width>0;};
   const button=document.querySelector('.v250-shared-bet-switch'),bounds=rect(button),roulette=rect(document.getElementById('cookie-roulette'));
   const blockers=['#bet-countdown','#debug-tools','#manual-number-toggle','#shared-bet-v228','.shared-auto-rebet-label','#sugar-collection','#sugar-slots','.stations-strip-v235','.avatar-box','.sc254-dock'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})));
-  const sharedBlockers=['#debug-start','#jpc-mode','#roulette-retry','#sugar-collection','#sugar-slots','#sugar-slots .sugar-slot','.sugar-caption','.avatar-box','.stations-strip-v235','.v250-shared-bet-switch'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})));
+  const sharedBlockers=['#debug-start','#jpc-mode','#roulette-retry','#sugar-collection','#sugar-slots','#sugar-slots .sugar-slot','.sugar-caption','.avatar-box','.stations-strip-v235','.v250-shared-bet-switch','.sc254-dock'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})));
   const sharedTargets=['#shared-bet-v228','.shared-auto-rebet-label'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>{const bounds=rect(node),at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2);return {selector,bounds,disabled:node.disabled??null,unobscured:at===node||node.contains(at),blockers:sharedBlockers};}));
   const manualButton=document.getElementById('manual-number-toggle');let manualTarget=null;
-  if(shown(manualButton)){const bounds=rect(manualButton),at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2);manualTarget={bounds,disabled:manualButton.disabled,unobscured:at===manualButton||manualButton.contains(at),blockers:['#local-debug-v258','#bet-countdown','#debug-tools','#sugar-collection','.avatar-box','.v250-shared-bet-switch','.roulette-info-strip'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})))};}
+  if(shown(manualButton)){const bounds=rect(manualButton),at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2);manualTarget={bounds,disabled:manualButton.disabled,unobscured:at===manualButton||manualButton.contains(at),blockers:['#local-debug-v258','#bet-countdown','#debug-tools','#sugar-collection','.avatar-box','.v250-shared-bet-switch','.roulette-info-strip','.sc254-dock'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})))};}
+  const dock=document.querySelector('.sc254-dock');let dockTarget=null;
+  if(shown(dock)){const bounds=rect(dock),at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2);dockTarget={bounds,unobscured:at===dock||dock.contains(at),blockers:['#local-debug-v258','#bet-countdown','#debug-tools','#sugar-collection','.avatar-box','.stations-strip-v235','.v250-shared-bet-switch','#manual-number-toggle','.roulette-info-strip'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})))};}
   const at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2),q=window.__qa269||window.__qa250;
   const footer=document.getElementById('console'),meters=footer.querySelector('.meters');
   return {edition:document.documentElement.dataset.edition,lineup:document.documentElement.dataset.lineup,viewport:{width:innerWidth,height:innerHeight},phase:q.app.phase,selected:q.slots[q.active]?.engine.kind,
-   button:{bounds,visible:shown(button),disabled:button.disabled,clickable:at===button||button.contains(at),inRoulette:document.getElementById('cookie-roulette').contains(button),inFooter:footer.contains(button),visibleCycles:[...document.querySelectorAll('.bet-cycle')].filter(shown).length},roulette,blockers,sharedTargets,manualTarget,serverPhase:window.SweetsSharedMachine?.client?.round?.phase||null,
+   button:{bounds,visible:shown(button),disabled:button.disabled,clickable:at===button||button.contains(at),inRoulette:document.getElementById('cookie-roulette').contains(button),inFooter:footer.contains(button),visibleCycles:[...document.querySelectorAll('.bet-cycle')].filter(shown).length},roulette,blockers,sharedTargets,manualTarget,dockTarget,serverPhase:window.SweetsSharedMachine?.client?.round?.phase||null,
    authority:window.SweetsSharedControllerV224?{canBet:window.SweetsSharedMachine?.client?.round?.canBet??null,editable:window.SweetsSharedControllerV224.canEditBets(q.app),stable:window.SweetsSharedControllerV224.stable()}:null,
    footer:{bounds:rect(footer),logicalHeight:footer.clientHeight,meters:rect(meters),history:rect(document.getElementById('balls')),menu:rect(document.getElementById('open-record-menu')),amounts:['total-bet','win','credit'].map(id=>{const el=document.getElementById(id),face=el.querySelector('.gold-number');return {id,bounds:rect(el),face:rect(face),font:parseFloat(getComputedStyle(face).fontSize),text:face.textContent};})},
    panel:rect(q.slots[q.active].panel)};
@@ -57,6 +59,10 @@ async function inspect(target,label){
  if(result.manualTarget){
   assert.equal(result.manualTarget.disabled,false,label+' manual mode can be selected during BET');assert.equal(result.manualTarget.unobscured,true,label+' manual mode has its own hit target');
   for(const blocker of result.manualTarget.blockers){const a=result.manualTarget.bounds,x=blocker.bounds;assert.ok(Math.min(a.right,x.right)<=Math.max(a.left,x.left)+1||Math.min(a.bottom,x.bottom)<=Math.max(a.top,x.top)+1,label+' manual mode does not overlap '+blocker.selector);}
+ }
+ if(result.dockTarget){
+  assert.equal(result.dockTarget.unobscured,true,label+' folded Sugar has its own hit target');
+  for(const blocker of result.dockTarget.blockers){const a=result.dockTarget.bounds,x=blocker.bounds;assert.ok(Math.min(a.right,x.right)<=Math.max(a.left,x.left)+1||Math.min(a.bottom,x.bottom)<=Math.max(a.top,x.top)+1,label+' folded Sugar does not overlap '+blocker.selector);}
  }
  assert.equal(result.footer.logicalHeight,66,label+' footer is shorter than the former78px');
  assert.ok(result.footer.meters.width>result.footer.bounds.width*.75,label+' recovered BET bay belongs to the ledger');
@@ -121,6 +127,25 @@ try{
   }
   await target.close();
  }
+ // Real BET-time quote and fold in ordinary roulette mode. demo=1 uses the
+ // native long BET interval; no manual panel, phase mutation or forced click.
+ const folded=await context.newPage();folded.on('pageerror',error=>errors.push(String(error.stack||error)));folded.on('request',request=>{const url=new URL(request.url());if(url.pathname.startsWith('/api/'))report.localApi.push(url.pathname);});
+ await folded.route('**/assets/local-debug-game-v258.js*',route=>route.fulfill({contentType:'application/javascript',body:localCode+hook}));
+ await folded.goto(base+'/?edition=local&demo=1&set=all&appv='+encodeURIComponent(version),{waitUntil:'domcontentloaded'});
+ await folded.waitForFunction(()=>window.__qa269&&window.SweetsLocalDebugV258?.ready&&window.SweetsLocalSugarV267,null,{timeout:60000});
+ const foldedTouch=await context.newCDPSession(folded);await foldedTouch.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});await folded.setViewportSize({width:390,height:844});
+ await folded.evaluate(async()=>{await document.fonts.ready;const q=window.__qa269;q.select(q.slots.findIndex(slot=>slot.engine?.kind==='dango'));});
+ await folded.locator('#local-debug-v258 [data-local-action="sugar-five"]').click();
+ await folded.waitForFunction(()=>window.SweetsLocalSugarV267.describe().active&&window.SweetsSugarChallengeV254.describe().expanded&&window.__qa269.app.phase==='ready',null,{timeout:10000});
+ const quote=()=>folded.evaluate(()=>{const s=window.SweetsSugarChallengeV254.describe().challenge;return {id:s.id,cardId:s.cardId,jpAmount:s.jpAmount,multiplier:s.multiplier,draws:s.draws};});
+ report.foldedBetQuote=await quote();
+ for(const [width,height]of [[390,844],[844,390]]){
+  await folded.setViewportSize({width,height});await sleep(250);await folded.locator('.sc254-overlay').click();await nextPaint(folded);
+  const foldedState=await inspect(folded,'local-folded-Sugar-BET-'+width+'x'+height);assert.ok(foldedState.dockTarget);assert.equal(await folded.evaluate(()=>window.SweetsLocalDebugV258.describe().manualNumbers),false);
+  await folded.locator('.sc254-dock').click();await folded.waitForFunction(()=>window.SweetsSugarChallengeV254.describe().expanded);
+  assert.deepEqual(await quote(),report.foldedBetQuote,'fold/reopen keeps the already-decided BET quote');
+ }
+ await folded.close();
  assert.deepEqual(report.localApi,[],'local layouts do not create server sessions');assert.deepEqual(errors,[],'all cabinet layouts remain free of uncaught errors');
  report.ok=true;await fs.writeFile(path.join(output,'result.json'),JSON.stringify(report,null,2)+'\n');
  console.log('BET_LAYOUT_V269_BROWSER_PASS',JSON.stringify({views:report.viewports.length,locks:report.locks.map(lock=>lock.label),localApi:report.localApi.length}));

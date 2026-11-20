@@ -108,8 +108,8 @@
     },
     {
       "path": "assets/arcade-tabs-v249.css",
-      "bytes": 38582,
-      "sha256": "38cbf141e6b25fb4238e7cf0069e8c7dc9c8a1ad072c78211f7589972ab95799"
+      "bytes": 39192,
+      "sha256": "dbac04a5230098295d6898af17f89973684670e3b7c1a22ea4160a773f63e6fe"
     },
     {
       "path": "assets/arcade-tabs-v249.js",
@@ -3227,5 +3227,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127964472
+  "totalBytes": 127965082
 }
