@@ -4,13 +4,20 @@
  const debug=window.SweetsLocalDebugV258;
  if(window.SweetsEditionV255?.value!=='local'||!debug)return;
  if(!LOCAL_EIGHT_DRAW_ALLOWED)throw Error('local_roulette_guard_not_enabled');
- const store=debug.storage,CREDIT_KEY='virtual-credit-v1',BETS_KEY='virtual-bets-v1';
+ const store=debug.storage,CREDIT_KEY='virtual-credit-v1',BETS_KEY='virtual-bets-v1',SIX_CARRY_KEY='sixdrop-carry-v278';
  const credit=Number(store.getItem(CREDIT_KEY));
  if(store.getItem(CREDIT_KEY)!==null&&Number.isSafeInteger(credit)&&credit>=0&&credit<=1e12){app.credit=credit;app.displayCredit=credit;}
  let bets=null;try{bets=JSON.parse(store.getItem(BETS_KEY));}catch{}
  if(Array.isArray(bets)&&bets.length===app.bets.length&&bets.every(n=>Number.isSafeInteger(n)&&n>=0&&n<=1e12)){
   app.bets=[...bets];app.enabled=bets.map(n=>n>0);
  }
+ // Local rounds have no server settlement/control response. Restore only a
+ // completed game's committed meter; an in-flight board is never persisted
+ // as a zero-WIN result, and skipping Six Drop leaves this record untouched.
+ try{const saved=JSON.parse(store.getItem(SIX_CARRY_KEY));if(saved?.version===247)window.SixDropV247?.restoreLocalCarryV278(saved);}catch{}
+ window.addEventListener('sweets:sixdrop-carry-v278',event=>{
+  const carry=window.SixDropV247?.rules.cleanCarry(event.detail);if(carry)store.setItem(SIX_CARRY_KEY,JSON.stringify(carry));
+ });
  let lastWallet='',lastBets='';
  function persist(){
   if(Number.isSafeInteger(app.credit)&&app.credit>=0&&app.credit<=1e12){const value=String(app.credit);if(value!==lastWallet){store.setItem(CREDIT_KEY,value);lastWallet=value;}}

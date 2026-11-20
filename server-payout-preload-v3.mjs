@@ -219,7 +219,14 @@ function finalGames(payload,round){
  if(!Object.keys(out).length)for(const [id,g] of Object.entries(round.games||{}))out[id]={bet:finite(g.bet),win:finite(g.win),appliedRate:g.appliedRate??null,...(id==='candy'&&g.rulesVersion===247?{rulesVersion:247}: {})};
  return out;
 }
-function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games,source='client',digest=null}={}){
+function interruptedSixRoundV278(machineId,roundId,requested,coreRound=null){
+ if(requested!==true)return false;
+ const authoritative=coreRound||coreRounds(machineId).find(item=>item.id===roundId);
+ // A client flag cannot turn a completed eight-ball loss into a retained
+ // meter. Only the server's still-incomplete round establishes interruption.
+ return authoritative?.id===roundId&&['BETTING','PLAYING'].includes(authoritative.phase)&&Array.isArray(authoritative.balls)&&authoritative.balls.length<8;
+}
+function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games,source='client',digest=null,interrupted=false}={}){
  guardStreamingWalletV255(machineId,playerId,roundId);
  const cancelled=operatorCancelledV242(machineId,roundId);if(cancelled?.refunds?.[playerId])return cancelled.refunds[playerId].settlement;
  const p=player(machineId,playerId),round=roundRecord(machineId,playerId,roundId);if(round.committed)return round.settlement;
@@ -240,7 +247,7 @@ function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games
  }
  round.win=win;round.phase='COMPLETE';round.committed=true;round.settlement={totalWin:win,creditAfter:credit,source,digest:digest||null,settledAt:now()};
  const six=games?.candy;
- if(sixGame247(six)){
+ if(sixGame247(six)&&!interrupted){
   if(!round.sixBeforeV247)round.sixBeforeV247=sixCarry247(p.sixDropV247);
   const carry=Number(six.win)>0&&six.carryV247?sixCarry247(six.carryV247):Number(six.win)===0?sixCarry247(null):sixCarry247(p.sixDropV247);
   p.sixDropV247={...carry,revision:p.sixDropV247.revision+1,roundId:round.id};
@@ -253,7 +260,7 @@ function commitSettlement(machineId,playerId,roundId,{totalWin,creditAfter,games
 }
 function processSettle(machineId,playerId,body,response){
  const roundId=safeId(body.roundId);if(!roundId)return null;const round=roundRecord(machineId,playerId,roundId),games=finalGames(body,round);
- const settlement=commitSettlement(machineId,playerId,roundId,{totalWin:response?.settlement?.totalWin??body.totalWin,creditAfter:response?.settlement?.creditAfter??body.creditAfter,games,source:'client',digest:body.digest});
+ const settlement=commitSettlement(machineId,playerId,roundId,{totalWin:response?.settlement?.totalWin??body.totalWin,creditAfter:response?.settlement?.creditAfter??body.creditAfter,games,source:'client',digest:body.digest,interrupted:interruptedSixRoundV278(machineId,roundId,body.abandoned)});
  if(response?.settlement)Object.assign(response.settlement,{totalWin:settlement.totalWin,creditAfter:settlement.creditAfter});
  return publicControl(machineId,playerId);
 }
@@ -314,7 +321,7 @@ globalThis[Symbol.for('sweets-link.payout-v3.wallet')]={
   guardStreamingWalletV255(machineId,playerId,coreRound.id);
   const record=roundRecord(machineId,playerId,coreRound.id);if(!record.bet)record.bet=Number(coreRound.participants?.[playerId]?.totalBet)||0;
   ingestSugarV254(machineId,playerId,coreRound.id,body);
-  return commitSettlement(machineId,playerId,coreRound.id,{totalWin:body.totalWin,creditAfter:body.creditAfter,games:finalGames(body,record),source:'client',digest:body.digest});
+  return commitSettlement(machineId,playerId,coreRound.id,{totalWin:body.totalWin,creditAfter:body.creditAfter,games:finalGames(body,record),source:'client',digest:body.digest,interrupted:interruptedSixRoundV278(machineId,coreRound.id,body.abandoned,coreRound)});
  }
 };
 function parseJson(value){try{return JSON.parse(Buffer.isBuffer(value)?value.toString('utf8'):String(value||''));}catch{return null;}}

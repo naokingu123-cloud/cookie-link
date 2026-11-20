@@ -124,7 +124,13 @@ function applyStateControl(response,options={}){
  if(clientRef?.isStaleState?.(response)===true)return;
  applyControl(response?.payoutControlV3,{...options,round:response?.round});
 }
-function processed(engine,ball){return Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length))>=ball;}
+function processed(engine,ball){
+ if(engine?.rulesVersion===247&&engine.drawMode==='grouped'){
+  const boundary=ball<3?0:ball<5?3:ball;
+  return finite(engine.processed)>=boundary&&!engine.busy&&!engine.opening&&!engine.fx&&!engine.queue?.length;
+ }
+ return Math.max(finite(engine?.processed),finite(engine?.accepted),finite(engine?.draws?.length))>=ball;
+}
 async function waitForBall(ball,timeout=18000,current=()=>true){
  if(ball<=0)return current();const started=Date.now();while(Date.now()-started<timeout){if(!current())return false;if((app.engines||[]).every((engine,index)=>app.enabled?.[index]===false||processed(engine,ball)))return true;await sleep(50);}return false;
 }

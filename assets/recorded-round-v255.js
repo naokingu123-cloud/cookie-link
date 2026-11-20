@@ -19,7 +19,12 @@ function clone(value,seen=new WeakSet(),depth=0){
  else if(value instanceof Set)result={$set:[...value].map(v=>clone(v,seen,depth+1))};
  else if(ArrayBuffer.isView(value)&&!(value instanceof DataView))result={$typed:value.constructor.name,values:Array.from(value)};
  else if(Array.isArray(value))result=value.map(v=>clone(v,seen,depth+1)??null);
- else if(Object.getPrototypeOf(value)===Object.prototype||Object.getPrototypeOf(value)===null){result={};for(const [key,item] of Object.entries(value)){if(CONTROL.has(key)||key.startsWith('__recorded'))continue;const saved=clone(item,seen,depth+1);if(saved!==undefined)result[key]=saved;}}
+ else if(Object.getPrototypeOf(value)===Object.prototype||Object.getPrototypeOf(value)===null){result={};for(const [key,item] of Object.entries(value)){
+  // Engine-level RNG providers are control objects, but a plain state's
+  // numeric RNG cursor is deterministic game data needed by every refill.
+  if((CONTROL.has(key)&&!(key==='rng'&&typeof item==='number'&&Number.isFinite(item)))||key.startsWith('__recorded'))continue;
+  const saved=clone(item,seen,depth+1);if(saved!==undefined)result[key]=saved;
+ }}
  seen.delete(value);return result;
 }
 function revive(value){

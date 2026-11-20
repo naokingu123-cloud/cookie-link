@@ -1,0 +1,38 @@
+{
+  "version": 278,
+  "createdAt": "2026-11-20",
+  "method": "built-in image_gen",
+  "purpose": "Six Drop candy bottle, persistent all-clear status, payout cards and all-clear award",
+  "assets": [
+    {
+      "key": "bottle",
+      "path": "assets/sixdrop-art-v278/bottle.png",
+      "prompt": "Use case: stylized-concept. Asset type: production PNG frame for a polished Japanese sweets arcade game, square 1024x1024 layout. Create an exquisitely detailed EMPTY transparent candy jar frame viewed dead straight from the front, near-square rounded rectangular silhouette, no perspective. The actual game candies and numbered cells will be drawn separately in the open center. Use clear thick glass with bright polished aqua/pink edge refractions, tiny gold seam accents, and a refined pastel striped candy rim/lid extremely thin at the very top edge. The silhouette must enclose a huge usable transparent center from x=8% to92%, y=6% to94%; all rich glass volume, sparkle and wrapped-candy corner decoration stays in left/right outer5%, bottom outer4%, top outer3%. Rounded shoulder details only in top corners. No bars, label, candy, text, numbers, fog, gray diamond pattern, white fill or reflection across the center. Delicate soft colored highlights only at glass edges. Luxurious candy shop rendered illustration, glossy glass and edible candy ornament, not flat vector. Both exterior background and full center are genuine transparency. No backdrop, no baked checkerboard, no watermark. One centered complete usable game frame, comfortable outside margin about1%, balanced symmetric edge thickness.",
+      "transparentBackground": true
+    },
+    {
+      "key": "allclear-logo",
+      "path": "assets/sixdrop-art-v278/allclear-logo.png",
+      "prompt": "Use case: logo-brand. Asset type: transparent PNG title logo for a Japanese candy puzzle arcade game. Create a beautiful horizontal candy-themed logo containing exactly the Japanese text 「全消し」, large and clearly legible. Three-dimensional rounded candy lettering with luminous pale lemon/white faces, deep pink glazed bevels and a gold edge, ornate but readable at about92x31 CSS pixels. Small jewel-like bonbons, tiny wrapped-candy twists and sugar-star accents at the ends. The characters take nearly all the width, decoration thin and restrained, strong silhouette, 3:1 horizontal composition centered tightly on a transparent canvas. Mature premium Japanese arcade illustration, abundant glossy candy material texture, avoid childish flat vector and plain font. No English, no extra words, no numbers, no backdrop, no rectangle, no drop-shadow cloud. Transparent background. Exact text only: 全消し.",
+      "transparentBackground": true
+    },
+    {
+      "key": "progressive-frame",
+      "path": "assets/sixdrop-art-v278/progressive-frame.png",
+      "prompt": "Use case: stylized-concept. Asset type: production transparent PNG UI strip for a candy arcade game. Design one elegant very wide and shallow 8:1 horizontal candy plaque frame, intended display430x54 pixels. Pink pearly glass, warm golden trim, curled wrapped-candy corners, miniature sugar jewels, high-end glossy illustrated game artwork. Thin borders at outer top/bottom and side edges. On left24% there is a simple dark plum inset space for a separate logo; continuous clear dark wine/plum reading area across right76% for the game's dynamic WIN digits and continuation label. Keep all decorative motifs entirely outside that central reading area, interior mostly uniform dark plum with only very subtle velvet shading, no patterns. Keep left and right inset reading areas visually seamless, no divider. Nearly all shape is contained in this slender strip; isolated transparent surrounding background, not a screenshot. No words, no letters, no numbers, no icons inside the reading area, no watermark. Rich candy motif clearly apparent on perimeter, no heavy overlapping embellishment.",
+      "transparentBackground": true
+    },
+    {
+      "key": "payout-frame",
+      "path": "assets/sixdrop-art-v278/payout-frame.png",
+      "prompt": "Use case: stylized-concept. Asset type: one reusable rectangular PNG paytable card frame for a candy puzzle arcade game. Aspect ratio5:4, intended display110x90 pixels with exact HTML number rows overlaid later. Premium glossy illustration: raspberry candy lacquer, subtle gold piping, tiny lilac and lemon bonbons and sugar ribbons at four outer corners. Thin decorative candy frame only within outer7% sides, top14%, bottom6%; large dark deep-plum blank panel inside x10..90%, y18..92% provides very high contrast for five tiny readable rows. The top14% includes a softly highlighted plain header inset for a separate title/icon, leave empty. No text, no letters, no numbers, no drawn tables, no fake charts. No center decorations or pattern, no bulky overlap. Transparent background outside outer rounded card. Avoid flat SVG appearance, photographed clutter or full game mockup. One centered card, refined detailed candy material, consistent restrained golden trim.",
+      "transparentBackground": true
+    },
+    {
+      "key": "allclear-award",
+      "path": "assets/sixdrop-art-v278/allclear-award.png",
+      "prompt": "Use case: stylized-concept. Asset type: celebratory special award frame PNG for a premium Japanese candy arcade puzzle game. A magnificent wide2:1 celebration frame formed from glossy candy ribbons, jewel-like colorful bonbons, small swirled lollipops, golden sugar stars, crystal glass and a small faceted candy crown. Strong dimensional illustration, sparkling but meticulously polished, in pink raspberry, purple, lemon gold, aquamarine. Dark plum central oval/cartouche must be EMPTY and provide an unobstructed reading region about x18..82%, y29..76% for exact Japanese title and winnings later drawn by the game. No words, letters, numbers or coins. Rich continuous candy silhouette wraps the panel, but not oversized wings or unrelated ornaments. The frame must feel like a candy-specific ALL CLEAR award. Isolated genuine transparent background, no radial rays baked outside, no screenshot, no checkerboard. One complete centered element with a small safe margin.",
+      "transparentBackground": true
+    }
+  ]
+}

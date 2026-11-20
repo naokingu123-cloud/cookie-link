@@ -8,7 +8,7 @@ function load(url){
 try{
  const params=new URLSearchParams(location.search),worker=params.get('serverSettlementWorker')==='1',host=params.get('serverHost')==='1';
  if(worker){
-  eval(load('assets/server-offline-settlement-worker-v3.js?v=262')+'\n//# sourceURL=server-offline-settlement-worker-v3.js');
+  eval(load('assets/server-offline-settlement-worker-v3.js?v=278')+'\n//# sourceURL=server-offline-settlement-worker-v3.js');
  }else{
   eval(load('assets/shared-core-patch-v221.js?v=262')+'\n//# sourceURL=shared-core-patch-v221.js');
   eval(load('assets/shared-core-patch-v224.js?v=262')+'\n//# sourceURL=shared-core-patch-v224.js');
@@ -23,7 +23,7 @@ try{
    eval(load('assets/stations-reach-host-v239.js?v=262')+'\n//# sourceURL=stations-reach-host-v239.js');
    eval(load('assets/sugar-roulette-v254.js?v=268')+'\n//# sourceURL=sugar-roulette-v254.js');
   }else{
-   eval(load('assets/server-payout-control-v3.js?v=262')+'\n//# sourceURL=server-payout-control-v3.js');
+   eval(load('assets/server-payout-control-v3.js?v=278')+'\n//# sourceURL=server-payout-control-v3.js');
    eval(load('assets/shared-roulette-client-v224.js?v=262')+'\n//# sourceURL=shared-roulette-client-v224.js');
    eval(load('assets/shared-client-controller-v224.js?v=262')+'\n//# sourceURL=shared-client-controller-v224.js');
    eval(load('assets/shared-client-background-v240.js?v=262')+'\n//# sourceURL=shared-client-background-v240.js');
