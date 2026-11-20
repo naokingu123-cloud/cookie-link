@@ -1,6 +1,9 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {R,clone,NUMBERS,createHost,idle,installWorker,streamingCheckpoint,fullRound}=require('./sixdrop-v278-fixture.cjs');
+const {R,clone,NUMBERS,createHost:createCurrentHost,idle,installWorker,streamingCheckpoint,fullRound}=require('./sixdrop-v278-fixture.cjs');
+// Preserve the released grouped host's exact awards and checkpoint witnesses.
+// The v283 host suite separately exercises the actual new-game default.
+const HISTORICAL_REVISION=280,createHost=options=>createCurrentHost({...options,rulesRevision:HISTORICAL_REVISION});
 require('../assets/recorded-round-v255.js');
 const Recorder=globalThis.SweetsRecordedRoundV255;
 globalThis.SweetsLineup={ids:['candy']};
@@ -102,7 +105,7 @@ async function run(){
  let old=R.newGame({seed:9,bet:3000,carry:prior});for(const n of NUMBERS.slice(0,2))old=R.hit(old,n).state;
  legacy.e.state=clone(old);legacy.app.draws=NUMBERS.slice(0,2);legacy.e.queue=[];legacy.e.afterCheckpointRestoreV247();assert.equal(legacy.e.drawMode,'single');
  for(const n of NUMBERS.slice(2)){old=R.hit(old,n).state;await legacy.number(n);}
- assert.deepEqual(legacy.e.state,old);assert.equal(legacy.e.state.rulesRevision,248);legacy.app.prepare();legacy.start();assert.equal(legacy.e.state.rulesRevision,R.CURRENT_REVISION);
+ assert.deepEqual(legacy.e.state,old);assert.equal(legacy.e.state.rulesRevision,248);legacy.app.prepare();legacy.start();assert.equal(legacy.e.state.rulesRevision,HISTORICAL_REVISION);
 
  // A saved grouped v278 game also keeps its original table and unresolved
  // 1st/2nd/4th-ball queue when restored by the newer payout revision.

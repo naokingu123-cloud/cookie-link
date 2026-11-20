@@ -1,11 +1,13 @@
-/* Six Drop grouped adapter. Reuses the live cabinet, approved candy art,
+/* Six Drop revision-aware adapter. Reuses the live cabinet, approved candy art,
    server draw channel, original result/credit flow and checkpoint serializer. */
 (()=>{
 'use strict';
 const id=window.SweetsLineup?.ids?.indexOf('candy');if(!(id>=0))return;
 const slot=slots[id],e=app.engines[id],R=window.SweetsSixDropV247.create({empty:sixEmpty,clone:sixClone,count:sixCount,valid:sixValid,step:sixStep,neighbors:sixNeighbors,patterns:sixPatterns,findShapes:sixFindShapes,drop:sixDrop,point:sixPoint,gapTemplates:SIX_START_GAP_TEMPLATES});
 let committed=R.cleanCarry(null),carryRevision=-1,carryPlayer='',inNewRenderer=false;
-const grouped=state=>Number(state?.rulesRevision)>=R.GROUPED_REVISION;
+const grouped=state=>R.isGrouped(state);
+const neighborHit=state=>(state?.rulesRevision||(state?R.REVISION:R.CURRENT_REVISION))===R.SINGLE_REVISION;
+const ruleHint=state=>neighborHit(state)?'1球ずつHIT＋周囲6マスを消去・役で同色を全消去':'同色4個以上で消去・役ができると同色をすべて消去';
 function adoptCarry(value){
  committed=R.cleanCarry(value);
  if(app.phase==='ready'){e.progressiveUnits=committed.bankUnits;e.removedTotal=committed.removed;e.feedRows=Math.floor(committed.feed*10/75);resetBank(committed.bankUnits);scheduleUI(app);}
@@ -73,24 +75,24 @@ function sync(engine){
 }
 e.reset=function(...args){
  nativeReset(...args);
- this.rulesVersion=247;this.drawMode=this.reachMode='grouped';this.state=null;this.seed247=0;this.roundId247='';this.progressiveUnits=committed.bankUnits;this.removedTotal=committed.removed;this.feedRows=Math.floor(committed.feed*10/75);
- this.chanceRound=null;this.maxRounds=Infinity;this.transitionPending=false;this.queue=[];this.phase='ready';this.candyMessage='同色4個以上で消去・役ができると同色をすべて消去';resetBank(committed.bankUnits);
+ this.rulesVersion=247;this.drawMode=this.reachMode=grouped(R.CURRENT_REVISION)?'grouped':'single';this.state=null;this.seed247=0;this.roundId247='';this.progressiveUnits=committed.bankUnits;this.removedTotal=committed.removed;this.feedRows=Math.floor(committed.feed*10/75);
+ this.chanceRound=null;this.maxRounds=Infinity;this.transitionPending=false;this.queue=[];this.phase='ready';this.candyMessage=ruleHint(null);resetBank(committed.bankUnits);
 };
 e.start=function(){
  if(this.running||!(this.roundBet>0))return;
  this.seed247=(this.random()*4294967296)>>>0;
  this.state=R.newGame({bet:this.roundBet,rate:typeof debugPayoutTarget==='number'?debugPayoutTarget:90,seed:this.seed247,carry:committed,rulesRevision:R.CURRENT_REVISION});
- this.drawMode=this.reachMode='grouped';
+ this.drawMode=this.reachMode=grouped(this.state)?'grouped':'single';
  this.roundId247=String(window.SweetsSharedMachine?.client?.round?.id||(window.SweetsEditionV255?.value==='local'?'local:'+app.token+':'+this.version:''));
  this.running=true;this.busy=false;this.opening=false;this.processed=this.accepted=0;this.queue=[];
  this.drawn=new Set();this.seen=new Set();this.pendingDraws=new Set();this.pyramid=sixClone(this.state.grid);this.initialPyramid=sixClone(this.pyramid);sync(this);
- resetBank(this.state.bankUnits);this.candyMessage='同色4個以上で消去・役ができると同色をすべて消去';this.emit('waiting');
+ resetBank(this.state.bankUnits);this.candyMessage=ruleHint(this.state);this.emit('waiting');
 };
 e.previewDraw=function(number){if(!this.running||!Number.isInteger(number)||number<1||number>25||this.drawn.has(number)||this.pendingDraws.has(number))return false;this.pendingDraws.add(number);this.emit('drawpending',{number});return true;};
 e.enqueueBatch=function(numbers){
  if(!this.running||!Array.isArray(numbers))return false;
  if(grouped(this.state)){
-  if(numbers.length!==R.batchSize(this.accepted)||new Set(numbers).size!==numbers.length||numbers.some(number=>!Number.isInteger(number)||number<1||number>25||this.seen.has(number)))return false;
+  if(numbers.length!==R.batchSize(this.accepted,this.state)||new Set(numbers).size!==numbers.length||numbers.some(number=>!Number.isInteger(number)||number<1||number>25||this.seen.has(number)))return false;
   for(const number of numbers)this.seen.add(number);this.queue.push([...numbers]);this.accepted+=numbers.length;
  }else for(const number of numbers){if(!Number.isInteger(number)||number<1||number>25||this.seen.has(number)||this.accepted>=8)continue;this.seen.add(number);this.queue.push([number]);this.accepted++;}
  this.emit('queued',{numbers});if(!this.busy)this.drain();return true;
@@ -123,7 +125,7 @@ e.afterCheckpointRestoreV247=function(){
  }
  this.drawMode=this.reachMode=grouped(this.state)?'grouped':'single';
  this.processed=this.state.draws.length;this.drawn=new Set(this.state.draws);this.seen=new Set(this.drawn);this.accepted=this.processed;
- const queue=[];for(const value of this.queue||[]){const numbers=Array.isArray(value)?value:[value],size=grouped(this.state)?R.batchSize(this.accepted):1;
+ const queue=[];for(const value of this.queue||[]){const numbers=Array.isArray(value)?value:[value],size=R.batchSize(this.accepted,this.state);
   if(!size||numbers.length!==size||new Set(numbers).size!==size||numbers.some(n=>!Number.isInteger(n)||n<1||n>25||this.seen.has(n)))continue;
   queue.push([...numbers]);for(const n of numbers)this.seen.add(n);this.accepted+=numbers.length;
  }
@@ -137,7 +139,7 @@ e.drain=async function(){
   while(this.queue.length&&token===this.version){
    const numbers=this.queue.shift(),number=numbers[numbers.length-1];if(numbers.some(n=>this.state.draws.includes(n)))continue;
    const plan=grouped(this.state)?R.hitBatch(this.state,numbers,{trace:true}):R.hit(this.state,number,{trace:true});if(!plan)continue;
-   // Canonical result is computed only from this received group. Store it
+   // Canonical result is computed only from this received ball or saved group. Store it
    // before presentation, so checkpoints cannot lose a half-animated award.
    this.state=plan.state;for(const n of numbers){this.drawn.add(n);this.pendingDraws.delete(n);}this.lastNumber=number;sync(this);
    this.cascade=plan.chain;this.lastGain=R.asHundredths(plan.gain,this.roundBet);
@@ -151,7 +153,7 @@ e.drain=async function(){
     if(!fast&&!await this.waitVisual(Math.max(35,stage.ms)*this.speed,token))return;
    }
    this.pyramid=sixClone(this.state.grid);this.fx=null;this.processed=this.state.draws.length;this.remainingCandies=sixCount(this.pyramid);this.initialPyramid=sixClone(this.pyramid);
-   const nextSize=grouped(this.state)?R.batchSize(this.processed):1;
+   const nextSize=R.batchSize(this.processed,this.state);
    this.candyMessage=plan.chain?plan.chain+'連鎖'+(nextSize?'・次は'+nextSize+'球！':''):(nextSize?'次の'+nextSize+'球で役をねらおう':'8球抽選完了');
    if(plan.sugarAward&&!this.wonderCollected){
     this.wonderCollected=true;this.roundSteps=1;this.wonderToken??={id:'six247-'+this.version,value:this.roundBet,tier:wonderTier(this.roundBet)};
@@ -167,19 +169,19 @@ e.drain=async function(){
   }else this.emit('waiting');
  }catch(error){if(token===this.version){this.busy=false;this.running=false;this.emit('error',{message:String(error?.message||error)});}}
 };
-// Preview only when the next received ball will close the current group.
+// Preview only when the next received ball will resolve the saved rule policy.
 const oldReachContext=reachContext;
 reachContext=function(engine,a=app){
  if(engine?.rulesVersion!==247)return oldReachContext(engine,a);
  if(!a||a.bet(id)<=0||a.phase==='ready'||!engine.state||engine.busy||engine.queue.length)return null;
- const pending=a.draws.slice(engine.processed),needed=grouped(engine.state)?R.batchSize(engine.processed):1;
+ const pending=a.draws.slice(engine.processed),needed=R.batchSize(engine.processed,engine.state);
  if(!needed||pending.length!==needed-1)return null;
  return {count:a.draws.length,pending,used:new Set(a.draws),key:[engine.version,engine.processed,a.draws.length,pending.join(','),a.token,'six247',engine.boardGeneration].join('/')};
 };
 requestSixSparkles=function(s,engine,a){if(engine?.rulesVersion===247){s.sixSparkleIds=new Set();return;}return nativeSparkles(s,engine,a);};
 sixArtCandySprite=function(color,round,sugar,chance){if(e.rulesVersion===247)return paletteSprite(color,sugar);return nativeSprite(color,round,sugar,chance);};
 sixGlassPose=function(order,r,elapsed,reduced){if(!inNewRenderer)return nativePose(order,r,elapsed,reduced);const i=order.indexOf(r),age=elapsed-i*32;if(i<0)return {visible:true,offset:0,rotation:0};if(age<0)return {visible:false,offset:0,rotation:0};const u=Math.min(1,age/220);return {visible:true,offset:reduced?0:-350*(1-u*u),rotation:reduced?0:Math.sin(Math.PI*u)*.04};};
-drawCarnival=function(s,now){if(s.engine?.rulesVersion!==247)return nativeDraw(s,now);inNewRenderer=true;try{const result=nativeDraw(s,now);paintBank();if(s.candyCanvas)s.candyCanvas.setAttribute('aria-label','シックスドロップ・同色4個以上で消去・今ゲームの色 '+(e.state?.palette||R.palette(committed.removed)).map(c=>colorNames[R.RING[c]]).join('・')+'・累計消去'+e.removedTotal+'個');return result;}finally{inNewRenderer=false;}};
+drawCarnival=function(s,now){if(s.engine?.rulesVersion!==247)return nativeDraw(s,now);inNewRenderer=true;try{const result=nativeDraw(s,now);paintBank();if(s.candyCanvas)s.candyCanvas.setAttribute('aria-label','シックスドロップ・'+ruleHint(e.state)+'・今ゲームの色 '+(e.state?.palette||R.palette(committed.removed)).map(c=>colorNames[R.RING[c]]).join('・')+'・累計消去'+e.removedTotal+'個');return result;}finally{inNewRenderer=false;}};
 function ensureHud(){
  setupCarnivalSlot(slot);const heading=$('carnival-heading');if(heading.dataset.progressive247==='1')return;
  heading.dataset.progressive247='1';heading.innerHTML='<div class="sd247-progressive"><span class="sd247-label">全消し</span><strong id="sd247-bank">0</strong><em>WIN</em></div>';
@@ -211,7 +213,7 @@ const oldTutorial=sixDrawTutorial;
 sixDrawTutorial=function(s,time,bet){
  if(s.engine?.rulesVersion!==247)return oldTutorial(s,time,bet);
  const ctx=s.candyCtx;ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,320,320);ctx.drawImage(sixArtBackdrop(10),0,0,320,320);
- const page=Math.floor(time/3500)%4,lines=[['同色4個以上で消去','曲がったつながりでもOK'],['役の色を全部消去！','直線 → △ → ⬡ で高配当'],['1個消去でBET×0.05','100個ごとに次ゲームから新色'],['全消しで総取り！','獲得後も継続・0 WINでリセット']][page];
+ const page=Math.floor(time/3500)%4,first=neighborHit(e.state)?['1球ずつHIT＋周囲を消去','隣接6マス・端や空きは少なくなる']:['同色4個以上で消去','曲がったつながりでもOK'],lines=[first,['役の色を全部消去！','直線 → △ → ⬡ で高配当'],['1個消去でBET×0.05','100個ごとに次ゲームから新色'],['全消しで総取り！','獲得後も継続・0 WINでリセット']][page];
  ctx.save();ctx.fillStyle='#12243cdd';ctx.beginPath();ctx.roundRect(18,65,284,190,18);ctx.fill();
  const colors=e.state?.palette||R.palette(committed.removed);for(let i=0;i<4;i++)ctx.drawImage(paletteSprite(colors[i]),40+i*62,90+Math.sin(time/400+i)*8,48,48);
  sixText(ctx,lines[0],160,177,page===3?18:20,'#fff2ad');sixText(ctx,lines[1],160,210,12,'#e6faff');ctx.restore();
@@ -228,9 +230,9 @@ window.SixDropV247={engine:e,rules:R,get carry(){return {...committed};},
  describeV278(){
   const state=e.state,carryAtStart=R.cleanCarry(state?.carryAtStart||committed),processedBalls=Number(e.processed)||0;
   const pendingNumbers=[...(e.pendingDraws||[])].filter(n=>!state?.draws?.includes(n));
-  const receivedBalls=Math.min(8,(state?.draws?.length||0)+pendingNumbers.length),modern=!state||grouped(state),size=modern?R.batchSize(processedBalls):(processedBalls<8?1:0);
+  const rulesRevision=state?.rulesRevision||(state?R.REVISION:R.CURRENT_REVISION),receivedBalls=Math.min(8,(state?.draws?.length||0)+pendingNumbers.length),size=R.batchSize(processedBalls,rulesRevision);
   const inheritedContinuation=carryAtStart.bankUnits>0||carryAtStart.removed>0,earnedContinuation=!!state&&R.totalMedals(state)>0;
-  return {rulesRevision:state?.rulesRevision||(state?R.REVISION:R.CURRENT_REVISION),batchSizes:modern?[...R.BATCH_SIZES]:Array(8).fill(1),receivedBalls,processedBalls,pendingNumbers,nextBatchEnd:size?processedBalls+size:8,carryAtStart,
+  return {rulesRevision,batchSizes:grouped(rulesRevision)?[...R.BATCH_SIZES]:Array(8).fill(1),receivedBalls,processedBalls,pendingNumbers,nextBatchEnd:size?processedBalls+size:8,carryAtStart,
    bankUnits:state?.bankUnits??committed.bankUnits,inheritedContinuation,earnedContinuation,continuationActive:state?.draws.length===8&&!earnedContinuation?false:inheritedContinuation||earnedContinuation,
    allClearCount:state?.allClears||0,allClearWin:state?.bonusMedals||0,lastAllClearWin:state?.lastAllClearWin||0,counts:{...(state?.counts||{line:0,triangle:0,hexagon:0})}};
  }

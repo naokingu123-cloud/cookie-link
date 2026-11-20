@@ -8,7 +8,7 @@ import {once} from 'node:events';
 import {createRequire} from 'node:module';
 import {chromium} from 'playwright';
 import {createDownloadComputerV255} from '../server-download-compute-v255.mjs';
-const {R,clone,NUMBERS,batches,fullRound}=createRequire(import.meta.url)('./sixdrop-v278-fixture.cjs');
+const {R,G,clone,NUMBERS,fullRound}=createRequire(import.meta.url)('./sixdrop-v283-fixture.cjs');
 const root=process.cwd(),output='qa-sixdrop-v278',ids=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const scenarios=[{id:'desktop-cycle',width:1366,height:900,cycle:true},{id:'mobile-high-amount',width:390,height:844,bet:300000},{id:'mini-allclear',width:390,height:844,mini:true},{id:'download-worker',worker:true}];
 const shard=Number(process.env.SIXDROP_QA_SHARD??0),shards=Number(process.env.SIXDROP_QA_SHARDS??1);
@@ -23,11 +23,14 @@ const prior={version:247,bankUnits:123456,removed:99,feed:450,roundId:'qa-previo
 let winning,losing;
 for(let seed=1;seed<=2000&&(!winning||!losing);seed++){
  const candidate=fullRound(seed,{bet:3000,carry:prior});
- if(!winning&&candidate.state.allClears>0&&candidate.state.counts.line>=2)winning=candidate;
+ if(!winning&&candidate.state.allClears>0&&candidate.state.counts.line>=2){
+  const degrees=candidate.plans.flatMap((plan,index)=>primaryArea(index?candidate.plans[index-1].state:candidate.initial,NUMBERS[index]).degrees);
+  if(degrees.some(drop=>drop.validNeighbours<6)&&degrees.some(drop=>drop.occupiedNeighbours===6))winning=candidate;
+ }
  if(!losing&&candidate.win===0)losing=candidate;
 }
-assert(winning&&losing,'natural current-rule witnesses exist for all-clear and own zero WIN');
-const report={version,shard,shards,totalPlannedCases:scenarios.length,plannedCases:planned.map(s=>s.id),caseResults:[],failures:[],screens:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[],witnesses:{winning:{seed:winning.seed,win:winning.win,counts:winning.state.counts,allClears:winning.state.allClears,numbers:NUMBERS},losing:{seed:losing.seed,win:losing.win}},scope:'Real manual number buttons; production grouped rules, native payout, local continuation and download worker; isolated virtual CREDIT'};
+assert(winning&&losing,'natural current-rule witnesses exist for all-clear, edge/interior HIT rings and own zero WIN');
+const report={version,rulesRevision:R.CURRENT_REVISION,shard,shards,totalPlannedCases:scenarios.length,plannedCases:planned.map(s=>s.id),caseResults:[],failures:[],screens:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[],witnesses:{winning:{seed:winning.seed,win:winning.win,counts:winning.state.counts,allClears:winning.state.allClears,numbers:NUMBERS},losing:{seed:losing.seed,win:losing.win}},scope:'Real manual number buttons; production v283 single-ball centre-and-neighbour removal, fixed cabinet anchors, native payout, local continuation and download worker; isolated virtual CREDIT'};
 const mime={'.html':'text/html','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.avif':'image/avif','.svg':'image/svg+xml','.wav':'audio/wav','.mp3':'audio/mpeg','.woff2':'font/woff2'};
 const bridge='\n;window.__qa278={app,slots,select,syncManualNumbers,scheduleUI,syncPause,debugResetRound,stopResultAuto,get active(){return active;},point:sixXY,reach:()=>reachContext(app.engines[2],app)};\n';
 const server=http.createServer(async(req,res)=>{
@@ -39,7 +42,7 @@ const server=http.createServer(async(req,res)=>{
 });
 server.listen(0,'127.0.0.1');await once(server,'listening');const base='http://127.0.0.1:'+server.address().port;
 let browser,context,page,computer,current;
-const expectedProcessed=[0,0,0,3,3,5,6,7,8];
+const expectedProcessed=Array.from({length:9},(_,index)=>index);
 async function open(s){
  await context?.close();context=await browser.newContext({viewport:{width:s.width,height:s.height},serviceWorkers:'block'});
  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==base){report.externalRequests.push(u.href);return route.abort();}if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/ws')){report.apiRequests.push(u.pathname);return route.abort();}return route.continue();});
@@ -54,11 +57,33 @@ async function open(s){
   const q=__qa278,candy=q.app.engines[2];if(!SixDropV247.restoreLocalCarryV278(prior))throw Error('local carry bootstrap rejected');
   if(!SweetsLocalDebugV258.setBets(q.app.bets.map((_n,i)=>i===2?bet:0)))throw Error('local BET setup failed');
   candy.random=()=>seed/4294967296;q.select(2);q.syncManualNumbers();q.scheduleUI(q.app);
-  const emit=candy.emit;candy.emit=function(phase,detail={}){q.events.push({phase,winMedals:detail.winMedals,allClears:detail.allClears,bonusMedals:detail.bonusMedals,numbers:detail.numbers,counts:detail.counts,gain:detail.gain});return Reflect.apply(emit,this,arguments);};q.events=[];
+   const emit=candy.emit;candy.emit=function(phase,detail={}){q.events.push({phase,winMedals:detail.winMedals,allClears:detail.allClears,bonusMedals:detail.bonusMedals,numbers:detail.numbers,counts:detail.counts,gain:detail.gain,cells:detail.cells,affectedCells:detail.affectedCells,removed:detail.removed?.map(({r,c,tile})=>({r,c,id:tile.id,number:tile.number}))});return Reflect.apply(emit,this,arguments);};q.events=[];
  },{prior,seed:winning.seed,bet:s.bet||3000});
+ await compareCabinets(s);
  await page.locator('#manual-start').click();
  await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout:45000});
  if(s.mini)await page.evaluate(()=>__qa278.select(3));
+}
+async function compareCabinets(s){
+ const frames=[];
+ for(const index of [0,3,2]){
+  await page.evaluate(index=>__qa278.select(index),index);
+  await page.waitForFunction(({index,kind})=>__qa278.active===index&&document.body.dataset.v249Game===kind,{index,kind:ids[index]});
+  // Let the existing UI/fit RAFs finish; no expected dimensions are used as a
+  // waiting condition, so an incorrect but stable layout still fails below.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  frames.push(await page.evaluate(kind=>{
+   const node=document.querySelector('#screen>.game'),b=node.getBoundingClientRect(),css=getComputedStyle(node);
+   return {kind,cssWidth:parseFloat(css.width),cssHeight:parseFloat(css.height),left:b.left,top:b.top,width:b.width,height:b.height,viewportWidth:innerWidth,scrollWidth:document.documentElement.scrollWidth};
+  },ids[index]));
+ }
+ for(const frame of frames){
+  assert.equal(frame.cssHeight,390,frame.kind+' keeps the common 390px game frame');
+  assert.equal(frame.cssWidth,frames[0].cssWidth,frame.kind+' keeps the common game width');
+  assert(Math.abs(frame.width-frames[0].width)<=1&&Math.abs(frame.height-frames[0].height)<=1,frame.kind+' has the same visible frame size at the same viewport');
+  assert(frame.scrollWidth<=frame.viewportWidth,'the selected game does not widen the document');
+ }
+ report[s.id+'Frames']=frames;
 }
 function snapshot(){
  const q=__qa278,e=SixDropV247.engine,d=SixDropUiV278.describe();
@@ -76,18 +101,50 @@ function snapshot(){
   rows:[...section.querySelectorAll('tbody tr')].map(tr=>({count:Number(tr.dataset.count),countText:tr.querySelector('th').textContent,hundredths:Number(tr.dataset.payoutHundredths),win:Number(tr.dataset.win),current:tr.getAttribute('aria-current')==='true',box:box(tr),amount:box(tr.querySelector('.gold-number')),cell:box(tr.querySelector('td'))}))
  }));
  const bank=document.getElementById('sd278-bank'),receipt=document.getElementById('sd278-clear-earned'),continuation=document.getElementById('sd278-continuation'),canvas=q.slots[2].candyCanvas;
- const heading=document.getElementById('carnival-heading'),field=document.querySelector('#screen>.game>.field'),top=document.querySelector('#screen>.game>.festival-top'),removed=document.getElementById('sd280-removed-total');
+  const heading=document.getElementById('carnival-heading'),field=document.querySelector('#screen>.game>.field'),game=document.querySelector('#screen>.game'),top=document.querySelector('#screen>.game>.festival-top'),removed=document.getElementById('sd280-removed-total');
  return {state:e.state,engine:{processed:e.processed,accepted:e.accepted,busy:e.busy,running:e.running,phase:e.phase,drawMode:e.drawMode},info:SixDropV247.describeV278(),ui:d,carry:SixDropV247.carry,app:{phase:q.app.phase,draws:q.app.draws,roundWins:q.app.roundWins,totalWin:q.app.totalWin,credit:q.app.credit},rows,
-  hud:{heading:box(heading),headingStyle:style(heading),logo:box(heading.querySelector('.sd278-bank-logo')),bank:box(bank),digits:box(bank.querySelector('.gold-number')),bankText:bank.textContent,continuation:box(continuation),continuationHidden:continuation.hidden,receipt:box(receipt),receiptHidden:receipt.hidden,receiptAmount:box(receipt.querySelector('.sd278-earned-win')),receiptDigits:box(receipt.querySelector('.sd278-earned-win .gold-number')),receiptText:receipt.querySelector('.sd278-earned-win').textContent,receiptWin:Number(receipt.dataset.win),receiptCount:Number(receipt.dataset.count),receiptLastWin:Number(receipt.dataset.lastWin),hasBatchStrip:!!document.getElementById('sd278-batches'),removed:box(removed?.closest('.sd280-removed')),removedAmount:box(removed),removedDigits:box(removed?.querySelector('.gold-number')),removedText:removed?.textContent},
-  board:{canvas:box(canvas),bottle:box(document.querySelector('.sd278-bottle-art')),points:e.state?.grid.flatMap((row,r)=>row.flatMap((tile,c)=>tile?[{id:tile.id,number:tile.number,...q.point(r,c,10)}]:[])),oldFieldBefore:style(field,'::before'),oldFieldAfter:style(field,'::after'),top:style(top),topGlass:style(top?.querySelector('.arcade-world-roulette-glass')),oldShine:style(document.querySelector('.sd278-bottle>.classic-bottle-shine'))},events:q.events.slice(),miniBadge:{hidden:q.slots[2].tab.querySelector('.sd278-mini-earned').hidden,text:q.slots[2].tab.querySelector('.sd278-mini-earned').textContent},awards:SweetsAwardsV277.describe()};
+   hud:{heading:box(heading),headingStyle:style(heading),logo:box(heading.querySelector('.sd278-bank-logo')),win:box(document.getElementById('sd283-bank-win')),bank:box(bank),digits:box(bank.querySelector('.gold-number')),bankText:bank.textContent,continuation:box(continuation),continuationHidden:continuation.hidden,receipt:box(receipt),receiptHidden:receipt.hidden,receiptAmount:box(receipt.querySelector('.sd278-earned-win')),receiptDigits:box(receipt.querySelector('.sd278-earned-win .gold-number')),receiptText:receipt.querySelector('.sd278-earned-win').textContent,receiptWin:Number(receipt.dataset.win),receiptCount:Number(receipt.dataset.count),receiptLastWin:Number(receipt.dataset.lastWin),hasBatchStrip:!!document.getElementById('sd278-batches'),removed:box(removed?.closest('.sd280-removed')),removedAmount:box(removed),removedDigits:box(removed?.querySelector('.gold-number')),removedText:removed?.textContent},
+   board:{game:box(game),gameHeight:parseFloat(getComputedStyle(game).height),field:box(field),fieldHeight:parseFloat(getComputedStyle(field).height),odds:box(document.getElementById('carnival-odds')),canvas:box(canvas),bottle:box(document.querySelector('.sd278-bottle-art')),points:e.state?.grid.flatMap((row,r)=>row.flatMap((tile,c)=>tile?[{id:tile.id,number:tile.number,...q.point(r,c,10)}]:[])),oldFieldBefore:style(field,'::before'),oldFieldAfter:style(field,'::after'),top:style(top),topGlass:style(top?.querySelector('.arcade-world-roulette-glass')),oldShine:style(document.querySelector('.sd278-bottle>.classic-bottle-shine'))},events:q.events.slice(),miniBadge:{hidden:q.slots[2].tab.querySelector('.sd278-mini-earned').hidden,text:q.slots[2].tab.querySelector('.sd278-mini-earned').textContent},awards:SweetsAwardsV277.describe()};
 }
 async function shot(label){const name=label+'.png';await page.screenshot({path:path.join(output,name)});report.screens.push(name);return name;}
+function fixedAnchors(hud){
+ const origin=hud.heading,scale=origin.width/290;assert(scale>0,'main award strip is visible');
+ return Object.fromEntries(['logo','win','bank','continuation'].map(name=>{
+  const box=hud[name];assert(box&&box.width>0,name+' retains its reserved slot');
+  return [name,{left:(box.left-origin.left)/scale,top:(box.top-origin.top)/scale,right:(box.right-origin.left)/scale,bottom:(box.bottom-origin.top)/scale}];
+ }));
+}
+function assertFixedAnchors(actual,expected,label){
+ for(const name of ['logo','win','bank','continuation'])for(const axis of ['left','top','right','bottom'])assert(Math.abs(actual[name][axis]-expected[name][axis])<=.25,label+': '+name+' '+axis+' stays fixed');
+}
+// Use the actual staggered circle centres as an independent geometric oracle.
+// No production neighbour list, emitted affectedCells, or post-HIT board is
+// used to determine which original tile IDs should disappear.
+function primaryArea(before,number){
+ const positions=before.grid.flatMap((row,r)=>row.map((tile,c)=>({r,c,tile,...G.point(r,c,R.ROWS)}))),centres=positions.filter(p=>p.tile?.number===number);
+ const adjacent=(p,q)=>Math.abs(Math.hypot(p.x-q.x,p.y-q.y)-1)<1e-8;
+ const affected=positions.filter(p=>p.tile&&centres.some(q=>p.r===q.r&&p.c===q.c||adjacent(p,q)));
+ return {centres:centres.map(p=>[p.r,p.c]),affected:affected.map(p=>[p.r,p.c]),removed:affected.map(p=>({r:p.r,c:p.c,id:p.tile.id,number:p.tile.number})),degrees:centres.map(q=>({cell:[q.r,q.c],validNeighbours:positions.filter(p=>adjacent(p,q)).length,occupiedNeighbours:positions.filter(p=>p.tile&&adjacent(p,q)).length}))};
+}
+function assertPrimaryRemoval(before,number,events){
+ const expected=primaryArea(before,number),hits=events.filter(event=>['pyramidHit','pyramidMiss'].includes(event.phase));
+ assert.equal(hits.length,1,'one real HIT or miss is emitted for this one ball');
+ const hit=hits[0],index=events.indexOf(hit);assert.equal(hit.phase,expected.centres.length?'pyramidHit':'pyramidMiss');assert.deepEqual(hit.numbers,[number]);
+ assert.deepEqual(hit.cells,expected.centres,'HIT centres come from the pre-ball numbered tiles');
+ assert.deepEqual(hit.affectedCells,expected.affected,'the actual HIT adds exactly the existing six-neighbour ring');
+ if(expected.centres.length){
+  const broken=events[index+1];assert.equal(broken?.phase,'pyramidBreak','primary removal happens before gravity and colour cascades');
+  assert.deepEqual(broken.numbers,[number]);assert.deepEqual(broken.removed,expected.removed,'the real first break removes exactly those pre-ball tile IDs once');
+  assert.equal(new Set(broken.removed.map(tile=>tile.id)).size,broken.removed.length);
+ }else assert(!events.some(event=>event.phase==='pyramidBreak'),'a missed number does not cause a primary blast');
+ return {number,...expected};
+}
 function assertHud(view,{mini=false}={}){
  const endedLoss=view.engine.processed===8&&!view.engine.running&&!view.info.earnedContinuation,bank=endedLoss?0:view.state.bankUnits,removed=endedLoss?0:view.state.removedTotal;
- assert(view.ui.artLoaded);assert.deepEqual(view.ui.errors,[]);assert.equal(view.ui.progressive.targetUnits,bank);
+ assert.equal(view.ui.version,283);assert.equal(view.state.rulesRevision,283);assert(view.ui.artLoaded);assert.deepEqual(view.ui.errors,[]);assert.equal(view.ui.progressive.targetUnits,bank);
  assert.equal(view.ui.progressive.units,bank,'count-up finishes at the canonical balance, or zero after a completed loss');assert.equal(view.hud.bankText,String(Math.floor(bank/100)),'visible digits show the actual progressive');
  assert.equal(view.ui.removed.targetCount,removed);assert.equal(view.ui.removed.count,removed,'removed total settles to the actual lifetime count, or zero after an own loss');assert.equal(view.hud.removedText,String(removed));
- assert.equal(view.hud.continuationHidden,!view.info.continuationActive);assert.equal(view.hud.hasBatchStrip,false,'group schedule is not presented');assert.deepEqual(view.ui.batchSizes,[3,2,1,1,1],'the actual grouped rules remain active');
+ assert.equal(view.hud.continuationHidden,!view.info.continuationActive);assert.equal(view.hud.hasBatchStrip,false,'group schedule is not presented');assert.deepEqual(view.ui.batchSizes,Array(8).fill(1),'each of the eight balls resolves immediately');
  assert.equal(view.hud.receiptCount,view.state.allClears);assert.equal(view.hud.receiptWin,view.state.bonusMedals);assert.equal(view.hud.receiptLastWin,view.state.lastAllClearWin);
  assert.equal(view.hud.receiptHidden,view.state.allClears===0);
  for(const role of view.rows){
@@ -101,18 +158,21 @@ function assertHud(view,{mini=false}={}){
  const radius=view.ui.geometry.radius;assert.equal(radius,14.75,'candies use the larger native geometry');
  for(const point of view.board.points){assert(point.x-radius>=0&&point.x+radius<=320&&point.y-radius>=0&&point.y+radius<=320,'every actual candy/number center remains inside the native board');}
  if(!mini){
-  assert.equal(parseFloat(view.hud.headingStyle.width),312,'the award heading uses the bottle width');
+  assert.equal(view.board.gameHeight,390,'the game uses the common cabinet height');assert.equal(view.board.fieldHeight,312,'the bottle and counter share the common field height');
+  assert.equal(parseFloat(view.hud.headingStyle.width),290,'the award heading uses the bottle width');
   assert(Math.abs(view.hud.heading.width-view.board.bottle.width)<=1&&Math.abs(view.hud.heading.left-view.board.bottle.left)<=2,'award strip and bottle align');
   for(const pseudo of [view.board.oldFieldBefore,view.board.oldFieldAfter]){assert.equal(pseudo.display,'none','retired field-level bottle artwork is hidden');assert.equal(pseudo.backgroundImage,'none');}
   assert.equal(view.board.top.boxShadow,'none','cyan outer award frame is removed');assert.equal(view.board.top.backgroundImage,'none');
   if(view.board.topGlass)assert.equal(view.board.topGlass.display,'none');if(view.board.oldShine)assert.equal(view.board.oldShine.display,'none');
   assert(view.hud.bank.width>20&&view.hud.bank.height>10,'progressive digits have visible space');
   assert(view.hud.digits.left>=view.hud.bank.left-2&&view.hud.digits.right<=view.hud.bank.right+2,'progressive digits do not clip');
-  assert(view.hud.digits.left-view.hud.logo.right<=12,'full-clear logo and payout stay close together');
-  assert(view.hud.continuationHidden||view.hud.continuation.left>=view.hud.bank.right-2,'continuation sits beside the amount');
+  assert(view.hud.bank.left>=view.hud.logo.right-1&&view.hud.bank.left-view.hud.logo.right<=4,'the reserved payout slot remains next to the logo');
+  assert(view.hud.win.left>=view.hud.bank.right-1&&view.hud.win.right<=view.hud.continuation.left+1,'WIN has its own stable column');
+  assert(view.hud.continuation.width>0&&view.hud.continuation.left>=view.hud.win.right-1,'hidden continuation keeps the same reserved column');
   assert(view.hud.removed.top>=view.board.bottle.bottom-1&&view.hud.removed.top-view.board.bottle.bottom<=3,'removed total sits directly below the bottle');
   assert(view.hud.removed.left>=view.board.bottle.left-1&&view.hud.removed.right<=view.board.bottle.right+1,'removed total fits the bottle width');
   assert(view.hud.removedDigits.left>=view.hud.removedAmount.left-2&&view.hud.removedDigits.right<=view.hud.removedAmount.right+2,'removed count digits fit their allocated space');
+  for(const box of [view.board.bottle,view.hud.removed,view.board.odds])assert(box.top>=view.board.field.top-1&&box.bottom<=view.board.field.bottom+1,'bottle, removed counter and odds fit the common field');
   if(!view.hud.receiptHidden){
    assert.equal(view.hud.receiptText,String(view.state.bonusMedals),'earned receipt displays its actual awarded amount');
    const digits=view.hud.receiptDigits;assert(digits.width>=digits.height*view.hud.receiptText.length*.45,'receipt amount keeps readable digit proportions');
@@ -132,29 +192,39 @@ function clearPaint({mini}){
  return {event:current,box:{width:b.width,height:b.height},dedicatedPaints:SixDropUiV278.describe().allClearBadgePaints,data:node.toDataURL('image/png')};
 }
 async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,capture=true}={}){
- const oracle=fullRound(seed,{bet,carry});let expected=oracle.initial,groupIndex=0,seenClear=false;
+ const oracle=fullRound(seed,{bet,carry}),blasts=[];let expected=oracle.initial,seenClear=false;
+ assert.equal(oracle.plans.length,8,'the current-rule witness resolves eight independent balls');
+ const initial=await page.evaluate(snapshot);assert.deepEqual(initial.state,expected,'live newGame equals the independent seeded core witness');
+ const anchors=s.mini?null:fixedAnchors(initial.hud);let eventCursor=initial.events.length;
  // Observe the same visible clock while real HIT buttons run. This records
  // UI values only: no engine, payout, animation or carry is advanced by QA.
- await page.evaluate(()=>{
+ await page.evaluate(({mini})=>{
   const q=__qa278;q.countUpSamples=[];q.captureCountUp=true;
   const sample=()=>{
    if(!q.captureCountUp)return;
-   const ui=SixDropUiV278.describe(),row={units:ui.progressive.units,removed:ui.removed.count,text:document.getElementById('sd280-removed-total').textContent},last=q.countUpSamples.at(-1);
-   if(!last||last.units!==row.units||last.removed!==row.removed)q.countUpSamples.push(row);
+   const ui=SixDropUiV278.describe(),row={units:ui.progressive.units,removed:ui.removed.count,text:document.getElementById('sd280-removed-total').textContent,continuationHidden:document.getElementById('sd278-continuation').hidden},last=q.countUpSamples.at(-1);
+   if(!mini){
+    const heading=document.getElementById('carnival-heading'),origin=heading.getBoundingClientRect(),scale=origin.width/290;
+    row.anchors=Object.fromEntries([['logo',heading.querySelector('.sd278-bank-logo')],['win',document.getElementById('sd283-bank-win')],['bank',document.getElementById('sd278-bank')],['continuation',document.getElementById('sd278-continuation')]].map(([name,node])=>{
+     const box=node.getBoundingClientRect();return [name,{left:(box.left-origin.left)/scale,top:(box.top-origin.top)/scale,right:(box.right-origin.left)/scale,bottom:(box.bottom-origin.top)/scale}];
+    }));
+   }
+   if(!last||last.units!==row.units||last.removed!==row.removed||last.continuationHidden!==row.continuationHidden||JSON.stringify(last.anchors)!==JSON.stringify(row.anchors))q.countUpSamples.push(row);
    requestAnimationFrame(sample);
   };requestAnimationFrame(sample);
- });
- assert.deepEqual((await page.evaluate(snapshot)).state,expected,'live newGame equals the independent seeded core witness');
+ },{mini:!!s.mini});
  if(capture)await shot(label+'-start');
  for(let i=0;i<8;i++){
-  const next=NUMBERS[i],closing=[3,5,6,7,8].includes(i+1),plan=closing?oracle.plans[groupIndex]:null;
+  const next=NUMBERS[i],plan=oracle.plans[i],before=expected;
   let paint;
   if(capture&&plan?.allClear&&!seenClear)paint=page.waitForFunction(clearPaint,{mini:!!s.mini},{polling:'raf',timeout:45000}).then(async handle=>{try{const evidence=await handle.jsonValue();evidence.liveScreen=await shot(label+'-allclear-live');return evidence;}finally{await handle.dispose();}});
   await page.locator('#manual-number-grid button[data-number="'+next+'"]').click();
   await page.waitForFunction(({received,processed})=>__qa278.app.draws.length===received&&SixDropV247.engine.processed===processed&&!SixDropV247.engine.busy&&!SixDropV247.engine.fx,{received:i+1,processed:expectedProcessed[i+1]},{timeout:90000});
-  if(closing){expected=plan.state;groupIndex++;}
+  expected=plan.state;
   const view=await page.evaluate(snapshot);assert.deepEqual(view.state,expected,'live board, RNG, table payout and bank at ball '+(i+1));
-  assert.equal(view.engine.drawMode,'grouped');assert.equal(view.info.receivedBalls,i+1);assert.equal(view.info.processedBalls,expectedProcessed[i+1]);assertHud(view,s);
+  assert.equal(view.engine.drawMode,'single');assert.equal(view.info.receivedBalls,i+1);assert.equal(view.info.processedBalls,i+1);assert.equal(view.state.processed,i+1);assertHud(view,s);
+  blasts.push(assertPrimaryRemoval(before,next,view.events.slice(eventCursor)));eventCursor=view.events.length;
+  if(anchors)assertFixedAnchors(fixedAnchors(view.hud),anchors,'after ball '+(i+1));
   if(paint){const overlay=await paint;assert(overlay);const file=label+'-allclear-overlay.png';await fs.writeFile(path.join(output,file),Buffer.from(overlay.data.slice('data:image/png;base64,'.length),'base64'));delete overlay.data;report.screens.push(file);report[label+'Overlay']=overlay;await shot(label+'-allclear-earned');seenClear=true;}
   if(capture&&[2,4,7].includes(i+1))await shot(label+'-ball'+(i+1));
  }
@@ -163,6 +233,7 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
  await page.waitForFunction(()=>__qa278.app.paid[2]&&!SixDropV247.engine.running,null,{timeout:45000});
  const result=await page.evaluate(snapshot);assertHud(result,s);assert.equal(result.app.roundWins[2],oracle.win);assert.equal(result.app.totalWin,oracle.win);
  const countUp=await page.evaluate(()=>{__qa278.captureCountUp=false;return __qa278.countUpSamples;});
+ if(anchors){assert(countUp.length>1,'real animations provide multiple balance samples');for(const row of countUp)assertFixedAnchors(row.anchors,anchors,'during progressive count-up');assertFixedAnchors(fixedAnchors(result.hud),anchors,'settled round');}
  const positive=countUp.filter(row=>row.units>=oracle.initial.bankUnits);
  for(const row of positive){
   const creditedDrops=(row.units-oracle.initial.bankUnits)/(bet*R.CREDIT_PER_DROP),shownDrops=row.removed-oracle.initial.removedTotal;
@@ -170,12 +241,13 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
   assert.equal(row.text,String(row.removed),'animated removal digits follow their observed count');
  }
  if(!s.mini&&capture&&oracle.state.roundRemoved>1){
-  assert(positive.some(row=>row.removed>oracle.initial.removedTotal&&row.removed<oracle.state.removedTotal),'live removal count shows intermediate values during the actual group animations');
+  assert(positive.some(row=>row.removed>oracle.initial.removedTotal&&row.removed<oracle.state.removedTotal),'live removal count shows intermediate values during actual single-ball animations');
   for(let index=1;index<positive.length;index++)assert(positive[index].removed>=positive[index-1].removed,'the cumulative removal counter rises without reversing');
  }
  assert.deepEqual({bankUnits:result.carry.bankUnits,removed:result.carry.removed,feed:result.carry.feed},{bankUnits:R.carryOut(oracle.state).bankUnits,removed:R.carryOut(oracle.state).removed,feed:R.carryOut(oracle.state).feed});
  if(capture){assert(seenClear,'an actual all-clear paints the dedicated generated bitmap');assert.equal(result.miniBadge.hidden,false);await shot(label+'-completed');}
- report[label]={seed,bet,win:oracle.win,clearCount:oracle.state.allClears,bonusMedals:oracle.state.bonusMedals,counts:oracle.state.counts,carry:result.carry,ui:result.ui,hud:result.hud,rows:result.rows,countUp,events:result.events};return result;
+ if(capture){const degrees=blasts.flatMap(blast=>blast.degrees);assert(degrees.some(drop=>drop.validNeighbours<6),'a natural edge HIT removes only existing neighbours');assert(degrees.some(drop=>drop.occupiedNeighbours===6),'a natural interior HIT removes all six existing neighbours');}
+ report[label]={seed,bet,win:oracle.win,clearCount:oracle.state.allClears,bonusMedals:oracle.state.bonusMedals,counts:oracle.state.counts,carry:result.carry,ui:result.ui,hud:result.hud,rows:result.rows,anchors,countUp,blasts,events:result.events};return result;
 }
 async function nextRound(seed,bet){
  await page.waitForFunction(()=>['complete','ready'].includes(__qa278.app.phase),null,{timeout:30000});
@@ -187,20 +259,20 @@ async function nextRound(seed,bet){
 }
 async function workerCase(){
  computer=createDownloadComputerV255({baseUrl:base});
- const input={version:255,sessionId:'sixdrop-v278-download-first',machineId:'qa-machine',playerId:'isolated',requestId:'native-v278-first',seed:25519,createdAt:1795046400000,bets:ids.map(id=>id==='candy'?3000:0),gameIds:ids,rate:90,creditBefore:1000000,totalBet:3000,previousState:null,sugarState:null,sixDropCarry:prior,profile:{name:'ISOLATED QA'}};
+ const input={version:255,sessionId:'sixdrop-v283-download-first',machineId:'qa-machine',playerId:'isolated',requestId:'native-v283-first',seed:25519,createdAt:1795046400000,bets:ids.map(id=>id==='candy'?3000:0),gameIds:ids,rate:90,creditBefore:1000000,totalBet:3000,previousState:null,sugarState:null,sixDropCarry:prior,profile:{name:'ISOLATED QA'}};
  const first=await computer.compute(input),games=[];
  for(const [index,result]of [[0,first]]){
   const s=result.initialState.engines[2].state;assert.equal(s.rulesRevision,R.CURRENT_REVISION);assert.deepEqual(s.carryAtStart,R.cleanCarry(prior));assert(Number.isSafeInteger(s.rng),'native downloaded checkpoint retains deterministic RNG');
-  let state=clone(s),group=0;for(let ball=0;ball<=8;ball++){if([3,5,6,7,8].includes(ball))state=R.hitBatch(state,batches(result.numbers)[group++]).state;const saved=result.playback.checkpoints[ball];assert.equal(saved.engines[2].processed,expectedProcessed[ball]);assert.deepEqual(saved.engines[2].state,state,'download actual checkpoint '+ball);}
+  let state=clone(s);for(let ball=0;ball<=8;ball++){if(ball)state=R.hit(state,result.numbers[ball-1]).state;const saved=result.playback.checkpoints[ball];assert.equal(saved.engines[2].processed,ball);assert.deepEqual(saved.engines[2].state,state,'download actual single-ball checkpoint '+ball);}
   assert.equal(result.games[2].win,R.totalMedals(state));assert.deepEqual(result.games[2].carryV247,R.carryOut(state,result.sessionId));games.push({index,win:result.totalWin,carry:result.games[2].carryV247});
  }
  const saved=first.games[2].carryV247;
- const second=await computer.compute({...input,sessionId:'sixdrop-v278-download-next',requestId:'native-v278-next',seed:25520,bets:ids.map(id=>id==='candy'?301:0),totalBet:301,previousState:first.finalState,creditBefore:first.finalState.credit,sixDropCarry:saved});
+ const second=await computer.compute({...input,sessionId:'sixdrop-v283-download-next',requestId:'native-v283-next',seed:25520,bets:ids.map(id=>id==='candy'?301:0),totalBet:301,previousState:first.finalState,creditBefore:first.finalState.credit,sixDropCarry:saved});
  assert.deepEqual(second.initialState.engines[2].state.carryAtStart,R.cleanCarry(saved));assert.equal(second.initialState.engines[2].state.bankUnits,saved.bankUnits);assert.equal(second.initialState.engines[2].state.bet,301);
  assert.equal(second.finalState.credit,first.finalState.credit-301+second.totalWin);games.push({index:1,win:second.totalWin,carry:second.games[2].carryV247});
  assert(second.games[2].win>0,'the second actual physical round earns a positive carry witness');
  const positiveCarry=second.games[2].carryV247;
- const third=await computer.compute({...input,sessionId:'sixdrop-v278-download-positive-carry',requestId:'native-v278-positive-carry',seed:25520,bets:ids.map(id=>id==='candy'?7:0),totalBet:7,previousState:second.finalState,creditBefore:second.finalState.credit,sixDropCarry:positiveCarry});
+ const third=await computer.compute({...input,sessionId:'sixdrop-v283-download-positive-carry',requestId:'native-v283-positive-carry',seed:25520,bets:ids.map(id=>id==='candy'?7:0),totalBet:7,previousState:second.finalState,creditBefore:second.finalState.credit,sixDropCarry:positiveCarry});
  assert.deepEqual(third.initialState.engines[2].state.carryAtStart,R.cleanCarry(positiveCarry));assert.equal(third.initialState.engines[2].state.bankUnits,positiveCarry.bankUnits);assert.deepEqual(third.initialState.engines[2].state.palette,R.palette(positiveCarry.removed));
  assert.equal(third.finalState.credit,second.finalState.credit-7+third.totalWin);assert.equal(third.games[2].win,R.totalMedals(third.finalState.engines[2].state));games.push({index:2,win:third.totalWin,carry:third.games[2].carryV247});
  await fs.writeFile(path.join(output,'download-first.json'),JSON.stringify(first));await fs.writeFile(path.join(output,'download-next.json'),JSON.stringify(second));await fs.writeFile(path.join(output,'download-positive-carry.json'),JSON.stringify(third));report.download={games,completed:computer.status().completed,numbers:first.numbers,processed:first.playback.checkpoints.map(s=>s.engines[2].processed)};
@@ -212,10 +284,15 @@ try{
   if(s.worker)await workerCase();else{
    await open(s);const first=await play(s);
    if(s.cycle){
-    await nextRound(winning.seed,301);const carried=await page.evaluate(snapshot);assert.equal(carried.state.bankUnits,first.carry.bankUnits);assert(carried.info.continuationActive);assert.deepEqual(carried.state.palette,R.palette(first.carry.removed));assert.equal(carried.hud.receiptHidden,true);await shot('desktop-carried-bet-change');
-    const second=await play(s,{seed:winning.seed,bet:301,carry:first.carry,label:'desktop-second',capture:false});
-    await nextRound(losing.seed,3000);const zero=await play(s,{seed:losing.seed,bet:3000,carry:second.carry,label:'desktop-own-zero',capture:false});assert.equal(zero.app.totalWin,0);assert.equal(zero.carry.bankUnits,0);assert.equal(zero.carry.removed,0);assert.equal(zero.info.continuationActive,false);
-    await nextRound(winning.seed,3000);assert.equal((await page.evaluate(snapshot)).state.bankUnits,0);await shot('desktop-after-own-zero');
+    // Reuse a natural zero-WIN witness with this exact carried palette/BET.
+    // Repeated winning carry is already covered by the host and worker tests.
+    let ownZero=fullRound(losing.seed,{bet:301,carry:first.carry});
+    for(let seed=1;ownZero.win!==0&&seed<=2000;seed++)ownZero=fullRound(seed,{bet:301,carry:first.carry});
+    assert.equal(ownZero.win,0,'a natural own zero WIN exists with the actual carried balance');
+    const anchors=fixedAnchors(first.hud);
+    await nextRound(ownZero.seed,301);const carried=await page.evaluate(snapshot);assert.equal(carried.state.bankUnits,first.carry.bankUnits);assert(carried.info.continuationActive);assert.deepEqual(carried.state.palette,R.palette(first.carry.removed));assert.equal(carried.hud.receiptHidden,true);assertFixedAnchors(fixedAnchors(carried.hud),anchors,'carried balance with changed BET');await shot('desktop-carried-bet-change');
+    const zero=await play(s,{seed:ownZero.seed,bet:301,carry:first.carry,label:'desktop-own-zero',capture:false});assert.equal(zero.app.totalWin,0);assert.equal(zero.carry.bankUnits,0);assert.equal(zero.carry.removed,0);assert.equal(zero.info.continuationActive,false);assertFixedAnchors(fixedAnchors(zero.hud),anchors,'own zero WIN hides continuation without shifting labels');
+    await nextRound(winning.seed,3000);const reset=await page.evaluate(snapshot);assert.equal(reset.state.bankUnits,0);assert.equal(reset.hud.continuationHidden,true);assertFixedAnchors(fixedAnchors(reset.hud),anchors,'new zero-balance round');await shot('desktop-after-own-zero');
    }
   }
   report.caseResults.push({id:current,status:'passed',durationMs:Date.now()-started});console.log('SIXDROP_V278_BROWSER_CASE_PASS',current);

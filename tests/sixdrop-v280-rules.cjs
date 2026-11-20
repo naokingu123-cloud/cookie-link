@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const crypto=require('node:crypto');
 const {R,clone,batches,NUMBERS,fullRound}=require('./sixdrop-v278-fixture.cjs');
-assert.equal(R.CURRENT_REVISION,280);assert.equal(R.GROUPED_REVISION,278);
+assert.equal(R.ROUNDED_REVISION,280);assert(R.CURRENT_REVISION>=R.ROUNDED_REVISION);assert.equal(R.GROUPED_REVISION,278);
 const totals={
  line:[0,20,50,150,250,400,550,750,950,1200,1450],
  triangle:[0,50,200,400,750,1250,1750,2500,3250,4250,5250],

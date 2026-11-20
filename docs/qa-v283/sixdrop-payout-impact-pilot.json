@@ -1,0 +1,1137 @@
+{
+  "version": 283,
+  "coreSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+  "method": "Paired board-seed and uniform 8-of-25 draw RNG streams. Each mode/revision retains its own continuous positive-game carry; only an actual completed own-zero game resets it. New board/removal trajectories are fully simulated, not revalued from old role histograms.",
+  "scope": "Direct Six Drop role and all-clear payouts at BET 100. Shared Sugar/JPC, physical roulette bias and adaptive payout feedback are excluded.",
+  "sampleCaution": "These are deterministic pilot observations, not calibrated target guarantees. Block errors are empirical diagnostics; carry induces dependence and long positive streaks can dominate short runs. No population confidence claim is inferred.",
+  "assistance": {
+    "production": "Unchanged support-probability table and 95% mobility-preferred numbered-target ordering.",
+    "unassisted": "Research-only source variant: no support-gap templates and no mobility preference for number placement. Existing colour constraints, four-colour palette, gravity, roles, rounded payouts and 0.05 BET progressive credits remain unchanged.",
+    "sourceOverrides": [
+      [
+        "const prepared=supportProbability(target,state),templates=G.gapTemplates||[];",
+        "const prepared=0,templates=[];"
+      ],
+      [
+        "targets.sort((a,b)=>(mobility(grid,...a)-mobility(grid,...b))*(prefer?-1:1));",
+        "/* Research variant: retain the already shuffled target order. */"
+      ]
+    ]
+  },
+  "samplesPerScenario": 256,
+  "blockSize": 64,
+  "rates": [
+    50,
+    90,
+    100,
+    150
+  ],
+  "modes": [
+    "production",
+    "unassisted"
+  ],
+  "boardSeed": 876193,
+  "drawSeed": 692317,
+  "totalGames": 4096,
+  "comparisons": [
+    {
+      "mode": "production",
+      "rate": 50,
+      "gamesPerRevision": 256,
+      "previousPercent": 34.47265625,
+      "newPercent": 3653.671875,
+      "differencePercentagePoints": 3619.19921875,
+      "ordinaryDifference": 319.84375,
+      "allClearDifference": 3299.35546875,
+      "pairedBlockDifferences": [
+        3153.203125,
+        4608.515625,
+        2525.390625,
+        4189.6875
+      ],
+      "empiricalPairedBlockSE": 475.9003248117023
+    },
+    {
+      "mode": "production",
+      "rate": 90,
+      "gamesPerRevision": 256,
+      "previousPercent": 97.28515625,
+      "newPercent": 4924.453125,
+      "differencePercentagePoints": 4827.16796875,
+      "ordinaryDifference": 324.0234375,
+      "allClearDifference": 4503.14453125,
+      "pairedBlockDifferences": [
+        3929.765625,
+        6442.96875,
+        1932.8125,
+        7003.125
+      ],
+      "empiricalPairedBlockSE": 1173.6064684192288
+    },
+    {
+      "mode": "production",
+      "rate": 100,
+      "gamesPerRevision": 256,
+      "previousPercent": 107.8515625,
+      "newPercent": 4963.10546875,
+      "differencePercentagePoints": 4855.25390625,
+      "ordinaryDifference": 317.421875,
+      "allClearDifference": 4537.83203125,
+      "pairedBlockDifferences": [
+        3442.421875,
+        5120.234375,
+        2743.359375,
+        8115
+      ],
+      "empiricalPairedBlockSE": 1195.559565788722
+    },
+    {
+      "mode": "production",
+      "rate": 150,
+      "gamesPerRevision": 256,
+      "previousPercent": 118.6328125,
+      "newPercent": 5423.28125,
+      "differencePercentagePoints": 5304.6484375,
+      "ordinaryDifference": 294.84375,
+      "allClearDifference": 5009.8046875,
+      "pairedBlockDifferences": [
+        5404.375,
+        7374.453125,
+        5512.421875,
+        2927.34375
+      ],
+      "empiricalPairedBlockSE": 912.3588571301078
+    },
+    {
+      "mode": "unassisted",
+      "rate": 50,
+      "gamesPerRevision": 256,
+      "previousPercent": 13.96484375,
+      "newPercent": 2493.75,
+      "differencePercentagePoints": 2479.78515625,
+      "ordinaryDifference": 320.625,
+      "allClearDifference": 2159.16015625,
+      "pairedBlockDifferences": [
+        2458.203125,
+        2292.65625,
+        2997.5,
+        2170.78125
+      ],
+      "empiricalPairedBlockSE": 182.34470222265918
+    },
+    {
+      "mode": "unassisted",
+      "rate": 90,
+      "gamesPerRevision": 256,
+      "previousPercent": 13.96484375,
+      "newPercent": 2493.75,
+      "differencePercentagePoints": 2479.78515625,
+      "ordinaryDifference": 320.625,
+      "allClearDifference": 2159.16015625,
+      "pairedBlockDifferences": [
+        2458.203125,
+        2292.65625,
+        2997.5,
+        2170.78125
+      ],
+      "empiricalPairedBlockSE": 182.34470222265918
+    },
+    {
+      "mode": "unassisted",
+      "rate": 100,
+      "gamesPerRevision": 256,
+      "previousPercent": 13.96484375,
+      "newPercent": 2493.75,
+      "differencePercentagePoints": 2479.78515625,
+      "ordinaryDifference": 320.625,
+      "allClearDifference": 2159.16015625,
+      "pairedBlockDifferences": [
+        2458.203125,
+        2292.65625,
+        2997.5,
+        2170.78125
+      ],
+      "empiricalPairedBlockSE": 182.34470222265918
+    },
+    {
+      "mode": "unassisted",
+      "rate": 150,
+      "gamesPerRevision": 256,
+      "previousPercent": 13.96484375,
+      "newPercent": 2493.75,
+      "differencePercentagePoints": 2479.78515625,
+      "ordinaryDifference": 320.625,
+      "allClearDifference": 2159.16015625,
+      "pairedBlockDifferences": [
+        2458.203125,
+        2292.65625,
+        2997.5,
+        2170.78125
+      ],
+      "empiricalPairedBlockSE": 182.34470222265918
+    }
+  ],
+  "runs": [
+    {
+      "mode": "production",
+      "revision": 280,
+      "rate": 50,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 34.47265625,
+      "ordinaryPercent": 21.6796875,
+      "allClearPercent": 12.79296875,
+      "winRate": 0.203125,
+      "zeroWinGames": 204,
+      "allClearsPerGame": 0.03125,
+      "allClearGameRate": 0.03125,
+      "removedPerGame": 25.4375,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 3,
+      "maximumCommittedBank": 1345,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        37.109375,
+        54.53125,
+        18.515625,
+        27.734375
+      ],
+      "empiricalBlockSE": 7.688361060241853,
+      "roleCounts": {
+        "line": {
+          "0": 205,
+          "1": 15,
+          "2": 17,
+          "3": 12,
+          "4": 6,
+          "5": 1
+        },
+        "triangle": {
+          "0": 253,
+          "1": 2,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 252,
+          "1": 4
+        }
+      },
+      "elapsedMs": 2949
+    },
+    {
+      "mode": "production",
+      "revision": 283,
+      "rate": 50,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 3653.671875,
+      "ordinaryPercent": 341.5234375,
+      "allClearPercent": 3312.1484375,
+      "winRate": 0.921875,
+      "zeroWinGames": 20,
+      "allClearsPerGame": 0.359375,
+      "allClearGameRate": 0.3046875,
+      "removedPerGame": 178.4140625,
+      "primaryRemovedPerGame": 46.67578125,
+      "hitBallRate": 0.99951171875,
+      "maxConsecutivePositiveGames": 34,
+      "maximumCommittedBank": 32620,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 51500,
+        "removed": 103,
+        "feed": 177,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        3190.3125,
+        4663.046875,
+        2543.90625,
+        4217.421875
+      ],
+      "empiricalBlockSE": 481.57152514424337,
+      "roleCounts": {
+        "line": {
+          "0": 22,
+          "1": 24,
+          "2": 41,
+          "3": 42,
+          "4": 45,
+          "5": 24,
+          "6": 15,
+          "7": 13,
+          "8": 11,
+          "9": 8,
+          "10": 7,
+          "11": 4
+        },
+        "triangle": {
+          "0": 228,
+          "1": 27,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 246,
+          "1": 10
+        }
+      },
+      "elapsedMs": 11637
+    },
+    {
+      "mode": "production",
+      "revision": 280,
+      "rate": 90,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 97.28515625,
+      "ordinaryPercent": 48.046875,
+      "allClearPercent": 49.23828125,
+      "winRate": 0.32421875,
+      "zeroWinGames": 173,
+      "allClearsPerGame": 0.0703125,
+      "allClearGameRate": 0.0703125,
+      "removedPerGame": 38.265625,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 4,
+      "maximumCommittedBank": 1800,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        94.0625,
+        80.9375,
+        130.234375,
+        83.90625
+      ],
+      "empiricalBlockSE": 11.33680410159564,
+      "roleCounts": {
+        "line": {
+          "0": 174,
+          "1": 25,
+          "2": 18,
+          "3": 23,
+          "4": 8,
+          "5": 4,
+          "6": 2,
+          "7": 1,
+          "8": 1
+        },
+        "triangle": {
+          "0": 252,
+          "1": 3,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 249,
+          "1": 7
+        }
+      },
+      "elapsedMs": 3318
+    },
+    {
+      "mode": "production",
+      "revision": 283,
+      "rate": 90,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 4924.453125,
+      "ordinaryPercent": 372.0703125,
+      "allClearPercent": 4552.3828125,
+      "winRate": 0.91796875,
+      "zeroWinGames": 21,
+      "allClearsPerGame": 0.375,
+      "allClearGameRate": 0.328125,
+      "removedPerGame": 184.4765625,
+      "primaryRemovedPerGame": 44.84375,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 54,
+      "maximumCommittedBank": 48675,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 111000,
+        "removed": 222,
+        "feed": 298,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        4023.828125,
+        6523.90625,
+        2063.046875,
+        7087.03125
+      ],
+      "empiricalBlockSE": 1163.105239003363,
+      "roleCounts": {
+        "line": {
+          "0": 21,
+          "1": 15,
+          "2": 44,
+          "3": 36,
+          "4": 41,
+          "5": 28,
+          "6": 23,
+          "7": 18,
+          "8": 11,
+          "9": 13,
+          "10": 1,
+          "11": 3,
+          "12": 2
+        },
+        "triangle": {
+          "0": 232,
+          "1": 24
+        },
+        "hexagon": {
+          "0": 239,
+          "1": 17
+        }
+      },
+      "elapsedMs": 12891
+    },
+    {
+      "mode": "production",
+      "revision": 280,
+      "rate": 100,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 107.8515625,
+      "ordinaryPercent": 53.1640625,
+      "allClearPercent": 54.6875,
+      "winRate": 0.34375,
+      "zeroWinGames": 168,
+      "allClearsPerGame": 0.078125,
+      "allClearGameRate": 0.078125,
+      "removedPerGame": 39.97265625,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 4,
+      "maximumCommittedBank": 2320,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        111.09375,
+        90.859375,
+        131.40625,
+        98.046875
+      ],
+      "empiricalBlockSE": 8.898508376949218,
+      "roleCounts": {
+        "line": {
+          "0": 169,
+          "1": 28,
+          "2": 18,
+          "3": 22,
+          "4": 10,
+          "5": 3,
+          "6": 3,
+          "7": 2,
+          "8": 1
+        },
+        "triangle": {
+          "0": 250,
+          "1": 5,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 250,
+          "1": 6
+        }
+      },
+      "elapsedMs": 4818
+    },
+    {
+      "mode": "production",
+      "revision": 283,
+      "rate": 100,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 4963.10546875,
+      "ordinaryPercent": 370.5859375,
+      "allClearPercent": 4592.51953125,
+      "winRate": 0.9140625,
+      "zeroWinGames": 22,
+      "allClearsPerGame": 0.34375,
+      "allClearGameRate": 0.30078125,
+      "removedPerGame": 184.59765625,
+      "primaryRemovedPerGame": 44.26953125,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 54,
+      "maximumCommittedBank": 49960,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 111500,
+        "removed": 223,
+        "feed": 297,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        3553.515625,
+        5211.09375,
+        2874.765625,
+        8213.046875
+      ],
+      "empiricalBlockSE": 1189.2478071696019,
+      "roleCounts": {
+        "line": {
+          "0": 22,
+          "1": 16,
+          "2": 43,
+          "3": 34,
+          "4": 38,
+          "5": 30,
+          "6": 23,
+          "7": 20,
+          "8": 13,
+          "9": 11,
+          "10": 3,
+          "11": 2,
+          "12": 1
+        },
+        "triangle": {
+          "0": 232,
+          "1": 24
+        },
+        "hexagon": {
+          "0": 241,
+          "1": 15
+        }
+      },
+      "elapsedMs": 18063
+    },
+    {
+      "mode": "production",
+      "revision": 280,
+      "rate": 150,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 118.6328125,
+      "ordinaryPercent": 59.9609375,
+      "allClearPercent": 58.671875,
+      "winRate": 0.42578125,
+      "zeroWinGames": 147,
+      "allClearsPerGame": 0.08203125,
+      "allClearGameRate": 0.08203125,
+      "removedPerGame": 48.140625,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 4,
+      "maximumCommittedBank": 2310,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        94.296875,
+        146.953125,
+        143.515625,
+        89.765625
+      ],
+      "empiricalBlockSE": 15.40223692133677,
+      "roleCounts": {
+        "line": {
+          "0": 148,
+          "1": 30,
+          "2": 33,
+          "3": 20,
+          "4": 14,
+          "5": 5,
+          "6": 4,
+          "7": 1,
+          "8": 1
+        },
+        "triangle": {
+          "0": 250,
+          "1": 6
+        },
+        "hexagon": {
+          "0": 252,
+          "1": 4
+        }
+      },
+      "elapsedMs": 7605
+    },
+    {
+      "mode": "production",
+      "revision": 283,
+      "rate": 150,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+      "actualPercent": 5423.28125,
+      "ordinaryPercent": 354.8046875,
+      "allClearPercent": 5068.4765625,
+      "winRate": 0.95703125,
+      "zeroWinGames": 11,
+      "allClearsPerGame": 0.3203125,
+      "allClearGameRate": 0.29296875,
+      "removedPerGame": 180.81640625,
+      "primaryRemovedPerGame": 42.578125,
+      "hitBallRate": 0.9990234375,
+      "maxConsecutivePositiveGames": 57,
+      "maximumCommittedBank": 52675,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 3073500,
+        "removed": 6147,
+        "feed": 8958,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        5498.671875,
+        7521.40625,
+        5655.9375,
+        3017.109375
+      ],
+      "empiricalBlockSE": 924.2836994427977,
+      "roleCounts": {
+        "line": {
+          "0": 12,
+          "1": 19,
+          "2": 37,
+          "3": 47,
+          "4": 41,
+          "5": 33,
+          "6": 26,
+          "7": 16,
+          "8": 13,
+          "9": 9,
+          "10": 1,
+          "11": 1,
+          "13": 1
+        },
+        "triangle": {
+          "0": 238,
+          "1": 17,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 236,
+          "1": 20
+        }
+      },
+      "elapsedMs": 19395
+    },
+    {
+      "mode": "unassisted",
+      "revision": 280,
+      "rate": 50,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 13.96484375,
+      "ordinaryPercent": 7.890625,
+      "allClearPercent": 6.07421875,
+      "winRate": 0.09765625,
+      "zeroWinGames": 231,
+      "allClearsPerGame": 0.015625,
+      "allClearGameRate": 0.015625,
+      "removedPerGame": 16.26953125,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 2,
+      "maximumCommittedBank": 750,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        14.6875,
+        18.125,
+        17.578125,
+        5.46875
+      ],
+      "empiricalBlockSE": 2.930707287790053,
+      "roleCounts": {
+        "line": {
+          "0": 231,
+          "1": 11,
+          "2": 6,
+          "3": 7,
+          "4": 1
+        },
+        "triangle": {
+          "0": 254,
+          "1": 2
+        },
+        "hexagon": {
+          "0": 255,
+          "1": 1
+        }
+      },
+      "elapsedMs": 2386
+    },
+    {
+      "mode": "unassisted",
+      "revision": 283,
+      "rate": 50,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 2493.75,
+      "ordinaryPercent": 328.515625,
+      "allClearPercent": 2165.234375,
+      "winRate": 0.90625,
+      "zeroWinGames": 24,
+      "allClearsPerGame": 0.26953125,
+      "allClearGameRate": 0.23828125,
+      "removedPerGame": 179.4140625,
+      "primaryRemovedPerGame": 48.29296875,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 36,
+      "maximumCommittedBank": 32690,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 711000,
+        "removed": 1422,
+        "feed": 2021,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        2472.890625,
+        2310.78125,
+        3015.078125,
+        2176.25
+      ],
+      "empiricalBlockSE": 184.0520625887253,
+      "roleCounts": {
+        "line": {
+          "0": 25,
+          "1": 20,
+          "2": 47,
+          "3": 40,
+          "4": 36,
+          "5": 18,
+          "6": 30,
+          "7": 19,
+          "8": 12,
+          "9": 4,
+          "10": 2,
+          "11": 1,
+          "13": 2
+        },
+        "triangle": {
+          "0": 223,
+          "1": 33
+        },
+        "hexagon": {
+          "0": 245,
+          "1": 11
+        }
+      },
+      "elapsedMs": 17669
+    },
+    {
+      "mode": "unassisted",
+      "revision": 280,
+      "rate": 90,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 13.96484375,
+      "ordinaryPercent": 7.890625,
+      "allClearPercent": 6.07421875,
+      "winRate": 0.09765625,
+      "zeroWinGames": 231,
+      "allClearsPerGame": 0.015625,
+      "allClearGameRate": 0.015625,
+      "removedPerGame": 16.26953125,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 2,
+      "maximumCommittedBank": 750,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        14.6875,
+        18.125,
+        17.578125,
+        5.46875
+      ],
+      "empiricalBlockSE": 2.930707287790053,
+      "roleCounts": {
+        "line": {
+          "0": 231,
+          "1": 11,
+          "2": 6,
+          "3": 7,
+          "4": 1
+        },
+        "triangle": {
+          "0": 254,
+          "1": 2
+        },
+        "hexagon": {
+          "0": 255,
+          "1": 1
+        }
+      },
+      "elapsedMs": 2166
+    },
+    {
+      "mode": "unassisted",
+      "revision": 283,
+      "rate": 90,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 2493.75,
+      "ordinaryPercent": 328.515625,
+      "allClearPercent": 2165.234375,
+      "winRate": 0.90625,
+      "zeroWinGames": 24,
+      "allClearsPerGame": 0.26953125,
+      "allClearGameRate": 0.23828125,
+      "removedPerGame": 179.4140625,
+      "primaryRemovedPerGame": 48.29296875,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 36,
+      "maximumCommittedBank": 32690,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 711000,
+        "removed": 1422,
+        "feed": 2021,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        2472.890625,
+        2310.78125,
+        3015.078125,
+        2176.25
+      ],
+      "empiricalBlockSE": 184.0520625887253,
+      "roleCounts": {
+        "line": {
+          "0": 25,
+          "1": 20,
+          "2": 47,
+          "3": 40,
+          "4": 36,
+          "5": 18,
+          "6": 30,
+          "7": 19,
+          "8": 12,
+          "9": 4,
+          "10": 2,
+          "11": 1,
+          "13": 2
+        },
+        "triangle": {
+          "0": 223,
+          "1": 33
+        },
+        "hexagon": {
+          "0": 245,
+          "1": 11
+        }
+      },
+      "elapsedMs": 16454
+    },
+    {
+      "mode": "unassisted",
+      "revision": 280,
+      "rate": 100,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 13.96484375,
+      "ordinaryPercent": 7.890625,
+      "allClearPercent": 6.07421875,
+      "winRate": 0.09765625,
+      "zeroWinGames": 231,
+      "allClearsPerGame": 0.015625,
+      "allClearGameRate": 0.015625,
+      "removedPerGame": 16.26953125,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 2,
+      "maximumCommittedBank": 750,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        14.6875,
+        18.125,
+        17.578125,
+        5.46875
+      ],
+      "empiricalBlockSE": 2.930707287790053,
+      "roleCounts": {
+        "line": {
+          "0": 231,
+          "1": 11,
+          "2": 6,
+          "3": 7,
+          "4": 1
+        },
+        "triangle": {
+          "0": 254,
+          "1": 2
+        },
+        "hexagon": {
+          "0": 255,
+          "1": 1
+        }
+      },
+      "elapsedMs": 2468
+    },
+    {
+      "mode": "unassisted",
+      "revision": 283,
+      "rate": 100,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 2493.75,
+      "ordinaryPercent": 328.515625,
+      "allClearPercent": 2165.234375,
+      "winRate": 0.90625,
+      "zeroWinGames": 24,
+      "allClearsPerGame": 0.26953125,
+      "allClearGameRate": 0.23828125,
+      "removedPerGame": 179.4140625,
+      "primaryRemovedPerGame": 48.29296875,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 36,
+      "maximumCommittedBank": 32690,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 711000,
+        "removed": 1422,
+        "feed": 2021,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        2472.890625,
+        2310.78125,
+        3015.078125,
+        2176.25
+      ],
+      "empiricalBlockSE": 184.0520625887253,
+      "roleCounts": {
+        "line": {
+          "0": 25,
+          "1": 20,
+          "2": 47,
+          "3": 40,
+          "4": 36,
+          "5": 18,
+          "6": 30,
+          "7": 19,
+          "8": 12,
+          "9": 4,
+          "10": 2,
+          "11": 1,
+          "13": 2
+        },
+        "triangle": {
+          "0": 223,
+          "1": 33
+        },
+        "hexagon": {
+          "0": 245,
+          "1": 11
+        }
+      },
+      "elapsedMs": 16380
+    },
+    {
+      "mode": "unassisted",
+      "revision": 280,
+      "rate": 150,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 13.96484375,
+      "ordinaryPercent": 7.890625,
+      "allClearPercent": 6.07421875,
+      "winRate": 0.09765625,
+      "zeroWinGames": 231,
+      "allClearsPerGame": 0.015625,
+      "allClearGameRate": 0.015625,
+      "removedPerGame": 16.26953125,
+      "primaryRemovedPerGame": 8,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 2,
+      "maximumCommittedBank": 750,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        14.6875,
+        18.125,
+        17.578125,
+        5.46875
+      ],
+      "empiricalBlockSE": 2.930707287790053,
+      "roleCounts": {
+        "line": {
+          "0": 231,
+          "1": 11,
+          "2": 6,
+          "3": 7,
+          "4": 1
+        },
+        "triangle": {
+          "0": 254,
+          "1": 2
+        },
+        "hexagon": {
+          "0": 255,
+          "1": 1
+        }
+      },
+      "elapsedMs": 2324
+    },
+    {
+      "mode": "unassisted",
+      "revision": 283,
+      "rate": 150,
+      "games": 256,
+      "bet": 100,
+      "boardSeed": 876193,
+      "drawSeed": 692317,
+      "variantSha256": "4ce5a8fde551a961dcb7cbd9893356b8c7b318c07439fa380749544c5c46034c",
+      "actualPercent": 2493.75,
+      "ordinaryPercent": 328.515625,
+      "allClearPercent": 2165.234375,
+      "winRate": 0.90625,
+      "zeroWinGames": 24,
+      "allClearsPerGame": 0.26953125,
+      "allClearGameRate": 0.23828125,
+      "removedPerGame": 179.4140625,
+      "primaryRemovedPerGame": 48.29296875,
+      "hitBallRate": 1,
+      "maxConsecutivePositiveGames": 36,
+      "maximumCommittedBank": 32690,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 711000,
+        "removed": 1422,
+        "feed": 2021,
+        "roundId": ""
+      },
+      "blockSize": 64,
+      "blockMeans": [
+        2472.890625,
+        2310.78125,
+        3015.078125,
+        2176.25
+      ],
+      "empiricalBlockSE": 184.0520625887253,
+      "roleCounts": {
+        "line": {
+          "0": 25,
+          "1": 20,
+          "2": 47,
+          "3": 40,
+          "4": 36,
+          "5": 18,
+          "6": 30,
+          "7": 19,
+          "8": 12,
+          "9": 4,
+          "10": 2,
+          "11": 1,
+          "13": 2
+        },
+        "triangle": {
+          "0": 223,
+          "1": 33
+        },
+        "hexagon": {
+          "0": 245,
+          "1": 11
+        }
+      },
+      "elapsedMs": 15768
+    }
+  ]
+}

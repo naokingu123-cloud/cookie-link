@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20T22:43:07.217774+00:00",
+  "baseCommit": "3d706b73db63bda4e12d7a10fa2f545f732e3ebe",
+  "rulesRevision": 283,
+  "scope": "Local Node/VM integration only; no browser, publication, or CI claim",
+  "outcome": "pass",
+  "runtimeChanges": [
+    "assets/sixdrop-progressive-host-v247.js (core change owned separately)"
+  ],
+  "unchangedRuntimePaths": [
+    "assets/recorded-round-v255.js",
+    "assets/shared-machine-core-v196.js",
+    "assets/download-worker-v255.js",
+    "assets/server-offline-settlement-worker-v3.js",
+    "server-payout-preload-v3.mjs",
+    "server-download-ledger-v255.mjs"
+  ],
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--check",
+        "assets/sixdrop-progressive-host-v247.js"
+      ],
+      "exitCode": 0,
+      "seconds": 0.084,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v278-host.cjs"
+      ],
+      "exitCode": 0,
+      "seconds": 2.06,
+      "stdout": "[OfflineSettlementWorkerV3] settled worker-0 isolated 56618\n[OfflineSettlementWorkerV3] settled worker-2 isolated 56618\n[OfflineSettlementWorkerV3] settled worker-4 isolated 56618\nSIXDROP_V278_HOST_PASS {\"boundaries\":[{\"received\":1,\"processed\":0,\"bank\":123456,\"allClears\":0},{\"received\":2,\"processed\":0,\"bank\":123456,\"allClears\":0},{\"received\":3,\"processed\":3,\"bank\":168456,\"allClears\":0},{\"received\":4,\"processed\":3,\"bank\":168456,\"allClears\":0},{\"received\":5,\"processed\":5,\"bank\":1128456,\"allClears\":1},{\"received\":6,\"processed\":6,\"bank\":1143456,\"allClears\":1},{\"received\":7,\"processed\":7,\"bank\":2133456,\"allClears\":2},{\"received\":8,\"processed\":8,\"bank\":2148456,\"allClears\":2}],\"repeated\":[{\"bankUnits\":4173456,\"removed\":369,\"feed\":892},{\"bankUnits\":4376631,\"removed\":504,\"feed\":1113},{\"bankUnits\":6401631,\"removed\":639,\"feed\":1334}],\"checkpointCases\":[1,2,3,4,5,6,7],\"queuedGroups\":[3,2],\"legacyMissingRng\":\"verified replay + 4 rejection cases\",\"streamingCases\":[{\"ball\":1},{\"ball\":2},{\"ball\":4},{\"ball\":0,\"queued\":3},{\"ball\":3,\"queued\":2},{\"ball\":2,\"legacy\":true}],\"offlineWorkerCases\":[0,2,4],\"payout\":56618,\"scope\":\"Native Arcade + live Six adapter + recorder + local persistence + shared resume + offline settlement worker\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v283-host.cjs"
+      ],
+      "exitCode": 0,
+      "seconds": 3.213,
+      "stdout": "[OfflineSettlementWorkerV3] settled worker-283-0 isolated 72934\n[OfflineSettlementWorkerV3] settled worker-283-1 isolated 72934\n[OfflineSettlementWorkerV3] settled worker-283-7 isolated 72934\n[OfflineSettlementWorkerV3] settled worker-248-2 isolated 14584\n[OfflineSettlementWorkerV3] settled worker-278-2 isolated 0\n[OfflineSettlementWorkerV3] settled worker-280-4 isolated 0\nSIXDROP_V283_HOST_PASS {\"boundaries\":[{\"received\":1,\"processed\":1,\"removed\":109,\"bank\":273456},{\"received\":2,\"processed\":2,\"removed\":113,\"bank\":333456},{\"received\":3,\"processed\":3,\"removed\":162,\"bank\":1068456},{\"received\":4,\"processed\":4,\"removed\":227,\"bank\":2043456},{\"received\":5,\"processed\":5,\"removed\":250,\"bank\":2388456},{\"received\":6,\"processed\":6,\"removed\":308,\"bank\":3258456},{\"received\":7,\"processed\":7,\"removed\":318,\"bank\":3408456},{\"received\":8,\"processed\":8,\"removed\":387,\"bank\":4443456}],\"payout\":72934,\"allClears\":1,\"changedBetWin\":52392,\"checkpointCases\":[1,2,3,4,5,6,7],\"queueCases\":[0,3],\"animatedCheckpoint\":true,\"compatibility\":[{\"revision\":248,\"ball\":2,\"win\":14584},{\"revision\":278,\"ball\":2,\"win\":0},{\"revision\":278,\"ball\":4,\"win\":0},{\"revision\":280,\"ball\":2,\"win\":0},{\"revision\":280,\"ball\":4,\"win\":0},{\"revision\":283,\"ball\":2,\"win\":72934}],\"workerCases\":[{\"revision\":283,\"ball\":0,\"win\":72934},{\"revision\":283,\"ball\":1,\"win\":72934},{\"revision\":283,\"ball\":7,\"win\":72934},{\"revision\":248,\"ball\":2,\"win\":14584},{\"revision\":278,\"ball\":2,\"win\":0},{\"revision\":280,\"ball\":4,\"win\":0}],\"downloadCases\":[{\"previousRevision\":null,\"revision\":283,\"checkpoints\":9,\"win\":600},{\"previousRevision\":280,\"revision\":283,\"checkpoints\":9,\"win\":600}],\"scope\":\"Native Arcade single input + occupied-neighbor break events + carry + recorder + shared resume + offline settlement + actual download worker\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v278-settlement.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 0.563,
+      "stdout": "[PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded\nSIXDROP_V278_SETTLEMENT_PASS {\"streaming\":[\"early bridge + HTTP\",\"eight-ball zero even with abandoned flag\",\"unknown interruption denied\",\"other-game WIN with own zero\",\"nonparticipant\",\"positive all-clears\",\"operator cancellation\",\"idempotent retry\"],\"download\":[{\"caseName\":\"positive\",\"bet\":3000,\"win\":56618,\"bankUnits\":2148456,\"removed\":234,\"feed\":671},{\"caseName\":\"positive-bet-change\",\"bet\":301,\"win\":48400,\"bankUnits\":2351631,\"removed\":369,\"feed\":892},{\"caseName\":\"nonparticipant\",\"bet\":0,\"win\":0,\"bankUnits\":2351631,\"removed\":369,\"feed\":892},{\"caseName\":\"zero\",\"bet\":3000,\"win\":0,\"bankUnits\":0,\"removed\":0,\"feed\":0}]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v283-settlement.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 0.63,
+      "stdout": "[PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded\nSIXDROP_V283_SETTLEMENT_PASS {\"revision\":283,\"streaming\":[\"single-eight-ball positive\",\"seven-ball interruption\",\"own zero despite other-game WIN\",\"nonparticipant\",\"receipt retry\",\"operator cancellation\"],\"download\":[{\"caseName\":\"positive\",\"bet\":3000,\"win\":72934,\"bankUnits\":4443456,\"removed\":387,\"feed\":825},{\"caseName\":\"positive-bet-change\",\"bet\":333,\"win\":52392,\"bankUnits\":4922976,\"removed\":675,\"feed\":1200},{\"caseName\":\"nonparticipant\",\"bet\":0,\"win\":0,\"bankUnits\":4922976,\"removed\":675,\"feed\":1200},{\"caseName\":\"zero\",\"bet\":3000,\"win\":0,\"bankUnits\":0,\"removed\":0,\"feed\":0}]}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "tests/recorded-round-v255.mjs"
+      ],
+      "exitCode": 0,
+      "seconds": 0.098,
+      "stdout": "recorded-round-v255: deterministic streams, offset resume, stable batches and wallet isolation PASS\n",
+      "stderr": ""
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "assets/sixdrop-progressive-core-v247.js",
+      "bytes": 18940,
+      "sha256": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28"
+    },
+    {
+      "path": "assets/sixdrop-progressive-host-v247.js",
+      "bytes": 23348,
+      "sha256": "ff86257a00dd4011d021f13303e02575b4adc4d25a4c2d0c2f936ad3d53220a6"
+    },
+    {
+      "path": "assets/recorded-round-v255.js",
+      "bytes": 8984,
+      "sha256": "c58a89f60349ee8f2b3b5c71da1d9e9735ca355e0216eb0ee54f7c6f25c9736c"
+    },
+    {
+      "path": "assets/shared-machine-core-v196.js",
+      "bytes": 52785,
+      "sha256": "97e7d0fe9a4fa6c51465633c2b759cf7b54c170217f353978ae88b9065fa27c0"
+    },
+    {
+      "path": "assets/download-worker-v255.js",
+      "bytes": 6120,
+      "sha256": "d54362bf91fd714cfbbcdae9e622b1d9a43e0d0cf5409fd9d28328b689c499c5"
+    },
+    {
+      "path": "assets/server-offline-settlement-worker-v3.js",
+      "bytes": 7947,
+      "sha256": "4af56aeb08b2e0364a26b68697be64f7b6896bf600ceb6d8bc61be8ed6e8021e"
+    },
+    {
+      "path": "server-payout-preload-v3.mjs",
+      "bytes": 50715,
+      "sha256": "eff2f27b657fa867fb7d6799436e749ee76833da19f1bac572fe509e707bc35a"
+    },
+    {
+      "path": "server-download-ledger-v255.mjs",
+      "bytes": 17910,
+      "sha256": "88bf9018e94ba2232a0b3546aff13bfd91faa37486624496d5af3413f3eb3d8f"
+    },
+    {
+      "path": "tests/sixdrop-v278-fixture.cjs",
+      "bytes": 8703,
+      "sha256": "cd5a58991d0259f8419415c8741ebce5804246059325889d56b126086d73856e"
+    },
+    {
+      "path": "tests/sixdrop-v278-host.cjs",
+      "bytes": 15115,
+      "sha256": "16353c3f49ea9565f626a5f71e1950f9b99305746c9de45441a2779b3b12cdd2"
+    },
+    {
+      "path": "tests/sixdrop-v283-fixture.cjs",
+      "bytes": 1225,
+      "sha256": "aeb06b313cd698e3638b73f64d3a0ff3ba745c4fd1e95c7de5cc910828dc1e6f"
+    },
+    {
+      "path": "tests/sixdrop-v283-host.cjs",
+      "bytes": 13668,
+      "sha256": "1ff49074e86aec940b20710e3eb65b913c362f111449d141e98c44abd07d320d"
+    },
+    {
+      "path": "tests/sixdrop-v283-settlement.mjs",
+      "bytes": 7486,
+      "sha256": "299a06f38a8a086d0f8324f957b3312f687dd468f020688815520ec886d3d2af"
+    }
+  ]
+}

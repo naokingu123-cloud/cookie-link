@@ -19,14 +19,18 @@ class NodeStub{
  setAttribute(){} removeAttribute(){} append(){} appendChild(){} addEventListener(){} remove(){}
  getBoundingClientRect(){return {x:0,y:0,width:320,height:320,left:0,top:0,right:320,bottom:320};}
 }
-function createHost({seed=1,bet=100,otherBet=null,search='?edition=local',storage=memoryStorage()}={}){
+function createHost({seed=1,bet=100,otherBet=null,search='?edition=local',storage=memoryStorage(),rulesRevision=null}={}){
  native??=require('./payout-v232-classic-sample.cjs').load();
  const source=fs.readFileSync('optimized/app-01.js','utf8');
  const start=source.indexOf('class Arcade{'),end=source.indexOf('// Only the next HIT is simulated.',start);
  assert(start>=0&&end>start,'production Arcade class exists');
  const listeners=new Map(),nodes=new Map(),events=[];
  const edition=new URLSearchParams(search).get('edition')||'streaming';
- const window={SweetsEditionV255:{value:edition},SweetsLineup:{ids:otherBet===null?['candy']:['candy','cookie']},SweetsSixDropV247:globalThis.SweetsSixDropV247,localStorage:storage,
+ // Historical suites explicitly choose an old build's default revision. The
+ // live adapter, native scheduler and complete rules implementation stay real.
+ // Omitting the option always exercises the production CURRENT_REVISION.
+ const rulesSource=globalThis.SweetsSixDropV247,rulesFactory=rulesRevision===null?rulesSource:{...rulesSource,create(...args){return {...rulesSource.create(...args),CURRENT_REVISION:rulesRevision};}};
+ const window={SweetsEditionV255:{value:edition},SweetsLineup:{ids:otherBet===null?['candy']:['candy','cookie']},SweetsSixDropV247:rulesFactory,localStorage:storage,
   addEventListener(type,fn){if(!listeners.has(type))listeners.set(type,[]);listeners.get(type).push(fn);},
   dispatchEvent(event){for(const fn of listeners.get(event.type)||[])fn(event);return true;}};
  const document={hidden:true,body:new NodeStub(),head:new NodeStub(),documentElement:new NodeStub(),
@@ -83,7 +87,7 @@ function streamingCheckpoint(host){
  // only network discovery and connection startup outside this source block.
  return new Function('window',source.slice(start,end)+'\nreturn {checkpoint,restore};')(host.window);
 }
-function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS,rulesRevision=R.CURRENT_REVISION}={}){
+function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS,rulesRevision=280}={}){
  let state=R.newGame({seed,bet,carry,rulesRevision});
  const initial=clone(state),plans=[];
  for(const group of batches(numbers)){

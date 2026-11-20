@@ -1,11 +1,11 @@
-/* Six Drop: deterministic legacy single-HIT and revisioned grouped rules.
+/* Six Drop: deterministic revisioned single-HIT and grouped rules.
    No DOM, wallet or network writes.
    Inject the existing staggered-grid gravity and role geometry to retain the
    approved board mechanics. A prediction clones the exact serialized RNG. */
 (function(root){
 'use strict';
 // Keep the v247 serialization and color IDs readable by existing checkpoints.
-const VERSION=247,REVISION=248,GROUPED_REVISION=278,CURRENT_REVISION=280,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5;
+const VERSION=247,REVISION=248,GROUPED_REVISION=278,ROUNDED_REVISION=280,SINGLE_REVISION=283,CURRENT_REVISION=SINGLE_REVISION,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5;
 const BATCH_SIZES=Object.freeze([3,2,1,1,1]);
 const RING=['blue','aqua','green','lime','yellow','orange','red','violet','pink'];
 const COLOR_PROGRESS=[0,1,2,3,4,5,6,8,7];
@@ -42,10 +42,11 @@ function totalMedals(s){
 }
 const revisionOf=value=>Number(typeof value==='object'?value?.rulesRevision:value)||REVISION;
 const modernRules=value=>revisionOf(value)>=GROUPED_REVISION;
-const normalizedRevision=value=>revisionOf(value)>=280?280:modernRules(value)?GROUPED_REVISION:REVISION;
+const isGrouped=value=>revisionOf(value)>=GROUPED_REVISION&&revisionOf(value)<SINGLE_REVISION;
+const normalizedRevision=value=>revisionOf(value)>=SINGLE_REVISION?SINGLE_REVISION:revisionOf(value)>=ROUNDED_REVISION?ROUNDED_REVISION:modernRules(value)?GROUPED_REVISION:REVISION;
 function roleTotal(type,count,stateOrRevision=CURRENT_REVISION){
  const n=integer(count);
- if(revisionOf(stateOrRevision)>=280){
+ if(revisionOf(stateOrRevision)>=ROUNDED_REVISION){
   const table=ROLE_PAY_TABLE_V280[type];if(!table)return 0;
   if(n<table.length)return table[n];
   const tail=n-5;
@@ -55,7 +56,12 @@ function roleTotal(type,count,stateOrRevision=CURRENT_REVISION){
  return base*(n*(n+1)/2+(modernRules(stateOrRevision)&&n>0?Math.floor((n-1)*(n-1)/4):0));
 }
 function roleAward(type,oldCount,count=1,stateOrRevision=REVISION){return roleTotal(type,integer(oldCount)+integer(count),stateOrRevision)-roleTotal(type,integer(oldCount),stateOrRevision);}
-function batchSize(processed){let end=0;for(const size of BATCH_SIZES){if(processed===end)return size;end+=size;}return 0;}
+// Omitted revision retains the old grouped helper contract. New scheduling
+// always passes the saved state so 278/280 games finish their original groups.
+function batchSize(processed,stateOrRevision=GROUPED_REVISION){
+ if(!isGrouped(stateOrRevision))return Number.isInteger(processed)&&processed>=0&&processed<8?1:0;
+ let end=0;for(const size of BATCH_SIZES){if(processed===end)return size;end+=size;}return 0;
+}
 function supportProbability(rate,stateOrRevision=CURRENT_REVISION){
  const target=Math.max(50,Math.min(150,Number(rate)||90));
  if(!modernRules(stateOrRevision))return .35+.55*(target-50)/100;
@@ -171,11 +177,11 @@ function create(geometry){
   refill(state,{initial:true});return state;
  }
  function hit(original,number,{trace=false,preview=false}={}){
-  if(modernRules(original))return null;
+  if(isGrouped(original))return null;
   return resolveHits(original,[number],{trace,preview});
  }
  function hitBatch(original,numbers,{trace=false,preview=false}={}){
-  if(!modernRules(original)||!Array.isArray(numbers)||numbers.length!==batchSize(original?.draws?.length))return null;
+  if(!isGrouped(original)||!Array.isArray(numbers)||numbers.length!==batchSize(original?.draws?.length,original))return null;
   return resolveHits(original,numbers,{trace,preview});
  }
  function resolveHits(original,numbers,{trace=false,preview=false}={}){
@@ -195,11 +201,18 @@ function create(geometry){
    const steps=result.steps.map(x=>({...x,ms:x.ms*scale})),motionMs=steps.reduce((n,x)=>n+x.ms,0)||80;
    push('pyramidFall',{moves:result.moves,steps,motionMs,chain},Math.min(350,motionMs+35));
   }
-  // Every received number in this group hits the same board. Only after all
-  // matching candies are removed do gravity, cascades and one refill run.
+  // A saved grouped round still hits all its numbers on the same board.
+  // Revision 283 resolves one number and its occupied six-neighbour ring.
+  // Build that ring before removing anything: it never expands recursively.
   const hits=new Set(numbers),cells=[];for(let r=0;r<ROWS;r++)for(let c=0;c<s.grid[r].length;c++)if(hits.has(s.grid[r][c]?.number))cells.push([r,c]);
-  push(cells.length?'pyramidHit':'pyramidMiss',{cells,numbers:[...numbers]},70);
-  if(cells.length){push('pyramidBreak',remove(cells),80);fall();}
+  const hitDetails={cells,numbers:[...numbers]};let affected=cells;
+  if(s.rulesRevision>=SINGLE_REVISION){
+   const keys=new Set();for(const [r,c]of cells){keys.add(r*16+c);for(const [y,x]of G.neighbors(r,c,ROWS))if(G.valid(y,x,ROWS))keys.add(y*16+x);}
+   affected=[];for(let r=0;r<ROWS;r++)for(let c=0;c<s.grid[r].length;c++)if(s.grid[r][c]&&keys.has(r*16+c))affected.push([r,c]);
+   hitDetails.affectedCells=affected;
+  }
+  push(cells.length?'pyramidHit':'pyramidMiss',hitDetails,70);
+  if(cells.length){push('pyramidBreak',remove(affected),80);fall();}
   for(;;){
    const forms=G.findShapes(s.grid),groups=connectedGroups(s.grid);if(!forms.length&&!groups.length)break;
    if(++chain>Math.floor(CAPACITY/4))throw Error('Six Drop cascade exceeded finite board');
@@ -228,7 +241,7 @@ function create(geometry){
   if(modernRules(s)&&s.draws.length<8)return cleanCarry(s.carryAtStart);
   return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});
  }
- return {VERSION,REVISION,GROUPED_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
+ return {VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,isGrouped,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
 }
-root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,batchSize,supportProbability};
+root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,isGrouped,batchSize,supportProbability};
 })(typeof window!=='undefined'?window:globalThis);

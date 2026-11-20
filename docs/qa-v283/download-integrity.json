@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-11-20T22:49:12.167056+00:00",
+  "version": "20261121-v283-single-hit-and-fixed-sixdrop-layout",
+  "files": 853,
+  "bytes": 238631834,
+  "expectedTotalBytes": 238631834,
+  "mismatches": [],
+  "cacheTest": "root/subpath offline navigation, private/API exclusion, bounded/open/suffix audio ranges passed"
+}

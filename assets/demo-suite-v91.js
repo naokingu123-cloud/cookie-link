@@ -15,7 +15,7 @@ const games={
  choco:{name:'チョコレートキャニオン',accent:'#ffcc88',ink:'#603844',steps:[
   ['ドリルHIT','ドリルの向きに地層を掘る'],['ドリルLv','レベルが上がると深く掘れる'],['同色の連鎖','落下後、同色4マス以上で消去'],['鉱石GET','地表に出た鉱石を獲得'],['ボーナス層','100mごとにボーナス層へ']]},
  candy:{name:'シックスドロップ',accent:'#ffb7dc',ink:'#64344b',steps:[
-  ['番号にHIT！','HITした後に落下・連鎖・補充'],['同色4個以上で消去','曲がったつながりも消える'],['役が育つ配当','直線・三角・ヘキサゴンで同色をすべて消去'],['全消しで総取り','消去1個でBET×0.05・獲得後も継続']]},
+  ['1球ずつHIT！','HIT＋周囲6マスを消去（端は減少）'],['同色4個以上で消去','曲がったつながりも消える'],['役が育つ配当','直線・三角・ヘキサゴンで同色をすべて消去'],['全消しで総取り','消去1個でBET×0.05・獲得後も継続']]},
  gelato:{name:'ジェラートプリズム',accent:'#91edff',ink:'#343856',steps:[
   ['交点にHIT','抽選された番号が点灯'],['ライン成立','HITした点を盤面の線で結ぶ'],['三角形GET','線で囲んだ小さな三角形を獲得'],['全埋め','本盤は三角形24枚で全埋め']]},
  winery:{name:'ワイナリーピラミッド',accent:'#ffcb9d',ink:'#65364b',steps:[
@@ -110,12 +110,12 @@ function canyonDiagram(c,stage,t){
 }
 function sixDiagram(c,stage,t){
  const pos=[],colors=[0,1,2,3];for(let r=0;r<3;r++)for(let j=0;j<(r===1?4:5);j++)pos.push([19+(r===1?.5:0)*43+j*43,66+r*38]);
- const sets=[[6],[1,2,6,11],[2,6,7,10,11,12],[1,2,5,7,10,11]];
+ const sets=[[1,2,5,6,7,10,11],[1,2,6,11],[2,6,7,10,11,12],[1,2,5,7,10,11]];
  const group=sets[stage];const vanish=ease((t-.68)/.24);
  for(let i=0;i<pos.length;i++){
-  let [x,y]=pos[i],selected=group.includes(i),color=selected?stage%4:colors[(i+Math.floor(i/5))%4];
-  if(!stage&&i===1){const u=ease((t-.46)/.45);x+=u*21.5;y+=u*38;}
-  const fade=stage?(stage===1?(selected?vanish:0):(color===stage%4?vanish:0)):(i===6?ease((t-.22)/.22):0);
+  let [x,y]=pos[i],selected=group.includes(i),color=stage&&selected?stage%4:colors[(i+Math.floor(i/5))%4];
+  if(!stage&&i===0){const u=ease((t-.58)/.3);x+=u*21.5;y+=u*38;}
+  const fade=stage?(stage===1?(selected?vanish:0):(color===stage%4?vanish:0)):(selected?ease((t-(i===6?.22:.30))/.25):0);
   c.save();c.globalAlpha=1-fade;candy(c,color,x,y,40);
   if(!stage&&i===6)text(c,'12',x,y,17,'#482f55',31);
   if(stage&&selected&&t>.28)dot(c,x,y,18.7,null,'#ffef9e',2.4);c.restore();
@@ -125,7 +125,7 @@ function sixDiagram(c,stage,t){
   const outline=stage===1?[2,1,6,11]:stage===2?[2,10,12,2]:[1,2,7,11,10,5,1];
   line(c,outline.map(i=>pos[i]),'rgba(255,244,178,.9)',3.1);
  }
- tag(c,['番号にHIT！','4個つながると消去','役で同色すべて消去','全消し BONUS'][stage],105,193,145);
+ tag(c,['HIT＋周囲6マス','4個つながると消去','役で同色すべて消去','全消し BONUS'][stage],105,193,145);
 }
 const prismPoints=[[22,116],[83,42],[100,147],[170,71]],prismLines=[[0,1],[0,2],[1,2],[1,3],[2,3]];
 function gelatoDiagram(c,stage,t){

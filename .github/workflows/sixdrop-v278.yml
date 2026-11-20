@@ -1,4 +1,4 @@
-name: Six Drop bottle, count payouts and continuation v280
+name: Six Drop single balls, neighbour clears and fixed cabinet v283
 on:
   workflow_dispatch:
   pull_request:
@@ -18,6 +18,7 @@ on:
       - 'app-version.json'
       - 'tests/sixdrop-v278-*'
       - 'tests/sixdrop-v280-*'
+      - 'tests/sixdrop-v283-*'
       - '.github/workflows/sixdrop-v278.yml'
   push:
     branches: [main]
@@ -37,11 +38,13 @@ on:
       - 'app-version.json'
       - 'tests/sixdrop-v278-*'
       - 'tests/sixdrop-v280-*'
+      - 'tests/sixdrop-v283-*'
       - '.github/workflows/sixdrop-v278.yml'
 permissions:
   contents: read
 jobs:
   grouped-rules-and-continuation:
+    name: Single-ball rules, legacy groups and continuation
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -54,10 +57,16 @@ jobs:
         run: node tests/sixdrop-v278-rules.cjs
       - name: Rounded v280 role tables and preserved legacy saved games
         run: node tests/sixdrop-v280-rules.cjs
+      - name: Current single balls, exact six-neighbour removal and historical trace hashes
+        run: node tests/sixdrop-v283-rules.cjs
       - name: Native Arcade, repeated carry, checkpoint resume and offline settlement
         run: node tests/sixdrop-v278-host.cjs
       - name: Authoritative interrupted rounds, zero WIN and download ledger
         run: node tests/sixdrop-v278-settlement.mjs
+      - name: Native single-ball Arcade, nine checkpoints and legacy-to-current download carry
+        run: node tests/sixdrop-v283-host.cjs
+      - name: Current authoritative settlement, interrupted single balls and once-only credit
+        run: node tests/sixdrop-v283-settlement.mjs
       - name: Legacy carry and worker compatibility
         run: node tests/sixdrop-server-v248.mjs
       - name: Recorded stream and wallet isolation
@@ -70,10 +79,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2]
+        shard: [0, 1, 2, 3]
     env:
       SIXDROP_QA_SHARD: ${{ matrix.shard }}
-      SIXDROP_QA_SHARDS: 3
+      SIXDROP_QA_SHARDS: 4
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -97,7 +106,7 @@ jobs:
           test -x "$browser_path"
           timeout 20s "$browser_path" --version
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
-      - name: Real manual groups, dedicated all-clear art and native download checkpoints
+      - name: Real single-ball blasts, fixed logo/WIN, common frame and download checkpoints
         run: node tests/sixdrop-v278-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()

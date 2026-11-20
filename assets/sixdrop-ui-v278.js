@@ -1,4 +1,4 @@
-/* Six Drop v280 cabinet. Observes the shared rule adapter; never computes a
+/* Six Drop v283 cabinet. Observes the shared rule adapter; never computes a
  * result, advances an engine, changes a carry, or samples game randomness. */
 (()=>{
 'use strict';
@@ -17,10 +17,11 @@ const money=value=>Math.floor(Math.max(0,Number(value)||0)).toLocaleString('ja-J
 const putText=(node,text)=>{if(node&&node.textContent!==String(text))node.textContent=String(text);};
 const epoch=()=>String(app.token)+'/'+String(engine.version);
 const image=id=>{const im=images.get(id);return im?.complete&&im.naturalWidth>0?im:null;};
+const batchSizes=(state=engine.state)=>rules.isGrouped?.(state||rules.CURRENT_REVISION)?rules.BATCH_SIZES.slice():Array(8).fill(1);
 function info(){
  const shared=window.SixDropV247.describeV278?.();if(shared)return shared;
  const s=engine.state;
- return {rulesRevision:s?.rulesRevision||247,batchSizes:rules.BATCH_SIZES||[3,2,1,1,1],receivedBalls:app.draws?.length||0,
+ return {rulesRevision:s?.rulesRevision||rules.CURRENT_REVISION,batchSizes:batchSizes(s),receivedBalls:app.draws?.length||0,
   processedBalls:engine.processed||0,pendingNumbers:[],bankUnits:s?.bankUnits??window.SixDropV247.carry?.bankUnits??0,
   inheritedContinuation:false,earnedContinuation:false,continuationActive:false,
   allClearCount:s?.allClears||0,allClearWin:s?.bonusMedals||0,lastAllClearWin:s?.lastAllClearWin||0,counts:s?.counts||{}};
@@ -48,7 +49,7 @@ function ensure(){
  setupCarnivalSlot(slot);document.body.classList.add('sixdrop-v278');slot.panel.classList.add('sd278-surface');
  const heading=document.getElementById('carnival-heading');heading.dataset.ui278='1';
  const hud=document.createElement('div');hud.className='sd278-hud';
- hud.innerHTML='<div class="sd278-progressive"><canvas class="sd278-progressive-frame" width="1248" height="176" aria-hidden="true"></canvas><span class="sd278-bank-logo"></span><strong id="sd278-bank" aria-label="全消し獲得可能金額"></strong><em>WIN</em><b id="sd278-continuation" hidden>継続</b></div><div class="sd278-underbar"><div id="sd278-clear-earned" role="status" hidden><b>全消し獲得済み</b><span>今回 <strong class="sd278-earned-win"></strong> WIN<span class="sd278-earned-count"></span></span></div></div>';
+ hud.innerHTML='<div class="sd278-progressive"><canvas class="sd278-progressive-frame" width="1160" height="144" aria-hidden="true"></canvas><span class="sd278-bank-logo"></span><strong id="sd278-bank" aria-label="全消し獲得可能金額"></strong><em id="sd283-bank-win">WIN</em><b id="sd278-continuation" hidden>継続</b></div><div class="sd278-underbar"><div id="sd278-clear-earned" role="status" hidden><b>全消し獲得済み</b><span>今回 <strong class="sd278-earned-win"></strong> WIN<span class="sd278-earned-count"></span></span></div></div>';
  hud.querySelector('.sd278-bank-logo').append(makeImage('allclear-logo','sd278-clear-logo','全消し'));
  heading.append(hud);
  nodes.heading=heading;nodes.hud=hud;nodes.frame=hud.querySelector('canvas');nodes.bank=hud.querySelector('#sd278-bank');
@@ -81,19 +82,10 @@ function paintFrame(){
  // margins from the source rectangle when fitting the cabinet's long strip.
  x.drawImage(art,0,160,art.naturalWidth,395,0,0,nodes.frame.width,nodes.frame.height);nodes.frame.dataset.painted='1';
 }
-function bankSpace(continuation){
- const strip=nodes.bank.parentElement,width=strip.clientWidth;
- if(width<=0)return continuation?138:178;
- const style=getComputedStyle(strip),scale=strip.getBoundingClientRect().width/width||1;
- const px=value=>parseFloat(value)||0;
- let occupied=0,siblings=0;
- for(const child of strip.children){
-  if(child===nodes.bank)continue;
-  const css=getComputedStyle(child);
-  if(css.display==='none'||css.position==='absolute')continue;
-  occupied+=Math.ceil(child.getBoundingClientRect().width/scale+px(css.marginLeft)+px(css.marginRight));siblings++;
- }
- return Math.max(14,Math.floor(width-px(style.paddingLeft)-px(style.paddingRight)-occupied-siblings*px(style.columnGap))-2);
+function bankSpace(){
+ // The grid owns a stable amount track, even while this game is hidden.
+ // Keep the fit independent of both the digit count and continuation state.
+ return nodes.bank.clientWidth||136;
 }
 function paintBank(d){
  const source=document.getElementById('sd247-bank'),animated=Number(source?.dataset.displayUnits);
@@ -104,10 +96,7 @@ function paintBank(d){
  nodes.bank.dataset.units=String(units);nodes.bank.dataset.targetUnits=String(target);
  nodes.continuation.hidden=!d.continuationActive;
  nodes.continuation.dataset.inherited=String(!!d.inheritedContinuation);nodes.continuation.dataset.earned=String(!!d.earnedContinuation);
- // Measure the fixed neighbours, not the previous number. A long balance
- // must fit the real remaining space before flex layout can squeeze its box.
- const available=bankSpace(d.continuationActive);
- nodes.bank.style.maxWidth=available+'px';amount(nodes.bank,units/100,29,available);
+ amount(nodes.bank,units/100,27,bankSpace());
  nodes.bank.parentElement.setAttribute('aria-label','全消し獲得可能 '+money(target/100)+' WIN'+(d.continuationActive?' 継続':''));
  // Every removed drop adds exactly BET*5 bank units. Reuse that same visual
  // tween so the count and progressive increase together, including pauses,
@@ -167,7 +156,7 @@ function refresh(){
  if(receipt.epoch!==epoch())resetReceipt();
  if(!engine.fx&&!engine.busy)canonicalReceipt(d);
  paintFrame();paintBank(d);paintReceipt();paintTables(d);stats.mainPaints++;
- slot.candyCanvas.dataset.presentation='v280';
+ slot.candyCanvas.dataset.presentation='v283';
  slot.candyCanvas.setAttribute('aria-label','シックスドロップ。'+(d.receivedBalls||0)+'球抽選済み。消したドロップ合計'+nodes.removedTotal.dataset.targetCount+'個。'+(receipt.count?'全消し獲得済み '+money(receipt.win)+' WIN。':''));
 }
 
@@ -203,12 +192,12 @@ paintSixThumbnail=function(s,rows){
  }
  return result;
 };
-const api={version:280,ready:null,
+const api={version:283,ready:null,
  awardArt:()=>({image:image('allclear-award'),logo:image('allclear-logo'),layout:{x:.19,y:.34,w:.62,h:.36,ribbonY:.79,ribbonWidth:.40},onPaint:()=>{stats.allClearBadgePaints++;}}),
- describe:()=>({version:280,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:ART_FILES.map(name=>ART_ROOT+name+'.png'),errors:errors.slice(),
+ describe:()=>({version:283,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:ART_FILES.map(name=>ART_ROOT+name+'.png'),errors:errors.slice(),
   receipt:{...receipt},progressive:{units:Number(nodes.bank?.dataset.units)||0,targetUnits:Number(nodes.bank?.dataset.targetUnits)||0},
   removed:{count:Number(nodes.removedTotal?.dataset.count)||0,targetCount:Number(nodes.removedTotal?.dataset.targetCount)||0},
-  continuation:!!lastInfo?.continuationActive,batchSizes:(lastInfo?.batchSizes||[3,2,1,1,1]).slice(),receivedBalls:lastInfo?.receivedBalls||0,processedBalls:lastInfo?.processedBalls||0,
+  continuation:!!lastInfo?.continuationActive,batchSizes:(lastInfo?.batchSizes||batchSizes()).slice(),receivedBalls:lastInfo?.receivedBalls||0,processedBalls:lastInfo?.processedBalls||0,
   roles:JSON.parse(JSON.stringify(lastRows)),geometry:{...sixLayout(engine.rows||10)},...stats})};
 window.SixDropUiV278=api;
 api.ready=Promise.all(ART_FILES.map(name=>new Promise(resolve=>{

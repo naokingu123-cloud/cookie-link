@@ -1,3 +1,15 @@
+# v283 — 1球ごとの周囲消去・全消し表示の位置固定（2026-11-21）
+
+- Build: `20261121-v283-single-hit-and-fixed-sixdrop-layout`。公開前候補。前回のv282ソース `3d706b73db63bda4e12d7a10fa2f545f732e3ebe`（tree `c71411ce49fd9c9e14364ef3cbb46b405b0ce5c7`）を正確に復元して変更。
+- 新規Sixはrevision283。8球を1球ずつ処理し、HIT中心と隣接する最大6マスの実ドロップを消去する。盤面端・空きマスでは対象が減る。近傍消去は再帰的に広がらず、その後の落下・同色連結・役・全消し・補充は既存経路を使う。
+- 全消しロゴ・金額領域・WIN・継続を固定列へ変更。継続が非表示でも列を保持し、桁数・カウントアップ・リセットでラベルが移動しない。共通ゲーム枠390px、盤面領域312px、瓶290px＋消去数22pxへ統一。CUAでCookie/Gelato/Sixの枠が同寸、5→6桁の増加時もラベル座標不変、390px幅の収まりを確認。
+- 旧248/278/280の途中保存は旧ルールで完走し、次の新規ゲームのみ283。旧state/timeline/RNGの9証跡、全75位置の近傍検査、72ゲーム576単球、host/recorded/offline/Download/精算の検査成功。細目は [v283仕様](docs/sixdrop-v283.md)、[ルール記録](docs/qa-v283/sixdrop-v283-rules.json)、[host記録](docs/qa-v283/host-verification.json)。
+- **配当率の再較正は未実施。** 丸い役配当・消去1個0.05BET・全消し獲得後も原資を保持し自己0WINでリセットする規則を維持。新しい消去で従来較正の前提が変わる。16条件計4,096ゲームのpilotで、現行生成器・BET100・設定90・連続carry256ゲームは旧280の97.285%に対して新283は4,924.453%（通常372.070%＋全消し4,552.383%）を観測。短期観測で長期RTP推定ではないが、従来の50〜150%の設定実現を主張できない。穴/番号位置の補助を除く研究用変種でも約2,493.750%。原本は [P/O影響試算](docs/qa-v283/sixdrop-payout-impact-pilot.json)。盤面生成の再設計・再較正や配当/継続条件の変更は今回行っていない。
+- 前回の97音と音声制御を保持。新規ランタイム音源は追加しない。外部3D抽選機のクラウド読込は今回も失敗したためCUAは既存番号指定・仮CREDITのみで確認。Windows稼働サーバーの更新・再起動は未実施。`.runtime`・`.tools`・`data`を保持する。
+- 実ブラウザーCI・公開SHA照合はこれから実施。公開後に本節を検査runとcommit情報で更新する。
+
+---
+
 # v282 — Six Drop仕上げ・97種類のカジノ効果音（2026-11-20）
 
 - 公開ビルド: `20261120-v282-sixdrop-compact-long-amounts`。runtime main `7d81f7440eb73fb046f5a59b51f6f2d83b6508c1`、tree `e0c6d21ecd8cec5c823307ca0c34380a79796058`。v279までの変更を保持し、v280のSixとv281の音声を同梱した。Pages [44759128472](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759128472) のbuild/deploy成功、公開実画面も確認済み。[全体検証](docs/qa-v282/verification-summary.json)。

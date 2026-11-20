@@ -1,0 +1,35 @@
+{
+  "historicalSnapshots": 9,
+  "primaryPositions": 75,
+  "primaryAreaSizes": {
+    "3": 2,
+    "4": 10,
+    "5": 11,
+    "6": 8,
+    "7": 44
+  },
+  "overlapAndEmptyNeighbours": true,
+  "games": 72,
+  "steps": 576,
+  "positive": 56,
+  "zero": 16,
+  "allClears": 18,
+  "witnesses": {
+    "allClear": {
+      "seed": 10,
+      "win": 72934,
+      "clears": 1
+    },
+    "zero": {
+      "seed": 6,
+      "win": 0
+    }
+  },
+  "sourceSha256": {
+    "assets/sixdrop-progressive-core-v247.js": "2dfb35ae2e7a11a45d164b8700867548bb8f4f05da5fc872d5d8477e9c8e9a28",
+    "tests/sixdrop-v283-rules.cjs": "d532085d6c93a4e2e0e567ff2e30318cb7af22b6dc4e0cafbe4644f3cf4c8eb7",
+    "tests/sixdrop-v283-fixture.cjs": "aeb06b313cd698e3638b73f64d3a0ff3ba745c4fd1e95c7de5cc910828dc1e6f"
+  },
+  "command": "node tests/sixdrop-v283-rules.cjs",
+  "result": "PASS"
+}
