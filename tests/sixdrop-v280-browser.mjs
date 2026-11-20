@@ -1,5 +1,6 @@
-/* CI browser evidence for the v280 cabinet. One real eight-ball round, then
- * viewport/miniature checks of that same result. No public wallet is used. */
+/* CI browser evidence for the v280 cabinet. One real eight-ball round, with
+ * viewport/miniature checks between manual balls after a real all-clear.
+ * No public wallet is used, and the native result countdown is unchanged. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -16,12 +17,12 @@ const prior={version:247,bankUnits:12345678900,removed:99,feed:450,roundId:'qa-v
 let oracle;
 for(let seed=1;seed<=2000&&!oracle;seed++){
  const round=fullRound(seed,{bet,carry:prior,rulesRevision:280});
- if(round.state.allClears>0&&round.state.counts.line>=2)oracle=round;
+ if(round.state.allClears>0&&round.state.counts.line>=2&&round.plans.slice(0,-1).some(plan=>plan.allClear))oracle=round;
 }
 assert(oracle,'a natural revision-280 all-clear witness exists');
 const report={version,shard:0,shards:1,totalPlannedCases:cases.length,plannedCases:cases,caseResults:[],failures:[],screens:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[],scope:'One real local manual eight-ball round; current core oracle; PC/390px/mini; inherited and reset display; no public CREDIT',witness:{seed:oracle.seed,bet,numbers:NUMBERS,win:oracle.win,allClears:oracle.state.allClears}};
 const mime={'.html':'text/html','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.avif':'image/avif','.svg':'image/svg+xml','.wav':'audio/wav','.mp3':'audio/mpeg','.woff2':'font/woff2'};
-const bridge='\n;window.__qa280={app,slots,select,syncManualNumbers,scheduleUI,stopResultAuto,get active(){return active;},point:sixXY,rowWidth:sixRowWidth,backdrop:sixArtBackdrop,roleIcon:sixDrawRoleIcon};\n';
+const bridge='\n;window.__qa280={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;},point:sixXY,rowWidth:sixRowWidth,backdrop:sixArtBackdrop,roleIcon:sixDrawRoleIcon};\n';
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://127.0.0.1');
  if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/ws')){report.apiRequests.push(url.pathname);res.writeHead(451).end();return;}
@@ -33,13 +34,13 @@ server.listen(0,'127.0.0.1');await once(server,'listening');const base='http://1
 let browser,context,page,current;
 const processed=[0,0,0,3,3,5,6,7,8];
 async function shot(label){const name=label+'.png';await page.screenshot({path:path.join(output,name)});report.screens.push(name);return name;}
-async function checked(name,fn){current=name;const started=Date.now();await fn();report.caseResults.push({id:name,status:'passed',durationMs:Date.now()-started});console.log('SIXDROP_V280_BROWSER_CASE_PASS',name);}
+async function checked(name,fn){const parentCase=current;current=name;const started=Date.now();await fn();report.caseResults.push({id:name,status:'passed',durationMs:Date.now()-started});console.log('SIXDROP_V280_BROWSER_CASE_PASS',name);current=parentCase;}
 function snapshot(){
  const q=__qa280,e=SixDropV247.engine,box=node=>{if(!node)return null;const b=node.getBoundingClientRect();return {left:b.left,top:b.top,right:b.right,bottom:b.bottom,width:b.width,height:b.height};};
  const bank=document.getElementById('sd278-bank'),counter=document.getElementById('sd280-removed'),earned=document.getElementById('sd278-clear-earned');
  const pseudo=(selector,part)=>{const node=document.querySelector(selector);if(!node)return null;const s=getComputedStyle(node,part);return {display:s.display,content:s.content,background:s.backgroundImage,border:s.borderWidth,shadow:s.boxShadow};};
  return {state:e.state,engine:{processed:e.processed,running:e.running,busy:e.busy,phase:e.phase,drawMode:e.drawMode},info:SixDropV247.describeV278(),ui:SixDropUiV278.describe(),carry:SixDropV247.carry,
-  app:{phase:q.app.phase,draws:q.app.draws,roundWins:q.app.roundWins,totalWin:q.app.totalWin,credit:q.app.credit},
+  app:{phase:q.app.phase,token:q.app.token,draws:q.app.draws,roundWins:q.app.roundWins,totalWin:q.app.totalWin,credit:q.app.credit,displayCredit:q.app.displayCredit},
   layout:{bottle:box(document.querySelector('.sd278-bottle-art')),canvas:box(q.slots[2].candyCanvas),strip:box(document.querySelector('.sd278-progressive')),logo:box(document.querySelector('.sd278-bank-logo')),bank:box(bank),digits:box(bank.querySelector('.gold-number')),counter:box(counter),counterDigits:box(counter.querySelector('.gold-number')),counterValue:box(counter.querySelector('strong'))},
   bankText:bank.textContent,counterText:counter.querySelector('strong').textContent,receipt:{hidden:earned.hidden,count:Number(earned.dataset.count),win:Number(earned.dataset.win),box:box(earned),amount:box(earned.querySelector('.sd278-earned-win')),digits:box(earned.querySelector('.gold-number'))},
   batches:document.getElementById('sd278-batches')?.textContent||'',
@@ -132,6 +133,7 @@ try{
   await shot('desktop-ready');
  });
  await checked('desktop-round',async()=>{
+  const creditAtStart=await page.evaluate(()=>__qa280.app.credit);report.creditAtStart=creditAtStart;
   await page.locator('#manual-start').click();await page.waitForFunction(()=>__qa280.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout:45000});
   let view=await page.evaluate(snapshot);assert.deepEqual(view.state,oracle.initial);assertValues(view);assertLayout(view);await shot('desktop-filled-bottle');
   await page.evaluate(()=>{const q=__qa280;q.counterSamples=[];q.watchCounter=true;const tick=()=>{if(!q.watchCounter)return;const d=SixDropUiV278.describe(),e=SixDropV247.engine,last=q.counterSamples.at(-1),sample={displayed:d.removed.displayed,total:d.removed.total,bank:d.progressive.units,clears:e.state?.allClears||0,phase:e.fx?.phase||e.phase};if(!last||sample.displayed!==last.displayed||sample.total!==last.total||sample.clears!==last.clears)q.counterSamples.push(sample);requestAnimationFrame(tick);};requestAnimationFrame(tick);});
@@ -143,24 +145,34 @@ try{
    await page.waitForFunction(({balls,done})=>__qa280.app.draws.length===balls&&SixDropV247.engine.processed===done&&!SixDropV247.engine.busy&&!SixDropV247.engine.fx,{balls:i+1,done:processed[i+1]},{timeout:90000});
    if(closes){expected=plan.state;group++;}view=await page.evaluate(snapshot);
    assert.deepEqual(view.state,expected,'native board/RNG/payout state is unchanged at ball '+(i+1));assert.equal(view.engine.drawMode,'grouped');assertValues(view);assertLayout(view);
-   if(capture){await capture;clearCaptured=true;await shot('desktop-allclear-earned');}
+   if(capture){
+    await capture;clearCaptured=true;await shot('desktop-allclear-earned');
+    // At this real all-clear checkpoint the manual picker is waiting for the
+    // next ball. The board stays visible without a result modal or a timer
+    // override, while all following balls still run through the native game.
+    const checkpointBall=i+1;assert(checkpointBall<8);assert.equal(view.app.phase,'playing');
+    await checked('mobile-fit',async()=>{
+     await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.querySelector('.sd278-bottle-art').getBoundingClientRect().width<312);await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     const mobile=await page.evaluate(snapshot);assertValues(mobile);assertLayout(mobile);assert.equal(mobile.app.phase,'playing');assert.equal(mobile.app.draws.length,checkpointBall);assert.deepEqual(mobile.state,expected,'viewport fitting preserves the actual all-clear checkpoint');
+     report.mobile={checkpointBall,layout:mobile.layout,ui:mobile.ui,app:mobile.app};await shot('mobile-390-allclear-earned');
+    });
+    await checked('mini-result',async()=>{
+     await page.evaluate(()=>__qa280.select(3));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     const mini=await page.evaluate(snapshot);assert.equal(mini.app.phase,'playing');assert.equal(mini.app.draws.length,checkpointBall);assert.equal(mini.mini.hidden,false);assert(mini.mini.text.includes('全消し獲得'));assert(mini.mini.paints>0);assert.deepEqual(mini.state,expected,'mini selection preserves the actual all-clear checkpoint');
+     report.mini={checkpointBall,...mini.mini,receipt:mini.ui.receipt,removed:mini.ui.removed};await shot('mobile-390-mini-earned');
+    });
+    await page.setViewportSize({width:1366,height:900});await page.evaluate(()=>__qa280.select(2));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    const returned=await page.evaluate(snapshot);assert.equal(returned.app.phase,'playing');assert.deepEqual(returned.state,expected,'returning to the main board preserves the checkpoint before the remaining balls');assertLayout(returned);
+   }
   }
-  await page.waitForFunction(()=>__qa280.app.paid[2]&&!SixDropV247.engine.running,null,{timeout:45000});
-  // Keep this completed result on screen while inspecting its two layouts.
-  await page.evaluate(()=>__qa280.stopResultAuto());view=await page.evaluate(snapshot);assertValues(view);assertLayout(view);assert(clearCaptured);
+  await page.waitForFunction(()=>__qa280.app.phase==='complete'&&__qa280.app.paid[2]&&!SixDropV247.engine.running,null,{timeout:45000});
+  view=await page.evaluate(snapshot);assertValues(view);assertLayout(view);assert(clearCaptured);
   assert.equal(view.app.roundWins[2],oracle.win);assert.equal(view.app.totalWin,oracle.win);assert.equal(view.ui.removed.total,oracle.state.removedTotal);
+  assert.equal(view.app.credit,creditAtStart+oracle.win,'native local CREDIT receives the completed award exactly once');assert.equal(view.app.displayCredit,view.app.credit,'the native payout animation finishes at the credited amount');
   const carry=R.carryOut(oracle.state);for(const key of ['bankUnits','removed','feed'])assert.equal(view.carry[key],carry[key]);
   const samples=await page.evaluate(()=>{__qa280.watchCounter=false;return __qa280.counterSamples;});assert(samples.length>5);
   assert(samples.every((sample,i)=>!i||sample.displayed>=samples[i-1].displayed),'the count stays monotonic across real all-clears');assert(samples.some(sample=>sample.displayed>prior.removed&&sample.displayed<sample.total),'real removal events count through intermediate values');assert.equal(samples.at(-1).displayed,oracle.state.removedTotal);
   report.counterSamples=samples;report.result=view;await shot('desktop-completed');
- });
- await checked('mobile-fit',async()=>{
-  await page.setViewportSize({width:390,height:844});await page.waitForFunction(()=>document.querySelector('.sd278-bottle-art').getBoundingClientRect().width<312);await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-  const view=await page.evaluate(snapshot);assertValues(view);assertLayout(view);assert.deepEqual(view.state,oracle.state,'viewport fitting does not mutate the result');report.mobile=view.layout;await shot('mobile-390-completed');
- });
- await checked('mini-result',async()=>{
-  const before=await page.evaluate(()=>JSON.stringify(SixDropV247.engine.state));await page.evaluate(()=>__qa280.select(3));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-  const view=await page.evaluate(snapshot);assert.equal(view.mini.hidden,false);assert(view.mini.text.includes('全消し獲得'));assert(view.mini.paints>0);assert.equal(await page.evaluate(()=>JSON.stringify(SixDropV247.engine.state)),before,'mini selection preserves the settled state');report.mini=view.mini;await shot('mobile-390-mini-earned');
  });
  assert.equal(report.pageErrors.length,0);assert.equal(report.assetFailures.length,0);assert.equal(report.apiRequests.length,0);assert.equal(report.externalRequests.length,0);assert.equal(report.caseResults.length,cases.length);report.ok=true;
 }catch(error){
