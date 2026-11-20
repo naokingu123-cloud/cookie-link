@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v276-hit-and-roulette-polish-r2",
+  "version": "20261120-v277-illustrated-awards-and-sound",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 56,
-      "sha256": "935e1946673da9982db957ad18a45cba23a181bb421684bc959e3f9e4e0dc5ea"
+      "bytes": 58,
+      "sha256": "57325d213318953c6b4ef086c85c2877585b24c59c5295f2040eb82063b701fd"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -23,8 +23,8 @@
     },
     {
       "path": "assets/arcade-candy-sfx-v158.js",
-      "bytes": 4847,
-      "sha256": "cb2fedc0ba46ded6e4b73046b1ad2e9ff2a2a9507c4f2266bc31e15e1b43e4ec"
+      "bytes": 380,
+      "sha256": "ec1445a360b7fb2d22098321636048cd53711509c1f386692f4a5a3a98add39b"
     },
     {
       "path": "assets/arcade-candy-world-v156.css",
@@ -44,7 +44,7 @@
     {
       "path": "assets/arcade-candy-world-v157.js",
       "bytes": 1072,
-      "sha256": "9f02d4d27c48fe86e29b53b97188f307f25fec024f16c3bbf09a09c607b81de1"
+      "sha256": "730dd66588e2575562522d20cab7402012663cebdec3b9c999eb7fb3dd30223b"
     },
     {
       "path": "assets/arcade-candy-world-v158.css",
@@ -53,8 +53,8 @@
     },
     {
       "path": "assets/arcade-candy-world-v158.js",
-      "bytes": 15553,
-      "sha256": "67cef05e43800dff603969f4d3ded2756b064717371ad421f198eec82019e729"
+      "bytes": 15768,
+      "sha256": "be59ab92fb1f5df987a5273874373f5095bbec02e600a5f84c852a5db3592e2b"
     },
     {
       "path": "assets/arcade-show-v91.css",
@@ -175,6 +175,216 @@
       "path": "assets/audio/bgm-loops.json",
       "bytes": 5819,
       "sha256": "8116ac846372a9460e98ef89b0e15d011013957aaf0859b15fff858e71928d53"
+    },
+    {
+      "path": "assets/audio/celebration-v277/arrival.wav",
+      "bytes": 68840,
+      "sha256": "bcc9be31ca262ce04c2dc7e7f2c9cfaf0726c33c76ed3bf24948f2c90973e82f"
+    },
+    {
+      "path": "assets/audio/celebration-v277/award-1.wav",
+      "bytes": 261116,
+      "sha256": "76e5645c0ef480de5b3d661561bb0fae240132bea2fdccd2b6330a1d75b63632"
+    },
+    {
+      "path": "assets/audio/celebration-v277/award-2.wav",
+      "bytes": 375776,
+      "sha256": "95062c36302708369cbcb17f350872e4ad192c3d94e1278d468ebebb0a329195"
+    },
+    {
+      "path": "assets/audio/celebration-v277/award-3.wav",
+      "bytes": 501020,
+      "sha256": "a8d12adf0b0183e8455e0c3139aea0a2c25067085d07c112b5c560515de09c6f"
+    },
+    {
+      "path": "assets/audio/celebration-v277/award-4.wav",
+      "bytes": 649196,
+      "sha256": "5eab182c87b5261f7f1899ef0d7aa31863244ada5b8f02937b6c8f3a0ca66987"
+    },
+    {
+      "path": "assets/audio/celebration-v277/chain.wav",
+      "bytes": 104120,
+      "sha256": "b79153d71e6e802072bbdc62b3c7e91b5dfb7cc31f8ce4c9684d5b054e66644c"
+    },
+    {
+      "path": "assets/audio/celebration-v277/confirm.wav",
+      "bytes": 63548,
+      "sha256": "14ed64af97cee8326819b885632bc184eda8ce53a00fbbe29a92ca938304d684"
+    },
+    {
+      "path": "assets/audio/celebration-v277/count-done.wav",
+      "bytes": 155276,
+      "sha256": "a6c8d678eb56c7124dde5764c8ae700cf052ea284940abc53505a4b427504974"
+    },
+    {
+      "path": "assets/audio/celebration-v277/count.wav",
+      "bytes": 33560,
+      "sha256": "e8e7e94ef5595e683d97b8bd6eda8f21cdf99e32c9fcca05485732ccef59e329"
+    },
+    {
+      "path": "assets/audio/celebration-v277/drill.wav",
+      "bytes": 97064,
+      "sha256": "a71e4a49797f048c9e10139f3b40782ac01ffee9b323b3b43c0a50f9ddc7b570"
+    },
+    {
+      "path": "assets/audio/celebration-v277/drop.wav",
+      "bytes": 109412,
+      "sha256": "72e37a6f6eef4e50f2510857191f43bdb4245c3534cf9987bde4d31f304b40c4"
+    },
+    {
+      "path": "assets/audio/celebration-v277/finish.wav",
+      "bytes": 165860,
+      "sha256": "de31b0f6e8e8ac0f36426c40d0754808d27beba8f01da68d75f6c90b6c2e2d59"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hammer-impact.wav",
+      "bytes": 155276,
+      "sha256": "2f3c1c684400e75cec245a59f805b067bb93f8091fae958d3629545d2d2b6d3b"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hammer-launch.wav",
+      "bytes": 123524,
+      "sha256": "6c5c25d6b0e7090ada2ac209df89d0f65a24318c85d7c00c45ca39d9d283faf8"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-candy.wav",
+      "bytes": 82952,
+      "sha256": "afcd1797a538048794178d46721c7139bbe3be8797f7f675276af4a2bdb32596"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-canyon.wav",
+      "bytes": 77660,
+      "sha256": "af0eba3d63f9ca48a1bbd4ca2443e470a2ec650107d6e67129d0e6f65186df9c"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-castella.wav",
+      "bytes": 70604,
+      "sha256": "7e6f9d86e7745e31fa3cc2a18d654605abced2581b9d92a519f2e720bfd11c99"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-cookie.wav",
+      "bytes": 67076,
+      "sha256": "7d7bf64f6cfa28099ea086c3534849e7ed87b80d7198eeb2db141cf441a2f7e4"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-dango.wav",
+      "bytes": 74132,
+      "sha256": "4fb7cf60f053a97c5d99c0ffd5523949be49ec1838855385b1fed2725fe5a290"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-popcorn.wav",
+      "bytes": 60020,
+      "sha256": "a4077b5cb3dd3c92ef972e1bf01b5dc1384508add79d3b1e90430275a23c82f2"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-prism.wav",
+      "bytes": 91772,
+      "sha256": "0872e51ee6cb2b14f4c9a7bc857bf75298ab7cefb94ed0e18b5c666b4b868e44"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-waffle.wav",
+      "bytes": 58256,
+      "sha256": "b12f78b5f431b66824cff9f08b2d6d484891229300558375edc24393b546647a"
+    },
+    {
+      "path": "assets/audio/celebration-v277/hit-water.wav",
+      "bytes": 81188,
+      "sha256": "8f82d6258a99aae4548c3d894cc1f23cad7b892fc413bd6d5d542fc8001d6c11"
+    },
+    {
+      "path": "assets/audio/celebration-v277/jpc-qualified.wav",
+      "bytes": 437516,
+      "sha256": "136f7187aa9f5d5bf62c27bb62354ed6ad0dd3d35a83315a12be9e0f323ac974"
+    },
+    {
+      "path": "assets/audio/celebration-v277/land.wav",
+      "bytes": 77660,
+      "sha256": "64c15f14d7caa6425a3e9e31f3e2f19388be885630447654b67a781403cf100c"
+    },
+    {
+      "path": "assets/audio/celebration-v277/launch.wav",
+      "bytes": 165860,
+      "sha256": "9b1795e24872ea0f526fdbccb00a66df88aad55e688c33d5b869c8c3ed5f8f4c"
+    },
+    {
+      "path": "assets/audio/celebration-v277/level.wav",
+      "bytes": 176444,
+      "sha256": "36d24ab21f1a2585d9ff8b6135222bc523eb64abd63d913b29bdcf295c09a4c7"
+    },
+    {
+      "path": "assets/audio/celebration-v277/manifest.json",
+      "bytes": 12907,
+      "sha256": "d6ce7db29eefa7fa12272092f0913e3e7fa492d8be4feb2e150e8830f9d8fa59"
+    },
+    {
+      "path": "assets/audio/celebration-v277/melt.wav",
+      "bytes": 116468,
+      "sha256": "86c930a6d9b8d1e0a3bd2d868ac4d29930f2324d4b5ce5c831dd544b6ad6c37c"
+    },
+    {
+      "path": "assets/audio/celebration-v277/miss.wav",
+      "bytes": 90008,
+      "sha256": "0c9adc3004a7db1560bcc8aa1e25efb4c035863ef6a782e641935a0b6d1ac89a"
+    },
+    {
+      "path": "assets/audio/celebration-v277/multiplier.wav",
+      "bytes": 215252,
+      "sha256": "22ebeefa1bf5785c7f389869bb764b3f648406951f3fc322f3fbd34d59eefbfe"
+    },
+    {
+      "path": "assets/audio/celebration-v277/ore.wav",
+      "bytes": 114704,
+      "sha256": "c0bc6bd51373609ec4f48e7f056ce0190c2364e5baee4535f60e8ad0559a2420"
+    },
+    {
+      "path": "assets/audio/celebration-v277/reach-high.wav",
+      "bytes": 276992,
+      "sha256": "fea3171a586185b177013095b739eb4d95dc76ccdb3b7ebcb801ccbef0956a3c"
+    },
+    {
+      "path": "assets/audio/celebration-v277/reach.wav",
+      "bytes": 165860,
+      "sha256": "e1f05ac102a7fe039313e4a71de9eda9fdf1b97799a2ffafa6eebeacfa4ffd4f"
+    },
+    {
+      "path": "assets/audio/celebration-v277/refill.wav",
+      "bytes": 130580,
+      "sha256": "10a40fe48f18bfc4ccd8097a42f6afa93be037d2bc5f3d5ff45afbfd81500b4b"
+    },
+    {
+      "path": "assets/audio/celebration-v277/round.wav",
+      "bytes": 204668,
+      "sha256": "3d0352f478504f022c9eae8534fe342d72a084b62f151bdcdab2573282833907"
+    },
+    {
+      "path": "assets/audio/celebration-v277/scroll.wav",
+      "bytes": 102356,
+      "sha256": "b9c987022be5145e92e246ae1d042c4765b99032e2b90b30dee7bb934d58fb59"
+    },
+    {
+      "path": "assets/audio/celebration-v277/sugar.wav",
+      "bytes": 208196,
+      "sha256": "46e02b60702d9fa3c4463b2f9ecba4a85a8408110b464e5d1dae3e7ef1ee087f"
+    },
+    {
+      "path": "assets/audio/celebration-v277/sweep.wav",
+      "bytes": 146456,
+      "sha256": "3c95ef5b7e70c9585f99e630eeae89293f07d6ce32a91afe74341e20e7d45814"
+    },
+    {
+      "path": "assets/audio/celebration-v277/transfer.wav",
+      "bytes": 105884,
+      "sha256": "0a64a378587be0bc8d33f668e2531aa8bbf1a736354b579d204a439e99f448b3"
+    },
+    {
+      "path": "assets/audio/celebration-v277/transform.wav",
+      "bytes": 164096,
+      "sha256": "969171c91de6d349055e183b00e3410db9c94be3f178989a9a0d466ae5b74391"
+    },
+    {
+      "path": "assets/audio/celebration-v277/ui.wav",
+      "bytes": 35324,
+      "sha256": "66f35379b5d8e4e4a96a244cdf2ebf49566fd52d3d7f968f36d2bed764053965"
     },
     {
       "path": "assets/audio/jpc-1.mp3",
@@ -882,6 +1092,16 @@
       "sha256": "7cef796cf47e377062ac8572c9fc1b840538c6955b2f6ec48415928ed4b3d2dc"
     },
     {
+      "path": "assets/award-presentation-v277.css",
+      "bytes": 1928,
+      "sha256": "b68220ba666a63ab3736df2053138f53af2caebfd9a5ef15c0bdcc4b4518ef96"
+    },
+    {
+      "path": "assets/award-presentation-v277.js",
+      "bytes": 31280,
+      "sha256": "c9913f2a1ec399d18547d05ec158768b0759d0d4958e61f64c98536f2b5058ed"
+    },
+    {
       "path": "assets/bgm-player.js",
       "bytes": 5723,
       "sha256": "a6033794e8bcb9e0b0120855f9b01719ea9808f1609d153b0c4b946536e93a3a"
@@ -1132,6 +1352,46 @@
       "sha256": "c1d2c358706cd7e5504c0331c749dfb44ab44ee29badd36098315c1daaf82793"
     },
     {
+      "path": "assets/celebration-art-v277.js",
+      "bytes": 2636,
+      "sha256": "644b17ada5a38d56aebb18b0600400a2231263793ab040358880a846c481d09f"
+    },
+    {
+      "path": "assets/celebration-art-v277/award-high.png",
+      "bytes": 2236635,
+      "sha256": "53e45209cd12c39c1b50fccd2fd71dc361a14c2a37a6d342cc9ea84bbacd89a0"
+    },
+    {
+      "path": "assets/celebration-art-v277/award-highest.png",
+      "bytes": 2936331,
+      "sha256": "611592e79fbb05670a960ba98e3383d40535e84d6f570f72aa9368fadb1df31d"
+    },
+    {
+      "path": "assets/celebration-art-v277/award-normal.png",
+      "bytes": 2008530,
+      "sha256": "1d73a6323c1ae44f01337a0da5e8bb814cf2968a6bb23fbc3a32b2df76ae8e87"
+    },
+    {
+      "path": "assets/celebration-art-v277/award-super.png",
+      "bytes": 2386028,
+      "sha256": "864afa3b2ebb5b1270af57bba8d3cd9a3ddb93be86481d40860bf398e3e3045f"
+    },
+    {
+      "path": "assets/celebration-art-v277/line-ornament.png",
+      "bytes": 1086044,
+      "sha256": "881d9a41232329b00d86ca7e5bc4c911f9979805b4304ed008fdea3052af14e4"
+    },
+    {
+      "path": "assets/celebration-art-v277/provenance.json",
+      "bytes": 10199,
+      "sha256": "a91481324d6e94cd49e51b613a8667ead30ae5ef2aeb87f59401dd04891f88c6"
+    },
+    {
+      "path": "assets/celebration-audio-v277.js",
+      "bytes": 18403,
+      "sha256": "14c5ee1b2aed3969991389b714cdf90d169c3ded78020d103191c28cc1ea2111"
+    },
+    {
       "path": "assets/choco-dig.css",
       "bytes": 2123,
       "sha256": "71b8bbc51468bb7f3bda570b87e6a7d21b589fd0f7fd4cd15c008941c98906c7"
@@ -1293,8 +1553,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4366,
-      "sha256": "60b78343f1e711aea59e16de51f0b20137a9c7dc174b76ca44a2727b4bc467ee"
+      "bytes": 4368,
+      "sha256": "18bcb9c4b69a1c729b93048b7f6232c0176cc85cbb45fef9327b6f6465d33508"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1318,8 +1578,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3777,
-      "sha256": "c7c9e16850634ee290c8536ce4c06ba2ff78d12538d1f3f364d697ceb6ebebb5"
+      "bytes": 3779,
+      "sha256": "77bfeb9715d1a6dff7e54d63127fa5d8e6a26a8383c6c9a878e06941568905ce"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1329,7 +1589,7 @@
     {
       "path": "assets/game-menu-v91.js",
       "bytes": 8496,
-      "sha256": "660a7a3ec51ed7b945d7d201abe8a0a91831f1a409764e946110afba726e0e01"
+      "sha256": "cb176598371f05ea87c6bb3a74824b0b457cca7376b7425ea2250c8d825c2e7f"
     },
     {
       "path": "assets/game-titles-v91.js",
@@ -1458,8 +1718,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 71340,
-      "sha256": "7465f6b4e1f1cffe498761b9a0d80299ca414245d9b3c1f354359d4c982ad545"
+      "bytes": 71560,
+      "sha256": "495724ca004294c1abc30efaf6831e0ebb78bbcf550badca911479185465ba61"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -2593,8 +2853,8 @@
     },
     {
       "path": "assets/sugar-challenge-v254.js",
-      "bytes": 26656,
-      "sha256": "6073f368f0c5b15303d05691bb5d7e136ef6389bae2a29bf65857affceb135e6"
+      "bytes": 26831,
+      "sha256": "5444a44f33dd1beb1bc57ce4b3479005df78c158a37a7390f193bf74f2c41bd3"
     },
     {
       "path": "assets/sugar-five-candy-frame.svg",
@@ -3178,8 +3438,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85230,
-      "sha256": "d66c1c7976d22e8c3256e60a39cca7acae1eede36caf9836585fc33c69606ab0"
+      "bytes": 85492,
+      "sha256": "26763c1a8d716bf85b1b57df33d0eba1dc7a35d891452a179dac10d54e5e770d"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3417,5 +3677,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 172471340
+  "totalBytes": 189660244
 }

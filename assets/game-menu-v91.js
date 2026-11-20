@@ -135,7 +135,7 @@ renderRoundResult=function(a){
  }
  const scripts=[
   ['arcade-candy-world-v156-js','assets/arcade-candy-world-v156.js?v=156'],
-  ['arcade-candy-world-v157-js','assets/arcade-candy-world-v157.js?v=160']
+  ['arcade-candy-world-v157-js','assets/arcade-candy-world-v157.js?v=277']
  ];
  for(const [id,src] of scripts){
   if(document.getElementById(id))continue;
