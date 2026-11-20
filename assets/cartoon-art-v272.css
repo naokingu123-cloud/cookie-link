@@ -67,6 +67,18 @@ html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen #odds-panel::befo
 }
 html.cartoon-art-v272.arcade-v249 #screen #odds-panel :is(.hammer-prize,.link-pay-window){background:#261a33!important;box-shadow:none!important}
 html.cartoon-art-v272.arcade-v249 .ds91-lesson{background-color:var(--v272-pale)!important;border-color:var(--v272-ink)!important}
+html.cartoon-art-v272 .ds91-field>.ds139-story{
+ --lesson-bg:none;--lesson-glow:var(--v272-pale);--lesson-dark:var(--v272-base);
+ background:var(--v272-base)!important;border-color:var(--v272-ink)!important;
+}
+html.cartoon-art-v272 .ds139-story::before{
+ background:radial-gradient(circle at 8px 8px,#fff2 0 2px,transparent 2.5px),linear-gradient(155deg,var(--v272-base),#40243f)!important;
+ background-size:24px 24px,100% 100%!important;
+}
+html.cartoon-art-v272 .ds139-story::after{
+ content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+ border:8px solid transparent;border-image-source:var(--v272-frame);border-image-slice:var(--v272-slice);border-image-width:8px;
+}
 html.cartoon-art-v272 .sc254-overlay{
  background:#40234f!important;border-color:#49264f!important;
  border-image-source:var(--v272-frame-cookie)!important;border-image-slice:var(--v272-frame-slice-cookie)!important;
@@ -81,5 +93,6 @@ html.cartoon-art-v272 .sc254-jp{background:#23172f!important;border-color:#f5c77
 @media(forced-colors:active){
  html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen>.game::before,
  html.cartoon-art-v272.arcade-v249 #screen #tabs>.tab-slot>.all-tab-frame-overlay,
- html.cartoon-art-v272.arcade-v249 #screen #odds-panel::before{display:none!important}
+ html.cartoon-art-v272.arcade-v249 #screen #odds-panel::before,
+ html.cartoon-art-v272 .ds139-story::after{display:none!important}
 }

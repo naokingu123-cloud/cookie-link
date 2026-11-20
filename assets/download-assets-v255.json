@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v272-cartoon-game-art",
+  "version": "20261120-v273-cartoon-game-art",
   "files": [
     {
       "path": "app-version.json",
       "bytes": 46,
-      "sha256": "443e6ea4b7db89102da6494f9b65f7d221b5e9b2a81584583fa1902a9387dfd2"
+      "sha256": "a682a8577889f8e480e8f7ef2470416f2e58cbd98b652ccc1142805785013770"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1073,8 +1073,8 @@
     },
     {
       "path": "assets/cartoon-art-v272.css",
-      "bytes": 8195,
-      "sha256": "5148b08ac972e2d998a12c8a06dad849ace18fd9f107e488a7f650d4d0aa5951"
+      "bytes": 8923,
+      "sha256": "7622a8b56221c3e96b26e5530a947cec0f8689a9993c93526f46095be5572f1f"
     },
     {
       "path": "assets/cartoon-art-v272.js",
@@ -1128,8 +1128,8 @@
     },
     {
       "path": "assets/castella-lesson.js",
-      "bytes": 7538,
-      "sha256": "39fe6ad38e915ab35bc4bbfb5cbd2619b66190bf613c6984e0ed01bb8cb888ad"
+      "bytes": 8451,
+      "sha256": "148edad9c348fba99b45d183bd9a39dd4c7666a9a8ef472e6247becda0c51526"
     },
     {
       "path": "assets/choco-dig.css",
@@ -1288,13 +1288,13 @@
     },
     {
       "path": "assets/demo-suite-v91.js",
-      "bytes": 18903,
-      "sha256": "965a28401554d245a74bdcfd561d7e52ad1534b1fd91693450df946d51bc4511"
+      "bytes": 20196,
+      "sha256": "4d0391fd44125658a5faa098f706a06be2ec4d6f15b63fa062646d68d85aa4e4"
     },
     {
       "path": "assets/download-cache-v255.js",
       "bytes": 4356,
-      "sha256": "dbb3e791fd193438570029bb9966192f7efcc899d8b4d92c6be83d5441500294"
+      "sha256": "b376f0fdf3a0bcdd71acd14c4aedb07e953c61a8239d199c0f84c8ee7273142c"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1319,7 +1319,7 @@
     {
       "path": "assets/edition-choice-v255.js",
       "bytes": 3767,
-      "sha256": "35f65566c02eb65fefc4e89525b1b1533a0991479ad2933fa522e64789642109"
+      "sha256": "58bbdc2f95c4721abdcdddd9003146eb64b6767f7f5eaa16d4c3051553d63b05"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1503,8 +1503,8 @@
     },
     {
       "path": "assets/jelly-lesson.js",
-      "bytes": 6659,
-      "sha256": "d525f2fccda159e48a1827329bd0591122e37d40264a59a8eaeacc7804cc74ba"
+      "bytes": 8300,
+      "sha256": "987e6ec59fbb3bcde3c57b01ab547bdad40d9e6ed1998e3a8ae5a88c7983d9c8"
     },
     {
       "path": "assets/jelly-rules.js",
@@ -1758,8 +1758,8 @@
     },
     {
       "path": "assets/popcorn-view.js",
-      "bytes": 65575,
-      "sha256": "36c5df9234031100f0e7e56a963f624ffe7587205065157077bbb8288e053648"
+      "bytes": 65897,
+      "sha256": "99634354a5d5383124f6d247f94f479e2f145007adbc193e413bcbcfa35a68bb"
     },
     {
       "path": "assets/popcorn.css",
@@ -2793,8 +2793,8 @@
     },
     {
       "path": "assets/waffle-lesson.js",
-      "bytes": 6611,
-      "sha256": "2e69f697b80736077de2e5bc9de068a4fbe72cde679ad8311541adbdaeb19c41"
+      "bytes": 7001,
+      "sha256": "4c14f647a7b242d0a967ccc05264e7c3b88ab6ae013e236c1a3b1d7fc897e5a4"
     },
     {
       "path": "assets/waffle-ogura.webp",
@@ -3079,7 +3079,7 @@
     {
       "path": "index.html",
       "bytes": 84884,
-      "sha256": "e1b241222d73636811ac3cf3c8326725d0ab8773afd4ca95c0955b0b07ead9af"
+      "sha256": "ec97293f0a32491bfe06aa82096ab17ba0801f6a4677fc68d36fac9da202006d"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3317,5 +3317,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 150252853
+  "totalBytes": 150258140
 }

@@ -5,6 +5,12 @@ const font='"Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif'
 const files={black:'waffle-reversi-ogura-v128.png',white:'waffle-reversi-butter-v128.png',wafer:'waffle-tier.webp',rail:'waffle-turn-rail.webp'};
 const images={};
 function sprite(c,key,x,y,w,h){
+ const cartoon=window.SweetsCartoonArt;
+ if(cartoon?.loaded){
+  if(key==='black'||key==='white')return cartoon.draw(c,'waffle-'+key,x,y,w,h);
+  box(c,x,y,w,h,Math.min(w,h)*.24,key==='rail'?'#e89cb5':'#e9b563');
+  return cartoon.frame(c,'stick',x,y,w,h,Math.min(w,h)*.22);
+ }
  let im=images[key];if(!im){im=images[key]=new Image();im.decoding='async';im.src='assets/'+files[key];}
  if(!im.complete||!im.naturalWidth)return false;
  c.drawImage(im,x,y,w,h);return true;
@@ -29,8 +35,12 @@ function stone(c,color,x,y,size){
  else box(c,x-size*.34,y-size*.32,size*.68,size*.64,8,'#ffe9a0','#b8853a');
 }
 function pocket(c,x,y,size,num){
- const r=size/2;box(c,x-r,y-r,size,size,8,'#c97f37','#f4bc6e',2);
- box(c,x-r+3,y-r+3,size-6,size-6,6,'#df9b50','#945624',2);
+ const r=size/2,cartoon=window.SweetsCartoonArt;
+ if(cartoon?.loaded)cartoon.draw(c,'waffle-cell',x-r,y-r,size,size);
+ else{
+  box(c,x-r,y-r,size,size,8,'#c97f37','#f4bc6e',2);
+  box(c,x-r+3,y-r+3,size-6,size-6,6,'#df9b50','#945624',2);
+ }
  if(num!=null)label(c,num,x,y+1,size*.52,'#5d301c',size-8,950);
 }
 function ball(c,x,y,n){

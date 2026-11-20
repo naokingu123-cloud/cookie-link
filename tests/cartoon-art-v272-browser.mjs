@@ -142,8 +142,15 @@ function inspectSurface(){
  }
  const inspectCanvas=cv=>({className:cv.className,width:cv.width,height:cv.height,bounds:rect(cv),visible:visible(cv),label:cv.getAttribute('aria-label')||'',...pixels(cv),...observer.inspect(cv)});
  const selectors={choco:'.choco-canvas',candy:'.carnival-canvas',gelato:'.gp-raster-board',winery:'.wp-canvas',popcorn:'.pc-scene',jelly:'.jb-scene',stick:'.bs-grid canvas',castella:'.pct-pan>canvas',dango:'.dgb-pan>canvas'};
- const mainCanvases=kind==='cookie'?[slot.betCanvas].filter(cv=>cv&&visible(cv)):[slot.panel.querySelector(selectors[kind])].filter(Boolean);
- const main=mainCanvases.map(inspectCanvas),cookieImages=kind==='cookie'?[...slot.board.querySelectorAll('.cookie-face')].filter(visible).map(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.naturalWidth,height:img.naturalHeight,bounds:rect(img),...observer.image(img)})):[];
+ // BET explanations sit above #panels and deliberately stop the classic
+ // underlay's draw loop. Inspect the actual foreground, never an occluded
+ // native board or Cookie DOM tiles that happen to retain earlier pixels.
+ const field=document.querySelector('#panels').closest('.field');
+ const lessonLayers=[...field.querySelectorAll(':scope > .ds91-lesson, :scope > .ds139-story')].filter(visible);
+ const primary={mode:lessonLayers.length?(lessonLayers[0].matches('canvas')?'ready-lesson':'ready-story'):'board',lessons:lessonLayers.map(layer=>({game:layer.dataset.game,type:layer.className,background:getComputedStyle(layer,'::before').backgroundImage})),demo:window.SweetsDemoSuite?.status||null};
+ const nativeCanvases=kind==='cookie'?[slot.betCanvas].filter(cv=>cv&&visible(cv)):[slot.panel.querySelector(selectors[kind])].filter(Boolean);
+ const mainCanvases=lessonLayers.length?lessonLayers.map(layer=>layer.matches('canvas')?layer:layer.querySelector('.ds139-stage>canvas')).filter(Boolean):nativeCanvases;
+ const main=mainCanvases.map(inspectCanvas),cookieImages=!lessonLayers.length&&kind==='cookie'?[...slot.board.querySelectorAll('.cookie-face')].filter(visible).map(img=>({loaded:img.complete&&img.naturalWidth>0,width:img.naturalWidth,height:img.naturalHeight,bounds:rect(img),...observer.image(img)})):[];
  const miniatures=q.slots.filter(s=>s.i!==q.active&&!s.holder.hidden).map(s=>{
   const candidates=[...new Set([s.miniCanvas,...s.tab.querySelectorAll('.mini-wrap canvas')])].filter(cv=>cv&&visible(cv));
   return {game:s.holder.dataset.gameKind||s.engine.kind||'cookie',canvases:candidates.map(inspectCanvas)};
@@ -156,7 +163,7 @@ function inspectSurface(){
   geometry.candy={layout:q.sixLayout(rows),centers:grid.flatMap((row,r)=>row.map((_,c)=>q.sixXY(r,c,rows)))};
  }
  const payoutNodes=[...slot.panel.querySelectorAll('.gold-number,.sd247-next,.sd247-subtotal,.pct-win-value')].filter(visible);
- return {kind,active:q.active,phase:q.app.phase,selected:q.slots.filter(s=>s.tab.getAttribute('aria-selected')==='true').map(s=>s.i),visiblePanels:q.slots.filter(s=>!s.panel.hidden).map(s=>s.i),main,cookieImages,miniatures,geometry,layout:{width:innerWidth,height:innerHeight,documentWidth:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),game,panel,primaryOutsideGame:main.filter(c=>c.visible&&(c.bounds.left<game.left-2||c.bounds.right>game.right+2||c.bounds.top<game.top-2||c.bounds.bottom>game.bottom+2)).map(c=>c.className)},payoutText:payoutNodes.map(n=>n.textContent),classes:{shared:document.documentElement.classList.contains('cartoon-art-v272'),a:document.documentElement.classList.contains('cartoon-boards-a-v272'),b:document.documentElement.classList.contains('cartoon-boards-b-v272'),c:document.documentElement.classList.contains('cartoon-boards-c-v272')}};
+ return {kind,active:q.active,phase:q.app.phase,selected:q.slots.filter(s=>s.tab.getAttribute('aria-selected')==='true').map(s=>s.i),visiblePanels:q.slots.filter(s=>!s.panel.hidden).map(s=>s.i),primary,main,cookieImages,miniatures,geometry,layout:{width:innerWidth,height:innerHeight,documentWidth:Math.max(document.documentElement.scrollWidth,document.body.scrollWidth),game,panel,primaryOutsideGame:main.filter(c=>c.visible&&(c.bounds.left<game.left-2||c.bounds.right>game.right+2||c.bounds.top<game.top-2||c.bounds.bottom>game.bottom+2)).map(c=>c.className)},payoutText:payoutNodes.map(n=>n.textContent),classes:{shared:document.documentElement.classList.contains('cartoon-art-v272'),a:document.documentElement.classList.contains('cartoon-boards-a-v272'),b:document.documentElement.classList.contains('cartoon-boards-b-v272'),c:document.documentElement.classList.contains('cartoon-boards-c-v272')}};
 }
 
 async function select(index){
@@ -166,6 +173,12 @@ async function select(index){
 }
 function assertPainted(surface,label){
  const match=names=>names.some(name=>name.startsWith(family[surface.kind]));
+ if(surface.primary.mode!=='board'){
+  assert.equal(surface.phase,'ready',label+': a lesson only covers a ready board');
+  assert.deepEqual(surface.primary.lessons.map(lesson=>lesson.game),[surface.kind],label+': the sole foreground lesson belongs to the selected game');
+  assert.ok(surface.primary.lessons.every(lesson=>!lesson.background.includes('url(')),label+': lesson background uses flat illustration colors, with no legacy backdrop');
+ }
+ if(surface.phase==='ready'&&surface.primary.demo?.active)assert.notEqual(surface.primary.mode,'board',label+': the active lesson is the inspected primary surface');
  const canvasPainted=surface.main.some(c=>c.visible&&c.opaque>60&&c.colors>8&&match(c.assets));
  const domPainted=surface.cookieImages.length>0&&surface.cookieImages.every(img=>img.loaded&&match(img.assets));
  assert.ok(canvasPainted||domPainted,label+': visible generated pieces in the primary board');

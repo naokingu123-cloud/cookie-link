@@ -13,6 +13,10 @@ on:
       - 'assets/bingo-stick-view.js'
       - 'assets/party-castella.js'
       - 'assets/dango-bingo-view.js'
+      - 'assets/demo-suite-v91.js'
+      - 'assets/jelly-lesson.js'
+      - 'assets/waffle-lesson.js'
+      - 'assets/castella-lesson.js'
       - 'assets/download-assets-v255.json'
       - 'index.html'
       - 'app-version.json'
@@ -36,6 +40,10 @@ jobs:
           node --check assets/cartoon-boards-a-v272.js
           node --check assets/cartoon-boards-b-v272.js
           node --check assets/cartoon-boards-c-v272.js
+          node --check assets/demo-suite-v91.js
+          node --check assets/jelly-lesson.js
+          node --check assets/waffle-lesson.js
+          node --check assets/castella-lesson.js
           npm run check
           npm run test:payout
           npm run test:sugar

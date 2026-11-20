@@ -22,6 +22,7 @@ const unit=(t,a,b)=>Math.min(1,Math.max(0,(t-a)/(b-a)));
 const smooth=(t,a,b)=>{const x=unit(t,a,b);return x*x*(3-2*x);};
 let art,faces;
 function loadArt(){
+ if(window.SweetsCartoonArt?.loaded)return;
  if(!art){
   art={};
   for(const [key,file] of Object.entries({tiles:'tiles',pan:'honey-griddle',bottle:'dispenser'})){
@@ -56,11 +57,18 @@ function gauge(c,kind,level,x,y){
  for(let i=0;i<3;i++)box(c,x+i*20,y-7,16,14,3,i<level?(kind==='pour'?'#79e8f6':'#ffc164'):'#41332d');
 }
 function well(c,x,y,r,state){
- disc(c,x,y+2,r+1,'#331d19');
- if(faces)c.drawImage(faces[state],x-r,y-r,r*2,r*2);
+ const cartoon=window.SweetsCartoonArt;
+ disc(c,x,y+2,r+1,cartoon?.loaded?'#87452c':'#331d19');
+ if(cartoon?.loaded)cartoon.draw(c,['castella-hole','castella-raw','castella-baked'][state],x-r,y-r,r*2,r*2);
+ else if(faces)c.drawImage(faces[state],x-r,y-r,r*2,r*2);
  else disc(c,x,y,r,['#192426','#ffcf69','#bf6b2a'][state]);
 }
 function plate(c,x,y,w,h){
+ const cartoon=window.SweetsCartoonArt;
+ if(cartoon?.loaded){
+  box(c,x-2,y-2,w+4,h+5,24,'#87452c');box(c,x,y,w,h,23,'#e49b3b');
+  cartoon.frame(c,'castella',x,y,w,h,Math.min(w,h)*.10);return;
+ }
  box(c,x-2,y-2,w+4,h+5,24,'#703e29');box(c,x,y,w,h,23,'#da9551');
  box(c,x+3,y+3,w-6,h-6,20,'#885031');
  if(art.pan.naturalWidth){
@@ -86,7 +94,13 @@ function pour(c,t){
  }
  if(t<.84){
   c.save();c.globalAlpha=approach*(1-leave);
-  if(art.bottle.naturalWidth){
+  const cartoon=window.SweetsCartoonArt;
+  if(cartoon?.loaded){
+   // Match the live board's generated bottle: the upper-center nozzle stays
+   // anchored to the existing jet origin throughout the unchanged approach.
+   const image=cartoon.sprite('castella-dispenser'),w=91*.66,h=w*image.height/image.width;
+   c.translate(bx,by);c.rotate(Math.PI*.75);cartoon.draw(c,'castella-dispenser',-w/2,0,w,h);
+  }else if(art.bottle.naturalWidth){
    const w=91,h=w*art.bottle.naturalHeight/art.bottle.naturalWidth;
    c.drawImage(art.bottle,bx-w*.954,by-h*.971,w,h);
   }else stroke(c,[bx-38,by-40],[bx,by],'#c4b6ab',14);
@@ -96,7 +110,8 @@ function pour(c,t){
  text(c,'7',x,y+5,43,t>.44?'#622e18':'#fff0c8');
 }
 function channels(c){for(const [a,b] of links){
- stroke(c,xy[a],xy[b],'#d29b69',9);stroke(c,xy[a],xy[b],'#4c3025',5);
+ const cartoon=window.SweetsCartoonArt?.loaded;
+ stroke(c,xy[a],xy[b],cartoon?'#87452c':'#d29b69',9);stroke(c,xy[a],xy[b],cartoon?'#f3b94f':'#4c3025',5);
 }}
 function flow(c,t){
  plate(c,15,15,490,211);channels(c);

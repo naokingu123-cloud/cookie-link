@@ -1052,6 +1052,7 @@
     const left=W*.30,fieldX=mini?W*.55:(left+W)/2,fieldY=H*(mini?.52:.47);
     const k=Math.min((mini?W*.94:W-left-32)/(2*radius+1.3),(H*(mini?.92:.585))/(radius*1.732+1.2));
     rounded(ctx,6,7,W-12,H-14,23,'rgba(64,32,48,.95)','#ffd688',3);
+    if(window.SweetsCartoonArt?.loaded)window.SweetsCartoonArt.frame(ctx,'popcorn',6,7,W-12,H-14,10);
     if(!mini){
       rounded(ctx,16,17,W-32,57,16,'#783740','#e5a773',2);
       label(ctx,action?'番号の遊び方':'ボムの遊び方',34,45,25,'#ffedc6',{align:'left',max:W-160});
@@ -1060,7 +1061,9 @@
       if(!action&&sheet){const tile=sheet.width/kernelColors.length;ctx.drawImage(sheet,power*tile,0,tile,tile,left*.52-icon/2,H*.31-icon/2,icon,icon);}
       if(action){
         const ex=exampleFor(s,power),sign=power===7?art.upSign:power===8?art.allSign:null;
-        if(sign)ctx.drawImage(sign,left*.52-icon*.6,H*.31-icon*.54,icon*1.20,icon*1.10);
+        if(sign&&window.SweetsCartoonBoardsB?.panelFrame(ctx,'popcorn',left*.52-icon*.6,H*.31-icon*.54,icon*1.20,icon*1.10,icon*.13)){
+          // The detailed ready lesson shares the live illustrated sign frame.
+        }else if(sign)ctx.drawImage(sign,left*.52-icon*.6,H*.31-icon*.54,icon*1.20,icon*1.10);
         else rounded(ctx,left*.52-icon*.52,H*.31-icon*.37,icon*1.04,icon*.75,13,'#28565c',accent,2.6);
         label(ctx,s.numbers[ex.port],left*.52,H*.32,38,'#fff2bf',{max:icon*.72,outline:'#67402e'});
       }

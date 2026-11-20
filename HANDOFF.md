@@ -1,6 +1,13 @@
 # CookieLink 開発引き継ぎ
 
-## 最新更新: 2026-11-20 — v272 全ゲームのイラスト調パーツと枠
+## 最新更新: 2026-11-20 — v273 説明デモまでイラスト調に統一
+
+- 版 `20261120-v273-cartoon-game-art`。v272の生成素材を開始前デモと詳細lessonにも適用。メイン盤面・ミニ盤面・デモで同じパーツを使用する。
+- `demo-suite-v91.js`、`jelly-lesson.js`、`waffle-lesson.js`、`castella-lesson.js` とPopcornの詳細デモを更新。説明の進行、座標、配当呼出しは保持。
+- 全10ゲームの専用CIは可視のlesson/storyを主描画として検査し、背後の非表示盤面による代替合格を禁止。Sugar表示CIは注入完了を待って厳密な合計を比較する。
+- キャッシュとapp-versionをv273に更新し、既存v272ダウンロードの版は保持。公開確認結果は `docs/cartoon-art-v272-public-qa.json` を参照。
+
+## 2026-11-20 — v272 全ゲームのイラスト調パーツと枠
 
 - 版 `20261120-v272-cartoon-game-art`。概要 `docs/cartoon-art-v272.md`、生成プロンプト `docs/cartoon-art-v272-prompts.json`。
 - 参考画像の丸い形・太い輪郭・鮮やかな色に合わせ、全10ゲームのマス／駒／枠を新生成PNG3枚へ交換。72パーツ＋10ゲーム枠。メインとミニは共通画材。Sugar外枠とタブ枠も揃えた。

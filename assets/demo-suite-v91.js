@@ -38,6 +38,10 @@ const art={},images={
  popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:[SweetsLineup.catalog.jelly.logo],stick:['assets/waffle-reversi-logo.webp'],castella:[SweetsLineup.catalog.castella.logo]
 };
 for(const [key,urls] of Object.entries(images))art[key]=urls.map(src=>{const im=new Image();im.decoding='async';im.src=src;return im;});
+// Lessons are a separate foreground canvas. Resolve their own illustration
+// sources as well as the live board caches; keep every example and coordinate.
+const illustrated={cakes:['choco-ivory','choco-berry','choco-milk','choco-dark'],ore:['ore-diamond'],prism:['gelato-blue'],glass:['wine-glass'],popcorn:['popcorn-cream'],jelly:['jelly-blue'],stick:['waffle-cell'],castella:['castella-baked']};
+function lessonArt(key,index=0){const A=window.SweetsCartoonArt,name=illustrated[key]?.[index];return A?.loaded&&name?A.sprite(name)||art[key]?.[index]:art[key]?.[index];}
 const loaded=im=>im&&(im.naturalWidth||im.width)>0&&im.complete!==false;
 function rect(c,x,y,w,h,r,fill,stroke,lw=1){c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.lineWidth=lw;c.strokeStyle=stroke;c.stroke();}}
 function dot(c,x,y,r,fill,stroke,lw=1){c.beginPath();c.arc(x,y,r,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw;c.stroke();}}
@@ -52,18 +56,18 @@ function cookie(c,color,x,y,size,hammer=false){
  const sprite=typeof cookieSprites!=='undefined'&&cookieSprites[color*2+Number(hammer)];
  if(!picture(c,sprite,x,y,size)&&typeof betCookie==='function')betCookie(c,color,x,y,size,hammer);
 }
-function cake(c,k,x,y,size){if(!picture(c,art.cakes[k],x,y,size))rect(c,x-size/2,y-size/2,size,size,3,shades[k],'#c99e80');}
+function cake(c,k,x,y,size){if(!picture(c,lessonArt('cakes',k),x,y,size))rect(c,x-size/2,y-size/2,size,size,3,shades[k],'#c99e80');}
 function candy(c,k,x,y,size){
  const im=typeof sixCandySprite==='function'?sixCandySprite(k,1,false):null;
  if(!picture(c,im,x,y,size))dot(c,x,y,size*.42,['#fc8cb8','#72d9ee','#eac554','#b19af2'][k%4],'#fee9f2',2);
 }
 function emblem(c,kind,x,y,size){
  if(kind==='cookie')cookie(c,1,x,y,size);
- else if(kind==='choco')picture(c,art.ore[0],x,y,size);
+ else if(kind==='choco')picture(c,lessonArt('ore'),x,y,size);
  else if(kind==='candy')candy(c,0,x,y,size);
- else if(kind==='gelato')picture(c,art.prism[0],x,y,size*1.18);
- else if(kind==='winery')picture(c,art.glass[0],x,y,size);
- else picture(c,art[kind][0],x,y,size);
+ else if(kind==='gelato')picture(c,lessonArt('prism'),x,y,size*1.18);
+ else if(kind==='winery')picture(c,lessonArt('glass'),x,y,size);
+ else picture(c,lessonArt(kind),x,y,size);
 }
 function tag(c,s,x,y,max=130,accent='#ffe69b'){const w=Math.min(max,Math.max(42,s.length*13+22));rect(c,x-w/2,y-11,w,22,7,'#6b3349',accent,1.4);text(c,s,x,y,15,accent,w-6);}
 function burst(c,x,y,p){if(p<=0||p>=1)return;c.save();c.globalAlpha=1-p;for(let i=0;i<6;i++){const a=i*Math.PI/3,d=6+19*p;dot(c,x+Math.cos(a)*d,y+Math.sin(a)*d,2.3,'#ffe5a8');}c.restore();}
@@ -94,7 +98,7 @@ function canyonDiagram(c,stage,t){
   const r=Math.floor(i/4),j=i%4,x=x0+j*cell,y=y0+r*cell;
   const killed=stage===2?cluster.includes(i)&&t>.58:stage===3?i===1&&t>.34:stage===4?false:j===1&&r<(stage===1?2:1)&&q>(r+.35)/(stage===1?2:1);
   if(killed){burst(c,x,y,ease((t-(stage===2?.58:.36))/.25));continue;}
-  if(stage===3&&i===5){picture(c,art.ore[0],x,y-(t>.56?31*ease((t-.56)/.3):0),39);continue;}
+  if(stage===3&&i===5){picture(c,lessonArt('ore'),x,y-(t>.56?31*ease((t-.56)/.3):0),39);continue;}
   const group=stage===2&&cluster.includes(i);
   cake(c,group?1:colors[i],x,y-(group&&i===6?22*(1-ease(t/.42)):0),42);
   if(group&&t>.43&&t<.58)rect(c,x-19,y-19,38,38,6,null,'#fff3af',3);
@@ -131,7 +135,7 @@ function gelatoDiagram(c,stage,t){
   if(!tri.every(i=>present.has(i)))continue;c.beginPath();tri.forEach((i,j)=>j?c.lineTo(...prismPoints[i]):c.moveTo(...prismPoints[i]));c.closePath();c.fillStyle='rgba(121,224,242,.63)';c.fill();
  }
  for(const [a,b] of prismLines){const hot=present.has(a)&&present.has(b);line(c,[prismPoints[a],prismPoints[b]],hot?'#f3ffff':'#557c8b',hot?5:2);}
- prismPoints.forEach(([x,y],i)=>{const on=present.has(i);dot(c,x,y,15,on?'#86dfea':'#3f5b71',on?'#f7ffff':'#70929c',2.5);text(c,['7','12','3','19'][i],x,y,16,on?'#325973':'#e3edf1',26);});
+ prismPoints.forEach(([x,y],i)=>{const on=present.has(i),painted=window.SweetsCartoonBoardsB?.gelatoSocket(c,on,x,y,32);if(!painted)dot(c,x,y,15,on?'#86dfea':'#3f5b71',on?'#f7ffff':'#70929c',2.5);text(c,['7','12','3','19'][i],x,y,16,painted?'#49305c':on?'#325973':'#e3edf1',26);});
  tag(c,['7 HIT','2点を結ぶ','1枚 GET','2枚 GET'][stage],100,198,136,'#adf0ff');
 }
 function glass(c,x,y,red,orange){
@@ -139,7 +143,14 @@ function glass(c,x,y,red,orange){
  c.beginPath();c.moveTo(-23,-22);c.lineTo(23,-22);c.quadraticCurveTo(23,13,0,17);c.quadraticCurveTo(-23,13,-23,-22);c.closePath();
  c.fillStyle='rgba(246,246,255,.11)';c.fill();c.save();c.clip();
  const base=17;const a=39*red,b=39*orange;c.fillStyle='#ee6692';c.fillRect(-25,base-a,50,a);c.fillStyle='#ffaf42';c.fillRect(-25,base-a-b,50,b);c.restore();
- c.strokeStyle='#ffe6aa';c.lineWidth=2.6;c.stroke();line(c,[[0,17],[0,28],[-11,28],[11,28]],'#ffe6aa',2.4);c.restore();
+ c.strokeStyle='#ffe6aa';c.lineWidth=2.6;c.stroke();line(c,[[0,17],[0,28],[-11,28],[11,28]],'#ffe6aa',2.4);
+ const A=window.SweetsCartoonArt,sprite=A?.loaded&&A.sprite(red+orange>=.99?'wine-glass-lit':'wine-glass');
+ if(sprite){
+  // Retain the example's exact liquid bowl. Only its rim and stem receive the
+  // generated glass, so changing fill levels still has the same visible area.
+  c.save();c.beginPath();c.rect(-28,-27,56,60);c.moveTo(-21,-19);c.lineTo(21,-19);c.quadraticCurveTo(21,12,0,15);c.quadraticCurveTo(-21,12,-21,-19);c.closePath();c.clip('evenodd');picture(c,sprite,0,3,57);c.restore();
+ }
+ c.restore();
 }
 function wineryDiagram(c,stage,t){
  const pts=[[110,36],[75,95],[145,95],[40,154],[110,154],[180,154]],q=ease((t-.15)/.65);
@@ -195,6 +206,7 @@ function draw(kind){
  ctx.setTransform(h/H,0,0,h/H,0,0);ctx.clearRect(0,0,W,H);
  const grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,game.ink);grad.addColorStop(1,'#342738');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
  rect(ctx,6,7,W-12,H-14,23,'rgba(60,32,48,.82)','#ffd688',3);
+ window.SweetsCartoonArt?.loaded&&window.SweetsCartoonArt.frame(ctx,kind,6,7,W-12,H-14,14);
  rect(ctx,16,17,W-32,57,16,'#783740','#e5a773',2);
  text(ctx,game.name+'の遊び方',34,45,25,'#ffedc6',W-174,'left');text(ctx,(idx+1)+' / '+n,W-31,45,23,game.accent,100,'right');
  const left=Math.max(110,W*.31),sx=left*.51,fieldX=left+6,fieldW=W-fieldX-20;

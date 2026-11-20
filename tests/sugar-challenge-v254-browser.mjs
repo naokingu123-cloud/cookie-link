@@ -104,7 +104,7 @@ try{
  for(const [width,height]of [[390,844],[844,390],[1366,900]]){
   await page.setViewportSize({width,height});await sleep(100);preserved(await inject({draws:[1,2,3,10]}));
   const pouring=await read();assert.equal(pouring.bottle.pouring,'true');
-  await sleep(820);const state=await read();verifyPanel(state);assert.equal(state.bottle.sum,16);assert.equal(state.bottle.label,'4 / 8球');assert.ok(Math.abs(state.bottle.fill-16/172*100)<.01);assert.deepEqual(state.history.filter(ball=>ball.hit==='true').map(ball=>Number(ball.text)),[1,2,3,10]);assert.deepEqual(state.lucky,[77]);
+  await page.waitForFunction(()=>document.querySelector('.sc254-bottle').dataset.pouring==='false',null,{timeout:5000});const state=await read();verifyPanel(state);assert.equal(state.bottle.sum,16);assert.equal(state.bottle.label,'4 / 8球');assert.ok(Math.abs(state.bottle.fill-16/172*100)<.01);assert.deepEqual(state.history.filter(ball=>ball.hit==='true').map(ball=>Number(ball.text)),[1,2,3,10]);assert.deepEqual(state.lucky,[77]);
   await page.screenshot({path:output+'/sugar-panel-'+width+'x'+height+'.png'});
   await page.locator('.sc254-overlay').click();const folded=await read();assert.equal(folded.overlay.visible,false);assert.equal(folded.dock.visible,true);assert.equal(folded.dock.parent,'cookie-roulette');contained(folded.dock.rect,folded.dock.parentRect,'folded roulette dock');
   await page.locator('.sc254-dock').click();const expanded=await read();assert.equal(expanded.overlay.visible,true);assert.equal(expanded.dock.visible,false);assert.equal(expanded.api.challenge.id,state.api.challenge.id);assert.equal(expanded.api.challenge.sum,state.api.challenge.sum,'folding never changes the active challenge');
@@ -121,7 +121,7 @@ try{
  // The panel may be compact even on a wide monitor. Constrain only its
  // logical box to reproduce320x300 without changing wallet or game geometry.
  await page.evaluate(()=>{const node=document.querySelector('.sc254-overlay');window.__sugarCompactStyle=node.getAttribute('style');Object.assign(node.style,{width:'320px',height:'300px',inset:'auto',left:'0px',top:'0px'});window.SweetsSugarChallengeV254.setExpanded(true);});
- preserved(await inject({id:'sugar-compact-v270',values:[40000,40000,40000,40000,40000],multiplier:10,draws:[1,2,3,10]}));await sleep(820);
+ preserved(await inject({id:'sugar-compact-v270',values:[40000,40000,40000,40000,40000],multiplier:10,draws:[1,2,3,10]}));await page.waitForFunction(()=>document.querySelector('.sc254-bottle').dataset.pouring==='false',null,{timeout:5000});
  const compact=await read();verifyPanel(compact,{jp:200000,multiplier:10});contained(compact.bottle.labelRect,compact.bottle.rect,'compact bottle label');
  assert.ok(compact.table.bottom<=compact.bottom.top+.5,'all six payout rows end above the history and phase area');
  for(const row of compact.payouts)contained(row.valueFace,row.valueRect,'compact high-JP payout '+row.value);
