@@ -142,7 +142,16 @@ try{
  }
 
  const seven=[1,2,3,10,15,19,21],luckyId='sugar-lucky-jpc';preserved(await inject({id:luckyId,draws:seven}));const reach=await read();assert.match(reach.reach,/JPCリーチ/);assert.match(reach.reach,/JPCリーチ　6$/);
- const luckyRecord=await inject({id:luckyId,draws:[...seven,6]});preserved(luckyRecord);await sleep(900);const lucky=await read();assert.equal(luckyRecord.challenge.sum,77);assert.equal(luckyRecord.challenge.award.reason,'lucky');assert.equal(luckyRecord.challenge.cashWin,0);assert.equal(lucky.api.challenge.jpcQualified,true);assert.match(lucky.reach,/合計 77 でJPC確定/);assert.equal(lucky.celebration.visible,true);assert.equal(lucky.celebration.loaded,true);assert.match(lucky.celebration.image,/sugar-art-v254\/jpc-title\.webp/);assert.match(lucky.celebration.alt,/JACKPOT CHANCE/);assert.equal(lucky.celebration.pointerEvents,'none');contained(lucky.celebration.title,lucky.celebration.rect,'illustrated JACKPOT CHANCE title');
+ const luckyRecord=await inject({id:luckyId,draws:[...seven,6]});preserved(luckyRecord);
+ // A busy renderer may not paint the entrance before a wall-time sleep ends.
+ // Wait for this image's actual entrance, without waiting for looping rays.
+ await page.waitForFunction(()=>{
+  const celebration=document.querySelector('.sc254-celebration'),title=celebration?.querySelector(':scope>img');
+  if(!celebration||celebration.hidden||!title)return false;
+  const entrance=title.getAnimations().find(animation=>animation instanceof CSSAnimation&&animation.animationName==='sc254-jpc');
+  return entrance?.playState==='finished'&&Number(entrance.currentTime)>0;
+ },null,{polling:'raf',timeout:15000});
+ const lucky=await read();assert.equal(luckyRecord.challenge.sum,77);assert.equal(luckyRecord.challenge.award.reason,'lucky');assert.equal(luckyRecord.challenge.cashWin,0);assert.equal(lucky.api.challenge.jpcQualified,true);assert.match(lucky.reach,/合計 77 でJPC確定/);assert.equal(lucky.celebration.visible,true);assert.equal(lucky.celebration.loaded,true);assert.match(lucky.celebration.image,/sugar-art-v254\/jpc-title\.webp/);assert.match(lucky.celebration.alt,/JACKPOT CHANCE/);assert.equal(lucky.celebration.pointerEvents,'none');contained(lucky.celebration.title,lucky.celebration.rect,'illustrated JACKPOT CHANCE title');
  await page.screenshot({path:output+'/lucky-jpc.png'});
  const luckyRepeat=await page.evaluate(()=>{const ui=window.SweetsSugarChallengeV254,before=ui.describe().celebrateAge;ui.accept({...window.__sugarView254.last,revision:++window.__sugarView254.revision});return {before,after:ui.describe().celebrateAge};});assert.equal(luckyRepeat.after,luckyRepeat.before,'JPC artwork never replays for duplicate server snapshots');
  await page.locator('.sc254-overlay').click();await page.locator('#open-record-menu').click();await page.waitForFunction(()=>window.SweetsSugarChallengeV254.describe().paused);const pausedDock=await read();assert.equal(pausedDock.dock.paused,'true');assert.equal(pausedDock.dock.animationPlayState,'paused','the folded JPC glow pauses along with the expanded UI');await page.locator('#record-close-top').click();
