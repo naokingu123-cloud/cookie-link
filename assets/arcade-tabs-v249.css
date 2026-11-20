@@ -385,6 +385,14 @@ html.arcade-v249.arcade-tabs-v250 #screen #bet-countdown #shared-bet-v228{
 html.arcade-v249.arcade-tabs-v250:is([data-edition="local"],[data-edition="download"]) #screen>.arena:has(#cookie-roulette>.v250-common-bet:not([hidden]))>.avatar-box{
  left:calc(50% - 36px)!important;right:auto!important;bottom:34px!important;
 }
+/* The older arcade-number-mode-button rule made this position:relative and
+   moved it under the fixed local DEV banner. Restore its own lower-right bay. */
+html.arcade-v249.arcade-tabs-v250[data-edition="local"] #screen #cookie-roulette #manual-number-toggle{
+ position:absolute!important;left:auto!important;top:auto!important;right:8px!important;bottom:4px!important;
+}
+html.arcade-v249.arcade-tabs-v250[data-edition="local"] #screen #cookie-roulette .roulette-info-strip{
+ right:126px!important;
+}
 @container v269-roulette (max-height:200px){
  html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette>.v250-common-bet{
   right:110px!important;bottom:4px!important;width:122px!important;height:28px!important;

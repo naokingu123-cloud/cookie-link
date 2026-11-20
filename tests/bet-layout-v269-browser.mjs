@@ -30,10 +30,12 @@ async function inspect(target,label){
   const blockers=['#bet-countdown','#debug-tools','#manual-number-toggle','#shared-bet-v228','.shared-auto-rebet-label','#sugar-collection','#sugar-slots','.stations-strip-v235','.avatar-box','.sc254-dock'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})));
   const sharedBlockers=['#debug-start','#jpc-mode','#roulette-retry','#sugar-collection','#sugar-slots','#sugar-slots .sugar-slot','.sugar-caption','.avatar-box','.stations-strip-v235','.v250-shared-bet-switch'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})));
   const sharedTargets=['#shared-bet-v228','.shared-auto-rebet-label'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>{const bounds=rect(node),at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2);return {selector,bounds,disabled:node.disabled??null,unobscured:at===node||node.contains(at),blockers:sharedBlockers};}));
+  const manualButton=document.getElementById('manual-number-toggle');let manualTarget=null;
+  if(shown(manualButton)){const bounds=rect(manualButton),at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2);manualTarget={bounds,disabled:manualButton.disabled,unobscured:at===manualButton||manualButton.contains(at),blockers:['#local-debug-v258','#bet-countdown','#debug-tools','#sugar-collection','.avatar-box','.v250-shared-bet-switch','.roulette-info-strip'].flatMap(selector=>[...document.querySelectorAll(selector)].filter(shown).map(node=>({selector,bounds:rect(node)})))};}
   const at=document.elementFromPoint(bounds.left+bounds.width/2,bounds.top+bounds.height/2),q=window.__qa269||window.__qa250;
   const footer=document.getElementById('console'),meters=footer.querySelector('.meters');
   return {edition:document.documentElement.dataset.edition,lineup:document.documentElement.dataset.lineup,viewport:{width:innerWidth,height:innerHeight},phase:q.app.phase,selected:q.slots[q.active]?.engine.kind,
-   button:{bounds,visible:shown(button),disabled:button.disabled,clickable:at===button||button.contains(at),inRoulette:document.getElementById('cookie-roulette').contains(button),inFooter:footer.contains(button),visibleCycles:[...document.querySelectorAll('.bet-cycle')].filter(shown).length},roulette,blockers,sharedTargets,serverPhase:window.SweetsSharedMachine?.client?.round?.phase||null,
+   button:{bounds,visible:shown(button),disabled:button.disabled,clickable:at===button||button.contains(at),inRoulette:document.getElementById('cookie-roulette').contains(button),inFooter:footer.contains(button),visibleCycles:[...document.querySelectorAll('.bet-cycle')].filter(shown).length},roulette,blockers,sharedTargets,manualTarget,serverPhase:window.SweetsSharedMachine?.client?.round?.phase||null,
    authority:window.SweetsSharedControllerV224?{canBet:window.SweetsSharedMachine?.client?.round?.canBet??null,editable:window.SweetsSharedControllerV224.canEditBets(q.app),stable:window.SweetsSharedControllerV224.stable()}:null,
    footer:{bounds:rect(footer),logicalHeight:footer.clientHeight,meters:rect(meters),history:rect(document.getElementById('balls')),menu:rect(document.getElementById('open-record-menu')),amounts:['total-bet','win','credit'].map(id=>{const el=document.getElementById(id),face=el.querySelector('.gold-number');return {id,bounds:rect(el),face:rect(face),font:parseFloat(getComputedStyle(face).fontSize),text:face.textContent};})},
    panel:rect(q.slots[q.active].panel)};
@@ -51,6 +53,10 @@ async function inspect(target,label){
  for(const control of result.sharedTargets){
   assert.equal(control.unobscured,true,label+' '+control.selector+' has its own hit target');
   for(const blocker of control.blockers){const a=control.bounds,x=blocker.bounds;assert.ok(Math.min(a.right,x.right)<=Math.max(a.left,x.left)+1||Math.min(a.bottom,x.bottom)<=Math.max(a.top,x.top)+1,label+' '+control.selector+' does not overlap '+blocker.selector);}
+ }
+ if(result.manualTarget){
+  assert.equal(result.manualTarget.disabled,false,label+' manual mode can be selected during BET');assert.equal(result.manualTarget.unobscured,true,label+' manual mode has its own hit target');
+  for(const blocker of result.manualTarget.blockers){const a=result.manualTarget.bounds,x=blocker.bounds;assert.ok(Math.min(a.right,x.right)<=Math.max(a.left,x.left)+1||Math.min(a.bottom,x.bottom)<=Math.max(a.top,x.top)+1,label+' manual mode does not overlap '+blocker.selector);}
  }
  assert.equal(result.footer.logicalHeight,66,label+' footer is shorter than the former78px');
  assert.ok(result.footer.meters.width>result.footer.bounds.width*.75,label+' recovered BET bay belongs to the ledger');
