@@ -1,11 +1,16 @@
-name: Cartoon game artwork v272
+name: Ornate game artwork v274
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'assets/cartoon-*'
-      - 'assets/cartoon-art-v272/**'
+      - 'assets/ornate-*'
+      - 'assets/ornate-art-v274/**'
+      - 'assets/sweet-skins/**'
+      - 'assets/six-candy-png/**'
+      - 'assets/arcade-surfaces-v249.css'
+      - 'assets/sweet-frames.js'
+      - 'optimized/app-01.js'
       - 'assets/gelato-prism-v28.js'
       - 'assets/winery-pyramid-v1.js'
       - 'assets/popcorn-view.js'
@@ -20,7 +25,7 @@ on:
       - 'assets/download-assets-v255.json'
       - 'index.html'
       - 'app-version.json'
-      - 'tests/cartoon-art-v272-browser.mjs'
+      - 'tests/ornate-art-v274-browser.mjs'
       - '.github/workflows/cartoon-art-v272.yml'
 permissions:
   contents: read
@@ -36,10 +41,9 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Syntax, preserved payouts, and current Sugar rules
         run: |
-          node --check assets/cartoon-art-v272.js
-          node --check assets/cartoon-boards-a-v272.js
-          node --check assets/cartoon-boards-b-v272.js
-          node --check assets/cartoon-boards-c-v272.js
+          node --check assets/ornate-art-v274.js
+          node --check assets/ornate-boards-a-v274.js
+          node --check tests/ornate-art-v274-browser.mjs
           node --check assets/demo-suite-v91.js
           node --check assets/jelly-lesson.js
           node --check assets/waffle-lesson.js
@@ -67,11 +71,11 @@ jobs:
           else
             npx playwright install --with-deps chromium
           fi
-      - name: All ten boards, miniatures, generated artwork, and stable state
-        run: node tests/cartoon-art-v272-browser.mjs
+      - name: All ten native boards, ornate frames, original backgrounds, and stable state
+        run: node tests/ornate-art-v274-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cartoon-v272-ten-games
-          path: qa-cartoon-v272/
+          name: ornate-v274-ten-games
+          path: qa-ornate-v274/
           retention-days: 7

@@ -1,0 +1,68 @@
+/* Illustrated confectionery surrounds. This stylesheet deliberately has no
+ * world/scene background, board-size, padding, font or piece-style overrides. */
+html.ornate-art-v274{
+ --oa274-board-current:var(--oa274-board-cookie);--oa274-board-slice-current:var(--oa274-board-slice-cookie);
+ --oa274-pay-current:var(--oa274-pay-cookie);--oa274-pay-slice-current:var(--oa274-pay-slice-cookie);
+}
+html.ornate-art-v274 :is(body[data-v249-game="cookie"],[data-v249-kind="cookie"],[data-game-kind="cookie"]){--oa274-board-current:var(--oa274-board-cookie);--oa274-board-slice-current:var(--oa274-board-slice-cookie);--oa274-pay-current:var(--oa274-pay-cookie);--oa274-pay-slice-current:var(--oa274-pay-slice-cookie)}
+html.ornate-art-v274 :is(body[data-v249-game="choco"],[data-v249-kind="choco"],[data-game-kind="choco"]){--oa274-board-current:var(--oa274-board-choco);--oa274-board-slice-current:var(--oa274-board-slice-choco);--oa274-pay-current:var(--oa274-pay-choco);--oa274-pay-slice-current:var(--oa274-pay-slice-choco)}
+html.ornate-art-v274 :is(body[data-v249-game="candy"],[data-v249-kind="candy"],[data-game-kind="candy"]){--oa274-board-current:var(--oa274-board-candy);--oa274-board-slice-current:var(--oa274-board-slice-candy);--oa274-pay-current:var(--oa274-pay-candy);--oa274-pay-slice-current:var(--oa274-pay-slice-candy)}
+html.ornate-art-v274 :is(body[data-v249-game="gelato"],[data-v249-kind="gelato"],[data-game-kind="gelato"]){--oa274-board-current:var(--oa274-board-gelato);--oa274-board-slice-current:var(--oa274-board-slice-gelato);--oa274-pay-current:var(--oa274-pay-gelato);--oa274-pay-slice-current:var(--oa274-pay-slice-gelato)}
+html.ornate-art-v274 :is(body[data-v249-game="winery"],[data-v249-kind="winery"],[data-game-kind="winery"]){--oa274-board-current:var(--oa274-board-winery);--oa274-board-slice-current:var(--oa274-board-slice-winery);--oa274-pay-current:var(--oa274-pay-winery);--oa274-pay-slice-current:var(--oa274-pay-slice-winery)}
+html.ornate-art-v274 :is(body[data-v249-game="popcorn"],[data-v249-kind="popcorn"],[data-game-kind="popcorn"]){--oa274-board-current:var(--oa274-board-popcorn);--oa274-board-slice-current:var(--oa274-board-slice-popcorn)}
+html.ornate-art-v274 :is(body[data-v249-game="jelly"],[data-v249-kind="jelly"],[data-game-kind="jelly"]){--oa274-board-current:var(--oa274-board-jelly);--oa274-board-slice-current:var(--oa274-board-slice-jelly);--oa274-pay-current:var(--oa274-pay-jelly);--oa274-pay-slice-current:var(--oa274-pay-slice-jelly)}
+html.ornate-art-v274 :is(body[data-v249-game="stick"],[data-v249-kind="stick"],[data-game-kind="stick"]){--oa274-board-current:var(--oa274-board-stick);--oa274-board-slice-current:var(--oa274-board-slice-stick)}
+html.ornate-art-v274 :is(body[data-v249-game="castella"],[data-v249-kind="castella"],[data-game-kind="castella"]){--oa274-board-current:var(--oa274-board-castella);--oa274-board-slice-current:var(--oa274-board-slice-castella)}
+html.ornate-art-v274 :is(body[data-v249-game="dango"],[data-v249-kind="dango"],[data-game-kind="dango"]){--oa274-board-current:var(--oa274-board-dango);--oa274-board-slice-current:var(--oa274-board-slice-dango)}
+
+/* Replace the old generic cookie rails with the matching themed artwork.
+ * Painting a positioned border never moves the playfield or its hit targets. */
+html.ornate-art-v274.arcade-v249 body[data-v249-game] #screen>.game::before{
+ content:""!important;position:absolute!important;inset:-5px!important;height:auto!important;
+ border:0 solid transparent!important;border-image-source:var(--oa274-board-current)!important;
+ border-image-slice:var(--oa274-board-slice-current)!important;border-image-width:19px!important;
+ border-image-repeat:stretch!important;background:none!important;box-shadow:none!important;
+ pointer-events:none!important;z-index:4!important;
+}
+html.ornate-art-v274.arcade-candy-world #screen>.game>.arcade-world-game-canopy,
+html.ornate-art-v274.arcade-candy-world #screen>.game>.arcade-world-game-rail{display:none!important}
+
+/* Miniatures keep their native board art and backing; only their frame changes. */
+html.ornate-art-v274.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.all-tab-frame-overlay{
+ background:none!important;border:0 solid transparent!important;
+ border-image-source:var(--oa274-board-current)!important;border-image-slice:var(--oa274-board-slice-current)!important;
+ border-image-width:6px!important;border-image-repeat:stretch!important;
+ box-shadow:none!important;pointer-events:none!important;z-index:8!important;opacity:1!important;
+}
+html.ornate-art-v274.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.all-tab-frame-overlay::before,
+html.ornate-art-v274.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.all-tab-frame-overlay::after{content:none!important}
+
+/* The three classic games share this cabinet; the other games own their
+ * matching illustrated paytables inside their existing native views. */
+html.ornate-art-v274.arcade-v249 body:is([data-v249-game="cookie"],[data-v249-game="choco"],[data-v249-game="candy"]) #screen #odds-panel>.menu-trim{display:none!important}
+html.ornate-art-v274.arcade-v249 body:is([data-v249-game="cookie"],[data-v249-game="choco"],[data-v249-game="candy"]) #screen #odds-panel::before{
+ content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;
+ border:0 solid transparent!important;border-image-source:var(--oa274-pay-current)!important;
+ border-image-slice:var(--oa274-pay-slice-current)!important;border-image-width:12px!important;
+ border-image-repeat:stretch!important;background:none!important;box-shadow:none!important;z-index:1!important;
+}
+html.ornate-art-v274 .ds139-story::after{
+ content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+ border:0 solid transparent;border-image-source:var(--oa274-board-current);
+ border-image-slice:var(--oa274-board-slice-current);border-image-width:6px;border-image-repeat:stretch;
+}
+html.ornate-art-v274 :is(.sc254-overlay,.sc254-dock){
+ border-image-source:var(--oa274-board-sugar)!important;border-image-slice:var(--oa274-board-slice-sugar)!important;
+ border-image-width:9px!important;border-image-repeat:stretch!important;
+}
+html.ornate-art-v274 .jpc-dashboard{
+ border-image-source:var(--oa274-board-bonus);border-image-slice:var(--oa274-board-slice-bonus);
+ border-image-width:10px;border-image-repeat:stretch;
+}
+@media(forced-colors:active){
+ html.ornate-art-v274 #screen>.game::before,
+ html.ornate-art-v274 #screen #tabs>.tab-slot>.all-tab-frame-overlay,
+ html.ornate-art-v274 #screen #odds-panel::before,
+ html.ornate-art-v274 .ds139-story::after{display:none!important}
+ html.ornate-art-v274 :is(.sc254-overlay,.sc254-dock,.jpc-dashboard){border-image:none!important}
+}

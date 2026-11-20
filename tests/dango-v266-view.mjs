@@ -6,10 +6,9 @@ const root=path.resolve(fileURLToPath(new URL('..',import.meta.url))),output=pat
 await fs.mkdir(output,{recursive:true});
 const mime={'.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.json':'application/json'};
 const baseHtml='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>html,body,#screen,#panels{width:100%;height:100%;margin:0;padding:0}#fixture{position:relative;width:100%;height:100%}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><script src="/assets/dango-bingo-rules.js"></script><script>window.DangoBingoRules=window.DangoBingoRules.legacy266;</script><script src="/assets/dango-bingo-view.js"></script></html>';
-// Use the production generated skin while keeping the isolated game fixture.
+// Use the restored production artwork while keeping the isolated game fixture.
 const html=baseHtml
- .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/cartoon-art-v272.css"><link rel="stylesheet" href="/assets/cartoon-boards-c-v272.css">')
- .replace('<script src="/assets/dango-bingo-rules.js">','<script src="/assets/cartoon-art-v272.js"></script><script src="/assets/dango-bingo-rules.js">');
+ .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css">');
 const server=http.createServer(async(req,res)=>{
  const u=new URL(req.url,'http://localhost');if(u.pathname==='/'){res.end(html);return;}
  const file=path.resolve(root,'.'+u.pathname);if(!file.startsWith(root+path.sep)){res.statusCode=403;res.end();return;}
@@ -23,8 +22,6 @@ try{
  const page=await browser.newPage({viewport:{width:1366,height:750}});
  page.on('pageerror',error=>errors.push(String(error)));
  await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'networkidle'});
- assert.equal(await page.evaluate(()=>SweetsCartoonArt.ready),true,'all generated PNG atlases load before installing the painter');
- await page.addScriptTag({url:'/assets/cartoon-boards-c-v272.js'});
  const ready=await page.evaluate(async()=>{
   await Promise.all([DangoBingoView.assetsReady,document.fonts.ready]);
   const R=DangoBingoRules;
@@ -52,17 +49,20 @@ try{
  assert.equal(ready,266);
  const seven=await page.evaluate(()=>qa.earlyByIds([1,3,6,10,15]));assert.equal(seven,7);
  const artwork=await page.evaluate(async()=>{
-  const sources=await Promise.all(SweetsCartoonArt.describe().files.map(async file=>{const image=new Image();image.src=file;await image.decode();return {file,width:image.naturalWidth,height:image.naturalHeight};}));
+  const sources=await Promise.all(DangoBingoView.describeAssets().images.map(async({key,url})=>{const image=new Image();image.src=url;await image.decode();return {key,file:url,width:image.naturalWidth,height:image.naturalHeight};}));
+  const payoutImage=new Image();payoutImage.src=document.querySelector('.dgb-scene').dataset.payoutArt;await payoutImage.decode();
   const frameSource=getComputedStyle(document.querySelector('.dgb-pay-matrix')).borderImageSource;
-  const mini=document.createElement('canvas');mini.width=220;mini.height=150;const before=JSON.stringify(qa.state),used=SweetsCartoonBoardsC.describe().usage.dangoCells;
+  const mini=document.createElement('canvas');mini.width=220;mini.height=150;const before=JSON.stringify(qa.state),used=DangoBingoView.describeAssets().usage.cells;
   DangoBingoView.drawMini(mini.getContext('2d'),qa.state,{reducedMotion:true});
-  const visual=DangoBingoView.describeAssets(),cartoon=SweetsCartoonBoardsC.describe();
-  return {ready:cartoon.ready,sources,frameSource:frameSource.slice(0,80),frameMatches:frameSource.includes(SweetsCartoonArt.url('frame-dango')),mainImageCells:visual.last.main.imageCells,miniImageCells:visual.last.mini.imageCells,miniGeneratedCells:cartoon.usage.dangoCells-used,cells:qa.state.cells.length,generatedCells:cartoon.usage.dangoCells,generatedStands:cartoon.usage.dangoStands,stateUnchanged:before===JSON.stringify(qa.state)};
+  const visual=DangoBingoView.describeAssets();
+  return {ready:visual.ready,cartoonAdapter:visual.cartoon,sources,frameSource,payoutPNG:{source:payoutImage.src,width:payoutImage.naturalWidth,height:payoutImage.naturalHeight},mainImageCells:visual.last.main.imageCells,mainStandRendered:visual.last.main.standRendered,miniImageCells:visual.last.mini.imageCells,miniGeneratedCells:visual.usage.cells-used,miniStandRendered:visual.last.mini.standRendered,cells:qa.state.cells.length,generatedCells:visual.usage.cells,generatedStands:visual.usage.stands,stateUnchanged:before===JSON.stringify(qa.state)};
  });
- assert.equal(artwork.ready,true);assert.equal(artwork.sources.length,3);
- for(const source of artwork.sources){assert.match(source.file,/\.png$/);assert.ok(source.width>0&&source.height>0,'generated PNG source decodes: '+source.file);}
- assert.match(artwork.frameSource,/^url\(["']?data:image\/png;base64,/);assert.equal(artwork.frameMatches,true,'legacy boards use the generated Dango frame material without changing its zero-width layout');
- assert.equal(artwork.mainImageCells,artwork.cells);assert.equal(artwork.miniImageCells,artwork.cells);assert.equal(artwork.miniGeneratedCells,artwork.cells);assert.ok(artwork.generatedCells>=artwork.cells*2);assert.ok(artwork.generatedStands>0);assert.equal(artwork.stateUnchanged,true);
+ assert.equal(artwork.ready,true);assert.equal(artwork.cartoonAdapter,null,'saved boards use the native mochi painter');
+ assert.deepEqual(artwork.sources.map(source=>source.key),['white','green','pink','yellow','rainbow','skewer','stand']);
+ for(const source of artwork.sources){assert.match(source.file,/dango-art-v25[23]\/[^/]+\.webp\?v=253$/);assert.ok(source.width>0&&source.height>0,'generated native source decodes: '+source.file);}
+ assert.match(artwork.frameSource,/dango-art-v270\/payout-table\.png/,'legacy boards retain the v270 frame material with their zero-width layout');
+ assert.match(artwork.payoutPNG.source,/dango-art-v270\/payout-table\.png$/);assert.ok(artwork.payoutPNG.width>0&&artwork.payoutPNG.height>0,'generated payout PNG decodes');
+ assert.equal(artwork.mainImageCells,artwork.cells);assert.equal(artwork.mainStandRendered,true);assert.equal(artwork.miniImageCells,artwork.cells);assert.equal(artwork.miniGeneratedCells,artwork.cells);assert.equal(artwork.miniStandRendered,true);assert.ok(artwork.generatedCells>=artwork.cells*2);assert.ok(artwork.generatedStands>0);assert.equal(artwork.stateUnchanged,true);
  const first=await page.evaluate(()=>({
   title:document.querySelector('.dgb-free-title').textContent,
   value:document.querySelector('.dgb-free-value').textContent,

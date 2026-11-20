@@ -6,6 +6,7 @@ const drawSweetFrame=(()=>{
   frames.set(id,{art});
  }
  return (ctx,id,x,y,w,h,edge)=>{
+  if(id==='jelly'&&window.SweetsOrnateArtV274?.frame(ctx,id,x,y,w,h,edge,'pay'))return;
   const frame=frames.get(id);
   if(!frame?.art.naturalWidth||w<=0||h<=0)return;
   const width=Math.round(w*2),height=Math.round(h*2);

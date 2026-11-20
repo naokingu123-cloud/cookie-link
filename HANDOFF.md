@@ -1,5 +1,14 @@
 # CookieLink 開発引き継ぎ
 
+## 最新更新: 2026-11-20 — v274 元の質感と背景を復帰、描き込んだ装飾枠
+
+- 版 `20261120-v274-ornate-game-art`。ユーザーが v272/v273 を「簡単な描写になりすぎ」と指摘。背景は元へ戻し、Six Drop のドロップは変更前の質感が適切との指定。概要 `docs/ornate-art-v274.md`、最終生成プロンプト `docs/ornate-art-v274-prompts.json`。
+- 入口から v272 common/A/B/C の JS/CSS を外して、全ゲーム・mini・lesson の元の画像／背景／光沢／奥行きを復帰。旧ファイルは旧キャッシュ向けに保存。新アダプターで元のピースを上書きしない。
+- 生成 PNG3枚・18枠を `assets/ornate-art-v274/` に追加。10ゲームごとの盤面外枠、6ゲームの配当枠、Sugar/Bonus枠。Waffle、Castella、Dango、Popcorn の良い既存配当画像を再利用する。
+- Six の元 `candies.webp` と v247 の9色変換・瓶・蓋は無変更。同じ native 描画経路で役説明も表示。Jelly 配当枠は sweet-frames の限定接続。全コードは装飾のみ、盤面寸法や番号、配当、RNG、保存・同期は保持。
+- v271 Sugar の約9.95%、JP横×n、はずれ倍率なし、長い倍率リールを維持。全配当・Sugar・構文・cacheテスト成功。全10ゲームの専用CIは v274 用へ更新。最終公開検証は `docs/ornate-art-v274-public-qa.json`。
+- Download 672ファイル・158,598,295 bytes、全SHA-256一致。v273 までの版別キャッシュも保持。Windows共有サーバーの更新は Pages 公開と別で、ユーザーの `.runtime`・`.tools`・`data` を保持する。
+
 ## 最新更新: 2026-11-20 — v273 説明デモまでイラスト調に統一
 
 - 版 `20261120-v273-cartoon-game-art`。v272の生成素材を開始前デモと詳細lessonにも適用。メイン盤面・ミニ盤面・デモで同じパーツを使用する。

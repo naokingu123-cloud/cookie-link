@@ -1,0 +1,54 @@
+/* v274: ornate internal paytable furniture only.
+ * The original Gelato ice, Winery glass/liquid, Popcorn artwork and Jelly
+ * surfaces stay with their existing renderers. No scene, world background,
+ * canvas size, padding, grid, number, or interaction rectangle is changed.
+ * Outer game frames belong to ornate-art-v274.css, not this stylesheet.
+ */
+
+/* Keep the original blue/green paytable surface and all earned-state colours.
+ * The generated ice-and-gold ornament occupies the existing cabinet margin.
+ * Omitting `fill` leaves the original middle and live payout rows intact.
+ */
+html.ornate-art-v274 #screen #panels .v249-game-surface[data-v249-kind="gelato"] .gp-scene .gp-collector-panel{
+ border-image-source:var(--oa274-pay-gelato)!important;
+ border-image-slice:var(--oa274-pay-slice-gelato)!important;
+ border-image-width:clamp(15px,3.2vw,23px) clamp(4px,1.05vw,8px) 6px!important;
+ border-image-outset:0!important;
+ border-image-repeat:stretch!important;
+}
+
+/* Use one grape-and-gold frame around the actual paytable. Its pre-existing
+ * padding still reserves the header, number columns, liquid level and MIX.
+ */
+html.ornate-art-v274 #screen #panels .v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-sidebar{
+ border-image-source:var(--oa274-pay-winery)!important;
+ border-image-slice:var(--oa274-pay-slice-winery)!important;
+ border-image-width:clamp(11px,2.7vw,18px) clamp(4px,1.05vw,8px) clamp(6px,1.4vw,10px)!important;
+ border-image-outset:0!important;
+ border-image-repeat:stretch!important;
+}
+
+/* The v60 photo ornament was a second frame drawn above the payout text.
+ * Replace only that decorative layer; never hide the live juice reservoir.
+ */
+html.ornate-art-v274 #screen #panels .v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-sidebar::before,
+html.ornate-art-v274 #screen #panels .v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-sidebar::after{
+ content:none!important;
+ display:none!important;
+}
+
+/* A matching narrow rim on the separate boost cabinet. The tube, HIT digits,
+ * displayed amount and all their original textures are left untouched.
+ */
+html.ornate-art-v274 #screen #panels .v249-game-surface[data-v249-kind="winery"] .wp-scene .wp-power-left{
+ border-image-source:var(--oa274-pay-winery)!important;
+ border-image-slice:var(--oa274-pay-slice-winery)!important;
+ border-image-width:6px 4px!important;
+ border-image-outset:0!important;
+ border-image-repeat:stretch!important;
+}
+
+/* Popcorn's existing illustrated bomb atlas, bulb-lined hexagonal carton,
+ * signs and striped paytable are intentionally handled by its original view.
+ * Jelly's Canvas paytable uses the shared sweet-frames.js ornate-pay hook.
+ */
