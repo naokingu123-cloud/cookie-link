@@ -45,7 +45,9 @@
 - CUAで実画面と独立した表示fixtureを確認。390×380の136px画像ルーレット、320×300の高額表示、844×340のOdds2倍まで画面内に収まる。
 - 320×300で瓶とゲージの上端は一致、下端の差は約0.02px。表の下端251pxと履歴の上端264pxに重なりがない。
 - リーチ4段階、配当の中央揃え、生成PNGの読込、2個ライン1本のGETを確認。
-- `.github/workflows/dango-sugar-v270.yml` はルール・配信cache、現行／旧保存Dangoブラウザ、Sugarブラウザを並列検証する。実行結果はGitHub Actionsの該当コミットを参照する。
+- `.github/workflows/dango-sugar-v270.yml` はルール・配信cache、現行／旧保存Dangoブラウザ、Sugarブラウザを並列検証する。Dangoの現行／旧保存・低高さGET、ルールとcacheはrun `44659953727`、Sugarの全表示試験はrun `44658794804`で成功。記録は `dango-sugar-v270-qa.json`。
 - この環境の表示ブラウザはWebGLが無効のため、CUAではネイティブ物理抽選の再検証は行っていない。既存の通常抽選コードは変更していない。
 
 Pages更新とWindows共有サーバー更新は別。Windows側は最新mainのソースを反映して既存ランチャーから再起動し、`.runtime`・`.tools`・`data`を保持する。
+
+既存のSix station checkとShared machine checkは、変更していないloaderのcache版をアプリ版と同一と仮定する検査で失敗する。同じ失敗は親コミットのrun `44653370461` と `44653370566` にも存在する。今回のDango／Sugar検証とは分けて記録し、これらの後続試験の成功は主張しない。
