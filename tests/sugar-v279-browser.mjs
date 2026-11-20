@@ -38,7 +38,7 @@ async function inject({multiplier=3,draws=[],startedAgo=12000,jpBase=150000,rule
   const native=()=>({credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),locked:a.locked.slice(),draws:a.draws.slice(),totalWin:a.totalWin,token:a.token,phase:a.phase});
   const before=native();let state=R.create({rulesRevision:rulesRevision??R.REVISION,id,roundId:'sugar-v279-view',station:1,sugarValues:Array(5).fill(jpBase/5),cardId:'standard',multiplier,seed:279});
   for(const number of draws)state=R.advance(state,number,{roundId:state.roundId,ballIndex:state.draws.length+1});
-  const acceptedIds=(a.wonderBank||[]).map(t=>t.sugarId).filter(Boolean),accepted=ui.accept({version:254,revision:++window.__qaSugar279Revision,bank:[],acceptedIds,queued:false,challenge:state,startedAt:Date.now()-startedAgo});
+  const acceptedIds=(a.wonderBank||[]).map(t=>t.sugarId).filter(Boolean),accepted=ui.accept({version:254,revision:++window.__qaSugar279Revision,bank:[],acceptedIds,queued:false,challenge:state,startedAt:Date.now()+(Number(window.SweetsSharedMachine?.client?.clockOffset)||0)-startedAgo});
   return {accepted,before,after:native(),challenge:state};
  },{multiplier,draws,startedAgo,id:'sugar-v279-view-'+(++serial),jpBase,rulesRevision});
 }
@@ -81,7 +81,14 @@ try{
  },multipliers);
  for(const a of report.artwork){assert.ok(a.frozen);assert.ok(a.width>=512&&a.height>=512,'transparent artwork supports a 512px future JPC presentation');assert.ok(a.transparentFraction>.05&&a.opaquePixels>0,'artwork has genuine alpha and visible content');assert.ok(a.cornerAlpha.every(alpha=>alpha<=1),'outer corners are transparent to within one alpha quantization step');assert.ok(Object.values(a.edgeClearFractions).every(fraction=>fraction>.05),'each edge contains a clear outer region while original ornament tips may touch the boundary');}
  await page.emulateMedia({reducedMotion:'no-preference'});preserved(await inject({startedAgo:4500}));const spinning=await read();assert.equal(spinning.reel.spinning,'true');assert.equal(spinning.result.visible,false);assert.equal(spinning.jp.multiplier.visible,false);report.spinning=spinning;
- preserved(await inject({startedAgo:9800}));const decided=await read();assert.equal(decided.reel.settled,'true');assert.equal(decided.reel.visible,true);assert.equal(decided.jp.multiplier.src,'assets/sugar-art-v279/multiplier-3-transparent.png');assert.equal(decided.jp.multiplier.visible,true);noPlate(decided.jp.multiplier.plate,'decided JP multiplier');report.decided=decided;
+ preserved(await inject({startedAgo:9800}));
+ // A server snapshot timestamp uses the server clock. Observe the actual
+ // stopped frame instead of assuming the injected age has painted already.
+ await page.waitForFunction(()=>{
+  const reel=document.querySelector('.sc270-reel'),popup=document.querySelector('[data-sc-jp-multiplier]');
+  return reel.dataset.settled==='true'&&!popup.hidden&&Number(getComputedStyle(popup).opacity)>0;
+ },null,{timeout:5000});
+ const decided=await read();assert.equal(decided.reel.settled,'true');assert.equal(decided.reel.visible,true);assert.equal(decided.jp.multiplier.src,'assets/sugar-art-v279/multiplier-3-transparent.png');assert.equal(decided.jp.multiplier.visible,true);noPlate(decided.jp.multiplier.plate,'decided JP multiplier');report.decided=decided;
  await page.emulateMedia({reducedMotion:'reduce'});
  for(const value of multipliers){
   preserved(await inject({multiplier:value,draws:[1,2,3,10]}));await page.waitForFunction(()=>window.SweetsSugarChallengeV254.describe().artLoaded);const challenge=await read();verify(challenge,value);await screen('challenge-'+value+'-desktop.png');
