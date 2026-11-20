@@ -137,15 +137,17 @@ function compactMetrics(width,height,state){
  // the Odds row in landscape before it appears, so activating Odds never clips
  // the panel or moves either the board or its FREE interaction targets.
  const reference=basePayoutLayout(width,height,state),base=baseGeometry(width,height,{state}),anchor=base.unit*.08;
- const compactRows=base.portrait?height<420:height<300,railColumns=compactRows?7:4;
+ const compactRows=base.portrait?height<420:height<300,shallowLandscape=!base.portrait&&compactRows,railColumns=compactRows&&!shallowLandscape?7:4,railVisible=showFreeRail(state);
  const metricsAt=u=>{
-  const icon=compactRows?Math.max(12,Math.min(16,u*.55)):Math.max(16,Math.min(22,u*.17)),railWidth=icon*railColumns+railColumns-1,gap=Math.max(3,u*.035);
-  const labelWidth=Math.max(66,u*1.24),nominal=labelWidth+3*Math.max(46,u*.72),matrixWidth=Math.min(nominal,reference.width*.98-railWidth-gap);
+  // Short landscape rows still fit two rows of compact FREE icons. A seven-wide
+  // rail would squeeze GET! out of the payout cells; reclaim it once hidden.
+  const icon=shallowLandscape?12:compactRows?Math.max(12,Math.min(16,u*.55)):Math.max(16,Math.min(22,u*.17)),railWidth=icon*railColumns+railColumns-1,gap=Math.max(3,u*.035);
+  const labelWidth=Math.max(66,u*1.24),nominal=labelWidth+3*Math.max(46,u*.72),matrixWidth=Math.min(nominal,shallowLandscape&&!railVisible?reference.width*.82:reference.width*.98-railWidth-gap);
   const rowHeight=Math.max(compactRows?20:34,u*.60,Math.max(14,u*.40)+u*.17+1),headerHeight=Math.max(14,u*.32),oddsHeight=Math.max(25,u*.54),oddsGap=u*.07;
   const frameInset=Math.max(6,Math.min(14,matrixWidth*.045)),matrixHeight=headerHeight+rowHeight*6+frameInset*2;
   return {unit:u,anchor,referenceWidth:reference.width,matrixWidth,matrixHeight,frameInset,labelWidth,columnWidth:(matrixWidth-frameInset*2-labelWidth)/3,
    railWidth,railGap:gap,railColumns,iconSize:icon,rowHeight,headerHeight,oddsHeight,oddsGap,
-   height:matrixHeight+((state?.oddsMultiplier||1)>=2?oddsGap+oddsHeight:0),railVisible:showFreeRail(state)};
+   height:matrixHeight+((state?.oddsMultiplier||1)>=2?oddsGap+oddsHeight:0),railVisible};
  };
  let metrics=metricsAt(reference.unit);
  if(!base.portrait&&metrics.matrixHeight+metrics.oddsGap+metrics.oddsHeight>height-anchor*2){

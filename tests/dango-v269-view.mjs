@@ -111,7 +111,7 @@ try{
    for(let second=first+1;second<=25;second++){const two=R.draw(one,second);if(two.lineCounts[2]===1){completed=two;break;}}
   }
   if(!completed)throw Error('No real single two-cell-line state was found');
-  qa269.state=completed;const before=JSON.stringify(completed),payout=R.payout(completed);qa269.render();
+  qa269.zeroGetState=completed;qa269.state=completed;const before=JSON.stringify(completed),payout=R.payout(completed);qa269.render();
   const cell=qa269.cell(2,1),result={lines:completed.lineCounts[2],value:cell.textContent,current:cell.classList.contains('current'),label:getComputedStyle(cell,'::after').content,basePayout:R.payRowsBaseFor(completed).find(row=>row.length===2&&row.count===1).hundredths,payoutUnchanged:payout===R.payout(completed),stateUnchanged:before===JSON.stringify(completed)};
   qa269.new();return result;
  });
@@ -119,6 +119,13 @@ try{
  report.artwork=await page.evaluate(async()=>{const image=new Image();image.src=document.querySelector('.dgb-scene').dataset.payoutArt;await image.decode();return {width:image.naturalWidth,height:image.naturalHeight};});
  assert.ok(report.artwork.width>0&&report.artwork.height>0,'generated payout PNG decodes');
  for(const [width,height]of viewports){const m=await fit(width,height);report.firstHalf.push(m);checkLayout(m,{rail:true});await page.screenshot({path:output+'/v269-first-half-'+width+'x'+height+'.png'});}
+ const shallowViewports=[[844,340],[844,300],[844,270],[844,250],[1366,250]];
+ await page.evaluate(()=>{qa269.state=qa269.zeroGetState;qa269.render();});report.shallowEarlyGet=[];
+ assert.equal(await page.evaluate(()=>qa269.cell(2,1).classList.contains('current')),true);
+ for(const [width,height]of shallowViewports){
+  const m=await fit(width,height);report.shallowEarlyGet.push(m);checkLayout(m,{rail:true});
+  await page.screenshot({path:output+'/v270-landscape-early-get-'+width+'x'+height+'.png'});
+ }
  // Entering the fifth-ball thinking state immediately removes every early icon.
  await page.evaluate(()=>qa269.seven());assert.equal(await page.evaluate(()=>qa269.state.freeBudget),7);
  for(const [width,height]of [[1366,750],[390,300],[320,270],[320,480]]){
@@ -139,8 +146,10 @@ try{
  }
  // The decorative frame must fit together with Odds in shallow landscape too.
  report.shallowOdds=[];
- for(const [width,height]of [[844,340],[844,300],[844,270],[844,250],[1366,250]]){
+ for(const [width,height]of shallowViewports){
   const m=await fit(width,height,{remainingMs:Infinity});report.shallowOdds.push(m);checkLayout(m);
+  const early=report.shallowEarlyGet.find(row=>row.width===width&&row.height===height);
+  assert.ok(Math.abs(m.unit-early.unit)<.01&&Math.abs(m.free.x-early.free.x)<.01&&Math.abs(m.free.y-early.free.y)<.01,'rail removal preserves the board and FREE-card positions '+JSON.stringify({early,after:m}));
   assert.ok(m.odds&&m.odds.bottom<=m.height+.5,'the complete Odds row stays visible '+JSON.stringify(m));
   assert.ok(m.odds.y>=m.frame.bottom-.5,'the Odds row follows the whole raster frame '+JSON.stringify(m));
   await page.screenshot({path:output+'/v270-landscape-odds2-'+width+'x'+height+'.png'});
