@@ -73,7 +73,9 @@ try{
  const files=[...new Set([...runtime,...art,...sound])].sort();
  for(const file of files){const bytes=await fs.readFile(path.join(root,file));expected.set(file,{bytes:bytes.length,sha256:hash(bytes)});}
  report.expectedVersion=JSON.parse(await fs.readFile(path.join(root,'app-version.json'),'utf8')).version;
- assert(report.expectedVersion?.includes('-v277-'),'this gate must run against the v277 release');
+ // The assets remain available to pinned offline editions after later releases.
+ // Compare against the current checkout, rather than pinning the shell to 277.
+ assert(typeof report.expectedVersion==='string'&&report.expectedVersion.length>0,'the checkout must declare a build version');
  report.expectedFiles=files.length;
 
  // Do not download all media while Pages is still serving the previous build.

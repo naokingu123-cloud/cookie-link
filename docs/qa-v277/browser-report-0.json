@@ -1,0 +1,5524 @@
+{
+  "version": "20261120-v277-illustrated-awards-and-sound",
+  "shard": 0,
+  "shards": 3,
+  "totalPlannedCases": 15,
+  "plannedCaseCount": 5,
+  "plannedCases": [
+    "cookie",
+    "gelato",
+    "jelly",
+    "dango",
+    "dango-reduced"
+  ],
+  "executedCaseCount": 5,
+  "caseResults": [
+    {
+      "id": "cookie",
+      "game": "cookie",
+      "status": "passed",
+      "durationMs": 44136
+    },
+    {
+      "id": "gelato",
+      "game": "gelato",
+      "status": "passed",
+      "durationMs": 26756
+    },
+    {
+      "id": "jelly",
+      "game": "jelly",
+      "status": "passed",
+      "durationMs": 25090
+    },
+    {
+      "id": "dango",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 29669
+    },
+    {
+      "id": "dango-reduced",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 24861
+    }
+  ],
+  "failures": [],
+  "scope": "Curated real-rule checkpoint witnesses; functional presentation checks, not a probability sample",
+  "games": [
+    {
+      "game": "cookie",
+      "label": "cookie",
+      "mini": false,
+      "reduced": false,
+      "muted": false,
+      "proof": {
+        "seed": 39595,
+        "event": "link",
+        "gain": 20,
+        "groupSizes": [
+          4,
+          2
+        ]
+      },
+      "restored": {
+        "awards": {
+          "version": 277,
+          "attached": [
+            "cookie",
+            "choco",
+            "candy",
+            "gelato",
+            "winery",
+            "popcorn",
+            "jelly",
+            "stick",
+            "castella",
+            "dango"
+          ],
+          "reducedMotion": false,
+          "received": 0,
+          "suppressed": 1,
+          "errors": 0,
+          "renderFrames": 0,
+          "mainImages": 0,
+          "miniImages": 0,
+          "maxPending": 0,
+          "maxMainPaths": 0,
+          "maxMiniPaths": 0,
+          "maxMainParticles": 0,
+          "maxMiniParticles": 0,
+          "eventCounts": {},
+          "artReady": true,
+          "limits": {
+            "pendingPerGame": 4,
+            "mainPaths": 12,
+            "miniPaths": 4,
+            "mainParticles": 48,
+            "miniParticles": 6
+          },
+          "active": [],
+          "pending": [],
+          "history": []
+        },
+        "audio": {
+          "version": 277,
+          "enabled": true,
+          "unlocked": true,
+          "loadedSamples": 41,
+          "totalSamples": 41,
+          "activeVoices": 0,
+          "maxVoices": 8,
+          "pendingAwards": 0,
+          "starts": 2,
+          "suppressed": 2,
+          "awardStarts": 0,
+          "legacyAwardsSuppressed": 0,
+          "voiceEvictions": 0,
+          "maxActiveVoices": 2,
+          "errors": 0,
+          "lastEvents": [
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 11233
+            },
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 14321
+            },
+            {
+              "event": "start",
+              "sample": "refill",
+              "game": "cookie",
+              "award": false,
+              "tier": 0,
+              "explicit": false,
+              "key": "",
+              "voices": 1,
+              "at": 16173
+            },
+            {
+              "event": "start",
+              "sample": "land",
+              "game": "cookie",
+              "award": false,
+              "tier": 0,
+              "explicit": false,
+              "key": "",
+              "voices": 2,
+              "at": 16173
+            }
+          ],
+          "sceneRoutes": {
+            "drill": "drill",
+            "stratum": "hit-canyon",
+            "melt": "melt",
+            "ore": "ore",
+            "sugar": "sugar",
+            "random": "transform",
+            "transform": "transform",
+            "glass": "hit-prism",
+            "landing": "land",
+            "refill": "refill",
+            "pop": "hit-popcorn",
+            "triangle": "award-1",
+            "hexagon": "award-2",
+            "role": "award-1",
+            "candy": "hit-candy",
+            "cookie": "hit-cookie",
+            "record": "award-2",
+            "gift": "sugar",
+            "delivery": "refill",
+            "cookie-hit": "hit-cookie",
+            "cookie-fall": "drop",
+            "cookie-land": "land",
+            "cookie-refill": "refill",
+            "chain": "chain",
+            "color-burst": "sweep",
+            "hammer-launch": "hammer-launch",
+            "hammer-impact": "hammer-impact",
+            "arrival": "arrival",
+            "canyon-fall": "drop",
+            "canyon-land": "land",
+            "scroll": "scroll",
+            "return": "round",
+            "renew": "refill",
+            "all-drills": "award-2",
+            "six-hit": "hit-candy",
+            "six-miss": "miss",
+            "sweep": "sweep",
+            "line": "award-1",
+            "finish": "finish",
+            "allclear": "award-4",
+            "bonus": "award-2",
+            "credit-tick": "count",
+            "credit-done": "count-done",
+            "pay-step": "count",
+            "pay-lock": "count-done",
+            "launch": "launch",
+            "continue": "award-2",
+            "scale-tick": "count",
+            "six-count": "count",
+            "big-bonus": "award-3",
+            "level": "level",
+            "rank": "level",
+            "round": "round",
+            "transfer": "transfer",
+            "clear": "award-4"
+          },
+          "nativeRoutes": {
+            "crack": "hit-cookie",
+            "confirm": "confirm",
+            "magic": "transform",
+            "sugar": "sugar",
+            "hammer": "hammer-impact",
+            "sugar-spawn": "sugar"
+          },
+          "samples": [
+            "drill",
+            "hit-canyon",
+            "melt",
+            "ore",
+            "sugar",
+            "transform",
+            "hit-prism",
+            "land",
+            "refill",
+            "hit-popcorn",
+            "award-1",
+            "award-2",
+            "hit-candy",
+            "hit-cookie",
+            "drop",
+            "chain",
+            "sweep",
+            "hammer-launch",
+            "hammer-impact",
+            "arrival",
+            "scroll",
+            "round",
+            "miss",
+            "finish",
+            "award-4",
+            "count",
+            "count-done",
+            "launch",
+            "award-3",
+            "level",
+            "transfer",
+            "confirm",
+            "ui",
+            "reach",
+            "reach-high",
+            "hit-water",
+            "hit-waffle",
+            "hit-castella",
+            "hit-dango",
+            "jpc-qualified",
+            "multiplier"
+          ],
+          "musicDucked": false,
+          "sharedContext": true
+        },
+        "phase": "playing",
+        "draws": [
+          1,
+          2
+        ]
+      },
+      "painted": 6847,
+      "pointerEvents": "none",
+      "box": {
+        "width": 301.875,
+        "height": 301.875
+      },
+      "boardBox": {
+        "width": 298,
+        "height": 298
+      },
+      "event": {
+        "game": "cookie",
+        "phase": "link",
+        "key": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+        "kind": "shape",
+        "tier": 1,
+        "label": "4 LINK!",
+        "detail": "2連鎖 ・ 最大LINK更新",
+        "win": 600,
+        "total": true,
+        "gain": 20,
+        "age": 300,
+        "duration": 1800,
+        "pathsVisible": true,
+        "paths": [
+          {
+            "closed": true,
+            "mainPoints": [
+              {
+                "x": 167.625,
+                "y": 55.875,
+                "r": 17.135
+              },
+              {
+                "x": 279.375,
+                "y": 55.875,
+                "r": 17.135
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 15.75,
+                "y": 5.25,
+                "r": 1.61
+              },
+              {
+                "x": 26.25,
+                "y": 5.25,
+                "r": 1.61
+              }
+            ]
+          },
+          {
+            "closed": true,
+            "mainPoints": [
+              {
+                "x": 279.375,
+                "y": 93.125,
+                "r": 17.135
+              },
+              {
+                "x": 279.375,
+                "y": 130.375,
+                "r": 17.135
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 26.25,
+                "y": 8.75,
+                "r": 1.61
+              },
+              {
+                "x": 26.25,
+                "y": 12.25,
+                "r": 1.61
+              }
+            ]
+          }
+        ]
+      },
+      "expectedPaths": [],
+      "diagnostics": {
+        "version": 277,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 1,
+        "errors": 0,
+        "renderFrames": 4,
+        "mainImages": 2,
+        "miniImages": 0,
+        "maxPending": 1,
+        "maxMainPaths": 2,
+        "maxMiniPaths": 0,
+        "maxMainParticles": 9,
+        "maxMiniParticles": 0,
+        "eventCounts": {
+          "cookie": 1
+        },
+        "artReady": true,
+        "limits": {
+          "pendingPerGame": 4,
+          "mainPaths": 12,
+          "miniPaths": 4,
+          "mainParticles": 48,
+          "miniParticles": 6
+        },
+        "active": [
+          {
+            "game": "cookie",
+            "phase": "link",
+            "key": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+            "kind": "shape",
+            "tier": 1,
+            "label": "4 LINK!",
+            "detail": "2連鎖 ・ 最大LINK更新",
+            "win": 600,
+            "total": true,
+            "gain": 20,
+            "age": 300,
+            "duration": 1800,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 167.625,
+                    "y": 55.875,
+                    "r": 17.135
+                  },
+                  {
+                    "x": 279.375,
+                    "y": 55.875,
+                    "r": 17.135
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 15.75,
+                    "y": 5.25,
+                    "r": 1.61
+                  },
+                  {
+                    "x": 26.25,
+                    "y": 5.25,
+                    "r": 1.61
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 279.375,
+                    "y": 93.125,
+                    "r": 17.135
+                  },
+                  {
+                    "x": 279.375,
+                    "y": 130.375,
+                    "r": 17.135
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 26.25,
+                    "y": 8.75,
+                    "r": 1.61
+                  },
+                  {
+                    "x": 26.25,
+                    "y": 12.25,
+                    "r": 1.61
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pending": [],
+        "history": [
+          {
+            "game": "cookie",
+            "phase": "link",
+            "key": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+            "kind": "shape",
+            "tier": 1,
+            "label": "4 LINK!",
+            "detail": "2連鎖 ・ 最大LINK更新",
+            "win": 600,
+            "total": true,
+            "gain": 20,
+            "age": 0,
+            "duration": 1800,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 167.625,
+                    "y": 55.875,
+                    "r": 17.135
+                  },
+                  {
+                    "x": 279.375,
+                    "y": 55.875,
+                    "r": 17.135
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 15.75,
+                    "y": 5.25,
+                    "r": 1.61
+                  },
+                  {
+                    "x": 26.25,
+                    "y": 5.25,
+                    "r": 1.61
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 279.375,
+                    "y": 93.125,
+                    "r": 17.135
+                  },
+                  {
+                    "x": 279.375,
+                    "y": 130.375,
+                    "r": 17.135
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 26.25,
+                    "y": 8.75,
+                    "r": 1.61
+                  },
+                  {
+                    "x": 26.25,
+                    "y": 12.25,
+                    "r": 1.61
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "audio": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 10,
+        "suppressed": 4,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 0,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 3,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 11233
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 14321
+          },
+          {
+            "event": "start",
+            "sample": "refill",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16173
+          },
+          {
+            "event": "start",
+            "sample": "land",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16173
+          },
+          {
+            "event": "start",
+            "sample": "hit-cookie",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 24631
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 24752
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 3,
+            "at": 24761
+          },
+          {
+            "event": "start",
+            "sample": "hit-cookie",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 30282
+          },
+          {
+            "event": "start",
+            "sample": "drop",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 33030
+          },
+          {
+            "event": "start",
+            "sample": "land",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 33030
+          },
+          {
+            "event": "start",
+            "sample": "chain",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 34432
+          },
+          {
+            "event": "suppressed",
+            "reason": "native-foley-owner",
+            "key": "chain",
+            "at": 34432
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-accent",
+            "key": "chain",
+            "at": 34441
+          },
+          {
+            "event": "start",
+            "sample": "award-1",
+            "game": "cookie",
+            "award": true,
+            "tier": 1,
+            "explicit": true,
+            "key": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+            "voices": 2,
+            "at": 34961
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      },
+      "nativeEvents": [
+        {
+          "phase": "drawpending",
+          "number": 3,
+          "draws": [],
+          "processed": 0
+        },
+        {
+          "phase": "queued",
+          "number": 3,
+          "draws": [],
+          "processed": 0
+        },
+        {
+          "phase": "hit",
+          "number": 3,
+          "draws": [
+            1,
+            2,
+            3
+          ],
+          "processed": 0
+        },
+        {
+          "phase": "vanish",
+          "number": 3,
+          "draws": [
+            1,
+            2,
+            3
+          ],
+          "processed": 0
+        },
+        {
+          "phase": "remove",
+          "number": 3,
+          "draws": [
+            1,
+            2,
+            3
+          ],
+          "processed": 0
+        },
+        {
+          "phase": "fall",
+          "number": 3,
+          "draws": [
+            1,
+            2,
+            3
+          ],
+          "processed": 0
+        },
+        {
+          "phase": "link",
+          "number": 3,
+          "gain": 20,
+          "draws": [
+            1,
+            2,
+            3
+          ],
+          "processed": 0
+        }
+      ],
+      "draws": [
+        1,
+        2,
+        3
+      ],
+      "audioAfter": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 10,
+        "suppressed": 4,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 0,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 3,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 11233
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 14321
+          },
+          {
+            "event": "start",
+            "sample": "refill",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16173
+          },
+          {
+            "event": "start",
+            "sample": "land",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16173
+          },
+          {
+            "event": "start",
+            "sample": "hit-cookie",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 24631
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 24752
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 3,
+            "at": 24761
+          },
+          {
+            "event": "start",
+            "sample": "hit-cookie",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 30282
+          },
+          {
+            "event": "start",
+            "sample": "drop",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 33030
+          },
+          {
+            "event": "start",
+            "sample": "land",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 33030
+          },
+          {
+            "event": "start",
+            "sample": "chain",
+            "game": "cookie",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 34432
+          },
+          {
+            "event": "suppressed",
+            "reason": "native-foley-owner",
+            "key": "chain",
+            "at": 34432
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-accent",
+            "key": "chain",
+            "at": 34441
+          },
+          {
+            "event": "start",
+            "sample": "award-1",
+            "game": "cookie",
+            "award": true,
+            "tier": 1,
+            "explicit": true,
+            "key": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+            "voices": 2,
+            "at": 34961
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      }
+    },
+    {
+      "game": "gelato",
+      "label": "gelato",
+      "mini": false,
+      "reduced": false,
+      "muted": false,
+      "proof": {
+        "event": "gelatoFill",
+        "allClear": true,
+        "nodeIds": [
+          0,
+          1,
+          5,
+          13,
+          17,
+          18
+        ]
+      },
+      "restored": {
+        "awards": {
+          "version": 277,
+          "attached": [
+            "cookie",
+            "choco",
+            "candy",
+            "gelato",
+            "winery",
+            "popcorn",
+            "jelly",
+            "stick",
+            "castella",
+            "dango"
+          ],
+          "reducedMotion": false,
+          "received": 0,
+          "suppressed": 1,
+          "errors": 0,
+          "renderFrames": 0,
+          "mainImages": 0,
+          "miniImages": 0,
+          "maxPending": 0,
+          "maxMainPaths": 0,
+          "maxMiniPaths": 0,
+          "maxMainParticles": 0,
+          "maxMiniParticles": 0,
+          "eventCounts": {},
+          "artReady": true,
+          "limits": {
+            "pendingPerGame": 4,
+            "mainPaths": 12,
+            "miniPaths": 4,
+            "mainParticles": 48,
+            "miniParticles": 6
+          },
+          "active": [],
+          "pending": [],
+          "history": []
+        },
+        "audio": {
+          "version": 277,
+          "enabled": true,
+          "unlocked": true,
+          "loadedSamples": 41,
+          "totalSamples": 41,
+          "activeVoices": 0,
+          "maxVoices": 8,
+          "pendingAwards": 0,
+          "starts": 0,
+          "suppressed": 2,
+          "awardStarts": 0,
+          "legacyAwardsSuppressed": 0,
+          "voiceEvictions": 0,
+          "maxActiveVoices": 0,
+          "errors": 0,
+          "lastEvents": [
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 9221
+            },
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 12472
+            }
+          ],
+          "sceneRoutes": {
+            "drill": "drill",
+            "stratum": "hit-canyon",
+            "melt": "melt",
+            "ore": "ore",
+            "sugar": "sugar",
+            "random": "transform",
+            "transform": "transform",
+            "glass": "hit-prism",
+            "landing": "land",
+            "refill": "refill",
+            "pop": "hit-popcorn",
+            "triangle": "award-1",
+            "hexagon": "award-2",
+            "role": "award-1",
+            "candy": "hit-candy",
+            "cookie": "hit-cookie",
+            "record": "award-2",
+            "gift": "sugar",
+            "delivery": "refill",
+            "cookie-hit": "hit-cookie",
+            "cookie-fall": "drop",
+            "cookie-land": "land",
+            "cookie-refill": "refill",
+            "chain": "chain",
+            "color-burst": "sweep",
+            "hammer-launch": "hammer-launch",
+            "hammer-impact": "hammer-impact",
+            "arrival": "arrival",
+            "canyon-fall": "drop",
+            "canyon-land": "land",
+            "scroll": "scroll",
+            "return": "round",
+            "renew": "refill",
+            "all-drills": "award-2",
+            "six-hit": "hit-candy",
+            "six-miss": "miss",
+            "sweep": "sweep",
+            "line": "award-1",
+            "finish": "finish",
+            "allclear": "award-4",
+            "bonus": "award-2",
+            "credit-tick": "count",
+            "credit-done": "count-done",
+            "pay-step": "count",
+            "pay-lock": "count-done",
+            "launch": "launch",
+            "continue": "award-2",
+            "scale-tick": "count",
+            "six-count": "count",
+            "big-bonus": "award-3",
+            "level": "level",
+            "rank": "level",
+            "round": "round",
+            "transfer": "transfer",
+            "clear": "award-4"
+          },
+          "nativeRoutes": {
+            "crack": "hit-cookie",
+            "confirm": "confirm",
+            "magic": "transform",
+            "sugar": "sugar",
+            "hammer": "hammer-impact",
+            "sugar-spawn": "sugar"
+          },
+          "samples": [
+            "drill",
+            "hit-canyon",
+            "melt",
+            "ore",
+            "sugar",
+            "transform",
+            "hit-prism",
+            "land",
+            "refill",
+            "hit-popcorn",
+            "award-1",
+            "award-2",
+            "hit-candy",
+            "hit-cookie",
+            "drop",
+            "chain",
+            "sweep",
+            "hammer-launch",
+            "hammer-impact",
+            "arrival",
+            "scroll",
+            "round",
+            "miss",
+            "finish",
+            "award-4",
+            "count",
+            "count-done",
+            "launch",
+            "award-3",
+            "level",
+            "transfer",
+            "confirm",
+            "ui",
+            "reach",
+            "reach-high",
+            "hit-water",
+            "hit-waffle",
+            "hit-castella",
+            "hit-dango",
+            "jpc-qualified",
+            "multiplier"
+          ],
+          "musicDucked": false,
+          "sharedContext": true
+        },
+        "phase": "playing",
+        "draws": [
+          4,
+          11,
+          25,
+          7,
+          8
+        ]
+      },
+      "painted": 6078,
+      "pointerEvents": "none",
+      "box": {
+        "width": 397.5,
+        "height": 343.125
+      },
+      "boardBox": {
+        "width": 326,
+        "height": 366
+      },
+      "event": {
+        "game": "gelato",
+        "phase": "gelatoFill",
+        "key": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+        "kind": "clear",
+        "tier": 4,
+        "label": "ALL COMPLETE!",
+        "detail": "24パネル 全埋め",
+        "win": 326100,
+        "total": false,
+        "gain": 10870,
+        "age": 300,
+        "duration": 3100,
+        "pathsVisible": true,
+        "paths": [
+          {
+            "closed": true,
+            "mainPoints": [
+              {
+                "x": 43.294504587299755,
+                "y": 105.40799999999999,
+                "r": 13.692
+              },
+              {
+                "x": 103.1472522936499,
+                "y": 144.204,
+                "r": 13.692
+              },
+              {
+                "x": 83.19633639153315,
+                "y": 183,
+                "r": 13.692
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 3.7185464062711446,
+                "y": 8.064,
+                "r": 1.176
+              },
+              {
+                "x": 8.859273203135574,
+                "y": 11.032,
+                "r": 1.176
+              },
+              {
+                "x": 7.1456976041807625,
+                "y": 14,
+                "r": 1.176
+              }
+            ]
+          },
+          {
+            "closed": true,
+            "mainPoints": [
+              {
+                "x": 282.7054954127002,
+                "y": 105.40799999999999,
+                "r": 13.692
+              },
+              {
+                "x": 222.85274770635013,
+                "y": 144.204,
+                "r": 13.692
+              },
+              {
+                "x": 242.80366360846685,
+                "y": 183,
+                "r": 13.692
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 24.281453593728852,
+                "y": 8.064,
+                "r": 1.176
+              },
+              {
+                "x": 19.140726796864428,
+                "y": 11.032,
+                "r": 1.176
+              },
+              {
+                "x": 20.85430239581924,
+                "y": 14,
+                "r": 1.176
+              }
+            ]
+          },
+          {
+            "closed": true,
+            "mainPoints": [
+              {
+                "x": 123.09816819576658,
+                "y": 260.592,
+                "r": 13.692
+              },
+              {
+                "x": 163,
+                "y": 260.592,
+                "r": 13.692
+              },
+              {
+                "x": 163,
+                "y": 338.184,
+                "r": 13.692
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 10.57284880209038,
+                "y": 19.936,
+                "r": 1.176
+              },
+              {
+                "x": 14,
+                "y": 19.936,
+                "r": 1.176
+              },
+              {
+                "x": 14,
+                "y": 25.872,
+                "r": 1.176
+              }
+            ]
+          },
+          {
+            "closed": true,
+            "mainPoints": [
+              {
+                "x": 163,
+                "y": 260.592,
+                "r": 13.692
+              },
+              {
+                "x": 202.90183180423344,
+                "y": 260.592,
+                "r": 13.692
+              },
+              {
+                "x": 163,
+                "y": 338.184,
+                "r": 13.692
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 14,
+                "y": 19.936,
+                "r": 1.176
+              },
+              {
+                "x": 17.42715119790962,
+                "y": 19.936,
+                "r": 1.176
+              },
+              {
+                "x": 14,
+                "y": 25.872,
+                "r": 1.176
+              }
+            ]
+          }
+        ]
+      },
+      "expectedPaths": [],
+      "diagnostics": {
+        "version": 277,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 1,
+        "errors": 0,
+        "renderFrames": 4,
+        "mainImages": 2,
+        "miniImages": 0,
+        "maxPending": 1,
+        "maxMainPaths": 4,
+        "maxMiniPaths": 0,
+        "maxMainParticles": 20,
+        "maxMiniParticles": 0,
+        "eventCounts": {
+          "gelato": 1
+        },
+        "artReady": true,
+        "limits": {
+          "pendingPerGame": 4,
+          "mainPaths": 12,
+          "miniPaths": 4,
+          "mainParticles": 48,
+          "miniParticles": 6
+        },
+        "active": [
+          {
+            "game": "gelato",
+            "phase": "gelatoFill",
+            "key": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+            "kind": "clear",
+            "tier": 4,
+            "label": "ALL COMPLETE!",
+            "detail": "24パネル 全埋め",
+            "win": 326100,
+            "total": false,
+            "gain": 10870,
+            "age": 300,
+            "duration": 3100,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 43.294504587299755,
+                    "y": 105.40799999999999,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 103.1472522936499,
+                    "y": 144.204,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 83.19633639153315,
+                    "y": 183,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 3.7185464062711446,
+                    "y": 8.064,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 8.859273203135574,
+                    "y": 11.032,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 7.1456976041807625,
+                    "y": 14,
+                    "r": 1.176
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 282.7054954127002,
+                    "y": 105.40799999999999,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 222.85274770635013,
+                    "y": 144.204,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 242.80366360846685,
+                    "y": 183,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 24.281453593728852,
+                    "y": 8.064,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 19.140726796864428,
+                    "y": 11.032,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 20.85430239581924,
+                    "y": 14,
+                    "r": 1.176
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 123.09816819576658,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 163,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 163,
+                    "y": 338.184,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 10.57284880209038,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 14,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 14,
+                    "y": 25.872,
+                    "r": 1.176
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 163,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 202.90183180423344,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 163,
+                    "y": 338.184,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 14,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 17.42715119790962,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 14,
+                    "y": 25.872,
+                    "r": 1.176
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pending": [],
+        "history": [
+          {
+            "game": "gelato",
+            "phase": "gelatoFill",
+            "key": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+            "kind": "clear",
+            "tier": 4,
+            "label": "ALL COMPLETE!",
+            "detail": "24パネル 全埋め",
+            "win": 326100,
+            "total": false,
+            "gain": 10870,
+            "age": 0,
+            "duration": 3100,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 43.294504587299755,
+                    "y": 105.40799999999999,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 103.1472522936499,
+                    "y": 144.204,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 83.19633639153315,
+                    "y": 183,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 3.7185464062711446,
+                    "y": 8.064,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 8.859273203135574,
+                    "y": 11.032,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 7.1456976041807625,
+                    "y": 14,
+                    "r": 1.176
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 282.7054954127002,
+                    "y": 105.40799999999999,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 222.85274770635013,
+                    "y": 144.204,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 242.80366360846685,
+                    "y": 183,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 24.281453593728852,
+                    "y": 8.064,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 19.140726796864428,
+                    "y": 11.032,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 20.85430239581924,
+                    "y": 14,
+                    "r": 1.176
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 123.09816819576658,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 163,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 163,
+                    "y": 338.184,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 10.57284880209038,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 14,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 14,
+                    "y": 25.872,
+                    "r": 1.176
+                  }
+                ]
+              },
+              {
+                "closed": true,
+                "mainPoints": [
+                  {
+                    "x": 163,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 202.90183180423344,
+                    "y": 260.592,
+                    "r": 13.692
+                  },
+                  {
+                    "x": 163,
+                    "y": 338.184,
+                    "r": 13.692
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 14,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 17.42715119790962,
+                    "y": 19.936,
+                    "r": 1.176
+                  },
+                  {
+                    "x": 14,
+                    "y": 25.872,
+                    "r": 1.176
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "audio": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 4,
+        "suppressed": 2,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 0,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 3,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 9221
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 12472
+          },
+          {
+            "event": "start",
+            "sample": "hit-prism",
+            "game": "gelato",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16771
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "gelato",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16832
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "gelato",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 3,
+            "at": 16840
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "gelato",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+            "voices": 1,
+            "at": 18561
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      },
+      "nativeEvents": [
+        {
+          "phase": "drawpending",
+          "number": 20,
+          "draws": [
+            4,
+            11,
+            25,
+            7,
+            8
+          ],
+          "processed": 5
+        },
+        {
+          "phase": "queued",
+          "draws": [
+            4,
+            11,
+            25,
+            7,
+            8
+          ],
+          "processed": 5
+        },
+        {
+          "phase": "gelatoHit",
+          "number": 20,
+          "draws": [
+            4,
+            11,
+            25,
+            7,
+            8,
+            20
+          ],
+          "processed": 5
+        },
+        {
+          "phase": "gelatoFill",
+          "number": 20,
+          "gain": 10870,
+          "draws": [
+            4,
+            11,
+            25,
+            7,
+            8,
+            20
+          ],
+          "processed": 5
+        }
+      ],
+      "draws": [
+        4,
+        11,
+        25,
+        7,
+        8,
+        20
+      ],
+      "audioAfter": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 4,
+        "suppressed": 2,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 0,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 3,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 9221
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 12472
+          },
+          {
+            "event": "start",
+            "sample": "hit-prism",
+            "game": "gelato",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16771
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "gelato",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16832
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "gelato",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 3,
+            "at": 16840
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "gelato",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+            "voices": 1,
+            "at": 18561
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      }
+    },
+    {
+      "game": "jelly",
+      "label": "jelly",
+      "mini": false,
+      "reduced": false,
+      "muted": false,
+      "proof": {
+        "event": "jellyPour",
+        "newLines": [
+          4,
+          7
+        ],
+        "allClear": true
+      },
+      "restored": {
+        "awards": {
+          "version": 277,
+          "attached": [
+            "cookie",
+            "choco",
+            "candy",
+            "gelato",
+            "winery",
+            "popcorn",
+            "jelly",
+            "stick",
+            "castella",
+            "dango"
+          ],
+          "reducedMotion": false,
+          "received": 0,
+          "suppressed": 1,
+          "errors": 0,
+          "renderFrames": 0,
+          "mainImages": 0,
+          "miniImages": 0,
+          "maxPending": 0,
+          "maxMainPaths": 0,
+          "maxMiniPaths": 0,
+          "maxMainParticles": 0,
+          "maxMiniParticles": 0,
+          "eventCounts": {},
+          "artReady": true,
+          "limits": {
+            "pendingPerGame": 4,
+            "mainPaths": 12,
+            "miniPaths": 4,
+            "mainParticles": 48,
+            "miniParticles": 6
+          },
+          "active": [],
+          "pending": [],
+          "history": []
+        },
+        "audio": {
+          "version": 277,
+          "enabled": true,
+          "unlocked": true,
+          "loadedSamples": 41,
+          "totalSamples": 41,
+          "activeVoices": 0,
+          "maxVoices": 8,
+          "pendingAwards": 0,
+          "starts": 0,
+          "suppressed": 2,
+          "awardStarts": 0,
+          "legacyAwardsSuppressed": 0,
+          "voiceEvictions": 0,
+          "maxActiveVoices": 0,
+          "errors": 0,
+          "lastEvents": [
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 10051
+            },
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 12931
+            }
+          ],
+          "sceneRoutes": {
+            "drill": "drill",
+            "stratum": "hit-canyon",
+            "melt": "melt",
+            "ore": "ore",
+            "sugar": "sugar",
+            "random": "transform",
+            "transform": "transform",
+            "glass": "hit-prism",
+            "landing": "land",
+            "refill": "refill",
+            "pop": "hit-popcorn",
+            "triangle": "award-1",
+            "hexagon": "award-2",
+            "role": "award-1",
+            "candy": "hit-candy",
+            "cookie": "hit-cookie",
+            "record": "award-2",
+            "gift": "sugar",
+            "delivery": "refill",
+            "cookie-hit": "hit-cookie",
+            "cookie-fall": "drop",
+            "cookie-land": "land",
+            "cookie-refill": "refill",
+            "chain": "chain",
+            "color-burst": "sweep",
+            "hammer-launch": "hammer-launch",
+            "hammer-impact": "hammer-impact",
+            "arrival": "arrival",
+            "canyon-fall": "drop",
+            "canyon-land": "land",
+            "scroll": "scroll",
+            "return": "round",
+            "renew": "refill",
+            "all-drills": "award-2",
+            "six-hit": "hit-candy",
+            "six-miss": "miss",
+            "sweep": "sweep",
+            "line": "award-1",
+            "finish": "finish",
+            "allclear": "award-4",
+            "bonus": "award-2",
+            "credit-tick": "count",
+            "credit-done": "count-done",
+            "pay-step": "count",
+            "pay-lock": "count-done",
+            "launch": "launch",
+            "continue": "award-2",
+            "scale-tick": "count",
+            "six-count": "count",
+            "big-bonus": "award-3",
+            "level": "level",
+            "rank": "level",
+            "round": "round",
+            "transfer": "transfer",
+            "clear": "award-4"
+          },
+          "nativeRoutes": {
+            "crack": "hit-cookie",
+            "confirm": "confirm",
+            "magic": "transform",
+            "sugar": "sugar",
+            "hammer": "hammer-impact",
+            "sugar-spawn": "sugar"
+          },
+          "samples": [
+            "drill",
+            "hit-canyon",
+            "melt",
+            "ore",
+            "sugar",
+            "transform",
+            "hit-prism",
+            "land",
+            "refill",
+            "hit-popcorn",
+            "award-1",
+            "award-2",
+            "hit-candy",
+            "hit-cookie",
+            "drop",
+            "chain",
+            "sweep",
+            "hammer-launch",
+            "hammer-impact",
+            "arrival",
+            "scroll",
+            "round",
+            "miss",
+            "finish",
+            "award-4",
+            "count",
+            "count-done",
+            "launch",
+            "award-3",
+            "level",
+            "transfer",
+            "confirm",
+            "ui",
+            "reach",
+            "reach-high",
+            "hit-water",
+            "hit-waffle",
+            "hit-castella",
+            "hit-dango",
+            "jpc-qualified",
+            "multiplier"
+          ],
+          "musicDucked": false,
+          "sharedContext": true
+        },
+        "phase": "playing",
+        "draws": [
+          2,
+          9,
+          12,
+          17,
+          19,
+          6,
+          15
+        ]
+      },
+      "painted": 9071,
+      "pointerEvents": "none",
+      "box": {
+        "width": 403.125,
+        "height": 348.75
+      },
+      "boardBox": {
+        "width": 430,
+        "height": 372
+      },
+      "event": {
+        "game": "jelly",
+        "phase": "jellyPour",
+        "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+        "kind": "bingo",
+        "tier": 4,
+        "label": "12 LINE BINGO!",
+        "detail": "12ライン 全完成",
+        "win": 900000,
+        "total": true,
+        "gain": 30000,
+        "age": 300,
+        "duration": 3100,
+        "pathsVisible": true,
+        "paths": [
+          {
+            "closed": false,
+            "mainPoints": [
+              {
+                "x": 193.32197997260272,
+                "y": 279.4886260273973,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 240.06629298630133,
+                "y": 279.4886260273973,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 286.810606,
+                "y": 279.4886260273973,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 333.5549190136986,
+                "y": 279.4886260273973,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 380.29923202739724,
+                "y": 279.4886260273973,
+                "r": 20.5674977260274
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 4.410958904109589,
+                "y": 23.58904109589041,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 9.205479452054794,
+                "y": 23.58904109589041,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 14,
+                "y": 23.58904109589041,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 18.794520547945204,
+                "y": 23.58904109589041,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 23.58904109589041,
+                "y": 23.58904109589041,
+                "r": 2.1095890410958904
+              }
+            ]
+          },
+          {
+            "closed": false,
+            "mainPoints": [
+              {
+                "x": 286.810606,
+                "y": 92.51137397260273,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 286.810606,
+                "y": 139.25568698630138,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 286.810606,
+                "y": 186,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 286.810606,
+                "y": 232.74431301369864,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 286.810606,
+                "y": 279.4886260273973,
+                "r": 20.5674977260274
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 14,
+                "y": 4.410958904109589,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 14,
+                "y": 9.205479452054794,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 14,
+                "y": 14,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 14,
+                "y": 18.794520547945204,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 14,
+                "y": 23.58904109589041,
+                "r": 2.1095890410958904
+              }
+            ]
+          }
+        ]
+      },
+      "expectedPaths": [
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 139.25568698630138,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 139.25568698630138,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 186,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 186,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 232.74431301369864,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 232.74431301369864,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 193.32197997260272,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 240.06629298630133,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 240.06629298630133,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 286.810606,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 286.810606,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 333.5549190136986,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 333.5549190136986,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 380.29923202739724,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 193.32197997260272,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 380.29923202739724,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ],
+        [
+          {
+            "x": 380.29923202739724,
+            "y": 92.51137397260273,
+            "r": 20.5674977260274
+          },
+          {
+            "x": 193.32197997260272,
+            "y": 279.4886260273973,
+            "r": 20.5674977260274
+          }
+        ]
+      ],
+      "diagnostics": {
+        "version": 277,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 1,
+        "errors": 0,
+        "renderFrames": 10,
+        "mainImages": 2,
+        "miniImages": 0,
+        "maxPending": 1,
+        "maxMainPaths": 2,
+        "maxMiniPaths": 0,
+        "maxMainParticles": 16,
+        "maxMiniParticles": 0,
+        "eventCounts": {
+          "jelly": 1
+        },
+        "artReady": true,
+        "limits": {
+          "pendingPerGame": 4,
+          "mainPaths": 12,
+          "miniPaths": 4,
+          "mainParticles": 48,
+          "miniParticles": 6
+        },
+        "active": [
+          {
+            "game": "jelly",
+            "phase": "jellyPour",
+            "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+            "kind": "bingo",
+            "tier": 4,
+            "label": "12 LINE BINGO!",
+            "detail": "12ライン 全完成",
+            "win": 900000,
+            "total": true,
+            "gain": 30000,
+            "age": 300,
+            "duration": 3100,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 193.32197997260272,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 240.06629298630133,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 333.5549190136986,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 380.29923202739724,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 4.410958904109589,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 9.205479452054794,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 18.794520547945204,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 23.58904109589041,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  }
+                ]
+              },
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 286.810606,
+                    "y": 92.51137397260273,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 139.25568698630138,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 186,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 232.74431301369864,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 14,
+                    "y": 4.410958904109589,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 9.205479452054794,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 14,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 18.794520547945204,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pending": [],
+        "history": [
+          {
+            "game": "jelly",
+            "phase": "jellyPour",
+            "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+            "kind": "bingo",
+            "tier": 4,
+            "label": "12 LINE BINGO!",
+            "detail": "12ライン 全完成",
+            "win": 900000,
+            "total": true,
+            "gain": 30000,
+            "age": 0,
+            "duration": 3100,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 193.32197997260272,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 240.06629298630133,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 333.5549190136986,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 380.29923202739724,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 4.410958904109589,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 9.205479452054794,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 18.794520547945204,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 23.58904109589041,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  }
+                ]
+              },
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 286.810606,
+                    "y": 92.51137397260273,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 139.25568698630138,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 186,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 232.74431301369864,
+                    "r": 20.5674977260274
+                  },
+                  {
+                    "x": 286.810606,
+                    "y": 279.4886260273973,
+                    "r": 20.5674977260274
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 14,
+                    "y": 4.410958904109589,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 9.205479452054794,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 14,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 18.794520547945204,
+                    "r": 2.1095890410958904
+                  },
+                  {
+                    "x": 14,
+                    "y": 23.58904109589041,
+                    "r": 2.1095890410958904
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "audio": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 4,
+        "suppressed": 4,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 2,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 3,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 10051
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 12931
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "jelly",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16840
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "jelly",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16840
+          },
+          {
+            "event": "start",
+            "sample": "transfer",
+            "game": "jelly",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 3,
+            "at": 16951
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "legacy:allclear",
+            "at": 17792
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "event:special",
+            "at": 17792
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "jelly",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+            "voices": 1,
+            "at": 17882
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      },
+      "nativeEvents": [
+        {
+          "phase": "jellyPour",
+          "draws": [
+            2,
+            9,
+            12,
+            17,
+            19,
+            6,
+            15,
+            23
+          ],
+          "processed": 7
+        }
+      ],
+      "draws": [
+        2,
+        9,
+        12,
+        17,
+        19,
+        6,
+        15,
+        23
+      ],
+      "audioAfter": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 4,
+        "suppressed": 4,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 2,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 3,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 10051
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 12931
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "jelly",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16840
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "jelly",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16840
+          },
+          {
+            "event": "start",
+            "sample": "transfer",
+            "game": "jelly",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 3,
+            "at": 16951
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "legacy:allclear",
+            "at": 17792
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "event:special",
+            "at": 17792
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "jelly",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+            "voices": 1,
+            "at": 17882
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      }
+    },
+    {
+      "game": "dango",
+      "label": "dango",
+      "mini": false,
+      "reduced": false,
+      "muted": false,
+      "proof": {
+        "event": "settled",
+        "newLines": [
+          3
+        ],
+        "newHighestRoles": [
+          6
+        ],
+        "highest": true
+      },
+      "restored": {
+        "awards": {
+          "version": 277,
+          "attached": [
+            "cookie",
+            "choco",
+            "candy",
+            "gelato",
+            "winery",
+            "popcorn",
+            "jelly",
+            "stick",
+            "castella",
+            "dango"
+          ],
+          "reducedMotion": false,
+          "received": 0,
+          "suppressed": 1,
+          "errors": 0,
+          "renderFrames": 0,
+          "mainImages": 0,
+          "miniImages": 0,
+          "maxPending": 0,
+          "maxMainPaths": 0,
+          "maxMiniPaths": 0,
+          "maxMainParticles": 0,
+          "maxMiniParticles": 0,
+          "eventCounts": {},
+          "artReady": true,
+          "limits": {
+            "pendingPerGame": 4,
+            "mainPaths": 12,
+            "miniPaths": 4,
+            "mainParticles": 48,
+            "miniParticles": 6
+          },
+          "active": [],
+          "pending": [],
+          "history": []
+        },
+        "audio": {
+          "version": 277,
+          "enabled": true,
+          "unlocked": true,
+          "loadedSamples": 41,
+          "totalSamples": 41,
+          "activeVoices": 0,
+          "maxVoices": 8,
+          "pendingAwards": 0,
+          "starts": 0,
+          "suppressed": 3,
+          "awardStarts": 0,
+          "legacyAwardsSuppressed": 0,
+          "voiceEvictions": 0,
+          "maxActiveVoices": 0,
+          "errors": 0,
+          "lastEvents": [
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 9421
+            },
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 15180
+            },
+            {
+              "event": "suppressed",
+              "reason": "unselected-reach",
+              "key": "reach",
+              "at": 17650
+            }
+          ],
+          "sceneRoutes": {
+            "drill": "drill",
+            "stratum": "hit-canyon",
+            "melt": "melt",
+            "ore": "ore",
+            "sugar": "sugar",
+            "random": "transform",
+            "transform": "transform",
+            "glass": "hit-prism",
+            "landing": "land",
+            "refill": "refill",
+            "pop": "hit-popcorn",
+            "triangle": "award-1",
+            "hexagon": "award-2",
+            "role": "award-1",
+            "candy": "hit-candy",
+            "cookie": "hit-cookie",
+            "record": "award-2",
+            "gift": "sugar",
+            "delivery": "refill",
+            "cookie-hit": "hit-cookie",
+            "cookie-fall": "drop",
+            "cookie-land": "land",
+            "cookie-refill": "refill",
+            "chain": "chain",
+            "color-burst": "sweep",
+            "hammer-launch": "hammer-launch",
+            "hammer-impact": "hammer-impact",
+            "arrival": "arrival",
+            "canyon-fall": "drop",
+            "canyon-land": "land",
+            "scroll": "scroll",
+            "return": "round",
+            "renew": "refill",
+            "all-drills": "award-2",
+            "six-hit": "hit-candy",
+            "six-miss": "miss",
+            "sweep": "sweep",
+            "line": "award-1",
+            "finish": "finish",
+            "allclear": "award-4",
+            "bonus": "award-2",
+            "credit-tick": "count",
+            "credit-done": "count-done",
+            "pay-step": "count",
+            "pay-lock": "count-done",
+            "launch": "launch",
+            "continue": "award-2",
+            "scale-tick": "count",
+            "six-count": "count",
+            "big-bonus": "award-3",
+            "level": "level",
+            "rank": "level",
+            "round": "round",
+            "transfer": "transfer",
+            "clear": "award-4"
+          },
+          "nativeRoutes": {
+            "crack": "hit-cookie",
+            "confirm": "confirm",
+            "magic": "transform",
+            "sugar": "sugar",
+            "hammer": "hammer-impact",
+            "sugar-spawn": "sugar"
+          },
+          "samples": [
+            "drill",
+            "hit-canyon",
+            "melt",
+            "ore",
+            "sugar",
+            "transform",
+            "hit-prism",
+            "land",
+            "refill",
+            "hit-popcorn",
+            "award-1",
+            "award-2",
+            "hit-candy",
+            "hit-cookie",
+            "drop",
+            "chain",
+            "sweep",
+            "hammer-launch",
+            "hammer-impact",
+            "arrival",
+            "scroll",
+            "round",
+            "miss",
+            "finish",
+            "award-4",
+            "count",
+            "count-done",
+            "launch",
+            "award-3",
+            "level",
+            "transfer",
+            "confirm",
+            "ui",
+            "reach",
+            "reach-high",
+            "hit-water",
+            "hit-waffle",
+            "hit-castella",
+            "hit-dango",
+            "jpc-qualified",
+            "multiplier"
+          ],
+          "musicDucked": false,
+          "sharedContext": true
+        },
+        "phase": "playing",
+        "draws": [
+          3,
+          6,
+          9,
+          14,
+          20,
+          17
+        ]
+      },
+      "painted": 8589,
+      "pointerEvents": "none",
+      "box": {
+        "width": 403.125,
+        "height": 348.75
+      },
+      "boardBox": {
+        "width": 430,
+        "height": 372
+      },
+      "event": {
+        "game": "dango",
+        "phase": "settled",
+        "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+        "kind": "bingo",
+        "tier": 4,
+        "label": "最高役 成立！",
+        "detail": "6個ライン 2本",
+        "win": 90600,
+        "total": true,
+        "gain": 3020,
+        "age": 283.40000000000146,
+        "duration": 3100,
+        "pathsVisible": true,
+        "paths": [
+          {
+            "closed": false,
+            "mainPoints": [
+              {
+                "x": 141.51976042396706,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 170.91185625438024,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 200.30395208479342,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 229.69604791520658,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 259.08814374561973,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 288.48023957603294,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 4.84967320261438,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 8.509803921568627,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 12.169934640522875,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 15.830065359477125,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 19.490196078431374,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 23.15032679738562,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              }
+            ]
+          }
+        ]
+      },
+      "expectedPaths": [
+        [
+          {
+            "id": 15,
+            "x": 141.51976042396706,
+            "y": 306.7532806088161
+          },
+          {
+            "id": 20,
+            "x": 288.48023957603294,
+            "y": 306.7532806088161
+          }
+        ],
+        [
+          {
+            "id": 2,
+            "x": 229.69604791520658,
+            "y": 204.93607397039818
+          },
+          {
+            "id": 22,
+            "x": 156.21580833917363,
+            "y": 332.20758226842065
+          }
+        ]
+      ],
+      "diagnostics": {
+        "version": 277,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 2,
+        "errors": 0,
+        "renderFrames": 6,
+        "mainImages": 2,
+        "miniImages": 0,
+        "maxPending": 1,
+        "maxMainPaths": 1,
+        "maxMiniPaths": 0,
+        "maxMainParticles": 14,
+        "maxMiniParticles": 0,
+        "eventCounts": {
+          "dango": 1
+        },
+        "artReady": true,
+        "limits": {
+          "pendingPerGame": 4,
+          "mainPaths": 12,
+          "miniPaths": 4,
+          "mainParticles": 48,
+          "miniParticles": 6
+        },
+        "active": [
+          {
+            "game": "dango",
+            "phase": "settled",
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "kind": "bingo",
+            "tier": 4,
+            "label": "最高役 成立！",
+            "detail": "6個ライン 2本",
+            "win": 90600,
+            "total": true,
+            "gain": 3020,
+            "age": 283.40000000000146,
+            "duration": 3100,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 141.51976042396706,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 170.91185625438024,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 200.30395208479342,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 229.69604791520658,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 259.08814374561973,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 288.48023957603294,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 4.84967320261438,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 8.509803921568627,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 12.169934640522875,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 15.830065359477125,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 19.490196078431374,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 23.15032679738562,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pending": [],
+        "history": [
+          {
+            "game": "dango",
+            "phase": "settled",
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "kind": "bingo",
+            "tier": 4,
+            "label": "最高役 成立！",
+            "detail": "6個ライン 2本",
+            "win": 90600,
+            "total": true,
+            "gain": 3020,
+            "age": 0,
+            "duration": 3100,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 141.51976042396706,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 170.91185625438024,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 200.30395208479342,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 229.69604791520658,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 259.08814374561973,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 288.48023957603294,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 4.84967320261438,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 8.509803921568627,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 12.169934640522875,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 15.830065359477125,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 19.490196078431374,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 23.15032679738562,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "audio": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 3,
+        "suppressed": 5,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 1,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 2,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 9421
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 15180
+          },
+          {
+            "event": "suppressed",
+            "reason": "unselected-reach",
+            "key": "reach",
+            "at": 17650
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "legacy:line",
+            "at": 20680
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-accent",
+            "key": "chain",
+            "at": 20680
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 20680
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 20680
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "dango",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "voices": 1,
+            "at": 22311
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      },
+      "nativeEvents": [
+        {
+          "phase": "settled",
+          "draws": [
+            3,
+            6,
+            9,
+            14,
+            20,
+            17
+          ],
+          "processed": 6
+        },
+        {
+          "phase": "settled",
+          "draws": [
+            3,
+            6,
+            9,
+            14,
+            20,
+            17,
+            18
+          ],
+          "processed": 7
+        }
+      ],
+      "draws": [
+        3,
+        6,
+        9,
+        14,
+        20,
+        17,
+        18
+      ],
+      "audioAfter": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 3,
+        "suppressed": 5,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 1,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 2,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 9421
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 15180
+          },
+          {
+            "event": "suppressed",
+            "reason": "unselected-reach",
+            "key": "reach",
+            "at": 17650
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "legacy:line",
+            "at": 20680
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-accent",
+            "key": "chain",
+            "at": 20680
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 20680
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 20680
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "dango",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "voices": 1,
+            "at": 22311
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      }
+    },
+    {
+      "game": "dango",
+      "label": "dango-reduced",
+      "mini": false,
+      "reduced": true,
+      "muted": false,
+      "proof": {
+        "event": "settled",
+        "newLines": [
+          3
+        ],
+        "newHighestRoles": [
+          6
+        ],
+        "highest": true
+      },
+      "restored": {
+        "awards": {
+          "version": 277,
+          "attached": [
+            "cookie",
+            "choco",
+            "candy",
+            "gelato",
+            "winery",
+            "popcorn",
+            "jelly",
+            "stick",
+            "castella",
+            "dango"
+          ],
+          "reducedMotion": true,
+          "received": 0,
+          "suppressed": 1,
+          "errors": 0,
+          "renderFrames": 0,
+          "mainImages": 0,
+          "miniImages": 0,
+          "maxPending": 0,
+          "maxMainPaths": 0,
+          "maxMiniPaths": 0,
+          "maxMainParticles": 0,
+          "maxMiniParticles": 0,
+          "eventCounts": {},
+          "artReady": true,
+          "limits": {
+            "pendingPerGame": 4,
+            "mainPaths": 12,
+            "miniPaths": 4,
+            "mainParticles": 48,
+            "miniParticles": 6
+          },
+          "active": [],
+          "pending": [],
+          "history": []
+        },
+        "audio": {
+          "version": 277,
+          "enabled": true,
+          "unlocked": true,
+          "loadedSamples": 41,
+          "totalSamples": 41,
+          "activeVoices": 0,
+          "maxVoices": 8,
+          "pendingAwards": 0,
+          "starts": 0,
+          "suppressed": 2,
+          "awardStarts": 0,
+          "legacyAwardsSuppressed": 0,
+          "voiceEvictions": 0,
+          "maxActiveVoices": 0,
+          "errors": 0,
+          "lastEvents": [
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 7880
+            },
+            {
+              "event": "suppressed",
+              "reason": "loading",
+              "key": "ui",
+              "at": 12550
+            }
+          ],
+          "sceneRoutes": {
+            "drill": "drill",
+            "stratum": "hit-canyon",
+            "melt": "melt",
+            "ore": "ore",
+            "sugar": "sugar",
+            "random": "transform",
+            "transform": "transform",
+            "glass": "hit-prism",
+            "landing": "land",
+            "refill": "refill",
+            "pop": "hit-popcorn",
+            "triangle": "award-1",
+            "hexagon": "award-2",
+            "role": "award-1",
+            "candy": "hit-candy",
+            "cookie": "hit-cookie",
+            "record": "award-2",
+            "gift": "sugar",
+            "delivery": "refill",
+            "cookie-hit": "hit-cookie",
+            "cookie-fall": "drop",
+            "cookie-land": "land",
+            "cookie-refill": "refill",
+            "chain": "chain",
+            "color-burst": "sweep",
+            "hammer-launch": "hammer-launch",
+            "hammer-impact": "hammer-impact",
+            "arrival": "arrival",
+            "canyon-fall": "drop",
+            "canyon-land": "land",
+            "scroll": "scroll",
+            "return": "round",
+            "renew": "refill",
+            "all-drills": "award-2",
+            "six-hit": "hit-candy",
+            "six-miss": "miss",
+            "sweep": "sweep",
+            "line": "award-1",
+            "finish": "finish",
+            "allclear": "award-4",
+            "bonus": "award-2",
+            "credit-tick": "count",
+            "credit-done": "count-done",
+            "pay-step": "count",
+            "pay-lock": "count-done",
+            "launch": "launch",
+            "continue": "award-2",
+            "scale-tick": "count",
+            "six-count": "count",
+            "big-bonus": "award-3",
+            "level": "level",
+            "rank": "level",
+            "round": "round",
+            "transfer": "transfer",
+            "clear": "award-4"
+          },
+          "nativeRoutes": {
+            "crack": "hit-cookie",
+            "confirm": "confirm",
+            "magic": "transform",
+            "sugar": "sugar",
+            "hammer": "hammer-impact",
+            "sugar-spawn": "sugar"
+          },
+          "samples": [
+            "drill",
+            "hit-canyon",
+            "melt",
+            "ore",
+            "sugar",
+            "transform",
+            "hit-prism",
+            "land",
+            "refill",
+            "hit-popcorn",
+            "award-1",
+            "award-2",
+            "hit-candy",
+            "hit-cookie",
+            "drop",
+            "chain",
+            "sweep",
+            "hammer-launch",
+            "hammer-impact",
+            "arrival",
+            "scroll",
+            "round",
+            "miss",
+            "finish",
+            "award-4",
+            "count",
+            "count-done",
+            "launch",
+            "award-3",
+            "level",
+            "transfer",
+            "confirm",
+            "ui",
+            "reach",
+            "reach-high",
+            "hit-water",
+            "hit-waffle",
+            "hit-castella",
+            "hit-dango",
+            "jpc-qualified",
+            "multiplier"
+          ],
+          "musicDucked": false,
+          "sharedContext": true
+        },
+        "phase": "playing",
+        "draws": [
+          3,
+          6,
+          9,
+          14,
+          20,
+          17
+        ]
+      },
+      "painted": 5709,
+      "pointerEvents": "none",
+      "box": {
+        "width": 349.375,
+        "height": 302.25
+      },
+      "boardBox": {
+        "width": 430,
+        "height": 372
+      },
+      "event": {
+        "game": "dango",
+        "phase": "settled",
+        "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+        "kind": "bingo",
+        "tier": 4,
+        "label": "最高役 成立！",
+        "detail": "6個ライン 2本",
+        "win": 90600,
+        "total": true,
+        "gain": 3020,
+        "age": 100,
+        "duration": 2850,
+        "pathsVisible": true,
+        "paths": [
+          {
+            "closed": false,
+            "mainPoints": [
+              {
+                "x": 141.51976042396706,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 170.91185625438024,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 200.30395208479342,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 229.69604791520658,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 259.08814374561973,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              },
+              {
+                "x": 288.48023957603294,
+                "y": 306.7532806088161,
+                "r": 13.226443123685929
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 4.84967320261438,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 8.509803921568627,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 12.169934640522875,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 15.830065359477125,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 19.490196078431374,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              },
+              {
+                "x": 23.15032679738562,
+                "y": 19.142948565989727,
+                "r": 1.6470588235294117
+              }
+            ]
+          }
+        ]
+      },
+      "expectedPaths": [
+        [
+          {
+            "id": 15,
+            "x": 141.51976042396706,
+            "y": 306.7532806088161
+          },
+          {
+            "id": 20,
+            "x": 288.48023957603294,
+            "y": 306.7532806088161
+          }
+        ],
+        [
+          {
+            "id": 2,
+            "x": 229.69604791520658,
+            "y": 204.93607397039818
+          },
+          {
+            "id": 22,
+            "x": 156.21580833917363,
+            "y": 332.20758226842065
+          }
+        ]
+      ],
+      "diagnostics": {
+        "version": 277,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": true,
+        "received": 1,
+        "suppressed": 2,
+        "errors": 0,
+        "renderFrames": 5,
+        "mainImages": 2,
+        "miniImages": 0,
+        "maxPending": 1,
+        "maxMainPaths": 1,
+        "maxMiniPaths": 0,
+        "maxMainParticles": 0,
+        "maxMiniParticles": 0,
+        "eventCounts": {
+          "dango": 1
+        },
+        "artReady": true,
+        "limits": {
+          "pendingPerGame": 4,
+          "mainPaths": 12,
+          "miniPaths": 4,
+          "mainParticles": 48,
+          "miniParticles": 6
+        },
+        "active": [
+          {
+            "game": "dango",
+            "phase": "settled",
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "kind": "bingo",
+            "tier": 4,
+            "label": "最高役 成立！",
+            "detail": "6個ライン 2本",
+            "win": 90600,
+            "total": true,
+            "gain": 3020,
+            "age": 100,
+            "duration": 2850,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 141.51976042396706,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 170.91185625438024,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 200.30395208479342,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 229.69604791520658,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 259.08814374561973,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 288.48023957603294,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 4.84967320261438,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 8.509803921568627,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 12.169934640522875,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 15.830065359477125,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 19.490196078431374,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 23.15032679738562,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "pending": [],
+        "history": [
+          {
+            "game": "dango",
+            "phase": "settled",
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "kind": "bingo",
+            "tier": 4,
+            "label": "最高役 成立！",
+            "detail": "6個ライン 2本",
+            "win": 90600,
+            "total": true,
+            "gain": 3020,
+            "age": 0,
+            "duration": 2850,
+            "pathsVisible": true,
+            "paths": [
+              {
+                "closed": false,
+                "mainPoints": [
+                  {
+                    "x": 141.51976042396706,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 170.91185625438024,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 200.30395208479342,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 229.69604791520658,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 259.08814374561973,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  },
+                  {
+                    "x": 288.48023957603294,
+                    "y": 306.7532806088161,
+                    "r": 13.226443123685929
+                  }
+                ],
+                "miniPoints": [
+                  {
+                    "x": 4.84967320261438,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 8.509803921568627,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 12.169934640522875,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 15.830065359477125,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 19.490196078431374,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  },
+                  {
+                    "x": 23.15032679738562,
+                    "y": 19.142948565989727,
+                    "r": 1.6470588235294117
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "audio": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 3,
+        "suppressed": 5,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 1,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 2,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 7880
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 12550
+          },
+          {
+            "event": "suppressed",
+            "reason": "ticker-not-owner",
+            "key": "special",
+            "at": 16431
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "legacy:line",
+            "at": 16982
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-accent",
+            "key": "chain",
+            "at": 16982
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16982
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16982
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "dango",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "voices": 1,
+            "at": 18381
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      },
+      "nativeEvents": [
+        {
+          "phase": "settled",
+          "draws": [
+            3,
+            6,
+            9,
+            14,
+            20,
+            17
+          ],
+          "processed": 6
+        },
+        {
+          "phase": "settled",
+          "draws": [
+            3,
+            6,
+            9,
+            14,
+            20,
+            17,
+            18
+          ],
+          "processed": 7
+        }
+      ],
+      "draws": [
+        3,
+        6,
+        9,
+        14,
+        20,
+        17,
+        18
+      ],
+      "audioAfter": {
+        "version": 277,
+        "enabled": true,
+        "unlocked": true,
+        "loadedSamples": 41,
+        "totalSamples": 41,
+        "activeVoices": 1,
+        "maxVoices": 8,
+        "pendingAwards": 0,
+        "starts": 3,
+        "suppressed": 5,
+        "awardStarts": 1,
+        "legacyAwardsSuppressed": 1,
+        "voiceEvictions": 0,
+        "maxActiveVoices": 2,
+        "errors": 0,
+        "lastEvents": [
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 7880
+          },
+          {
+            "event": "suppressed",
+            "reason": "loading",
+            "key": "ui",
+            "at": 12550
+          },
+          {
+            "event": "suppressed",
+            "reason": "ticker-not-owner",
+            "key": "special",
+            "at": 16431
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-owner",
+            "key": "legacy:line",
+            "at": 16982
+          },
+          {
+            "event": "suppressed",
+            "reason": "award-accent",
+            "key": "chain",
+            "at": 16982
+          },
+          {
+            "event": "start",
+            "sample": "arrival",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 1,
+            "at": 16982
+          },
+          {
+            "event": "start",
+            "sample": "ui",
+            "game": "dango",
+            "award": false,
+            "tier": 0,
+            "explicit": false,
+            "key": "",
+            "voices": 2,
+            "at": 16982
+          },
+          {
+            "event": "start",
+            "sample": "award-4",
+            "game": "dango",
+            "award": true,
+            "tier": 4,
+            "explicit": true,
+            "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+            "voices": 1,
+            "at": 18381
+          }
+        ],
+        "sceneRoutes": {
+          "drill": "drill",
+          "stratum": "hit-canyon",
+          "melt": "melt",
+          "ore": "ore",
+          "sugar": "sugar",
+          "random": "transform",
+          "transform": "transform",
+          "glass": "hit-prism",
+          "landing": "land",
+          "refill": "refill",
+          "pop": "hit-popcorn",
+          "triangle": "award-1",
+          "hexagon": "award-2",
+          "role": "award-1",
+          "candy": "hit-candy",
+          "cookie": "hit-cookie",
+          "record": "award-2",
+          "gift": "sugar",
+          "delivery": "refill",
+          "cookie-hit": "hit-cookie",
+          "cookie-fall": "drop",
+          "cookie-land": "land",
+          "cookie-refill": "refill",
+          "chain": "chain",
+          "color-burst": "sweep",
+          "hammer-launch": "hammer-launch",
+          "hammer-impact": "hammer-impact",
+          "arrival": "arrival",
+          "canyon-fall": "drop",
+          "canyon-land": "land",
+          "scroll": "scroll",
+          "return": "round",
+          "renew": "refill",
+          "all-drills": "award-2",
+          "six-hit": "hit-candy",
+          "six-miss": "miss",
+          "sweep": "sweep",
+          "line": "award-1",
+          "finish": "finish",
+          "allclear": "award-4",
+          "bonus": "award-2",
+          "credit-tick": "count",
+          "credit-done": "count-done",
+          "pay-step": "count",
+          "pay-lock": "count-done",
+          "launch": "launch",
+          "continue": "award-2",
+          "scale-tick": "count",
+          "six-count": "count",
+          "big-bonus": "award-3",
+          "level": "level",
+          "rank": "level",
+          "round": "round",
+          "transfer": "transfer",
+          "clear": "award-4"
+        },
+        "nativeRoutes": {
+          "crack": "hit-cookie",
+          "confirm": "confirm",
+          "magic": "transform",
+          "sugar": "sugar",
+          "hammer": "hammer-impact",
+          "sugar-spawn": "sugar"
+        },
+        "samples": [
+          "drill",
+          "hit-canyon",
+          "melt",
+          "ore",
+          "sugar",
+          "transform",
+          "hit-prism",
+          "land",
+          "refill",
+          "hit-popcorn",
+          "award-1",
+          "award-2",
+          "hit-candy",
+          "hit-cookie",
+          "drop",
+          "chain",
+          "sweep",
+          "hammer-launch",
+          "hammer-impact",
+          "arrival",
+          "scroll",
+          "round",
+          "miss",
+          "finish",
+          "award-4",
+          "count",
+          "count-done",
+          "launch",
+          "award-3",
+          "level",
+          "transfer",
+          "confirm",
+          "ui",
+          "reach",
+          "reach-high",
+          "hit-water",
+          "hit-waffle",
+          "hit-castella",
+          "hit-dango",
+          "jpc-qualified",
+          "multiplier"
+        ],
+        "musicDucked": true,
+        "sharedContext": true
+      }
+    }
+  ],
+  "screens": [
+    "award-cookie.png",
+    "award-gelato.png",
+    "award-jelly.png",
+    "award-dango.png",
+    "award-dango-reduced.png"
+  ],
+  "overlayScreens": [
+    "award-cookie-overlay.png",
+    "award-gelato-overlay.png",
+    "award-jelly-overlay.png",
+    "award-dango-overlay.png",
+    "award-dango-reduced-overlay.png"
+  ],
+  "pageErrors": [],
+  "apiRequests": [],
+  "externalRequests": [],
+  "assetFailures": [],
+  "warnings": [
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[.WebGL-0xc5400a6a600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0xc5400a6a600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0xc541303e600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0xc541303e600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)"
+  ]
+}

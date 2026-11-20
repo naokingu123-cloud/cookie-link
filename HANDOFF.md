@@ -1,11 +1,12 @@
 # v277 — 役成立の専用画像・豪華ライン・効果音（2026-11-20）
 
-- Build: `20261120-v277-illustrated-awards-and-sound`。検証PR #2。公開前の実画面検証中であり、まだ公開完了として扱わない。検査範囲は `docs/celebration-v277-qa.md`。
+- Build: `20261120-v277-illustrated-awards-and-sound`。公開・確認済み。[PR #2](https://github.com/naokingu123-cloud/cookie-link/pull/2) をマージした公開コミットは `727b739e1ad0084d6a51b120a832189fc75f2dc4`。最終公開確認は2026-11-20 20:42:33 JST。検査範囲・結果は [v277 QA記録](docs/celebration-v277-qa.md)。
 - 全10ゲームの本物の成立イベントから、通常・高配当・超高配当・最高役の4段階で菓子と宝石の専用PNGを表示。金色のレール、星の先端、光の流れで実際の成立セルを結ぶ。メイン/mini共通、静かな表示にも対応。
 - `assets/award-presentation-v277.js/css`、`assets/celebration-art-v277.js` と生成PNG5枚。画像内の文字はゲーム側で描き、実際の確定配当を表示。シックスドロップは `pyramidAward` の累積配当・端数処理後の金額を採用。
 - `assets/celebration-audio-v277.js` と独自WAV41種で旧55scene経路と基本操作音を統合。成立ファンファーレは1.48/2.13/2.84/3.68秒。共有AudioContext、8声部上限、ミュート・一時停止、非選択タブの消音、復元時の再演防止を実装。BGM自体は維持。
-- 全10ゲーム成立例、配当/状態/RNG不変、音ルーティング/PCM/hash、オフライン音声Rangeのローカル検査成功。735ファイルのダウンロード一覧を再生成し全SHA-256を照合。ローカルChromiumは環境のsocket制限で起動できず、GitHub Actionsで画面と実音声解錠を確認する。
-- v276のHIT、キャニオン接続、物理調整を保持。今回の変更は表示/音のみ。Windowsの物理ホスト更新・再起動は今回実施していない。
+- 全10ゲーム成立例、配当/状態/RNG不変、音ルーティング/PCM/hash、オフライン音声Rangeのローカル検査成功。735ファイルのダウンロード一覧を再生成し全SHA-256を照合。実画面・音声解錠はGitHub Actionsで検証し、PC全10ゲーム、390px、mini、動きを減らす設定、ミュート、一時停止の計15ケースが成功。全画面15枚＋成立canvas15枚の計30PNGを視認レビュー済み。例外・素材失敗・API/外部要求0、観測最大声部数6（実装上限8）。[検証集計](docs/qa-v277/verification-summary.json)、[ダンゴ](docs/qa-v277/award-dango.png)、[シックスドロップ](docs/qa-v277/award-candy.png)、[390pxジェリー](docs/qa-v277/award-jelly-mobile.png)。
+- PR検査 [44728312185](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44728312185)、マージ後v277検査 [44729122651](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44729122651) の全5ジョブ、Pages build/deploy [44729122125](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44729122125) が成功。公開URLから変更runtime・新PNG5枚・全WAV41種・manifest等の64/64ファイルを取得し、HTTP200・bytes・SHA-256がすべて一致。[公開配信照合](docs/qa-v277/public-verification.json)。
+- v276のHIT、キャニオン接続、物理調整を保持。今回の変更は表示/音のみ。Windowsの物理ホスト更新・再起動と、Windows/3D抽選の実機確認は今回実施していない。[更新版を開く](https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v277-illustrated-awards-and-sound)。
 
 ---
 

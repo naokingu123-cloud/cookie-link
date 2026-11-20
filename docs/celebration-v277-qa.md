@@ -1,5 +1,7 @@
 # v277 — 役成立の画像・ライン・効果音の検査
 
+版 `20261120-v277-illustrated-awards-and-sound` は公開・確認済み。公開コミットは `727b739e1ad0084d6a51b120a832189fc75f2dc4`、最終公開照合は2026-11-20 20:42:33 JST。
+
 ## 検査の範囲
 
 全10ゲームの役成立を、実際のエンジンが発行したイベントから確認する。CI専用サーバーで、通常のゲームルールから作った成立直前の盤面を復元し、最後の番号は画面の「番号指定」ボタンで入賞させる。成立イベントを直接呼ぶ公開機能は追加しない。
@@ -52,15 +54,50 @@
 
 出力先 `qa-celebration-v277/` に、各成立のPNG、全画面PNG、ルール上の成立条件、実イベント、ライン座標、音の状態、例外を含む `report.json` が残る。CIは独立した15シナリオを3分割して並行実行する。Actions artifactの名前は `celebration-v277-display-0`、`-1`、`-2`。各ケースの失敗を保存し、最後に1件でも失敗があればジョブを失敗させる。
 
-## 実行状況
+## 最終検証結果
 
 全10ゲームのルール上の確認例、演出モジュール単体、音のルーティング、全41音源のPCM・ハッシュ、オフラインの音声Range要求、構文確認が成功した。シックスドロップは実際の `pyramidAward` の加算・端数処理済み金額を使い、BET333の累積直線33/66/100 WIN、三角形100 WIN、六角形199 WINを本番ルールで確認した。直接呼ばれる素材音も各ゲームの割当に揃えた。
 
-この実行環境ではChromiumがページ読込前に `socket() failed: Operation not permitted` で停止したため、ローカルのブラウザー検査は未実行。画面・実際の音声解錠は公開前のGitHub Actionsで検査する。この時点では公開確認済みとして扱わない。
+この実行環境ではChromiumがページ読込前に `socket() failed: Operation not permitted` で停止したため、実画面と実際の開始操作による音声解錠はGitHub Actionsで検査した。最終候補とマージ後の検査はともに成功している。
+
+| 検証・公開工程 | 結果と証拠 |
+|---|---|
+| [PR #2](https://github.com/naokingu123-cloud/cookie-link/pull/2) の最終検査 | [run 44728312185](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44728312185) 成功。15ブラウザーケースを3分割で実行 |
+| マージ後のv277検査 | [run 44729122651](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44729122651) の全5ジョブ成功 |
+| GitHub Pagesのbuild/deploy | [run 44729122125](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44729122125) 成功 |
+| 公開内容の照合 | [public-verification.json](qa-v277/public-verification.json)：64/64ファイルがHTTP200、バイト数・SHA-256一致。失敗0件 |
+
+ブラウザーの15ケースは、PC全10ゲームに加えて390pxのジェリー、非選択ダンゴのmini、動きを減らすダンゴ、ミュートしたダンゴ、シックスドロップの一時停止。全画面PNG15枚と成立canvas PNG15枚、計30枚の視認レビューを完了した。JavaScript例外、素材読込失敗、API要求、外部要求はいずれも0件。音声の観測最大声部数は6で、実装上限8を超えていない。ミュート・一時停止・復元抑制も成功した。
+
+集計は [verification-summary.json](qa-v277/verification-summary.json)、ケースごとの実イベント・座標・音声状態は [shard 0](qa-v277/browser-report-0.json)、[shard 1](qa-v277/browser-report-1.json)、[shard 2](qa-v277/browser-report-2.json) に保存している。
 
 初回CIではクッキーの実画像描画を確認した後、キャニオンの確認盤面が旧来の3球まとめ処理を前提にしていた不一致を検出。確認例を現行の単球処理による実際の2球後チェックポイントへ修正した。新規エンジンへの復元後も3球目で本物の成立イベントと確定配当を再現することを確認した。
 
-公開後は `tests/celebration-v277-public.mjs` で新画像・全41音源・変更した既存ファイルを含む64ファイルのSHA-256を照合する。公開版のバージョンが揃うまで最大5分待ち、結果を `qa-celebration-v277-public/report.json` に保存する。公開ゲームのAPI・BET操作は行わない。
+`tests/celebration-v277-public.mjs` による公開照合は20:42:31〜20:42:33 JSTに完了した。[公開URL](https://naokingu123-cloud.github.io/cookie-link/) から、新PNG5枚、全WAV41種、変更runtime、manifestなど64ファイルを取得し、すべてのバイト数とSHA-256が検証済みローカル内容に一致した。最終 `app-version.json` もv277と一致。結果の原本を [public-verification.json](qa-v277/public-verification.json) として保存している。公開照合は静的GETだけを使用し、公開ゲームのAPI・BET操作は行っていない。
+
+クラウドブラウザーでは [v277更新URL](https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v277-illustrated-awards-and-sound) の版選択画面を確認した。local debugでは既知の抽選機読込失敗が見られ、Windows/3D抽選の実機確認は未実施。上記15ケースのCIは番号指定による実エンジンの成立演出検査として成功している。
+
+Windowsの物理ホストは今回更新・再起動していない。Pagesの公開完了とWindows側の適用状況は別であり、ホストへ適用する際は既存の `.runtime`・`.tools`・`data` を保持する。
+
+## 保存した画面証拠
+
+各ゲームの成立canvasと主要な全画面PNGを `qa-v277/` に保存した。全30PNGは上記PR検査runの `celebration-v277-display-0`、`-1`、`-2` artifactに含まれる。
+
+| ゲーム・条件 | 保存画像 |
+|---|---|
+| クッキーリンク | [成立演出](qa-v277/award-cookie-overlay.png) |
+| チョコレートキャニオン | [鉱石回収](qa-v277/award-choco-overlay.png) |
+| シックスドロップ | [全画面](qa-v277/award-candy.png)、[成立演出](qa-v277/award-candy-overlay.png) |
+| ジェラートプリズム | [全埋め](qa-v277/award-gelato-overlay.png) |
+| ワイナリーピラミッド | [グラス成立](qa-v277/award-winery-overlay.png) |
+| ポップコーンスプラッシュ | [配当獲得](qa-v277/award-popcorn-overlay.png) |
+| ジェリービンゴ | [成立ライン](qa-v277/award-jelly-overlay.png)、[390px全画面](qa-v277/award-jelly-mobile.png) |
+| ワッフルリバーシ | [反転配当](qa-v277/award-stick-overlay.png) |
+| パーティカステラ | [全焼き](qa-v277/award-castella-overlay.png) |
+| ダンゴデビンゴ | [全画面](qa-v277/award-dango.png)、[最高役](qa-v277/award-dango-overlay.png) |
+| 追加の表示条件 | [mini](qa-v277/award-dango-mini-overlay.png)、[動きを減らす](qa-v277/award-dango-reduced-overlay.png)、[ミュート](qa-v277/award-dango-muted-overlay.png)、[一時停止対象](qa-v277/award-candy-pause-overlay.png) |
+
+## 再検証コマンド
 
 ```bash
 node tests/award-fixtures-v277.mjs

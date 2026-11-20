@@ -1,0 +1,120 @@
+{
+  "runId": 44728312185,
+  "headSha": "2ed4fcb0848a8343a14f90f53e8d5ea1c6511bdf",
+  "status": "success",
+  "version": "20261120-v277-illustrated-awards-and-sound",
+  "shards": 3,
+  "cases": [
+    {
+      "id": "cookie",
+      "game": "cookie",
+      "status": "passed",
+      "durationMs": 44136
+    },
+    {
+      "id": "gelato",
+      "game": "gelato",
+      "status": "passed",
+      "durationMs": 26756
+    },
+    {
+      "id": "jelly",
+      "game": "jelly",
+      "status": "passed",
+      "durationMs": 25090
+    },
+    {
+      "id": "dango",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 29669
+    },
+    {
+      "id": "dango-reduced",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 24861
+    },
+    {
+      "id": "choco",
+      "game": "choco",
+      "status": "passed",
+      "durationMs": 42906
+    },
+    {
+      "id": "winery",
+      "game": "winery",
+      "status": "passed",
+      "durationMs": 52837
+    },
+    {
+      "id": "stick",
+      "game": "stick",
+      "status": "passed",
+      "durationMs": 30318
+    },
+    {
+      "id": "jelly-mobile",
+      "game": "jelly",
+      "status": "passed",
+      "durationMs": 29363
+    },
+    {
+      "id": "dango-muted",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 37002
+    },
+    {
+      "id": "candy",
+      "game": "candy",
+      "status": "passed",
+      "durationMs": 51210
+    },
+    {
+      "id": "popcorn",
+      "game": "popcorn",
+      "status": "passed",
+      "durationMs": 35854
+    },
+    {
+      "id": "castella",
+      "game": "castella",
+      "status": "passed",
+      "durationMs": 37033
+    },
+    {
+      "id": "dango-mini",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 42657
+    },
+    {
+      "id": "candy-pause",
+      "game": "candy",
+      "status": "passed",
+      "durationMs": 48463
+    }
+  ],
+  "screens": 15,
+  "overlayScreens": 15,
+  "pageErrors": 0,
+  "apiRequests": 0,
+  "externalRequests": 0,
+  "assetFailures": 0,
+  "maxActiveVoices": 6,
+  "artifacts": [
+    {
+      "shard": 0,
+      "id": 14624818351
+    },
+    {
+      "shard": 1,
+      "id": 14625865636
+    },
+    {
+      "shard": 2,
+      "id": 14625177525
+    }
+  ]
+}
