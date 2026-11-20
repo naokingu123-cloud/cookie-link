@@ -54,6 +54,13 @@ jobs:
   ten-game-award-display:
     runs-on: ubuntu-latest
     timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2]
+    env:
+      CELEBRATION_QA_SHARD: ${{ matrix.shard }}
+      CELEBRATION_QA_SHARDS: 3
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -74,6 +81,25 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: celebration-v277-display
+          name: celebration-v277-display-${{ matrix.shard }}
           path: qa-celebration-v277/
+          retention-days: 7
+  public-assets:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [presentation-contract-and-audio, ten-game-award-display]
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify published v277 runtime, illustrated assets and all original sounds
+        run: node tests/celebration-v277-public.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: celebration-v277-public
+          path: qa-celebration-v277-public/report.json
+          if-no-files-found: error
           retention-days: 7

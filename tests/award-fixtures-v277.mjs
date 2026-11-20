@@ -23,9 +23,20 @@ export async function buildAwardFixtures(){
  }
  assert(fixtures.cookie,'a genuine Cookie grouped-draw award witness exists');
  for(let seed=1;seed<=100&&!fixtures.choco;seed++){
-  const e=new classic.ChocoDigEngine({random:random(seed*7919),colorCount:5}),plan=e.plan([1,2,3],{trace:true});
-  const award=plan.timeline?.find(v=>['canyonCollect','canyonBonus'].includes(v.phase)&&v.gain>0);
-  if(award)record('choco',engineData(e),[1,2],3,{seed:seed*7919,event:award.phase,gain:award.gain});
+  const events=[],e=new classic.ChocoDigEngine({random:random(seed*7919),colorCount:5,onEvent:event=>events.push(event)});
+  assert.equal(e.drawMode,'single');e.visualWait=async()=>true;e.running=true;
+  // Canyon consumes each received ball immediately. Store the real checkpoint
+  // after the first two separate draws, including renewed drill numbers and
+  // already collected ore; a grouped [1,2,3] plan is a different board history.
+  e.accepted=2;e.seen=new Set([1,2]);e.queue=[[1],[2]];await e.drain();
+  assert(!events.some(event=>event.phase==='error'),'Canyon prior draws execute without engine errors');
+  assert.equal(e.processed,2);assert.deepEqual([...e.drawn],[1,2]);
+  const before=encode(engineData(e));events.length=0;
+  e.accepted=3;e.seen.add(3);e.queue=[[3]];await e.drain();
+  assert(!events.some(event=>event.phase==='error'),'Canyon final draw executes without engine errors');
+  assert.equal(e.processed,3);
+  const award=events.find(v=>['canyonCollect','canyonBonus'].includes(v.phase)&&v.gain>0);
+  if(award)record('choco',before,[1,2],3,{seed:seed*7919,event:award.phase,gain:award.gain,drawMode:'single',processedBefore:2,processedAfter:e.processed});
  }
  assert(fixtures.choco,'a genuine Canyon drill/collect witness exists');
  const six=require('./sixdrop-v247-fixture.cjs').R;

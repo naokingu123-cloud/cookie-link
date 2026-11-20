@@ -1,3 +1,14 @@
+# v277 — 役成立の専用画像・豪華ライン・効果音（2026-11-20）
+
+- Build: `20261120-v277-illustrated-awards-and-sound`。検証PR #2。公開前の実画面検証中であり、まだ公開完了として扱わない。検査範囲は `docs/celebration-v277-qa.md`。
+- 全10ゲームの本物の成立イベントから、通常・高配当・超高配当・最高役の4段階で菓子と宝石の専用PNGを表示。金色のレール、星の先端、光の流れで実際の成立セルを結ぶ。メイン/mini共通、静かな表示にも対応。
+- `assets/award-presentation-v277.js/css`、`assets/celebration-art-v277.js` と生成PNG5枚。画像内の文字はゲーム側で描き、実際の確定配当を表示。シックスドロップは `pyramidAward` の累積配当・端数処理後の金額を採用。
+- `assets/celebration-audio-v277.js` と独自WAV41種で旧55scene経路と基本操作音を統合。成立ファンファーレは1.48/2.13/2.84/3.68秒。共有AudioContext、8声部上限、ミュート・一時停止、非選択タブの消音、復元時の再演防止を実装。BGM自体は維持。
+- 全10ゲーム成立例、配当/状態/RNG不変、音ルーティング/PCM/hash、オフライン音声Rangeのローカル検査成功。735ファイルのダウンロード一覧を再生成し全SHA-256を照合。ローカルChromiumは環境のsocket制限で起動できず、GitHub Actionsで画面と実音声解錠を確認する。
+- v276のHIT、キャニオン接続、物理調整を保持。今回の変更は表示/音のみ。Windowsの物理ホスト更新・再起動は今回実施していない。
+
+---
+
 # v276 — HIT演出・上下オートタイル・ルーレット調整（2026-11-20）
 
 - Build: `20261120-v276-hit-and-roulette-polish-r2`。公開・確認済み。runtime `40b912f0bc33b614ea8ecec23d54adcc137eef46`、撮影検査のみ後続 `16b7769b64294f59d41dd0efe87d0ff499d61b26`。概要 `docs/game-polish-v276.md`、結果 `docs/qa-v276/verification.json`。公開主要9ファイルのSHA-256一致。

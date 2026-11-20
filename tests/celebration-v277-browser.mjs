@@ -8,9 +8,26 @@ import {once} from 'node:events';
 import {chromium} from 'playwright';
 import {buildAwardFixtures} from './award-fixtures-v277.mjs';
 const root=process.cwd(),output='qa-celebration-v277',games=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
+const scenarios=[
+ ...games.map(game=>({id:game,game,options:{}})),
+ {id:'jelly-mobile',game:'jelly',options:{width:390,height:844,bet:300000,label:'jelly-mobile'}},
+ {id:'dango-mini',game:'dango',options:{width:390,height:844,mini:true,label:'dango-mini'}},
+ {id:'dango-reduced',game:'dango',options:{width:390,height:844,reduced:true,label:'dango-reduced'}},
+ {id:'dango-muted',game:'dango',options:{muted:true,label:'dango-muted'}},
+ {id:'candy-pause',game:'candy',options:{label:'candy-pause'},pause:true}
+];
+const shard=Number(process.env.CELEBRATION_QA_SHARD??0),shards=Number(process.env.CELEBRATION_QA_SHARDS??1);
+assert(Number.isInteger(shards)&&shards>0&&shards<=scenarios.length,'valid positive shard count');
+assert(Number.isInteger(shard)&&shard>=0&&shard<shards,'valid shard index');
+assert.equal(new Set(scenarios.map(s=>s.id)).size,15,'all 15 scenarios have distinct identities');
+const planned=scenarios.filter((_scenario,index)=>index%shards===shard);
+if(process.argv.includes('--list-cases')){
+ console.log(JSON.stringify({shard,shards,totalPlannedCases:scenarios.length,plannedCaseCount:planned.length,plannedCases:planned.map(s=>s.id)}));
+ process.exit(0);
+}
 await fs.mkdir(output,{recursive:true});
 const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version,fixtures=await buildAwardFixtures();
-const report={version,scope:'Curated real-rule checkpoint witnesses; functional presentation checks, not a probability sample',games:[],screens:[],overlayScreens:[],pageErrors:[],apiRequests:[],externalRequests:[],assetFailures:[],warnings:[]};
+const report={version,shard,shards,totalPlannedCases:scenarios.length,plannedCaseCount:planned.length,plannedCases:planned.map(s=>s.id),executedCaseCount:0,caseResults:[],failures:[],scope:'Curated real-rule checkpoint witnesses; functional presentation checks, not a probability sample',games:[],screens:[],overlayScreens:[],pageErrors:[],apiRequests:[],externalRequests:[],assetFailures:[],warnings:[]};
 await fs.writeFile(path.join(output,'rule-witnesses.json'),JSON.stringify(Object.values(fixtures).map(({game,draws,next,proof})=>({game,draws,next,proof})),null,2)+'\n');
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml','.mp3':'audio/mpeg','.wav':'audio/wav','.avif':'image/avif'};
 const server=http.createServer(async(req,res)=>{
@@ -128,20 +145,46 @@ async function capture(kind,options={}){
  const screen='award-'+label+'.png';await page.screenshot({path:path.join(output,screen)});report.screens.push(screen);
  const result={game:kind,label,mini,reduced,muted,proof:fixtures[kind].proof,restored:before,...evidence};report.games.push(result);return result;
 }
+async function recordFailure(id,error){
+ const failure={current:id,message:String(error),stack:error.stack};
+ if(page)try{
+  failure.diagnostics=await page.evaluate(()=>({awards:window.SweetsAwardsV277?.describe(),audio:window.SweetsAudioV277?.describe(),fixtureEvents:window.__qa277?.fixtureEvents,phase:window.__qa277?.app.phase,enginePhase:window.__qa277?.slots[window.__qa277?.active]?.engine?.phase}));
+  failure.screenshot='failure-'+id+'.png';await page.screenshot({path:path.join(output,failure.screenshot)});
+ }catch(diagnosticError){failure.diagnosticError=String(diagnosticError);}
+ return failure;
+}
 try{
  browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{}),args:['--no-sandbox','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
- for(const kind of games){current=kind;await capture(kind);}
- current='mobile-jelly';await capture('jelly',{width:390,height:844,bet:300000,label:'jelly-mobile'});
- current='live-mini';await capture('dango',{width:390,height:844,mini:true,label:'dango-mini'});
- current='reduced';const reduced=await capture('dango',{width:390,height:844,reduced:true,label:'dango-reduced'});
- assert(reduced.diagnostics.reducedMotion,'reduced-motion preference reaches the renderer');
- assert.equal(reduced.diagnostics.maxMainParticles,0);assert.equal(reduced.diagnostics.maxMiniParticles,0);
- current='muted';await capture('dango',{muted:true,label:'dango-muted'});
- current='pause';await capture('candy',{label:'candy-pause'});
- await page.evaluate(()=>window.__qa277.setPaused(true));
- await page.waitForFunction(()=>SweetsAudioV277.describe().activeVoices===0&&SweetsAudioV277.describe().pendingAwards===0,null,{timeout:3000});
- report.pause=await page.evaluate(()=>({paused:window.__qa277.app.paused,audio:SweetsAudioV277.describe(),awards:SweetsAwardsV277.describe()}));assert(report.pause.paused);
+ for(const scenario of planned){
+  current=scenario.id;const started=Date.now();
+  try{
+   const evidence=await capture(scenario.game,scenario.options);
+   if(scenario.options.reduced){
+    assert(evidence.diagnostics.reducedMotion,'reduced-motion preference reaches the renderer');
+    assert.equal(evidence.diagnostics.maxMainParticles,0);assert.equal(evidence.diagnostics.maxMiniParticles,0);
+   }
+   if(scenario.pause){
+    await page.evaluate(()=>window.__qa277.setPaused(true));
+    await page.waitForFunction(()=>SweetsAudioV277.describe().activeVoices===0&&SweetsAudioV277.describe().pendingAwards===0,null,{timeout:3000});
+    report.pause=await page.evaluate(()=>({paused:window.__qa277.app.paused,audio:SweetsAudioV277.describe(),awards:SweetsAwardsV277.describe()}));assert(report.pause.paused);
+   }
+   report.caseResults.push({id:current,game:scenario.game,status:'passed',durationMs:Date.now()-started});
+   console.log('CELEBRATION_V277_CASE_PASS',current);
+  }catch(error){
+   report.failures.push(await recordFailure(current,error));
+   report.caseResults.push({id:current,game:scenario.game,status:'failed',durationMs:Date.now()-started,message:String(error)});
+   console.error('CELEBRATION_V277_CASE_FAIL',current,String(error));
+  }finally{
+   // Each next case opens a new context, so a failed board cannot hide later
+   // failures. Preserve every assertion and fail the whole shard at the end.
+   report.executedCaseCount++;
+   await context?.close().catch(()=>{});context=null;page=null;
+   await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');
+  }
+ }
+ assert.equal(report.executedCaseCount,planned.length,'every planned scenario was attempted');
  assert.deepEqual(report.apiRequests,[]);assert.deepEqual(report.externalRequests,[]);assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.assetFailures,[]);
- console.log('CELEBRATION_V277_BROWSER_PASS',JSON.stringify({version,games:games.length,scenarios:report.games.length,screens:report.screens.length,apiRequests:0,pageErrors:0}));
-}catch(error){report.failure={current,message:String(error),stack:error.stack};if(page)try{report.failure.diagnostics=await page.evaluate(()=>({awards:window.SweetsAwardsV277?.describe(),audio:window.SweetsAudioV277?.describe(),fixtureEvents:window.__qa277?.fixtureEvents,phase:window.__qa277?.app.phase,enginePhase:window.__qa277?.slots[window.__qa277?.active]?.engine?.phase}));await page.screenshot({path:path.join(output,'failure.png')});}catch{}throw error;
+ assert.equal(report.failures.length,0,'failed scenarios: '+report.failures.map(f=>f.current).join(', '));
+ console.log('CELEBRATION_V277_BROWSER_PASS',JSON.stringify({version,shard,shards,totalPlannedCases:scenarios.length,scenarios:report.caseResults.length,screens:report.screens.length,apiRequests:0,pageErrors:0}));
+}catch(error){report.failure=await recordFailure(current||'startup',error);throw error;
 }finally{await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');await context?.close().catch(()=>{});await browser?.close().catch(()=>{});await new Promise(resolve=>server.close(resolve));}
