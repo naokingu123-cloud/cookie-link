@@ -21,7 +21,7 @@ body.carnival-active.sixdrop-v278 #carnival-heading[data-ui278="1"]>:not(.sd278-
 #sd278-clear-earned[hidden]{display:none!important}
 #sd278-clear-earned>b{font:1000 9px/15px system-ui!important;color:#fff0a8!important;white-space:nowrap}
 #sd278-clear-earned>span{display:flex;align-items:center;gap:2px;font:800 8px/15px system-ui!important;min-width:0}
-.sd278-earned-win{display:flex;justify-content:flex-end;min-width:12px;max-width:86px;font:700 12px/15px ArcadePayout,Georgia,serif!important}
+.sd278-earned-win{display:flex;justify-content:flex-end;flex:0 0 78px;width:78px;min-width:78px;max-width:78px;font:700 12px/15px ArcadePayout,Georgia,serif!important}
 .sd278-earned-count{font:800 8px/15px system-ui!important;white-space:nowrap}
 #sd278-batches{display:flex;align-items:center;justify-content:center;gap:3px;height:18px;flex:none}
 #sd278-batches>span{display:flex;align-items:center;justify-content:center;min-width:21px;height:17px;padding:0 3px;border:1px solid #f9d4df;border-radius:5px;background:#563459;color:#eacada;font:900 9px/15px system-ui;text-shadow:0 1px #542542}
@@ -39,22 +39,28 @@ body.carnival-active.sixdrop-v278 #carnival-odds[data-ui278="1"]>.sd278-payouts{
 .sd278-payout-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1;pointer-events:none}
 .sd278-payout-content{position:absolute;inset:3px 7px 6px;display:grid;grid-template-rows:20px minmax(0,1fr);gap:1px;min-height:0}
 .sd278-payout-content header{height:auto!important;min-height:0!important;display:flex!important;align-items:center;justify-content:center;gap:2px;padding:0 1px!important;background:none!important;border:0!important;box-shadow:none!important;color:#fff9df;overflow:hidden}
-.sd278-role-icon{width:18px!important;height:16px!important;object-fit:contain!important;flex:none}
-.sd278-payout-content header>b{font:1000 8px/10px system-ui!important;white-space:nowrap;color:#fff5d5!important;-webkit-text-fill-color:#fff5d5!important;-webkit-text-stroke:0!important;text-shadow:0 1px #702048!important}
+.sd278-role-icon{width:16px!important;height:16px!important;object-fit:contain!important;flex:none}
+.sd278-payout-content header>b{font:1000 9px/11px system-ui!important;white-space:nowrap;color:#fff5d5!important;-webkit-text-fill-color:#fff5d5!important;-webkit-text-stroke:0!important;text-shadow:0 1px #702048!important}
 .sd278-role-count{margin-left:auto;font:900 8px/11px system-ui!important;color:#fff2a9!important;white-space:nowrap}
-.sd278-payout-content table{width:100%;height:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0;color:#fff3da}
-.sd278-payout-content thead{height:10px}
-.sd278-payout-content thead th{font:700 6.8px/9px system-ui!important;color:#efd4e4!important;border-bottom:1px solid #d99eaa77;padding:0 1px!important;text-align:right}
-.sd278-payout-content th:first-child{width:27px;text-align:center}
-.sd278-payout-content tbody th{font:800 8px/10px system-ui!important;text-align:center;color:#e9cadb;padding:0 1px!important;border-bottom:1px solid #f5adc01f}
-.sd278-payout-content td{font:700 11px/12px ArcadePayout,Georgia,serif!important;text-align:right;padding:0 2px!important;border-bottom:1px solid #f5adc01f;color:#ffe29a}
-.sd278-table-amount{display:flex!important;align-items:center;justify-content:flex-end;min-width:0;white-space:nowrap}
-.sd278-table-amount .gold-number{font-family:ArcadePayout,Georgia,serif!important;transform-origin:right center}
-.sd278-payout-content tr.is-earned{background:#bd4d7940}
-.sd278-payout-content tr.is-current{background:linear-gradient(90deg,#fff2ad,#efc35b);box-shadow:inset 0 1px #fff9d9,inset 0 -1px #ffdc87}
-.sd278-payout-content tr.is-current th,.sd278-payout-content tr.is-current td{color:#5d2346!important}
-.sd278-payout-content tr.is-current .gold-number{background:none!important;-webkit-text-fill-color:#5d2346!important;color:#5d2346!important;text-shadow:0 1px #fff4bd!important}
-.sd278-payout-content tr.is-next th{color:#fff7d4}
+/* Keep table semantics, but give its five rows explicit grid tracks. The
+   generic .odds table theme has 15px rows, 44% headers and cream cell fills;
+   none of those dimensions belong inside this generated candy frame. */
+#sd278-payouts table{display:grid!important;grid-template-rows:10px minmax(0,1fr);width:100%!important;height:100%!important;min-height:0;table-layout:fixed;border-collapse:collapse;border-spacing:0;margin:0!important;padding:0!important;border:0!important;background:none!important;color:#fff3da}
+#sd278-payouts thead{display:block!important;min-width:0;min-height:0;height:10px!important;background:none!important}
+#sd278-payouts tbody{display:grid!important;grid-template-rows:repeat(5,minmax(0,1fr));min-width:0;min-height:0;height:100%!important;background:none!important}
+#sd278-payouts tr{display:grid!important;grid-template-columns:24px minmax(0,1fr);min-width:0;min-height:0;height:100%!important;margin:0!important;padding:0!important;border:0!important;background:none;box-shadow:none}
+#sd278-payouts th,#sd278-payouts td{display:flex!important;align-items:center;justify-content:flex-end;min-width:0;min-height:0;width:auto!important;height:100%!important;padding:0 2px!important;border:0!important;border-bottom:1px solid #f5adc01f!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;white-space:nowrap;vertical-align:middle;-webkit-text-stroke:0;text-shadow:none}
+#sd278-payouts thead th{font:700 7px/1 system-ui!important;color:#efd4e4!important;border-bottom-color:#d99eaa77!important}
+#sd278-payouts th:first-child{justify-content:center;text-align:center}
+#sd278-payouts tbody th{font:800 9px/1 system-ui!important;color:#e9cadb}
+#sd278-payouts td{font:700 11px/1 ArcadePayout,Georgia,serif!important;text-align:right;color:#ffe29a}
+#sd278-payouts .sd278-table-amount{display:flex!important;align-items:center;justify-content:flex-end;width:100%;min-width:0;height:100%;font:700 11px/1 ArcadePayout,Georgia,serif!important;white-space:nowrap}
+#sd278-payouts .gold-number{display:inline-block!important;flex:none;font-family:ArcadePayout,Georgia,serif!important;line-height:1!important;transform-origin:right center}
+#sd278-payouts tr.is-earned{background:#bd4d7940}
+#sd278-payouts tr.is-current{background:linear-gradient(90deg,#fff2ad,#efc35b);box-shadow:inset 0 1px #fff9d9,inset 0 -1px #ffdc87}
+#sd278-payouts tr.is-current th,#sd278-payouts tr.is-current td{color:#5d2346!important}
+#sd278-payouts tr.is-current .gold-number{background:none!important;-webkit-text-fill-color:#5d2346!important;color:#5d2346!important;text-shadow:0 1px #fff4bd!important}
+#sd278-payouts tr.is-next th{color:#fff7d4}
 /* Generated bottle, with a quiet transparent interior over the existing world. */
 body.carnival-active.sixdrop-v278 .game>.field::before{display:none!important}
 html.arcade-v249 body.sixdrop-v278 #panels>.v249-game-surface[data-v249-kind="candy"] .six-board-viewport.sd278-bottle,

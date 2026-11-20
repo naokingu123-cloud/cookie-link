@@ -17,6 +17,7 @@ const runtime=[
  'assets/sixdrop-progressive-core-v247.js','assets/sixdrop-progressive-host-v247.js',
  'assets/local-debug-game-v258.js','assets/recorded-round-v255.js',
  'assets/server-offline-settlement-worker-v3.js','assets/server-payout-control-v3.js','assets/shared-machine-v176.js',
+ 'assets/shared-machine-core-v196.js',
  'assets/demo-suite-v91.js','assets/sixdrop-ui-v278.js','assets/sixdrop-ui-v278.css',
  'assets/award-presentation-v277.js'
 ];

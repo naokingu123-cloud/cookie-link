@@ -76,6 +76,13 @@ function installWorker(host){
  host.window.__qaWorker278.installDrawCapture();
  return {...host.window.__qaWorker278,requests};
 }
+function streamingCheckpoint(host){
+ const source=fs.readFileSync('assets/shared-machine-core-v196.js','utf8'),start=source.indexOf('const CONTROLS='),end=source.indexOf('function totalBet(',start);
+ assert(start>=0&&end>start,'production shared checkpoint functions exist');
+ // Retain the actual clone/checkpoint/restore/repaint functions, excluding
+ // only network discovery and connection startup outside this source block.
+ return new Function('window',source.slice(start,end)+'\nreturn {checkpoint,restore};')(host.window);
+}
 function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS}={}){
  let state=R.newGame({seed,bet,carry,rulesRevision:278});
  const initial=clone(state),plans=[];
@@ -84,4 +91,4 @@ function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS}={}){
  }
  return {seed,bet,carry,initial,state,plans,numbers:[...numbers],win:R.totalMedals(state)};
 }
-module.exports={R,G,clone,batches,NUMBERS,memoryStorage,createHost,idle,installWorker,fullRound};
+module.exports={R,G,clone,batches,NUMBERS,memoryStorage,createHost,idle,installWorker,streamingCheckpoint,fullRound};

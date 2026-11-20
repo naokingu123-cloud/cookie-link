@@ -84,7 +84,7 @@ function audit(plan,before){
  assert(plan.state.grid.flat().filter(Boolean).every(tile=>!plan.state.draws.includes(tile.number)),'new labels exclude every consumed group number');
 }
 let groups=0,rounds=0,clears=0,positive=0,zero=0;
-for(const removed of [0,99,199,499])for(const rate of [50,90,150])for(let seed=1;seed<=8;seed++){
+for(const removed of [0,99,199,499])for(const rate of [50,90,150])for(let seed=1;seed<=9;seed++){
  let state=R.newGame({seed,bet:seed%2?301:3000,rate,carry:{...carry,removed},rulesRevision:278});
  const start=clone(state),fixed=[...state.palette];
  for(const group of batches(NUMBERS)){

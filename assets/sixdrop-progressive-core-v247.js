@@ -11,6 +11,7 @@ const RING=['blue','aqua','green','lime','yellow','orange','red','violet','pink'
 const COLOR_PROGRESS=[0,1,2,3,4,5,6,8,7];
 const BASE_PAY=Object.freeze({line:10,triangle:30,hexagon:60});
 const BASE_PAY_V278=Object.freeze({line:20,triangle:60,hexagon:120});
+const SUPPORT_TABLE_V278=Object.freeze([[50,.23],[90,.57],[100,.615],[150,.9]].map(row=>Object.freeze(row)));
 const LIMIT=Number.MAX_SAFE_INTEGER;
 const integer=(n,fallback=0)=>Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):fallback;
 const copy=x=>JSON.parse(JSON.stringify(x));
@@ -41,7 +42,11 @@ function batchSize(processed){let end=0;for(const size of BATCH_SIZES){if(proces
 function supportProbability(rate,stateOrRevision=CURRENT_REVISION){
  const target=Math.max(50,Math.min(150,Number(rate)||90));
  if(!modernRules(stateOrRevision))return .35+.55*(target-50)/100;
- return target<=90?.25+.008*(target-50):.57+.0065*(target-90);
+ for(let index=1;index<SUPPORT_TABLE_V278.length;index++){
+  const [low,from]=SUPPORT_TABLE_V278[index-1],[high,to]=SUPPORT_TABLE_V278[index];
+  if(target<=high)return from+(to-from)*(target-low)/(high-low);
+ }
+ return SUPPORT_TABLE_V278.at(-1)[1];
 }
 function create(geometry){
  const G=geometry;
@@ -206,7 +211,7 @@ function create(geometry){
   if(modernRules(s)&&s.draws.length<8)return cleanCarry(s.carryAtStart);
   return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});
  }
- return {VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
+ return {VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,SUPPORT_TABLE_V278,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
 }
-root.SweetsSixDropV247={VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,batchSize,supportProbability};
+root.SweetsSixDropV247={VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,SUPPORT_TABLE_V278,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,batchSize,supportProbability};
 })(typeof window!=='undefined'?window:globalThis);

@@ -80,17 +80,20 @@ function paintFrame(){
 }
 function paintBank(d){
  const source=document.getElementById('sd247-bank'),animated=Number(source?.dataset.displayUnits);
- const units=Number.isFinite(animated)?animated:d.bankUnits;
- nodes.bank.dataset.units=String(units);nodes.bank.dataset.targetUnits=String(d.bankUnits);
+ // A completed zero-WIN game relinquishes its meter. Preserve the canonical
+ // state for result/checkpoint records while showing the committed reset.
+ const resetAtEnd=Number(engine.processed)>=8&&!engine.running&&!d.earnedContinuation;
+ const target=resetAtEnd?0:d.bankUnits,units=resetAtEnd?0:Number.isFinite(animated)?animated:target;
+ nodes.bank.dataset.units=String(units);nodes.bank.dataset.targetUnits=String(target);
  nodes.continuation.hidden=!d.continuationActive;
  nodes.continuation.dataset.inherited=String(!!d.inheritedContinuation);nodes.continuation.dataset.earned=String(!!d.earnedContinuation);
  amount(nodes.bank,units/100,29,nodes.bank.clientWidth||225);
- nodes.bank.parentElement.setAttribute('aria-label','全消し獲得可能 '+money(d.bankUnits/100)+' WIN'+(d.continuationActive?' 継続':''));
+ nodes.bank.parentElement.setAttribute('aria-label','全消し獲得可能 '+money(target/100)+' WIN'+(d.continuationActive?' 継続':''));
 }
 function paintReceipt(){
  const earned=receipt.count>0;nodes.earned.hidden=!earned;
  nodes.earned.dataset.count=String(receipt.count);nodes.earned.dataset.win=String(receipt.win);nodes.earned.dataset.lastWin=String(receipt.lastWin);
- amount(nodes.earnedWin,receipt.win,12,nodes.earnedWin.clientWidth||85);putText(nodes.earnedCount,'・'+receipt.count+'回');
+ amount(nodes.earnedWin,receipt.win,12,nodes.earnedWin.clientWidth||78);putText(nodes.earnedCount,'・'+receipt.count+'回');
  nodes.earned.setAttribute('aria-label',earned?'全消し獲得済み。今回 '+money(receipt.win)+' WIN、'+receipt.count+'回':'全消し未獲得');
  nodes.hud.classList.toggle('has-clear',earned);
  nodes.miniBadge.hidden=!earned;putText(nodes.miniBadge,'全消し獲得'+(receipt.count>1?' ×'+receipt.count:''));
@@ -118,7 +121,7 @@ function paintTables(d){
   const record=nodes.roles.get(role),count=Math.max(0,Math.floor(Number(counts[role])||0));
   const first=count<5?1:count-3,list=Array.from({length:5},(_,i)=>first+i);
   const rows=list.map(n=>{const hundredths=typeof rules.roleTotal==='function'?rules.roleTotal(role,n,engine.state||278):rules.roleAward(role,0,n);return {count:n,hundredths,win:Math.floor(bet*hundredths/100)};});
-  const key=[bet,count,engine.state?.rulesRevision||278,...rows.map(row=>row.hundredths)].join('/');
+  const key=[bet,count,engine.state?.rulesRevision||278,record.section.clientWidth,...rows.map(row=>row.hundredths)].join('/');
   if(record.key===key)continue;record.key=key;record.section.dataset.earnedCount=String(count);putText(record.count,count+'個');record.body.replaceChildren();
   for(const row of rows){
    const tr=document.createElement('tr');tr.dataset.count=String(row.count);tr.dataset.payoutHundredths=String(row.hundredths);tr.dataset.win=String(row.win);
@@ -126,7 +129,7 @@ function paintTables(d){
    if(row.count===count)tr.setAttribute('aria-current','true');
    const number=document.createElement('th');number.scope='row';number.textContent=row.count+'個';
    const value=document.createElement('td'),span=document.createElement('span');span.className='sd278-table-amount';value.append(span);tr.append(number,value);record.body.append(tr);
-   amount(span,row.win,11,62);
+   amount(span,row.win,11,span.clientWidth||62);
   }
   lastRows[role]={count,rows};
  }

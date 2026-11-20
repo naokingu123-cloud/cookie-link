@@ -1,5 +1,6 @@
 'use strict';
 const {R}=require('./sixdrop-v247-fixture.cjs');
+const coreSha256=require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('assets/sixdrop-progressive-core-v247.js')).digest('hex');
 const initialSeed=Number(process.env.SIXDROP_SEED||876193)>>>0,drawSeed=Number(process.env.SIXDROP_DRAW_SEED||692317)>>>0;
 const N=Number(process.env.SIXDROP_SAMPLES||5000),blockSize=200;
 for(const rate of (process.argv.length>2?process.argv.slice(2).map(Number):[50,90,100,150])){
@@ -20,5 +21,5 @@ for(const rate of (process.argv.length>2?process.argv.slice(2).map(Number):[50,9
  }
  const mean=total/N,blockMean=blockMeans.reduce((sum,value)=>sum+value,0)/Math.max(1,blockMeans.length);
  const blockSE=blockMeans.length>1?Math.sqrt(blockMeans.reduce((sum,value)=>sum+(value-blockMean)**2,0)/(blockMeans.length-1)/blockMeans.length):null;
- console.log(JSON.stringify({rate,N,seed:initialSeed,drawSeed,bet:100,rulesRevision:278,batchSizes:R.BATCH_SIZES,basePay:R.BASE_PAY_V278,supportProbability:R.supportProbability(rate),geometry:'browser CookieUpgradePatch',scope:'Independent board and 8/25 draw RNG streams; continuous positive-game carry; completed own zero-WIN resets; no carry reset between samples; direct Six Drop payouts, shared Sugar/JPC excluded',actual:mean,naiveSE:Math.sqrt(Math.max(0,squares/N-mean*mean)/N),blockSize,blockSE,blockMeans,normal:normal/N,bonus:bonus/N,winning:winning/N,allClear:allClears/N,removed:removed/N,maximumCommittedBank:maxBank/100,counts,ms:Date.now()-started}));
+ console.log(JSON.stringify({rate,N,seed:initialSeed,drawSeed,bet:100,rulesRevision:278,coreSha256,batchSizes:R.BATCH_SIZES,basePay:R.BASE_PAY_V278,supportProbability:R.supportProbability(rate),geometry:'browser CookieUpgradePatch',scope:'Independent board and 8/25 draw RNG streams; continuous positive-game carry; completed own zero-WIN resets; no carry reset between samples; direct Six Drop payouts, shared Sugar/JPC excluded',actual:mean,naiveSE:Math.sqrt(Math.max(0,squares/N-mean*mean)/N),blockSize,blockSE,blockMeans,normal:normal/N,bonus:bonus/N,winning:winning/N,allClear:allClears/N,removed:removed/N,maximumCommittedBank:maxBank/100,counts,ms:Date.now()-started}));
 }

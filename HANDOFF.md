@@ -1,3 +1,16 @@
+# v278 — シックスドロップの全消し・継続・3/2球進行（2026-11-20）
+
+- Build: `20261120-v278-sixdrop-bottle-and-carry`。実装済み、[PR #3](https://github.com/naokingu123-cloud/cookie-link/pull/3) の最終検査中。仕様と再検証は [v278記録](docs/sixdrop-v278.md)。
+- 新ゲームはrevision278、3・2・1・1・1球の5群。各群の番号を同じ盤面へ同時HITし、落下・連鎖・補充は群ごと。旧revision248保存は単球と旧配当を維持。
+- ローカル版の継続未保存を修正。全消し取得後も蓄積額を保持、Six自身の正常8球終了WIN0のみリセット。非参加・未完了中断は開始carryを保持。streaming中断はserver実ラウンドで確認し、フラグだけでは8球0WINリセットを回避できない。
+- 全消し獲得済み/今回WIN/回数を常設し、全消し蓄積額の横に継続を表示。新生成PNG5点でボトル・全消しロゴ・配当3表・全消し特別演出を実装。元のキャンディと世界背景は維持。
+- 成立n個の係数は n(n+1)/2+floor((n-1)^2/4)、基礎倍率は直線.2/三角.6/ヘキサゴン1.2。各役の表の整数累計WINを合算＋全消し、少額BETでも表示合計一致。旧248の丸めは維持。
+- recorded保存で消えていた数値state.rngを保持。旧欠落snapshotはシード等からの再演完全一致でのみ復旧し、不一致は明示停止。streaming restoreでもSixの復元hookを適用。offline workerはgroup境界待ち/派生drawHeldを使用。
+- 未使用2seedの計32,000ゲーム（50/90/100/150各8,000）で49.18/90.20/97.81/151.47%を観測。固定BET100、均等8/25、Six直接配当のみ。近似区間と較正履歴は [検証JSON](docs/qa-v278/sixdrop-payout-validation.json)。短期/理論一致は保証しない。
+- Windows稼働サーバーの更新・再起動は未実施。精算workerにも変更があるため適用には最新ソースと再起動が必要。`.runtime`・`.tools`・`data`を保持する。
+
+---
+
 # v277 — 役成立の専用画像・豪華ライン・効果音（2026-11-20）
 
 - Build: `20261120-v277-illustrated-awards-and-sound`。公開・確認済み。[PR #2](https://github.com/naokingu123-cloud/cookie-link/pull/2) をマージした公開コミットは `727b739e1ad0084d6a51b120a832189fc75f2dc4`。最終公開確認は2026-11-20 20:42:33 JST。検査範囲・結果は [v277 QA記録](docs/celebration-v277-qa.md)。

@@ -64,13 +64,15 @@ function snapshot(){
  const q=__qa278,e=SixDropV247.engine,d=SixDropUiV278.describe(),box=node=>{if(!node)return null;const b=node.getBoundingClientRect();return {left:b.left,top:b.top,right:b.right,bottom:b.bottom,width:b.width,height:b.height};};
  const rows=[...document.querySelectorAll('#sd278-payouts section')].map(section=>({role:section.dataset.role,earned:Number(section.dataset.earnedCount),box:box(section),rows:[...section.querySelectorAll('tbody tr')].map(tr=>({count:Number(tr.dataset.count),hundredths:Number(tr.dataset.payoutHundredths),win:Number(tr.dataset.win),current:tr.getAttribute('aria-current')==='true',box:box(tr),amount:box(tr.querySelector('.gold-number')),cell:box(tr.querySelector('td'))}))}));
  const bank=document.getElementById('sd278-bank'),receipt=document.getElementById('sd278-clear-earned'),continuation=document.getElementById('sd278-continuation'),canvas=q.slots[2].candyCanvas;
- return {state:e.state,engine:{processed:e.processed,accepted:e.accepted,busy:e.busy,phase:e.phase,drawMode:e.drawMode},info:SixDropV247.describeV278(),ui:d,carry:SixDropV247.carry,app:{phase:q.app.phase,draws:q.app.draws,roundWins:q.app.roundWins,totalWin:q.app.totalWin,credit:q.app.credit},rows,
-  hud:{bank:box(bank),digits:box(bank.querySelector('.gold-number')),continuation:box(continuation),continuationHidden:continuation.hidden,receipt:box(receipt),receiptHidden:receipt.hidden,receiptWin:Number(receipt.dataset.win),receiptCount:Number(receipt.dataset.count),receiptLastWin:Number(receipt.dataset.lastWin),batches:[...document.querySelectorAll('#sd278-batches>span')].map(n=>({size:Number(n.dataset.size),start:Number(n.dataset.start),end:Number(n.dataset.end),current:n.getAttribute('aria-current')}))},
+ return {state:e.state,engine:{processed:e.processed,accepted:e.accepted,busy:e.busy,running:e.running,phase:e.phase,drawMode:e.drawMode},info:SixDropV247.describeV278(),ui:d,carry:SixDropV247.carry,app:{phase:q.app.phase,draws:q.app.draws,roundWins:q.app.roundWins,totalWin:q.app.totalWin,credit:q.app.credit},rows,
+  hud:{bank:box(bank),digits:box(bank.querySelector('.gold-number')),bankText:bank.textContent,continuation:box(continuation),continuationHidden:continuation.hidden,receipt:box(receipt),receiptHidden:receipt.hidden,receiptAmount:box(receipt.querySelector('.sd278-earned-win')),receiptDigits:box(receipt.querySelector('.sd278-earned-win .gold-number')),receiptText:receipt.querySelector('.sd278-earned-win').textContent,receiptWin:Number(receipt.dataset.win),receiptCount:Number(receipt.dataset.count),receiptLastWin:Number(receipt.dataset.lastWin),batches:[...document.querySelectorAll('#sd278-batches>span')].map(n=>({size:Number(n.dataset.size),start:Number(n.dataset.start),end:Number(n.dataset.end),current:n.getAttribute('aria-current')}))},
   board:{canvas:box(canvas),bottle:box(document.querySelector('.sd278-bottle-art')),points:e.state?.grid.flatMap((row,r)=>row.flatMap((tile,c)=>tile?[{id:tile.id,number:tile.number,...q.point(r,c,10)}]:[]))},events:q.events.slice(),miniBadge:{hidden:q.slots[2].tab.querySelector('.sd278-mini-earned').hidden,text:q.slots[2].tab.querySelector('.sd278-mini-earned').textContent},awards:SweetsAwardsV277.describe()};
 }
 async function shot(label){const name=label+'.png';await page.screenshot({path:path.join(output,name)});report.screens.push(name);return name;}
 function assertHud(view,{mini=false}={}){
- assert(view.ui.artLoaded);assert.deepEqual(view.ui.errors,[]);assert.equal(view.ui.progressive.targetUnits,view.state.bankUnits);
+ const endedLoss=view.engine.processed===8&&!view.engine.running&&!view.info.earnedContinuation,bank=endedLoss?0:view.state.bankUnits;
+ assert(view.ui.artLoaded);assert.deepEqual(view.ui.errors,[]);assert.equal(view.ui.progressive.targetUnits,bank);
+ assert.equal(view.ui.progressive.units,bank,'count-up finishes at the canonical balance, or zero after a completed loss');assert.equal(view.hud.bankText,String(Math.floor(bank/100)),'visible digits show the actual progressive');
  assert.equal(view.hud.continuationHidden,!view.info.continuationActive);assert.deepEqual(view.hud.batches.map(x=>x.size),[3,2,1,1,1]);
  assert.equal(view.hud.receiptCount,view.state.allClears);assert.equal(view.hud.receiptWin,view.state.bonusMedals);assert.equal(view.hud.receiptLastWin,view.state.lastAllClearWin);
  assert.equal(view.hud.receiptHidden,view.state.allClears===0);
@@ -85,7 +87,12 @@ function assertHud(view,{mini=false}={}){
   assert(view.hud.bank.width>20&&view.hud.bank.height>10,'progressive digits have visible space');
   assert(view.hud.digits.left>=view.hud.bank.left-2&&view.hud.digits.right<=view.hud.bank.right+2,'progressive digits do not clip');
   assert(view.hud.continuationHidden||view.hud.continuation.left>=view.hud.bank.right-2,'continuation sits beside the amount');
-  for(const role of view.rows)for(const row of role.rows){assert(row.amount.left>=row.cell.left-2&&row.amount.right<=row.cell.right+2,'payout '+role.role+' count '+row.count+' amount fits its cell');}
+  if(!view.hud.receiptHidden){
+   assert.equal(view.hud.receiptText,String(view.state.bonusMedals),'earned receipt displays its actual awarded amount');
+   const digits=view.hud.receiptDigits;assert(digits.width>=digits.height*view.hud.receiptText.length*.45,'receipt amount keeps readable digit proportions');
+   assert(digits.left>=view.hud.receiptAmount.left-2&&digits.right<=view.hud.receiptAmount.right+2,'earned receipt amount fits its allocated space');
+  }
+  for(const role of view.rows)for(const row of role.rows){assert(row.amount.left>=row.cell.left-2&&row.amount.right<=row.cell.right+2,'payout '+role.role+' count '+row.count+' amount fits its cell');assert(row.box.top>=role.box.top-2&&row.box.bottom<=role.box.bottom+2,'all five '+role.role+' payout rows stay visible inside their frame');}
  }
 }
 function clearPaint({mini}){
@@ -101,7 +108,7 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
  for(let i=0;i<8;i++){
   const next=NUMBERS[i],closing=[3,5,6,7,8].includes(i+1),plan=closing?oracle.plans[groupIndex]:null;
   let paint;
-  if(capture&&plan?.allClear&&!seenClear)paint=page.waitForFunction(clearPaint,{mini:!!s.mini},{polling:'raf',timeout:45000}).then(async handle=>{try{return await handle.jsonValue();}finally{await handle.dispose();}});
+  if(capture&&plan?.allClear&&!seenClear)paint=page.waitForFunction(clearPaint,{mini:!!s.mini},{polling:'raf',timeout:45000}).then(async handle=>{try{const evidence=await handle.jsonValue();evidence.liveScreen=await shot(label+'-allclear-live');return evidence;}finally{await handle.dispose();}});
   await page.locator('#manual-number-grid button[data-number="'+next+'"]').click();
   await page.waitForFunction(({received,processed})=>__qa278.app.draws.length===received&&SixDropV247.engine.processed===processed&&!SixDropV247.engine.busy&&!SixDropV247.engine.fx,{received:i+1,processed:expectedProcessed[i+1]},{timeout:90000});
   if(closing){expected=plan.state;groupIndex++;}
@@ -110,7 +117,10 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
   if(paint){const overlay=await paint;assert(overlay);const file=label+'-allclear-overlay.png';await fs.writeFile(path.join(output,file),Buffer.from(overlay.data.slice('data:image/png;base64,'.length),'base64'));delete overlay.data;report.screens.push(file);report[label+'Overlay']=overlay;await shot(label+'-allclear-earned');seenClear=true;}
   if(capture&&[2,4,7].includes(i+1))await shot(label+'-ball'+(i+1));
  }
- const result=await page.evaluate(snapshot);assert.equal(result.app.roundWins[2],oracle.win);assert.equal(result.app.totalWin,oracle.win);
+ // The native completion hook holds payout until its last award finishes.
+ // A settled board may be idle while this deliberate presentation hold runs.
+ await page.waitForFunction(()=>__qa278.app.paid[2]&&!SixDropV247.engine.running,null,{timeout:45000});
+ const result=await page.evaluate(snapshot);assertHud(result,s);assert.equal(result.app.roundWins[2],oracle.win);assert.equal(result.app.totalWin,oracle.win);
  assert.deepEqual({bankUnits:result.carry.bankUnits,removed:result.carry.removed,feed:result.carry.feed},{bankUnits:R.carryOut(oracle.state).bankUnits,removed:R.carryOut(oracle.state).removed,feed:R.carryOut(oracle.state).feed});
  if(capture){assert(seenClear,'an actual all-clear paints the dedicated generated bitmap');assert.equal(result.miniBadge.hidden,false);await shot(label+'-completed');}
  report[label]={seed,bet,win:oracle.win,clearCount:oracle.state.allClears,bonusMedals:oracle.state.bonusMedals,counts:oracle.state.counts,carry:result.carry,ui:result.ui,hud:result.hud,rows:result.rows,events:result.events};return result;
@@ -135,7 +145,12 @@ async function workerCase(){
  const second=await computer.compute({...input,sessionId:'sixdrop-v278-download-next',requestId:'native-v278-next',seed:25520,bets:ids.map(id=>id==='candy'?301:0),totalBet:301,previousState:first.finalState,creditBefore:first.finalState.credit,sixDropCarry:saved});
  assert.deepEqual(second.initialState.engines[2].state.carryAtStart,R.cleanCarry(saved));assert.equal(second.initialState.engines[2].state.bankUnits,saved.bankUnits);assert.equal(second.initialState.engines[2].state.bet,301);
  assert.equal(second.finalState.credit,first.finalState.credit-301+second.totalWin);games.push({index:1,win:second.totalWin,carry:second.games[2].carryV247});
- await fs.writeFile(path.join(output,'download-first.json'),JSON.stringify(first));await fs.writeFile(path.join(output,'download-next.json'),JSON.stringify(second));report.download={games,completed:computer.status().completed,numbers:first.numbers,processed:first.playback.checkpoints.map(s=>s.engines[2].processed)};
+ assert(second.games[2].win>0,'the second actual physical round earns a positive carry witness');
+ const positiveCarry=second.games[2].carryV247;
+ const third=await computer.compute({...input,sessionId:'sixdrop-v278-download-positive-carry',requestId:'native-v278-positive-carry',seed:25520,bets:ids.map(id=>id==='candy'?7:0),totalBet:7,previousState:second.finalState,creditBefore:second.finalState.credit,sixDropCarry:positiveCarry});
+ assert.deepEqual(third.initialState.engines[2].state.carryAtStart,R.cleanCarry(positiveCarry));assert.equal(third.initialState.engines[2].state.bankUnits,positiveCarry.bankUnits);assert.deepEqual(third.initialState.engines[2].state.palette,R.palette(positiveCarry.removed));
+ assert.equal(third.finalState.credit,second.finalState.credit-7+third.totalWin);assert.equal(third.games[2].win,R.totalMedals(third.finalState.engines[2].state));games.push({index:2,win:third.totalWin,carry:third.games[2].carryV247});
+ await fs.writeFile(path.join(output,'download-first.json'),JSON.stringify(first));await fs.writeFile(path.join(output,'download-next.json'),JSON.stringify(second));await fs.writeFile(path.join(output,'download-positive-carry.json'),JSON.stringify(third));report.download={games,completed:computer.status().completed,numbers:first.numbers,processed:first.playback.checkpoints.map(s=>s.engines[2].processed)};
  await computer.close();computer=null;
 }
 try{
@@ -152,7 +167,7 @@ try{
   }
   report.caseResults.push({id:current,status:'passed',durationMs:Date.now()-started});console.log('SIXDROP_V278_BROWSER_CASE_PASS',current);
  }catch(error){
-  const failure={id:current,message:String(error),stack:error.stack};if(page)try{failure.diagnostics=await page.evaluate(snapshot);failure.screenshot='failure-'+current+'.png';await page.screenshot({path:path.join(output,failure.screenshot)});}catch{}
+  const failure={id:current,message:String(error),stack:error.stack,computer:computer?.status()};if(page)try{failure.diagnostics=await page.evaluate(snapshot);failure.screenshot='failure-'+current+'.png';await page.screenshot({path:path.join(output,failure.screenshot)});}catch{}
   report.failures.push(failure);report.caseResults.push({id:current,status:'failed',durationMs:Date.now()-started,message:String(error)});console.error('SIXDROP_V278_BROWSER_CASE_FAIL',current,String(error));
  }finally{await computer?.close();computer=null;}}
  assert.equal(report.pageErrors.length,0,'no runtime page errors');assert.equal(report.assetFailures.length,0,'all generated UI assets load');assert.equal(report.apiRequests.length,0,'no wallet/server API is contacted');

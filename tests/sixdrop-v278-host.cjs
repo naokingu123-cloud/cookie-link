@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {R,clone,NUMBERS,createHost,idle,installWorker,fullRound}=require('./sixdrop-v278-fixture.cjs');
+const {R,clone,NUMBERS,createHost,idle,installWorker,streamingCheckpoint,fullRound}=require('./sixdrop-v278-fixture.cjs');
 require('../assets/recorded-round-v255.js');
 const Recorder=globalThis.SweetsRecordedRoundV255;
 globalThis.SweetsLineup={ids:['candy']};
@@ -104,6 +104,46 @@ async function run(){
  for(const n of NUMBERS.slice(2)){old=R.hit(old,n).state;await legacy.number(n);}
  assert.deepEqual(legacy.e.state,old);assert.equal(legacy.e.state.rulesRevision,248);legacy.app.prepare();legacy.start();assert.equal(legacy.e.state.rulesRevision,278);
 
+ // A previously downloaded v248 package omitted numeric state.rng. Migration
+ // may reconstruct that cursor only when the saved seed/history reproduce
+ // the exact physical board and every prior award. It must never guess.
+ let oldMid=R.newGame({seed:9,bet:333,carry:prior});for(const n of NUMBERS.slice(0,4))oldMid=R.hit(oldMid,n).state;
+ const missingRng=clone(oldMid);delete missingRng.rng;
+ const migration=createHost({seed:9,bet:333,search:'?edition=streaming'});migration.control(prior);migration.start();
+ migration.e.state=clone(missingRng);migration.e.seed247=9;migration.app.draws=NUMBERS.slice(0,4);migration.e.queue=[];migration.e.afterCheckpointRestoreV247();
+ assert.deepEqual(migration.e.state,oldMid,'legacy migration reconstructs only the missing RNG field');
+ let oldFinal=oldMid;for(const n of NUMBERS.slice(4)){oldFinal=R.hit(oldFinal,n).state;await migration.number(n);}
+ assert.deepEqual(migration.e.state,oldFinal);assert.equal(migration.app.totalWin,R.totalMedals(oldFinal));
+ for(const corrupt of ['seed','board','award','modern']){
+  const bad=createHost({seed:9,bet:333,search:'?edition=streaming'});bad.control(prior);bad.start();bad.e.state=clone(missingRng);bad.e.seed247=9;bad.app.draws=NUMBERS.slice(0,4);bad.e.queue=[];
+  if(corrupt==='seed')delete bad.e.seed247;
+  if(corrupt==='board')bad.e.state.grid.flat().find(Boolean).color=8;
+  if(corrupt==='award')bad.e.state.bonusMedals++;
+  if(corrupt==='modern')bad.e.state.rulesRevision=278;
+  assert.throws(()=>bad.e.afterCheckpointRestoreV247(),/RNG cannot be recovered/,corrupt+' does not permit an invented RNG continuation');
+ }
+
+ const streamingCases=[];
+ for(const scenario of [{ball:1},{ball:2},{ball:4},{ball:0,queued:3},{ball:3,queued:2},{ball:2,legacy:true}]){
+  const a=createHost({seed:9,bet:3000,search:'?edition=streaming'});a.control(prior);a.start();
+  if(scenario.legacy){a.e.state=R.newGame({seed:9,bet:3000,carry:prior});a.e.afterCheckpointRestoreV247();}
+  for(const n of NUMBERS.slice(0,scenario.ball))await a.number(n);
+  const shared=streamingCheckpoint(a),checkpoint=clone(shared.checkpoint(a.app));
+  if(scenario.queued){checkpoint.draws=NUMBERS.slice(0,scenario.ball+scenario.queued);Object.assign(checkpoint.engines[0],{queue:[NUMBERS.slice(scenario.ball,scenario.ball+scenario.queued)],accepted:scenario.ball+scenario.queued,busy:true});}
+  const b=createHost({seed:77,bet:3000,search:'?edition=streaming'});b.control(prior);b.start();
+  let hookCalls=0,drawsAtHook;const hook=b.e.afterCheckpointRestoreV247;
+  b.e.afterCheckpointRestoreV247=function(...args){hookCalls++;drawsAtHook=clone(b.app.draws);return Reflect.apply(hook,this,args);};
+  assert.equal(streamingCheckpoint(b).restore(b.app,checkpoint),true);await idle(b.e);
+  assert.equal(hookCalls,1,'explicit shared resume invokes the engine hook once');assert.deepEqual(drawsAtHook,checkpoint.draws,'app draw history is revived before the engine reconstructs pending numbers');
+  assert.equal(b.e.drawMode,scenario.legacy?'single':'grouped');
+  const resumedBall=scenario.ball+(scenario.queued||0);assert.equal(b.e.processed,scenario.legacy?resumedBall:expectedProcessed[resumedBall]);
+  if(!scenario.legacy)assert.deepEqual([...b.e.pendingDraws],NUMBERS.slice(expectedProcessed[resumedBall],resumedBall));
+  for(const n of NUMBERS.slice(resumedBall))await b.number(n);
+  if(scenario.legacy){let expected=R.newGame({seed:9,bet:3000,carry:prior});for(const n of NUMBERS)expected=R.hit(expected,n).state;assert.deepEqual(b.e.state,expected);}
+  else assert.deepEqual(b.e.state,oracle.state);
+  streamingCases.push(scenario);
+ }
+
  // Execute the real offline worker prepare/restore/replay/settle function.
  // It must pass early pending balls without waiting for a nonexistent HIT.
  const workerCases=[];
@@ -118,6 +158,6 @@ async function run(){
   workerCases.push(ball);
  }
  assert.equal(h.events.filter(e=>e.phase==='error').length,0);
- console.log('SIXDROP_V278_HOST_PASS',JSON.stringify({boundaries,repeated,checkpointCases,queuedGroups:[3,2],offlineWorkerCases:workerCases,payout:56618,scope:'Native Arcade + live Six adapter + recorder + local persistence + offline settlement worker'}));
+ console.log('SIXDROP_V278_HOST_PASS',JSON.stringify({boundaries,repeated,checkpointCases,queuedGroups:[3,2],legacyMissingRng:'verified replay + 4 rejection cases',streamingCases,offlineWorkerCases:workerCases,payout:56618,scope:'Native Arcade + live Six adapter + recorder + local persistence + shared resume + offline settlement worker'}));
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});

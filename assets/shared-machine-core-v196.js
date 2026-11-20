@@ -100,6 +100,7 @@ function restore(a,state){
  if(!state)return false;
  for(const key of ['credit','displayCredit','bets','locked','enabled','paid','draws','roundWins','totalWin','wonderBank','wonderSteps','wonderValue'])if(key in state)try{a[key]=revive(state[key]);}catch{}
  (state.engines||[]).forEach((saved,index)=>{const engine=a.engines?.[index];if(!engine)return;for(const [key,value] of Object.entries(saved))if(!CONTROLS.has(key))try{engine[key]=revive(value);}catch{}});
+ for(const engine of a.engines||[])engine.afterCheckpointRestoreV247?.();
  repaint(a);return true;
 }
 function repaint(a){try{typeof renderRoundResult==='function'&&renderRoundResult(a);}catch{}try{typeof scheduleUI==='function'&&scheduleUI(a);}catch{}try{a.onChange?.(a);}catch{}}
