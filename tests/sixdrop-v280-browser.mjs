@@ -21,7 +21,7 @@ for(let seed=1;seed<=2000&&!oracle;seed++){
 assert(oracle,'a natural revision-280 all-clear witness exists');
 const report={version,shard:0,shards:1,totalPlannedCases:cases.length,plannedCases:cases,caseResults:[],failures:[],screens:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[],scope:'One real local manual eight-ball round; current core oracle; PC/390px/mini; inherited and reset display; no public CREDIT',witness:{seed:oracle.seed,bet,numbers:NUMBERS,win:oracle.win,allClears:oracle.state.allClears}};
 const mime={'.html':'text/html','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.avif':'image/avif','.svg':'image/svg+xml','.wav':'audio/wav','.mp3':'audio/mpeg','.woff2':'font/woff2'};
-const bridge='\n;window.__qa280={app,slots,select,syncManualNumbers,scheduleUI,stopResultAuto,get active(){return active;},point:sixXY,backdrop:sixArtBackdrop,roleIcon:sixDrawRoleIcon};\n';
+const bridge='\n;window.__qa280={app,slots,select,syncManualNumbers,scheduleUI,stopResultAuto,get active(){return active;},point:sixXY,rowWidth:sixRowWidth,backdrop:sixArtBackdrop,roleIcon:sixDrawRoleIcon};\n';
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://127.0.0.1');
  if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/ws')){report.apiRequests.push(url.pathname);res.writeHead(451).end();return;}
@@ -85,8 +85,9 @@ function artEvidence(){
  const x=art.getContext('2d');x.drawImage(source,0,0);const pixels=x.getImageData(0,0,art.width,art.height).data,geometry=SixDropUiV278.describe().geometry,positions=[];
  // Sample the full board, including the live idle breathing envelope. This
  // detects a wider board crossing an opaque PNG shoulder or bottom corner.
- for(let row=0;row<10;row++)for(let col=0;col<(row%2?7:8);col++){
-  const p=q.point(row,col,10);let maxAlpha=0;
+ const rows=SixDropV247.engine.rows;
+ for(let row=0;row<rows;row++)for(let col=0;col<q.rowWidth(row,rows);col++){
+  const p=q.point(row,col,rows);let maxAlpha=0;
   for(const lift of [-.9,0,.9])for(let angle=0;angle<360;angle++){
    const a=angle*Math.PI/180,cx=p.x+Math.cos(a)*geometry.radius*1.02,cy=p.y+lift+Math.sin(a)*geometry.radius*1.02;
    const ix=Math.round(cx*art.width/320),iy=Math.round(cy*art.height/320);maxAlpha=Math.max(maxAlpha,pixels[(iy*art.width+ix)*4+3]||0);
@@ -123,10 +124,12 @@ try{
  await checked('ready-restoration',async()=>{
   const zero={version:247,bankUnits:0,removed:0,feed:0,roundId:''};report.restore=[];
   for(const carry of [zero,prior,zero,prior]){const view=await restoreCarry(carry);assertLayout(view);report.restore.push(view.ui.removed);}
-  const evidence=await page.evaluate(artEvidence);assert.equal(evidence.positions.length,75);assert(Math.abs(evidence.geometry.step-30.2)<.001);assert(evidence.geometry.step>27.745*1.08,'native drop diameter increases by more than 8%');
-  assert(evidence.positions.every(p=>p.maxAlpha<=80),'all 75 breathing drops fit the PNG transparent interior');assert.equal(evidence.backdropAlpha,0,'legacy canvas jar outline is removed');
+  const evidence=await page.evaluate(artEvidence);report.art=evidence;
+  assert.equal(evidence.positions.length,75);assert.deepEqual(Array.from({length:10},(_,row)=>evidence.positions.filter(p=>p.row===row).length),oracle.initial.grid.map(row=>row.length),'PNG checks enumerate the actual native board cells');
+  assert(Math.abs(evidence.geometry.step-29.4)<.001);assert(evidence.geometry.step>27.745*1.05,'native drop diameter increases by more than 5% while fitting the bottle');
+  assert(evidence.positions.every(p=>p.maxAlpha<=80),'all 75 breathing drops fit the PNG transparent interior: '+JSON.stringify(evidence.positions.filter(p=>p.maxAlpha>80)));assert.equal(evidence.backdropAlpha,0,'legacy canvas jar outline is removed');
   for(const icon of evidence.icons){assert.equal(icon.difference,0,'role diagram uses the actual native candy layout');assert(icon.ink>100000,'role diagram has visible candy pixels');}
-  report.art=evidence;await shot('desktop-ready');
+  await shot('desktop-ready');
  });
  await checked('desktop-round',async()=>{
   await page.locator('#manual-start').click();await page.waitForFunction(()=>__qa280.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout:45000});
@@ -162,6 +165,7 @@ try{
  assert.equal(report.pageErrors.length,0);assert.equal(report.assetFailures.length,0);assert.equal(report.apiRequests.length,0);assert.equal(report.externalRequests.length,0);assert.equal(report.caseResults.length,cases.length);report.ok=true;
 }catch(error){
  report.ok=false;report.error=String(error);report.failures.push({id:current,message:String(error),stack:error.stack});report.caseResults.push({id:current,status:'failed',message:String(error)});process.exitCode=1;
+ console.error('SIXDROP_V280_BROWSER_CASE_FAIL',current||'setup',String(error));
  if(page)try{report.diagnostics=await page.evaluate(snapshot);await shot('failure-'+current);}catch{}
 }finally{
  await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');await context?.close();await browser?.close();await new Promise(resolve=>server.close(resolve));console.log('SIXDROP_V280_BROWSER_REPORT',output+'/report.json');

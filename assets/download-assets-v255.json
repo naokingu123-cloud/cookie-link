@@ -2793,8 +2793,8 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 16336,
-      "sha256": "74bb396f11375e837b733509f93722ebf2e9102c0e024bd72fd62210eb73100f"
+      "bytes": 16490,
+      "sha256": "58555f8fb59be9ad868e78c442163b2bdc4d4232e2c43fc3e1793354d2160093"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -3752,5 +3752,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 214058761
+  "totalBytes": 214058915
 }

@@ -158,8 +158,10 @@ function refresh(){
 // Fit the existing candies inside the generated bottle's clear window. Every
 // renderer, fall path, reach and award uses these same native coordinates.
 sixLayout=function(rows=SIX_ROWS){
- const count=Math.max(1,Number(rows)||SIX_ROWS),step=Math.min(30.2,266/(1+(count-1)*SIX_SQRT3_2));
- return {step,top:163-(count-1)*step*SIX_SQRT3_2/2,radius:step*.5};
+ // Native rows start with seven drops and end with eight. The wider bottom
+ // row sets the limit at the bottle's curved corners, including idle motion.
+ const count=Math.max(1,Number(rows)||SIX_ROWS),step=Math.min(29.4,259/(1+(count-1)*SIX_SQRT3_2));
+ return {step,top:158-(count-1)*step*SIX_SQRT3_2/2,radius:step*.5};
 };
 // The old canvas backdrop contains a white rounded jar outline in addition
 // to the CSS lid/rails. The new transparent PNG supplies the sole bottle.
