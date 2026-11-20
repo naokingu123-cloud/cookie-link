@@ -11,7 +11,7 @@ const root=process.cwd(),output='qa-game-polish-v276';
 await fs.mkdir(output,{recursive:true});
 const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
 const games=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
-const report={version,games:[],payoutFits:[],screens:[],pageErrors:[],apiRequests:[],externalRequests:[],warnings:[]};
+const report={version,games:[],payoutFits:[],screens:[],overlayScreens:[],pageErrors:[],apiRequests:[],externalRequests:[],warnings:[]};
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml','.mp3':'audio/mpeg','.wav':'audio/wav','.avif':'image/avif'};
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://127.0.0.1');
@@ -66,7 +66,17 @@ function inspectHit(input){
  const probe=document.createElement('canvas');probe.width=probe.height=96;const ctx=probe.getContext('2d',{willReadFrequently:true});ctx.drawImage(node,0,0,96,96);
  const pixels=ctx.getImageData(0,0,96,96).data;let painted=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>10)painted++;
  if(painted<3)return null;
- return {painted,pointerEvents:style.pointerEvents,box:{width:bounds.width,height:bounds.height},diagnostics:d,history:d.history.filter(e=>e.game===kind),draws:window.SweetsLocalDebugV258.describe().draws};
+ // Capture synchronously in the same frame as the passing alpha probe; a later
+ // full-page screenshot can arrive after this short live effect has expired.
+ return {painted,pointerEvents:style.pointerEvents,box:{width:bounds.width,height:bounds.height},diagnostics:d,history:d.history.filter(e=>e.game===kind),draws:window.SweetsLocalDebugV258.describe().draws,overlayDataUrl:node.toDataURL('image/png')};
+}
+async function saveHitOverlay(evidence,kind,{mini=false,reduced=false}={}){
+ const prefix='data:image/png;base64,',dataUrl=evidence.overlayDataUrl;
+ assert.ok(typeof dataUrl==='string'&&dataUrl.startsWith(prefix),'live HIT canvas encoded as PNG');
+ const file='hit-'+kind+(mini?'-mini':'')+(reduced?'-reduced':'')+'-overlay.png';
+ await fs.writeFile(path.join(output,file),Buffer.from(dataUrl.slice(prefix.length),'base64'));
+ delete evidence.overlayDataUrl;
+ report.overlayScreens.push({game:kind,mini,reduced,path:file});
 }
 async function numberCandidates(kind){
  return page.evaluate(kind=>{
@@ -99,6 +109,7 @@ async function captureHit(kind,{reduced=false}={}){
  assert.equal(evidence.pointerEvents,'none');assert.equal(evidence.diagnostics.errors,0);
  assert.ok(evidence.history.length,'actual engine event is recorded');
  for(const event of evidence.history)for(const p of event.mainPoints.filter(Boolean))assert.ok(Number.isFinite(p.x+p.y+p.r)&&p.r>0,'finite main HIT projection');
+ await saveHitOverlay(evidence,kind,{reduced});
  const file='hit-'+kind+(reduced?'-reduced':'')+'.png';await page.screenshot({path:path.join(output,file)});report.screens.push(file);
  report.games.push({game:kind,reduced,...evidence});
  return evidence;
@@ -112,7 +123,8 @@ try{
  const [miniNumber]=await numberCandidates('dango');await page.locator('#manual-number-grid button[data-number="'+miniNumber+'"]').click();
  let miniature=null;const miniEnd=Date.now()+7000;
  while(Date.now()<miniEnd){miniature=await page.evaluate(inspectHit,['dango',true]);if(miniature)break;await new Promise(r=>setTimeout(r,30));}
- assert.ok(miniature,'a real offscreen game HIT paints its live miniature');assert.equal(miniature.pointerEvents,'none');assert.ok(miniature.diagnostics.maxMiniParticles<=16);report.miniature=miniature;
+ assert.ok(miniature,'a real offscreen game HIT paints its live miniature');assert.equal(miniature.pointerEvents,'none');assert.ok(miniature.diagnostics.maxMiniParticles<=16);
+ await saveHitOverlay(miniature,'dango',{mini:true});report.miniature=miniature;
  await page.screenshot({path:path.join(output,'hit-dango-mini.png')});report.screens.push('hit-dango-mini.png');
  current='gelato-mobile';await openGame('gelato',{width:390,height:844,bet:300000});await payoutFit('mobile BET300000');await page.screenshot({path:path.join(output,'gelato-mobile-long-payout.png')});report.screens.push('gelato-mobile-long-payout.png');
  current='reduced-motion';await openGame('dango',{width:390,height:844,reduced:true});const reduced=await captureHit('dango',{reduced:true});
