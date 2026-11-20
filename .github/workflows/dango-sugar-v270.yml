@@ -1,4 +1,4 @@
-name: Dango and Sugar presentation v270
+name: Dango and Sugar presentation v271
 on:
   workflow_dispatch:
   push:
@@ -49,12 +49,14 @@ jobs:
           node tests/dango-v268-rules.mjs
           node tests/dango-v269-presentation-rules.mjs
           node tests/dango-v269-lifecycle.mjs
-      - name: Sugar quantization, multiplier reel and existing ledger
+      - name: Sugar JPC entry, fixed cash, multiplier reel and existing ledger
         run: |
           node tests/sugar-challenge-v254-rules.mjs
           node tests/sugar-challenge-v268-rules.mjs
           node tests/sugar-v270-rules.mjs
           node tests/sugar-v270-presentation.mjs
+          node tests/sugar-v271-rules.mjs
+          node scripts/sugar-challenge-v271-probabilities.mjs --check
           node tests/sugar-challenge-v254-ledger.mjs
           node tests/sugar-challenge-v254-server.mjs
           node tests/sugar-roulette-v254.mjs

@@ -13,7 +13,7 @@ const app={
 };
 const V={stampBank(){},accept(value){notifications.push(JSON.parse(JSON.stringify(value)));},setExpanded(value){rounds.push(['expanded',value]);}};
 const ctx=vm.createContext({console,window:{SweetsEditionV255:{value:'local'},SweetsLocalDebugV258:{storage:store}},app,document:{getElementById:()=>null},Date,Number,Map,Math,URLSearchParams,debugPayoutTarget:90});
-vm.runInContext(rules,ctx);ctx.window.SugarChallengeRulesV254=ctx.SugarChallengeRulesV254;ctx.window.SweetsSugarChallengeV254=V;
+vm.runInContext(rules,ctx);const legacyRules=ctx.SugarChallengeRulesV254;ctx.window.SugarChallengeRulesV254={...legacyRules,create:options=>legacyRules.create({...options,rulesRevision:268})};ctx.window.SweetsSugarChallengeV254=V;
 vm.runInContext(bridge,ctx);
 const L=ctx.window.SweetsLocalSugarV267;
 assert.equal(L.version,268);assert.equal(L.describe().bankCount,0);
@@ -22,7 +22,7 @@ const betQuote=L.describe();assert.ok(betQuote.jpAmount>0);assert.ok(betQuote.mu
 assert.equal(app.start(),true);let now=L.describe();assert.equal(now.jpAmount,betQuote.jpAmount);assert.equal(now.roundId,betQuote.roundId);assert.equal(now.active,true);assert.equal(now.bankCount,0);assert.equal(now.phase,'ready');assert.deepEqual(rounds.at(-1),['expanded',true]);
 for(const n of [2,5,8,10,12,14,17,22])assert.equal(app.acceptNumber(n),true);
 now=L.describe();assert.equal(now.phase,'complete');assert.equal(now.draws.length,8);assert.equal(now.settled,true);assert.equal(app.phase,'result');
-const p=ctx.window.SugarChallengeRulesV254.evaluate('standard',90);assert.equal(p.jpc,false);
+const p=ctx.window.SugarChallengeRulesV254.evaluate('standard',90,268);assert.equal(p.jpc,false);
 assert.equal(app.totalWin,25+now.cashWin);assert.ok(now.cashWin>0);
 const once=app.totalWin;app.finishRound();assert.equal(app.totalWin,once,'no duplicate Sugar payment');
 assert.equal(app.acceptNumber(24),false);

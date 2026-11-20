@@ -25,7 +25,7 @@ for(const edition of ['local','download']){
  root.anima8=driver;ui.pulse();assert.equal(ui.describe().panelCount,25);
  const shaders=panels.map(p=>p.material.fragmentShader);ui.pulse();assert.deepEqual(panels.map(p=>p.material.fragmentShader),shaders,'rebinding the same driver is idempotent');
  for(let station=1;station<=6;station++){
-  challenge=R.create({id:edition+'-'+station,roundId:edition+'-round-'+station,station,sugarValues:[1000,1000,1000,1000,1000],cardId:'standard',multiplier:2});
+  challenge=R.create({id:edition+'-'+station,roundId:edition+'-round-'+station,station,rulesRevision:268,sugarValues:[1000,1000,1000,1000,1000],cardId:'standard',multiplier:2});
   now+=100;ui.pulse();assert.equal(ui.colorFor(8),null,'BET keeps number faces in their normal state');
   app.phase='playing';for(const n of [25,24,20])challenge=R.advance(challenge,n);
   now+=100;ui.pulse();const reach=ui.colorFor(8);assert.equal(reach.station,station);assert.equal(reach.status,'reach');assert.equal(reach.color,colors[station-1]);

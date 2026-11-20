@@ -5,12 +5,12 @@ import {createSugarChallengeLedger} from '../server-sugar-challenge-v254.mjs';
 const R=globalThis.SugarChallengeRulesV254;
 const copy=value=>JSON.parse(JSON.stringify(value));
 const valuesFor=total=>[total-4,1,1,1,1];
-const make=(total=725,extra={})=>R.create({id:'sc270',roundId:'round270',station:1,sugarValues:valuesFor(total),cardId:'standard',multiplier:3,...extra});
+const make=(total=725,extra={})=>R.create({id:'sc270',roundId:'round270',station:1,sugarValues:valuesFor(total),rulesRevision:270,cardId:'standard',multiplier:3,...extra});
 const drawAll=(state,draws)=>draws.reduce((s,number)=>R.advance(s,number,{roundId:s.roundId,ballIndex:s.drawCount+1}),state);
 const cashBalls=[1,2,3,8,20,21,24,25];
 const earlyLuckyBalls=[20,19,18,15,5,3,7,17];
 
-assert.equal(R.REVISION,270);assert.equal(R.PREVIOUS_REVISION,268);assert.equal(R.JP_STEP,500);
+assert.equal(R.REVISION,271);assert.equal(R.PREVIOUS_REVISION,270);assert.equal(R.EARLY_REVISION,268);assert.equal(R.JP_STEP,500);
 
 // User-facing rounding boundaries: half a 500-medal step rounds upward, and
 // a positive five-Sugar challenge never displays a zero JP.
@@ -60,7 +60,7 @@ for(let bucket=0;bucket<10000;bucket++){
 }
 assert.deepEqual(bins,{1:8000,2:1500,3:400,5:90,10:10});
 let rngCalls=0;
-let chosen=R.create({id:'rng270',roundId:'rng-round',station:2,sugarValues:valuesFor(750),rng:()=>{rngCalls++;return .85;}});
+let chosen=R.create({id:'rng270',roundId:'rng-round',station:2,rulesRevision:270,sugarValues:valuesFor(750),rng:()=>{rngCalls++;return .85;}});
 assert.equal(rngCalls,2);assert.equal(chosen.multiplier,2);assert.equal(chosen.jpBase,1000);
 chosen=drawAll(R.restore(copy(R.snapshot(chosen))),cashBalls);
 assert.equal(rngCalls,2);assert.equal(chosen.jpAmount,2000);

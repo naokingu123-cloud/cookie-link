@@ -202,7 +202,7 @@ try{
   assert.equal(info.results.installed,true);assert.equal(info.results.stylesheet,true);assert.equal(info.results.resultHidden,true);
   assert.equal(info.results.assets.length,2);for(const asset of info.results.assets)assert.ok(asset.width>0&&asset.height>0);
   assert.deepEqual(errors,[],'published result module initializes without errors');
-  await page.waitForFunction(()=>window.SugarChallengeRulesV254?.REVISION===270&&window.SweetsSugarChallengeV254?.version===254&&document.querySelector('.sc254-overlay'),null,{timeout:10000});
+  await page.waitForFunction(()=>window.SugarChallengeRulesV254?.REVISION===271&&window.SweetsSugarChallengeV254?.version===254&&document.querySelector('.sc254-overlay'),null,{timeout:10000});
   info.sugar=await page.evaluate(async()=>{
    const R=window.SugarChallengeRulesV254,ui=window.SweetsSugarChallengeV254,assets=await Promise.all(['scale','bottle','jpc-title'].map(async name=>{const image=new Image();image.src='assets/sugar-art-v254/'+name+'.webp?v=254';await image.decode();return {name,width:image.naturalWidth,height:image.naturalHeight};}));
    await Promise.all([...document.querySelectorAll('.sc254-overlay img,.sc254-celebration img,.sc254-dock img')].map(image=>image.decode()));
@@ -213,12 +213,12 @@ try{
     reachPopups:[...document.querySelectorAll('.v250-reach-pop')].map(node=>({game:node.dataset.gameKind,image:getComputedStyle(node,'::before').backgroundImage,hidden:node.hidden,numberNodes:node.querySelectorAll('small').length})),
     serverRouletteInstalled:!!window.SweetsSugarRouletteV254};
   });
-  assert.equal(info.sugar.revision,270);assert.equal(info.sugar.jpStep,500);assert.equal(info.sugar.ui.version,254);assert.equal(info.sugar.ui.presentationRevision,270);assert.equal(info.sugar.ui.challenge,null);assert.equal(info.sugar.ui.bankCount,0);assert.equal(info.sugar.ui.artLoaded,true);
+  assert.equal(info.sugar.revision,271);assert.equal(info.sugar.jpStep,500);assert.equal(info.sugar.ui.version,254);assert.equal(info.sugar.ui.presentationRevision,271);assert.equal(info.sugar.ui.challenge,null);assert.equal(info.sugar.ui.bankCount,0);assert.equal(info.sugar.ui.artLoaded,true);
   assert.equal(info.sugar.stylesheet,true);assert.equal(info.sugar.overlayHidden,true);assert.equal(info.sugar.dockHidden,true);assert.equal(info.sugar.dockParent,'cookie-roulette');
   assert.equal(info.sugar.serverRouletteInstalled,false,'published player does not install a second local roulette');
   assert.equal(info.sugar.assets.length,3);for(const asset of info.sugar.assets)assert.ok(asset.width>=100&&asset.height>=100,'published '+asset.name+' artwork decodes');
   assert.deepEqual(info.sugar.cards.map(card=>card.id),['standard','lucky','wide']);
-  for(const card of info.sugar.cards)for(const sum of card.luckySums)assert.ok(sum>card.lowMax&&sum<card.highMin,'lucky final sums are outside the two JPC tail intervals');
+  for(const card of info.sugar.cards){assert.equal(card.lowMax,null);for(const sum of card.luckySums)assert.ok(sum<card.highMin,'lucky cumulative sums lie below the high JPC threshold');}
   assert.equal(info.sugar.reachFrame.loaded,true);assert.ok(info.sugar.reachFrame.width>=300&&info.sugar.reachFrame.height>=100);
   assert.equal(info.sugar.reachPopups.length,10);for(const pop of info.sugar.reachPopups){assert.match(pop.image,/reach-art-v254\/reach-common\.webp/);assert.equal(pop.hidden,true);assert.equal(pop.numberNodes,0);}
   assert.deepEqual(errors,[],'published Sugar and reach modules initialize without errors');

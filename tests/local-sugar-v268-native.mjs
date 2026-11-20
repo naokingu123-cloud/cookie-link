@@ -13,7 +13,7 @@ function boot(){
  app.boostAfterDraws=()=>{};context.app=app;
  let visible=null;
  context.window.SweetsSugarChallengeV254={stampBank(){for(const [i,t] of app.wonderBank.entries())if(!t.sugarId)t.sugarId='native:'+i;},accept(s){visible=JSON.parse(JSON.stringify(s));const accepted=new Set(s.acceptedIds),pending=app.wonderBank.filter(t=>!accepted.has(t.sugarId));app.wonderBank=[...new Map([...s.bank,...pending].map(t=>[t.sugarId,t])).values()];},setExpanded(){},snapshot:()=>visible};
- vm.runInContext(read('assets/sugar-challenge-rules-v254.js'),context);context.window.SugarChallengeRulesV254=context.SugarChallengeRulesV254;
+ vm.runInContext(read('assets/sugar-challenge-rules-v254.js'),context);const legacyRules=context.SugarChallengeRulesV254;context.window.SugarChallengeRulesV254={...legacyRules,create:options=>legacyRules.create({...options,rulesRevision:268})};
  vm.runInContext(read('assets/local-sugar-v267.js'),context);return {context,app,L:context.window.SweetsLocalSugarV267,V:context.window.SweetsSugarChallengeV254};
 }
 let {app,L,V}=boot();

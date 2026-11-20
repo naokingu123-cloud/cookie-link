@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import '../assets/sugar-challenge-rules-v254.js';
 import {buildReport} from '../scripts/sugar-challenge-v254-probabilities.mjs';
 
-const R=globalThis.SugarChallengeRulesV254,plain=value=>JSON.parse(JSON.stringify(value));
+const R=globalThis.SugarChallengeRulesV254,LEGACY=254,legacyCards=R.cardsFor(LEGACY),plain=value=>JSON.parse(JSON.stringify(value));
 const source=fs.readFileSync(new URL('../assets/sugar-challenge-rules-v254.js',import.meta.url),'utf8');
 const freezeDeep=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freezeDeep);Object.freeze(value);}return value;};
 const options={rulesRevision:254,id:'challenge:r42:st2',roundId:'r42',station:2,sugarValues:[100,110,95,105,90],cardId:'standard',multiplier:2,seed:254};
@@ -35,18 +35,18 @@ const oracle=(cardId,sum)=>{
  return {reason,payout};
 };
 const expectedJpc={standard:101646,lucky:148922,wide:184154};
-for(const card of R.cards){
+for(const card of legacyCards){
  assert(card.luckySums.every(sum=>sum>card.lowMax&&sum<card.highMin));
  let jpcCount=0;
  for(let sum=36;sum<=172;sum++){
-  const expected=oracle(card.id,sum),actual=R.evaluate(card.id,sum),final=advanceAll(create({cardId:card.id}),witnesses.get(sum));
+  const expected=oracle(card.id,sum),actual=R.evaluate(card.id,sum,LEGACY),final=advanceAll(create({cardId:card.id}),witnesses.get(sum));
   assert.equal(actual.reason,expected.reason);assert.equal(actual.payoutHundredths,expected.payout);
   assert.equal(final.sum,sum);assert.equal(final.phase,'complete');assert.equal(final.cashWin,10*expected.payout);
   assert.equal(final.jpcQualified,!!expected.reason);assert.equal(final.jpcTicket?.status??null,expected.reason?'pending-implementation':null);
   if(expected.reason)jpcCount+=histogram[sum];
  }
  assert.equal(jpcCount,expectedJpc[card.id]);
- const tiers=R.payoutRows(card.id),seen=new Set();assert.deepEqual(tiers.map(row=>row.hundredths),[20,10,5,3,2,1]);
+ const tiers=R.payoutRows(card.id,LEGACY),seen=new Set();assert.deepEqual(tiers.map(row=>row.hundredths),[20,10,5,3,2,1]);
  for(const row of tiers){assert(row.ranges.length>0);for(const range of row.ranges)for(let sum=range.min;sum<=range.max;sum++){assert(!seen.has(sum));seen.add(sum);assert.equal(oracle(card.id,sum).payout,row.hundredths);}}
  for(let sum=36;sum<=172;sum++)assert.equal(seen.has(sum),!oracle(card.id,sum).reason);
 }
@@ -109,7 +109,7 @@ assert.throws(()=>create({sugarValues:Array(5).fill(Number.MAX_SAFE_INTEGER)}),R
 for(const history of [[],[13],[1,25],[3,7,14],[2,8,15,23],[1,2,3,10,15],[1,2,3,10,15,19],[1,2,3,10,15,19,21],[1,2,3,10,15,19,21,6]]){
  const available=numbers.filter(n=>!history.includes(n)),expected=new Map(),observed=history.reduce((a,b)=>a+b,0);
  combinations(available,8-history.length,extra=>{const sum=observed+extra.reduce((a,b)=>a+b,0);expected.set(sum,(expected.get(sum)||0)+1);});
- for(const card of R.cards){
+ for(const card of legacyCards){
   const round=advanceAll(create({cardId:card.id}),history),forecast=R.forecast(freezeDeep(round));
   assert.equal(forecast.outcomeCount,choose(25-history.length,8-history.length));
   assert.deepEqual(forecast.rows.map(({sum,count})=>({sum,count})),[...expected].sort((a,b)=>a[0]-b[0]).map(([sum,count])=>({sum,count})));
@@ -128,6 +128,6 @@ assert.deepEqual(report,saved);assert.equal(report.mixture.jpcProbability.numera
 assert(Math.abs(report.mixture.jpcPercent-10)<.02);assert.equal(report.multiplier.mean.value,1.275);
 const browser=vm.createContext({}),common=vm.createContext({module:{exports:{}}});
 vm.runInContext(source,browser);vm.runInContext(source,common);
-assert.deepEqual(plain(browser.SugarChallengeRulesV254.create(options)),create());assert.equal(common.module.exports.REVISION,270);assert.equal(common.module.exports.LEGACY_REVISION,254);
-assert(Object.isFrozen(R));assert(Object.isFrozen(R.cards[0].luckySums));
-console.log(`Sugar Challenge v254: ${visited} combinations, ${R.cards.length} cards, exact 9.997938191988535% JPC, persisted input validation, conditional reach and integer cash checks passed.`);
+assert.deepEqual(plain(browser.SugarChallengeRulesV254.create(options)),create());assert.equal(common.module.exports.REVISION,271);assert.equal(common.module.exports.LEGACY_REVISION,254);
+assert(Object.isFrozen(R));assert(Object.isFrozen(legacyCards[0].luckySums));
+console.log(`Sugar Challenge v254: ${visited} combinations, ${legacyCards.length} cards, exact 9.997938191988535% JPC, persisted input validation, conditional reach and integer cash checks passed.`);

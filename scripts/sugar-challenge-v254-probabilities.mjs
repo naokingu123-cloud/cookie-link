@@ -9,11 +9,11 @@ const exactRatio=(numerator,denominator)=>({numerator:String(numerator),denomina
 
 export function buildReport(){
  const distribution=R.finalSumDistribution(),total=distribution.outcomeCount;
- const cards=R.cards.map(card=>{
+ const cards=R.cardsFor(254).map(card=>{
   const reasons={low:0,high:0,lucky:0},cashCounts=Object.fromEntries([20,10,5,3,2,1].map(n=>[n,0]));
   let cashHundredthsNumerator=0;
   for(const {sum,count} of distribution.rows){
-   const outcome=R.evaluate(card.id,sum);
+   const outcome=R.evaluate(card.id,sum,254);
    if(outcome.jpc)reasons[outcome.reason]+=count;
    else{cashCounts[outcome.payoutHundredths]+=count;cashHundredthsNumerator+=outcome.payoutHundredths*count;}
   }
@@ -24,7 +24,7 @@ export function buildReport(){
    luckySums:card.luckySums,luckySumCounts:card.luckySums.map(sum=>({sum,count:distribution.rows.find(row=>row.sum===sum).count})),
    jpcCounts:reasons,jpcOutcomes,jpcProbability:exactRatio(jpcOutcomes,total),jpcPercent:100*jpcOutcomes/total,
    cashBandsByDistanceFrom104:card.bands,
-   cashTiers:R.payoutRows(card.id).map(row=>({...row,outcomeCount:cashCounts[row.hundredths],probability:cashCounts[row.hundredths]/total})),
+   cashTiers:R.payoutRows(card.id,254).map(row=>({...row,outcomeCount:cashCounts[row.hundredths],probability:cashCounts[row.hundredths]/total})),
    cashHundredthsNumerator,expectedCashFractionOfFinalJp:exactRatio(cashHundredthsNumerator,total*100)
   };
  });

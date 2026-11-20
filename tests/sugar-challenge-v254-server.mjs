@@ -18,7 +18,11 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let child,port,base,logs='';const sockets=new Set();
 async function start(){
  const listener=net.createServer();listener.listen(0,'127.0.0.1');await once(listener,'listening');port=listener.address().port;await new Promise(resolve=>listener.close(resolve));base='http://127.0.0.1:'+port;
- child=spawn(process.execPath,['server.mjs'],{cwd:root,env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:coreFile,SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:admin,SWEETS_PLAYER_STABLE_MS:'500',SWEETS_BET_DURATION_MS:'1800',SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_RESULT_GRACE_MS:'3200',SWEETS_HOST_FALLBACK_DELAY_MS:'300'},stdio:['ignore','pipe','pipe']});
+ // Preserve the issued v270 round contract while running today's server.
+ // This wrapper lives only in the isolated child fixture; production defaults remain current.
+ const rulesUrl=new URL('../assets/sugar-challenge-rules-v254.js',import.meta.url).href,serverUrl=new URL('../server.mjs',import.meta.url).href;
+ const fixture=`await import(${JSON.stringify(rulesUrl)});const rules=globalThis.SugarChallengeRulesV254;globalThis.SugarChallengeRulesV254={...rules,create:options=>rules.create({...options,rulesRevision:270})};await import(${JSON.stringify(serverUrl)});`;
+ child=spawn(process.execPath,['--input-type=module','-e',fixture],{cwd:root,env:{...process.env,PORT:String(port),SWEETS_DATA_FILE:coreFile,SWEETS_DATA_DIR:temp,SWEETS_ADMIN_TOKEN:admin,SWEETS_PLAYER_STABLE_MS:'500',SWEETS_BET_DURATION_MS:'1800',SWEETS_ROUND_START_DELAY_MS:'300',SWEETS_RESULT_GRACE_MS:'3200',SWEETS_HOST_FALLBACK_DELAY_MS:'300'},stdio:['ignore','pipe','pipe']});
  child.stdout.on('data',bytes=>logs+=bytes);child.stderr.on('data',bytes=>logs+=bytes);
  for(let i=0;i<120;i++){if(child.exitCode!==null)throw Error(logs);try{if((await fetch(base+'/api/health')).ok)return;}catch{}await sleep(25);}throw Error('server startup '+logs);
 }

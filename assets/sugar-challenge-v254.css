@@ -240,3 +240,32 @@
 .sc254-overlay[data-compact=true] .sc254-history{gap:3px}
 .sc254-overlay[data-compact=true] .sc254-history>span{width:17px;height:17px;font-size:10px}
 .sc254-overlay[data-compact=true]>footer{font-size:7px;line-height:9px;flex-basis:9px;margin-top:2px}
+
+/* v271: keep the quoted JP amount readable and reveal its multiplier beside it. */
+.sc254-jp{position:relative;display:flex;flex-direction:row;align-items:center;gap:4px;padding:10px 6px 1px;height:34px;flex-basis:158px}
+.sc254-jp>span{position:absolute;top:2px;left:7px;right:auto;font-size:7px;line-height:8px;text-align:left}
+.sc254-jp>b{flex:1 1 auto;width:0;height:21px;line-height:21px;min-width:0;text-align:right}
+.sc254-jp>b>.gold-number{line-height:21px}
+.sc271-multiplier-popup{--sc271-tier:#ffe493;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;min-width:30px;padding:2px 5px;box-sizing:border-box;border:1px solid var(--sc271-tier);border-radius:8px;background:linear-gradient(155deg,#4d2a59,#160b24 75%);color:var(--sc271-tier);font:1000 21px/1 system-ui,sans-serif;letter-spacing:-.06em;text-shadow:0 1px 2px #17071e,0 0 7px color-mix(in srgb,var(--sc271-tier),transparent 40%);box-shadow:0 0 7px color-mix(in srgb,var(--sc271-tier),transparent 70%),inset 0 1px #fff5;transform:scale(var(--sc271-pop-scale,1));transform-origin:50% 60%;opacity:var(--sc271-pop-opacity,1)}
+.sc271-multiplier-popup[hidden]{display:none!important}
+.sc271-multiplier-popup[data-tier="2"]{--sc271-tier:#8affb9}.sc271-multiplier-popup[data-tier="3"]{--sc271-tier:#fff287}.sc271-multiplier-popup[data-tier="4"]{--sc271-tier:#ff8d93}.sc271-multiplier-popup[data-tier="5"]{--sc271-tier:#e5a6ff}
+.sc271-multiplier-popup[data-tier="10"]{--sc271-tier:#fff3d8;border-color:#f3b1ff;background:linear-gradient(#10091f,#0b0517) padding-box,conic-gradient(#ff8dcc,#ae9aff,#79e6ff,#a6ffbc,#ffe887,#ff8dcc) border-box;box-shadow:0 0 6px #f07aff66,0 0 12px #5fc7ff44}
+.sc270-base>.sc271-multiplier-popup{font-size:26px;min-width:40px;padding:3px 7px}
+.sc254-celebration .sc271-multiplier-popup{font-size:40px;padding:5px 10px;border-width:2px;border-radius:13px}
+.sc270-reel[data-motion=accelerating] .sc270-reel-window,.sc270-reel[data-motion=cruising] .sc270-reel-window{animation:sc271-reel-glow .58s ease-in-out infinite alternate}
+.sc270-reel[data-motion=braking] .sc270-reel-window{animation:sc271-reel-glow 1.1s ease-in-out infinite alternate}
+.sc270-reel[data-motion=settling] .sc270-reel-window{border-color:#fff1ba;box-shadow:inset 0 0 20px #b978e14f,0 0 16px #ffd47766}
+.sc270-reel[data-spinning=true] .sc270-reel-card>img{filter:drop-shadow(0 2px 2px #000b) blur(calc(var(--sc271-reel-speed,0) * .45px))}
+.sc270-reel[data-settled=true] .sc270-reel-pointer{box-shadow:0 0 17px #fff1a6,inset 0 0 11px #fff0ad44;background:linear-gradient(130deg,#fff7c514,transparent 38%,#fff7c50d)}
+.sc270-reel[data-settled=true] .sc270-reel-state{animation:sc271-result-glow 1.1s ease-in-out infinite alternate}
+@keyframes sc271-reel-glow{from{border-color:#dfb873;box-shadow:inset 0 0 14px #aa65cf40,0 3px 11px #0007}to{border-color:#fff0b0;box-shadow:inset 0 0 22px #eabbeb55,0 0 14px #f4c67666}}
+@keyframes sc271-result-glow{from{text-shadow:0 0 3px #ffdf8e22}to{text-shadow:0 0 9px #ffdf8eaa}}
+.sc254-overlay[data-narrow=true] .sc254-jp{flex-basis:137px;padding-left:5px;padding-right:5px;gap:3px}
+.sc254-overlay[data-narrow=true] .sc271-multiplier-popup{font-size:19px;min-width:28px;padding-left:4px;padding-right:4px}
+.sc254-overlay[data-narrow=true] .sc270-base>.sc271-multiplier-popup{font-size:25px;min-width:39px}
+.sc254-overlay[data-compact=true]>.sc254-head{height:30px;flex-basis:30px}
+.sc254-overlay[data-compact=true] .sc254-jp{height:29px;padding-top:8px}
+.sc254-overlay[data-compact=true] .sc254-jp>b,.sc254-overlay[data-compact=true] .sc254-jp>b>.gold-number{height:19px;line-height:19px}
+.sc254-overlay[data-compact=true] .sc254-jp>span{font-size:6px;line-height:7px;top:1px}
+.sc254-overlay[data-compact=true] .sc254-jp>.sc271-multiplier-popup{font-size:18px;padding-top:1px;padding-bottom:1px}
+@media(prefers-reduced-motion:reduce){.sc271-multiplier-popup{transform:none;opacity:1}.sc270-reel-window,.sc270-reel-state{animation:none!important}}

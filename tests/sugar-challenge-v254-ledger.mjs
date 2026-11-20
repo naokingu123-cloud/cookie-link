@@ -4,7 +4,7 @@ import {createSugarChallengeLedger} from '../server-sugar-challenge-v254.mjs';
 const R=globalThis.SugarChallengeRulesV254,copy=value=>JSON.parse(JSON.stringify(value));
 const CASH_BALLS=[1,2,3,8,20,21,24,25],LUCKY_BALLS=[1,2,3,10,15,19,21,6];
 let clock=1000,seedCalls=0,createCalls=0;
-const deterministicRules={...R,create:options=>{createCalls++;return R.create({...options,cardId:'standard',multiplier:2});}};
+const deterministicRules={...R,create:options=>{createCalls++;return R.create({...options,rulesRevision:270,cardId:'standard',multiplier:2});}};
 const factory=()=>createSugarChallengeLedger({rules:deterministicRules,now:()=>clock,randomSeed:()=>{seedCalls++;return 254;}});
 const L=factory();
 const player=(name='p1')=>({playerId:name,wallet:{credit:1000000,revision:7,reservedRoundId:'r2',source:'bet'},lifetimeBet:1000,lifetimeWin:120,games:{cookie:{bet:1000,win:120}}});

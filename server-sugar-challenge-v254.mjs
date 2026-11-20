@@ -15,7 +15,7 @@ const keyHash=value=>createHash('sha256').update(value).digest('hex').slice(0,24
 const ordinarySugar=token=>token.directJpc!==true&&token.kind!=='direct-jpc'&&token.jpcRedeemed!==true;
 
 export function createSugarChallengeLedger({rules=globalThis.SugarChallengeRulesV254,randomSeed=()=>randomBytes(4).readUInt32LE(0),now=Date.now}={}){
- if(![254,268,270].includes(rules?.REVISION))throw new Error('Compatible Sugar Challenge rules are required.');
+ if(![254,268,270,271].includes(rules?.REVISION))throw new Error('Compatible Sugar Challenge rules are required.');
  const timestamp=()=>{const value=Number(now());if(!Number.isSafeInteger(value)||value<0)throw new RangeError('Invalid Sugar Challenge server time.');return value;};
  const seed=()=>{const value=Number(randomSeed());if(!Number.isSafeInteger(value)||value<0||value>0xffffffff)throw new RangeError('Sugar Challenge seed must be a uint32.');return value;};
 

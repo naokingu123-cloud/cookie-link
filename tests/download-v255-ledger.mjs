@@ -63,7 +63,7 @@ h=harness(h.durable());L=h.ledger;
 const oldState=h.getPlayer(machineId,playerId).downloadV255.gameState;
 const second=prepare('request-unit-next-0001'),secondInput=L.work(machineId,playerId,second.id);
 assert.deepEqual(secondInput.previousState,oldState);assert.equal(secondInput.sugarState.bank.length,0);assert.equal(secondInput.sugarState.current.roundId,second.id);
-const expectedCash=rules.cashFor(secondInput.sugarState.current.jpAmount,1),secondOutput=computedFixtureV255(secondInput,{sugars:0});
+const expectedCash=rules.cashFor(secondInput.sugarState.current.cashBase,1),secondOutput=computedFixtureV255(secondInput,{sugars:0});
 let sugarPackage;
 const settled=L.finish(machineId,playerId,second.id,secondOutput,value=>{sugarPackage=clone(value);return save(value);});
 assert.ok(expectedCash>0);assert.equal(settled.session.sugarWin,expectedCash);assert.equal(settled.wallet.credit,1004500-1000+5500+expectedCash);assert.equal(settled.stats.rounds,2);assert.equal(settled.stats.win,11000+expectedCash);assert.equal(settled.stats.sugarWin,expectedCash);assert.equal(settled.sugarState.bank.length,0);

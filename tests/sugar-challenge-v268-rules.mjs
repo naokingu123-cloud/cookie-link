@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import '../assets/sugar-challenge-rules-v254.js';
 import {createSugarChallengeLedger} from '../server-sugar-challenge-v254.mjs';
 const R=globalThis.SugarChallengeRulesV254;
-const create=(extra={})=>R.create({id:'s268',roundId:'r268',station:3,sugarValues:[100,100,100,100,100],cardId:'standard',multiplier:2,...extra});
+const create=(extra={})=>R.create({id:'s268',roundId:'r268',station:3,sugarValues:[100,100,100,100,100],rulesRevision:268,cardId:'standard',multiplier:2,...extra});
 const advance=(s,draws)=>draws.reduce((state,n)=>R.advance(state,n,{roundId:state.roundId,ballIndex:state.draws.length+1}),s);
-assert.equal(R.REVISION,270);assert.equal(R.PREVIOUS_REVISION,268);
+assert.equal(R.REVISION,271);assert.equal(R.PREVIOUS_REVISION,270);assert.equal(R.EARLY_REVISION,268);
 const draw=[20,19,18,15,5,3,7,17]; // 77 on ball 5, final 104 normally pays cash.
 let s=advance(create(),draw.slice(0,4));
 assert.equal(s.sum,72);assert.equal(s.jpcQualified,false);
@@ -30,7 +30,7 @@ function oracle(card,history){
  const band=complete&&!jpc?card.bands.find(row=>Math.abs(sum-104)>=row.distance).hundredths:0;
  return {sum,jpc,cash:10*band};
 }
-for(const card of R.cards)for(const prefix of [[1,2,3,10,15],[20,19,18,15,5],[25,24,23,22,21]]){
+for(const card of R.cardsFor(268))for(const prefix of [[1,2,3,10,15],[20,19,18,15,5],[25,24,23,22,21]]){
  const state=advance(create({cardId:card.id}),prefix),f=R.forecast(state),rows=new Map();let count=0,jpc=0,cash=0;
  const walk=history=>{if(history.length===8){const o=oracle(card,history);count++;jpc+=Number(o.jpc);cash+=o.cash;const row=rows.get(o.sum)||{count:0,jpc:0,cash:0};row.count++;row.jpc+=Number(o.jpc);row.cash+=o.cash;rows.set(o.sum,row);return;}for(let n=1;n<=25;n++)if(!history.includes(n))walk([...history,n]);};walk(prefix);
  assert.equal(f.outcomeCount,count);assert.equal(f.jpcOutcomes,jpc);assert.equal(f.expectedCashNumerator,String(cash));assert.equal(f.jpcProbability,jpc/count);
@@ -41,7 +41,7 @@ for(const card of R.cards)for(const prefix of [[1,2,3,10,15],[20,19,18,15,5],[25
 
 // The server publishes the entitlement immediately and durably, but never pays
 // ordinary cash early or duplicates the ticket on replay/restart.
-const ledger=createSugarChallengeLedger({randomSeed:()=>268,now:()=>1000,rules:{...R,create:o=>R.create({...o,cardId:'standard',multiplier:2})}});
+const ledger=createSugarChallengeLedger({randomSeed:()=>268,now:()=>1000,rules:{...R,create:o=>R.create({...o,rulesRevision:268,cardId:'standard',multiplier:2})}});
 let p={playerId:'early',wallet:{credit:10000,revision:1},games:{},lifetimeWin:0};
 ledger.ingest(p,{roundId:'earned',tokens:Array.from({length:5},(_,i)=>({id:i,sugarId:'s'+i,sourceRoundId:'earned',game:0,value:100})),locked:[100]});
 const opened=ledger.start(p,{roundId:'r268',station:3,openedAt:900});assert.equal(opened.started,true);assert.equal(opened.challenge.phase,'ready');

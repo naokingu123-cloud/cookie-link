@@ -5,8 +5,8 @@ import '../assets/sugar-challenge-rules-v254.js';
 const R=globalThis.SugarChallengeRulesV254,destination=new URL('../docs/sugar-challenge-v268-probabilities.json',import.meta.url);
 const ratio=(n,d)=>({numerator:String(n),denominator:String(d),value:Number(n)/Number(d)});
 export function buildReport(){
- const cards=R.cards.map(card=>{
-  const state=R.create({id:'probabilities-v268',roundId:'probabilities-v268',station:1,sugarValues:[20,20,20,20,20],cardId:card.id,multiplier:1}),forecast=R.forecast(state);
+ const cards=R.cardsFor(268).map(card=>{
+  const state=R.create({id:'probabilities-v268',roundId:'probabilities-v268',station:1,rulesRevision:268,sugarValues:[20,20,20,20,20],cardId:card.id,multiplier:1}),forecast=R.forecast(state);
   return {id:card.id,weightBps:card.weightBps,luckySums:card.luckySums,lowMax:card.lowMax,highMin:card.highMin,outcomeCount:forecast.outcomeCount,jpcOutcomes:forecast.jpcOutcomes,jpcProbability:ratio(forecast.jpcOutcomes,forecast.outcomeCount),jpcPercent:100*forecast.jpcProbability,cashHundredthsNumerator:forecast.expectedCashNumerator,expectedCashFractionOfFinalJp:ratio(forecast.expectedCashNumerator,BigInt(forecast.outcomeCount)*100n),rows:forecast.rows.map(({sum,count,jpcOutcomes,cashOutcomes,payoutHundredths})=>({sum,count,jpcOutcomes,cashOutcomes,payoutHundredths}))};
  });
  const total=BigInt(cards[0].outcomeCount)*10000n,jpc=cards.reduce((n,c)=>n+BigInt(c.weightBps)*BigInt(c.jpcOutcomes),0n),cash=cards.reduce((n,c)=>n+BigInt(c.weightBps)*BigInt(c.cashHundredthsNumerator),0n),meanMultiplier=R.multipliers.reduce((n,c)=>n+c.multiplier*c.weightBps,0)/10000;
