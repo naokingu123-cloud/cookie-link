@@ -13,8 +13,8 @@ if(!document.getElementById('arcade-candy-world-v158-css')){
 }
 
 const scripts=[
- ['arcade-candy-sfx-v158-js','assets/arcade-candy-sfx-v158.js?v=160'],
- ['arcade-candy-world-v158-js','assets/arcade-candy-world-v158.js?v=160']
+ ['arcade-candy-sfx-v158-js','assets/arcade-candy-sfx-v158.js?v=277'],
+ ['arcade-candy-world-v158-js','assets/arcade-candy-world-v158.js?v=277']
 ];
 function load(index){
  if(index>=scripts.length)return;

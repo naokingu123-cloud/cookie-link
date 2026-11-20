@@ -1,0 +1,383 @@
+{
+  "version": 277,
+  "format": {
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 16
+  },
+  "provenance": "Original procedural composition and synthesis; no recordings, third-party samples, reference audio, or game audio were used.",
+  "generator": "scripts/generate-celebration-audio-v277.py",
+  "seed": 27702112026,
+  "cues": {
+    "hit-cookie": {
+      "file": "hit-cookie.wav",
+      "description": "Round baked-cookie knock with golden mallet tail",
+      "seconds": 0.38,
+      "peakDbFS": -3.223,
+      "rmsDbFS": -17.173,
+      "bytes": 67076,
+      "sha256": "7d7bf64f6cfa28099ea086c3534849e7ed87b80d7198eeb2db141cf441a2f7e4"
+    },
+    "hit-canyon": {
+      "file": "hit-canyon.wav",
+      "description": "Soft chocolate-rock impact and low wooden body",
+      "seconds": 0.44,
+      "peakDbFS": -2.854,
+      "rmsDbFS": -18.018,
+      "bytes": 77660,
+      "sha256": "af0eba3d63f9ca48a1bbd4ca2443e470a2ec650107d6e67129d0e6f65186df9c"
+    },
+    "hit-candy": {
+      "file": "hit-candy.wav",
+      "description": "Two tiny glassy candy lights",
+      "seconds": 0.47,
+      "peakDbFS": -3.098,
+      "rmsDbFS": -18.33,
+      "bytes": 82952,
+      "sha256": "afcd1797a538048794178d46721c7139bbe3be8797f7f675276af4a2bdb32596"
+    },
+    "hit-prism": {
+      "file": "hit-prism.wav",
+      "description": "Crystal chime with airy facets",
+      "seconds": 0.52,
+      "peakDbFS": -3.223,
+      "rmsDbFS": -17.765,
+      "bytes": 91772,
+      "sha256": "0872e51ee6cb2b14f4c9a7bc857bf75298ab7cefb94ed0e18b5c666b4b868e44"
+    },
+    "hit-water": {
+      "file": "hit-water.wav",
+      "description": "Juice bubble pop and light celesta",
+      "seconds": 0.46,
+      "peakDbFS": -3.098,
+      "rmsDbFS": -16.944,
+      "bytes": 81188,
+      "sha256": "8f82d6258a99aae4548c3d894cc1f23cad7b892fc413bd6d5d542fc8001d6c11"
+    },
+    "hit-popcorn": {
+      "file": "hit-popcorn.wav",
+      "description": "Springy popcorn snap with a tuned kernel",
+      "seconds": 0.34,
+      "peakDbFS": -2.854,
+      "rmsDbFS": -18.57,
+      "bytes": 60020,
+      "sha256": "a4077b5cb3dd3c92ef972e1bf01b5dc1384508add79d3b1e90430275a23c82f2"
+    },
+    "hit-waffle": {
+      "file": "hit-waffle.wav",
+      "description": "Dry waffle-stone click with a soft upper overtone",
+      "seconds": 0.33,
+      "peakDbFS": -3.742,
+      "rmsDbFS": -17.668,
+      "bytes": 58256,
+      "sha256": "b12f78b5f431b66824cff9f08b2d6d484891229300558375edc24393b546647a"
+    },
+    "hit-castella": {
+      "file": "hit-castella.wav",
+      "description": "Soft cake tap and fine crumb sparkle",
+      "seconds": 0.4,
+      "peakDbFS": -3.35,
+      "rmsDbFS": -17.516,
+      "bytes": 70604,
+      "sha256": "7e6f9d86e7745e31fa3cc2a18d654605abced2581b9d92a519f2e720bfd11c99"
+    },
+    "hit-dango": {
+      "file": "hit-dango.wav",
+      "description": "Elastic mochi pluck and a small bell",
+      "seconds": 0.42,
+      "peakDbFS": -3.35,
+      "rmsDbFS": -19.102,
+      "bytes": 74132,
+      "sha256": "4fb7cf60f053a97c5d99c0ffd5523949be49ec1838855385b1fed2725fe5a290"
+    },
+    "drop": {
+      "file": "drop.wav",
+      "description": "A short descending airy fall",
+      "seconds": 0.62,
+      "peakDbFS": -4.014,
+      "rmsDbFS": -14.574,
+      "bytes": 109412,
+      "sha256": "72e37a6f6eef4e50f2510857191f43bdb4245c3534cf9987bde4d31f304b40c4"
+    },
+    "land": {
+      "file": "land.wav",
+      "description": "Rounded landing with a clean tuned click",
+      "seconds": 0.44,
+      "peakDbFS": -3.35,
+      "rmsDbFS": -19.325,
+      "bytes": 77660,
+      "sha256": "64c15f14d7caa6425a3e9e31f3e2f19388be885630447654b67a781403cf100c"
+    },
+    "refill": {
+      "file": "refill.wav",
+      "description": "Fresh sweets dropping in three ascending notes",
+      "seconds": 0.74,
+      "peakDbFS": -3.35,
+      "rmsDbFS": -18.387,
+      "bytes": 130580,
+      "sha256": "10a40fe48f18bfc4ccd8097a42f6afa93be037d2bc5f3d5ff45afbfd81500b4b"
+    },
+    "drill": {
+      "file": "drill.wav",
+      "description": "Four short rhythmic chocolate drill taps",
+      "seconds": 0.55,
+      "peakDbFS": -3.098,
+      "rmsDbFS": -17.309,
+      "bytes": 97064,
+      "sha256": "a71e4a49797f048c9e10139f3b40782ac01ffee9b323b3b43c0a50f9ddc7b570"
+    },
+    "melt": {
+      "file": "melt.wav",
+      "description": "Melting low sweep with liquid droplets",
+      "seconds": 0.66,
+      "peakDbFS": -3.742,
+      "rmsDbFS": -16.292,
+      "bytes": 116468,
+      "sha256": "86c930a6d9b8d1e0a3bd2d868ac4d29930f2324d4b5ce5c831dd544b6ad6c37c"
+    },
+    "ore": {
+      "file": "ore.wav",
+      "description": "Three small gold glints",
+      "seconds": 0.65,
+      "peakDbFS": -3.098,
+      "rmsDbFS": -17.623,
+      "bytes": 114704,
+      "sha256": "c0bc6bd51373609ec4f48e7f056ce0190c2364e5baee4535f60e8ad0559a2420"
+    },
+    "hammer-launch": {
+      "file": "hammer-launch.wav",
+      "description": "Elastic rising hammer windup",
+      "seconds": 0.7,
+      "peakDbFS": -3.098,
+      "rmsDbFS": -15.999,
+      "bytes": 123524,
+      "sha256": "6c5c25d6b0e7090ada2ac209df89d0f65a24318c85d7c00c45ca39d9d283faf8"
+    },
+    "hammer-impact": {
+      "file": "hammer-impact.wav",
+      "description": "Firm low impact with a brief golden chord",
+      "seconds": 0.88,
+      "peakDbFS": -1.938,
+      "rmsDbFS": -16.541,
+      "bytes": 155276,
+      "sha256": "2f3c1c684400e75cec245a59f805b067bb93f8091fae958d3629545d2d2b6d3b"
+    },
+    "transform": {
+      "file": "transform.wav",
+      "description": "Magical turning sweep and celesta staircase",
+      "seconds": 0.93,
+      "peakDbFS": -2.734,
+      "rmsDbFS": -19.036,
+      "bytes": 164096,
+      "sha256": "969171c91de6d349055e183b00e3410db9c94be3f178989a9a0d466ae5b74391"
+    },
+    "transfer": {
+      "file": "transfer.wav",
+      "description": "A bright arc arriving on a bell",
+      "seconds": 0.6,
+      "peakDbFS": -3.742,
+      "rmsDbFS": -17.848,
+      "bytes": 105884,
+      "sha256": "0a64a378587be0bc8d33f668e2531aa8bbf1a736354b579d204a439e99f448b3"
+    },
+    "scroll": {
+      "file": "scroll.wav",
+      "description": "Soft terrain movement and two wooden steps",
+      "seconds": 0.58,
+      "peakDbFS": -3.742,
+      "rmsDbFS": -20.409,
+      "bytes": 102356,
+      "sha256": "b9c987022be5145e92e246ae1d042c4765b99032e2b90b30dee7bb934d58fb59"
+    },
+    "sweep": {
+      "file": "sweep.wav",
+      "description": "Full-board sweep that opens into four bright notes",
+      "seconds": 0.83,
+      "peakDbFS": -2.854,
+      "rmsDbFS": -18.349,
+      "bytes": 146456,
+      "sha256": "3c95ef5b7e70c9585f99e630eeae89293f07d6ce32a91afe74341e20e7d45814"
+    },
+    "chain": {
+      "file": "chain.wav",
+      "description": "Three-note positive link accent, short enough for cascades",
+      "seconds": 0.59,
+      "peakDbFS": -2.854,
+      "rmsDbFS": -17.758,
+      "bytes": 104120,
+      "sha256": "b79153d71e6e802072bbdc62b3c7e91b5dfb7cc31f8ce4c9684d5b054e66644c"
+    },
+    "ui": {
+      "file": "ui.wav",
+      "description": "Small rounded user-interface marimba tick",
+      "seconds": 0.2,
+      "peakDbFS": -6.376,
+      "rmsDbFS": -20.109,
+      "bytes": 35324,
+      "sha256": "66f35379b5d8e4e4a96a244cdf2ebf49566fd52d3d7f968f36d2bed764053965"
+    },
+    "confirm": {
+      "file": "confirm.wav",
+      "description": "Two-note selection confirmation",
+      "seconds": 0.36,
+      "peakDbFS": -4.732,
+      "rmsDbFS": -19.547,
+      "bytes": 63548,
+      "sha256": "14ed64af97cee8326819b885632bc184eda8ce53a00fbbe29a92ca938304d684"
+    },
+    "count": {
+      "file": "count.wav",
+      "description": "Short coin-counter tick with no long overlapping tail",
+      "seconds": 0.19,
+      "peakDbFS": -6.196,
+      "rmsDbFS": -20.007,
+      "bytes": 33560,
+      "sha256": "e8e7e94ef5595e683d97b8bd6eda8f21cdf99e32c9fcca05485732ccef59e329"
+    },
+    "count-done": {
+      "file": "count-done.wav",
+      "description": "Coin count resolves with a warm major chord",
+      "seconds": 0.88,
+      "peakDbFS": -3.098,
+      "rmsDbFS": -17.231,
+      "bytes": 155276,
+      "sha256": "a6c8d678eb56c7124dde5764c8ae700cf052ea284940abc53505a4b427504974"
+    },
+    "launch": {
+      "file": "launch.wav",
+      "description": "Roulette launch spring, airy sweep and compact lift",
+      "seconds": 0.94,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -15.454,
+      "bytes": 165860,
+      "sha256": "9b1795e24872ea0f526fdbccb00a66df88aad55e688c33d5b869c8c3ed5f8f4c"
+    },
+    "arrival": {
+      "file": "arrival.wav",
+      "description": "Precise soft pocket chime leaving room for the spoken number",
+      "seconds": 0.39,
+      "peakDbFS": -4.294,
+      "rmsDbFS": -18.191,
+      "bytes": 68840,
+      "sha256": "bcc9be31ca262ce04c2dc7e7f2c9cfaf0726c33c76ed3bf24948f2c90973e82f"
+    },
+    "miss": {
+      "file": "miss.wav",
+      "description": "Gentle two-note landing; quiet and clearly separate from awards",
+      "seconds": 0.51,
+      "peakDbFS": -5.515,
+      "rmsDbFS": -20.344,
+      "bytes": 90008,
+      "sha256": "0c9adc3004a7db1560bcc8aa1e25efb4c035863ef6a782e641935a0b6d1ac89a"
+    },
+    "level": {
+      "file": "level.wav",
+      "description": "Short upward level-change flourish",
+      "seconds": 1.0,
+      "peakDbFS": -2.854,
+      "rmsDbFS": -16.47,
+      "bytes": 176444,
+      "sha256": "36d24ab21f1a2585d9ff8b6135222bc523eb64abd63d913b29bdcf295c09a4c7"
+    },
+    "sugar": {
+      "file": "sugar.wav",
+      "description": "Sugar crystal collection with bright falling star reflections",
+      "seconds": 1.18,
+      "peakDbFS": -2.734,
+      "rmsDbFS": -17.975,
+      "bytes": 208196,
+      "sha256": "46e02b60702d9fa3c4463b2f9ecba4a85a8408110b464e5d1dae3e7ef1ee087f"
+    },
+    "round": {
+      "file": "round.wav",
+      "description": "Fresh round begins with an open uplifting cadence",
+      "seconds": 1.16,
+      "peakDbFS": -2.734,
+      "rmsDbFS": -16.453,
+      "bytes": 204668,
+      "sha256": "3d0352f478504f022c9eae8534fe342d72a084b62f151bdcdab2573282833907"
+    },
+    "finish": {
+      "file": "finish.wav",
+      "description": "A warm completed-round cadence without a jackpot flourish",
+      "seconds": 0.94,
+      "peakDbFS": -3.742,
+      "rmsDbFS": -15.029,
+      "bytes": 165860,
+      "sha256": "de31b0f6e8e8ac0f36426c40d0754808d27beba8f01da68d75f6c90b6c2e2d59"
+    },
+    "reach": {
+      "file": "reach.wav",
+      "description": "Three measured sparkle steps and an unresolved suspended chord",
+      "seconds": 0.94,
+      "peakDbFS": -3.223,
+      "rmsDbFS": -17.864,
+      "bytes": 165860,
+      "sha256": "e1f05ac102a7fe039313e4a71de9eda9fdf1b97799a2ffafa6eebeacfa4ffd4f"
+    },
+    "reach-high": {
+      "file": "reach-high.wav",
+      "description": "High-reach rising shimmer and open bright suspense",
+      "seconds": 1.57,
+      "peakDbFS": -2.499,
+      "rmsDbFS": -16.401,
+      "bytes": 276992,
+      "sha256": "fea3171a586185b177013095b739eb4d95dc76ccdb3b7ebcb801ccbef0956a3c"
+    },
+    "award-1": {
+      "file": "award-1.wav",
+      "description": "Bingo / role: bell pickup and one warm resolved brass chord",
+      "seconds": 1.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.819,
+      "bytes": 261116,
+      "sha256": "76e5645c0ef480de5b3d661561bb0fae240132bea2fdccd2b6330a1d75b63632"
+    },
+    "award-2": {
+      "file": "award-2.wav",
+      "description": "High win: rhythmic brass call, bright chime response",
+      "seconds": 2.13,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.966,
+      "bytes": 375776,
+      "sha256": "95062c36302708369cbcb17f350872e4ad192c3d94e1278d468ebebb0a329195"
+    },
+    "award-3": {
+      "file": "award-3.wav",
+      "description": "Super win: staged IV–V–I brass cadence and sparkle cascade",
+      "seconds": 2.84,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.77,
+      "bytes": 501020,
+      "sha256": "a8d12adf0b0183e8455e0c3139aea0a2c25067085d07c112b5c560515de09c6f"
+    },
+    "award-4": {
+      "file": "award-4.wav",
+      "description": "Highest win / all clear: full original three-stage fanfare, impact and long gold resolution",
+      "seconds": 3.68,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.389,
+      "bytes": 649196,
+      "sha256": "5eab182c87b5261f7f1899ef0d7aa31863244ada5b8f02937b6c8f3a0ca66987"
+    },
+    "jpc-qualified": {
+      "file": "jpc-qualified.wav",
+      "description": "Earned JPC ticket: original ascending crystal call and major fanfare",
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.16,
+      "bytes": 437516,
+      "sha256": "136f7187aa9f5d5bf62c27bb62354ed6ad0dd3d35a83315a12be9e0f323ac974"
+    },
+    "multiplier": {
+      "file": "multiplier.wav",
+      "description": "Multiplier reveal: four sparkling notes and a crisp affirmative stamp",
+      "seconds": 1.22,
+      "peakDbFS": -2.734,
+      "rmsDbFS": -16.724,
+      "bytes": 215252,
+      "sha256": "22ebeefa1bf5785c7f389869bb764b3f648406951f3fc322f3fbd34d59eefbfe"
+    }
+  },
+  "totalBytes": 6461572
+}

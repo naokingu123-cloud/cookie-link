@@ -1249,6 +1249,9 @@ try{
  window.GelatoPrism={
    get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
+   // The award layer follows the same real triangle vertices as this board.
+   // Return a copy so a presentation can never change rule geometry.
+   awardFaceNodesV277(faceId){return FACES[faceId]?.nodes.slice()||[];},
    // Read-only projection shared with the event-driven HIT overlay.
    hitGeometryV276(width,height,mini,anchor){
      const face=anchor.type==='face'?FACES[anchor.id]:null;

@@ -1,0 +1,28 @@
+/* Independent transparent artwork: the authored board/backdrop stays intact. */
+.award-presentation-v277,
+#screen #panels .award-presentation-main,
+#screen #tabs .award-presentation-mini {
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;
+ transform:none!important;pointer-events:none!important;user-select:none;
+ z-index:31;border:0!important;border-radius:inherit;background:transparent!important;
+ contain:strict;isolation:isolate;
+}
+.award-presentation-v277[hidden]{display:none!important}
+#screen .panel .award-presentation-main:not([hidden]),
+#screen #panels>.panel>.award-presentation-main:not([hidden]) {display:block!important;visibility:visible!important}
+.mini-wrap>.award-presentation-mini{z-index:8}
+#screen .mini-wrap>.award-presentation-mini:not([hidden]){display:block!important;visibility:visible!important}
+.award-v277-status{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;pointer-events:none!important}
+/* One owner for major award text; ordinary cell, reach and payout animations
+ * remain visible, and these native banners return automatically afterwards. */
+#screen .panel.award-v277-owned .v91-board-show,
+#screen .panel.award-v277-owned .allclear-scene,
+#screen .panel.award-v277-owned .six-special-award,
+#screen .panel.award-v277-owned .six-simple-award,
+#screen .panel.award-v277-owned .bs-burst,
+#screen .panel.award-v277-owned[data-award-kind="clear"] .gp-flash,
+#screen .panel.award-v277-owned[data-award-kind="clear"] .wp-message {visibility:hidden!important;opacity:0!important}
+@media (prefers-reduced-motion:reduce){
+ .award-presentation-v277{animation:none!important;transition:none!important}
+}

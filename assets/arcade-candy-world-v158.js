@@ -103,7 +103,7 @@ function queueMessage(message,{cooldown=15000}={}){
   if(cooldown>0&&now-last<cooldown)return;
   state.seen.set(message.key,now);
   state.queue=state.queue.filter(item=>item.key!==message.key);
-  state.queue.push({...message,cue:inferCue(message)});
+  state.queue.push({...message,cue:inferCue(message),audioQueuedAt:performance.now()});
   state.queue.sort((a,b)=>(b.priority||0)-(a.priority||0));
   if(state.queue.length>24)state.queue.length=24;
   pump();
@@ -153,7 +153,7 @@ function showMessage(item){
     state.text.classList.add('is-scrolling');
   }
 
-  window.SweetsEventSound?.play(item.cue||inferCue(item));
+  window.SweetsEventSound?.play(item.cue||inferCue(item),{source:'ticker',key:item.key,game:item.game,reach:/reach|^heat:/.test(item.key||''),queuedAt:item.audioQueuedAt});
   return duration;
 }
 function pump(){
@@ -226,17 +226,17 @@ function scanReach(){
   const added=candidates.filter(c=>!state.previousReach.has(`${c.game}:${c.board}:${c.number}:${Math.round(c.gain)}`));
   const heats=bestHeatCandidates(added);
   for(const item of heats.slice(0,8)){
-    queueMessage({key:`heat:${item.game}:${item.number}:${Math.round(item.gain)}`,level:item.level,badge:item.label,text:`${item.number}番に入れば ${formatWin(item.gain)}WIN!`,source:item.source,priority:item.priority,duration:item.level==='god'?5000:4200,cue:item.cue},{cooldown:18000});
+    queueMessage({game:item.game,key:`heat:${item.game}:${item.number}:${Math.round(item.gain)}`,level:item.level,badge:item.label,text:`${item.number}番に入れば ${formatWin(item.gain)}WIN!`,source:item.source,priority:item.priority,duration:item.level==='god'?5000:4200,cue:item.cue},{cooldown:18000});
   }
   const highReach=heats.find(item=>item.ratio>=50);
   if(highReach){
-    queueMessage({key:`high-reach:${highReach.game}:${highReach.number}:${Math.round(highReach.gain)}`,level:highReach.ratio>=200?'extreme':'rare',badge:'高額リーチ!',text:`${highReach.number}番が高配当チャンス!`,source:highReach.source,priority:55,duration:3500,cue:highReach.ratio>=200?'special':'high-reach'},{cooldown:22000});
+    queueMessage({game:highReach.game,key:`high-reach:${highReach.game}:${highReach.number}:${Math.round(highReach.gain)}`,level:highReach.ratio>=200?'extreme':'rare',badge:'高額リーチ!',text:`${highReach.number}番が高配当チャンス!`,source:highReach.source,priority:55,duration:3500,cue:highReach.ratio>=200?'special':'high-reach'},{cooldown:22000});
   }else{
     const ordinary=added.filter(item=>item.ratio<10).sort((a,b)=>b.gain-a.gain)[0];
-    if(ordinary)queueMessage({key:`reach:${ordinary.game}:${ordinary.number}:${Math.round(ordinary.gain)}`,level:'reach',badge:'リーチ!',text:`${ordinary.number}番に入れば ${formatWin(ordinary.gain)}WIN!`,source:ordinary.source,priority:20,duration:3100,cue:'reach'},{cooldown:16000});
+    if(ordinary)queueMessage({game:ordinary.game,key:`reach:${ordinary.game}:${ordinary.number}:${Math.round(ordinary.gain)}`,level:'reach',badge:'リーチ!',text:`${ordinary.number}番に入れば ${formatWin(ordinary.gain)}WIN!`,source:ordinary.source,priority:20,duration:3100,cue:'reach'},{cooldown:16000});
   }
   const full=added.find(item=>item.full);
-  if(full)queueMessage({key:`full-reach:${full.game}:${full.number}:${Math.round(full.gain)}`,level:'clear',badge:'全消しリーチ!',text:`${full.number}番で全消しチャンス!`,source:full.source,priority:75,duration:4200,cue:'special'},{cooldown:24000});
+  if(full)queueMessage({game:full.game,key:`full-reach:${full.game}:${full.number}:${Math.round(full.gain)}`,level:'clear',badge:'全消しリーチ!',text:`${full.number}番で全消しチャンス!`,source:full.source,priority:75,duration:4200,cue:'special'},{cooldown:24000});
   state.previousReach=current;
   scanVisibleReachLabels();
 }

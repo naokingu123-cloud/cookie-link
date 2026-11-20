@@ -65,7 +65,8 @@ function restore(raw){const next=raw?.version===254?raw:null;if(!next)return fal
   intro=challenge.draws.length?INTRO_END:clamp(Date.now()+(Number(client?.clockOffset)||0)-opened,0,INTRO_END);fillSum=fromSum=0;fillAge=900;expanded=true;paintKey='';
  }
  if(challenge&&(challenge.sum!==(old?.sum||0)||challenge.id!==old?.id&&challenge.draws.length>0)){fromSum=fillSum;fillAge=0;}
- if(challenge?.jpcQualified&&!celebrated.has(challenge.id)){celebrated.add(challenge.id);celebrateAge=0;try{sceneSound('bonus',{volume:.65});}catch{}}
+ if(challenge?.jpcQualified&&!celebrated.has(challenge.id)){celebrated.add(challenge.id);celebrateAge=0;}
+ if(!worker)window.SweetsAudioV277?.sugarTransition?.(old,challenge);
  if(!challenge&&old){expanded=false;paintKey='';}
  if(next.queued&&next.bank?.length>=5)stampBank();
  if(!worker){render();wake();try{scheduleUI(app);}catch{}}
@@ -134,6 +135,7 @@ function paintReel(s,introDone){
  reel.hidden=introDone;reel.dataset.ready=String(ready);reel.dataset.spinning=String(spinning);reel.dataset.settled=String(!introDone&&intro>=REEL_STOP);
  const winningIndex=REEL_SEQUENCE.indexOf(s.multiplier),target=REEL_SEQUENCE.length*5+Math.max(0,winningIndex),progress=clamp((intro-REEL_START)/(REEL_STOP-REEL_START));
  const motion=reelMotion(progress),position=progress>=1?target:target*motion.position,cardWidth=reelTrack.firstElementChild?.offsetWidth||136,windowWidth=reel.querySelector('.sc270-reel-window').clientWidth;
+ window.SweetsAudioV277?.sugarReel?.({id:s.id,intro,position,spinning,multiplier:s.multiplier,baseEnd:BASE_END,reelStop:REEL_STOP,blocked:paused()});
  reelTrack.style.transform='translate3d('+(windowWidth/2-(position+.5)*cardWidth).toFixed(3)+'px,0,0)';
  reelTrack.dataset.position=position.toFixed(6);reelTrack.dataset.target=String(target);reel.dataset.motion=spinning?motion.phase:intro>=REEL_STOP?'stopped':'waiting';
  reel.style.setProperty('--sc271-reel-speed',String(spinning&&['accelerating','cruising'].includes(motion.phase)?1:spinning&&motion.phase==='braking'?.45:0));
