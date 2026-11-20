@@ -127,8 +127,9 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
 }
 async function nextRound(seed,bet){
  await page.waitForFunction(()=>['complete','ready'].includes(__qa278.app.phase),null,{timeout:30000});
- if(await page.evaluate(()=>__qa278.app.phase==='complete'))await page.locator('#result-next').click();
- await page.waitForFunction(()=>__qa278.app.phase==='ready');
+ // The production result screen advances automatically after its eight-second
+ // countdown. Its legacy result-next button stays hidden in this edition.
+ await page.waitForFunction(()=>__qa278.app.phase==='ready'&&__qa278.app.draws.length===0,null,{timeout:30000});
  await page.evaluate(({seed,bet})=>{const q=__qa278;q.app.engines[2].random=()=>seed/4294967296;if(!SweetsLocalDebugV258.setBets(q.app.bets.map((_n,i)=>i===2?bet:0)))throw Error('next BET failed');q.select(2);q.syncManualNumbers();q.events=[];},{seed,bet});
  await page.locator('#manual-start').click();await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle);
 }
