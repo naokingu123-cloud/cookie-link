@@ -12,7 +12,11 @@ assert.ok(cometStart>=0&&cometEnd>cometStart,'production comet builder exists');
 const circularBuilder=nativeSource.match(/function sixDropReachCometMarkup\(tier\)\{[^\n]+\}/)?.[0];
 assert.ok(circularBuilder,'production circular Six Drop builder exists');
 const nativeReach=nativeSource.slice(cometStart,cometEnd)+'\n'+circularBuilder+'\n'+nativeSource.match(/const REACH_WORDS=\[[^;]+;/)[0]+'\n'+nativeSource.match(/const reachTier=[^\n]+;/)[0];
-const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango current presentation</title><link rel="stylesheet" href="/optimized/style-01.css"><link rel="stylesheet" href="/optimized/style-03.css"><style>html,body,#screen,#panels{width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;transform:none!important}#screen{position:fixed!important;inset:0!important}#panels,#fixture{position:relative!important;width:100%!important;height:100%!important}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><body class="dgb-active"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="reach-rainbow-edge"><stop stop-color="#ff487d"/><stop offset=".5" stop-color="#59efb6"/><stop offset="1" stop-color="#bb78ff"/></linearGradient></defs></svg><script>'+nativeReach+'</script><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></body></html>';
+const baseHtml='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango current presentation</title><link rel="stylesheet" href="/optimized/style-01.css"><link rel="stylesheet" href="/optimized/style-03.css"><style>html,body,#screen,#panels{width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;transform:none!important}#screen{position:fixed!important;inset:0!important}#panels,#fixture{position:relative!important;width:100%!important;height:100%!important}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><body class="dgb-active"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="reach-rainbow-edge"><stop stop-color="#ff487d"/><stop offset=".5" stop-color="#59efb6"/><stop offset="1" stop-color="#bb78ff"/></linearGradient></defs></svg><script>'+nativeReach+'</script><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></body></html>';
+// Use the production generated skin while keeping the isolated game fixture.
+const html=baseHtml
+ .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/cartoon-art-v272.css"><link rel="stylesheet" href="/assets/cartoon-boards-c-v272.css">')
+ .replace('<script src="/assets/dango-bingo-rules.js">','<script src="/assets/cartoon-art-v272.js"></script><script src="/assets/dango-bingo-rules.js">');
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');if(url.pathname==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(html);return;}
  if(url.pathname==='/favicon.ico'){res.statusCode=204;res.end();return;}
@@ -25,6 +29,8 @@ const viewports=[[1366,750],[844,340],[390,844],[390,540],[320,480],[390,300],[3
 async function setup(target){
  target.on('pageerror',error=>report.errors.push(String(error)));
  await target.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'networkidle'});
+ assert.equal(await target.evaluate(()=>SweetsCartoonArt.ready),true,'all generated PNG atlases load before installing the painter');
+ await target.addScriptTag({url:'/assets/cartoon-boards-c-v272.js'});
  return target.evaluate(async()=>{
   await Promise.all([DangoBingoView.assetsReady,document.fonts.ready]);
   const R=DangoBingoRules,qa=window.qa269={R,view:DangoBingoView.mount(document.getElementById('fixture')),state:null,bet:100};
@@ -43,10 +49,11 @@ async function setup(target){
    const labels=[...document.querySelectorAll('.dgb-pay tbody th')].map(th=>({length:+th.parentElement.dataset.length,text:th.textContent,cell:box(th),name:box(th.querySelector('.dgb-line-name')),scroll:th.scrollWidth,width:th.clientWidth}));
    const rows=[...document.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,box:box(row),icons:[...row.children].map(icon=>({box:box(icon),bitmap:icon.dataset.bitmap,kind:icon.dataset.kind,width:icon.width}))}));
    const draw=DangoBingoView.describeAssets().last.main,dpr=Math.min(2,devicePixelRatio||1),freeStyle=getComputedStyle(document.querySelector('.dgb-free-stat')),freeContentWidth=free.width-['paddingLeft','paddingRight','borderLeftWidth','borderRightWidth'].reduce((sum,key)=>sum+parseFloat(freeStyle[key]),0);
+   const payoutSource=getComputedStyle(document.querySelector('.dgb-pay-matrix')).borderImageSource;
    return {width:scene.clientWidth,height:scene.clientHeight,table,frame,matrix,odds,free,rail,railVisible:!railElement.hidden,unit:g.unit,payout,labels,rows,draw,
     tableClearance:Math.min(...[frame,odds].filter(Boolean).flatMap(rect=>g.centers.map(p=>distance(rect,p)))),freeClearance:Math.min(...g.centers.map(p=>distance(free,p))),railClearance:railElement.hidden?null:Math.min(...g.centers.map(p=>distance(rail,p))),
     numeralFont:parseFloat(getComputedStyle(document.querySelector('.gold-number')).fontSize),
-    payoutSvgCount:document.querySelectorAll('.dgb-pay svg').length,payoutArtwork:getComputedStyle(document.querySelector('.dgb-pay-matrix')).borderImageSource,frameBackground:getComputedStyle(document.querySelector('.dgb-pay-matrix')).backgroundColor,frameInsets:Object.fromEntries(['Top','Right','Bottom','Left'].map(side=>[side.toLowerCase(),parseFloat(getComputedStyle(document.querySelector('.dgb-pay-matrix'))['border'+side+'Width'])])),
+    payoutSvgCount:document.querySelectorAll('.dgb-pay svg').length,payoutArtwork:payoutSource.slice(0,80),payoutArtworkMatchesCartoon:payoutSource.includes(SweetsCartoonArt.url('frame-dango')),cartoon:SweetsCartoonBoardsC.describe(),frameBackground:getComputedStyle(document.querySelector('.dgb-pay-matrix')).backgroundColor,frameInsets:Object.fromEntries(['Top','Right','Bottom','Left'].map(side=>[side.toLowerCase(),parseFloat(getComputedStyle(document.querySelector('.dgb-pay-matrix'))['border'+side+'Width'])])),
     numerals:[...document.querySelectorAll('.dgb-pay td .gold-number')].map(el=>({text:el.textContent,value:box(el),cell:box(el.parentElement)})),
     overflow:cells.filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>({length:e.parentElement.dataset.length,count:e.dataset.count,width:e.clientWidth,scroll:e.scrollWidth})),
     inside:g.centers.every(p=>p.x-g.radius>=0&&p.x+g.radius<=scene.clientWidth&&p.y-g.radius>=0&&p.y+g.radius<=scene.clientHeight),
@@ -57,7 +64,7 @@ async function setup(target){
     freeContentWidth,freeTextOverflow:[...document.querySelectorAll('.dgb-free-stat>small,.dgb-free-stat>b,.dgb-free-detail,.dgb-countdown,.dgb-actions button')].filter(e=>e.getBoundingClientRect().width>freeContentWidth+1||e.scrollWidth>e.clientWidth+1).map(e=>({text:e.textContent,width:e.getBoundingClientRect().width,scroll:e.scrollWidth,client:e.clientWidth}))
    };
   };
-  qa.new();return {rules:R.REVISION,view:DangoBingoView.presentationRevision,assets:DangoBingoView.describeAssets().ready};
+  qa.new();return {rules:R.REVISION,view:DangoBingoView.presentationRevision,assets:DangoBingoView.describeAssets().ready,cartoon:SweetsCartoonBoardsC.describe().ready};
  });
 }
 async function fit(width,height,options={}){
@@ -73,7 +80,8 @@ function checkLayout(m,{rail=false}={}){
  assert.ok(m.table.right<=m.width+1&&m.table.bottom<=m.height+1,'table containment '+detail);assert.ok(m.free.right<=m.width+1&&m.free.bottom<=m.height+1,'FREE card containment '+detail);
  assert.ok(m.tableClearance>=m.unit*.5-.5,'payout/mochi overlap '+detail);assert.ok(m.freeClearance>=m.unit*.5-.5,'FREE card/mochi overlap '+detail);
  assert.ok(m.table.width<=m.oldTableWidth*.83+1,'compact matrix removes unused width '+detail);
- assert.equal(m.payoutSvgCount,0,'payout skin contains no SVG');assert.match(m.payoutArtwork,/dango-art-v270\/payout-table\.png/);assert.equal(m.frameBackground,'rgb(0, 0, 0)');
+ assert.equal(m.payoutSvgCount,0,'payout skin contains no SVG');assert.match(m.payoutArtwork,/^url\(["']?data:image\/png;base64,/);assert.equal(m.payoutArtworkMatchesCartoon,true,'the payout frame is the generated Dango bitmap');assert.equal(m.frameBackground,'rgb(0, 0, 0)');
+ assert.equal(m.cartoon.ready,true);assert.ok(m.cartoon.usage.dangoCells>=m.draw.cells,'generated cell painter is used');assert.equal(m.draw.imageCells,m.draw.cells,'every dango body is drawn from its generated bitmap');assert.ok(m.cartoon.usage.dangoStands>0,'generated tray painter is used');
  assert.ok(Math.abs(m.frame.width-m.matrix.width-m.frameInsets.left-m.frameInsets.right)<1,'the inner table leaves the measured raster-frame inset '+detail);
  assert.ok(Object.values(m.frameInsets).every(inset=>Math.abs(inset-m.payout.frameInset)<1.01),'raster border respects the fitted inset after device-pixel rounding '+detail);
  assert.ok(m.frame.x>=m.table.x-.5&&m.frame.right<=m.table.right+.5&&m.frame.bottom<=m.table.bottom+.5,'the generated frame is contained by the payout panel '+detail);
@@ -100,7 +108,7 @@ try{
  const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
  browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{}),args:['--no-sandbox']});
  page=await browser.newPage({viewport:{width:1366,height:750}});
- assert.deepEqual(await setup(page),{rules:268,view:269,assets:true});
+ assert.deepEqual(await setup(page),{rules:268,view:269,assets:true,cartoon:true});
  report.initial=await page.evaluate(()=>({highest:qa269.view.describe().highestCells,zero:qa269.cell(2,1).textContent,zeroCurrent:qa269.cell(2,1).classList.contains('current'),oddsHidden:document.querySelector('.dgb-pay-odds').hidden,removedGrantText:document.querySelectorAll('.dgb-free-grant').length,idleMotion:DangoBingoView.describeAssets().last.main.idleMotion,colors:DangoBingoView.lineColors,freeTitle:document.querySelector('.dgb-free-title').textContent,value:document.querySelector('.dgb-free-value').textContent}));
  assert.deepEqual(report.initial.highest,[{length:4,count:3},{length:5,count:3},{length:6,count:2},{length:6,count:3},{length:7,count:2},{length:7,count:3}]);
  assert.equal(report.initial.zero,'-');assert.equal(report.initial.zeroCurrent,false);assert.equal(report.initial.oddsHidden,true);assert.equal(report.initial.idleMotion,false);assert.equal(report.initial.removedGrantText,0);assert.equal(report.initial.freeTitle,'置けるFREE');assert.equal(report.initial.colors[2],'#269eff');assert.equal(report.initial.colors[3],'#4ee3f5');
@@ -116,8 +124,16 @@ try{
   qa269.new();return result;
  });
  assert.equal(report.zeroGet.lines,1);assert.equal(report.zeroGet.value,'-');assert.equal(report.zeroGet.current,true);assert.match(report.zeroGet.label,/GET!/);assert.equal(report.zeroGet.basePayout,0);assert.equal(report.zeroGet.payoutUnchanged,true);assert.equal(report.zeroGet.stateUnchanged,true);
- report.artwork=await page.evaluate(async()=>{const image=new Image();image.src=document.querySelector('.dgb-scene').dataset.payoutArt;await image.decode();return {width:image.naturalWidth,height:image.naturalHeight};});
- assert.ok(report.artwork.width>0&&report.artwork.height>0,'generated payout PNG decodes');
+ report.artwork=await page.evaluate(async()=>{
+  const files=await Promise.all(SweetsCartoonArt.describe().files.map(async file=>{const image=new Image();image.src=file;await image.decode();return {file,width:image.naturalWidth,height:image.naturalHeight};}));
+  const image=new Image();image.src=SweetsCartoonArt.url('frame-dango');await image.decode();
+  const mini=document.createElement('canvas');mini.width=220;mini.height=150;const before=JSON.stringify(qa269.state),used=SweetsCartoonBoardsC.describe().usage.dangoCells;
+  DangoBingoView.drawMini(mini.getContext('2d'),qa269.state,{reducedMotion:true});
+  return {width:image.naturalWidth,height:image.naturalHeight,files,miniImageCells:DangoBingoView.describeAssets().last.mini.imageCells,miniGeneratedCells:SweetsCartoonBoardsC.describe().usage.dangoCells-used,cells:qa269.state.cells.length,stateUnchanged:before===JSON.stringify(qa269.state)};
+ });
+ assert.ok(report.artwork.width>0&&report.artwork.height>0,'generated payout PNG decodes');assert.equal(report.artwork.files.length,3);
+ for(const source of report.artwork.files){assert.match(source.file,/\.png$/);assert.ok(source.width>0&&source.height>0,'generated PNG source decodes: '+source.file);}
+ assert.equal(report.artwork.miniImageCells,report.artwork.cells);assert.equal(report.artwork.miniGeneratedCells,report.artwork.cells);assert.equal(report.artwork.stateUnchanged,true);
  for(const [width,height]of viewports){const m=await fit(width,height);report.firstHalf.push(m);checkLayout(m,{rail:true});await page.screenshot({path:output+'/v269-first-half-'+width+'x'+height+'.png'});}
  const shallowViewports=[[844,340],[844,300],[844,270],[844,250],[1366,250]];
  await page.evaluate(()=>{qa269.state=qa269.zeroGetState;qa269.render();});report.shallowEarlyGet=[];

@@ -716,6 +716,7 @@ try{
    // The v37 -> v40 asset swap creates blank caches; invalidate text keys.
    rasterImages.labelsBet=null;
    rasterImages.numbersKey=null;
+    window.SweetsCartoonBoardsB?.gelatoCache(rasterImages,FACES,rasterCoords,MAIN_PX);
  }
  // Crystal sprite atlas: loading is optional so the game remains functional
  // on a slow connection; once ready all 24 cached triangle tiles are rebuilt.
@@ -786,7 +787,9 @@ try{
      for(let idx=0;idx<rasterCoords.length;idx++){
        const p=rasterCoords[idx],n=String(e.nodeNumbers[idx]);
        const hit=e.hits.has(idx);
-       if(socketArt.naturalWidth){
+        if(window.SweetsCartoonBoardsB?.gelatoSocket(ctx,hit,p.x,p.y,38)){
+          // The live numeral below remains independent from the illustrated socket.
+        }else if(socketArt.naturalWidth){
          ctx.drawImage(socketArt,hit?144:0,0,144,144,p.x-19,p.y-19,38,38);
        }else{
          ctx.beginPath();ctx.arc(p.x,p.y,16.3,0,Math.PI*2);

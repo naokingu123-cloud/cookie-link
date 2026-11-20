@@ -1,0 +1,100 @@
+/* v272: generated cartoon materials, with the existing layouts and hit areas. */
+html.cartoon-boards-c-v272 body.bs-active #screen>.game{background:#f7ccdf!important}
+html.cartoon-boards-c-v272 body.pct-active #screen>.game{background:#ffe4a4!important}
+html.cartoon-boards-c-v272 body.dgb-active #screen>.game{background:#e4f8c5!important}
+
+/* These selectors also cover isolated view fixtures, while outranking the
+   older v249 cabinet skin in the full game. */
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-scene{
+ background:#f7c7dc!important;border-color:#603344!important;
+ box-shadow:inset 0 0 0 3px #fff4c5,inset 0 0 0 5px #cf6e94!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-pay{
+ background:#673549 var(--c272-stick-panel) center/100% 100% no-repeat!important;
+ border-color:#703348!important;box-shadow:inset 0 0 0 1px #ffedb7,0 2px 0 #703348!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-pay tbody{
+ background:#49243b!important;border-color:#8f4b59!important;box-shadow:none!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-pay-title i{
+ background:var(--c272-waffle-white) center/contain no-repeat!important;filter:none!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-block::before{
+ background:#b87036!important;border:1.5px solid transparent;
+ border-image:var(--v272-frame-stick) var(--v272-frame-slice-stick) stretch;box-shadow:none!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-block::after{
+ background:#63302e!important;box-shadow:inset 0 1px #e9a75a!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-block[data-material="silver"]::after{background:#3b5570!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-block[data-material="gold"]::after{background:#885726!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-pay .current .bs-block::after{box-shadow:inset 0 0 0 1.5px #fff3a7,0 0 4px #ffcb43!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-board{
+ background:#f8c669!important;box-shadow:none!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-turns::before{
+ background:#e89cb5 var(--v272-frame-stick) center/100% 100% no-repeat!important;
+ box-shadow:inset 0 0 0 1.5px #6b354e!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-medallion{
+ background:#633d58!important;box-shadow:inset 0 0 0 1.5px #4d2a3b,0 1px 0 #fff2bf!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-turn[data-color="white"] .bs-medallion{background:#ffe298!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) .bs-turn:is([data-state="current"],[data-state="done"]) .bs-medallion{box-shadow:0 0 0 3px #cd6c25,0 0 .43em .25em #ffcf4e!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.bs-panel) :is(.bs-bonus,.bs-earned,.bs-guide){
+ background:#b33e7b!important;border-color:#672c50!important;box-shadow:inset 0 1px #ffe6b7!important;
+}
+
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-scene{
+ background:#ffe2a0!important;border-color:#78402d!important;
+ box-shadow:inset 0 0 0 3px #fff8c8,inset 0 0 0 5px #e29538!important;
+}
+html.cartoon-boards-c-v272 .pct-land{display:none!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-pay{
+ background:#553043 var(--c272-castella-panel) center/100% 100% no-repeat!important;
+ box-shadow:inset 0 0 0 1px #7b422f,0 2px 0 #7b422f!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-pay thead th{color:#ffe59a!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-pay tbody tr{
+ background:#432638!important;color:#fff2c4!important;box-shadow:inset 0 -1px #a77262!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-pay tbody tr.current{
+ background:#993855!important;box-shadow:inset 0 1px #fff3a7,inset 0 -1px #f6c45a!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-phase{
+ background:#df7040!important;box-shadow:inset 0 0 0 1.5px #88432e,0 2px 0 #88432e!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-phase>div{background:#a95337!important}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) :is(.pct-phase:not(.pct-after) .pct-phase-first,.pct-phase.pct-after .pct-phase-second){
+ background:#ffe383!important;color:#733a29!important;box-shadow:inset 0 0 0 1px #fff5bd!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-pay-label span{
+ background:#df6543!important;border-color:#783c35!important;box-shadow:inset 0 1px #fff2b5,0 1px 0 #783c35!important;
+}
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.pct-panel) .pct-status>div{
+ background:#e3863d!important;border-color:#8e432b!important;box-shadow:inset 0 1px #fff1ae,inset 0 0 0 1px #ffcb68,0 2px 0 #8e432b!important;
+}
+
+html.cartoon-boards-c-v272 #screen #panels :is(.v249-game-surface[data-v249-kind],.dgb-panel) .dgb-scene{background:#e7f7ce!important}
+html.cartoon-boards-c-v272 .dgb-scene::before{background:none!important}
+html.cartoon-boards-c-v272 .dgb-pay-matrix{
+ border-image-source:var(--v272-frame-dango)!important;border-image-slice:var(--v272-frame-slice-dango)!important;
+ border-image-repeat:stretch!important;background:#000!important;
+}
+html.cartoon-boards-c-v272 .dgb-scene .dgb-free-stat{
+ background:#caef9d!important;border-color:#436439!important;color:#2e542e!important;
+ box-shadow:inset 0 0 0 1px #f7ffc9,0 2px 0 #64844b!important;
+}
+html.cartoon-boards-c-v272 .dgb-free-stat :is(small,b,.dgb-free-detail,.dgb-countdown){color:#31552a!important;text-shadow:none!important}
+html.cartoon-boards-c-v272 .dgb-free-stat .dgb-countdown.urgent{color:#b3274a!important}
+html.cartoon-boards-c-v272 .dgb-free-rail-heading{background:#64834a!important;color:#fff8cc!important}
+html.cartoon-boards-c-v272 .dgb-free-rail-row{background:#b8dc8bd9!important;border-bottom-color:#52783b!important}
+html.cartoon-boards-c-v272 .dgb-scene .dgb-pay-odds{border-color:#ffdc78!important;background:#653273!important;box-shadow:inset 0 0 0 1px #a967ad!important}
+
+html.cartoon-boards-c-v272 #screen #tabs .tab-slot.bs-slot .mini-wrap{background:#f9d2b0!important}
+html.cartoon-boards-c-v272 #screen #tabs .tab-slot.pct-slot .mini-wrap{background:#ffdfa1!important}
+html.cartoon-boards-c-v272 #screen #tabs .tab-slot.dgb-slot .mini-wrap{background:#e2f1bf!important}
+html.cartoon-boards-c-v272 :is(#round-result-layer,.result-game)[data-game-kind="stick"]{--v91-bg:none;--v91-floor:#f6c3d5}
+html.cartoon-boards-c-v272 :is(#round-result-layer,.result-game)[data-game-kind="castella"]{--v91-bg:none;--v91-floor:#ffe1a3}
+html.cartoon-boards-c-v272 :is(#round-result-layer,.result-game)[data-game-kind="dango"]{--v91-bg:none;--v91-floor:#e4f8c5}
+@media(forced-colors:active){html.cartoon-boards-c-v272 .dgb-pay-matrix{border-image:none!important;border-color:CanvasText!important;background:Canvas!important}}

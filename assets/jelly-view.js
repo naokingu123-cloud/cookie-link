@@ -112,6 +112,7 @@ function refractionArt(){
 }
 function cell(c,i,color,time,mini,paints){
  const [cx,cy]=center(i),x=cx-50,y=cy-50,p=syrup[color];
+  if(window.SweetsCartoonBoardsB?.jellyCell(c,i,color,mini,p))return;
  // Use one continuous hue across adjoining compartments. The open seams have no tile edges.
  const g=paints[color]??=gradient(c,0,0,160,510,[[0,p[0]],[.2,p[1]],[.62,p[2]],[1,p[3]]]);
  c.fillStyle=g;c.fillRect(x-.12,y-.12,100.24,100.24);
@@ -166,6 +167,7 @@ function sectionIds(state){
 let floorSprite;
 jellySkin.addEventListener('load',()=>{floorSprite=null;});
 function cleanMoldFloor(){
+  const illustrated=window.SweetsCartoonBoardsB?.jellyFloor();if(illustrated)return illustrated;
  if(floorSprite)return floorSprite;
  const canvas=document.createElement('canvas');canvas.width=canvas.height=500;
  const g=canvas.getContext('2d');
@@ -237,6 +239,7 @@ function glazeCells(c,state,turn,elapsed){
 // follow the same three seams in both the crack and the separated fragments.
 let ribSprite;
 function ribArt(){
+  const illustrated=window.SweetsCartoonBoardsB?.jellyRib();if(illustrated)return illustrated;
  if(ribSprite)return ribSprite;
  const img=document.createElement('canvas');img.width=208;img.height=32;
  const g=img.getContext('2d');g.scale(2,2);g.translate(2,7);
@@ -544,11 +547,13 @@ function reachFrame(c,loops,id,item,t,mini){
 function board(c,state,o,x,y,side){
  const {time=0,elapsed=0,turn,mini}=o,scale=side/moldSize;
  c.save();c.translate(x+moldRim*scale,y+moldRim*scale);c.scale(scale,scale);
- if(mold.complete&&mold.naturalWidth)c.drawImage(mold,-moldRim,-moldRim,moldSize,moldSize);
+  if(window.SweetsCartoonBoardsB?.jellyRim(c)){
+   // The generated bezel stays outside the same 500 x 500 live compartments.
+  }else if(mold.complete&&mold.naturalWidth)c.drawImage(mold,-moldRim,-moldRim,moldSize,moldSize);
  else rect(c,0,0,500,500,9,'#244b54','#9ae3da',5);
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
  c.drawImage(cleanMoldFloor(),0,0);
- fillCells(c,state,turn,elapsed,time,mini);if(!mini)glazeCells(c,state,turn,elapsed);partitions(c,state,turn,elapsed,mini);
+  fillCells(c,state,turn,elapsed,time,mini);if(!mini&&!window.SweetsCartoonBoardsB?.active)glazeCells(c,state,turn,elapsed);partitions(c,state,turn,elapsed,mini);
  c.restore();
  rect(c,-1.4,-1.4,502.8,502.8,10,'','#f4e8b9',3.8);
  // Only syrup and partitions are confined to the cells. Light crosses the lip and the gold bezel.
@@ -584,6 +589,7 @@ function visibleCount(state,turn,elapsed){
    turn.newLines.filter((_,j)=>elapsed>=waveEnd(turn)+Math.min(210,j*36)+215).length;
 }
 function ticket(c,w,h){
+  if(window.SweetsCartoonBoardsB?.panelFrame(c,'jelly',0,0,w,h,10))return;
  const shell=gradient(c,0,0,w,h,[[0,'#fff2c9'],[.18,'#e1a875'],[.48,'#fff4ce'],[.82,'#b77664'],[1,'#f9d397']]);
  rect(c,0,2,w,h-2,14,'#341b37ab');
  rect(c,0,0,w,h-3,14,shell,'#693e50',1.3);

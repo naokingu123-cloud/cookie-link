@@ -1,5 +1,15 @@
 # CookieLink 開発引き継ぎ
 
+## 最新更新: 2026-11-20 — v272 全ゲームのイラスト調パーツと枠
+
+- 版 `20261120-v272-cartoon-game-art`。概要 `docs/cartoon-art-v272.md`、生成プロンプト `docs/cartoon-art-v272-prompts.json`。
+- 参考画像の丸い形・太い輪郭・鮮やかな色に合わせ、全10ゲームのマス／駒／枠を新生成PNG3枚へ交換。72パーツ＋10ゲーム枠。メインとミニは共通画材。Sugar外枠とタブ枠も揃えた。
+- `assets/cartoon-art-v272.js` のreadyをゲーム起動前に待つ。B/C adapterはviewより前、A adapterはv247より後・通信起動より前。ロード失敗は元画材へfallback。
+- 元の盤面座標・番号・HIT/REACH/GET・液量・配当・RNG・保存／同期を維持。v271 Sugarの約9.95%・JP横×n・はずれ倍率なしも変更なし。
+- CSSは既存の上飾り／レールの重なりを除去し、Wineryの写実風景を平面的な色面へ変更。Dangoの黒い配当表と中央の金額は維持。
+- 構文・配当・Sugarテスト、実ブラウザーで全10ゲームを確認。専用CIは `.github/workflows/cartoon-art-v272.yml`。記録 `docs/qa-v272/` と公開確認JSONを参照。
+- Windows共有サーバーの更新はPages公開とは別。ユーザーの `.runtime`・`.tools`・`data` を保持。
+
 ## 最新更新: 2026-11-20 — v271 シュガーJPC約10%・倍率表示
 
 - 版 `20261120-v271-sugar-jpc-ten-percent`。詳細は `docs/sugar-challenge-v271.md` と厳密確率JSON。

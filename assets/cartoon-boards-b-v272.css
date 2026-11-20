@@ -1,0 +1,103 @@
+/* Illustrated furniture; the original playfield dimensions remain authoritative. */
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78{
+ /* Broad, hard-edged mint and grape shapes replace every historical river/
+    palace image, including the dynamically loaded v56-v76 scene styles. */
+ background:
+  radial-gradient(ellipse 76% 93% at 50% 36%,#c3eed9 0 56%,transparent 56.5%),
+  radial-gradient(ellipse 65% 55% at 8% 108%,#7854a7 0 73%,transparent 73.5%),
+  radial-gradient(ellipse 72% 55% at 96% 113%,#9770bf 0 72%,transparent 72.5%),
+  #ad98d2!important;
+ background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
+ box-shadow:inset 0 0 0 2px #d7f5cc,0 2px 0 #49315f!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78::before,
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78::after{
+ content:none!important;display:none!important;background:none!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-mold::before,
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-sidebar::before,
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-tea-stand,
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-stand-contrast-v71{
+ display:none!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-collector-panel{
+ background:#305a84!important;border:0!important;border-radius:16px!important;
+ border-image-source:var(--v272-frame-gelato)!important;
+ border-image-slice:var(--v272-frame-slice-gelato) fill!important;
+ border-image-width:11px!important;border-image-repeat:stretch!important;
+ box-shadow:0 3px 0 #44305f!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-collector-row{
+ background:#2b826c!important;border-color:#caffac!important;
+ border-radius:8px!important;box-shadow:inset 0 2px #f8ffd469,0 1px #392c5c!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-collector-row[data-grade="2"]{
+ background:#a87824!important;border-color:#fff4b1!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-collector-row[data-grade="3"]{
+ background:#b84572!important;border-color:#ffc7d9!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-collector-row[data-grade="4"]{
+ background:#7750ac!important;border-color:#e9c5ff!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-payout-window{
+ background:#234c73!important;border-color:#afe8ff!important;border-radius:8px!important;
+ box-shadow:inset 0 0 0 2px #3d3068!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-pay-row:not(.gp-current):not(.gp-pay-fixed){
+ background:#365985!important;border-color:#70b5d3!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene :is(.gp-pay-row.gp-pay-fixed,.gp-pay-row.gp-current){
+ background:#ffdb76!important;color:#633953!important;border-color:#fff6bb!important;
+ box-shadow:inset 0 2px #fff6ce!important;text-shadow:0 1px #fff4c9!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .gp-scene .gp-highest-frame{
+ background:#7957ad!important;border-color:#ffdc8a!important;border-radius:9px!important;
+ box-shadow:inset 0 2px #c5a5ef,0 2px #472f67!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene :is(.wp-sidebar,.wp-power-left,.wp-mix){
+ background:#684285!important;border-color:#49265e!important;border-radius:15px!important;
+ border-image-source:var(--v272-frame-winery)!important;
+ border-image-slice:var(--v272-frame-slice-winery) fill!important;
+ border-image-width:10px!important;border-image-repeat:stretch!important;
+ box-shadow:0 3px #49275e!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene :is(.wp-score,.wp-pay-fixed){
+ background:#ffe28c!important;color:#593255!important;border-color:#fff3bc!important;
+ border-radius:7px!important;text-shadow:0 1px #fff6cb!important;box-shadow:0 2px #573269!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-pay-window{
+ background:#53306b!important;border-color:#d5a7ee!important;border-radius:8px!important;
+ box-shadow:inset 0 0 0 2px #422856!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-pay-row{
+ border-color:#b677bd!important;background:#5d377544!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-pay-row.current{
+ background:#a853ae!important;box-shadow:inset 3px 0 #ffe08c!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-pay-juice-level{
+ background:#c25cbd!important;box-shadow:inset 0 3px #ffb4e7!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-amount-gauge{
+ background:#593c78!important;border-color:#d9b3ef!important;border-radius:10px!important;
+ box-shadow:inset 0 2px #ab7fbd!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-amount-tube{
+ background:#452c68!important;border-color:#e6beee!important;box-shadow:inset 0 2px #352753!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-amount-fill{
+ background:#e56fb3!important;box-shadow:inset 0 3px #ffb6db!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-boost-number{
+ background:var(--v272-b-wine-plaque) center/100% 100% no-repeat!important;
+ border-color:transparent!important;box-shadow:none!important;color:#fff9d7!important;
+ filter:none!important;text-shadow:0 2px #59366d!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels .wp-scene .wp-boost-number.hit{
+ filter:brightness(1.16)!important;
+}
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #panels :is(.gp-raster-board,.wp-canvas,.wp-liquid-layer,.pc-scene,.jb-scene),
+html.cartoon-art-v272.cartoon-boards-b-v272 #screen #tabs :is(.gp-raster-board,.wp-mini canvas){
+ filter:none!important;
+}

@@ -1,0 +1,85 @@
+/* Generated candy frames and a flat illustrated cabinet, without layout edits. */
+html.cartoon-art-v272{
+ --v272-ink:#4b204c;--v272-light:#fff5d6;--v272-accent:#ffc45e;--v272-mid:#ed6d9d;
+ --v272-pale:#ffdeed;--v272-base:#a33170;--v272-frame:var(--v272-frame-cookie);--v272-slice:var(--v272-frame-slice-cookie);
+}
+html.cartoon-art-v272 :is(body[data-v249-game="cookie"],[data-v249-kind="cookie"],[data-game-kind="cookie"]){--v272-accent:#ffb85b;--v272-mid:#ed83b5;--v272-pale:#ffdeed;--v272-base:#963869;--v272-frame:var(--v272-frame-cookie);--v272-slice:var(--v272-frame-slice-cookie)}
+html.cartoon-art-v272 :is(body[data-v249-game="choco"],[data-v249-kind="choco"],[data-game-kind="choco"]){--v272-accent:#f5bc63;--v272-mid:#c57b5c;--v272-pale:#ffe1b9;--v272-base:#713b52;--v272-frame:var(--v272-frame-choco);--v272-slice:var(--v272-frame-slice-choco)}
+html.cartoon-art-v272 :is(body[data-v249-game="candy"],[data-v249-kind="candy"],[data-game-kind="candy"]){--v272-accent:#51e9ee;--v272-mid:#48b6e5;--v272-pale:#c9f7ff;--v272-base:#3e5296;--v272-frame:var(--v272-frame-candy);--v272-slice:var(--v272-frame-slice-candy)}
+html.cartoon-art-v272 :is(body[data-v249-game="gelato"],[data-v249-kind="gelato"],[data-game-kind="gelato"]){--v272-accent:#7de6cb;--v272-mid:#eb8cbc;--v272-pale:#ffe3ef;--v272-base:#7d4888;--v272-frame:var(--v272-frame-gelato);--v272-slice:var(--v272-frame-slice-gelato)}
+html.cartoon-art-v272 :is(body[data-v249-game="winery"],[data-v249-kind="winery"],[data-game-kind="winery"]){--v272-accent:#d6a2ff;--v272-mid:#a975d7;--v272-pale:#ecdcff;--v272-base:#64376e;--v272-frame:var(--v272-frame-winery);--v272-slice:var(--v272-frame-slice-winery)}
+html.cartoon-art-v272 :is(body[data-v249-game="popcorn"],[data-v249-kind="popcorn"],[data-game-kind="popcorn"]){--v272-accent:#ffe474;--v272-mid:#f59685;--v272-pale:#fff0ba;--v272-base:#9f3b56;--v272-frame:var(--v272-frame-popcorn);--v272-slice:var(--v272-frame-slice-popcorn)}
+html.cartoon-art-v272 :is(body[data-v249-game="jelly"],[data-v249-kind="jelly"],[data-game-kind="jelly"]){--v272-accent:#69e2dc;--v272-mid:#62c5bf;--v272-pale:#cdf8e8;--v272-base:#4f448a;--v272-frame:var(--v272-frame-jelly);--v272-slice:var(--v272-frame-slice-jelly)}
+html.cartoon-art-v272 :is(body[data-v249-game="stick"],[data-v249-kind="stick"],[data-game-kind="stick"]){--v272-accent:#ffcc5b;--v272-mid:#e5aa5f;--v272-pale:#fff0bb;--v272-base:#8e4d57;--v272-frame:var(--v272-frame-stick);--v272-slice:var(--v272-frame-slice-stick)}
+html.cartoon-art-v272 :is(body[data-v249-game="castella"],[data-v249-kind="castella"],[data-game-kind="castella"]){--v272-accent:#ffcd65;--v272-mid:#efa459;--v272-pale:#ffe9c4;--v272-base:#93445c;--v272-frame:var(--v272-frame-castella);--v272-slice:var(--v272-frame-slice-castella)}
+html.cartoon-art-v272 :is(body[data-v249-game="dango"],[data-v249-kind="dango"],[data-game-kind="dango"]){--v272-accent:#afe66d;--v272-mid:#d9c782;--v272-pale:#f3f5c5;--v272-base:#656942;--v272-frame:var(--v272-frame-dango);--v272-slice:var(--v272-frame-slice-dango)}
+html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen>.game{
+ --v249-world:none!important;
+ background-color:var(--v272-pale)!important;
+ background-image:radial-gradient(circle at 8px 8px,#fff9 0 2px,transparent 2.5px),linear-gradient(180deg,var(--v272-pale),var(--v272-mid))!important;
+ background-size:24px 24px,100% 100%!important;background-repeat:repeat,no-repeat!important;
+ border-color:var(--v272-ink)!important;box-shadow:0 3px 0 #4b204c,inset 0 0 0 3px #fff6ce!important;
+}
+html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen>.game::before{
+ content:""!important;position:absolute!important;inset:-2px!important;height:auto!important;
+ border:16px solid transparent!important;border-image-source:var(--v272-frame)!important;
+ border-image-slice:var(--v272-slice)!important;border-image-width:16px!important;border-image-repeat:stretch!important;
+ background:none!important;box-shadow:none!important;pointer-events:none!important;z-index:4!important;
+}
+html.cartoon-art-v272.arcade-v249 #screen #panels>.v249-game-surface{--v249-world:none!important;box-shadow:none!important}
+/* Remove the previous generic biscuit awning and side rails: the generated
+   themed border owns those edges and leaves the top row of labels visible. */
+html.cartoon-art-v272.arcade-candy-world #screen>.game>.arcade-world-game-canopy,
+html.cartoon-art-v272.arcade-candy-world #screen>.game>.arcade-world-game-rail{display:none!important}
+html.cartoon-art-v272.arcade-candy-world body[data-v249-game="cookie"] #screen .festival-top{
+ background:#623459!important;box-shadow:inset 0 0 0 2px #f8c982!important;
+}
+/* The existing hit targets, mini canvases and typography retain their geometry. */
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot{
+ background:var(--v272-pale)!important;border-color:var(--v272-ink)!important;
+ box-shadow:0 2px 0 var(--v272-ink)!important;
+}
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.all-tab-frame-overlay{
+ background:none!important;border:9px solid transparent!important;border-image-source:var(--v272-frame)!important;
+ border-image-slice:var(--v272-slice)!important;border-image-width:9px!important;border-image-repeat:stretch!important;
+ box-shadow:none!important;z-index:8!important;opacity:1!important;
+}
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.all-tab-frame-overlay::before,
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.all-tab-frame-overlay::after{content:none!important}
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot>.tab{
+ background:linear-gradient(180deg,var(--v272-pale),var(--v272-mid))!important;
+ box-shadow:inset 0 2px 0 #ffffce!important;
+}
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs>.tab-slot.selected{
+ outline:2px solid #ffe85b!important;outline-offset:0!important;
+}
+html.cartoon-art-v272.arcade-v249.arcade-tabs-v250 #screen #tabs .mini-wrap{background:none!important}
+/* Classic pay frames use the same generated art; live figures stay native. */
+html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen #odds-panel{
+ background:#311c3a!important;border-color:var(--v272-ink)!important;border-radius:12px!important;
+ box-shadow:inset 0 0 0 2px #ffe5a4!important;
+}
+html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen #odds-panel>.menu-trim{display:none!important}
+html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen #odds-panel::before{
+ content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;
+ border:12px solid transparent!important;border-image-source:var(--v272-frame)!important;border-image-slice:var(--v272-slice)!important;border-image-width:12px!important;
+ background:none!important;box-shadow:none!important;z-index:1!important;
+}
+html.cartoon-art-v272.arcade-v249 #screen #odds-panel :is(.hammer-prize,.link-pay-window){background:#261a33!important;box-shadow:none!important}
+html.cartoon-art-v272.arcade-v249 .ds91-lesson{background-color:var(--v272-pale)!important;border-color:var(--v272-ink)!important}
+html.cartoon-art-v272 .sc254-overlay{
+ background:#40234f!important;border-color:#49264f!important;
+ border-image-source:var(--v272-frame-cookie)!important;border-image-slice:var(--v272-frame-slice-cookie)!important;
+ border-image-width:10px!important;border-image-repeat:stretch!important;box-shadow:0 3px 0 #301c3e!important;
+}
+html.cartoon-art-v272 .sc254-dock{
+ background:#51336c!important;border-color:#442154!important;
+ border-image-source:var(--v272-frame-cookie)!important;border-image-slice:var(--v272-frame-slice-cookie)!important;
+ border-image-width:8px!important;border-image-repeat:stretch!important;box-shadow:0 2px 0 #301c3e!important;
+}
+html.cartoon-art-v272 .sc254-jp{background:#23172f!important;border-color:#f5c775!important}
+@media(forced-colors:active){
+ html.cartoon-art-v272.arcade-v249 body[data-v249-game] #screen>.game::before,
+ html.cartoon-art-v272.arcade-v249 #screen #tabs>.tab-slot>.all-tab-frame-overlay,
+ html.cartoon-art-v272.arcade-v249 #screen #odds-panel::before{display:none!important}
+}

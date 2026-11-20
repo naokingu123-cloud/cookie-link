@@ -70,6 +70,7 @@
     ctx.beginPath(); points.forEach(({x,y},i) => i ? ctx.lineTo(x*f,y*f) : ctx.moveTo(x*f,y*f)); ctx.closePath();
   }
   function boardBorder(ctx) {
+    if(window.SweetsCartoonBoardsB?.popcornBoard(ctx,K))return;
     // A red-cream folded carton with a double brass lip, registered to the exact live polygon.
     ctx.save(); polygon(ctx,K.outline,1.047); ctx.translate(0,.05); ctx.fillStyle='#67382b'; ctx.fill(); ctx.restore();
     ctx.save(); polygon(ctx,K.outline,1.04); ctx.fillStyle='#ffefc4'; ctx.fill();ctx.clip();
@@ -152,6 +153,7 @@
     ctx.beginPath();for(let j=0;j<8;j++){const a=j*Math.PI/4;const d=r*(j%2?.24:1);const xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d;if(j)ctx.lineTo(xx,yy);else ctx.moveTo(xx,yy);}ctx.closePath();ctx.fillStyle=fill;ctx.fill();
   }
   function spriteAtlas(mini) {
+    const illustrated=window.SweetsCartoonBoardsB?.popcornAtlas(mini);if(illustrated)return illustrated;
     if(!art.pieces) return null;
     const tile=mini?18:54;
     if(!sprites[tile]) {
@@ -619,7 +621,9 @@
       if(flipped){const f=clamp((elapsed-change)/260),k=1+.16*Math.sin(Math.PI*f);ctx.scale(k,k);}
       const half=special?.685:.376,high=special?.415:.292;
       const sign=all?art.allSign:boost?art.upSign:null;
-      if(sign){
+      if(window.SweetsCartoonBoardsB?.popcornPlaque(ctx,half,high,special,sign,lit||inspected||flipped)){
+        // Keep the original live labels and reach geometry above the artwork.
+      }else if(sign){
         ctx.drawImage(sign,-.94,-.84,1.88,1.62);
         if(lit||inspected||flipped)rounded(ctx,-.652,-.48,1.304,.867,.135,null,edge,.060);
       } else {
@@ -664,6 +668,7 @@
   }
   const awningW=6.88,awningH=1.43,restingStand={raised:0,open:0,y:-5.77};
   function foodStand(ctx,stage,front){
+    if(window.SweetsCartoonBoardsB?.popcornStand(ctx,stage,front,awningW,awningH))return;
     const img=art.stall;
     if(!stage||!img)return;
     const x=-awningW/2,y=stage.y,w=awningW,h=awningH;
@@ -789,6 +794,7 @@
     }
   }
   function background(ctx,w,h,mini) {
+    if(window.SweetsCartoonBoardsB?.popcornBackground(ctx,w,h))return;
     if(art.back) {
       const img=art.back, s=Math.max(w/img.width,h/img.height),iw=img.width*s,ih=img.height*s;
       ctx.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);
@@ -823,6 +829,7 @@
     label(ctx,opt.demo?'デモ':(s.turn+'/8 球'),bx+bw/2,y+12.5,16,cream,{max:bw-8});
   }
   function payoutFrame(ctx,x,y,w,h){
+    if(window.SweetsCartoonBoardsB?.panelFrame(ctx,'popcorn',x,y,w,h,w*.10))return;
     const img=art.payout;
     if(!img){rounded(ctx,x,y,w,h,12,'#fff1d2','#b95b46',2);return;}
     // Preserve the printed corner ornaments when the narrow mobile tray grows taller.

@@ -248,6 +248,7 @@ function premiumClip(x,cx,cy){
 }
 function premiumJuice(x,i,g,t,activePour=false){
  const {x:cx,y:cy}=premiumPos(i);
+  if(window.SweetsCartoonBoardsB?.wineryJuice(x,cx,cy,g,t,activePour,K.FLAVORS))return;
  x.save();premiumClip(x,cx,cy);x.clip();
  // A clean transparent glass, with no baked red liquid or white opaque wipe.
  const clear=x.createLinearGradient(cx-56,cy+7,cx+56,cy+80);
@@ -442,7 +443,9 @@ function premiumGlass(x,i,g,t){
   rad.addColorStop(1,'#ffffff00');
   x.fillStyle=rad;x.beginPath();x.arc(cx,cy+43,fresh?92:73,0,Math.PI*2);x.fill();
  }
- if(rasterCupReady&&rasterCup.naturalWidth){
+  if(window.SweetsCartoonBoardsB?.wineryGlass(x,cx,cy,full)){
+   // Generated cup artwork surrounds the existing live liquid window.
+  }else if(rasterCupReady&&rasterCup.naturalWidth){
   // EXCLUDE the source PNG's printed red juice and digit 1 from the upper
   // glass layer. Preserve photographic gold rim, faceted edge, jewel and foot.
   x.save();x.beginPath();x.rect(cx-74,cy-12,148,147);
@@ -474,7 +477,7 @@ function premiumGlass(x,i,g,t){
  // The photo is clipped to the silhouette of the coupe, stem and foot. Its
  // backdrop, adjacent glasses, printed numbers and scenery are excluded.
  // Screen blending removes dark photographic tones and reveals live juice below.
- if(photoReady&&!rasterCupReady){
+  if(!window.SweetsCartoonBoardsB?.active&&photoReady&&!rasterCupReady){
   const {r,c}=K.CELLS[i],oldX=692+(c-r/2)*150,oldY=38+r*133;
   x.save();x.beginPath();
   x.moveTo(cx-65,cy+4);
@@ -499,7 +502,9 @@ function premiumGlass(x,i,g,t){
  x.shadowColor='#ffe7bb';x.shadowBlur=4;
  x.beginPath();x.moveTo(cx+25,cy+76);x.quadraticCurveTo(cx+30,cy+84,cx+28,badgeY-11);x.stroke();
  x.shadowBlur=0;
- if(priceTagArt.naturalWidth){
+  if(window.SweetsCartoonBoardsB?.wineryPlaque(x,cx,badgeY,full)){
+   // Number and FULL/MIX state continue to use the actual engine values.
+  }else if(priceTagArt.naturalWidth){
   x.drawImage(confectionTags||priceTagArt,full?200:0,0,200,100,cx-42,badgeY-22,84,44);
  }else{
   wineryTagReachPath(x,cx,badgeY);
@@ -664,6 +669,7 @@ function paint(target,time,small=false){
  lx.setTransform((small?W:liquidCanvas.width)/DRAW_W,0,0,
                  (small?H:liquidCanvas.height)/DRAW_H,0,0);
  if(!small){lx.save();spreadMainGlasses(lx);}
+  window.SweetsCartoonBoardsB?.wineryStand(lx,K.CELLS,premiumPos);
  // Ambient moving light on the river; unobtrusive, no opacity fill.
  if(!small){
   for(let k=0;k<18;k++){
@@ -836,6 +842,7 @@ function paintMini(){
  // Centre the six actual tiers, including the numbered tags below each bowl.
  miniOnlyCtx.translate(465-premiumPos(0).x,465-(premiumPos(0).y+premiumPos(20).y+116*WP_MAIN_CUP_ZOOM)/2);
  spreadMainGlasses(miniOnlyCtx);
+  window.SweetsCartoonBoardsB?.wineryStand(miniOnlyCtx,K.CELLS,premiumPos);
  const fx=engine.fx;
  let current=engine.glasses,flows=[];
  if(fx?.type==='pour'){

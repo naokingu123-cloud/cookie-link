@@ -49,6 +49,7 @@ function spriteBounds(image,key){
 }
 function describeAssets(){
  return {revision:253,presentationRevision:269,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
+  cartoon:window.SweetsCartoonBoardsC?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS}};
 }
@@ -69,6 +70,7 @@ const assetsReady=Promise.all(Object.entries(assetFiles).map(([key,file])=>new P
 }))).then(results=>results.every(Boolean));
 function onAssetsChanged(listener){assetListeners.add(listener);return ()=>assetListeners.delete(listener);}
 function bitmap(c,key,x,y,width,height){
+ if(window.SweetsCartoonBoardsC)return window.SweetsCartoonBoardsC.dangoBitmap(c,key,x,y,width,height);
  const asset=art[key];if(!asset?.loaded||!(width>0&&height>0))return false;
  c.drawImage(asset.image,...asset.crop,x,y,width,height);return true;
 }

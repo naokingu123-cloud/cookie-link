@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v271-sugar-jpc-ten-percent",
+  "version": "20261120-v272-cartoon-game-art",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 51,
-      "sha256": "ca53e32621abb834952bd66385a2aadb1558b78cda2aa3ef8a402db95e9ef618"
+      "bytes": 46,
+      "sha256": "443e6ea4b7db89102da6494f9b65f7d221b5e9b2a81584583fa1902a9387dfd2"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -898,8 +898,8 @@
     },
     {
       "path": "assets/bingo-stick-view.js",
-      "bytes": 16091,
-      "sha256": "0c06396a760bab23ae48174b788c5de6ef73cbf27b555c7da8ecf700e7a2e679"
+      "bytes": 16386,
+      "sha256": "b5301832d3800023ec485f87aa5c597b5d28f4882a6c4c568feb374c19bd1b45"
     },
     {
       "path": "assets/bingo-stick.css",
@@ -1072,6 +1072,61 @@
       "sha256": "45713a03e8c73c09c6d4e8d1cc5abadb467111b46a458a51dcacf0923f0ce57b"
     },
     {
+      "path": "assets/cartoon-art-v272.css",
+      "bytes": 8195,
+      "sha256": "5148b08ac972e2d998a12c8a06dad849ace18fd9f107e488a7f650d4d0aa5951"
+    },
+    {
+      "path": "assets/cartoon-art-v272.js",
+      "bytes": 5638,
+      "sha256": "f802267645b7d85db2ae3bcbd9387436f7615fd411bbc5a03d1d788daea23c7e"
+    },
+    {
+      "path": "assets/cartoon-art-v272/sweets-frames.png",
+      "bytes": 1488659,
+      "sha256": "36e77056ea1950825c3a78a608fc1f1e838a8ddc4c748b2dc34236e42ae34b78"
+    },
+    {
+      "path": "assets/cartoon-art-v272/sweets-sprites-a.png",
+      "bytes": 1758814,
+      "sha256": "28d57b731f286dd77b159eb7d1ae879fa46e0cc46072e0cc0e816e5abbf93736"
+    },
+    {
+      "path": "assets/cartoon-art-v272/sweets-sprites-b.png",
+      "bytes": 1561856,
+      "sha256": "2794a5a7239eb69864c0542b2b197fb0c865fc49e415f726ccada44d7913adea"
+    },
+    {
+      "path": "assets/cartoon-boards-a-v272.css",
+      "bytes": 4961,
+      "sha256": "1a807c5807da592da626b4bb8c68fe21ed13b26dfa23434d74437aedf6ca5f66"
+    },
+    {
+      "path": "assets/cartoon-boards-a-v272.js",
+      "bytes": 14038,
+      "sha256": "f4a5aeb58207dd5b7697b403da52fa0acf7d41307774768f5ac697a35de77170"
+    },
+    {
+      "path": "assets/cartoon-boards-b-v272.css",
+      "bytes": 6265,
+      "sha256": "801fb8bca4084506809d2e858af6dbc8c7882ffaebd30d5e37d5701f2c9d39c0"
+    },
+    {
+      "path": "assets/cartoon-boards-b-v272.js",
+      "bytes": 13086,
+      "sha256": "6d803053c85f47d2c49d48dcc5b5c94c85c8106386cd849472a8e7ae7d48ee92"
+    },
+    {
+      "path": "assets/cartoon-boards-c-v272.css",
+      "bytes": 7940,
+      "sha256": "64f005c7189b67030bf2a3723cdb456c5ceca5dd0c83170924ea13dc1b40b835"
+    },
+    {
+      "path": "assets/cartoon-boards-c-v272.js",
+      "bytes": 4124,
+      "sha256": "902d9e84fe1544438404cdda26b639b16d6357d452b366c13d841b012b811bc6"
+    },
+    {
       "path": "assets/castella-lesson.js",
       "bytes": 7538,
       "sha256": "39fe6ad38e915ab35bc4bbfb5cbd2619b66190bf613c6984e0ed01bb8cb888ad"
@@ -1208,8 +1263,8 @@
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 57733,
-      "sha256": "5c68ab5825bdeca1a928628e97fa4d132769337dd4642a6f26d354704e2c6784"
+      "bytes": 57894,
+      "sha256": "e9dc879365ce29d30fea1bad263851eab4f958fcca1b5b6ed5bb919b0b84275c"
     },
     {
       "path": "assets/dango-bingo.css",
@@ -1238,8 +1293,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4361,
-      "sha256": "084694bb67b08e3f3f831271b45be13ddc3c52c2cb830610a033b0d796aea1f3"
+      "bytes": 4356,
+      "sha256": "dbb3e791fd193438570029bb9966192f7efcc899d8b4d92c6be83d5441500294"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1263,8 +1318,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3772,
-      "sha256": "68ce7356ad99d076b6435fe33e659e333a4510ff35576d86e316c3ade7bf36c8"
+      "bytes": 3767,
+      "sha256": "35f65566c02eb65fefc4e89525b1b1533a0991479ad2933fa522e64789642109"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1403,8 +1458,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 69423,
-      "sha256": "0492c4a76b302d712bb5fb2e78534773ee426cb5a964242f241993086f752b5f"
+      "bytes": 69677,
+      "sha256": "1c9e7be1aa25d8434e216b2cc95c4896a6e5b5fa06b6a8f2b3cb410d2d65233c"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -1458,8 +1513,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 37158,
-      "sha256": "f7adcf5035de06a7f8055bdb00e7af4b01ebe6e2b624aaf9481b4da102e21238"
+      "bytes": 37667,
+      "sha256": "e6a0019fa4c76539d9d48bb4a13b4b93a67b8358a0bc1a463d9bdfc889f7dc14"
     },
     {
       "path": "assets/jelly.css",
@@ -1583,8 +1638,8 @@
     },
     {
       "path": "assets/party-castella.js",
-      "bytes": 31051,
-      "sha256": "393493ca41d3f3c852cbc0f41fe1d8406d2401dcd2cb211fd5438bc6308c7021"
+      "bytes": 31742,
+      "sha256": "c3f9942f194d30eb6f3cca7cfaf716c9c6f178fb71120e59a77412c63873e699"
     },
     {
       "path": "assets/payout-trend-v242.js",
@@ -1703,8 +1758,8 @@
     },
     {
       "path": "assets/popcorn-view.js",
-      "bytes": 64970,
-      "sha256": "28c01356fdbdce80fbb290cd76ef50c459f4666c635e5edaaa05b654f5f627e1"
+      "bytes": 65575,
+      "sha256": "36c5df9234031100f0e7e56a963f624ffe7587205065157077bbb8288e053648"
     },
     {
       "path": "assets/popcorn.css",
@@ -2983,8 +3038,8 @@
     },
     {
       "path": "assets/winery-pyramid-v1.js",
-      "bytes": 49836,
-      "sha256": "9d0a4d43340b05fca88a912c16f2845d0f0a990ef10cde0496f2617bbfa50731"
+      "bytes": 50394,
+      "sha256": "29c29731e0f088bbdd71423c2870242334e05b5cb5bdbf46ffb34af76a77e163"
     },
     {
       "path": "assets/winery-pyramid-validation-v1.json",
@@ -3023,8 +3078,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 84140,
-      "sha256": "1e7b2196555c25b88503835287cd3d661914090156333e0d984b62f3d07ea6ee"
+      "bytes": 84884,
+      "sha256": "e1b241222d73636811ac3cf3c8326725d0ab8773afd4ca95c0955b0b07ead9af"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3262,5 +3317,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 145375475
+  "totalBytes": 150252853
 }
