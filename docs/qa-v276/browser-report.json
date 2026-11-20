@@ -1,0 +1,2875 @@
+{
+  "version": "20261120-v276-hit-and-roulette-polish-r2",
+  "games": [
+    {
+      "game": "cookie",
+      "reduced": false,
+      "painted": 176,
+      "pointerEvents": "none",
+      "box": {
+        "width": 301.875,
+        "height": 301.875
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 3,
+        "maxQueued": 3,
+        "maxMainParticles": 24,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "cookie": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "cookie",
+            "bursts": [
+              {
+                "phase": "hit",
+                "number": 23,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "r": 0,
+                  "c": 0,
+                  "delay": 0,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "hit",
+                "number": 23,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "r": 0,
+                  "c": 3,
+                  "delay": 0,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "hit",
+                "number": 23,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "r": 0,
+                  "c": 4,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "cookie",
+            "phase": "hit",
+            "number": 23,
+            "level": 1,
+            "anchors": [
+              {
+                "r": 0,
+                "c": 0,
+                "delay": 0,
+                "level": 1
+              },
+              {
+                "r": 0,
+                "c": 3,
+                "delay": 0,
+                "level": 1
+              },
+              {
+                "r": 0,
+                "c": 4,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 18.625,
+                "y": 18.625,
+                "r": 17.88
+              },
+              {
+                "x": 130.375,
+                "y": 18.625,
+                "r": 17.88
+              },
+              {
+                "x": 167.625,
+                "y": 18.625,
+                "r": 17.88
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 1.75,
+                "y": 1.75,
+                "r": 1.68
+              },
+              {
+                "x": 12.25,
+                "y": 1.75,
+                "r": 1.68
+              },
+              {
+                "x": 15.75,
+                "y": 1.75,
+                "r": 1.68
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "cookie",
+          "phase": "hit",
+          "number": 23,
+          "level": 1,
+          "anchors": [
+            {
+              "r": 0,
+              "c": 0,
+              "delay": 0,
+              "level": 1
+            },
+            {
+              "r": 0,
+              "c": 3,
+              "delay": 0,
+              "level": 1
+            },
+            {
+              "r": 0,
+              "c": 4,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 18.625,
+              "y": 18.625,
+              "r": 17.88
+            },
+            {
+              "x": 130.375,
+              "y": 18.625,
+              "r": 17.88
+            },
+            {
+              "x": 167.625,
+              "y": 18.625,
+              "r": 17.88
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 1.75,
+              "y": 1.75,
+              "r": 1.68
+            },
+            {
+              "x": 12.25,
+              "y": 1.75,
+              "r": 1.68
+            },
+            {
+              "x": 15.75,
+              "y": 1.75,
+              "r": 1.68
+            }
+          ]
+        }
+      ],
+      "draws": [
+        7,
+        10,
+        23
+      ]
+    },
+    {
+      "game": "choco",
+      "reduced": false,
+      "painted": 22,
+      "pointerEvents": "none",
+      "box": {
+        "width": 403.125,
+        "height": 348.75
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "choco": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "choco",
+            "bursts": [
+              {
+                "phase": "canyonSoften",
+                "number": 14,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "r": 0,
+                  "c": 0,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "choco",
+            "phase": "canyonSoften",
+            "number": 14,
+            "level": 1,
+            "anchors": [
+              {
+                "r": 0,
+                "c": 0,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 136.75,
+                "y": 70.04166666666667,
+                "r": 12.52
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 6.999999999999999,
+                "y": 1.1666666666666667,
+                "r": 1.12
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "choco",
+          "phase": "canyonSoften",
+          "number": 14,
+          "level": 1,
+          "anchors": [
+            {
+              "r": 0,
+              "c": 0,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 136.75,
+              "y": 70.04166666666667,
+              "r": 12.52
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 6.999999999999999,
+              "y": 1.1666666666666667,
+              "r": 1.12
+            }
+          ]
+        }
+      ],
+      "draws": [
+        14
+      ]
+    },
+    {
+      "game": "candy",
+      "reduced": false,
+      "painted": 52,
+      "pointerEvents": "none",
+      "box": {
+        "width": 290.625,
+        "height": 300
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "candy": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "candy",
+            "bursts": [
+              {
+                "phase": "pyramidHit",
+                "number": 20,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "r": 0,
+                  "c": 3,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "candy",
+            "phase": "pyramidHit",
+            "number": 20,
+            "level": 1,
+            "anchors": [
+              {
+                "r": 0,
+                "c": 3,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 155,
+                "y": 29.05695894779288,
+                "r": 16.275
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 14,
+                "y": 1.5919531527504494,
+                "r": 1.5919531527504476
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "candy",
+          "phase": "pyramidHit",
+          "number": 20,
+          "level": 1,
+          "anchors": [
+            {
+              "r": 0,
+              "c": 3,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 155,
+              "y": 29.05695894779288,
+              "r": 16.275
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 14,
+              "y": 1.5919531527504494,
+              "r": 1.5919531527504476
+            }
+          ]
+        }
+      ],
+      "draws": [
+        20
+      ]
+    },
+    {
+      "game": "gelato",
+      "reduced": false,
+      "painted": 26,
+      "pointerEvents": "none",
+      "box": {
+        "width": 397.5,
+        "height": 343.125
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "gelato": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "gelato",
+            "bursts": [
+              {
+                "phase": "gelatoHit",
+                "number": 11,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "id": 0,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "gelato",
+            "phase": "gelatoHit",
+            "number": 11,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 0,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 163,
+                "y": 27.816,
+                "r": 13.692
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 14,
+                "y": 2.128,
+                "r": 1.176
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "gelato",
+          "phase": "gelatoHit",
+          "number": 11,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 0,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 163,
+              "y": 27.816,
+              "r": 13.692
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 14,
+              "y": 2.128,
+              "r": 1.176
+            }
+          ]
+        }
+      ],
+      "draws": [
+        11
+      ]
+    },
+    {
+      "game": "winery",
+      "reduced": false,
+      "painted": 12,
+      "pointerEvents": "none",
+      "box": {
+        "width": 399.375,
+        "height": 345
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "winery": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "winery",
+            "bursts": [
+              {
+                "phase": "wineryPour",
+                "number": 2,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "id": 0,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "winery",
+            "phase": "wineryPour",
+            "number": 2,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 0,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 190.57894736842104,
+                "y": 84.44446333687567,
+                "r": 7.9059688995215325
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 14,
+                "y": 5.054150537634412,
+                "r": 0.934236559139785
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "winery",
+          "phase": "wineryPour",
+          "number": 2,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 0,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 190.57894736842104,
+              "y": 84.44446333687567,
+              "r": 7.9059688995215325
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 14,
+              "y": 5.054150537634412,
+              "r": 0.934236559139785
+            }
+          ]
+        }
+      ],
+      "draws": [
+        2
+      ]
+    },
+    {
+      "game": "popcorn",
+      "reduced": false,
+      "painted": 40,
+      "pointerEvents": "none",
+      "box": {
+        "width": 403.125,
+        "height": 348.75
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 6,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "popcorn": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "popcorn",
+            "bursts": [
+              {
+                "phase": "popcornDraw",
+                "number": 25,
+                "age": 67.99999999999272,
+                "duration": 620,
+                "anchor": {
+                  "id": 0,
+                  "type": "port",
+                  "delay": 0,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "popcornDraw",
+                "number": 25,
+                "age": -557.0000000000073,
+                "duration": 700,
+                "anchor": {
+                  "id": 26,
+                  "delay": 625,
+                  "level": 2
+                }
+              },
+              {
+                "phase": "popcornDraw",
+                "number": 25,
+                "age": -557.0000000000073,
+                "duration": 700,
+                "anchor": {
+                  "id": 11,
+                  "delay": 625,
+                  "level": 2
+                }
+              },
+              {
+                "phase": "popcornDraw",
+                "number": 25,
+                "age": -557.0000000000073,
+                "duration": 700,
+                "anchor": {
+                  "id": 0,
+                  "delay": 625,
+                  "level": 2
+                }
+              },
+              {
+                "phase": "popcornDraw",
+                "number": 25,
+                "age": -1037.0000000000073,
+                "duration": 700,
+                "anchor": {
+                  "id": 27,
+                  "delay": 1105,
+                  "level": 2
+                }
+              },
+              {
+                "phase": "popcornDraw",
+                "number": 25,
+                "age": -1037.0000000000073,
+                "duration": 700,
+                "anchor": {
+                  "id": 35,
+                  "delay": 1105,
+                  "level": 2
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "popcorn",
+            "phase": "popcornDraw",
+            "number": 25,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 0,
+                "type": "port",
+                "delay": 0,
+                "level": 1
+              },
+              {
+                "id": 26,
+                "delay": 625,
+                "level": 2
+              },
+              {
+                "id": 11,
+                "delay": 625,
+                "level": 2
+              },
+              {
+                "id": 0,
+                "delay": 625,
+                "level": 2
+              },
+              {
+                "id": 27,
+                "delay": 1105,
+                "level": 2
+              },
+              {
+                "id": 35,
+                "delay": 1105,
+                "level": 2
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 106.22169741697417,
+                "y": 199.22314795310467,
+                "r": 14.232652726527265
+              },
+              {
+                "x": 137.1622468224682,
+                "y": 185.91871170874222,
+                "r": 13.304436244362442
+              },
+              {
+                "x": 168.10279622796227,
+                "y": 132.3281081243315,
+                "r": 13.304436244362442
+              },
+              {
+                "x": 199.0433456334563,
+                "y": 78.73750453992078,
+                "r": 13.304436244362442
+              },
+              {
+                "x": 168.10279622796227,
+                "y": 185.91871170874222,
+                "r": 13.304436244362442
+              },
+              {
+                "x": 152.63252152521525,
+                "y": 212.71401350094757,
+                "r": 13.304436244362442
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 1.1805384720513878,
+                "y": 14.53315933442775,
+                "r": 1.1793904605712724
+              },
+              {
+                "x": 3.7444307776411097,
+                "y": 13.43068564302417,
+                "r": 1.1024736914035806
+              },
+              {
+                "x": 6.308323083230832,
+                "y": 8.989893904607861,
+                "r": 1.1024736914035806
+              },
+              {
+                "x": 8.872215388820555,
+                "y": 4.549102166191552,
+                "r": 1.1024736914035806
+              },
+              {
+                "x": 6.308323083230832,
+                "y": 13.43068564302417,
+                "r": 1.1024736914035806
+              },
+              {
+                "x": 5.026376930435971,
+                "y": 15.651081512232325,
+                "r": 1.1024736914035806
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "popcorn",
+          "phase": "popcornDraw",
+          "number": 25,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 0,
+              "type": "port",
+              "delay": 0,
+              "level": 1
+            },
+            {
+              "id": 26,
+              "delay": 625,
+              "level": 2
+            },
+            {
+              "id": 11,
+              "delay": 625,
+              "level": 2
+            },
+            {
+              "id": 0,
+              "delay": 625,
+              "level": 2
+            },
+            {
+              "id": 27,
+              "delay": 1105,
+              "level": 2
+            },
+            {
+              "id": 35,
+              "delay": 1105,
+              "level": 2
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 106.22169741697417,
+              "y": 199.22314795310467,
+              "r": 14.232652726527265
+            },
+            {
+              "x": 137.1622468224682,
+              "y": 185.91871170874222,
+              "r": 13.304436244362442
+            },
+            {
+              "x": 168.10279622796227,
+              "y": 132.3281081243315,
+              "r": 13.304436244362442
+            },
+            {
+              "x": 199.0433456334563,
+              "y": 78.73750453992078,
+              "r": 13.304436244362442
+            },
+            {
+              "x": 168.10279622796227,
+              "y": 185.91871170874222,
+              "r": 13.304436244362442
+            },
+            {
+              "x": 152.63252152521525,
+              "y": 212.71401350094757,
+              "r": 13.304436244362442
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 1.1805384720513878,
+              "y": 14.53315933442775,
+              "r": 1.1793904605712724
+            },
+            {
+              "x": 3.7444307776411097,
+              "y": 13.43068564302417,
+              "r": 1.1024736914035806
+            },
+            {
+              "x": 6.308323083230832,
+              "y": 8.989893904607861,
+              "r": 1.1024736914035806
+            },
+            {
+              "x": 8.872215388820555,
+              "y": 4.549102166191552,
+              "r": 1.1024736914035806
+            },
+            {
+              "x": 6.308323083230832,
+              "y": 13.43068564302417,
+              "r": 1.1024736914035806
+            },
+            {
+              "x": 5.026376930435971,
+              "y": 15.651081512232325,
+              "r": 1.1024736914035806
+            }
+          ]
+        }
+      ],
+      "draws": [
+        25
+      ]
+    },
+    {
+      "game": "jelly",
+      "reduced": false,
+      "painted": 74,
+      "pointerEvents": "none",
+      "box": {
+        "width": 403.125,
+        "height": 348.75
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 3,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "jelly": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "jelly",
+            "bursts": [
+              {
+                "phase": "jellyPour",
+                "number": 7,
+                "age": 78.49999999999272,
+                "duration": 620,
+                "anchor": {
+                  "id": 0,
+                  "delay": 0,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "jellyPour",
+                "number": 7,
+                "age": -101.50000000000728,
+                "duration": 620,
+                "anchor": {
+                  "id": 1,
+                  "delay": 180,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "jellyPour",
+                "number": 7,
+                "age": -101.50000000000728,
+                "duration": 620,
+                "anchor": {
+                  "id": 5,
+                  "delay": 180,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "jelly",
+            "phase": "jellyPour",
+            "number": 7,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 0,
+                "delay": 0,
+                "level": 1
+              },
+              {
+                "id": 1,
+                "delay": 180,
+                "level": 1
+              },
+              {
+                "id": 5,
+                "delay": 180,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 193.32197997260272,
+                "y": 92.51137397260273,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 240.06629298630133,
+                "y": 92.51137397260273,
+                "r": 20.5674977260274
+              },
+              {
+                "x": 193.32197997260272,
+                "y": 139.25568698630138,
+                "r": 20.5674977260274
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 4.410958904109589,
+                "y": 4.410958904109589,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 9.205479452054794,
+                "y": 4.410958904109589,
+                "r": 2.1095890410958904
+              },
+              {
+                "x": 4.410958904109589,
+                "y": 9.205479452054794,
+                "r": 2.1095890410958904
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "jelly",
+          "phase": "jellyPour",
+          "number": 7,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 0,
+              "delay": 0,
+              "level": 1
+            },
+            {
+              "id": 1,
+              "delay": 180,
+              "level": 1
+            },
+            {
+              "id": 5,
+              "delay": 180,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 193.32197997260272,
+              "y": 92.51137397260273,
+              "r": 20.5674977260274
+            },
+            {
+              "x": 240.06629298630133,
+              "y": 92.51137397260273,
+              "r": 20.5674977260274
+            },
+            {
+              "x": 193.32197997260272,
+              "y": 139.25568698630138,
+              "r": 20.5674977260274
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 4.410958904109589,
+              "y": 4.410958904109589,
+              "r": 2.1095890410958904
+            },
+            {
+              "x": 9.205479452054794,
+              "y": 4.410958904109589,
+              "r": 2.1095890410958904
+            },
+            {
+              "x": 4.410958904109589,
+              "y": 9.205479452054794,
+              "r": 2.1095890410958904
+            }
+          ]
+        }
+      ],
+      "draws": [
+        7
+      ]
+    },
+    {
+      "game": "stick",
+      "reduced": false,
+      "painted": 53,
+      "pointerEvents": "none",
+      "box": {
+        "width": 275.625,
+        "height": 275.625
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "stick": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "stick",
+            "bursts": [
+              {
+                "phase": "flipping",
+                "number": 6,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "id": 3,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "stick",
+            "phase": "flipping",
+            "number": 6,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 3,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 130.977,
+                "y": 34.839,
+                "r": 14.74116
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 12.474,
+                "y": 3.318,
+                "r": 1.40392
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "stick",
+          "phase": "flipping",
+          "number": 6,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 3,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 130.977,
+              "y": 34.839,
+              "r": 14.74116
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 12.474,
+              "y": 3.318,
+              "r": 1.40392
+            }
+          ]
+        }
+      ],
+      "draws": [
+        6
+      ]
+    },
+    {
+      "game": "castella",
+      "reduced": false,
+      "painted": 51,
+      "pointerEvents": "none",
+      "box": {
+        "width": 312.626953125,
+        "height": 280.78125
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 3,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "castella": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "castella",
+            "bursts": [
+              {
+                "phase": "settled",
+                "number": 8,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "id": 0,
+                  "delay": 0,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "settled",
+                "number": 8,
+                "age": -180,
+                "duration": 620,
+                "anchor": {
+                  "id": 1,
+                  "delay": 180,
+                  "level": 1
+                }
+              },
+              {
+                "phase": "settled",
+                "number": 8,
+                "age": -180,
+                "duration": 620,
+                "anchor": {
+                  "id": 6,
+                  "delay": 180,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "castella",
+            "phase": "settled",
+            "number": 8,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 0,
+                "delay": 0,
+                "level": 1
+              },
+              {
+                "id": 1,
+                "delay": 180,
+                "level": 1
+              },
+              {
+                "id": 6,
+                "delay": 180,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 166.5,
+                "y": 150,
+                "r": 14.974304068522484
+              },
+              {
+                "x": 148.67344753747324,
+                "y": 119.12350541111155,
+                "r": 14.974304068522484
+              },
+              {
+                "x": 184.32655246252676,
+                "y": 119.12350541111155,
+                "r": 14.974304068522484
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 14,
+                "y": 14,
+                "r": 1.259100642398287
+              },
+              {
+                "x": 12.501070663811563,
+                "y": 11.403778232766136,
+                "r": 1.259100642398287
+              },
+              {
+                "x": 15.498929336188437,
+                "y": 11.403778232766136,
+                "r": 1.259100642398287
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "castella",
+          "phase": "settled",
+          "number": 8,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 0,
+              "delay": 0,
+              "level": 1
+            },
+            {
+              "id": 1,
+              "delay": 180,
+              "level": 1
+            },
+            {
+              "id": 6,
+              "delay": 180,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 166.5,
+              "y": 150,
+              "r": 14.974304068522484
+            },
+            {
+              "x": 148.67344753747324,
+              "y": 119.12350541111155,
+              "r": 14.974304068522484
+            },
+            {
+              "x": 184.32655246252676,
+              "y": 119.12350541111155,
+              "r": 14.974304068522484
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 14,
+              "y": 14,
+              "r": 1.259100642398287
+            },
+            {
+              "x": 12.501070663811563,
+              "y": 11.403778232766136,
+              "r": 1.259100642398287
+            },
+            {
+              "x": 15.498929336188437,
+              "y": 11.403778232766136,
+              "r": 1.259100642398287
+            }
+          ]
+        }
+      ],
+      "draws": [
+        8
+      ]
+    },
+    {
+      "game": "dango",
+      "reduced": false,
+      "painted": 26,
+      "pointerEvents": "none",
+      "box": {
+        "width": 403.125,
+        "height": 348.75
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": false,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 8,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "dango": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "dango",
+            "bursts": [
+              {
+                "phase": "settled",
+                "number": 9,
+                "age": 0,
+                "duration": 620,
+                "anchor": {
+                  "id": 1,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "dango",
+            "phase": "settled",
+            "number": 9,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 1,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 200.30395208479342,
+                "y": 204.93607397039818,
+                "r": 13.226443123685929
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 12.169934640522875,
+                "y": 6.463883830845006,
+                "r": 1.6470588235294117
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "dango",
+          "phase": "settled",
+          "number": 9,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 1,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 200.30395208479342,
+              "y": 204.93607397039818,
+              "r": 13.226443123685929
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 12.169934640522875,
+              "y": 6.463883830845006,
+              "r": 1.6470588235294117
+            }
+          ]
+        }
+      ],
+      "draws": [
+        9
+      ]
+    },
+    {
+      "game": "dango",
+      "reduced": true,
+      "painted": 21,
+      "pointerEvents": "none",
+      "box": {
+        "width": 349.375,
+        "height": 302.25
+      },
+      "diagnostics": {
+        "version": 276,
+        "attached": [
+          "cookie",
+          "choco",
+          "candy",
+          "gelato",
+          "winery",
+          "popcorn",
+          "jelly",
+          "stick",
+          "castella",
+          "dango"
+        ],
+        "reducedMotion": true,
+        "received": 1,
+        "suppressed": 0,
+        "renderFrames": 1,
+        "drawnBursts": 1,
+        "maxQueued": 1,
+        "maxMainParticles": 0,
+        "maxMiniParticles": 0,
+        "errors": 0,
+        "eventCounts": {
+          "dango": 1
+        },
+        "limits": {
+          "queuedPerGame": 24,
+          "mainBursts": 8,
+          "miniBursts": 4,
+          "mainParticles": 96,
+          "miniParticles": 16
+        },
+        "active": [
+          {
+            "game": "dango",
+            "bursts": [
+              {
+                "phase": "settled",
+                "number": 3,
+                "age": 0,
+                "duration": 300,
+                "anchor": {
+                  "id": 1,
+                  "delay": 0,
+                  "level": 1
+                }
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "game": "dango",
+            "phase": "settled",
+            "number": 3,
+            "level": 1,
+            "anchors": [
+              {
+                "id": 1,
+                "delay": 0,
+                "level": 1
+              }
+            ],
+            "mainPoints": [
+              {
+                "x": 200.30395208479342,
+                "y": 204.93607397039818,
+                "r": 13.226443123685929
+              }
+            ],
+            "miniPoints": [
+              {
+                "x": 12.169934640522875,
+                "y": 6.463883830845006,
+                "r": 1.6470588235294117
+              }
+            ]
+          }
+        ]
+      },
+      "history": [
+        {
+          "game": "dango",
+          "phase": "settled",
+          "number": 3,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 1,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 200.30395208479342,
+              "y": 204.93607397039818,
+              "r": 13.226443123685929
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 12.169934640522875,
+              "y": 6.463883830845006,
+              "r": 1.6470588235294117
+            }
+          ]
+        }
+      ],
+      "draws": [
+        3
+      ]
+    }
+  ],
+  "payoutFits": [
+    {
+      "label": "desktop BET3000",
+      "rows": [
+        {
+          "value": "3000",
+          "left": 799.2054443359375,
+          "right": 827.1119384765625,
+          "bayLeft": 797.5068359375,
+          "bayRight": 828.7958984375,
+          "scale": "scaleX(0.6522)"
+        },
+        {
+          "value": "9000",
+          "left": 837.0570068359375,
+          "right": 864.9635009765625,
+          "bayLeft": 835.3583984375,
+          "bayRight": 866.6474609375,
+          "scale": "scaleX(0.6522)"
+        },
+        {
+          "value": "15000",
+          "left": 799.0850830078125,
+          "right": 827.2323608398438,
+          "bayLeft": 797.5068359375,
+          "bayRight": 828.7958984375,
+          "scale": "scaleX(0.5263)"
+        },
+        {
+          "value": "30000",
+          "left": 836.9366455078125,
+          "right": 865.0839233398438,
+          "bayLeft": 835.3583984375,
+          "bayRight": 866.6474609375,
+          "scale": "scaleX(0.5263)"
+        },
+        {
+          "value": "300000WIN",
+          "left": 830.154296875,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.4605)"
+        },
+        {
+          "value": "25500WIN",
+          "left": 830.1004028320312,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5147)"
+        },
+        {
+          "value": "19200WIN",
+          "left": 830.1004028320312,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5147)"
+        },
+        {
+          "value": "12900WIN",
+          "left": 830.1004028320312,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5147)"
+        },
+        {
+          "value": "10200WIN",
+          "left": 830.1004028320312,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5147)"
+        },
+        {
+          "value": "7800WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "6300WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "5100WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "3900WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "2700WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "2100WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "1500WIN",
+          "left": 830.0270385742188,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.5833)"
+        },
+        {
+          "value": "900WIN",
+          "left": 829.9359130859375,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.6731)"
+        },
+        {
+          "value": "600WIN",
+          "left": 829.9359130859375,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.6731)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 830.5299072265625,
+          "right": 862.8974609375,
+          "bayLeft": 827.1552734375,
+          "bayRight": 862.8974609375,
+          "scale": "scaleX(0.9459)"
+        },
+        {
+          "value": "0WIN",
+          "left": 836.5609130859375,
+          "right": 863.8349609375,
+          "bayLeft": 834.0693359375,
+          "bayRight": 863.8349609375,
+          "scale": "scaleX(0.4328)"
+        }
+      ]
+    },
+    {
+      "label": "mobile BET300000",
+      "rows": [
+        {
+          "value": "300000",
+          "left": 285.91510009765625,
+          "right": 317.74700927734375,
+          "bayLeft": 284.8828125,
+          "bayRight": 318.7666015625,
+          "scale": "scaleX(0.8125)"
+        },
+        {
+          "value": "900000",
+          "left": 325.48638916015625,
+          "right": 357.31829833984375,
+          "bayLeft": 324.4541015625,
+          "bayRight": 358.3505859375,
+          "scale": "scaleX(0.8125)"
+        },
+        {
+          "value": "1500000",
+          "left": 285.917236328125,
+          "right": 317.744873046875,
+          "bayLeft": 284.8828125,
+          "bayRight": 318.7666015625,
+          "scale": "scaleX(0.6964)"
+        },
+        {
+          "value": "3000000",
+          "left": 325.488525390625,
+          "right": 357.316162109375,
+          "bayLeft": 324.4541015625,
+          "bayRight": 358.3505859375,
+          "scale": "scaleX(0.6964)"
+        },
+        {
+          "value": "30000000WIN",
+          "left": 318.7022399902344,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.6522)"
+        },
+        {
+          "value": "2550000WIN",
+          "left": 318.664306640625,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7143)"
+        },
+        {
+          "value": "1920000WIN",
+          "left": 318.664306640625,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7143)"
+        },
+        {
+          "value": "1290000WIN",
+          "left": 318.664306640625,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7143)"
+        },
+        {
+          "value": "1020000WIN",
+          "left": 318.664306640625,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7143)"
+        },
+        {
+          "value": "780000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "630000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "510000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "390000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "270000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "210000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "150000WIN",
+          "left": 318.6070251464844,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.7895)"
+        },
+        {
+          "value": "90000WIN",
+          "left": 318.5473327636719,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.8824)"
+        },
+        {
+          "value": "60000WIN",
+          "left": 318.5473327636719,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(0.8824)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 332.8583984375,
+          "right": 355.1005859375,
+          "bayLeft": 316.265625,
+          "bayRight": 355.1005859375,
+          "scale": "scaleX(1)"
+        },
+        {
+          "value": "0WIN",
+          "left": 324.6953125,
+          "right": 355.9130859375,
+          "bayLeft": 309.2578125,
+          "bayRight": 355.9130859375,
+          "scale": "scaleX(1)"
+        }
+      ]
+    }
+  ],
+  "screens": [
+    "hit-cookie.png",
+    "hit-choco.png",
+    "hit-candy.png",
+    "hit-gelato.png",
+    "hit-winery.png",
+    "hit-popcorn.png",
+    "hit-jelly.png",
+    "hit-stick.png",
+    "hit-castella.png",
+    "hit-dango.png",
+    "hit-dango-mini.png",
+    "gelato-mobile-long-payout.png",
+    "hit-dango-reduced.png"
+  ],
+  "overlayScreens": [
+    {
+      "game": "cookie",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-cookie-overlay.png"
+    },
+    {
+      "game": "choco",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-choco-overlay.png"
+    },
+    {
+      "game": "candy",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-candy-overlay.png"
+    },
+    {
+      "game": "gelato",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-gelato-overlay.png"
+    },
+    {
+      "game": "winery",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-winery-overlay.png"
+    },
+    {
+      "game": "popcorn",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-popcorn-overlay.png"
+    },
+    {
+      "game": "jelly",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-jelly-overlay.png"
+    },
+    {
+      "game": "stick",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-stick-overlay.png"
+    },
+    {
+      "game": "castella",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-castella-overlay.png"
+    },
+    {
+      "game": "dango",
+      "mini": false,
+      "reduced": false,
+      "path": "hit-dango-overlay.png"
+    },
+    {
+      "game": "dango",
+      "mini": true,
+      "reduced": false,
+      "path": "hit-dango-mini-overlay.png"
+    },
+    {
+      "game": "dango",
+      "mini": false,
+      "reduced": true,
+      "path": "hit-dango-reduced-overlay.png"
+    }
+  ],
+  "pageErrors": [],
+  "apiRequests": [],
+  "externalRequests": [],
+  "warnings": [
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[.WebGL-0x23dc001b5400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x23dc001b5400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x23dc0eeeb000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x23dc0eeeb000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "入賞音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "ハンマー音源は合成音へ切替 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 1 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 2 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 3 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 4 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 5 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 6 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 7 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 8 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 9 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 10 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 11 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 12 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 13 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 14 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 15 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 16 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 17 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 18 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 19 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 20 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 21 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 22 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 23 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 24 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "番号音声の読み込み失敗 25 AbortError: signal is aborted without reason\n    at <anonymous>:5970:73",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)"
+  ],
+  "miniature": {
+    "painted": 118,
+    "pointerEvents": "none",
+    "box": {
+      "width": 59.3125,
+      "height": 38.1875
+    },
+    "diagnostics": {
+      "version": 276,
+      "attached": [
+        "cookie",
+        "choco",
+        "candy",
+        "gelato",
+        "winery",
+        "popcorn",
+        "jelly",
+        "stick",
+        "castella",
+        "dango"
+      ],
+      "reducedMotion": false,
+      "received": 2,
+      "suppressed": 0,
+      "renderFrames": 1,
+      "drawnBursts": 2,
+      "maxQueued": 1,
+      "maxMainParticles": 8,
+      "maxMiniParticles": 4,
+      "errors": 0,
+      "eventCounts": {
+        "gelato": 1,
+        "dango": 1
+      },
+      "limits": {
+        "queuedPerGame": 24,
+        "mainBursts": 8,
+        "miniBursts": 4,
+        "mainParticles": 96,
+        "miniParticles": 16
+      },
+      "active": [
+        {
+          "game": "gelato",
+          "bursts": [
+            {
+              "phase": "gelatoHit",
+              "number": 18,
+              "age": 0,
+              "duration": 620,
+              "anchor": {
+                "id": 16,
+                "delay": 0,
+                "level": 1
+              }
+            }
+          ]
+        },
+        {
+          "game": "dango",
+          "bursts": [
+            {
+              "phase": "settled",
+              "number": 18,
+              "age": 0,
+              "duration": 620,
+              "anchor": {
+                "id": 0,
+                "delay": 0,
+                "level": 1
+              }
+            }
+          ]
+        }
+      ],
+      "history": [
+        {
+          "game": "gelato",
+          "phase": "gelatoHit",
+          "number": 18,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 16,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 197.92264574768782,
+              "y": 260.592,
+              "r": 13.356
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 17.42715119790962,
+              "y": 19.936,
+              "r": 1.176
+            }
+          ]
+        },
+        {
+          "game": "dango",
+          "phase": "settled",
+          "number": 18,
+          "level": 1,
+          "anchors": [
+            {
+              "id": 0,
+              "delay": 0,
+              "level": 1
+            }
+          ],
+          "mainPoints": [
+            {
+              "x": 0.5,
+              "y": 73.47748103448275,
+              "r": 0.0045000000000000005
+            }
+          ],
+          "miniPoints": [
+            {
+              "x": 36.5,
+              "y": 3.57608695652174,
+              "r": 3.065217391304348
+            }
+          ]
+        }
+      ]
+    },
+    "history": [
+      {
+        "game": "dango",
+        "phase": "settled",
+        "number": 18,
+        "level": 1,
+        "anchors": [
+          {
+            "id": 0,
+            "delay": 0,
+            "level": 1
+          }
+        ],
+        "mainPoints": [
+          {
+            "x": 0.5,
+            "y": 73.47748103448275,
+            "r": 0.0045000000000000005
+          }
+        ],
+        "miniPoints": [
+          {
+            "x": 36.5,
+            "y": 3.57608695652174,
+            "r": 3.065217391304348
+          }
+        ]
+      }
+    ],
+    "draws": [
+      18
+    ]
+  }
+}

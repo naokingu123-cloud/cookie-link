@@ -1,0 +1,149 @@
+{
+  "recordedAt": "2026-11-20T07:47:29.097939+00:00",
+  "baselineCommit": "6e820baba805ea41c2875e277fbab7de81131a04",
+  "currentRuntimeCommit": "40b912f0bc33b614ea8ecec23d54adcc137eef46",
+  "method": "Read immutable Git objects for both revisions. Run each unchanged version-pin assertion verbatim in an isolated Node process with that revision loader and release; do not run the remainder of either test. No runtime or test files were edited.",
+  "finding": "Both assertions already fail at the v275 starting commit and still fail at v276. Shared loader pins both unchanged modules to v262, while these tests require each module URL to equal the overall release (275 or276).",
+  "fileIdentity": [
+    {
+      "path": "tests/stations-highlight-v239.mjs",
+      "identical": true,
+      "baselineSha256": "2d9de7185c054db665bd7f93df6e90edee1737b0a05551aac2e44162e85ced56",
+      "currentSha256": "2d9de7185c054db665bd7f93df6e90edee1737b0a05551aac2e44162e85ced56"
+    },
+    {
+      "path": "tests/roulette-hd60-v234.mjs",
+      "identical": true,
+      "baselineSha256": "268d72984708e33511903f4b523e98d97c9b9863e38ab4b3490cc4ea017da592",
+      "currentSha256": "268d72984708e33511903f4b523e98d97c9b9863e38ab4b3490cc4ea017da592"
+    },
+    {
+      "path": "assets/shared-machine-v176.js",
+      "identical": true,
+      "baselineSha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693",
+      "currentSha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693"
+    },
+    {
+      "path": "assets/stations-reach-host-v239.js",
+      "identical": true,
+      "baselineSha256": "c16486ca44cf6c03fb81e6c08ab0043ed5ee9ef74c1410bbf821a333331415b0",
+      "currentSha256": "c16486ca44cf6c03fb81e6c08ab0043ed5ee9ef74c1410bbf821a333331415b0"
+    },
+    {
+      "path": "assets/stations-v235.js",
+      "identical": true,
+      "baselineSha256": "cde2297aeeb22c5d95570b9380d57e0b302e71d35bfe4edd3ac553e35c4e811a",
+      "currentSha256": "cde2297aeeb22c5d95570b9380d57e0b302e71d35bfe4edd3ac553e35c4e811a"
+    },
+    {
+      "path": "server-stations-v235.mjs",
+      "identical": true,
+      "baselineSha256": "a7bb9dcacb23b4377b6c8fc86db6e35087c9a403e82bb15135053871b98bfce0",
+      "currentSha256": "a7bb9dcacb23b4377b6c8fc86db6e35087c9a403e82bb15135053871b98bfce0"
+    },
+    {
+      "path": "tests/stations-view-fixture-v236.mjs",
+      "identical": true,
+      "baselineSha256": "f848fdd0c4bbe06e14aa794230480f1eebcc464aafc4e479c2624753c26c7d80",
+      "currentSha256": "f848fdd0c4bbe06e14aa794230480f1eebcc464aafc4e479c2624753c26c7d80"
+    },
+    {
+      "path": "assets/shared-roulette-webrtc-host-v224.js",
+      "identical": true,
+      "baselineSha256": "c4d80e0ebd602a8b8c847d6e9f8ee9c458864198014344b33db30ee783ba90ec",
+      "currentSha256": "c4d80e0ebd602a8b8c847d6e9f8ee9c458864198014344b33db30ee783ba90ec"
+    },
+    {
+      "path": "assets/shared-host-keepalive-v206.js",
+      "identical": true,
+      "baselineSha256": "d74180f3b77fb83715bf4b8ccf3a27cdf53d3c2b65588a7ce5dd9df9ecd4ab24",
+      "currentSha256": "d74180f3b77fb83715bf4b8ccf3a27cdf53d3c2b65588a7ce5dd9df9ecd4ab24"
+    },
+    {
+      "path": "tests/shared-v225-video-reconnect.mjs",
+      "identical": true,
+      "baselineSha256": "4751ea2798b7a2feaae71c59ac4de0794644fac14b3c029e2a9af6713c719486",
+      "currentSha256": "4751ea2798b7a2feaae71c59ac4de0794644fac14b3c029e2a9af6713c719486"
+    }
+  ],
+  "revisions": [
+    {
+      "commit": "6e820baba805ea41c2875e277fbab7de81131a04",
+      "version": "20261120-v275-illustrated-board-pieces",
+      "release": "275",
+      "loaderSha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693",
+      "gates": [
+        {
+          "test": "tests/stations-highlight-v239.mjs",
+          "line": 14,
+          "assertion": "assert.ok(loader.includes('stations-reach-host-v239.js?v='+release));",
+          "expectedSubstring": "stations-reach-host-v239.js?v=275",
+          "actualPinnedVersions": [
+            "262"
+          ],
+          "includesExpected": false,
+          "isolatedExactAssertion": {
+            "exitCode": 1,
+            "stdout": "",
+            "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('stations-reach-host-v239.js?v='+release))\n\n    at file:///workspace/scratch/f3087e4c2afe/qa-v276-legacy-gates/6e820baba805ea41c2875e277fbab7de81131a04/stations-reach-host-v239-assertion.mjs:3:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.22.3\n"
+          }
+        },
+        {
+          "test": "tests/roulette-hd60-v234.mjs",
+          "line": 21,
+          "assertion": "assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release));",
+          "expectedSubstring": "shared-roulette-webrtc-host-v224.js?v=275",
+          "actualPinnedVersions": [
+            "262"
+          ],
+          "includesExpected": false,
+          "isolatedExactAssertion": {
+            "exitCode": 1,
+            "stdout": "",
+            "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release))\n\n    at file:///workspace/scratch/f3087e4c2afe/qa-v276-legacy-gates/6e820baba805ea41c2875e277fbab7de81131a04/shared-roulette-webrtc-host-v224-assertion.mjs:3:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.22.3\n"
+          }
+        }
+      ]
+    },
+    {
+      "commit": "40b912f0bc33b614ea8ecec23d54adcc137eef46",
+      "version": "20261120-v276-hit-and-roulette-polish-r2",
+      "release": "276",
+      "loaderSha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693",
+      "gates": [
+        {
+          "test": "tests/stations-highlight-v239.mjs",
+          "line": 14,
+          "assertion": "assert.ok(loader.includes('stations-reach-host-v239.js?v='+release));",
+          "expectedSubstring": "stations-reach-host-v239.js?v=276",
+          "actualPinnedVersions": [
+            "262"
+          ],
+          "includesExpected": false,
+          "isolatedExactAssertion": {
+            "exitCode": 1,
+            "stdout": "",
+            "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('stations-reach-host-v239.js?v='+release))\n\n    at file:///workspace/scratch/f3087e4c2afe/qa-v276-legacy-gates/40b912f0bc33b614ea8ecec23d54adcc137eef46/stations-reach-host-v239-assertion.mjs:3:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.22.3\n"
+          }
+        },
+        {
+          "test": "tests/roulette-hd60-v234.mjs",
+          "line": 21,
+          "assertion": "assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release));",
+          "expectedSubstring": "shared-roulette-webrtc-host-v224.js?v=276",
+          "actualPinnedVersions": [
+            "262"
+          ],
+          "includesExpected": false,
+          "isolatedExactAssertion": {
+            "exitCode": 1,
+            "stdout": "",
+            "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release))\n\n    at file:///workspace/scratch/f3087e4c2afe/qa-v276-legacy-gates/40b912f0bc33b614ea8ecec23d54adcc137eef46/shared-roulette-webrtc-host-v224-assertion.mjs:3:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.22.3\n"
+          }
+        }
+      ]
+    }
+  ],
+  "scope": "Evidence proves the identical preexisting version-pin gates. It does not assert that subsequent station/video behavioral checks pass, since these failures stop execution before them.",
+  "priorEvidence": "docs/qa-v275/hd-baseline-triage.json also records this HD assertion failing at v274."
+}

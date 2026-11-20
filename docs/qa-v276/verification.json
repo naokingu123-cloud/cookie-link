@@ -1,0 +1,53 @@
+{
+  "version": "20261120-v276-hit-and-roulette-polish-r2",
+  "runtimeCommit": "40b912f0bc33b614ea8ecec23d54adcc137eef46",
+  "finalQaCommit": "16b7769b64294f59d41dd0efe87d0ff499d61b26",
+  "runs": [
+    {
+      "id": 44698770588,
+      "name": "Game HIT and roulette polish v276",
+      "headSha": "16b7769b64294f59d41dd0efe87d0ff499d61b26",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44698770588",
+      "updatedAt": "2026-11-20T08:04:20Z"
+    },
+    {
+      "id": 44697358302,
+      "name": "Illustrated game cells v275",
+      "headSha": "40b912f0bc33b614ea8ecec23d54adcc137eef46",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44697358302",
+      "updatedAt": "2026-11-20T07:50:46Z"
+    },
+    {
+      "id": 44698770106,
+      "name": "pages build and deployment",
+      "headSha": "16b7769b64294f59d41dd0efe87d0ff499d61b26",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44698770106",
+      "updatedAt": "2026-11-20T07:58:32Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14612147761,
+      "name": "game-polish-v276-hit-display",
+      "bytes": 11934627,
+      "expiresAt": "2026-11-27T08:04:14Z"
+    },
+    {
+      "id": 14611856893,
+      "name": "game-polish-v276-numerical",
+      "bytes": 355089,
+      "expiresAt": "2026-11-27T07:59:10Z"
+    }
+  ],
+  "browserScope": "Real production engines through isolated local manual controls; no server wallet or external API.",
+  "fullBrowserScreens": 13,
+  "preservedHitBitmaps": 12,
+  "publicFilesMatched": 9,
+  "windowsHostUpdated": false
+}

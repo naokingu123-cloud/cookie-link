@@ -1,0 +1,78 @@
+{
+  "version": "20261120-v276-hit-and-roulette-polish-r2",
+  "url": "https://naokingu123-cloud.github.io/cookie-link/",
+  "checks": [
+    {
+      "path": "app-version.json",
+      "status": 200,
+      "bytes": 56,
+      "sha256": "935e1946673da9982db957ad18a45cba23a181bb421684bc959e3f9e4e0dc5ea",
+      "localSha256": "935e1946673da9982db957ad18a45cba23a181bb421684bc959e3f9e4e0dc5ea",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 85230,
+      "sha256": "d66c1c7976d22e8c3256e60a39cca7acae1eede36caf9836585fc33c69606ab0",
+      "localSha256": "d66c1c7976d22e8c3256e60a39cca7acae1eede36caf9836585fc33c69606ab0",
+      "matches": true
+    },
+    {
+      "path": "assets/hit-presentation-v276.js",
+      "status": 200,
+      "bytes": 19453,
+      "sha256": "718441f9991c4963d863b017577b1f594c5f5ae58e3543335b1ee749eccec534",
+      "localSha256": "718441f9991c4963d863b017577b1f594c5f5ae58e3543335b1ee749eccec534",
+      "matches": true
+    },
+    {
+      "path": "assets/hit-presentation-v276.css",
+      "status": 200,
+      "bytes": 912,
+      "sha256": "b6c9aae71a7fcb82cc72a3438410ffba531f9c7c817ae8f7d3203e28e9c2ec57",
+      "localSha256": "b6c9aae71a7fcb82cc72a3438410ffba531f9c7c817ae8f7d3203e28e9c2ec57",
+      "matches": true
+    },
+    {
+      "path": "assets/gelato-prism-v28.css",
+      "status": 200,
+      "bytes": 75593,
+      "sha256": "705b4e5dc55003967ba3e4317947bdb5b4953c2a18bb4f2f7be36889250e6f1f",
+      "localSha256": "705b4e5dc55003967ba3e4317947bdb5b4953c2a18bb4f2f7be36889250e6f1f",
+      "matches": true
+    },
+    {
+      "path": "assets/choco-dig.js",
+      "status": 200,
+      "bytes": 731364,
+      "sha256": "4500879307fa0338cc12b5c58307f28894dcc2e3ca22cb86d0c827664c20d1df",
+      "localSha256": "4500879307fa0338cc12b5c58307f28894dcc2e3ca22cb86d0c827664c20d1df",
+      "matches": true
+    },
+    {
+      "path": "optimized/app-01.js",
+      "status": 200,
+      "bytes": 1174641,
+      "sha256": "aa8aaf6b3e0ee2cc5ba4a99caada91de848ba2ecf64f410d3b925e158df30257",
+      "localSha256": "aa8aaf6b3e0ee2cc5ba4a99caada91de848ba2ecf64f410d3b925e158df30257",
+      "matches": true
+    },
+    {
+      "path": "assets/download-assets-v255.json",
+      "status": 200,
+      "bytes": 115109,
+      "sha256": "25ba22f4fe668acbc42eba350621f149cb5ab367dfb150422ebbb50f85b64624",
+      "localSha256": "25ba22f4fe668acbc42eba350621f149cb5ab367dfb150422ebbb50f85b64624",
+      "matches": true
+    },
+    {
+      "path": "download-sw-v255.js",
+      "status": 200,
+      "bytes": 3823,
+      "sha256": "77240bb11022aaaaa563a3bab2ddc87f3d116aa4f9dc29eeceae4394421045c5",
+      "localSha256": "77240bb11022aaaaa563a3bab2ddc87f3d116aa4f9dc29eeceae4394421045c5",
+      "matches": true
+    }
+  ]
+}

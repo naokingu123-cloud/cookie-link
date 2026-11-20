@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-11-20T08:02:02.869390+00:00",
+  "version": "20261120-v276-hit-and-roulette-polish-r2",
+  "runtimeCommit": "40b912f0bc33b614ea8ecec23d54adcc137eef46",
+  "publicEntry": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v276-hit-and-roulette-polish-r2",
+  "reviewedEdition": "local",
+  "reviewUrl": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v276-hit-and-roulette-polish-r2&edition=local",
+  "screens": [
+    "public-canyon-v276.jpg",
+    "public-gelato-v276.jpg"
+  ],
+  "canyon": "Live 7-column / 12-row board reviewed with original background and illustrated cake joins.",
+  "gelato": {
+    "visibleAmountLabels": 29,
+    "amountsOutsideOwnBay": 0
+  },
+  "limitation": "This cloud browser displayed a roulette-load error. Public 2D boards were reviewed through the local manual-number controls. Real stopper motion was tested with production Cannon/PHYSICS and server recording, not a Windows machine. The external Windows host was not updated or restarted by this work."
+}

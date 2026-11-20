@@ -1,0 +1,21 @@
+{
+  "version": 276,
+  "dependency": "@napi-rs/canvas@0.1.100",
+  "materials": [
+    "choco-milk",
+    "choco-berry",
+    "choco-ivory",
+    "choco-dark"
+  ],
+  "canonicalMasks": 47,
+  "verticalPairs": 5120,
+  "horizontalPairs": 120,
+  "verticalMaxDelta": 0,
+  "horizontalCakeMaxDelta": 0,
+  "retainedFruitHorizontalDecorMaxDelta": 43,
+  "variationChecks": 4,
+  "cornerChecks": 12,
+  "legacyGemSprites": 282,
+  "sourcePixelsUnchanged": true,
+  "cachedSprites": 1392
+}

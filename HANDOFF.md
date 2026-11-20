@@ -1,12 +1,13 @@
 # v276 — HIT演出・上下オートタイル・ルーレット調整（2026-11-20）
 
-- Build: `20261120-v276-hit-and-roulette-polish-r2`。概要 `docs/game-polish-v276.md`。本記録作成時点ではローカル検査成功、ブラウザーCIと公開確認は待機中。公開完了扱いにしない。
+- Build: `20261120-v276-hit-and-roulette-polish-r2`。公開・確認済み。runtime `40b912f0bc33b614ea8ecec23d54adcc137eef46`、撮影検査のみ後続 `16b7769b64294f59d41dd0efe87d0ff499d61b26`。概要 `docs/game-polish-v276.md`、結果 `docs/qa-v276/verification.json`。公開主要9ファイルのSHA-256一致。
 - Canyon: v275画像の深いクリーム上面に合う本体範囲を指定し、上下/T/L接続を実画像で連続化。PNG・47マスク・既存キャッシュを保持。5120組の上下境界差0。`docs/canyon-autotile-v276.md`、`tests/canyon-autotile-v276.mjs`（QA依存 `@napi-rs/canvas@0.1.100`）。
 - 全10ゲームの実HITイベントへテーマ別の光・粒・波紋・反転軌跡を追加。miniも対応、動きを減らす設定では飛び散りなしの短い輪郭光。ゲームRNG不使用、復元・FREE再描画では再演しない。`assets/hit-presentation-v276.js/css`、`tests/hit-presentation-v276.mjs`。
 - Gelato: 長い配当数字を実際の枠幅に合わせて横縮小。数字の高さ・行構成・配当は保持。
 - ルーレット: 発射速度/角度/回転/発射口位置等をシード付きで各球一度だけ変化。3個120°の三角平面は保持し、低い上面と面取り・反発/摩擦・重複接触抑制で外向きへ抜けやすくした。代表接触速度維持74.4～91.8%、既HIT穴上6条件は1.70～1.90秒で空き穴へ。詳細 `docs/roulette-motion-v276.md`。番号選択・瞬間移動・補助力なし、必ず隣の番号へ入る保証なし。
 - 元背景、v275 PNG、v274枠、Sugar条件（理論9.949938%）・JP横×n・はずれ倍率非適用は維持。物理変更後の長期RTP/番号一様性は未較正。旧録画は不変。Windowsの物理ホスト/録画計算には最新ソース更新・再起動が必要（`.runtime`・`.tools`・`data`保持）。
-- 新ブラウザー検査 `tests/game-polish-v276-browser.mjs` は全10実エンジン・mini・復元・配当幅を隔離ローカル版で検査し、公開APIを遮断。最終CI/公開記録は後から追記する。
+- 新CI `44698770588` の2ジョブ成功。全10実HIT・mini・動きを減らす設定・PC/390px配当各29ラベル・物理・録画・上下接続・キャッシュ。入力前から実フレームを観察し、300msの静かなHITも保存する。画像CI `44697358302` の2ジョブとPages `44698770106` も成功。スクリーンショット13枚、保持HIT bitmap12枚、page/API/external errors0。
+- 公開ブラウザーでは3D読込不可のため番号指定でCanyon/Gelatoを確認。実接触は本番Cannon/録画で検査し、Windows実機は未更新。既存のstations/HD workflowの版番号assertionはv275でも失敗する既知の不整合（関連10ファイル同一）。`docs/qa-v276/legacy-version-gates.json` に証拠を保存し、全workflow成功とは主張しない。
 
 ---
 
