@@ -91,14 +91,14 @@ try{
  const opened=await page.evaluate(()=>({challenge:window.SweetsSugarChallengeV254?.describe()?.challenge,local:window.SweetsLocalSugarV267.describe()}));
  assert.ok(opened.challenge);assert.equal(opened.local.bankCount,0);assert.equal(opened.local.roundId,betQuote.local.roundId);assert.equal(opened.local.jpAmount,betQuote.local.jpAmount);assert.equal(opened.local.multiplier,betQuote.local.multiplier);
  await capture('local-sugar-challenge-open');
- const draws=[25,24,23,16,1,2,3,4];
+ const draws=[25,24,20,8,1,2,3,4];
  for(let i=0;i<draws.length;i++){
   const n=draws[i];
   await page.waitForFunction(n=>{const s=window.SweetsLocalDebugV258?.describe?.(),el=document.querySelector('#manual-number-grid button[data-number="'+n+'"]');return s?.phase==='playing'&&s?.drawHeld===false&&el&&!el.disabled;},n,{timeout:45000});
   await page.locator('#manual-number-grid button[data-number="'+n+'"]').click();
   await page.waitForFunction(n=>window.SweetsLocalDebugV258?.describe?.().draws.includes(n),n,{timeout:5000});
   milestone('manual-hit',{ball:i+1,number:n});
-  if(i===3){const early=await page.evaluate(()=>({local:window.SweetsLocalSugarV267.describe(),ui:window.SweetsSugarChallengeV254.describe()}));assert.equal(early.local.jpcQualified,true);assert.equal(early.local.qualifyingDrawCount,4);assert.equal(early.local.phase,'drawing');assert.equal(early.ui.challenge.jpcQualified,true);milestone('early-lucky-jpc',{ball:4,sum:88});await capture('local-sugar-early-jpc');}
+  if(i===3){const early=await page.evaluate(()=>({local:window.SweetsLocalSugarV267.describe(),ui:window.SweetsSugarChallengeV254.describe()}));assert.equal(early.local.jpcQualified,true);assert.equal(early.local.qualifyingDrawCount,4);assert.equal(early.local.phase,'drawing');assert.equal(early.ui.challenge.jpcQualified,true);milestone('early-lucky-jpc',{ball:4,sum:77});await capture('local-sugar-early-jpc');}
  }
  current=await state();assert.deepEqual(current.draws,draws);
  await page.waitForFunction(()=>['result','paying','complete'].includes(window.SweetsLocalDebugV258?.describe?.().phase),null,{timeout:150000});
