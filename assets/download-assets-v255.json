@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v275-illustrated-board-pieces",
+  "version": "20261120-v276-hit-and-roulette-polish",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 54,
-      "sha256": "b23ed604195dd6925249ede84a632ec5e010df096d34b66da0af538c99dc388e"
+      "bytes": 53,
+      "sha256": "d510f11fc942d484f695596aa461b5bc45fface62eedfa71be85bf340a20a4f5"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1138,8 +1138,8 @@
     },
     {
       "path": "assets/choco-dig.js",
-      "bytes": 729551,
-      "sha256": "88be10e6a4e652fe9282f2994b1ca762457ea8d3a732ed118bdff72cbdb99bd4"
+      "bytes": 731364,
+      "sha256": "4500879307fa0338cc12b5c58307f28894dcc2e3ca22cb86d0c827664c20d1df"
     },
     {
       "path": "assets/choco-multi-12.css",
@@ -1293,8 +1293,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4364,
-      "sha256": "19e24c44d1773ff957607db596f850c5b9f2ca380f36aef16f7b07aaa34e7721"
+      "bytes": 4363,
+      "sha256": "3a628e67c1779083ecd6d623649d4fc750918a4c2c3e8e65eb18af66e293a658"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1318,8 +1318,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3775,
-      "sha256": "1a7a3234643791c2cd2b45915fd4a7299b1eda2051fcf5a7fe03aef150ed4f24"
+      "bytes": 3774,
+      "sha256": "cb0281ce4d771410dd863975f21caf0aa729ff884cb47a49081a6e08077e35a5"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1453,13 +1453,13 @@
     },
     {
       "path": "assets/gelato-prism-v28.css",
-      "bytes": 74487,
-      "sha256": "15978d1e030af79bf3edd449b24f2887c49ae6ac0c1835f14a3f45ca09e9c637"
+      "bytes": 75313,
+      "sha256": "683de07f6d940ee14c882d20d9294d24d03bfa5cd8406f96bcce2fc7b6a29b76"
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 69693,
-      "sha256": "428ea8ecf5b14936f5935de77948898cf0287b3b92a6f821a96da737f0392806"
+      "bytes": 71340,
+      "sha256": "7465f6b4e1f1cffe498761b9a0d80299ca414245d9b3c1f354359d4c982ad545"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -1480,6 +1480,16 @@
       "path": "assets/highest-role-reach-v18.js",
       "bytes": 4347,
       "sha256": "fc0fb5c5438284efaa731d8dc099ddf27e3d6571bf67d2dab3f31be3a7034118"
+    },
+    {
+      "path": "assets/hit-presentation-v276.css",
+      "bytes": 912,
+      "sha256": "b6c9aae71a7fcb82cc72a3438410ffba531f9c7c817ae8f7d3203e28e9c2ec57"
+    },
+    {
+      "path": "assets/hit-presentation-v276.js",
+      "bytes": 19447,
+      "sha256": "41376763321bf5ce1176174988a4aca8d64c46949b89181ccc1a5c95adec368d"
     },
     {
       "path": "assets/illustrated-art-v275.js",
@@ -1513,8 +1523,8 @@
     },
     {
       "path": "assets/illustrated-boards-a-v275.js",
-      "bytes": 6624,
-      "sha256": "ac47bd72e1988c55cfba61fa13b64b3b7e02c634739b03b80d0d5efceab5bb0c"
+      "bytes": 6866,
+      "sha256": "f5bdfd14009cb552cc6f71aa466ca94d8c493729d5c469d661a5a893f090ff67"
     },
     {
       "path": "assets/illustrated-boards-b-v275.js",
@@ -1558,8 +1568,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 37916,
-      "sha256": "944b2cb6e71eb7a89567775ed69aec8791e0e3e4fe33f2443a4c7c0c2d9d75c0"
+      "bytes": 38557,
+      "sha256": "017077bc9550b58522f777df6bfce4e3d351a0fa76e9ddc22f9986e5c0bc90f7"
     },
     {
       "path": "assets/jelly.css",
@@ -1848,8 +1858,8 @@
     },
     {
       "path": "assets/popcorn-view.js",
-      "bytes": 66050,
-      "sha256": "f415d281d093f0ea4450c5ba04758e023121630149d64235332a5f9a53503a5d"
+      "bytes": 66589,
+      "sha256": "ded2b6bc49934f14939ef2d7ab085cb219c29cd1ad6d7471cc68913ddf0230c3"
     },
     {
       "path": "assets/popcorn.css",
@@ -3128,8 +3138,8 @@
     },
     {
       "path": "assets/winery-pyramid-v1.js",
-      "bytes": 50418,
-      "sha256": "506d162de39ef381fdb07d5c6e7e03406e1707797cb03d762a8dd81b989d2090"
+      "bytes": 51003,
+      "sha256": "7ad63802276ada7ee4209809727e47fed055fac2d87c842ac950144a17d20a1d"
     },
     {
       "path": "assets/winery-pyramid-validation-v1.json",
@@ -3168,8 +3178,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85093,
-      "sha256": "938950be60db9c18061646fae7781676450772b0aebce759be70f6536d7af16b"
+      "bytes": 85219,
+      "sha256": "72e69e2b1e92017c8874db069fbb635fb24eeff0438ac2127b34fd3a9240b861"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3183,8 +3193,8 @@
     },
     {
       "path": "optimized/app-01.js",
-      "bytes": 1172007,
-      "sha256": "005ac6bb0d54865b1e364c28f03544e7ac3069f1aa1ddd1147bb4d4e5c358d34"
+      "bytes": 1174641,
+      "sha256": "aa8aaf6b3e0ee2cc5ba4a99caada91de848ba2ecf64f410d3b925e158df30257"
     },
     {
       "path": "optimized/cookie-20261031.css",
@@ -3407,5 +3417,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 172441625
+  "totalBytes": 172471034
 }

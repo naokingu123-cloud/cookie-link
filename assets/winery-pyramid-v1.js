@@ -914,7 +914,14 @@ const result0=renderRoundResult;renderRoundResult=function(a){
 };
 window.addEventListener('resize',()=>{miniKey='';queueFrame();},{passive:true});
 document.addEventListener('visibilitychange',()=>{stamp=0;if(!document.hidden)queueFrame();});
-window.WineryPyramid={installed:true,version:78,engine,core:K,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
+// Match the actual cup/number transforms, including miniature cropping.
+function hitGeometryV276(width,height,mini,anchor){
+ if(!K.CELLS[anchor.id])return null;
+ const p=premiumPos(anchor.id),x=748+(p.x-748)*WP_MAIN_X_SPREAD,y=p.y+(anchor.type==='bowl'?36:99)*WP_MAIN_CUP_ZOOM;
+ if(mini)return {x:(x+465-premiumPos(0).x)/930*width,y:(y+465-(premiumPos(0).y+premiumPos(20).y+116*WP_MAIN_CUP_ZOOM)/2)/930*height,r:29*WP_MAIN_CUP_ZOOM*Math.min(width,height)/930};
+ return {x:x/DRAW_W*width,y:y/DRAW_H*height,r:29*WP_MAIN_CUP_ZOOM*Math.min(width/DRAW_W,height/DRAW_H)};
+}
+window.WineryPyramid={installed:true,version:78,engine,core:K,hitGeometryV276,draw:()=>{miniKey='';uiKey='';queueFrame();},get state(){return {pattern:K.NAMES[engine.pattern],processed:engine.processed,power:engine.power,full:engine.fullCount,mix:engine.mixCount,multiplier:engine.totalHundredths/100,wasted:engine.wasted,glasses:K.clone(engine.glasses)};}};
 select(mount);queueFrame();scheduleUI(app);
 console.info('[Winery Pyramid v62] selected sharp strawberry-orange river background; live cups, dynamic juice and payouts retained');
 })();

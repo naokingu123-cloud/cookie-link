@@ -1159,5 +1159,12 @@
     if(sidebar)side(ctx,s,sv,...sidebar,tr,elapsed,opt.sugarIcon);
     ctx.restore();
   }
-  window.PopcornView={draw,duration,waveAt,refilling,pickPort,lessonGuideHit,shownPopped,assetsReady:Promise.all(loading),get artVersion(){return artVersion;}};
+  // Project the live kernel grid and fuse plaques through the native layout.
+  function hitGeometryV276(width,height,mini,anchor){
+    const p=anchor.type==='port'?badgePositions[anchor.id]:K.cells[anchor.id];if(!p)return null;
+    const {H,b}=layout(width,height,mini),scale=height/H;
+    return {x:(b.x+p.x*b.k)*scale,y:(b.y+p.y*b.k)*scale,r:b.k*scale*(anchor.type==='port'?.46:.43)};
+  }
+  const hitSequenceV276=trace=>(trace?.waves||[]).map((ids,index)=>({ids:ids.slice(),index,at:LIGHT+index*WAVE}));
+  window.PopcornView={draw,duration,waveAt,refilling,pickPort,lessonGuideHit,shownPopped,hitGeometryV276,hitSequenceV276,assetsReady:Promise.all(loading),get artVersion(){return artVersion;}};
 })();

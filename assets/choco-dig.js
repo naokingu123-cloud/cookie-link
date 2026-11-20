@@ -462,31 +462,51 @@ function chocoCanonicalMask(mask){let m=mask&15;for(const [a,b,d] of [[8,1,16],[
 function chocoTileMask(grid,r,c){const color=grid[r]?.[c]?.color;if(color==null||color<0)return 0;let mask=0;for(const [dy,dx,bit]of [[-1,0,1],[0,1,2],[1,0,4],[0,-1,8],[-1,-1,16],[-1,1,32],[1,1,64],[1,-1,128]])if(grid[r+dy]?.[c+dx]?.color===color&&(color!==4||grid[r+dy][c+dx].fruitIndex===grid[r][c].fruitIndex))mask|=bit;return mask;}
 function chocoFruitSprite(mask){
  const key='fruit/'+mask;if(chocoSprites.has(key))return chocoSprites.get(key);const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),base=chocoAutoSprite(2,mask,0);if(!base)return null;x.drawImage(base,0,0);x.globalCompositeOperation='source-atop';x.globalAlpha=.48;
+ const shared=chocoCakeImages[2]?.chocoAutotileBodyV276&&(mask&5)?x.getImageData(0,0,96,96):null;
  const rainbow=['#ef87a6','#f6ba74','#f8e4a3','#9ad5ae','#9acfe8','#baa5df'];for(let i=0;i<6;i++){x.fillStyle=rainbow[i];x.fillRect(0,i*16,96,16);x.fillStyle='#fff4d080';x.fillRect(0,i*16+12,96,4);}
  x.globalAlpha=1;const glow=x.createLinearGradient(0,0,96,96);glow.addColorStop(0,'#fff7d966');glow.addColorStop(.45,'#ffffff00');glow.addColorStop(1,'#803e4726');x.fillStyle=glow;x.fillRect(0,0,96,96);
  if(!(mask&1)){x.fillStyle='#fff9e9';x.beginPath();x.moveTo(0,0);x.lineTo(96,0);x.lineTo(96,20);for(let i=96;i>0;i-=16)x.quadraticCurveTo(i-8,38,i-16,20);x.closePath();x.fill();for(let i=0;i<3;i++){const cx=16+i*32;x.fillStyle=['#e94d69','#f5b93e','#79b260'][i];x.beginPath();x.ellipse(cx,12,10,8,0,0,Math.PI*2);x.fill();x.fillStyle='#fff9d9';x.beginPath();x.ellipse(cx-3,9,2,3,.5,0,Math.PI*2);x.fill();x.fillStyle='#43854d';x.fillRect(cx-2,1,4,5);}}
  if(!(mask&1)){x.fillStyle='#ffe19a';for(let k=5;k<96;k+=12){x.beginPath();x.arc(k,31,2,0,Math.PI*2);x.fill();}}
  x.strokeStyle='#ffe9a8';x.lineWidth=3;for(const [bit,a,b,c,d]of [[1,0,1,96,1],[2,95,0,95,96],[4,0,95,96,95],[8,1,0,1,96]])if(!(mask&bit)){x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke();}
+ if(shared){
+  // The rainbow glaze must meet the same painted cake at a vertical join.
+  // Fade only its decoration into the shared texture, never draw a seam strip.
+  const pixels=x.getImageData(0,0,96,96),d=pixels.data,b=shared.data,smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);};
+  for(let y=0;y<96;y++){const blend=Math.min(mask&1?smooth(y/18):1,mask&4?smooth((95-y)/18):1);if(blend===1)continue;for(let px=0;px<96;px++){const i=(y*96+px)*4;for(let k=0;k<4;k++)d[i+k]=b[i+k]+(d[i+k]-b[i+k])*blend;}}
+  x.putImageData(pixels,0,0);
+ }
  chocoSprites.set(key,cv);return cv;
 }
 function chocoAutoSprite(color,mask,variant=0,kind='fruit'){
  if(color===4&&CHOCO_BONUS_GEMS.includes(kind))color=5+CHOCO_BONUS_GEMS.indexOf(kind);
  variant=((variant%6)+6)%6;if(color===4)return chocoFruitSprite(chocoCanonicalMask(mask));
  mask=chocoCanonicalMask(mask);const image=color>=5?chocoGemCakeImages[color-5]:chocoCakeImages[color];if(!image?.complete||!image.naturalWidth)return null;const key=color+'/'+mask+'/'+variant;if(chocoSprites.has(key))return chocoSprites.get(key);
+ const material=image.chocoAutotileBodyV276;
  let src=chocoSourcePixels.get(image);if(!src){const sample=document.createElement('canvas');sample.width=sample.height=256;const sx=sample.getContext('2d',{willReadFrequently:true});sx.drawImage(image,0,0,256,256);src=sx.getImageData(0,0,256,256).data;chocoSourcePixels.set(image,src);}
  const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),pixels=x.createImageData(96,96),d=pixels.data;
  const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);},read=(u,v,k)=>src[(Math.min(255,Math.max(0,Math.round(v*255)))*256+Math.min(255,Math.max(0,Math.round(u*255))))*4+k];
  for(let y=0;y<96;y++)for(let px=0;px<96;px++){
   const u=px/95,v=y/95,i=(y*96+px)*4;
   // Keep the original sculpted face, highlights, bevels and real painted topping.
-  const sourceX=.055+.89*u,sourceY=Math.min((mask&4)?.80:.945,(mask&1)?Math.max(.34,.055+.89*v):v<.32?.055+v/.32*.255:.31+(v-.32)/.68*.635);
-  const joinX=color>=5?Math.max(mask&8?1-smooth(px/9):0,mask&2?1-smooth((95-px)/9):0):Math.max(mask&8?1-smooth((px-14)/14):0,mask&2?1-smooth((81-px)/14):0),joinY=Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
+  const sourceX=.055+.89*u,faceY=v<.32?.055+v/.32*.255:.31+(v-.32)/.68*.635;
+  // The v275 painted frosting reaches below the legacy .34 cut. A connected
+  // upper neighbour exposes the actual sponge, retaining its pores and layers.
+  const sourceY=material?Math.min(mask&4?material.bottom:.945,mask&1?material.top+(material.bottom-material.top)*v:faceY):Math.min((mask&4)?.80:.945,(mask&1)?Math.max(.34,.055+.89*v):faceY);
+  const topJoin=material&&(mask&1)?1-smooth(y/18):0,bottomJoin=material&&(mask&4)?1-smooth((95-y)/18):0;
+  // At a T/L junction, both touching tiles must use the same side profile.
+  // A side joins at the shared edge only when that diagonal is also filled.
+  const leftJoin=(mask&8)?(1-topJoin*Number(!(mask&16)))*(1-bottomJoin*Number(!(mask&128))):0,rightJoin=(mask&2)?(1-topJoin*Number(!(mask&32)))*(1-bottomJoin*Number(!(mask&64))):0;
+  const joinX=color>=5?Math.max(leftJoin*(1-smooth(px/9)),rightJoin*(1-smooth((95-px)/9))):Math.max(leftJoin*(1-smooth((px-14)/14)),rightJoin*(1-smooth((81-px)/14))),joinY=material?Math.max(topJoin,bottomJoin):Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
   const fade=Math.sin(Math.PI*u)**2*Math.sin(Math.PI*v)**2,grain=Math.sin(px*12.9898+y*78.233+variant*37.719)*43758.5453,sheen=Math.sin(u*5+variant*1.7)*Math.cos(v*7-variant*.9),variation=fade*((variant-2.5)*1.4+sheen*4+(grain-Math.floor(grain)-.5)*3);
   for(let k=0;k<3;k++){
    let value=read(sourceX,sourceY,k);
    // Connected sides share the same material profile, with no baked-in side rim.
    value=value*(1-joinX)+read(color>=5?.07:.24,sourceY,k)*joinX;
-   const edgeU=.055+.89*u,body=read(edgeU,.46,k),sideBody=read(.24,.46,k),rim=1-smooth(Math.min(u,1-u)/.24),vertical=sideBody+(body-sideBody)*rim*(1-joinX);
+   const edgeU=.055+.89*u,seamY=material?material.seam+material.wave*Math.sin(v*Math.PI*2):.46,body=read(edgeU,seamY,k),sideBody=read(.24,seamY,k),rim=1-smooth(Math.min(u,1-u)/.24);
+   // Both ends use one continuous image profile, with matching direction and
+   // edge pixels. Keep the texture across the full width instead of stretching
+   // one sampled colour over the middle of the connected stratum.
+   const vertical=material?body*(1-joinX)+sideBody*joinX:sideBody+(body-sideBody)*rim*(1-joinX);
    value=value*(1-joinY)+vertical*joinY;
    if(color===3)value*=value>175?.66:[.48,.50,.57][k];
    // Hand-finished variants fade to identical edge pixels, preserving every autotile join.

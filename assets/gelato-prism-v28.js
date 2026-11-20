@@ -515,6 +515,28 @@ try{
        '<strong class="gold-number gp-highest-win">0WIN</strong></div>'+
   '</div>';
  scene.appendChild(collectorPanel);
+ // Keep the tall gold type inside each real payout bay, including long BETs.
+ // Only the amount face scales; row geometry, labels and rewards stay fixed.
+ let prismPayoutFrame=0;
+ function queuePrismPayoutFit(){
+   if(prismPayoutFrame)return;
+   prismPayoutFrame=requestAnimationFrame(()=>{
+     prismPayoutFrame=0;
+     if(collectorPanel.hidden||!collectorPanel.clientWidth)return;
+     for(const face of collectorPanel.querySelectorAll('.gp-fit-amount')){
+       const width=Math.max(1,face.parentElement.clientWidth-3);
+       const natural=face.offsetWidth;
+       if(natural)face.style.transform='scaleX('+Math.min(1,width/natural).toFixed(4)+')';
+     }
+   });
+ }
+ function setPrismPayout(label,value){
+   let face=label.querySelector('.gp-fit-amount');
+   if(!face){label.textContent='';face=document.createElement('span');face.className='gp-fit-amount';label.appendChild(face);}
+   if(face.textContent!==value){face.textContent=value;queuePrismPayoutFit();}
+ }
+ if(typeof ResizeObserver==='function')new ResizeObserver(queuePrismPayoutFit).observe(collectorPanel);
+ document.fonts?.ready.then(queuePrismPayoutFit);
  // For 10 panels: 24,13,12,11,10,9,8.  For 22: 24,22,21,20,19,18,17.
  function payoutWindowFor(n){
    const top=Math.max(5,Math.min(22,Math.floor(n)+3));
@@ -575,16 +597,16 @@ try{
        piece.style.setProperty('--gp-gem-color',color);
        piece.style.setProperty('--gp-crystal-pos',grade*25+'%');
      }
-     row.querySelector('.gp-win-number').textContent=
-       num(medalWin(bet,COLLECTOR_MULT[grade]*100));
+     setPrismPayout(row.querySelector('.gp-win-number'),
+       num(medalWin(bet,COLLECTOR_MULT[grade]*100)));
      row.classList.toggle('gp-complete',count===4);
      if(count===4)best.push({mult:COLLECTOR_MULT[grade],name:GRADE_NAMES[grade]+'4個'});
    }
    const highest=best.sort((a,b)=>b.mult-a.mult)[0];
    collectorPanel.querySelector('.gp-highest-name').textContent=
      e.filled.size===24?'全獲り':highest.name;
-   collectorPanel.querySelector('.gp-highest-win').textContent=
-     num(medalWin(bet,Math.round(highest.mult*100)))+'WIN';
+   setPrismPayout(collectorPanel.querySelector('.gp-highest-win'),
+     num(medalWin(bet,Math.round(highest.mult*100)))+'WIN');
    const sugarHeader=collectorPanel.querySelector('.gp-sugar-header');
    sugarHeader.textContent=e.sugarAwarded?'✦ GET!':'✦ '+e.sugarTarget+'枚';
    sugarHeader.classList.toggle('is-get',e.sugarAwarded);
@@ -593,7 +615,7 @@ try{
      const n=+row.dataset.panels;
      const payout=num(medalWin(bet,Math.round(countPaytable[n]*100)))+'WIN';
      const label=row.querySelector('.gp-pay-win');
-     if(label.textContent!==payout)label.textContent=payout;
+     setPrismPayout(label,payout);
      // The current-highlight is owned by paintPayoutStep(), so it advances
      // through 0,1,2,... rather than jumping straight to the final count.
      const tag=row.querySelector('.gp-sugar-status');
@@ -1188,7 +1210,9 @@ try{
      if(selected)cookieOddsCabinet.style.setProperty('display','none','important');
      else cookieOddsCabinet.style.removeProperty('display');
    }
+   const newlyVisible=selected&&collectorPanel.hidden;
    collectorPanel.hidden=!selected;
+   if(newlyVisible)queuePrismPayoutFit();
  }
  const nativeSelect=select;
  select=function(i){const result=nativeSelect(i);syncGelatoOdds();return result;};
@@ -1225,6 +1249,12 @@ try{
  window.GelatoPrism={
    get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
+   // Read-only projection shared with the event-driven HIT overlay.
+   hitGeometryV276(width,height,mini,anchor){
+     const face=anchor.type==='face'?FACES[anchor.id]:null;
+     const point=face?{x:face.nodes.reduce((v,i)=>v+rasterCoords[i].x,0)/3,y:face.nodes.reduce((v,i)=>v+rasterCoords[i].y,0)/3}:rasterCoords[anchor.id];
+     return point?{x:point.x/500*width,y:point.y/500*height,r:Math.min(width,height)*(face?31:21)/500}:null;
+   },
    get state(){return {filled:e.filled.size,hits:e.hits.size,processed:e.processed,phase:e.phase,
      pattern:e.pattern?.id,counts:e.collectorCounts.slice(),sugarTarget:e.sugarTarget,sugarAwarded:e.sugarAwarded,countMult:e.countMult,
      collectorMult:e.collectorMult,totalHundredths:e.totalHundredths,bonus:e.allComplete};},

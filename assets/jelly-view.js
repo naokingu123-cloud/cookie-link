@@ -760,5 +760,14 @@ function draw(c,state,options){
  }
  c.restore();
 }
-window.JellyView=Object.freeze({draw,duration,oddsPopupMs,oddsRevealAt:waveStart,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
+// Use the same mold inset and board/payout split as draw().
+function hitGeometryV276(width,height,mini,anchor){
+ if(!(anchor.id>=0&&anchor.id<25))return null;
+ let side,x,y;
+ if(mini){side=Math.min(width,height);x=(width-side)/2;y=(height-side)/2;}
+ else{const pad=Math.max(2,Math.min(width,height)*.018),gap=Math.max(4,Math.min(width,height)*.023);side=Math.min(height-pad*2,(width-gap-pad*2)*.669);const pw=Math.min(width-side-gap-2*pad,side*.66);x=(width-side-pw-gap)/2+pw+gap;y=(height-side)/2;}
+ const [cx,cy]=center(anchor.id),scale=side/moldSize;
+ return {x:x+(moldRim+cx)*scale,y:y+(moldRim+cy)*scale,r:44*scale};
+}
+window.JellyView=Object.freeze({draw,duration,hitGeometryV276,oddsPopupMs,oddsRevealAt:waveStart,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
 })();

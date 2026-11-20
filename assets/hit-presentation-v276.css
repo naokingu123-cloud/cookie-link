@@ -1,0 +1,7 @@
+/* Light lives over the board, never over its controls or pointer targets. */
+.hit-presentation-v276,#screen #panels .hit-presentation-main,#screen #tabs .hit-presentation-mini{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;margin:0!important;transform:none!important;pointer-events:none!important;user-select:none;z-index:24;border-radius:inherit;contain:strict}
+.hit-presentation-v276[hidden]{display:none!important}
+#screen .panel .hit-presentation-main:not([hidden]),#screen #panels>.panel>.hit-presentation-main:not([hidden]){display:block!important;visibility:visible!important}
+.mini-wrap>.hit-presentation-mini{z-index:4}
+#screen .mini-wrap>.hit-presentation-mini:not([hidden]){display:block!important;visibility:visible!important}
+@media(prefers-reduced-motion:reduce){.hit-presentation-v276{mix-blend-mode:normal}}

@@ -115,6 +115,9 @@ if(selected.has('choco')){
   const bitmap=art.sprite(names[color]);if(!bitmap)continue;
   const out=canvas(256),ctx=out.getContext('2d');
   ctx.drawImage(bitmap,0,0,256,256);
+  // This artwork's sculpted frosting extends farther down than the original
+  // cake. Describe its real sponge for connected tiles; keep the PNG untouched.
+  out.chocoAutotileBodyV276=Object.freeze({top:.50,bottom:.94,seam:.55,wave:.035});
   sources.set(out,Object.freeze([names[color]]));
   sourceImages.set(out,Object.freeze([bitmap]));
   chocoCakeImages[color]=imageLike(out);

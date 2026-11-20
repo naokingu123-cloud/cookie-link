@@ -1,0 +1,77 @@
+name: Game HIT and roulette polish v276
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'optimized/app-01.js'
+      - 'assets/hit-presentation-v276.*'
+      - 'assets/choco-dig.js'
+      - 'assets/illustrated-boards-a-v275.js'
+      - 'assets/gelato-prism-v28.*'
+      - 'assets/winery-pyramid-v1.js'
+      - 'assets/popcorn-view.js'
+      - 'assets/jelly-view.js'
+      - 'assets/download-assets-v255.json'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/*v276*'
+      - '.github/workflows/game-polish-v276.yml'
+permissions:
+  contents: read
+jobs:
+  motion-and-autotiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: QA-only raster dependency
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund @napi-rs/canvas@0.1.100
+      - name: Continuous vertical cake joins with real generated pixels
+        run: node tests/canyon-autotile-v276.mjs
+      - name: Actual stopper contacts, occupied pockets and launch variability
+        run: node tests/roulette-motion-v276.mjs
+      - name: Reproducible production recording and eight real unique hits
+        run: node tests/download-v255-recording.mjs
+      - name: HIT forwarding, unchanged state and bounded particles
+        run: node tests/hit-presentation-v276.mjs
+      - name: Preserved offline cache
+        run: node tests/download-v255-cache.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: game-polish-v276-numerical
+          path: |
+            qa-canyon-v276/
+            qa-v276/roulette-*.json
+          retention-days: 7
+  ten-game-hit-display:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts and Chromium
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Real manual HITs in all ten games, miniatures and fitted payouts
+        run: node tests/game-polish-v276-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: game-polish-v276-hit-display
+          path: qa-game-polish-v276/
+          retention-days: 7

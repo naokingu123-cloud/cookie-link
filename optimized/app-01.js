@@ -896,31 +896,51 @@ function chocoCanonicalMask(mask){let m=mask&15;for(const [a,b,d] of [[8,1,16],[
 function chocoTileMask(grid,r,c){const color=grid[r]?.[c]?.color;if(color==null||color<0)return 0;let mask=0;for(const [dy,dx,bit]of [[-1,0,1],[0,1,2],[1,0,4],[0,-1,8],[-1,-1,16],[-1,1,32],[1,1,64],[1,-1,128]])if(grid[r+dy]?.[c+dx]?.color===color&&(color!==4||grid[r+dy][c+dx].fruitIndex===grid[r][c].fruitIndex))mask|=bit;return mask;}
 function chocoFruitSprite(mask){
  const key='fruit/'+mask;if(chocoSprites.has(key))return chocoSprites.get(key);const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),base=chocoAutoSprite(2,mask,0);if(!base)return null;x.drawImage(base,0,0);x.globalCompositeOperation='source-atop';x.globalAlpha=.48;
+ const shared=chocoCakeImages[2]?.chocoAutotileBodyV276&&(mask&5)?x.getImageData(0,0,96,96):null;
  const rainbow=['#ef87a6','#f6ba74','#f8e4a3','#9ad5ae','#9acfe8','#baa5df'];for(let i=0;i<6;i++){x.fillStyle=rainbow[i];x.fillRect(0,i*16,96,16);x.fillStyle='#fff4d080';x.fillRect(0,i*16+12,96,4);}
  x.globalAlpha=1;const glow=x.createLinearGradient(0,0,96,96);glow.addColorStop(0,'#fff7d966');glow.addColorStop(.45,'#ffffff00');glow.addColorStop(1,'#803e4726');x.fillStyle=glow;x.fillRect(0,0,96,96);
  if(!(mask&1)){x.fillStyle='#fff9e9';x.beginPath();x.moveTo(0,0);x.lineTo(96,0);x.lineTo(96,20);for(let i=96;i>0;i-=16)x.quadraticCurveTo(i-8,38,i-16,20);x.closePath();x.fill();for(let i=0;i<3;i++){const cx=16+i*32;x.fillStyle=['#e94d69','#f5b93e','#79b260'][i];x.beginPath();x.ellipse(cx,12,10,8,0,0,Math.PI*2);x.fill();x.fillStyle='#fff9d9';x.beginPath();x.ellipse(cx-3,9,2,3,.5,0,Math.PI*2);x.fill();x.fillStyle='#43854d';x.fillRect(cx-2,1,4,5);}}
  if(!(mask&1)){x.fillStyle='#ffe19a';for(let k=5;k<96;k+=12){x.beginPath();x.arc(k,31,2,0,Math.PI*2);x.fill();}}
  x.strokeStyle='#ffe9a8';x.lineWidth=3;for(const [bit,a,b,c,d]of [[1,0,1,96,1],[2,95,0,95,96],[4,0,95,96,95],[8,1,0,1,96]])if(!(mask&bit)){x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke();}
+ if(shared){
+  // The rainbow glaze must meet the same painted cake at a vertical join.
+  // Fade only its decoration into the shared texture, never draw a seam strip.
+  const pixels=x.getImageData(0,0,96,96),d=pixels.data,b=shared.data,smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);};
+  for(let y=0;y<96;y++){const blend=Math.min(mask&1?smooth(y/18):1,mask&4?smooth((95-y)/18):1);if(blend===1)continue;for(let px=0;px<96;px++){const i=(y*96+px)*4;for(let k=0;k<4;k++)d[i+k]=b[i+k]+(d[i+k]-b[i+k])*blend;}}
+  x.putImageData(pixels,0,0);
+ }
  chocoSprites.set(key,cv);return cv;
 }
 function chocoAutoSprite(color,mask,variant=0,kind='fruit'){
  if(color===4&&CHOCO_BONUS_GEMS.includes(kind))color=5+CHOCO_BONUS_GEMS.indexOf(kind);
  variant=((variant%6)+6)%6;if(color===4)return chocoFruitSprite(chocoCanonicalMask(mask));
  mask=chocoCanonicalMask(mask);const image=color>=5?chocoGemCakeImages[color-5]:chocoCakeImages[color];if(!image?.complete||!image.naturalWidth)return null;const key=color+'/'+mask+'/'+variant;if(chocoSprites.has(key))return chocoSprites.get(key);
+ const material=image.chocoAutotileBodyV276;
  let src=chocoSourcePixels.get(image);if(!src){const sample=document.createElement('canvas');sample.width=sample.height=256;const sx=sample.getContext('2d',{willReadFrequently:true});sx.drawImage(image,0,0,256,256);src=sx.getImageData(0,0,256,256).data;chocoSourcePixels.set(image,src);}
  const cv=document.createElement('canvas');cv.width=cv.height=96;const x=cv.getContext('2d'),pixels=x.createImageData(96,96),d=pixels.data;
  const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v);},read=(u,v,k)=>src[(Math.min(255,Math.max(0,Math.round(v*255)))*256+Math.min(255,Math.max(0,Math.round(u*255))))*4+k];
  for(let y=0;y<96;y++)for(let px=0;px<96;px++){
   const u=px/95,v=y/95,i=(y*96+px)*4;
   // Keep the original sculpted face, highlights, bevels and real painted topping.
-  const sourceX=.055+.89*u,sourceY=Math.min((mask&4)?.80:.945,(mask&1)?Math.max(.34,.055+.89*v):v<.32?.055+v/.32*.255:.31+(v-.32)/.68*.635);
-  const joinX=color>=5?Math.max(mask&8?1-smooth(px/9):0,mask&2?1-smooth((95-px)/9):0):Math.max(mask&8?1-smooth((px-14)/14):0,mask&2?1-smooth((81-px)/14):0),joinY=Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
+  const sourceX=.055+.89*u,faceY=v<.32?.055+v/.32*.255:.31+(v-.32)/.68*.635;
+  // The v275 painted frosting reaches below the legacy .34 cut. A connected
+  // upper neighbour exposes the actual sponge, retaining its pores and layers.
+  const sourceY=material?Math.min(mask&4?material.bottom:.945,mask&1?material.top+(material.bottom-material.top)*v:faceY):Math.min((mask&4)?.80:.945,(mask&1)?Math.max(.34,.055+.89*v):faceY);
+  const topJoin=material&&(mask&1)?1-smooth(y/18):0,bottomJoin=material&&(mask&4)?1-smooth((95-y)/18):0;
+  // At a T/L junction, both touching tiles must use the same side profile.
+  // A side joins at the shared edge only when that diagonal is also filled.
+  const leftJoin=(mask&8)?(1-topJoin*Number(!(mask&16)))*(1-bottomJoin*Number(!(mask&128))):0,rightJoin=(mask&2)?(1-topJoin*Number(!(mask&32)))*(1-bottomJoin*Number(!(mask&64))):0;
+  const joinX=color>=5?Math.max(leftJoin*(1-smooth(px/9)),rightJoin*(1-smooth((95-px)/9))):Math.max(leftJoin*(1-smooth((px-14)/14)),rightJoin*(1-smooth((81-px)/14))),joinY=material?Math.max(topJoin,bottomJoin):Math.max(mask&1?1-smooth((y-12)/16):0,mask&4?1-smooth((83-y)/16):0);
   const fade=Math.sin(Math.PI*u)**2*Math.sin(Math.PI*v)**2,grain=Math.sin(px*12.9898+y*78.233+variant*37.719)*43758.5453,sheen=Math.sin(u*5+variant*1.7)*Math.cos(v*7-variant*.9),variation=fade*((variant-2.5)*1.4+sheen*4+(grain-Math.floor(grain)-.5)*3);
   for(let k=0;k<3;k++){
    let value=read(sourceX,sourceY,k);
    // Connected sides share the same material profile, with no baked-in side rim.
    value=value*(1-joinX)+read(color>=5?.07:.24,sourceY,k)*joinX;
-   const edgeU=.055+.89*u,body=read(edgeU,.46,k),sideBody=read(.24,.46,k),rim=1-smooth(Math.min(u,1-u)/.24),vertical=sideBody+(body-sideBody)*rim*(1-joinX);
+   const edgeU=.055+.89*u,seamY=material?material.seam+material.wave*Math.sin(v*Math.PI*2):.46,body=read(edgeU,seamY,k),sideBody=read(.24,seamY,k),rim=1-smooth(Math.min(u,1-u)/.24);
+   // Both ends use one continuous image profile, with matching direction and
+   // edge pixels. Keep the texture across the full width instead of stretching
+   // one sampled colour over the middle of the connected stratum.
+   const vertical=material?body*(1-joinX)+sideBody*joinX:sideBody+(body-sideBody)*rim*(1-joinX);
    value=value*(1-joinY)+vertical*joinY;
    if(color===3)value*=value>175?.66:[.48,.50,.57][k];
    // Hand-finished variants fade to identical edge pixels, preserving every autotile join.
@@ -4180,11 +4200,11 @@ const DIM={count:25,ball:.24,hole:.255,pocket:3.08,hub:2.22,inner:3.50,outer:7.1
 const TAU=Math.PI*2;
 // Motion calibration for the estimated model dimensions; motor RPM stays in real seconds.
 const MOTION={gravityScale:1.15,friction:.10,rolling:.22,bounce:.44};
-// Glancing acrylic contact should slide rather than launch the ball away.
-const CONTACT={stopperBounce:.02,stopperFriction:.035,pocketBounce:.32,pocketFriction:.055,pocketRolling:.45,throatBounce:.28,throatFriction:.14};
+// Polished acrylic keeps a glancing ball moving, with a modest outward rebound.
+const CONTACT={stopperBounce:.68,stopperFriction:.008,pocketBounce:.32,pocketFriction:.055,pocketRolling:.45,throatBounce:.28,throatFriction:.14};
 function bowlHeight(r){const t=Math.max(0,Math.min(1,(r-DIM.inner)/(DIM.outer-DIM.inner)));return .204*t+.391*t*t;}
 // Shallow inter-pocket flats keep the ball near the mouth while the fixed
-// prism arrests its tangential motion. The lower third remains steeper and scooped.
+// triangular guide diverts it across the next opening. The lower third is scooped.
 const PROFILE={upperSlope:-.01,lowerSlope:-.02,transitionCenter:DIM.pocket+DIM.hole/3,transitionWidth:.10,hubStep:.115,lip:.012,scoop:.034,edgeBand:.09,lowerBand:.20};
 const clamp01=x=>Math.max(0,Math.min(1,x));
 const smooth01=x=>{x=clamp01(x);return x*x*(3-2*x);};
@@ -4204,12 +4224,12 @@ function pocketSurface(x,z){
 }
 function pocketGradient(x,z){const e=.0001;return [(pocketSurface(x+e,z)-pocketSurface(x-e,z))/(2*e),(pocketSurface(x,z+e)-pocketSurface(x,z-e))/(2*e)];}
 // Fixed transparent deflectors, separate from the moving pocket assembly.
-// v42: The three original rounded triangular footprints have a real 45-degree
-// top ramp.  The high, inner edge and low, outer edge are gently eased so the
-// ball doesn't meet a discontinuous sharp lip.
+// v276: Keep the three triangular footprints and 120-degree spacing. A lower
+// outward-sloping roof, rounded nose and eased reverse entry let circulating
+// balls skim outward and balls riding a filled pocket roll off its shoulder.
 const STOPPERS=[0,TAU/3,2*TAU/3].map(angle=>({
- angle,radius:3.57,length:.78,width:.78/Math.sqrt(3),
- height:.425,minHeight:.025,rampAngle:Math.PI/4,edgeBlend:.12,
+ angle,radius:3.50,length:.78,width:.78/Math.sqrt(3),
+ height:.20,minHeight:.025,rampAngle:.44,edgeBlend:.17,entryBlend:.23,
  corner:.035,twist:-5*Math.PI/180
 }));
 function stopperOutline(s){
@@ -4227,8 +4247,8 @@ function stopperOutline(s){
  }
  return {points,outline};
 }
-// Integrated eased ramp profile: interior d(height)/d(radial distance) = tan(45°).
-// The height and first derivative remain continuous right to the triangle edges.
+// Integrated outward ramp. The entry from a carried, already-filled pocket
+// blends continuously up from the base instead of meeting the old vertical wall.
 function stopperTopHeight(s,x,z){
  const edge=s.edgeBlend??.12;
  const u=clamp01((s.width/2-z)/s.width); // outer (+z) low, inner (-z) high
@@ -4239,7 +4259,8 @@ function stopperTopHeight(s,x,z){
   integral=1-1.5*edge+.5*v+edge*Math.sin(Math.PI*v/edge)/(2*Math.PI);
  }else integral=u-.5*edge;
  const tan=Math.tan(s.rampAngle??Math.PI/4);
- return (s.minHeight??.025)+s.width*tan*integral;
+ const entry=smooth01((x+s.length/2)/(s.entryBlend??.23));
+ return (s.minHeight??.025)+s.width*tan*integral*entry;
 }
 function stopperMesh(s){
  // One shared watertight mesh supplies BOTH the visible acrylic and the Cannon
@@ -4343,7 +4364,10 @@ function installMeshContactManifold(world){
   const contacts=this.result.splice(first),kept=[];
   const depth=c=>(c.bj.position.x+c.rj.x-c.bi.position.x-c.ri.x)*c.ni.x+(c.bj.position.y+c.rj.y-c.bi.position.y-c.ri.y)*c.ni.y+(c.bj.position.z+c.rj.z-c.bi.position.z-c.ri.z)*c.ni.z;
   contacts.sort((a,b)=>depth(a)-depth(b));
-  for(const c of contacts)if(kept.every(k=>c.ni.dot(k.ni)<.985)){kept.push(c);if(kept.length===4)break;}
+  // A sphere touches the small convex acrylic guide at one closest patch.
+  // Multiple triangle-edge normals otherwise add artificial braking impulses.
+  const limit=args[1]?.material?.name==='acrylic deflector'?1:4;
+  for(const c of contacts)if(kept.every(k=>c.ni.dot(k.ni)<.985)){kept.push(c);if(kept.length===limit)break;}
   this.frictionResult.length=frictionFirst;
   for(const c of kept){this.result.push(c);const start=this.frictionResult.length;this.createFrictionEquationsFromContact(c,this.frictionResult);for(let i=start;i<this.frictionResult.length;i++){this.frictionResult[i].minForce/=kept.length;this.frictionResult[i].maxForce/=kept.length;}}
   return result;
@@ -4356,7 +4380,8 @@ class RoulettePhysics{
   this.world=new C.World({gravity:new C.Vec3(0,-9.81/DIM.metresPerUnit*this.settings.gravityScale,0)});this.world.solver.iterations=18;this.world.solver.tolerance=.0001;this.world.allowSleep=false;
   installMeshContactManifold(this.world);
   this.material=new C.Material('contact');this.ballMaterial=new C.Material('ball');
-  // Keep floor, acrylic and pocket restitutions unchanged; strengthen only ball/ball contacts.
+  // Floor and pocket contacts retain their existing calibration; the separate
+  // polished-acrylic contact controls only the three fixed deflectors.
   this.contact=new C.ContactMaterial(this.ballMaterial,this.material,{friction:.08,restitution:this.settings.bounce,contactEquationStiffness:1e8,contactEquationRelaxation:3});this.world.addContactMaterial(this.contact);
   this.ballBallContact=new C.ContactMaterial(this.ballMaterial,this.ballMaterial,{friction:.005,restitution:this.settings.ballBounce,contactEquationStiffness:1e8,contactEquationRelaxation:2});this.world.addContactMaterial(this.ballBallContact);
   this.stopperMaterial=new C.Material('acrylic deflector');this.pocketMaterial=new C.Material('polished pocket rim');
@@ -4393,11 +4418,19 @@ class RoulettePhysics{
   this.rotor.updateBoundingRadius();this.rotor.aabbNeedsUpdate=true;
  }
  createLaunchSpec(jpc=false){
-  return {speed:this.settings.speed+(this.random()*2-1)*(jpc?.40:.25),angle:2.12+(this.random()*2-1)*(jpc?.05:.035),spin:jpc?1+(this.random()*2-1)*.06:1};
+  // Sample the physical launch once per ball. Server recordings and resumed
+  // jobs keep the same seeded sequence; no contact or pocket is rerolled.
+  const signed=()=>this.random()*2-1;
+  return {speed:this.settings.speed+signed()*(jpc?.72:.62),
+   angle:2.12+signed()*(jpc?.095:.082),spin:1+signed()*.15,
+   mouthAngle:2.12+signed()*.012,mouthRadius:signed()*.018,
+   clearance:.025+signed()*.011,inward:.75+signed()*.24,
+   lift:.22+signed()*.20,yawSpin:signed()*2.4};
  }
  launchState(spec){
-  const radius=DIM.ball*this.settings.ballSize,r=DIM.outer-.30,a=spec.angle;
-  return {radius,position:polar(r,2.12,bowlHeight(r)+radius+.025),velocity:[-spec.speed*Math.cos(a)-.75*Math.sin(a),0,spec.speed*Math.sin(a)-.75*Math.cos(a)]};
+  const radius=DIM.ball*this.settings.ballSize,r=DIM.outer-.30+(spec.mouthRadius??0),a=spec.angle,inward=spec.inward??.75;
+  return {radius,position:polar(r,spec.mouthAngle??2.12,bowlHeight(r)+radius+(spec.clearance??.025)),
+   velocity:[-spec.speed*Math.cos(a)-inward*Math.sin(a),spec.lift??0,spec.speed*Math.sin(a)-inward*Math.cos(a)]};
  }
  launch(spec=null){
   if(this.active>=10||(this.settings.retain&&this.active+this.occupied.filter(Boolean).length>=25))return null;
@@ -4407,7 +4440,7 @@ class RoulettePhysics{
   const inertia=.4*body.mass*radius*radius;
   body.inertia.set(inertia,inertia,inertia);body.invInertia.set(1/inertia,1/inertia,1/inertia);body.updateInertiaWorld(true);
   spec=spec||this.createLaunchSpec();const launch=this.launchState(spec);
-  body.position.set(...launch.position);body.velocity.set(...launch.velocity);body.angularVelocity.set(body.velocity.z/radius*spec.spin,0,-body.velocity.x/radius*spec.spin);
+  body.position.set(...launch.position);body.velocity.set(...launch.velocity);body.angularVelocity.set(body.velocity.z/radius*(spec.spin??1),spec.yawSpin??0,-body.velocity.x/radius*(spec.spin??1));
   const ball={id:++this.serial,body,radius,launchSpec:{...spec},collisions:0,collisionImpulse:0,age:0,resolved:false,held:false,grounded:-1,onRotor:false,normal:new C.Vec3(0,1,0),removeAt:Infinity};
   this.balls.push(ball);this.world.addBody(body);return ball;
  }

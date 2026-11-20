@@ -1852,3 +1852,20 @@ body.gelato-enabled .gp-tab .gp-tab-logo-img{
  body.gelato-enabled .gp-tab .tab-game-name{height:39px!important}
  body.gelato-enabled .gp-tab .gp-tab-logo-img{max-height:39px!important}
 }
+/* v276: fit gold amounts to their own bay while retaining numeral height. */
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-row strong.gp-collector-win{
+ align-self:stretch!important;width:100%!important;min-width:0!important;
+}
+body.gelato-active #panel0 .gp-collector-grid .gp-collector-win .gp-win-number{
+ width:100%!important;min-width:0!important;text-align:center!important;
+}
+body.gelato-active #panel0 .gp-pay-row .gp-pay-win{
+ flex:1 1 auto!important;display:block!important;
+}
+body.gelato-active #panel0 .gp-highest-win{
+ flex:1 1 0!important;min-width:0!important;text-align:right!important;
+}
+body.gelato-active #panel0 .gp-fit-amount{
+ display:inline-block;white-space:nowrap;transform-origin:right center;
+}
+body.gelato-active #panel0 .gp-win-number .gp-fit-amount{transform-origin:center center}
