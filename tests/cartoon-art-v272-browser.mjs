@@ -294,12 +294,39 @@ try{
   const q=window.__qa250;window.SweetsSharedControllerV224.setAutoRebet(false);
   for(let i=0;i<q.app.bets.length;i++)if(q.app.bets[i]<=0)q.app.setBet(i,100);
  });
+ current={phase:'playing',game:null,step:'server-bet-window'};
  await fixture.call('/api/admin/machines/public-01/host/register',{session:fixture.host,body:{},adminOnly:true});
- const round=await until(async()=>{const state=await fixture.call('/api/machines/public-01/state',{session:fixture.host});return state.round?.phase==='PLAYING'?state.round:null;},'isolated artwork round starts');
+ const betRound=await until(async()=>{const state=await fixture.call('/api/machines/public-01/state',{session:fixture.host});return state.round?.phase==='BETTING'?state.round:null;},'isolated artwork BET window opens');
+ report.round={id:betRound.id,serverPhase:betRound.phase,ballsSubmitted:0};
+ // AUTO REBET is deliberately off. Register this client through the real
+ // manual BET control before waiting for PLAYING; a server round alone does
+ // not authorize or start an unregistered player's ten engines.
+ await page.waitForFunction(id=>{
+  const q=window.__qa250,c=window.SweetsSharedMachine?.client,C=window.SweetsSharedControllerV224,button=document.getElementById('shared-bet-v228');
+  return c?.round?.id===id&&c.round.phase==='BETTING'&&c.round.canBet&&C?.stable()&&C.canEditBets(q.app)&&button&&!button.disabled;
+ },betRound.id,{timeout:15000});
+ const selectedBets=await page.evaluate(()=>[...window.__qa250.app.bets]);
+ assert.equal(selectedBets.length,games.length);assert.ok(selectedBets.every(bet=>bet>0),'all ten games have a positive real BET before registration');
+ current.step='register-bet';
+ await page.locator('#shared-bet-v228').click();
+ await page.waitForFunction(id=>{
+  const c=window.SweetsSharedMachine?.client;
+  return c?.round?.id===id&&c.round.participant?.playerId===c.playerId&&window.SweetsSharedControllerV224.describe().joinedRoundId===id;
+ },betRound.id,{timeout:15000});
+ report.round.registration=await page.evaluate(()=>{
+  const c=window.SweetsSharedMachine.client,p=c.round.participant;
+  return {roundId:c.round.id,bets:p.bets,enabled:p.enabled,totalBet:p.totalBet};
+ });
+ assert.deepEqual(report.round.registration.bets,selectedBets,'the server acknowledges the selected ten-game BET');
+ assert.ok(report.round.registration.enabled.every(Boolean),'the acknowledged entry enables all ten games');
+ current.step='server-playing';
+ const round=await until(async()=>{const state=await fixture.call('/api/machines/public-01/state',{session:fixture.host});return state.round?.id===betRound.id&&state.round.phase==='PLAYING'?state.round:null;},'registered artwork round starts');
+ report.round.serverPhase=round.phase;current.step='client-playing';
  await page.waitForFunction(id=>window.SweetsSharedMachine.active?.roundId===id&&window.__qa250.app.phase==='playing',round.id,{timeout:30000});
+ current.step='opening-presentation';
  await page.waitForFunction(()=>window.__qa250.app.engines.every(e=>!e.opening&&!e.busy&&!(e.queue?.length)),null,{timeout:30000});
  assert.ok(await page.evaluate(()=>window.__qa250.app.enabled.every(Boolean)),'all ten real engines start under their own rules');
- report.round={id:round.id,serverPhase:round.phase,ballsSubmitted:0};
+ assert.equal(await page.evaluate(()=>window.__qa250.app.draws.length),0,'live artwork is inspected before the first lottery ball');
  await tour('playing');
 
  await page.setViewportSize({width:390,height:844});await sleep(320);
@@ -316,6 +343,7 @@ try{
  report.failure={message:String(error),stack:error.stack,current,pageErrors:fixture?.errors||[],warnings:fixture?.warnings||[]};
  if(page){
   try{report.failure.state=(await page.evaluate(logicalSnapshot)).summary;}catch{}
+  try{report.failure.startup=await page.evaluate(()=>({serverRound:window.SweetsSharedMachine?.client?.round?.id,serverPhase:window.SweetsSharedMachine?.client?.round?.phase,participant:!!window.SweetsSharedMachine?.client?.round?.participant,controller:window.SweetsSharedControllerV224?.describe(),engines:window.__qa250.app.engines.map(e=>({kind:e.kind||'cookie',phase:e.phase,opening:!!e.opening,busy:!!e.busy,queued:e.queue?.length||0,accepted:e.accepted,processed:e.processed,paused:!!e.paused}))}));}catch{}
   try{report.failure.surface=await page.evaluate(inspectSurface);}catch{}
   try{await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});}catch{}
  }
