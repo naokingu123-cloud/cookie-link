@@ -1,0 +1,213 @@
+{
+  "version": "20261120-v274-ornate-game-art",
+  "runtimeCommit": "ca66bc5c51e92f4185a066ac05312172e764fb0e",
+  "verifiedAt": "2026-11-20T05:23:42.299965+00:00",
+  "publicURL": "https://naokingu123-cloud.github.io/cookie-link/",
+  "files": [
+    {
+      "file": "app-version.json",
+      "bytes": 45,
+      "sha256": "2d4fde8311a0df28e64af53b96913ec22ad9d23a7a0b78cd2de34da0181d7d56",
+      "match": true
+    },
+    {
+      "file": "assets/download-assets-v255.json",
+      "bytes": 113174,
+      "sha256": "546268aa3b397f44e5a3e927f8d913936f1340a7e26ab315c43f7f9e11935a2c",
+      "match": true
+    },
+    {
+      "file": "assets/download-cache-v255.js",
+      "bytes": 4355,
+      "sha256": "cecac0e2eaf6eec045711bbdb746c9231a6a3fd2e64411f68ca7908af6b8bf65",
+      "match": true
+    },
+    {
+      "file": "assets/edition-choice-v255.js",
+      "bytes": 3766,
+      "sha256": "0426bc74a8acaceec2275dfeac2a86ade49a55ac1b70e03b7ec57c47cea99e8d",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-art-v274.css",
+      "bytes": 6736,
+      "sha256": "103f818cd1be17839f7ba0df24171fa2f9b1e6f2de2171fd0dd6d221eb9f472b",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-art-v274.js",
+      "bytes": 4839,
+      "sha256": "ac759d98faa0396a330e5715ed683ae87b483e944e866cfeeb512caee94c2136",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-art-v274/board-frames-a.png",
+      "bytes": 2870592,
+      "sha256": "28c797898f8e4c144b8c7864bdd96477c4af2ac88cded5653a363bb52d0d9fae",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-art-v274/board-frames-b.png",
+      "bytes": 2784182,
+      "sha256": "9cc9ac45a02408e7308b96301e0952c52a42772ae5785ff2737b8833e578ebf4",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-art-v274/payout-frames.png",
+      "bytes": 2660927,
+      "sha256": "acf33efeff8c878a8bd394e6fb16595d430d184d024805d5073a15556b699a93",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-boards-a-v274.css",
+      "bytes": 5042,
+      "sha256": "3c03f4802999b00a637915cc9422abcef844db9a2c26d376acb60e4bc8a0a098",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-boards-a-v274.js",
+      "bytes": 3341,
+      "sha256": "8acb6d7198a1701745865418dded65390ed07ea4637efa7e218d651e8383a111",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-boards-b-v274.css",
+      "bytes": 2686,
+      "sha256": "3cf3dca3b09f54c336b4a08aeed2a7cf8bd1ba60f7c22ab9e7270a88f46da981",
+      "match": true
+    },
+    {
+      "file": "assets/ornate-boards-c-v274.css",
+      "bytes": 1799,
+      "sha256": "21f267cd5d74d691c67bee38f4143b65acb37c814a86ff30faed5d3ff1713527",
+      "match": true
+    },
+    {
+      "file": "assets/sweet-frames.js",
+      "bytes": 1737,
+      "sha256": "002aafa395e5a0895645f5bcd9e7c668d352d186dbf6c883c9eeaf9cc208ef59",
+      "match": true
+    },
+    {
+      "file": "download-sw-v255.js",
+      "bytes": 3699,
+      "sha256": "a3fd08a22c65ae842db00f352f3f6f38223d015e3fd0f986ee22864e3be53413",
+      "match": true
+    },
+    {
+      "file": "index.html",
+      "bytes": 84810,
+      "sha256": "d051a204c48fa8da62b8356ba5800883baa8358c7889c21b5eb7c16d401c793a",
+      "match": true
+    },
+    {
+      "file": "assets/six-candy-png/candies.webp",
+      "bytes": 30044,
+      "sha256": "ba24d2811b3758f9e810110a6505bb9ede2e70308983ec93f0d280e2e3461abb",
+      "match": true
+    },
+    {
+      "file": "assets/sweet-skins/cookie-berry.webp",
+      "bytes": 6838,
+      "sha256": "ee0452952676423916c4d44b4f751aec516b5ce14da2daac8e3b1e3999b4e6bf",
+      "match": true
+    },
+    {
+      "file": "assets/popcorn-art/popcorn-kernels-v85.webp",
+      "bytes": 234726,
+      "sha256": "ea9989fe666368a79093093769128febba709b03c748a6f21f7e50f6f389774c",
+      "match": true
+    },
+    {
+      "file": "assets/waffle-pay.webp",
+      "bytes": 54914,
+      "sha256": "ff65fea919ad3407996be0dc31e0c78669de5b501ecf7bad1d54d0cd528e69c3",
+      "match": true
+    },
+    {
+      "file": "assets/party-castella-bakery-menu.webp",
+      "bytes": 45828,
+      "sha256": "af9287fa5f9851ccb5fb3898cc27fb7ee1ad3097088020f3645eb245e1bca42c",
+      "match": true
+    },
+    {
+      "file": "assets/dango-art-v270/payout-table.png",
+      "bytes": 794378,
+      "sha256": "1082671113760ec7c0866968ac17655941f6fa214c2212b68bc9f6cd39148ecc",
+      "match": true
+    }
+  ],
+  "allMatch": true,
+  "localChecks": [
+    "npm run check",
+    "npm run test:payout",
+    "npm run test:sugar",
+    "node tests/download-v255-cache.mjs",
+    "672 manifest file sizes and SHA-256"
+  ],
+  "browser": {
+    "preview": "All ten native boards visually inspected in the managed preview with local manual-number mode.",
+    "public": "Six Drop and Popcorn verified on the public v274 URL; original background URL and four ornate stylesheets confirmed; no Cartoon stylesheet active.",
+    "publicUrl": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v274-ornate-game-art&edition=local",
+    "screenFiles": [
+      "docs/qa-v274/public-six.jpg",
+      "docs/qa-v274/public-popcorn.jpg"
+    ],
+    "limitations": "WebGL unavailable in the CUA browser; the 3D roulette itself was not visually verified. No shared-server wager, draw or settlement was sent."
+  },
+  "ci": {
+    "artwork": 44679611742,
+    "dangoSugar": 44680310937,
+    "pages": 44679610860,
+    "artworkResult": {
+      "status": "success",
+      "run": 44679611742,
+      "jobs": [
+        136099593181,
+        136099593596
+      ],
+      "frames": 18,
+      "nativeImages": 59,
+      "screens": 20,
+      "games": 10,
+      "phases": [
+        "ready",
+        "playing",
+        "mobile"
+      ],
+      "pageErrors": []
+    },
+    "dangoLayoutResult": {
+      "status": "success",
+      "job": 136099594222,
+      "run": 44679611975
+    },
+    "sugarInitialFailure": {
+      "run": 44679611975,
+      "job": 136099594403,
+      "introClock": 6500,
+      "paused": false,
+      "errors": [],
+      "reason": "The RAF-capped presentation clock had not reached stop within the 9-second wall-clock wait. The test now waits for the visible settled state with a 45-second budget; runtime and numerical assertions are unchanged."
+    },
+    "dangoSugarResult": {
+      "status": "success",
+      "run": 44680310937,
+      "jobs": {
+        "dangoLayout": 136101848363,
+        "sugarLayout": 136101848522,
+        "rulesAndCache": 136101848551
+      }
+    },
+    "pagesResult": {
+      "status": "success",
+      "runtimeRun": 44679610860,
+      "validationRun": 44680310300
+    }
+  },
+  "validationCommit": "b00974abfbc549c5e6f51b3d01a4798ff1c7928f",
+  "visualReview": {
+    "screens": "All ten live games in CUA; 17 of the 20 CI screenshots independently inspected, including both ready/live Six and all B/C games.",
+    "finding": "No clear new text occlusion, blank board or cropped game surface was found."
+  }
+}

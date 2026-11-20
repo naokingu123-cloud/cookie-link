@@ -1,0 +1,204 @@
+{
+  "version": "20261120-v274-ornate-game-art",
+  "description": {
+    "version": "v274",
+    "loaded": true,
+    "frames": 18,
+    "files": [
+      "assets/ornate-art-v274/board-frames-a.png",
+      "assets/ornate-art-v274/board-frames-b.png",
+      "assets/ornate-art-v274/payout-frames.png"
+    ],
+    "cached": 18,
+    "drawCalls": 0
+  },
+  "files": [
+    {
+      "file": "assets/ornate-art-v274/board-frames-a.png",
+      "width": 1536,
+      "height": 1024,
+      "loaded": true
+    },
+    {
+      "file": "assets/ornate-art-v274/board-frames-b.png",
+      "width": 1536,
+      "height": 1024,
+      "loaded": true
+    },
+    {
+      "file": "assets/ornate-art-v274/payout-frames.png",
+      "width": 1536,
+      "height": 1024,
+      "loaded": true
+    }
+  ],
+  "frames": [
+    {
+      "name": "board-cookie",
+      "width": 490,
+      "height": 483,
+      "colors": 820,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-choco",
+      "width": 493,
+      "height": 485,
+      "colors": 741,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-candy",
+      "width": 496,
+      "height": 477,
+      "colors": 2028,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-gelato",
+      "width": 490,
+      "height": 479,
+      "colors": 1986,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-winery",
+      "width": 497,
+      "height": 474,
+      "colors": 1404,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-popcorn",
+      "width": 498,
+      "height": 472,
+      "colors": 594,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-jelly",
+      "width": 481,
+      "height": 472,
+      "colors": 1535,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-stick",
+      "width": 484,
+      "height": 467,
+      "colors": 817,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-castella",
+      "width": 478,
+      "height": 503,
+      "colors": 1115,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-dango",
+      "width": 488,
+      "height": 478,
+      "colors": 851,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-sugar",
+      "width": 485,
+      "height": 488,
+      "colors": 1072,
+      "interiorPixels": 0
+    },
+    {
+      "name": "board-bonus",
+      "width": 488,
+      "height": 488,
+      "colors": 1690,
+      "interiorPixels": 0
+    },
+    {
+      "name": "pay-cookie",
+      "width": 486,
+      "height": 483,
+      "colors": 750,
+      "interiorPixels": 0
+    },
+    {
+      "name": "pay-choco",
+      "width": 485,
+      "height": 488,
+      "colors": 683,
+      "interiorPixels": 0
+    },
+    {
+      "name": "pay-candy",
+      "width": 488,
+      "height": 484,
+      "colors": 3167,
+      "interiorPixels": 0
+    },
+    {
+      "name": "pay-gelato",
+      "width": 486,
+      "height": 498,
+      "colors": 1100,
+      "interiorPixels": 0
+    },
+    {
+      "name": "pay-winery",
+      "width": 494,
+      "height": 484,
+      "colors": 1494,
+      "interiorPixels": 0
+    },
+    {
+      "name": "pay-jelly",
+      "width": 491,
+      "height": 486,
+      "colors": 1541,
+      "interiorPixels": 0
+    }
+  ],
+  "stateHashes": [
+    {
+      "phase": "ready",
+      "hash": "3e45645e8f0cc31c843b7c6674698fcb54eab744ec5c1f13927b3df4ba13cf67",
+      "strictState": false
+    },
+    {
+      "phase": "playing",
+      "hash": "8ac49b78cf0667587110ff8271ff6d32b9a9e0fb01472396db7d93c2d3a3f56a",
+      "strictState": true
+    },
+    {
+      "phase": "mobile",
+      "hash": "8ac49b78cf0667587110ff8271ff6d32b9a9e0fb01472396db7d93c2d3a3f56a",
+      "strictState": true
+    }
+  ],
+  "imageFailures": [],
+  "pageErrors": [],
+  "screens": [
+    "ready-cookie-1366.png",
+    "ready-choco-1366.png",
+    "ready-candy-1366.png",
+    "ready-gelato-1366.png",
+    "ready-winery-1366.png",
+    "ready-popcorn-1366.png",
+    "ready-jelly-1366.png",
+    "ready-stick-1366.png",
+    "ready-castella-1366.png",
+    "ready-dango-1366.png",
+    "playing-cookie-1366.png",
+    "playing-choco-1366.png",
+    "playing-candy-1366.png",
+    "playing-gelato-1366.png",
+    "playing-winery-1366.png",
+    "playing-popcorn-1366.png",
+    "playing-jelly-1366.png",
+    "playing-stick-1366.png",
+    "playing-castella-1366.png",
+    "playing-dango-1366.png"
+  ]
+}
