@@ -111,11 +111,25 @@ export function createSugarChallengeLedger({rules=globalThis.SugarChallengeRules
   if(changed)commit(player,draft,{at});
   return result(player,changed,{acceptedCount:accepted.length,accepted,skippedCount:skipped,rejectedCount:rejected.length,rejected});
  }
- function start(player,{roundId,station=1,openedAt}={}){
+ function start(player,{roundId,station=1,openedAt,refreshUnstarted=false}={}){
   const ledger=normalize(player),round=id(roundId);
   if(!round||round.length>240||!Number.isInteger(station)||station<1||station>6)return result(player,false,{started:false,reason:'invalid-round'});
   if(isCancelled(ledger,round))return result(player,false,{started:false,reason:'cancelled-round'});
-  if(getRound(ledger,round))return result(player,false,{started:false,reason:'already-started'});
+  const existing=getRound(ledger,round);
+  if(existing){
+   // The caller must confirm an authoritative BET window with no landed
+   // balls. Read-only views and replay of an issued history never migrate it.
+   const state=storedState(existing);
+   if(refreshUnstarted===true&&existing.status==='ready'&&!existing.paid&&!existing.reversed&&state?.draws.length===0){
+    const updated=rules.upgradeUnstarted?.(state);
+    if(updated&&updated.rulesRevision!==state.rulesRevision){
+     const draft=clone(ledger),target=getRound(draft,round),at=timestamp();
+     target.state=rules.snapshot(updated);target.rulesUpdatedAt=at;
+     commit(player,draft,{roundId:round,at});return result(player,true,{started:false,upgraded:true,reason:'rules-upgraded'});
+    }
+   }
+   return result(player,false,{started:false,reason:'already-started'});
+  }
   if(activeRecord(ledger))return result(player,false,{started:false,reason:'previous-challenge-pending'});
   const consumed=ledger.bank.filter(ordinarySugar).slice(0,rules.SUGAR_COUNT);
   if(consumed.length<rules.SUGAR_COUNT)return result(player,false,{started:false,reason:'not-enough-sugar'});

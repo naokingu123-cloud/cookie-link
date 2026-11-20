@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v278-sixdrop-bottle-and-carry",
+  "version": "20261120-v279-sugar-transparent-and-current-rules",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 54,
-      "sha256": "193b3eb02a367f1a79012759aa3c3c1807abe04629c6f42c3c0f33a98af3f8da"
+      "bytes": 65,
+      "sha256": "b1c1de94373eb3da53bbd5dbd63c136c6989d48729af553ee0e10b1eec2d1f7b"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1553,8 +1553,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4364,
-      "sha256": "79ebc05412deb1b3a31cbc76410abfa1005f1e21f90e713ebd73a33cf21860dd"
+      "bytes": 4375,
+      "sha256": "b89795f5a56cd4d96f7c8c3c0d58b037e8405f2a98bf162a8a14ab48667067cd"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1563,8 +1563,8 @@
     },
     {
       "path": "assets/download-mode-v255.js",
-      "bytes": 46089,
-      "sha256": "e0d6892152209fa0c2a4ae7dd47cbe39bb2355b99198ea8d23bebcdf542ab63d"
+      "bytes": 46837,
+      "sha256": "3fb40e81d8c17d756e3278ad8f87ed978741ef4142f05f9c1e2591c9b87a5c48"
     },
     {
       "path": "assets/download-roulette-v255.js",
@@ -1578,8 +1578,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3775,
-      "sha256": "6f5e775b108c5c67960c6d74b25ffa794da36c2303b73c8b40673e8e69c8ba90"
+      "bytes": 3786,
+      "sha256": "9643bfe29f4d59cb1b59cb089affc28f232e97177eafc8c3f59b5867da620a4a"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1858,8 +1858,8 @@
     },
     {
       "path": "assets/local-sugar-v267.js",
-      "bytes": 8427,
-      "sha256": "b90c2cb5476d188736f4343248f159304db6c4827766217882b49ab563a96096"
+      "bytes": 8857,
+      "sha256": "9bcfed03f5c0cb83e80ee9114ad6d3a79939bfef8f2c12ee0fc3b7008e01d1b6"
     },
     {
       "path": "assets/manual-numbers.css",
@@ -2882,19 +2882,54 @@
       "sha256": "d2b4fb982ddd0185253a585e0db71df2323dd8b0a0f09d18cbc7f2437bfecae3"
     },
     {
+      "path": "assets/sugar-art-v279/multiplier-1-transparent.png",
+      "bytes": 1824569,
+      "sha256": "d7f9121ff202284eafad8c861f0510c2bbce645c9b84934b58dc352a37dc0f5f"
+    },
+    {
+      "path": "assets/sugar-art-v279/multiplier-10-transparent.png",
+      "bytes": 2567395,
+      "sha256": "c0abd23f6cbd35ca59c8f0eb5f5cc67e50e09c939078c107a1e94d9bf583781e"
+    },
+    {
+      "path": "assets/sugar-art-v279/multiplier-2-transparent.png",
+      "bytes": 2664441,
+      "sha256": "7810781c4734453382907beadc07ca1563ff550e9766f091534653fb0dc5f065"
+    },
+    {
+      "path": "assets/sugar-art-v279/multiplier-3-transparent.png",
+      "bytes": 2805625,
+      "sha256": "4144c1ad9dfa80daa9402966ce18cca8469af590f61b634f25ad6e1c3b15c22a"
+    },
+    {
+      "path": "assets/sugar-art-v279/multiplier-4-transparent.png",
+      "bytes": 2655568,
+      "sha256": "043610a9a4b83a64c313bb7ab86bf1f53fa2a41a09778600d05a99917741677d"
+    },
+    {
+      "path": "assets/sugar-art-v279/multiplier-5-transparent.png",
+      "bytes": 3046893,
+      "sha256": "553597707850d5ccb063cea82bf8422e0a2bcfc0435b8c09c139f413dc31d69d"
+    },
+    {
+      "path": "assets/sugar-art-v279/provenance.json",
+      "bytes": 16488,
+      "sha256": "f6c0133f1084064421568a5f7c0646700a5678e39e4970ae17a04bd0e6e10bf1"
+    },
+    {
       "path": "assets/sugar-challenge-rules-v254.js",
-      "bytes": 15491,
-      "sha256": "08292677a0cc2158710b07e25e1f2bb52eef6fb38dbb4e4f9e425583a9f64027"
+      "bytes": 16445,
+      "sha256": "1e4025d82dd8c96559aaf1b2b07cf1601122f784bd52353c5dd6689387eb4f22"
     },
     {
       "path": "assets/sugar-challenge-v254.css",
-      "bytes": 34785,
-      "sha256": "c0d750660723ab7a62f9d02fb7e8afd7f79c176a102e9638e1be27786f28953a"
+      "bytes": 35880,
+      "sha256": "fbcbfa24bc7cd17896d3b1ea18e2399c9f326e7cbdb4846f4c2e8ba8d7127380"
     },
     {
       "path": "assets/sugar-challenge-v254.js",
-      "bytes": 26831,
-      "sha256": "5444a44f33dd1beb1bc57ce4b3479005df78c158a37a7390f193bf74f2c41bd3"
+      "bytes": 28171,
+      "sha256": "13d109d4e2dda101dfc6ca71fa21b64f414000f92f508c57f08d04529a88a622"
     },
     {
       "path": "assets/sugar-five-candy-frame.svg",
@@ -3479,7 +3514,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "46450c91251a63cb8f2f822136b60afb6af9af328484b39827b94475b5680028"
+      "sha256": "2ebb8e4ae202fc7ca410f45e1f1505cb619ecd2bc80426b0bb53e491191bc7ef"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3717,5 +3752,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 198468000
+  "totalBytes": 214053579
 }

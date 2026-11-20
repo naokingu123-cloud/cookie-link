@@ -7,7 +7,7 @@ const debug=window.SweetsLocalDebugV258,R=window.SugarChallengeRulesV254,V=windo
 if(!debug||!R||!V||!app||typeof app.start!=='function')return;
 const store=debug.storage,KEY='local-sugar-challenge-v267',SCHEMA=268,copy=x=>JSON.parse(JSON.stringify(x));
 const ordinary=t=>t&&t.directJpc!==true&&t.kind!=='direct-jpc'&&t.jpcRedeemed!==true;
-let revision=0,challenge=null,consumed=[],settled=false,awardCount=0,openedAt=0,roundSequence=0,tokenSequence=0,updating=false,resetting=false;
+let revision=0,challenge=null,consumed=[],settled=false,started=false,awardCount=0,openedAt=0,roundSequence=0,tokenSequence=0,updating=false,resetting=false;
 const getSaved=()=>{try{const d=JSON.parse(store.getItem(KEY)||'null');return [267,SCHEMA].includes(d?.schema)?d:null;}catch{return null;}};
 const saved=getSaved();
 if(saved){
@@ -15,7 +15,13 @@ if(saved){
  const previous=R.restore(saved.challenge),pending=previous&&previous.phase!=='complete';
  // A ready quote survives reloading the BET screen. Local debug does not resume
  // the native board mid-round, so unfinished draws restart with the SAME quote.
- if(pending){challenge=R.restore({...R.snapshot(previous),draws:[]});consumed=copy(saved.consumed||[]);openedAt=Number(saved.openedAt)||Date.now();}
+ if(pending){
+  // Keep this marker across that draw-list reset: only a quote which has
+  // never seen a ball may switch from legacy LOW to the current conditions.
+  started=saved.started===true||previous.draws.length>0;
+  const prepared=!started&&saved.settled!==true?R.upgradeUnstarted(previous):previous;
+  challenge=R.restore({...R.snapshot(prepared),draws:[]});consumed=copy(saved.consumed||[]);openedAt=Number(saved.openedAt)||Date.now();
+ }
  const recover=!previous&&Array.isArray(saved.consumed)?saved.consumed:[];
  const bank=[...(Array.isArray(saved.bank)?saved.bank:[]),...recover],unique=new Map();
  for(const t of bank)if(t&&typeof t==='object')unique.set(String(t.sugarId||t.id||unique.size),t);
@@ -24,7 +30,7 @@ if(saved){
  app.wonderSteps=app.wonderBank.length;app.wonderValue=app.wonderBank.reduce((n,t)=>n+Math.max(0,Number(t.value)||0),0);
 }
 function persist(){
- try{store.setItem(KEY,JSON.stringify({schema:SCHEMA,bank:copy(app.wonderBank||[]),consumed:copy(consumed),challenge:challenge?R.snapshot(challenge):null,settled,awardCount,openedAt,roundSequence,tokenSequence}));}catch(e){console.warn('[LocalSugar] save',e);}
+ try{store.setItem(KEY,JSON.stringify({schema:SCHEMA,bank:copy(app.wonderBank||[]),consumed:copy(consumed),challenge:challenge?R.snapshot(challenge):null,settled,started,awardCount,openedAt,roundSequence,tokenSequence}));}catch(e){console.warn('[LocalSugar] save',e);}
 }
 function show(){
  V.stampBank();
@@ -36,7 +42,7 @@ function sync(){
  for(let i=challenge.draws.length;i<numbers.length&&i<8;i++){
   const next=R.advance(challenge,numbers[i],{roundId:challenge.roundId,ballIndex:i+1});
   if(!next)throw Error('[LocalSugar] nonsequential native ball');
-  challenge=next;
+  challenge=next;started=true;
  }
  show();persist();
 }
@@ -57,7 +63,7 @@ function beginBet(){
   // Validate and freeze the complete quote BEFORE removing any bank tokens.
   const next=R.create({id:roundId+':sugar',roundId,station:1,sugarValues:values,rng:app.random});
   consumed=copy(eligible);const used=new Set(eligible);
-  app.wonderBank=bank.filter(t=>!used.has(t));challenge=next;openedAt=Date.now();settled=false;
+  app.wonderBank=bank.filter(t=>!used.has(t));challenge=next;openedAt=Date.now();settled=false;started=false;
   app.wonderSteps=app.wonderBank.length;app.wonderValue=app.wonderBank.reduce((sum,t)=>sum+Number(t.value||0),0);
   show();persist();V.setExpanded(true);return true;
  }finally{updating=false;}
@@ -102,7 +108,7 @@ app.prepare=function(...args){
    const bank=app.wonderBank||[],ids=new Set(bank.map(t=>t.sugarId));
    for(const token of consumed)if(!ids.has(token.sugarId)){bank.push(copy(token));ids.add(token.sugarId);}
   }
-  challenge=null;consumed=[];settled=false;openedAt=0;
+  challenge=null;consumed=[];settled=false;started=false;openedAt=0;
  }
  const result=nativePrepare.apply(this,args);
  if(!beginBet()){show();persist();}return result;
@@ -114,7 +120,7 @@ app.onChange=function(...args){
 };
 const nativeReset=app.resetDebug;
 app.resetDebug=function(...args){
- resetting=true;challenge=null;consumed=[];settled=false;openedAt=0;
+ resetting=true;challenge=null;consumed=[];settled=false;started=false;openedAt=0;
  try{return nativeReset.apply(this,args);}finally{resetting=false;store.removeItem(KEY);show();persist();}
 };
 function grantTestSugar(count=5){
@@ -133,6 +139,6 @@ if(banner&&!banner.querySelector('[data-local-action="sugar-five"]')){
  button.title='ローカル版だけで5個を追加。BETタイム中にJP値と倍率が決まります';
  button.addEventListener('click',event=>{event.stopPropagation();grantTestSugar(5);});banner.append(button);
 }
-window.SweetsLocalSugarV267={version:268,grantTestSugar,beginBet,describe:()=>({active:!!challenge,phase:challenge?.phase||null,draws:challenge?.draws.slice()||[],bankCount:app.wonderBank?.length||0,roundId:challenge?.roundId||null,jpAmount:challenge?.jpAmount||0,multiplier:challenge?.multiplier||null,openedAt,cashWin:challenge?.cashWin||0,jpcQualified:!!challenge?.jpcQualified,qualifyingDrawCount:challenge?.qualifyingDrawCount||null,settled,awardCount,serverIsolated:true})};
+window.SweetsLocalSugarV267={version:268,grantTestSugar,beginBet,describe:()=>({active:!!challenge,phase:challenge?.phase||null,rulesRevision:challenge?.rulesRevision||null,draws:challenge?.draws.slice()||[],bankCount:app.wonderBank?.length||0,roundId:challenge?.roundId||null,jpAmount:challenge?.jpAmount||0,multiplier:challenge?.multiplier||null,openedAt,cashWin:challenge?.cashWin||0,jpcQualified:!!challenge?.jpcQualified,qualifyingDrawCount:challenge?.qualifyingDrawCount||null,settled,started,awardCount,serverIsolated:true})};
 V.stampBank();if(!beginBet()){show();persist();}
 })();
