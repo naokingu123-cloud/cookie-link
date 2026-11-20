@@ -1,0 +1,116 @@
+{
+  "version": "20261120-v271-sugar-jpc-ten-percent",
+  "runtimeCommit": "5051e704a8727f9f37e1dde7776a2a8ec627d734",
+  "url": "https://naokingu123-cloud.github.io/cookie-link/",
+  "verifiedAt": "2026-11-20T03:21:16Z",
+  "files": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 84140,
+      "sha256": "1e7b2196555c25b88503835287cd3d661914090156333e0d984b62f3d07ea6ee",
+      "match": true
+    },
+    {
+      "path": "app-version.json",
+      "status": 200,
+      "bytes": 51,
+      "sha256": "ca53e32621abb834952bd66385a2aadb1558b78cda2aa3ef8a402db95e9ef618",
+      "match": true
+    },
+    {
+      "path": "assets/sugar-challenge-rules-v254.js",
+      "status": 200,
+      "bytes": 15491,
+      "sha256": "08292677a0cc2158710b07e25e1f2bb52eef6fb38dbb4e4f9e425583a9f64027",
+      "match": true
+    },
+    {
+      "path": "assets/sugar-challenge-v254.js",
+      "status": 200,
+      "bytes": 26656,
+      "sha256": "6073f368f0c5b15303d05691bb5d7e136ef6389bae2a29bf65857affceb135e6",
+      "match": true
+    },
+    {
+      "path": "assets/sugar-challenge-v254.css",
+      "status": 200,
+      "bytes": 34785,
+      "sha256": "c0d750660723ab7a62f9d02fb7e8afd7f79c176a102e9638e1be27786f28953a",
+      "match": true
+    },
+    {
+      "path": "assets/edition-choice-v255.js",
+      "status": 200,
+      "bytes": 3772,
+      "sha256": "68ce7356ad99d076b6435fe33e659e333a4510ff35576d86e316c3ade7bf36c8",
+      "match": true
+    },
+    {
+      "path": "assets/download-cache-v255.js",
+      "status": 200,
+      "bytes": 4361,
+      "sha256": "084694bb67b08e3f3f831271b45be13ddc3c52c2cb830610a033b0d796aea1f3",
+      "match": true
+    },
+    {
+      "path": "download-sw-v255.js",
+      "status": 200,
+      "bytes": 3601,
+      "sha256": "670662cebd7f66764182be286e21534732bdcacb2297acde4b2ec36f693a991a",
+      "match": true
+    },
+    {
+      "path": "assets/download-assets-v255.json",
+      "status": 200,
+      "bytes": 109793,
+      "sha256": "a65950d825d7840f69876e2d7e9560f9b041fcd960d3d5f3b01ec5f36458c1f1",
+      "match": true
+    }
+  ],
+  "allMatch": true,
+  "verificationCommit": "63edde48824056f0a64f0c3b122c1e0faa3b109e",
+  "ci": {
+    "runId": 44667039479,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44667039479",
+    "jobs": [
+      {
+        "id": 136058734662,
+        "name": "dango-layout",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136058734972,
+        "name": "sugar-layout",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136058735006,
+        "name": "rules-and-cache",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "browser": {
+    "productionUrl": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v271-sugar-jpc-ten-percent",
+    "checked": [
+      "fixed JP base plus x10 popup",
+      "320x300 compact panel",
+      "extended horizontal multiplier reel",
+      "low sum36 cash unaffected by x10",
+      "fourth-ball cumulative77 JPC celebration"
+    ],
+    "screenshot": "qa-v271/sugar-jp-popup.jpg",
+    "limitation": "The local CUA browser has WebGL disabled. The revised DOM image reel and Sugar panel were checked there; CI browser presentation checks also passed."
+  },
+  "localChecks": [
+    "npm run test:sugar",
+    "node tests/download-v255-ledger.mjs",
+    "node tests/download-v255-cache.mjs",
+    "changed JavaScript syntax",
+    "git diff --check"
+  ]
+}

@@ -41,3 +41,7 @@ JPベースの500刻み丸めは維持。JP表示は基礎額を固定し、横�
 正本は `naokingu123-cloud/cookie-link` のmain、公開先は既存GitHub Pages。版情報・該当資産URL・Downloadハッシュを更新し、旧v270のオフラインcacheも再開可能に維持。
 
 Windows共有サーバーの更新はPages公開と別。Windows側も最新mainを取得して既存のランチャーから再起動する必要がある。`.runtime`、`.tools`、`data`を保持する。公開確認のために実稼働のBET・精算を操作しない。
+
+## 公開確認完了
+
+実行コード `5051e704a8727f9f37e1dde7776a2a8ec627d734` のPages公開が成功し、変更に関係する9配信ファイルのSHA-256が手元と完全一致。後続の試験前提修正コミット `63edde48824056f0a64f0c3b122c1e0faa3b109e` のrun `44667039479` はrules-and-cache・dango-layout・sugar-layoutの3ジョブすべて成功。後続コミットはruntimeを変更していない。詳細は `sugar-challenge-v271-public-qa.json`。
