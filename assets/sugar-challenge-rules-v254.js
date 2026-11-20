@@ -69,13 +69,17 @@
  }
  function canonical(raw){
   if(!raw||typeof raw!=='object'||!SUPPORTED_REVISIONS.includes(raw.rulesRevision)||!isId(raw.id)||!isId(raw.roundId)||!Number.isInteger(raw.station)||raw.station<1||raw.station>6)return null;
+  // An owner may update an unstarted legacy quote's entry conditions without
+  // repricing the JP it already announced. Only a supported older rounding
+  // revision can be retained; arbitrary cached monetary fields remain ignored.
+  if(raw.quoteRevision!==undefined&&(raw.rulesRevision<REVISION||!SUPPORTED_REVISIONS.includes(raw.quoteRevision)||raw.quoteRevision>=REVISION))return null;
   const validMultiplier=multipliers.some(row=>row.multiplier===raw.multiplier)||(raw.rulesRevision>=270&&raw.multiplier===4);
   if(!Array.isArray(raw.sugarValues)||raw.sugarValues.length!==SUGAR_COUNT||!raw.sugarValues.every(isMedal)||typeof raw.cardId!=='string'||!cardFor(raw)||!validMultiplier||!validDraws(raw.draws))return null;
-  return {rulesRevision:raw.rulesRevision,id:raw.id,roundId:raw.roundId,station:raw.station,sugarValues:raw.sugarValues.slice(),cardId:raw.cardId,multiplier:raw.multiplier,seed:Number.isInteger(raw.seed)?raw.seed>>>0:null,draws:raw.draws.slice()};
+  return {rulesRevision:raw.rulesRevision,...(raw.quoteRevision!==undefined?{quoteRevision:raw.quoteRevision}:{}),id:raw.id,roundId:raw.roundId,station:raw.station,sugarValues:raw.sugarValues.slice(),cardId:raw.cardId,multiplier:raw.multiplier,seed:Number.isInteger(raw.seed)?raw.seed>>>0:null,draws:raw.draws.slice()};
  }
  function derive(input){
   const state=canonical(input);if(!state)return null;
-  const jpBase=baseFor(state.sugarValues,state.rulesRevision),jpAmount=safeNumber(BigInt(jpBase)*BigInt(state.multiplier)),sum=state.draws.reduce((total,n)=>total+n,0),complete=state.draws.length===BALL_COUNT;
+  const jpBase=baseFor(state.sugarValues,state.quoteRevision??state.rulesRevision),jpAmount=safeNumber(BigInt(jpBase)*BigInt(state.multiplier)),sum=state.draws.reduce((total,n)=>total+n,0),complete=state.draws.length===BALL_COUNT;
   const cashBase=state.rulesRevision>=271?jpBase:jpAmount,card=cardFor(state);
   const finalOutcome=complete?evaluate(state,sum):null;
   // Re-derive the first qualification from the authoritative ordered history.
@@ -103,6 +107,14 @@
  }
  function restore(raw){try{return derive(raw);}catch{return null;}}
  function snapshot(state){const restored=restore(state);return restored?canonical(restored):null;}
+ function upgradeUnstarted(raw){
+  const state=restore(raw);
+  if(!state||state.draws.length||state.rulesRevision>=REVISION)return state;
+  // This is deliberately separate from restore/advance. Their callers may
+  // be replaying an issued old game, so only the owner at a zero-ball BET
+  // boundary opts in to the current high/lucky conditions and cash basis.
+  return restore({...state,rulesRevision:REVISION,quoteRevision:state.rulesRevision});
+ }
  function advance(source,number,options={}){
   const state=restore(source);if(!state||!isNumber(number)||options.roundId!==undefined&&String(options.roundId)!==state.roundId)return null;
   const index=options.ballIndex;
@@ -175,5 +187,5 @@
    return {hundredths,fraction:hundredths/100,ranges};
   });
  }
- return freeze({REVISION,PREVIOUS_REVISION,EARLY_REVISION,LEGACY_REVISION,SUPPORTED_REVISIONS,JP_STEP,version:REVISION,SUGAR_COUNT,BALL_COUNT,MIN_SUM,MAX_SUM,CENTER_SUM,OUTCOME_COUNT,cards,CARDS:cards,legacyCards,multipliers,MULTIPLIERS:multipliers,cardsFor,cardFor,seededRandom,selectCard,selectMultiplier,quoteSugar,evaluate,cashFor,create,advance,draw:advance,restore,snapshot,reaches,finalSumDistribution,forecast,payoutRows});
+ return freeze({REVISION,PREVIOUS_REVISION,EARLY_REVISION,LEGACY_REVISION,SUPPORTED_REVISIONS,JP_STEP,version:REVISION,SUGAR_COUNT,BALL_COUNT,MIN_SUM,MAX_SUM,CENTER_SUM,OUTCOME_COUNT,cards,CARDS:cards,legacyCards,multipliers,MULTIPLIERS:multipliers,cardsFor,cardFor,seededRandom,selectCard,selectMultiplier,quoteSugar,evaluate,cashFor,create,advance,draw:advance,restore,snapshot,upgradeUnstarted,reaches,finalSumDistribution,forecast,payoutRows});
 });

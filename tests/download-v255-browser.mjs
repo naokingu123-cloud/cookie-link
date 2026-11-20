@@ -79,6 +79,32 @@ async function waitPlayback(predicate,label,timeout){
   return predicate(current)?current:false;
  },label,timeout);
 }
+async function waitForPlaybackComplete(recording){
+ const initial=await state(),nativeLimit=Number(initial.wait?.nativeTimeoutMs)||90000;
+ // Every recorded HIT has its own native-animation wait. The old whole-round
+ // allowance of recording+180s could expire while a valid replay still moved:
+ // the v278 failures had already accumulated 228/240s across earlier HITs.
+ // Keep the runtime's unchanged per-HIT bound and a separate no-progress
+ // watchdog, instead of treating cumulative animation time as one stalled HIT.
+ const remainingHits=Math.max(0,8-initial.stableBall),remainingRecording=Math.max(0,recording.durationMs-initial.playbackMs);
+ const timeout=Math.max(180000,remainingRecording+remainingHits*nativeLimit+30000),noProgressLimit=nativeLimit+20000;
+ report.completionBudget={remainingHits,remainingRecordingMs:remainingRecording,nativePerHitLimitMs:nativeLimit,noProgressLimitMs:noProgressLimit,totalLimitMs:timeout};
+ report.playbackProgress=[];
+ let progressAt=Date.now(),lastKey='',lastBoundary='',lastSample=0;
+ return waitPlayback(current=>{
+  if(!current)return false;
+  const now=Date.now(),key=[current.cursor,current.stableBall,Math.floor(current.playbackMs/250),current.phase].join('/');
+  if(key!==lastKey){lastKey=key;progressAt=now;}
+  const boundary=current.cursor+'/'+current.stableBall;
+  if(boundary!==lastBoundary||now-lastSample>=30000||current.localComplete){
+   const row={cursor:current.cursor,stableBall:current.stableBall,playbackMs:current.playbackMs,phase:current.phase,timing:current.timing,wait:current.wait};
+   report.playbackProgress.push(row);lastSample=now;
+   if(boundary!==lastBoundary){milestone('offline-playback-progress',{cursor:current.cursor,stableBall:current.stableBall,playbackMs:current.playbackMs,stage:current.wait?.stage});lastBoundary=boundary;}
+  }
+  if(now-progressAt>noProgressLimit)throw Error('Offline playback made no progress within '+noProgressLimit+'ms: '+JSON.stringify(current.wait||current));
+  return current.localComplete;
+ },'offline recorded playback and native payout complete',timeout);
+}
 async function capture(name){
  const details=await page.evaluate(()=>{
   const panel=document.getElementById('download-v255-panel'),r=panel?.getBoundingClientRect();
@@ -253,7 +279,7 @@ try{
  await waitPlayback(s=>s?.stableBall>paused.stableBall,'offline playback advances beyond the saved hit',Math.max(90000,pack.playback.recording.durationMs+60000));
  server=await launchServer({port:server.port,directory:server.directory});report.restartedHealth=await waitReady(server);
  const resumedServer=await call('active');assert.equal(resumedServer.session.id,prepared.session.id);assert.equal(resumedServer.wallet.credit,active.wallet.credit);assert.equal(resumedServer.stats.rounds,1);
- await waitPlayback(s=>s?.localComplete,'offline recorded playback and native payout complete',Math.max(180000,pack.playback.recording.durationMs+180000));
+ await waitForPlaybackComplete(pack.playback.recording);
  report.offlineComplete=await state();assert.equal(report.offlineComplete.pendingComplete,true);assert.equal(report.offlineComplete.stableBall,8);assert.deepEqual(report.offlineComplete.draws,pack.numbers);
  await betSwitch(false,'offline result');
  milestone('offline-complete',{ball:report.offlineComplete.stableBall});

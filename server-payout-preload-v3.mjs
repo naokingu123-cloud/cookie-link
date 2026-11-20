@@ -512,7 +512,7 @@ function startSugarInBetV254(machineId,p){
  if(downloadLedgerV255?.locked(machineId,p.playerId))return false;
  const core=coreDatabase?.machines?.[machineId],round=core?.round,station=sugarStationV254(core,p.playerId);
  if(!round||round.phase!=='BETTING'||!station||!(round.eligiblePlayerIds||[]).includes(p.playerId))return false;
- return sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed;
+ return sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt,refreshUnstarted:Array.isArray(round.balls)&&round.balls.length===0}).changed;
 }
 function ingestSugarV254(machineId,playerId,roundId,payload,{startInBet=true}={}){
  if(downloadLedgerV255?.locked(machineId,playerId))return false;
@@ -542,6 +542,7 @@ function hydrateSugarV254(){
   const bank=candidates[0]?.state?.wonderBank;
   if(bank?.length)changed=ingestSugarV254(machineId,p.playerId,null,{state:{wonderBank:bank}},{startInBet:false})||changed;
   for(const round of coreRounds(machineId))if(p.sugarV254.rounds?.[round.id]&&!round.cancelledV242)changed=sugarLedgerV254.advance(p,{roundId:round.id,balls:round.balls||[]}).changed||changed;
+  changed=startSugarInBetV254(machineId,p)||changed;
  }
  if(changed)persistWallet();
 }
@@ -550,7 +551,7 @@ Object.assign(globalThis[Symbol.for('sweets-link.payout-v3.wallet')],{
  sugarState:(machineId,playerId)=>sugarLedgerV254.publicState(player(machineId,playerId)),
  sugarBetting(core,round){
   let changed=false;
-  for(const id of round.eligiblePlayerIds||[]){if(downloadLedgerV255?.locked(core.id,id))continue;const station=sugarStationV254(core,id);if(!station)continue;const p=player(core.id,id);ensureWallet(core.id,id,p);changed=sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt}).changed||changed;}
+  for(const id of round.eligiblePlayerIds||[]){if(downloadLedgerV255?.locked(core.id,id))continue;const station=sugarStationV254(core,id);if(!station)continue;const p=player(core.id,id);ensureWallet(core.id,id,p);changed=sugarLedgerV254.start(p,{roundId:round.id,station,openedAt:round.betOpenedAt,refreshUnstarted:round.phase==='BETTING'&&Array.isArray(round.balls)&&round.balls.length===0}).changed||changed;}
   if(changed)persistWallet();
  },
  sugarBall(core,round){

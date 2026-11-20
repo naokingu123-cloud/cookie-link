@@ -11,7 +11,9 @@ const [html,bootstrap,extension,choice,service,profile,sugar,versionText]=await 
 const version=JSON.parse(versionText).version;
 assert.ok(Number(/-v(\d+)-/.exec(version)?.[1])>=258,'the local edition remains available in later builds');
 assert.ok(html.includes('<script src="assets/local-debug-v258.js?v=258"></script>'));
-assert.ok(html.includes("else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=269','assets/local-sugar-v267.js?v=268');"));
+const localExtras=html.match(/else if\(edition==='local'\)extras\.push\(([^;]+)\);/)?.[1]||'';
+assert.ok(Number(localExtras.match(/local-debug-game-v258\.js\?v=(\d+)/)?.[1])>=278,'local edition loads the current grouped-game host');
+assert.ok(Number(localExtras.match(/local-sugar-v267\.js\?v=(\d+)/)?.[1])>=279,'local edition loads the unstarted Sugar migration instead of the cached legacy owner');
 assert.ok(html.includes('if(edition===\'local\')'));
 assert.ok(html.includes('const localStorage=window.SweetsLocalDebugV258.storage;'));
 assert.ok(html.includes("const localEightAllowed=new URLSearchParams(location.search).get('serverHost')==='1';"));

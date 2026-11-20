@@ -7,6 +7,7 @@ if(!G||!R||!renderer||!cache)throw Error('download_dependencies_missing');
 const query=new URLSearchParams(location.search),sameOrigin=!/\.github\.io$/i.test(location.hostname),machine=G.machine(query,sameOrigin),explicitServer=query.get('sharedServer')||query.get('server')||'';
 const pageBase=new URL('./',location.href),pointerKey='sweets-download-resume-v255@'+pageBase.origin+pageBase.pathname+'@'+machine;
 const nativeStart=Arcade.prototype.start,nativePrepare=Arcade.prototype.prepare,nativeSetBet=Arcade.prototype.setBet,nativeFinish=Arcade.prototype.finishRound,nativeHud=hud;
+const NATIVE_SETTLEMENT_TIMEOUT_MS=90000;
 const initialProfile={name:playerLounge.store.data.name,pet:JSON.parse(JSON.stringify(playerLounge.store.data.pet)),photo:playerLounge.store.data.photo||''};
 let base='',playerId='',token='',profileReady=false,online=false,connecting=false,busy=false,pack=null,session=null,wallet=null,responseCache=null,identityConflict=false;
 let callbacks=null,started=false,playing=false,localComplete=false,pendingComplete=false,cursor=0,stableBall=0,playbackMs=0,stableMs=0,seq=0,ackSeq=0,frame=0,lastFrame=null,settling=false,settleStamp=0;
@@ -331,7 +332,7 @@ function tick(now){
   if(settling){
    playbackTiming.settlingMs+=elapsed;
    if(R.stable(app,cursor)&&(cursor<8||app.enabled.every((yes,i)=>!yes||app.paid[i]))){reconcile(cursor);settling=false;stableBall=cursor;stableMs=playbackMs;seq++;persist().catch(()=>{});syncProgress();}
-   else if((settleStamp+=elapsed)>90000)throw Error('download_native_settlement_timeout');
+   else if((settleStamp+=elapsed)>NATIVE_SETTLEMENT_TIMEOUT_MS)throw Error('download_native_settlement_timeout');
   }else if(cursor<8){
    const hit=pack.playback.recording.hits[cursor];playbackMs=Math.min(hit.atMs,playbackMs+elapsed);commitDangoBeforeRecordedLaunchV269(playbackMs);renderer.renderAt(playbackMs);
    if(playbackMs>=hit.atMs&&!app.drawHeld&&typeof callbacks?.onNumber==='function'&&callbacks.onNumber(hit.number)!==false){cursor++;if(pack.playback.sugarStates?.[cursor])window.SweetsSugarChallengeV254?.accept(pack.playback.sugarStates[cursor]);settling=true;settleStamp=0;}
@@ -418,6 +419,10 @@ window.addEventListener('pagehide',()=>{persist().catch(()=>{});});window.addEve
 setInterval(()=>{if(navigator.onLine&&playerId&&token&&(pendingComplete||pack&&seq>ackSeq))sync().catch(()=>{});},20000);
 // Reprobe a restarted server even when navigator.onLine never changes.
 setInterval(()=>{if(navigator.onLine&&!connecting&&!profileReady&&!pack)initialize().catch(()=>{});},20000);
-window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,server:base,connectStep,online,identityConflict,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],timing:{...playbackTiming},error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
+function playbackWaitState(){
+ return {stage:settling?'native':cursor<8?'recording':app.phase,settling,settleElapsedMs:settling?settleStamp:0,nativeTimeoutMs:NATIVE_SETTLEMENT_TIMEOUT_MS,nextHitAtMs:pack?.playback?.recording?.hits?.[cursor]?.atMs??null,
+  engines:app.engines.map((engine,index)=>({id:SweetsLineup.ids[index],enabled:app.enabled[index]!==false,processed:Number(engine.processed)||0,accepted:Number(engine.accepted)||0,phase:engine.phase,drawMode:engine.drawMode||'grouped',busy:!!engine.busy,opening:!!engine.opening,queue:engine.queue?.length||0,fx:!!engine.fx,trace:!!engine.trace,holdDraws:!!engine.holdDraws,paid:!!app.paid[index]}))};
+}
+window.SweetsDownloadV255={version:255,prepare,play,pause,sync,nextRound,chooseEdition,checkpoint:persist,initialize,describe:()=>({version:255,edition:'download',playerId,machine,server:base,connectStep,online,identityConflict,hydrated:profileReady,assetsReady,assetsProgress:assetsProgress?{...assetsProgress}:null,session:session?{id:session.id,status:session.status,requestId:session.requestId,totalBet:session.totalBet,totalWin:session.totalWin}:null,packageReady:!!pack,started,playing:playing&&!stopped(),cursor,stableBall,playbackMs,stableMs,seq,ackSeq,localComplete,pendingComplete,wallet:wallet?{...wallet}:null,bets:[...app.bets],phase:app.phase,draws:[...app.draws],timing:{...playbackTiming},wait:playbackWaitState(),error,message,streamingClientPresent:!!window.SweetsSharedMachine})};
 render();scheduleUI(app);initialize();
 })();

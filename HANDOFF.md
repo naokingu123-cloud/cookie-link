@@ -1,3 +1,13 @@
+# v279 — シュガー倍率透過・開始前の旧JPC条件移行（2026-11-20）
+
+- Build: `20261120-v279-sugar-transparent-and-current-rules`。実装候補。仕様・素材・原因は [v279記録](docs/sugar-v279.md)。実ブラウザーと公開照合は専用CIで確認する。
+- 倍率1/2/3/4/5/10の元PNGを保持し、別途1254×1254 RGBA透過版6枚を生成。開始後の倍率・JPヘッダ・JPC獲得表示を透過版へ変更。素材API `SweetsSugarChallengeV254.multiplierArtwork(n)`。生成プロンプト・SHAは `assets/sugar-art-v279/provenance.json`。
+- 新規Sugarは既に271だったが、保存された0球旧quoteを再利用するとLOW条件が復活していた。所有者の未開始境界だけ `upgradeUnstarted` で271へ移行。JP額/倍率/seed/5個の値を保持し、旧JP丸めをquoteRevisionへ保存。既進行・精算済み・取消済みには適用しない。local startedマーカーで再読込による誤移行も防ぐ。
+- 旧Download browserの期限切れは録画時間＋180秒の全体待ちが累積演出を十分含めていない疑い。再生・配当・90秒/球は保持し、診断を追加。検査は残り録画＋各球上限と110秒無進展監視を併用し、専用CIの実オフライン8球完了で確認する。
+- Windows稼働サーバーの更新・再起動は未実施。最新ソースの適用時も `.runtime`・`.tools`・`data` を保持する。
+
+---
+
 # v278 — シックスドロップの全消し・継続・3/2球進行（2026-11-20）
 
 - Build: `20261120-v278-sixdrop-bottle-and-carry`。[PR #3](https://github.com/naokingu123-cloud/cookie-link/pull/3) をマージし、公開ファイル照合済み。main/runtimeコミットは `c5510fa5ec37a0677ef1ee47cc759016c49bf7f9`。PR検証HEAD `db1ed0d1369b87cb88bfbe05625df291cf32cd48` とローカル検証HEAD `d985b430e278729e9ce7ac071a7f900d0a96d3c2` はtree `4347ea2c6c080da058badbcb42bfae9983667fd8` が一致。仕様・検証範囲と残る調査は [v278記録](docs/sixdrop-v278.md)。

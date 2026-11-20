@@ -12,6 +12,7 @@ const elements={digital:{hidden:false,attributes:{},setAttribute(n,v){this.attri
 const attributes={};
 const context={
  clamp:(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),intro:0,
+ window:{SweetsAudioV277:{sugarReel(){}}},paused:()=>false,
  stage:{dataset:{}},reel:{hidden:false,dataset:{},style:style(),attributes:{},setAttribute(n,v){this.attributes[n]=v;},querySelector:s=>s==='.sc270-reel-window'?elements.window:elements.state},
  reelTrack:{dataset:{},style:{},firstElementChild:{offsetWidth:136}},reelMultiplier:badge(),
  resultFace:{alt:'',getAttribute:n=>attributes[n],setAttribute:(n,v)=>{attributes[n]=v;}},
@@ -54,12 +55,24 @@ for(const multiplier of [1,2,3,4,5,10]){
  context.intro=timing.stop+720;context.paintReel(state,false);assert.equal(context.reelMultiplier.style['--sc271-pop-scale'],'1');assert.equal(context.reelMultiplier.style['--sc271-pop-opacity'],'1');
  const before=JSON.stringify(context.reelTrack);
  context.paintReel(state,false);assert.equal(JSON.stringify(context.reelTrack),before,'duplicate snapshots do not reroll');
- assert.equal(attributes.src,'assets/sugar-art-v270/multiplier-'+multiplier+'.png');
+ assert.equal(attributes.src,'assets/sugar-art-v279/multiplier-'+multiplier+'-transparent.png');
  context.paintReel(state,true);assert.equal(context.reel.hidden,true);assert.equal(elements.digital.hidden,false);const label=({1:'',2:'ハイパー ',3:'スペシャル ',4:'ウルトラ ',5:'ミラクル ',10:'ギャラクシー '}[multiplier])+multiplier+'倍';assert.equal(context.multiplier.textContent,label);assert.equal(context.resultFace.alt,label);assert.equal(elements.digital.attributes['aria-label'],label);assert.equal(context.stage.dataset.reelReady,'false');
  assert.equal(context.displayAmounts(state).cashBase,10500,'miss awards do not change with multiplier');
  assert.equal(context.displayAmounts({...state,cashBase:undefined}).cashBase,10500,'new-revision fallback also uses the base');
  assert.equal(context.displayAmounts({...state,rulesRevision:270,cashBase:undefined}).cashBase,state.jpAmount,'legacy payout display preserves its persisted award calculation');
 }
+vm.runInContext('globalThis.artworkFor=multiplierArtwork;',context);
+for(const value of [1,2,3,4,5,10]){
+ const descriptor=context.artworkFor(value),imageAttributes={},label={textContent:''};
+ assert.ok(Object.isFrozen(descriptor),'reusable artwork descriptors cannot be changed by a JPC consumer');
+ assert.equal(descriptor.multiplier,value);assert.equal(descriptor.transparentSrc,'assets/sugar-art-v279/multiplier-'+value+'-transparent.png');
+ assert.equal(descriptor.reelSrc,'assets/sugar-art-v270/multiplier-'+value+'.png','the original reel still uses its full-background card');
+ const image={getAttribute:n=>imageAttributes[n],setAttribute:(n,v)=>{imageAttributes[n]=v;}},node=badge();node.querySelector=s=>s==='[data-sc-multiplier-art]'?image:label;
+ context.paintMultiplier(node,{multiplier:value},false);assert.equal(node.hidden,true,'transparent multiplier stays hidden until the result is known');
+ context.paintMultiplier(node,{multiplier:value},true);assert.equal(node.hidden,value===1,'the base-one JP amount has no extra multiplier popup');
+ assert.equal(imageAttributes.src,descriptor.transparentSrc);assert.equal(image.alt,descriptor.label);assert.equal(label.textContent,'×'+value);assert.equal(node.attributes['aria-label'],'JP '+value+'倍');
+}
+for(const value of [0,6,NaN,'toString'])assert.equal(context.artworkFor(value),null,'unsupported artwork does not silently select a different multiplier');
 const bands={innerHTML:''},pins={innerHTML:''},gaugeAxis={innerHTML:''};
 context.R={MIN_SUM:36,MAX_SUM:172,CENTER_SUM:104,payoutRows:s=>{assert.ok(s.rulesRevision,'payout rows are resolved with their saved revision');return [];}};
 context.gauge={attributes:{},querySelector:selector=>selector.includes('bands')?bands:pins,setAttribute(n,v){this.attributes[n]=v;}};context.gaugeAxis=gaugeAxis;
@@ -72,4 +85,4 @@ assert.doesNotMatch(source,/JP ×|JP \*/,'cash awards never show fractional JP e
 assert.equal((source.match(/class="sc270-gauge"/g)||[]).length,1,'there is one actual vertical gauge');
 assert.match(source,/R\.cashFor\(money\.cashBase,row\.hundredths\)/);assert.doesNotMatch(source,/R\.cashFor\(s\.jpAmount,row\.hundredths\)/);
 assert.doesNotMatch(source,/Math\.random|selectMultiplier\(/,'presentation never draws a second outcome');
-console.log('SUGAR_V271_PRESENTATION_PASS: 6.25s smooth spin;5+ full cycles; all6 server results centered; JP base plus multiplier popup; cash independent of multiplier; revision-aware high-only gauge; deterministic replay.');
+console.log('SUGAR_V279_PRESENTATION_PASS: unchanged 6.25s spin and six original reel cards; all server results centered; transparent settled/JPC artwork descriptors; JP base plus multiplier popup; cash independent of multiplier; deterministic replay.');

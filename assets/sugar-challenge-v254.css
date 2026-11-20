@@ -269,3 +269,14 @@
 .sc254-overlay[data-compact=true] .sc254-jp>span{font-size:6px;line-height:7px;top:1px}
 .sc254-overlay[data-compact=true] .sc254-jp>.sc271-multiplier-popup{font-size:18px;padding-top:1px;padding-bottom:1px}
 @media(prefers-reduced-motion:reduce){.sc271-multiplier-popup{transform:none;opacity:1}.sc270-reel-window,.sc270-reel-state{animation:none!important}}
+
+/* v279: settled multipliers are transparent emblems. The roulette keeps its
+   original full artwork and text popup; no plaque survives behind these PNGs. */
+.sc271-multiplier-popup.sc279-multiplier-artwork{position:relative;min-width:0;padding:0!important;border:0!important;border-radius:0;background:none!important;box-shadow:none!important;text-shadow:none;line-height:0;letter-spacing:0}
+.sc279-multiplier-artwork>img{display:block;width:100%;height:100%;object-fit:contain;background:transparent;filter:drop-shadow(0 1px 3px #17071e88)}
+.sc279-multiplier-artwork>[data-sc-multiplier-label]{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.sc254-jp>.sc279-multiplier-artwork{width:40px;height:32px}
+.sc254-celebration .sc279-multiplier-artwork{width:112px;height:112px}
+.sc254-overlay[data-narrow=true] .sc254-jp>.sc279-multiplier-artwork{width:36px;height:29px}
+.sc254-overlay[data-compact=true] .sc254-jp>.sc279-multiplier-artwork{height:27px}
+@media(max-width:620px){.sc254-celebration .sc279-multiplier-artwork{width:92px;height:92px}}

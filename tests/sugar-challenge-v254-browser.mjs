@@ -62,7 +62,7 @@ function verifyPanel(state,{jp=jpAmount,multiplier=3,cashBase=jp}={}){
  const markerCenter=(state.gauge.marker.top+state.gauge.marker.bottom)/2;assert.ok(Math.abs(markerCenter-state.bottle.liquid.top)<1,'moving gauge marker matches the animated liquid level');
  assert.deepEqual(state.gauge.pins,state.lucky,'lucky totals are represented on the same gauge');assert.match(state.gauge.label,/0から172/);
  assert.equal(state.jp.value,jp);assert.equal(state.jp.multiplierVisible,multiplier>1);if(multiplier>1){assert.equal(state.jp.multiplier,'×'+multiplier);contained(state.jp.multiplierRect,state.overlay.rect,'JP multiplier popup');}assert.match(state.jp.font,/ArcadePayout/);assert.match(state.sumFont,/ArcadePayout/);assert.doesNotMatch(state.jp.text,/[,，]/);const tier=({1:'',2:'ハイパー ',3:'スペシャル ',4:'ウルトラ ',5:'ミラクル ',10:'ギャラクシー '}[multiplier])+multiplier+'倍';assert.equal(state.multiplier,tier);assert.equal(state.reel.resultAlt,tier);assert.equal(state.reel.resultLabel,tier);assert.equal(state.reel.cardFit,'contain','the full square emblem is preserved');
- assert.equal(state.reel.images.length,6);assert.equal(state.reel.resultImage,'assets/sugar-art-v270/multiplier-'+multiplier+'.png');
+ assert.equal(state.reel.images.length,6);assert.equal(state.reel.resultImage,'assets/sugar-art-v279/multiplier-'+multiplier+'-transparent.png');
  assert.deepEqual(state.reel.imageLabels,state.reel.cycle.map(value=>({1:'',2:'ハイパー ',3:'スペシャル ',4:'ウルトラ ',5:'ミラクル ',10:'ギャラクシー '}[value])+value+'倍'));
  assert.equal(state.reel.cycle.length,14);assert.deepEqual(Object.fromEntries([1,2,3,4,5,10].map(n=>[n,state.reel.cycle.filter(v=>v===n).length])),{1:5,2:3,3:2,4:2,5:1,10:1});
 }

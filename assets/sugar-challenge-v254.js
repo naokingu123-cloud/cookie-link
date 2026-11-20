@@ -13,6 +13,13 @@ const BASE_END=3250,REEL_START=3450,REEL_STOP=9700,INTRO_END=10500;
 const REEL_SEQUENCE=Object.freeze([1,2,1,3,4,1,2,5,1,3,2,4,1,10]);
 const MULTIPLIER_TIERS=Object.freeze({1:'',2:'ハイパー',3:'スペシャル',4:'ウルトラ',5:'ミラクル',10:'ギャラクシー'});
 const multiplierLabel=value=>(MULTIPLIER_TIERS[value]?MULTIPLIER_TIERS[value]+' ':'')+value+'倍';
+// Keep the original opaque cards exclusive to the unchanged multiplier reel.
+// The same transparent descriptor is reusable by a future, larger JPC view.
+const MULTIPLIER_ARTWORK=Object.freeze(Object.fromEntries(Object.keys(MULTIPLIER_TIERS).map(key=>{
+ const value=Number(key);return [value,Object.freeze({multiplier:value,tier:MULTIPLIER_TIERS[value],label:multiplierLabel(value),transparentSrc:'assets/sugar-art-v279/multiplier-'+value+'-transparent.png',reelSrc:'assets/sugar-art-v270/multiplier-'+value+'.png'})];
+})));
+const multiplierArtwork=value=>Object.hasOwn(MULTIPLIER_ARTWORK,value)?MULTIPLIER_ARTWORK[value]:null;
+const multiplierArtworkMarkup=()=>'<img data-sc-multiplier-art src="'+multiplierArtwork(1).transparentSrc+'" alt=""><span data-sc-multiplier-label aria-hidden="true">×1</span>';
 // Integrate a smooth speed profile: accelerate, cruise, brake, then ease the
 // final card into place. The distance and selected outcome never change.
 function reelMotion(progress){
@@ -27,7 +34,10 @@ function reelMotion(progress){
 }
 function displayAmounts(s){return {jpBase:s.jpBase,cashBase:s.cashBase??(s.rulesRevision>=271?s.jpBase:s.jpAmount),multiplier:s.multiplier};}
 function paintMultiplier(node,s,revealed,age=1000){
- const visible=revealed&&s.multiplier>1;node.hidden=!visible;node.textContent='×'+s.multiplier;node.dataset.tier=String(s.multiplier);
+ const visible=revealed&&s.multiplier>1;node.hidden=!visible;node.dataset.tier=String(s.multiplier);
+ const art=node.querySelector?.('[data-sc-multiplier-art]');
+ if(art){const descriptor=multiplierArtwork(s.multiplier);if(art.getAttribute('src')!==descriptor.transparentSrc)art.setAttribute('src',descriptor.transparentSrc);art.alt=descriptor.label;node.querySelector('[data-sc-multiplier-label]').textContent='×'+s.multiplier;}
+ else node.textContent='×'+s.multiplier;
  const p=clamp(age/720),scale=p<.24?.55+.7*(1-(1-p/.24)**3):1+.25*(1-(p-.24)/.76)**3;
  node.style.setProperty('--sc271-pop-scale',String(scale));node.style.setProperty('--sc271-pop-opacity',String(clamp(p/.12)));
  node.setAttribute('aria-label','JP '+s.multiplier+'倍');
@@ -78,14 +88,14 @@ function mount(){
  game.classList.add('sc254-host');
  overlay=document.createElement('section');overlay.className='sc254-overlay';overlay.hidden=true;overlay.tabIndex=0;overlay.setAttribute('role','button');overlay.setAttribute('aria-label','シュガーチャレンジ。タップで小さく表示');
  overlay.innerHTML=`<div class="sc254-sparkles" aria-hidden="true"></div>
- <header class="sc254-head"><div><small>SWEETS KINGDOM</small><h2>シュガーチャレンジ</h2></div><div class="sc254-jp"><span>JACKPOT</span><b data-sc-amount></b><strong class="sc271-multiplier-popup" data-sc-jp-multiplier hidden></strong></div></header>
+ <header class="sc254-head"><div><small>SWEETS KINGDOM</small><h2>シュガーチャレンジ</h2></div><div class="sc254-jp"><span>JACKPOT</span><b data-sc-amount></b><strong class="sc271-multiplier-popup sc279-multiplier-artwork" data-sc-jp-multiplier hidden>${multiplierArtworkMarkup()}</strong></div></header>
  <div class="sc254-content">
   <div class="sc270-summary"><div class="sc254-card-name"></div><div class="sc254-targets"></div><p class="sc254-reach" aria-live="polite"></p></div>
   <div class="sc270-stage">
    <div class="sc254-magic">
     <div class="sc254-scale"><img src="assets/sugar-art-v254/scale.webp" alt="シュガーを量る魔法の秤"><div class="sc254-five" aria-hidden="true">${Array.from({length:5},(_,i)=>'<i class="sugar-gem" data-i="'+i+'"></i>').join('')}</div><div class="sc254-sugar-stream" aria-hidden="true"></div><b data-sc-scale-amount></b></div>
     <div class="sc254-bottle"><div class="sc254-fill-shell"><div class="sc254-fill"></div></div><img src="assets/sugar-art-v254/bottle.webp" alt="数字の量だけシュガーが入る魔法の瓶"><div class="sc254-sugar-stream" aria-hidden="true"></div><div class="sc254-sum"><small>シュガー投入量</small><b data-sc-sum></b><span data-sc-ball-count></span></div><b class="sc254-last-hit"></b></div>
-    <div class="sc254-digital" role="img" aria-label="1倍"><img data-sc-result-face src="assets/sugar-art-v270/multiplier-1.png" alt="1倍"><b data-sc-multiplier aria-hidden="true">1倍</b></div>
+    <div class="sc254-digital" role="img" aria-label="1倍"><img data-sc-result-face src="${multiplierArtwork(1).transparentSrc}" alt="1倍"><b data-sc-multiplier aria-hidden="true">1倍</b></div>
    </div>
    <div class="sc270-gauge-column"><div class="sc270-gauge-caption">合計ゲージ</div><div class="sc270-gauge-axis" aria-hidden="true"></div><div class="sc270-gauge" role="img" aria-label="シュガー合計 0から172"><div class="sc270-gauge-bands"></div><div class="sc270-gauge-pins"></div><div class="sc270-gauge-marker"><b data-sc-gauge-current>0</b></div></div></div>
    <div class="sc254-card"><table class="sc254-payouts" aria-label="配当"><colgroup><col style="width:13px"><col></colgroup><thead><tr><th colspan="2">配当</th></tr></thead><tbody></tbody></table></div>
@@ -97,7 +107,7 @@ function mount(){
  scale.querySelectorAll('.sugar-gem').forEach((el,i)=>{if(typeof applySugarTier==='function')applySugarTier(el,i);});
  dock=document.createElement('button');dock.type='button';dock.className='sc254-dock';dock.hidden=true;dock.setAttribute('aria-label','シュガーチャレンジを大きく表示');dock.innerHTML='<img src="assets/sugar-art-v254/bottle.webp" alt=""><span><small>シュガーチャレンジ</small><b class="sc254-dock-sum"></b><em></em></span>';roulette.append(dock);dockAmount=dock.querySelector('b');
  announcement=document.createElement('div');announcement.className='sc254-announcement';announcement.hidden=true;announcement.setAttribute('role','status');announcement.innerHTML='<div class="sc254-announcement-rays"></div><div class="sc254-announcement-badge"><small>5 SUGAR GET!</small><strong>シュガーチャレンジ</strong><span>次のBETタイムでJP・倍率を決定！</span></div>';screen.append(announcement);
- celebration=document.createElement('div');celebration.className='sc254-celebration';celebration.hidden=true;celebration.setAttribute('role','status');celebration.innerHTML='<div class="sc254-celebration-rays"></div><img src="assets/sugar-art-v254/jpc-title.webp" alt="JACKPOT CHANCE獲得"><div><span>JACKPOT</span><b></b><strong class="sc271-multiplier-popup" data-sc-celebration-multiplier hidden></strong><small>JPC挑戦権を獲得！</small></div>';screen.append(celebration);celebrationMultiplier=celebration.querySelector('[data-sc-celebration-multiplier]');
+ celebration=document.createElement('div');celebration.className='sc254-celebration';celebration.hidden=true;celebration.setAttribute('role','status');celebration.innerHTML='<div class="sc254-celebration-rays"></div><img src="assets/sugar-art-v254/jpc-title.webp" alt="JACKPOT CHANCE獲得"><div><span>JACKPOT</span><b></b><strong class="sc271-multiplier-popup sc279-multiplier-artwork" data-sc-celebration-multiplier hidden>'+multiplierArtworkMarkup()+'</strong><small>JPC挑戦権を獲得！</small></div>';screen.append(celebration);celebrationMultiplier=celebration.querySelector('[data-sc-celebration-multiplier]');
  overlay.addEventListener('click',()=>setExpanded(false));overlay.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '||event.key==='Escape'){event.preventDefault();setExpanded(false);}});dock.addEventListener('click',event=>{event.stopPropagation();setExpanded(true);overlay.focus({preventScroll:true});});
  const resize=()=>{if(!overlay)return;overlay.style.setProperty('--sc254-unit',Math.max(1,Math.min(game.clientWidth/700,game.clientHeight/440)).toFixed(4));paintKey='';render();wake();};
  new ResizeObserver(resize).observe(game);addEventListener('resize',resize);
@@ -140,7 +150,7 @@ function paintReel(s,introDone){
  reelTrack.dataset.position=position.toFixed(6);reelTrack.dataset.target=String(target);reel.dataset.motion=spinning?motion.phase:intro>=REEL_STOP?'stopped':'waiting';
  reel.style.setProperty('--sc271-reel-speed',String(spinning&&['accelerating','cruising'].includes(motion.phase)?1:spinning&&motion.phase==='braking'?.45:0));
  paintMultiplier(reelMultiplier,s,introDone||intro>=REEL_STOP,introDone?1000:intro-REEL_STOP);
- const face='assets/sugar-art-v270/multiplier-'+s.multiplier+'.png';if(resultFace.getAttribute('src')!==face)resultFace.setAttribute('src',face);
+ const face=multiplierArtwork(s.multiplier).transparentSrc;if(resultFace.getAttribute('src')!==face)resultFace.setAttribute('src',face);
  const label=multiplierLabel(s.multiplier),result=overlay.querySelector('.sc254-digital');
  resultFace.alt=label;multiplier.textContent=label;result.hidden=!introDone;result.setAttribute('aria-label',label);
  reel.setAttribute('aria-label',!ready?'JPベース計測中。倍率ルーレットは計測後に開始':intro<REEL_STOP?'JPベース'+s.jpBase+'、倍率ルーレット抽選中':'JP倍率 '+label+' に決定');
@@ -188,7 +198,7 @@ function bind(){
  c.on(message=>{if(message?.sugarV254)restore(message.sugarV254);else if(message?.payoutControlV3?.sugarV254)restore(message.payoutControlV3.sugarV254);});
  c.getState?.().then(msg=>{const data=msg?.sugarV254||msg?.payoutControlV3?.sugarV254;if(data)restore(data);}).catch(()=>{});
 }
-window.SweetsSugarChallengeV254={version:254,presentationRevision:271,accept:restore,payload,stampBank,setExpanded,snapshot:()=>server?clone(server):null,describe:()=>({version:254,presentationRevision:271,expanded,challenge:challenge?clone(challenge):null,bankCount:app.wonderBank?.length||0,revision:server?.revision??null,intro,multiplierTier:challenge?{multiplier:challenge.multiplier,name:MULTIPLIER_TIERS[challenge.multiplier],label:multiplierLabel(challenge.multiplier)}:null,reelSequence:REEL_SEQUENCE.slice(),reelTiming:{baseEnd:BASE_END,start:REEL_START,stop:REEL_STOP,end:INTRO_END},displayAmounts:challenge?displayAmounts(challenge):null,reelTarget:reelTrack?Number(reelTrack.dataset.target):null,reelPosition:reelTrack?Number(reelTrack.dataset.position):null,paused:paused(),announceAge,celebrateAge,artLoaded:overlay?[...overlay.querySelectorAll('img'),celebration.querySelector('img')].every(i=>i.complete&&i.naturalWidth>0):false})};
+window.SweetsSugarChallengeV254={version:254,presentationRevision:279,accept:restore,payload,stampBank,setExpanded,multiplierArtwork,snapshot:()=>server?clone(server):null,describe:()=>({version:254,presentationRevision:279,expanded,challenge:challenge?clone(challenge):null,bankCount:app.wonderBank?.length||0,revision:server?.revision??null,intro,multiplierTier:challenge?{multiplier:challenge.multiplier,name:MULTIPLIER_TIERS[challenge.multiplier],label:multiplierLabel(challenge.multiplier)}:null,multiplierArtwork:challenge?multiplierArtwork(challenge.multiplier):null,reelSequence:REEL_SEQUENCE.slice(),reelTiming:{baseEnd:BASE_END,start:REEL_START,stop:REEL_STOP,end:INTRO_END},displayAmounts:challenge?displayAmounts(challenge):null,reelTarget:reelTrack?Number(reelTrack.dataset.target):null,reelPosition:reelTrack?Number(reelTrack.dataset.position):null,paused:paused(),announceAge,celebrateAge,artLoaded:overlay?[...overlay.querySelectorAll('img'),...celebration.querySelectorAll('img')].every(i=>i.complete&&i.naturalWidth>0):false})};
 const nativeWonder=updateWonderHud;updateWonderHud=function(...args){stampBank();return nativeWonder.apply(this,args);};
 mount();stampBank();if(!worker){bind();document.addEventListener('visibilitychange',()=>{lastStamp=null;render();wake();});media.addEventListener?.('change',()=>{render();wake();});const nativePause=syncPause;syncPause=function(...args){const result=nativePause.apply(this,args);lastStamp=null;render();wake();return result;};}
 })();
