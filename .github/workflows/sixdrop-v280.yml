@@ -1,0 +1,180 @@
+name: Six Drop rounded payouts and clear display v280
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'assets/sixdrop-*'
+      - 'assets/sixdrop-art-v278/**'
+      - 'assets/download-*'
+      - 'assets/edition-choice-v255.js'
+      - 'assets/local-debug-game-v258.js'
+      - 'assets/recorded-round-v255.js'
+      - 'assets/server-offline-settlement-worker-v3.js'
+      - 'assets/server-payout-control-v3.js'
+      - 'assets/shared-machine-v176.js'
+      - 'assets/shared-machine-core-v196.js'
+      - 'assets/demo-suite-v91.js'
+      - 'assets/award-presentation-v277.js'
+      - 'server-download-*.mjs'
+      - 'server-payout-preload-v3.mjs'
+      - 'optimized/app-01.js'
+      - 'download-sw-v255.js'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/sixdrop-*'
+      - 'tests/fixtures/sixdrop-*'
+      - 'tests/recorded-round-v255.mjs'
+      - 'tests/download-v255-*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/sixdrop-v280.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/sixdrop-*'
+      - 'assets/sixdrop-art-v278/**'
+      - 'assets/download-*'
+      - 'assets/edition-choice-v255.js'
+      - 'assets/local-debug-game-v258.js'
+      - 'assets/recorded-round-v255.js'
+      - 'assets/server-offline-settlement-worker-v3.js'
+      - 'assets/server-payout-control-v3.js'
+      - 'assets/shared-machine-v176.js'
+      - 'assets/shared-machine-core-v196.js'
+      - 'assets/demo-suite-v91.js'
+      - 'assets/award-presentation-v277.js'
+      - 'server-download-*.mjs'
+      - 'server-payout-preload-v3.mjs'
+      - 'optimized/app-01.js'
+      - 'download-sw-v255.js'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/sixdrop-*'
+      - 'tests/fixtures/sixdrop-*'
+      - 'tests/recorded-round-v255.mjs'
+      - 'tests/download-v255-*'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/sixdrop-v280.yml'
+permissions:
+  contents: read
+jobs:
+  rules-and-settlement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Changed runtime and publication gate syntax
+        run: |
+          node --check assets/sixdrop-progressive-core-v247.js
+          node --check assets/sixdrop-progressive-host-v247.js
+          node --check assets/sixdrop-ui-v278.js
+          node --check assets/download-worker-v255.js
+          node --check assets/recorded-round-v255.js
+          node --check assets/server-offline-settlement-worker-v3.js
+          node --check server-payout-preload-v3.mjs
+          node --check tests/sixdrop-v280-public.mjs
+      - name: Rounded payouts, cumulative removal and saved rule revisions
+        run: node tests/sixdrop-v280-rules.cjs
+      - name: Native counters, saved checkpoints and settlement worker
+        run: node tests/sixdrop-v280-host.cjs
+      - name: Preserved v278 grouped rounds and v248 saved games
+        run: |
+          node tests/sixdrop-v278-rules.cjs
+          node tests/sixdrop-v278-host.cjs
+          node tests/sixdrop-server-v248.mjs
+      - name: Authoritative settlement and exactly-once Download ledger
+        run: |
+          node tests/sixdrop-v280-settlement.mjs
+          node tests/sixdrop-v278-settlement.mjs
+          node tests/download-v255-ledger.mjs
+      - name: Recorded state and wallet isolation
+        run: node tests/recorded-round-v255.mjs
+      - name: Published runtime and artwork remain in the offline manifest
+        run: node tests/download-v255-cache.mjs
+  native-browser-display:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Installed Chrome and Japanese fonts on the pinned runner
+        run: |
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          test -n "$browser_path"
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 360s sudo env DEBIAN_FRONTEND=noninteractive bash -e -c '
+              apt-get -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2 update -qq
+              apt-get -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2 install -y --no-install-recommends fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          echo "PLAYWRIGHT_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real PC, mobile and mini boards, clear count and role shapes
+        id: browser
+        run: node tests/sixdrop-v280-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.browser.outcome != 'skipped'
+        with:
+          name: sixdrop-v280-display
+          path: qa-sixdrop-v280/
+          if-no-files-found: error
+          retention-days: 7
+  native-download-worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Installed Chrome for the native worker contract
+        run: |
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          test -n "$browser_path"
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          echo "SWEETS_DOWNLOAD_BROWSER_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: One native v280 round, rounded settlement and nine checkpoints
+        id: worker
+        run: node tests/sixdrop-v280-download-worker.mjs
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.worker.outcome != 'skipped'
+        with:
+          name: sixdrop-v280-worker
+          path: qa-sixdrop-v280-worker/
+          if-no-files-found: error
+          retention-days: 7
+  public-assets:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [rules-and-settlement, native-browser-display, native-download-worker]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify published rules, display, native worker and unchanged artwork
+        id: public
+        run: node tests/sixdrop-v280-public.mjs
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.public.outcome != 'skipped'
+        with:
+          name: sixdrop-v280-public
+          path: qa-sixdrop-v280-public/
+          if-no-files-found: error
+          retention-days: 7

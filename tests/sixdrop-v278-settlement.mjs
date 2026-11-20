@@ -8,7 +8,11 @@ import {createHash} from 'node:crypto';
 import {createDownloadLedgerV255,DOWNLOAD_GAME_IDS_V255} from '../server-download-ledger-v255.mjs';
 import {createSugarChallengeLedger} from '../server-sugar-challenge-v254.mjs';
 import {computedFixtureV255} from './download-v255-fixture.mjs';
-const {R,clone,NUMBERS,fullRound}=createRequire(import.meta.url)('./sixdrop-v278-fixture.cjs');
+const {R,clone,NUMBERS,fullRound:fixtureRound}=createRequire(import.meta.url)('./sixdrop-v278-fixture.cjs');
+const rulesRevision=Number(process.env.SIXDROP_SETTLEMENT_REVISION||278);
+assert([278,280].includes(rulesRevision));
+const fullRound=(seed,options)=>fixtureRound(seed,{...options,rulesRevision});
+const positiveSeed=rulesRevision===280?3:9;
 const prior={version:247,revision:4,roundId:'prior',bankUnits:123456,removed:99,feed:450};
 const value=c=>({bankUnits:c.bankUnits,removed:c.removed,feed:c.feed});
 const temp=await mkdtemp(path.join(os.tmpdir(),'sixdrop-v278-settlement-')),file=path.join(temp,'payout-control-v3.json');
@@ -40,7 +44,8 @@ try{
  }
  const passive=round('passive',8);reserve('passive',passive);bridge.settle('qa-machine','passive',passive,body(passive,{games:[row(0,0),{id:'cookie',bet:3000,win:0}]}));
  assert.deepEqual(value((await read('passive')).sixDropV247),value(prior),'unbet Six Drop never resets even after eight balls');
- const win=fullRound(9,{bet:3000,carry:R.cleanCarry(prior)}),positive=round('positive',8);reserve('positive',positive);
+ const win=fullRound(positiveSeed,{bet:3000,carry:R.cleanCarry(prior)}),positive=round('positive',8);reserve('positive',positive);
+ if(rulesRevision===280)assert.equal(win.win,4500,'the new rounded payout reaches the authoritative settlement bridge');
  bridge.settle('qa-machine','positive',positive,body(positive,{games:[row(win.win,3000,R.carryOut(win.state,positive.id))]}));
  const paid=await read('positive');assert.equal(paid.wallet.credit,1000000-3000+win.win);assert.deepEqual(value(paid.sixDropV247),value(R.carryOut(win.state)));
  bridge.operatorCancel('qa-machine',positive,'qa-cancel');const cancelled=await read('positive');assert.equal(cancelled.wallet.credit,1000000);assert.deepEqual(value(cancelled.sixDropV247),value(prior),'operator cancel restores pre-BET bank and palette progress');
@@ -60,7 +65,7 @@ for(const [index,caseName]of ['positive','positive-bet-change','nonparticipant',
  const bet=caseName==='positive-bet-change'?301:caseName==='nonparticipant'?0:3000,bets=DOWNLOAD_GAME_IDS_V255.map(game=>game==='candy'?bet:game==='cookie'&&!bet?100:0);
  const before=clone(getPlayer('download','qa').sixDropV247),prepared=L.prepare('download','qa',{requestId:'sixdrop-v278-request-'+index,bets,gameIds:DOWNLOAD_GAME_IDS_V255});
  const input=L.work('download','qa',prepared.id);assert.deepEqual(input.sixDropCarry,before,'download continuation comes from the committed server balance');
- const actual=bet?fullRound(caseName==='zero'?2:9,{bet,carry:R.cleanCarry(before)}):null;
+ const actual=bet?fullRound(caseName==='zero'?2:positiveSeed,{bet,carry:R.cleanCarry(before)}):null;
  const output=computedFixtureV255(input,{numbers:NUMBERS,sugars:0});
  output.games=DOWNLOAD_GAME_IDS_V255.map((game,i)=>({id:game,bet:bets[i],win:game==='candy'&&actual?actual.win:0,...(game==='candy'?{rulesVersion:247,carryV247:actual?R.carryOut(actual.state,prepared.id):R.cleanCarry(before)}:{})}));
  output.totalWin=actual?.win||0;
@@ -74,4 +79,4 @@ for(const [index,caseName]of ['positive','positive-bet-change','nonparticipant',
  database=JSON.parse(durable);L=ledger();assert.deepEqual(getPlayer('download','qa').sixDropV247,stored,'cold restart preserves each carry transition');
 }
 assert.equal(resultCases.at(-1).bankUnits,0);assert.equal(resultCases.at(-1).removed,0);
-console.log('SIXDROP_V278_SETTLEMENT_PASS',JSON.stringify({streaming:['early bridge + HTTP','eight-ball zero even with abandoned flag','unknown interruption denied','other-game WIN with own zero','nonparticipant','positive all-clears','operator cancellation','idempotent retry'],download:resultCases}));
+console.log('SIXDROP_V'+rulesRevision+'_SETTLEMENT_PASS',JSON.stringify({rulesRevision,streaming:['early bridge + HTTP','eight-ball zero even with abandoned flag','unknown interruption denied','other-game WIN with own zero','nonparticipant','positive awards and carry','operator cancellation','idempotent retry'],download:resultCases}));

@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v279-sugar-transparent-and-current-rules",
+  "version": "20261120-v280-sixdrop-fit-and-round-payouts",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 65,
-      "sha256": "b1c1de94373eb3da53bbd5dbd63c136c6989d48729af553ee0e10b1eec2d1f7b"
+      "bytes": 59,
+      "sha256": "d14b59f728f4820708cc17e8cd9710052467764dd2b42917069bdcee9e6fb546"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1553,8 +1553,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4375,
-      "sha256": "b89795f5a56cd4d96f7c8c3c0d58b037e8405f2a98bf162a8a14ab48667067cd"
+      "bytes": 4369,
+      "sha256": "9898472805f2bcbc01676b67d288c0563da2f9f106a9e3fdf492fc1607e024d0"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1578,8 +1578,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3786,
-      "sha256": "9643bfe29f4d59cb1b59cb089affc28f232e97177eafc8c3f59b5867da620a4a"
+      "bytes": 3780,
+      "sha256": "b929a27a2d91df1c909ca4ec4fe05993928f213b84ed60cfdb4c45d8110717b9"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2768,13 +2768,13 @@
     },
     {
       "path": "assets/sixdrop-progressive-core-v247.js",
-      "bytes": 16904,
-      "sha256": "a6596177ea77f1686a8117c1730cb3ba63108f18375c11c35543b0fc5be397dd"
+      "bytes": 18286,
+      "sha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3"
     },
     {
       "path": "assets/sixdrop-progressive-host-v247.js",
-      "bytes": 23172,
-      "sha256": "04cb5efab1a4c3a8d9f837ff0badbcf004b6dab1da1201ae623057c6468676b1"
+      "bytes": 24156,
+      "sha256": "5242aec5135fae6a5cb3cb5e0ec12ea3e9ffd5da66c434cedd6c6dae59fbc5e5"
     },
     {
       "path": "assets/sixdrop-progressive-v247.css",
@@ -2788,13 +2788,13 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.css",
-      "bytes": 10791,
-      "sha256": "d77d1a48afee806968f0820276782ee06a02ae408cb6eeb1552008be6bd0568b"
+      "bytes": 12455,
+      "sha256": "48ea6c7a6770d2caa76c86a11402fa0bcde72b73b08593690b4a197da4d5a55a"
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 15166,
-      "sha256": "c6135445aa08480ec302bce7d034b1ad45578ec67f48df9710798425bc8ae747"
+      "bytes": 16336,
+      "sha256": "74bb396f11375e837b733509f93722ebf2e9102c0e024bd72fd62210eb73100f"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -3514,7 +3514,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "2ebb8e4ae202fc7ca410f45e1f1505cb619ecd2bc80426b0bb53e491191bc7ef"
+      "sha256": "301a7e4965d8128eb4d8ab64dcd0a6d76770887da267b02e366f8c8e5561e108"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3752,5 +3752,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 214053579
+  "totalBytes": 214058761
 }

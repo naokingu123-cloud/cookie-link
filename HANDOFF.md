@@ -1,3 +1,12 @@
+# v280 — シックスドロップの瓶・消去累計・丸い配当（2026-11-20）
+
+- Build: `20261120-v280-sixdrop-fit-and-round-payouts`。追加依頼の実装中。仕様と100 BET配当表は [v280記録](docs/sixdrop-v280.md)。
+- 旧瓶の蓋/側枠pseudoとキャンバス内の白い輪郭を除去。ドロップを新瓶の内窓へ拡大し、全消し欄を瓶幅へ圧縮、水色の外枠と3・2・1・1・1球表記を除く。役別表は×個数と実ドロップの形。
+- 瓶下の消去合計は既存removedTotal/carry.removedを使い、全消し額と同じ表示時計で上昇。獲得後/次ゲームに保持、本人の正常8球WIN0のみリセット。
+- 新規だけrulesRevision280で丸い個数別配当を使用し、旧248/278の途中状態・録画・金額を保持。既存5PNGとSugar v279は維持。検査結果・公開状況は完了後に追記。
+
+---
+
 # v279 — シュガー倍率透過・開始前の旧JPC条件移行（2026-11-20）
 
 - Build: `20261120-v279-sugar-transparent-and-current-rules`。[PR #4](https://github.com/naokingu123-cloud/cookie-link/pull/4) をmain `004372c6a0b810d06adefb69ba21409d17e77659` へマージ済み。仕様・素材・原因は [v279記録](docs/sugar-v279.md)。main専用CIの全5jobと公開28ファイル照合が成功。

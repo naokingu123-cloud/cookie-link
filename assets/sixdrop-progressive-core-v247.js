@@ -1,17 +1,23 @@
-/* Six Drop: deterministic legacy single-HIT and v278 grouped rules.
+/* Six Drop: deterministic legacy single-HIT and revisioned grouped rules.
    No DOM, wallet or network writes.
    Inject the existing staggered-grid gravity and role geometry to retain the
    approved board mechanics. A prediction clones the exact serialized RNG. */
 (function(root){
 'use strict';
 // Keep the v247 serialization and color IDs readable by existing checkpoints.
-const VERSION=247,REVISION=248,CURRENT_REVISION=278,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5;
+const VERSION=247,REVISION=248,GROUPED_REVISION=278,CURRENT_REVISION=280,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5;
 const BATCH_SIZES=Object.freeze([3,2,1,1,1]);
 const RING=['blue','aqua','green','lime','yellow','orange','red','violet','pink'];
 const COLOR_PROGRESS=[0,1,2,3,4,5,6,8,7];
 const BASE_PAY=Object.freeze({line:10,triangle:30,hexagon:60});
 const BASE_PAY_V278=Object.freeze({line:20,triangle:60,hexagon:120});
 const SUPPORT_TABLE_V278=Object.freeze([[50,.23],[90,.57],[100,.615],[150,.9]].map(row=>Object.freeze(row)));
+const ROLE_TOTALS_V280=Object.freeze({
+ line:Object.freeze([0,20,50,150,250,400,550,750,950,1200,1500]),
+ triangle:Object.freeze([0,50,200,400,700,1100,1600,2200,2900,3700,4500]),
+ hexagon:Object.freeze([0,100,400,800,1400,2200,3200,4400,5800,7400,9000])
+});
+const SUPPORT_TABLE_V280=Object.freeze([[50,.23],[90,.57],[100,.615],[150,.9]].map(row=>Object.freeze(row)));
 const LIMIT=Number.MAX_SAFE_INTEGER;
 const integer=(n,fallback=0)=>Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):fallback;
 const copy=x=>JSON.parse(JSON.stringify(x));
@@ -32,9 +38,23 @@ function totalMedals(s){
  const normal=modernRules(s)?Object.keys(BASE_PAY).reduce((sum,type)=>sum+Math.floor(s.bet*roleTotal(type,s.counts[type],s)/100),0):Math.floor(s.bet*s.normalHundredths/100);
  return normal+s.bonusMedals;
 }
-const modernRules=value=>Number(typeof value==='object'?value?.rulesRevision:value)>=CURRENT_REVISION;
+const ruleRevision=value=>Number(typeof value==='object'?value?.rulesRevision:value);
+const modernRules=value=>ruleRevision(value)>=GROUPED_REVISION;
+const roundedRules=value=>ruleRevision(value)>=CURRENT_REVISION;
+const savedRevision=value=>roundedRules(value)?CURRENT_REVISION:modernRules(value)?GROUPED_REVISION:REVISION;
+function roundedRoleTotal(type,n){
+ const table=ROLE_TOTALS_V280[type];if(!table)return 0;
+ if(n<=10)return table[n];
+ // After the first two counts, round each former marginal award to 0.5 / 1
+ // / 2 BET units. Those nondecreasing steps repeat every ten counts, shifted
+ // by 15 old base units. This closed form also avoids a loop on saved counts.
+ const cycles=Math.floor(n/10),rest=n%10,quantum={line:50,triangle:100,hexagon:200}[type];
+ const prefix=rest===1?Math.round(BASE_PAY_V278[type]/quantum)*quantum:table[rest];
+ return table[10]*cycles*cycles+15*BASE_PAY_V278[type]*cycles*rest+prefix;
+}
 function roleTotal(type,count,stateOrRevision=CURRENT_REVISION){
- const n=integer(count),base=(modernRules(stateOrRevision)?BASE_PAY_V278:BASE_PAY)[type]||0;
+ const n=integer(count);if(roundedRules(stateOrRevision))return roundedRoleTotal(type,n);
+ const base=(modernRules(stateOrRevision)?BASE_PAY_V278:BASE_PAY)[type]||0;
  return base*(n*(n+1)/2+(modernRules(stateOrRevision)&&n>0?Math.floor((n-1)*(n-1)/4):0));
 }
 function roleAward(type,oldCount,count=1,stateOrRevision=REVISION){return roleTotal(type,integer(oldCount)+integer(count),stateOrRevision)-roleTotal(type,integer(oldCount),stateOrRevision);}
@@ -42,11 +62,12 @@ function batchSize(processed){let end=0;for(const size of BATCH_SIZES){if(proces
 function supportProbability(rate,stateOrRevision=CURRENT_REVISION){
  const target=Math.max(50,Math.min(150,Number(rate)||90));
  if(!modernRules(stateOrRevision))return .35+.55*(target-50)/100;
- for(let index=1;index<SUPPORT_TABLE_V278.length;index++){
-  const [low,from]=SUPPORT_TABLE_V278[index-1],[high,to]=SUPPORT_TABLE_V278[index];
+ const table=roundedRules(stateOrRevision)?SUPPORT_TABLE_V280:SUPPORT_TABLE_V278;
+ for(let index=1;index<table.length;index++){
+  const [low,from]=table[index-1],[high,to]=table[index];
   if(target<=high)return from+(to-from)*(target-low)/(high-low);
  }
- return SUPPORT_TABLE_V278.at(-1)[1];
+ return table.at(-1)[1];
 }
 function create(geometry){
  const G=geometry;
@@ -148,7 +169,7 @@ function create(geometry){
  }
  function newGame({bet=100,rate=90,seed=1,carry=null,rulesRevision=REVISION}={}){
   bet=integer(bet);if(!bet||bet>1e10)throw Error('Six Drop invalid BET');
-  const saved=cleanCarry(carry),state={version:VERSION,rulesRevision:modernRules(rulesRevision)?CURRENT_REVISION:REVISION,palette:palette(saved.removed),bet,target:Math.max(50,Math.min(150,Number(rate)||90)),rng:(seed>>>0)||1,uid:0,grid:G.empty(ROWS),draws:[],processed:0,
+  const saved=cleanCarry(carry),state={version:VERSION,rulesRevision:savedRevision(rulesRevision),palette:palette(saved.removed),bet,target:Math.max(50,Math.min(150,Number(rate)||90)),rng:(seed>>>0)||1,uid:0,grid:G.empty(ROWS),draws:[],processed:0,
    feed:saved.feed,removedTotal:saved.removed,bankUnits:saved.bankUnits,roundRemoved:0,normalHundredths:0,bonusMedals:0,counts:{line:0,triangle:0,hexagon:0},allClears:0,maxChain:0,sugarAwarded:false,sugarTarget:95+((seed>>>8)%36)};
   if(modernRules(state)){state.carryAtStart={...saved};state.lastAllClearWin=0;}
   refill(state,{initial:true});return state;
@@ -164,7 +185,7 @@ function create(geometry){
  function resolveHits(original,numbers,{trace=false,preview=false}={}){
   if(original?.version!==VERSION||!Array.isArray(original.draws)||!numbers.length||original.draws.length+numbers.length>8||new Set(numbers).size!==numbers.length||numbers.some(number=>!Number.isInteger(number)||number<1||number>25||original.draws.includes(number)))return null;
   const s=copy(original),timeline=[],startWin=totalMedals(s),startRemoved=s.roundRemoved;
-  gamePalette(s);s.rulesRevision=modernRules(s)?CURRENT_REVISION:REVISION;s.draws.push(...numbers);let chain=0,sugar=false;
+  gamePalette(s);s.rulesRevision=savedRevision(s);s.draws.push(...numbers);let chain=0,sugar=false;
   const push=(phase,extra={},ms=100)=>{if(trace)timeline.push({phase,...extra,ms,grid:G.clone(s.grid),bankUnits:s.bankUnits,normalHundredths:s.normalHundredths,bonusMedals:s.bonusMedals,counts:{...s.counts},allClears:s.allClears});};
   function remove(cells){const removed=[],progressiveCredits=[],bankUnitsBefore=s.bankUnits;for(const [r,c]of cells){
    const t=s.grid[r]?.[c];if(!t)continue;removed.push({r,c,tile:{...t}});s.grid[r][c]=null;
@@ -211,7 +232,7 @@ function create(geometry){
   if(modernRules(s)&&s.draws.length<8)return cleanCarry(s.carryAtStart);
   return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});
  }
- return {VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,SUPPORT_TABLE_V278,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
+ return {VERSION,REVISION,GROUPED_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_TOTALS_V280,SUPPORT_TABLE_V278,SUPPORT_TABLE_V280,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
 }
-root.SweetsSixDropV247={VERSION,REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,SUPPORT_TABLE_V278,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,batchSize,supportProbability};
+root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_TOTALS_V280,SUPPORT_TABLE_V278,SUPPORT_TABLE_V280,RING,CREDIT_PER_DROP,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,batchSize,supportProbability};
 })(typeof window!=='undefined'?window:globalThis);

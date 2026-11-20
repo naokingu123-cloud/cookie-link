@@ -5,7 +5,7 @@ const carry={version:247,bankUnits:123456,removed:99,feed:450,roundId:'prior-com
 const lineTotals=[0,20,60,140,240,380,540,740,960];
 const roleScales={line:1,triangle:3,hexagon:6};
 const roleWin=(bet,counts)=>Object.entries(counts).reduce((sum,[role,count])=>sum+Math.floor(bet*(count<lineTotals.length?lineTotals[count]*roleScales[role]:R.roleTotal(role,count,278))/100),0);
-assert.equal(R.CURRENT_REVISION,278);
+assert.equal(R.GROUPED_REVISION,278);
 assert.deepEqual(R.BATCH_SIZES,[3,2,1,1,1]);
 for(const [role,scale]of Object.entries(roleScales)){
  assert.deepEqual(lineTotals.map((_n,count)=>R.roleTotal(role,count,278)),lineTotals.map(n=>n*scale),role+' cumulative count table');

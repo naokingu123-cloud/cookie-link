@@ -5,7 +5,9 @@
 const id=window.SweetsLineup?.ids?.indexOf('candy');if(!(id>=0))return;
 const slot=slots[id],e=app.engines[id],R=window.SweetsSixDropV247.create({empty:sixEmpty,clone:sixClone,count:sixCount,valid:sixValid,step:sixStep,neighbors:sixNeighbors,patterns:sixPatterns,findShapes:sixFindShapes,drop:sixDrop,point:sixPoint,gapTemplates:SIX_START_GAP_TEMPLATES});
 let committed=R.cleanCarry(null),carryRevision=-1,carryPlayer='',inNewRenderer=false;
-const grouped=state=>Number(state?.rulesRevision)>=R.CURRENT_REVISION;
+// Grouping began in 278; a newer payout revision must not turn a saved 278
+// round into the legacy single-ball mode.
+const grouped=state=>Number(state?.rulesRevision)>=R.GROUPED_REVISION;
 function adoptCarry(value){
  committed=R.cleanCarry(value);
  if(app.phase==='ready'){e.progressiveUnits=committed.bankUnits;e.removedTotal=committed.removed;e.feedRows=Math.floor(committed.feed*10/75);resetBank(committed.bankUnits);scheduleUI(app);}
@@ -62,6 +64,19 @@ function paintBank(){
  node.dataset.displayUnits=String(units);node.dataset.targetUnits=String(bankView.target);
  node.parentElement.setAttribute('aria-label','全消し '+money(bankView.target/100)+' WIN');
  node.parentElement.classList.toggle('sd247-adding',!!bankView.tween&&!motionReduced);
+}
+function removedProgress(){
+ const state=e.state;
+ if(!state)return {removedTotal:committed.removed,displayRemoved:committed.removed};
+ if(e.processed===8&&!e.running&&!e.busy&&R.totalMedals(state)===0)return {removedTotal:0,displayRemoved:0};
+ // The existing meter adds exactly BET * 5 hundredth-medal units per candy,
+ // even after an all-clear. Derive its animated count from the same clock;
+ // keep removedTotal/carry.removed as the sole persisted count.
+ const removedTotal=state.removedTotal,roundRemoved=state.roundRemoved;
+ const startRemoved=Math.max(0,removedTotal-roundRemoved),perCandy=state.bet*R.CREDIT_PER_DROP;
+ const startUnits=state.bankUnits-roundRemoved*perCandy;
+ const shown=Math.max(0,Math.min(roundRemoved,Math.floor((bankAt()-startUnits)/perCandy+1e-7)));
+ return {removedTotal,displayRemoved:startRemoved+shown};
 }
 function sync(engine){
  const s=engine.state;if(!s||s.version!==247)return;
@@ -231,7 +246,7 @@ window.SixDropV247={engine:e,rules:R,get carry(){return {...committed};},
   const receivedBalls=Math.min(8,(state?.draws?.length||0)+pendingNumbers.length),modern=!state||grouped(state),size=modern?R.batchSize(processedBalls):(processedBalls<8?1:0);
   const inheritedContinuation=carryAtStart.bankUnits>0||carryAtStart.removed>0,earnedContinuation=!!state&&R.totalMedals(state)>0;
   return {rulesRevision:state?.rulesRevision||(state?R.REVISION:R.CURRENT_REVISION),batchSizes:modern?[...R.BATCH_SIZES]:Array(8).fill(1),receivedBalls,processedBalls,pendingNumbers,nextBatchEnd:size?processedBalls+size:8,carryAtStart,
-   bankUnits:state?.bankUnits??committed.bankUnits,inheritedContinuation,earnedContinuation,continuationActive:state?.draws.length===8&&!earnedContinuation?false:inheritedContinuation||earnedContinuation,
+   bankUnits:state?.bankUnits??committed.bankUnits,...removedProgress(),inheritedContinuation,earnedContinuation,continuationActive:state?.draws.length===8&&!earnedContinuation?false:inheritedContinuation||earnedContinuation,
    allClearCount:state?.allClears||0,allClearWin:state?.bonusMedals||0,lastAllClearWin:state?.lastAllClearWin||0,counts:{...(state?.counts||{line:0,triangle:0,hexagon:0})}};
  }
 };

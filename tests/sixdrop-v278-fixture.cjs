@@ -19,17 +19,20 @@ class NodeStub{
  setAttribute(){} removeAttribute(){} append(){} appendChild(){} addEventListener(){} remove(){}
  getBoundingClientRect(){return {x:0,y:0,width:320,height:320,left:0,top:0,right:320,bottom:320};}
 }
-function createHost({seed=1,bet=100,otherBet=null,search='?edition=local',storage=memoryStorage()}={}){
+function createHost({seed=1,bet=100,otherBet=null,search='?edition=local',storage=memoryStorage(),rulesRevision=278,hidden=true,reducedMotion=true}={}){
  native??=require('./payout-v232-classic-sample.cjs').load();
  const source=fs.readFileSync('optimized/app-01.js','utf8');
  const start=source.indexOf('class Arcade{'),end=source.indexOf('// Only the next HIT is simulated.',start);
  assert(start>=0&&end>start,'production Arcade class exists');
  const listeners=new Map(),nodes=new Map(),events=[];
  const edition=new URLSearchParams(search).get('edition')||'streaming';
- const window={SweetsEditionV255:{value:edition},SweetsLineup:{ids:otherBet===null?['candy']:['candy','cookie']},SweetsSixDropV247:globalThis.SweetsSixDropV247,localStorage:storage,
+ // Keep this legacy suite explicitly on 278. New suites request their own
+ // revision; production rules/adapter code and scheduling remain unchanged.
+ const rules={...globalThis.SweetsSixDropV247,CURRENT_REVISION:rulesRevision,create:geometry=>({...globalThis.SweetsSixDropV247.create(geometry),CURRENT_REVISION:rulesRevision})};
+ const window={SweetsEditionV255:{value:edition},SweetsLineup:{ids:otherBet===null?['candy']:['candy','cookie']},SweetsSixDropV247:rules,localStorage:storage,
   addEventListener(type,fn){if(!listeners.has(type))listeners.set(type,[]);listeners.get(type).push(fn);},
   dispatchEvent(event){for(const fn of listeners.get(event.type)||[])fn(event);return true;}};
- const document={hidden:true,body:new NodeStub(),head:new NodeStub(),documentElement:new NodeStub(),
+ const document={hidden,body:new NodeStub(),head:new NodeStub(),documentElement:new NodeStub(),
   getElementById(id){if(!nodes.has(id))nodes.set(id,new NodeStub());return nodes.get(id);},createElement(){return new NodeStub();}};
  const medalWin=(w,h)=>Math.floor(w*h/100),noop=()=>{};
  const Arcade=new Function('Engine','ChocoDigEngine','CandyCarnivalEngine','window','medalWin',
@@ -41,7 +44,7 @@ function createHost({seed=1,bet=100,otherBet=null,search='?edition=local',storag
  const scope={window,document,location:{search,origin:'http://isolated.test'},localStorage:storage,app,slots:[slot],
   sixEmpty:G.empty,sixClone:G.clone,sixCount:G.count,sixValid:G.valid,sixStep:G.step,sixNeighbors:G.neighbors,sixPatterns:G.patterns,sixFindShapes:G.findShapes,sixDrop:G.drop,sixPoint:G.point,SIX_START_GAP_TEMPLATES:G.gapTemplates,
   carnivalEvent:noop,drawCarnival:noop,sixArtCandySprite:noop,sixGlassPose:noop,requestSixSparkles:noop,reachContext:noop,carnivalHud:noop,sixDrawTutorial:noop,renderRoundResult:noop,
-  setupCarnivalSlot:noop,fitGoldenNumber:noop,carnivalQueueFrame:noop,scheduleUI:noop,put:noop,$:id=>document.getElementById(id),motionReduced:true,active:0,debugPayoutTarget:90,reachTier:(total,clear)=>clear?3:total>=1000?2:total>=300?1:0,wonderTier:()=>1,
+  setupCarnivalSlot:noop,fitGoldenNumber:noop,carnivalQueueFrame:noop,scheduleUI:noop,put:noop,$:id=>document.getElementById(id),motionReduced:reducedMotion,active:0,debugPayoutTarget:90,reachTier:(total,clear)=>clear?3:total>=1000?2:total>=300?1:0,wonderTier:()=>1,
   CustomEvent:class{constructor(type,options={}){this.type=type;this.detail=options.detail;}},setTimeout,clearTimeout,URLSearchParams,console};
  const adapter=new Function(...Object.keys(scope),fs.readFileSync('assets/sixdrop-progressive-host-v247.js','utf8')+'\nreturn {reachContext};')(...Object.values(scope));
  if(edition==='local'){
@@ -83,8 +86,8 @@ function streamingCheckpoint(host){
  // only network discovery and connection startup outside this source block.
  return new Function('window',source.slice(start,end)+'\nreturn {checkpoint,restore};')(host.window);
 }
-function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS}={}){
- let state=R.newGame({seed,bet,carry,rulesRevision:278});
+function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS,rulesRevision=278,rate=90}={}){
+ let state=R.newGame({seed,bet,carry,rulesRevision,rate});
  const initial=clone(state),plans=[];
  for(const group of batches(numbers)){
   const plan=R.hitBatch(state,group,{trace:true});assert(plan,'valid 3 / 2 / 1 / 1 / 1 group');plans.push(plan);state=plan.state;
