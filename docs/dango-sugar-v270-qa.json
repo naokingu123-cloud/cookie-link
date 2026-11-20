@@ -959,6 +959,14 @@
       "parentJob": 136013492085,
       "test": "tests/roulette-hd60-v234.mjs:21",
       "cause": "Unchanged loader uses v262 while the assertion expects the app version; parent v269 fails identically."
+    },
+    {
+      "workflow": "Client v246 progressive payouts and smooth hidden-safe rendering",
+      "featureRun": 44660491772,
+      "featureJob": 136037232734,
+      "parentCommit": "1f36c32c55c2a4b305e6ff6786ba3f17cea076dd",
+      "test": "tests/background-continuity-v240.mjs:13",
+      "cause": "Unchanged background-handler loader pins v262; assertion expects the app release. The identical assertion is false with parent v269; later browser steps were skipped."
     }
   ],
   "dango": {

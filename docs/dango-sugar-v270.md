@@ -51,3 +51,5 @@
 Pages更新とWindows共有サーバー更新は別。Windows側は最新mainのソースを反映して既存ランチャーから再起動し、`.runtime`・`.tools`・`data`を保持する。
 
 既存のSix station checkとShared machine checkは、変更していないloaderのcache版をアプリ版と同一と仮定する検査で失敗する。同じ失敗は親コミットのrun `44653370461` と `44653370566` にも存在する。今回のDango／Sugar検証とは分けて記録し、これらの後続試験の成功は主張しない。
+
+Client v246検証にも、変更していないbackground-handlerのv262 pinとアプリ版を同一と仮定する親版からの検査失敗がある（run `44660491772`）。公開検証のSugar revision条件は新しい270・JP_STEP500へ更新し、旧268を待ち続ける検査前提を解消した。
