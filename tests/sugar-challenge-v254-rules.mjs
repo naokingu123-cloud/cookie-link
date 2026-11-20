@@ -128,6 +128,6 @@ assert.deepEqual(report,saved);assert.equal(report.mixture.jpcProbability.numera
 assert(Math.abs(report.mixture.jpcPercent-10)<.02);assert.equal(report.multiplier.mean.value,1.275);
 const browser=vm.createContext({}),common=vm.createContext({module:{exports:{}}});
 vm.runInContext(source,browser);vm.runInContext(source,common);
-assert.deepEqual(plain(browser.SugarChallengeRulesV254.create(options)),create());assert.equal(common.module.exports.REVISION,268);assert.equal(common.module.exports.LEGACY_REVISION,254);
+assert.deepEqual(plain(browser.SugarChallengeRulesV254.create(options)),create());assert.equal(common.module.exports.REVISION,270);assert.equal(common.module.exports.LEGACY_REVISION,254);
 assert(Object.isFrozen(R));assert(Object.isFrozen(R.cards[0].luckySums));
 console.log(`Sugar Challenge v254: ${visited} combinations, ${R.cards.length} cards, exact 9.997938191988535% JPC, persisted input validation, conditional reach and integer cash checks passed.`);

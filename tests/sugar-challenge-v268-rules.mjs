@@ -4,7 +4,7 @@ import {createSugarChallengeLedger} from '../server-sugar-challenge-v254.mjs';
 const R=globalThis.SugarChallengeRulesV254;
 const create=(extra={})=>R.create({id:'s268',roundId:'r268',station:3,sugarValues:[100,100,100,100,100],cardId:'standard',multiplier:2,...extra});
 const advance=(s,draws)=>draws.reduce((state,n)=>R.advance(state,n,{roundId:state.roundId,ballIndex:state.draws.length+1}),s);
-assert.equal(R.REVISION,268);
+assert.equal(R.REVISION,270);assert.equal(R.PREVIOUS_REVISION,268);
 const draw=[20,19,18,15,5,3,7,17]; // 77 on ball 5, final 104 normally pays cash.
 let s=advance(create(),draw.slice(0,4));
 assert.equal(s.sum,72);assert.equal(s.jpcQualified,false);

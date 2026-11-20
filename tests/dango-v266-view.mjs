@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';import path from 'node:path';import http from 
 import {fileURLToPath} from 'node:url';import {chromium} from 'playwright';
 const root=path.resolve(fileURLToPath(new URL('..',import.meta.url))),output=path.resolve('qa-dango-v266-view');
 await fs.mkdir(output,{recursive:true});
-const mime={'.js':'text/javascript','.css':'text/css','.webp':'image/webp','.woff2':'font/woff2','.json':'application/json'};
+const mime={'.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.json':'application/json'};
 const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>html,body,#screen,#panels{width:100%;height:100%;margin:0;padding:0}#fixture{position:relative;width:100%;height:100%}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><script src="/assets/dango-bingo-rules.js"></script><script>window.DangoBingoRules=window.DangoBingoRules.legacy266;</script><script src="/assets/dango-bingo-view.js"></script></html>';
 const server=http.createServer(async(req,res)=>{
  const u=new URL(req.url,'http://localhost');if(u.pathname==='/'){res.end(html);return;}
@@ -37,6 +37,10 @@ try{
   };
   qa.view.setCallbacks({onCell(id){const s=qa.state;qa.state=s.manualFreeCells.includes(id)?R.undoFree(s,id):R.placeFree(s,id);if(qa.state)qa.render();},
    onAuto(){qa.state=R.autoPlace(qa.state);qa.render();}});
+  qa.layout=()=>{
+   const frame=document.querySelector('.dgb-pay-matrix'),table=document.querySelector('.dgb-pay table'),box=e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,right:b.right,bottom:b.bottom,width:b.width,height:b.height,cx:(b.left+b.right)/2,cy:(b.top+b.bottom)/2};};
+   return {frame:box(frame),table:box(table),border:parseFloat(getComputedStyle(frame).borderTopWidth),svg:frame.querySelectorAll('svg').length,numbers:[...table.querySelectorAll('td .gold-number')].map(el=>({text:el.textContent,number:box(el),cell:box(el.parentElement)}))};
+  };
   qa.new(0);return R.REVISION;
  });
  assert.equal(ready,266);
@@ -53,6 +57,10 @@ try{
  assert.deepEqual(first.labels,['2','3','4','5','6','7'],'six paid row lengths are visible');
   const payouts=await page.evaluate(()=>[...qa.R.payRows.filter(r=>r.length===2)].map(r=>r.hundredths));
   assert.deepEqual(payouts,[0,20,1000]);
+ const legacyLayout=await page.evaluate(()=>qa.layout());
+ assert.equal(legacyLayout.border,0,'saved v266 boards keep the original table envelope');assert.equal(legacyLayout.svg,0);
+ assert.ok(Math.abs(legacyLayout.frame.width-legacyLayout.table.width)<1&&Math.abs(legacyLayout.frame.height-legacyLayout.table.height)<1,'the new matrix wrapper adds no legacy layout padding');
+ for(const n of legacyLayout.numbers)assert.ok(Math.abs(n.number.cx-n.cell.cx)<.75&&Math.abs(n.number.cy-n.cell.cy)<.75,'saved-game payouts remain centered '+JSON.stringify(n));
  const eligible=await page.evaluate(()=>qa.R.availableCenters(qa.state));
  assert.equal(eligible.length,23);
  for(let n=0;n<7;n++){
@@ -71,6 +79,9 @@ try{
   badges:[...document.querySelectorAll('.dgb-trigger')].map(e=>e.classList.contains('hit'))}));
  assert.equal(twoView.free,2);assert.ok(twoView.text.includes('2'));assert.ok(twoView.badges[0]);
  await page.setViewportSize({width:390,height:844});
+ await page.evaluate(()=>qa.render());await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const mobileLayout=await page.evaluate(()=>qa.layout());assert.equal(mobileLayout.border,0);assert.equal(mobileLayout.svg,0);
+ for(const n of mobileLayout.numbers)assert.ok(Math.abs(n.number.cx-n.cell.cx)<.75&&Math.abs(n.number.cy-n.cell.cy)<.75&&n.number.x>=n.cell.x-1&&n.number.right<=n.cell.right+1,'saved-game mobile payouts remain centered and contained '+JSON.stringify(n));
  await page.screenshot({path:output+'/v266-two-line-mobile.png'});
  assert.deepEqual(errors,[]);
  console.log('DANGO_V266_VIEW_PASS',JSON.stringify({seven:first,complete,two:twoView,viewports:[[1366,750],[390,844]],pageErrors:errors}));

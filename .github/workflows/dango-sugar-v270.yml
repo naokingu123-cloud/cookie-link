@@ -1,0 +1,122 @@
+name: Dango and Sugar presentation v270
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feature/v270-dango-sugar]
+    paths:
+      - 'assets/dango-*'
+      - 'assets/dango-art-v270/**'
+      - 'assets/sugar-*'
+      - 'assets/sugar-art-v270/**'
+      - 'assets/download-cache-v255.js'
+      - 'assets/edition-choice-v255.js'
+      - 'server-sugar-*.mjs'
+      - 'optimized/app-01.js'
+      - 'optimized/style-01.css'
+      - 'optimized/style-03.css'
+      - 'index.html'
+      - 'app-version.json'
+      - 'download-sw-v255.js'
+      - 'tests/dango-*'
+      - 'tests/sugar-*'
+      - 'tests/download-v255-cache.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/dango-sugar-v270.yml'
+permissions:
+  contents: read
+jobs:
+  rules-and-cache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Changed runtime syntax
+        run: |
+          node --check assets/dango-bingo-view.js
+          node --check assets/sugar-challenge-rules-v254.js
+          node --check assets/sugar-challenge-v254.js
+          node --check server-sugar-challenge-v254.mjs
+          node --check assets/download-cache-v255.js
+          node --check assets/edition-choice-v255.js
+          node --check download-sw-v255.js
+      - name: Preserved Dango rules and final-board presentation
+        run: |
+          node tests/dango-v268-rules.mjs
+          node tests/dango-v269-presentation-rules.mjs
+          node tests/dango-v269-lifecycle.mjs
+      - name: Sugar quantization, multiplier reel and existing ledger
+        run: |
+          node tests/sugar-challenge-v254-rules.mjs
+          node tests/sugar-challenge-v268-rules.mjs
+          node tests/sugar-v270-rules.mjs
+          node tests/sugar-v270-presentation.mjs
+          node tests/sugar-challenge-v254-ledger.mjs
+          node tests/sugar-challenge-v254-server.mjs
+          node tests/sugar-roulette-v254.mjs
+          node tests/sugar-roulette-v268.mjs
+      - name: Updated offline assets and versioned cache
+        run: node tests/download-v255-cache.mjs
+  dango-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts and Chromium
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Generated table, centered payouts and native reach effects
+        run: node tests/dango-v269-view.mjs
+      - name: Preserved saved-game table envelope
+        if: ${{ !cancelled() }}
+        run: node tests/dango-v266-view.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dango-v270-layout
+          path: |
+            qa-dango-v269-view/
+            qa-dango-v266-view/
+          retention-days: 7
+  sugar-layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts and Chromium
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-noto-cjk
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - name: Multiplier images, horizontal reel and vertical gauge
+        run: node tests/sugar-challenge-v254-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sugar-v270-layout
+          path: qa-sugar-v254/
+          retention-days: 7

@@ -26,7 +26,7 @@ assert.equal(earn(p,'r1',6,0,{locked:[99999],payoutRate:150}).changed,false);ass
 assert.deepEqual(p.sugarV254.bank.map(token=>token.challengeValue),issuedValues);
 clock=2000;const started=open(p,'r2');assert.equal(started.started,true);assert.equal(started.current.phase,'ready');assert.equal(started.bank.length,1);
 assert.equal(started.startedAt,2000);assert.equal(started.openedAt,2000);assert.equal(started.challenge.sugarTokens.length,5);
-assert.deepEqual(started.challenge.sugarValues,issuedValues.slice(0,5));assert.equal(started.challenge.jpBase,issuedValues.slice(0,5).reduce((a,b)=>a+b,0));
+assert.deepEqual(started.challenge.sugarValues,issuedValues.slice(0,5));assert.equal(started.challenge.jpBase,Math.max(500,Math.round(issuedValues.slice(0,5).reduce((a,b)=>a+b,0)/500)*500));
 assert.equal(started.challenge.jpAmount,started.challenge.jpBase*2);assert.equal(p.wallet.credit,1000000);
 assert.equal(p.wallet.reservedRoundId,'r2');assert.equal(open(p,'r2').reason,'already-started');assert.equal(createCalls,1);
 earn(p,'r2',4,6);assert.equal(L.publicState(p).queued,true);assert.equal(open(p,'r3').reason,'previous-challenge-pending');

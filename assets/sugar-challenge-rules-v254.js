@@ -1,7 +1,8 @@
 /* Sugar Challenge — pure shared-round rules. No draw source, wallet or DOM.
  * The owner persists five quoted Sugar values and chooses the card/multiplier
  * during BET. Lucky cumulative totals qualify immediately in v268; cash settles
- * on the eighth distinct shared number. Revision-254 checkpoints retain their rules.
+ * on the eighth distinct shared number. New v270 JP bases round to 500 medals;
+ * revision-254/268 checkpoints retain their original monetary calculation.
  */
 (function(root,factory){
  'use strict';
@@ -10,7 +11,7 @@
  if(root)root.SugarChallengeRulesV254=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
- const REVISION=268,LEGACY_REVISION=254,SUGAR_COUNT=5,BALL_COUNT=8,MIN_SUM=36,MAX_SUM=172,CENTER_SUM=104,OUTCOME_COUNT=1081575;
+ const REVISION=270,PREVIOUS_REVISION=268,LEGACY_REVISION=254,JP_STEP=500,SUGAR_COUNT=5,BALL_COUNT=8,MIN_SUM=36,MAX_SUM=172,CENTER_SUM=104,OUTCOME_COUNT=1081575;
  const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value;};
  const regularBands=[{distance:30,hundredths:20},{distance:24,hundredths:10},{distance:18,hundredths:5},{distance:12,hundredths:3},{distance:6,hundredths:2},{distance:0,hundredths:1}];
  const cards=freeze([
@@ -18,6 +19,8 @@
   {id:'lucky',name:'ラッキーシュガーカード',rarity:'rare',weightBps:500,lowMax:70,highMin:138,luckySums:[77,88,99,109,120,131],bands:regularBands},
   {id:'wide',name:'ワイドシュガーカード',rarity:'rare',weightBps:500,lowMax:78,highMin:130,luckySums:[88,120],bands:[{distance:23,hundredths:20},{distance:19,hundredths:10},{distance:15,hundredths:5},{distance:10,hundredths:3},{distance:5,hundredths:2},{distance:0,hundredths:1}]}
  ]);
+ // The picture reel is presentation only. Keep the existing selection weights;
+ // v270 can restore an explicitly supplied 4x result without inventing its odds.
  const multipliers=freeze([{multiplier:1,weightBps:8000},{multiplier:2,weightBps:1500},{multiplier:3,weightBps:400},{multiplier:5,weightBps:90},{multiplier:10,weightBps:10}]);
  const cardFor=id=>cards.find(card=>card.id===(typeof id==='object'?id?.cardId??id?.id:id))||null;
  const isMedal=n=>Number.isSafeInteger(n)&&n>0;
@@ -25,6 +28,13 @@
  const isId=value=>typeof value==='string'&&value.length>0&&value.length<=240;
  const validDraws=draws=>Array.isArray(draws)&&draws.length<=BALL_COUNT&&draws.every(isNumber)&&new Set(draws).size===draws.length;
  function safeNumber(value){if(value<0n||value>BigInt(Number.MAX_SAFE_INTEGER))throw new RangeError('Sugar Challenge medal amount exceeds the safe integer range.');return Number(value);}
+ function baseFor(sugarValues,revision){
+  const total=sugarValues.reduce((sum,value)=>sum+BigInt(value),0n);
+  safeNumber(total);
+  if(revision<REVISION)return Number(total);
+  const step=BigInt(JP_STEP),rounded=(total+step/2n)/step*step;
+  return safeNumber(rounded<step?step:rounded);
+ }
  function seededRandom(seed){
   let value=Number(seed)>>>0;
   return ()=>{value=(value+0x6D2B79F5)>>>0;let t=value;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};
@@ -54,13 +64,14 @@
   return safeNumber(BigInt(jpAmount)*BigInt(hundredths)/100n);
  }
  function canonical(raw){
-  if(!raw||typeof raw!=='object'||![LEGACY_REVISION,REVISION].includes(raw.rulesRevision)||!isId(raw.id)||!isId(raw.roundId)||!Number.isInteger(raw.station)||raw.station<1||raw.station>6)return null;
-  if(!Array.isArray(raw.sugarValues)||raw.sugarValues.length!==SUGAR_COUNT||!raw.sugarValues.every(isMedal)||typeof raw.cardId!=='string'||!cardFor(raw.cardId)||!multipliers.some(row=>row.multiplier===raw.multiplier)||!validDraws(raw.draws))return null;
+  if(!raw||typeof raw!=='object'||![LEGACY_REVISION,PREVIOUS_REVISION,REVISION].includes(raw.rulesRevision)||!isId(raw.id)||!isId(raw.roundId)||!Number.isInteger(raw.station)||raw.station<1||raw.station>6)return null;
+  const validMultiplier=multipliers.some(row=>row.multiplier===raw.multiplier)||(raw.rulesRevision===REVISION&&raw.multiplier===4);
+  if(!Array.isArray(raw.sugarValues)||raw.sugarValues.length!==SUGAR_COUNT||!raw.sugarValues.every(isMedal)||typeof raw.cardId!=='string'||!cardFor(raw.cardId)||!validMultiplier||!validDraws(raw.draws))return null;
   return {rulesRevision:raw.rulesRevision,id:raw.id,roundId:raw.roundId,station:raw.station,sugarValues:raw.sugarValues.slice(),cardId:raw.cardId,multiplier:raw.multiplier,seed:Number.isInteger(raw.seed)?raw.seed>>>0:null,draws:raw.draws.slice()};
  }
  function derive(input){
   const state=canonical(input);if(!state)return null;
-  const jpBase=safeNumber(state.sugarValues.reduce((sum,value)=>sum+BigInt(value),0n)),jpAmount=safeNumber(BigInt(jpBase)*BigInt(state.multiplier)),sum=state.draws.reduce((total,n)=>total+n,0),complete=state.draws.length===BALL_COUNT;
+  const jpBase=baseFor(state.sugarValues,state.rulesRevision),jpAmount=safeNumber(BigInt(jpBase)*BigInt(state.multiplier)),sum=state.draws.reduce((total,n)=>total+n,0),complete=state.draws.length===BALL_COUNT;
   const finalOutcome=complete?evaluate(state.cardId,sum):null;
   // Re-derive the first qualification from the authoritative ordered history.
   // A later sum cannot revoke it, and a forged cached ticket cannot create it.
@@ -155,5 +166,5 @@
    return {hundredths,fraction:hundredths/100,ranges};
   });
  }
- return freeze({REVISION,LEGACY_REVISION,version:REVISION,SUGAR_COUNT,BALL_COUNT,MIN_SUM,MAX_SUM,CENTER_SUM,OUTCOME_COUNT,cards,CARDS:cards,multipliers,MULTIPLIERS:multipliers,cardFor,seededRandom,selectCard,selectMultiplier,quoteSugar,evaluate,cashFor,create,advance,draw:advance,restore,snapshot,reaches,finalSumDistribution,forecast,payoutRows});
+ return freeze({REVISION,PREVIOUS_REVISION,LEGACY_REVISION,JP_STEP,version:REVISION,SUGAR_COUNT,BALL_COUNT,MIN_SUM,MAX_SUM,CENTER_SUM,OUTCOME_COUNT,cards,CARDS:cards,multipliers,MULTIPLIERS:multipliers,cardFor,seededRandom,selectCard,selectMultiplier,quoteSugar,evaluate,cashFor,create,advance,draw:advance,restore,snapshot,reaches,finalSumDistribution,forecast,payoutRows});
 });
