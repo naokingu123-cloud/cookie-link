@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v279-sugar-transparent-and-current-rules",
+  "version": "20261120-v281-casino-sound-and-sixdrop-refinement",
   "files": [
     {
       "path": "app-version.json",
       "bytes": 65,
-      "sha256": "b1c1de94373eb3da53bbd5dbd63c136c6989d48729af553ee0e10b1eec2d1f7b"
+      "sha256": "c1072b621353bb059087cedeb60ca0d2b0cb24b0be4c092c49c3568b5ea5c9aa"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -175,6 +175,521 @@
       "path": "assets/audio/bgm-loops.json",
       "bytes": 5819,
       "sha256": "8116ac846372a9460e98ef89b0e15d011013957aaf0859b15fff858e71928d53"
+    },
+    {
+      "path": "assets/audio/casino-v281/arrival.wav",
+      "bytes": 68840,
+      "sha256": "3cbe70374476d3262a2ff03f5b2b1f31febf4e9443588858d3f5711932b0cf4b"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-1.wav",
+      "bytes": 204668,
+      "sha256": "c87a49e3c1155b827cc90f8e51018a68c64b1afaa989c894f1a550c952d97a01"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-2.wav",
+      "bytes": 328148,
+      "sha256": "fb96470ccf985a575033a906ad7438857db0aef0103221ab8dcbd38942d0e2d6"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-3.wav",
+      "bytes": 437516,
+      "sha256": "8e8d9ed35bac01ae5bbcbdd32010251708fae91179db1b49547008161853d47d"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-4.wav",
+      "bytes": 539828,
+      "sha256": "6d0ec9ab2bbc2e2d244ae5bbfd340657cfc79dd4d587cbb383caee105889e734"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-candy-1.wav",
+      "bytes": 204668,
+      "sha256": "f0d74917422c458bcdad114536cfb9b1ae9ebe067e15fd995bf3353d9c9697bf"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-candy-2.wav",
+      "bytes": 328148,
+      "sha256": "3326f053740fa122a9b40296970582deb41e71039f5114ba300c8d5da3f67be6"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-candy-3.wav",
+      "bytes": 437516,
+      "sha256": "d9d7e926bf6675d7f28bf7d79ecf15a6a5d400adda0214f4d675c298b6c4d3df"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-candy-4.wav",
+      "bytes": 539828,
+      "sha256": "6f6af64d40dcb36ba7ce8f3981808e08e8ff995aeb425defeefcdf671e86a64e"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-castella-1.wav",
+      "bytes": 204668,
+      "sha256": "1ff725e3e137ea8266a683a2d53bae56e8a2bd4e760fa9b3391861f544cf5d10"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-castella-2.wav",
+      "bytes": 328148,
+      "sha256": "5889c0c99895ba66b933344bfb8f686856b5184b75dd3fffbf0e71af63f2216c"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-castella-3.wav",
+      "bytes": 437516,
+      "sha256": "0e80715e1331295eaee07954b4f886ee81f3e8a5956646bcab33fa6c6213dde2"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-castella-4.wav",
+      "bytes": 539828,
+      "sha256": "2a4784d55b5eeb7ed8093b6ebde6c9bc06138dd84608d1bf4fa4a58b2f4ea134"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-choco-1.wav",
+      "bytes": 204668,
+      "sha256": "3142ccfcba7f673c6142c49e389cd7f0764eda3038b5db29ab484f098ef8b51f"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-choco-2.wav",
+      "bytes": 328148,
+      "sha256": "c583bb7ce61631a9d611c0378eaeaca7c07d390c9a6ff05b4cea4be0c476b793"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-choco-3.wav",
+      "bytes": 437516,
+      "sha256": "40cc2af2873b38ac99fe50dc00865f4a15f312f53feb516b2cdd5fe0b31da275"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-choco-4.wav",
+      "bytes": 539828,
+      "sha256": "efcc2b0f4d51da0752f67d04663ec915d0a9cd639ebcc7ea4b1bcdac3c3df815"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-cookie-1.wav",
+      "bytes": 204668,
+      "sha256": "1c03ba7192b2f2865825c3de8affa3b83564dd3901a66c337193907bdcdc6770"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-cookie-2.wav",
+      "bytes": 328148,
+      "sha256": "01120052dd252cb6f7571d5e9fb939a8f19ac5fb7e993f0c108e0345d005621e"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-cookie-3.wav",
+      "bytes": 437516,
+      "sha256": "9da8ef52feeadc8b7aaf70dab8c876eaf011689235c4a80dd386fbcede0280a8"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-cookie-4.wav",
+      "bytes": 539828,
+      "sha256": "6e27a9b68c19bbafe437c637ce138d08d79198ac01fa75837eaa2302a1db6aca"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-dango-1.wav",
+      "bytes": 204668,
+      "sha256": "a1573986ef7fce993b1735a1d53071fbfe637e2d0fd93ce9c146e9143cdb1091"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-dango-2.wav",
+      "bytes": 328148,
+      "sha256": "5ed6c1ab0515ebfc6a55a2990f1fe0281dea5e390cb63327aacb9af2a2a981c1"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-dango-3.wav",
+      "bytes": 437516,
+      "sha256": "9ad9fd3b4a4cc42d96718c0dfac8c59032b416e94329d969419e4c0225ed6822"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-dango-4.wav",
+      "bytes": 539828,
+      "sha256": "612669acc6a0201bb16143f9862ae70f6c0e614cc85d7bd5d155dbf3b4fc9f33"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-gelato-1.wav",
+      "bytes": 204668,
+      "sha256": "d91733ae64cbf992a01f470c01bcd20dd0ea4b1f3ac7eecdd6a041ade165cc6d"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-gelato-2.wav",
+      "bytes": 328148,
+      "sha256": "5b8c2c4f9725c5b4b0dca48d6b95c80178267d4dbeceab5fd12ccdaff5624a4c"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-gelato-3.wav",
+      "bytes": 437516,
+      "sha256": "83a6857d04fd8b7c241c52821cbfb8156376a4349b1682448e59ab40999f9439"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-gelato-4.wav",
+      "bytes": 539828,
+      "sha256": "283571bc0184d688280bedff572ec9fc60b0510ae78d4e057bd1c877cbfe8e39"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-jelly-1.wav",
+      "bytes": 204668,
+      "sha256": "90d244e78d105edee211fd3a1fd43b821f2e345e061abf86bbf47cc6493eb804"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-jelly-2.wav",
+      "bytes": 328148,
+      "sha256": "6d1dc0fc87de402bd1eb46e824a41dabdf358c0d077167abd148bb3103acc5e8"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-jelly-3.wav",
+      "bytes": 437516,
+      "sha256": "3883b69f1c8db1e1dedaa6756e07b36220892fd4dca17c8cccf8368ff807cf8c"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-jelly-4.wav",
+      "bytes": 539828,
+      "sha256": "8d9a0e0d55aec839757cace415a5f1939a8f18084a99c86746dcb2fe3da6856c"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-popcorn-1.wav",
+      "bytes": 204668,
+      "sha256": "ad69fad9d22612e604cc2f0c83d7f9669699ae4ebfd91cbe5eb11ec904143025"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-popcorn-2.wav",
+      "bytes": 328148,
+      "sha256": "651fde8bfab7458429dc5e39ecb95214438bef7a493c865df3a58ca12545a459"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-popcorn-3.wav",
+      "bytes": 437516,
+      "sha256": "d07afc1a1504f4c3eafe676c4b6a32fee052087533857adb8762b25ce9936a5d"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-popcorn-4.wav",
+      "bytes": 539828,
+      "sha256": "5b2fdd0f41a5d831638e16695888a49257e1ed72568a87d7e58a19e11401b6eb"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-stick-1.wav",
+      "bytes": 204668,
+      "sha256": "3359130e5bff3fbb2d9d167edb1b2a79ad0a1ed78dfe10a8c2896d941730e261"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-stick-2.wav",
+      "bytes": 328148,
+      "sha256": "dfa21b03b890caf5fbd92d64b280807e86b4d5a85434f2cf7526d24ef19a93e5"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-stick-3.wav",
+      "bytes": 437516,
+      "sha256": "86bda4b80667852c2c3b9b579ae11abaaf5b3e7159250a7c8cb36dd8901dc330"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-stick-4.wav",
+      "bytes": 539828,
+      "sha256": "69b2d5eb197f91bd07c45b93991fd5ceda8422c814f8825b1c8242cd065a59d9"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-winery-1.wav",
+      "bytes": 204668,
+      "sha256": "474358df8cfb5316880c128add8fe4abd7d544dbc6b731d1f74871dc0f58d121"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-winery-2.wav",
+      "bytes": 328148,
+      "sha256": "1957171d78aadade8a674dbc62b3e1024ca19fdbee0b1c2739472884def5aecd"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-winery-3.wav",
+      "bytes": 437516,
+      "sha256": "0f895b97404a3a5028587512c2759fcf6e5b46cfcb0e12c1b019950ba5a6c8f3"
+    },
+    {
+      "path": "assets/audio/casino-v281/award-winery-4.wav",
+      "bytes": 539828,
+      "sha256": "cb4746565e3ed692626b2d7fc589c71e2e7fccf9a9bbf0c354532760a30111a4"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-candy.wav",
+      "bytes": 109412,
+      "sha256": "369f95e8cb46fa68e65e95d6b29de2bb75ba2915277d78806b255c678700ff39"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-castella.wav",
+      "bytes": 109412,
+      "sha256": "1e8ed471852d606644f5c11100c7620cf045f9176c42b7b6b0be85db5a8f014e"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-choco.wav",
+      "bytes": 109412,
+      "sha256": "216e6b899b9642f77248376641ee2386ced9fb7997c7e1b6066132ffad2d4280"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-cookie.wav",
+      "bytes": 109412,
+      "sha256": "39b915aec0eaf6cc2bc75835f243d5de3f12f47a4dd99cbdbb40b3d07011c763"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-dango.wav",
+      "bytes": 109412,
+      "sha256": "9e558776867c80c0ff35b08d6f500057af1767eebcbf970870e53ad6b926143a"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-gelato.wav",
+      "bytes": 109412,
+      "sha256": "c54fe0524838dd932e051db5323612478f2251e30f398a727533acb2ba478b5b"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-jelly.wav",
+      "bytes": 109412,
+      "sha256": "4a495ca6db0686e04b5dc9602d35b4f2d4e01ea560f1c31d6ba4a2c9007b7d0b"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-popcorn.wav",
+      "bytes": 109412,
+      "sha256": "a6022fd00bd25c117e66ceefd57838e389e59b56b73aa74a39dc3fbe0e3818af"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-stick.wav",
+      "bytes": 109412,
+      "sha256": "be4b43832cad03dbec3fe7749875cc8e14ef0f13b7252167dfd658bc9339f098"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain-winery.wav",
+      "bytes": 109412,
+      "sha256": "bfe6313523f39f2a8a8fa13e6bb74b1cf644f64cccbc18f57e3c50d033496d49"
+    },
+    {
+      "path": "assets/audio/casino-v281/chain.wav",
+      "bytes": 109412,
+      "sha256": "8b64176d1c4dd1f6956e82cc2355536dd26dd4c991a5da3656ec61a8540a0adb"
+    },
+    {
+      "path": "assets/audio/casino-v281/confirm.wav",
+      "bytes": 63548,
+      "sha256": "e2d5ba83aa18694e2a7821bd7ae0cba0e278e2d7dee524b4c3af40821f992fd7"
+    },
+    {
+      "path": "assets/audio/casino-v281/count-done.wav",
+      "bytes": 155276,
+      "sha256": "c28552fda7a86c0b55c22d6914edbc41ea35cb2f2a4f1aece8a0734bf9d0b499"
+    },
+    {
+      "path": "assets/audio/casino-v281/count.wav",
+      "bytes": 26504,
+      "sha256": "f6861213c8ca0e611328d4b007da29da82ea255057767895b71df79201f84d24"
+    },
+    {
+      "path": "assets/audio/casino-v281/drill.wav",
+      "bytes": 97064,
+      "sha256": "45ab63a747129bf28ca3d3f9989ace1078afa001833461cc6af76a24cc92aae2"
+    },
+    {
+      "path": "assets/audio/casino-v281/drop.wav",
+      "bytes": 109412,
+      "sha256": "4f76850fa5993dc5213a25c34b962d9edcfbad440a15f9163770b4198f027d95"
+    },
+    {
+      "path": "assets/audio/casino-v281/finish.wav",
+      "bytes": 165860,
+      "sha256": "0db1eebd016b1cd7e984d0486ef6792f655f0673855894f15e00c0276918bd08"
+    },
+    {
+      "path": "assets/audio/casino-v281/hammer-impact.wav",
+      "bytes": 155276,
+      "sha256": "e7efe55fda72d9ec4ea25e703e33da6b232dc848b3be2cbbd5849b234a00bda5"
+    },
+    {
+      "path": "assets/audio/casino-v281/hammer-launch.wav",
+      "bytes": 123524,
+      "sha256": "d57d25869b9298027c4be6478a77999600796852c72b62628622fa54b4fa625c"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-candy.wav",
+      "bytes": 68840,
+      "sha256": "64a5f0ef70291aad83f5b0d5cf5ecf71aca5527d82c9e30a2d7b4121d7c8c356"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-canyon.wav",
+      "bytes": 60900,
+      "sha256": "b1891901a78cfb2a537e86e6f4fb366f183d335fb72bf2ab072cc75ae229e364"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-castella.wav",
+      "bytes": 52964,
+      "sha256": "d917227094fe43f9a82f0466e24c772c7916637e39b7c96217e959d2c09a802b"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-cookie.wav",
+      "bytes": 52964,
+      "sha256": "d3974d04f233032ef1f398867f1f0bf164c8063783379d4fc06db87d03d0fa5e"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-dango.wav",
+      "bytes": 60900,
+      "sha256": "5d3127bc06e9d5cbba322098ded0c8ae70daccffe12e99b69d036ceac75fb870"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-jelly.wav",
+      "bytes": 68840,
+      "sha256": "fc3284be33d16e19a04c993e1bbad4736403c8a8e976386e6aa7cc628c9e9a1a"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-popcorn.wav",
+      "bytes": 60900,
+      "sha256": "c39e2473fd2632f578ecc1863f7e6b758f938d24ae659124416c39d7a85b4280"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-prism.wav",
+      "bytes": 76780,
+      "sha256": "505b93e8679f871624f58962eb455b4bc8c7c98bca7ec445a14cd26005f4d758"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-waffle.wav",
+      "bytes": 76780,
+      "sha256": "57034f77f3496e346356bd747d6830bf6c5f2c7127b45b51c71e47154aef11ec"
+    },
+    {
+      "path": "assets/audio/casino-v281/hit-water.wav",
+      "bytes": 52964,
+      "sha256": "f242d5c73620dfa0dd8c5fe978b6fa0a3e1c106ea24aab5e376cd3ddbce1f324"
+    },
+    {
+      "path": "assets/audio/casino-v281/jackpot.wav",
+      "bytes": 698588,
+      "sha256": "f9163e166726aafd8b346301e38442bb50b42f654430476f9719afe9df85ed44"
+    },
+    {
+      "path": "assets/audio/casino-v281/jpc-qualified.wav",
+      "bytes": 437516,
+      "sha256": "36eabf739888ba8a7a8ff21d014d3c5327abb9a40a75e897d4d1914a69785011"
+    },
+    {
+      "path": "assets/audio/casino-v281/jpc-reach.wav",
+      "bytes": 285812,
+      "sha256": "0e2439885fd8b79ba719a3c18abacbbec6f110c2b0aef3c9174544b87d4bc191"
+    },
+    {
+      "path": "assets/audio/casino-v281/land.wav",
+      "bytes": 77660,
+      "sha256": "a5e5419dc57e017014ace8f19c9574b1085fde4ad017a2044b1ac24b317daf4a"
+    },
+    {
+      "path": "assets/audio/casino-v281/launch.wav",
+      "bytes": 165860,
+      "sha256": "9f3ad603bf1d51c41c6baeb37606addd5feca869939788f9d8a9501207e00497"
+    },
+    {
+      "path": "assets/audio/casino-v281/level.wav",
+      "bytes": 176444,
+      "sha256": "71f8622ff606ca241e53f9dfc3b224a175cb1169e68b97d9d8d95ea517052e51"
+    },
+    {
+      "path": "assets/audio/casino-v281/manifest.json",
+      "bytes": 172028,
+      "sha256": "893d659d35faa9f7ab37cfe3dc53795450e2c9299241c197f39b97f6b6298273"
+    },
+    {
+      "path": "assets/audio/casino-v281/melt.wav",
+      "bytes": 116468,
+      "sha256": "3ce9cc4e15baf1f8cd2e6c74f8cc65a08b48ab31d5200a4e6fb5adb1ade8a436"
+    },
+    {
+      "path": "assets/audio/casino-v281/miss.wav",
+      "bytes": 90008,
+      "sha256": "f85c567c96003887f11f2658f460654471e47d9bb1150fc044898bb20785625e"
+    },
+    {
+      "path": "assets/audio/casino-v281/multiplier-galaxy.wav",
+      "bytes": 437516,
+      "sha256": "ea794ebdffb14e4215697be142a396c5cfcccfa7e83679d39151de1f7bcafb98"
+    },
+    {
+      "path": "assets/audio/casino-v281/multiplier-high.wav",
+      "bytes": 328148,
+      "sha256": "7e344ff871d3c27f99bccef0c0fdcceacac6c7b1fcccec7c4e732654bd98e9da"
+    },
+    {
+      "path": "assets/audio/casino-v281/multiplier.wav",
+      "bytes": 204668,
+      "sha256": "48b1987b6c037aca3f5edbde3140c43e7d81b496f042f7f6b41177ac9988fc00"
+    },
+    {
+      "path": "assets/audio/casino-v281/ore.wav",
+      "bytes": 114704,
+      "sha256": "7edee67cd0198d454be41a2089008b9077de55603aaeadb2863d196e747e010a"
+    },
+    {
+      "path": "assets/audio/casino-v281/reach-high.wav",
+      "bytes": 276992,
+      "sha256": "015a89d64ff31715525ac76e8826c0d657a932d51f440c5e8147ca8760141896"
+    },
+    {
+      "path": "assets/audio/casino-v281/reach.wav",
+      "bytes": 165860,
+      "sha256": "6f90bdf807dc76f1e9d65567c56a1c61a5623b7ca89661b147a3a1724f72b013"
+    },
+    {
+      "path": "assets/audio/casino-v281/reel-tick.wav",
+      "bytes": 22976,
+      "sha256": "54808593c238e9306f519aae09735fc7d7968ef16ea795d553626ce6718bb6d9"
+    },
+    {
+      "path": "assets/audio/casino-v281/refill.wav",
+      "bytes": 130580,
+      "sha256": "61a0fe60cf5080194fbf7fcecce4debf56552c00393f6f709bd7bfc3cc7fea0c"
+    },
+    {
+      "path": "assets/audio/casino-v281/round.wav",
+      "bytes": 204668,
+      "sha256": "56c0fa79d40a1b382899258966a68fe75a7c2849cd923f6b3d35a92784472a9e"
+    },
+    {
+      "path": "assets/audio/casino-v281/scroll.wav",
+      "bytes": 102356,
+      "sha256": "60d68480db42574765bbdcc836a74888b43a3edaf4fb7491956ad346b7607c37"
+    },
+    {
+      "path": "assets/audio/casino-v281/sources/KENNEY_CASINO_LICENSE.txt",
+      "bytes": 487,
+      "sha256": "3d9c53acb6e236d760da14030f54bc53e1d8c2599f78470c36b96fddcde09221"
+    },
+    {
+      "path": "assets/audio/casino-v281/sources/KENNEY_MUSIC_JINGLES_LICENSE.txt",
+      "bytes": 482,
+      "sha256": "373b1c880ee6c7a83c1ccf209f251cf45fc9ea9b1f0330844fa7be64a401adc4"
+    },
+    {
+      "path": "assets/audio/casino-v281/sources/SOUNDBIBLE_COIN_LICENSE.txt",
+      "bytes": 397,
+      "sha256": "d58834b8011ef032e1ad9746a243dfc559292189a4f18a85d0590f5eeaca7734"
+    },
+    {
+      "path": "assets/audio/casino-v281/sources/provenance.json",
+      "bytes": 5335,
+      "sha256": "5cc4455af98e194d1b85ce0fe2a1cc411c7f96bb4a86b431ac036c17507dff39"
+    },
+    {
+      "path": "assets/audio/casino-v281/sources/soundbible-coin-drop-willem-hunt.wav",
+      "bytes": 280642,
+      "sha256": "63d47384f2b746a4d866ef99f17175eb851c79d89cf95082962742e82580bb7f"
+    },
+    {
+      "path": "assets/audio/casino-v281/sugar.wav",
+      "bytes": 208196,
+      "sha256": "607c118748ea987025ed3b48fa7320b69ed83d870abc4133a6ed196b19358c50"
+    },
+    {
+      "path": "assets/audio/casino-v281/sweep.wav",
+      "bytes": 146456,
+      "sha256": "637050c1b61b4a3e23e4ed9c33c95a9c55e2eba33ca3478c1ba986e5d694e95d"
+    },
+    {
+      "path": "assets/audio/casino-v281/transfer.wav",
+      "bytes": 105884,
+      "sha256": "7551e2435ba0c064ca7a5172c0273ce447052ec28f04b1679d49c97dcddb7097"
+    },
+    {
+      "path": "assets/audio/casino-v281/transform.wav",
+      "bytes": 164096,
+      "sha256": "778eb91ebd7ffb30f038d2d7e37f549095a3b3ac7a64932ab7be4b759915dd19"
+    },
+    {
+      "path": "assets/audio/casino-v281/ui.wav",
+      "bytes": 35324,
+      "sha256": "278f6d40e071ac214b7c62311de882826ffbef7c3b204db94f92d232a0294c56"
     },
     {
       "path": "assets/audio/celebration-v277/arrival.wav",
@@ -1388,8 +1903,8 @@
     },
     {
       "path": "assets/celebration-audio-v277.js",
-      "bytes": 18403,
-      "sha256": "14c5ee1b2aed3969991389b714cdf90d169c3ded78020d103191c28cc1ea2111"
+      "bytes": 20413,
+      "sha256": "ec79a6e534023ccc8f4c89b5074e985b8cc69839eae47e943008cbac4d89bab8"
     },
     {
       "path": "assets/choco-dig.css",
@@ -1549,12 +2064,12 @@
     {
       "path": "assets/demo-suite-v91.js",
       "bytes": 20310,
-      "sha256": "dccfe015308336c72b7eb3d7439db23b55133e911c6c6311489fab14f0f71e63"
+      "sha256": "5dbd0a0e0da3d7ee893dfb1c0ec5874907f32393536c83693b3fc3fcd2023ba9"
     },
     {
       "path": "assets/download-cache-v255.js",
       "bytes": 4375,
-      "sha256": "b89795f5a56cd4d96f7c8c3c0d58b037e8405f2a98bf162a8a14ab48667067cd"
+      "sha256": "7ffe9aa9b31f87b0f73ea5563c79c8a2301b21eae69da793d43ed2ba39ddc14c"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1579,7 +2094,7 @@
     {
       "path": "assets/edition-choice-v255.js",
       "bytes": 3786,
-      "sha256": "9643bfe29f4d59cb1b59cb089affc28f232e97177eafc8c3f59b5867da620a4a"
+      "sha256": "9749f5c0b8516e7e40683467b5084623ed46348d7fbb3292923bc6e608fe3c57"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2768,13 +3283,13 @@
     },
     {
       "path": "assets/sixdrop-progressive-core-v247.js",
-      "bytes": 16904,
-      "sha256": "a6596177ea77f1686a8117c1730cb3ba63108f18375c11c35543b0fc5be397dd"
+      "bytes": 17844,
+      "sha256": "7be0268b8598e308d54b355b980e61c292017aeefd56249e628832c076c14fe8"
     },
     {
       "path": "assets/sixdrop-progressive-host-v247.js",
-      "bytes": 23172,
-      "sha256": "04cb5efab1a4c3a8d9f837ff0badbcf004b6dab1da1201ae623057c6468676b1"
+      "bytes": 23028,
+      "sha256": "bbb2b2966897a7617330a438e940ec4f3f68302a5c55298b25976bcd5278753f"
     },
     {
       "path": "assets/sixdrop-progressive-v247.css",
@@ -2788,13 +3303,13 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.css",
-      "bytes": 10791,
-      "sha256": "d77d1a48afee806968f0820276782ee06a02ae408cb6eeb1552008be6bd0568b"
+      "bytes": 12042,
+      "sha256": "2ed5f307db6a39d31aae0ac5f193505f80f15ce2204b8b722fe5fc84acea2279"
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 15166,
-      "sha256": "c6135445aa08480ec302bce7d034b1ad45578ec67f48df9710798425bc8ae747"
+      "bytes": 16996,
+      "sha256": "4e0c92651bcc09e09402901bb95894408a4d8af8949ef45e32a470a2dff685fb"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -3514,7 +4029,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "2ebb8e4ae202fc7ca410f45e1f1505cb619ecd2bc80426b0bb53e491191bc7ef"
+      "sha256": "06c5456de64ef18b40fece320a6fb9fbe36964f0a917b4a590bf36fb4a5b45ef"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3752,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 214053579
+  "totalBytes": 238629045
 }

@@ -7,13 +7,16 @@ import vm from 'node:vm';
 
 const root=new URL('../',import.meta.url);
 const source=await fs.readFile(new URL('assets/celebration-audio-v277.js',root),'utf8');
-const manifest=JSON.parse(await fs.readFile(new URL('assets/audio/celebration-v277/manifest.json',root),'utf8'));
+const bank='assets/audio/casino-v281/';
+const manifest=JSON.parse(await fs.readFile(new URL(bank+'manifest.json',root),'utf8'));
+const legacyManifest=JSON.parse(await fs.readFile(new URL('assets/audio/celebration-v277/manifest.json',root),'utf8'));
+const sampleCount=Object.keys(manifest.cues).length;
 const host=await fs.readFile(new URL('optimized/app-01.js',root),'utf8');
 const sceneKeys=JSON.parse(host.match(/const SCENE_SOUND_KEYS=(\[[^;]+\]);/)[1]);
 const kinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const plain=value=>JSON.parse(JSON.stringify(value));
 
-function harness({search='',cold=false}={}){
+function harness({search='',cold=false,unavailable=[]}={}){
  let now=1000,serial=0,context,unlocks=0;
  const timers=new Map(),events=new Map(),sources=[],fallback=[],loads=[],owned=new Set();
  const checkbox={checked:true};
@@ -33,9 +36,13 @@ function harness({search='',cold=false}={}){
   SCENE_SOUND_FILES:Object.fromEntries(sceneKeys.map(k=>[k,'legacy/'+k+'.wav'])),
   prepareSceneSounds(){},sceneSoundsReady(){},prepareArrival(){},prepareHammerImpact(){},arrivalBuffer:null,hammerImpactBuffer:null,
   sound:(...args)=>fallback.push(args),stopSounds:legacyStop,
-  loadEffectSample:async file=>{loads.push(file);const name=file.split('/').pop().replace(/\.wav$/,'');assert(manifest.cues[name],file);return {name,duration:manifest.cues[name].seconds};},
+  loadEffectSample:async file=>{loads.push(file);const name=file.split('/').pop().replace(/\.wav$/,'');
+   const current=file.startsWith(bank);if(current&&unavailable.includes(name))throw Error('fixture unavailable new sound');
+   const entry=(current?manifest:legacyManifest).cues[name];assert(entry,file);return {name,duration:entry.seconds};},
   unlock:()=>{unlocks++;context.audio=audio;context.prepareSceneSounds();return Promise.resolve(true);},
-  inView:true,userPaused:false,menuOpen:false,bgmGain,bgmRole:'game',bgmFadeFrame:0,jpcSession:{active:false,previousCounts:[]},
+  inView:true,userPaused:false,menuOpen:false,bgmGain,bgmRole:'game',bgmFadeFrame:0,jpcSession:{active:false,previousCounts:[],jackpotShown:false},
+  celebrateJpc(){context.jpcSession.jackpotShown=true;return 'native-jackpot';},
+  paintJpcDashboard(count){context.jpcSession.previousCounts=Array.from({length:25},(_,i)=>Number(i<count));return 'native-dashboard';},
   document:{hidden:false,addEventListener:(n,fn)=>events.set(n,fn)},$:id=>id==='sound'?checkbox:null,
   location:{search},URLSearchParams,performance:{now:()=>now},console,Math:math,
   setTimeout:(fn,ms)=>{const id=++serial;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id)});
@@ -48,19 +55,20 @@ const h=harness();await h.context.prepareSceneSounds();
 const d=h.api.describe();
 assert.deepEqual(Object.keys(plain(d.sceneRoutes)).sort(),sceneKeys.slice().sort(),'every existing scene route is replaced');
 assert.deepEqual(plain(d.samples).sort(),Object.keys(manifest.cues).sort(),'every routed sound exists, with no unused shipped cue');
-assert.equal(d.loadedSamples,41);assert.equal(d.totalSamples,41);assert.equal(d.errors,0);
-assert.equal(h.loads.length,41,'parallel preparation shares each decode');
+assert.equal(d.version,281);assert.equal(sampleCount,97);assert.equal(d.soundBank,bank);
+assert.equal(d.loadedSamples,sampleCount);assert.equal(d.totalSamples,sampleCount);assert.equal(d.errors,0);
+assert.equal(h.loads.length,sampleCount,'parallel preparation shares each decode');
 for(const [key,name]of Object.entries(d.sceneRoutes)){
- assert.equal(h.context.SCENE_SOUND_FILES[key],`assets/audio/celebration-v277/${name}.wav`);
+ assert.equal(h.context.SCENE_SOUND_FILES[key],`${bank}${name}.wav`);
  assert.equal(h.context.sfxBuffers.get('scene-'+key).name,name);
- await fs.access(new URL('assets/audio/celebration-v277/'+name+'.wav',root));
+ await fs.access(new URL(bank+name+'.wav',root));
 }
 await h.context.prepareArrival();await h.context.prepareHammerImpact();
 assert.equal(h.context.arrivalBuffer.name,'arrival');assert.equal(h.context.hammerImpactBuffer.name,'hammer-impact');
-assert.equal(h.loads.length,41,'warm arrival and hammer gates reuse decoded buffers');
+assert.equal(h.loads.length,sampleCount,'warm arrival and hammer gates reuse decoded buffers');
 
 // Selected materials route through actual sound() calls, not diagnostics alone.
-for(const [index,key,name]of [[0,'crack','hit-cookie'],[7,'crack','hit-waffle'],[8,'scene-cookie-hit','hit-castella'],[9,'scene-cookie-hit','hit-dango'],[4,'scene-glass','hit-water'],[6,'scene-glass','hit-water']]){
+for(const [index,key,name]of [[0,'crack','hit-cookie'],[1,'scene-stratum','hit-canyon'],[2,'scene-six-hit','hit-candy'],[3,'scene-glass','hit-prism'],[4,'scene-glass','hit-water'],[5,'scene-pop','hit-popcorn'],[6,'scene-glass','hit-jelly'],[7,'crack','hit-waffle'],[8,'scene-cookie-hit','hit-castella'],[9,'scene-cookie-hit','hit-dango']]){
  h.context.active=index;h.context.stopSounds();h.advance(250);h.context.sound(key);
  assert.equal(h.api.describe().lastEvents.at(-1).sample,name);
 }
@@ -72,7 +80,7 @@ h.context.sound('scene-line');assert.equal(h.api.describe().pendingAwards,1);
 assert(h.api.award({game:'cookie',tier:2,key:'native:line',delayMs:120}));
 h.advance(90);assert.equal(h.api.describe().awardStarts,0);
 h.advance(40);assert.equal(h.api.describe().awardStarts,1);
-assert.equal(h.api.describe().lastEvents.filter(e=>e.event==='start'&&e.award).at(-1).sample,'award-2');
+assert.equal(h.api.describe().lastEvents.filter(e=>e.event==='start'&&e.award).at(-1).sample,'award-cookie-2');
 assert.equal(h.api.award({game:'cookie',tier:2,key:'native:line'}),false,'same award never sounds twice');
 assert.equal(h.context.sound('scene-role'),false,'legacy audio cannot layer over explicit award');
 assert.equal(h.api.award({game:'jelly',tier:4,key:'other-game'}),false,'nonselected game remains quiet');
@@ -119,7 +127,46 @@ sugar.context.stopSounds();sugar.api.sugarReel({id:'restored-reel',intro:9800,po
 
 const cold=harness({cold:true});assert.equal(cold.api.unlock({isTrusted:false}),false);assert.equal(cold.unlocks(),0);
 cold.checkbox.checked=false;assert.equal(cold.api.unlock({isTrusted:true}),false);assert.equal(cold.unlocks(),0);
-cold.checkbox.checked=true;await cold.api.unlock({isTrusted:true});await cold.context.prepareSceneSounds();assert.equal(cold.unlocks(),1);assert.equal(cold.api.describe().loadedSamples,41);assert.equal(cold.api.describe().starts,0,'unlock itself is silent');
+cold.checkbox.checked=true;await cold.api.unlock({isTrusted:true});await cold.context.prepareSceneSounds();assert.equal(cold.unlocks(),1);assert.equal(cold.api.describe().loadedSamples,sampleCount);assert.equal(cold.api.describe().starts,0,'unlock itself is silent');
 for(const search of ['?serverSettlementWorker=1','?downloadWorker=1']){const worker=harness({search});assert.equal(worker.api,undefined);assert.equal(worker.context.sound('crack'),false);assert.equal(worker.loads.length,0);}
-assert.equal(h.api.describe().errors+sugar.api.describe().errors+cold.api.describe().errors,0);
-console.log(JSON.stringify({ok:true,samples:41,sceneRoutes:sceneKeys.length,nativeMaterialRoutes:true,sharedContext:true,singleAwardOwner:true,maxVoices:8,muteAndPause:true,staleRoundAndSelectionSuppressed:true,restoreIsSilent:true,trustedUnlock:true,workerDisabled:true}));
+// All ten cabinets use their own actual chain and four actual award buffers.
+const themed=harness();await themed.context.prepareSceneSounds();
+for(const [index,game]of kinds.entries()){
+ themed.context.active=index;themed.context.stopSounds();themed.advance(500);
+ themed.context.sound('scene-chain',{volume:.45});
+ assert.equal(themed.api.describe().lastEvents.at(-1).sample,'chain-'+game);
+ themed.context.stopSounds();themed.advance(500);assert(themed.api.play('chain'));
+ assert.equal(themed.api.describe().lastEvents.at(-1).sample,'chain-'+game);
+ for(let tier=1;tier<=4;tier++){
+  themed.context.stopSounds();themed.advance(500);
+  assert(themed.api.award({game,tier,key:game+':'+tier}));
+  assert.equal(themed.api.describe().lastEvents.at(-1).sample,'award-'+game+'-'+tier);
+  assert.equal(themed.api.describe().activeVoices,1,'a composed fanfare is one runtime voice');
+ }
+}
+themed.context.stopSounds();themed.advance(500);
+for(const [multiplier,expected]of [[2,'multiplier'],[5,'multiplier-high'],[10,'multiplier-galaxy']]){
+ themed.context.stopSounds();themed.advance(500);const id='multiplier-'+multiplier;
+ themed.api.sugarReel({id,intro:9600,position:13,spinning:true,multiplier});
+ themed.api.sugarReel({id,intro:9800,position:14,spinning:false,multiplier});
+ assert.equal(themed.api.describe().lastEvents.at(-1).sample,expected);
+ const count=themed.api.describe().starts;themed.api.sugarReel({id,intro:9900,position:14,spinning:false,multiplier});
+ assert.equal(themed.api.describe().starts,count,'the same multiplier stop cannot replay');
+}
+themed.context.stopSounds();themed.advance(500);
+themed.context.jpcSession.active=true;themed.app.paused=true;
+assert.equal(themed.context.paintJpcDashboard(23),'native-dashboard');
+themed.context.paintJpcDashboard(24);assert.equal(themed.api.describe().lastEvents.at(-1).sample,'jpc-reach');
+const reachStarts=themed.api.describe().starts;themed.context.paintJpcDashboard(24);assert.equal(themed.api.describe().starts,reachStarts);
+assert.equal(themed.context.celebrateJpc(),'native-jackpot');assert.equal(themed.api.describe().lastEvents.at(-1).sample,'jackpot');
+const jackpotStarts=themed.api.describe().awardStarts;themed.context.celebrateJpc();assert.equal(themed.api.describe().awardStarts,jackpotStarts);
+
+// New cache misses recover the matching legacy cue without extra voice starts.
+const recovered=harness({unavailable:['hit-jelly','award-candy-4']});await recovered.context.prepareSceneSounds();
+assert.equal(recovered.api.describe().loadedSamples,sampleCount);assert.equal(recovered.api.describe().fallbackLoads,2);assert.equal(recovered.api.describe().errors,0);
+assert(recovered.loads.includes('assets/audio/celebration-v277/hit-water.wav'));
+assert(recovered.loads.includes('assets/audio/celebration-v277/award-4.wav'));
+recovered.context.active=2;assert(recovered.api.award({game:'candy',tier:4,key:'recovered-clear'}));
+assert.equal(recovered.api.describe().activeVoices,1);assert.equal(recovered.api.describe().awardStarts,1);
+assert.equal(h.api.describe().errors+sugar.api.describe().errors+cold.api.describe().errors+themed.api.describe().errors,0);
+console.log(JSON.stringify({ok:true,version:281,samples:sampleCount,sceneRoutes:sceneKeys.length,nativeMaterialRoutes:10,themedAwardRoutes:40,themedChains:10,multiplierTiers:3,jpcAndJackpot:true,legacyFallback:true,sharedContext:true,singleAwardOwner:true,maxVoices:8,muteAndPause:true,staleRoundAndSelectionSuppressed:true,restoreIsSilent:true,trustedUnlock:true,workerDisabled:true}));

@@ -5,7 +5,8 @@ const carry={version:247,bankUnits:123456,removed:99,feed:450,roundId:'prior-com
 const lineTotals=[0,20,60,140,240,380,540,740,960];
 const roleScales={line:1,triangle:3,hexagon:6};
 const roleWin=(bet,counts)=>Object.entries(counts).reduce((sum,[role,count])=>sum+Math.floor(bet*(count<lineTotals.length?lineTotals[count]*roleScales[role]:R.roleTotal(role,count,278))/100),0);
-assert.equal(R.CURRENT_REVISION,278);
+assert.equal(R.GROUPED_REVISION,278);
+assert(R.CURRENT_REVISION>=R.GROUPED_REVISION);
 assert.deepEqual(R.BATCH_SIZES,[3,2,1,1,1]);
 for(const [role,scale]of Object.entries(roleScales)){
  assert.deepEqual(lineTotals.map((_n,count)=>R.roleTotal(role,count,278)),lineTotals.map(n=>n*scale),role+' cumulative count table');
@@ -104,7 +105,7 @@ assert(positive>0&&zero>0&&clears>0,'the sample exercises winning, zero and all-
 
 // This full real-rule witness produces TWO all-clear awards. It also reaches
 // the seventh line count, where the new convex payout differs materially.
-const witness=fullRound(9,{bet:3000,carry});
+const witness=fullRound(9,{bet:3000,carry,rulesRevision:278});
 assert.deepEqual(witness.state.counts,{line:7,triangle:1,hexagon:0});assert.equal(witness.state.normalHundredths,800);
 assert.equal(witness.win,56618);assert.equal(witness.state.allClears,2);assert.equal(witness.state.bonusMedals,32618);
 const clearEvents=witness.plans.flatMap(p=>p.timeline).filter(e=>e.phase==='pyramidAllClear');
@@ -114,9 +115,9 @@ const saved=R.carryOut(witness.state,'two-clears'),next=R.newGame({seed:9,bet:30
 assert.equal(next.bankUnits,witness.state.bankUnits,'a BET change leaves the carried medal value intact');
 assert.deepEqual(next.palette,R.palette(witness.state.removedTotal),'only the next game uses the new four colors');
 assert.notDeepEqual(next.palette,witness.initial.palette);assert.equal(next.roundRemoved,0);assert.equal(next.normalHundredths,0);assert.equal(next.bonusMedals,0);
-const noWin=fullRound(2,{bet:3000,carry:saved});assert.equal(noWin.win,0);assert.equal(R.carryOut(noWin.state).bankUnits,0);assert.equal(R.carryOut(noWin.state).removed,0);
+const noWin=fullRound(2,{bet:3000,carry:saved,rulesRevision:278});assert.equal(noWin.win,0);assert.equal(R.carryOut(noWin.state).bankUnits,0);assert.equal(R.carryOut(noWin.state).removed,0);
 for(const bet of [1,3,7,301,333]){
- const mixed=fullRound(9,{bet,carry}),tableWin=Math.floor(bet*740/100)+Math.floor(bet*60/100);
+ const mixed=fullRound(9,{bet,carry,rulesRevision:278}),tableWin=Math.floor(bet*740/100)+Math.floor(bet*60/100);
  assert.deepEqual(mixed.state.counts,{line:7,triangle:1,hexagon:0});
  assert.equal(mixed.win-mixed.state.bonusMedals,tableWin,'BET '+bet+': sum of displayed role amounts is the actual settled ordinary WIN');
  let previous=mixed.initial;for(const plan of mixed.plans){audit(plan,previous);previous=plan.state;}

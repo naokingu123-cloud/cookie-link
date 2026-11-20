@@ -97,12 +97,29 @@ async function run(){
   assert.deepEqual(b.events.filter(e=>e.phase==='settled').map(e=>e.numbers.length),completed?[2,1,1,1]:[3,2,1,1,1]);
  }
  // Old serialized single-HIT games keep their unfinished board and payout
- // revision until all eight balls settle, then the next game adopts v278.
+ // revision until all eight balls settle, then the next game adopts current rules.
  const legacy=createHost({bet:3000,search:'?edition=streaming'});legacy.control(prior);legacy.start();
  let old=R.newGame({seed:9,bet:3000,carry:prior});for(const n of NUMBERS.slice(0,2))old=R.hit(old,n).state;
  legacy.e.state=clone(old);legacy.app.draws=NUMBERS.slice(0,2);legacy.e.queue=[];legacy.e.afterCheckpointRestoreV247();assert.equal(legacy.e.drawMode,'single');
  for(const n of NUMBERS.slice(2)){old=R.hit(old,n).state;await legacy.number(n);}
- assert.deepEqual(legacy.e.state,old);assert.equal(legacy.e.state.rulesRevision,248);legacy.app.prepare();legacy.start();assert.equal(legacy.e.state.rulesRevision,278);
+ assert.deepEqual(legacy.e.state,old);assert.equal(legacy.e.state.rulesRevision,248);legacy.app.prepare();legacy.start();assert.equal(legacy.e.state.rulesRevision,R.CURRENT_REVISION);
+
+ // A saved grouped v278 game also keeps its original table and unresolved
+ // 1st/2nd/4th-ball queue when restored by the newer payout revision.
+ for(const ball of [2,4]){
+  const a=createHost({seed:1,bet:101,search:'?edition=streaming'});a.control(prior);a.start();
+  a.e.state=R.newGame({seed:1,bet:101,carry:prior,rulesRevision:278});a.e.afterCheckpointRestoreV247();
+  assert.equal(a.e.drawMode,'grouped');
+  for(const n of NUMBERS.slice(0,ball))await a.number(n);
+  const checkpoint=clone(Recorder.capture(a.app,{ballIndex:ball}));
+  const b=createHost({seed:77,bet:101,search:'?edition=streaming'});b.control(prior);b.start();Recorder.restore(b.app,checkpoint,{wallet:false,random:false});await idle(b.e);
+  assert.equal(b.e.drawMode,'grouped');assert.equal(b.e.state.rulesRevision,278);
+  assert.deepEqual([...b.e.pendingDraws],NUMBERS.slice(expectedProcessed[ball],ball));
+  for(const n of NUMBERS.slice(ball))await b.number(n);
+  const oldOracle=fullRound(1,{bet:101,carry:prior,rulesRevision:278});
+  assert.deepEqual(b.e.state,oldOracle.state);assert.equal(b.app.totalWin,oldOracle.win);
+  assert.notEqual(oldOracle.win,fullRound(1,{bet:101,carry:prior}).win,'this witness distinguishes the saved and current payout tables');
+ }
 
  // A previously downloaded v248 package omitted numeric state.rng. Migration
  // may reconstruct that cursor only when the saved seed/history reproduce

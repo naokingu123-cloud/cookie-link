@@ -1,0 +1,196 @@
+{
+  "version": 280,
+  "coreSha256": "7be0268b8598e308d54b355b980e61c292017aeefd56249e628832c076c14fe8",
+  "source": {
+    "path": "docs/qa-v278/sixdrop-payout-validation.json",
+    "sha256": "96e9e16650a295221cac8d4dfc696d0f4ee94754ffcc7bf1f6cddf8f892aa0cf"
+  },
+  "method": "Paired revaluation of existing role-count histograms at BET 100. New payout tables do not change initial boards, RNG, shape counts, support probability, all-clear awards or positive/zero carry boundaries at this BET. Historical samples are reused, not newly generated or independent validation. No confidence interval is inferred for the revalued samples.",
+  "scope": "Direct Six Drop role and all-clear payouts; shared Sugar/JPC, physical roulette bias and adaptive payout feedback are excluded.",
+  "games": 32000,
+  "payouts": [
+    {
+      "role": "line",
+      "multipliers": [
+        0.2,
+        0.5,
+        1.5,
+        2.5,
+        4,
+        5.5,
+        7.5,
+        9.5,
+        12,
+        14.5
+      ]
+    },
+    {
+      "role": "triangle",
+      "multipliers": [
+        0.5,
+        2,
+        4,
+        7.5,
+        12.5,
+        17.5,
+        25,
+        32.5,
+        42.5,
+        52.5
+      ]
+    },
+    {
+      "role": "hexagon",
+      "multipliers": [
+        1,
+        4,
+        8,
+        15,
+        25,
+        35,
+        50,
+        65,
+        85,
+        105
+      ]
+    }
+  ],
+  "unchangedSupportProbabilityAnchors": [
+    [
+      50,
+      0.23
+    ],
+    [
+      90,
+      0.57
+    ],
+    [
+      100,
+      0.615
+    ],
+    [
+      150,
+      0.9
+    ]
+  ],
+  "summary": [
+    {
+      "rate": 50,
+      "games": 8000,
+      "previousPercent": 49.178125,
+      "revaluedPercent": 49.261875,
+      "differencePercentagePoints": 0.08374999999999488
+    },
+    {
+      "rate": 90,
+      "games": 8000,
+      "previousPercent": 90.200625,
+      "revaluedPercent": 90.559375,
+      "differencePercentagePoints": 0.35875000000000057
+    },
+    {
+      "rate": 100,
+      "games": 8000,
+      "previousPercent": 97.814375,
+      "revaluedPercent": 98.245625,
+      "differencePercentagePoints": 0.4312500000000057
+    },
+    {
+      "rate": 150,
+      "games": 8000,
+      "previousPercent": 151.468125,
+      "revaluedPercent": 152.085625,
+      "differencePercentagePoints": 0.6174999999999926
+    }
+  ],
+  "runs": [
+    {
+      "rate": 50,
+      "games": 4000,
+      "seed": 7483913,
+      "drawSeed": 3280919,
+      "previousPercent": 49.2,
+      "revaluedPercent": 49.3,
+      "differencePercentagePoints": 0.09999999999999432,
+      "rolePercent": 25.57,
+      "unchangedAllClearPercent": 23.73
+    },
+    {
+      "rate": 90,
+      "games": 4000,
+      "seed": 7483913,
+      "drawSeed": 3280919,
+      "previousPercent": 88.3525,
+      "revaluedPercent": 88.73750000000001,
+      "differencePercentagePoints": 0.3850000000000051,
+      "rolePercent": 45.45,
+      "unchangedAllClearPercent": 43.2875
+    },
+    {
+      "rate": 100,
+      "games": 4000,
+      "seed": 7483913,
+      "drawSeed": 3280919,
+      "previousPercent": 98.015,
+      "revaluedPercent": 98.4975,
+      "differencePercentagePoints": 0.4825000000000017,
+      "rolePercent": 49.2225,
+      "unchangedAllClearPercent": 49.275
+    },
+    {
+      "rate": 150,
+      "games": 4000,
+      "seed": 7483913,
+      "drawSeed": 3280919,
+      "previousPercent": 156.6975,
+      "revaluedPercent": 157.315,
+      "differencePercentagePoints": 0.6175000000000068,
+      "rolePercent": 69.2025,
+      "unchangedAllClearPercent": 88.1125
+    },
+    {
+      "rate": 50,
+      "games": 4000,
+      "seed": 5926319,
+      "drawSeed": 8721431,
+      "previousPercent": 49.15625,
+      "revaluedPercent": 49.223749999999995,
+      "differencePercentagePoints": 0.06749999999999545,
+      "rolePercent": 26.3375,
+      "unchangedAllClearPercent": 22.88625
+    },
+    {
+      "rate": 90,
+      "games": 4000,
+      "seed": 5926319,
+      "drawSeed": 8721431,
+      "previousPercent": 92.04875,
+      "revaluedPercent": 92.38125,
+      "differencePercentagePoints": 0.332499999999996,
+      "rolePercent": 48.2475,
+      "unchangedAllClearPercent": 44.13375
+    },
+    {
+      "rate": 100,
+      "games": 4000,
+      "seed": 5926319,
+      "drawSeed": 8721431,
+      "previousPercent": 97.61375,
+      "revaluedPercent": 97.99375,
+      "differencePercentagePoints": 0.38000000000000966,
+      "rolePercent": 50.535,
+      "unchangedAllClearPercent": 47.45875
+    },
+    {
+      "rate": 150,
+      "games": 4000,
+      "seed": 5926319,
+      "drawSeed": 8721431,
+      "previousPercent": 146.23875,
+      "revaluedPercent": 146.85625,
+      "differencePercentagePoints": 0.6174999999999784,
+      "rolePercent": 70.0675,
+      "unchangedAllClearPercent": 76.78875
+    }
+  ]
+}

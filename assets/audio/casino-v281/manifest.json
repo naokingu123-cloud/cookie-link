@@ -1,0 +1,6169 @@
+{
+  "version": 281,
+  "format": {
+    "sampleRate": 44100,
+    "channels": 2,
+    "bitsPerSample": 16
+  },
+  "seed": 28120261120,
+  "generator": "scripts/generate-casino-audio-v281.py",
+  "generatorSha256": "42bd0195677a7d4d106615dd85e91ea88f433115665aa54a7976910e478e3c6d",
+  "synthesisBase": "scripts/generate-celebration-audio-v277.py",
+  "provenance": "Kenney Casino Audio / Music Jingles (CC0), Willem Hunt Coin Drop / SoundBible (Public Domain), combined with original procedural composition and synthesis. Source files, licenses and per-cue layers are preserved.",
+  "sources": {
+    "retrievedAtUTC": "2026-11-20T14:31:16.358025+00:00",
+    "sources": {
+      "chip": {
+        "file": "kenney-chip-lay-1.ogg",
+        "originalFilename": "casino-audio/Audio/chip-lay-1.ogg",
+        "bytes": 5720,
+        "sha256": "4b2111252ccb64eed67f171e061053849cfbb29873536c03948646f244a3905c",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.044762,
+        "decodedSeconds": 0.12483
+      },
+      "collide": {
+        "file": "kenney-chips-collide-1.ogg",
+        "originalFilename": "casino-audio/Audio/chips-collide-1.ogg",
+        "bytes": 6356,
+        "sha256": "f41b3d106360fc68ebc061a211d4265b4cb5fa1fbe86e4d57d3673510e2c3784",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.080023,
+        "decodedSeconds": 0.175828
+      },
+      "stack": {
+        "file": "kenney-chips-stack-1.ogg",
+        "originalFilename": "casino-audio/Audio/chips-stack-1.ogg",
+        "bytes": 6469,
+        "sha256": "12bf175b9afcea112175b241ad3336c6244ac5fdcdff8b5942ecc03f2225e0c4",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.079274,
+        "decodedSeconds": 0.205306
+      },
+      "handle": {
+        "file": "kenney-chips-handle-1.ogg",
+        "originalFilename": "casino-audio/Audio/chips-handle-1.ogg",
+        "bytes": 9374,
+        "sha256": "a2c495237fb0dc0dc96ccc2c9840572edd226e6459398ecb631c6c9f9e5408f0",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.039546,
+        "decodedSeconds": 0.576712
+      },
+      "shower": {
+        "file": "kenney-chips-handle-5.ogg",
+        "originalFilename": "casino-audio/Audio/chips-handle-5.ogg",
+        "bytes": 11273,
+        "sha256": "589753ea21b1955626e82975be8979f42140f5b0645a8c33c2d1f7e33fba68cb",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.0,
+        "decodedSeconds": 0.833719
+      },
+      "dice": {
+        "file": "kenney-die-throw-1.ogg",
+        "originalFilename": "casino-audio/Audio/die-throw-1.ogg",
+        "bytes": 8410,
+        "sha256": "b31d716165be60e442da3c1ca25a3968aad1e0851a7f0859f495aecc02fd9e13",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.156009,
+        "decodedSeconds": 0.37585
+      },
+      "shuffle": {
+        "file": "kenney-card-shuffle.ogg",
+        "originalFilename": "casino-audio/Audio/card-shuffle.ogg",
+        "bytes": 30002,
+        "sha256": "96c84883a30845ede723a4cf2e8369e9837e7dd4e0d4eb0212b0a7ed21b0f544",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/casino-audio",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.068912,
+        "decodedSeconds": 2.99458
+      },
+      "jingle": {
+        "file": "kenney-jingle-hit03.ogg",
+        "originalFilename": "music-jingles/Audio/Hit jingles/jingles_HIT03.ogg",
+        "bytes": 13944,
+        "sha256": "889d4c2b76c7edd63138b3a976c3f7337aaba3de90019d19bca70ec958c93014",
+        "author": "Kenney Vleugels",
+        "sourcePage": "https://kenney.nl/assets/music-jingles",
+        "license": "CC0-1.0",
+        "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "decodedTrimLeadingSeconds": 0.016327,
+        "decodedSeconds": 0.72941
+      },
+      "coin": {
+        "file": "soundbible-coin-drop-willem-hunt.wav",
+        "originalFilename": "soundbible-coin-drop-willem-hunt.wav",
+        "bytes": 280642,
+        "sha256": "63d47384f2b746a4d866ef99f17175eb851c79d89cf95082962742e82580bb7f",
+        "author": "Willem Hunt",
+        "sourcePage": "https://soundbible.com/2081-Coin-Drop.html",
+        "license": "Public Domain (specific asset declaration)",
+        "licenseURL": "https://soundbible.com/2081-Coin-Drop.html",
+        "attributionRequired": false,
+        "originalPreserved": true,
+        "downloadURL": "https://soundbible.com/grab.php?id=2081&type=wav",
+        "decodedTrimLeadingSeconds": 0.003515,
+        "decodedSeconds": 3.176259
+      }
+    },
+    "processing": "Original files above are unmodified. Generator decodes with ffmpeg, trims silence, downmixes to mono, filters, speed/pitch-shifts, envelopes, pans and mixes into original synthesized compositions. Every output cue records actual source layers and SHA-256.",
+    "archives": [
+      {
+        "file": "kenney_casino-audio.zip",
+        "sha256": "f36250766ac5bc378c13708ddf12a23a8e54a3251f8d482c7536e51b5dbafa18",
+        "bytes": 876839
+      },
+      {
+        "file": "kenney_music-jingles.zip",
+        "sha256": "b729ba57959bd58793d2c5cafa348aaf2655d354f3da35ec4729e03ec77197b8",
+        "bytes": 1239525
+      }
+    ]
+  },
+  "themes": {
+    "cookie": {
+      "root": 72,
+      "timbre": "mallet",
+      "hit": "hit-cookie",
+      "material": "stack",
+      "label": "warm mallet, cookie crunch and gold chips"
+    },
+    "choco": {
+      "root": 60,
+      "timbre": "brass",
+      "hit": "hit-canyon",
+      "material": "collide",
+      "label": "low brass, mining impact and heavy chips"
+    },
+    "candy": {
+      "root": 84,
+      "timbre": "bell",
+      "hit": "hit-candy",
+      "material": "coin",
+      "label": "bright glass candy, coin sparkle and rapid arpeggios"
+    },
+    "gelato": {
+      "root": 88,
+      "timbre": "crystal",
+      "hit": "hit-prism",
+      "material": "coin",
+      "label": "high crystalline facets and wide frozen sparkle"
+    },
+    "winery": {
+      "root": 67,
+      "timbre": "brass",
+      "hit": "hit-water",
+      "material": "handle",
+      "label": "rounded bottle pop and swinging brass"
+    },
+    "popcorn": {
+      "root": 79,
+      "timbre": "pluck",
+      "hit": "hit-popcorn",
+      "material": "dice",
+      "label": "explosive short pops and syncopated chip showers"
+    },
+    "jelly": {
+      "root": 81,
+      "timbre": "bell",
+      "hit": "hit-jelly",
+      "material": "chip",
+      "label": "elastic liquid pings and rising triplets"
+    },
+    "stick": {
+      "root": 74,
+      "timbre": "mallet",
+      "hit": "hit-waffle",
+      "material": "chip",
+      "label": "dry wafer clicks and precise cascading scale"
+    },
+    "castella": {
+      "root": 76,
+      "timbre": "brass",
+      "hit": "hit-castella",
+      "material": "collide",
+      "label": "warm toasted impact, fizz and golden brass"
+    },
+    "dango": {
+      "root": 81,
+      "timbre": "pluck",
+      "hit": "hit-dango",
+      "material": "stack",
+      "label": "springy mochi plucks and bright pentatonic glints"
+    }
+  },
+  "cues": {
+    "drop": {
+      "file": "drop.wav",
+      "description": "Casino remix: A short descending airy fall",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -3.676,
+      "rmsDbFS": -14.982,
+      "bytes": 109412,
+      "sha256": "4f76850fa5993dc5213a25c34b962d9edcfbad440a15f9163770b4198f027d95",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.464989,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "land": {
+      "file": "land.wav",
+      "description": "Casino remix: Rounded landing with a clean tuned click",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.44,
+      "peakDbFS": -3.036,
+      "rmsDbFS": -18.859,
+      "bytes": 77660,
+      "sha256": "a5e5419dc57e017014ace8f19c9574b1085fde4ad017a2044b1ac24b317daf4a",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.31,
+          "pan": 0
+        }
+      ]
+    },
+    "refill": {
+      "file": "refill.wav",
+      "description": "Casino remix: Fresh sweets dropping in three ascending notes",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.74,
+      "peakDbFS": -3.036,
+      "rmsDbFS": -17.928,
+      "bytes": 130580,
+      "sha256": "61a0fe60cf5080194fbf7fcecce4debf56552c00393f6f709bd7bfc3cc7fea0c",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.24666666666666667,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "drill": {
+      "file": "drill.wav",
+      "description": "Casino remix: Four short rhythmic chocolate drill taps",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.55,
+      "peakDbFS": -2.794,
+      "rmsDbFS": -20.229,
+      "bytes": 97064,
+      "sha256": "45ab63a747129bf28ca3d3f9989ace1078afa001833461cc6af76a24cc92aae2",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.31,
+          "pan": 0
+        }
+      ]
+    },
+    "melt": {
+      "file": "melt.wav",
+      "description": "Casino remix: Melting low sweep with liquid droplets",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.66,
+      "peakDbFS": -3.414,
+      "rmsDbFS": -16.768,
+      "bytes": 116468,
+      "sha256": "3ce9cc4e15baf1f8cd2e6c74f8cc65a08b48ab31d5200a4e6fb5adb1ade8a436",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.16,
+          "sourceDurationSeconds": 0.18,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.13,
+          "pan": 0
+        }
+      ]
+    },
+    "ore": {
+      "file": "ore.wav",
+      "description": "Casino remix: Three small gold glints",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.65,
+      "peakDbFS": -2.794,
+      "rmsDbFS": -18.068,
+      "bytes": 114704,
+      "sha256": "7edee67cd0198d454be41a2089008b9077de55603aaeadb2863d196e747e010a",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.21666666666666667,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "hammer-launch": {
+      "file": "hammer-launch.wav",
+      "description": "Casino remix: Elastic rising hammer windup",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.7,
+      "peakDbFS": -2.794,
+      "rmsDbFS": -15.863,
+      "bytes": 123524,
+      "sha256": "d57d25869b9298027c4be6478a77999600796852c72b62628622fa54b4fa625c",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.5,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "hammer-impact": {
+      "file": "hammer-impact.wav",
+      "description": "Casino remix: Firm low impact with a brief golden chord",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.88,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -18.441,
+      "bytes": 155276,
+      "sha256": "e7efe55fda72d9ec4ea25e703e33da6b232dc848b3be2cbbd5849b234a00bda5",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.31,
+          "pan": 0
+        }
+      ]
+    },
+    "transform": {
+      "file": "transform.wav",
+      "description": "Casino remix: Magical turning sweep and celesta staircase",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.93,
+      "peakDbFS": -2.441,
+      "rmsDbFS": -18.276,
+      "bytes": 164096,
+      "sha256": "778eb91ebd7ffb30f038d2d7e37f549095a3b3ac7a64932ab7be4b759915dd19",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.5,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "transfer": {
+      "file": "transfer.wav",
+      "description": "Casino remix: A bright arc arriving on a bell",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.6,
+      "peakDbFS": -3.414,
+      "rmsDbFS": -18.868,
+      "bytes": 105884,
+      "sha256": "7551e2435ba0c064ca7a5172c0273ce447052ec28f04b1679d49c97dcddb7097",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.45,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "scroll": {
+      "file": "scroll.wav",
+      "description": "Casino remix: Soft terrain movement and two wooden steps",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.58,
+      "peakDbFS": -3.414,
+      "rmsDbFS": -20.673,
+      "bytes": 102356,
+      "sha256": "60d68480db42574765bbdcc836a74888b43a3edaf4fb7491956ad346b7607c37",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.435011,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "sweep": {
+      "file": "sweep.wav",
+      "description": "Casino remix: Full-board sweep that opens into four bright notes",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.83,
+      "peakDbFS": -2.557,
+      "rmsDbFS": -18.636,
+      "bytes": 146456,
+      "sha256": "637050c1b61b4a3e23e4ed9c33c95a9c55e2eba33ca3478c1ba986e5d694e95d",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.5,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "ui": {
+      "file": "ui.wav",
+      "description": "Casino remix: Small rounded user-interface marimba tick",
+      "category": "ui",
+      "game": null,
+      "tier": null,
+      "seconds": 0.2,
+      "peakDbFS": -5.935,
+      "rmsDbFS": -20.685,
+      "bytes": 35324,
+      "sha256": "278f6d40e071ac214b7c62311de882826ffbef7c3b204db94f92d232a0294c56",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.112494,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.12,
+          "pan": 0
+        }
+      ]
+    },
+    "confirm": {
+      "file": "confirm.wav",
+      "description": "Casino remix: Two-note selection confirmation",
+      "category": "ui",
+      "game": null,
+      "tier": null,
+      "seconds": 0.36,
+      "peakDbFS": -4.365,
+      "rmsDbFS": -19.763,
+      "bytes": 63548,
+      "sha256": "e2d5ba83aa18694e2a7821bd7ae0cba0e278e2d7dee524b4c3af40821f992fd7",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.112494,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.12,
+          "pan": 0
+        }
+      ]
+    },
+    "count-done": {
+      "file": "count-done.wav",
+      "description": "Casino remix: Coin count resolves with a warm major chord",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.88,
+      "peakDbFS": -2.794,
+      "rmsDbFS": -17.049,
+      "bytes": 155276,
+      "sha256": "c28552fda7a86c0b55c22d6914edbc41ea35cb2f2a4f1aece8a0734bf9d0b499",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.28,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "launch": {
+      "file": "launch.wav",
+      "description": "Casino remix: Roulette launch spring, airy sweep and compact lift",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.94,
+      "peakDbFS": -2.327,
+      "rmsDbFS": -16.58,
+      "bytes": 165860,
+      "sha256": "9f3ad603bf1d51c41c6baeb37606addd5feca869939788f9d8a9501207e00497",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.5,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.27,
+          "pan": 0
+        }
+      ]
+    },
+    "arrival": {
+      "file": "arrival.wav",
+      "description": "Casino remix: Precise soft pocket chime leaving room for the spoken number",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.39,
+      "peakDbFS": -3.945,
+      "rmsDbFS": -21.717,
+      "bytes": 68840,
+      "sha256": "3cbe70374476d3262a2ff03f5b2b1f31febf4e9443588858d3f5711932b0cf4b",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12483,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.31,
+          "pan": 0
+        }
+      ]
+    },
+    "miss": {
+      "file": "miss.wav",
+      "description": "Casino remix: Gentle two-note landing; quiet and clearly separate from awards",
+      "category": "ui",
+      "game": null,
+      "tier": null,
+      "seconds": 0.51,
+      "peakDbFS": -5.114,
+      "rmsDbFS": -20.49,
+      "bytes": 90008,
+      "sha256": "f85c567c96003887f11f2658f460654471e47d9bb1150fc044898bb20785625e",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.112494,
+          "rate": 1.25,
+          "atSeconds": 0,
+          "gain": 0.12,
+          "pan": 0
+        }
+      ]
+    },
+    "level": {
+      "file": "level.wav",
+      "description": "Casino remix: Short upward level-change flourish",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 1.0,
+      "peakDbFS": -2.557,
+      "rmsDbFS": -16.25,
+      "bytes": 176444,
+      "sha256": "71f8622ff606ca241e53f9dfc3b224a175cb1169e68b97d9d8d95ea517052e51",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.28,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "sugar": {
+      "file": "sugar.wav",
+      "description": "Casino remix: Sugar crystal collection with bright falling star reflections",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 1.18,
+      "peakDbFS": -2.441,
+      "rmsDbFS": -17.955,
+      "bytes": 208196,
+      "sha256": "607c118748ea987025ed3b48fa7320b69ed83d870abc4133a6ed196b19358c50",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.28,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "round": {
+      "file": "round.wav",
+      "description": "Casino remix: Fresh round begins with an open uplifting cadence",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 1.16,
+      "peakDbFS": -2.441,
+      "rmsDbFS": -17.253,
+      "bytes": 204668,
+      "sha256": "56c0fa79d40a1b382899258966a68fe75a7c2849cd923f6b3d35a92784472a9e",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.28,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "finish": {
+      "file": "finish.wav",
+      "description": "Casino remix: A warm completed-round cadence without a jackpot flourish",
+      "category": "action",
+      "game": null,
+      "tier": null,
+      "seconds": 0.94,
+      "peakDbFS": -3.414,
+      "rmsDbFS": -17.151,
+      "bytes": 165860,
+      "sha256": "0db1eebd016b1cd7e984d0486ef6792f655f0673855894f15e00c0276918bd08",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.31,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.22,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.330408,
+          "rate": 1.18,
+          "atSeconds": 0.28,
+          "gain": 0.22,
+          "pan": 0.3
+        }
+      ]
+    },
+    "reach": {
+      "file": "reach.wav",
+      "description": "Casino remix: Three measured sparkle steps and an unresolved suspended chord",
+      "category": "reach",
+      "game": null,
+      "tier": null,
+      "seconds": 0.94,
+      "peakDbFS": -2.914,
+      "rmsDbFS": -17.786,
+      "bytes": 165860,
+      "sha256": "6f90bdf807dc76f1e9d65567c56a1c61a5623b7ca89661b147a3a1724f72b013",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.19,
+          "pan": 0
+        }
+      ]
+    },
+    "reach-high": {
+      "file": "reach-high.wav",
+      "description": "Casino remix: High-reach rising shimmer and open bright suspense",
+      "category": "reach",
+      "game": null,
+      "tier": null,
+      "seconds": 1.57,
+      "peakDbFS": -2.214,
+      "rmsDbFS": -16.341,
+      "bytes": 276992,
+      "sha256": "015a89d64ff31715525ac76e8826c0d657a932d51f440c5e8147ca8760141896",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0,
+          "gain": 0.19,
+          "pan": 0
+        }
+      ]
+    },
+    "hit-cookie": {
+      "file": "hit-cookie.wav",
+      "description": "warm mallet, cookie crunch and gold chips; one compact real HIT",
+      "category": "hit",
+      "game": "cookie",
+      "tier": null,
+      "seconds": 0.3,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -18.985,
+      "bytes": 52964,
+      "sha256": "d3974d04f233032ef1f398867f1f0bf164c8063783379d4fc06db87d03d0fa5e",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.110408,
+          "rate": 0.92,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-cookie": {
+      "file": "chain-cookie.wav",
+      "description": "warm mallet, cookie crunch and gold chips; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "cookie",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -17.568,
+      "bytes": 109412,
+      "sha256": "39b915aec0eaf6cc2bc75835f243d5de3f12f47a4dd99cbdbb40b3d07011c763",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-cookie-1": {
+      "file": "award-cookie-1.wav",
+      "description": "warm mallet, cookie crunch and gold chips; role / bingo stamp",
+      "category": "award",
+      "game": "cookie",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -16.468,
+      "bytes": 204668,
+      "sha256": "1c03ba7192b2f2865825c3de8affa3b83564dd3901a66c337193907bdcdc6770",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.94,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-cookie-2": {
+      "file": "award-cookie-2.wav",
+      "description": "warm mallet, cookie crunch and gold chips; high-win brass and coin response",
+      "category": "award",
+      "game": "cookie",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.028,
+      "bytes": 328148,
+      "sha256": "01120052dd252cb6f7571d5e9fb939a8f19ac5fb7e993f0c108e0345d005621e",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.94,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-cookie-3": {
+      "file": "award-cookie-3.wav",
+      "description": "warm mallet, cookie crunch and gold chips; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "cookie",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.068,
+      "bytes": 437516,
+      "sha256": "9da8ef52feeadc8b7aaf70dab8c876eaf011689235c4a80dd386fbcede0280a8",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.94,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-cookie-4": {
+      "file": "award-cookie-4.wav",
+      "description": "warm mallet, cookie crunch and gold chips; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "cookie",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.65,
+      "bytes": 539828,
+      "sha256": "6e27a9b68c19bbafe437c637ce138d08d79198ac01fa75837eaa2302a1db6aca",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.94,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-canyon": {
+      "file": "hit-canyon.wav",
+      "description": "low brass, mining impact and heavy chips; one compact real HIT",
+      "category": "hit",
+      "game": "choco",
+      "tier": null,
+      "seconds": 0.344989,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -12.819,
+      "bytes": 60900,
+      "sha256": "b1891901a78cfb2a537e86e6f4fb366f183d335fb72bf2ab072cc75ae229e364",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.114603,
+          "rate": 0.9550000000000001,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-choco": {
+      "file": "chain-choco.wav",
+      "description": "low brass, mining impact and heavy chips; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "choco",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -15.982,
+      "bytes": 109412,
+      "sha256": "216e6b899b9642f77248376641ee2386ced9fb7997c7e1b6066132ffad2d4280",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-choco-1": {
+      "file": "award-choco-1.wav",
+      "description": "low brass, mining impact and heavy chips; role / bingo stamp",
+      "category": "award",
+      "game": "choco",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.955,
+      "bytes": 204668,
+      "sha256": "3142ccfcba7f673c6142c49e389cd7f0764eda3038b5db29ab484f098ef8b51f",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.955,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-choco-2": {
+      "file": "award-choco-2.wav",
+      "description": "low brass, mining impact and heavy chips; high-win brass and coin response",
+      "category": "award",
+      "game": "choco",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.006,
+      "bytes": 328148,
+      "sha256": "c583bb7ce61631a9d611c0378eaeaca7c07d390c9a6ff05b4cea4be0c476b793",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.955,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-choco-3": {
+      "file": "award-choco-3.wav",
+      "description": "low brass, mining impact and heavy chips; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "choco",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.028,
+      "bytes": 437516,
+      "sha256": "40cc2af2873b38ac99fe50dc00865f4a15f312f53feb516b2cdd5fe0b31da275",
+      "masteringDrive": 1.2,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.955,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-choco-4": {
+      "file": "award-choco-4.wav",
+      "description": "low brass, mining impact and heavy chips; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "choco",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.344,
+      "bytes": 539828,
+      "sha256": "efcc2b0f4d51da0752f67d04663ec915d0a9cd639ebcc7ea4b1bcdac3c3df815",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.955,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-candy": {
+      "file": "hit-candy.wav",
+      "description": "bright glass candy, coin sparkle and rapid arpeggios; one compact real HIT",
+      "category": "hit",
+      "game": "candy",
+      "tier": null,
+      "seconds": 0.39,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -15.248,
+      "bytes": 68840,
+      "sha256": "64a5f0ef70291aad83f5b0d5cf5ecf71aca5527d82c9e30a2d7b4121d7c8c356",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.118798,
+          "rate": 0.99,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-candy": {
+      "file": "chain-candy.wav",
+      "description": "bright glass candy, coin sparkle and rapid arpeggios; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "candy",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -15.992,
+      "bytes": 109412,
+      "sha256": "369f95e8cb46fa68e65e95d6b29de2bb75ba2915277d78806b255c678700ff39",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-candy-1": {
+      "file": "award-candy-1.wav",
+      "description": "bright glass candy, coin sparkle and rapid arpeggios; role / bingo stamp",
+      "category": "award",
+      "game": "candy",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.009,
+      "bytes": 204668,
+      "sha256": "f0d74917422c458bcdad114536cfb9b1ae9ebe067e15fd995bf3353d9c9697bf",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.97,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-candy-2": {
+      "file": "award-candy-2.wav",
+      "description": "bright glass candy, coin sparkle and rapid arpeggios; high-win brass and coin response",
+      "category": "award",
+      "game": "candy",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.325,
+      "bytes": 328148,
+      "sha256": "3326f053740fa122a9b40296970582deb41e71039f5114ba300c8d5da3f67be6",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.97,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-candy-3": {
+      "file": "award-candy-3.wav",
+      "description": "bright glass candy, coin sparkle and rapid arpeggios; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "candy",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.58,
+      "bytes": 437516,
+      "sha256": "d9d7e926bf6675d7f28bf7d79ecf15a6a5d400adda0214f4d675c298b6c4d3df",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.97,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-candy-4": {
+      "file": "award-candy-4.wav",
+      "description": "bright glass candy, coin sparkle and rapid arpeggios; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "candy",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.535,
+      "bytes": 539828,
+      "sha256": "6f6af64d40dcb36ba7ce8f3981808e08e8ff995aeb425defeefcdf671e86a64e",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.97,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-prism": {
+      "file": "hit-prism.wav",
+      "description": "high crystalline facets and wide frozen sparkle; one compact real HIT",
+      "category": "hit",
+      "game": "gelato",
+      "tier": null,
+      "seconds": 0.435011,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -16.488,
+      "bytes": 76780,
+      "sha256": "505b93e8679f871624f58962eb455b4bc8c7c98bca7ec445a14cd26005f4d758",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.122993,
+          "rate": 1.0250000000000001,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-gelato": {
+      "file": "chain-gelato.wav",
+      "description": "high crystalline facets and wide frozen sparkle; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "gelato",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -16.021,
+      "bytes": 109412,
+      "sha256": "c54fe0524838dd932e051db5323612478f2251e30f398a727533acb2ba478b5b",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-gelato-1": {
+      "file": "award-gelato-1.wav",
+      "description": "high crystalline facets and wide frozen sparkle; role / bingo stamp",
+      "category": "award",
+      "game": "gelato",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -16.254,
+      "bytes": 204668,
+      "sha256": "d91733ae64cbf992a01f470c01bcd20dd0ea4b1f3ac7eecdd6a041ade165cc6d",
+      "masteringDrive": 1.2,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.985,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-gelato-2": {
+      "file": "award-gelato-2.wav",
+      "description": "high crystalline facets and wide frozen sparkle; high-win brass and coin response",
+      "category": "award",
+      "game": "gelato",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.277,
+      "bytes": 328148,
+      "sha256": "5b8c2c4f9725c5b4b0dca48d6b95c80178267d4dbeceab5fd12ccdaff5624a4c",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.985,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-gelato-3": {
+      "file": "award-gelato-3.wav",
+      "description": "high crystalline facets and wide frozen sparkle; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "gelato",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.19,
+      "bytes": 437516,
+      "sha256": "83a6857d04fd8b7c241c52821cbfb8156376a4349b1682448e59ab40999f9439",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.985,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-gelato-4": {
+      "file": "award-gelato-4.wav",
+      "description": "high crystalline facets and wide frozen sparkle; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "gelato",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.383,
+      "bytes": 539828,
+      "sha256": "283571bc0184d688280bedff572ec9fc60b0510ae78d4e057bd1c877cbfe8e39",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 0.985,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-water": {
+      "file": "hit-water.wav",
+      "description": "rounded bottle pop and swinging brass; one compact real HIT",
+      "category": "hit",
+      "game": "winery",
+      "tier": null,
+      "seconds": 0.3,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -14.144,
+      "bytes": 52964,
+      "sha256": "f242d5c73620dfa0dd8c5fe978b6fa0a3e1c106ea24aab5e376cd3ddbce1f324",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "handle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.127211,
+          "rate": 1.06,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-winery": {
+      "file": "chain-winery.wav",
+      "description": "rounded bottle pop and swinging brass; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "winery",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -16.501,
+      "bytes": 109412,
+      "sha256": "bfe6313523f39f2a8a8fa13e6bb74b1cf644f64cccbc18f57e3c50d033496d49",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-winery-1": {
+      "file": "award-winery-1.wav",
+      "description": "rounded bottle pop and swinging brass; role / bingo stamp",
+      "category": "award",
+      "game": "winery",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.901,
+      "bytes": 204668,
+      "sha256": "474358df8cfb5316880c128add8fe4abd7d544dbc6b731d1f74871dc0f58d121",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.0,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-winery-2": {
+      "file": "award-winery-2.wav",
+      "description": "rounded bottle pop and swinging brass; high-win brass and coin response",
+      "category": "award",
+      "game": "winery",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.845,
+      "bytes": 328148,
+      "sha256": "1957171d78aadade8a674dbc62b3e1024ca19fdbee0b1c2739472884def5aecd",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.0,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-winery-3": {
+      "file": "award-winery-3.wav",
+      "description": "rounded bottle pop and swinging brass; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "winery",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.288,
+      "bytes": 437516,
+      "sha256": "0f895b97404a3a5028587512c2759fcf6e5b46cfcb0e12c1b019950ba5a6c8f3",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.0,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-winery-4": {
+      "file": "award-winery-4.wav",
+      "description": "rounded bottle pop and swinging brass; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "winery",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.399,
+      "bytes": 539828,
+      "sha256": "cb4746565e3ed692626b2d7fc589c71e2e7fccf9a9bbf0c354532760a30111a4",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.0,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-popcorn": {
+      "file": "hit-popcorn.wav",
+      "description": "explosive short pops and syncopated chip showers; one compact real HIT",
+      "category": "hit",
+      "game": "popcorn",
+      "tier": null,
+      "seconds": 0.344989,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -18.976,
+      "bytes": 60900,
+      "sha256": "c39e2473fd2632f578ecc1863f7e6b758f938d24ae659124416c39d7a85b4280",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "dice",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.131406,
+          "rate": 1.095,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-popcorn": {
+      "file": "chain-popcorn.wav",
+      "description": "explosive short pops and syncopated chip showers; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "popcorn",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -17.547,
+      "bytes": 109412,
+      "sha256": "a6022fd00bd25c117e66ceefd57838e389e59b56b73aa74a39dc3fbe0e3818af",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-popcorn-1": {
+      "file": "award-popcorn-1.wav",
+      "description": "explosive short pops and syncopated chip showers; role / bingo stamp",
+      "category": "award",
+      "game": "popcorn",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.624,
+      "bytes": 204668,
+      "sha256": "ad69fad9d22612e604cc2f0c83d7f9669699ae4ebfd91cbe5eb11ec904143025",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.015,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-popcorn-2": {
+      "file": "award-popcorn-2.wav",
+      "description": "explosive short pops and syncopated chip showers; high-win brass and coin response",
+      "category": "award",
+      "game": "popcorn",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.908,
+      "bytes": 328148,
+      "sha256": "651fde8bfab7458429dc5e39ecb95214438bef7a493c865df3a58ca12545a459",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.015,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-popcorn-3": {
+      "file": "award-popcorn-3.wav",
+      "description": "explosive short pops and syncopated chip showers; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "popcorn",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.931,
+      "bytes": 437516,
+      "sha256": "d07afc1a1504f4c3eafe676c4b6a32fee052087533857adb8762b25ce9936a5d",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.015,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-popcorn-4": {
+      "file": "award-popcorn-4.wav",
+      "description": "explosive short pops and syncopated chip showers; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "popcorn",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.458,
+      "bytes": 539828,
+      "sha256": "5b2fdd0f41a5d831638e16695888a49257e1ed72568a87d7e58a19e11401b6eb",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.015,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-jelly": {
+      "file": "hit-jelly.wav",
+      "description": "elastic liquid pings and rising triplets; one compact real HIT",
+      "category": "hit",
+      "game": "jelly",
+      "tier": null,
+      "seconds": 0.39,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -15.722,
+      "bytes": 68840,
+      "sha256": "fc3284be33d16e19a04c993e1bbad4736403c8a8e976386e6aa7cc628c9e9a1a",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12483,
+          "rate": 1.1300000000000001,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-jelly": {
+      "file": "chain-jelly.wav",
+      "description": "elastic liquid pings and rising triplets; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "jelly",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -16.055,
+      "bytes": 109412,
+      "sha256": "4a495ca6db0686e04b5dc9602d35b4f2d4e01ea560f1c31d6ba4a2c9007b7d0b",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-jelly-1": {
+      "file": "award-jelly-1.wav",
+      "description": "elastic liquid pings and rising triplets; role / bingo stamp",
+      "category": "award",
+      "game": "jelly",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.98,
+      "bytes": 204668,
+      "sha256": "90d244e78d105edee211fd3a1fd43b821f2e345e061abf86bbf47cc6493eb804",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.03,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-jelly-2": {
+      "file": "award-jelly-2.wav",
+      "description": "elastic liquid pings and rising triplets; high-win brass and coin response",
+      "category": "award",
+      "game": "jelly",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.616,
+      "bytes": 328148,
+      "sha256": "6d1dc0fc87de402bd1eb46e824a41dabdf358c0d077167abd148bb3103acc5e8",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.03,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-jelly-3": {
+      "file": "award-jelly-3.wav",
+      "description": "elastic liquid pings and rising triplets; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "jelly",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.353,
+      "bytes": 437516,
+      "sha256": "3883b69f1c8db1e1dedaa6756e07b36220892fd4dca17c8cccf8368ff807cf8c",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.03,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-jelly-4": {
+      "file": "award-jelly-4.wav",
+      "description": "elastic liquid pings and rising triplets; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "jelly",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.349,
+      "bytes": 539828,
+      "sha256": "8d9a0e0d55aec839757cace415a5f1939a8f18084a99c86746dcb2fe3da6856c",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.03,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-waffle": {
+      "file": "hit-waffle.wav",
+      "description": "dry wafer clicks and precise cascading scale; one compact real HIT",
+      "category": "hit",
+      "game": "stick",
+      "tier": null,
+      "seconds": 0.435011,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -19.964,
+      "bytes": 76780,
+      "sha256": "57034f77f3496e346356bd747d6830bf6c5f2c7127b45b51c71e47154aef11ec",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12483,
+          "rate": 1.165,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-stick": {
+      "file": "chain-stick.wav",
+      "description": "dry wafer clicks and precise cascading scale; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "stick",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -17.817,
+      "bytes": 109412,
+      "sha256": "be4b43832cad03dbec3fe7749875cc8e14ef0f13b7252167dfd658bc9339f098",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-stick-1": {
+      "file": "award-stick-1.wav",
+      "description": "dry wafer clicks and precise cascading scale; role / bingo stamp",
+      "category": "award",
+      "game": "stick",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -16.654,
+      "bytes": 204668,
+      "sha256": "3359130e5bff3fbb2d9d167edb1b2a79ad0a1ed78dfe10a8c2896d941730e261",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.045,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-stick-2": {
+      "file": "award-stick-2.wav",
+      "description": "dry wafer clicks and precise cascading scale; high-win brass and coin response",
+      "category": "award",
+      "game": "stick",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.194,
+      "bytes": 328148,
+      "sha256": "dfa21b03b890caf5fbd92d64b280807e86b4d5a85434f2cf7526d24ef19a93e5",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.045,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-stick-3": {
+      "file": "award-stick-3.wav",
+      "description": "dry wafer clicks and precise cascading scale; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "stick",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.126,
+      "bytes": 437516,
+      "sha256": "86bda4b80667852c2c3b9b579ae11abaaf5b3e7159250a7c8cb36dd8901dc330",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.045,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-stick-4": {
+      "file": "award-stick-4.wav",
+      "description": "dry wafer clicks and precise cascading scale; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "stick",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.658,
+      "bytes": 539828,
+      "sha256": "69b2d5eb197f91bd07c45b93991fd5ceda8422c814f8825b1c8242cd065a59d9",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.045,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-castella": {
+      "file": "hit-castella.wav",
+      "description": "warm toasted impact, fizz and golden brass; one compact real HIT",
+      "category": "hit",
+      "game": "castella",
+      "tier": null,
+      "seconds": 0.3,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -12.631,
+      "bytes": 52964,
+      "sha256": "d917227094fe43f9a82f0466e24c772c7916637e39b7c96217e959d2c09a802b",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.143991,
+          "rate": 1.2000000000000002,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-castella": {
+      "file": "chain-castella.wav",
+      "description": "warm toasted impact, fizz and golden brass; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "castella",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -15.331,
+      "bytes": 109412,
+      "sha256": "1e8ed471852d606644f5c11100c7620cf045f9176c42b7b6b0be85db5a8f014e",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-castella-1": {
+      "file": "award-castella-1.wav",
+      "description": "warm toasted impact, fizz and golden brass; role / bingo stamp",
+      "category": "award",
+      "game": "castella",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -15.745,
+      "bytes": 204668,
+      "sha256": "1ff725e3e137ea8266a683a2d53bae56e8a2bd4e760fa9b3391861f544cf5d10",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.06,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-castella-2": {
+      "file": "award-castella-2.wav",
+      "description": "warm toasted impact, fizz and golden brass; high-win brass and coin response",
+      "category": "award",
+      "game": "castella",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.714,
+      "bytes": 328148,
+      "sha256": "5889c0c99895ba66b933344bfb8f686856b5184b75dd3fffbf0e71af63f2216c",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.06,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-castella-3": {
+      "file": "award-castella-3.wav",
+      "description": "warm toasted impact, fizz and golden brass; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "castella",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.329,
+      "bytes": 437516,
+      "sha256": "0e80715e1331295eaee07954b4f886ee81f3e8a5956646bcab33fa6c6213dde2",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.06,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-castella-4": {
+      "file": "award-castella-4.wav",
+      "description": "warm toasted impact, fizz and golden brass; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "castella",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.404,
+      "bytes": 539828,
+      "sha256": "2a4784d55b5eeb7ed8093b6ebde6c9bc06138dd84608d1bf4fa4a58b2f4ea134",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.06,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "hit-dango": {
+      "file": "hit-dango.wav",
+      "description": "springy mochi plucks and bright pentatonic glints; one compact real HIT",
+      "category": "hit",
+      "game": "dango",
+      "tier": null,
+      "seconds": 0.344989,
+      "peakDbFS": -2.615,
+      "rmsDbFS": -19.118,
+      "bytes": 60900,
+      "sha256": "5d3127bc06e9d5cbba322098ded0c8ae70daccffe12e99b69d036ceac75fb870",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.148209,
+          "rate": 1.235,
+          "atSeconds": 0,
+          "gain": 0.38,
+          "pan": 0
+        }
+      ]
+    },
+    "chain-dango": {
+      "file": "chain-dango.wav",
+      "description": "springy mochi plucks and bright pentatonic glints; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": "dango",
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.384,
+      "rmsDbFS": -17.643,
+      "bytes": 109412,
+      "sha256": "9e558776867c80c0ff35b08d6f500057af1767eebcbf970870e53ad6b926143a",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "award-dango-1": {
+      "file": "award-dango-1.wav",
+      "description": "springy mochi plucks and bright pentatonic glints; role / bingo stamp",
+      "category": "award",
+      "game": "dango",
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -16.245,
+      "bytes": 204668,
+      "sha256": "a1573986ef7fce993b1735a1d53071fbfe637e2d0fd93ce9c146e9143cdb1091",
+      "masteringDrive": 1.2,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.075,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-dango-2": {
+      "file": "award-dango-2.wav",
+      "description": "springy mochi plucks and bright pentatonic glints; high-win brass and coin response",
+      "category": "award",
+      "game": "dango",
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.562,
+      "bytes": 328148,
+      "sha256": "5ed6c1ab0515ebfc6a55a2990f1fe0281dea5e390cb63327aacb9af2a2a981c1",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.075,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-dango-3": {
+      "file": "award-dango-3.wav",
+      "description": "springy mochi plucks and bright pentatonic glints; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": "dango",
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.524,
+      "bytes": 437516,
+      "sha256": "9ad9fd3b4a4cc42d96718c0dfac8c59032b416e94329d969419e4c0225ed6822",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.075,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-dango-4": {
+      "file": "award-dango-4.wav",
+      "description": "springy mochi plucks and bright pentatonic glints; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": "dango",
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.217,
+      "bytes": 539828,
+      "sha256": "612669acc6a0201bb16143f9862ae70f6c0e614cc85d7bd5d155dbf3b4fc9f33",
+      "masteringDrive": 2.7,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.075,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-1": {
+      "file": "award-1.wav",
+      "description": "casino brass and coin cascade; role / bingo stamp",
+      "category": "award",
+      "game": null,
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -16.396,
+      "bytes": 204668,
+      "sha256": "c87a49e3c1155b827cc90f8e51018a68c64b1afaa989c894f1a550c952d97a01",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.105,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "award-2": {
+      "file": "award-2.wav",
+      "description": "casino brass and coin cascade; high-win brass and coin response",
+      "category": "award",
+      "game": null,
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -14.903,
+      "bytes": 328148,
+      "sha256": "fb96470ccf985a575033a906ad7438857db0aef0103221ab8dcbd38942d0e2d6",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.105,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-3": {
+      "file": "award-3.wav",
+      "description": "casino brass and coin cascade; super-win roll and ascending fanfare",
+      "category": "award",
+      "game": null,
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.523,
+      "bytes": 437516,
+      "sha256": "8e8d9ed35bac01ae5bbcbdd32010251708fae91179db1b49547008161853d47d",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.105,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "award-4": {
+      "file": "award-4.wav",
+      "description": "casino brass and coin cascade; all-clear climax with rolling coin payout",
+      "category": "award",
+      "game": null,
+      "tier": 4,
+      "seconds": 3.06,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.443,
+      "bytes": 539828,
+      "sha256": "6d0ec9ab2bbc2e2d244ae5bbfd340657cfc79dd4d587cbb383caee105889e734",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.105,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "chain": {
+      "file": "chain.wav",
+      "description": "casino brass and coin cascade; rising four-step chain with coin punctuation",
+      "category": "chain",
+      "game": null,
+      "tier": null,
+      "seconds": 0.62,
+      "peakDbFS": -2.499,
+      "rmsDbFS": -15.149,
+      "bytes": 109412,
+      "sha256": "8b64176d1c4dd1f6956e82cc2355536dd26dd4c991a5da3656ec61a8540a0adb",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.12,
+          "rate": 1,
+          "atSeconds": 0.005,
+          "gain": 0.21,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.11,
+          "sourceDurationSeconds": 0.321995,
+          "rate": 1.15,
+          "atSeconds": 0.18,
+          "gain": 0.18,
+          "pan": 0.35
+        }
+      ]
+    },
+    "count": {
+      "file": "count.wav",
+      "description": "Short physical coin-counter click with bright tuned transient",
+      "category": "counter",
+      "game": null,
+      "tier": null,
+      "seconds": 0.15,
+      "peakDbFS": -5.515,
+      "rmsDbFS": -22.735,
+      "bytes": 26504,
+      "sha256": "f6861213c8ca0e611328d4b007da29da82ea255057767895b71df79201f84d24",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.108753,
+          "rate": 1.45,
+          "atSeconds": 0,
+          "gain": 0.45,
+          "pan": 0
+        }
+      ]
+    },
+    "reel-tick": {
+      "file": "reel-tick.wav",
+      "description": "Mechanical reel tooth: real casino chip attack and high-frequency spring",
+      "category": "counter",
+      "game": null,
+      "tier": null,
+      "seconds": 0.13,
+      "peakDbFS": -5.849,
+      "rmsDbFS": -27.633,
+      "bytes": 22976,
+      "sha256": "54808593c238e9306f519aae09735fc7d7968ef16ea795d553626ce6718bb6d9",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "stack",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.123492,
+          "rate": 1.9,
+          "atSeconds": 0,
+          "gain": 0.5,
+          "pan": 0
+        }
+      ]
+    },
+    "multiplier": {
+      "file": "multiplier.wav",
+      "description": "Multiplier reveal 1: reel stop, compact brass stamp",
+      "category": "multiplier",
+      "game": null,
+      "tier": 1,
+      "seconds": 1.16,
+      "peakDbFS": -2.27,
+      "rmsDbFS": -16.479,
+      "bytes": 204668,
+      "sha256": "48b1987b6c037aca3f5edbde3140c43e7d81b496f042f7f6b41177ac9988fc00",
+      "masteringDrive": 1.6,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.0,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.08,
+          "sourceDurationSeconds": 0.44,
+          "rate": 1,
+          "atSeconds": 0.29,
+          "gain": 0.22,
+          "pan": 0.2
+        }
+      ]
+    },
+    "multiplier-high": {
+      "file": "multiplier-high.wav",
+      "description": "Multiplier reveal 2: reel stop, coin cascade and rising crystal fanfare",
+      "category": "multiplier",
+      "game": null,
+      "tier": 2,
+      "seconds": 1.86,
+      "peakDbFS": -2.27,
+      "rmsDbFS": -15.062,
+      "bytes": 328148,
+      "sha256": "7e344ff871d3c27f99bccef0c0fdcceacac6c7b1fcccec7c4e732654bd98e9da",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.015,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 0.84,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 0.9233333333333333,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.0066666666666666,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.0899999999999999,
+          "gain": 0.14,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.1733333333333333,
+          "gain": 0.14,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.2566666666666666,
+          "gain": 0.14,
+          "pan": -0.65
+        }
+      ]
+    },
+    "multiplier-galaxy": {
+      "file": "multiplier-galaxy.wav",
+      "description": "Multiplier reveal 3: reel stop, coin cascade and rising crystal fanfare",
+      "category": "multiplier",
+      "game": null,
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.27,
+      "rmsDbFS": -14.117,
+      "bytes": 437516,
+      "sha256": "ea794ebdffb14e4215697be142a396c5cfcccfa7e83679d39151de1f7bcafb98",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.03,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "jpc-qualified": {
+      "file": "jpc-qualified.wav",
+      "description": "Actual JPC qualification: accelerating reel roll, broad brass, crystal climb and coin shower",
+      "category": "jpc",
+      "game": null,
+      "tier": 3,
+      "seconds": 2.48,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -13.985,
+      "bytes": 437516,
+      "sha256": "36eabf739888ba8a7a8ff21d014d3c5327abb9a40a75e897d4d1914a69785011",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.1199999999999999,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.52,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.5975,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.675,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7525,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.83,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.9075,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9849999999999999,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.0625,
+          "gain": 0.16,
+          "pan": -0.65
+        }
+      ]
+    },
+    "jpc-reach": {
+      "file": "jpc-reach.wav",
+      "description": "24/25 JPC reach: urgent rolling suspense and unresolved suspended brass",
+      "category": "reach",
+      "game": null,
+      "tier": null,
+      "seconds": 1.62,
+      "peakDbFS": -2.27,
+      "rmsDbFS": -17.278,
+      "bytes": 285812,
+      "sha256": "0e2439885fd8b79ba719a3c18abacbbec6f110c2b0aef3c9174544b87d4bc191",
+      "masteringDrive": 0.85,
+      "sourceLayers": [
+        {
+          "source": "shuffle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.63,
+          "rate": 1.5,
+          "atSeconds": 0.02,
+          "gain": 0.2,
+          "pan": 0
+        },
+        {
+          "source": "chip",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.11,
+          "rate": 1,
+          "atSeconds": 0.91,
+          "gain": 0.22,
+          "pan": 0
+        }
+      ]
+    },
+    "jackpot": {
+      "file": "jackpot.wav",
+      "description": "JACKPOT: two-stage brass victory, heavy drum accents, stereo coin payout and final crystal crown",
+      "category": "jackpot",
+      "game": null,
+      "tier": 4,
+      "seconds": 3.96,
+      "peakDbFS": -2.048,
+      "rmsDbFS": -12.236,
+      "bytes": 698588,
+      "sha256": "f9163e166726aafd8b346301e38442bb50b42f654430476f9719afe9df85ed44",
+      "masteringDrive": 2.1,
+      "sourceLayers": [
+        {
+          "source": "collide",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.175828,
+          "rate": 1.15,
+          "atSeconds": 0,
+          "gain": 0.3,
+          "pan": 0
+        },
+        {
+          "source": "jingle",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.172789,
+          "rate": 1.08,
+          "atSeconds": 0.385,
+          "gain": 0.055,
+          "pan": 0
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.7000000000000002,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 1.7766666666666668,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 1.8533333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 1.9300000000000002,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.006666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.0833333333333335,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.16,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.236666666666667,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.3133333333333335,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.39,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.466666666666667,
+          "gain": 0.16,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.5433333333333334,
+          "gain": 0.16,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 2.85,
+          "gain": 0.18,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 2.91,
+          "gain": 0.18,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 2.97,
+          "gain": 0.18,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 3.0300000000000002,
+          "gain": 0.18,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 3.09,
+          "gain": 0.18,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 3.15,
+          "gain": 0.18,
+          "pan": -0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 3.21,
+          "gain": 0.18,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 3.27,
+          "gain": 0.18,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.0,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 3.33,
+          "gain": 0.18,
+          "pan": 0.65
+        },
+        {
+          "source": "coin",
+          "sourceStartSeconds": 0.085011,
+          "sourceDurationSeconds": 0.25,
+          "rate": 1.0,
+          "atSeconds": 3.39,
+          "gain": 0.18,
+          "pan": -0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.17,
+          "sourceDurationSeconds": 0.166508,
+          "rate": 1.11,
+          "atSeconds": 3.45,
+          "gain": 0.18,
+          "pan": 0.65
+        },
+        {
+          "source": "shower",
+          "sourceStartSeconds": 0.255011,
+          "sourceDurationSeconds": 0.182993,
+          "rate": 1.22,
+          "atSeconds": 3.5100000000000002,
+          "gain": 0.18,
+          "pan": -0.65
+        }
+      ]
+    }
+  },
+  "totalBytes": 24110208,
+  "limits": {
+    "maxCueSeconds": 4,
+    "maxHitSeconds": 0.5,
+    "maxChainSeconds": 0.7,
+    "maxPcmPeak": 0.8,
+    "maxRuntimeVoices": 8
+  },
+  "runtime": "One pre-rendered multi-layer cue per voice. Existing AudioContext, limiter, mute/pause, event ownership and deterministic game state remain unchanged."
+}

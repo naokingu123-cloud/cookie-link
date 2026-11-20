@@ -8,6 +8,7 @@ import {once} from 'node:events';
 import {chromium} from 'playwright';
 import {buildAwardFixtures} from './award-fixtures-v277.mjs';
 const root=process.cwd(),output='qa-celebration-v277',games=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
+const soundBank='assets/audio/casino-v281/',soundVersion=281,soundCount=97;
 const scenarios=[
  ...games.map(game=>({id:game,game,options:{}})),
  {id:'jelly-mobile',game:'jelly',options:{width:390,height:844,bet:300000,label:'jelly-mobile'}},
@@ -50,7 +51,7 @@ async function openGame(kind,{width=1366,height=900,bet=3000,reduced=false,muted
  context=await browser.newContext({viewport:{width,height},serviceWorkers:'block',reducedMotion:reduced?'reduce':'no-preference'});
  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==base){report.externalRequests.push(u.href);return route.abort();}return route.continue();});
  page=await context.newPage();page.on('pageerror',e=>report.pageErrors.push(String(e.stack||e)));page.on('console',m=>{if(m.type()==='warning'||m.type()==='error')report.warnings.push(m.text().slice(0,400));});
- page.on('response',response=>{if(response.status()>=400&&/v277|celebration/.test(response.url()))report.assetFailures.push({url:response.url(),status:response.status()});});
+ page.on('response',response=>{if(response.status()>=400&&/v277|celebration|casino-v281/.test(response.url()))report.assetFailures.push({url:response.url(),status:response.status()});});
  await page.goto(base+'/?edition=local&appv='+encodeURIComponent(version),{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__qa277&&window.SweetsLocalDebugV258?.ready&&window.SweetsAwardsV277&&window.SweetsAudioV277,null,{timeout:90000});
  await page.locator('#manual-number-toggle').click();
@@ -66,6 +67,7 @@ async function openGame(kind,{width=1366,height=900,bet=3000,reduced=false,muted
  await page.locator('#manual-start').click();
  await page.waitForFunction(kind=>{const q=window.__qa277,e=q.slots.find(s=>(s.engine.kind||'cookie')===kind).engine;return q.app.phase==='playing'&&e.idle;},kind,{timeout:45000});
  await page.waitForFunction(()=>{const d=SweetsAudioV277.describe();return d.totalSamples>0&&d.loadedSamples===d.totalSamples;},null,{timeout:45000});
+ checkSoundBank(await page.evaluate(()=>SweetsAudioV277.describe()));
  await page.waitForFunction(()=>SweetsAwardsV277.describe().artReady,null,{timeout:45000});
  if(muted)await page.locator('#sound').uncheck();
  const restored=await page.evaluate(({fixture,mini})=>{
@@ -112,9 +114,17 @@ function inspectAward({kind,mini=false,reduced=false}){
  }
  // The PNG is captured in the same RAF as the passing alpha probe. Screenshots
  // taken after a click RPC can miss a short reduced-motion celebration.
- return {painted,pointerEvents:style.pointerEvents,box:{width:bounds.width,height:bounds.height},boardBox,event,expectedPaths,diagnostics:d,audio:SweetsAudioV277.describe(),nativeEvents:q.fixtureEvents.slice(),draws:q.app.draws.slice(),overlayDataUrl:node.toDataURL('image/png')};
+ return {painted,pointerEvents:style.pointerEvents,box:{width:bounds.width,height:bounds.height},boardBox,event,expectedPaths,diagnostics:d,audio:SweetsAudioV277.describe(),selectedGame:q.slots[q.active].engine.kind||'cookie',nativeEvents:q.fixtureEvents.slice(),draws:q.app.draws.slice(),overlayDataUrl:node.toDataURL('image/png')};
 }
 function watchAward(input){return page.waitForFunction(inspectAward,input,{polling:'raf',timeout:30000}).then(async h=>{try{return await h.jsonValue();}finally{await h.dispose();}},error=>{if(error.name==='TimeoutError')return null;throw error;});}
+function checkSoundBank(audio){
+ assert.equal(audio.version,soundVersion,'the current audio runtime is active');
+ assert.equal(audio.soundBank,soundBank,'the casino bank is the primary source');
+ assert.equal(audio.totalSamples,soundCount,'all 97 current cues are registered');
+ assert.equal(audio.loadedSamples,soundCount,'all 97 current cues decode in the real browser');
+ assert.equal(audio.fallbackLoads,0,'the complete current bank needs no legacy fallback');
+ assert.equal(audio.errors,0,'audio loading and playback have no errors');
+}
 function checkGeometry(evidence,mini){
  const paths=evidence.event.paths||[];
  for(const item of paths){
@@ -137,9 +147,24 @@ async function capture(kind,options={}){
  assert(evidence.diagnostics.artReady,'illustrated award assets loaded');
  assert(evidence.diagnostics[mini?'miniImages':'mainImages']>0,'the visible celebration draws a generated bitmap');
  checkGeometry(evidence,mini);
+ checkSoundBank(evidence.audio);
+ assert.equal(evidence.selectedGame,mini?'gelato':kind,'the real selected game matches the scenario');
  assert(evidence.audio.activeVoices<=evidence.audio.maxVoices&&evidence.audio.maxVoices<=8,'audio has a strict source-voice bound');
  if(muted){assert.equal(evidence.audio.enabled,false);assert.equal(evidence.audio.awardStarts,0,'muted real awards start no fanfare');}
- else if(!mini){await page.waitForFunction(()=>SweetsAudioV277.describe().awardStarts>0,null,{timeout:5000});evidence.audioAfter=await page.evaluate(()=>SweetsAudioV277.describe());assert(evidence.audioAfter.unlocked,'real start gesture unlocks audio');}
+ else if(mini)assert.equal(evidence.audio.awardStarts,0,'an unselected miniature award starts no fanfare');
+ else{
+  await page.waitForFunction(({game,key})=>SweetsAudioV277.describe().lastEvents.some(event=>event.event==='start'&&event.award&&event.explicit&&event.game===game&&event.key===key),{game:kind,key:evidence.event.key},{timeout:5000});
+  evidence.audioAfter=await page.evaluate(()=>SweetsAudioV277.describe());
+  checkSoundBank(evidence.audioAfter);
+  assert(evidence.audioAfter.awardStarts>0,'the real engine award starts its fanfare');
+  assert(evidence.audioAfter.unlocked,'real start gesture unlocks audio');
+  const sounded=evidence.audioAfter.lastEvents.filter(event=>event.event==='start'&&event.award&&event.explicit&&event.game===kind&&event.key===evidence.event.key);
+  assert.equal(sounded.length,1,'the captured native award has one explicit audio owner');
+  assert.equal(sounded[0].tier,evidence.event.tier,'audio tier matches the captured award');
+  assert.equal(sounded[0].sample,'award-'+kind+'-'+evidence.event.tier,'the selected game uses its own tiered casino fanfare');
+  assert.equal(evidence.audioAfter.gameAwardRoutes[kind][evidence.event.tier-1],sounded[0].sample,'reported routing agrees with the actual started sample');
+  evidence.awardSound=sounded[0];
+ }
  const prefix='data:image/png;base64,';assert(evidence.overlayDataUrl.startsWith(prefix));
  const file='award-'+label+'-overlay.png';await fs.writeFile(path.join(output,file),Buffer.from(evidence.overlayDataUrl.slice(prefix.length),'base64'));delete evidence.overlayDataUrl;report.overlayScreens.push(file);
  const screen='award-'+label+'.png';await page.screenshot({path:path.join(output,screen)});report.screens.push(screen);

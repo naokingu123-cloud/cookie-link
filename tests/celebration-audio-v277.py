@@ -6,6 +6,7 @@ import json
 import math
 from pathlib import Path
 import sys
+import subprocess
 import wave
 
 root = Path(__file__).resolve().parents[1]
@@ -52,3 +53,6 @@ assert durations == sorted(set(durations)), "award tiers must have distinct incr
 print(json.dumps({"ok": True, "cues": len(hashes), "bytes": total, "sampleRate": 44100,
                   "stereo": True, "bits": 16, "maxPeakDbFS": round(max(peaks), 3),
                   "fadedEdges": True, "hashesMatched": True, "awardSeconds": durations}))
+# The existing CI entry verifies both the preserved fallback bank and the
+# current casino palette, including the CC0/public-domain source originals.
+subprocess.run([sys.executable, str(root / 'tests/casino-audio-v281.py')], check=True)

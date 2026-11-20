@@ -1,0 +1,127 @@
+{
+  "retrievedAtUTC": "2026-11-20T14:31:16.358025+00:00",
+  "sources": {
+    "chip": {
+      "file": "kenney-chip-lay-1.ogg",
+      "originalFilename": "casino-audio/Audio/chip-lay-1.ogg",
+      "bytes": 5720,
+      "sha256": "4b2111252ccb64eed67f171e061053849cfbb29873536c03948646f244a3905c",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "collide": {
+      "file": "kenney-chips-collide-1.ogg",
+      "originalFilename": "casino-audio/Audio/chips-collide-1.ogg",
+      "bytes": 6356,
+      "sha256": "f41b3d106360fc68ebc061a211d4265b4cb5fa1fbe86e4d57d3673510e2c3784",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "stack": {
+      "file": "kenney-chips-stack-1.ogg",
+      "originalFilename": "casino-audio/Audio/chips-stack-1.ogg",
+      "bytes": 6469,
+      "sha256": "12bf175b9afcea112175b241ad3336c6244ac5fdcdff8b5942ecc03f2225e0c4",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "handle": {
+      "file": "kenney-chips-handle-1.ogg",
+      "originalFilename": "casino-audio/Audio/chips-handle-1.ogg",
+      "bytes": 9374,
+      "sha256": "a2c495237fb0dc0dc96ccc2c9840572edd226e6459398ecb631c6c9f9e5408f0",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "shower": {
+      "file": "kenney-chips-handle-5.ogg",
+      "originalFilename": "casino-audio/Audio/chips-handle-5.ogg",
+      "bytes": 11273,
+      "sha256": "589753ea21b1955626e82975be8979f42140f5b0645a8c33c2d1f7e33fba68cb",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "dice": {
+      "file": "kenney-die-throw-1.ogg",
+      "originalFilename": "casino-audio/Audio/die-throw-1.ogg",
+      "bytes": 8410,
+      "sha256": "b31d716165be60e442da3c1ca25a3968aad1e0851a7f0859f495aecc02fd9e13",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "shuffle": {
+      "file": "kenney-card-shuffle.ogg",
+      "originalFilename": "casino-audio/Audio/card-shuffle.ogg",
+      "bytes": 30002,
+      "sha256": "96c84883a30845ede723a4cf2e8369e9837e7dd4e0d4eb0212b0a7ed21b0f544",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/casino-audio",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "jingle": {
+      "file": "kenney-jingle-hit03.ogg",
+      "originalFilename": "music-jingles/Audio/Hit jingles/jingles_HIT03.ogg",
+      "bytes": 13944,
+      "sha256": "889d4c2b76c7edd63138b3a976c3f7337aaba3de90019d19bca70ec958c93014",
+      "author": "Kenney Vleugels",
+      "sourcePage": "https://kenney.nl/assets/music-jingles",
+      "license": "CC0-1.0",
+      "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attributionRequired": false,
+      "originalPreserved": true
+    },
+    "coin": {
+      "file": "soundbible-coin-drop-willem-hunt.wav",
+      "originalFilename": "soundbible-coin-drop-willem-hunt.wav",
+      "bytes": 280642,
+      "sha256": "63d47384f2b746a4d866ef99f17175eb851c79d89cf95082962742e82580bb7f",
+      "author": "Willem Hunt",
+      "sourcePage": "https://soundbible.com/2081-Coin-Drop.html",
+      "license": "Public Domain (specific asset declaration)",
+      "licenseURL": "https://soundbible.com/2081-Coin-Drop.html",
+      "attributionRequired": false,
+      "originalPreserved": true,
+      "downloadURL": "https://soundbible.com/grab.php?id=2081&type=wav"
+    }
+  },
+  "processing": "Original files above are unmodified. Generator decodes with ffmpeg, trims silence, downmixes to mono, filters, speed/pitch-shifts, envelopes, pans and mixes into original synthesized compositions. Every output cue records actual source layers and SHA-256.",
+  "archives": [
+    {
+      "file": "kenney_casino-audio.zip",
+      "sha256": "f36250766ac5bc378c13708ddf12a23a8e54a3251f8d482c7536e51b5dbafa18",
+      "bytes": 876839
+    },
+    {
+      "file": "kenney_music-jingles.zip",
+      "sha256": "b729ba57959bd58793d2c5cafa348aaf2655d354f3da35ec4729e03ec77197b8",
+      "bytes": 1239525
+    }
+  ]
+}

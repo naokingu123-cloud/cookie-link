@@ -1,4 +1,4 @@
-/* Read-only publication gate. Run in CI after the v277 behavioral jobs pass.
+/* Read-only publication gate. Run in CI after the presentation/audio jobs pass.
  * Only GET static resources on the public Pages origin; no game/API requests. */
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -11,6 +11,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const base='https://naokingu123-cloud.github.io/cookie-link/';
 const output=path.join(root,'qa-celebration-v277-public/report.json');
 const started=Date.now(),deadline=started+5*60*1000,concurrency=4;
+const casinoRoot='assets/audio/casino-v281';
 const runtime=[
  'app-version.json','index.html','download-sw-v255.js',
  'assets/arcade-candy-sfx-v158.js','assets/arcade-candy-world-v157.js','assets/arcade-candy-world-v158.js',
@@ -21,8 +22,8 @@ const runtime=[
 ];
 const report={ok:false,startedAt:new Date(started).toISOString(),completedAt:null,
  commit:process.env.GITHUB_SHA||null,url:base,maxWaitSeconds:300,concurrency,
- scope:'Static GET and SHA-256 only: changed runtime, all v277 art, all 41 original sounds and manifests. No gameplay, API, wallet or BET operations.',
- expectedVersion:null,expectedFiles:0,attempts:[],checks:[],finalVersionCheck:null};
+ scope:'Static GET and SHA-256 only: changed runtime, all v277 art, all 97 casino cues, their original sources, licenses and provenance, and all 41 fallback cues and manifests. No gameplay, API, wallet or BET operations.',
+ expectedVersion:null,expectedFiles:0,currentCues:0,legacyCues:0,licensedSources:0,attempts:[],checks:[],finalVersionCheck:null};
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=new Map(),latest=new Map(),matched=new Set();
 
@@ -43,7 +44,7 @@ async function check(file,attempt){
  try{
   const remaining=deadline-Date.now();if(remaining<=0)throw Error('Publication wait deadline reached');
   const url=new URL(file,base);
-  url.searchParams.set('verify-v277',(report.commit||report.expectedVersion)+'-'+attempt);
+  url.searchParams.set('verify-v281',(report.commit||report.expectedVersion)+'-'+attempt);
   const response=await fetch(url,{method:'GET',redirect:'error',
    headers:{'Cache-Control':'no-cache',Accept:'*/*'},signal:AbortSignal.timeout(Math.min(12000,remaining))});
   result.status=response.status;
@@ -67,16 +68,35 @@ async function batch(files,attempt){
 }
 
 try{
- const [art,sound]=await Promise.all([filesUnder('assets/celebration-art-v277'),filesUnder('assets/audio/celebration-v277')]);
- assert.equal(sound.filter(file=>file.endsWith('.wav')).length,41,'all 41 sound cues must be in the publication gate');
+ const [art,sound,casino]=await Promise.all([filesUnder('assets/celebration-art-v277'),filesUnder('assets/audio/celebration-v277'),filesUnder(casinoRoot)]);
+ const manifest=JSON.parse(await fs.readFile(path.join(root,casinoRoot,'manifest.json'),'utf8'));
+ assert.equal(manifest.version,281,'the current casino manifest must be checked');
+ const currentCues=Object.values(manifest.cues).map(cue=>{
+  assert.equal(path.basename(cue.file),cue.file,'cue filenames stay in the bank root');
+  assert(cue.file.endsWith('.wav'),'every current cue is a PCM WAV');
+  return casinoRoot+'/'+cue.file;
+ }).sort();
+ assert.equal(currentCues.length,97,'all 97 casino cues must be in the publication gate');
+ assert.equal(new Set(currentCues).size,97,'every casino cue has its own file');
+ assert.deepEqual(casino.filter(file=>path.dirname(file)===casinoRoot&&file.endsWith('.wav')),currentCues,'the manifest covers every delivered casino cue');
+ const sourceFiles=Object.values(manifest.sources.sources).map(source=>{
+  assert.equal(path.basename(source.file),source.file,'source filenames stay in the provenance directory');
+  assert(['CC0-1.0','Public Domain (specific asset declaration)'].includes(source.license),'preserved sources have declared reusable licenses');
+  return casinoRoot+'/sources/'+source.file;
+ });
+ assert.equal(sourceFiles.length,9,'all nine licensed source recordings must be preserved');
+ const provenanceFiles=['provenance.json','KENNEY_CASINO_LICENSE.txt','KENNEY_MUSIC_JINGLES_LICENSE.txt','SOUNDBIBLE_COIN_LICENSE.txt'].map(file=>casinoRoot+'/sources/'+file);
+ for(const file of [...sourceFiles,...provenanceFiles])assert(casino.includes(file),'publication gate includes source and license: '+file);
+ assert.equal(sound.filter(file=>file.endsWith('.wav')).length,41,'all 41 fallback sound cues must stay in the publication gate');
  assert.equal(art.filter(file=>file.endsWith('.png')).length,5,'all four award images and the line ornament must be checked');
- const files=[...new Set([...runtime,...art,...sound])].sort();
+ const files=[...new Set([...runtime,...art,...sound,...casino])].sort();
  for(const file of files){const bytes=await fs.readFile(path.join(root,file));expected.set(file,{bytes:bytes.length,sha256:hash(bytes)});}
  report.expectedVersion=JSON.parse(await fs.readFile(path.join(root,'app-version.json'),'utf8')).version;
  // The assets remain available to pinned offline editions after later releases.
  // Compare against the current checkout, rather than pinning the shell to 277.
  assert(typeof report.expectedVersion==='string'&&report.expectedVersion.length>0,'the checkout must declare a build version');
  report.expectedFiles=files.length;
+ report.currentCues=currentCues.length;report.legacyCues=41;report.licensedSources=sourceFiles.length;
 
  // Do not download all media while Pages is still serving the previous build.
  let attempt=0,ready=false;
@@ -101,7 +121,7 @@ try{
   console.log(JSON.stringify({publicationAttempt:attempt,versionMatches:version.matches,matched:matched.size,total:files.length,remainingSeconds:Math.max(0,Math.ceil((deadline-Date.now())/1000))}));
   const remaining=deadline-Date.now();if(remaining>0)await delay(Math.min(10000,remaining));
  }
- if(!report.ok)throw Error('Public v277 SHA-256 verification did not finish within 300 seconds; unmatched files: '+files.filter(file=>!matched.has(file)).join(', '));
+ if(!report.ok)throw Error('Public presentation/audio SHA-256 verification did not finish within 300 seconds; unmatched files: '+files.filter(file=>!matched.has(file)).join(', '));
 }catch(error){report.failure={message:String(error?.message||error),stack:error?.stack||null};process.exitCode=1;}
 finally{
  report.completedAt=new Date().toISOString();report.elapsedSeconds=Math.round((Date.now()-started)/1000);

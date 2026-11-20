@@ -1,4 +1,4 @@
-name: Six Drop bottle and continuation v278
+name: Six Drop bottle, count payouts and continuation v280
 on:
   workflow_dispatch:
   pull_request:
@@ -17,6 +17,7 @@ on:
       - 'index.html'
       - 'app-version.json'
       - 'tests/sixdrop-v278-*'
+      - 'tests/sixdrop-v280-*'
       - '.github/workflows/sixdrop-v278.yml'
   push:
     branches: [main]
@@ -35,6 +36,7 @@ on:
       - 'index.html'
       - 'app-version.json'
       - 'tests/sixdrop-v278-*'
+      - 'tests/sixdrop-v280-*'
       - '.github/workflows/sixdrop-v278.yml'
 permissions:
   contents: read
@@ -50,6 +52,8 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Simultaneous groups, convex count payouts and progressive conservation
         run: node tests/sixdrop-v278-rules.cjs
+      - name: Rounded v280 role tables and preserved legacy saved games
+        run: node tests/sixdrop-v280-rules.cjs
       - name: Native Arcade, repeated carry, checkpoint resume and offline settlement
         run: node tests/sixdrop-v278-host.cjs
       - name: Authoritative interrupted rounds, zero WIN and download ledger
@@ -112,7 +116,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify published v278 rules, UI, artwork and cache
+      - name: Verify published current rules, UI, artwork and cache
         run: node tests/sixdrop-v278-public.mjs
       - uses: actions/upload-artifact@v4
         if: always()

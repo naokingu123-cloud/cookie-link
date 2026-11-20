@@ -83,8 +83,8 @@ function streamingCheckpoint(host){
  // only network discovery and connection startup outside this source block.
  return new Function('window',source.slice(start,end)+'\nreturn {checkpoint,restore};')(host.window);
 }
-function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS}={}){
- let state=R.newGame({seed,bet,carry,rulesRevision:278});
+function fullRound(seed,{bet=100,carry=null,numbers=NUMBERS,rulesRevision=R.CURRENT_REVISION}={}){
+ let state=R.newGame({seed,bet,carry,rulesRevision});
  const initial=clone(state),plans=[];
  for(const group of batches(numbers)){
   const plan=R.hitBatch(state,group,{trace:true});assert(plan,'valid 3 / 2 / 1 / 1 / 1 group');plans.push(plan);state=plan.state;

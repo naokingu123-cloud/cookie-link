@@ -5,7 +5,7 @@
 const id=window.SweetsLineup?.ids?.indexOf('candy');if(!(id>=0))return;
 const slot=slots[id],e=app.engines[id],R=window.SweetsSixDropV247.create({empty:sixEmpty,clone:sixClone,count:sixCount,valid:sixValid,step:sixStep,neighbors:sixNeighbors,patterns:sixPatterns,findShapes:sixFindShapes,drop:sixDrop,point:sixPoint,gapTemplates:SIX_START_GAP_TEMPLATES});
 let committed=R.cleanCarry(null),carryRevision=-1,carryPlayer='',inNewRenderer=false;
-const grouped=state=>Number(state?.rulesRevision)>=R.CURRENT_REVISION;
+const grouped=state=>Number(state?.rulesRevision)>=R.GROUPED_REVISION;
 function adoptCarry(value){
  committed=R.cleanCarry(value);
  if(app.phase==='ready'){e.progressiveUnits=committed.bankUnits;e.removedTotal=committed.removed;e.feedRows=Math.floor(committed.feed*10/75);resetBank(committed.bankUnits);scheduleUI(app);}
@@ -179,7 +179,7 @@ reachContext=function(engine,a=app){
 requestSixSparkles=function(s,engine,a){if(engine?.rulesVersion===247){s.sixSparkleIds=new Set();return;}return nativeSparkles(s,engine,a);};
 sixArtCandySprite=function(color,round,sugar,chance){if(e.rulesVersion===247)return paletteSprite(color,sugar);return nativeSprite(color,round,sugar,chance);};
 sixGlassPose=function(order,r,elapsed,reduced){if(!inNewRenderer)return nativePose(order,r,elapsed,reduced);const i=order.indexOf(r),age=elapsed-i*32;if(i<0)return {visible:true,offset:0,rotation:0};if(age<0)return {visible:false,offset:0,rotation:0};const u=Math.min(1,age/220);return {visible:true,offset:reduced?0:-350*(1-u*u),rotation:reduced?0:Math.sin(Math.PI*u)*.04};};
-drawCarnival=function(s,now){if(s.engine?.rulesVersion!==247)return nativeDraw(s,now);inNewRenderer=true;try{const result=nativeDraw(s,now);paintBank();if(s.candyCanvas)s.candyCanvas.setAttribute('aria-label','シックスドロップ・'+(e.drawMode==='single'?'1球ずつ':'3・2・1・1・1球')+'抽選・同色4個以上で消去・今ゲームの色 '+(e.state?.palette||R.palette(committed.removed)).map(c=>colorNames[R.RING[c]]).join('・')+'・累計消去'+e.removedTotal+'個');return result;}finally{inNewRenderer=false;}};
+drawCarnival=function(s,now){if(s.engine?.rulesVersion!==247)return nativeDraw(s,now);inNewRenderer=true;try{const result=nativeDraw(s,now);paintBank();if(s.candyCanvas)s.candyCanvas.setAttribute('aria-label','シックスドロップ・同色4個以上で消去・今ゲームの色 '+(e.state?.palette||R.palette(committed.removed)).map(c=>colorNames[R.RING[c]]).join('・')+'・累計消去'+e.removedTotal+'個');return result;}finally{inNewRenderer=false;}};
 function ensureHud(){
  setupCarnivalSlot(slot);const heading=$('carnival-heading');if(heading.dataset.progressive247==='1')return;
  heading.dataset.progressive247='1';heading.innerHTML='<div class="sd247-progressive"><span class="sd247-label">全消し</span><strong id="sd247-bank">0</strong><em>WIN</em></div>';
@@ -193,7 +193,7 @@ carnivalHud=function(a){
  const set=(node,text)=>{if(node&&node.textContent!==String(text))node.textContent=String(text);};
  if(bankView.version!==e.version)resetBank(bank);paintBank();
  for(const type of Object.keys(R.BASE_PAY)){const row=slot.sixOdds.querySelector('[data-sd247="'+type+'"]'),count=s?.counts[type]||0,revision=s||R.CURRENT_REVISION;set(row.querySelector('.sd247-count'),'成立 '+count+'回');set(row.querySelector('.sd247-next'),'次 +'+money(bet*R.roleAward(type,count,1,revision)/100)+' WIN');set(row.querySelector('.sd247-subtotal'),'役合計 '+money(bet*R.roleTotal(type,count,revision)/100)+' WIN');}
- fitGoldenNumber($('carnival-win'),money(s?R.totalMedals(s):0),23,100);slot.tab.setAttribute('aria-label','シックスドロップ '+bet+' BET・'+(e.drawMode==='single'?'1球ずつ':'3・2・1・1・1球')+'抽選');
+ fitGoldenNumber($('carnival-win'),money(s?R.totalMedals(s):0),23,100);slot.tab.setAttribute('aria-label','シックスドロップ '+bet+' BET');
  if(active===id){put('best',s?R.totalMedals(s)+' WIN':'全消し '+money(bank/100)+' WIN');put('ballinfo','進行 '+(a.draws?.length||0)+' ／ 8球');}
  const stamp=[e.version,e.phase,e.processed,e.boardGeneration,e.totalHundredths,bank,s?.counts.line,s?.counts.triangle,s?.counts.hexagon].join('/');if(slot.candyKey!==stamp){slot.candyKey=stamp;carnivalQueueFrame(slot);}
 };

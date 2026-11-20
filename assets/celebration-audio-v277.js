@@ -1,4 +1,6 @@
-/* Original v277 arcade SFX. Loaded inside the host's private scope after game
+/* v281 casino palette, retaining the v277 public API and event ownership.
+ * CC0 / public-domain source layers are rendered into single-voice cues.
+ * Loaded inside the host's private scope after game
  * modules: one existing AudioContext, one bounded SFX bus, one award at a time.
  * BGM and spoken-number/character recordings are never replaced. */
 (()=>{
@@ -9,7 +11,11 @@ if(query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1')
  sound=()=>false;
  return;
 }
-const VERSION=277,ROOT='assets/audio/celebration-v277/',MAX_VOICES=8,AWARD_WAIT=70;
+const VERSION=281,ROOT='assets/audio/casino-v281/',LEGACY_ROOT='assets/audio/celebration-v277/',MAX_VOICES=8,AWARD_WAIT=70;
+const gameKinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
+const gameAwards=Object.fromEntries(gameKinds.map(game=>[game,Array.from({length:4},(_,i)=>'award-'+game+'-'+(i+1))]));
+const gameChains=Object.fromEntries(gameKinds.map(game=>[game,'chain-'+game]));
+const extraFallbacks={'hit-jelly':'hit-water','reel-tick':'count','multiplier-high':'multiplier','multiplier-galaxy':'multiplier','jpc-reach':'reach-high',jackpot:'award-4'};
 const sceneMap={
  drill:'drill',stratum:'hit-canyon',melt:'melt',ore:'ore',sugar:'sugar',random:'transform',transform:'transform',
  glass:'hit-prism',landing:'land',refill:'refill',pop:'hit-popcorn',triangle:'award-1',hexagon:'award-2',role:'award-1',
@@ -24,9 +30,10 @@ const sceneMap={
 const nativeMap={crack:'hit-cookie',confirm:'confirm',magic:'transform',sugar:'sugar',hammer:'hammer-impact','sugar-spawn':'sugar'};
 const eventMap={notice:'ui',reach:'reach','high-reach':'reach-high','high-win':'award-2',special:'award-4',sugar:'sugar',level:'level',chain:'chain',miss:'miss',ui:'ui',confirm:'confirm'};
 const allSamples=[...new Set([...Object.values(sceneMap),...Object.values(nativeMap),...Object.values(eventMap),
- 'hit-water','hit-waffle','hit-castella','hit-dango','jpc-qualified','multiplier'])];
+ 'hit-water','hit-jelly','hit-waffle','hit-castella','hit-dango','jpc-qualified','multiplier',
+ 'reel-tick','multiplier-high','multiplier-galaxy','jpc-reach','jackpot',...Object.values(gameChains),...Object.values(gameAwards).flat()])];
 const aliases=new Map(),samples=new Map(),loading=new Map(),ownVoices=new Set(),lastStart=new Map(),seenAwards=new Set(),reachSeen=new Set(),sugarSeen=new Map();
-const history=[],stats={starts:0,suppressed:0,awardStarts:0,legacyAwardsSuppressed:0,voiceEvictions:0,maxActiveVoices:0,errors:0};
+const history=[],stats={starts:0,suppressed:0,awardStarts:0,legacyAwardsSuppressed:0,voiceEvictions:0,maxActiveVoices:0,fallbackLoads:0,errors:0};
 let prepared=null,pending=null,awardVoice=null,scopeToken=app?.token,scopeActive=active,epoch=0,chainStep=0,lastFoley=-Infinity,reachFloorCount=app?.draws?.length||0;
 let duckBus=null,duckSource=null;
 const coreSound=sound,coreStop=stopSounds;
@@ -99,7 +106,13 @@ function installSample(name,buffer){
 function load(name){
  if(samples.has(name))return Promise.resolve(samples.get(name));
  if(loading.has(name))return loading.get(name);
- const task=loadEffectSample(ROOT+name+'.wav').then(buffer=>{installSample(name,buffer);return buffer;})
+ const fallback=extraFallbacks[name]||(name.startsWith('chain-')?'chain':/^award-[a-z]+-[1-4]$/.test(name)?'award-'+name.slice(-1):name);
+ const task=loadEffectSample(ROOT+name+'.wav').catch(async()=>{
+  // A new bank may be temporarily absent from a restored/offline cache. Keep
+  // the same event, priority and voice identity while decoding the old sound.
+  const buffer=await loadEffectSample(LEGACY_ROOT+fallback+'.wav');
+  stats.fallbackLoads++;record({event:'fallback',sample:name,fallback});return buffer;
+ }).then(buffer=>{installSample(name,buffer);return buffer;})
   .catch(error=>{stats.errors++;console.warn('[SweetsAudioV277] sample unavailable: '+name,error);return null;})
   .finally(()=>loading.delete(name));
  loading.set(name,task);return task;
@@ -142,7 +155,11 @@ function playSample(name,options={}){
  }
  const source=audio.createBufferSource(),gain=audio.createGain();
  const rate=options.award?1:clamp(Number(options.rate)||1,.65,4);
- const volume=clamp(Number(options.volume??.7),0,1)*(awardVoice&&!options.award?.38:1);
+ // Native scene ceilings still apply before this point. A small, bounded
+ // material correction restores their transient detail; the shared output
+ // compressor/ceiling, UI counters and music gains are unchanged.
+ const materialBoost=/^(hit-|chain-)/.test(name)?1.35:1;
+ const volume=clamp(Number(options.volume??.7)*materialBoost,0,options.award?1:.9)*(awardVoice&&!options.award?.38:1);
  if(volume<=0)return denied('zero-volume',name);
  const voice={source,gain,priority,started:at,name,award:!!options.award,tier:options.tier||0,explicit:!!options.explicit,game:options.game||selected(),until:at+buffer.duration/rate};
  source.buffer=buffer;source.playbackRate.value=rate;gain.gain.value=volume;source.connect(gain);gain.connect(sfxBus);
@@ -179,7 +196,7 @@ function queueAward({game=selected(),tier=1,key='',kind='role',win=0,delayMs=0,e
   if(pending.explicit===explicit&&pending.tier>tier)return denied('lower-pending-tier',key);
   cancelPending();
  }
- const job={game,tier,key,kind,win,explicit,sample:sample||'award-'+tier,volume,jpc,token:app?.token,selection:active,epoch,timer:0};
+ const job={game,tier,key,kind,win,explicit,sample:sample||gameAwards[game]?.[tier-1]||'award-'+tier,volume,jpc,token:app?.token,selection:active,epoch,timer:0};
  const wait=Math.max(0,Number(delayMs)||0)+(explicit?0:AWARD_WAIT);
  pending=job;
  const start=()=>{
@@ -198,8 +215,10 @@ function queueAward({game=selected(),tier=1,key='',kind='role',win=0,delayMs=0,e
 }
 function sceneSample(key){
  const game=selected();
+ if(key==='chain')return gameChains[game]||'chain';
  if(['cookie-hit','cookie','crack'].includes(key)&&['castella','dango','stick'].includes(game))return {castella:'hit-castella',dango:'hit-dango',stick:'hit-waffle'}[game];
- if(key==='glass'&&['winery','jelly'].includes(game))return 'hit-water';
+ if(key==='glass'&&['winery','jelly'].includes(game))return game==='jelly'?'hit-jelly':'hit-water';
+ if(key==='pop'&&game==='candy')return 'hit-candy';
  if(key==='landing'&&game==='stick')return 'hit-waffle';
  return sceneMap[key];
 }
@@ -227,7 +246,7 @@ function play(name='notice',options={}){
   reachSeen.add(key);if(reachSeen.size>128)reachSeen.delete(reachSeen.values().next().value);
   name=name==='reach'?'reach':'high-reach';
  }
- const sample=eventMap[name];if(!sample)return false;
+ const sample=name==='chain'?(gameChains[selected()]||'chain'):eventMap[name];if(!sample)return false;
  if(sample.startsWith('award-'))return queueAward({game:selected(),tier:Number(sample.slice(-1)),key:'event:'+name,kind:name});
  if(pending||awardVoice||owns(selected())){
   if(['chain','level','sugar','notice','reach','high-reach'].includes(name))return denied('award-accent',name);
@@ -272,17 +291,17 @@ function sugarReel({id,intro,position,spinning,multiplier,baseEnd=3250,reelStop=
  if(oldIntro<baseEnd&&intro>=baseEnd)return playSample('confirm',{volume:.55,priority:1});
  if(oldIntro<reelStop&&intro>=reelStop&&!state.multiplier){
   state.multiplier=true;
-  if(multiplier>=5)return award({game:'sugar',tier:multiplier>=10?3:2,key:'sugar:'+id+':multiplier',kind:'bonus',sample:'multiplier',volume:.8});
+  if(multiplier>=5)return award({game:'sugar',tier:multiplier>=10?3:2,key:'sugar:'+id+':multiplier',kind:'bonus',sample:multiplier>=10?'multiplier-galaxy':'multiplier-high',volume:.8});
   return playSample('multiplier',{volume:multiplier>1?.68:.5,priority:2,gap:.6});
  }
- if(spinning&&oldPosition!==null&&Math.floor(oldPosition)!==Math.floor(position))return playSample('count',{volume:.25,rate:.9+Math.min(1,(intro-baseEnd)/6000)*.22,gap:.075});
+ if(spinning&&oldPosition!==null&&Math.floor(oldPosition)!==Math.floor(position))return playSample('reel-tick',{volume:.25,rate:.9+Math.min(1,(intro-baseEnd)/6000)*.22,gap:.075});
  return false;
 }
 // Real JPC transitions; the existing render/ticker remains authoritative.
 if(typeof celebrateJpc==='function'){
  const nativeCelebrate=celebrateJpc;
  celebrateJpc=function(...args){const already=jpcSession.jackpotShown,result=nativeCelebrate.apply(this,args);
-  if(!already&&jpcSession.jackpotShown)award({game:'jpc',tier:4,key:'jpc:'+app.token+':jackpot',kind:'clear',jpc:true,volume:.9});
+  if(!already&&jpcSession.jackpotShown)award({game:'jpc',tier:4,key:'jpc:'+app.token+':jackpot',kind:'clear',sample:'jackpot',jpc:true,volume:.9});
   return result;
  };
 }
@@ -292,7 +311,7 @@ if(typeof paintJpcDashboard==='function'){
   const before=jpcSession.active?jpcSession.previousCounts?.filter(n=>n>0).length:0;
   const result=nativePaint.apply(this,args);
   const after=jpcSession.active?jpcSession.previousCounts?.filter(n=>n>0).length:0;
-  if(before<24&&after===24)playSample('reach-high',{volume:.68,priority:2,jpc:true,gap:2});
+  if(before<24&&after===24)playSample('jpc-reach',{volume:.68,priority:2,jpc:true,gap:2});
   return result;
  };
 }
@@ -300,10 +319,11 @@ const api={version:VERSION,award,play,unlock:unlockFromGesture,sugarTransition,s
  describe:()=>({version:VERSION,enabled:allowed({jpc:isJpc()}),unlocked:!!audio&&audio.state==='running',
   loadedSamples:samples.size,totalSamples:allSamples.length,activeVoices:sfxVoices.size,maxVoices:MAX_VOICES,
   pendingAwards:pending?1:0,...stats,lastEvents:history.map(event=>({...event})),
-  sceneRoutes:{...sceneMap},nativeRoutes:{...nativeMap},samples:allSamples.slice(),
+  sceneRoutes:{...sceneMap},nativeRoutes:{...nativeMap},samples:allSamples.slice(),soundBank:ROOT,
+  gameAwardRoutes:Object.fromEntries(Object.entries(gameAwards).map(([game,names])=>[game,names.slice()])),gameChainRoutes:{...gameChains},
   musicDucked:!!duckBus&&duckBus.gain.value<.99,sharedContext:true})};
 window.SweetsAudioV277=Object.freeze(api);
-window.SweetsEventSound={version:'v277',play:(name,options)=>api.play(name,options),unlock:event=>api.unlock(event)};
+window.SweetsEventSound={version:'v281',play:(name,options)=>api.play(name,options),unlock:event=>api.unlock(event)};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('pagehide',stop);
 document.addEventListener('click',event=>{

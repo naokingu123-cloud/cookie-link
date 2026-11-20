@@ -3,7 +3,7 @@
 'use strict';
 // This constant travels with the cached shell. It must not follow a newer
 // online version while an older, already downloaded game is being resumed.
-const BUILD_VERSION='20261120-v279-sugar-transparent-and-current-rules';
+const BUILD_VERSION='20261120-v281-casino-sound-and-sixdrop-refinement';
 const query=new URLSearchParams(location.search);
 const internal=['serverHost','serverSettlementWorker','downloadWorker','admin'].some(key=>query.get(key)==='1');
 let edition=query.get('edition');

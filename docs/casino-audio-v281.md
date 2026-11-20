@@ -1,0 +1,68 @@
+# v281 — カジノ系の効果音と10ゲーム別のファンファーレ
+
+2026-11-20。先行するシックスドロップ修正に加え、ユーザー指定の「より激しいカジノ系の効果音」を各ゲームとシチュエーションへ組み込んだ。改修前の音声経路と弱さの分析は [監査記録](audio-audit-v281.md)。
+
+## 実装
+
+新音源は97種類、24,110,208 bytes、44.1kHz・16bit・ステレオWAV。実際のコイン・カジノチップ・カードの動作音と、独自の明るいブラス、ベル、上昇アルペジオ、低音インパクト、ドラムロールを事前合成する。複数の楽器が一つのWAVとなるため、成立時に多数の音声voiceを追加しない。
+
+通常のHITは0.30〜0.435秒、連鎖は0.62秒。通常役／高額／超高額／全消し・最高役のフレーズを1.16／1.86／2.48／3.06秒に分け、長さだけでなく、リズム、和音、ロール、払い出し音の密度を増やした。JPは専用の3.96秒のクライマックス。ゲームの進行待ち時間は延長していない。
+
+|ゲーム|固有のHIT・連鎖・成立音の方向|
+|---|---|
+|クッキーリンク|暖かいマレット、クッキーのアタック、チップが積み上がる音|
+|チョコレートキャニオン|低めのブラス、掘削の重いインパクト、硬いチップ|
+|シックスドロップ|透明なキャンディベル、コインのきらめき、速いアルペジオ|
+|ジェラートプリズム|高いクリスタル音、広がる氷のきらめき|
+|ワイナリーピラミッド|瓶の丸いポップ音、低めの明るいブラス|
+|ポップコーンスプラッシュ|短く強いポップ、弾けるリズム、チップの連打|
+|ジェリービンゴ|弾力のある液体のピン音、上昇する短いフレーズ|
+|ワッフルリバーシ|乾いたチップ音、歯切れのよいマレット、連続反転の音階|
+|パーティカステラ|暖かいアタック、焼ける粒感、金色のブラス|
+|ダンゴデビンゴ|弾む短い弦の音、明るい五音音階のきらめき|
+
+10ゲームに固有HIT10種、固有連鎖10種、4段階×10ゲームの成立音40種を割り当てた。共通の動作音・リーチ・カウンター等も新しい素材の混合へ更新した。個別ゲームにその種類のイベントが存在するとき、既存の実イベント境界で鳴る。ゲームへ新しい判定や架空の成立を追加する仕組みではない。
+
+倍率リールは専用の短い機械的なtick。倍率確定は通常／5倍以上／10倍の3段階。JPC権利獲得、JPCの24/25リーチ、JP獲得にそれぞれ別の音を使用する。通常リーチの未解決和音と、実際に成立したファンファーレを区別する。
+
+## 音量と動作
+
+新WAVの最大peakは−2.048dBFS（約0.79）。ゲーム別を含む成立音のtier平均RMSは−15.93／−14.40／−13.63／−12.62dBFS。元の低い出力上限を上げず、事前合成とクレストファクターの調整で上位ほど密度を増やした。高いHIT音のregisterを長いファンファーレへそのまま延長せず、旋律は下のoctaveへ戻している。
+
+HITとゲーム別連鎖のみ、旧sceneの強い前段減衰に対する1.35倍の限定補正を使用する。非awardの最終voice gain上限は0.9。全音共通のcompressor、tanh出力上限、BGMの音源・通常音量・フェード、番号読上げ音声は変更しない。
+
+- 共通AudioContextと8voice上限、award同時1つ、高tier優先を維持。
+- 選択ゲームだけを鳴らし、ゲーム切替・新round・mute・pause・menu・hidden・pagehideで音と保留を停止。
+- 一意な成立key、旧scene/tickerの抑止、Sugar復元snapshotの基準化により重複再生を防ぐ。
+- trusted gestureによるモバイル音声解錠を維持。計算用workerは音源ロードも再生もしない。
+- ゲームRNG、入賞、配当、ルール、精算、演出待ち時間は変更しない。
+
+既存のAPI名 `SweetsAudioV277` は互換性のため維持し、`describe().version` は281、`soundBank` は `assets/audio/casino-v281/`。新bankを読み込めない場合は同じイベントとvoice所有権のまま元v277の対応音へfallbackする。元41音を変更・削除していない。fallback発生数は `fallbackLoads` に記録する。
+
+## 実素材・ライセンス
+
+公式配布から取得した原音9点を [sources](../assets/audio/casino-v281/sources/) に未変更で保存した。Kenneyの同梱License.txt、SoundBibleの対象素材の権利表示、原音のSHA-256・byte数・取得元・作者を [出典記録](../assets/audio/casino-v281/sources/provenance.json) に残す。
+
+|提供元|素材|権利表示・使用|
+|---|---|---|
+|[Kenney Casino Audio](https://kenney.nl/assets/casino-audio)|チップ配置・衝突・積上げ・扱う音、ダイス、カードshuffleの7点|同梱のCC0。商用利用・変更・再配布可、クレジット任意|
+|[Kenney Music Jingles](https://kenney.nl/assets/music-jingles)|Hit JinglesのHIT03|同梱のCC0。短いアタック部分を低いレベルで重ねる|
+|[SoundBible Coin Drop](https://soundbible.com/2081-Coin-Drop.html)|Willem HuntのCoin Drop|この素材ページのPublic Domain表示。コイン音を区間ごとに切り出し、speed/pitch/panを変えて使用|
+
+クレジットは任意の素材でも作者と出典を保持している。原音はgenerator内でffmpegにより44.1kHz monoへdecode、先頭無音を除去、DC除去、level調整を行う。その後、必要区間を切り出してspeed/pitch、fade、panを付け、独自合成のフレーズへ混合する。実際に使った原音ID、区間、再生速度、配置時刻、gain、panを各cueの `sourceLayers` に記録している。
+
+## 再生成・検証
+
+生成スクリプトは [generate-casino-audio-v281.py](../scripts/generate-casino-audio-v281.py)。numpyとffmpegを使用し、保存済みの原音だけで再生成する。外部接続は不要。合成用の固定seedはゲームRNGと独立している。元v277の音色bufferをメモリー内で参照するが、旧WAVへ書き込まない。
+
+```bash
+python3 scripts/generate-casino-audio-v281.py
+node tests/celebration-audio-v277.mjs
+python3 tests/celebration-audio-v277.py
+```
+
+音声JS単体では、55scene経路、97音のpreload、全10HIT・10連鎖・40成立音、倍率3段階、JPC／JPの実transitionと重複抑止、旧bank fallbackを確認した。さらに従来の8voice・award所有権・mute/pause・古いround/選択の破棄・復元時無音・trusted unlock・worker無音を確認し、すべて成功した。
+
+PCM検査は旧41音のhash不変と新97音を両方検査する。形式・全出力／原音hash・重複fileなし・最大peak・RMS・始終端fade・DC offset・区間の実在・10ゲームの全tierと順序を確認した。原音9点すべてが生成cueへ実際に混合されていることも確認した。
+
+実ブラウザー・公開ファイル照合は公開工程で別途記録する。この文書の単体成功は、別のWindows稼働サーバーの更新や音響実機の聴取確認を意味しない。
