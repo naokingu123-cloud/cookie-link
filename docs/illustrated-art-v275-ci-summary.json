@@ -1,0 +1,559 @@
+{
+  "version": "20261120-v275-illustrated-board-pieces",
+  "runtimeCommit": "3d8dc8cbc76b87fae091fc1867fbb12b78a80248",
+  "recordedAt": "2026-11-20T06:32:18.595309+00:00",
+  "workflow": {
+    "id": 44687435583,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44687435583",
+    "conclusion": "success",
+    "jobs": [
+      "art-and-cache",
+      "ten-games"
+    ],
+    "artifactId": 14606738627,
+    "artifact": "illustrated-v275-ten-games"
+  },
+  "originalFrames": {
+    "version": "v274",
+    "loaded": true,
+    "frames": 18,
+    "files": [
+      "assets/ornate-art-v274/board-frames-a.png",
+      "assets/ornate-art-v274/board-frames-b.png",
+      "assets/ornate-art-v274/payout-frames.png"
+    ],
+    "cached": 18,
+    "drawCalls": 0
+  },
+  "newArtwork": {
+    "version": "v275",
+    "loaded": true,
+    "sprites": 54,
+    "files": [
+      "assets/illustrated-art-v275/biscuits-cakes.png",
+      "assets/illustrated-art-v275/sugar-drops.png",
+      "assets/illustrated-art-v275/crystals-glass.png",
+      "assets/illustrated-art-v275/popcorn-kernels.png",
+      "assets/illustrated-art-v275/bakery-mochi.png"
+    ],
+    "cached": 54,
+    "drawCalls": 139
+  },
+  "spriteChecks": {
+    "count": 54,
+    "allDrawn": true,
+    "minimumOpaquePixels": 28410,
+    "minimumColors": 229
+  },
+  "phases": [
+    {
+      "phase": "ready",
+      "strictState": false,
+      "stateHash": "9c9a03fc017ccbb29e126236d2c85f062348b502bc5191739db38a271605d8e6",
+      "games": [
+        "cookie",
+        "choco",
+        "candy",
+        "gelato",
+        "winery",
+        "popcorn",
+        "jelly",
+        "stick",
+        "castella",
+        "dango"
+      ]
+    },
+    {
+      "phase": "playing",
+      "strictState": true,
+      "stateHash": "a9204221c9fcc08662e0e167a8878c335b7b14a2bdc127865ea513350021f299",
+      "games": [
+        "cookie",
+        "choco",
+        "candy",
+        "gelato",
+        "winery",
+        "popcorn",
+        "jelly",
+        "stick",
+        "castella",
+        "dango"
+      ]
+    },
+    {
+      "phase": "mobile",
+      "strictState": true,
+      "stateHash": "a9204221c9fcc08662e0e167a8878c335b7b14a2bdc127865ea513350021f299",
+      "games": [
+        "cookie",
+        "choco",
+        "candy",
+        "gelato",
+        "winery",
+        "popcorn",
+        "jelly",
+        "stick",
+        "castella",
+        "dango"
+      ]
+    }
+  ],
+  "viewports": [
+    {
+      "width": 1366,
+      "height": 900,
+      "phases": [
+        "ready",
+        "playing"
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "games": [
+        {
+          "game": "cookie",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 485.375,
+              "right": 273.8125,
+              "bottom": 747,
+              "width": 253.5,
+              "height": 261.625
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "choco",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 440.6875,
+              "right": 369.6875,
+              "bottom": 742.9375,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "candy",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 485.375,
+              "right": 273.8125,
+              "bottom": 747,
+              "width": 253.5,
+              "height": 261.625
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "gelato",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 444.75,
+              "right": 369.6875,
+              "bottom": 747,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "winery",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 19.5,
+              "top": 443.9375,
+              "right": 370.5,
+              "bottom": 747.8125,
+              "width": 351,
+              "height": 303.875
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "popcorn",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 444.75,
+              "right": 369.6875,
+              "bottom": 747,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "jelly",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 444.75,
+              "right": 369.6875,
+              "bottom": 747,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "stick",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 444.75,
+              "right": 369.6875,
+              "bottom": 747,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "castella",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 444.75,
+              "right": 369.6875,
+              "bottom": 747,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        },
+        {
+          "game": "dango",
+          "layout": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390,
+            "game": {
+              "left": 9.75,
+              "top": 437.4375,
+              "right": 380.25,
+              "bottom": 754.3125,
+              "width": 370.5,
+              "height": 316.875
+            },
+            "panel": {
+              "left": 20.3125,
+              "top": 444.75,
+              "right": 369.6875,
+              "bottom": 747,
+              "width": 349.375,
+              "height": 302.25
+            },
+            "primaryOutsideGame": []
+          }
+        }
+      ]
+    }
+  ],
+  "screens": [
+    "ready-cookie-1366.png",
+    "ready-choco-1366.png",
+    "ready-candy-1366.png",
+    "ready-gelato-1366.png",
+    "ready-winery-1366.png",
+    "ready-popcorn-1366.png",
+    "ready-jelly-1366.png",
+    "ready-stick-1366.png",
+    "ready-castella-1366.png",
+    "ready-dango-1366.png",
+    "playing-cookie-1366.png",
+    "playing-choco-1366.png",
+    "playing-candy-1366.png",
+    "playing-gelato-1366.png",
+    "playing-winery-1366.png",
+    "playing-popcorn-1366.png",
+    "playing-jelly-1366.png",
+    "playing-stick-1366.png",
+    "playing-castella-1366.png",
+    "playing-dango-1366.png"
+  ],
+  "pageErrors": [],
+  "imageFailures": [],
+  "warnings": [
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[.WebGL-0x2140101ae00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x2140101ae00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x2140101ae00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0x2140101ae00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "adapters": {
+    "art": {
+      "version": "v274",
+      "loaded": true,
+      "frames": 18,
+      "files": [
+        "assets/ornate-art-v274/board-frames-a.png",
+        "assets/ornate-art-v274/board-frames-b.png",
+        "assets/ornate-art-v274/payout-frames.png"
+      ],
+      "cached": 18,
+      "drawCalls": 61
+    },
+    "a": {
+      "games": [
+        "cookie",
+        "choco",
+        "candy"
+      ],
+      "pieces": "native",
+      "backgrounds": "native",
+      "geometry": "native",
+      "rules": "unchanged",
+      "candyRoles": 3,
+      "chocoPayTrim": true
+    },
+    "boardArt": {
+      "version": "v275",
+      "loaded": true,
+      "sprites": 54,
+      "files": [
+        "assets/illustrated-art-v275/biscuits-cakes.png",
+        "assets/illustrated-art-v275/sugar-drops.png",
+        "assets/illustrated-art-v275/crystals-glass.png",
+        "assets/illustrated-art-v275/popcorn-kernels.png",
+        "assets/illustrated-art-v275/bakery-mochi.png"
+      ],
+      "cached": 54,
+      "drawCalls": 11393
+    },
+    "illustratedA": {
+      "games": [
+        "cookie",
+        "choco",
+        "candy"
+      ],
+      "cachedSprites": 10,
+      "generatedURLs": 8,
+      "cookiePieces": "painted-v275",
+      "canyonMaterial": "painted-v275-native-autotile",
+      "candyPieces": "painted-v275-native-palette",
+      "backgrounds": "native",
+      "geometry": "native",
+      "rules": "unchanged"
+    },
+    "illustratedB": {
+      "version": "v275",
+      "active": true,
+      "cached": 8,
+      "calls": {
+        "popcornLiner": 122,
+        "popcornAtlas": 6763,
+        "wineryGlass": 1134,
+        "wineryPlaque": 1134,
+        "gelatoCache": 2,
+        "gelatoSocket": 118,
+        "jellyRim": 96,
+        "jellyTexture": 385,
+        "jellyRib": 3840,
+        "popcornSource": 50
+      }
+    },
+    "illustratedC": {
+      "version": 275,
+      "ready": true,
+      "epoch": "v275:1",
+      "usage": {
+        "waffleCells": 149,
+        "wafflePieces": 273,
+        "castellaMaterials": 1,
+        "dangoCells": 10914
+      },
+      "preserved": [
+        "waffle-tray",
+        "waffle-lattice",
+        "castella-griddle",
+        "castella-channels",
+        "castella-dispenser",
+        "dango-stand",
+        "dango-skewer"
+      ]
+    },
+    "legacy": []
+  },
+  "round": {
+    "id": "public-01-1-419a72af",
+    "serverPhase": "PLAYING",
+    "ballsSubmitted": 0,
+    "registration": {
+      "roundId": "public-01-1-419a72af",
+      "bets": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "enabled": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "totalBet": 30000
+    }
+  },
+  "scope": "CI-only isolated server/client fixture; no production BET or settlement. Ready demos and live presentation with zero submitted balls. Playing and mobile state hashes match. Public CUA used local debug edition, zero manual balls.",
+  "visualReview": {
+    "public": [
+      "cookie",
+      "candy",
+      "winery",
+      "stick",
+      "dango"
+    ],
+    "local": [
+      "cookie",
+      "choco",
+      "candy",
+      "gelato",
+      "winery",
+      "popcorn",
+      "jelly",
+      "stick",
+      "castella",
+      "dango"
+    ],
+    "ciAdditional": [
+      "ready-stick",
+      "playing-stick",
+      "ready-castella",
+      "playing-castella",
+      "ready-dango",
+      "playing-dango"
+    ],
+    "findings": "No new occlusion, missing pieces, blank board, neighboring sprite fragments or board overflow observed."
+  }
+}

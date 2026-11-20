@@ -1,0 +1,59 @@
+{
+  "baseline": "99bf81968748d9e10a4510c727f5a35f96dc7dff",
+  "v275": "3d8dc8cbc76b87fae091fc1867fbb12b78a80248",
+  "checks": [
+    {
+      "file": "tests/roulette-hd60-v234.mjs",
+      "identical": true,
+      "baseline_sha256": "268d72984708e33511903f4b523e98d97c9b9863e38ab4b3490cc4ea017da592",
+      "v275_sha256": "268d72984708e33511903f4b523e98d97c9b9863e38ab4b3490cc4ea017da592"
+    },
+    {
+      "file": "tests/shared-v225-video-reconnect.mjs",
+      "identical": true,
+      "baseline_sha256": "4751ea2798b7a2feaae71c59ac4de0794644fac14b3c029e2a9af6713c719486",
+      "v275_sha256": "4751ea2798b7a2feaae71c59ac4de0794644fac14b3c029e2a9af6713c719486"
+    },
+    {
+      "file": "assets/shared-roulette-webrtc-host-v224.js",
+      "identical": true,
+      "baseline_sha256": "c4d80e0ebd602a8b8c847d6e9f8ee9c458864198014344b33db30ee783ba90ec",
+      "v275_sha256": "c4d80e0ebd602a8b8c847d6e9f8ee9c458864198014344b33db30ee783ba90ec"
+    },
+    {
+      "file": "assets/shared-host-keepalive-v206.js",
+      "identical": true,
+      "baseline_sha256": "d74180f3b77fb83715bf4b8ccf3a27cdf53d3c2b65588a7ce5dd9df9ecd4ab24",
+      "v275_sha256": "d74180f3b77fb83715bf4b8ccf3a27cdf53d3c2b65588a7ce5dd9df9ecd4ab24"
+    },
+    {
+      "file": "assets/shared-machine-v176.js",
+      "identical": true,
+      "baseline_sha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693",
+      "v275_sha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693"
+    },
+    {
+      "file": "index.html",
+      "identical": false,
+      "baseline_sha256": "d051a204c48fa8da62b8356ba5800883baa8358c7889c21b5eb7c16d401c793a",
+      "v275_sha256": "938950be60db9c18061646fae7781676450772b0aebce759be70f6536d7af16b"
+    },
+    {
+      "file": "app-version.json",
+      "identical": false,
+      "baseline_sha256": "2d4fde8311a0df28e64af53b96913ec22ad9d23a7a0b78cd2de34da0181d7d56",
+      "v275_sha256": "b23ed604195dd6925249ede84a632ec5e010df096d34b66da0af538c99dc388e"
+    },
+    {
+      "file": ".github/workflows/shared-machine-check.yml",
+      "identical": true,
+      "baseline_sha256": "e0db04f0b964cbf76f3260be700cb9308782951f73d8e243ee1b3cb03e980821",
+      "v275_sha256": "e0db04f0b964cbf76f3260be700cb9308782951f73d8e243ee1b3cb03e980821"
+    }
+  ],
+  "baseline_reproduction": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release))\n\n    at file:///workspace/scratch/f3087e4c2afe/qa-v275-hd-baseline/tests/roulette-hd60-v234.mjs:21:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}\n\nNode.js v24.22.3\n"
+  }
+}

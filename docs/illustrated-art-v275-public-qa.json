@@ -1,0 +1,129 @@
+{
+  "version": "20261120-v275-illustrated-board-pieces",
+  "runtimeCommit": "3d8dc8cbc76b87fae091fc1867fbb12b78a80248",
+  "allMatch": true,
+  "files": [
+    {
+      "path": "app-version.json",
+      "bytes": 54,
+      "sha256": "b23ed604195dd6925249ede84a632ec5e010df096d34b66da0af538c99dc388e",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "bytes": 85093,
+      "sha256": "938950be60db9c18061646fae7781676450772b0aebce759be70f6536d7af16b",
+      "match": true
+    },
+    {
+      "path": "optimized/app-01.js",
+      "bytes": 1172007,
+      "sha256": "005ac6bb0d54865b1e364c28f03544e7ac3069f1aa1ddd1147bb4d4e5c358d34",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-art-v275.js",
+      "bytes": 7228,
+      "sha256": "d0f6c81d0530fade36bc04d4419cff23c66776392205f01625c9369fd48180fe",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-boards-a-v275.js",
+      "bytes": 6624,
+      "sha256": "ac47bd72e1988c55cfba61fa13b64b3b7e02c634739b03b80d0d5efceab5bb0c",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-boards-b-v275.js",
+      "bytes": 7288,
+      "sha256": "6be4b96feb8ac1b01f7916bff23d09a5511215fa35a961d3b515afcdc59ac971",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-boards-c-v275.js",
+      "bytes": 1956,
+      "sha256": "8180c30b9fe6f1eef0c5afa85f97fc1dd971f8c8d41d472a064ffa63435dcd7f",
+      "match": true
+    },
+    {
+      "path": "assets/download-assets-v255.json",
+      "bytes": 114774,
+      "sha256": "328ce5926ffd626a23e9ebba3ea3d2d688b03f1b6647b6e2c7ecaf818a8af8ce",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-art-v275/bakery-mochi.png",
+      "bytes": 2902913,
+      "sha256": "705fafe7ce90101e3e1c5c857b3e4e3147d9a0c235a656b38b8d8c14fa5adcf7",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-art-v275/biscuits-cakes.png",
+      "bytes": 2897678,
+      "sha256": "237615f6151c4df80a4d694be7fbef7f4b035d84caab1fe246db6c5cf08dad89",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-art-v275/crystals-glass.png",
+      "bytes": 2467885,
+      "sha256": "af830ae3149c5213d61d222ddb56a47452c5f52d806f8fe07a8b3b895d10e5bd",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-art-v275/popcorn-kernels.png",
+      "bytes": 2807618,
+      "sha256": "e8e2bbb1c443f956ba27233f1e12767e13eb7dba89a71001376620fb6f757429",
+      "match": true
+    },
+    {
+      "path": "assets/illustrated-art-v275/sugar-drops.png",
+      "bytes": 2741607,
+      "sha256": "25667ceffe2618d29a54ab8c720dfd3ce8e56ab4e881e935b77d04d40c8d90ed",
+      "match": true
+    }
+  ],
+  "recordedAt": "2026-11-20T06:32:47.782809+00:00",
+  "url": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v275-illustrated-board-pieces",
+  "pages": {
+    "runId": 44687434807,
+    "conclusion": "success"
+  },
+  "allTenGames": {
+    "runId": 44687435583,
+    "conclusion": "success",
+    "artifactId": 14606738627,
+    "pageErrors": 0,
+    "imageFailures": 0
+  },
+  "dangoSugar": {
+    "runId": 44687435689,
+    "jobs": [
+      {
+        "name": "dango-layout",
+        "id": 136124995927,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "rules-and-cache",
+        "id": 136124996166,
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "sugar-layout",
+        "id": 136124996259,
+        "status": "in_progress",
+        "conclusion": null,
+        "currentStep": "Japanese fonts and Chromium"
+      }
+    ]
+  },
+  "publicScreens": [
+    "docs/qa-v275/public-cookie.jpg",
+    "docs/qa-v275/public-six.jpg",
+    "docs/qa-v275/public-waffle.jpg",
+    "docs/qa-v275/public-dango.jpg"
+  ],
+  "knownBaselineIssue": "HD test expects global release to equal fixed v262 module query. Same assertion reproduced on v274; see qa-v275/hd-baseline-triage.json."
+}
