@@ -10,6 +10,18 @@ const {page,context,call,host,base,version,output,errors}=fixture;
 const report={version,layoutRevision:269,viewports:[],locks:[],localApi:[],pageErrors:errors};
 const viewports=[[320,740],[390,844],[430,932],[844,390],[1366,900]];
 async function nextPaint(target){await target.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
+async function waitSharedBet(){
+ // Native HUD temporarily enables cycle buttons before the authoritative
+ // MutationObserver runs. Wait for the actual registration guard and the
+ // visible controls together, including the connection-stability interval.
+ await page.waitForFunction(()=>{
+  const machine=window.SweetsSharedMachine,controller=window.SweetsSharedControllerV224,round=machine?.client?.round;
+  const unit=document.querySelector('.v250-shared-bet-switch'),submit=document.getElementById('shared-bet-v228');
+  return round?.phase==='BETTING'&&round.canBet===true&&controller?.stable?.()&&controller.canEditBets(window.__qa250.app)&&
+   window.__qa250.app.phase==='ready'&&!machine.active&&unit&&!unit.disabled&&!unit.parentElement.hidden&&unit.getBoundingClientRect().width>0&&submit&&!submit.disabled;
+ },null,{timeout:12000});
+ await nextPaint(page);
+}
 async function inspect(target,label){
  const result=await target.evaluate(()=>{
   const rect=node=>{const r=node.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
@@ -22,6 +34,7 @@ async function inspect(target,label){
   const footer=document.getElementById('console'),meters=footer.querySelector('.meters');
   return {edition:document.documentElement.dataset.edition,lineup:document.documentElement.dataset.lineup,viewport:{width:innerWidth,height:innerHeight},phase:q.app.phase,selected:q.slots[q.active]?.engine.kind,
    button:{bounds,visible:shown(button),disabled:button.disabled,clickable:at===button||button.contains(at),inRoulette:document.getElementById('cookie-roulette').contains(button),inFooter:footer.contains(button),visibleCycles:[...document.querySelectorAll('.bet-cycle')].filter(shown).length},roulette,blockers,sharedTargets,serverPhase:window.SweetsSharedMachine?.client?.round?.phase||null,
+   authority:window.SweetsSharedControllerV224?{canBet:window.SweetsSharedMachine?.client?.round?.canBet??null,editable:window.SweetsSharedControllerV224.canEditBets(q.app),stable:window.SweetsSharedControllerV224.stable()}:null,
    footer:{bounds:rect(footer),logicalHeight:footer.clientHeight,meters:rect(meters),history:rect(document.getElementById('balls')),menu:rect(document.getElementById('open-record-menu')),amounts:['total-bet','win','credit'].map(id=>{const el=document.getElementById(id),face=el.querySelector('.gold-number');return {id,bounds:rect(el),face:rect(face),font:parseFloat(getComputedStyle(face).fontSize),text:face.textContent};})},
    panel:rect(q.slots[q.active].panel)};
  });
@@ -62,7 +75,7 @@ try{
 
  await call('/api/admin/machines/public-01/host/register',{session:host,body:{},adminOnly:true});
  const betRound=await until(async()=>{const state=await call('/api/machines/public-01/state',{session:host});return state.round?.phase==='BETTING'?state.round:null;},'real server BET time');
- await page.waitForFunction(()=>window.SweetsSharedMachine?.client?.round?.phase==='BETTING'&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:10000});
+ await waitSharedBet();
  const activeBet=await inspect(page,'shared-server-BETTING-1366x900');
  assert.equal(activeBet.serverPhase,'BETTING');assert.equal(activeBet.sharedTargets.find(control=>control.selector==='#shared-bet-v228').disabled,false,'real server registration is enabled and unobscured');
  const before=await page.evaluate(()=>({bets:[...window.__qa250.app.bets],credit:window.__qa250.app.credit,unit:[...window.__qa250.unit]}));
@@ -70,6 +83,9 @@ try{
  const after=await page.evaluate(()=>({bets:[...window.__qa250.app.bets],credit:window.__qa250.app.credit,unit:[...window.__qa250.unit]}));
  assert.deepEqual(after.bets,before.bets);assert.equal(after.credit,before.credit);assert.notDeepEqual(after.unit,before.unit);assert.ok(after.unit.every(value=>value===after.unit[0]),'keyboard switch changes the common increment only');
  report.unitSwitch={before,after};
+ await waitSharedBet();
+ report.registrationTarget=await page.evaluate(()=>{const button=document.getElementById('shared-bet-v228'),r=button.getBoundingClientRect(),at=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return {disabled:button.disabled,unobscured:at===button||button.contains(at),canBet:window.SweetsSharedMachine.client.round.canBet,editable:window.SweetsSharedControllerV224.canEditBets(window.__qa250.app),stable:window.SweetsSharedControllerV224.stable()};});
+ assert.deepEqual(report.registrationTarget,{disabled:false,unobscured:true,canBet:true,editable:true,stable:true},'real BET registration target is ready immediately before the normal click');
  await page.locator('#shared-bet-v228').click();await hiddenLock(page,'server BET registered');
  await page.waitForFunction(id=>window.SweetsSharedMachine?.active?.roundId===id&&window.__qa250.app.phase==='playing',betRound.id,{timeout:30000});
  await hiddenLock(page,'server PLAYING');
