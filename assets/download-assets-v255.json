@@ -1,10 +1,10 @@
 {
-  "version": "20261120-v281-casino-sound-and-sixdrop-refinement",
+  "version": "20261120-v282-sixdrop-compact-long-amounts",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 65,
-      "sha256": "c1072b621353bb059087cedeb60ca0d2b0cb24b0be4c092c49c3568b5ea5c9aa"
+      "bytes": 58,
+      "sha256": "7e5666845de621d0de8e9e708509637999d91e2fae3b0319c867e6f0c0e12288"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1903,8 +1903,8 @@
     },
     {
       "path": "assets/celebration-audio-v277.js",
-      "bytes": 20413,
-      "sha256": "ec79a6e534023ccc8f4c89b5074e985b8cc69839eae47e943008cbac4d89bab8"
+      "bytes": 21272,
+      "sha256": "b0af65f909aef2b6be38d371d543f25aaaeb27efa5a13ad7d400bd3e434f90ed"
     },
     {
       "path": "assets/choco-dig.css",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4375,
-      "sha256": "7ffe9aa9b31f87b0f73ea5563c79c8a2301b21eae69da793d43ed2ba39ddc14c"
+      "bytes": 4368,
+      "sha256": "4c7e1f87d3cf97f9183e6bf272ee19912395789f2afad62f67c2ee7f7f6ac05e"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2093,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3786,
-      "sha256": "9749f5c0b8516e7e40683467b5084623ed46348d7fbb3292923bc6e608fe3c57"
+      "bytes": 3779,
+      "sha256": "f366f63800294fbd1a836a6fb5343db9cf23809a6b5307474ad72703d8233898"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -3303,13 +3303,13 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.css",
-      "bytes": 12042,
-      "sha256": "2ed5f307db6a39d31aae0ac5f193505f80f15ce2204b8b722fe5fc84acea2279"
+      "bytes": 12055,
+      "sha256": "a253fdb945457ebeee3ef5acc910a9269a9e41350c59123596ddf40f739f4b29"
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 16996,
-      "sha256": "4e0c92651bcc09e09402901bb95894408a4d8af8949ef45e32a470a2dff685fb"
+      "bytes": 17708,
+      "sha256": "c4b37d261ac2e35622f64e360fe73b9a8459dacb9779c6c73a35a5a09fe2daee"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -4029,7 +4029,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "06c5456de64ef18b40fece320a6fb9fbe36964f0a917b4a590bf36fb4a5b45ef"
+      "sha256": "909104abb5be5d1b42591a7e0189ba2ee2436762a3f6db28fef0d7ec5ab3ff42"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238629045
+  "totalBytes": 238630608
 }

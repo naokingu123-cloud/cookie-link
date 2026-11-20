@@ -33,7 +33,7 @@ const allSamples=[...new Set([...Object.values(sceneMap),...Object.values(native
  'hit-water','hit-jelly','hit-waffle','hit-castella','hit-dango','jpc-qualified','multiplier',
  'reel-tick','multiplier-high','multiplier-galaxy','jpc-reach','jackpot',...Object.values(gameChains),...Object.values(gameAwards).flat()])];
 const aliases=new Map(),samples=new Map(),loading=new Map(),ownVoices=new Set(),lastStart=new Map(),seenAwards=new Set(),reachSeen=new Set(),sugarSeen=new Map();
-const history=[],stats={starts:0,suppressed:0,awardStarts:0,legacyAwardsSuppressed:0,voiceEvictions:0,maxActiveVoices:0,fallbackLoads:0,errors:0};
+const history=[],stats={starts:0,suppressed:0,awardStarts:0,legacyAwardsSuppressed:0,voiceEvictions:0,maxActiveVoices:0,primaryRetries:0,fallbackLoads:0,errors:0};
 let prepared=null,pending=null,awardVoice=null,scopeToken=app?.token,scopeActive=active,epoch=0,chainStep=0,lastFoley=-Infinity,reachFloorCount=app?.draws?.length||0;
 let duckBus=null,duckSource=null;
 const coreSound=sound,coreStop=stopSounds;
@@ -103,15 +103,30 @@ function installSample(name,buffer){
  samples.set(name,buffer);
  for(const [alias,sample] of aliases)if(sample===name)sfxBuffers.set(alias,buffer);
 }
+function loadError(error){return {errorName:String(error?.name||'Error'),errorMessage:String(error?.message||error||'Unknown sample error')};}
 function load(name){
  if(samples.has(name))return Promise.resolve(samples.get(name));
  if(loading.has(name))return loading.get(name);
  const fallback=extraFallbacks[name]||(name.startsWith('chain-')?'chain':/^award-[a-z]+-[1-4]$/.test(name)?'award-'+name.slice(-1):name);
- const task=loadEffectSample(ROOT+name+'.wav').catch(async()=>{
+ let primaryAttempts=0,firstFailure=null;
+ async function primary(){
+  primaryAttempts++;
+  try{return await loadEffectSample(ROOT+name+'.wav');}
+  catch(error){
+   const info=loadError(error);if(!firstFailure)firstFailure=info;
+   // A cold first load can time out while the host prepares the whole game.
+   // Retry once inside this same worker; known missing files go straight to
+   // the legacy bank. The host's timeout and decode cache stay authoritative.
+   if(primaryAttempts>=2||/\bHTTP\s+(?:404|410)\b/i.test(info.errorMessage))throw error;
+   stats.primaryRetries++;record({event:'retry',sample:name,attempt:2,...info});
+   return primary();
+  }
+ }
+ const task=primary().catch(async error=>{
   // A new bank may be temporarily absent from a restored/offline cache. Keep
   // the same event, priority and voice identity while decoding the old sound.
   const buffer=await loadEffectSample(LEGACY_ROOT+fallback+'.wav');
-  stats.fallbackLoads++;record({event:'fallback',sample:name,fallback});return buffer;
+  stats.fallbackLoads++;record({event:'fallback',sample:name,fallback,primaryAttempts,...loadError(error),firstError:firstFailure});return buffer;
  }).then(buffer=>{installSample(name,buffer);return buffer;})
   .catch(error=>{stats.errors++;console.warn('[SweetsAudioV277] sample unavailable: '+name,error);return null;})
   .finally(()=>loading.delete(name));

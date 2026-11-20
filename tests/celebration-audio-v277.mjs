@@ -16,9 +16,9 @@ const sceneKeys=JSON.parse(host.match(/const SCENE_SOUND_KEYS=(\[[^;]+\]);/)[1])
 const kinds=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const plain=value=>JSON.parse(JSON.stringify(value));
 
-function harness({search='',cold=false,unavailable=[]}={}){
+function harness({search='',cold=false,unavailable=[],primaryFailures={}}={}){
  let now=1000,serial=0,context,unlocks=0;
- const timers=new Map(),events=new Map(),sources=[],fallback=[],loads=[],owned=new Set();
+ const timers=new Map(),events=new Map(),primaryAttempts=new Map(),sources=[],fallback=[],loads=[],owned=new Set();
  const checkbox={checked:true};
  function parameter(value=1){return {value,calls:[],cancelScheduledValues(t){this.calls.push(['cancel',t]);},setValueAtTime(v,t){this.value=v;this.calls.push(['set',v,t]);},linearRampToValueAtTime(v,t){this.value=v;this.calls.push(['ramp',v,t]);}};}
  function gain(){return {gain:parameter(),outputs:[],connect(out){this.outputs.push(out);},disconnect(out){this.outputs=out?this.outputs.filter(o=>o!==out):[];}};}
@@ -37,7 +37,12 @@ function harness({search='',cold=false,unavailable=[]}={}){
   prepareSceneSounds(){},sceneSoundsReady(){},prepareArrival(){},prepareHammerImpact(){},arrivalBuffer:null,hammerImpactBuffer:null,
   sound:(...args)=>fallback.push(args),stopSounds:legacyStop,
   loadEffectSample:async file=>{loads.push(file);const name=file.split('/').pop().replace(/\.wav$/,'');
-   const current=file.startsWith(bank);if(current&&unavailable.includes(name))throw Error('fixture unavailable new sound');
+   const current=file.startsWith(bank);if(current){
+    const attempt=primaryAttempts.get(name)||0;primaryAttempts.set(name,attempt+1);
+    const planned=primaryFailures[name],failure=Array.isArray(planned)?planned[attempt]:planned;
+    if(failure)throw Object.assign(Error(failure.message),{name:failure.name||'Error'});
+    if(unavailable.includes(name))throw Error(file+' HTTP 404');
+   }
    const entry=(current?manifest:legacyManifest).cues[name];assert(entry,file);return {name,duration:entry.seconds};},
   unlock:()=>{unlocks++;context.audio=audio;context.prepareSceneSounds();return Promise.resolve(true);},
   inView:true,userPaused:false,menuOpen:false,bgmGain,bgmRole:'game',bgmFadeFrame:0,jpcSession:{active:false,previousCounts:[],jackpotShown:false},
@@ -162,11 +167,36 @@ assert.equal(themed.context.celebrateJpc(),'native-jackpot');assert.equal(themed
 const jackpotStarts=themed.api.describe().awardStarts;themed.context.celebrateJpc();assert.equal(themed.api.describe().awardStarts,jackpotStarts);
 
 // New cache misses recover the matching legacy cue without extra voice starts.
-const recovered=harness({unavailable:['hit-jelly','award-candy-4']});await recovered.context.prepareSceneSounds();
+const missing={'hit-jelly':{message:bank+'hit-jelly.wav HTTP 404'},'award-candy-4':{message:bank+'award-candy-4.wav HTTP 410'}};
+const recovered=harness({primaryFailures:missing});await recovered.context.prepareSceneSounds();
 assert.equal(recovered.api.describe().loadedSamples,sampleCount);assert.equal(recovered.api.describe().fallbackLoads,2);assert.equal(recovered.api.describe().errors,0);
+assert.equal(recovered.api.describe().primaryRetries,0,'known 404/410 misses use legacy immediately');
+for(const name of Object.keys(missing))assert.equal(recovered.loads.filter(file=>file===bank+name+'.wav').length,1);
 assert(recovered.loads.includes('assets/audio/celebration-v277/hit-water.wav'));
 assert(recovered.loads.includes('assets/audio/celebration-v277/award-4.wav'));
+assert(recovered.api.describe().lastEvents.filter(event=>event.event==='fallback').every(event=>event.primaryAttempts===1&&event.errorName==='Error'&&event.firstError.errorMessage===missing[event.sample].message));
 recovered.context.active=2;assert(recovered.api.award({game:'candy',tier:4,key:'recovered-clear'}));
 assert.equal(recovered.api.describe().activeVoices,1);assert.equal(recovered.api.describe().awardStarts,1);
+
+// A cold transient abort must not permanently substitute a shipped current cue.
+const coldNames=['drill','hit-canyon','melt','ore','arrival','hammer-impact'];
+const aborted={name:'AbortError',message:'The operation was aborted.'};
+const retried=harness({primaryFailures:Object.fromEntries(coldNames.map(name=>[name,[aborted]]))});
+await Promise.all([retried.context.prepareSceneSounds(),retried.context.prepareArrival(),retried.context.prepareHammerImpact()]);
+assert.equal(retried.api.describe().loadedSamples,sampleCount);assert.equal(retried.api.describe().primaryRetries,6);
+assert.equal(retried.api.describe().fallbackLoads,0);assert.equal(retried.api.describe().errors,0);assert.equal(retried.api.describe().starts,0);
+assert(retried.loads.every(file=>file.startsWith(bank)),'a recovered primary load never requests a legacy cue');
+for(const name of coldNames)assert.equal(retried.loads.filter(file=>file===bank+name+'.wav').length,2,'concurrent ready gates share the single retry');
+const retryEvents=retried.api.describe().lastEvents.filter(event=>event.event==='retry');
+assert.equal(retryEvents.length,6);assert(retryEvents.every(event=>event.attempt===2&&event.errorName==='AbortError'&&event.errorMessage===aborted.message));
+
+// Persistent transient errors still have a strict two-primary-attempt ceiling.
+const bounded=harness({primaryFailures:{'award-cookie-4':aborted}});await bounded.context.prepareSceneSounds();
+assert.equal(bounded.loads.filter(file=>file===bank+'award-cookie-4.wav').length,2);
+assert.equal(bounded.loads.filter(file=>file==='assets/audio/celebration-v277/award-4.wav').length,1);
+assert.equal(bounded.api.describe().primaryRetries,1);assert.equal(bounded.api.describe().fallbackLoads,1);
+assert.equal(bounded.api.describe().loadedSamples,sampleCount);assert.equal(bounded.api.describe().errors,0);assert.equal(bounded.api.describe().starts,0);
+const boundedEvent=bounded.api.describe().lastEvents.find(event=>event.event==='fallback');
+assert.equal(boundedEvent.primaryAttempts,2);assert.equal(boundedEvent.errorName,'AbortError');assert.equal(boundedEvent.firstError.errorMessage,aborted.message);
 assert.equal(h.api.describe().errors+sugar.api.describe().errors+cold.api.describe().errors+themed.api.describe().errors,0);
-console.log(JSON.stringify({ok:true,version:281,samples:sampleCount,sceneRoutes:sceneKeys.length,nativeMaterialRoutes:10,themedAwardRoutes:40,themedChains:10,multiplierTiers:3,jpcAndJackpot:true,legacyFallback:true,sharedContext:true,singleAwardOwner:true,maxVoices:8,muteAndPause:true,staleRoundAndSelectionSuppressed:true,restoreIsSilent:true,trustedUnlock:true,workerDisabled:true}));
+console.log(JSON.stringify({ok:true,version:281,samples:sampleCount,sceneRoutes:sceneKeys.length,nativeMaterialRoutes:10,themedAwardRoutes:40,themedChains:10,multiplierTiers:3,jpcAndJackpot:true,legacyFallback:true,boundedPrimaryRetry:true,missing404And410SkipRetry:true,sharedContext:true,singleAwardOwner:true,maxVoices:8,muteAndPause:true,staleRoundAndSelectionSuppressed:true,restoreIsSilent:true,trustedUnlock:true,workerDisabled:true}));

@@ -81,6 +81,20 @@ function paintFrame(){
  // margins from the source rectangle when fitting the cabinet's long strip.
  x.drawImage(art,0,160,art.naturalWidth,395,0,0,nodes.frame.width,nodes.frame.height);nodes.frame.dataset.painted='1';
 }
+function bankSpace(continuation){
+ const strip=nodes.bank.parentElement,width=strip.clientWidth;
+ if(width<=0)return continuation?138:178;
+ const style=getComputedStyle(strip),scale=strip.getBoundingClientRect().width/width||1;
+ const px=value=>parseFloat(value)||0;
+ let occupied=0,siblings=0;
+ for(const child of strip.children){
+  if(child===nodes.bank)continue;
+  const css=getComputedStyle(child);
+  if(css.display==='none'||css.position==='absolute')continue;
+  occupied+=Math.ceil(child.getBoundingClientRect().width/scale+px(css.marginLeft)+px(css.marginRight));siblings++;
+ }
+ return Math.max(14,Math.floor(width-px(style.paddingLeft)-px(style.paddingRight)-occupied-siblings*px(style.columnGap))-2);
+}
 function paintBank(d){
  const source=document.getElementById('sd247-bank'),animated=Number(source?.dataset.displayUnits);
  // A completed zero-WIN game relinquishes its meter. Preserve the canonical
@@ -90,9 +104,9 @@ function paintBank(d){
  nodes.bank.dataset.units=String(units);nodes.bank.dataset.targetUnits=String(target);
  nodes.continuation.hidden=!d.continuationActive;
  nodes.continuation.dataset.inherited=String(!!d.inheritedContinuation);nodes.continuation.dataset.earned=String(!!d.earnedContinuation);
- // Size against the available space, not the previous number's width. The
- // logo, live amount and continuation badge stay together in the bottle width.
- const available=d.continuationActive?146:184;
+ // Measure the fixed neighbours, not the previous number. A long balance
+ // must fit the real remaining space before flex layout can squeeze its box.
+ const available=bankSpace(d.continuationActive);
  nodes.bank.style.maxWidth=available+'px';amount(nodes.bank,units/100,29,available);
  nodes.bank.parentElement.setAttribute('aria-label','全消し獲得可能 '+money(target/100)+' WIN'+(d.continuationActive?' 継続':''));
  // Every removed drop adds exactly BET*5 bank units. Reuse that same visual

@@ -39,6 +39,14 @@ HITとゲーム別連鎖のみ、旧sceneの強い前段減衰に対する1.35�
 
 既存のAPI名 `SweetsAudioV277` は互換性のため維持し、`describe().version` は281、`soundBank` は `assets/audio/casino-v281/`。新bankを読み込めない場合は同じイベントとvoice所有権のまま元v277の対応音へfallbackする。元41音を変更・削除していない。fallback発生数は `fallbackLoads` に記録する。
 
+### v282の初回ロード補正
+
+公開v281の [CI run 44756910214](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910214) では、15ブラウザーケース中13件が成功した。最初のcookieとcandyのみ、最初の並列ロード6音が旧bankへfallbackし、通常公開ではfallbackを不要とする検査に失敗した。後続ケースは97音decode・fallback0・音声error0だった。元のloaderが最初の例外を捨てていたため、原因は確定できない。初期の重い読み込みにhostの8秒fetch期限が重なった可能性があるという推定に留める。
+
+v282では、primary bankの失敗時だけ一度再試行し、最大2回の試行後に従来のfallbackへ移る。明確なHTTP 404/410は再試行せず直ちにfallbackする。4worker上限、既存hostの8秒期限とdecode cache、音声再生・mute/pause・award所有権は変えない。`primaryRetries` と `lastEvents` のretry/fallback記録に、対象sample・試行回数・最初と最後の例外名／メッセージを保存する。新WAVの内容は変えない。
+
+単体fixtureでは、初回6音のAbortErrorからprimary再試行で97音すべて復帰しfallback0になること、404/410のprimary試行が各1回で旧音へ移ること、継続するAbortErrorでもprimary最大2回・legacy1回に収まること、再ロード自体が音を鳴らさないことを検証した。通常公開のfallback0検査は維持する。
+
 ## 実素材・ライセンス
 
 公式配布から取得した原音9点を [sources](../assets/audio/casino-v281/sources/) に未変更で保存した。Kenneyの同梱License.txt、SoundBibleの対象素材の権利表示、原音のSHA-256・byte数・取得元・作者を [出典記録](../assets/audio/casino-v281/sources/provenance.json) に残す。
