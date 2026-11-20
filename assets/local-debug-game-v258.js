@@ -18,6 +18,44 @@
  }
  const change=app.onChange;
  app.onChange=function(...args){const result=change.apply(this,args);persist();return result;};
+ function localDangoEngines(){
+  if(app.phase!=='playing')return [];
+  return app.engines.filter((engine,index)=>engine?.kind==='dango'&&app.enabled[index]!==false&&Number(app.locked?.[index]??app.bets[index])>0);
+ }
+ function finishDangoThinkingV269(reason){
+  if(app.draws.length!==5)return;
+  for(const engine of localDangoEngines())engine.finishThinkingV251?.({reason});
+ }
+ function bindLocalDangoLaunchV269(){
+  const draw=rouletteDriver?.draw;if(!draw||draw.__dangoLaunchV269)return;
+  const prior=draw.canLaunchNormal;draw.__dangoLaunchV269=true;
+  // DrawController calls this only inside launch(), after its physical clock,
+  // group and canAdvance checks. An earlier closed gate must keep FREE editable.
+  draw.canLaunchNormal=function(...args){
+   if(prior?.apply(this,args)===false)return false;
+   finishDangoThinkingV269('sixth-launch');return true;
+  };
+ }
+ if(typeof loadCookieRoulette==='function'){
+  const nativeLoad=loadCookieRoulette;
+  loadCookieRoulette=async function(...args){try{return await nativeLoad.apply(this,args);}finally{bindLocalDangoLaunchV269();}};
+ }
+ const nativeStart=app.start;
+ app.start=function(...args){bindLocalDangoLaunchV269();return nativeStart.apply(this,args);};
+ const nativeAccept=app.acceptNumber;
+ app.acceptNumber=function(...args){
+  // Manual entry has no invented deadline: the sixth explicit selection is its
+  // launch boundary. AUTO receives only the existing five-ball engine state.
+  if(manualNumbers&&this.phase==='playing'&&!this.paused&&!this.drawHeld&&args[1]===this.token&&Number.isInteger(args[0])&&args[0]>=1&&args[0]<=25&&!this.draws.includes(args[0]))finishDangoThinkingV269('manual-sixth-launch');
+  return nativeAccept.apply(this,args);
+ };
+ window.SweetsDangoThinkingV251={version:251,state:()=>{
+  const engines=localDangoEngines(),ballCount=app.draws.length,active=ballCount===5&&engines.some(engine=>engine.state?.phase==='placing');
+  const serverNow=manualNumbers?Date.now():Number(rouletteDriver?.physics?.time||0)*1000;
+  const closesAt=active&&!manualNumbers?(Number(rouletteDriver?.physics?.hits?.[4]?.time)||serverNow/1000)*1000+5000:0;
+  return {roundId:'local:'+app.token,enabled:engines.length>0,active,ballCount,serverNow,closesAt,remainingMs:active?(manualNumbers?Infinity:Math.max(1,closesAt-serverNow)):0,manual:manualNumbers};
+ },checkpointPlacement:async()=>({ok:true,skipped:true,reason:'local_only'}),beforeSix:async()=>finishDangoThinkingV269('manual-sixth-launch')};
+ bindLocalDangoLaunchV269();
  function setBets(values){
   if(app.phase!=='ready'||!Array.isArray(values)||values.length!==app.bets.length||!values.every(n=>Number.isSafeInteger(n)&&n>=0&&n<=1e12))return false;
   for(let i=0;i<values.length;i++)if(!app.setBet(i,values[i]))return false;

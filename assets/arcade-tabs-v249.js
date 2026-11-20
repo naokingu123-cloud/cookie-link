@@ -1,4 +1,4 @@
-/* v254: illustrated preview cards, sweet-shaped reach badges and four-number pages.
+/* v269: shared BET control at the roulette and a wider, compact ledger.
    This extension runs in the existing game scope. It never changes a board,
    wager, RNG, draw, payout, game clock or the server's current round. */
 (()=>{
@@ -11,7 +11,7 @@ if(!deck||typeof select!=='function'||typeof paintTabWin!=='function')return;
 root.classList.add('arcade-v249','arcade-tabs-v250');
 if(!document.getElementById('arcade-tabs-v249-css')){
  const link=document.createElement('link');link.id='arcade-tabs-v249-css';
- link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=254';document.head.append(link);
+ link.rel='stylesheet';link.href='assets/arcade-tabs-v249.css?v=269';document.head.append(link);
 }
 const media=matchMedia('(prefers-reduced-motion: reduce)');
 const reachFrame=new Image();reachFrame.decoding='async';
@@ -126,29 +126,70 @@ for(const slot of slots){
  slot.tab.addEventListener('blur',()=>slot.holder.classList.remove('v249-pressed'));
 }
 
-// Retain the native cycle button (including shared-server edit restrictions)
-// but show exactly one of them, outside every game's miniature and tab button.
+// Retain the native cycle button and slot reference so the server can still
+// lock it. The roulette is its only home; the footer belongs to the ledger.
 const firstVisible=slots.find(slot=>!slot.holder.hidden&&records.has(slot.i));
 const commonBet=firstVisible?.cycle;
-const commonBetHost=document.createElement('div');commonBetHost.className='v250-common-bet';
+const commonBetHost=document.createElement('div');commonBetHost.className='v250-common-bet';commonBetHost.hidden=true;
+const commonBetObserver=typeof MutationObserver==='function'?new MutationObserver(()=>syncCommonBet()):null;
+let observedDownloadBet=null;
 if(commonBet){
  const selectedUnit=unit[firstVisible.i]??4;unit.fill(selectedUnit);
  for(const slot of slots)if(slot.cycle!==commonBet){slot.cycle.hidden=true;slot.cycle.tabIndex=-1;slot.cycle.setAttribute('aria-hidden','true');}
  commonBet.classList.add('v250-shared-bet-switch');commonBetHost.append(commonBet);
- document.getElementById('console')?.append(commonBetHost);
+ document.getElementById('cookie-roulette')?.append(commonBetHost);
  commonBet.onclick=()=>{
-  if(commonBet.disabled||app?.phase!=='ready')return;
+  if(commonBet.disabled||!commonBetEditable())return;
   const next=((unit[firstVisible.i]??4)+1)%units.length;unit.fill(next);
   syncCommonBet();scheduleUI(app);
  };
+ commonBetObserver?.observe(commonBet,{attributes:true,attributeFilter:['disabled']});
+}
+function commonBetEditable(){
+ if(app?.phase!=='ready'||app.draws?.length||(typeof jpcSession!=='undefined'&&jpcSession.active))return false;
+ const shared=window.SweetsSharedMachine,controller=window.SweetsSharedControllerV224;
+ if(shared){
+  if(!controller?.canEditBets?.(app)||shared.active)return false;
+  const round=shared.client?.round;
+  // A waiting cabinet permits a draft for the next BET. A running or finished
+  // server round must never expose a stale local ready-state control.
+  if(round&&round.phase!=='WAITING'&&round.phase!=='BETTING')return false;
+  if(round?.phase==='BETTING'&&(!round.canBet||Number(round.betClosesAt)<=Date.now()+Number(shared.client?.clockOffset||0)))return false;
+ }
+ if(window.SweetsEditionV255?.value==='download'){
+  const state=window.SweetsDownloadV255?.describe?.(),prepare=document.querySelector('[data-dl-action="prepare"]');
+  if(!state?.hydrated||state.packageReady||state.started||state.session||!prepare||prepare.hidden||prepare.disabled)return false;
+ }
+ return true;
 }
 function syncCommonBet(){
  if(!commonBet)return;
+ const editable=commonBetEditable();
+ if(commonBet.disabled===editable)commonBet.disabled=!editable;
+ if(commonBetHost.hidden===editable)commonBetHost.hidden=!editable;
+ if(commonBet.tabIndex!==(editable?0:-1))commonBet.tabIndex=editable?0:-1;
+ const hidden=String(!editable);if(commonBetHost.getAttribute('aria-hidden')!==hidden)commonBetHost.setAttribute('aria-hidden',hidden);
+ const prepare=document.querySelector('[data-dl-action="prepare"]');
+ if(prepare&&prepare!==observedDownloadBet){observedDownloadBet=prepare;commonBetObserver?.observe(prepare,{attributes:true,attributeFilter:['disabled','hidden']});}
  const amount=units[unit[firstVisible.i]];
  if(commonBet.dataset.amount!==String(amount)){
   commonBet.dataset.amount=String(amount);
   commonBet.innerHTML='<span>BET切替</span><strong>'+amount+'<small> BET</small></strong>';
   commonBet.setAttribute('aria-label','全ゲーム共通のBET追加数を切り替え。現在 '+amount+' BET');
+ }
+}
+// Adapt the native fitter once, avoiding a second, competing font size on
+// every payout frame. Wider bays retain taller digits and squeeze long values.
+const nativeFitLedgerNumber=fitGoldenNumber;
+fitGoldenNumber=function(el,text,size,width){
+ if(el&&['total-bet','win','credit'].includes(el.id)&&el.clientWidth>0){size=el.id==='total-bet'?20:21;width=Math.max(1,el.clientWidth-6);}
+ return nativeFitLedgerNumber.call(this,el,text,size,width);
+};
+function fitLedger(){
+ const ledger=[['total-bet',(app.phase==='ready'?app.bets:app.locked)?.reduce((sum,value)=>sum+value,0),20],['win',app.totalWin,21],['credit',app.displayCredit,21]];
+ for(const [id,value,size]of ledger){
+  const node=document.getElementById(id);if(!node||!Number.isFinite(value)||node.clientWidth<=0)continue;
+  fitGoldenNumber(node,num(value),size,Math.max(1,node.clientWidth-6));
  }
 }
 function syncSugar(){
@@ -161,7 +202,10 @@ function syncSugar(){
 }
 const nativeTabs=tabs;
 tabs=function(...args){const result=nativeTabs.apply(this,args);syncSugar();syncCommonBet();return result;};
-syncCommonBet();syncSugar();
+syncCommonBet();syncSugar();fitLedger();
+if(typeof ResizeObserver==='function'){
+ const ledger=document.querySelector('#console .meters');if(ledger)new ResizeObserver(fitLedger).observe(ledger);
+}
 
 function stopReach(slot){
  const record=records.get(slot.i);if(!record)return;
@@ -348,7 +392,7 @@ window.addEventListener('pagehide',()=>{disposed=true;quiet();syncReachPager();}
 window.addEventListener('pageshow',event=>{if(event.persisted){disposed=false;syncFace();syncReachPager();}});
 syncFace();
 window.SweetsArcadeTabsV249={
- version:254,reachFrameReady,
+ version:254,layoutRevision:269,reachFrameReady,
  describe(){return {activeIndex:active,transitions,runningAnimations:selectionAnimations.size+rewardAnimations.size+reachAnimations.size,reducedMotion:media.matches,rewardBursts,reachBursts,logos:records.size,sharedBetUnit:commonBet?units[unit[firstVisible.i]]:null,reachPager:{pageSize:REACH_PAGE_SIZE,holdMs:REACH_HOLD_MS,slideMs:REACH_SLIDE_MS},reachFrame:{url:reachFrame.src,loaded:reachFrame.complete&&reachFrame.naturalWidth>0,width:reachFrame.naturalWidth,height:reachFrame.naturalHeight},reachPopups:[...records.entries()].map(([index,record])=>({index,game:record.reachPop.dataset.gameKind,visible:!record.reachPop.hidden,tier:Number(record.reachPop.dataset.tier)||0,label:record.reachPop.textContent,hasNumbers:!!record.reachPop.querySelector('small'),paused:record.reachPop.dataset.motionPaused==='true',count:Number(slots[index].holder.dataset.v250ReachPopCount)||0}))};}
 };
 })();

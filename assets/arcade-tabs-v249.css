@@ -350,26 +350,34 @@ html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch>strong{font-si
 html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch small{font-size:8px}
 html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch:focus-visible{outline:3px solid #fff!important;outline-offset:1px!important}
 html.arcade-v249.arcade-tabs-v250 #screen .v250-shared-bet-switch:disabled{opacity:.45!important;cursor:default!important}
-html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen>.games-deck>.v250-common-bet{
- position:absolute!important;right:8px!important;bottom:16px!important;width:84px!important;height:53px!important;z-index:60!important;
+/* The BET unit is available only while a new wager can still be edited. */
+html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette{container:v269-roulette/size}
+html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette>.v250-common-bet{
+ position:absolute!important;right:8px!important;bottom:34px!important;width:96px!important;height:46px!important;z-index:40!important;
 }
-html.arcade-v249.arcade-tabs-v250[data-lineup="all"] body.mobile-landscape #screen>.games-deck>.v250-common-bet{
- width:calc((100% - 16px) / 5 - 8px)!important;right:8px!important;
+html.arcade-v249.arcade-tabs-v250 #screen .v250-common-bet[hidden]{display:none!important;pointer-events:none!important}
+html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch{gap:1px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch>span{font-size:11px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch>strong{font-size:21px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch small{font-size:9px!important}
+/* Local and Download cabinets have no station rail. Their pet uses the lower centre
+   during BET, leaving the right corner and manual control independently usable. */
+html.arcade-v249.arcade-tabs-v250:is([data-edition="local"],[data-edition="download"]) #screen>.arena:has(#cookie-roulette>.v250-common-bet:not([hidden]))>.avatar-box{
+ left:calc(50% - 36px)!important;right:auto!important;bottom:34px!important;
 }
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .drawline{
- grid-template-columns:minmax(0,1fr) 73px!important;grid-template-rows:23px 22px!important;height:46px!important;
+@container v269-roulette (max-height:200px){
+ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette>.v250-common-bet{
+  right:110px!important;bottom:4px!important;width:122px!important;height:28px!important;
+ }
+ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch{
+  flex-direction:row!important;gap:5px!important;padding:1px 3px!important;border-radius:7px!important;
+ }
+ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch>strong{font-size:18px!important}
+ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette:has(>.v250-common-bet:not([hidden])) .roulette-info-strip{right:240px!important}
+ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette #manual-number-toggle{
+  right:8px!important;bottom:4px!important;width:94px!important;max-width:94px!important;height:28px!important;padding:1px 3px!important;font-size:9px!important;line-height:11px!important;white-space:normal!important;
+ }
 }
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .balls{grid-column:1/-1!important}
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console #ballinfo{grid-column:1!important;grid-row:1!important}
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-common-bet{
- grid-column:2!important;grid-row:1!important;width:73px!important;height:23px!important;
-}
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch{
- flex-direction:row!important;gap:3px!important;padding:0!important;border-width:1px!important;border-radius:4px!important;
-}
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch>span{font-size:7px}
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch>strong{font-size:9px}
-html.arcade-v249.arcade-tabs-v250:not([data-lineup="all"]) #console .v250-shared-bet-switch small{font-size:5px}
 
 /* Four stationary numbers per page; paired pages translate only at a change.
    The page override also permits paging on nonselected ALL cards. */
@@ -437,35 +445,27 @@ html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop[data-motion-paus
  html.arcade-v249.arcade-tabs-v250 #screen #tabs .v250-reach-pop::after{animation:none!important;opacity:0}
 }
 
-/* v251: the tenth card is a game. A large shared BET control belongs to the
-   console, alongside the history and ledger, rather than covering any card. */
+/* v269: return the former BET bay to the ledger. All three amounts have more
+   width, while a shorter footer returns 12 logical pixels to the main scene. */
 html.arcade-v249.arcade-tabs-v250 #screen #console{
- display:grid!important;grid-template-columns:84px minmax(0,1fr) 44px!important;
- grid-template-rows:24px 40px!important;gap:3px 7px!important;
- height:78px!important;min-height:78px!important;padding:5px 9px 6px!important;
+ display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;
+ grid-template-rows:20px 40px!important;gap:2px 7px!important;
+ height:66px!important;min-height:66px!important;padding:3px 9px 1px!important;
 }
-html.arcade-v249.arcade-tabs-v250 #screen #console>.v250-common-bet{
- position:relative!important;inset:auto!important;grid-column:1!important;grid-row:1/3!important;
- width:84px!important;height:67px!important;z-index:2!important;
-}
-html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch{
- flex-direction:column!important;gap:2px!important;padding:3px!important;border-width:2px!important;border-radius:9px!important;
-}
-html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch>span{font-size:11px!important}
-html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch>strong{font-size:20px!important}
-html.arcade-v249.arcade-tabs-v250 #screen #console .v250-shared-bet-switch small{font-size:9px!important}
 html.arcade-v249.arcade-tabs-v250 #screen #console .drawline{
- grid-column:2/4!important;grid-row:1!important;display:grid!important;width:100%!important;
- height:24px!important;grid-template-columns:146px minmax(0,1fr)!important;grid-template-rows:24px!important;gap:0 5px!important;
+ grid-column:1!important;grid-row:1!important;display:grid!important;width:100%!important;
+ height:20px!important;grid-template-columns:164px minmax(0,1fr)!important;grid-template-rows:20px!important;gap:0 5px!important;
  position:relative!important;z-index:3!important;isolation:isolate;
  padding:0 4px!important;box-sizing:border-box!important;border-radius:5px!important;background:#3b291deb!important;
 }
 html.arcade-v249.arcade-tabs-v250 #screen #console .history-label{display:none!important}
-html.arcade-v249.arcade-tabs-v250 #screen #console .balls{grid-column:1!important;grid-row:1!important;width:146px!important;height:24px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .balls{grid-column:1!important;grid-row:1!important;width:164px!important;height:20px!important;gap:3px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .balls span{height:20px!important;line-height:20px!important;flex-basis:17px!important;width:17px!important}
 html.arcade-v249.arcade-tabs-v250 #screen #console #ballinfo{grid-column:2!important;grid-row:1!important;width:100%!important;text-align:center!important}
-html.arcade-v249.arcade-tabs-v250 #screen #console .meters{grid-column:2!important;grid-row:2!important;height:40px!important}
-html.arcade-v249.arcade-tabs-v250 #screen #console .menu-reserve{grid-column:3!important;grid-row:2!important;height:36px!important}
-html.arcade-v249.arcade-tabs-v250 body.mobile-landscape #screen{grid-template-rows:minmax(130px,1fr) 178px 78px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .meters{grid-column:1!important;grid-row:2!important;height:40px!important;grid-template-columns:.9fr 1fr 1.2fr!important;gap:4px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .meter label{font-size:9px!important;line-height:10px!important}
+html.arcade-v249.arcade-tabs-v250 #screen #console .menu-reserve{grid-column:2!important;grid-row:1/3!important;align-self:end!important;width:44px!important;height:40px!important;font-size:8px!important}
+html.arcade-v249.arcade-tabs-v250 body.mobile-landscape #screen{grid-template-rows:minmax(130px,1fr) 178px 66px!important}
 
 html.arcade-v249.arcade-tabs-v250[data-lineup="all"] #screen #tabs>.tab-slot[data-game-kind="dango"]{
  grid-column:5!important;grid-row:2!important;

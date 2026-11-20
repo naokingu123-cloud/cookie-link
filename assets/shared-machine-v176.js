@@ -13,7 +13,7 @@ try{
   eval(load('assets/shared-core-patch-v221.js?v=262')+'\n//# sourceURL=shared-core-patch-v221.js');
   eval(load('assets/shared-core-patch-v224.js?v=262')+'\n//# sourceURL=shared-core-patch-v224.js');
   eval(load('assets/guest-entry-v237.js?v=262')+'\n//# sourceURL=guest-entry-v237.js');
-  eval(load('assets/dango-thinking-v251.js?v=262')+'\n//# sourceURL=dango-thinking-v251.js');
+  eval(load('assets/dango-thinking-v251.js?v=269')+'\n//# sourceURL=dango-thinking-v251.js');
   const coreSource=window.SweetsDangoThinkingV251.patch(window.SweetsGuestEntryV237.patch(window.SweetsSharedCorePatchV224.patch(load('assets/shared-machine-core-v196.js?v=262'))));
   eval(coreSource+'\n//# sourceURL=shared-machine-core-v196-v243-patched.js');
   if(host){

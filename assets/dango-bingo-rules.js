@@ -1652,11 +1652,37 @@
   }
   return result;
  }
+ // v269 presentation only: explain the final board's remaining opportunities.
+ // Never call draw(), append a ninth number, alter state, or enter settlement.
+ // Live gameplay continues to use reaches(), which is empty after ball eight.
+ function presentationReaches(s){
+  if(!modern(s))return typeof previous.presentationReaches==='function'?previous.presentationReaches(s):previous.reaches(s);
+  if(!stateOk(s)||s.phase!=='done'||s.draws.length!==8)return reaches(s);
+  const initial=maskOf(s.initialFreeCells),manual=maskOf(s.manualFreeCells),hits=maskOf(s.draws.map(n=>s.numbers.indexOf(n)));
+  const marked=initial|manual|hits,completed=new Set(s.completedLines),result=[];
+  for(let n=1;n<=25;n++)if(!s.draws.includes(n)){
+   const cell=s.numbers.indexOf(n);if(!valid(cell))continue;
+   const projected=marked|(1<<cell),lineCounts={2:0,3:0,4:0,5:0,6:0,7:0};
+   for(const line of gradeLines)if((line.mask&projected)===line.mask)lineCounts[line.length]++;
+   const oddsUp=!!(manual&(1<<cell)),oddsMultiplier=s.oddsMultiplier+Number(oddsUp);
+   const totalHundredths=LENGTHS.reduce((sum,length)=>sum+tiers[length][lineCounts[length]],0)*oddsMultiplier;
+   const gainHundredths=totalHundredths-s.totalHundredths;
+   const highestRoles=LENGTHS.filter(length=>isHighestRole(length,lineCounts[length],s));
+   const newHighestRoles=highestRoles.filter(length=>lineCounts[length]>(s.lineCounts[length]||0)),allClear=newHighestRoles.length>0;
+   if(gainHundredths>0||oddsUp||allClear)result.push({n,number:n,visualOnly:true,afterFinal:true,
+    totalHundredths,gainHundredths,total:totalHundredths/100,gain:gainHundredths/100,oddsUp,allClear,
+    highestRole:highestRoles.length>0,highestRoles,newHighestRoles,lineCounts,
+    newLines:lines.filter(line=>(line.mask&projected)===line.mask&&!completed.has(line.id)).map(line=>line.id),
+    nextPayRows:LENGTHS.filter(length=>lineCounts[length]>0&&tiers[length][lineCounts[length]]>0)
+     .map(length=>({length,count:lineCounts[length],hundredths:tiers[length][lineCounts[length]]*oddsMultiplier}))});
+  }
+  return result;
+ }
  return freeze({REVISION,version:REVISION,ruleId:'triangle-nonline-free-v268',geometry,cells,lines,CELLS:cells,LINES:lines,
   shortLines,gradeLines,gradeFor,isValidInitialFree,geometryFor,linesFor,lengthsFor,tiers,requestedTiers:previous.requestedTiers,payRows,tiersFor,
   payRowsBaseFor,legacy:previous.legacy,legacy253:previous.legacy253,legacy254:previous.legacy254,legacy262:previous.legacy262,
   legacy263:previous.legacy263,legacy264:previous.legacy264,legacy265:previous.legacy265,legacy266:previous,highestRoleMinimums,isHighestRole,highestRolesFor,DENOMINATOR,molds,
-  create,createBoard:create,draw,placeFree,undoFree,autoPlace,commitFree,reaches,payout,payoutState:payout,payRowsFor,
+  create,createBoard:create,draw,placeFree,undoFree,autoPlace,commitFree,reaches,presentationReaches,payout,payoutState:payout,payRowsFor,
   expansionCellsFor,availableCenters,expectedNumeratorForCenter,expectedNumeratorForPlacement,calibrationForTarget,
   weightsForTarget,effectiveTarget,seededRandom,helpers:previous.helpers});
 });

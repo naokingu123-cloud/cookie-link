@@ -11,7 +11,7 @@ const [html,bootstrap,extension,choice,service,profile,sugar,versionText]=await 
 const version=JSON.parse(versionText).version;
 assert.ok(Number(/-v(\d+)-/.exec(version)?.[1])>=258,'the local edition remains available in later builds');
 assert.ok(html.includes('<script src="assets/local-debug-v258.js?v=258"></script>'));
-assert.ok(html.includes("else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=258','assets/local-sugar-v267.js?v=268');"));
+assert.ok(html.includes("else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=269','assets/local-sugar-v267.js?v=268');"));
 assert.ok(html.includes('if(edition===\'local\')'));
 assert.ok(html.includes('const localStorage=window.SweetsLocalDebugV258.storage;'));
 assert.ok(html.includes("const localEightAllowed=new URLSearchParams(location.search).get('serverHost')==='1';"));

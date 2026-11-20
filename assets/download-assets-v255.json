@@ -1,10 +1,10 @@
 {
-  "version": "20261119-v268-dango-sugar",
+  "version": "20261120-v269-dango-layout",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 41,
-      "sha256": "ba3d482def650d95ba2d9a295fe2244353f94db446bc998e92de20fc7bbf84a6"
+      "bytes": 42,
+      "sha256": "fbd81ea526585b2b28f82d48aff79e990324547c07646bbd40092a0babf82d7c"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -108,13 +108,13 @@
     },
     {
       "path": "assets/arcade-tabs-v249.css",
-      "bytes": 36120,
-      "sha256": "806b18c3d546e0d1dfa2f4177195525d11d1aea8b1bc21ad2fd1299788a81f8d"
+      "bytes": 36550,
+      "sha256": "a9560f3302cad2c90b4ec89541ba6208937a6dbd5fffca49f162c9d8166ad1ce"
     },
     {
       "path": "assets/arcade-tabs-v249.js",
-      "bytes": 22616,
-      "sha256": "ed6a4443618f2ac25da74d435ac5b84a454b8aff4390ba77aa901ee6aaa3a114"
+      "bytes": 25547,
+      "sha256": "81d24c68b559030d0cd251259c205acb89a16e23caa15c628e15ee1e165d5073"
     },
     {
       "path": "assets/arcade-v249/logo-candy.webp",
@@ -1188,8 +1188,8 @@
     },
     {
       "path": "assets/dango-bingo-host.js",
-      "bytes": 18488,
-      "sha256": "c49fa5ae251fbf18f90bba0d7480fe283abf79f5bac059b20d21f9a120065ee5"
+      "bytes": 19323,
+      "sha256": "adac1921d8df9817e5d69546b587efc9db58a1bc9de8f669aa51e505cf6f3d8d"
     },
     {
       "path": "assets/dango-bingo-lesson.js",
@@ -1198,23 +1198,23 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 134425,
-      "sha256": "85ec2da6630ce3942cd22f593f50a170ba9582fe75f7d5a24931d50a94e0f118"
+      "bytes": 136516,
+      "sha256": "222912fe3a08b105863818af4de6120de19cd27fa1a4fe9260a33ff9f2421234"
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 45124,
-      "sha256": "813d9dbe1c892ac22fccafd667a69a3439641236550a166366f02ff1e08e8f6f"
+      "bytes": 52692,
+      "sha256": "5b54ff3bc43b531b2be4c32d265fa31698c91693888dd2f9d98c6182d9a28f69"
     },
     {
       "path": "assets/dango-bingo.css",
-      "bytes": 18288,
-      "sha256": "7249e2d65037cc1152cd1e9b142ccfe16ffe463a5e541ff531886832461e542b"
+      "bytes": 20538,
+      "sha256": "cefffa29a226b507a1db5cdd09a843a4610b6e5992557e986e8ff82840f85be2"
     },
     {
       "path": "assets/dango-thinking-v251.js",
-      "bytes": 8505,
-      "sha256": "5d9407b7852a26bb104f1f1dcc266ad945928ae363f566b5463ceb76a2f94b32"
+      "bytes": 8752,
+      "sha256": "2f62bf5ac8be7e5882340b5c7d1adf57740dc46b8337cff30b9be71e84037679"
     },
     {
       "path": "assets/debug-economy.js",
@@ -1233,8 +1233,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4351,
-      "sha256": "1d66c5d9e5119a7ee910e3c93703299821e452be857bf36e361771762542c36a"
+      "bytes": 4352,
+      "sha256": "95a7b65652d08a17af3cc60084ec8763510146b4a81ab826094be0928c56aadf"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -1243,8 +1243,8 @@
     },
     {
       "path": "assets/download-mode-v255.js",
-      "bytes": 45152,
-      "sha256": "0bc48f2e8a945fe35a2881d4b3ce43ecbd3263c0a7ca03140cb662b5f3b2cc1e"
+      "bytes": 46089,
+      "sha256": "e0d6892152209fa0c2a4ae7dd47cbe39bb2355b99198ea8d23bebcdf542ab63d"
     },
     {
       "path": "assets/download-roulette-v255.js",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3762,
-      "sha256": "31e4a672face8f81d51890f962596e55dba2de2864945302ad454eb9f4d60875"
+      "bytes": 3763,
+      "sha256": "096b10a75652355bb11475f8f10a7f70434bd36ff5db0a8f65ce657bacf1bfb8"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -1468,8 +1468,8 @@
     },
     {
       "path": "assets/local-debug-game-v258.js",
-      "bytes": 3031,
-      "sha256": "3a9f114fe1cabfd28ff39836edde935bc4d405acd544c7acfe4b2461dac2b761"
+      "bytes": 5529,
+      "sha256": "a4aecb9451a58940a8b517a784daef87795846c9948e4301b26d3ee32297f658"
     },
     {
       "path": "assets/local-debug-v258.css",
@@ -2024,7 +2024,7 @@
     {
       "path": "assets/shared-machine-v176.js",
       "bytes": 3101,
-      "sha256": "d356db051e213f23380a4602d6dea455fea2e26ec37c528c01badff65eeb40dc"
+      "sha256": "9161c5339ae965a4b6d28858ade64fcacf88c8689e249916c831b50d70f37693"
     },
     {
       "path": "assets/shared-next-bet-join-v214.js",
@@ -2989,7 +2989,7 @@
     {
       "path": "index.html",
       "bytes": 84140,
-      "sha256": "96f6d7f3ffabbfc7d4d1760dc1d709d4f7e842618c15ba2e988e9fdefdad24e2"
+      "sha256": "81b4c11ffb1558dd521f90c2d1a338d6d58f75c8d92b36709de2f1863854f481"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -3227,5 +3227,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127942530
+  "totalBytes": 127962320
 }

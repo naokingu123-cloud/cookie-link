@@ -279,7 +279,7 @@ function restoreNative(ball){
  app.phase=ball>=8?'result':'playing';app.paused=false;app.dealing=ball<8;app.fastForward=false;app.credit=app.displayCredit=bankAfterBet();
  for(const engine of app.engines){engine.paused=false;engine.presentationRate=1;}
  if(ball>=8){app.result={elapsed:0,duration:1800};app.totalWin=number(session.totalWin??pack.totalWin);}
- renderer.mount(pack.playback.recording);renderer.renderAt(playbackMs);repaint();
+ renderer.mount(pack.playback.recording);commitDangoBeforeRecordedLaunchV269(playbackMs,ball);renderer.renderAt(playbackMs);repaint();
 }
 async function play(){
  if(busy||localComplete||!pack)return false;if(!assetsReady&&!await prepareAssets())return false;
@@ -297,6 +297,19 @@ function pause(){
  persist().then(syncProgress).catch(()=>{});render();return true;
 }
 function stopped(){return !playing||app.paused||document.hidden||menuOpen||userPaused||!inView;}
+function commitDangoBeforeRecordedLaunchV269(milliseconds,ballIndex=cursor){
+ if(ballIndex!==5||app.phase!=='playing'||app.draws.length!==5)return false;
+ const recording=pack?.playback?.recording,fifthAt=Number(recording?.hits?.[4]?.atMs);
+ // Use launch timing only. In particular, do not read the sixth hit's number or
+ // use its landing as the AUTO boundary, including after a five-ball restore.
+ const launch=recording?.launches?.find(item=>Number(item.atMs)>fifthAt);
+ if(!Number.isFinite(fifthAt)||!launch||Number(milliseconds)<Number(launch.atMs))return false;
+ let committed=false;
+ for(const [index,engine] of app.engines.entries())if(app.enabled[index]!==false&&engine?.kind==='dango'&&engine.state?.phase==='placing'){
+  engine.finishThinkingV251?.({reason:'download-sixth-launch'});committed=true;
+ }
+ return committed;
+}
 function reconcile(ball){
  const state=checkpointAt(ball);if(!state)return;
  const phase=app.phase;R.restore(app,state,{wallet:false,notify:false});
@@ -320,7 +333,7 @@ function tick(now){
    if(R.stable(app,cursor)&&(cursor<8||app.enabled.every((yes,i)=>!yes||app.paid[i]))){reconcile(cursor);settling=false;stableBall=cursor;stableMs=playbackMs;seq++;persist().catch(()=>{});syncProgress();}
    else if((settleStamp+=elapsed)>90000)throw Error('download_native_settlement_timeout');
   }else if(cursor<8){
-   const hit=pack.playback.recording.hits[cursor];playbackMs=Math.min(hit.atMs,playbackMs+elapsed);renderer.renderAt(playbackMs);
+   const hit=pack.playback.recording.hits[cursor];playbackMs=Math.min(hit.atMs,playbackMs+elapsed);commitDangoBeforeRecordedLaunchV269(playbackMs);renderer.renderAt(playbackMs);
    if(playbackMs>=hit.atMs&&!app.drawHeld&&typeof callbacks?.onNumber==='function'&&callbacks.onNumber(hit.number)!==false){cursor++;if(pack.playback.sugarStates?.[cursor])window.SweetsSugarChallengeV254?.accept(pack.playback.sugarStates[cursor]);settling=true;settleStamp=0;}
   }else{playbackMs=Math.min(pack.playback.recording.durationMs,playbackMs+elapsed);renderer.renderAt(playbackMs);}
   if(cursor===8&&app.phase==='complete'&&!settling&&playbackMs>=pack.playback.recording.durationMs){finishLocal();return;}

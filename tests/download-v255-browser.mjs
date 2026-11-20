@@ -61,6 +61,17 @@ async function call(action,{body,admin=false,sessionId}={}){
  const value=await response.json();assert.equal(response.ok,true,route+' '+JSON.stringify(value).slice(0,500));return value;
 }
 async function state(){return page.evaluate(()=>window.SweetsDownloadV255?.describe());}
+async function betSwitch(visible,label){
+ await page.waitForFunction(expected=>{const button=document.querySelector('.v250-shared-bet-switch');return !!button&&button.parentElement.hidden===!expected&&button.disabled===!expected;},visible,{timeout:10000});
+ const check=await page.evaluate(expected=>{
+  const button=document.querySelector('.v250-shared-bet-switch'),before={unit:window.SweetsArcadeTabsV249.describe().sharedBetUnit,bets:window.SweetsDownloadV255.describe().bets,wallet:window.SweetsDownloadV255.describe().wallet};
+  if(!expected)button.onclick();
+  return {phase:window.SweetsDownloadV255.describe().phase,visible:!button.parentElement.hidden,disabled:button.disabled,tabIndex:button.tabIndex,inRoulette:document.getElementById('cookie-roulette').contains(button),before,after:{unit:window.SweetsArcadeTabsV249.describe().sharedBetUnit,bets:window.SweetsDownloadV255.describe().bets,wallet:window.SweetsDownloadV255.describe().wallet}};
+ },visible);
+ assert.equal(check.inRoulette,true,label+' unit control is at the roulette');assert.equal(check.visible,visible,label+' BET-only visibility');assert.equal(check.tabIndex,visible?0:-1);
+ assert.deepEqual(check.after,check.before,label+' cannot change locked units, wagers or wallet');
+ (report.betSwitch??=[]).push({label,...check});return check;
+}
 async function waitPlayback(predicate,label,timeout){
  return until(async()=>{
   const current=await state();
@@ -121,6 +132,7 @@ try{
  await page.setViewportSize({width:390,height:844});
  await page.locator('[data-edition-choice="download"]').click();
  await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().hydrated,null,{timeout:60000});
+ await betSwitch(true,'initial Download BET');
  report.initial=await state();assert.equal(report.initial.streamingClientPresent,false);assert.deepEqual(report.initial.bets,Array(10).fill(0));
  identity=await page.evaluate(base=>window.SweetsGuestEntryV237.readSession('sweets-shared-session-v176',base),server.base);
  assert.equal(identity.playerId,report.initial.playerId);assert.ok(identity.token);
@@ -132,6 +144,7 @@ try{
  await page.reload({waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().identityConflict===true,null,{timeout:30000});
  const rejected=await state();
+ await betSwitch(false,'identity not authenticated');
  assert.equal(rejected.playerId,identity.playerId,'client must preserve the old player identity');
  assert.match(rejected.error,/CREDIT/,'client must explain the protected account');
  assert.equal(await page.locator('[data-dl-action="fresh"]').isVisible(),true,'explicit alternate-account recovery is available');
@@ -158,8 +171,10 @@ try{
  assert.equal((await call('profile')).wallet.credit,before.wallet.credit,'editing the draft does not spend server credit');
  await capture('download-bets-390');
  await page.locator('[data-dl-action="prepare"]').click();
+ await betSwitch(false,'Download preparation submitted');
  await page.waitForFunction(()=>{const s=window.SweetsDownloadV255?.describe();return s?.session?.status==='failed'||s?.packageReady&&s.assetsReady;},null,{timeout:300000});
  const prepared=await state();assert.notEqual(prepared.session?.status,'failed',prepared.error||prepared.message);assert.equal(prepared.packageReady,true);
+ await betSwitch(false,'prepared round');
  const active=await call('active'),pack=active.package;assert.ok(pack);report.prepared={session:prepared.session,credit:active.wallet.credit,numbers:pack.numbers,totalBet:pack.totalBet,totalWin:pack.totalWin,sugarWin:pack.sugarWin||0,recordingDurationMs:pack.playback.recording.durationMs,frames:pack.playback.recording.frames.length};
  milestone('prepared',{frames:pack.playback.recording.frames.length,durationMs:pack.playback.recording.durationMs});
  assert.equal(active.wallet.credit,before.wallet.credit-pack.totalBet+pack.totalWin+(pack.sugarWin||0));
@@ -176,6 +191,7 @@ try{
  await page.setViewportSize({width:390,height:844});
  await page.locator('[data-dl-action="play"]').click();
  await waitPlayback(s=>s?.started,'recorded playback starts',30000);
+ await betSwitch(false,'recorded PLAYING');
  assert.equal(await page.evaluate(()=>!!window.SweetsDownloadRouletteV255?.driver),true);
  await page.evaluate(()=>{
   const physics=window.SweetsDownloadRouletteV255.driver.physics;
@@ -239,6 +255,7 @@ try{
  const resumedServer=await call('active');assert.equal(resumedServer.session.id,prepared.session.id);assert.equal(resumedServer.wallet.credit,active.wallet.credit);assert.equal(resumedServer.stats.rounds,1);
  await waitPlayback(s=>s?.localComplete,'offline recorded playback and native payout complete',Math.max(180000,pack.playback.recording.durationMs+180000));
  report.offlineComplete=await state();assert.equal(report.offlineComplete.pendingComplete,true);assert.equal(report.offlineComplete.stableBall,8);assert.deepEqual(report.offlineComplete.draws,pack.numbers);
+ await betSwitch(false,'offline result');
  milestone('offline-complete',{ball:report.offlineComplete.stableBall});
  report.completionPanel={offline:await completionPanel(true)};
  await capture('download-offline-complete-390');
@@ -258,6 +275,10 @@ try{
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('sweets-player-v1')||'{}').name),profile.name);
  report.profile=await page.evaluate(()=>window.SweetsPlayerProfileV255.describe());
  assert.equal(report.profile.stats.rounds,1);
+ await betSwitch(false,'restored complete round');
+ await page.locator('[data-dl-action="next"]').click();
+ await betSwitch(true,'next Download BET');
+ await capture('download-next-bet-390');
  adminContext=await secureContext({width:1366,height:900});adminPage=await adminContext.newPage();
  const adminRequests=[];adminPage.on('request',request=>{const u=new URL(request.url());adminRequests.push({path:u.pathname,serverHost:u.searchParams.get('serverHost'),settlement:u.searchParams.get('serverSettlementWorker')});});
  adminPage.on('pageerror',error=>report.pageErrors.push('admin: '+String(error.stack||error)));

@@ -13,6 +13,7 @@ const expansionSize=state=>Number(state?.rulesRevision)>=265?(Number(state?.free
 const gradeLabel=state=>Number(state?.rulesRevision)>=265?(state?.qualifiedEarlyLengths?.length?String(state.expansionLevel)+'個ライン':'ライン未成立'):Number(state?.rulesRevision)>=264?([null,'3個','4個','5個'][Number(state?.expansionLevel)||0]||'未成立')+'ライン':'拡張HIT '+(state?.expansionLevel||0)+'/3';
 let clock=0,lastHit=-Infinity,lineStart=-Infinity,lastMain=-Infinity,lastMini=-Infinity,stamp=null,frame=0,reachTimer=0,paused=false;
 let presentationEpoch=0,pendingFinish=null,lastRestoredState=null,checkpointTimer=0;
+let finalReachState=null,finalReachResults=[];
 const payoutNote=document.createElement('small');payoutNote.id='dango-payout-status';
 document.getElementById('debug-payout-status')?.after(payoutNote);
 const engine={
@@ -24,6 +25,7 @@ const engine={
  set paused(value){if(paused!==value){paused=value;stamp=null;wake();}},
  reset(){
   presentationEpoch++;pendingFinish=null;lastRestoredState=null;
+  finalReachState=null;finalReachResults=[];
   clearTimeout(checkpointTimer);checkpointTimer=0;
   this.version++;this.liveBoard=false;
   // This fixed demonstration is unrelated to the next mold and uses no live RNG.
@@ -129,18 +131,26 @@ view.setCallbacks({
  onCell(cellId){if(!canPlace())return;const s=engine.state,selected=Number(s.rulesRevision)>=265?s.manualFreeCells.includes(cellId):expansionRules(s)?s.expansionCenter===cellId:s.manualFreeCells.includes(cellId);changePlacement(selected?R.undoFree(s,cellId):R.placeFree(s,cellId));},
  onAuto(){if(canPlace())changePlacement(R.autoPlace(engine.state));}
 });
-function projectReaches(state){
- return R.reaches(state).map(hit=>{
+function projectReaches(state,{presentation=false}={}){
+ const hits=presentation&&typeof R.presentationReaches==='function'?R.presentationReaches(state):R.reaches(state);
+ return hits.map(hit=>{
   // Common reach code measures hundredths of this game's BET, not raw medals.
   const total=hit.totalHundredths,gain=hit.gainHundredths,tier=reachTier(gain,hit.allClear);
   return {...hit,total,gain,tier,kind:['reach','high','super','all'][tier]};
  });
 }
+function presentationReaches(state){
+ if(state?.phase!=='done')return slot.reachResults||[];
+ if(finalReachState!==state){finalReachState=state;finalReachResults=projectReaches(state,{presentation:true});}
+ return finalReachResults;
+}
 slot.updateDangoReach=function(a){
  const s=engine.state,c=engine.liveBoard?reachContext(engine,a):null;
  if(!c||a.bet(id)<=0){if(slot.reachStatus!=='inactive'){invalidateReach(slot);slot.reachStatus='inactive';}return;}
  if(slot.reachBoardKey===c.key)return;
- slot.tabReachResults=slot.reachResults=projectReaches(s);slot.reachBoardKey=c.key;slot.tabReachBase=R.payoutState(s);
+ // Final opportunities belong to the visible board and tab only. The ordinary
+ // reach array remains empty after eight, so roulette/gameplay cannot use them.
+ slot.reachResults=projectReaches(s);slot.tabReachResults=presentationReaches(s);slot.reachBoardKey=c.key;slot.tabReachBase=R.payoutState(s);
  slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
 };
 const currentJob=job=>job.epoch===presentationEpoch&&job.version===engine.version&&job.token===app.token;
@@ -173,7 +183,10 @@ engine.afterCheckpointRestoreV247=function(){
  const version=this.version,token=app.token,epoch=presentationEpoch;
  Promise.resolve().then(()=>{
   if(epoch!==presentationEpoch||version!==this.version||token!==app.token||app.enabled[id]===false||app.paid[id]||app.phase!=='playing')return;
-  if(this.state.phase==='placing'&&settlementWorker)this.finishThinkingV251({reason:'worker-restore'});
+  if(this.state.phase==='placing'){
+   const t=thinking(),expired=Number(t.closesAt)>0&&Number(t.serverNow)>=Number(t.closesAt)&&Number(t.ballCount)>=5;
+   if(settlementWorker||expired)this.finishThinkingV251({reason:settlementWorker?'worker-restore':'thinking-restore'});
+  }
   invalidateReach(slot);this.emit('settled');slot.updateDangoReach(app);
   if(this.state.phase==='done')finish(version,token);
  });return true;
@@ -183,7 +196,7 @@ function paint(mini){
  if(!mini&&(active!==id||slot.panel.hidden))return;
  const s=engine.state,t=thinking();
  const opts={time:clock,bet:app.bet(id),paused:presentationPaused(),age:clock-lastHit,lineAge:mini?Infinity:clock-lineStart,
-  animationLines:engine.animationLines,reach:slot.reachResults,demo:!engine.liveBoard,
+  animationLines:engine.animationLines,reach:engine.liveBoard?presentationReaches(s):[],demo:!engine.liveBoard,
   placementLocked:!canPlace(),reducedMotion:motionReduced,remainingMs:t.remainingMs};
  if(mini)view.drawMini(slot.mini,s,opts);else view.draw(s,opts);
 }

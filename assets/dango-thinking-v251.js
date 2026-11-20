@@ -16,7 +16,7 @@ function localEngines(){
  return (app.engines||[]).filter((engine,index)=>engine?.kind==='dango'&&app.enabled?.[index]!==false&&Number(app.locked?.[index]??app.bets?.[index])>0);
 }
 function finishPending(reason){
- for(const engine of localEngines())engine.finishThinkingV251?.({reason});
+ for(const engine of localEngines())if(Number(engine.state?.draws?.length??engine.processed)===5)engine.finishThinkingV251?.({reason});
 }
 function checkpointPlacement(options={}){
  const shared=window.SweetsSharedMachine,current=state();
@@ -45,6 +45,9 @@ function tick(){
  }
  if(finalized.size>20){const keep=finalized.has(current.roundId)?current.roundId:'';finalized.clear();if(keep)finalized.add(keep);}
  if(current.enabled&&current.ballCount===5&&current.closesAt&&current.serverNow>=current.closesAt&&localEngines().length&&!finalized.has(current.roundId)&&finishingRound!==current.roundId&&Date.now()>=retryAt){
+  // End the visible choice window at the server deadline. Saving may need to
+  // await another game's animation or an ACK; neither can delay Dango's AUTO.
+  finishPending('deadline');
   const id=current.roundId;finishingRound=id;
   checkpointPlacement({roundId:id,finalize:true,reason:'deadline'}).then(result=>{
    if(result?.ok&&!result.skipped)finalized.add(id);
