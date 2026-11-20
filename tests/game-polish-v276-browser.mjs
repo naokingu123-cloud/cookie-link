@@ -70,6 +70,13 @@ function inspectHit(input){
  // full-page screenshot can arrive after this short live effect has expired.
  return {painted,pointerEvents:style.pointerEvents,box:{width:bounds.width,height:bounds.height},diagnostics:d,history:d.history.filter(e=>e.game===kind),draws:window.SweetsLocalDebugV258.describe().draws,overlayDataUrl:node.toDataURL('image/png')};
 }
+function watchHit(input){
+ // Arm before the input: short reduced-motion effects can finish before the
+ // click RPC returns. The returned object retains the first painted frame.
+ return page.waitForFunction(inspectHit,input,{polling:'raf',timeout:7500}).then(async handle=>{
+  try{return await handle.jsonValue();}finally{await handle.dispose();}
+ },error=>{if(error.name==='TimeoutError')return null;throw error;});
+}
 async function saveHitOverlay(evidence,kind,{mini=false,reduced=false}={}){
  const prefix='data:image/png;base64,',dataUrl=evidence.overlayDataUrl;
  assert.ok(typeof dataUrl==='string'&&dataUrl.startsWith(prefix),'live HIT canvas encoded as PNG');
@@ -99,11 +106,11 @@ async function captureHit(kind,{reduced=false}={}){
  for(let attempt=0;attempt<5&&!evidence;attempt++){
   const [number]=await numberCandidates(kind);assert.ok(number,'an undrawn number exists');
   await page.waitForFunction(n=>{const b=document.querySelector('#manual-number-grid button[data-number="'+n+'"]'),s=window.SweetsLocalDebugV258.describe();return s.phase==='playing'&&!s.drawHeld&&b&&!b.disabled;},number,{timeout:45000});
+  const pendingHit=drawMode==='grouped'&&attempt<2?null:watchHit(kind);
   await page.locator('#manual-number-grid button[data-number="'+number+'"]').click();
   await page.waitForFunction(n=>window.__qa276.app.draws.includes(n),number);
-  if(drawMode==='grouped'&&attempt<2)continue;
-  const end=Date.now()+7500;
-  while(Date.now()<end){evidence=await page.evaluate(inspectHit,kind);if(evidence)break;await new Promise(r=>setTimeout(r,35));}
+  if(!pendingHit)continue;
+  evidence=await pendingHit;
  }
  assert.ok(evidence,'real manual draw produces a visible main HIT for '+kind);
  assert.equal(evidence.pointerEvents,'none');assert.equal(evidence.diagnostics.errors,0);
@@ -120,9 +127,12 @@ try{
  current='live-miniature';await openGame('gelato',{width:390,height:844});
  await page.evaluate(()=>{const q=window.__qa276;if(!SweetsLocalDebugV258.setBets(q.slots.map(s=>['gelato','dango'].includes(s.engine.kind)?3000:0)))throw Error('Two-game virtual BET failed');});
  await page.locator('#manual-start').click();await page.waitForFunction(()=>window.__qa276.app.phase==='playing');
- const [miniNumber]=await numberCandidates('dango');await page.locator('#manual-number-grid button[data-number="'+miniNumber+'"]').click();
- let miniature=null;const miniEnd=Date.now()+7000;
- while(Date.now()<miniEnd){miniature=await page.evaluate(inspectHit,['dango',true]);if(miniature)break;await new Promise(r=>setTimeout(r,30));}
+ const [miniNumber]=await numberCandidates('dango');
+ await page.waitForFunction(n=>{const b=document.querySelector('#manual-number-grid button[data-number="'+n+'"]'),s=window.SweetsLocalDebugV258.describe();return s.phase==='playing'&&!s.drawHeld&&b&&!b.disabled;},miniNumber,{timeout:45000});
+ const pendingMini=watchHit(['dango',true]);
+ await page.locator('#manual-number-grid button[data-number="'+miniNumber+'"]').click();
+ await page.waitForFunction(n=>window.__qa276.app.draws.includes(n),miniNumber);
+ const miniature=await pendingMini;
  assert.ok(miniature,'a real offscreen game HIT paints its live miniature');assert.equal(miniature.pointerEvents,'none');assert.ok(miniature.diagnostics.maxMiniParticles<=16);
  await saveHitOverlay(miniature,'dango',{mini:true});report.miniature=miniature;
  await page.screenshot({path:path.join(output,'hit-dango-mini.png')});report.screens.push('hit-dango-mini.png');
