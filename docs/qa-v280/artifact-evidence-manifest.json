@@ -1,0 +1,359 @@
+{
+  "repository": "naokingu123-cloud/cookie-link",
+  "pullRequest": 5,
+  "branch": "feature/v280-sixdrop-fit-20261120",
+  "head": "22ee4e63bc33e90d1177da8e85fce62d63fe833c",
+  "tree": "6fb66c2660c393c1daa7dde42d000daa55e31835",
+  "localEquivalentHead": "d8009c785a7209f60c202607599c28634da6ad20",
+  "runId": null,
+  "status": "blocked_by_merge_conflict",
+  "updatedAt": "2026-11-20T14:51:53.835560+00:00",
+  "releaseGate": "Dedicated v280 rules/legacy compatibility, actual display and native Download worker. Known old v278 browser current-version assertions are not this gate.",
+  "artifacts": [],
+  "history": [
+    {
+      "head": "d162595d80efa01235e9b7b451c1c31ca6b76a69",
+      "runId": 44754825393,
+      "jobId": 136351689606,
+      "artifactId": 14637620694,
+      "artifactName": "sixdrop-v280-display",
+      "zip": "head-d162595-display.zip",
+      "sha256": "1776881bbb287bec5421ab4e4a29c772adb40ffc05fca9c7cb72240e5cd2b5c2",
+      "zipDigestVerified": true,
+      "report": "head-d162595-display/report.json",
+      "reportOk": false,
+      "files": [
+        "failure-ready-restoration.png",
+        "report.json"
+      ],
+      "conclusion": "failure",
+      "log": "head-d162595-display-job.log",
+      "firstFailure": {
+        "path": "tests/sixdrop-v280-browser.mjs",
+        "line": 127,
+        "case": "ready-restoration",
+        "message": "AssertionError [ERR_ASSERTION]: all 75 breathing drops fit the PNG transparent interior",
+        "analysisStatus": "Root and UI reviewers confirmed two issues: test row widths were reversed relative to native rows, and even the correct native 75-position layout has bottom-row end circles contacting the PNG (alpha 253). UI owner is correcting runtime geometry, canonical-row validation and diagnostics; threshold 80 remains unchanged.",
+        "pageErrors": [],
+        "assetFailures": [],
+        "apiRequests": [],
+        "externalRequests": [],
+        "confirmedBy": [
+          "root",
+          "ui_v280"
+        ],
+        "thresholdAlpha": 80,
+        "observedBottomRowEndAlpha": 253,
+        "retryPerformed": false
+      },
+      "visualObservation": "Failure screenshot is covered by the first-use tutorial (page 2/4); UI owner notified to expose the actual board for final screenshots."
+    },
+    {
+      "head": "d162595d80efa01235e9b7b451c1c31ca6b76a69",
+      "runId": 44754825393,
+      "jobId": 136351689460,
+      "artifactId": 14637415897,
+      "artifactName": "sixdrop-v280-worker",
+      "zip": "head-d162595-worker.zip",
+      "sha256": "82e96606796eabbdcf4ec788c3798d6a0b1de30c44576b35c1e75e0b7008c478",
+      "zipDigestVerified": true,
+      "report": "head-d162595-worker/report.json",
+      "reportOk": true,
+      "files": [
+        "report.json",
+        "native-round.json"
+      ],
+      "conclusion": "success",
+      "independentCoreReview": {
+        "reviewer": "core_review",
+        "passed": true,
+        "win": 451,
+        "winBreakdown": [
+          150,
+          301
+        ],
+        "oldWin": 541,
+        "creditAfter": 997150,
+        "removed": 83,
+        "bankUnits": 124915,
+        "previousRevision": 278,
+        "initialRevision": 280,
+        "checkpointProcessed": [
+          0,
+          0,
+          0,
+          3,
+          3,
+          5,
+          6,
+          7,
+          8
+        ],
+        "canonicalComparison": "Nine canonical states compared with the original v278 download-next artifact. Only rules revision and normalHundredths 180 -> 150 after ball five differ; grid, RNG, counts, bank, removed and feed match.",
+        "recordingSourceHashUnchanged": true,
+        "physicalNumbersUnchanged": true
+      }
+    },
+    {
+      "head": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d",
+      "runId": 44755794333,
+      "jobId": 136355051237,
+      "artifactId": 14636709629,
+      "artifactName": "sixdrop-v280-worker",
+      "zip": "head-c6ba373-worker.zip",
+      "sha256": "be4e5469575bd6d252c03a17f85b64e81fbeaeb7a589b39ec71781a844e66473",
+      "zipDigestVerified": true,
+      "report": "head-c6ba373-worker/report.json",
+      "conclusion": "success",
+      "reportOk": true,
+      "files": [
+        "report.json",
+        "native-round.json"
+      ],
+      "independentCoreReview": {
+        "reviewer": "core_review",
+        "passed": true,
+        "comparedHead": "d162595d80efa01235e9b7b451c1c31ca6b76a69",
+        "canonicalCheckpointsIdentical": 9,
+        "canonicalStatesSha256": "1ff5b8d52f7bcaeed8f44f028c506cc576b31b4b2bd3266abdb76a8b9c19e4f7",
+        "nativeRoundSha256": "e7021311232922fb8897f499fded0435628b0ee2592be7d286fd1d1c6c31d7af",
+        "numbersIdentical": true,
+        "recordingSourceHashIdentical": true,
+        "carryIdentical": true,
+        "win": 451,
+        "creditAfter": 997150
+      }
+    },
+    {
+      "head": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d",
+      "runId": 44755794333,
+      "jobId": 136355051567,
+      "artifactId": 14638445414,
+      "artifactName": "sixdrop-v280-display",
+      "zip": "head-c6ba373-display.zip",
+      "sha256": "4f8c3566ceefa618265109d92ba6c5359ef9c5ba87b0dc07e6abe1383e7aa851",
+      "zipDigestVerified": true,
+      "report": "head-c6ba373-display/report.json",
+      "conclusion": "failure",
+      "reportOk": false,
+      "log": "head-c6ba373-display-job.log",
+      "caseResults": [
+        {
+          "id": "ready-restoration",
+          "status": "passed",
+          "durationMs": 7104
+        },
+        {
+          "id": "desktop-round",
+          "status": "passed",
+          "durationMs": 128751
+        },
+        {
+          "id": "mobile-fit",
+          "status": "passed",
+          "durationMs": 5420
+        },
+        {
+          "id": "mini-result",
+          "status": "failed",
+          "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n"
+        }
+      ],
+      "firstFailure": {
+        "id": "mini-result",
+        "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n",
+        "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sixdrop-v280-browser.mjs:163:51\n    at async checked (file:///home/runner/work/cookie-link/cookie-link/tests/sixdrop-v280-browser.mjs:36:71)\n    at async file:///home/runner/work/cookie-link/cookie-link/tests/sixdrop-v280-browser.mjs:161:2",
+        "path": "tests/sixdrop-v280-browser.mjs",
+        "line": 163,
+        "expectedMiniHidden": false,
+        "actualMiniHidden": true,
+        "observedAppPhase": "ready",
+        "analysisStatus": "Root/UI confirmed that the mini check ran after the ordinary result modal and automatic next-game transition. The mobile screenshot was also covered by the result modal. The next test-only candidate will observe mobile and mini at the actual manual ball-five waiting boundary, then return to PC and finish the remaining three balls. Runtime remains unchanged.",
+        "retryPerformed": false
+      },
+      "files": [
+        "desktop-filled-bottle.png",
+        "mobile-390-completed.png",
+        "report.json",
+        "desktop-allclear-earned.png",
+        "desktop-allclear-live.png",
+        "failure-mini-result.png",
+        "desktop-ready.png",
+        "desktop-completed.png"
+      ],
+      "verifiedPassedCases": {
+        "positions": 75,
+        "maxAlpha": 72,
+        "thresholdAlpha": 80,
+        "backdropAlpha": 0,
+        "icons": [
+          {
+            "role": "line",
+            "difference": 0,
+            "ink": 680310
+          },
+          {
+            "role": "triangle",
+            "difference": 0,
+            "ink": 1028667
+          },
+          {
+            "role": "hexagon",
+            "difference": 0,
+            "ink": 1030678
+          }
+        ],
+        "counterSamples": 36,
+        "counterStart": 99,
+        "counterEnd": 234,
+        "allClears": 2
+      },
+      "visualReview": {
+        "screens": [
+          "desktop-filled-bottle.png",
+          "mobile-390-completed.png"
+        ],
+        "desktopFinding": "Visible native bottle board fits within the retained PNG and no old cyan outer frame is visible.",
+        "mobileLimitation": "The screenshot is covered by the result modal and blur; its DOM fit assertion passed, but an unobscured mobile screenshot is still required."
+      }
+    }
+  ],
+  "conclusion": null,
+  "workflowSnapshot": null,
+  "jobs": [],
+  "workflowHistory": [
+    {
+      "head": "d162595d80efa01235e9b7b451c1c31ca6b76a69",
+      "runId": 44754825393,
+      "conclusion": "failure",
+      "snapshot": "head-d162595-workflows.json"
+    },
+    {
+      "head": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d",
+      "runId": 44755794333,
+      "conclusion": "failure",
+      "snapshot": "head-c6ba373-workflows.json"
+    }
+  ],
+  "fixes": [
+    {
+      "head": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d",
+      "changes": [
+        "UI projection step 29.4 / center 158",
+        "Offline manifest hashes",
+        "Canonical native row widths and saved alpha diagnostics in the browser test"
+      ],
+      "alphaThresholdUnchanged": 80,
+      "productionPositions": 75,
+      "staticMaximumAlpha": 72
+    },
+    {
+      "head": "22ee4e63bc33e90d1177da8e85fce62d63fe833c",
+      "changes": [
+        "Browser test only: capture mobile and mini after the first all-clear at the ball-five manual waiting boundary, then finish balls six through eight on PC and verify the payout."
+      ],
+      "runtimeIdenticalTo": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d"
+    }
+  ],
+  "blockers": [
+    {
+      "type": "pull_request_merge_conflict",
+      "head": "22ee4e63bc33e90d1177da8e85fce62d63fe833c",
+      "base": "d16b3249d34fd2d43581d2fc0f3b611508401099",
+      "mergeable": false,
+      "mergeableState": "dirty",
+      "mergeCommitSha": null,
+      "workflowRunsForHead": 0,
+      "evidence": "head-22ee4e6-pr-conflict.json",
+      "remoteMutationPerformed": false
+    }
+  ],
+  "archiveStatus": "unmerged candidate, superseded by newer main",
+  "savedFiles": [
+    {
+      "path": "candidate-desktop-allclear-earned.png",
+      "bytes": 1129505,
+      "sha256": "d30cfd3384843f65c113b4e0ca12f60df59a5e1d3179daff844b1c0b99dd8b60"
+    },
+    {
+      "path": "candidate-desktop-filled-bottle.png",
+      "bytes": 1130602,
+      "sha256": "eff0bcbb8c3e86065350e2920b1d3e5b3f949cef08c6f76779e52756229626d5"
+    },
+    {
+      "path": "initial-ui-failure.png",
+      "bytes": 915732,
+      "sha256": "423a2d2c2d535bac377a44d24e09185dd20e8257ae3004f484b48c792d5bbed9"
+    },
+    {
+      "path": "initial-ui-report.json",
+      "bytes": 24760,
+      "sha256": "4ed6a7ed1d0272c6dc419643ac04fcca6e2dc71f7d71d13be9e106538ba1c91e"
+    },
+    {
+      "path": "initial-worker-report.json",
+      "bytes": 967,
+      "sha256": "d31795748ac1d52042fc38dc346ae8cd0e3c00c68bcf2bad3607061f27a7ef77"
+    },
+    {
+      "path": "native-worker-checkpoint-evidence.json",
+      "bytes": 115059,
+      "sha256": "00a60991df707a745a37d79eeb2c0ddf8fb0810e93888db870faa3cd0bbfa076"
+    },
+    {
+      "path": "payout-100-extended.jsonl",
+      "bytes": 1370,
+      "sha256": "38a8a4ac990a4741858e4444e19846a2575a98e652f4a5e1a48e93916a1cf4d4"
+    },
+    {
+      "path": "payout-100.jsonl",
+      "bytes": 1133,
+      "sha256": "7c29be1ef27aec1d0646b3dd365d4f3559f63a2836d5511ffff5bf190b869eb0"
+    },
+    {
+      "path": "payout-150.jsonl",
+      "bytes": 1118,
+      "sha256": "323ab560bc9e456a4624507b59e97e5622692f0fb98de1601ff5199abe5d8821"
+    },
+    {
+      "path": "payout-50.jsonl",
+      "bytes": 1092,
+      "sha256": "e589950776ab9834b8d5f2d98ac654201ec0c8c58afeac22052126ed841c072f"
+    },
+    {
+      "path": "payout-90-extended.jsonl",
+      "bytes": 1351,
+      "sha256": "93fedae269ef85009d0450001c953885e571d63011b06f639c71aa153269fee9"
+    },
+    {
+      "path": "payout-90.jsonl",
+      "bytes": 1125,
+      "sha256": "3bfd2bddcc4278c044bb3abc812f4a83f25109ec373c7c5951e70560c2ac1494"
+    },
+    {
+      "path": "payout-validation.json",
+      "bytes": 26060,
+      "sha256": "481677212bec2bb8f30d18b8d8ad34a6fbd9c9df03f2eb320f6ffdc67bbae3ff"
+    },
+    {
+      "path": "second-ui-failure.png",
+      "bytes": 355491,
+      "sha256": "df5f3b368e9750472329ad6dcbda6baf6cce5700d4fd8bbf7271cebd787b662e"
+    },
+    {
+      "path": "second-ui-report.json",
+      "bytes": 73328,
+      "sha256": "938c2a7d70c726415a2e27dca8dec9853e408f47c022370db33c6604ea005850"
+    },
+    {
+      "path": "verification-summary.json",
+      "bytes": 4762,
+      "sha256": "f97a67e41553173b65590991054c2924c8aa553efd95b3fcfc394c2b74fb8675"
+    },
+    {
+      "path": "worker-report.json",
+      "bytes": 967,
+      "sha256": "5ef82d07067a150e1c0f103d424ee86e5014c28cd2297e911e4dd683caa899ce"
+    }
+  ]
+}

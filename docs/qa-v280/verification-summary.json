@@ -1,0 +1,120 @@
+{
+  "version": "20261120-v280-sixdrop-fit-and-round-payouts",
+  "status": "superseded-unmerged-candidate",
+  "generatedAt": "2026-11-20T14:58:04.886522+00:00",
+  "repository": "naokingu123-cloud/cookie-link",
+  "pullRequest": 5,
+  "candidate": {
+    "head": "22ee4e63bc33e90d1177da8e85fce62d63fe833c",
+    "tree": "6fb66c2660c393c1daa7dde42d000daa55e31835",
+    "localEquivalentHead": "d8009c785a7209f60c202607599c28634da6ad20",
+    "runtimeMatchesPriorCandidate": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d",
+    "ciStatus": "not-started: PR conflicts with newer main"
+  },
+  "runtimeSha256": {
+    "assets/sixdrop-progressive-core-v247.js": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+    "assets/sixdrop-progressive-host-v247.js": "5242aec5135fae6a5cb3cb5e0ec12ea3e9ffd5da66c434cedd6c6dae59fbc5e5",
+    "assets/sixdrop-ui-v278.js": "58555f8fb59be9ad868e78c442163b2bdc4d4232e2c43fc3e1793354d2160093",
+    "assets/sixdrop-ui-v278.css": "48ea6c7a6770d2caa76c86a11402fa0bcde72b73b08593690b4a197da4d5a55a",
+    "assets/download-assets-v255.json": "bf692fd0f8189da614698eaf8ce1a7e32f30ddb97c6ee0ceaaf4c4de7e881f97"
+  },
+  "geometry": {
+    "previousStep": 27.745,
+    "step": 29.4,
+    "centerY": 158,
+    "enlargementPercent": 5.965038745719942,
+    "nativeRowWidths": [
+      7,
+      8,
+      7,
+      8,
+      7,
+      8,
+      7,
+      8,
+      7,
+      8
+    ],
+    "positions": 75,
+    "breathingScale": 1.02,
+    "liftPositions": [
+      -0.9,
+      0,
+      0.9
+    ],
+    "alphaThreshold": 80,
+    "independentPngMaxAlpha": 72
+  },
+  "logic": {
+    "newRulesRevision": 280,
+    "preservedSavedRevisions": [
+      248,
+      278
+    ],
+    "groupedRevisionBoundary": 278,
+    "removedTotal": "existing state.removedTotal / carry.removed",
+    "counterClock": "existing bankAt timeline",
+    "allClearAndNextBet": "preserve cumulative removed total and bank",
+    "ownNormalEightBallZeroWin": "reset display and carry",
+    "perRemovedBank": "BET * 0.05",
+    "supportProbabilities": [
+      0.23,
+      0.57,
+      0.615,
+      0.9
+    ]
+  },
+  "localValidation": [
+    "v280 rules: native 64 rounds / 320 groups, actual new payouts, nondecreasing increments, frozen legacy states",
+    "v280 host: old recorded boundaries, restore, monotonic removal display, all-clear carry and own-zero reset",
+    "v280 and legacy v278 settlement: real preload, HTTP, Download ledger, retry/cancel, cold restart",
+    "v278 rules and host, v248 server compatibility, recorded v255 state and wallet isolation",
+    "v255 offline manifest/cache test, all 750 files generated"
+  ],
+  "initialFailure": {
+    "head": "d162595d80efa01235e9b7b451c1c31ca6b76a69",
+    "tree": "90af514502403c1c7503e1c5f02208ea112d0bc7",
+    "run": 44754825393,
+    "cause": "Test and initial PNG fit used inverted alternating row widths; native bottom 8-drop corners also touched alpha253 at step30.2/center163.",
+    "correction": "Use native row widths with oracle comparison, step29.4/center158; keep alpha limit80 and preserve failure diagnostics.",
+    "rules": "success",
+    "nativeWorker": "success",
+    "display": "failed ready-restoration"
+  },
+  "payoutEvidence": "payout-validation.json",
+  "scope": {
+    "sugarV279": "preserved byte-for-byte for Sugar sources/assets; index keeps v279 pins",
+    "artwork": "all five original v278 PNGs unchanged",
+    "publicAssets": "Not published for this candidate. Do not apply candidate evidence to newer main.",
+    "windowsRunningServer": "not accessed, replaced or restarted",
+    "historicalWorkflows": "Only the source-bound candidate evidence recorded here; not an assertion about the newer main workflows."
+  },
+  "secondCandidate": {
+    "head": "c6ba373160e6ca91f4f56cea5b47c975ce65ad3d",
+    "run": 44755794333,
+    "passedCases": [
+      "ready-restoration",
+      "desktop-round",
+      "mobile-fit"
+    ],
+    "nativeAlphaMax": 72,
+    "nativeBackdropAlpha": 0,
+    "roleIconPixelDifferences": [
+      0,
+      0,
+      0
+    ],
+    "counterSamples": 36,
+    "counterFrom": 99,
+    "counterTo": 234,
+    "allClears": 2,
+    "failure": "Final mini check observed expected next-game ready reset after the normal eight-second result timer.",
+    "testCorrection": "Inspect live mobile and mini at the manual fifth-ball all-clear boundary before final result; return and complete remaining balls; no runtime/timer/state manipulation."
+  },
+  "published": false,
+  "supersededBy": {
+    "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+    "version": "20261120-v281-casino-sound-and-sixdrop-refinement",
+    "reason": "Parallel main release implements the same user request plus a newer authorized audio request. Preserve its published revision280 payout semantics and its paired host/UI contract."
+  }
+}

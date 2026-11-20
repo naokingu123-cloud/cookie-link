@@ -1,0 +1,981 @@
+{
+  "version": "20261120-v280-sixdrop-fit-and-round-payouts",
+  "shard": 0,
+  "shards": 1,
+  "totalPlannedCases": 4,
+  "plannedCases": [
+    "ready-restoration",
+    "desktop-round",
+    "mobile-fit",
+    "mini-result"
+  ],
+  "caseResults": [
+    {
+      "id": "ready-restoration",
+      "status": "failed",
+      "message": "AssertionError [ERR_ASSERTION]: all 75 breathing drops fit the PNG transparent interior"
+    }
+  ],
+  "failures": [
+    {
+      "id": "ready-restoration",
+      "message": "AssertionError [ERR_ASSERTION]: all 75 breathing drops fit the PNG transparent interior",
+      "stack": "AssertionError [ERR_ASSERTION]: all 75 breathing drops fit the PNG transparent interior\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sixdrop-v280-browser.mjs:127:3\n    at async checked (file:///home/runner/work/cookie-link/cookie-link/tests/sixdrop-v280-browser.mjs:36:71)\n    at async file:///home/runner/work/cookie-link/cookie-link/tests/sixdrop-v280-browser.mjs:123:2"
+    }
+  ],
+  "screens": [
+    "failure-ready-restoration.png"
+  ],
+  "pageErrors": [],
+  "assetFailures": [],
+  "apiRequests": [],
+  "externalRequests": [],
+  "scope": "One real local manual eight-ball round; current core oracle; PC/390px/mini; inherited and reset display; no public CREDIT",
+  "witness": {
+    "seed": 9,
+    "bet": 300000,
+    "numbers": [
+      6,
+      2,
+      10,
+      14,
+      18,
+      22,
+      25,
+      5
+    ],
+    "win": 252328578,
+    "allClears": 2
+  },
+  "restore": [
+    {
+      "total": 0,
+      "displayed": 0
+    },
+    {
+      "total": 99,
+      "displayed": 99
+    },
+    {
+      "total": 0,
+      "displayed": 0
+    },
+    {
+      "total": 99,
+      "displayed": 99
+    }
+  ],
+  "ok": false,
+  "error": "AssertionError [ERR_ASSERTION]: all 75 breathing drops fit the PNG transparent interior",
+  "diagnostics": {
+    "state": null,
+    "engine": {
+      "processed": 0,
+      "running": false,
+      "busy": false,
+      "phase": "ready",
+      "drawMode": "grouped"
+    },
+    "info": {
+      "rulesRevision": 280,
+      "batchSizes": [
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "receivedBalls": 0,
+      "processedBalls": 0,
+      "pendingNumbers": [],
+      "nextBatchEnd": 3,
+      "carryAtStart": {
+        "version": 247,
+        "bankUnits": 12345678900,
+        "removed": 99,
+        "feed": 450,
+        "roundId": "qa-v280-prior"
+      },
+      "bankUnits": 12345678900,
+      "removedTotal": 99,
+      "displayRemoved": 99,
+      "inheritedContinuation": true,
+      "earnedContinuation": false,
+      "continuationActive": true,
+      "allClearCount": 0,
+      "allClearWin": 0,
+      "lastAllClearWin": 0,
+      "counts": {
+        "line": 0,
+        "triangle": 0,
+        "hexagon": 0
+      }
+    },
+    "ui": {
+      "version": 280,
+      "artLoaded": true,
+      "imageFiles": [
+        "assets/sixdrop-art-v278/bottle.png",
+        "assets/sixdrop-art-v278/allclear-logo.png",
+        "assets/sixdrop-art-v278/progressive-frame.png",
+        "assets/sixdrop-art-v278/payout-frame.png",
+        "assets/sixdrop-art-v278/allclear-award.png"
+      ],
+      "errors": [],
+      "receipt": {
+        "epoch": "0/2",
+        "count": 0,
+        "win": 0,
+        "lastWin": 0
+      },
+      "progressive": {
+        "units": 12345678900,
+        "targetUnits": 12345678900
+      },
+      "removed": {
+        "total": 99,
+        "displayed": 99
+      },
+      "continuation": true,
+      "batchSizes": [
+        3,
+        2,
+        1,
+        1,
+        1
+      ],
+      "receivedBalls": 0,
+      "processedBalls": 0,
+      "roles": {
+        "line": {
+          "count": 0,
+          "rows": [
+            {
+              "count": 1,
+              "hundredths": 20,
+              "win": 60000
+            },
+            {
+              "count": 2,
+              "hundredths": 50,
+              "win": 150000
+            },
+            {
+              "count": 3,
+              "hundredths": 150,
+              "win": 450000
+            },
+            {
+              "count": 4,
+              "hundredths": 250,
+              "win": 750000
+            },
+            {
+              "count": 5,
+              "hundredths": 400,
+              "win": 1200000
+            }
+          ]
+        },
+        "triangle": {
+          "count": 0,
+          "rows": [
+            {
+              "count": 1,
+              "hundredths": 50,
+              "win": 150000
+            },
+            {
+              "count": 2,
+              "hundredths": 200,
+              "win": 600000
+            },
+            {
+              "count": 3,
+              "hundredths": 400,
+              "win": 1200000
+            },
+            {
+              "count": 4,
+              "hundredths": 700,
+              "win": 2100000
+            },
+            {
+              "count": 5,
+              "hundredths": 1100,
+              "win": 3300000
+            }
+          ]
+        },
+        "hexagon": {
+          "count": 0,
+          "rows": [
+            {
+              "count": 1,
+              "hundredths": 100,
+              "win": 300000
+            },
+            {
+              "count": 2,
+              "hundredths": 400,
+              "win": 1200000
+            },
+            {
+              "count": 3,
+              "hundredths": 800,
+              "win": 2400000
+            },
+            {
+              "count": 4,
+              "hundredths": 1400,
+              "win": 4200000
+            },
+            {
+              "count": 5,
+              "hundredths": 2200,
+              "win": 6600000
+            }
+          ]
+        }
+      },
+      "geometry": {
+        "step": 30.2,
+        "top": 45.307147625694796,
+        "radius": 15.1
+      },
+      "mainPaints": 36,
+      "miniPaints": 3,
+      "receiptEvents": 0,
+      "allClearBadgePaints": 0
+    },
+    "carry": {
+      "version": 247,
+      "bankUnits": 12345678900,
+      "removed": 99,
+      "feed": 450,
+      "roundId": "qa-v280-prior"
+    },
+    "app": {
+      "phase": "ready",
+      "draws": [],
+      "roundWins": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "totalWin": 0,
+      "credit": 1000000
+    },
+    "layout": {
+      "bottle": {
+        "left": 481.4375,
+        "top": 500.625,
+        "right": 773.9375,
+        "bottom": 793.125,
+        "width": 292.5,
+        "height": 292.5
+      },
+      "canvas": {
+        "left": 481.4375,
+        "top": 500.625,
+        "right": 773.9375,
+        "bottom": 793.125,
+        "width": 292.5,
+        "height": 292.5
+      },
+      "strip": {
+        "left": 481.4375,
+        "top": 450,
+        "right": 773.9375,
+        "bottom": 485.625,
+        "width": 292.5,
+        "height": 35.625
+      },
+      "logo": {
+        "left": 495.705078125,
+        "top": 454.21875,
+        "right": 566.955078125,
+        "bottom": 481.40625,
+        "width": 71.25,
+        "height": 27.1875
+      },
+      "bank": {
+        "left": 569.767578125,
+        "top": 454.21875,
+        "right": 693.517578125,
+        "bottom": 481.40625,
+        "width": 123.75,
+        "height": 27.1875
+      },
+      "digits": {
+        "left": 571.6407470703125,
+        "top": 453.80859375,
+        "right": 693.517578125,
+        "bottom": 481.8310546875,
+        "width": 121.8768310546875,
+        "height": 28.0224609375
+      },
+      "counter": {
+        "left": 481.4375,
+        "top": 793.125,
+        "right": 773.9375,
+        "bottom": 813.75,
+        "width": 292.5,
+        "height": 20.625
+      },
+      "counterDigits": {
+        "left": 633.7696533203125,
+        "top": 793.740234375,
+        "right": 654.40625,
+        "bottom": 813.134765625,
+        "width": 20.6365966796875,
+        "height": 19.39453125
+      },
+      "counterValue": {
+        "left": 631.90625,
+        "top": 793.125,
+        "right": 654.40625,
+        "bottom": 813.75,
+        "width": 22.5,
+        "height": 20.625
+      }
+    },
+    "bankText": "123456789",
+    "counterText": "99",
+    "receipt": {
+      "hidden": true,
+      "count": 0,
+      "win": 0,
+      "box": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "amount": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "digits": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      }
+    },
+    "batches": "",
+    "legacy": {
+      "fieldBefore": {
+        "display": "none",
+        "content": "none",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      },
+      "fieldAfter": {
+        "display": "none",
+        "content": "none",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      },
+      "viewportAfter": {
+        "display": "none",
+        "content": "none",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      },
+      "festivalBefore": {
+        "display": "none",
+        "content": "none",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      },
+      "festivalAfter": {
+        "display": "none",
+        "content": "none",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      },
+      "festival": {
+        "display": "block",
+        "content": "normal",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      },
+      "glass": {
+        "display": "none",
+        "content": "normal",
+        "background": "none",
+        "border": "0px",
+        "shadow": "none"
+      }
+    },
+    "roles": [
+      {
+        "role": "line",
+        "earned": 0,
+        "count": "×0",
+        "box": {
+          "left": 781.4375,
+          "top": 450,
+          "right": 884.5625,
+          "bottom": 563.4375,
+          "width": 103.125,
+          "height": 113.4375
+        },
+        "icon": {
+          "left": 809.09375,
+          "top": 452.8125,
+          "right": 856.90625,
+          "bottom": 484.6875,
+          "width": 47.8125,
+          "height": 31.875
+        },
+        "shape": "line",
+        "drops": 4,
+        "rows": [
+          {
+            "count": 1,
+            "label": "×1",
+            "hundredths": 20,
+            "win": 60000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 505.3125,
+              "right": 878,
+              "bottom": 515.80078125,
+              "width": 90,
+              "height": 10.48828125
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 505.3125,
+              "right": 878,
+              "bottom": 515.80078125,
+              "width": 67.5,
+              "height": 10.48828125
+            },
+            "digits": {
+              "left": 840.236328125,
+              "top": 504.931640625,
+              "right": 876.125,
+              "bottom": 515.244140625,
+              "width": 35.888671875,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 2,
+            "label": "×2",
+            "hundredths": 50,
+            "win": 150000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 515.80078125,
+              "right": 878,
+              "bottom": 526.3037109375,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 515.80078125,
+              "right": 878,
+              "bottom": 526.3037109375,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 833.05859375,
+              "top": 515.4345703125,
+              "right": 876.125,
+              "bottom": 525.7470703125,
+              "width": 43.06640625,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 3,
+            "label": "×3",
+            "hundredths": 150,
+            "win": 450000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 526.3037109375,
+              "right": 878,
+              "bottom": 536.806640625,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 526.3037109375,
+              "right": 878,
+              "bottom": 536.806640625,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 833.05859375,
+              "top": 525.9375,
+              "right": 876.125,
+              "bottom": 536.25,
+              "width": 43.06640625,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 4,
+            "label": "×4",
+            "hundredths": 250,
+            "win": 750000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 536.806640625,
+              "right": 878,
+              "bottom": 547.3095703125,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 536.806640625,
+              "right": 878,
+              "bottom": 547.3095703125,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 833.05859375,
+              "top": 536.4404296875,
+              "right": 876.125,
+              "bottom": 546.7529296875,
+              "width": 43.06640625,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 5,
+            "label": "×5",
+            "hundredths": 400,
+            "win": 1200000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 547.3095703125,
+              "right": 878,
+              "bottom": 557.7978515625,
+              "width": 90,
+              "height": 10.48828125
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 547.3095703125,
+              "right": 878,
+              "bottom": 557.7978515625,
+              "width": 67.5,
+              "height": 10.48828125
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 546.9287109375,
+              "right": 876.125,
+              "bottom": 557.2412109375,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          }
+        ]
+      },
+      {
+        "role": "triangle",
+        "earned": 0,
+        "count": "×0",
+        "box": {
+          "left": 781.4375,
+          "top": 567.1875,
+          "right": 884.5625,
+          "bottom": 680.625,
+          "width": 103.125,
+          "height": 113.4375
+        },
+        "icon": {
+          "left": 809.09375,
+          "top": 570,
+          "right": 856.90625,
+          "bottom": 601.875,
+          "width": 47.8125,
+          "height": 31.875
+        },
+        "shape": "triangle",
+        "drops": 6,
+        "rows": [
+          {
+            "count": 1,
+            "label": "×1",
+            "hundredths": 50,
+            "win": 150000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 622.5,
+              "right": 878,
+              "bottom": 632.98828125,
+              "width": 90,
+              "height": 10.48828125
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 622.5,
+              "right": 878,
+              "bottom": 632.98828125,
+              "width": 67.5,
+              "height": 10.48828125
+            },
+            "digits": {
+              "left": 833.05859375,
+              "top": 622.119140625,
+              "right": 876.125,
+              "bottom": 632.431640625,
+              "width": 43.06640625,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 2,
+            "label": "×2",
+            "hundredths": 200,
+            "win": 600000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 632.98828125,
+              "right": 878,
+              "bottom": 643.4912109375,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 632.98828125,
+              "right": 878,
+              "bottom": 643.4912109375,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 833.05859375,
+              "top": 632.6220703125,
+              "right": 876.125,
+              "bottom": 642.9345703125,
+              "width": 43.06640625,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 3,
+            "label": "×3",
+            "hundredths": 400,
+            "win": 1200000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 643.4912109375,
+              "right": 878,
+              "bottom": 653.994140625,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 643.4912109375,
+              "right": 878,
+              "bottom": 653.994140625,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 643.125,
+              "right": 876.125,
+              "bottom": 653.4375,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 4,
+            "label": "×4",
+            "hundredths": 700,
+            "win": 2100000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 653.994140625,
+              "right": 878,
+              "bottom": 664.4970703125,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 653.994140625,
+              "right": 878,
+              "bottom": 664.4970703125,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 653.6279296875,
+              "right": 876.125,
+              "bottom": 663.9404296875,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 5,
+            "label": "×5",
+            "hundredths": 1100,
+            "win": 3300000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 664.4970703125,
+              "right": 878,
+              "bottom": 674.9853515625,
+              "width": 90,
+              "height": 10.48828125
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 664.4970703125,
+              "right": 878,
+              "bottom": 674.9853515625,
+              "width": 67.5,
+              "height": 10.48828125
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 664.1162109375,
+              "right": 876.125,
+              "bottom": 674.4287109375,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          }
+        ]
+      },
+      {
+        "role": "hexagon",
+        "earned": 0,
+        "count": "×0",
+        "box": {
+          "left": 781.4375,
+          "top": 684.375,
+          "right": 884.5625,
+          "bottom": 797.8125,
+          "width": 103.125,
+          "height": 113.4375
+        },
+        "icon": {
+          "left": 809.09375,
+          "top": 687.1875,
+          "right": 856.90625,
+          "bottom": 719.0625,
+          "width": 47.8125,
+          "height": 31.875
+        },
+        "shape": "hexagon",
+        "drops": 6,
+        "rows": [
+          {
+            "count": 1,
+            "label": "×1",
+            "hundredths": 100,
+            "win": 300000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 739.6875,
+              "right": 878,
+              "bottom": 750.17578125,
+              "width": 90,
+              "height": 10.48828125
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 739.6875,
+              "right": 878,
+              "bottom": 750.17578125,
+              "width": 67.5,
+              "height": 10.48828125
+            },
+            "digits": {
+              "left": 833.05859375,
+              "top": 739.306640625,
+              "right": 876.125,
+              "bottom": 749.619140625,
+              "width": 43.06640625,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 2,
+            "label": "×2",
+            "hundredths": 400,
+            "win": 1200000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 750.17578125,
+              "right": 878,
+              "bottom": 760.6787109375,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 750.17578125,
+              "right": 878,
+              "bottom": 760.6787109375,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 749.8095703125,
+              "right": 876.125,
+              "bottom": 760.1220703125,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 3,
+            "label": "×3",
+            "hundredths": 800,
+            "win": 2400000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 760.6787109375,
+              "right": 878,
+              "bottom": 771.181640625,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 760.6787109375,
+              "right": 878,
+              "bottom": 771.181640625,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 760.3125,
+              "right": 876.125,
+              "bottom": 770.625,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 4,
+            "label": "×4",
+            "hundredths": 1400,
+            "win": 4200000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 771.181640625,
+              "right": 878,
+              "bottom": 781.6845703125,
+              "width": 90,
+              "height": 10.5029296875
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 771.181640625,
+              "right": 878,
+              "bottom": 781.6845703125,
+              "width": 67.5,
+              "height": 10.5029296875
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 770.8154296875,
+              "right": 876.125,
+              "bottom": 781.1279296875,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          },
+          {
+            "count": 5,
+            "label": "×5",
+            "hundredths": 2200,
+            "win": 6600000,
+            "current": false,
+            "box": {
+              "left": 788,
+              "top": 781.6845703125,
+              "right": 878,
+              "bottom": 792.1728515625,
+              "width": 90,
+              "height": 10.48828125
+            },
+            "cell": {
+              "left": 810.5,
+              "top": 781.6845703125,
+              "right": 878,
+              "bottom": 792.1728515625,
+              "width": 67.5,
+              "height": 10.48828125
+            },
+            "digits": {
+              "left": 825.8955078125,
+              "top": 781.3037109375,
+              "right": 876.125,
+              "bottom": 791.6162109375,
+              "width": 50.2294921875,
+              "height": 10.3125
+            }
+          }
+        ]
+      }
+    ],
+    "mini": {
+      "hidden": true,
+      "text": "全消し獲得",
+      "paints": 3
+    }
+  }
+}

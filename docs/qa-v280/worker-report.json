@@ -1,0 +1,55 @@
+{
+  "rulesRevision": 280,
+  "scope": "Real production Download computer and physical recording; published 278 final state into a fresh 280 round; nine checkpoints and native integer payout",
+  "apiRequests": [],
+  "assetFailures": [],
+  "ok": true,
+  "previousRevision": 278,
+  "initialRevision": 280,
+  "numbers": [
+    18,
+    19,
+    7,
+    10,
+    24,
+    16,
+    14,
+    2
+  ],
+  "checkpointProcessed": [
+    0,
+    0,
+    0,
+    3,
+    3,
+    5,
+    6,
+    7,
+    8
+  ],
+  "counts": {
+    "line": 2,
+    "triangle": 0,
+    "hexagon": 1
+  },
+  "oldWin": 541,
+  "win": 451,
+  "creditAfter": 997150,
+  "carry": {
+    "version": 247,
+    "bankUnits": 124915,
+    "removed": 83,
+    "feed": 155,
+    "roundId": "sixdrop-v280-download-native"
+  },
+  "computer": {
+    "enabled": true,
+    "ready": true,
+    "busy": false,
+    "completed": 1,
+    "lastMs": 47961,
+    "error": null,
+    "engine": "native-games-and-recorded-physics",
+    "visibleWindow": false
+  }
+}

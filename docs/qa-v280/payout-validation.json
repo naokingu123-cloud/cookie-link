@@ -1,0 +1,1148 @@
+{
+  "version": 280,
+  "generatedAt": "2026-11-20T14:31:31.752274+00:00",
+  "status": "complete",
+  "runtime": {
+    "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+    "groupedRevision": 278,
+    "currentRevision": 280,
+    "payoutHundredths": {
+      "line": [
+        0,
+        20,
+        50,
+        150,
+        250,
+        400,
+        550,
+        750,
+        950,
+        1200,
+        1500
+      ],
+      "triangle": [
+        0,
+        50,
+        200,
+        400,
+        700,
+        1100,
+        1600,
+        2200,
+        2900,
+        3700,
+        4500
+      ],
+      "hexagon": [
+        0,
+        100,
+        400,
+        800,
+        1400,
+        2200,
+        3200,
+        4400,
+        5800,
+        7400,
+        9000
+      ]
+    },
+    "supportProbabilities": [
+      [
+        50,
+        0.23
+      ],
+      [
+        90,
+        0.57
+      ],
+      [
+        100,
+        0.615
+      ],
+      [
+        150,
+        0.9
+      ]
+    ],
+    "supportProbabilitiesChanged": false,
+    "removedCreditPerBet": 0.05,
+    "paletteThreshold": 100
+  },
+  "decision": "Retain the published support curve. The paired payout-only effect is small; do not tune to the newly observed sample variation. Exact target percentages or short-run returns are not guaranteed.",
+  "scope": "BET100, independent board and uniform 8/25 draw streams; continuous carry across positive own-win rounds; own zero resets; excludes common Sugar/JPC, physical roulette distribution, other BETs and server feedback.",
+  "historicalRevaluation": {
+    "source": "docs/qa-v278/sixdrop-payout-validation.json",
+    "sourceSha256": "96e9e16650a295221cac8d4dfc696d0f4ee94754ffcc7bf1f6cddf8f892aa0cf",
+    "games": 32000,
+    "method": "Revalue the published independent count histograms with the approved v280 cumulative table. Board generation, RNG, all-clear money and positive/zero carry classification stay unchanged, so the revised means are exact for those same samples. New block intervals cannot be reconstructed from per-role aggregate histograms; no prior confidence interval is reused.",
+    "summary": [
+      {
+        "rate": 50,
+        "N": 8000,
+        "previousActual": 49.178125,
+        "actual": 49.261875,
+        "pairedPayoutDelta": 0.08375000000000021
+      },
+      {
+        "rate": 90,
+        "N": 8000,
+        "previousActual": 90.200625,
+        "actual": 90.559375,
+        "pairedPayoutDelta": 0.35875000000000407
+      },
+      {
+        "rate": 100,
+        "N": 8000,
+        "previousActual": 97.814375,
+        "actual": 98.245625,
+        "pairedPayoutDelta": 0.43124999999999497
+      },
+      {
+        "rate": 150,
+        "N": 8000,
+        "previousActual": 151.468125,
+        "actual": 152.104375,
+        "pairedPayoutDelta": 0.636250000000004
+      }
+    ],
+    "runs": [
+      {
+        "rate": 50,
+        "N": 4000,
+        "seed": 7483913,
+        "drawSeed": 3280919,
+        "seedLabel": "C",
+        "previousActual": 49.2,
+        "actual": 49.3,
+        "normal": 25.57,
+        "bonus": 23.73,
+        "pairedPayoutDelta": 0.10000000000000142
+      },
+      {
+        "rate": 90,
+        "N": 4000,
+        "seed": 7483913,
+        "drawSeed": 3280919,
+        "seedLabel": "C",
+        "previousActual": 88.3525,
+        "actual": 88.73750000000001,
+        "normal": 45.45,
+        "bonus": 43.2875,
+        "pairedPayoutDelta": 0.3850000000000051
+      },
+      {
+        "rate": 100,
+        "N": 4000,
+        "seed": 7483913,
+        "drawSeed": 3280919,
+        "seedLabel": "C",
+        "previousActual": 98.015,
+        "actual": 98.4975,
+        "normal": 49.2225,
+        "bonus": 49.275,
+        "pairedPayoutDelta": 0.4824999999999946
+      },
+      {
+        "rate": 150,
+        "N": 4000,
+        "seed": 7483913,
+        "drawSeed": 3280919,
+        "seedLabel": "C",
+        "previousActual": 156.6975,
+        "actual": 157.3275,
+        "normal": 69.215,
+        "bonus": 88.1125,
+        "pairedPayoutDelta": 0.6300000000000097
+      },
+      {
+        "rate": 50,
+        "N": 4000,
+        "seed": 5926319,
+        "drawSeed": 8721431,
+        "seedLabel": "D",
+        "previousActual": 49.15625,
+        "actual": 49.223749999999995,
+        "normal": 26.3375,
+        "bonus": 22.88625,
+        "pairedPayoutDelta": 0.067499999999999
+      },
+      {
+        "rate": 90,
+        "N": 4000,
+        "seed": 5926319,
+        "drawSeed": 8721431,
+        "seedLabel": "D",
+        "previousActual": 92.04875,
+        "actual": 92.38125,
+        "normal": 48.2475,
+        "bonus": 44.13375,
+        "pairedPayoutDelta": 0.3325000000000031
+      },
+      {
+        "rate": 100,
+        "N": 4000,
+        "seed": 5926319,
+        "drawSeed": 8721431,
+        "seedLabel": "D",
+        "previousActual": 97.61375,
+        "actual": 97.99375,
+        "normal": 50.535,
+        "bonus": 47.45875,
+        "pairedPayoutDelta": 0.37999999999999545
+      },
+      {
+        "rate": 150,
+        "N": 4000,
+        "seed": 5926319,
+        "drawSeed": 8721431,
+        "seedLabel": "D",
+        "previousActual": 146.23875,
+        "actual": 146.88125,
+        "normal": 70.0925,
+        "bonus": 76.78875,
+        "pairedPayoutDelta": 0.6424999999999983
+      }
+    ]
+  },
+  "newIndependentValidation": {
+    "uniqueGames": 20000,
+    "seed": 2967841,
+    "drawSeed": 5012773,
+    "method": "New seed pair was not used for v278 calibration. Initial 2000 rounds per setting were retained. The same 90/100 sequences were extended to 8000 after high observations; seeds and support probabilities were not changed. Extended runs include their initial 2000, so they are not double-counted. Block SE uses continuous blocks of 200; no carry reset between blocks.",
+    "initialRuns": [
+      {
+        "rate": 50,
+        "N": 2000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.23,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 46.765,
+        "reference278Actual": 46.655,
+        "pairedPayoutDelta": 0.11,
+        "naiveSE": 3.919860314794393,
+        "blockSize": 200,
+        "blockSE": 3.4251240853434775,
+        "blockMeans": [
+          34.7,
+          38.725,
+          56.05,
+          54.05,
+          30.85,
+          61.3,
+          47.4,
+          41.075,
+          60.675,
+          42.825
+        ],
+        "normal": 25.4,
+        "bonus": 21.365,
+        "winning": 0.221,
+        "allClear": 0.0405,
+        "removed": 26.8215,
+        "maximumCommittedBank": 2320,
+        "counts": {
+          "line": {
+            "0": 1561,
+            "1": 135,
+            "2": 122,
+            "3": 95,
+            "4": 71,
+            "5": 12,
+            "6": 2,
+            "7": 1,
+            "8": 1
+          },
+          "triangle": {
+            "0": 1982,
+            "1": 18
+          },
+          "hexagon": {
+            "0": 1985,
+            "1": 15
+          }
+        },
+        "ms": 18532
+      },
+      {
+        "rate": 90,
+        "N": 2000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.57,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 113.0275,
+        "reference278Actual": 112.5225,
+        "pairedPayoutDelta": 0.505,
+        "naiveSE": 7.672567912496767,
+        "blockSize": 200,
+        "blockSE": 6.345828080540613,
+        "blockMeans": [
+          129,
+          137.875,
+          146.625,
+          84.375,
+          96.775,
+          97.95,
+          96.575,
+          115.25,
+          108.75,
+          117.1
+        ],
+        "normal": 55.285,
+        "bonus": 57.7425,
+        "winning": 0.376,
+        "allClear": 0.085,
+        "removed": 40.953,
+        "maximumCommittedBank": 4165,
+        "counts": {
+          "line": {
+            "0": 1251,
+            "1": 221,
+            "2": 187,
+            "3": 164,
+            "4": 103,
+            "5": 35,
+            "6": 21,
+            "7": 8,
+            "8": 8,
+            "9": 1,
+            "10": 1
+          },
+          "triangle": {
+            "0": 1966,
+            "1": 34
+          },
+          "hexagon": {
+            "0": 1977,
+            "1": 21,
+            "2": 2
+          }
+        },
+        "ms": 26767
+      },
+      {
+        "rate": 100,
+        "N": 2000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.615,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 123.4625,
+        "reference278Actual": 122.8675,
+        "pairedPayoutDelta": 0.595,
+        "naiveSE": 8.30266519238702,
+        "blockSize": 200,
+        "blockSE": 9.772492751766734,
+        "blockMeans": [
+          126.475,
+          146.375,
+          130.675,
+          99.2,
+          98.275,
+          97.1,
+          113.2,
+          198.925,
+          107.875,
+          116.525
+        ],
+        "normal": 58.325,
+        "bonus": 65.1375,
+        "winning": 0.394,
+        "allClear": 0.0895,
+        "removed": 42.8135,
+        "maximumCommittedBank": 4170,
+        "counts": {
+          "line": {
+            "0": 1215,
+            "1": 230,
+            "2": 192,
+            "3": 172,
+            "4": 112,
+            "5": 38,
+            "6": 23,
+            "7": 10,
+            "8": 6,
+            "9": 1,
+            "10": 1
+          },
+          "triangle": {
+            "0": 1962,
+            "1": 38
+          },
+          "hexagon": {
+            "0": 1976,
+            "1": 22,
+            "2": 2
+          }
+        },
+        "ms": 27303
+      },
+      {
+        "rate": 150,
+        "N": 2000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.9,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 159.755,
+        "reference278Actual": 159.255,
+        "pairedPayoutDelta": 0.5,
+        "naiveSE": 10.031724427410275,
+        "blockSize": 200,
+        "blockSE": 9.414335847230245,
+        "blockMeans": [
+          121.125,
+          153.375,
+          181.35,
+          193.5,
+          142.525,
+          164.675,
+          120.2,
+          191.5,
+          133.85,
+          195.45
+        ],
+        "normal": 73.15,
+        "bonus": 86.605,
+        "winning": 0.477,
+        "allClear": 0.099,
+        "removed": 52.499,
+        "maximumCommittedBank": 4410,
+        "counts": {
+          "line": {
+            "0": 1052,
+            "1": 255,
+            "2": 252,
+            "3": 205,
+            "4": 129,
+            "5": 52,
+            "6": 35,
+            "7": 9,
+            "8": 5,
+            "9": 3,
+            "10": 3
+          },
+          "triangle": {
+            "0": 1943,
+            "1": 57
+          },
+          "hexagon": {
+            "0": 1969,
+            "1": 31
+          }
+        },
+        "ms": 32814
+      }
+    ],
+    "finalRuns": [
+      {
+        "rate": 50,
+        "N": 2000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.23,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 46.765,
+        "reference278Actual": 46.655,
+        "pairedPayoutDelta": 0.11,
+        "naiveSE": 3.919860314794393,
+        "blockSize": 200,
+        "blockSE": 3.4251240853434775,
+        "blockMeans": [
+          34.7,
+          38.725,
+          56.05,
+          54.05,
+          30.85,
+          61.3,
+          47.4,
+          41.075,
+          60.675,
+          42.825
+        ],
+        "normal": 25.4,
+        "bonus": 21.365,
+        "winning": 0.221,
+        "allClear": 0.0405,
+        "removed": 26.8215,
+        "maximumCommittedBank": 2320,
+        "counts": {
+          "line": {
+            "0": 1561,
+            "1": 135,
+            "2": 122,
+            "3": 95,
+            "4": 71,
+            "5": 12,
+            "6": 2,
+            "7": 1,
+            "8": 1
+          },
+          "triangle": {
+            "0": 1982,
+            "1": 18
+          },
+          "hexagon": {
+            "0": 1985,
+            "1": 15
+          }
+        },
+        "ms": 18532
+      },
+      {
+        "rate": 90,
+        "N": 8000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.57,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 99.715625,
+        "reference278Actual": 99.411875,
+        "pairedPayoutDelta": 0.30375,
+        "naiveSE": 3.4081291331509758,
+        "blockSize": 200,
+        "blockSE": 4.173176103169011,
+        "blockMeans": [
+          129,
+          137.875,
+          146.625,
+          84.375,
+          96.775,
+          97.95,
+          96.575,
+          115.25,
+          108.75,
+          117.1,
+          55.85,
+          120.725,
+          81.825,
+          86.35,
+          104.75,
+          156.45,
+          68.675,
+          89.9,
+          98.675,
+          77.85,
+          84.2,
+          86.425,
+          101.75,
+          167.975,
+          68,
+          93.15,
+          71.8,
+          93.975,
+          109.875,
+          89.675,
+          88.85,
+          93.3,
+          102.4,
+          116.9,
+          125.15,
+          62.55,
+          80.1,
+          145.1,
+          63.6,
+          72.525
+        ],
+        "normal": 48.90875,
+        "bonus": 50.806875,
+        "winning": 0.355125,
+        "allClear": 0.0785,
+        "removed": 39.5165,
+        "maximumCommittedBank": 4165,
+        "counts": {
+          "line": {
+            "0": 5175,
+            "1": 831,
+            "2": 759,
+            "3": 611,
+            "4": 376,
+            "5": 142,
+            "6": 58,
+            "7": 29,
+            "8": 14,
+            "9": 2,
+            "10": 1,
+            "11": 1,
+            "12": 1
+          },
+          "triangle": {
+            "0": 7816,
+            "1": 181,
+            "2": 3
+          },
+          "hexagon": {
+            "0": 7911,
+            "1": 86,
+            "2": 3
+          }
+        },
+        "ms": 95571
+      },
+      {
+        "rate": 100,
+        "N": 8000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.615,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 107.544375,
+        "reference278Actual": 107.208125,
+        "pairedPayoutDelta": 0.33625,
+        "naiveSE": 3.5985942008800356,
+        "blockSize": 200,
+        "blockSE": 4.133718010380358,
+        "blockMeans": [
+          126.475,
+          146.375,
+          130.675,
+          99.2,
+          98.275,
+          97.1,
+          113.2,
+          198.925,
+          107.875,
+          116.525,
+          82.9,
+          122.475,
+          85.175,
+          102.1,
+          105.45,
+          154,
+          87.1,
+          92.075,
+          107.575,
+          88.55,
+          91.75,
+          82.55,
+          112.225,
+          167.05,
+          74.75,
+          94.675,
+          98.35,
+          102.875,
+          109.575,
+          92.6,
+          96.7,
+          94.975,
+          112.1,
+          114.525,
+          124.45,
+          67.575,
+          104.275,
+          140.675,
+          81.575,
+          76.5
+        ],
+        "normal": 51.59625,
+        "bonus": 55.948125,
+        "winning": 0.36875,
+        "allClear": 0.08275,
+        "removed": 41.03075,
+        "maximumCommittedBank": 4170,
+        "counts": {
+          "line": {
+            "0": 5063,
+            "1": 866,
+            "2": 779,
+            "3": 623,
+            "4": 403,
+            "5": 152,
+            "6": 61,
+            "7": 34,
+            "8": 12,
+            "9": 3,
+            "10": 2,
+            "11": 1,
+            "12": 1
+          },
+          "triangle": {
+            "0": 7805,
+            "1": 192,
+            "2": 3
+          },
+          "hexagon": {
+            "0": 7906,
+            "1": 91,
+            "2": 3
+          }
+        },
+        "ms": 96202
+      },
+      {
+        "rate": 150,
+        "N": 2000,
+        "seed": 2967841,
+        "drawSeed": 5012773,
+        "bet": 100,
+        "rulesRevision": 280,
+        "coreSha256": "68a9ec2d448b0d67205ad6927a819b871a440e906486ce55952c6a918e87e7f3",
+        "batchSizes": [
+          3,
+          2,
+          1,
+          1,
+          1
+        ],
+        "payoutTable": {
+          "line": [
+            0,
+            20,
+            50,
+            150,
+            250,
+            400,
+            550,
+            750,
+            950,
+            1200,
+            1500
+          ],
+          "triangle": [
+            0,
+            50,
+            200,
+            400,
+            700,
+            1100,
+            1600,
+            2200,
+            2900,
+            3700,
+            4500
+          ],
+          "hexagon": [
+            0,
+            100,
+            400,
+            800,
+            1400,
+            2200,
+            3200,
+            4400,
+            5800,
+            7400,
+            9000
+          ]
+        },
+        "supportProbability": 0.9,
+        "geometry": "browser CookieUpgradePatch",
+        "scope": "Independent board and uniform 8/25 draw streams; continuous positive-game carry; own zero resets; shared Sugar/JPC excluded; no retuning to validation samples",
+        "actual": 159.755,
+        "reference278Actual": 159.255,
+        "pairedPayoutDelta": 0.5,
+        "naiveSE": 10.031724427410275,
+        "blockSize": 200,
+        "blockSE": 9.414335847230245,
+        "blockMeans": [
+          121.125,
+          153.375,
+          181.35,
+          193.5,
+          142.525,
+          164.675,
+          120.2,
+          191.5,
+          133.85,
+          195.45
+        ],
+        "normal": 73.15,
+        "bonus": 86.605,
+        "winning": 0.477,
+        "allClear": 0.099,
+        "removed": 52.499,
+        "maximumCommittedBank": 4410,
+        "counts": {
+          "line": {
+            "0": 1052,
+            "1": 255,
+            "2": 252,
+            "3": 205,
+            "4": 129,
+            "5": 52,
+            "6": 35,
+            "7": 9,
+            "8": 5,
+            "9": 3,
+            "10": 3
+          },
+          "triangle": {
+            "0": 1943,
+            "1": 57
+          },
+          "hexagon": {
+            "0": 1969,
+            "1": 31
+          }
+        },
+        "ms": 32814
+      }
+    ]
+  }
+}
