@@ -1,0 +1,184 @@
+{
+  "build": "20261120-v282-sixdrop-compact-long-amounts",
+  "commit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "status": "published-and-verified",
+  "highAmountCua": {
+    "fixture": "Preview-only visible virtual-credit setup control; no production control, emitted awards, random advancement or external API. Production bankSpace and CSS used.",
+    "viewport": 390,
+    "bet": 300000,
+    "bankText": "1006234",
+    "bank": {
+      "left": 98.490234375,
+      "right": 203.302734375,
+      "width": 104.8125
+    },
+    "digits": {
+      "left": 98.48729705810548,
+      "right": 203.302734375,
+      "width": 104.81543731689452
+    },
+    "logoRight": 95.240234375,
+    "gap": 3.2470626831054688,
+    "contained": true,
+    "nativeAvailableWidth": 131,
+    "screen": "sixdrop-high-amount.jpg"
+  },
+  "zeroWidthFix": {
+    "nativeMinWidth": 26,
+    "expected390pxWidth": 21.125,
+    "browserAssertionUnchanged": true
+  },
+  "audioRetry": {
+    "primaryAttemptsMaximum": 2,
+    "notFound404Or410Retries": 0,
+    "workers": 4,
+    "unitTest": "passed",
+    "bankBytesChanged": false,
+    "browserConfirmed": true,
+    "case": "choco",
+    "primaryRetries": 6,
+    "observedErrorName": "AbortError",
+    "observedErrorMessage": "signal is aborted without reason",
+    "fallbackLoadsAfterRecovery": 0,
+    "decodedCurrentSamples": 97
+  },
+  "pending": [],
+  "tree": "e0c6d21ecd8cec5c823307ca0c34380a79796058",
+  "repository": "naokingu123-cloud/cookie-link",
+  "publicUrl": "https://naokingu123-cloud.github.io/cookie-link/",
+  "runtimeCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "testOnlyFollowupCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+  "testOnlyFollowupChanges": [
+    "tests/sugar-challenge-v254-browser.mjs"
+  ],
+  "runtimeUnchangedByTestFollowup": true,
+  "pages": {
+    "runId": 44759128472,
+    "status": "success",
+    "jobs": {
+      "build": "success",
+      "report-build-status": "success",
+      "deploy": "success"
+    }
+  },
+  "audio": {
+    "runId": 44759129889,
+    "status": "success",
+    "browserCasesPassed": 15,
+    "browserCasesPlanned": 15,
+    "decodedPerCase": 97,
+    "fallbackLoads": 0,
+    "audioErrors": 0,
+    "matchingActualAwardIdentityCases": 13,
+    "mutedOrMiniCasesWithNoAwardStarts": 2,
+    "publicHashesMatched": 175,
+    "publicHashesExpected": 175,
+    "evidence": "audio/ci-summary-v282.json",
+    "manifest": "audio/manifest.json"
+  },
+  "downloadIntegrity": {
+    "version": "20261120-v282-sixdrop-compact-long-amounts",
+    "manifestSha256": "5d24e6aeb022e3f58f6e2b09c530a6b710af6c10f53d7f98d37c57bd3edbff65",
+    "files": 853,
+    "bytes": 238630608,
+    "declaredBytes": 238630608,
+    "mismatches": [],
+    "allLocalHashesMatch": true,
+    "runtimeCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+  },
+  "publicCua": {
+    "observedUrl": "https://naokingu123-cloud.github.io/cookie-link/?edition=local&appv=20261120-v282-sixdrop-compact-long-amounts",
+    "status": "passed-visual-check",
+    "actualMode": "isolated local virtual credit, manual-number mode",
+    "screenshot": "sixdrop-public.jpg",
+    "viewportWidth": 1363,
+    "documentScrollWidth": 1363,
+    "cssPin": "assets/sixdrop-ui-v278.css?v=282",
+    "removedLabel": "消したドロップ合計 0個",
+    "notes": [
+      "Observed actual bottle, enlarged drops, compact all-clear, removed-count caption and role diagrams.",
+      "Cloud browser could not load external 3D roulette; used the existing visible manual-number mode.",
+      "No production settlement or hardware acoustic listening is claimed."
+    ]
+  },
+  "windowsHost": {
+    "updated": false,
+    "restarted": false
+  },
+  "initialReleaseEvidence": "../qa-v281/verification-summary.json",
+  "six": {
+    "runId": 44759129758,
+    "status": "success",
+    "runtimeHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "jobsPassed": 5,
+    "browserCasesPassed": 4,
+    "browserCasesPlanned": 4,
+    "publicHashesMatched": 24,
+    "publicHashesExpected": 24,
+    "evidence": "six/summary.json",
+    "manifest": "six/manifest.json"
+  },
+  "sugar": {
+    "status": "success",
+    "runId": 44760996283,
+    "validationHead": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+    "runtimeHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "runtimeUnchangedSinceAudioAndSixValidation": true,
+    "jobsPassed": 5,
+    "rulesAndMigration": "passed",
+    "transparentArtwork": "passed",
+    "panel": "passed",
+    "downloadOfflineResume": "passed",
+    "publicHashesMatched": 28,
+    "publicHashesExpected": 28,
+    "animationWait": {
+      "target": "title CSSAnimation sc254-jpc",
+      "requiresActualAnimation": true,
+      "playState": "finished",
+      "currentTimePositive": true,
+      "maximumWaitMs": 15000,
+      "boundsAreWaitCondition": false,
+      "existingBoundsAssertionUnchanged": true
+    },
+    "earlierRuntimeDownload": {
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+      "runId": 44759130197,
+      "downloadJobStatus": "success",
+      "overallRunStatus": "failure",
+      "overallFailure": "old Sugar panel test measured CSS entrance before completion",
+      "playedBalls": 8,
+      "paidGames": 10,
+      "exactlyOnceSettlement": "passed",
+      "wallet": 999344,
+      "walletRevision": 2,
+      "rounds": 1
+    },
+    "evidence": "sugar/summary.json",
+    "manifest": "sugar/artifact-evidence-manifest.json",
+    "finalDownload": {
+      "actualBalls": 8,
+      "allTenGamesPaid": true,
+      "offlinePendingCompletionObserved": true,
+      "reconnectedSessionStatus": "complete",
+      "sameSessionAfterServerRestart": true,
+      "creditPreservedAfterServerRestart": true,
+      "walletCredit": 1000242,
+      "walletRevision": 2,
+      "rounds": 1,
+      "duplicateCompleteWalletAndStatsUnchanged": true,
+      "pageErrors": 0,
+      "externalRequests": 0,
+      "webSockets": 0
+    },
+    "publicReport": "sugar/public-verification.json"
+  },
+  "testOnlyFollowupPages": {
+    "runId": 44760996057,
+    "status": "success",
+    "runtimeUnchanged": true
+  },
+  "verificationScope": "Final Six 4-case, audio 15-case, Sugar migration/display/offline-resume suites, public static hashes and manual CUA display. Historical workflows with obsolete pin/layout assumptions are recorded separately; this does not claim every workflow in the repository is green.",
+  "publicVerificationCompletedAtUtc": "2026-11-20T15:25:56.917Z",
+  "publicVerificationCompletedAtJst": "2026-11-21T00:25:56.917+09:00",
+  "documentationParentCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56"
+}

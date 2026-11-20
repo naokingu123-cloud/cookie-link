@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "validationHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "workflowRunId": 44759129758,
+  "workflowRun": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129758",
+  "completedAt": "2026-11-20T15:15:33Z",
+  "files": [
+    {
+      "path": "browser-shard-0.report.json.gz",
+      "bytes": 9806,
+      "sha256": "8b247122c48a5553eb1d4979ea325ba2db7f0b548d0408a99872971c59d3ae56"
+    },
+    {
+      "path": "browser-shard-1.report.json.gz",
+      "bytes": 4102,
+      "sha256": "826c99339aec2d1406350571b1f53fd03294ee0a631932500befb74bda824982"
+    },
+    {
+      "path": "browser-shard-2.report.json.gz",
+      "bytes": 2828,
+      "sha256": "220e3ab507a24b3863ff0f247c92f5c980418311f5e34fd71b9c2d99125d05f0"
+    },
+    {
+      "path": "desktop-zero-reset.png",
+      "bytes": 1128464,
+      "sha256": "42879bd4ac38851ef4bac356c31df177d510b5ab2c92c9e887c587aa5614312d"
+    },
+    {
+      "path": "mobile-high-amount.png",
+      "bytes": 560741,
+      "sha256": "863bc75948e7b0af63718b97ef04ffb5cacf417a9096b1718ab09ccacb482c0b"
+    },
+    {
+      "path": "public-report.json",
+      "bytes": 11021,
+      "sha256": "f5a1dca93b352720601d179db8ca24ec5f46b38bf00be92694ee56cc6fe14ff5"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 14711,
+      "sha256": "e3b04fc5d9954d597cacb1fe8a5dc90a056eab1d2e13d4dbe15e781482e859a1"
+    },
+    {
+      "path": "workflow.json",
+      "bytes": 12722,
+      "sha256": "8d1cd47d743bb75e922ef279c554513c3721ac342b9534c18b14b133998fc317"
+    },
+    {
+      "path": "workflow.yml",
+      "bytes": 4866,
+      "sha256": "4359aa9bab53e380fd9182ffea70b59728517e017f3e463505f38fad6a568326"
+    }
+  ],
+  "compressedReports": [
+    {
+      "file": "browser-shard-0.report.json.gz",
+      "artifactName": "sixdrop-v278-display-0",
+      "sourceEntry": "report.json",
+      "sourceBytes": 114101,
+      "sourceSha256": "f72cdc2efd054404ee9243506993d84cb9d0580e38c6632bd36eff253fd72802",
+      "compressedBytes": 9806,
+      "compressedSha256": "8b247122c48a5553eb1d4979ea325ba2db7f0b548d0408a99872971c59d3ae56",
+      "gzipMtime": 0,
+      "decompressedByteIdentical": true
+    },
+    {
+      "file": "browser-shard-1.report.json.gz",
+      "artifactName": "sixdrop-v278-display-1",
+      "sourceEntry": "report.json",
+      "sourceBytes": 41282,
+      "sourceSha256": "92a885d9c21275d28f4bfda3dbd33651eff9007e4e7a67ddef0756217a574440",
+      "compressedBytes": 4102,
+      "compressedSha256": "826c99339aec2d1406350571b1f53fd03294ee0a631932500befb74bda824982",
+      "gzipMtime": 0,
+      "decompressedByteIdentical": true
+    },
+    {
+      "file": "browser-shard-2.report.json.gz",
+      "artifactName": "sixdrop-v278-display-2",
+      "sourceEntry": "report.json",
+      "sourceBytes": 36305,
+      "sourceSha256": "24929b2ea545eebbe1ac2390ccd72a394930079cb176bf2c06e41fdc2f1289f7",
+      "compressedBytes": 2828,
+      "compressedSha256": "220e3ab507a24b3863ff0f247c92f5c980418311f5e34fd71b9c2d99125d05f0",
+      "gzipMtime": 0,
+      "decompressedByteIdentical": true
+    }
+  ],
+  "sourceArtifacts": [
+    {
+      "id": 14641361326,
+      "name": "sixdrop-v278-public",
+      "size_in_bytes": 2386,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14641361326",
+      "digest": "sha256:bd5b0cf602bd79fdc94574878272d4d3e22b0803073e71b756b12503fb1855ae",
+      "created_at": "2026-11-20T15:15:30Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    },
+    {
+      "id": 14640652383,
+      "name": "sixdrop-v278-display-1",
+      "size_in_bytes": 3821917,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14640652383",
+      "digest": "sha256:f9623f08314fce2b6b73dad92a4d1cefdf4e2ff1de224801a7ab9c1b2431aed6",
+      "created_at": "2026-11-20T15:05:25Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    },
+    {
+      "id": 14640269928,
+      "name": "sixdrop-v278-display-0",
+      "size_in_bytes": 11091731,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14640269928",
+      "digest": "sha256:1f85e26db5e08dacc439c6f739cbaa30c06063690bc5891bbd31559085e09dae",
+      "created_at": "2026-11-20T15:14:52Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    },
+    {
+      "id": 14638974115,
+      "name": "sixdrop-v278-display-2",
+      "size_in_bytes": 3274389,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14638974115",
+      "digest": "sha256:3ca7a0a2a9a66439eb5e39d49be02a807a7de7f797f4874471041d84691ddb87",
+      "created_at": "2026-11-20T15:04:59Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    }
+  ],
+  "originalFailureEvidence": "Scratch QA retained under qa-v280-ci/004f088; not mixed with successful evidence.",
+  "notes": [
+    "Reports decompress byte-for-byte to downloaded CI artifacts.",
+    "Gzip timestamp is 0 and the filename header is omitted.",
+    "Two original PNGs are copied without image transformation.",
+    "No workflow assertion, runtime or publish operation is performed by this packaging step."
+  ]
+}

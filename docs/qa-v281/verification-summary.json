@@ -1,0 +1,287 @@
+{
+  "version": "20261120-v281-casino-sound-and-sixdrop-refinement",
+  "remoteCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+  "remoteTree": "cf61954f8489bcb56b0354cc7995d2a65128665c",
+  "parentCommit": "d16b3249d34fd2d43581d2fc0f3b611508401099",
+  "localCommit": "93cf5e2",
+  "status": "superseded-after-initial-ci-failures",
+  "initialCiFullyPassed": false,
+  "supersededByBuild": "20261120-v282-sixdrop-compact-long-amounts",
+  "supersededByHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "finalEvidence": "../qa-v282/verification-summary.json",
+  "recordScope": "Historical results of the initial v281 publication only. The preserved local/manual successes do not imply that initial CI passed; corrected-build verification belongs to finalEvidence.",
+  "legacyWorkflowTriage": {
+    "evidence": "preliminary/legacy-initial-triage.json",
+    "classifiedFirstFailures": 4,
+    "cachePinAssertions": 3,
+    "singleVersusGroupedAssertion": 1,
+    "scope": "Read-only first-failure matches against prior recorded mismatches. Later skipped or unexecuted checks are not claimed to pass; this is not a final status of every workflow."
+  },
+  "initialEvidenceManifest": "preliminary/manifest.json",
+  "changedFiles": 145,
+  "releasedBytes": 25667723,
+  "downloadManifest": {
+    "files": 853,
+    "bytes": 238629045,
+    "allLocalHashesMatch": true
+  },
+  "audio": {
+    "newCues": 97,
+    "legacyFallbackCues": 41,
+    "licensedSources": 9,
+    "newCueBytes": 24110208,
+    "sourceSites": [
+      "https://kenney.nl/assets/casino-audio",
+      "https://kenney.nl/assets/music-jingles",
+      "https://soundbible.com/2081-Coin-Drop.html"
+    ],
+    "unitAndPcmChecks": "passed"
+  },
+  "localChecks": {
+    "awardPresentation": "passed",
+    "allTenNativeFixtures": "passed",
+    "audioRoutes": "passed",
+    "old41AndNew97Pcm": "passed",
+    "sixCurrentAndLegacyRules": "passed",
+    "sixHostRestoreAndSettlement": "passed",
+    "downloadCache": "passed",
+    "localDebug": "passed",
+    "completeAssetHashes": "853/853"
+  },
+  "cua": {
+    "desktop": "passed",
+    "mobile": {
+      "cssViewportWidth": 390,
+      "scrollWidth": 390,
+      "scaledBottleHeadingAndCountWidth": 253.5
+    },
+    "actualManualEightBalls": true,
+    "mutedAndUnmutedViaVisibleControl": true,
+    "audioWarningsObserved": 0,
+    "audioErrorsObserved": 0,
+    "limitations": [
+      "Cloud preview cannot load the external 3D roulette; manual-number mode uses isolated virtual credit.",
+      "No claim of acoustic-device listening or Windows-host deployment."
+    ]
+  },
+  "workflows": {
+    "pages": {
+      "runId": 44756907800,
+      "status": "completed",
+      "conclusion": "success",
+      "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756907800",
+      "updatedAt": "2026-11-20T14:52:52Z",
+      "jobs": [
+        {
+          "jobId": 136358918912,
+          "name": "build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "jobId": 136359536409,
+          "name": "report-build-status",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "jobId": 136359536451,
+          "name": "deploy",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "verificationScope": "Build and deployment succeeded for this initial v281 head; this does not override the failed Six/audio gates or their skipped public-file checks."
+    },
+    "six": {
+      "runId": 44756910150,
+      "status": "completed",
+      "conclusion": "failure",
+      "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910150",
+      "rulesAndContinuation": "passed",
+      "browserCases": {
+        "planned": 4,
+        "executed": 4,
+        "passed": 2,
+        "failed": 2,
+        "results": [
+          {
+            "case": "desktop-cycle",
+            "status": "failed",
+            "message": "AssertionError [ERR_ASSERTION]: progressive digits have visible space",
+            "bankText": "0",
+            "bankWidth": 18.92578125,
+            "requiredWidthGreaterThan": 20,
+            "detail": "A correctly reset single zero fit its box, but its natural rendered width did not meet the visibility assertion."
+          },
+          {
+            "case": "mobile-high-amount",
+            "status": "failed",
+            "message": "progressive digits do not clip",
+            "bankText": "1006234",
+            "overflowLeft": 6.34765625,
+            "logoOverlap": 3.09765625,
+            "detail": "The fitter used a fixed 146 CSS px budget with continuation, but flex reduced the bank to 133.4375 CSS px; the 141.25 CSS px digit face extended into the logo."
+          },
+          {
+            "case": "mini-allclear",
+            "status": "passed"
+          },
+          {
+            "case": "download-worker",
+            "status": "passed"
+          }
+        ]
+      },
+      "publicAssets": {
+        "status": "skipped",
+        "reason": "The browser display prerequisites failed."
+      },
+      "evidence": "preliminary/sixdrop-initial-triage.json",
+      "browserReports": [
+        "preliminary/sixdrop-004f088-initial-shard-0.json.gz",
+        "preliminary/sixdrop-004f088-initial-shard-1.json.gz",
+        "preliminary/sixdrop-004f088-initial-shard-2.json.gz"
+      ]
+    },
+    "audio": {
+      "runId": 44756910214,
+      "status": "completed",
+      "conclusion": "failure",
+      "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910214",
+      "contractAndPcm": "passed",
+      "browserCases": {
+        "planned": 15,
+        "executed": 15,
+        "passed": 13,
+        "failed": 2,
+        "failedCases": [
+          {
+            "case": "cookie",
+            "message": "AssertionError [ERR_ASSERTION]: the complete current bank needs no legacy fallback\n\n6 !== 0\n",
+            "loadedSamples": 97,
+            "legacyFallbackLoads": 6,
+            "samples": [
+              "hit-canyon",
+              "drill",
+              "ore",
+              "melt",
+              "arrival",
+              "hammer-impact"
+            ]
+          },
+          {
+            "case": "candy",
+            "message": "AssertionError [ERR_ASSERTION]: the complete current bank needs no legacy fallback\n\n6 !== 0\n",
+            "loadedSamples": 97,
+            "legacyFallbackLoads": 6,
+            "samples": [
+              "drill",
+              "hit-canyon",
+              "ore",
+              "melt",
+              "arrival",
+              "hammer-impact"
+            ]
+          }
+        ],
+        "failureScope": "The first cookie and candy cases each decoded 97 samples but used six legacy fallbacks, violating the required current-bank fallback0 assertion. Their original primary-load exceptions were not recorded, so the initial-head timeout cause remained an inference."
+      },
+      "publicAssets": {
+        "status": "skipped",
+        "reason": "Two browser cases failed the current-bank fallback0 assertion."
+      },
+      "evidence": "preliminary/ci-summary-v281.json",
+      "browserReports": [
+        "preliminary/casino-audio-004f088-initial-shard-0.json.gz",
+        "preliminary/casino-audio-004f088-initial-shard-1.json.gz",
+        "preliminary/casino-audio-004f088-initial-shard-2.json.gz"
+      ]
+    },
+    "sugarRegression": {
+      "runId": 44756910008,
+      "status": "completed",
+      "conclusion": "failure",
+      "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910008",
+      "updatedAt": "2026-11-20T14:54:27Z",
+      "jobs": [
+        {
+          "jobId": 136358916919,
+          "name": "native-browser-display (transparent-art, tests/sugar-v279-browser.mjs, qa-sugar-v279)",
+          "status": "completed",
+          "conclusion": "success",
+          "failedSteps": [],
+          "skippedSteps": [],
+          "actualBrowserTestExecuted": true,
+          "actualBrowserTestConclusion": "success"
+        },
+        {
+          "jobId": 136358917357,
+          "name": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedSteps": [
+            "Installed Chrome and Japanese fonts on the pinned runner"
+          ],
+          "skippedSteps": [
+            "Real Sugar artwork, JPC display and preserved native state",
+            "Run actions/upload-artifact@v4",
+            "Post Run actions/setup-node@v4"
+          ],
+          "exitCode": 124,
+          "actualBrowserTestExecuted": false,
+          "failurePhase": "Japanese-font package installation during runner setup",
+          "logUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910008/job/136358917357"
+        },
+        {
+          "jobId": 136358917558,
+          "name": "download-offline-resume",
+          "status": "completed",
+          "conclusion": "failure",
+          "failedSteps": [
+            "Installed Chrome and Japanese fonts on the pinned runner"
+          ],
+          "skippedSteps": [
+            "Real recording, offline resume, eight-ball completion and exactly-once credit",
+            "Run actions/upload-artifact@v4",
+            "Post Run actions/setup-node@v4"
+          ],
+          "exitCode": 124,
+          "actualBrowserTestExecuted": false,
+          "failurePhase": "Japanese-font package installation during runner setup",
+          "logUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910008/job/136358917558"
+        },
+        {
+          "jobId": 136358917659,
+          "name": "rules-and-migration",
+          "status": "completed",
+          "conclusion": "success",
+          "failedSteps": [],
+          "skippedSteps": []
+        },
+        {
+          "jobId": 136362592237,
+          "name": "public-assets",
+          "status": "completed",
+          "conclusion": "skipped",
+          "failedSteps": [],
+          "skippedSteps": []
+        }
+      ],
+      "failureScope": "Two Japanese-font setup steps timed out with exit 124 before their actual browser checks. The transparent-art browser job and rules-and-migration job did pass.",
+      "setupTimeoutSeconds": 360,
+      "publicAssets": {
+        "status": "skipped",
+        "reason": "The sugar-panel and download-offline-resume prerequisites failed during setup."
+      }
+    }
+  },
+  "windowsHost": {
+    "updated": false,
+    "restarted": false
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "recordedAt": "2026-11-20T15:04:26.197517+00:00",
+  "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+  "sourceBuild": "20261120-v281-casino-sound-and-sixdrop-refinement",
+  "status": "initial-failed-candidate-evidence-not-final-pass",
+  "scope": "Original first-attempt browser reports and compact triage from v281 commit 004f088. This bundle includes individual passing cases within failed initial runs. It is not the verification result for the subsequent v282 runtime. Full job logs and screenshots are intentionally not included.",
+  "runs": [
+    {
+      "suite": "sixdrop",
+      "id": 44756910150
+    },
+    {
+      "suite": "casino-audio",
+      "id": 44756910214
+    }
+  ],
+  "compression": {
+    "format": "gzip",
+    "level": 9,
+    "mtime": 0,
+    "embeddedFilename": "",
+    "allUncompressedBytesIdentical": true
+  },
+  "counts": {
+    "compressedReports": 6,
+    "copiedRecords": 3,
+    "reportOriginalBytes": 1155017,
+    "reportGzipBytes": 87641,
+    "copiedRecordBytes": 27229,
+    "caseResultsAcrossSuites": {
+      "failed": 4,
+      "passed": 15
+    }
+  },
+  "reports": [
+    {
+      "suite": "sixdrop",
+      "shard": 0,
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910150,
+      "sourceRunURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910150",
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v280-ci/004f088/display-0/report.json",
+      "originalBytes": 182064,
+      "originalSha256": "c2b06b40ae25246229751c1253a443858ff6a23b36813b98297cfaf5b1b0a01c",
+      "gzipPath": "sixdrop-004f088-initial-shard-0.json.gz",
+      "gzipBytes": 14168,
+      "gzipSha256": "88727d03e153806545c3d63b81f1d7d70a315a30ab99185ae3b304011f92732f",
+      "gzipMtime": 0,
+      "uncompressedBytesIdentical": true,
+      "caseResults": [
+        {
+          "id": "desktop-cycle",
+          "status": "failed",
+          "message": "AssertionError [ERR_ASSERTION]: progressive digits have visible space"
+        },
+        {
+          "id": "download-worker",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "suite": "sixdrop",
+      "shard": 1,
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910150,
+      "sourceRunURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910150",
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v280-ci/004f088/display-1/report.json",
+      "originalBytes": 67012,
+      "originalSha256": "0fbb4961227bb702c9fab6491e3bbb2dbe680bfb004a883baf29d5bbffafac77",
+      "gzipPath": "sixdrop-004f088-initial-shard-1.json.gz",
+      "gzipBytes": 6579,
+      "gzipSha256": "3c4bf54b7a75d3dc211dadd27026dfab70a7cc1ca597170c90e17eb1154f9cc2",
+      "gzipMtime": 0,
+      "uncompressedBytesIdentical": true,
+      "caseResults": [
+        {
+          "id": "mobile-high-amount",
+          "status": "failed",
+          "message": "AssertionError [ERR_ASSERTION]: progressive digits do not clip"
+        }
+      ]
+    },
+    {
+      "suite": "sixdrop",
+      "shard": 2,
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910150,
+      "sourceRunURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910150",
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v280-ci/004f088/display-2/report.json",
+      "originalBytes": 36312,
+      "originalSha256": "9baaea370fefd50be53fa903414b1afb25843555fadf413c1fb2268cb2df42c0",
+      "gzipPath": "sixdrop-004f088-initial-shard-2.json.gz",
+      "gzipBytes": 2835,
+      "gzipSha256": "ce4c4d2d50a3509f1af34d5785662f1248d05cb97d5ea045941e71f3786ca852",
+      "gzipMtime": 0,
+      "uncompressedBytesIdentical": true,
+      "caseResults": [
+        {
+          "id": "mini-allclear",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "suite": "casino-audio",
+      "shard": 0,
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910214,
+      "sourceRunURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910214",
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v281-ci/display-0/report.json",
+      "originalBytes": 174299,
+      "originalSha256": "f429c1eed953a4f7c7ce77024df4c909f8c478cb1e39a3a268f6f89626cbb873",
+      "gzipPath": "casino-audio-004f088-initial-shard-0.json.gz",
+      "gzipBytes": 12312,
+      "gzipSha256": "71b7b224426ac7f58d69ff060a909637e32942541e2c937c7a15e29e7198c482",
+      "gzipMtime": 0,
+      "uncompressedBytesIdentical": true,
+      "caseResults": [
+        {
+          "id": "cookie",
+          "status": "failed",
+          "message": "AssertionError [ERR_ASSERTION]: the complete current bank needs no legacy fallback\n\n6 !== 0\n"
+        },
+        {
+          "id": "gelato",
+          "status": "passed"
+        },
+        {
+          "id": "jelly",
+          "status": "passed"
+        },
+        {
+          "id": "dango",
+          "status": "passed"
+        },
+        {
+          "id": "dango-reduced",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "suite": "casino-audio",
+      "shard": 1,
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910214,
+      "sourceRunURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910214",
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v281-ci/display-1/report.json",
+      "originalBytes": 339269,
+      "originalSha256": "a21138ef6c8a7aaa16dd32bef1d8482bc913cab49bb8b76c8c8dda902cfec1be",
+      "gzipPath": "casino-audio-004f088-initial-shard-1.json.gz",
+      "gzipBytes": 24210,
+      "gzipSha256": "d722a31e1a0c925febcb0ecc16e99b168d268323a965827bf7f135902a8ffcd6",
+      "gzipMtime": 0,
+      "uncompressedBytesIdentical": true,
+      "caseResults": [
+        {
+          "id": "choco",
+          "status": "passed"
+        },
+        {
+          "id": "winery",
+          "status": "passed"
+        },
+        {
+          "id": "stick",
+          "status": "passed"
+        },
+        {
+          "id": "jelly-mobile",
+          "status": "passed"
+        },
+        {
+          "id": "dango-muted",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "suite": "casino-audio",
+      "shard": 2,
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910214,
+      "sourceRunURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910214",
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v281-ci/display-2/report.json",
+      "originalBytes": 356061,
+      "originalSha256": "e0d90cb055e19a6ff5c9735fe296ac7e8c851859ab7572002413fcfe0aa22142",
+      "gzipPath": "casino-audio-004f088-initial-shard-2.json.gz",
+      "gzipBytes": 27537,
+      "gzipSha256": "e571568129a1b2600befcd407708df09c346a1375db0692480bbd4b069bf7b85",
+      "gzipMtime": 0,
+      "uncompressedBytesIdentical": true,
+      "caseResults": [
+        {
+          "id": "candy",
+          "status": "failed",
+          "message": "AssertionError [ERR_ASSERTION]: the complete current bank needs no legacy fallback\n\n6 !== 0\n"
+        },
+        {
+          "id": "popcorn",
+          "status": "passed"
+        },
+        {
+          "id": "castella",
+          "status": "passed"
+        },
+        {
+          "id": "dango-mini",
+          "status": "passed"
+        },
+        {
+          "id": "candy-pause",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "copiedRecords": [
+    {
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910150,
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v280-ci/004f088/triage.json",
+      "originalBytes": 4525,
+      "originalSha256": "93803d4c68214e432143f868788207edd57e493e099fb0624a60ff3349bc79bc",
+      "retainedPath": "sixdrop-initial-triage.json",
+      "retainedBytes": 4525,
+      "retainedSha256": "93803d4c68214e432143f868788207edd57e493e099fb0624a60ff3349bc79bc",
+      "retainedBytesIdentical": true
+    },
+    {
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": null,
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v281-ci/legacy-triage.json",
+      "originalBytes": 13487,
+      "originalSha256": "da807ea0de5edcc3e3c1de6dc7c5d54aa197d16e475377033b3ff57beabe3b9d",
+      "retainedPath": "legacy-initial-triage.json",
+      "retainedBytes": 13487,
+      "retainedSha256": "da807ea0de5edcc3e3c1de6dc7c5d54aa197d16e475377033b3ff57beabe3b9d",
+      "retainedBytesIdentical": true
+    },
+    {
+      "sourceCommit": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "sourceRunId": 44756910214,
+      "originalPath": "/workspace/scratch/0a50e7c9379e/qa-v281-ci/ci-summary-v281.json",
+      "originalBytes": 9217,
+      "originalSha256": "bc5d970a696e3f8a4bcd7aef37b8fd9458dd1e7e76495298b23b20cd9742785b",
+      "retainedPath": "ci-summary-v281.json",
+      "retainedBytes": 9217,
+      "retainedSha256": "bc5d970a696e3f8a4bcd7aef37b8fd9458dd1e7e76495298b23b20cd9742785b",
+      "retainedBytesIdentical": true
+    }
+  ]
+}

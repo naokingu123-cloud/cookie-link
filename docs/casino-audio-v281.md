@@ -73,4 +73,16 @@ python3 tests/celebration-audio-v277.py
 
 PCM検査は旧41音のhash不変と新97音を両方検査する。形式・全出力／原音hash・重複fileなし・最大peak・RMS・始終端fade・DC offset・区間の実在・10ゲームの全tierと順序を確認した。原音9点すべてが生成cueへ実際に混合されていることも確認した。
 
-実ブラウザー・公開ファイル照合は公開工程で別途記録する。この文書の単体成功は、別のWindows稼働サーバーの更新や音響実機の聴取確認を意味しない。
+## 最終公開版での確認
+
+新音源は最終ビルド `20261120-v282-sixdrop-compact-long-amounts`、runtime commit `7d81f7440eb73fb046f5a59b51f6f2d83b6508c1` に含まれる。[最終 CI 44759129889](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129889) は音声・PCM・契約、実 Chromium 3 shard、公開照合の全5 jobが成功した。
+
+- 実ブラウザー15/15ケースで、新97音をすべてdecode、旧bankへのfallback 0、音声error 0。10ゲーム、390px、動きを減らす設定、mute、非選択mini、pauseを含む。
+- 選択・非muteの13ケースでは、本物の役成立イベントのkey・game・tierと専用音源が一致し、各イベントにつき1回だけ開始した。mute・非選択miniの2ケースはaward開始0。復元時は全ケースでaward再生0。
+- pause後はactive voiceとpending awardがともに0。同時voiceの観測最大は5で、上限8以内だった。
+- chocoの初回だけ6音で `AbortError: signal is aborted without reason` を記録した。各音を一度再試行して97音すべて新bankから取得し、fallback 0で回復した。他14ケースはretry 0。初回v281では失われていた例外と回復経路を、この検証では実際に取得できた。Abortの背景にある負荷の要因までは計測していない。
+- 公開先の175/175ファイルでbytes・SHA-256が一致。新97音、旧41音、原音9点、ライセンス・出典、関連runtime・画像を含む。完了は2026-11-21 00:07:33 JST。
+
+原本対応・ZIP digest照合・3本の全ケースreportの可逆圧縮は [音声検証記録](qa-v282/audio/manifest.json)、集計は [CI summary](qa-v282/audio/ci-summary-v282.json)、公開照合は [public report](qa-v282/audio/public-report.json) に保存した。初回v281の2失敗を含む履歴は [初回記録](qa-v281/verification-summary.json) に残す。
+
+これらは仮CREDITの隔離環境で、実ルールの保存状態と実際の番号入力を使った検証である。Windows稼働サーバーの更新・再起動と、実機スピーカーの聴感確認は未実施。

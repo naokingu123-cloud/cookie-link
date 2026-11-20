@@ -1,0 +1,665 @@
+{
+  "ok": true,
+  "validationHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "build": "20261120-v282-sixdrop-compact-long-amounts",
+  "workflowRun": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129758",
+  "workflowConclusion": "success",
+  "jobsPassed": 5,
+  "casesPassed": 4,
+  "plannedCases": 4,
+  "caseResults": [
+    {
+      "id": "desktop-cycle",
+      "status": "passed",
+      "durationMs": 498497
+    },
+    {
+      "id": "download-worker",
+      "status": "passed",
+      "durationMs": 176188
+    },
+    {
+      "id": "mobile-high-amount",
+      "status": "passed",
+      "durationMs": 179042
+    },
+    {
+      "id": "mini-allclear",
+      "status": "passed",
+      "durationMs": 155434
+    }
+  ],
+  "pageErrors": 0,
+  "assetFailures": 0,
+  "apiRequests": 0,
+  "externalRequests": 0,
+  "rulesResults": {
+    "SIXDROP_V278_RULES_PASS": {
+      "rounds": 108,
+      "groups": 540,
+      "positive": 64,
+      "zero": 44,
+      "allClears": 16,
+      "witness": {
+        "seed": 9,
+        "win": 56618,
+        "counts": {
+          "line": 7,
+          "triangle": 1,
+          "hexagon": 0
+        },
+        "clearWins": [
+          11284,
+          21334
+        ]
+      }
+    },
+    "SIXDROP_V280_RULES_PASS": {
+      "historicalSnapshots": 6,
+      "games": 72,
+      "groups": 360,
+      "allClears": 20,
+      "roles": {
+        "line": [
+          0,
+          20,
+          50,
+          150,
+          250,
+          400,
+          550,
+          750,
+          950,
+          1200,
+          1450
+        ],
+        "triangle": [
+          0,
+          50,
+          200,
+          400,
+          750,
+          1250,
+          1750,
+          2500,
+          3250,
+          4250,
+          5250
+        ],
+        "hexagon": [
+          0,
+          100,
+          400,
+          800,
+          1500,
+          2500,
+          3500,
+          5000,
+          6500,
+          8500,
+          10500
+        ]
+      }
+    },
+    "SIXDROP_V278_HOST_PASS": {
+      "boundaries": [
+        {
+          "received": 1,
+          "processed": 0,
+          "bank": 123456,
+          "allClears": 0
+        },
+        {
+          "received": 2,
+          "processed": 0,
+          "bank": 123456,
+          "allClears": 0
+        },
+        {
+          "received": 3,
+          "processed": 3,
+          "bank": 168456,
+          "allClears": 0
+        },
+        {
+          "received": 4,
+          "processed": 3,
+          "bank": 168456,
+          "allClears": 0
+        },
+        {
+          "received": 5,
+          "processed": 5,
+          "bank": 1128456,
+          "allClears": 1
+        },
+        {
+          "received": 6,
+          "processed": 6,
+          "bank": 1143456,
+          "allClears": 1
+        },
+        {
+          "received": 7,
+          "processed": 7,
+          "bank": 2133456,
+          "allClears": 2
+        },
+        {
+          "received": 8,
+          "processed": 8,
+          "bank": 2148456,
+          "allClears": 2
+        }
+      ],
+      "repeated": [
+        {
+          "bankUnits": 4173456,
+          "removed": 369,
+          "feed": 892
+        },
+        {
+          "bankUnits": 4376631,
+          "removed": 504,
+          "feed": 1113
+        },
+        {
+          "bankUnits": 6401631,
+          "removed": 639,
+          "feed": 1334
+        }
+      ],
+      "checkpointCases": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "queuedGroups": [
+        3,
+        2
+      ],
+      "legacyMissingRng": "verified replay + 4 rejection cases",
+      "streamingCases": [
+        {
+          "ball": 1
+        },
+        {
+          "ball": 2
+        },
+        {
+          "ball": 4
+        },
+        {
+          "ball": 0,
+          "queued": 3
+        },
+        {
+          "ball": 3,
+          "queued": 2
+        },
+        {
+          "ball": 2,
+          "legacy": true
+        }
+      ],
+      "offlineWorkerCases": [
+        0,
+        2,
+        4
+      ],
+      "payout": 56618,
+      "scope": "Native Arcade + live Six adapter + recorder + local persistence + shared resume + offline settlement worker"
+    },
+    "SIXDROP_V278_SETTLEMENT_PASS": {
+      "streaming": [
+        "early bridge + HTTP",
+        "eight-ball zero even with abandoned flag",
+        "unknown interruption denied",
+        "other-game WIN with own zero",
+        "nonparticipant",
+        "positive all-clears",
+        "operator cancellation",
+        "idempotent retry"
+      ],
+      "download": [
+        {
+          "caseName": "positive",
+          "bet": 3000,
+          "win": 56618,
+          "bankUnits": 2148456,
+          "removed": 234,
+          "feed": 671
+        },
+        {
+          "caseName": "positive-bet-change",
+          "bet": 301,
+          "win": 48400,
+          "bankUnits": 2351631,
+          "removed": 369,
+          "feed": 892
+        },
+        {
+          "caseName": "nonparticipant",
+          "bet": 0,
+          "win": 0,
+          "bankUnits": 2351631,
+          "removed": 369,
+          "feed": 892
+        },
+        {
+          "caseName": "zero",
+          "bet": 3000,
+          "win": 0,
+          "bankUnits": 0,
+          "removed": 0,
+          "feed": 0
+        }
+      ]
+    }
+  },
+  "legacy248ServerCompatibility": true,
+  "verifiedInvariants": [
+    "Actual input grouping remains 3-2-1-1-1 while the schedule strip is absent.",
+    "Role counts and current payout values match the production rules; multiplication labels and painted role diagrams remain visible.",
+    "Larger drops, retired bottle/frame removal, compact amount strip and container bounds pass on desktop and mobile.",
+    "Live removed-drop counters contain intermediate increasing values and settle at the canonical total.",
+    "Positive continuation, changed BET, own-zero carry reset and native download checkpoints retain deterministic production state.",
+    "Both original geometry assertions remain unchanged: bank has visible space and digits fit its allocated box."
+  ],
+  "stages": [
+    {
+      "stage": "desktop-cycle",
+      "bet": 3000,
+      "win": 56618,
+      "allClears": 2,
+      "roleCounts": {
+        "line": 7,
+        "triangle": 1,
+        "hexagon": 0
+      },
+      "carry": {
+        "version": 247,
+        "bankUnits": 2148456,
+        "removed": 234,
+        "feed": 671,
+        "roundId": "local:1:2"
+      },
+      "progressive": {
+        "units": 2148456,
+        "targetUnits": 2148456
+      },
+      "removed": {
+        "count": 234,
+        "targetCount": 234
+      },
+      "counterSamples": 34,
+      "counterFirst": {
+        "units": 123456,
+        "removed": 99,
+        "text": "99"
+      },
+      "counterLast": {
+        "units": 2148456,
+        "removed": 234,
+        "text": "234"
+      },
+      "positiveRemovedNeverDecreases": true,
+      "bankText": "21484",
+      "bankBox": {
+        "left": 584.8115234375,
+        "top": 447.1875,
+        "right": 679.4111328125,
+        "bottom": 479.0625,
+        "width": 94.599609375,
+        "height": 31.875
+      },
+      "digitsBox": {
+        "left": 584.8115234375,
+        "top": 447.4951171875,
+        "right": 679.4111328125,
+        "bottom": 478.7548828125,
+        "width": 94.599609375,
+        "height": 31.259765625
+      },
+      "logoGapPx": 3.75,
+      "bankLeftOverflowPx": 0,
+      "geometry": {
+        "step": 29.5,
+        "top": 43.03512764761578,
+        "radius": 14.75
+      }
+    },
+    {
+      "stage": "desktop-second",
+      "bet": 301,
+      "win": 48400,
+      "allClears": 2,
+      "roleCounts": {
+        "line": 7,
+        "triangle": 1,
+        "hexagon": 0
+      },
+      "carry": {
+        "version": 247,
+        "bankUnits": 2351631,
+        "removed": 369,
+        "feed": 892,
+        "roundId": "local:3:3"
+      },
+      "progressive": {
+        "units": 2351631,
+        "targetUnits": 2351631
+      },
+      "removed": {
+        "count": 369,
+        "targetCount": 369
+      },
+      "counterSamples": 34,
+      "counterFirst": {
+        "units": 2148456,
+        "removed": 234,
+        "text": "234"
+      },
+      "counterLast": {
+        "units": 2351631,
+        "removed": 369,
+        "text": "369"
+      },
+      "positiveRemovedNeverDecreases": true,
+      "bankText": "23516",
+      "bankBox": {
+        "left": 584.8115234375,
+        "top": 447.1875,
+        "right": 679.4111328125,
+        "bottom": 479.0625,
+        "width": 94.599609375,
+        "height": 31.875
+      },
+      "digitsBox": {
+        "left": 584.8115234375,
+        "top": 447.4951171875,
+        "right": 679.4111328125,
+        "bottom": 478.7548828125,
+        "width": 94.599609375,
+        "height": 31.259765625
+      },
+      "logoGapPx": 3.75,
+      "bankLeftOverflowPx": 0,
+      "geometry": {
+        "step": 29.5,
+        "top": 43.03512764761578,
+        "radius": 14.75
+      }
+    },
+    {
+      "stage": "desktop-own-zero",
+      "bet": 3000,
+      "win": 0,
+      "allClears": 0,
+      "roleCounts": {
+        "line": 0,
+        "triangle": 0,
+        "hexagon": 0
+      },
+      "carry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": "local:5:4"
+      },
+      "progressive": {
+        "units": 0,
+        "targetUnits": 0
+      },
+      "removed": {
+        "count": 0,
+        "targetCount": 0
+      },
+      "counterSamples": 20,
+      "counterFirst": {
+        "units": 2351631,
+        "removed": 369,
+        "text": "369"
+      },
+      "counterLast": {
+        "units": 0,
+        "removed": 0,
+        "text": "0"
+      },
+      "positiveRemovedNeverDecreases": true,
+      "bankText": "0",
+      "bankBox": {
+        "left": 639.611328125,
+        "top": 447.1875,
+        "right": 663.986328125,
+        "bottom": 479.0625,
+        "width": 24.375,
+        "height": 31.875
+      },
+      "digitsBox": {
+        "left": 645.060546875,
+        "top": 447.4951171875,
+        "right": 663.986328125,
+        "bottom": 478.7548828125,
+        "width": 18.92578125,
+        "height": 31.259765625
+      },
+      "logoGapPx": 9.19921875,
+      "bankLeftOverflowPx": 0,
+      "geometry": {
+        "step": 29.5,
+        "top": 43.03512764761578,
+        "radius": 14.75
+      }
+    },
+    {
+      "stage": "mobile-high-amount",
+      "bet": 300000,
+      "win": 5417468,
+      "allClears": 2,
+      "roleCounts": {
+        "line": 7,
+        "triangle": 1,
+        "hexagon": 0
+      },
+      "carry": {
+        "version": 247,
+        "bankUnits": 202623456,
+        "removed": 234,
+        "feed": 671,
+        "roundId": "local:1:2"
+      },
+      "progressive": {
+        "units": 202623456,
+        "targetUnits": 202623456
+      },
+      "removed": {
+        "count": 234,
+        "targetCount": 234
+      },
+      "counterSamples": 34,
+      "counterFirst": {
+        "units": 123456,
+        "removed": 99,
+        "text": "99"
+      },
+      "counterLast": {
+        "units": 202623456,
+        "removed": 234,
+        "text": "234"
+      },
+      "positiveRemovedNeverDecreases": true,
+      "bankText": "2026234",
+      "bankBox": {
+        "left": 98.490234375,
+        "top": 419.5625,
+        "right": 203.302734375,
+        "bottom": 447.1875,
+        "width": 104.8125,
+        "height": 27.625
+      },
+      "digitsBox": {
+        "left": 98.48729705810547,
+        "top": 419.8291015625,
+        "right": 203.302734375,
+        "bottom": 446.9208984375,
+        "width": 104.81543731689453,
+        "height": 27.091796875
+      },
+      "logoGapPx": 3.2470626831054688,
+      "bankLeftOverflowPx": 0.00293731689453125,
+      "geometry": {
+        "step": 29.5,
+        "top": 43.03512764761578,
+        "radius": 14.75
+      }
+    },
+    {
+      "stage": "mini-allclear",
+      "bet": 3000,
+      "win": 56618,
+      "allClears": 2,
+      "roleCounts": {
+        "line": 7,
+        "triangle": 1,
+        "hexagon": 0
+      },
+      "carry": {
+        "version": 247,
+        "bankUnits": 2148456,
+        "removed": 234,
+        "feed": 671,
+        "roundId": "local:1:2"
+      },
+      "progressive": {
+        "units": 2148456,
+        "targetUnits": 2148456
+      },
+      "removed": {
+        "count": 234,
+        "targetCount": 234
+      },
+      "counterSamples": 16,
+      "counterFirst": {
+        "units": 123456,
+        "removed": 99,
+        "text": "99"
+      },
+      "counterLast": {
+        "units": 2148456,
+        "removed": 234,
+        "text": "234"
+      },
+      "positiveRemovedNeverDecreases": true,
+      "bankText": "21484",
+      "bankBox": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "digitsBox": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "logoGapPx": 0,
+      "bankLeftOverflowPx": 0,
+      "geometry": {
+        "step": 29.5,
+        "top": 43.03512764761578,
+        "radius": 14.75
+      }
+    }
+  ],
+  "downloadWorker": {
+    "games": [
+      {
+        "index": 0,
+        "win": 0,
+        "carry": {
+          "version": 247,
+          "bankUnits": 0,
+          "removed": 0,
+          "feed": 0,
+          "roundId": "sixdrop-v278-download-first"
+        }
+      },
+      {
+        "index": 1,
+        "win": 451,
+        "carry": {
+          "version": 247,
+          "bankUnits": 124915,
+          "removed": 83,
+          "feed": 155,
+          "roundId": "sixdrop-v278-download-next"
+        }
+      },
+      {
+        "index": 2,
+        "win": 10,
+        "carry": {
+          "version": 247,
+          "bankUnits": 127820,
+          "removed": 166,
+          "feed": 310,
+          "roundId": "sixdrop-v278-download-positive-carry"
+        }
+      }
+    ],
+    "completed": 3,
+    "numbers": [
+      7,
+      25,
+      10,
+      19,
+      20,
+      2,
+      3,
+      11
+    ],
+    "processed": [
+      0,
+      0,
+      0,
+      3,
+      3,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "publicVerification": {
+    "ok": true,
+    "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "matched": 24,
+    "expected": 24,
+    "status200AndSha256Matched": true,
+    "finalVersionMatches": true,
+    "completedAt": "2026-11-20T15:15:28.778Z",
+    "elapsedSeconds": 1
+  },
+  "images": [
+    {
+      "file": "desktop-zero-reset.png",
+      "sourceArtifactEntry": "display-0/desktop-after-own-zero.png"
+    },
+    {
+      "file": "mobile-high-amount.png",
+      "sourceArtifactEntry": "display-1/mobile-high-amount-ball7.png"
+    }
+  ],
+  "scope": "CI evidence from the exact validation head, curated real-rule witnesses and static public asset hashes; no probability or RTP estimate."
+}

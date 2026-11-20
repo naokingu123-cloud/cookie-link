@@ -1,0 +1,446 @@
+{
+  "run": {
+    "id": 44759129758,
+    "name": "Six Drop bottle, count payouts and continuation v280",
+    "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "head_branch": "main",
+    "event": "push",
+    "path": ".github/workflows/sixdrop-v278.yml",
+    "html_url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129758",
+    "run_attempt": 1,
+    "created_at": "2026-11-20T15:01:38Z",
+    "updated_at": "2026-11-20T15:15:33Z",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "id": 136366651856,
+      "name": "grouped-rules-and-continuation",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44759129758,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Simultaneous groups, convex count payouts and progressive conservation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Rounded v280 role tables and preserved legacy saved games",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Native Arcade, repeated carry, checkpoint resume and offline settlement",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Authoritative interrupted rounds, zero WIN and download ledger",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Legacy carry and worker compatibility",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Recorded stream and wallet isolation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Offline asset manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        }
+      ]
+    },
+    {
+      "id": 136366652170,
+      "name": "native-browser-display (1)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44759129758,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Japanese fonts and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Real manual groups, dedicated all-clear art and native download checkpoints",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 136366652394,
+      "name": "native-browser-display (2)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44759129758,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Japanese fonts and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Real manual groups, dedicated all-clear art and native download checkpoints",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 136366653218,
+      "name": "native-browser-display (0)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44759129758,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Japanese fonts and Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Real manual groups, dedicated all-clear art and native download checkpoints",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15
+        }
+      ]
+    },
+    {
+      "id": 136374390854,
+      "name": "public-assets",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 44759129758,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify published current rules, UI, artwork and cache",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14641361326,
+      "name": "sixdrop-v278-public",
+      "size_in_bytes": 2386,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14641361326",
+      "digest": "sha256:bd5b0cf602bd79fdc94574878272d4d3e22b0803073e71b756b12503fb1855ae",
+      "created_at": "2026-11-20T15:15:30Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    },
+    {
+      "id": 14640652383,
+      "name": "sixdrop-v278-display-1",
+      "size_in_bytes": 3821917,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14640652383",
+      "digest": "sha256:f9623f08314fce2b6b73dad92a4d1cefdf4e2ff1de224801a7ab9c1b2431aed6",
+      "created_at": "2026-11-20T15:05:25Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    },
+    {
+      "id": 14640269928,
+      "name": "sixdrop-v278-display-0",
+      "size_in_bytes": 11091731,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14640269928",
+      "digest": "sha256:1f85e26db5e08dacc439c6f739cbaa30c06063690bc5891bbd31559085e09dae",
+      "created_at": "2026-11-20T15:14:52Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    },
+    {
+      "id": 14638974115,
+      "name": "sixdrop-v278-display-2",
+      "size_in_bytes": 3274389,
+      "url": "https://api.github.com/repos/naokingu123-cloud/cookie-link/actions/artifacts/14638974115",
+      "digest": "sha256:3ca7a0a2a9a66439eb5e39d49be02a807a7de7f797f4874471041d84691ddb87",
+      "created_at": "2026-11-20T15:04:59Z",
+      "workflow_run": {
+        "id": 44759129758,
+        "repository_id": 1432244089,
+        "head_repository_id": 1432244089,
+        "head_branch": "main",
+        "head_sha": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+      }
+    }
+  ],
+  "sourceWorkflow": {
+    "path": ".github/workflows/sixdrop-v278.yml",
+    "ref": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+  }
+}

@@ -1,31 +1,29 @@
-# v282 — 高額表示と初回音声取得の調整（2026-11-20）
+# v282 — Six Drop仕上げ・97種類のカジノ効果音（2026-11-20）
 
-- Build: `20261120-v282-sixdrop-compact-long-amounts`。v281の97音とv280のSix Drop変更を含む。高額スマホ表示の文字幅と初回音声ロードを調整し、公開・再検証中。
-- 初回v281の300,000 BET検査では、5球後の1,006,234が数字枠の左へ6.35画面pxはみ出した。配当・消去数は一致。固定幅146 CSS pxでの文字fit後にflexが枠を133.44 CSS pxへ縮めていた。
-- ロゴ・WIN・継続の実寸と余白から利用幅を測り、数字枠と文字をflexで再縮小させない。桁数に応じたfitを維持し、テスト許容値は変えていない。
-- 初回音源取得の失敗は一度だけ再取得してから旧bankへfallbackする。404/410は即fallback。初回v281で最初の6音だけ旧bankに戻った2ケースを記録し、実エラー情報を診断へ追加する。8秒取得期限に初回負荷が重なった可能性があるが、初回ログでは原因を確定できない。ルール・精算・音源本体の変更はない。
-- v281 mainは `004f088b8d0f3b5a5f740cfeb75949448fd45da4`。初回の失敗も保持し、最終結果は `docs/qa-v281/verification-summary.json` と `docs/qa-v280/verification-summary.json` に追記する。Windowsサーバー更新・再起動は未実施。
-
----
-
-# v281 — カジノ効果音とシックスドロップ調整（2026-11-20）
-
-- Build: `20261120-v281-casino-sound-and-sixdrop-refinement`。v280のSix修正と新音声を一括公開する候補。実装・ローカル検証済み、CI・公開照合は未実施。
-- Six: 旧瓶・水色外枠除去、ドロップ直径29.5、瓶幅312pxの全消し表示、瓶下で配当と同期する消去合計、×nと実役形、きりのよい配当へ変更。新規revision280、旧248/278保存の配当・進行・RNGは維持。[Six詳細](docs/sixdrop-v280.md)。
-- 音声: 実素材9点と独自合成による97音へ更新。10ゲーム別HIT10・連鎖10・4段階成立40、倍率/JPC/JP専用音を収録。8voice・mute/pause・重複抑止を維持し、旧41音は無変更でfallbackに使用。[音声詳細](docs/casino-audio-v281.md)。
-- Sixルール72ゲーム/360群/20全消し・旧6保存hash・host/精算/cache/local debug、音声55scene/97音/PCM検査は成功。PC8球と390pxの実表示も確認済み。既存32,000標本の配当再評価は新規独立試行ではない。実ブラウザーCIと公開結果は別途追記する。
-- Windows稼働サーバーのソース更新・再起動は未実施。適用時も `.runtime`・`.tools`・`data` を保持する。
+- 公開ビルド: `20261120-v282-sixdrop-compact-long-amounts`。runtime main `7d81f7440eb73fb046f5a59b51f6f2d83b6508c1`、tree `e0c6d21ecd8cec5c823307ca0c34380a79796058`。v279までの変更を保持し、v280のSixとv281の音声を同梱した。Pages [44759128472](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759128472) のbuild/deploy成功、公開実画面も確認済み。[全体検証](docs/qa-v282/verification-summary.json)。
+- Six: 旧瓶の輪郭・上飾り・Canvas枠と水色外枠除去、ドロップ直径29.5、瓶幅312pxの全消し表示、瓶下で配当と同期する消去合計、×n表記と実役形、端数の少ない役配当。新規revision280、保存済み248/278の配当・進行・RNGとv278継続を保持。[仕様と配当](docs/sixdrop-v280.md)。
+- v282の高額fit: ロゴ・WIN・継続の実寸から利用幅を計算し、数字枠と文字をflexで再縮小しない。0表示の最小幅26px。390pxの高額ケースで最終2,026,234、数字枠と描画文字の差0.003px、ロゴ間3.25pxを確認した。消去99→234の途中経過を含む34標本で配当との保存則も確認。既存assertionの許容値は変更していない。最終 [Six CI 44759129758](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129758) は全5job・4/4ケース・公開24/24 SHA照合が成功。
+- 音声: KenneyとSoundBibleの実素材9点＋独自合成で97音。ゲーム固有HIT10・連鎖10・4段階成立40、倍率/JPC/JP専用音を導入。8voice・mute/pause・選択所有権・重複抑止を維持し、旧41音は無変更でfallbackに残す。[音声詳細](docs/casino-audio-v281.md)。最終 [44759129889](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129889) 全5job、15/15実ブラウザー、公開175/175 SHA照合成功。全ケースで97decode/fallback0/audio error0。
+- 初回ロードは一時失敗時に一度だけprimaryを再試行、404/410は即fallback。最大primary2回・legacy1回、4loader workerとhostの8秒期限を維持。最終CIのchoco初回6音で実AbortErrorを記録し、一次bank再試行だけで97音へ回復、fallback0。他14ケースretry0。音源bytesとゲームの進行待ち時間は変更しない。
+- Sugar回帰のタイトル境界検査が、既存入場アニメーション開始時のscale(2)/rotate(-10deg)を測って失敗した。失敗寸法とCSS変換予測が0.00008px未満で一致し、直後画像は正常。対象CSSとテストの旧v279/source hashは同一。テストのみ `b2509a8a49f6e9d2d7f547f6025f96d896078d56` で固定900ms待ちを対象CSSAnimationの実完了待ちへ変更。boundsは待機条件に含めず既存assertion保持、runtimeは7d81f744と同一。最終 [Sugar CI 44760996283](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283) は全5job成功。ルール/移行、透過画像、panel、実Downloadの8球/全10paid/再接続/一度だけ精算、公開28/28 SHA照合が成功。修正前7d81のDownloadも同じruntimeで成功済み。
+- Download manifestは853ファイル／238,630,608 bytes、全ローカルhash一致。[整合性](docs/qa-v282/download-integrity.json)。初回v281の失敗履歴と従来workflowの旧前提による失敗も [初回記録](docs/qa-v281/verification-summary.json) に残す。全歴史的workflow成功の主張ではない。
+- Windows稼働サーバーの更新・再起動と実機スピーカー聴感確認は未実施。適用時は `.runtime`・`.tools`・`data` を保持する。クラウド実画面は外部3D抽選機の読込制限があるため既存番号指定・仮CREDITで確認した。
 
 ---
 
-# v280 — シックスドロップの瓶・消去数・配当表（2026-11-20）
+# v281 — 初回の統合公開と修正経緯（2026-11-20）
 
-- この変更は `20261120-v281-casino-sound-and-sixdrop-refinement` に同梱する。v280単独公開は行わない。実装とローカル検証済み、最終v281のCI・公開照合は未実施。詳細は [v280記録](docs/sixdrop-v280.md)。
-- 旧瓶の輪郭・上飾り・水色の全消し外枠を除去。312pxの瓶幅に全消し表示を収め、ドロップを直径29.5へ拡大。瓶の下に消したドロップの累計を常設し、既存の全消し配当アニメーションと同じ値から連続加算する。
-- 各役の配当を端数の少ない累計表へ整理。個数は×n。直線4個・三角6個・中心なしヘキサゴン6個を実際の盤面配置と同じ形で示す。3-2-1-1-1の説明表記を除去し、実際の群進行は維持する。
-- 新規はrevision280、保存済み248/278は元の配当・進行・RNGを維持。6旧fixtureの状態・timeline・RNG hash一致。新72ゲーム/360群、旧278の108ゲーム/540群、host・精算・Download cache・local debug検査成功。
-- 既存32,000試行の役実績を新表で再評価したSix直接配当は49.262/90.559/98.246/152.086%。新しい独立試行・理論値の主張ではない。[計算記録](docs/qa-v280/sixdrop-payout-impact.json)。
-- Windows稼働サーバーの更新・再起動は未実施。適用時も `.runtime`・`.tools`・`data` を保持する。
+- 初回build `20261120-v281-casino-sound-and-sixdrop-refinement`、main `004f088b8d0f3b5a5f740cfeb75949448fd45da4`。Pages公開成功後、Sixは2/4、音声は13/15の実ケースが成功。高額の左はみ出し、0表示幅、最初の6音のfallbackが最終gateを失敗させ、v282で修正した。初回の実エラーは破棄されていたため、そのheadの音声失敗原因は推定に留める。
+- Sugar初回はrulesとtransparent-art成功、panelとDownloadは日本語フォントsetup timeoutで実検査未実行。公開照合は依存失敗でskip。失敗を成功に置換せず [原本圧縮記録](docs/qa-v281/preliminary/manifest.json) と [集計](docs/qa-v281/verification-summary.json) に保持する。
+- 新97音はv281からv282へbyte変更なし。最終音声と公開175照合の成功は上記v282記録を参照。
+
+---
+
+# v280 — Six Drop変更の仕様（2026-11-20）
+
+- v280単独公開は行わず、v281へ統合し、高額表示を調整した最終v282へ反映。旧瓶除去・ドロップ拡大・消去合計・×n・実役形・新配当を実装。[Six詳細](docs/sixdrop-v280.md)。
+- 新規revision280、保存済み248/278の配当・進行・RNGを維持。6旧保存の状態/timeline/RNG hash一致。新72ゲーム/360群/20全消し、旧278の108ゲーム/540群、host/精算/cache検査が成功。
+- 既存32,000試行を新表で再評価したSix直接配当は49.262/90.559/98.246/152.086%。新しい独立試行・理論値ではない。[計算記録](docs/qa-v280/sixdrop-payout-impact.json)。
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "version": "20261120-v280-sixdrop-bottle-fit-and-payouts",
   "recordedOn": "2026-11-20",
-  "status": "local-regression-and-desktop-mobile-passed-ci-pending",
+  "status": "published-browser-and-public-verification-passed",
   "repository": "naokingu123-cloud/cookie-link",
   "releaseNotes": "../sixdrop-v280.md",
   "sourceIdentity": {
@@ -9,8 +9,8 @@
     "baselineTree": "197c2b2e97b05ee32259951b9ab92ddd35f95dcd",
     "sameTreeAsPublishedV279": "004372c6a0b810d06adefb69ba21409d17e77659",
     "latestRemoteDocsOnlyCommitReported": "d16b3249d34fd2d43581d2fc0f3b611508401099",
-    "releaseCommit": null,
-    "note": "The docs-only main advance d16b3249 is preserved; v280 Six Drop changes are included in the combined v281 release. Final release and CI identity will be appended."
+    "releaseCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "note": "Preserves v279 runtime and the d16b3249 documentation advance. Six revision280 was included in initial v281 and finalized with high-amount/zero-width layout adjustments in v282; saved rules and RNG remain unchanged."
   },
   "ruleRevisions": {
     "current": 280,
@@ -165,7 +165,7 @@
     "scope": "Paired revaluation of historical role histograms at BET 100, including unchanged all-clear awards. Shared Sugar/JPC, physical roulette bias and adaptive payout feedback are excluded. Positive/zero carry boundaries are preserved at this BET; this is not claimed for every low BET."
   },
   "browserGate": {
-    "status": "updated-not-run",
+    "status": "passed",
     "workflow": ".github/workflows/sixdrop-v278.yml",
     "script": "tests/sixdrop-v278-browser.mjs",
     "shards": 3,
@@ -188,7 +188,12 @@
       "payout table uses state's revision"
     ],
     "localBrowserLaunchedByAuditAgent": false,
-    "ciRunId": null
+    "ciRunId": 44759129758,
+    "runtimeHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "casesPassed": 4,
+    "rulesJob": "passed",
+    "report": "../qa-v282/six/summary.json",
+    "testAssertionsRelaxed": false
   },
   "manualVisual": {
     "status": "desktop-and-mobile-passed",
@@ -241,23 +246,29 @@
       "scaledHeadingWidth": 253.5,
       "scaledCounterWidth": 253.5,
       "counterTopEqualsBottleBottom": true
-    }
+    },
+    "finalPublicScreenshot": "../qa-v282/sixdrop-public.jpg"
   },
   "ci": {
-    "status": "not-run-for-v280",
-    "runId": null,
-    "url": null
+    "status": "success",
+    "runId": 44759129758,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129758",
+    "runtimeHead": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "jobsPassed": 5
   },
   "publication": {
-    "status": "not-performed-for-v280",
-    "releaseCommit": null,
-    "publicHashVerification": "pending",
-    "url": "https://naokingu123-cloud.github.io/cookie-link/"
+    "status": "published-and-verified",
+    "releaseCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "publicHashVerification": "24/24 matched",
+    "url": "https://naokingu123-cloud.github.io/cookie-link/",
+    "report": "../qa-v282/six/public-report.json",
+    "pagesRunId": 44759128472
   },
   "windowsServer": {
     "sourceUpdated": false,
     "restarted": false,
     "status": "not-performed"
   },
-  "includedInRelease": "20261120-v281-casino-sound-and-sixdrop-refinement"
+  "includedInRelease": "20261120-v282-sixdrop-compact-long-amounts",
+  "initialReleaseEvidence": "../qa-v281/verification-summary.json"
 }

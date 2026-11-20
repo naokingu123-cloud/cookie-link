@@ -1,0 +1,207 @@
+{
+  "recordedAt": "2026-11-20T15:08:21.990162+00:00",
+  "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "build": "20261120-v282-sixdrop-compact-long-amounts",
+  "runId": 44759130197,
+  "jobId": 136366657813,
+  "runURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759130197",
+  "jobName": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+  "classification": "fixed-wall-delay sampled the initial transform of the existing JPC entrance animation",
+  "firstError": "AssertionError [ERR_ASSERTION]: illustrated JACKPOT CHANCE title fits its container: {\"inner\":{\"left\":236.95709228515625,\"top\":78.74022674560547,\"right\":1129.04296875,\"bottom\":657.3730392456055,\"width\":892.0858764648438,\"height\":578.6328125},\"outer\":{\"left\":458,\"top\":35.9912109375,\"right\":908,\"bottom\":837.01171875,\"width\":450,\"height\":801.0205078125}}",
+  "source": {
+    "file": "tests/sugar-challenge-v254-browser.mjs",
+    "line": 145,
+    "assertionHelperLine": 17,
+    "waitBeforeRead": "await sleep(900)",
+    "cssFile": "assets/sugar-challenge-v254.css",
+    "cssAnimationLine": 77,
+    "cssKeyframesLine": 87,
+    "cssStartTransform": "scale(2) rotate(-10deg)",
+    "cssDurationMs": 850
+  },
+  "evidence": {
+    "failedBounds": {
+      "inner": {
+        "left": 236.95709228515625,
+        "top": 78.74022674560547,
+        "right": 1129.04296875,
+        "bottom": 657.3730392456055,
+        "width": 892.0858764648438,
+        "height": 578.6328125
+      },
+      "outer": {
+        "left": 458,
+        "top": 35.9912109375,
+        "right": 908,
+        "bottom": 837.01171875,
+        "width": 450,
+        "height": 801.0205078125
+      }
+    },
+    "subsequentTitleBounds": {
+      "left": 476.0029296875,
+      "top": 257.666015625,
+      "right": 889.9970703125,
+      "bottom": 478.447265625,
+      "width": 413.994140625,
+      "height": 220.78125
+    },
+    "subsequentContainerBounds": {
+      "left": 458,
+      "top": 35.9912109375,
+      "right": 908,
+      "bottom": 837.01171875,
+      "width": 450,
+      "height": 801.0205078125
+    },
+    "predictedInitialTransformBounds": {
+      "width": 892.0858022293066,
+      "height": 578.6328296080894
+    },
+    "absolutePixelError": {
+      "width": 7.42355371130543e-05,
+      "height": 1.7108089423345518e-05
+    },
+    "subsequentPresentationCelebrateAgeMs": 400,
+    "subsequentTitleFits": true,
+    "pageErrors": [],
+    "priorReelStopPassed": true,
+    "earlierPanelSizesPassed": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 844,
+        "height": 390
+      },
+      {
+        "width": 1366,
+        "height": 900
+      }
+    ],
+    "highAmountSizesPassed": 3,
+    "cashAwardsPassed": 7,
+    "visualReview": "failure.png viewed; the JPC title is already settled within the cabinet at capture time."
+  },
+  "baselineIdentity": {
+    "baseline": "d16b3249d34fd2d43581d2fc0f3b611508401099",
+    "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "files": [
+      {
+        "path": "assets/sugar-challenge-v254.css",
+        "blobSha": "3feb151fd19e0b3ba0ce868181093a114df741e7",
+        "identical": true
+      },
+      {
+        "path": "tests/sugar-challenge-v254-browser.mjs",
+        "blobSha": "dd688727933b4bfb9e2a75a966736aff896d9937",
+        "identical": true
+      }
+    ],
+    "method": "GitHub fetch_file at both immutable refs returned identical full-file blob SHA values; the relevant CSS and test lines also match."
+  },
+  "artifact": {
+    "id": 14640862891,
+    "name": "sugar-v279-sugar-panel",
+    "zip": "sugar-panel-14640862891.zip",
+    "bytes": 7390156,
+    "sha256": "c6b0cb3235ab528656175e44799cfc383224d93abf06d219aeaf44310adae60a",
+    "sha256MatchedActionsMetadata": true,
+    "partialReport": "sugar-panel/partial-result.json",
+    "partialReportSha256": "fc49f014528bbd4916e86f904ce4373d3a1e3c8062807feb57e4b8f16eeec78a",
+    "screen": "sugar-panel/failure.png"
+  },
+  "interpretation": {
+    "newAudioLoadFailureEstablished": false,
+    "runtimeGeometryRegressionEstablished": false,
+    "timingStressSource": "Not instrumented; no causal claim about new audio preload load or runner load is made.",
+    "relationToEarlierReelRace": "Same unsafe wall-time assumption class, but a separate JPC entrance assertion. The earlier reel-stop section passed in this run.",
+    "fontSetup": "Passed; unlike the previous v281 setup timeout, this is an executed test assertion."
+  },
+  "proposedCorrection": {
+    "scope": "test synchronization only",
+    "change": "Replace the fixed 900 ms sleep with a bounded wait for the visible title image sc254-jpc CSSAnimation to be finished, then retain all existing image, state, native-preservation and contained assertions.",
+    "runtimeChangeNeeded": false,
+    "implemented": true,
+    "implementedAt": "2026-11-20T15:11:32.733860+00:00",
+    "file": "tests/sugar-challenge-v254-browser.mjs",
+    "timeoutMs": 15000,
+    "polling": "raf",
+    "condition": "Visible celebration and a CSSAnimation named sc254-jpc on its direct title image, playState finished and currentTime greater than zero",
+    "boundsUsedAsWaitCondition": false,
+    "loopingRaysWaitedFor": false,
+    "existingAssertionsByteIdentical": true,
+    "patchFile": "sugar-jpc-animation-wait.patch",
+    "patchSha256": "988575c65b0400b65b88ecf7623f79d66b0232ddad2ba50603e990f8c9d227f2",
+    "testBlobSha": "7c480afeba03d81620e3130be6fbe006280ac462",
+    "validation": [
+      {
+        "command": "node --check tests/sugar-challenge-v254-browser.mjs",
+        "exitCode": 0
+      },
+      {
+        "command": "git diff --check -- tests/sugar-challenge-v254-browser.mjs",
+        "exitCode": 0
+      }
+    ],
+    "browserExecution": "Passed the actual sugar-panel job on commit b2509a8a49f6e9d2d7f547f6025f96d896078d56; artifact result checked.",
+    "reason": "A fixed 900 ms wall delay returned before the CSS animation actually progressed. The failed rectangle exactly matches its initial scale/rotation, while the later screenshot is correctly fitted. Waiting for the specific real animation leaves runtime and strict geometry assertions unchanged."
+  },
+  "editsPerformed": {
+    "tests": [
+      "tests/sugar-challenge-v254-browser.mjs"
+    ],
+    "runtime": []
+  },
+  "otherJobsAtInitialInspection": {
+    "rules-and-migration": "success",
+    "transparent-art": "success",
+    "download-offline-resume": "in_progress"
+  },
+  "downloadObservation": {
+    "checkedAt": "2026-11-20T15:12:49.425698+00:00",
+    "runId": 44759130197,
+    "jobId": 136366657781,
+    "status": "in_progress",
+    "activeStep": "Real recording, offline resume, eight-ball completion and exactly-once credit",
+    "fontSetup": "success",
+    "artifactUpload": "pending",
+    "eightBallCompletionVerified": false
+  },
+  "resolution": {
+    "checkedAt": "2026-11-20T15:19:46.753890+00:00",
+    "testOnlyCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+    "runtimeCommitUnchanged": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "sourceComparison": "Only tests/sugar-challenge-v254-browser.mjs differs between these immutable commits.",
+    "runId": 44760996283,
+    "jobId": 136373165252,
+    "status": "success",
+    "artifactId": 14642650128,
+    "artifactZipSha256": "363665e343bdd62efe4983309f7cb73be991509f7caa7df1b22d4ce3f853f27a",
+    "artifactDigestMatched": true,
+    "fittedTitleWidth": 413.994140625,
+    "containerWidth": 450,
+    "presentationCelebrateAgeAtReadMs": 500,
+    "nativeBeforeAfterIdentical": true,
+    "pageErrors": 0,
+    "retainedReportSource": "b250/sugar-panel/result.json"
+  },
+  "oldDownloadResolution": {
+    "runId": 44759130197,
+    "jobId": 136366657781,
+    "status": "success",
+    "actualBalls": 8,
+    "allTenGamesPaid": true,
+    "walletCredit": 999344,
+    "walletRevision": 2,
+    "rounds": 1,
+    "duplicateCompleteAssertionsPassed": true,
+    "pageErrors": 0,
+    "externalRequests": 0,
+    "webSockets": 0,
+    "artifactId": 14641955458,
+    "artifactZipSha256": "ac7c47e977e5c10232d599ecf6e8f8b5d3d2da4753b51ebd666058b91a393ad3",
+    "artifactDigestMatched": true
+  }
+}

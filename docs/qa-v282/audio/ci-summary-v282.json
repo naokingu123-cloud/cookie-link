@@ -1,0 +1,657 @@
+{
+  "ok": true,
+  "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "tree": "e0c6d21ecd8cec5c823307ca0c34380a79796058",
+  "runId": 44759129889,
+  "workflowUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129889",
+  "version": "20261120-v282-sixdrop-compact-long-amounts",
+  "casesPlanned": 15,
+  "casesAttempted": 15,
+  "casesPassed": 15,
+  "caseResults": [
+    {
+      "id": "cookie",
+      "game": "cookie",
+      "status": "passed",
+      "durationMs": 55820
+    },
+    {
+      "id": "gelato",
+      "game": "gelato",
+      "status": "passed",
+      "durationMs": 37868
+    },
+    {
+      "id": "jelly",
+      "game": "jelly",
+      "status": "passed",
+      "durationMs": 35772
+    },
+    {
+      "id": "dango",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 39131
+    },
+    {
+      "id": "dango-reduced",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 34137
+    },
+    {
+      "id": "choco",
+      "game": "choco",
+      "status": "passed",
+      "durationMs": 52795
+    },
+    {
+      "id": "winery",
+      "game": "winery",
+      "status": "passed",
+      "durationMs": 64733
+    },
+    {
+      "id": "stick",
+      "game": "stick",
+      "status": "passed",
+      "durationMs": 42629
+    },
+    {
+      "id": "jelly-mobile",
+      "game": "jelly",
+      "status": "passed",
+      "durationMs": 40662
+    },
+    {
+      "id": "dango-muted",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 46906
+    },
+    {
+      "id": "candy",
+      "game": "candy",
+      "status": "passed",
+      "durationMs": 39264
+    },
+    {
+      "id": "popcorn",
+      "game": "popcorn",
+      "status": "passed",
+      "durationMs": 26360
+    },
+    {
+      "id": "castella",
+      "game": "castella",
+      "status": "passed",
+      "durationMs": 25963
+    },
+    {
+      "id": "dango-mini",
+      "game": "dango",
+      "status": "passed",
+      "durationMs": 29473
+    },
+    {
+      "id": "candy-pause",
+      "game": "candy",
+      "status": "passed",
+      "durationMs": 35876
+    }
+  ],
+  "errors": {
+    "failures": 0,
+    "pageErrors": 0,
+    "assetFailures": 0,
+    "apiRequests": 0,
+    "externalRequests": 0
+  },
+  "nativeAwardIdentityCases": 13,
+  "allCasesDecodedCurrent97": true,
+  "allCasesFallback0": true,
+  "allCasesAudioErrors0": true,
+  "maxActiveVoices": 5,
+  "restoreIsSilent": true,
+  "pause": [
+    {
+      "paused": true,
+      "activeVoices": 0,
+      "pendingAwards": 0
+    }
+  ],
+  "audioEvidence": [
+    {
+      "case": "cookie",
+      "game": "cookie",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+      "nativeTier": 1,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-cookie-1",
+        "game": "cookie",
+        "award": true,
+        "tier": 1,
+        "explicit": true,
+        "key": "1/1/link/3/0///2/20/:1:4,:1:5,:1:6,:1:7;:2:7,:3:7",
+        "voices": 2,
+        "at": 43773
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "gelato",
+      "game": "gelato",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+      "nativeTier": 4,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-gelato-4",
+        "game": "gelato",
+        "award": true,
+        "tier": 4,
+        "explicit": true,
+        "key": "1/1/gelatoFill/20/5////10870/1::,6::,8::;5::,7::,10::;14::,15::,18::;15::,16::,18::",
+        "voices": 1,
+        "at": 28842
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "jelly",
+      "game": "jelly",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+      "nativeTier": 4,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-jelly-4",
+        "game": "jelly",
+        "award": true,
+        "tier": 4,
+        "explicit": true,
+        "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+        "voices": 1,
+        "at": 27571
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "dango",
+      "game": "dango",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 2,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+      "nativeTier": 4,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-dango-4",
+        "game": "dango",
+        "award": true,
+        "tier": 4,
+        "explicit": true,
+        "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+        "voices": 1,
+        "at": 30912
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "dango-reduced",
+      "game": "dango",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 2,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+      "nativeTier": 4,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-dango-4",
+        "game": "dango",
+        "award": true,
+        "tier": 4,
+        "explicit": true,
+        "key": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+        "voices": 1,
+        "at": 27063
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "choco",
+      "game": "choco",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 6,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 5,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/canyonCollect/3/2///0/30/:4:4;:5:5",
+      "nativeTier": 1,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-choco-1",
+        "game": "choco",
+        "award": true,
+        "tier": 1,
+        "explicit": true,
+        "key": "1/1/canyonCollect/3/2///0/30/:4:4;:5:5",
+        "voices": 2,
+        "at": 38162
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "winery",
+      "game": "winery",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/2/wineryAward/4/4////420/0::;1::;2::;3::;4::;5::;6::;7::;8::;9::;11::;12::;13::;17::;18::",
+      "nativeTier": 2,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-winery-2",
+        "game": "winery",
+        "award": true,
+        "tier": 2,
+        "explicit": true,
+        "key": "1/2/wineryAward/4/4////420/0::;1::;2::;3::;4::;5::;6::;7::;8::;9::;11::;12::;13::;17::;18::",
+        "voices": 3,
+        "at": 52680
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "stick",
+      "game": "stick",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/2/flipping/8/1////20/29::,21::,13::",
+      "nativeTier": 1,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-stick-1",
+        "game": "stick",
+        "award": true,
+        "tier": 1,
+        "explicit": true,
+        "key": "1/2/flipping/8/1////20/29::,21::,13::",
+        "voices": 3,
+        "at": 32093
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "jelly-mobile",
+      "game": "jelly",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+      "nativeTier": 4,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-jelly-4",
+        "game": "jelly",
+        "award": true,
+        "tier": 4,
+        "explicit": true,
+        "key": "1/1/jellyPour/23/7////30000/20::,21::,22::,23::,24::;2::,7::,12::,17::,22::",
+        "voices": 1,
+        "at": 30912
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "dango-muted",
+      "game": "dango",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 0,
+      "muted": true,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+      "nativeTier": 4,
+      "awardSound": null,
+      "eventIdentityMatches": null,
+      "matchingExplicitStarts": 0
+    },
+    {
+      "case": "candy",
+      "game": "candy",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/2/pyramidAward/19/0/2/1//10/:2:5,:3:6,:4:6,:5:7",
+      "nativeTier": 1,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-candy-1",
+        "game": "candy",
+        "award": true,
+        "tier": 1,
+        "explicit": true,
+        "key": "1/2/pyramidAward/19/0/2/1//10/:2:5,:3:6,:4:6,:5:7",
+        "voices": 1,
+        "at": 27440
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "popcorn",
+      "game": "popcorn",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/popcornDraw/8/2////20/2::;14::;18::;40::;4::;6::;21::;30::;27::;43::;41::;32::",
+      "nativeTier": 1,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-popcorn-1",
+        "game": "popcorn",
+        "award": true,
+        "tier": 1,
+        "explicit": true,
+        "key": "1/1/popcornDraw/8/2////20/2::;14::;18::;40::;4::;6::;21::;30::;27::;43::;41::;32::",
+        "voices": 3,
+        "at": 19940
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "castella",
+      "game": "castella",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 2,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/settled/7/8////20000/0::;5::;11::;16::;22::;27::;33::;38::;44::;49::;55::;60::",
+      "nativeTier": 4,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-castella-4",
+        "game": "castella",
+        "award": true,
+        "tier": 4,
+        "explicit": true,
+        "key": "1/1/settled/7/8////20000/0::;5::;11::;16::;22::;27::;33::;38::;44::;49::;55::;60::",
+        "voices": 1,
+        "at": 19261
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    },
+    {
+      "case": "dango-mini",
+      "game": "dango",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 2,
+      "muted": false,
+      "mini": true,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/1/settled/18/7////3020/15::,16::,17::,18::,19::,20::",
+      "nativeTier": 4,
+      "awardSound": null,
+      "eventIdentityMatches": null,
+      "matchingExplicitStarts": 0
+    },
+    {
+      "case": "candy-pause",
+      "game": "candy",
+      "loadedSamples": 97,
+      "totalSamples": 97,
+      "primaryRetries": 0,
+      "fallbackLoads": 0,
+      "errors": 0,
+      "maxActiveVoices": 3,
+      "muted": false,
+      "mini": false,
+      "restoreAwardStarts": 0,
+      "nativeEventKey": "1/2/pyramidAward/19/0/2/1//10/:2:5,:3:6,:4:6,:5:7",
+      "nativeTier": 1,
+      "awardSound": {
+        "event": "start",
+        "sample": "award-candy-1",
+        "game": "candy",
+        "award": true,
+        "tier": 1,
+        "explicit": true,
+        "key": "1/2/pyramidAward/19/0/2/1//10/:2:5,:3:6,:4:6,:5:7",
+        "voices": 1,
+        "at": 27460
+      },
+      "eventIdentityMatches": true,
+      "matchingExplicitStarts": 1
+    }
+  ],
+  "coldStartRetries": [
+    {
+      "case": "choco",
+      "events": [
+        {
+          "event": "retry",
+          "sample": "drill",
+          "attempt": 2,
+          "errorName": "AbortError",
+          "errorMessage": "signal is aborted without reason",
+          "at": 9462
+        },
+        {
+          "event": "retry",
+          "sample": "hit-canyon",
+          "attempt": 2,
+          "errorName": "AbortError",
+          "errorMessage": "signal is aborted without reason",
+          "at": 9471
+        },
+        {
+          "event": "retry",
+          "sample": "melt",
+          "attempt": 2,
+          "errorName": "AbortError",
+          "errorMessage": "signal is aborted without reason",
+          "at": 9471
+        },
+        {
+          "event": "retry",
+          "sample": "ore",
+          "attempt": 2,
+          "errorName": "AbortError",
+          "errorMessage": "signal is aborted without reason",
+          "at": 9471
+        },
+        {
+          "event": "retry",
+          "sample": "arrival",
+          "attempt": 2,
+          "errorName": "AbortError",
+          "errorMessage": "signal is aborted without reason",
+          "at": 9471
+        },
+        {
+          "event": "retry",
+          "sample": "hammer-impact",
+          "attempt": 2,
+          "errorName": "AbortError",
+          "errorMessage": "signal is aborted without reason",
+          "at": 9471
+        }
+      ],
+      "fallbackLoads": 0,
+      "loadedSamples": 97
+    }
+  ],
+  "retryFinding": "The choco cold start logged six AbortError failures (signal is aborted without reason), retried each current cue once, decoded all 97 current cues, and used no legacy fallback. The other 14 cases needed no retry.",
+  "public": {
+    "ok": true,
+    "commit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+    "expectedVersion": "20261120-v282-sixdrop-compact-long-amounts",
+    "expectedFiles": 175,
+    "matchedFiles": 175,
+    "currentCues": 97,
+    "legacyCues": 41,
+    "licensedSources": 9,
+    "completedAt": "2026-11-20T15:07:33.324Z"
+  },
+  "artifactHashesVerified": [
+    {
+      "id": 14640232794,
+      "name": "celebration-v277-display-0",
+      "size": 5815011,
+      "digest": "sha256:113cab06b0e9e32039ee332be3d859fc12086c49f2beb345693d61b90edeadcf",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    },
+    {
+      "id": 14640033513,
+      "name": "celebration-v277-display-2",
+      "size": 5530042,
+      "digest": "sha256:3da8924c01cec1ce2ee7c5b5312b0a314ee8e56cf6759d9b850d347d5ddd662c",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    },
+    {
+      "id": 14639858562,
+      "name": "celebration-v277-display-1",
+      "size": 5920004,
+      "digest": "sha256:f5800b3c351285dee7ed78953de2873c55f6dff550ca3b1a413dabfffb8886f4",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    },
+    {
+      "id": 14639624029,
+      "name": "celebration-v277-public",
+      "size": 11134,
+      "digest": "sha256:afc0ff399a835f93e5c1913b6e15332c625df6230e86289af4948b3beaa4a69e",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    }
+  ],
+  "screenshots": [
+    "display-0/award-cookie-overlay.png",
+    "display-0/award-cookie.png",
+    "display-0/award-dango-overlay.png",
+    "display-0/award-dango-reduced-overlay.png",
+    "display-0/award-dango-reduced.png",
+    "display-0/award-dango.png",
+    "display-0/award-gelato-overlay.png",
+    "display-0/award-gelato.png",
+    "display-0/award-jelly-overlay.png",
+    "display-0/award-jelly.png",
+    "display-1/award-choco-overlay.png",
+    "display-1/award-choco.png",
+    "display-1/award-dango-muted-overlay.png",
+    "display-1/award-dango-muted.png",
+    "display-1/award-jelly-mobile-overlay.png",
+    "display-1/award-jelly-mobile.png",
+    "display-1/award-stick-overlay.png",
+    "display-1/award-stick.png",
+    "display-1/award-winery-overlay.png",
+    "display-1/award-winery.png",
+    "display-2/award-candy-overlay.png",
+    "display-2/award-candy-pause-overlay.png",
+    "display-2/award-candy-pause.png",
+    "display-2/award-candy.png",
+    "display-2/award-castella-overlay.png",
+    "display-2/award-castella.png",
+    "display-2/award-dango-mini-overlay.png",
+    "display-2/award-dango-mini.png",
+    "display-2/award-popcorn-overlay.png",
+    "display-2/award-popcorn.png"
+  ],
+  "evidenceScope": "CI real Chromium with genuine-rule checkpoints and actual manual final draws in isolated local virtual credit; not a statistical/probability test or a hardware listening measurement."
+}

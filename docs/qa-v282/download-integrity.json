@@ -1,0 +1,10 @@
+{
+  "version": "20261120-v282-sixdrop-compact-long-amounts",
+  "manifestSha256": "5d24e6aeb022e3f58f6e2b09c530a6b710af6c10f53d7f98d37c57bd3edbff65",
+  "files": 853,
+  "bytes": 238630608,
+  "declaredBytes": 238630608,
+  "mismatches": [],
+  "allLocalHashesMatch": true,
+  "runtimeCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+}

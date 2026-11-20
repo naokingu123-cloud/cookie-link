@@ -1,0 +1,328 @@
+{
+  "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "tree": "e0c6d21ecd8cec5c823307ca0c34380a79796058",
+  "runId": 44759129889,
+  "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759129889",
+  "jobs": [
+    {
+      "id": 136366653388,
+      "name": "ten-game-award-display (0)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Japanese fonts and Chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Actual manual final draws, illustrated awards, completed paths and sound",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 136366654562,
+      "name": "presentation-contract-and-audio",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Native event forwarding, state invariance, restore and render bounds",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "All ten production-rule witnesses",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Semantic audio routing, single award ownership, mute and pause",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "All 97 casino and 41 fallback PCM cues, licensed layers, fades and content hashes",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Offline cache contains the new illustrated and audio resources",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 136366654700,
+      "name": "ten-game-award-display (1)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Japanese fonts and Chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Actual manual final draws, illustrated awards, completed paths and sound",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 136366656380,
+      "name": "ten-game-award-display (2)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npm install --ignore-scripts --no-audit --no-fund",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Japanese fonts and Chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Actual manual final draws, illustrated awards, completed paths and sound",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 136369978611,
+      "name": "public-assets",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify published runtime, artwork, 97 casino cues, licenses and 41 fallback cues",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14640232794,
+      "name": "celebration-v277-display-0",
+      "size": 5815011,
+      "digest": "sha256:113cab06b0e9e32039ee332be3d859fc12086c49f2beb345693d61b90edeadcf",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    },
+    {
+      "id": 14640033513,
+      "name": "celebration-v277-display-2",
+      "size": 5530042,
+      "digest": "sha256:3da8924c01cec1ce2ee7c5b5312b0a314ee8e56cf6759d9b850d347d5ddd662c",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    },
+    {
+      "id": 14639858562,
+      "name": "celebration-v277-display-1",
+      "size": 5920004,
+      "digest": "sha256:f5800b3c351285dee7ed78953de2873c55f6dff550ca3b1a413dabfffb8886f4",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    },
+    {
+      "id": 14639624029,
+      "name": "celebration-v277-public",
+      "size": 11134,
+      "digest": "sha256:afc0ff399a835f93e5c1913b6e15332c625df6230e86289af4948b3beaa4a69e",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1"
+    }
+  ]
+}

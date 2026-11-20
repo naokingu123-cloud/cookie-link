@@ -1,0 +1,364 @@
+{
+  "version": "20261120-v282-sixdrop-compact-long-amounts",
+  "recordedAt": "2026-11-20T15:28:10.404484+00:00",
+  "status": "passed",
+  "repository": "naokingu123-cloud/cookie-link",
+  "runtimeCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "testCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+  "testTree": "e52c53ab65b707401d87931a9e6e320040af5be5",
+  "runtimeUnchangedByTestFix": true,
+  "onlyChangedPathBetweenTheseCommits": "tests/sugar-challenge-v254-browser.mjs",
+  "ci": {
+    "id": 44760996283,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283",
+    "head": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-11-20T15:12:49Z",
+    "updatedAt": "2026-11-20T15:26:01Z",
+    "tree": "e52c53ab65b707401d87931a9e6e320040af5be5",
+    "jobs": [
+      {
+        "id": 136373164911,
+        "name": "download-offline-resume",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:51Z",
+        "completedAt": "2026-11-20T15:25:20Z",
+        "testSteps": [
+          {
+            "name": "Real recording, offline resume, eight-ball completion and exactly-once credit",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:13:36Z",
+            "completedAt": "2026-11-20T15:25:17Z"
+          }
+        ]
+      },
+      {
+        "id": 136373165252,
+        "name": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:53Z",
+        "completedAt": "2026-11-20T15:17:45Z",
+        "testSteps": [
+          {
+            "name": "Real Sugar artwork, JPC display and preserved native state",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:13:57Z",
+            "completedAt": "2026-11-20T15:17:39Z"
+          }
+        ]
+      },
+      {
+        "id": 136373165280,
+        "name": "native-browser-display (transparent-art, tests/sugar-v279-browser.mjs, qa-sugar-v279)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:51Z",
+        "completedAt": "2026-11-20T15:15:25Z",
+        "testSteps": [
+          {
+            "name": "Real Sugar artwork, JPC display and preserved native state",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:13:41Z",
+            "completedAt": "2026-11-20T15:15:21Z"
+          }
+        ]
+      },
+      {
+        "id": 136373165597,
+        "name": "rules-and-migration",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:52Z",
+        "completedAt": "2026-11-20T15:13:50Z",
+        "testSteps": []
+      },
+      {
+        "id": 136380526576,
+        "name": "public-assets",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:25:23Z",
+        "completedAt": "2026-11-20T15:26:01Z",
+        "testSteps": [
+          {
+            "name": "Verify published Sugar runtime, transparent art, unchanged reel art and offline cache",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:25:55Z",
+            "completedAt": "2026-11-20T15:25:56Z"
+          }
+        ]
+      }
+    ]
+  },
+  "panel": {
+    "status": "passed",
+    "jobId": 136373165252,
+    "report": "sugar-panel.json.gz",
+    "panelViewportSizes": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 844,
+        "height": 390
+      },
+      {
+        "width": 1366,
+        "height": 900
+      }
+    ],
+    "highAmountSizes": 3,
+    "cards": 3,
+    "cashAwardCases": 7,
+    "compactPanel": {
+      "width": 320,
+      "height": 300,
+      "passed": true
+    },
+    "jpcTitleBounds": {
+      "left": 476.0029296875,
+      "top": 257.666015625,
+      "right": 889.9970703125,
+      "bottom": 478.447265625,
+      "width": 413.994140625,
+      "height": 220.78125
+    },
+    "jpcContainerBounds": {
+      "left": 458,
+      "top": 35.9912109375,
+      "right": 908,
+      "bottom": 837.01171875,
+      "width": 450,
+      "height": 801.0205078125
+    },
+    "jpcTitleFits": true,
+    "presentationCelebrateAgeAtReadMs": 500,
+    "earlyJpcChecked": true,
+    "reducedMotionChecked": true,
+    "nativeBeforeAfterIdentical": true,
+    "pageErrors": 0,
+    "representativeImage": "sugar-jpc.png",
+    "representativeImageVisuallyInspected": true
+  },
+  "transparentArtwork": {
+    "status": "passed",
+    "jobId": 136373165280,
+    "report": "transparent-art.json.gz",
+    "multipliers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10
+    ],
+    "originalArtworkHashesPreserved": 6,
+    "mobileChecked": true,
+    "mobileJpcChecked": true,
+    "enlargedArtworkChecked": true,
+    "legacyStateChecked": true,
+    "screensInOriginalArtifact": 15,
+    "errors": 0,
+    "assetFailures": 0
+  },
+  "download": {
+    "status": "passed",
+    "runId": 44760996283,
+    "jobId": 136373164911,
+    "report": "download-browser.json.gz",
+    "actualBalls": 8,
+    "actualNumbers": [
+      25,
+      5,
+      4,
+      8,
+      14,
+      24,
+      21,
+      2
+    ],
+    "allTenGamesPaid": true,
+    "offlinePendingCompletionObserved": true,
+    "reconnectedSessionStatus": "complete",
+    "sameSessionAfterServerRestart": true,
+    "creditPreservedAfterServerRestart": true,
+    "creditBefore": 1000000,
+    "totalBet": 1000,
+    "totalWin": 1242,
+    "walletCredit": 1000242,
+    "walletRevision": 2,
+    "rounds": 1,
+    "duplicateCompleteWalletAndStatsUnchanged": true,
+    "duplicateCompleteEvidence": "The successful tests/download-v255-browser.mjs execution includes deepEqual checks of repeated complete wallet and stats before report.ok=true.",
+    "pageErrors": 0,
+    "externalRequests": 0,
+    "webSockets": 0,
+    "recordedFrames": 3293,
+    "recordingDurationMs": 109725,
+    "lastNativeTiming": {
+      "frames": 1880,
+      "activeMs": 350769.19999999995,
+      "settlingMs": 254139.79999999996,
+      "maxFrameMs": 2049.8999999999996
+    }
+  },
+  "publicVerification": {
+    "status": "passed",
+    "jobId": 136380526576,
+    "report": "public-verification.json",
+    "sourceCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+    "expectedFiles": 28,
+    "matchedFiles": 28,
+    "completedAt": "2026-11-20T15:25:56.917Z",
+    "httpStatus": 200,
+    "allBytesMatched": true,
+    "allSha256Matched": true,
+    "scope": "Static public Pages GET, byte-count and SHA-256 only: current Sugar entry rules, local owner, presentation, six transparent multiplier images with provenance, six unchanged roulette images and offline runtime/cache. No gameplay, API, wallet or BET operations. Server .mjs checks verify published source only; they do not install, restart or verify the separate running Windows game server."
+  },
+  "previousAttempt": {
+    "ci": {
+      "id": 44759130197,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759130197",
+      "head": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+      "status": "completed",
+      "conclusion": "failure",
+      "createdAt": "2026-11-20T15:01:38Z",
+      "updatedAt": "2026-11-20T15:15:41Z",
+      "tree": "e0c6d21ecd8cec5c823307ca0c34380a79796058",
+      "jobs": [
+        {
+          "id": 136366654498,
+          "name": "rules-and-migration",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-20T15:02:18Z",
+          "completedAt": "2026-11-20T15:02:51Z",
+          "testSteps": []
+        },
+        {
+          "id": 136366654952,
+          "name": "native-browser-display (transparent-art, tests/sugar-v279-browser.mjs, qa-sugar-v279)",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-20T15:02:43Z",
+          "completedAt": "2026-11-20T15:05:34Z",
+          "testSteps": [
+            {
+              "name": "Real Sugar artwork, JPC display and preserved native state",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-11-20T15:03:37Z",
+              "completedAt": "2026-11-20T15:05:30Z"
+            }
+          ]
+        },
+        {
+          "id": 136366657781,
+          "name": "download-offline-resume",
+          "status": "completed",
+          "conclusion": "success",
+          "startedAt": "2026-11-20T15:02:26Z",
+          "completedAt": "2026-11-20T15:15:40Z",
+          "testSteps": [
+            {
+              "name": "Real recording, offline resume, eight-ball completion and exactly-once credit",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-11-20T15:03:32Z",
+              "completedAt": "2026-11-20T15:15:35Z"
+            }
+          ]
+        },
+        {
+          "id": 136366657813,
+          "name": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+          "status": "completed",
+          "conclusion": "failure",
+          "startedAt": "2026-11-20T15:02:18Z",
+          "completedAt": "2026-11-20T15:05:26Z",
+          "testSteps": [
+            {
+              "name": "Real Sugar artwork, JPC display and preserved native state",
+              "status": "completed",
+              "conclusion": "failure",
+              "startedAt": "2026-11-20T15:02:53Z",
+              "completedAt": "2026-11-20T15:05:22Z"
+            }
+          ]
+        },
+        {
+          "id": 136374846598,
+          "name": "public-assets",
+          "status": "completed",
+          "conclusion": "skipped",
+          "startedAt": "2026-11-20T15:15:41Z",
+          "completedAt": "2026-11-20T15:15:40Z",
+          "testSteps": []
+        }
+      ]
+    },
+    "overallStatus": "failure",
+    "panelFailure": "The fixed 900 ms wall delay sampled the sc254-jpc entrance start transform; test synchronization corrected without runtime changes.",
+    "triage": "sugar-panel-triage.json",
+    "initialPanelReport": "initial-sugar-panel-report.json.gz",
+    "download": {
+      "status": "passed",
+      "runId": 44759130197,
+      "jobId": 136366657781,
+      "report": "download-before-test-fix.json.gz",
+      "actualBalls": 8,
+      "actualNumbers": [
+        5,
+        4,
+        11,
+        8,
+        10,
+        22,
+        14,
+        23
+      ],
+      "allTenGamesPaid": true,
+      "offlinePendingCompletionObserved": true,
+      "reconnectedSessionStatus": "complete",
+      "sameSessionAfterServerRestart": true,
+      "creditPreservedAfterServerRestart": true,
+      "creditBefore": 1000000,
+      "totalBet": 1000,
+      "totalWin": 344,
+      "walletCredit": 999344,
+      "walletRevision": 2,
+      "rounds": 1,
+      "duplicateCompleteWalletAndStatsUnchanged": true,
+      "duplicateCompleteEvidence": "The successful tests/download-v255-browser.mjs execution includes deepEqual checks of repeated complete wallet and stats before report.ok=true.",
+      "pageErrors": 0,
+      "externalRequests": 0,
+      "webSockets": 0,
+      "recordedFrames": 3756,
+      "recordingDurationMs": 125150,
+      "lastNativeTiming": {
+        "frames": 1567,
+        "activeMs": 344602.89999999997,
+        "settlingMs": 231607.5,
+        "maxFrameMs": 2266.5
+      }
+    },
+    "publicVerification": "skipped after panel failure"
+  },
+  "evidence": {
+    "manifest": "artifact-evidence-manifest.json",
+    "artifactZipCount": 6,
+    "allArtifactZipDigestsMatchedActionsMetadata": true,
+    "allCompressedReportsRestoreOriginalBytes": true,
+    "representativePngCount": 1,
+    "fullJobLogsRetainedInRepository": false
+  },
+  "scope": "Sugar regression only. Browser/Download fixtures use isolated test servers. Public verification performs static GET and SHA-256 checks; this does not update or verify a separate running Windows server."
+}

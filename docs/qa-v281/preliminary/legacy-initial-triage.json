@@ -1,0 +1,298 @@
+{
+  "version": "20261120-v281-casino-sound-and-sixdrop-refinement",
+  "recordedAt": "2026-11-20T14:52:26.326Z",
+  "headSha": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+  "baseSha": "d16b3249d34fd2d43581d2fc0f3b611508401099",
+  "scope": "Read-only first-failure triage of failed legacy workflows observed on this head. No reruns, runtime/test edits or assertions of harmlessness. CI jobs still queued/running are not classified.",
+  "method": [
+    "Fetched job steps and original logs through GitHub connector; checkout head confirmed in every log.",
+    "Matched each first error, source line and expected/actual pair against the retained v278 failure record.",
+    "Compared immutable GitHub revisions v278 -> v279 documentation baseline -> v281: assertion files and cache-pin loader/modules are unchanged; grouped startup existed at v278.",
+    "Later skipped or unexecuted checks are not claimed to pass."
+  ],
+  "snapshot": {
+    "workflowRuns": 23,
+    "classifiedFailures": 4,
+    "unfinishedRuns": [
+      {
+        "id": 44756910617,
+        "name": "Local Debug v258 - native roulette and manual numbers",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910156,
+        "name": "Dango v266 - contested FREE payouts, independent RTP and local Sugar",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910040,
+        "name": "Arcade v254 Sugar Challenge and Dango reach presentation",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910008,
+        "name": "Sugar current entry rules and transparent artwork v279",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910184,
+        "name": "Verify current games and public Pages",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910093,
+        "name": "Download v255 server recording and offline playback",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910180,
+        "name": "Dango and Sugar v268 release verification",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756909978,
+        "name": "Game HIT and roulette polish v276",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756907800,
+        "name": "pages build and deployment",
+        "status": "queued"
+      },
+      {
+        "id": 44756910150,
+        "name": "Six Drop bottle, count payouts and continuation v280",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910214,
+        "name": "Celebration imagery and casino audio v281",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910104,
+        "name": "Dango launch timing and compact layout v269",
+        "status": "in_progress"
+      },
+      {
+        "id": 44756910231,
+        "name": "Dango and Sugar presentation v271",
+        "status": "in_progress"
+      }
+    ],
+    "allWorkflowsSucceeded": false
+  },
+  "comparisons": [
+    {
+      "base": "d16b3249d34fd2d43581d2fc0f3b611508401099",
+      "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "status": "ahead",
+      "files": 145,
+      "tooLarge": null,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/compare/d16b3249d34fd2d43581d2fc0f3b611508401099...004f088b8d0f3b5a5f740cfeb75949448fd45da4"
+    },
+    {
+      "base": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+      "head": "d16b3249d34fd2d43581d2fc0f3b611508401099",
+      "status": "ahead",
+      "files": 63,
+      "tooLarge": null,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/compare/c5510fa5ec37a0677ef1ee47cc759016c49bf7f9...d16b3249d34fd2d43581d2fc0f3b611508401099"
+    }
+  ],
+  "findings": {
+    "cachePinAssertions": 3,
+    "singleVersusGroupedAssertion": 1,
+    "missingWindowFirstErrorsInReviewedRuns": 0,
+    "newRuntimeRegressionsEstablished": 0,
+    "limitations": "These four first failures are evidenced historical test mismatches. This does not certify their skipped tests or the unreviewed/running workflows."
+  },
+  "failures": [
+    {
+      "runId": 44756910109,
+      "jobId": 136358918381,
+      "name": "Client v246 progressive payouts and smooth hidden-safe rendering",
+      "workflow": ".github/workflows/client-v246-check.yml",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910109",
+      "headSha": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "status": "failure",
+      "firstFailedStep": "Actual source and cached forecast contracts",
+      "firstError": "AssertionError [ERR_ASSERTION]: extra background handler loaded with current release cache key\n    at file:///home/runner/work/cookie-link/cookie-link/tests/background-continuity-v240.mjs:13:8 {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '==',\n  diff: 'simple'\n}",
+      "source": {
+        "file": "tests/background-continuity-v240.mjs",
+        "line": 13,
+        "loader": "assets/shared-machine-v176.js",
+        "loaderLine": 29,
+        "module": "assets/shared-client-background-v240.js"
+      },
+      "expected": "module cache pin 281",
+      "actual": "module cache pin 262",
+      "classification": "historically documented release-equals-module-cache-pin assertion",
+      "baseline": {
+        "record": "docs/qa-v278/legacy-workflow-failures.json",
+        "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+        "runId": 44743092232,
+        "jobId": 136311412333,
+        "sourceFile": "tests/background-continuity-v240.mjs",
+        "sourceLine": 13,
+        "expected": "v=278",
+        "actual": "v=262",
+        "firstError": "AssertionError [ERR_ASSERTION]: extra background handler loaded with current release cache key",
+        "sameGateAndError": true
+      },
+      "unchangedFiles": [
+        "tests/background-continuity-v240.mjs",
+        "assets/shared-machine-v176.js",
+        "assets/shared-client-background-v240.js"
+      ],
+      "skippedSteps": [
+        "Browser dependencies",
+        "Real nine games, forced BET, hidden result and exact wallet",
+        "Single-row monitor graphics and no-scroll layout"
+      ],
+      "newRuntimeRegressionEstablishedByThisFailure": false,
+      "downstreamBehavior": "not verified after the first failed assertion"
+    },
+    {
+      "runId": 44756910192,
+      "jobId": 136358918245,
+      "name": "Shared machine check",
+      "workflow": ".github/workflows/shared-machine-check.yml",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910192",
+      "headSha": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "status": "failure",
+      "firstFailedStep": "HD video adaptive capture regression",
+      "firstError": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/roulette-hd60-v234.mjs:21:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '=='\n}",
+      "source": {
+        "file": "tests/roulette-hd60-v234.mjs",
+        "line": 21,
+        "loader": "assets/shared-machine-v176.js",
+        "loaderLine": 22,
+        "module": "assets/shared-roulette-webrtc-host-v224.js"
+      },
+      "expected": "module cache pin 281",
+      "actual": "module cache pin 262",
+      "classification": "historically documented release-equals-module-cache-pin assertion",
+      "baseline": {
+        "record": "docs/qa-v278/legacy-workflow-failures.json",
+        "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+        "runId": 44743092504,
+        "jobId": 136311413679,
+        "sourceFile": "tests/roulette-hd60-v234.mjs",
+        "sourceLine": 21,
+        "expected": "v=278",
+        "actual": "v=262",
+        "firstError": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+        "sameGateAndError": true
+      },
+      "unchangedFiles": [
+        "tests/roulette-hd60-v234.mjs",
+        "assets/shared-machine-v176.js",
+        "assets/shared-roulette-webrtc-host-v224.js"
+      ],
+      "skippedSteps": [
+        "PowerShell syntax check",
+        "Windows PowerShell 5.1 encoding guard",
+        "Stable shared-machine regressions",
+        "Normal-cycle and physical roulette guards"
+      ],
+      "newRuntimeRegressionEstablishedByThisFailure": false,
+      "downstreamBehavior": "not verified after the first failed assertion"
+    },
+    {
+      "runId": 44756910220,
+      "jobId": 136358919023,
+      "name": "Six station check",
+      "workflow": ".github/workflows/stations-check.yml",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910220",
+      "headSha": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "status": "failure",
+      "firstFailedStep": "Stations sidebar, high-pay and rotating 3D reach colors",
+      "firstError": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(loader.includes('stations-reach-host-v239.js?v='+release))\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/stations-highlight-v239.mjs:14:8 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: false,\n  expected: true,\n  operator: '=='\n}",
+      "source": {
+        "file": "tests/stations-highlight-v239.mjs",
+        "line": 14,
+        "loader": "assets/shared-machine-v176.js",
+        "loaderLine": 23,
+        "module": "assets/stations-reach-host-v239.js"
+      },
+      "expected": "module cache pin 281",
+      "actual": "module cache pin 262",
+      "classification": "historically documented release-equals-module-cache-pin assertion",
+      "baseline": {
+        "record": "docs/qa-v278/legacy-workflow-failures.json",
+        "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+        "runId": 44743092582,
+        "jobId": 136311413272,
+        "sourceFile": "tests/stations-highlight-v239.mjs",
+        "sourceLine": 14,
+        "expected": "v=278",
+        "actual": "v=262",
+        "firstError": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:",
+        "sameGateAndError": true
+      },
+      "unchangedFiles": [
+        "tests/stations-highlight-v239.mjs",
+        "assets/shared-machine-v176.js",
+        "assets/stations-reach-host-v239.js"
+      ],
+      "skippedSteps": [
+        "Real-only migration and actual live-WIN UI",
+        "Operator BET control and unfocused physical/client continuity",
+        "Two real players, live WIN, checkpoint fallback and settlement",
+        "Seat allocation, privacy and idle-round guards",
+        "Actual HTTP and WebSocket six-seat integration",
+        "Wallet restart compatibility with server diagnostics",
+        "Existing shared-machine and payout regressions",
+        "Existing tab visibility and HD60 regressions"
+      ],
+      "newRuntimeRegressionEstablishedByThisFailure": false,
+      "downstreamBehavior": "not verified after the first failed assertion"
+    },
+    {
+      "runId": 44756909998,
+      "jobId": 136358917907,
+      "name": "Six Drop v248 connected groups colors and HUD",
+      "workflow": ".github/workflows/sixdrop-v247-check.yml",
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756909998",
+      "headSha": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+      "status": "failure",
+      "firstFailedStep": "Live nine-game client, readable Six Drop and forced BET",
+      "firstError": "CLIENT_BROWSER_V243_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'grouped'\n- 'single'\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/.sixdrop-hud-run-v247.mjs:75:46 {\n  generatedMessage: true,\n  code: 'ERR_ASSERTION',\n  actual: 'grouped',\n  expected: 'single',\n  operator: 'strictEqual',\n  diff: 'simple'\n}",
+      "source": {
+        "file": "tests/client-browser-v243.mjs",
+        "line": 60,
+        "generatedLocation": "tests/.sixdrop-hud-run-v247.mjs:75:46"
+      },
+      "expected": "single",
+      "actual": "grouped",
+      "classification": "historically documented single-ball test superseded by v278 grouped gameplay",
+      "baseline": {
+        "record": "docs/qa-v278/legacy-workflow-failures.json",
+        "headSha": "c5510fa5ec37a0677ef1ee47cc759016c49bf7f9",
+        "runId": 44743092306,
+        "jobId": 136311411755,
+        "sourceFile": "tests/client-browser-v243.mjs",
+        "sourceLine": 60,
+        "expected": "single",
+        "actual": "grouped",
+        "firstError": "CLIENT_BROWSER_V243_FAIL AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'grouped'\n- 'single'\n",
+        "sameGateAndError": true,
+        "groupedStartAlreadyPresentAtV278": true,
+        "hostBlobAtV278": "9cf64a801d6d3703a2265f6f2d21fbe2d0398fe4"
+      },
+      "unchangedFiles": [
+        "tests/client-browser-v243.mjs",
+        "tests/sixdrop-hud-v247.mjs"
+      ],
+      "skippedSteps": [
+        "Hidden full-game payout and carry",
+        "Per-game forecast colors and no-scroll monitor"
+      ],
+      "newRuntimeRegressionEstablishedByThisFailure": false,
+      "downstreamBehavior": "not verified after the first failed assertion"
+    }
+  ],
+  "unchangedEvidence": "Every path listed in unchangedFiles is absent from both complete immutable compare results below (v278 -> v279 documentation baseline -> v281).",
+  "publishedLoaderBlobSha": "2cda975938c76319875a45055f76dcfd1ae12738"
+}

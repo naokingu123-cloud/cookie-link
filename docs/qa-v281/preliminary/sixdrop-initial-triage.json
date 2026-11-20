@@ -1,0 +1,132 @@
+{
+  "head": "004f088b8d0f3b5a5f740cfeb75949448fd45da4",
+  "build": "20261120-v281-casino-sound-and-sixdrop-refinement",
+  "runId": 44756910150,
+  "runURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44756910150",
+  "failure": {
+    "jobId": 136358918433,
+    "case": "mobile-high-amount",
+    "message": "progressive digits do not clip",
+    "assertion": "tests/sixdrop-v278-browser.mjs:110",
+    "at": "2026-11-20T14:50:16Z",
+    "receivedBalls": 5,
+    "processedBalls": 5,
+    "bankText": "1006234",
+    "bankBox": {
+      "left": 96.6875,
+      "right": 205.10546875,
+      "width": 108.41796875
+    },
+    "digitsBox": {
+      "left": 90.33984375,
+      "right": 205.10546875,
+      "width": 114.765625
+    },
+    "logoRight": 93.4375,
+    "overflowLeft": 6.34765625,
+    "logoOverlap": 3.09765625,
+    "screenScale": 0.8125,
+    "diagnosis": "The fitter used a fixed 146 CSS px budget with continuation, but flex reduced the bank to 133.4375 CSS px; the 141.25 CSS px digit face extended into the logo.",
+    "artifactId": 14638267207,
+    "artifactSha256": "46bc112174e14ba9d11d460ae3b8b2132522d2f9087a72b6fb4f2d9cb1610a4e",
+    "report": "display-1/report.json",
+    "screenshot": "display-1/failure-mobile-high-amount.png"
+  },
+  "rules": {
+    "conclusion": "success",
+    "oldRevision278": {
+      "rounds": 108,
+      "groups": 540
+    },
+    "currentRevision280": {
+      "historicalSnapshots": 6,
+      "games": 72,
+      "groups": 360,
+      "allClears": 20
+    },
+    "old248ServerCompatibility": true,
+    "log": "grouped-rules-and-continuation.log"
+  },
+  "mini": {
+    "conclusion": "success",
+    "artifactId": 14640680285,
+    "artifactSha256": "93d9a04d2eaac8036132603ad64ed710ecc9bfaf188358d7e910d19c4f60bbdd",
+    "report": "display-2/report.json"
+  },
+  "proposedFix": {
+    "owner": "root",
+    "build": "20261120-v282-sixdrop-compact-long-amounts",
+    "change": "Measure actual free width after visible in-flow siblings, margins, gaps and padding, accounting for transform scale, with 2 px reserve; disable shrinking of the bank and digit face.",
+    "readReview": "The measured budget replaces 146/184 constants; hidden-only fallback remains. No test threshold weakened.",
+    "verification": "Awaiting new-head CI; no local browser run.",
+    "minimumBankWidthCssPx": 26,
+    "rootReportedPreview": {
+      "viewportWidth": 390,
+      "bankText": "1006234",
+      "bank": {
+        "left": 98.49,
+        "right": 203.303,
+        "width": 104.8125
+      },
+      "digits": {
+        "left": 98.487,
+        "right": 203.303,
+        "width": 104.815
+      },
+      "logoRight": 95.24,
+      "logoGap": 3.247,
+      "fitBudgetCssPx": 131,
+      "screenshot": "/workspace/shared/sixdrop-v282-high-amount.jpg",
+      "source": "Root CUA measurement; new-head CI still pending"
+    }
+  },
+  "desktopFailure": {
+    "jobId": 136358918439,
+    "case": "desktop-cycle",
+    "message": "AssertionError [ERR_ASSERTION]: progressive digits have visible space",
+    "assertion": "tests/sixdrop-v278-browser.mjs:109",
+    "bankText": "0",
+    "bankBox": {
+      "left": 642.3359375,
+      "top": 447.1875,
+      "right": 661.26171875,
+      "bottom": 479.0625,
+      "width": 18.92578125,
+      "height": 31.875
+    },
+    "digitsBox": {
+      "left": 642.3359375,
+      "top": 447.4951171875,
+      "right": 661.26171875,
+      "bottom": 478.7548828125,
+      "width": 18.92578125,
+      "height": 31.259765625
+    },
+    "logoRight": 638.5859375,
+    "phase": "result",
+    "processed": 8,
+    "bankReset": {
+      "units": 0,
+      "targetUnits": 0
+    },
+    "removedReset": {
+      "count": 0,
+      "targetCount": 0
+    },
+    "diagnosis": "A correctly reset single zero uses 18.92578125 rendered px at the full native 29px font. It fits its box, but the bank width >20px visibility assertion rejects that compact natural width. A native 26px bank minimum would satisfy the visibility floor while retaining the close logo gap.",
+    "artifactId": 14639592416,
+    "artifactSha256": "c00504c0a03fe4ac8fe57ee6da0d505680da26923fa1b79e6f51c69564754cda",
+    "report": "display-0/report.json",
+    "screenshot": "display-0/failure-desktop-cycle.png"
+  },
+  "finalInitialRun": {
+    "rules": "success",
+    "browserCases": {
+      "desktop-cycle": "failed: single-zero bank width",
+      "mobile-high-amount": "failed: long-number left overflow",
+      "mini-allclear": "passed",
+      "download-worker": "passed"
+    },
+    "publicAssets": "skipped because browser cases failed"
+  }
+}

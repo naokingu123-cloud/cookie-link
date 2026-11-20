@@ -1,0 +1,287 @@
+{
+  "recordedAt": "2026-11-20T15:28:10.404484+00:00",
+  "status": "complete",
+  "runtimeCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+  "testCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+  "finalRunId": 44760996283,
+  "scope": "Verified original browser and public reports, deterministic gzip copies, earlier failed-attempt triage, and one representative inspected JPC screenshot. Current and earlier evidence is separated by immutable source commit/run. Full job logs and additional screenshots are not retained in the repository.",
+  "artifacts": [
+    {
+      "id": 14640862891,
+      "name": "sugar-v279-sugar-panel",
+      "sourceRunId": 44759130197,
+      "sourceCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+      "createdAt": "2026-11-20T15:05:23Z",
+      "archiveBytes": 7390156,
+      "archiveSha256": "c6b0cb3235ab528656175e44799cfc383224d93abf06d219aeaf44310adae60a",
+      "archiveDigestMatchedActionsMetadata": true,
+      "sourceArchive": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/sugar-panel-14640862891.zip",
+      "artifactURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759130197/artifacts/14640862891"
+    },
+    {
+      "id": 14642650128,
+      "name": "sugar-v279-sugar-panel",
+      "sourceRunId": 44760996283,
+      "sourceCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+      "createdAt": "2026-11-20T15:17:41Z",
+      "archiveBytes": 8380797,
+      "archiveSha256": "363665e343bdd62efe4983309f7cb73be991509f7caa7df1b22d4ce3f853f27a",
+      "archiveDigestMatchedActionsMetadata": true,
+      "sourceArchive": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/sugar-panel/artifact.zip",
+      "artifactURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283/artifacts/14642650128"
+    },
+    {
+      "id": 14640199855,
+      "name": "sugar-v279-transparent-art",
+      "sourceRunId": 44760996283,
+      "sourceCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+      "createdAt": "2026-11-20T15:15:22Z",
+      "archiveBytes": 16089989,
+      "archiveSha256": "eab4534dd861bfa5edfa39afd3f0ed7616eb75b77beb5a1d4be42e5a4b07188b",
+      "archiveDigestMatchedActionsMetadata": true,
+      "sourceArchive": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/transparent-art/artifact.zip",
+      "artifactURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283/artifacts/14640199855"
+    },
+    {
+      "id": 14641955458,
+      "name": "sugar-v279-download-offline",
+      "sourceRunId": 44759130197,
+      "sourceCommit": "7d81f7440eb73fb046f5a59b51f6f2d83b6508c1",
+      "createdAt": "2026-11-20T15:15:37Z",
+      "archiveBytes": 5729642,
+      "archiveSha256": "ac7c47e977e5c10232d599ecf6e8f8b5d3d2da4753b51ebd666058b91a393ad3",
+      "archiveDigestMatchedActionsMetadata": true,
+      "sourceArchive": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/7d81/download-offline/artifact.zip",
+      "artifactURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44759130197/artifacts/14641955458"
+    },
+    {
+      "id": 14642835709,
+      "name": "sugar-v279-download-offline",
+      "sourceRunId": 44760996283,
+      "sourceCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+      "createdAt": "2026-11-20T15:25:18Z",
+      "archiveBytes": 5710516,
+      "archiveSha256": "6fd6fd4d7739a4e8458c1006c1aa2c29aefa4365a4504e39879d923fe0492915",
+      "archiveDigestMatchedActionsMetadata": true,
+      "sourceArchive": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/download-offline/artifact.zip",
+      "artifactURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283/artifacts/14642835709"
+    },
+    {
+      "id": 14640114911,
+      "name": "sugar-v279-public",
+      "sourceRunId": 44760996283,
+      "sourceCommit": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+      "createdAt": "2026-11-20T15:25:58Z",
+      "archiveBytes": 2757,
+      "archiveSha256": "d5022ca55f248144bae1821a9700f83d1f81b1741bf9ec6af7cb3008b6877a4d",
+      "archiveDigestMatchedActionsMetadata": true,
+      "sourceArchive": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/public/artifact.zip",
+      "artifactURL": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283/artifacts/14640114911"
+    }
+  ],
+  "files": [
+    {
+      "path": "sugar-panel.json.gz",
+      "sourceArtifactId": 14642650128,
+      "artifactMember": "result.json",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/sugar-panel/result.json",
+      "originalBytes": 376785,
+      "originalSha256": "073bb83736a57b71d722c1854863141a65c2a05b07b2a72a083efd95d6ea03ce",
+      "retainedBytes": 24091,
+      "retainedSha256": "0cd672d7f3d14adc966bdec99fffadab972d12fbad3bccb4817b213495596a83",
+      "compression": "gzip-mtime-0",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "transparent-art.json.gz",
+      "sourceArtifactId": 14640199855,
+      "artifactMember": "report.json",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/transparent-art/report.json",
+      "originalBytes": 127788,
+      "originalSha256": "b45413a697b38dea901aac3f3120a08eaea3ecbd76e0476eab2a9d19176e05bd",
+      "retainedBytes": 6114,
+      "retainedSha256": "530a5b4c13aad59d704593c6e65dc38314263264210d431ae08279491ae1ecc7",
+      "compression": "gzip-mtime-0",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "download-before-test-fix.json.gz",
+      "sourceArtifactId": 14641955458,
+      "artifactMember": "browser.json",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/7d81/download-offline/browser.json",
+      "originalBytes": 194331,
+      "originalSha256": "9e715dda1931d9df6e30e2416164007bd53957efa1f78dc0a0f1623293119682",
+      "retainedBytes": 9789,
+      "retainedSha256": "7ac6bf47d8f21d2dec43c5caa5fd71d13ac05b08be1f2592f6a686254f897ea5",
+      "compression": "gzip-mtime-0",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "initial-sugar-panel-report.json.gz",
+      "sourceArtifactId": 14640862891,
+      "artifactMember": "partial-result.json",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/sugar-panel/partial-result.json",
+      "originalBytes": 314931,
+      "originalSha256": "fc49f014528bbd4916e86f904ce4373d3a1e3c8062807feb57e4b8f16eeec78a",
+      "retainedBytes": 20191,
+      "retainedSha256": "46949cefdd39dac0a1484ec0868bc37c3802955e934f2a5e50cb00bfbd134ad3",
+      "compression": "gzip-mtime-0",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "sugar-panel-triage.json",
+      "sourceArtifactId": null,
+      "artifactMember": null,
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/sugar-panel-triage.json",
+      "originalBytes": 8129,
+      "originalSha256": "cd956ee22d2db6d4e3cbbd886b57188b3091b0ad8e1f2fd1b92da206efe1f1ed",
+      "retainedBytes": 8129,
+      "retainedSha256": "cd956ee22d2db6d4e3cbbd886b57188b3091b0ad8e1f2fd1b92da206efe1f1ed",
+      "compression": "none",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "sugar-jpc.png",
+      "sourceArtifactId": 14642650128,
+      "artifactMember": "lucky-jpc.png",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/sugar-panel/lucky-jpc.png",
+      "originalBytes": 1087598,
+      "originalSha256": "fbc8775f887fa67dd0513283725b3b9418ca01a1dc0b50084ce7c615dcdc612f",
+      "retainedBytes": 1087598,
+      "retainedSha256": "fbc8775f887fa67dd0513283725b3b9418ca01a1dc0b50084ce7c615dcdc612f",
+      "compression": "none",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "download-browser.json.gz",
+      "sourceArtifactId": 14642835709,
+      "artifactMember": "browser.json",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/download-offline/browser.json",
+      "originalBytes": 194416,
+      "originalSha256": "1fb90f7cc0b2867322e3f4fb3f4ea1b043ddf762990ee8a8fbdde6c5b3221a40",
+      "retainedBytes": 9789,
+      "retainedSha256": "282da1956021dcacb991caab6ea9f011459b3182650935dbd427c4877aab783f",
+      "compression": "gzip-mtime-0",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "public-verification.json",
+      "sourceArtifactId": 14640114911,
+      "artifactMember": "report.json",
+      "sourcePath": "/workspace/scratch/0a50e7c9379e/qa-v282-sugar/b250/public/report.json",
+      "originalBytes": 13080,
+      "originalSha256": "68ec14e1335785c209ad34422ad25fc44ac93702341b48feb341ce55fb610cb1",
+      "retainedBytes": 13080,
+      "retainedSha256": "68ec14e1335785c209ad34422ad25fc44ac93702341b48feb341ce55fb610cb1",
+      "compression": "none",
+      "originalBytesRetainedAfterDecompression": true
+    },
+    {
+      "path": "summary.json",
+      "kind": "derived-verification-summary",
+      "retainedBytes": 12056,
+      "retainedSha256": "ecab0eeb55cf3627e88127ed3fa43d80cbb6b2f5b3ba833176b7725528388c52",
+      "sources": [
+        "sugar-panel.json.gz",
+        "transparent-art.json.gz",
+        "download-browser.json.gz",
+        "download-before-test-fix.json.gz",
+        "public-verification.json",
+        "sugar-panel-triage.json"
+      ],
+      "compression": "none"
+    }
+  ],
+  "finalRun": {
+    "id": 44760996283,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44760996283",
+    "head": "b2509a8a49f6e9d2d7f547f6025f96d896078d56",
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-11-20T15:12:49Z",
+    "updatedAt": "2026-11-20T15:26:01Z",
+    "tree": "e52c53ab65b707401d87931a9e6e320040af5be5",
+    "jobs": [
+      {
+        "id": 136373164911,
+        "name": "download-offline-resume",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:51Z",
+        "completedAt": "2026-11-20T15:25:20Z",
+        "testSteps": [
+          {
+            "name": "Real recording, offline resume, eight-ball completion and exactly-once credit",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:13:36Z",
+            "completedAt": "2026-11-20T15:25:17Z"
+          }
+        ]
+      },
+      {
+        "id": 136373165252,
+        "name": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:53Z",
+        "completedAt": "2026-11-20T15:17:45Z",
+        "testSteps": [
+          {
+            "name": "Real Sugar artwork, JPC display and preserved native state",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:13:57Z",
+            "completedAt": "2026-11-20T15:17:39Z"
+          }
+        ]
+      },
+      {
+        "id": 136373165280,
+        "name": "native-browser-display (transparent-art, tests/sugar-v279-browser.mjs, qa-sugar-v279)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:51Z",
+        "completedAt": "2026-11-20T15:15:25Z",
+        "testSteps": [
+          {
+            "name": "Real Sugar artwork, JPC display and preserved native state",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:13:41Z",
+            "completedAt": "2026-11-20T15:15:21Z"
+          }
+        ]
+      },
+      {
+        "id": 136373165597,
+        "name": "rules-and-migration",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:12:52Z",
+        "completedAt": "2026-11-20T15:13:50Z",
+        "testSteps": []
+      },
+      {
+        "id": 136380526576,
+        "name": "public-assets",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-20T15:25:23Z",
+        "completedAt": "2026-11-20T15:26:01Z",
+        "testSteps": [
+          {
+            "name": "Verify published Sugar runtime, transparent art, unchanged reel art and offline cache",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-20T15:25:55Z",
+            "completedAt": "2026-11-20T15:25:56Z"
+          }
+        ]
+      }
+    ]
+  },
+  "retainedFileCountExcludingManifest": 9,
+  "allArchiveDigestsMatched": true,
+  "allOriginalReportBytesRetained": true
+}
