@@ -35,7 +35,7 @@ async function setup(target){
    const cells=[...document.querySelectorAll('.dgb-pay td,.dgb-pay tbody th')];
    const labels=[...document.querySelectorAll('.dgb-pay tbody th')].map(th=>({length:+th.parentElement.dataset.length,text:th.textContent,cell:box(th),name:box(th.querySelector('.dgb-line-name')),scroll:th.scrollWidth,width:th.clientWidth}));
    const rows=[...document.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,box:box(row),icons:[...row.children].map(icon=>({box:box(icon),bitmap:icon.dataset.bitmap,kind:icon.dataset.kind,width:icon.width}))}));
-   const draw=DangoBingoView.describeAssets().last.main,dpr=Math.min(2,devicePixelRatio||1);
+   const draw=DangoBingoView.describeAssets().last.main,dpr=Math.min(2,devicePixelRatio||1),freeStyle=getComputedStyle(document.querySelector('.dgb-free-stat')),freeContentWidth=free.width-['paddingLeft','paddingRight','borderLeftWidth','borderRightWidth'].reduce((sum,key)=>sum+parseFloat(freeStyle[key]),0);
    return {width:scene.clientWidth,height:scene.clientHeight,table,matrix,odds,free,rail,railVisible:!railElement.hidden,unit:g.unit,payout,labels,rows,draw,
     tableClearance:Math.min(...[matrix,odds].filter(Boolean).flatMap(rect=>g.centers.map(p=>distance(rect,p)))),freeClearance:Math.min(...g.centers.map(p=>distance(free,p))),railClearance:railElement.hidden?null:Math.min(...g.centers.map(p=>distance(rail,p))),
     numeralFont:parseFloat(getComputedStyle(document.querySelector('.gold-number')).fontSize),
@@ -45,7 +45,7 @@ async function setup(target){
     controlMatches:[...document.querySelectorAll('.dgb-cell')].every((button,i)=>Math.abs(parseFloat(button.style.left)-g.centers[i].x)<.01&&Math.abs(parseFloat(button.style.top)-g.centers[i].y)<.01),
     oldTableWidth:g.portrait?g.width-payout.anchor*2:payout.unit*4.23,
     manualWait:document.querySelector('.dgb-countdown').textContent,
-    freeTextOverflow:[...document.querySelectorAll('.dgb-free-stat>small,.dgb-free-stat>b,.dgb-free-detail,.dgb-countdown')].filter(e=>e.getBoundingClientRect().width>free.width-4).map(e=>({text:e.textContent,width:e.getBoundingClientRect().width}))
+    freeContentWidth,freeTextOverflow:[...document.querySelectorAll('.dgb-free-stat>small,.dgb-free-stat>b,.dgb-free-detail,.dgb-countdown,.dgb-actions button')].filter(e=>e.getBoundingClientRect().width>freeContentWidth+1||e.scrollWidth>e.clientWidth+1).map(e=>({text:e.textContent,width:e.getBoundingClientRect().width,scroll:e.scrollWidth,client:e.clientWidth}))
    };
   };
   qa.new();return {rules:R.REVISION,view:DangoBingoView.presentationRevision,assets:DangoBingoView.describeAssets().ready};
@@ -89,7 +89,7 @@ try{
  assert.deepEqual(await setup(page),{rules:268,view:269,assets:true});
  report.initial=await page.evaluate(()=>({highest:qa269.view.describe().highestCells,zero:qa269.cell(2,1).textContent,zeroCurrent:qa269.cell(2,1).classList.contains('current'),oddsHidden:document.querySelector('.dgb-pay-odds').hidden,removedGrantText:document.querySelectorAll('.dgb-free-grant').length,idleMotion:DangoBingoView.describeAssets().last.main.idleMotion,colors:DangoBingoView.lineColors,freeTitle:document.querySelector('.dgb-free-title').textContent,value:document.querySelector('.dgb-free-value').textContent}));
  assert.deepEqual(report.initial.highest,[{length:4,count:3},{length:5,count:3},{length:6,count:2},{length:6,count:3},{length:7,count:2},{length:7,count:3}]);
- assert.equal(report.initial.zero,'-');assert.equal(report.initial.zeroCurrent,false);assert.equal(report.initial.oddsHidden,true);assert.equal(report.initial.idleMotion,false);assert.equal(report.initial.removedGrantText,0);assert.equal(report.initial.colors[2],'#269eff');assert.equal(report.initial.colors[3],'#4ee3f5');
+ assert.equal(report.initial.zero,'-');assert.equal(report.initial.zeroCurrent,false);assert.equal(report.initial.oddsHidden,true);assert.equal(report.initial.idleMotion,false);assert.equal(report.initial.removedGrantText,0);assert.equal(report.initial.freeTitle,'置けるFREE');assert.equal(report.initial.colors[2],'#269eff');assert.equal(report.initial.colors[3],'#4ee3f5');
  for(const [width,height]of viewports){const m=await fit(width,height);report.firstHalf.push(m);checkLayout(m,{rail:true});await page.screenshot({path:output+'/v269-first-half-'+width+'x'+height+'.png'});}
  // Entering the fifth-ball thinking state immediately removes every early icon.
  await page.evaluate(()=>qa269.seven());assert.equal(await page.evaluate(()=>qa269.state.freeBudget),7);

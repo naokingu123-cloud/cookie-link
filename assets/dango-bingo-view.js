@@ -443,7 +443,7 @@ function mount(panel){
     find('.dgb-free-value').textContent=state.draws.length<5?'最大FREE '+area+'個':'あと'+state.freeRemaining+'個';
     find('.dgb-free-detail').textContent='配置'+state.manualFreeCells.length+'/'+state.freeBudget+'個 ／ '+(state.qualifiedEarlyLengths?.length?level+'個ライン':'ライン未成立');
     if(isCurrent(state)){
-     find('.dgb-free-title').textContent='配置できるFREE';
+     find('.dgb-free-title').textContent='置けるFREE';
      find('.dgb-free-value').textContent='あと '+state.freeRemaining+'個';
      find('.dgb-free-detail').textContent=drawCount<5?'前半5球で確定':'配置 '+state.manualFreeCells.length+' / '+state.freeBudget+'個';
      triggerBox.hidden=true;

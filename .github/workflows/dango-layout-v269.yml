@@ -58,11 +58,23 @@ jobs:
           fi
       - name: Compact payouts, yellow FREE icons and final-board reaches
         run: node tests/dango-v269-view.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dango-v269-payout-screens
+          path: qa-dango-v269-view/
+          retention-days: 7
       - name: Preserved saved-game display
         run: node tests/dango-v266-view.mjs
       - name: BET-time roulette control and reclaimed main-game space
         if: ${{ !cancelled() }}
         run: node tests/bet-layout-v269-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dango-v269-bet-screens
+          path: qa-bet-layout-v269/
+          retention-days: 7
       - name: Shared native BET controls and tab navigation
         if: ${{ !cancelled() }}
         run: node tests/tabs-v250-browser.mjs
@@ -102,6 +114,12 @@ jobs:
           fi
       - name: Actual local roulette, manual numbers and eight-ball settlement
         run: node tests/local-debug-v258-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dango-v269-native-screens
+          path: qa-local-debug-v258/
+          retention-days: 7
       - name: Native ten-game recording and deterministic settlement
         run: node tests/download-v255-compute.mjs
       - name: Offline replay, launch timing and server restart

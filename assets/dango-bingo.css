@@ -135,4 +135,5 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 .dgb-free-icon{display:block;width:var(--dgb-free-icon-size);height:var(--dgb-free-icon-size);filter:drop-shadow(0 1px 1px #15220699)}
 
 .dgb-scene[data-presentation="269"] .dgb-placement[data-manual-wait="true"]{flex-direction:column;gap:3px}
-.dgb-scene[data-presentation="269"] .dgb-placement[data-manual-wait="true"] .dgb-actions{flex-basis:auto;width:calc(var(--dgb-unit)*1.13)}
+.dgb-scene[data-presentation="269"] .dgb-placement[data-manual-wait="true"] .dgb-actions{flex-basis:auto;width:max(56px,calc(var(--dgb-unit)*1.13))}
+.dgb-scene[data-presentation="269"] .dgb-placement[data-manual-wait="true"] .dgb-actions button{white-space:nowrap}

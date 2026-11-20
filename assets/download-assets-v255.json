@@ -108,8 +108,8 @@
     },
     {
       "path": "assets/arcade-tabs-v249.css",
-      "bytes": 36550,
-      "sha256": "a9560f3302cad2c90b4ec89541ba6208937a6dbd5fffca49f162c9d8166ad1ce"
+      "bytes": 37806,
+      "sha256": "4d1df8ff21635d28ffa2c449a730d5e1603754e872280ba146b10436344316ca"
     },
     {
       "path": "assets/arcade-tabs-v249.js",
@@ -1203,13 +1203,13 @@
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 52692,
-      "sha256": "5b54ff3bc43b531b2be4c32d265fa31698c91693888dd2f9d98c6182d9a28f69"
+      "bytes": 52686,
+      "sha256": "44bf4136f49719c1e629a022653bc8ce1c00bc9584fb0a68645cdc17695fa5e8"
     },
     {
       "path": "assets/dango-bingo.css",
-      "bytes": 20538,
-      "sha256": "cefffa29a226b507a1db5cdd09a843a4610b6e5992557e986e8ff82840f85be2"
+      "bytes": 20664,
+      "sha256": "cda34355d125692ad42f91396c34bac4fb6fb118a4dbc2b869fc6a6860ad3042"
     },
     {
       "path": "assets/dango-thinking-v251.js",
@@ -3227,5 +3227,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 127962320
+  "totalBytes": 127963696
 }

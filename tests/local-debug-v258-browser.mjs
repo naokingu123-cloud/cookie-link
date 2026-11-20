@@ -39,6 +39,10 @@ try{
  await capture('chooser');
  await page.locator('[data-edition-choice="local"]').click();
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().ready===true,null,{timeout:90000});
+ // Hold BET through the real manual control before renderer setup or screenshots
+ // can consume the automatic countdown. No production clock/state is patched.
+ await page.locator('#manual-number-toggle').click();
+ await page.waitForFunction(()=>{const s=window.SweetsLocalDebugV258?.describe?.();return s?.manualNumbers===true&&s.phase==='ready';},null,{timeout:10000});
  let current=await state();
  assert.equal(current.localDrawAllowed,true);
  assert.equal(current.serverClientPresent,false);
@@ -65,9 +69,21 @@ try{
  assert.equal((await state()).phase,'ready');assert.equal(betQuote.local.bankCount,0);assert.equal(betQuote.local.phase,'ready');assert.ok(betQuote.local.jpAmount>0);assert.ok(betQuote.local.multiplier>=1);assert.ok(betQuote.ui.challenge);
  milestone('sugar-bet-quote',{jpAmount:betQuote.local.jpAmount,multiplier:betQuote.local.multiplier});
  await capture('local-sugar-bet-quote');
- milestone('before-manual-switch',{native:await state(),sugar:await page.evaluate(()=>window.SweetsLocalSugarV267.describe())});
+ // Explicitly exercise the zero-ball controller reset without racing a falling
+ // physical ball: start the held manual round, then switch controllers twice.
+ await page.locator('#manual-start').click();
+ await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().phase==='playing',null,{timeout:20000});
+ const beforeModeReset=await page.evaluate(()=>({native:window.SweetsLocalDebugV258.describe(),local:window.SweetsLocalSugarV267.describe(),challenge:window.SweetsSugarChallengeV254.describe().challenge}));
+ assert.deepEqual(beforeModeReset.native.draws,[]);assert.deepEqual(beforeModeReset.local.draws,[]);assert.deepEqual(beforeModeReset.challenge,betQuote.ui.challenge);
+ milestone('before-zero-ball-mode-reset',{native:beforeModeReset.native,sugar:beforeModeReset.local});
  await page.locator('#manual-number-toggle').click();
- await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().manualNumbers===true,null,{timeout:5000});
+ await page.waitForFunction(()=>{const s=window.SweetsLocalDebugV258?.describe?.();return s?.manualNumbers===false&&s.phase==='ready';},null,{timeout:5000});
+ await page.locator('#manual-number-toggle').click();
+ await page.waitForFunction(()=>{const s=window.SweetsLocalDebugV258?.describe?.();return s?.manualNumbers===true&&s.phase==='ready';},null,{timeout:5000});
+ const resetQuote=await page.evaluate(()=>({native:window.SweetsLocalDebugV258.describe(),local:window.SweetsLocalSugarV267.describe(),challenge:window.SweetsSugarChallengeV254.describe().challenge}));
+ assert.deepEqual(resetQuote.native.draws,[]);assert.deepEqual(resetQuote.local.draws,[]);assert.equal(resetQuote.local.phase,'ready');assert.equal(resetQuote.local.bankCount,0);
+ assert.equal(resetQuote.local.roundId,betQuote.local.roundId);assert.equal(resetQuote.local.jpAmount,betQuote.local.jpAmount);assert.equal(resetQuote.local.multiplier,betQuote.local.multiplier);assert.deepEqual(resetQuote.challenge,beforeModeReset.challenge);
+ milestone('zero-ball-mode-reset-preserved',{roundId:resetQuote.local.roundId,jpAmount:resetQuote.local.jpAmount,multiplier:resetQuote.local.multiplier});
  await capture('local-manual');
  await page.locator('#manual-start').click();
  await page.waitForFunction(()=>window.SweetsLocalDebugV258?.describe?.().phase==='playing',null,{timeout:20000});

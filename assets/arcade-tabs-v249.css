@@ -360,6 +360,21 @@ html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-swit
 html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch>span{font-size:11px!important}
 html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch>strong{font-size:21px!important}
 html.arcade-v249.arcade-tabs-v250 #screen #cookie-roulette .v250-shared-bet-switch small{font-size:9px!important}
+/* Shared AUTO REBET and registration have their own column between the
+   200px sugar tray and the pet/status rail. Keeping them out of the countdown
+   flow leaves the native debug/JPC buttons below that status, with no overlap. */
+html.arcade-v249.arcade-tabs-v250 #screen #bet-countdown .shared-auto-rebet-label{
+ position:absolute!important;right:136px!important;top:20px!important;box-sizing:border-box!important;
+ width:102px!important;height:20px!important;min-height:20px!important;margin:0!important;padding:1px 3px!important;
+ border:1px solid #efd18f!important;border-radius:6px!important;background:#fff2d8f5!important;
+ color:#713959!important;font:800 9px/16px system-ui,sans-serif!important;white-space:nowrap!important;
+}
+html.arcade-v249.arcade-tabs-v250 #screen #bet-countdown #shared-bet-v228{
+ position:absolute!important;right:136px!important;top:44px!important;box-sizing:border-box!important;
+ width:102px!important;height:28px!important;min-height:28px!important;margin:0!important;padding:3px!important;
+ border:1px solid #efd18f!important;border-radius:7px!important;background:linear-gradient(#ffe8a5,#e4b55e)!important;
+ color:#623e24!important;font:900 11px/20px system-ui,sans-serif!important;white-space:nowrap!important;
+}
 /* Local and Download cabinets have no station rail. Their pet uses the lower centre
    during BET, leaving the right corner and manual control independently usable. */
 html.arcade-v249.arcade-tabs-v250:is([data-edition="local"],[data-edition="download"]) #screen>.arena:has(#cookie-roulette>.v250-common-bet:not([hidden]))>.avatar-box{
