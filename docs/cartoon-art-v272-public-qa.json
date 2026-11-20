@@ -1,0 +1,345 @@
+{
+  "version": "20261120-v273-cartoon-game-art",
+  "runtimeCommit": "f8e2a5e9adef53afe09957fa44362fdb6a88dc78",
+  "url": "https://naokingu123-cloud.github.io/cookie-link/",
+  "verifiedAt": "2026-11-20T04:35:42.525989+00:00",
+  "files": [
+    {
+      "path": "app-version.json",
+      "status": 200,
+      "bytes": 46,
+      "sha256": "a682a8577889f8e480e8f7ef2470416f2e58cbd98b652ccc1142805785013770",
+      "match": true
+    },
+    {
+      "path": "assets/bingo-stick-view.js",
+      "status": 200,
+      "bytes": 16386,
+      "sha256": "b5301832d3800023ec485f87aa5c597b5d28f4882a6c4c568feb374c19bd1b45",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-art-v272.css",
+      "status": 200,
+      "bytes": 8923,
+      "sha256": "7622a8b56221c3e96b26e5530a947cec0f8689a9993c93526f46095be5572f1f",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-art-v272.js",
+      "status": 200,
+      "bytes": 5638,
+      "sha256": "f802267645b7d85db2ae3bcbd9387436f7615fd411bbc5a03d1d788daea23c7e",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-art-v272/sweets-frames.png",
+      "status": 200,
+      "bytes": 1488659,
+      "sha256": "36e77056ea1950825c3a78a608fc1f1e838a8ddc4c748b2dc34236e42ae34b78",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-art-v272/sweets-sprites-a.png",
+      "status": 200,
+      "bytes": 1758814,
+      "sha256": "28d57b731f286dd77b159eb7d1ae879fa46e0cc46072e0cc0e816e5abbf93736",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-art-v272/sweets-sprites-b.png",
+      "status": 200,
+      "bytes": 1561856,
+      "sha256": "2794a5a7239eb69864c0542b2b197fb0c865fc49e415f726ccada44d7913adea",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-boards-a-v272.css",
+      "status": 200,
+      "bytes": 4961,
+      "sha256": "1a807c5807da592da626b4bb8c68fe21ed13b26dfa23434d74437aedf6ca5f66",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-boards-a-v272.js",
+      "status": 200,
+      "bytes": 14038,
+      "sha256": "f4a5aeb58207dd5b7697b403da52fa0acf7d41307774768f5ac697a35de77170",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-boards-b-v272.css",
+      "status": 200,
+      "bytes": 6265,
+      "sha256": "801fb8bca4084506809d2e858af6dbc8c7882ffaebd30d5e37d5701f2c9d39c0",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-boards-b-v272.js",
+      "status": 200,
+      "bytes": 13086,
+      "sha256": "6d803053c85f47d2c49d48dcc5b5c94c85c8106386cd849472a8e7ae7d48ee92",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-boards-c-v272.css",
+      "status": 200,
+      "bytes": 7940,
+      "sha256": "64f005c7189b67030bf2a3723cdb456c5ceca5dd0c83170924ea13dc1b40b835",
+      "match": true
+    },
+    {
+      "path": "assets/cartoon-boards-c-v272.js",
+      "status": 200,
+      "bytes": 4124,
+      "sha256": "902d9e84fe1544438404cdda26b639b16d6357d452b366c13d841b012b811bc6",
+      "match": true
+    },
+    {
+      "path": "assets/castella-lesson.js",
+      "status": 200,
+      "bytes": 8451,
+      "sha256": "148edad9c348fba99b45d183bd9a39dd4c7666a9a8ef472e6247becda0c51526",
+      "match": true
+    },
+    {
+      "path": "assets/dango-bingo-view.js",
+      "status": 200,
+      "bytes": 57894,
+      "sha256": "e9dc879365ce29d30fea1bad263851eab4f958fcca1b5b6ed5bb919b0b84275c",
+      "match": true
+    },
+    {
+      "path": "assets/demo-suite-v91.js",
+      "status": 200,
+      "bytes": 20196,
+      "sha256": "4d0391fd44125658a5faa098f706a06be2ec4d6f15b63fa062646d68d85aa4e4",
+      "match": true
+    },
+    {
+      "path": "assets/download-assets-v255.json",
+      "status": 200,
+      "bytes": 111655,
+      "sha256": "e490cdb745cb3086c76bb259a9b69b47227dce58b857b53f2c78f987c0446b01",
+      "match": true
+    },
+    {
+      "path": "assets/download-cache-v255.js",
+      "status": 200,
+      "bytes": 4356,
+      "sha256": "b376f0fdf3a0bcdd71acd14c4aedb07e953c61a8239d199c0f84c8ee7273142c",
+      "match": true
+    },
+    {
+      "path": "assets/edition-choice-v255.js",
+      "status": 200,
+      "bytes": 3767,
+      "sha256": "58bbdc2f95c4721abdcdddd9003146eb64b6767f7f5eaa16d4c3051553d63b05",
+      "match": true
+    },
+    {
+      "path": "assets/gelato-prism-v28.js",
+      "status": 200,
+      "bytes": 69677,
+      "sha256": "1c9e7be1aa25d8434e216b2cc95c4896a6e5b5fa06b6a8f2b3cb410d2d65233c",
+      "match": true
+    },
+    {
+      "path": "assets/jelly-lesson.js",
+      "status": 200,
+      "bytes": 8300,
+      "sha256": "987e6ec59fbb3bcde3c57b01ab547bdad40d9e6ed1998e3a8ae5a88c7983d9c8",
+      "match": true
+    },
+    {
+      "path": "assets/jelly-view.js",
+      "status": 200,
+      "bytes": 37667,
+      "sha256": "e6a0019fa4c76539d9d48bb4a13b4b93a67b8358a0bc1a463d9bdfc889f7dc14",
+      "match": true
+    },
+    {
+      "path": "assets/party-castella.js",
+      "status": 200,
+      "bytes": 31742,
+      "sha256": "c3f9942f194d30eb6f3cca7cfaf716c9c6f178fb71120e59a77412c63873e699",
+      "match": true
+    },
+    {
+      "path": "assets/popcorn-view.js",
+      "status": 200,
+      "bytes": 65897,
+      "sha256": "99634354a5d5383124f6d247f94f479e2f145007adbc193e413bcbcfa35a68bb",
+      "match": true
+    },
+    {
+      "path": "assets/waffle-lesson.js",
+      "status": 200,
+      "bytes": 7001,
+      "sha256": "4c14f647a7b242d0a967ccc05264e7c3b88ab6ae013e236c1a3b1d7fc897e5a4",
+      "match": true
+    },
+    {
+      "path": "assets/winery-pyramid-v1.js",
+      "status": 200,
+      "bytes": 50394,
+      "sha256": "29c29731e0f088bbdd71423c2870242334e05b5cb5bdbf46ffb34af76a77e163",
+      "match": true
+    },
+    {
+      "path": "download-sw-v255.js",
+      "status": 200,
+      "bytes": 3667,
+      "sha256": "536df3195bf4484c846dded53ff82f50fa02b0167cbfef94dddcf4ce901bf8c8",
+      "match": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 84884,
+      "sha256": "ec97293f0a32491bfe06aa82096ab17ba0801f6a4677fc68d36fac9da202006d",
+      "match": true
+    }
+  ],
+  "allMatch": true,
+  "validationCommit": "88211f5ad64fa36409a8f7a01b287f24cea207fb",
+  "generatedArtwork": {
+    "provider": "built-in image_gen",
+    "spriteCount": 72,
+    "frameCount": 10,
+    "totalBytes": 4809329,
+    "prompts": "cartoon-art-v272-prompts.json",
+    "atlases": [
+      "assets/cartoon-art-v272/sweets-sprites-a.png",
+      "assets/cartoon-art-v272/sweets-sprites-b.png",
+      "assets/cartoon-art-v272/sweets-frames.png"
+    ]
+  },
+  "ci": {
+    "artwork": {
+      "runId": 44675764230,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44675764230",
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 136087078675,
+          "name": "ten-games",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 136087079044,
+          "name": "art-and-cache",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "result": {
+        "version": "20261120-v273-cartoon-game-art",
+        "sprites": 82,
+        "screens": 20,
+        "games": 10,
+        "phases": [
+          "ready",
+          "playing",
+          "mobile"
+        ],
+        "pageErrors": []
+      },
+      "artifacts": [
+        {
+          "id": 14601149810,
+          "name": "cartoon-v272-ten-games",
+          "size_in_bytes": 17704770,
+          "digest": "sha256:86928eb74b3eee4ab38d3ee5ed1d2e05cda9d724d3c4bca0030e2314cc30dbbf",
+          "expired": false
+        }
+      ]
+    },
+    "dangoAndSugar": {
+      "runId": 44675143945,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44675143945",
+      "jobs": [
+        {
+          "id": 136085083593,
+          "name": "rules-and-cache",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 136085083916,
+          "name": "sugar-layout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 136085083917,
+          "name": "dango-layout",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    "runtimeDeployment": {
+      "runId": 44675143139,
+      "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44675143139",
+      "jobs": [
+        {
+          "id": 136085086446,
+          "name": "build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 136085268879,
+          "name": "deploy",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 136085268953,
+          "name": "report-build-status",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  },
+  "browser": {
+    "productionUrl": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v273-cartoon-game-art",
+    "inspectionUrl": "https://naokingu123-cloud.github.io/cookie-link/?appv=20261120-v273-cartoon-game-art&edition=local",
+    "checked": [
+      "Published edition selection and version",
+      "Illustrated Choco foreground lesson",
+      "Jelly, Waffle and Castella detailed lessons and flat backgrounds",
+      "All ten live game tabs selected in the local debugging edition",
+      "Published Cookie and Winery boards with generated pieces and frames"
+    ],
+    "screens": [
+      "qa-v273/public-cookie.jpg",
+      "qa-v273/public-winery.jpg",
+      "qa-v273/public-jelly-ready.jpg"
+    ],
+    "earlierAllGameScreens": "qa-v272/",
+    "scope": "The public frontend was inspected in the local debugging edition with fake CREDIT. No public shared-server BET, draw or settlement was submitted.",
+    "limitation": "WebGL is unavailable in this CUA browser. The 2D boards, lesson screens and DOM layouts were inspected; the physical 3D lottery itself was outside this visual check."
+  },
+  "localChecks": [
+    "Changed JavaScript syntax",
+    "npm run check",
+    "npm run test:payout (v272 runtime)",
+    "npm run test:sugar (v272 runtime)",
+    "node tests/download-v255-cache.mjs",
+    "All 663 offline-manifest file hashes and sizes",
+    "git diff --check"
+  ],
+  "readyVerification": {
+    "runId": 44675143936,
+    "artifactId": 14601676994,
+    "games": 10,
+    "pageErrors": [],
+    "notes": "All ten foreground ready lessons and all miniatures passed. The subsequent live start did not register a manual BET with AUTO REBET disabled; the isolated fixture was corrected in validationCommit without changing runtime."
+  },
+  "deploymentScope": "GitHub Pages frontend updated. A separately running Windows shared-server checkout is not redeployed by Pages."
+}
