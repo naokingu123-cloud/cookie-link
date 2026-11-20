@@ -48,13 +48,27 @@ JPヘッダの倍率、チャレンジ中の決定済み倍率、JPC獲得演出
 
 v278公開時の旧ブラウザー検査2件では、8球目の録画時刻へ到達する前に「録画長＋180秒」の検査期限が切れていた。`settlingMs`は全HIT演出の累積値であり、その値だけで7球目が長時間停止したとは判断できない。
 
-再生・配当・ゲーム速度・1球当たり90秒の既存上限は保持する。診断情報へ現在の待機種別・当該球の経過・次HIT時刻を追加した。完了検査は残りの録画時間と各球の既存上限を使う有限の期限にし、別途110秒の無進展で失敗させる。実際のオフライン再開から8球完了・一度だけの精算まで専用CIで確認する。
+再生・配当・ゲーム速度・1球当たり90秒の既存上限は保持する。診断情報へ現在の待機種別・当該球の経過・次HIT時刻を追加した。完了検査は残りの録画時間と各球の既存上限を使う有限の期限にし、別途110秒の無進展で失敗させる。
+
+初回候補 `52f6b6d` の [Download検査](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44746679806/job/136323684824) は実際のオフライン再開から8球完了・再接続・一度だけの精算まで成功した。全10ゲームがprocessed 8・paid true、CREDITは準備時から完了・再読込まで999,264（revision 2）のまま、roundsは1。重複completeでもwallet・statsは一致した。録画122.37秒に対して実再生の計測は400.53秒、うちネイティブ演出の累計は290.31秒で、旧「録画長＋180秒」の検査予算が不足する事例を実完走で確認できた。各球の90秒上限は超えていない。
+
+別の候補 `582df7c` では、球間の状態を観測した後、別のブラウザー呼出しでpauseする間に次HITへ進んでいた。実際のpauseはcursor 2・stableBall 1・settling trueで、切断後の通常演出が9.90秒進んだ時点で「録画時刻が10秒以内に進む」という検査に達した。ゲームはplaying true・errorなしで、複数エンジンの処理数も増えていた。この検査競合を、条件の観測とpauseを同一ブラウザータスクで行う修正により解消した。初回pauseではcursorとstableBallの一致、settling false、次HITまで1秒以上を明示確認する。切断中の200ms進行観測とpauseも同一タスクにした。10秒の検査期限自体は変更していない。
+
+初回候補から最終候補 `3174c71` までに変えたのはブラウザー検査2ファイルのみで、配信するゲーム本体・画像・ルールは同一。もう1件のリール検査は、サーバー時計の差を含めて実際の停止フレームを待つようにした。最終候補とmainの検査結果は下記を参照。
 
 ## 検証と公開
 
 ローカルでは移行の再現、旧ルール互換、正確な突入率、実Arcade、台帳、HTTP/WS精算、倍率表示、loaderの更新、Six Drop精算の回帰を検査した。元のルーレットPNG6枚のSHA-256不変と、透過PNGの実アルファも検査している。
 
-実ブラウザーでの全6倍率・PC/390px・JPC獲得・512px拡大素材、ダウンロードの実録画再開、および公開配信ハッシュの最終結果はCI後に追記する。検査用512px一覧は素材の再利用確認であり、JPC本体の実装を意味しない。
+[PR #4](https://github.com/naokingu123-cloud/cookie-link/pull/4) をmain `004372c6a0b810d06adefb69ba21409d17e77659` へマージした。最終候補 `3174c71` とmergeのtreeは `197c2b2e97b05ee32259951b9ab92ddd35f95dcd` で一致する。
+
+- [main専用CI 44749112751](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112751) はルール・ブラウザー2種・Download・公開照合の全5jobが成功。全6倍率、PC/390px、JPC獲得、512pxの拡大素材を検査し、例外・素材失敗は0。旧254/268/270の途中状態を維持し、表示前後のcredit/bets/draws/totalWin/phaseも一致した。
+- 最終Downloadは球間でcursor=stableBall=2、settling=falseを確認。一時切断から自動ACKへ回復し、オフライン再読込から8球・全10ゲームの処理と精算が完了した。同じsessionの再接続・重複complete・再読込でもCREDIT999,513、wallet revision2、rounds1を維持した。
+- [Pages 44749111680](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749111680) は成功。2026-11-20 **23:13:50 JST**の公開照合で28/28ファイルのHTTP200・bytes・SHA-256が一致。旧ルーレットPNG6枚、透過PNG6枚、provenance、runtime/cacheと公開serverソースを含む。
+- 関連するv277演出・音声CIとv278シックスドロップCIも成功し、公開ファイル照合はそれぞれ64/64・24/24が一致。全ての歴史的workflowの成功を意味しない。
+- PR317の補足Downloadは日本語フォント取得が360秒で期限切れとなり、実テストは未実行だった。再実行は行わず、同じtreeのmainで準備と本テストの成功を確認した。リール時計とpauseの検査競合も履歴に保持する。
+
+[検証集計](qa-v279/verification-summary.json)、[公開照合原本](qa-v279/public-verification.json)、[CI原本との対応と途中履歴](qa-v279/artifact-evidence-manifest.json)、[全6種の512px確認](qa-v279/jpc-artwork-enlarged-512.png)、[390pxチャレンジ](qa-v279/challenge-10-mobile.png)、[390px JPC獲得](qa-v279/jpc-10-mobile.png)。512px一覧は素材の再利用確認であり、JPC本体のゲーム実装を意味しない。
 
 Windows上の稼働サーバーの更新・再起動は未実施。サーバー側の開始前データにも移行を適用するには、最新ソースを反映して再起動する必要がある。`.runtime`・`.tools`・`data`を保持する。
 

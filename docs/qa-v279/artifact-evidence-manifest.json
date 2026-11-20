@@ -1,0 +1,640 @@
+{
+  "repository": "naokingu123-cloud/cookie-link",
+  "pullRequest": 4,
+  "runtimeMerge": "004372c6a0b810d06adefb69ba21409d17e77659",
+  "runtimeTree": "197c2b2e97b05ee32259951b9ab92ddd35f95dcd",
+  "status": "success",
+  "artifacts": [
+    {
+      "head": "004372c6a0b810d06adefb69ba21409d17e77659",
+      "runId": 44749112751,
+      "jobId": 136332059434,
+      "artifactId": 14633629429,
+      "artifactName": "sugar-v279-transparent-art",
+      "sha256": "3820509c43764157ae13ac010a76b521d9923f6f332fc5258e23cce82e71f1e1",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "reportOk": true,
+      "errors": [],
+      "assetFailures": [],
+      "nativeStateUnchanged": null,
+      "visualReview": {
+        "screens": [
+          "jpc-artwork-enlarged-512.png"
+        ],
+        "finding": "All six 512px main-build artwork previews have readable labels/numerals and visible transparent surround; no concrete clipping observed."
+      },
+      "sourceReport": "main-004372c6-transparent-art/report.json",
+      "savedReport": "transparent-art-browser.json",
+      "archiveName": "main-004372c6-transparent-art.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112751/job/136332059434"
+    },
+    {
+      "head": "004372c6a0b810d06adefb69ba21409d17e77659",
+      "runId": 44749112751,
+      "jobId": 136332059117,
+      "artifactId": 14634676898,
+      "artifactName": "sugar-v279-sugar-panel",
+      "sha256": "d101fa351f768c8356c5d9c7d5ef872c4b9404b3728b12ddf545a6a116c08d03",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "errors": [],
+      "nativeStateUnchanged": true,
+      "visualReview": {
+        "screens": [
+          "sugar-large-jp-390x844.png"
+        ],
+        "finding": "390px main panel retains legible six-digit JP, payout amounts and bottle without clipping."
+      },
+      "sourceReport": "main-004372c6-sugar-panel/result.json",
+      "savedReport": "sugar-panel-browser.json",
+      "archiveName": "main-004372c6-sugar-panel.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112751/job/136332059117"
+    },
+    {
+      "head": "004372c6a0b810d06adefb69ba21409d17e77659",
+      "runId": 44749112751,
+      "jobId": 136332059517,
+      "artifactId": 14635971097,
+      "artifactName": "sugar-v279-download-offline",
+      "sha256": "5aa540e170cbe2f621b00a91aa9342fc5508afbd49604563654e18e78bead3c1",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "reportOk": true,
+      "pageErrors": [],
+      "scope": "Isolated real server preparation, offline local playback, persisted resume, authoritative wallet and download-only administration",
+      "completionBudget": {
+        "remainingHits": 5,
+        "remainingRecordingMs": 92750.06666,
+        "nativePerHitLimitMs": 90000,
+        "noProgressLimitMs": 110000,
+        "totalLimitMs": 572750.06666
+      },
+      "independentCoreReview": {
+        "reviewer": "core_review",
+        "passed": true,
+        "atomicPause": {
+          "cursor": 2,
+          "stableBall": 2,
+          "settling": false
+        },
+        "transient": {
+          "seq": 3,
+          "ackSeq": 3
+        },
+        "offlineRestoredSameSession": true,
+        "complete": {
+          "cursor": 8,
+          "stableBall": 8,
+          "enginesPaid": 10,
+          "allEnginesProcessed": 8,
+          "seq": 10,
+          "ackSeq": 10,
+          "pendingComplete": false
+        },
+        "wallet": {
+          "credit": 999513,
+          "revision": 2,
+          "startingCredit": 1000000,
+          "totalBet": 1000,
+          "totalWin": 513,
+          "arithmeticMatches": true,
+          "unchangedAfterRepeatedComplete": true,
+          "unchangedAtNextBet": true
+        },
+        "rounds": 1,
+        "coldResumeSameSession": true,
+        "coldResumeCreditUnchanged": true,
+        "pageErrors": 0,
+        "externalRequests": 0,
+        "webSockets": 0,
+        "screens": 12
+      },
+      "visualReview": {
+        "screens": [
+          "download-synced-complete-390.png"
+        ],
+        "finding": "8/8 complete and all ten result rows fit within the 390px result panel; total 513 WIN matches the recorded settlement."
+      },
+      "sourceReport": "main-004372c6-download-offline/browser.json",
+      "savedReport": "download-browser.json",
+      "archiveName": "main-004372c6-download-offline.zip",
+      "sourceJobLogName": "main-004372c6-download-job.log",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112751/job/136332059517"
+    },
+    {
+      "kind": "v277-related-regression",
+      "head": "004372c6a0b810d06adefb69ba21409d17e77659",
+      "runId": 44749112809,
+      "jobId": 136336880967,
+      "artifactId": 14633879998,
+      "artifactName": "celebration-v277-public",
+      "sha256": "acd973b58e377f744d84fe9fe8d93b8c5b8263d856e9f7e08d27cb080b053728",
+      "zipDigestVerified": true,
+      "ok": true,
+      "matchedFiles": 64,
+      "expectedFiles": 64,
+      "allHttp200SizeShaMatch": true,
+      "sourceReport": "main-004372c6-v277-public/report.json",
+      "savedReport": "related-v277-public.json",
+      "archiveName": "main-004372c6-v277-public.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112809/job/136336880967"
+    },
+    {
+      "kind": "v278-related-regression",
+      "head": "004372c6a0b810d06adefb69ba21409d17e77659",
+      "runId": 44749112749,
+      "jobId": 136337527878,
+      "artifactId": 14634319213,
+      "artifactName": "sixdrop-v278-public",
+      "sha256": "4d9cd3ad7704806c5ee4db873e76b1b594b802fa51cd1beaea91589cace52057",
+      "zipDigestVerified": true,
+      "ok": true,
+      "matchedFiles": 24,
+      "expectedFiles": 24,
+      "allHttp200SizeShaMatch": true,
+      "sourceReport": "main-004372c6-v278-public/report.json",
+      "savedReport": "related-v278-public.json",
+      "archiveName": "main-004372c6-v278-public.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112749/job/136337527878"
+    },
+    {
+      "kind": "v279-release-public",
+      "head": "004372c6a0b810d06adefb69ba21409d17e77659",
+      "runId": 44749112751,
+      "jobId": 136339808865,
+      "artifactId": 14636365892,
+      "artifactName": "sugar-v279-public",
+      "sha256": "293d640b5fa8c036f12044d5f980d2823f39180755b1e3e66814ebeee46f229e",
+      "zipDigestVerified": true,
+      "ok": true,
+      "matchedFiles": 28,
+      "expectedFiles": 28,
+      "allHttp200SizeShaMatch": true,
+      "finalVersionMatches": true,
+      "completedAt": "2026-11-20T14:13:50.045Z",
+      "scope": "Static public Pages GET/size/SHA256; server source publication does not verify the separate Windows server process.",
+      "sourceReport": "main-004372c6-v279-public/report.json",
+      "savedReport": "public-verification.json",
+      "archiveName": "main-004372c6-v279-public.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112751/job/136339808865"
+    }
+  ],
+  "history": [
+    {
+      "head": "52f6b6de4fc5de05846faaed5f73f952c09342d6",
+      "runId": 44746679806,
+      "jobId": 136323684277,
+      "artifactId": 14632639472,
+      "artifactName": "sugar-v279-transparent-art",
+      "sha256": "710466bca320e4a5184dd2d676946873c97d0e07c99dad7b866fe8ecfa14f890",
+      "zipDigestVerified": true,
+      "conclusion": "failure",
+      "firstFailure": "tests/sugar-v279-browser.mjs:84:79 expected reel.settled true but observed false; actual intro9536ms before9700ms stop. Parent corrected test timestamp clock and frame synchronization in next head.",
+      "runtimeAndImagesUnchangedByFix": true,
+      "sourceReport": "initial-transparent-art-failure/report.json",
+      "savedReport": "reel-test-clock-52f6b6d.json",
+      "archiveName": "initial-transparent-art-failure.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44746679806/job/136323684277"
+    },
+    {
+      "head": "52f6b6de4fc5de05846faaed5f73f952c09342d6",
+      "runId": 44746679806,
+      "jobId": 136323684592,
+      "artifactId": 14634365105,
+      "artifactName": "sugar-v279-sugar-panel",
+      "sha256": "521609e80ece6a009bdb0217582279c12d53ab5952e8e7c9cd485ee9c70a9945",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "scope": "Reference only; runtime and artwork identical to latest head. Latest head artifact remains preferred.",
+      "visualReview": {
+        "screens": [
+          "sugar-panel-1366x900.png",
+          "sugar-panel-390x844.png",
+          "early-lucky-jpc-v271.png",
+          "lucky-jpc.png",
+          "sugar-large-jp-390x844.png"
+        ],
+        "finding": "No concrete clipping or unintended overlap observed in Sugar text, bottle, payout amounts, 150000 JP amount and JPC award display."
+      },
+      "sourceReport": "panel-reference-52f6b6d/result.json",
+      "savedReport": null,
+      "archiveName": "panel-reference-52f6b6d.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44746679806/job/136323684592"
+    },
+    {
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "runId": 44747206127,
+      "jobId": 136325483271,
+      "artifactId": 14633432626,
+      "artifactName": "sugar-v279-transparent-art",
+      "sha256": "96dc64450cba6578232e074cd1874aa43db83f753c5d49455c86b09569ce7da8",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "reportOk": true,
+      "scope": "Presentation snapshots including all six multiplier images, reel-settled transition, challenge/JPC displays, legacy state preservation and a test-only 512px reusable-artwork preview. This does not execute a standalone JPC game.",
+      "visualReview": {
+        "screens": [
+          "jpc-artwork-enlarged-512.png",
+          "jpc-10-mobile.png",
+          "challenge-10-desktop.png"
+        ],
+        "finding": "All six 512px previews retain visible transparent surround; labels/numerals readable. Desktop challenge and 390px JPC show no concrete clipping or unintended overlap."
+      },
+      "sourceReport": "latest-transparent-art/report.json",
+      "savedReport": "transparent-art-browser-reference-582df7c.json",
+      "archiveName": "latest-transparent-art.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44747206127/job/136325483271"
+    },
+    {
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "runId": 44747206127,
+      "jobId": 136325483031,
+      "artifactId": 14633946900,
+      "artifactName": "sugar-v279-sugar-panel",
+      "sha256": "c12c4d87ad8b3b06117bbc3692bdc3fc0d9aae1280ca5e910580b32bdefb0831",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "errors": [],
+      "nativeStateUnchanged": true,
+      "visualReview": {
+        "screens": [
+          "sugar-panel-390x844.png"
+        ],
+        "finding": "The latest-head 390px challenge panel has readable payout and JP numerals and no concrete clipping or unintended overlap."
+      },
+      "sourceReport": "latest-sugar-panel/result.json",
+      "savedReport": "sugar-panel-browser-reference-582df7c.json",
+      "archiveName": "latest-sugar-panel.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44747206127/job/136325483031"
+    },
+    {
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "runId": 44747206127,
+      "jobId": 136325482593,
+      "artifactId": 14634231914,
+      "artifactName": "sugar-v279-download-offline",
+      "sha256": "cd242144f8e45039397627d4c9e66799f8ecd22f8ad8db3381177cad58ab5d8a",
+      "zipDigestVerified": true,
+      "conclusion": "failure",
+      "jobStartedAt": "2026-11-20T13:46:08Z",
+      "testStartedAt": "2026-11-20T13:47:04Z",
+      "testCompletedAt": "2026-11-20T13:53:42Z",
+      "jobCompletedAt": "2026-11-20T13:53:47Z",
+      "jobTimeoutMinutes": 22,
+      "firstFailure": {
+        "path": "tests/download-v255-browser.mjs",
+        "line": 258,
+        "message": "Error: Timed out: recorded playback advances during transient disconnection",
+        "waitTimeoutMs": 10000,
+        "actual": {
+          "cursor": 2,
+          "stableBall": 1,
+          "playbackMs": 19825,
+          "wait": {
+            "stage": "native",
+            "settling": true,
+            "settleElapsedMs": 9899.599999999977,
+            "nativeTimeoutMs": 90000,
+            "nextHitAtMs": 24933.33333,
+            "engines": [
+              {
+                "id": "cookie",
+                "enabled": true,
+                "processed": 0,
+                "accepted": 0,
+                "phase": "waiting",
+                "drawMode": "grouped",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "choco",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "waiting",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "candy",
+                "enabled": true,
+                "processed": 0,
+                "accepted": 0,
+                "phase": "waiting",
+                "drawMode": "grouped",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "gelato",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "waiting",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "winery",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "waiting",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "popcorn",
+                "enabled": true,
+                "processed": 1,
+                "accepted": 2,
+                "phase": "settled",
+                "drawMode": "single",
+                "busy": true,
+                "opening": false,
+                "queue": 1,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "jelly",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "settled",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "stick",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "settled",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "castella",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "settled",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              },
+              {
+                "id": "dango",
+                "enabled": true,
+                "processed": 2,
+                "accepted": 2,
+                "phase": "settled",
+                "drawMode": "single",
+                "busy": false,
+                "opening": false,
+                "queue": 0,
+                "fx": false,
+                "trace": false,
+                "holdDraws": false,
+                "paid": false
+              }
+            ]
+          }
+        }
+      },
+      "analysisStatus": "Root and core reviewers confirmed test race: observing a stable gap and pausing in a separate browser evaluate allowed the next HIT to begin. The later transient-disconnection check used a 10-second clock-advance expectation while the second HIT was still inside the normal 90-second native presentation bound. Test-only synchronization correction requested for the next head.",
+      "runtimeError": "",
+      "pageErrors": [],
+      "runtimeChangedForThisFailure": false,
+      "automaticRetryPerformed": false,
+      "sourceReport": "latest-download-offline/browser.json",
+      "savedReport": "download-test-race-582df7c.json",
+      "archiveName": "latest-download-offline.zip",
+      "sourceJobLogName": "latest-download-job.log",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44747206127/job/136325482593"
+    },
+    {
+      "head": "52f6b6de4fc5de05846faaed5f73f952c09342d6",
+      "runId": 44746679806,
+      "jobId": 136323684824,
+      "artifactId": 14634735857,
+      "artifactName": "sugar-v279-download-offline",
+      "sha256": "b2d89c21d4d56606c03d903f6de5af05d5556dadca405d6db063c251c09d6e6e",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "reportOk": true,
+      "scope": "Older-head reference only; runtime and artwork match the final candidate. The successful main report supersedes this reference.",
+      "pageErrors": [],
+      "completionBudget": {
+        "remainingHits": 6,
+        "remainingRecordingMs": 100158.26667,
+        "nativePerHitLimitMs": 90000,
+        "noProgressLimitMs": 110000,
+        "totalLimitMs": 670158.26667
+      },
+      "independentCoreReview": {
+        "reviewer": "core_review",
+        "findings": [
+          "Eight balls completed",
+          "All ten engines paid",
+          "Credit unchanged by duplicate completion",
+          "Wallet revision remained 2",
+          "Profile rounds remained 1"
+        ]
+      },
+      "sourceReport": "download-reference-52f6b6d/browser.json",
+      "savedReport": "download-browser-reference-52f6b6d.json",
+      "archiveName": "download-reference-52f6b6d.zip",
+      "sourceJobLogName": "download-reference-52f6b6d-job.log",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44746679806/job/136323684824"
+    },
+    {
+      "head": "3174c71fc6e5fc943fe28e78935790d9bd0c5270",
+      "runId": 44748801880,
+      "jobId": 136330969712,
+      "artifactId": 14633749475,
+      "artifactName": "sugar-v279-sugar-panel",
+      "sha256": "04c08d28f99b08aee60b940b7826b2723ea6367fcd97fb3fd50389d0426916ab",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "reportOk": null,
+      "errors": [],
+      "assetFailures": [],
+      "nativeStateUnchanged": true,
+      "sourceReport": "head-3174c71-sugar-panel/result.json",
+      "savedReport": null,
+      "archiveName": "head-3174c71-sugar-panel.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44748801880/job/136330969712"
+    },
+    {
+      "head": "3174c71fc6e5fc943fe28e78935790d9bd0c5270",
+      "runId": 44748801880,
+      "jobId": 136330969361,
+      "artifactId": 14633234642,
+      "artifactName": "sugar-v279-transparent-art",
+      "sha256": "f570352badd64ae0bdc911fdf19b167743e8530d945c350d47f55d7b9682be7e",
+      "zipDigestVerified": true,
+      "conclusion": "success",
+      "reportOk": true,
+      "errors": [],
+      "assetFailures": [],
+      "nativeStateUnchanged": null,
+      "sourceReport": "head-3174c71-transparent-art/report.json",
+      "savedReport": null,
+      "archiveName": "head-3174c71-transparent-art.zip",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44748801880/job/136330969361"
+    },
+    {
+      "head": "3174c71fc6e5fc943fe28e78935790d9bd0c5270",
+      "runId": 44748801880,
+      "jobId": 136330969129,
+      "conclusion": "failure",
+      "failureKind": "runner environment setup",
+      "stage": "Installed Chrome and Japanese fonts on the pinned runner",
+      "firstFailure": "Azure Ubuntu mirror fonts-noto-cjk 61.2 MB download exceeded the 360-second setup bound; exit 124 at 2026-11-20T14:03:22Z.",
+      "testExecuted": false,
+      "retryPerformed": false,
+      "disposition": "Reference PR setup failure; the identical merge tree passed setup and the actual Download test on main.",
+      "sourceJobLogName": "head-3174c71-download-fonts-timeout.log",
+      "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44748801880/job/136330969129"
+    }
+  ],
+  "retainedFiles": [
+    {
+      "path": "challenge-10-desktop.png",
+      "bytes": 995363,
+      "sha256": "2641d7c6535d96a04aa134f68d2d4e4da61782f0a9e82851ed59021b54515bcf"
+    },
+    {
+      "path": "challenge-10-mobile.png",
+      "bytes": 447401,
+      "sha256": "58e95c1afa20497d1a8957be83d39dab4c0f53a9916a7ed83cf6c0773f52deaa"
+    },
+    {
+      "path": "download-browser-reference-52f6b6d.json",
+      "bytes": 207829,
+      "sha256": "80830b4014d948906199d5a92bcf05fa3cc4c9bc638893f21b89cb7ed541efc7"
+    },
+    {
+      "path": "download-browser.json",
+      "bytes": 195052,
+      "sha256": "37709e8953add76ae56ba4d32394fc320f279df4f57a0da93cd703bf234f3160"
+    },
+    {
+      "path": "download-complete-mobile.png",
+      "bytes": 343750,
+      "sha256": "2a119519539fd178e6787d2c091e2d5bce8bb3be651a63bbf4850200de34495d"
+    },
+    {
+      "path": "download-test-race-582df7c.json",
+      "bytes": 63963,
+      "sha256": "87fbefb1994c41b865ecf35c1acaeb7fce59032a69470889a4a0145b568e7ade"
+    },
+    {
+      "path": "jpc-10-mobile.png",
+      "bytes": 504547,
+      "sha256": "a0341d35f1795367ad061990d3fd5be2b590ed4ddbd60983ad6e6b82cd4597bb"
+    },
+    {
+      "path": "jpc-artwork-enlarged-512.png",
+      "bytes": 2726995,
+      "sha256": "60e678f8898abd92a86428b71f8a3d7481d3b5725aba7f7ce1990c6418b7003a"
+    },
+    {
+      "path": "pre-merge-verification.json",
+      "bytes": 3280,
+      "sha256": "4a9f6046085b2d804c0fe10658bbcf101c30ceb1fcf228d0a189d08118f85afa"
+    },
+    {
+      "path": "public-verification.json",
+      "bytes": 13108,
+      "sha256": "dc0abf1a5846c0358ca054421a99ac682b4eacfe0275677abbf2fb0eb025581e"
+    },
+    {
+      "path": "reel-test-clock-52f6b6d.json",
+      "bytes": 19640,
+      "sha256": "961a7afeaab6a83e1155b2b203a074ae8204be6f187665cc5955cf2fa4d42dac"
+    },
+    {
+      "path": "related-v277-public.json",
+      "bytes": 27507,
+      "sha256": "3c5d8d4f4c7d725218424a956922b4fe2e6ef2d8ac4b60d3da23b655e44e1944"
+    },
+    {
+      "path": "related-v278-public.json",
+      "bytes": 11049,
+      "sha256": "51ef9c48ddff378b1ca0e6696cc765d3c3cdf9b19e5d70968b49a403761c95d2"
+    },
+    {
+      "path": "sugar-panel-browser-reference-582df7c.json",
+      "bytes": 376607,
+      "sha256": "fd3f96593cb2c8381ad4b0382ef8d5ebb29eb45838e204c7c44d64740a7dbdb2"
+    },
+    {
+      "path": "sugar-panel-browser.json",
+      "bytes": 376270,
+      "sha256": "e9a4139637208537e6b0437c2dfcd6a131cfe52deae4cd19aec04ce73a492f66"
+    },
+    {
+      "path": "transparent-art-browser-reference-582df7c.json",
+      "bytes": 127796,
+      "sha256": "cdf3dc791f0bd553dfc0b307fef5aebad43fd7678f9ca82783bb2372b9a6d5f6"
+    },
+    {
+      "path": "transparent-art-browser.json",
+      "bytes": 127796,
+      "sha256": "70307f17adb74c21f963843c726c4fa694f34a4c1d04e89529e700d75a3b4618"
+    }
+  ],
+  "note": "Selected reports and screenshots below are retained in this repository. ZIP names identify original CI archives; the archives are not duplicated here. SHA256 values in artifacts refer to the verified downloaded original ZIP archives."
+}

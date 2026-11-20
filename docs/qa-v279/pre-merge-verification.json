@@ -1,0 +1,75 @@
+{
+  "version": "20261120-v279-sugar-transparent-and-current-rules",
+  "scope": "Evidence used before publication; final main CI and static public hash verification are recorded separately.",
+  "runtimeMerge": "004372c6a0b810d06adefb69ba21409d17e77659",
+  "finalCandidateHead": "3174c71fc6e5fc943fe28e78935790d9bd0c5270",
+  "finalCandidateAndMergeTree": "197c2b2e97b05ee32259951b9ab92ddd35f95dcd",
+  "localCheckpoint": "2108493db6182dae8c7a44763feb691358f55776",
+  "firstCandidate": {
+    "head": "52f6b6de4fc5de05846faaed5f73f952c09342d6",
+    "tree": "d2af1038050079892657a5c9b22a3659ab8731e2"
+  },
+  "laterCandidate": {
+    "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+    "tree": "1de6581ea9a55b81989b922668a8cdeab3373370"
+  },
+  "onlyChangesSinceFirstCandidate": [
+    "tests/sugar-v279-browser.mjs",
+    "tests/download-v255-browser.mjs"
+  ],
+  "runtimeAndArtworkUnchanged": true,
+  "completedChecks": [
+    {
+      "runId": 44747206127,
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "jobId": 136325483266,
+      "suite": "rules-and-migration",
+      "conclusion": "success"
+    },
+    {
+      "runId": 44747206127,
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "jobId": 136325483271,
+      "suite": "native-browser-display transparent-art",
+      "conclusion": "success",
+      "report": "transparent-art-browser-reference-582df7c.json"
+    },
+    {
+      "runId": 44747206127,
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "jobId": 136325483031,
+      "suite": "native-browser-display sugar-panel",
+      "conclusion": "success",
+      "report": "sugar-panel-browser-reference-582df7c.json"
+    },
+    {
+      "runId": 44746679806,
+      "head": "52f6b6de4fc5de05846faaed5f73f952c09342d6",
+      "jobId": 136323684824,
+      "suite": "download-offline-resume",
+      "conclusion": "success",
+      "report": "download-browser-reference-52f6b6d.json"
+    }
+  ],
+  "testTimingCorrections": [
+    {
+      "head": "52f6b6de4fc5de05846faaed5f73f952c09342d6",
+      "report": "reel-test-clock-52f6b6d.json",
+      "cause": "Test observed intro9536ms before the9700ms reel stop because the injected timestamp did not account for the server clock offset.",
+      "fix": "Use the client clock offset and wait for the actual settled reel and visible popup.",
+      "runtimeChanged": false
+    },
+    {
+      "head": "582df7c7a90a73b71d1f53834f33ea2af10df2ce",
+      "report": "download-test-race-582df7c.json",
+      "cause": "Separate automation tasks observed a stable HIT then paused after the next HIT had already started. At pause cursor2/stable1/settlingtrue; native animations progressed9899.6ms during the10sec recorded-clock expectation.",
+      "fix": "Observe and pause in one browser JavaScript task before awaiting checkpoint; assert the stable initial pause. Also pause atomically when disconnected progress is observed. Keep the10sec expectation and runtime timing unchanged.",
+      "runtimeChanged": false
+    }
+  ],
+  "limitations": [
+    "This record does not claim every historical repository workflow passed.",
+    "The512px artwork preview is a reusable-image presentation test, not a standalone JPC game.",
+    "No update or restart was performed on the separate running Windows game server."
+  ]
+}

@@ -1,0 +1,827 @@
+{
+  "revision": 279,
+  "scope": "Presentation-only rule-derived snapshots. The reusable 512px artwork preview is test-only; no JPC game or native settlement is run.",
+  "originalArtwork": [
+    {
+      "multiplier": 1,
+      "path": "assets/sugar-art-v270/multiplier-1.png",
+      "bytes": 2210140,
+      "sha256": "a49b2da1409b0bc1ef990f68d62d8fcc5f3cb568791526293492da28f5b6e57e"
+    },
+    {
+      "multiplier": 2,
+      "path": "assets/sugar-art-v270/multiplier-2.png",
+      "bytes": 2663465,
+      "sha256": "b37f485aa7f94579aaf823965bc8cdd8a8314c1eeffedfcf43b0bcec52ba7330"
+    },
+    {
+      "multiplier": 3,
+      "path": "assets/sugar-art-v270/multiplier-3.png",
+      "bytes": 2795978,
+      "sha256": "28b90d47d644d94be7f59349d9d62f567f146b068596793e20b8ac83c7226f6c"
+    },
+    {
+      "multiplier": 4,
+      "path": "assets/sugar-art-v270/multiplier-4.png",
+      "bytes": 2855489,
+      "sha256": "db5cd2ef6846ac8deb820b6243f93af5dc970e493b61d63e4b8583cbc1c12f42"
+    },
+    {
+      "multiplier": 5,
+      "path": "assets/sugar-art-v270/multiplier-5.png",
+      "bytes": 2974590,
+      "sha256": "d2b4fb982ddd0185253a585e0db71df2323dd8b0a0f09d18cbc7f2437bfecae3"
+    },
+    {
+      "multiplier": 10,
+      "path": "assets/sugar-art-v270/multiplier-10.png",
+      "bytes": 3084346,
+      "sha256": "971907c8c2cbf2d91171328a636307ad52631bc5e03cfef9f3058dacc5b77be4"
+    }
+  ],
+  "artwork": [
+    {
+      "descriptor": {
+        "multiplier": 1,
+        "tier": "",
+        "label": "1倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-1-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-1.png"
+      },
+      "frozen": true,
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 629036,
+      "opaquePixels": 707,
+      "transparentFraction": 0.4000188233378865,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "edgeClearFractions": {
+        "top": 1,
+        "right": 1,
+        "bottom": 0.9728867623604466,
+        "left": 0.9856459330143541
+      },
+      "edgeMaxAlpha": {
+        "top": 0,
+        "right": 0,
+        "bottom": 1,
+        "left": 1
+      },
+      "paintedBounds": {
+        "minX": 80,
+        "minY": 25,
+        "maxX": 1168,
+        "maxY": 1161
+      }
+    },
+    {
+      "descriptor": {
+        "multiplier": 2,
+        "tier": "ハイパー",
+        "label": "ハイパー 2倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-2-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-2.png"
+      },
+      "frozen": true,
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 277335,
+      "opaquePixels": 471,
+      "transparentFraction": 0.17636386529612416,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "edgeClearFractions": {
+        "top": 0.9681020733652312,
+        "right": 0.89792663476874,
+        "bottom": 0.9577352472089314,
+        "left": 0.8668261562998405
+      },
+      "edgeMaxAlpha": {
+        "top": 159,
+        "right": 152,
+        "bottom": 205,
+        "left": 64
+      },
+      "paintedBounds": {
+        "minX": 0,
+        "minY": 0,
+        "maxX": 1253,
+        "maxY": 1253
+      }
+    },
+    {
+      "descriptor": {
+        "multiplier": 3,
+        "tier": "スペシャル",
+        "label": "スペシャル 3倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-3-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-3.png"
+      },
+      "frozen": true,
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 269611,
+      "opaquePixels": 296,
+      "transparentFraction": 0.17145199158545923,
+      "cornerAlpha": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "edgeClearFractions": {
+        "top": 0.9832535885167464,
+        "right": 0.854066985645933,
+        "bottom": 0.9752791068580542,
+        "left": 0.7870813397129187
+      },
+      "edgeMaxAlpha": {
+        "top": 1,
+        "right": 14,
+        "bottom": 1,
+        "left": 6
+      },
+      "paintedBounds": {
+        "minX": 1,
+        "minY": 8,
+        "maxX": 1253,
+        "maxY": 1244
+      }
+    },
+    {
+      "descriptor": {
+        "multiplier": 4,
+        "tier": "ウルトラ",
+        "label": "ウルトラ 4倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-4-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-4.png"
+      },
+      "frozen": true,
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 330740,
+      "opaquePixels": 466,
+      "transparentFraction": 0.21032536393906326,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "edgeClearFractions": {
+        "top": 0.9864433811802232,
+        "right": 1,
+        "bottom": 0.9784688995215312,
+        "left": 1
+      },
+      "edgeMaxAlpha": {
+        "top": 2,
+        "right": 0,
+        "bottom": 1,
+        "left": 0
+      },
+      "paintedBounds": {
+        "minX": 15,
+        "minY": 10,
+        "maxX": 1237,
+        "maxY": 1242
+      }
+    },
+    {
+      "descriptor": {
+        "multiplier": 5,
+        "tier": "ミラクル",
+        "label": "ミラクル 5倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-5-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-5.png"
+      },
+      "frozen": true,
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 210306,
+      "opaquePixels": 364,
+      "transparentFraction": 0.13373854383675587,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "edgeClearFractions": {
+        "top": 0.9649122807017544,
+        "right": 0.9066985645933014,
+        "bottom": 0.8947368421052632,
+        "left": 0.8429027113237639
+      },
+      "edgeMaxAlpha": {
+        "top": 3,
+        "right": 5,
+        "bottom": 39,
+        "left": 4
+      },
+      "paintedBounds": {
+        "minX": 5,
+        "minY": 2,
+        "maxX": 1250,
+        "maxY": 1253
+      }
+    },
+    {
+      "descriptor": {
+        "multiplier": 10,
+        "tier": "ギャラクシー",
+        "label": "ギャラクシー 10倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-10-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-10.png"
+      },
+      "frozen": true,
+      "width": 1254,
+      "height": 1254,
+      "transparentPixels": 424968,
+      "opaquePixels": 413,
+      "transparentFraction": 0.2702471707760048,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "edgeClearFractions": {
+        "top": 0.9776714513556619,
+        "right": 0.9338118022328549,
+        "bottom": 0.7607655502392344,
+        "left": 0.8652312599681021
+      },
+      "edgeMaxAlpha": {
+        "top": 42,
+        "right": 4,
+        "bottom": 248,
+        "left": 2
+      },
+      "paintedBounds": {
+        "minX": 8,
+        "minY": 0,
+        "maxX": 1246,
+        "maxY": 1253
+      }
+    }
+  ],
+  "cases": [],
+  "screens": [
+    "failure.png"
+  ],
+  "assetFailures": [],
+  "errors": [],
+  "spinning": {
+    "api": {
+      "version": 254,
+      "presentationRevision": 279,
+      "expanded": true,
+      "challenge": {
+        "rulesRevision": 271,
+        "id": "sugar-v279-view-1",
+        "roundId": "sugar-v279-view",
+        "station": 1,
+        "sugarValues": [
+          30000,
+          30000,
+          30000,
+          30000,
+          30000
+        ],
+        "cardId": "standard",
+        "multiplier": 3,
+        "seed": 279,
+        "draws": [],
+        "type": "sugar-challenge",
+        "phase": "ready",
+        "drawCount": 0,
+        "remaining": 8,
+        "sum": 0,
+        "jpBase": 150000,
+        "jpAmount": 450000,
+        "cashBase": 150000,
+        "award": null,
+        "cashWin": 0,
+        "jpcQualified": false,
+        "jpcTicket": null,
+        "qualifyingDrawCount": null,
+        "qualifyingNumber": null,
+        "qualifyingSum": null
+      },
+      "bankCount": 0,
+      "revision": 100001,
+      "intro": 4137,
+      "multiplierTier": {
+        "multiplier": 3,
+        "name": "スペシャル",
+        "label": "スペシャル 3倍"
+      },
+      "multiplierArtwork": {
+        "multiplier": 3,
+        "tier": "スペシャル",
+        "label": "スペシャル 3倍",
+        "transparentSrc": "assets/sugar-art-v279/multiplier-3-transparent.png",
+        "reelSrc": "assets/sugar-art-v270/multiplier-3.png"
+      },
+      "reelSequence": [
+        1,
+        2,
+        1,
+        3,
+        4,
+        1,
+        2,
+        5,
+        1,
+        3,
+        2,
+        4,
+        1,
+        10
+      ],
+      "reelTiming": {
+        "baseEnd": 3250,
+        "start": 3450,
+        "stop": 9700,
+        "end": 10500
+      },
+      "displayAmounts": {
+        "jpBase": 150000,
+        "cashBase": 150000,
+        "multiplier": 3
+      },
+      "reelTarget": 73,
+      "reelPosition": 5.178178,
+      "paused": false,
+      "announceAge": 5600,
+      "celebrateAge": 5600,
+      "artLoaded": true
+    },
+    "overlay": {
+      "left": 472.0625,
+      "top": 470.625,
+      "right": 893.9375,
+      "bottom": 830.625,
+      "width": 421.875,
+      "height": 360
+    },
+    "jp": {
+      "value": 150000,
+      "rect": {
+        "left": 738.3125,
+        "top": 492.1875,
+        "right": 873.3125,
+        "bottom": 511.875,
+        "width": 135,
+        "height": 19.6875
+      },
+      "face": {
+        "left": 771.5498046875,
+        "top": 492.1875,
+        "right": 873.3125,
+        "bottom": 511.875,
+        "width": 101.7626953125,
+        "height": 19.6875
+      },
+      "multiplier": {
+        "visible": false,
+        "src": "assets/sugar-art-v279/multiplier-3-transparent.png",
+        "alt": "スペシャル 3倍",
+        "text": "×3",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "imageRect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "loaded": true,
+        "fit": "contain",
+        "plate": {
+          "backgroundImage": "none",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "borders": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "boxShadow": "none"
+        }
+      }
+    },
+    "result": {
+      "visible": false,
+      "src": "assets/sugar-art-v279/multiplier-3-transparent.png",
+      "alt": "スペシャル 3倍",
+      "text": "スペシャル 3倍",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "imageRect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "loaded": true,
+      "fit": "contain",
+      "plate": {
+        "backgroundImage": "none",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borders": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "boxShadow": "none"
+      }
+    },
+    "reel": {
+      "visible": true,
+      "spinning": "true",
+      "settled": "false",
+      "sequence": [
+        1,
+        2,
+        1,
+        3,
+        4,
+        1,
+        2,
+        5,
+        1,
+        3,
+        2,
+        4,
+        1,
+        10
+      ],
+      "images": [
+        "assets/sugar-art-v270/multiplier-1.png",
+        "assets/sugar-art-v270/multiplier-2.png",
+        "assets/sugar-art-v270/multiplier-3.png",
+        "assets/sugar-art-v270/multiplier-4.png",
+        "assets/sugar-art-v270/multiplier-5.png",
+        "assets/sugar-art-v270/multiplier-10.png"
+      ],
+      "popupImageCount": 0
+    },
+    "payouts": [
+      30000,
+      15000,
+      7500,
+      4500,
+      3000,
+      1500
+    ],
+    "celebration": {
+      "visible": false,
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "value": 150000,
+      "multiplier": {
+        "visible": false,
+        "src": "assets/sugar-art-v279/multiplier-3-transparent.png",
+        "alt": "スペシャル 3倍",
+        "text": "×3",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "imageRect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "loaded": true,
+        "fit": "contain",
+        "plate": {
+          "backgroundImage": "none",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "borders": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "boxShadow": "none"
+        }
+      }
+    }
+  },
+  "ok": false,
+  "failure": {
+    "message": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'false' !== 'true'\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'false' !== 'true'\n\n    at file:///home/runner/work/cookie-link/cookie-link/tests/sugar-v279-browser.mjs:84:79",
+    "state": {
+      "api": {
+        "version": 254,
+        "presentationRevision": 279,
+        "expanded": true,
+        "challenge": {
+          "rulesRevision": 271,
+          "id": "sugar-v279-view-2",
+          "roundId": "sugar-v279-view",
+          "station": 1,
+          "sugarValues": [
+            30000,
+            30000,
+            30000,
+            30000,
+            30000
+          ],
+          "cardId": "standard",
+          "multiplier": 3,
+          "seed": 279,
+          "draws": [],
+          "type": "sugar-challenge",
+          "phase": "ready",
+          "drawCount": 0,
+          "remaining": 8,
+          "sum": 0,
+          "jpBase": 150000,
+          "jpAmount": 450000,
+          "cashBase": 150000,
+          "award": null,
+          "cashWin": 0,
+          "jpcQualified": false,
+          "jpcTicket": null,
+          "qualifyingDrawCount": null,
+          "qualifyingNumber": null,
+          "qualifyingSum": null
+        },
+        "bankCount": 0,
+        "revision": 100002,
+        "intro": 9536,
+        "multiplierTier": {
+          "multiplier": 3,
+          "name": "スペシャル",
+          "label": "スペシャル 3倍"
+        },
+        "multiplierArtwork": {
+          "multiplier": 3,
+          "tier": "スペシャル",
+          "label": "スペシャル 3倍",
+          "transparentSrc": "assets/sugar-art-v279/multiplier-3-transparent.png",
+          "reelSrc": "assets/sugar-art-v270/multiplier-3.png"
+        },
+        "reelSequence": [
+          1,
+          2,
+          1,
+          3,
+          4,
+          1,
+          2,
+          5,
+          1,
+          3,
+          2,
+          4,
+          1,
+          10
+        ],
+        "reelTiming": {
+          "baseEnd": 3250,
+          "start": 3450,
+          "stop": 9700,
+          "end": 10500
+        },
+        "displayAmounts": {
+          "jpBase": 150000,
+          "cashBase": 150000,
+          "multiplier": 3
+        },
+        "reelTarget": 73,
+        "reelPosition": 72.996018,
+        "paused": false,
+        "announceAge": 6000,
+        "celebrateAge": 6000,
+        "artLoaded": true
+      },
+      "overlay": {
+        "left": 472.0625,
+        "top": 470.625,
+        "right": 893.9375,
+        "bottom": 830.625,
+        "width": 421.875,
+        "height": 360
+      },
+      "jp": {
+        "value": 150000,
+        "rect": {
+          "left": 738.3125,
+          "top": 492.1875,
+          "right": 873.3125,
+          "bottom": 511.875,
+          "width": 135,
+          "height": 19.6875
+        },
+        "face": {
+          "left": 771.5498046875,
+          "top": 492.1875,
+          "right": 873.3125,
+          "bottom": 511.875,
+          "width": 101.7626953125,
+          "height": 19.6875
+        },
+        "multiplier": {
+          "visible": false,
+          "src": "assets/sugar-art-v279/multiplier-3-transparent.png",
+          "alt": "スペシャル 3倍",
+          "text": "×3",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "imageRect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "loaded": true,
+          "fit": "contain",
+          "plate": {
+            "backgroundImage": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borders": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "boxShadow": "none"
+          }
+        }
+      },
+      "result": {
+        "visible": false,
+        "src": "assets/sugar-art-v279/multiplier-3-transparent.png",
+        "alt": "スペシャル 3倍",
+        "text": "スペシャル 3倍",
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "imageRect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "loaded": true,
+        "fit": "contain",
+        "plate": {
+          "backgroundImage": "none",
+          "backgroundColor": "rgba(0, 0, 0, 0)",
+          "borders": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "boxShadow": "none"
+        }
+      },
+      "reel": {
+        "visible": true,
+        "spinning": "true",
+        "settled": "false",
+        "sequence": [
+          1,
+          2,
+          1,
+          3,
+          4,
+          1,
+          2,
+          5,
+          1,
+          3,
+          2,
+          4,
+          1,
+          10
+        ],
+        "images": [
+          "assets/sugar-art-v270/multiplier-1.png",
+          "assets/sugar-art-v270/multiplier-2.png",
+          "assets/sugar-art-v270/multiplier-3.png",
+          "assets/sugar-art-v270/multiplier-4.png",
+          "assets/sugar-art-v270/multiplier-5.png",
+          "assets/sugar-art-v270/multiplier-10.png"
+        ],
+        "popupImageCount": 0
+      },
+      "payouts": [
+        30000,
+        15000,
+        7500,
+        4500,
+        3000,
+        1500
+      ],
+      "celebration": {
+        "visible": false,
+        "rect": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "value": 150000,
+        "multiplier": {
+          "visible": false,
+          "src": "assets/sugar-art-v279/multiplier-3-transparent.png",
+          "alt": "スペシャル 3倍",
+          "text": "×3",
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "imageRect": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "loaded": true,
+          "fit": "contain",
+          "plate": {
+            "backgroundImage": "none",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borders": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "boxShadow": "none"
+          }
+        }
+      }
+    }
+  }
+}

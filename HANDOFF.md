@@ -1,9 +1,10 @@
 # v279 — シュガー倍率透過・開始前の旧JPC条件移行（2026-11-20）
 
-- Build: `20261120-v279-sugar-transparent-and-current-rules`。実装候補。仕様・素材・原因は [v279記録](docs/sugar-v279.md)。実ブラウザーと公開照合は専用CIで確認する。
+- Build: `20261120-v279-sugar-transparent-and-current-rules`。[PR #4](https://github.com/naokingu123-cloud/cookie-link/pull/4) をmain `004372c6a0b810d06adefb69ba21409d17e77659` へマージ済み。仕様・素材・原因は [v279記録](docs/sugar-v279.md)。main専用CIの全5jobと公開28ファイル照合が成功。
 - 倍率1/2/3/4/5/10の元PNGを保持し、別途1254×1254 RGBA透過版6枚を生成。開始後の倍率・JPヘッダ・JPC獲得表示を透過版へ変更。素材API `SweetsSugarChallengeV254.multiplierArtwork(n)`。生成プロンプト・SHAは `assets/sugar-art-v279/provenance.json`。
 - 新規Sugarは既に271だったが、保存された0球旧quoteを再利用するとLOW条件が復活していた。所有者の未開始境界だけ `upgradeUnstarted` で271へ移行。JP額/倍率/seed/5個の値を保持し、旧JP丸めをquoteRevisionへ保存。既進行・精算済み・取消済みには適用しない。local startedマーカーで再読込による誤移行も防ぐ。
-- 旧Download browserの期限切れは録画時間＋180秒の全体待ちが累積演出を十分含めていない疑い。再生・配当・90秒/球は保持し、診断を追加。検査は残り録画＋各球上限と110秒無進展監視を併用し、専用CIの実オフライン8球完了で確認する。
+- 旧Download browserの全体予算不足を同runtimeの実完走で確認。初回候補52fの専用jobはoffline再開から8球・全10ゲーム精算・再接続・重複complete不変まで成功し、実再生400.53秒、ネイティブ演出累計290.31秒だった。再生・配当・90秒/球は保持し、診断を追加。検査は残り録画＋各球上限と110秒無進展監視を併用。別候補で球間観測とpauseの間に次HITへ進む検査競合が出たため、317では同一ブラウザータスクで観測＋pauseを行い前提をassertする。ゲーム本体の差分はない。詳細・最終結果はv279記録を参照。
+- 最終検証は [main CI 44749112751](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44749112751)。ルール・全6透過画像のPC/390px/JPC/512px・native状態保持・実Download再開から8球/全10paid/再接続/一度だけ精算・公開28/28が成功。公開確認は2026-11-20 23:13:50 JST。Download残高999513/revision2・rounds1、例外/外部通信/WS0。Pages44749111680、関連v277/v278と公開64/24照合も成功。[検証集計](docs/qa-v279/verification-summary.json)、[原本対応と失敗履歴](docs/qa-v279/artifact-evidence-manifest.json)。全歴史的workflow成功の主張ではない。
 - Windows稼働サーバーの更新・再起動は未実施。最新ソースの適用時も `.runtime`・`.tools`・`data` を保持する。
 
 ---
@@ -19,7 +20,7 @@
 - 未使用2seedの計32,000ゲーム（50/90/100/150各8,000）で49.18/90.20/97.81/151.47%を観測。固定BET100、均等8/25、Six直接配当のみ。近似区間と較正履歴は [検証JSON](docs/qa-v278/sixdrop-payout-validation.json)。短期/理論一致は保証しない。
 - PRのv278検査 [44738198360](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198360) とv277回帰検査 [44738198352](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44738198352) が成功。v278はルール・継続検査と実ブラウザー3 shard・4ケース（PC継続/Download worker/高額スマホ/mini）を通過。PNG26枚を生成し、うち7枚でボトル・配当表・全消し獲得表示・BET変更後の継続・WIN0リセットを視認。例外・素材失敗・API/外部要求0。ルール/host/精算/旧server/録画/cacheの既存6テストも再実行して全成功。[検証集計](docs/qa-v278/verification-summary.json)、[CI原本と保存証跡の対応](docs/qa-v278/browser-evidence-manifest.json)。
 - Pages deploy [44743091387](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743091387) は2026-11-20 13:20:08 UTCに成功。マージ後v277回帰 [44743092481](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092481) と公開64ファイルの照合も成功。v278 CI [44743092484](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44743092484) は初回shard2の日本語フォント取得timeout（150秒・exit124、本テスト未実行）後、失敗ジョブを一度再試行したattempt2で成功。2026-11-20 22:34:10 JSTの公開確認は24/24ファイルのHTTP200・bytes・SHA-256が一致。[公開照合原本](docs/qa-v278/public-verification.json)。
-- mainの別workflow15 runには16 failed jobがあり、全workflow成功ではない。6件は変更していないcache pin `262`とrelease `278`の同値要求（同一gateの過去記録あり2件）、2件は今回のlocal-debug pin `269→278`と旧値の不一致、2件は旧Six HUDの`single`と現行`grouped`の不一致、4件はv277音声hookが使う`window`を旧VM fixtureが用意していない問題。残るDownload browserのoffline完了timeout 2 jobは調査中で、旧assertionや無害な失敗とは断定していない。記録時間に累積演出時間を足す旧テストの予算不足が疑われるが、完走は未確認。各runと最初の失敗は [記録](docs/qa-v278/legacy-workflow-failures.json)。専用v278の成功を全runtime経路の成功とは扱わない。
+- mainの別workflow15 runには16 failed jobがあり、全workflow成功ではない。6件は変更していないcache pin `262`とrelease `278`の同値要求（同一gateの過去記録あり2件）、2件は今回のlocal-debug pin `269→278`と旧値の不一致、2件は旧Six HUDの`single`と現行`grouped`の不一致、4件はv277音声hookが使う`window`を旧VM fixtureが用意していない問題。v278公開時点ではDownload browserのoffline完了timeout 2 jobは調査中で、旧assertionや無害な失敗とは断定していない。記録時間に累積演出時間を足す旧テストの予算不足が疑われるが、完走は未確認。各runと最初の失敗は [記録](docs/qa-v278/legacy-workflow-failures.json)。専用v278の成功を全runtime経路の成功とは扱わない。このDownload経路は後続v279で実8球完走・再接続・一度だけ精算を確認済みで、上記v279記録を参照。
 - Windows稼働サーバーの更新・再起動は未実施。精算workerにも変更があるため適用には最新ソースと再起動が必要。`.runtime`・`.tools`・`data`を保持する。
 
 ---

@@ -1,0 +1,2472 @@
+{
+  "version": "20261120-v279-sugar-transparent-and-current-rules",
+  "scope": "Isolated real server preparation, offline local playback, persisted resume, authoritative wallet and download-only administration",
+  "screens": [
+    {
+      "file": "edition-choice-390.png",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "panel": null
+    },
+    {
+      "file": "edition-choice-844.png",
+      "width": 844,
+      "height": 390,
+      "horizontalOverflow": false,
+      "panel": null
+    },
+    {
+      "file": "edition-choice-1366.png",
+      "width": 1366,
+      "height": 900,
+      "horizontalOverflow": false,
+      "panel": null
+    },
+    {
+      "file": "download-bets-390.png",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "panel": {
+        "x": 77,
+        "y": 8,
+        "width": 305,
+        "height": 222.375,
+        "right": 382,
+        "bottom": 230.375
+      },
+      "state": {
+        "version": 255,
+        "edition": "download",
+        "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+        "machine": "public-01",
+        "server": "http://127.0.0.1:39161",
+        "connectStep": "接続完了",
+        "online": true,
+        "identityConflict": false,
+        "hydrated": true,
+        "assetsReady": true,
+        "assetsProgress": {
+          "ready": true,
+          "version": "20261120-v279-sugar-transparent-and-current-rules",
+          "done": 750,
+          "total": 750,
+          "bytes": 214053579,
+          "totalBytes": 214053579,
+          "path": "optimized/style-04.css",
+          "files": 750,
+          "savedAt": 1795182654118
+        },
+        "session": null,
+        "packageReady": false,
+        "started": false,
+        "playing": false,
+        "cursor": 0,
+        "stableBall": 0,
+        "playbackMs": 0,
+        "stableMs": 0,
+        "seq": 0,
+        "ackSeq": 0,
+        "localComplete": false,
+        "pendingComplete": false,
+        "wallet": {
+          "credit": 1000000,
+          "revision": 1,
+          "lastRoundId": null,
+          "updatedAt": 1795182449314,
+          "source": "initial",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        },
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "phase": "ready",
+        "draws": [],
+        "timing": {
+          "frames": 0,
+          "activeMs": 0,
+          "settlingMs": 0,
+          "maxFrameMs": 0
+        },
+        "wait": {
+          "stage": "recording",
+          "settling": false,
+          "settleElapsedMs": 0,
+          "nativeTimeoutMs": 90000,
+          "nextHitAtMs": null,
+          "engines": [
+            {
+              "id": "cookie",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "choco",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "candy",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "gelato",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "winery",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "popcorn",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "jelly",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "stick",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "castella",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "dango",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            }
+          ]
+        },
+        "error": "",
+        "message": "各ゲームのBETを選んで、1ゲーム分をダウンロードしてください。",
+        "streamingClientPresent": false
+      }
+    },
+    {
+      "file": "download-ready-390.png",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "panel": {
+        "x": 77,
+        "y": 8,
+        "width": 305,
+        "height": 222.375,
+        "right": 382,
+        "bottom": 230.375
+      },
+      "state": {
+        "version": 255,
+        "edition": "download",
+        "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+        "machine": "public-01",
+        "server": "http://127.0.0.1:39161",
+        "connectStep": "接続完了",
+        "online": true,
+        "identityConflict": false,
+        "hydrated": true,
+        "assetsReady": true,
+        "assetsProgress": {
+          "ready": true,
+          "version": "20261120-v279-sugar-transparent-and-current-rules",
+          "done": 750,
+          "total": 750,
+          "bytes": 214053579,
+          "totalBytes": 214053579,
+          "path": "optimized/style-04.css",
+          "files": 750,
+          "savedAt": 1795182654118
+        },
+        "session": {
+          "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "status": "ready",
+          "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+          "totalBet": 1000,
+          "totalWin": 1210
+        },
+        "packageReady": true,
+        "started": false,
+        "playing": false,
+        "cursor": 0,
+        "stableBall": 0,
+        "playbackMs": 0,
+        "stableMs": 0,
+        "seq": 0,
+        "ackSeq": 0,
+        "localComplete": false,
+        "pendingComplete": false,
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        },
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "phase": "ready",
+        "draws": [],
+        "timing": {
+          "frames": 0,
+          "activeMs": 0,
+          "settlingMs": 0,
+          "maxFrameMs": 0
+        },
+        "wait": {
+          "stage": "recording",
+          "settling": false,
+          "settleElapsedMs": 0,
+          "nativeTimeoutMs": 90000,
+          "nextHitAtMs": 18583.33333,
+          "engines": [
+            {
+              "id": "cookie",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "choco",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "candy",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "gelato",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "winery",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "popcorn",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "jelly",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "stick",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "castella",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "dango",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            }
+          ]
+        },
+        "error": "",
+        "message": "ダウンロード完了。圏外でも1ゲームを再生できます。",
+        "streamingClientPresent": false
+      }
+    },
+    {
+      "file": "download-ready-844.png",
+      "width": 844,
+      "height": 390,
+      "horizontalOverflow": false,
+      "panel": {
+        "x": 508,
+        "y": 4,
+        "width": 332,
+        "height": 203.1875,
+        "right": 840,
+        "bottom": 207.1875
+      },
+      "state": {
+        "version": 255,
+        "edition": "download",
+        "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+        "machine": "public-01",
+        "server": "http://127.0.0.1:39161",
+        "connectStep": "接続完了",
+        "online": true,
+        "identityConflict": false,
+        "hydrated": true,
+        "assetsReady": true,
+        "assetsProgress": {
+          "ready": true,
+          "version": "20261120-v279-sugar-transparent-and-current-rules",
+          "done": 750,
+          "total": 750,
+          "bytes": 214053579,
+          "totalBytes": 214053579,
+          "path": "optimized/style-04.css",
+          "files": 750,
+          "savedAt": 1795182654118
+        },
+        "session": {
+          "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "status": "ready",
+          "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+          "totalBet": 1000,
+          "totalWin": 1210
+        },
+        "packageReady": true,
+        "started": false,
+        "playing": false,
+        "cursor": 0,
+        "stableBall": 0,
+        "playbackMs": 0,
+        "stableMs": 0,
+        "seq": 0,
+        "ackSeq": 0,
+        "localComplete": false,
+        "pendingComplete": false,
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        },
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "phase": "ready",
+        "draws": [],
+        "timing": {
+          "frames": 0,
+          "activeMs": 0,
+          "settlingMs": 0,
+          "maxFrameMs": 0
+        },
+        "wait": {
+          "stage": "recording",
+          "settling": false,
+          "settleElapsedMs": 0,
+          "nativeTimeoutMs": 90000,
+          "nextHitAtMs": 18583.33333,
+          "engines": [
+            {
+              "id": "cookie",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "choco",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "candy",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "gelato",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "winery",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "popcorn",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "jelly",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "stick",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "castella",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "dango",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            }
+          ]
+        },
+        "error": "",
+        "message": "ダウンロード完了。圏外でも1ゲームを再生できます。",
+        "streamingClientPresent": false
+      }
+    },
+    {
+      "file": "download-ready-1366.png",
+      "width": 1366,
+      "height": 900,
+      "horizontalOverflow": false,
+      "panel": {
+        "x": 1026,
+        "y": 8,
+        "width": 332,
+        "height": 203.1875,
+        "right": 1358,
+        "bottom": 211.1875
+      },
+      "state": {
+        "version": 255,
+        "edition": "download",
+        "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+        "machine": "public-01",
+        "server": "http://127.0.0.1:39161",
+        "connectStep": "接続完了",
+        "online": true,
+        "identityConflict": false,
+        "hydrated": true,
+        "assetsReady": true,
+        "assetsProgress": {
+          "ready": true,
+          "version": "20261120-v279-sugar-transparent-and-current-rules",
+          "done": 750,
+          "total": 750,
+          "bytes": 214053579,
+          "totalBytes": 214053579,
+          "path": "optimized/style-04.css",
+          "files": 750,
+          "savedAt": 1795182654118
+        },
+        "session": {
+          "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "status": "ready",
+          "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+          "totalBet": 1000,
+          "totalWin": 1210
+        },
+        "packageReady": true,
+        "started": false,
+        "playing": false,
+        "cursor": 0,
+        "stableBall": 0,
+        "playbackMs": 0,
+        "stableMs": 0,
+        "seq": 0,
+        "ackSeq": 0,
+        "localComplete": false,
+        "pendingComplete": false,
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        },
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "phase": "ready",
+        "draws": [],
+        "timing": {
+          "frames": 0,
+          "activeMs": 0,
+          "settlingMs": 0,
+          "maxFrameMs": 0
+        },
+        "wait": {
+          "stage": "recording",
+          "settling": false,
+          "settleElapsedMs": 0,
+          "nativeTimeoutMs": 90000,
+          "nextHitAtMs": 18583.33333,
+          "engines": [
+            {
+              "id": "cookie",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "choco",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "candy",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "gelato",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "winery",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "popcorn",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "jelly",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "stick",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "castella",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "dango",
+              "enabled": false,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "ready",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            }
+          ]
+        },
+        "error": "",
+        "message": "ダウンロード完了。圏外でも1ゲームを再生できます。",
+        "streamingClientPresent": false
+      }
+    },
+    {
+      "file": "download-paused-390.png",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "panel": {
+        "x": 164,
+        "y": 8,
+        "width": 218,
+        "height": 40,
+        "right": 382,
+        "bottom": 48
+      },
+      "state": {
+        "version": 255,
+        "edition": "download",
+        "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+        "machine": "public-01",
+        "server": "http://127.0.0.1:39161",
+        "connectStep": "接続完了",
+        "online": true,
+        "identityConflict": false,
+        "hydrated": true,
+        "assetsReady": true,
+        "assetsProgress": {
+          "ready": true,
+          "version": "20261120-v279-sugar-transparent-and-current-rules",
+          "done": 750,
+          "total": 750,
+          "bytes": 214053579,
+          "totalBytes": 214053579,
+          "path": "optimized/style-04.css",
+          "files": 750,
+          "savedAt": 1795182654118
+        },
+        "session": {
+          "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "status": "ready",
+          "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+          "totalBet": 1000,
+          "totalWin": 1210
+        },
+        "packageReady": true,
+        "started": true,
+        "playing": false,
+        "cursor": 2,
+        "stableBall": 1,
+        "playbackMs": 19825,
+        "stableMs": 18583.33333,
+        "seq": 2,
+        "ackSeq": 2,
+        "localComplete": false,
+        "pendingComplete": false,
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        },
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "phase": "playing",
+        "draws": [
+          22,
+          10
+        ],
+        "timing": {
+          "frames": 94,
+          "activeMs": 36498.5,
+          "settlingMs": 16549.29999999999,
+          "maxFrameMs": 2966.5
+        },
+        "wait": {
+          "stage": "native",
+          "settling": true,
+          "settleElapsedMs": 0,
+          "nativeTimeoutMs": 90000,
+          "nextHitAtMs": 24933.33333,
+          "engines": [
+            {
+              "id": "cookie",
+              "enabled": true,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "waiting",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "choco",
+              "enabled": true,
+              "processed": 2,
+              "accepted": 2,
+              "phase": "waiting",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "candy",
+              "enabled": true,
+              "processed": 0,
+              "accepted": 0,
+              "phase": "waiting",
+              "drawMode": "grouped",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "gelato",
+              "enabled": true,
+              "processed": 1,
+              "accepted": 2,
+              "phase": "gelatoHit",
+              "drawMode": "single",
+              "busy": true,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "winery",
+              "enabled": true,
+              "processed": 1,
+              "accepted": 2,
+              "phase": "wineryBoost",
+              "drawMode": "single",
+              "busy": true,
+              "opening": false,
+              "queue": 0,
+              "fx": true,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "popcorn",
+              "enabled": true,
+              "processed": 1,
+              "accepted": 2,
+              "phase": "settled",
+              "drawMode": "single",
+              "busy": true,
+              "opening": false,
+              "queue": 1,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "jelly",
+              "enabled": true,
+              "processed": 1,
+              "accepted": 2,
+              "phase": "settled",
+              "drawMode": "single",
+              "busy": true,
+              "opening": false,
+              "queue": 1,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "stick",
+              "enabled": true,
+              "processed": 2,
+              "accepted": 2,
+              "phase": "flipping",
+              "drawMode": "single",
+              "busy": true,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "castella",
+              "enabled": true,
+              "processed": 2,
+              "accepted": 2,
+              "phase": "settled",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            },
+            {
+              "id": "dango",
+              "enabled": true,
+              "processed": 2,
+              "accepted": 2,
+              "phase": "settled",
+              "drawMode": "single",
+              "busy": false,
+              "opening": false,
+              "queue": 0,
+              "fx": false,
+              "trace": false,
+              "holdDraws": false,
+              "paid": false
+            }
+          ]
+        },
+        "error": "",
+        "message": "録画を再生しています。",
+        "streamingClientPresent": false
+      }
+    }
+  ],
+  "pageErrors": [],
+  "warnings": [
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[.WebGL-0xab400abee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0xab400abee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0xab400abee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "[.WebGL-0xab400abee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "[DownloadV255] connect download_identity_invalid",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)",
+    "[cookie-upgrade] skipped 60fps roulette frame cap (matches=0)"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "POST",
+      "path": "/api/session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/profile"
+    },
+    {
+      "method": "POST",
+      "path": "/api/machines/public-01/download-v255/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/profile"
+    },
+    {
+      "method": "POST",
+      "path": "/api/machines/public-01/download-v255/prepare"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "GET",
+      "path": "/api/machines/public-01/download-v255/active"
+    },
+    {
+      "method": "POST",
+      "path": "/api/machines/public-01/download-v255/progress"
+    },
+    {
+      "method": "POST",
+      "path": "/api/machines/public-01/download-v255/progress"
+    }
+  ],
+  "webSockets": [],
+  "externalRequests": [],
+  "milestones": [
+    {
+      "stage": "assets-ready"
+    },
+    {
+      "stage": "prepared",
+      "frames": 3507,
+      "durationMs": 116850
+    },
+    {
+      "stage": "paused",
+      "ball": 1,
+      "playbackMs": 19825
+    }
+  ],
+  "health": {
+    "ok": true,
+    "service": "sweets-link-shared-machine",
+    "version": 204,
+    "source": "physical-host",
+    "time": 1795182433778,
+    "betDurationMs": 20000,
+    "serverEdition": "download",
+    "download": {
+      "enabled": true,
+      "ready": true,
+      "activeJobs": 0,
+      "busy": false,
+      "completed": 0,
+      "error": null
+    }
+  },
+  "betSwitch": [
+    {
+      "label": "initial Download BET",
+      "phase": "ready",
+      "visible": true,
+      "disabled": false,
+      "tabIndex": 0,
+      "inRoulette": true,
+      "before": {
+        "unit": 100,
+        "bets": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "wallet": {
+          "credit": 1000000,
+          "revision": 1,
+          "lastRoundId": null,
+          "updatedAt": 1795182449314,
+          "source": "initial",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      },
+      "after": {
+        "unit": 100,
+        "bets": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "wallet": {
+          "credit": 1000000,
+          "revision": 1,
+          "lastRoundId": null,
+          "updatedAt": 1795182449314,
+          "source": "initial",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      }
+    },
+    {
+      "label": "identity not authenticated",
+      "phase": "ready",
+      "visible": false,
+      "disabled": true,
+      "tabIndex": -1,
+      "inRoulette": true,
+      "before": {
+        "unit": 100,
+        "bets": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "wallet": null
+      },
+      "after": {
+        "unit": 100,
+        "bets": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "wallet": null
+      }
+    },
+    {
+      "label": "Download preparation submitted",
+      "phase": "ready",
+      "visible": false,
+      "disabled": true,
+      "tabIndex": -1,
+      "inRoulette": true,
+      "before": {
+        "unit": 100,
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "wallet": {
+          "credit": 1000000,
+          "revision": 1,
+          "lastRoundId": null,
+          "updatedAt": 1795182449314,
+          "source": "initial",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      },
+      "after": {
+        "unit": 100,
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "wallet": {
+          "credit": 1000000,
+          "revision": 1,
+          "lastRoundId": null,
+          "updatedAt": 1795182449314,
+          "source": "initial",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      }
+    },
+    {
+      "label": "prepared round",
+      "phase": "ready",
+      "visible": false,
+      "disabled": true,
+      "tabIndex": -1,
+      "inRoulette": true,
+      "before": {
+        "unit": 100,
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      },
+      "after": {
+        "unit": 100,
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      }
+    },
+    {
+      "label": "recorded PLAYING",
+      "phase": "playing",
+      "visible": false,
+      "disabled": true,
+      "tabIndex": -1,
+      "inRoulette": true,
+      "before": {
+        "unit": 100,
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      },
+      "after": {
+        "unit": 100,
+        "bets": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ],
+        "wallet": {
+          "credit": 1000210,
+          "revision": 2,
+          "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+          "updatedAt": 1795182751541,
+          "source": "download-v255",
+          "reservedRoundId": null,
+          "initializationVersion": 228,
+          "initializationPending": false
+        }
+      }
+    }
+  ],
+  "initial": {
+    "version": 255,
+    "edition": "download",
+    "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+    "machine": "public-01",
+    "server": "http://127.0.0.1:39161",
+    "connectStep": "接続完了",
+    "online": true,
+    "identityConflict": false,
+    "hydrated": true,
+    "assetsReady": false,
+    "assetsProgress": null,
+    "session": null,
+    "packageReady": false,
+    "started": false,
+    "playing": false,
+    "cursor": 0,
+    "stableBall": 0,
+    "playbackMs": 0,
+    "stableMs": 0,
+    "seq": 0,
+    "ackSeq": 0,
+    "localComplete": false,
+    "pendingComplete": false,
+    "wallet": {
+      "credit": 1000000,
+      "revision": 1,
+      "lastRoundId": null,
+      "updatedAt": 1795182449314,
+      "source": "initial",
+      "reservedRoundId": null,
+      "initializationVersion": 228,
+      "initializationPending": false
+    },
+    "bets": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "phase": "ready",
+    "draws": [],
+    "timing": {
+      "frames": 0,
+      "activeMs": 0,
+      "settlingMs": 0,
+      "maxFrameMs": 0
+    },
+    "wait": {
+      "stage": "recording",
+      "settling": false,
+      "settleElapsedMs": 0,
+      "nativeTimeoutMs": 90000,
+      "nextHitAtMs": null,
+      "engines": [
+        {
+          "id": "cookie",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "grouped",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "choco",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "candy",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "grouped",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "gelato",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "winery",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "popcorn",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "jelly",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "stick",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "castella",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "dango",
+          "enabled": false,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "ready",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        }
+      ]
+    },
+    "error": "",
+    "message": "各ゲームのBETを選んで、1ゲーム分をダウンロードしてください。",
+    "streamingClientPresent": false
+  },
+  "creditBefore": 1000000,
+  "prepared": {
+    "session": {
+      "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+      "status": "ready",
+      "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+      "totalBet": 1000,
+      "totalWin": 1210
+    },
+    "credit": 1000210,
+    "numbers": [
+      22,
+      10,
+      11,
+      16,
+      23,
+      6,
+      9,
+      13
+    ],
+    "totalBet": 1000,
+    "totalWin": 1210,
+    "sugarWin": 0,
+    "recordingDurationMs": 116850,
+    "frames": 3507
+  },
+  "paused": {
+    "version": 255,
+    "edition": "download",
+    "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+    "machine": "public-01",
+    "server": "http://127.0.0.1:39161",
+    "connectStep": "接続完了",
+    "online": true,
+    "identityConflict": false,
+    "hydrated": true,
+    "assetsReady": true,
+    "assetsProgress": {
+      "ready": true,
+      "version": "20261120-v279-sugar-transparent-and-current-rules",
+      "done": 750,
+      "total": 750,
+      "bytes": 214053579,
+      "totalBytes": 214053579,
+      "path": "optimized/style-04.css",
+      "files": 750,
+      "savedAt": 1795182654118
+    },
+    "session": {
+      "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+      "status": "ready",
+      "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+      "totalBet": 1000,
+      "totalWin": 1210
+    },
+    "packageReady": true,
+    "started": true,
+    "playing": false,
+    "cursor": 2,
+    "stableBall": 1,
+    "playbackMs": 19825,
+    "stableMs": 18583.33333,
+    "seq": 2,
+    "ackSeq": 2,
+    "localComplete": false,
+    "pendingComplete": false,
+    "wallet": {
+      "credit": 1000210,
+      "revision": 2,
+      "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+      "updatedAt": 1795182751541,
+      "source": "download-v255",
+      "reservedRoundId": null,
+      "initializationVersion": 228,
+      "initializationPending": false
+    },
+    "bets": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "phase": "playing",
+    "draws": [
+      22,
+      10
+    ],
+    "timing": {
+      "frames": 94,
+      "activeMs": 36498.5,
+      "settlingMs": 16549.29999999999,
+      "maxFrameMs": 2966.5
+    },
+    "wait": {
+      "stage": "native",
+      "settling": true,
+      "settleElapsedMs": 0,
+      "nativeTimeoutMs": 90000,
+      "nextHitAtMs": 24933.33333,
+      "engines": [
+        {
+          "id": "cookie",
+          "enabled": true,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "waiting",
+          "drawMode": "grouped",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "choco",
+          "enabled": true,
+          "processed": 2,
+          "accepted": 2,
+          "phase": "waiting",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "candy",
+          "enabled": true,
+          "processed": 0,
+          "accepted": 0,
+          "phase": "waiting",
+          "drawMode": "grouped",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "gelato",
+          "enabled": true,
+          "processed": 1,
+          "accepted": 2,
+          "phase": "gelatoHit",
+          "drawMode": "single",
+          "busy": true,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "winery",
+          "enabled": true,
+          "processed": 1,
+          "accepted": 2,
+          "phase": "wineryBoost",
+          "drawMode": "single",
+          "busy": true,
+          "opening": false,
+          "queue": 0,
+          "fx": true,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "popcorn",
+          "enabled": true,
+          "processed": 1,
+          "accepted": 2,
+          "phase": "settled",
+          "drawMode": "single",
+          "busy": true,
+          "opening": false,
+          "queue": 1,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "jelly",
+          "enabled": true,
+          "processed": 1,
+          "accepted": 2,
+          "phase": "settled",
+          "drawMode": "single",
+          "busy": true,
+          "opening": false,
+          "queue": 1,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "stick",
+          "enabled": true,
+          "processed": 2,
+          "accepted": 2,
+          "phase": "flipping",
+          "drawMode": "single",
+          "busy": true,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "castella",
+          "enabled": true,
+          "processed": 2,
+          "accepted": 2,
+          "phase": "settled",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        },
+        {
+          "id": "dango",
+          "enabled": true,
+          "processed": 2,
+          "accepted": 2,
+          "phase": "settled",
+          "drawMode": "single",
+          "busy": false,
+          "opening": false,
+          "queue": 0,
+          "fx": false,
+          "trace": false,
+          "holdDraws": false,
+          "paid": false
+        }
+      ]
+    },
+    "error": "",
+    "message": "録画を再生しています。",
+    "streamingClientPresent": false
+  },
+  "pausedBoard": {
+    "expected": 64,
+    "tiles": 64,
+    "visible": 64
+  },
+  "recordedDisplay": {
+    "source": "download-recording",
+    "state": "external",
+    "localPhysicsSteps": 0,
+    "canvas": {
+      "width": 344.5,
+      "height": 205.5625
+    },
+    "time": 19.8
+  },
+  "failure": {
+    "message": "Error: Timed out: recorded playback advances during transient disconnection",
+    "stack": "Error: Timed out: recorded playback advances during transient disconnection\n    at until (file:///home/runner/work/cookie-link/cookie-link/tests/download-v255-browser.mjs:23:8)\n    at async file:///home/runner/work/cookie-link/cookie-link/tests/download-v255-browser.mjs:258:2",
+    "state": {
+      "version": 255,
+      "edition": "download",
+      "playerId": "cf3c2ed4-6d8a-441e-9d94-2ec1c5d4806c",
+      "machine": "public-01",
+      "server": "http://127.0.0.1:39161",
+      "connectStep": "接続完了",
+      "online": true,
+      "identityConflict": false,
+      "hydrated": true,
+      "assetsReady": true,
+      "assetsProgress": {
+        "ready": true,
+        "version": "20261120-v279-sugar-transparent-and-current-rules",
+        "done": 750,
+        "total": 750,
+        "bytes": 214053579,
+        "totalBytes": 214053579,
+        "path": "optimized/style-04.css",
+        "files": 750,
+        "savedAt": 1795182654118
+      },
+      "session": {
+        "id": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+        "status": "ready",
+        "requestId": "dl255-5ff9cba3-2554-4583-b668-29f3cae4abc1",
+        "totalBet": 1000,
+        "totalWin": 1210
+      },
+      "packageReady": true,
+      "started": true,
+      "playing": true,
+      "cursor": 2,
+      "stableBall": 1,
+      "playbackMs": 19825,
+      "stableMs": 18583.33333,
+      "seq": 2,
+      "ackSeq": 2,
+      "localComplete": false,
+      "pendingComplete": false,
+      "wallet": {
+        "credit": 1000210,
+        "revision": 2,
+        "lastRoundId": "dl255-cdf071d1-6a24-4477-8e9a-0ff7ed9a14ba",
+        "updatedAt": 1795182751541,
+        "source": "download-v255",
+        "reservedRoundId": null,
+        "initializationVersion": 228,
+        "initializationPending": false
+      },
+      "bets": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "phase": "playing",
+      "draws": [
+        22,
+        10
+      ],
+      "timing": {
+        "frames": 143,
+        "activeMs": 46398.09999999998,
+        "settlingMs": 26448.899999999965,
+        "maxFrameMs": 2966.5
+      },
+      "wait": {
+        "stage": "native",
+        "settling": true,
+        "settleElapsedMs": 9899.599999999977,
+        "nativeTimeoutMs": 90000,
+        "nextHitAtMs": 24933.33333,
+        "engines": [
+          {
+            "id": "cookie",
+            "enabled": true,
+            "processed": 0,
+            "accepted": 0,
+            "phase": "waiting",
+            "drawMode": "grouped",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "choco",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "waiting",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "candy",
+            "enabled": true,
+            "processed": 0,
+            "accepted": 0,
+            "phase": "waiting",
+            "drawMode": "grouped",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "gelato",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "waiting",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "winery",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "waiting",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "popcorn",
+            "enabled": true,
+            "processed": 1,
+            "accepted": 2,
+            "phase": "settled",
+            "drawMode": "single",
+            "busy": true,
+            "opening": false,
+            "queue": 1,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "jelly",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "settled",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "stick",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "settled",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "castella",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "settled",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          },
+          {
+            "id": "dango",
+            "enabled": true,
+            "processed": 2,
+            "accepted": 2,
+            "phase": "settled",
+            "drawMode": "single",
+            "busy": false,
+            "opening": false,
+            "queue": 0,
+            "fx": false,
+            "trace": false,
+            "holdDraws": false,
+            "paid": false
+          }
+        ]
+      },
+      "error": "",
+      "message": "録画を再生しています。",
+      "streamingClientPresent": false
+    }
+  }
+}

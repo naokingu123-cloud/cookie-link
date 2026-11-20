@@ -1,0 +1,143 @@
+{
+  "ok": true,
+  "version": "20261120-v279-sugar-transparent-and-current-rules",
+  "repository": "naokingu123-cloud/cookie-link",
+  "pullRequest": 4,
+  "runtimeMerge": "004372c6a0b810d06adefb69ba21409d17e77659",
+  "runtimeTree": "197c2b2e97b05ee32259951b9ab92ddd35f95dcd",
+  "sourceHead": "3174c71fc6e5fc943fe28e78935790d9bd0c5270",
+  "mainRun": 44749112751,
+  "jobs": [
+    {
+      "id": 136332059117,
+      "name": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+      "conclusion": "success",
+      "started_at": "2026-11-20T13:59:00Z",
+      "completed_at": "2026-11-20T14:02:43Z"
+    },
+    {
+      "id": 136332059434,
+      "name": "native-browser-display (transparent-art, tests/sugar-v279-browser.mjs, qa-sugar-v279)",
+      "conclusion": "success",
+      "started_at": "2026-11-20T13:59:11Z",
+      "completed_at": "2026-11-20T14:01:22Z"
+    },
+    {
+      "id": 136332059493,
+      "name": "rules-and-migration",
+      "conclusion": "success",
+      "started_at": "2026-11-20T13:59:58Z",
+      "completed_at": "2026-11-20T14:00:53Z"
+    },
+    {
+      "id": 136332059517,
+      "name": "download-offline-resume",
+      "conclusion": "success",
+      "started_at": "2026-11-20T14:00:06Z",
+      "completed_at": "2026-11-20T14:13:23Z"
+    },
+    {
+      "id": 136339808865,
+      "name": "public-assets",
+      "conclusion": "success",
+      "started_at": "2026-11-20T14:13:25Z",
+      "completed_at": "2026-11-20T14:13:52Z"
+    }
+  ],
+  "public": {
+    "matched": 28,
+    "total": 28,
+    "allHttp200SizeShaMatch": true,
+    "verifiedAtUtc": "2026-11-20T14:13:50.045Z",
+    "verifiedAtJst": "2026-11-20T23:13:50.045000+09:00",
+    "report": "public-verification.json"
+  },
+  "pages": {
+    "runId": 44749111680,
+    "conclusion": "success",
+    "updatedAt": "2026-11-20T14:03:43Z"
+  },
+  "artwork": {
+    "multipliers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      10
+    ],
+    "pixels": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "originalRouletteImagesUnchanged": true,
+    "enlargedPreviewPx": 512,
+    "enlargedPreviewScope": "Reusable artwork only, not an implemented standalone JPC game."
+  },
+  "browser": {
+    "transparentReport": "transparent-art-browser.json",
+    "panelReport": "sugar-panel-browser.json",
+    "nativeStateUnchanged": true,
+    "legacyRulesPreserved": [
+      254,
+      268,
+      270
+    ],
+    "pageErrors": 0,
+    "assetFailures": 0
+  },
+  "download": {
+    "report": "download-browser.json",
+    "initialPause": {
+      "cursor": 2,
+      "stableBall": 2,
+      "playbackMs": 18400
+    },
+    "initialPauseSettling": false,
+    "offlineStableBall": 8,
+    "offlineComplete": true,
+    "offlinePendingComplete": true,
+    "numbers": [
+      5,
+      23,
+      2,
+      16,
+      11,
+      24,
+      7,
+      13
+    ],
+    "allTenEnginesPaid": true,
+    "completedStatus": "complete",
+    "credit": 999513,
+    "walletRevision": 2,
+    "rounds": 1,
+    "duplicateCompleteWalletAndStatsUnchanged": true,
+    "coldResume": {
+      "sameSession": true,
+      "creditUnchanged": true
+    },
+    "pageErrors": [],
+    "webSockets": [],
+    "externalRequests": []
+  },
+  "relatedRuns": [
+    {
+      "runId": 44749112809,
+      "name": "Celebration imagery and audio v277",
+      "conclusion": "success"
+    },
+    {
+      "runId": 44749112749,
+      "name": "Six Drop bottle and continuation v278",
+      "conclusion": "success"
+    }
+  ],
+  "scopeLimitations": [
+    "This validates the targeted release workflows and does not claim every historical repository workflow passed.",
+    "The separate running Windows server was not updated or restarted.",
+    "Pre-merge timing failures and the PR font-download environment timeout are preserved in artifact-evidence-manifest.json."
+  ],
+  "evidence": "artifact-evidence-manifest.json"
+}
