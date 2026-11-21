@@ -268,6 +268,7 @@ function dangoLabels(c,cell,p,r,o){
   c.save();c.font='1000 '+r*.60+'px ElixirNumbers,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=Math.max(.8,r*.065);c.strokeStyle='#fffad8';c.strokeText('FREE',p.x,p.y);c.fillStyle=o.oddsActivated?'#693b93':'#315d16';c.fillText('FREE',p.x,p.y);c.restore();
   return;
  }
+ const numberY=o.plusFree?(label?-.10:cell.trigger&&o.plusFreeOpacity>.05?.12:cell.hit?.08:0):cell.hit?(label?-.06:.13):label?-.10:0,numberSize=o.plusFree?(cell.number>=10?.98:1.12):cell.hit?(label?(cell.number>=10?.88:1):(cell.number>=10?1:1.16)):(cell.number>=10?1.07:1.21);
  if(o.plusFree){
   const cyan=cell.trigger?clamp(o.plusFreeOpacity):0;
   if(cyan>0){
@@ -276,8 +277,18 @@ function dangoLabels(c,cell,p,r,o){
   if(cell.hit){
    // Keep a fixed edge position so the fade never moves HIT across a numeral.
    // A numbered FREE reserves its lower edge for FREE and uses the upper edge.
-   const y=p.y+r*(cell.trigger&&!label?.76:-.88),size=r*.33;
-   c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';c.lineWidth=Math.max(.7,r*.065);c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#a91650';c.fillText('HIT!',p.x,y);c.restore();
+   const lower=cell.trigger&&!label,size=r*.30,numberPixels=r*numberSize;
+   c.save();c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
+   c.font='900 '+numberPixels+'px ElixirNumbers,system-ui,sans-serif';const digit=c.measureText(String(cell.number));
+   const numberStroke=numberPixels*(typeof drawElixirNumber==='function'?.036:.055);
+   // Small fonts are hinted to whole pixels. Reserve their actual glyph bounds,
+   // plus the native vector numeral and both outlines, rather than only a ratio.
+   const numberTop=p.y+r*numberY-Math.max(digit.actualBoundingBoxAscent+numberStroke,numberPixels*.46);
+   const numberBottom=p.y+r*(lower?.12:numberY)+Math.max(digit.actualBoundingBoxDescent+numberStroke,numberPixels*.46);
+   c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';const caption=c.measureText('HIT!');
+   c.lineWidth=Math.max(.7,r*.065);const gap=Math.max(.8,r*.04),rim=c.lineWidth/2;
+   const y=lower?Math.max(p.y+r*.76,numberBottom+gap+caption.actualBoundingBoxAscent+rim):Math.min(p.y-r*.88,numberTop-gap-caption.actualBoundingBoxDescent-rim);
+   c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#a91650';c.fillText('HIT!',p.x,y);c.restore();
   }
  }else if(cell.hit&&!o.staticDango){
   const y=p.y-r*(label?.73:.66),size=r*(label?.34:.40);
@@ -291,7 +302,6 @@ function dangoLabels(c,cell,p,r,o){
   c.lineWidth=Math.max(.6,r*.04);c.strokeStyle=cell.initialFree?'#eaff91':'#fff49f';c.stroke();
   text(c,'FREE',p.x,by+r*.015,r*.40,'#fffde1');c.restore();
  }
- const numberY=o.plusFree?(label?-.10:cell.trigger&&o.plusFreeOpacity>.05?.12:cell.hit?.08:0):cell.hit?(label?-.06:.13):label?-.10:0,numberSize=o.plusFree?(cell.number>=10?.98:1.12):cell.hit?(label?(cell.number>=10?.88:1):(cell.number>=10?1:1.16)):(cell.number>=10?1.07:1.21);
  number(c,cell.number,p.x,p.y+r*numberY,r*numberSize);
  if(cell.hit&&o.staticDango&&!o.plusFree){
   // Draw HIT after the numeral at the same center, deliberately covering it.
