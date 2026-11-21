@@ -31,7 +31,16 @@ async function setup(p){
  p.on('response',response=>{if(response.status()>=400)report.assetFailures.push({url:response.url(),status:response.status()});});
  await p.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'networkidle'});
  return p.evaluate(async()=>{
-  await Promise.all([DangoBingoView.assetsReady,SweetsBoardArtV275.ready,document.fonts.ready]);
+  // This isolated fixture creates the first gold label only at mount. Merely
+  // awaiting fonts.ready before that does not request its face, so measurement
+  // could otherwise race a fallback-to-ArcadePayout font swap.
+  const [,,payoutFonts,numberFonts]=await Promise.all([
+   DangoBingoView.assetsReady,SweetsBoardArtV275.ready,
+   document.fonts.load('700 28px ArcadePayout','0123456789'),
+   document.fonts.load('900 36px ElixirNumbers','0123456789')
+  ]);
+  if(!payoutFonts.length||!numberFonts.length)throw Error('Production numeral fonts must load before display measurement');
+  await document.fonts.ready;
   const R=DangoBingoRules,q=window.qa285={R,view:DangoBingoView.mount(document.getElementById('fixture')),state:null,bet:100,calls:[],states:{}};
   q.canvas=q.view.canvas;
   const fill=CanvasRenderingContext2D.prototype.fillText;
