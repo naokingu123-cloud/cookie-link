@@ -259,7 +259,7 @@ function dangoBody(c,cell,p,r,options){
  // A temporary cyan skin reuses the same mochi artwork and silhouette. Fade
  // back to the actual hit/FREE color without changing any rule or cell data.
  const cyan=cell.trigger&&options.plusFree?clamp(options.plusFreeOpacity):0;
- if(cyan>0){c.save();c.globalAlpha*=cyan;c.filter='hue-rotate(75deg) saturate(1.4) brightness(1.04)';bitmap(c,'green',p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);c.restore();}
+ if(cyan>0){c.save();c.globalAlpha*=cyan;c.filter='hue-rotate(120deg) saturate(.88) brightness(1.35)';bitmap(c,'green',p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);c.restore();}
  return drawn?(cyan>.5?'cyan':kind):null;
 }
 function dangoLabels(c,cell,p,r,o){
@@ -545,7 +545,10 @@ function mount(panel){
     // Keep numeral height consistent even for a large BET: squeeze only X.
     const anchor=isPlusFree(state)?'translateY(-50%)':'translate(-50%,-50%)';
     label.style.fontSize=size+'px';label.style.transform=anchor;label.style.marginLeft='0';
-    ctx.save();ctx.font='700 '+size+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;ctx.restore();
+    ctx.save();ctx.font='700 '+size+'px ArcadePayout,Georgia,serif';const estimated=ctx.measureText(item.value).width;ctx.restore();
+    // Intrinsic DOM width includes the actual font and inherited spacing. It
+    // also stays in logical pixels when the entire arcade cabinet is scaled.
+    const measured=isPlusFree(state)?Math.max(label.scrollWidth,label.offsetWidth)||estimated:estimated;
     const scale=Math.min(1,available/Math.max(1,measured));label.style.transform=anchor+' scaleX('+scale+')';
     label.dataset.horizontalScale=String(scale);
    }else{const label=item.td.querySelector('.gold-number');label.textContent=item.value;ctx.save();ctx.font='700 '+u*.28+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;label.style.fontSize=(u*.28*Math.min(1,available/Math.max(1,measured)))+'px';label.style.transform='translate(-50%,-50%)';label.style.marginLeft='0';ctx.restore();}
@@ -627,8 +630,9 @@ function mount(panel){
   fit();
  }
  const refreshArt=()=>{root.dataset.artReady=String(allAssetsReady());root.dataset.artFailed=String(Object.values(art).some(asset=>asset.failed));fit();};
- const offArt=onAssetsChanged(refreshArt),observer=new ResizeObserver(fit);observer.observe(root);observer.observe(pan);document.addEventListener('visibilitychange',syncMotion);motionMedia.addEventListener?.('change',syncMotion);syncMotion();refreshArt();document.fonts?.ready?.then(()=>{if(root.isConnected)fit();});
- return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isPlusFree(state)?285:isCurrent(state)?269:262,modern:isModern(state),payout:payGeometry,payoutArtwork:PAYOUT_ART,reachPresentation:{style:'six-drop',count:reachLayer.children.length,afterFinal:state?.phase==='done'},plusFree:{enabled:isPlusFree(state),active:isPlusFree(state)&&state.draws.length<5,numbers:isPlusFree(state)?(state.triggerNumbers||[]).slice():[],hits:isPlusFree(state)?(state.triggerHits||[]).length:0},freeRail:{visible:showFreeRail(state),counts:[...root.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,count:row.children.length}))},highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);root.remove();}};
+ const refreshFonts=()=>{if(root.isConnected)fit();};
+ const offArt=onAssetsChanged(refreshArt),observer=new ResizeObserver(fit);observer.observe(root);observer.observe(pan);document.addEventListener('visibilitychange',syncMotion);motionMedia.addEventListener?.('change',syncMotion);syncMotion();refreshArt();document.fonts?.addEventListener?.('loadingdone',refreshFonts);document.fonts?.ready?.then(refreshFonts);
+ return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isPlusFree(state)?285:isCurrent(state)?269:262,modern:isModern(state),payout:payGeometry,payoutArtwork:PAYOUT_ART,reachPresentation:{style:'six-drop',count:reachLayer.children.length,afterFinal:state?.phase==='done'},plusFree:{enabled:isPlusFree(state),active:isPlusFree(state)&&state.draws.length<5,numbers:isPlusFree(state)?(state.triggerNumbers||[]).slice():[],hits:isPlusFree(state)?(state.triggerHits||[]).length:0},freeRail:{visible:showFreeRail(state),counts:[...root.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,count:row.children.length}))},highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);document.fonts?.removeEventListener?.('loadingdone',refreshFonts);root.remove();}};
 }
 const hasAmbientMotion=(state,options={})=>!!state?.cells&&!options.reducedMotion&&!options.paused&&(!isCurrent(state)||isPlusFree(state)&&state.hitCells?.length>0||state.completedLines?.length>0||Number(state.lineCounts?.[2])>=2||options.reach?.length>0);
 window.DangoBingoView={mount,drawMini,paint,geometry,payoutLayout,drawLessonDango,assetsReady,describeAssets,onAssetsChanged,hasAmbientMotion,lineColors:LINE_COLORS,reachStyle:REACH_STYLE,presentationRevision:285};
