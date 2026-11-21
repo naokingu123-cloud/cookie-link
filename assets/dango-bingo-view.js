@@ -18,6 +18,8 @@ const tierInk=['#21ddd5','#ff3c66','#bc58ff','#ffe383'];
 const PAYOUT_ART='assets/dango-art-v270/payout-table.png';
 const assetFiles={white:'dango-art-v252/dango-white.webp',green:'dango-art-v253/dango-green.webp',pink:'dango-art-v253/dango-pink.webp',yellow:'dango-art-v253/dango-yellow.webp',rainbow:'dango-art-v253/dango-rainbow.webp',skewer:'dango-art-v252/bamboo-skewer.webp',stand:'dango-art-v253/tsukimi-stand.webp'};
 const art={},assetListeners=new Set(),pendingMinis=new Map();
+// Cyan is a separate, once-baked mochi bitmap; do not tint a green mochi during paint.
+const cyanCache={source:null,canvas:null,pixels:0,cyanPixels:0,meanBlueMinusRed:0};
 const usage={main:0,mini:0,lesson:0,skewers:0,cells:0,stands:0},last={main:null,mini:null,lesson:null};
 let assetsNotifyQueued=false;
 const allAssetsReady=()=>Object.keys(art).length===Object.keys(assetFiles).length&&Object.values(art).every(asset=>asset.loaded);
@@ -52,7 +54,8 @@ function describeAssets(){
  return {revision:253,presentationRevision:285,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
   cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
-  usage:{...usage},last:{...last},lineColors:{...LINE_COLORS}};
+  usage:{...usage},last:{...last},lineColors:{...LINE_COLORS},
+  cyanDango:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed}};
 }
 function notifyAssets(){
  if(assetsNotifyQueued)return;assetsNotifyQueued=true;
@@ -71,10 +74,48 @@ const assetsReady=Promise.all(Object.entries(assetFiles).map(([key,file])=>new P
 }))).then(results=>results.every(Boolean));
 function onAssetsChanged(listener){assetListeners.add(listener);return ()=>assetListeners.delete(listener);}
 function bitmap(c,key,x,y,width,height){
+ if(key==='cyan')return cyanBitmap(c,x,y,width,height);
  if(window.SweetsIllustratedBoardsCV275?.dangoBitmap(c,key,x,y,width,height))return true;
- if(window.SweetsCartoonBoardsC)return window.SweetsCartoonBoardsC.dangoBitmap(c,key,x,y,width,height);
+ if(window.SweetsCartoonBoardsC?.dangoBitmap(c,key,x,y,width,height))return true;
  const asset=art[key];if(!asset?.loaded||!(width>0&&height>0))return false;
  c.drawImage(asset.image,...asset.crop,x,y,width,height);return true;
+}
+function cyanBitmap(c,x,y,width,height){
+ if(!(width>0&&height>0))return false;
+ const source=window.SweetsIllustratedBoardsCV275?.loaded?'illustrated-v275':window.SweetsCartoonBoardsC?.describe?.().ready?'cartoon':'fallback-v253';
+ if(cyanCache.source!==source)cyanCache.canvas=null;
+ if(!cyanCache.canvas){
+  const size=256,sprite=document.createElement('canvas');sprite.width=sprite.height=size;
+  const context=sprite.getContext('2d',{willReadFrequently:true});
+  if(!bitmap(context,'green',0,0,size,size))return false;
+  const image=context.getImageData(0,0,size,size),pixels=image.data;
+  let visible=0,converted=0,blueMinusRed=0;
+  for(let i=0;i<pixels.length;i+=4){
+   const alpha=pixels[i+3];if(alpha<8)continue;
+   visible++;
+   const red=pixels[i],green=pixels[i+1],blue=pixels[i+2],high=Math.max(red,green,blue),low=Math.min(red,green,blue);
+   // Hue-shift the *texture pixels* before making a reusable cyan sprite.
+   // Keep ivory highlights, the natural shading, transparent edges and gold trim.
+   if(green<red*.93||green<blue*1.05||high-low<8)continue;
+   const value=Math.min(1,high/255*1.035+.012);
+   const saturation=Math.min(.86,Math.max(.46,high?(high-low)/high*.96:0));
+   const chroma=value*saturation,shadow=value-chroma;
+   pixels[i]=Math.round(shadow*255);
+   pixels[i+1]=Math.round((shadow+chroma*5/6)*255);
+   pixels[i+2]=Math.round(value*255);
+   blueMinusRed+=pixels[i+2]-pixels[i];converted++;
+  }
+  context.putImageData(image,0,0);
+  if(converted<100){
+   // Even an unusual older green texture yields a genuinely aqua source image.
+   context.save();context.globalCompositeOperation='source-atop';context.globalAlpha=.8;
+   context.fillStyle='#40d4ef';context.fillRect(0,0,size,size);context.restore();
+   converted=Math.max(converted,visible);blueMinusRed=Math.max(blueMinusRed,visible*70);
+  }
+  cyanCache.source=source;cyanCache.canvas=sprite;cyanCache.pixels=visible;
+  cyanCache.cyanPixels=converted;cyanCache.meanBlueMinusRed=Math.round(blueMinusRed/Math.max(1,converted));
+ }
+ c.drawImage(cyanCache.canvas,x,y,width,height);return true;
 }
 function legacyGeometry(width,height,{layout='main',state=null}={}){
  const main=layout==='main',unit=Math.min(width/(main?9.85:9.7),height/(main?6.8:6.15)),cx=main?Math.min(width*.55,width-unit*4.72):width/2,top=height-unit*(main?6.22:5.65);
@@ -256,16 +297,22 @@ function dangoBody(c,cell,p,r,options){
  // keeps the piled sweets touching throughout their slow, soft compression.
  const sx=1.012+cycle*.025,sy=1.022-cycle*.02;
  const drawn=bitmap(c,kind,p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);if(drawn)usage.cells++;
- // A temporary cyan skin reuses the same mochi artwork and silhouette. Fade
- // back to the actual hit/FREE color without changing any rule or cell data.
+ // The +FREE cell itself is an aqua dango, not a green dango with a live tint.
+ // Fade that fully baked bitmap back to the original white/pink/yellow dango.
  const cyan=cell.trigger&&options.plusFree?clamp(options.plusFreeOpacity):0;
- if(cyan>0){c.save();c.globalAlpha*=cyan;c.filter='hue-rotate(120deg) saturate(.88) brightness(1.35)';bitmap(c,'green',p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);c.restore();}
- return drawn?(cyan>.5?'cyan':kind):null;
+ let cyanDrawn=false;
+ if(cyan>0){c.save();c.globalAlpha*=cyan;cyanDrawn=bitmap(c,'cyan',p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);c.restore();}
+ return drawn||cyanDrawn?(cyan>.5&&cyanDrawn?'cyan':kind):null;
 }
 function dangoLabels(c,cell,p,r,o){
  const label=cell.initialFree||cell.manualFree;
  if(cell.initialFree&&!(cell.number>0)){
   c.save();c.font='1000 '+r*.60+'px ElixirNumbers,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=Math.max(.8,r*.065);c.strokeStyle='#fffad8';c.strokeText('FREE',p.x,p.y);c.fillStyle=o.oddsActivated?'#693b93':'#315d16';c.fillText('FREE',p.x,p.y);c.restore();
+  // Green initial FREE already counts as a HIT. Its small label stays above FREE.
+  if(o.plusFree&&cell.hit){
+   c.save();c.font='1000 '+r*.28+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=Math.max(.7,r*.06);c.lineJoin='round';
+   c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,p.y-r*.83);c.fillStyle='#246732';c.fillText('HIT!',p.x,p.y-r*.83);c.restore();
+  }
   return;
  }
  const numberY=o.plusFree?(label?-.10:cell.trigger&&o.plusFreeOpacity>.05?.12:cell.hit?.08:0):cell.hit?(label?-.06:.13):label?-.10:0,numberSize=o.plusFree?(cell.number>=10?.98:1.12):cell.hit?(label?(cell.number>=10?.88:1):(cell.number>=10?1:1.16)):(cell.number>=10?1.07:1.21);
@@ -453,7 +500,7 @@ function paint(ctx,state,options={},mini=false){
   const p=g.centers[state.lastCell],t=clamp(options.age/1400),x=Math.max(u*1.12,Math.min(w-u*1.12,p.x)),y=Math.max(u*.31,p.y-u*(.69+.34*t));
   c.save();c.globalAlpha=Math.min(1,(1-t)*3);roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':plusFree?'#126e8d':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:plusFree?'FREE ＋'+state.lastBonusGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
  }
- last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitSparkleCells:plusFree?state.cells.filter(cell=>cell.hit).length:0,plusFree:{active:plusFree&&state.draws.length<5,opacity:plusFreeOpacity,cells:plusFree?(state.triggerCells||[]).slice():[],label:'+FREE'},hitLabelPosition:plusFree?'edge-outside-number':isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
+ last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitSparkleCells:plusFree?state.cells.filter(cell=>cell.hit).length:0,greenHitCells:plusFree?state.cells.filter(cell=>cell.initialFree&&cell.hit).length:0,plusFree:{active:plusFree&&state.draws.length<5,opacity:plusFreeOpacity,cells:plusFree?(state.triggerCells||[]).slice():[],label:'+FREE'},hitLabelPosition:plusFree?'edge-outside-number':isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
  c.restore();
 }
 function drawMini(context,state,options={}){const ctx=typeof context?.getContext==='function'?context.getContext('2d'):context;if(ctx&&!allAssetsReady())pendingMinis.set(ctx,{state,options});paint(ctx,state,options,true);}

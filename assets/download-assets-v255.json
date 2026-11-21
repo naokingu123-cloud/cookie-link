@@ -1,10 +1,10 @@
 {
-  "version": "20261121-v285-dango-plus-free-and-board",
+  "version": "20261121-v286-dango-cyan-mochi-green-hit",
   "files": [
     {
       "path": "app-version.json",
       "bytes": 55,
-      "sha256": "5b0aaff98fae4a03b66d50c8cc751b408ae5f21ba5e09fa6a681e1463b221b85"
+      "sha256": "72f101010377328ff1e6a53bfa6fddaddc7d9551976f42791504e42e73cf78c1"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -2033,13 +2033,13 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 157043,
-      "sha256": "7f4d251adc694375790cb7ca18182993a7413ac94c43b953e0430accf7d84a59"
+      "bytes": 157083,
+      "sha256": "c9a15b01a08e0cec820c7908686aa126925ada996c81fcc265710f9899b46c8c"
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 68583,
-      "sha256": "7c01cf5f103c677f6e7db139b635f4417eb20f3c40e3e4f7a8a2a32a1d243491"
+      "bytes": 71578,
+      "sha256": "40e1eeb74b534e1e8f35c0afa3da30a0b7f4a43c3de5a4fc8630abd27aa66c75"
     },
     {
       "path": "assets/dango-bingo.css",
@@ -4029,7 +4029,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "1b71573155ee1c981e21f44a55bc0479009bf65a996d4568e4229af1f83b5f36"
+      "sha256": "20b37809f556ef8316809d0ccefe6a652eede790e25b785e32b93399a026b842"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238674900
+  "totalBytes": 238677935
 }

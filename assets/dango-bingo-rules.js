@@ -1763,7 +1763,7 @@
   const numbers=source.numbers.slice(),draws=source.draws.slice(),initialFreeCells=source.initialFreeCells.slice();
   const manualFreeCells=source.manualFreeCells.slice(),initialMask=maskOf(initialFreeCells),manualMask=maskOf(manualFreeCells);
   const earlyHitMask=maskOf(draws.slice(0,5).map(n=>numbers.indexOf(n))),hitCells=draws.map(n=>numbers.indexOf(n)),hitMask=maskOf(hitCells);
-  const earlyMask=initialMask|earlyHitMask,markedMask=initialMask|manualMask|hitMask;
+  const earlyMask=initialMask|earlyHitMask,markedMask=initialMask|manualMask|hitMask,visualHitMask=initialMask|hitMask;
   const finishedEarly=gradeLines.filter(line=>(line.mask&earlyMask)===line.mask);
   const qualifiedEarlyLengths=[...new Set(finishedEarly.map(line=>line.length))].sort((a,b)=>a-b);
   const triggerCells=source.triggerCells.slice(),triggerNumbers=triggerCells.map(id=>numbers[id]);
@@ -1791,7 +1791,7 @@
    hitCells,markedCells:idsOf(markedMask),initialMask,manualMask,hitMask,markedMask,lineMasks:lines.map(line=>line.mask),
    lastBonusGain:prior?Math.max(0,freeBudget-(prior.freeBudget||BASE_FREE_BUDGET)):0,
    lastOddsGain:prior?Math.max(0,oddsMultiplier-prior.oddsMultiplier):0,
-   cells:cells.map(c=>({...c,number:numbers[c.id],hit:!!(hitMask&(1<<c.id)),initialFree:!!(initialMask&(1<<c.id)),
+   cells:cells.map(c=>({...c,number:numbers[c.id],hit:!!(visualHitMask&(1<<c.id)),initialFree:!!(initialMask&(1<<c.id)),
     manualFree:!!(manualMask&(1<<c.id)),marked:!!(markedMask&(1<<c.id)),
     expansionCenter:false,overlapFree:overlapFreeCells.includes(c.id),trigger:triggerCells.includes(c.id),
     triggerActive:triggerActive&&triggerCells.includes(c.id),triggerHit:triggerHits.includes(numbers[c.id])}))};

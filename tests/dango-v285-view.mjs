@@ -78,7 +78,7 @@ async function setup(p){
     canvasMatches:Math.abs(draw.geometry.unit/dpr-g.unit)<.02&&draw.geometry.centers.every((p,i)=>Math.abs(p.x/dpr-g.centers[i].x)<.02&&Math.abs(p.y/dpr-g.centers[i].y)<.02),
     controlsMatch:[...document.querySelectorAll('.dgb-cell')].every((button,i)=>Math.abs(parseFloat(button.style.left)-g.centers[i].x)<.02&&Math.abs(parseFloat(button.style.top)-g.centers[i].y)<.02),
     tableClearance:Math.min(...[frame,odds].filter(Boolean).flatMap(r=>g.centers.map(p=>distance(r,p)))),freeClearance:Math.min(...g.centers.map(p=>distance(free,p))),
-    numerals,labels,captions,draw,description:q.view.describe(),dataset:{...scene.dataset},headings:[...document.querySelectorAll('.dgb-pay thead th')].map(e=>e.textContent),
+    numerals,labels,captions,draw,cyanDango:DangoBingoView.describeAssets().cyanDango,description:q.view.describe(),dataset:{...scene.dataset},headings:[...document.querySelectorAll('.dgb-pay thead th')].map(e=>e.textContent),
     railHidden:document.querySelector('.dgb-free-rail').hidden,railNodes:document.querySelectorAll('.dgb-free-rail-row').length,
     freeText:document.querySelector('.dgb-free-value').textContent,manualWait:document.querySelector('.dgb-countdown').textContent,
     tableOverflow:[...document.querySelectorAll('.dgb-pay td,.dgb-pay th')].filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>({text:e.textContent,width:e.clientWidth,scroll:e.scrollWidth})),
@@ -95,7 +95,8 @@ function checkLayout(m){
  assert.ok(m.tableClearance>=m.radius-.5,'table clears mochi '+detail);assert.ok(m.freeClearance>=m.radius-.5,'FREE card clears mochi '+detail);
  assert.ok(m.unit>=m.legacyUnit-.01,'board grows from v268 '+detail);assert.deepEqual(m.tableOverflow,[]);assert.deepEqual(m.freeOverflow,[]);
  assert.equal(m.railHidden,true);assert.equal(m.railNodes,0);assert.deepEqual(m.headings,['ライン','1個','2個','3個']);assert.equal(m.description.revision,285);
- assert.equal(m.draw.imageCells,28);assert.equal(m.draw.standRendered,true);assert.equal(m.draw.hitSparkleCells,m.state.draws.length);assert.equal(m.draw.hitLabelPosition,'edge-outside-number');
+ assert.equal(m.draw.imageCells,28);assert.equal(m.draw.standRendered,true);assert.equal(m.draw.greenHitCells,3,'green FREE must glow as a HIT');assert.equal(m.draw.hitSparkleCells,m.state.draws.length+3);assert.equal(m.draw.hitLabelPosition,'edge-outside-number');
+ assert.equal(m.cyanDango.baked,true,'cyan needs an independent raster sprite');assert.ok(m.cyanDango.cyanPixels>=100,'aqua pigments have been baked into the bitmap');assert.ok(m.cyanDango.meanBlueMinusRed>=35,'real aqua rather than green tinted on canvas');
  for(const n of m.numerals){
   assert.ok(n.font>=14,'numeral height '+JSON.stringify(n));assert.ok(n.value.x>=n.cell.x-.75&&n.value.right<=n.cell.right+.75,'numeral fits '+JSON.stringify(n));
   assert.ok(n.rightGap>=0&&n.rightGap<=6,'numerals share the right edge '+JSON.stringify(n));
@@ -121,6 +122,7 @@ try{
  assert.deepEqual(await setup(page),{rules:285,view:285,revision:285,assets:true});
  report.initial=await page.evaluate(()=>qa285.measure());checkLayout(report.initial);
  assert.equal(report.initial.draw.plusFree.cells.length,3);assert.equal(report.initial.draw.plusFree.opacity,1);assert.equal(report.initial.draw.plusFree.label,'+FREE');
+ assert.equal(report.initial.draw.kinds.cyan,3,'all numbered +FREE are actual aqua mochi');assert.equal(report.initial.draw.kinds.green,3,'initial FREE remains a green HIT');
  assert.equal(report.initial.labels.filter(l=>l.plusBox).length,3);assert.match(report.initial.freeText,/1個/);
  assert.equal(report.initial.description.highestCells.length,5);assert.equal(report.initial.numerals.find(n=>n.length===7&&n.count===3).text,'—');
  await shot('initial-desktop');
@@ -132,7 +134,7 @@ try{
  for(const age of [0,900,1800]){
   await page.evaluate(age=>qa285.render({reducedMotion:false,paused:true,plusFreeFadeAge:age}),age);
   const m=await page.evaluate(()=>qa285.measure());report.fade.push({age,opacity:m.draw.plusFree.opacity,labels:m.labels.filter(l=>l.plusBox).length,state:m.state});
-  assert.equal(m.draw.plusFree.active,false);assert.equal(m.draw.plusFree.opacity,1-age/1800);assert.equal(m.labels.filter(l=>l.plusBox).length,age===1800?0:3);checkLayout(m);await shot('thinking-fade-'+age);
+  assert.equal(m.draw.plusFree.active,false);assert.equal(m.draw.plusFree.opacity,1-age/1800);assert.equal(m.labels.filter(l=>l.plusBox).length,age===1800?0:3);assert.equal(m.draw.kinds.cyan,age===1800?0:age===0?3:0);checkLayout(m);await shot('thinking-fade-'+age);
  }
  const chosen=await page.evaluate(()=>qa285.state.initialFreeCells[0]);
  await page.locator('.dgb-cell[data-cell-id="'+chosen+'"]').click();
