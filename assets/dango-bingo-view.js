@@ -276,7 +276,7 @@ function dangoLabels(c,cell,p,r,o){
   if(cell.hit){
    // Keep a fixed edge position so the fade never moves HIT across a numeral.
    // A numbered FREE reserves its lower edge for FREE and uses the upper edge.
-   const y=p.y+r*(cell.trigger&&!label?.76:-.75),size=r*.33;
+   const y=p.y+r*(cell.trigger&&!label?.76:-.88),size=r*.33;
    c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';c.lineWidth=Math.max(.7,r*.065);c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#a91650';c.fillText('HIT!',p.x,y);c.restore();
   }
  }else if(cell.hit&&!o.staticDango){
