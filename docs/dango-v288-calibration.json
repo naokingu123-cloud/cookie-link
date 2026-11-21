@@ -1,0 +1,744 @@
+{
+  "revision": 288,
+  "paytableHundredths": [
+    [
+      0,
+      20,
+      2000
+    ],
+    [
+      20,
+      100,
+      3000
+    ],
+    [
+      50,
+      400,
+      10000
+    ],
+    [
+      100,
+      5000,
+      100000
+    ],
+    [
+      300,
+      20000,
+      200000
+    ],
+    [
+      500,
+      50000,
+      0
+    ]
+  ],
+  "lengths": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "scope": {
+    "uniformEightBalls": true,
+    "uniformThreeCyanCells": true,
+    "manualPlayExcluded": true,
+    "sugarExcluded": true,
+    "roundStartPolicyChosenWithoutFutureDraw": true,
+    "payoutBasis": "unrounded hundredths of BET",
+    "storedV287GamesUntouched": true
+  },
+  "method": "Exact C++ enumerated first-five 53130 combinations x 4 quotas x conditional C(20,3) integration and cyan weights; uniformly hashed legal FREE candidates vs max conditional expectation; select policy at start, fixed 65:1.5:33.5 initial green mold mixture",
+  "denominator": 139306860000,
+  "cyanWeights": [
+    1140,
+    950,
+    200,
+    10
+  ],
+  "layoutWeights": [
+    0.65,
+    0.015,
+    0.335
+  ],
+  "profiles": [
+    {
+      "id": "triangle-perimeter",
+      "initialFreeCells": [
+        0,
+        21,
+        27
+      ],
+      "maxNumerator": 21978554300400,
+      "uniformNumerator": 2294536465100,
+      "byQuotaMax": [
+        2138099640,
+        11371260580,
+        39353480760,
+        86772700780
+      ],
+      "byQuotaUniform": [
+        611213080,
+        1184690820,
+        2162003380,
+        3989659890
+      ]
+    },
+    {
+      "id": "triangle-inner-corners",
+      "initialFreeCells": [
+        1,
+        20,
+        22
+      ],
+      "maxNumerator": 172980567455400,
+      "uniformNumerator": 17005375295300,
+      "byQuotaMax": [
+        23751082650,
+        101027877230,
+        231885934920,
+        355066288190
+      ],
+      "byQuotaUniform": [
+        5612814770,
+        8298070470,
+        12689078120,
+        18578388700
+      ]
+    },
+    {
+      "id": "triangle-step",
+      "initialFreeCells": [
+        3,
+        4,
+        10
+      ],
+      "maxNumerator": 33170259982100,
+      "uniformNumerator": 5038129059000,
+      "byQuotaMax": [
+        4045969490,
+        15973723120,
+        58949413110,
+        159293517750
+      ],
+      "byQuotaUniform": [
+        1513534270,
+        2536047080,
+        4179556120,
+        6754404120
+      ]
+    }
+  ],
+  "minimumReturnPercent": 24.652788574155643,
+  "maximumReturnPercent": 200.94348477235434,
+  "settings": [
+    {
+      "target": 50,
+      "maxPolicyProbability": 0.14378076649800733,
+      "uniformPolicyProbability": 0.8562192335019927,
+      "expectedReturnPercent": 50
+    },
+    {
+      "target": 51,
+      "maxPolicyProbability": 0.14945321559240382,
+      "uniformPolicyProbability": 0.8505467844075962,
+      "expectedReturnPercent": 51
+    },
+    {
+      "target": 52,
+      "maxPolicyProbability": 0.15512566468680034,
+      "uniformPolicyProbability": 0.8448743353131997,
+      "expectedReturnPercent": 52
+    },
+    {
+      "target": 53,
+      "maxPolicyProbability": 0.16079811378119682,
+      "uniformPolicyProbability": 0.8392018862188032,
+      "expectedReturnPercent": 53
+    },
+    {
+      "target": 54,
+      "maxPolicyProbability": 0.1664705628755933,
+      "uniformPolicyProbability": 0.8335294371244066,
+      "expectedReturnPercent": 54
+    },
+    {
+      "target": 55,
+      "maxPolicyProbability": 0.17214301196998982,
+      "uniformPolicyProbability": 0.8278569880300102,
+      "expectedReturnPercent": 55
+    },
+    {
+      "target": 56,
+      "maxPolicyProbability": 0.1778154610643863,
+      "uniformPolicyProbability": 0.8221845389356137,
+      "expectedReturnPercent": 56
+    },
+    {
+      "target": 57,
+      "maxPolicyProbability": 0.1834879101587828,
+      "uniformPolicyProbability": 0.8165120898412173,
+      "expectedReturnPercent": 57
+    },
+    {
+      "target": 58,
+      "maxPolicyProbability": 0.1891603592531793,
+      "uniformPolicyProbability": 0.8108396407468207,
+      "expectedReturnPercent": 58
+    },
+    {
+      "target": 59,
+      "maxPolicyProbability": 0.1948328083475758,
+      "uniformPolicyProbability": 0.8051671916524242,
+      "expectedReturnPercent": 59
+    },
+    {
+      "target": 60,
+      "maxPolicyProbability": 0.20050525744197228,
+      "uniformPolicyProbability": 0.7994947425580277,
+      "expectedReturnPercent": 60
+    },
+    {
+      "target": 61,
+      "maxPolicyProbability": 0.2061777065363688,
+      "uniformPolicyProbability": 0.7938222934636312,
+      "expectedReturnPercent": 61
+    },
+    {
+      "target": 62,
+      "maxPolicyProbability": 0.21185015563076529,
+      "uniformPolicyProbability": 0.7881498443692347,
+      "expectedReturnPercent": 62
+    },
+    {
+      "target": 63,
+      "maxPolicyProbability": 0.21752260472516177,
+      "uniformPolicyProbability": 0.7824773952748383,
+      "expectedReturnPercent": 63
+    },
+    {
+      "target": 64,
+      "maxPolicyProbability": 0.2231950538195583,
+      "uniformPolicyProbability": 0.7768049461804417,
+      "expectedReturnPercent": 64
+    },
+    {
+      "target": 65,
+      "maxPolicyProbability": 0.22886750291395477,
+      "uniformPolicyProbability": 0.7711324970860453,
+      "expectedReturnPercent": 65
+    },
+    {
+      "target": 66,
+      "maxPolicyProbability": 0.23453995200835126,
+      "uniformPolicyProbability": 0.7654600479916487,
+      "expectedReturnPercent": 66
+    },
+    {
+      "target": 67,
+      "maxPolicyProbability": 0.24021240110274777,
+      "uniformPolicyProbability": 0.7597875988972522,
+      "expectedReturnPercent": 67
+    },
+    {
+      "target": 68,
+      "maxPolicyProbability": 0.24588485019714426,
+      "uniformPolicyProbability": 0.7541151498028558,
+      "expectedReturnPercent": 68
+    },
+    {
+      "target": 69,
+      "maxPolicyProbability": 0.25155729929154075,
+      "uniformPolicyProbability": 0.7484427007084593,
+      "expectedReturnPercent": 69
+    },
+    {
+      "target": 70,
+      "maxPolicyProbability": 0.25722974838593726,
+      "uniformPolicyProbability": 0.7427702516140627,
+      "expectedReturnPercent": 70
+    },
+    {
+      "target": 71,
+      "maxPolicyProbability": 0.2629021974803337,
+      "uniformPolicyProbability": 0.7370978025196663,
+      "expectedReturnPercent": 71
+    },
+    {
+      "target": 72,
+      "maxPolicyProbability": 0.26857464657473024,
+      "uniformPolicyProbability": 0.7314253534252697,
+      "expectedReturnPercent": 72
+    },
+    {
+      "target": 73,
+      "maxPolicyProbability": 0.27424709566912675,
+      "uniformPolicyProbability": 0.7257529043308732,
+      "expectedReturnPercent": 73
+    },
+    {
+      "target": 74,
+      "maxPolicyProbability": 0.2799195447635232,
+      "uniformPolicyProbability": 0.7200804552364768,
+      "expectedReturnPercent": 74
+    },
+    {
+      "target": 75,
+      "maxPolicyProbability": 0.2855919938579197,
+      "uniformPolicyProbability": 0.7144080061420803,
+      "expectedReturnPercent": 75
+    },
+    {
+      "target": 76,
+      "maxPolicyProbability": 0.29126444295231624,
+      "uniformPolicyProbability": 0.7087355570476838,
+      "expectedReturnPercent": 76
+    },
+    {
+      "target": 77,
+      "maxPolicyProbability": 0.2969368920467127,
+      "uniformPolicyProbability": 0.7030631079532873,
+      "expectedReturnPercent": 77
+    },
+    {
+      "target": 78,
+      "maxPolicyProbability": 0.3026093411411092,
+      "uniformPolicyProbability": 0.6973906588588907,
+      "expectedReturnPercent": 78
+    },
+    {
+      "target": 79,
+      "maxPolicyProbability": 0.3082817902355057,
+      "uniformPolicyProbability": 0.6917182097644943,
+      "expectedReturnPercent": 79
+    },
+    {
+      "target": 80,
+      "maxPolicyProbability": 0.3139542393299022,
+      "uniformPolicyProbability": 0.6860457606700978,
+      "expectedReturnPercent": 80
+    },
+    {
+      "target": 81,
+      "maxPolicyProbability": 0.3196266884242987,
+      "uniformPolicyProbability": 0.6803733115757014,
+      "expectedReturnPercent": 81
+    },
+    {
+      "target": 82,
+      "maxPolicyProbability": 0.3252991375186952,
+      "uniformPolicyProbability": 0.6747008624813048,
+      "expectedReturnPercent": 82
+    },
+    {
+      "target": 83,
+      "maxPolicyProbability": 0.3309715866130917,
+      "uniformPolicyProbability": 0.6690284133869083,
+      "expectedReturnPercent": 83
+    },
+    {
+      "target": 84,
+      "maxPolicyProbability": 0.3366440357074882,
+      "uniformPolicyProbability": 0.6633559642925118,
+      "expectedReturnPercent": 84
+    },
+    {
+      "target": 85,
+      "maxPolicyProbability": 0.3423164848018847,
+      "uniformPolicyProbability": 0.6576835151981153,
+      "expectedReturnPercent": 85
+    },
+    {
+      "target": 86,
+      "maxPolicyProbability": 0.34798893389628116,
+      "uniformPolicyProbability": 0.6520110661037188,
+      "expectedReturnPercent": 86
+    },
+    {
+      "target": 87,
+      "maxPolicyProbability": 0.3536613829906777,
+      "uniformPolicyProbability": 0.6463386170093224,
+      "expectedReturnPercent": 87
+    },
+    {
+      "target": 88,
+      "maxPolicyProbability": 0.3593338320850742,
+      "uniformPolicyProbability": 0.6406661679149258,
+      "expectedReturnPercent": 88
+    },
+    {
+      "target": 89,
+      "maxPolicyProbability": 0.3650062811794707,
+      "uniformPolicyProbability": 0.6349937188205292,
+      "expectedReturnPercent": 89
+    },
+    {
+      "target": 90,
+      "maxPolicyProbability": 0.3706787302738672,
+      "uniformPolicyProbability": 0.6293212697261328,
+      "expectedReturnPercent": 90
+    },
+    {
+      "target": 91,
+      "maxPolicyProbability": 0.3763511793682637,
+      "uniformPolicyProbability": 0.6236488206317363,
+      "expectedReturnPercent": 91
+    },
+    {
+      "target": 92,
+      "maxPolicyProbability": 0.3820236284626602,
+      "uniformPolicyProbability": 0.6179763715373399,
+      "expectedReturnPercent": 92
+    },
+    {
+      "target": 93,
+      "maxPolicyProbability": 0.3876960775570567,
+      "uniformPolicyProbability": 0.6123039224429433,
+      "expectedReturnPercent": 93
+    },
+    {
+      "target": 94,
+      "maxPolicyProbability": 0.39336852665145317,
+      "uniformPolicyProbability": 0.6066314733485468,
+      "expectedReturnPercent": 94
+    },
+    {
+      "target": 95,
+      "maxPolicyProbability": 0.3990409757458497,
+      "uniformPolicyProbability": 0.6009590242541503,
+      "expectedReturnPercent": 95
+    },
+    {
+      "target": 96,
+      "maxPolicyProbability": 0.4047134248402462,
+      "uniformPolicyProbability": 0.5952865751597538,
+      "expectedReturnPercent": 96
+    },
+    {
+      "target": 97,
+      "maxPolicyProbability": 0.41038587393464265,
+      "uniformPolicyProbability": 0.5896141260653573,
+      "expectedReturnPercent": 97
+    },
+    {
+      "target": 98,
+      "maxPolicyProbability": 0.41605832302903917,
+      "uniformPolicyProbability": 0.5839416769709609,
+      "expectedReturnPercent": 98
+    },
+    {
+      "target": 99,
+      "maxPolicyProbability": 0.4217307721234357,
+      "uniformPolicyProbability": 0.5782692278765643,
+      "expectedReturnPercent": 99
+    },
+    {
+      "target": 100,
+      "maxPolicyProbability": 0.42740322121783214,
+      "uniformPolicyProbability": 0.5725967787821679,
+      "expectedReturnPercent": 100
+    },
+    {
+      "target": 101,
+      "maxPolicyProbability": 0.43307567031222866,
+      "uniformPolicyProbability": 0.5669243296877713,
+      "expectedReturnPercent": 101
+    },
+    {
+      "target": 102,
+      "maxPolicyProbability": 0.43874811940662517,
+      "uniformPolicyProbability": 0.5612518805933748,
+      "expectedReturnPercent": 102
+    },
+    {
+      "target": 103,
+      "maxPolicyProbability": 0.44442056850102163,
+      "uniformPolicyProbability": 0.5555794314989784,
+      "expectedReturnPercent": 103
+    },
+    {
+      "target": 104,
+      "maxPolicyProbability": 0.45009301759541814,
+      "uniformPolicyProbability": 0.5499069824045819,
+      "expectedReturnPercent": 104
+    },
+    {
+      "target": 105,
+      "maxPolicyProbability": 0.45576546668981466,
+      "uniformPolicyProbability": 0.5442345333101853,
+      "expectedReturnPercent": 105
+    },
+    {
+      "target": 106,
+      "maxPolicyProbability": 0.4614379157842111,
+      "uniformPolicyProbability": 0.5385620842157889,
+      "expectedReturnPercent": 106
+    },
+    {
+      "target": 107,
+      "maxPolicyProbability": 0.46711036487860763,
+      "uniformPolicyProbability": 0.5328896351213923,
+      "expectedReturnPercent": 107
+    },
+    {
+      "target": 108,
+      "maxPolicyProbability": 0.47278281397300415,
+      "uniformPolicyProbability": 0.5272171860269959,
+      "expectedReturnPercent": 108
+    },
+    {
+      "target": 109,
+      "maxPolicyProbability": 0.4784552630674006,
+      "uniformPolicyProbability": 0.5215447369325994,
+      "expectedReturnPercent": 109
+    },
+    {
+      "target": 110,
+      "maxPolicyProbability": 0.4841277121617971,
+      "uniformPolicyProbability": 0.5158722878382029,
+      "expectedReturnPercent": 110
+    },
+    {
+      "target": 111,
+      "maxPolicyProbability": 0.48980016125619363,
+      "uniformPolicyProbability": 0.5101998387438064,
+      "expectedReturnPercent": 111
+    },
+    {
+      "target": 112,
+      "maxPolicyProbability": 0.4954726103505901,
+      "uniformPolicyProbability": 0.5045273896494099,
+      "expectedReturnPercent": 112
+    },
+    {
+      "target": 113,
+      "maxPolicyProbability": 0.5011450594449867,
+      "uniformPolicyProbability": 0.49885494055501334,
+      "expectedReturnPercent": 113.00000000000003
+    },
+    {
+      "target": 114,
+      "maxPolicyProbability": 0.5068175085393831,
+      "uniformPolicyProbability": 0.4931824914606169,
+      "expectedReturnPercent": 114
+    },
+    {
+      "target": 115,
+      "maxPolicyProbability": 0.5124899576337796,
+      "uniformPolicyProbability": 0.4875100423662204,
+      "expectedReturnPercent": 115
+    },
+    {
+      "target": 116,
+      "maxPolicyProbability": 0.5181624067281762,
+      "uniformPolicyProbability": 0.48183759327182385,
+      "expectedReturnPercent": 116.00000000000003
+    },
+    {
+      "target": 117,
+      "maxPolicyProbability": 0.5238348558225726,
+      "uniformPolicyProbability": 0.4761651441774274,
+      "expectedReturnPercent": 117
+    },
+    {
+      "target": 118,
+      "maxPolicyProbability": 0.5295073049169691,
+      "uniformPolicyProbability": 0.47049269508303093,
+      "expectedReturnPercent": 118
+    },
+    {
+      "target": 119,
+      "maxPolicyProbability": 0.5351797540113656,
+      "uniformPolicyProbability": 0.46482024598863436,
+      "expectedReturnPercent": 119.00000000000003
+    },
+    {
+      "target": 120,
+      "maxPolicyProbability": 0.5408522031057621,
+      "uniformPolicyProbability": 0.4591477968942379,
+      "expectedReturnPercent": 120
+    },
+    {
+      "target": 121,
+      "maxPolicyProbability": 0.5465246522001586,
+      "uniformPolicyProbability": 0.45347534779984144,
+      "expectedReturnPercent": 121
+    },
+    {
+      "target": 122,
+      "maxPolicyProbability": 0.5521971012945551,
+      "uniformPolicyProbability": 0.4478028987054449,
+      "expectedReturnPercent": 122.00000000000003
+    },
+    {
+      "target": 123,
+      "maxPolicyProbability": 0.5578695503889516,
+      "uniformPolicyProbability": 0.4421304496110484,
+      "expectedReturnPercent": 123
+    },
+    {
+      "target": 124,
+      "maxPolicyProbability": 0.563541999483348,
+      "uniformPolicyProbability": 0.43645800051665196,
+      "expectedReturnPercent": 124
+    },
+    {
+      "target": 125,
+      "maxPolicyProbability": 0.5692144485777446,
+      "uniformPolicyProbability": 0.4307855514222554,
+      "expectedReturnPercent": 125.00000000000003
+    },
+    {
+      "target": 126,
+      "maxPolicyProbability": 0.5748868976721411,
+      "uniformPolicyProbability": 0.4251131023278589,
+      "expectedReturnPercent": 126
+    },
+    {
+      "target": 127,
+      "maxPolicyProbability": 0.5805593467665375,
+      "uniformPolicyProbability": 0.41944065323346247,
+      "expectedReturnPercent": 127
+    },
+    {
+      "target": 128,
+      "maxPolicyProbability": 0.5862317958609341,
+      "uniformPolicyProbability": 0.4137682041390659,
+      "expectedReturnPercent": 128.00000000000003
+    },
+    {
+      "target": 129,
+      "maxPolicyProbability": 0.5919042449553306,
+      "uniformPolicyProbability": 0.40809575504466944,
+      "expectedReturnPercent": 129
+    },
+    {
+      "target": 130,
+      "maxPolicyProbability": 0.597576694049727,
+      "uniformPolicyProbability": 0.402423305950273,
+      "expectedReturnPercent": 130
+    },
+    {
+      "target": 131,
+      "maxPolicyProbability": 0.6032491431441236,
+      "uniformPolicyProbability": 0.3967508568558764,
+      "expectedReturnPercent": 131.00000000000003
+    },
+    {
+      "target": 132,
+      "maxPolicyProbability": 0.60892159223852,
+      "uniformPolicyProbability": 0.39107840776147995,
+      "expectedReturnPercent": 132
+    },
+    {
+      "target": 133,
+      "maxPolicyProbability": 0.6145940413329165,
+      "uniformPolicyProbability": 0.3854059586670835,
+      "expectedReturnPercent": 133
+    },
+    {
+      "target": 134,
+      "maxPolicyProbability": 0.6202664904273131,
+      "uniformPolicyProbability": 0.3797335095726869,
+      "expectedReturnPercent": 134.00000000000003
+    },
+    {
+      "target": 135,
+      "maxPolicyProbability": 0.6259389395217095,
+      "uniformPolicyProbability": 0.37406106047829046,
+      "expectedReturnPercent": 135
+    },
+    {
+      "target": 136,
+      "maxPolicyProbability": 0.631611388616106,
+      "uniformPolicyProbability": 0.368388611383894,
+      "expectedReturnPercent": 136
+    },
+    {
+      "target": 137,
+      "maxPolicyProbability": 0.6372838377105026,
+      "uniformPolicyProbability": 0.36271616228949743,
+      "expectedReturnPercent": 137.00000000000003
+    },
+    {
+      "target": 138,
+      "maxPolicyProbability": 0.642956286804899,
+      "uniformPolicyProbability": 0.357043713195101,
+      "expectedReturnPercent": 138
+    },
+    {
+      "target": 139,
+      "maxPolicyProbability": 0.6486287358992955,
+      "uniformPolicyProbability": 0.3513712641007045,
+      "expectedReturnPercent": 139
+    },
+    {
+      "target": 140,
+      "maxPolicyProbability": 0.654301184993692,
+      "uniformPolicyProbability": 0.34569881500630795,
+      "expectedReturnPercent": 140.00000000000003
+    },
+    {
+      "target": 141,
+      "maxPolicyProbability": 0.6599736340880885,
+      "uniformPolicyProbability": 0.3400263659119115,
+      "expectedReturnPercent": 141
+    },
+    {
+      "target": 142,
+      "maxPolicyProbability": 0.665646083182485,
+      "uniformPolicyProbability": 0.33435391681751503,
+      "expectedReturnPercent": 142
+    },
+    {
+      "target": 143,
+      "maxPolicyProbability": 0.6713185322768815,
+      "uniformPolicyProbability": 0.32868146772311846,
+      "expectedReturnPercent": 143.00000000000003
+    },
+    {
+      "target": 144,
+      "maxPolicyProbability": 0.676990981371278,
+      "uniformPolicyProbability": 0.323009018628722,
+      "expectedReturnPercent": 144
+    },
+    {
+      "target": 145,
+      "maxPolicyProbability": 0.6826634304656745,
+      "uniformPolicyProbability": 0.31733656953432554,
+      "expectedReturnPercent": 145
+    },
+    {
+      "target": 146,
+      "maxPolicyProbability": 0.688335879560071,
+      "uniformPolicyProbability": 0.31166412043992897,
+      "expectedReturnPercent": 146.00000000000003
+    },
+    {
+      "target": 147,
+      "maxPolicyProbability": 0.6940083286544675,
+      "uniformPolicyProbability": 0.3059916713455325,
+      "expectedReturnPercent": 147
+    },
+    {
+      "target": 148,
+      "maxPolicyProbability": 0.699680777748864,
+      "uniformPolicyProbability": 0.30031922225113605,
+      "expectedReturnPercent": 148
+    },
+    {
+      "target": 149,
+      "maxPolicyProbability": 0.7053532268432605,
+      "uniformPolicyProbability": 0.2946467731567395,
+      "expectedReturnPercent": 149.00000000000003
+    },
+    {
+      "target": 150,
+      "maxPolicyProbability": 0.711025675937657,
+      "uniformPolicyProbability": 0.288974324062343,
+      "expectedReturnPercent": 150
+    }
+  ],
+  "reproduction": "g++ -O3 -std=c++20 scripts/dango-v288-policy.cpp -o /tmp/dango-v288-policy && /tmp/dango-v288-policy > /tmp/dango-v288-policy.json && node tests/dango-v288-calibration.mjs /tmp/dango-v288-policy.json"
+}
