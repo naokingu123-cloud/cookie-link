@@ -20,7 +20,9 @@ on:
       - 'tests/sixdrop-v280-*'
       - 'tests/sixdrop-v283-*'
       - 'tests/sixdrop-v284-*'
+      - 'tests/sixdrop-v285-*'
       - 'scripts/sixdrop-v284-*'
+      - 'scripts/sixdrop-v285-*'
       - '.github/workflows/sixdrop-v278.yml'
   push:
     branches: [main]
@@ -42,7 +44,9 @@ on:
       - 'tests/sixdrop-v280-*'
       - 'tests/sixdrop-v283-*'
       - 'tests/sixdrop-v284-*'
+      - 'tests/sixdrop-v285-*'
       - 'scripts/sixdrop-v284-*'
+      - 'scripts/sixdrop-v285-*'
       - '.github/workflows/sixdrop-v278.yml'
 permissions:
   contents: read
@@ -73,6 +77,10 @@ jobs:
         run: node tests/sixdrop-v283-settlement.mjs
       - name: Current 200-drop colours, integer accrual and exact simulation geometry
         run: node tests/sixdrop-v284-rules.cjs
+      - name: Locked 200-drop palette, doubled all-clear meter and unbiased numbered layout
+        run: node tests/sixdrop-v285-rules.cjs
+      - name: Diagnostic 285 direct RTP across 50 90 150 settings
+        run: node scripts/sixdrop-v285-calibrate.cjs --samples=256 --block-size=64 --rates=50,90,150 --bet=100
       - name: Current single-ball host, all legacy saves and both settlement workers
         run: node tests/sixdrop-v284-host.cjs
       - name: Actual removed counts, small BETs and synchronized progressive display

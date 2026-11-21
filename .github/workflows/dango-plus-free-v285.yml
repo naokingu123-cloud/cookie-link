@@ -14,6 +14,8 @@ on:
       - 'scripts/dango-v287-*'
       - 'scripts/dango-v288-*'
       - 'assets/jelly-*'
+      - 'assets/choco-*'
+      - 'tests/choco-v288-*'
       - 'tests/jelly-v288-*'
       - 'docs/qa-v285/**'
       - 'package.json'
@@ -32,6 +34,8 @@ on:
       - 'scripts/dango-v287-*'
       - 'scripts/dango-v288-*'
       - 'assets/jelly-*'
+      - 'assets/choco-*'
+      - 'tests/choco-v288-*'
       - 'tests/jelly-v288-*'
       - 'docs/qa-v285/**'
       - 'package.json'
@@ -63,6 +67,7 @@ jobs:
           /tmp/dango-v288-policy > /tmp/dango-v288-policy.json
           node tests/dango-v288-calibration.mjs /tmp/dango-v288-policy.json
           node tests/jelly-v288-lines.mjs
+          node tests/choco-v288-gravity-fruit.mjs
       - name: Legacy presentation and launch-time commitment
         run: |
           node tests/dango-v269-presentation-rules.mjs
