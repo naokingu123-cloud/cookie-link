@@ -67,7 +67,10 @@ async function setup(p){
     return {length:+td.parentElement.dataset.length,count:+td.dataset.count,text:value.textContent,cell,value:box,font:parseFloat(style.fontSize),rightGap:cell.right-box.right,scale:+value.dataset.horizontalScale,badges};
    });
    const calls=[...new Map(q.paintCalls.map(c=>[c.text+':'+c.x.toFixed(3)+':'+c.y.toFixed(3),c])).values()];
-   const labels=q.state.cells.filter(c=>c.number>0).map(cell=>{const p=g.centers[cell.id],near=text=>calls.find(c=>c.text===text&&Math.abs(c.x-p.x)<.5&&Math.abs(c.y-p.y)<g.radius);return {id:cell.id,number:cell.number,hit:cell.hit,trigger:cell.trigger,numberBox:near(String(cell.number)),hitBox:near('HIT!'),plusBox:near('+FREE')};});
+   // HIT may sit just outside the mochi edge to leave a real glyph gap on a
+   // compact canvas. Keep the same narrow X/number association, then verify
+   // the actual painted bounds below rather than discarding that edge label.
+   const labels=q.state.cells.filter(c=>c.number>0).map(cell=>{const p=g.centers[cell.id],near=text=>calls.find(c=>c.text===text&&Math.abs(c.x-p.x)<.5&&Math.abs(c.y-p.y)<g.radius*(text==='HIT!'?1.3:1));return {id:cell.id,number:cell.number,hit:cell.hit,trigger:cell.trigger,numberBox:near(String(cell.number)),hitBox:near('HIT!'),plusBox:near('+FREE')};});
    const captions=[...document.querySelectorAll('.dgb-reach-layer .six-reach-cell')].map(el=>{const cell=q.state.cells.find(c=>c.number===+el.dataset.number),p=g.centers[cell.id];return {number:cell.number,tier:+el.dataset.tier,cell:p,box:rect(el.querySelector('.tile-reach')),text:el.querySelector('.tile-reach').textContent,glints:el.querySelectorAll('.reach-glints i').length,circles:el.querySelectorAll('.allclear-reach-perimeter circle').length};});
    const legacy=DangoBingoView.geometry(scene.clientWidth,scene.clientHeight,{state:R.legacy268.create({moldIndex:0,numbers:Array.from({length:25},(_,i)=>i+1)})});
    return {width:scene.clientWidth,height:scene.clientHeight,unit:g.unit,radius:g.radius,centers:g.centers,stand:g.stand,legacyUnit:legacy.unit,free,freeReserve:g.free,frame,table,odds,
@@ -100,7 +103,7 @@ function checkLayout(m){
  }
  for(const label of m.labels){
   assert.ok(label.numberBox,'number painted '+JSON.stringify(label));
-  if(label.hit){assert.ok(label.hitBox,'HIT painted '+JSON.stringify(label));assert.ok(label.hitBox.bottom<=label.numberBox.top+.5||label.hitBox.top>=label.numberBox.bottom-.5,'HIT leaves number readable '+JSON.stringify(label));}
+  if(label.hit){assert.ok(label.hitBox,'HIT painted '+JSON.stringify(label));assert.ok(label.hitBox.left>=-.5&&label.hitBox.right<=m.width+.5&&label.hitBox.top>=-.5&&label.hitBox.bottom<=m.height+.5,'HIT caption stays on the canvas '+JSON.stringify(label));assert.ok(label.hitBox.bottom<=label.numberBox.top+.5||label.hitBox.top>=label.numberBox.bottom-.5,'HIT leaves number readable '+JSON.stringify(label));}
  }
  for(const caption of m.captions){assert.equal(caption.glints,3);assert.ok(caption.box.cy<caption.cell.y-m.radius*.35,'reach caption at upper edge '+JSON.stringify(caption));}
 }
