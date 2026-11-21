@@ -2068,8 +2068,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4365,
-      "sha256": "c6f64c04b815e691dad6767c3fcc04c650e43df8c86d24a3809c92bb2f47a424"
+      "bytes": 4366,
+      "sha256": "b5d738a2373388db4168fb13d32e14fae1d3fc5fe4bb8194594f7c63065d83b8"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2093,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3776,
-      "sha256": "c78363207021cf744ca0f7b432f368f26159e1dda46b023a112389de71a0d3a2"
+      "bytes": 3777,
+      "sha256": "917eaec6ed2f735fc6d08dc39a1c8fcc4fe6728430596b625d2807fa1a9bd88c"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -4029,7 +4029,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "20b37809f556ef8316809d0ccefe6a652eede790e25b785e32b93399a026b842"
+      "sha256": "9859eb476086acecd01bd39fabc011c51f0f680a5bff796278cc4bf2e82910a5"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238677935
+  "totalBytes": 238677937
 }
