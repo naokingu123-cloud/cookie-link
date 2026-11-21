@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const root=new URL('../',import.meta.url),read=path=>fs.readFile(new URL(path,root),'utf8');
 const data=JSON.parse(await read('docs/dango-v287-calibration.json')),ctx=vm.createContext({console});
 vm.runInContext(await read('assets/dango-bingo-rules.js'),ctx);
-const R=ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x)),D=BigInt(data.method.probabilityDenominator);
+const R=ctx.DangoBingoRules.legacy287,P=x=>JSON.parse(JSON.stringify(x)),D=BigInt(data.method.probabilityDenominator);
 const N=data.profiles.map(p=>BigInt(p.automaticNumerator)),lengths=[2,3,4,5,6,7];
 const bit=id=>1<<id,mask=ids=>ids.reduce((m,id)=>m|bit(id),0),pop=x=>{let n=0;for(;x;x&=x-1)n++;return n;};
 assert.equal(R.REVISION,287);assert.equal(data.revision,287);assert.equal(data.profiles.length,3);

@@ -96,7 +96,7 @@ function checkLayout(m){
  assert.ok(m.unit>=m.legacyUnit-.01,'board grows from v268 '+detail);assert.deepEqual(m.tableOverflow,[]);assert.deepEqual(m.freeOverflow,[]);
  assert.equal(m.railHidden,true);assert.equal(m.railNodes,0);assert.deepEqual(m.headings,['ライン','1個','2個','3個']);assert.equal(m.description.revision,285);
  assert.equal(m.draw.imageCells,28);assert.equal(m.draw.standRendered,true);assert.equal(m.draw.greenHitCells,3,'green FREE must glow as a HIT');assert.equal(m.draw.hitSparkleCells,m.state.draws.length+3);assert.equal(m.draw.hitLabelPosition,'edge-outside-number');
- assert.equal(m.cyanDango.baked,true,'cyan needs an independent raster sprite');assert.ok(m.cyanDango.cyanPixels>=100,'aqua pigments have been baked into the bitmap');assert.ok(m.cyanDango.meanBlueMinusRed>=35,'real aqua rather than green tinted on canvas');
+ assert.equal(m.cyanDango.baked,true,'cyan needs an independent raster sprite');assert.ok(m.cyanDango.cyanPixels>=100,'aqua pigments have been baked into the bitmap');assert.ok(m.cyanDango.meanBlueMinusRed>=3&&m.cyanDango.meanBlueMinusRed<=27,'light blue not HIT-cyan');assert.ok(m.cyanDango.meanLuminance>=230,'pale nearly-white cyan surface');assert.equal(m.draw.hitSparklesPerCell,11);
  for(const n of m.numerals){
   assert.ok(n.font>=14,'numeral height '+JSON.stringify(n));assert.ok(n.value.x>=n.cell.x-.75&&n.value.right<=n.cell.right+.75,'numeral fits '+JSON.stringify(n));
   assert.ok(n.rightGap>=0&&n.rightGap<=6,'numerals share the right edge '+JSON.stringify(n));
@@ -119,16 +119,16 @@ try{
  const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
  browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{}),args:['--no-sandbox']});
  page=await browser.newPage({viewport:{width:1366,height:750}});
- assert.deepEqual(await setup(page),{rules:287,view:285,revision:285,assets:true});
+ assert.deepEqual(await setup(page),{rules:288,view:285,revision:285,assets:true});
  report.initial=await page.evaluate(()=>qa285.measure());checkLayout(report.initial);
  assert.equal(report.initial.draw.plusFree.cells.length,3);assert.equal(report.initial.draw.plusFree.opacity,1);assert.equal(report.initial.draw.plusFree.label,'+FREE');
  assert.equal(report.initial.draw.kinds.cyan,3,'all numbered +FREE are actual aqua mochi');assert.equal(report.initial.draw.kinds.green,3,'initial FREE remains a green HIT');
- assert.equal(report.initial.labels.filter(l=>l.plusBox).length,3);assert.match(report.initial.freeText,/1個/);
+ assert.equal(report.initial.labels.filter(l=>l.plusBox).length,3);assert.match(report.initial.freeText,/×1/);
  assert.equal(report.initial.description.highestCells.length,5);assert.equal(report.initial.numerals.find(n=>n.length===7&&n.count===3).text,'—');
  await shot('initial-desktop');
  await page.evaluate(()=>{qa285.hit(qa285.state.triggerNumbers[0]);qa285.states.firstHit=qa285.state;});
  report.firstHit=await page.evaluate(()=>qa285.measure());checkLayout(report.firstHit);
- assert.equal(report.firstHit.state.freeBudget,2);assert.match(report.firstHit.freeText,/2個/);assert.equal(report.firstHit.description.plusFree.hits,1);
+ assert.equal(report.firstHit.state.freeBudget,2);assert.match(report.firstHit.freeText,/×2/);assert.equal(report.firstHit.description.plusFree.hits,1);
  assert.equal(report.firstHit.labels.filter(l=>l.hitBox).length,1);await shot('cyan-hit-free-two');
  await page.evaluate(()=>{qa285.thinking();qa285.states.thinking=qa285.state;});
  for(const age of [0,900,1800]){
