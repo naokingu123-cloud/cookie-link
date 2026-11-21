@@ -54,12 +54,13 @@ slot.updateJellyReach=function(a){
  const base=engine.totalHundredths,hits=[];
  for(let number=1;number<=25;number++){
   if(c.used.has(number))continue;
-  const {lines,oddsReason,totalHundredths:total}=K.preview(engine.state,number),gain=total-base;
+  const {lines,totalHundredths:total}=K.preview(engine.state,number),gain=total-base;
   const allClear=lines===K.LINES.length&&engine.state.lines.length<lines;
   const tier=reachTier(total,allClear);
-  const oddsUp=oddsReason==='color'&&lines===engine.state.lines.length&&(!gain||!tier);
-  if(gain<=0&&!oddsUp)continue;
-  hits.push({number,total,gain,allClear,tier,oddsUp,kind:['reach','high','super','all'][tier]});
+  // ODDS-up alone is not a line REACH. Keep the real multiplier in Jelly
+  // settlement/HUD, but suppress ODDS REACH on the board and tab alike.
+  if(gain<=0)continue;
+  hits.push({number,total,gain,allClear,tier,oddsUp:false,kind:['reach','high','super','all'][tier]});
  }
  reachStarted=clock;slot.reachBoardKey=c.key;slot.tabReachResults=slot.reachResults=hits;slot.tabReachBase=base;slot.tabReachVersion=engine.version;slot.reachStatus='ready';slot.reachAfterBall=c.count;
 };
