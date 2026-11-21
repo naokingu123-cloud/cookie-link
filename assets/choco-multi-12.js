@@ -117,10 +117,10 @@ try {
  function frame(now){
   if(!gallery.isConnected)return;
   if(document.hidden||!inView||!state.active){setTimeout(()=>requestAnimationFrame(frame),250);return;}
-  const step=active===1?85:200;
+  const step=active===1?120:250;
   if(now-lastDraw>=step){
    lastDraw=now;const start=performance.now();
-   for(let i=0;i<TOTAL;i++){const f=fleet[i];if(!f?.engine)continue;paintMini(f,now);updateCard(f);}
+   for(let i=0;i<TOTAL;i++){const f=fleet[i];if(!f?.engine)continue;const animating=!!f.engine.fx&&!app.paused&&!f.engine.paused;if(f.dirty||animating)paintMini(f,now);if(f.dirty||animating||i===state.selected)updateCard(f);}
    const duration=performance.now()-start;drawWork+=duration;peak=Math.max(peak,duration);frames++;
    if(now-lastPerf>=1200){
     state.fps=frames*1000/Math.max(1,now-lastPerf);state.miniMs=drawWork/Math.max(1,frames);state.maxMiniMs=peak;
