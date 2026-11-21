@@ -6,7 +6,10 @@ assert.equal(R.FIXED_PALETTE_REVISION,285);
 assert.equal(R.BALANCED_REVISION,284);
 assert.equal(R.creditPerDrop(285),.4);
 assert.equal(R.creditPerDrop(284),.2);
-assert.equal(R.numberPlacementBias(90,285),0);
+assert.equal(R.numberPlacementBias(90,285),.06);
+assert.equal(R.NUMBER_EDGE_BIAS_V285,.4);
+assert.ok(R.numberPlacementBias(50,285)<R.numberPlacementBias(90,284));
+for(const rate of [50,90,150])assert.ok(R.colorCohesion(rate,100,285)<=.075);
 assert.equal(R.numberPlacementBias(90,284),.16);
 const progress=[0,1,2,3,4,5,6,8,7];
 for(const removed of [0,1,198,199,200,201,399,400,1600,1800,2000,4001]){
@@ -35,4 +38,4 @@ const a=R.newGame({seed:12,bet:100,rulesRevision:284,carry:{removed:199}});
 a.grid=G.empty(10);a.uid=1;a.grid[9][0]={id:1,color:a.palette[0],number:1};
 const old=R.hit(a,1);assert.deepEqual(old.state.palette,R.palette(200,284),'v284 saved rounds preserve prior midgame band switch');
 assert.equal(old.state.bankUnits,20,'v284 still earns 0.002 BET per removed');
-console.log('SIXDROP_V285_RULES_PASS',JSON.stringify({bandLocked:true,stageChangesBetweenRounds:true,firstBoundary:200,numberBias:0,creditPerDrop:.004,legacy284:true}));
+console.log('SIXDROP_V285_RULES_PASS',JSON.stringify({bandLocked:true,stageChangesBetweenRounds:true,firstBoundary:200,numberBias:'small row + symmetric edge',creditPerDrop:.004,legacy284:true}));
