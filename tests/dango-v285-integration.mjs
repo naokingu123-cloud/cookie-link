@@ -11,7 +11,7 @@ for(const input of baseline.cases){
  assert.equal(actual,input.sha256,'unchanged full legacy trace '+JSON.stringify(input));
 }
 
-const fixed=api=>api.create({moldIndex:0,numbers,triggerCells:api.cells.filter(cell=>!api.molds[0].initialFreeCells.includes(cell.id)).slice(0,3).map(cell=>cell.id)});
+const fixed=api=>api.create({moldIndex:0,placementPolicy:'max',numbers,triggerCells:api.cells.filter(cell=>!api.molds[0].initialFreeCells.includes(cell.id)).slice(0,3).map(cell=>cell.id)});
 const listFor=(s,hits)=>{
  const others=numbers.filter(n=>!s.triggerNumbers.includes(n));
  const early=[...s.triggerNumbers.slice(0,hits),...others.slice(0,5-hits)];
