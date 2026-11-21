@@ -120,7 +120,7 @@ try {
   const step=active===1?120:250;
   if(now-lastDraw>=step){
    lastDraw=now;const start=performance.now();
-   for(let i=0;i<TOTAL;i++){const f=fleet[i];if(!f?.engine)continue;const animating=!!f.engine.fx&&!app.paused&&!f.engine.paused;if(f.dirty||animating)paintMini(f,now);if(f.dirty||animating||i===state.selected)updateCard(f);}
+   for(let i=0;i<TOTAL;i++){const f=fleet[i];if(!f?.engine)continue;const changed=f.dirty,animating=!!f.engine.fx&&!app.paused&&!f.engine.paused;if(changed||animating)paintMini(f,now);if(changed||animating||i===state.selected)updateCard(f);}
    const duration=performance.now()-start;drawWork+=duration;peak=Math.max(peak,duration);frames++;
    if(now-lastPerf>=1200){
     state.fps=frames*1000/Math.max(1,now-lastPerf);state.miniMs=drawWork/Math.max(1,frames);state.maxMiniMs=peak;
