@@ -1,10 +1,10 @@
 {
-  "version": "20261121-v287-dango-probability-payouts",
+  "version": "20261121-v288-dango-jelly-pale-glow",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 54,
-      "sha256": "57e483916c0a0db28f42185a3c69f799d312f10cd206043c044291132f4ee810"
+      "bytes": 50,
+      "sha256": "5a452cc430ab3571a8e486551980380a2d37396d662dfb93718cf5857716c31d"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -2033,18 +2033,18 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 177902,
-      "sha256": "6e4adc5d8f4c2faa64233a3b8fb4f502b0f45ff32ddc8d8169f87309792dbb54"
+      "bytes": 199661,
+      "sha256": "e61d3421e71022ef271c1f9ef0c885c80e59c0587278cf6db2cd0174dde8b86b"
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 71578,
-      "sha256": "40e1eeb74b534e1e8f35c0afa3da30a0b7f4a43c3de5a4fc8630abd27aa66c75"
+      "bytes": 72352,
+      "sha256": "d3d67257494047f9f78ba33e5bbcf80edaf9f89c27025a253762c66c404a50ae"
     },
     {
       "path": "assets/dango-bingo.css",
-      "bytes": 26208,
-      "sha256": "c20911d53439379cb4562aba7c9a63ad96c0e783bf872866d41a82bc1ab8a52e"
+      "bytes": 27225,
+      "sha256": "366e9725c6bc4c37e8f2fefee40658062293c189315410f603fc583eaf0986c3"
     },
     {
       "path": "assets/dango-thinking-v251.js",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4365,
-      "sha256": "d3dc8f709fab88b17b141a13d175567fdb85faec543c65b39da24726116131de"
+      "bytes": 4361,
+      "sha256": "17507a273b01ff7f13771ad3e09fa19f937f915cc4307e561ec7a08b8ed5b9bd"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2093,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3776,
-      "sha256": "0d4e0386c73a70d35cfa0af6588acf3031a2ad4fdf76e56b41675223801c315a"
+      "bytes": 3772,
+      "sha256": "aea58ba4a123f11c1754f61b713dd1a74a1d1d42598c6a6b220eccef2f412f3d"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2328,8 +2328,8 @@
     },
     {
       "path": "assets/jelly-host.js",
-      "bytes": 9890,
-      "sha256": "0dbeede510249676a94ac8691be6d940ed3c98a3e4c8660f4192f7b9ddb30852"
+      "bytes": 10003,
+      "sha256": "d236f5a648ab0fecfa6eeff6e8c4534ad2501096608fc026dfdb728fd216b052"
     },
     {
       "path": "assets/jelly-lesson.js",
@@ -2343,8 +2343,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 38557,
-      "sha256": "017077bc9550b58522f777df6bfce4e3d351a0fa76e9ddc22f9986e5c0bc90f7"
+      "bytes": 38640,
+      "sha256": "639663b822f81ccf965d532eb33828c25f1df6477ee07a23ad888f9d9413adae"
     },
     {
       "path": "assets/jelly.css",
@@ -4028,8 +4028,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85639,
-      "sha256": "c8aa93f680543c357e633421eef22203f2b2234b28e9fc69ce81b1b23c8e48b0"
+      "bytes": 85638,
+      "sha256": "5b6d72b314700790b22a9c32eae3b371948e1742f1e2cf79c9303cc2aef0c5d5"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238698753
+  "totalBytes": 238722486
 }
