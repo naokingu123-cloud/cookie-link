@@ -1,0 +1,5725 @@
+{
+  "revision": 284,
+  "finalCoreSha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+  "parameters": {
+    "colorEveryRemoved": 200,
+    "colorMode": "cyclic sliding four-color window, only future refills change; existing drops retain their colors",
+    "progressiveBetPerDrop": 0.002,
+    "integerProgressiveUnitFormula": "floor(BET * ((removedBefore mod 5) + 1) / 5) - floor(BET * (removedBefore mod 5) / 5)",
+    "ordinaryRoleHundredths": {
+      "line": [
+        0,
+        10,
+        20,
+        50,
+        100,
+        200
+      ],
+      "triangle": [
+        0,
+        20,
+        100,
+        200,
+        400,
+        750
+      ],
+      "hexagon": [
+        0,
+        50,
+        200,
+        400,
+        750,
+        1250
+      ]
+    },
+    "ordinaryTailSteps": {
+      "line": 50,
+      "triangle": 100,
+      "hexagon": 250
+    },
+    "numberPlacementBiasAllRates": 0.16,
+    "cohesionKnots": [
+      [
+        50,
+        0.0235
+      ],
+      [
+        75,
+        0.10555
+      ],
+      [
+        90,
+        0.13223
+      ],
+      [
+        100,
+        0.15295
+      ],
+      [
+        125,
+        0.19317
+      ],
+      [
+        150,
+        0.22354
+      ]
+    ],
+    "lowBetCohesionKnots": {
+      "1": [
+        [
+          50,
+          0.09726
+        ],
+        [
+          75,
+          0.16071
+        ],
+        [
+          90,
+          0.19879
+        ],
+        [
+          100,
+          0.21733
+        ],
+        [
+          125,
+          0.26284
+        ],
+        [
+          150,
+          0.305
+        ]
+      ],
+      "2": [
+        [
+          50,
+          0.06666
+        ],
+        [
+          75,
+          0.13714
+        ],
+        [
+          90,
+          0.17355
+        ],
+        [
+          100,
+          0.18928
+        ],
+        [
+          125,
+          0.22832
+        ],
+        [
+          150,
+          0.26066
+        ]
+      ],
+      "3": [
+        [
+          50,
+          0.07366
+        ],
+        [
+          75,
+          0.14344
+        ],
+        [
+          90,
+          0.17925
+        ],
+        [
+          100,
+          0.19458
+        ],
+        [
+          125,
+          0.23302
+        ],
+        [
+          150,
+          0.26486
+        ]
+      ],
+      "5": [
+        [
+          50,
+          0.0483
+        ],
+        [
+          75,
+          0.1271
+        ],
+        [
+          90,
+          0.165
+        ],
+        [
+          100,
+          0.17685
+        ],
+        [
+          125,
+          0.2098
+        ],
+        [
+          150,
+          0.24272
+        ]
+      ]
+    },
+    "lowBetFloorClasses": {
+      "1": "anchor1",
+      "3": "anchor3",
+      "2,4": "anchor2",
+      "5–9": "anchor5",
+      "10+": "main"
+    }
+  },
+  "method": {
+    "draws": "Uniform sample without replacement: independent board-seed and draw RNG streams, actual8balls outof25",
+    "carry": "One continuous player per run. Retain exact terminal carry after own positiveWIN; only own completed0WIN resets. No artificial resets between samples.",
+    "calibration": "24576games bracketed the operating curve. Two independent4096-game streams per setting validated initial knots; only50and75, whose targets fell outside the empirical block intervals, were adjusted and revalidated on two fresh4096-game streams.",
+    "mainTrainingGames": 40960,
+    "mainHeldOutGames": 49152,
+    "lowBetCaution": "Low-BET results are additional spot/profile observations, not exhaustive validation of everyBET/rate pair. Preliminary1/BETinterpolation was rejected after observed floor-class errors; final classes1,2/4,3,5–9use different cohesion anchors. The same-seed2048and4096low-BETprobe prefixes overlap and must not be pooled as independent evidence. Game totals count computation, not unique independent trajectories.",
+    "mainTotalGames": 90112,
+    "additionalLowBetAndScaleGames": 70656,
+    "geometry": "Real production staggered gravity with exact cached geometric collision paths for sampling; full states and animation timelines compared with unmodified production geometry for96games/768balls.",
+    "scope": "Direct Six Drop role payouts and all-clear payouts. SharedSugar/JPC, external roulette bias and adaptive serverfeedback excluded.",
+    "uncertainty": "Finite-sample block intervals are empirical diagnostics, not per-round or exact long-run payout guarantees. New rules use unchanged inherited bank; validation starts each independent continuous player with empty carry.",
+    "sourceProvenance": "Every run records its executed full-source hash. Changes made after each main run changed comments, another target knot, or the <10BET correction only. controlsMatchFinalCore compares each observed target andBET with the final core. Legacy248/278/280/283 paths are preserved and regression-tested separately."
+  },
+  "mainValidation": [
+    {
+      "target": 50,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 49.381103515625,
+      "normalPercent": 42.366943359375,
+      "allClearPercent": 7.01416015625,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 1.0024208167550568,
+      "diagnostic95Percent": [
+        47.41635871478509,
+        51.34584831646491
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 50,
+          "bet": 100,
+          "games": 4096,
+          "seed": 573771,
+          "drawSeed": 817631,
+          "bias": 0.16,
+          "cohesion": 0.0235,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "executedCoreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "rtp": 49.18359375,
+          "normalRtp": 42.6416015625,
+          "allClearRtp": 6.541992187499999,
+          "winningRate": 0.564453125,
+          "allClearsPerGame": 0.11962890625,
+          "removedPerGame": 106.9599609375,
+          "maxConsecutivePositiveGames": 14,
+          "maximumCommittedBank": 400.4,
+          "maxWin": 1015,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 6420,
+            "removed": 321,
+            "feed": 471,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 321,
+          "blockSize": 256,
+          "blockMeans": [
+            51.41796875,
+            51.9921875,
+            43.69140625,
+            41.77734375,
+            50.17578124999999,
+            47.28515625,
+            45.796875,
+            56.8125,
+            58.76171875,
+            45.91796875,
+            54.2734375,
+            52.19140625000001,
+            42.98828125,
+            42.3671875,
+            51.33593749999999,
+            50.15234374999999
+          ],
+          "blockSE": 1.2908822087359693,
+          "diagnostic95Percent": [
+            46.6534646208775,
+            51.7137228791225
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1791,
+              "1": 631,
+              "2": 530,
+              "3": 487,
+              "4": 342,
+              "5": 177,
+              "6": 72,
+              "7": 39,
+              "8": 21,
+              "9": 5,
+              "10": 1
+            },
+            "triangle": {
+              "0": 3967,
+              "1": 125,
+              "2": 4
+            },
+            "hexagon": {
+              "0": 4016,
+              "1": 79,
+              "2": 1
+            }
+          },
+          "elapsedMs": 53552,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/final-50-rep3.jsonl"
+        },
+        {
+          "revision": 284,
+          "rate": 50,
+          "bet": 100,
+          "games": 4096,
+          "seed": 735373,
+          "drawSeed": 925379,
+          "bias": 0.16,
+          "cohesion": 0.0235,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "executedCoreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "rtp": 49.57861328125,
+          "normalRtp": 42.09228515625,
+          "allClearRtp": 7.486328125,
+          "winningRate": 0.57373046875,
+          "allClearsPerGame": 0.125,
+          "removedPerGame": 106.881103515625,
+          "maxConsecutivePositiveGames": 16,
+          "maximumCommittedBank": 447.8,
+          "maxWin": 1344,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 2160,
+            "removed": 108,
+            "feed": 183,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 108,
+          "blockSize": 256,
+          "blockMeans": [
+            41.609375,
+            37.3515625,
+            51.31250000000001,
+            52.83203125,
+            41.97265625,
+            49.65234375,
+            60.4765625,
+            55.6796875,
+            53.94140625,
+            52.05859375000001,
+            41.22265625,
+            55.20703125000001,
+            47.96875,
+            46.86328125,
+            51.9140625,
+            53.1953125
+          ],
+          "blockSE": 1.5753702475304008,
+          "diagnostic95Percent": [
+            46.49088759609042,
+            52.66633896640958
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1754,
+              "1": 664,
+              "2": 524,
+              "3": 509,
+              "4": 357,
+              "5": 163,
+              "6": 64,
+              "7": 31,
+              "8": 16,
+              "9": 10,
+              "10": 3,
+              "11": 1
+            },
+            "triangle": {
+              "0": 3960,
+              "1": 132,
+              "2": 4
+            },
+            "hexagon": {
+              "0": 4026,
+              "1": 70
+            }
+          },
+          "elapsedMs": 50391,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/final-50-rep4.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 75,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 77.535400390625,
+      "normalPercent": 64.915771484375,
+      "allClearPercent": 12.61962890625,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 1.8678836927640317,
+      "diagnostic95Percent": [
+        73.8743483528075,
+        81.1964524284425
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 75,
+          "bet": 100,
+          "games": 4096,
+          "seed": 573771,
+          "drawSeed": 817631,
+          "bias": 0.16,
+          "cohesion": 0.10555,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "executedCoreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "rtp": 79.576171875,
+          "normalRtp": 66.47216796875,
+          "allClearRtp": 13.10400390625,
+          "winningRate": 0.66796875,
+          "allClearsPerGame": 0.15966796875,
+          "removedPerGame": 123.0478515625,
+          "maxConsecutivePositiveGames": 22,
+          "maximumCommittedBank": 616,
+          "maxWin": 2163,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 219,
+          "blockSize": 256,
+          "blockMeans": [
+            70.921875,
+            67.5546875,
+            77.68359375,
+            83.8125,
+            67.38671875,
+            68.4609375,
+            92.75,
+            73.0078125,
+            87.49609375,
+            90.28515625,
+            86.375,
+            79.7734375,
+            108.6640625,
+            76.484375,
+            71.0078125,
+            71.5546875
+          ],
+          "blockSE": 2.8481438643591352,
+          "diagnostic95Percent": [
+            73.99380990085609,
+            85.15853384914391
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1368,
+              "1": 633,
+              "2": 594,
+              "3": 566,
+              "4": 428,
+              "5": 219,
+              "6": 133,
+              "7": 88,
+              "8": 42,
+              "9": 15,
+              "10": 5,
+              "11": 2,
+              "12": 1,
+              "14": 2
+            },
+            "triangle": {
+              "0": 3934,
+              "1": 158,
+              "2": 4
+            },
+            "hexagon": {
+              "0": 3985,
+              "1": 110,
+              "2": 1
+            }
+          },
+          "elapsedMs": 53744,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/final-75-rep3.jsonl"
+        },
+        {
+          "revision": 284,
+          "rate": 75,
+          "bet": 100,
+          "games": 4096,
+          "seed": 735373,
+          "drawSeed": 925379,
+          "bias": 0.16,
+          "cohesion": 0.10555,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "executedCoreSha256": "379165503bd000e01c0694103450719b2ed100ab088d46344efc5e8a647ac52d",
+          "rtp": 75.49462890625,
+          "normalRtp": 63.35937499999999,
+          "allClearRtp": 12.13525390625,
+          "winningRate": 0.66357421875,
+          "allClearsPerGame": 0.152587890625,
+          "removedPerGame": 122.19189453125,
+          "maxConsecutivePositiveGames": 17,
+          "maximumCommittedBank": 514.4,
+          "maxWin": 2191,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 815,
+          "blockSize": 256,
+          "blockMeans": [
+            75.98828125,
+            101.05078125,
+            70.76171875,
+            71.640625,
+            71.234375,
+            65.91796875,
+            87.15625,
+            65.6015625,
+            75.96484375,
+            85.8125,
+            81.203125,
+            73.796875,
+            66.93359375,
+            79.1484375,
+            68.55078125,
+            67.15234375
+          ],
+          "blockSE": 2.398735775039847,
+          "diagnostic95Percent": [
+            70.7931067871719,
+            80.1961510253281
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1389,
+              "1": 636,
+              "2": 557,
+              "3": 606,
+              "4": 440,
+              "5": 227,
+              "6": 110,
+              "7": 67,
+              "8": 33,
+              "9": 21,
+              "10": 5,
+              "11": 2,
+              "12": 1,
+              "13": 1,
+              "14": 1
+            },
+            "triangle": {
+              "0": 3910,
+              "1": 181,
+              "2": 5
+            },
+            "hexagon": {
+              "0": 3991,
+              "1": 103,
+              "2": 2
+            }
+          },
+          "elapsedMs": 54575,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/final-75-rep4.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 90,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 87.1571044921875,
+      "normalPercent": 72.32177734375,
+      "allClearPercent": 14.8353271484375,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.2421691745216275,
+      "diagnostic95Percent": [
+        82.7624529101251,
+        91.5517560742499
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 90,
+          "bet": 100,
+          "games": 4096,
+          "seed": 135731,
+          "drawSeed": 733743,
+          "bias": 0.16,
+          "cohesion": 0.13223,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 88.659423828125,
+          "normalRtp": 73.75,
+          "allClearRtp": 14.909423828125002,
+          "winningRate": 0.69384765625,
+          "allClearsPerGame": 0.17626953125,
+          "removedPerGame": 128.168701171875,
+          "maxConsecutivePositiveGames": 17,
+          "maximumCommittedBank": 531.4,
+          "maxWin": 1895,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 5500,
+            "removed": 275,
+            "feed": 424,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 275,
+          "blockSize": 256,
+          "blockMeans": [
+            78.69140625,
+            100.73828125,
+            83.28125,
+            105.5859375,
+            67.21875,
+            102.28124999999999,
+            88.2578125,
+            103.66015625,
+            73.421875,
+            97.41015625,
+            102.79687500000001,
+            64.1015625,
+            98.8984375,
+            95.4453125,
+            58.69921875000001,
+            98.0625
+          ],
+          "blockSE": 3.9156541619784067,
+          "diagnostic95Percent": [
+            80.98474167064732,
+            96.33410598560268
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1264,
+              "1": 632,
+              "2": 592,
+              "3": 580,
+              "4": 471,
+              "5": 232,
+              "6": 159,
+              "7": 78,
+              "8": 44,
+              "9": 28,
+              "10": 8,
+              "11": 5,
+              "12": 1,
+              "13": 2
+            },
+            "triangle": {
+              "0": 3899,
+              "1": 186,
+              "2": 11
+            },
+            "hexagon": {
+              "0": 3992,
+              "1": 101,
+              "2": 3
+            }
+          },
+          "elapsedMs": 143449,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-90-rep1.jsonl"
+        },
+        {
+          "revision": 284,
+          "rate": 90,
+          "bet": 100,
+          "games": 4096,
+          "seed": 837343,
+          "drawSeed": 374339,
+          "bias": 0.16,
+          "cohesion": 0.13223,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 85.65478515625,
+          "normalRtp": 70.8935546875,
+          "allClearRtp": 14.76123046875,
+          "winningRate": 0.69677734375,
+          "allClearsPerGame": 0.163330078125,
+          "removedPerGame": 127.649658203125,
+          "maxConsecutivePositiveGames": 20,
+          "maximumCommittedBank": 647,
+          "maxWin": 2103,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 668,
+          "blockSize": 256,
+          "blockMeans": [
+            75.53515625,
+            97.6484375,
+            87.80859375,
+            85.65625,
+            95.921875,
+            85.27734375,
+            102.40625000000001,
+            80.203125,
+            88.48828125,
+            78.79296875,
+            77.9453125,
+            80.51171875,
+            66.10546875,
+            88.50390625,
+            90.85546875,
+            88.81640625
+          ],
+          "blockSE": 2.26855111069164,
+          "diagnostic95Percent": [
+            81.20842497929439,
+            90.10114533320561
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1252,
+              "1": 601,
+              "2": 636,
+              "3": 615,
+              "4": 435,
+              "5": 240,
+              "6": 156,
+              "7": 84,
+              "8": 51,
+              "9": 14,
+              "10": 9,
+              "11": 2,
+              "13": 1
+            },
+            "triangle": {
+              "0": 3892,
+              "1": 200,
+              "2": 4
+            },
+            "hexagon": {
+              "0": 3993,
+              "1": 102,
+              "2": 1
+            }
+          },
+          "elapsedMs": 149429,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-90-rep2.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 100,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 102.4608154296875,
+      "normalPercent": 84.808349609375,
+      "allClearPercent": 17.6524658203125,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.1668537991136456,
+      "diagnostic95Percent": [
+        98.21378198342475,
+        106.70784887595025
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 100,
+          "bet": 100,
+          "games": 4096,
+          "seed": 135731,
+          "drawSeed": 733743,
+          "bias": 0.16,
+          "cohesion": 0.15295,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 103.9267578125,
+          "normalRtp": 85.4296875,
+          "allClearRtp": 18.4970703125,
+          "winningRate": 0.71240234375,
+          "allClearsPerGame": 0.1875,
+          "removedPerGame": 132.41357421875,
+          "maxConsecutivePositiveGames": 26,
+          "maximumCommittedBank": 771.2,
+          "maxWin": 2543,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 8480,
+            "removed": 424,
+            "feed": 647,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 424,
+          "blockSize": 256,
+          "blockMeans": [
+            124.11328125,
+            105.22265625,
+            114.51171874999999,
+            94.87109375,
+            89.22265625,
+            113.7890625,
+            106.1796875,
+            103.078125,
+            113.73046874999999,
+            94.01171875,
+            118.0390625,
+            88.33984375,
+            111.39453125,
+            120.99609375,
+            79.85546875,
+            85.47265625
+          ],
+          "blockSE": 3.431553055628921,
+          "diagnostic95Percent": [
+            97.20091382346732,
+            110.65260180153268
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1192,
+              "1": 590,
+              "2": 568,
+              "3": 621,
+              "4": 466,
+              "5": 244,
+              "6": 199,
+              "7": 113,
+              "8": 48,
+              "9": 32,
+              "10": 11,
+              "11": 5,
+              "12": 4,
+              "13": 1,
+              "14": 1,
+              "15": 1
+            },
+            "triangle": {
+              "0": 3864,
+              "1": 218,
+              "2": 14
+            },
+            "hexagon": {
+              "0": 3981,
+              "1": 114,
+              "2": 1
+            }
+          },
+          "elapsedMs": 117561,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-100-rep1.jsonl"
+        },
+        {
+          "revision": 284,
+          "rate": 100,
+          "bet": 100,
+          "games": 4096,
+          "seed": 837343,
+          "drawSeed": 374339,
+          "bias": 0.16,
+          "cohesion": 0.15295,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 100.994873046875,
+          "normalRtp": 84.18701171875,
+          "allClearRtp": 16.807861328125,
+          "winningRate": 0.707275390625,
+          "allClearsPerGame": 0.1845703125,
+          "removedPerGame": 132.263427734375,
+          "maxConsecutivePositiveGames": 19,
+          "maximumCommittedBank": 588,
+          "maxWin": 4031,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 450,
+          "blockSize": 256,
+          "blockMeans": [
+            94.05859375,
+            98.046875,
+            96.671875,
+            105.11718750000001,
+            108.38281249999999,
+            100.62500000000001,
+            96.1953125,
+            96.3828125,
+            79.90234375,
+            95.19921875,
+            107.5,
+            116.70703125,
+            98.96484375,
+            122.8515625,
+            112.26953125000001,
+            87.04296875
+          ],
+          "blockSE": 2.7101600719522825,
+          "diagnostic95Percent": [
+            95.68295930584853,
+            106.30678678790147
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1220,
+              "1": 576,
+              "2": 617,
+              "3": 590,
+              "4": 458,
+              "5": 270,
+              "6": 157,
+              "7": 99,
+              "8": 50,
+              "9": 30,
+              "10": 13,
+              "11": 6,
+              "12": 5,
+              "13": 2,
+              "14": 1,
+              "16": 1,
+              "18": 1
+            },
+            "triangle": {
+              "0": 3869,
+              "1": 219,
+              "2": 8
+            },
+            "hexagon": {
+              "0": 3975,
+              "1": 118,
+              "2": 3
+            }
+          },
+          "elapsedMs": 122285,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-100-rep2.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 125,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 125.155517578125,
+      "normalPercent": 100.15625,
+      "allClearPercent": 24.999267578125,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.7294417975454057,
+      "diagnostic95Percent": [
+        119.80581165493601,
+        130.505223501314
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 125,
+          "bet": 100,
+          "games": 4096,
+          "seed": 135731,
+          "drawSeed": 733743,
+          "bias": 0.16,
+          "cohesion": 0.19317,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 125.25732421875,
+          "normalRtp": 100.08056640625,
+          "allClearRtp": 25.1767578125,
+          "winningRate": 0.762939453125,
+          "allClearsPerGame": 0.204833984375,
+          "removedPerGame": 141.783935546875,
+          "maxConsecutivePositiveGames": 24,
+          "maximumCommittedBank": 795.2,
+          "maxWin": 2209,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 2620,
+            "removed": 131,
+            "feed": 206,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 131,
+          "blockSize": 256,
+          "blockMeans": [
+            119.32421875000001,
+            123.2734375,
+            158.99609375,
+            134.26953125,
+            109.11718749999999,
+            132.984375,
+            142.91796875,
+            91.9375,
+            124.578125,
+            125.83203125,
+            128.125,
+            145.9609375,
+            137.48046875,
+            103.03125,
+            111.515625,
+            114.7734375
+          ],
+          "blockSE": 4.272385629916661,
+          "diagnostic95Percent": [
+            116.88344838411335,
+            133.63120005338666
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 987,
+              "1": 573,
+              "2": 619,
+              "3": 648,
+              "4": 489,
+              "5": 316,
+              "6": 186,
+              "7": 140,
+              "8": 59,
+              "9": 39,
+              "10": 23,
+              "11": 9,
+              "12": 5,
+              "13": 2,
+              "14": 1
+            },
+            "triangle": {
+              "0": 3830,
+              "1": 256,
+              "2": 10
+            },
+            "hexagon": {
+              "0": 3938,
+              "1": 155,
+              "2": 3
+            }
+          },
+          "elapsedMs": 151162,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-125-rep1.jsonl"
+        },
+        {
+          "revision": 284,
+          "rate": 125,
+          "bet": 100,
+          "games": 4096,
+          "seed": 837343,
+          "drawSeed": 374339,
+          "bias": 0.16,
+          "cohesion": 0.19317,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 125.0537109375,
+          "normalRtp": 100.23193359375,
+          "allClearRtp": 24.82177734375,
+          "winningRate": 0.751953125,
+          "allClearsPerGame": 0.210693359375,
+          "removedPerGame": 141.62353515625,
+          "maxConsecutivePositiveGames": 24,
+          "maximumCommittedBank": 830,
+          "maxWin": 2756,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 9180,
+            "removed": 459,
+            "feed": 683,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 459,
+          "blockSize": 256,
+          "blockMeans": [
+            93.359375,
+            128.29296875,
+            114.84765625,
+            125.58984375,
+            129.49609375,
+            125.87890625,
+            125.85546875,
+            135.4140625,
+            135.890625,
+            135.53515625,
+            104.8046875,
+            135.89453125,
+            113.26171875,
+            153.93359375,
+            123.22656249999999,
+            119.578125
+          ],
+          "blockSE": 3.5409127154706233,
+          "diagnostic95Percent": [
+            118.11352201517758,
+            131.99389985982242
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1023,
+              "1": 558,
+              "2": 604,
+              "3": 629,
+              "4": 505,
+              "5": 306,
+              "6": 200,
+              "7": 124,
+              "8": 68,
+              "9": 39,
+              "10": 19,
+              "11": 14,
+              "12": 4,
+              "13": 2,
+              "14": 1
+            },
+            "triangle": {
+              "0": 3854,
+              "1": 232,
+              "2": 9,
+              "3": 1
+            },
+            "hexagon": {
+              "0": 3951,
+              "1": 140,
+              "2": 5
+            }
+          },
+          "elapsedMs": 134681,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-125-rep2.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 150,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 149.9344482421875,
+      "normalPercent": 117.789306640625,
+      "allClearPercent": 32.1451416015625,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.815522240138908,
+      "diagnostic95Percent": [
+        144.41602465151524,
+        155.45287183285976
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 150,
+          "bet": 100,
+          "games": 4096,
+          "seed": 135731,
+          "drawSeed": 733743,
+          "bias": 0.16,
+          "cohesion": 0.22354,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 147.0361328125,
+          "normalRtp": 116.0400390625,
+          "allClearRtp": 30.996093749999996,
+          "winningRate": 0.784912109375,
+          "allClearsPerGame": 0.214111328125,
+          "removedPerGame": 148.911376953125,
+          "maxConsecutivePositiveGames": 26,
+          "maximumCommittedBank": 858.4,
+          "maxWin": 2542,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 3260,
+            "removed": 163,
+            "feed": 235,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 163,
+          "blockSize": 256,
+          "blockMeans": [
+            141.953125,
+            133.1640625,
+            160.41796875,
+            143.046875,
+            131.78515625,
+            133.30859375,
+            153.91796875,
+            151.578125,
+            142.20703125,
+            136.828125,
+            165.484375,
+            133.12890625,
+            139.37109375,
+            179.75390625,
+            129.46875,
+            177.1640625
+          ],
+          "blockSE": 4.035813028580002,
+          "diagnostic95Percent": [
+            139.1259392764832,
+            154.9463263485168
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 888,
+              "1": 522,
+              "2": 614,
+              "3": 663,
+              "4": 533,
+              "5": 329,
+              "6": 208,
+              "7": 145,
+              "8": 85,
+              "9": 46,
+              "10": 30,
+              "11": 20,
+              "12": 10,
+              "13": 2,
+              "15": 1
+            },
+            "triangle": {
+              "0": 3836,
+              "1": 250,
+              "2": 10
+            },
+            "hexagon": {
+              "0": 3957,
+              "1": 133,
+              "2": 5,
+              "3": 1
+            }
+          },
+          "elapsedMs": 128213,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-150-rep1.jsonl"
+        },
+        {
+          "revision": 284,
+          "rate": 150,
+          "bet": 100,
+          "games": 4096,
+          "seed": 837343,
+          "drawSeed": 374339,
+          "bias": 0.16,
+          "cohesion": 0.22354,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+          "rtp": 152.832763671875,
+          "normalRtp": 119.53857421875,
+          "allClearRtp": 33.294189453125,
+          "winningRate": 0.781005859375,
+          "allClearsPerGame": 0.228515625,
+          "removedPerGame": 147.976318359375,
+          "maxConsecutivePositiveGames": 30,
+          "maximumCommittedBank": 1017,
+          "maxWin": 3249,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 77080,
+            "removed": 3854,
+            "feed": 5423,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 3854,
+          "blockSize": 256,
+          "blockMeans": [
+            145.25390625,
+            152.6171875,
+            158.71484375,
+            144.65625,
+            137.85546875,
+            171.58984375,
+            198.3671875,
+            138.484375,
+            153.77734375,
+            157.875,
+            129.40234375,
+            156.90234375,
+            149.16796875,
+            153.63671875,
+            144.75390625,
+            152.26953125
+          ],
+          "blockSE": 3.9189028512894777,
+          "diagnostic95Percent": [
+            145.15171408334763,
+            160.51381326040237
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 902,
+              "1": 527,
+              "2": 628,
+              "3": 580,
+              "4": 539,
+              "5": 317,
+              "6": 246,
+              "7": 156,
+              "8": 99,
+              "9": 51,
+              "10": 29,
+              "11": 12,
+              "12": 5,
+              "14": 2,
+              "15": 2,
+              "16": 1
+            },
+            "triangle": {
+              "0": 3827,
+              "1": 255,
+              "2": 14
+            },
+            "hexagon": {
+              "0": 3892,
+              "1": 196,
+              "2": 8
+            }
+          },
+          "elapsedMs": 144012,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/validate-150-rep2.jsonl"
+        }
+      ]
+    }
+  ],
+  "initialCalibration": [
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 100,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.0125,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "rtp": 49.33740234375,
+      "normalRtp": 42.72216796875,
+      "allClearRtp": 6.615234374999999,
+      "winningRate": 0.570068359375,
+      "allClearsPerGame": 0.1171875,
+      "removedPerGame": 105.80419921875,
+      "maxConsecutivePositiveGames": 10,
+      "maximumCommittedBank": 300.6,
+      "maxWin": 2728,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 8000,
+        "removed": 400,
+        "feed": 625,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 400,
+      "blockSize": 256,
+      "blockMeans": [
+        40.90234375,
+        53.50390625,
+        45.69140625,
+        50.07812499999999,
+        52.82421874999999,
+        58.03125,
+        34.28125,
+        50.11718750000001,
+        61.67578124999999,
+        33.33984375,
+        47.1640625,
+        59.58984375000001,
+        45.15625,
+        70.5234375,
+        40.63671875,
+        45.8828125
+      ],
+      "blockSE": 2.4911077123350895,
+      "diagnostic95Percent": [
+        44.45483122757322,
+        54.21997345992678
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1768,
+          "1": 712,
+          "2": 493,
+          "3": 490,
+          "4": 334,
+          "5": 156,
+          "6": 73,
+          "7": 39,
+          "8": 24,
+          "9": 4,
+          "10": 1,
+          "12": 1,
+          "15": 1
+        },
+        "triangle": {
+          "0": 3970,
+          "1": 123,
+          "2": 3
+        },
+        "hexagon": {
+          "0": 4019,
+          "1": 75,
+          "2": 2
+        }
+      },
+      "elapsedMs": 63790,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/calibrate-50.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 75,
+      "bet": 100,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.075,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "rtp": 64.831787109375,
+      "normalRtp": 54.150390625,
+      "allClearRtp": 10.681396484375,
+      "winningRate": 0.62744140625,
+      "allClearsPerGame": 0.149169921875,
+      "removedPerGame": 115.765625,
+      "maxConsecutivePositiveGames": 18,
+      "maximumCommittedBank": 542.8,
+      "maxWin": 2189,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 634,
+      "blockSize": 256,
+      "blockMeans": [
+        63.07421875,
+        55.60937500000001,
+        57.66796875,
+        94.5234375,
+        88.640625,
+        64.1484375,
+        58.7890625,
+        68.94921875,
+        51.72656249999999,
+        70.0234375,
+        67.43359375,
+        55.25,
+        60.1171875,
+        50.5703125,
+        69.4453125,
+        61.33984375
+      ],
+      "blockSE": 3.02643037861144,
+      "diagnostic95Percent": [
+        58.89998356729658,
+        70.76359065145343
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1534,
+          "1": 660,
+          "2": 574,
+          "3": 529,
+          "4": 400,
+          "5": 203,
+          "6": 91,
+          "7": 58,
+          "8": 26,
+          "9": 13,
+          "10": 5,
+          "11": 2,
+          "12": 1
+        },
+        "triangle": {
+          "0": 3929,
+          "1": 161,
+          "2": 6
+        },
+        "hexagon": {
+          "0": 4010,
+          "1": 85,
+          "2": 1
+        }
+      },
+      "elapsedMs": 52067,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/calibrate-75.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 100,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.115,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "rtp": 83.177001953125,
+      "normalRtp": 69.18701171875,
+      "allClearRtp": 13.989990234375,
+      "winningRate": 0.6708984375,
+      "allClearsPerGame": 0.169921875,
+      "removedPerGame": 124.164306640625,
+      "maxConsecutivePositiveGames": 15,
+      "maximumCommittedBank": 479.2,
+      "maxWin": 2157,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 15060,
+        "removed": 753,
+        "feed": 1127,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 753,
+      "blockSize": 256,
+      "blockMeans": [
+        83.97265625,
+        84.140625,
+        70.46484375,
+        98.8671875,
+        90.515625,
+        87.6796875,
+        102.7265625,
+        85.01171875,
+        65.2578125,
+        87.28515625,
+        79.91796875,
+        76.99609375,
+        72.03125,
+        92.59765625,
+        82.40625,
+        70.9609375
+      ],
+      "blockSE": 2.596973881405444,
+      "diagnostic95Percent": [
+        78.08693314557033,
+        88.26707076067967
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1355,
+          "1": 613,
+          "2": 617,
+          "3": 561,
+          "4": 424,
+          "5": 226,
+          "6": 139,
+          "7": 82,
+          "8": 46,
+          "9": 21,
+          "10": 5,
+          "11": 4,
+          "12": 1,
+          "13": 1,
+          "14": 1
+        },
+        "triangle": {
+          "0": 3889,
+          "1": 196,
+          "2": 11
+        },
+        "hexagon": {
+          "0": 3988,
+          "1": 105,
+          "2": 3
+        }
+      },
+      "elapsedMs": 74555,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/calibrate-90.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 100,
+      "bet": 100,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.145,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "rtp": 95.058837890625,
+      "normalRtp": 77.04833984375,
+      "allClearRtp": 18.010498046875,
+      "winningRate": 0.7138671875,
+      "allClearsPerGame": 0.17578125,
+      "removedPerGame": 130.58251953125,
+      "maxConsecutivePositiveGames": 28,
+      "maximumCommittedBank": 835.8,
+      "maxWin": 2031,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 669,
+      "blockSize": 256,
+      "blockMeans": [
+        101.84375000000001,
+        84.91015625,
+        103.97265625,
+        98.49609375,
+        91.35546875,
+        91.57421875,
+        81.3828125,
+        114.35546875,
+        78.7734375,
+        79.41015625,
+        97.09765625,
+        115.6015625,
+        112.03125,
+        97.109375,
+        74.2578125,
+        98.76953125
+      ],
+      "blockSE": 3.227826925686134,
+      "diagnostic95Percent": [
+        88.73229711628018,
+        101.38537866496982
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1188,
+          "1": 600,
+          "2": 630,
+          "3": 616,
+          "4": 477,
+          "5": 251,
+          "6": 157,
+          "7": 77,
+          "8": 55,
+          "9": 31,
+          "10": 8,
+          "11": 3,
+          "13": 3
+        },
+        "triangle": {
+          "0": 3888,
+          "1": 197,
+          "2": 11
+        },
+        "hexagon": {
+          "0": 3971,
+          "1": 123,
+          "2": 2
+        }
+      },
+      "elapsedMs": 59839,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/calibrate-100.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 125,
+      "bet": 100,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.195,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "rtp": 126.13476562499999,
+      "normalRtp": 100.51025390624999,
+      "allClearRtp": 25.62451171875,
+      "winningRate": 0.75732421875,
+      "allClearsPerGame": 0.2041015625,
+      "removedPerGame": 142.34228515625,
+      "maxConsecutivePositiveGames": 31,
+      "maximumCommittedBank": 990.2,
+      "maxWin": 2352,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 966,
+      "blockSize": 256,
+      "blockMeans": [
+        107.734375,
+        148.71875,
+        125.56640625,
+        127.0234375,
+        147.7734375,
+        138.51953125,
+        136.08203125,
+        115.60937499999999,
+        124.31640625,
+        89.26171875,
+        120.84765625,
+        122.09375,
+        133.80859375,
+        114.41796875000001,
+        113.71875,
+        152.6640625
+      ],
+      "blockSE": 4.154522300095667,
+      "diagnostic95Percent": [
+        117.99190191681248,
+        134.2776293331875
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1011,
+          "1": 541,
+          "2": 617,
+          "3": 614,
+          "4": 519,
+          "5": 323,
+          "6": 201,
+          "7": 129,
+          "8": 71,
+          "9": 29,
+          "10": 20,
+          "11": 15,
+          "12": 3,
+          "13": 2,
+          "14": 1
+        },
+        "triangle": {
+          "0": 3857,
+          "1": 227,
+          "2": 12
+        },
+        "hexagon": {
+          "0": 3947,
+          "1": 146,
+          "2": 3
+        }
+      },
+      "elapsedMs": 62883,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/calibrate-125.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 100,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.24,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "rtp": 163.770263671875,
+      "normalRtp": 125.03173828125,
+      "allClearRtp": 38.738525390625,
+      "winningRate": 0.789794921875,
+      "allClearsPerGame": 0.236572265625,
+      "removedPerGame": 150.9609375,
+      "maxConsecutivePositiveGames": 36,
+      "maximumCommittedBank": 1239.4,
+      "maxWin": 5237,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 18920,
+        "removed": 946,
+        "feed": 1321,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 946,
+      "blockSize": 256,
+      "blockMeans": [
+        179.5078125,
+        153.19140625,
+        157.7421875,
+        165.8984375,
+        166.40625,
+        161.92578125,
+        186.7890625,
+        154.578125,
+        150.1171875,
+        153.37109375,
+        190.953125,
+        190.81640625,
+        153.3671875,
+        147.09375,
+        151.23828125,
+        157.328125
+      ],
+      "blockSE": 3.749996324643347,
+      "diagnostic95Percent": [
+        156.42027087557403,
+        171.12025646817597
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 869,
+          "1": 489,
+          "2": 569,
+          "3": 639,
+          "4": 520,
+          "5": 398,
+          "6": 252,
+          "7": 160,
+          "8": 99,
+          "9": 50,
+          "10": 22,
+          "11": 16,
+          "12": 4,
+          "13": 4,
+          "15": 3,
+          "17": 1,
+          "19": 1
+        },
+        "triangle": {
+          "0": 3791,
+          "1": 293,
+          "2": 10,
+          "3": 2
+        },
+        "hexagon": {
+          "0": 3934,
+          "1": 161,
+          "2": 1
+        }
+      },
+      "elapsedMs": 62762,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/calibrate-150.jsonl"
+    }
+  ],
+  "supersededEndpointValidation": [
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 100,
+      "games": 4096,
+      "seed": 135731,
+      "drawSeed": 733743,
+      "bias": 0.16,
+      "cohesion": 0.01517,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "rtp": 47.939697265625,
+      "normalRtp": 41.25,
+      "allClearRtp": 6.689697265625,
+      "winningRate": 0.5634765625,
+      "allClearsPerGame": 0.119873046875,
+      "removedPerGame": 105.802734375,
+      "maxConsecutivePositiveGames": 12,
+      "maximumCommittedBank": 311.4,
+      "maxWin": 1523,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 2440,
+        "removed": 122,
+        "feed": 197,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 122,
+      "blockSize": 256,
+      "blockMeans": [
+        41.5546875,
+        45.50390625,
+        61.06640625000001,
+        55.9453125,
+        38.25390625,
+        51.5625,
+        50.35937499999999,
+        41.140625,
+        56.4453125,
+        39.02734375,
+        38.1484375,
+        47.3359375,
+        52.75,
+        51.00781250000001,
+        46.9375,
+        49.99609375
+      ],
+      "blockSE": 1.7415481637341488,
+      "diagnostic95Percent": [
+        44.52626286470607,
+        51.35313166654393
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1796,
+          "1": 675,
+          "2": 473,
+          "3": 505,
+          "4": 369,
+          "5": 153,
+          "6": 63,
+          "7": 35,
+          "8": 18,
+          "9": 5,
+          "10": 3,
+          "11": 1
+        },
+        "triangle": {
+          "0": 3974,
+          "1": 120,
+          "2": 2
+        },
+        "hexagon": {
+          "0": 4022,
+          "1": 74
+        }
+      },
+      "elapsedMs": 109259,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/validate-50-rep1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 100,
+      "games": 4096,
+      "seed": 837343,
+      "drawSeed": 374339,
+      "bias": 0.16,
+      "cohesion": 0.01517,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "rtp": 46.966064453125,
+      "normalRtp": 40.9375,
+      "allClearRtp": 6.028564453125,
+      "winningRate": 0.579833984375,
+      "allClearsPerGame": 0.114013671875,
+      "removedPerGame": 106.53076171875,
+      "maxConsecutivePositiveGames": 11,
+      "maximumCommittedBank": 338.6,
+      "maxWin": 1299,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 225,
+      "blockSize": 256,
+      "blockMeans": [
+        42.0546875,
+        48.7578125,
+        55.9921875,
+        40.390625,
+        53.85546875,
+        58.1796875,
+        47.31640625,
+        47.484375,
+        36.33984375,
+        34.12109375,
+        50.98046875,
+        47.78515625,
+        50.1796875,
+        50.328125,
+        45.40234375,
+        42.2890625
+      ],
+      "blockSE": 1.6661913786141742,
+      "diagnostic95Percent": [
+        43.70032935104122,
+        50.23179955520878
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1724,
+          "1": 707,
+          "2": 559,
+          "3": 492,
+          "4": 334,
+          "5": 152,
+          "6": 68,
+          "7": 34,
+          "8": 15,
+          "9": 7,
+          "10": 2,
+          "11": 2
+        },
+        "triangle": {
+          "0": 3962,
+          "1": 129,
+          "2": 5
+        },
+        "hexagon": {
+          "0": 4033,
+          "1": 63
+        }
+      },
+      "elapsedMs": 126993,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/validate-50-rep2.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 75,
+      "bet": 100,
+      "games": 4096,
+      "seed": 135731,
+      "drawSeed": 733743,
+      "bias": 0.16,
+      "cohesion": 0.09717000000000002,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "rtp": 73.094482421875,
+      "normalRtp": 61.20849609375,
+      "allClearRtp": 11.885986328125,
+      "winningRate": 0.66015625,
+      "allClearsPerGame": 0.160400390625,
+      "removedPerGame": 120.67138671875,
+      "maxConsecutivePositiveGames": 17,
+      "maximumCommittedBank": 505.8,
+      "maxWin": 2147,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 3580,
+        "removed": 179,
+        "feed": 254,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 179,
+      "blockSize": 256,
+      "blockMeans": [
+        80.61328125,
+        70.33984375,
+        80.51171875,
+        79.8515625,
+        60.39453125000001,
+        62.41015625000001,
+        63.87890625,
+        71.625,
+        67.80078125,
+        82.875,
+        79.2578125,
+        75.11328125,
+        88.96875,
+        66.6875,
+        52.89843749999999,
+        86.28515625
+      ],
+      "blockSE": 2.5560252250146522,
+      "diagnostic95Percent": [
+        68.08467298084628,
+        78.10429186290372
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1403,
+          "1": 645,
+          "2": 594,
+          "3": 594,
+          "4": 433,
+          "5": 183,
+          "6": 109,
+          "7": 61,
+          "8": 51,
+          "9": 11,
+          "10": 5,
+          "11": 6,
+          "14": 1
+        },
+        "triangle": {
+          "0": 3938,
+          "1": 154,
+          "2": 4
+        },
+        "hexagon": {
+          "0": 3999,
+          "1": 95,
+          "2": 2
+        }
+      },
+      "elapsedMs": 132811,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/validate-75-rep1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 75,
+      "bet": 100,
+      "games": 4096,
+      "seed": 837343,
+      "drawSeed": 374339,
+      "bias": 0.16,
+      "cohesion": 0.09717000000000002,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "rtp": 69.265869140625,
+      "normalRtp": 57.63916015625,
+      "allClearRtp": 11.626708984375,
+      "winningRate": 0.648193359375,
+      "allClearsPerGame": 0.148193359375,
+      "removedPerGame": 119.995361328125,
+      "maxConsecutivePositiveGames": 18,
+      "maximumCommittedBank": 487.8,
+      "maxWin": 1501,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 9500,
+        "removed": 475,
+        "feed": 699,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 475,
+      "blockSize": 256,
+      "blockMeans": [
+        79.19140625,
+        61.47265625,
+        79.79296875,
+        67.3515625,
+        69.5078125,
+        59.84374999999999,
+        68.27734375,
+        74.71484375,
+        65.13671875,
+        58.86718749999999,
+        71.15625,
+        75.5234375,
+        60.03515625,
+        65.77734375,
+        71.4453125,
+        80.16015625
+      ],
+      "blockSE": 1.8050423838798613,
+      "diagnostic95Percent": [
+        65.72798606822047,
+        72.80375221302953
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1453,
+          "1": 666,
+          "2": 606,
+          "3": 485,
+          "4": 437,
+          "5": 221,
+          "6": 111,
+          "7": 76,
+          "8": 26,
+          "9": 9,
+          "10": 4,
+          "11": 2
+        },
+        "triangle": {
+          "0": 3947,
+          "1": 148,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 3996,
+          "1": 98,
+          "2": 2
+        }
+      },
+      "elapsedMs": 115611,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/validate-75-rep2.jsonl"
+    }
+  ],
+  "additionalCurrentProfileObservations": [
+    {
+      "target": 150,
+      "bet": 10,
+      "games": 2048,
+      "observedPercent": 139.4287109375,
+      "normalPercent": 111.640625,
+      "allClearPercent": 27.7880859375,
+      "blockSize": 256,
+      "blockCount": 8,
+      "empiricalBlockSE": 3.7647063395931664,
+      "diagnostic95Percent": [
+        132.0498865118974,
+        146.8075353631026
+      ],
+      "configuredTargetInsideDiagnosticInterval": false,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 150,
+          "bet": 10,
+          "games": 2048,
+          "seed": 573977,
+          "drawSeed": 337171,
+          "bias": 0.16,
+          "cohesion": 0.22354,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "rtp": 139.4287109375,
+          "normalRtp": 111.640625,
+          "allClearRtp": 27.7880859375,
+          "winningRate": 0.78076171875,
+          "allClearsPerGame": 0.21240234375,
+          "removedPerGame": 146.98974609375,
+          "maxConsecutivePositiveGames": 27,
+          "maximumCommittedBank": 95.36,
+          "maxWin": 210,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 186,
+          "blockSize": 256,
+          "blockMeans": [
+            128.984375,
+            136.484375,
+            148.5546875,
+            129.6875,
+            159.1796875,
+            141.796875,
+            129.4921875,
+            141.25
+          ],
+          "blockSE": 3.7647063395931664,
+          "diagnostic95Percent": [
+            132.0498865118974,
+            146.8075353631026
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 454,
+              "1": 258,
+              "2": 315,
+              "3": 291,
+              "4": 301,
+              "5": 159,
+              "6": 109,
+              "7": 69,
+              "8": 46,
+              "9": 24,
+              "10": 13,
+              "11": 6,
+              "12": 2,
+              "13": 1
+            },
+            "triangle": {
+              "0": 1923,
+              "1": 118,
+              "2": 7
+            },
+            "hexagon": {
+              "0": 1963,
+              "1": 84,
+              "2": 1
+            }
+          },
+          "elapsedMs": 28473,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/bet-10-rate-150.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 50,
+      "bet": 10,
+      "games": 2048,
+      "observedPercent": 44.345703125,
+      "normalPercent": 38.8427734375,
+      "allClearPercent": 5.5029296875,
+      "blockSize": 256,
+      "blockCount": 8,
+      "empiricalBlockSE": 2.6036047919705556,
+      "diagnostic95Percent": [
+        39.24263773273771,
+        49.44876851726229
+      ],
+      "configuredTargetInsideDiagnosticInterval": false,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 50,
+          "bet": 10,
+          "games": 2048,
+          "seed": 573977,
+          "drawSeed": 337171,
+          "bias": 0.16,
+          "cohesion": 0.0235,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "rtp": 44.345703125,
+          "normalRtp": 38.8427734375,
+          "allClearRtp": 5.5029296875,
+          "winningRate": 0.58984375,
+          "allClearsPerGame": 0.10400390625,
+          "removedPerGame": 106.37841796875,
+          "maxConsecutivePositiveGames": 14,
+          "maximumCommittedBank": 37.14,
+          "maxWin": 130,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 566,
+            "removed": 283,
+            "feed": 433,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 283,
+          "blockSize": 256,
+          "blockMeans": [
+            54.3359375,
+            41.9140625,
+            53.20312499999999,
+            47.1484375,
+            31.4453125,
+            44.1015625,
+            42.4609375,
+            40.15625
+          ],
+          "blockSE": 2.6036047919705556,
+          "diagnostic95Percent": [
+            39.24263773273771,
+            49.44876851726229
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 842,
+              "1": 341,
+              "2": 308,
+              "3": 270,
+              "4": 160,
+              "5": 66,
+              "6": 36,
+              "7": 18,
+              "8": 4,
+              "9": 2,
+              "11": 1
+            },
+            "triangle": {
+              "0": 1982,
+              "1": 64,
+              "2": 2
+            },
+            "hexagon": {
+              "0": 2015,
+              "1": 33
+            }
+          },
+          "elapsedMs": 23913,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/bet-10-rate-50.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 90,
+      "bet": 10,
+      "games": 2048,
+      "observedPercent": 85.33203125,
+      "normalPercent": 70.693359375,
+      "allClearPercent": 14.638671875,
+      "blockSize": 256,
+      "blockCount": 8,
+      "empiricalBlockSE": 2.978636835209329,
+      "diagnostic95Percent": [
+        79.49390305298971,
+        91.17015944701029
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 90,
+          "bet": 10,
+          "games": 2048,
+          "seed": 573977,
+          "drawSeed": 337171,
+          "bias": 0.16,
+          "cohesion": 0.13223,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "rtp": 85.33203125,
+          "normalRtp": 70.693359375,
+          "allClearRtp": 14.638671875,
+          "winningRate": 0.68310546875,
+          "allClearsPerGame": 0.17333984375,
+          "removedPerGame": 125.466796875,
+          "maxConsecutivePositiveGames": 18,
+          "maximumCommittedBank": 53.64,
+          "maxWin": 154,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 209,
+          "blockSize": 256,
+          "blockMeans": [
+            95.8203125,
+            70.0390625,
+            84.4921875,
+            78.3984375,
+            86.3671875,
+            95.4296875,
+            85.8203125,
+            86.2890625
+          ],
+          "blockSE": 2.978636835209329,
+          "diagnostic95Percent": [
+            79.49390305298971,
+            91.17015944701029
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 655,
+              "1": 309,
+              "2": 319,
+              "3": 268,
+              "4": 235,
+              "5": 108,
+              "6": 58,
+              "7": 55,
+              "8": 30,
+              "9": 7,
+              "10": 1,
+              "11": 1,
+              "12": 2
+            },
+            "triangle": {
+              "0": 1944,
+              "1": 98,
+              "2": 6
+            },
+            "hexagon": {
+              "0": 1986,
+              "1": 61,
+              "2": 1
+            }
+          },
+          "elapsedMs": 26954,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/bet-10-rate-90.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 90,
+      "bet": 3000,
+      "games": 2048,
+      "observedPercent": 86.209765625,
+      "normalPercent": 70.693359375,
+      "allClearPercent": 15.516406250000001,
+      "blockSize": 256,
+      "blockCount": 8,
+      "empiricalBlockSE": 3.0181847445623466,
+      "diagnostic95Percent": [
+        80.29412352565781,
+        92.1254077243422
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 90,
+          "bet": 3000,
+          "games": 2048,
+          "seed": 573977,
+          "drawSeed": 337171,
+          "bias": 0.16,
+          "cohesion": 0.13223,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "rtp": 86.209765625,
+          "normalRtp": 70.693359375,
+          "allClearRtp": 15.516406250000001,
+          "winningRate": 0.68310546875,
+          "allClearsPerGame": 0.17333984375,
+          "removedPerGame": 125.466796875,
+          "maxConsecutivePositiveGames": 18,
+          "maximumCommittedBank": 16092,
+          "maxWin": 46428,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 209,
+          "blockSize": 256,
+          "blockMeans": [
+            96.92031250000001,
+            70.76796875,
+            85.41875,
+            79.12109375,
+            87.23046875,
+            96.40625,
+            86.675,
+            87.13828125
+          ],
+          "blockSE": 3.0181847445623466,
+          "diagnostic95Percent": [
+            80.29412352565781,
+            92.1254077243422
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 655,
+              "1": 309,
+              "2": 319,
+              "3": 268,
+              "4": 235,
+              "5": 108,
+              "6": 58,
+              "7": 55,
+              "8": 30,
+              "9": 7,
+              "10": 1,
+              "11": 1,
+              "12": 2
+            },
+            "triangle": {
+              "0": 1944,
+              "1": 98,
+              "2": 6
+            },
+            "hexagon": {
+              "0": 1986,
+              "1": 61,
+              "2": 1
+            }
+          },
+          "elapsedMs": 25690,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/bet-3000-rate-90.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 150,
+      "bet": 1,
+      "games": 4096,
+      "observedPercent": 156.201171875,
+      "normalPercent": 150.537109375,
+      "allClearPercent": 5.6640625,
+      "blockSize": 256,
+      "blockCount": 16,
+      "empiricalBlockSE": 4.143031158926745,
+      "diagnostic95Percent": [
+        148.08083080350357,
+        164.32151294649643
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 150,
+          "bet": 1,
+          "games": 4096,
+          "seed": 573977,
+          "drawSeed": 337171,
+          "bias": 0.16,
+          "cohesion": 0.305,
+          "researchOverride": {
+            "numberPlacementBias": null,
+            "colorCohesion": 0.305
+          },
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "f01aa9e3ccad462b8fbc8945fba97e2d99d7e417fe0e179ff923c9cd4e60182f",
+          "rtp": 156.201171875,
+          "normalRtp": 150.537109375,
+          "allClearRtp": 5.6640625,
+          "winningRate": 0.458740234375,
+          "allClearsPerGame": 0.2919921875,
+          "removedPerGame": 166.768310546875,
+          "maxConsecutivePositiveGames": 9,
+          "maximumCommittedBank": 3.89,
+          "maxWin": 32,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 72,
+            "removed": 363,
+            "feed": 513,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 363,
+          "blockSize": 256,
+          "blockMeans": [
+            146.875,
+            122.65625,
+            160.546875,
+            134.765625,
+            136.71875,
+            162.890625,
+            183.59375,
+            133.984375,
+            159.375,
+            169.140625,
+            160.546875,
+            170.703125,
+            158.984375,
+            163.671875,
+            162.890625,
+            171.875
+          ],
+          "blockSE": 4.143031158926745,
+          "diagnostic95Percent": [
+            148.08083080350357,
+            164.32151294649643
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 682,
+              "1": 440,
+              "2": 548,
+              "3": 569,
+              "4": 591,
+              "5": 371,
+              "6": 304,
+              "7": 257,
+              "8": 144,
+              "9": 82,
+              "10": 54,
+              "11": 26,
+              "12": 15,
+              "13": 8,
+              "14": 2,
+              "15": 2,
+              "16": 1
+            },
+            "triangle": {
+              "0": 3741,
+              "1": 334,
+              "2": 20,
+              "3": 1
+            },
+            "hexagon": {
+              "0": 3886,
+              "1": 205,
+              "2": 4,
+              "3": 1
+            }
+          },
+          "elapsedMs": 60496,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/lowbet-correction-bet1.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 90,
+      "bet": 7,
+      "games": 4096,
+      "observedPercent": 91.39229910714286,
+      "normalPercent": 79.97000558035714,
+      "allClearPercent": 11.422293526785714,
+      "blockSize": 256,
+      "blockCount": 16,
+      "empiricalBlockSE": 2.5194375213278515,
+      "diagnostic95Percent": [
+        86.45420156534027,
+        96.33039664894545
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 90,
+          "bet": 7,
+          "games": 4096,
+          "seed": 573977,
+          "drawSeed": 337171,
+          "bias": 0.16,
+          "cohesion": 0.165,
+          "researchOverride": {
+            "numberPlacementBias": null,
+            "colorCohesion": 0.165
+          },
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "9028f387075f06534d0ed80ddf20d2f2dcfe8f9a267c2d9cfeb1b5d9b6e112e8",
+          "rtp": 91.39229910714286,
+          "normalRtp": 79.97000558035714,
+          "allClearRtp": 11.422293526785714,
+          "winningRate": 0.581298828125,
+          "allClearsPerGame": 0.193603515625,
+          "removedPerGame": 132.81396484375,
+          "maxConsecutivePositiveGames": 14,
+          "maximumCommittedBank": 32.46,
+          "maxWin": 113,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 593,
+            "removed": 424,
+            "feed": 574,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 424,
+          "blockSize": 256,
+          "blockMeans": [
+            100.66964285714286,
+            83.03571428571429,
+            95.53571428571429,
+            76.33928571428571,
+            90.90401785714286,
+            83.48214285714286,
+            82.31026785714286,
+            78.96205357142857,
+            84.04017857142857,
+            100.22321428571428,
+            88.56026785714286,
+            90.40178571428571,
+            97.04241071428571,
+            106.25,
+            112.109375,
+            92.41071428571429
+          ],
+          "blockSE": 2.5194375213278515,
+          "diagnostic95Percent": [
+            86.45420156534027,
+            96.33039664894545
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1159,
+              "1": 585,
+              "2": 634,
+              "3": 592,
+              "4": 468,
+              "5": 273,
+              "6": 164,
+              "7": 103,
+              "8": 66,
+              "9": 33,
+              "10": 11,
+              "11": 6,
+              "12": 2
+            },
+            "triangle": {
+              "0": 3872,
+              "1": 216,
+              "2": 8
+            },
+            "hexagon": {
+              "0": 3977,
+              "1": 116,
+              "2": 3
+            }
+          },
+          "elapsedMs": 50371,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/lowbet-correction-bet7.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 90,
+      "bet": 3,
+      "games": 4096,
+      "observedPercent": 89.6728515625,
+      "normalPercent": 82.23470052083334,
+      "allClearPercent": 7.438151041666667,
+      "blockSize": 256,
+      "blockCount": 16,
+      "empiricalBlockSE": 2.5002520045671672,
+      "diagnostic95Percent": [
+        84.77235763354835,
+        94.57334549145165
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 90,
+          "bet": 3,
+          "games": 4096,
+          "seed": 317777,
+          "drawSeed": 765773,
+          "bias": 0.16,
+          "cohesion": 0.17925,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+          "executedCoreSha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+          "rtp": 89.6728515625,
+          "normalRtp": 82.23470052083334,
+          "allClearRtp": 7.438151041666667,
+          "winningRate": 0.4619140625,
+          "allClearsPerGame": 0.201416015625,
+          "removedPerGame": 137.6240234375,
+          "maxConsecutivePositiveGames": 8,
+          "maximumCommittedBank": 9.57,
+          "maxWin": 49,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 597,
+            "removed": 996,
+            "feed": 1444,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 996,
+          "blockSize": 256,
+          "blockMeans": [
+            80.72916666666666,
+            90.75520833333334,
+            83.59375,
+            107.8125,
+            89.71354166666666,
+            96.74479166666666,
+            89.0625,
+            89.453125,
+            72.65625,
+            87.63020833333334,
+            94.53125,
+            109.89583333333333,
+            75.91145833333334,
+            86.97916666666666,
+            83.33333333333334,
+            95.96354166666666
+          ],
+          "blockSE": 2.5002520045671672,
+          "diagnostic95Percent": [
+            84.77235763354835,
+            94.57334549145165
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 1077,
+              "1": 554,
+              "2": 614,
+              "3": 612,
+              "4": 507,
+              "5": 304,
+              "6": 184,
+              "7": 119,
+              "8": 71,
+              "9": 32,
+              "10": 13,
+              "11": 8,
+              "12": 1
+            },
+            "triangle": {
+              "0": 3843,
+              "1": 248,
+              "2": 5
+            },
+            "hexagon": {
+              "0": 3958,
+              "1": 135,
+              "2": 3
+            }
+          },
+          "elapsedMs": 46790,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/lowbet-final-bet3.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 50,
+      "bet": 1,
+      "games": 1024,
+      "observedPercent": 53.80859375,
+      "normalPercent": 53.515625,
+      "allClearPercent": 0.29296875,
+      "blockSize": 256,
+      "blockCount": 4,
+      "empiricalBlockSE": 3.6726194668618195,
+      "diagnostic95Percent": [
+        46.61025959495083,
+        61.00692790504917
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 50,
+          "bet": 1,
+          "games": 1024,
+          "seed": 2841827,
+          "drawSeed": 1029387,
+          "bias": 0.16,
+          "cohesion": 0.09726,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "rtp": 53.80859375,
+          "normalRtp": 53.515625,
+          "allClearRtp": 0.29296875,
+          "winningRate": 0.2548828125,
+          "allClearsPerGame": 0.1875,
+          "removedPerGame": 124.49609375,
+          "maxConsecutivePositiveGames": 6,
+          "maximumCommittedBank": 1.76,
+          "maxWin": 12,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 109,
+          "blockSize": 256,
+          "blockMeans": [
+            54.296875,
+            44.53125,
+            53.90625,
+            62.5
+          ],
+          "blockSE": 3.6726194668618195,
+          "diagnostic95Percent": [
+            46.61025959495083,
+            61.00692790504917
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 323,
+              "1": 158,
+              "2": 141,
+              "3": 144,
+              "4": 134,
+              "5": 53,
+              "6": 39,
+              "7": 16,
+              "8": 10,
+              "9": 1,
+              "10": 3,
+              "11": 2
+            },
+            "triangle": {
+              "0": 972,
+              "1": 51,
+              "2": 1
+            },
+            "hexagon": {
+              "0": 992,
+              "1": 30,
+              "2": 2
+            }
+          },
+          "elapsedMs": 14374,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/lowbet-production-spot-bet1.jsonl"
+        }
+      ]
+    },
+    {
+      "target": 50,
+      "bet": 2,
+      "games": 1024,
+      "observedPercent": 54.150390625,
+      "normalPercent": 52.490234375,
+      "allClearPercent": 1.66015625,
+      "blockSize": 256,
+      "blockCount": 4,
+      "empiricalBlockSE": 1.318359375,
+      "diagnostic95Percent": [
+        51.56640625,
+        56.734375
+      ],
+      "configuredTargetInsideDiagnosticInterval": false,
+      "controlsMatchFinalCore": true,
+      "runs": [
+        {
+          "revision": 284,
+          "rate": 50,
+          "bet": 2,
+          "games": 1024,
+          "seed": 2841827,
+          "drawSeed": 1029387,
+          "bias": 0.16,
+          "cohesion": 0.06666,
+          "researchOverride": null,
+          "geometry": "exact cached collision paths",
+          "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+          "rtp": 54.150390625,
+          "normalRtp": 52.490234375,
+          "allClearRtp": 1.66015625,
+          "winningRate": 0.3251953125,
+          "allClearsPerGame": 0.1435546875,
+          "removedPerGame": 115.576171875,
+          "maxConsecutivePositiveGames": 4,
+          "maximumCommittedBank": 3.22,
+          "maxWin": 17,
+          "terminalCarry": {
+            "version": 247,
+            "bankUnits": 0,
+            "removed": 0,
+            "feed": 0,
+            "roundId": ""
+          },
+          "terminalRemovedTotal": 164,
+          "blockSize": 256,
+          "blockMeans": [
+            51.5625,
+            53.3203125,
+            53.90625,
+            57.8125
+          ],
+          "blockSE": 1.318359375,
+          "diagnostic95Percent": [
+            51.56640625,
+            56.734375
+          ],
+          "roleCounts": {
+            "line": {
+              "0": 387,
+              "1": 160,
+              "2": 150,
+              "3": 110,
+              "4": 105,
+              "5": 47,
+              "6": 35,
+              "7": 16,
+              "8": 9,
+              "9": 5
+            },
+            "triangle": {
+              "0": 992,
+              "1": 31,
+              "2": 1
+            },
+            "hexagon": {
+              "0": 1007,
+              "1": 15,
+              "2": 2
+            }
+          },
+          "elapsedMs": 13943,
+          "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+          "file": "docs/qa-v284/lowbet-production-spot-bet2.jsonl"
+        }
+      ]
+    }
+  ],
+  "additionalRuns": [
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 10,
+      "games": 2048,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.22354,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 139.4287109375,
+      "normalRtp": 111.640625,
+      "allClearRtp": 27.7880859375,
+      "winningRate": 0.78076171875,
+      "allClearsPerGame": 0.21240234375,
+      "removedPerGame": 146.98974609375,
+      "maxConsecutivePositiveGames": 27,
+      "maximumCommittedBank": 95.36,
+      "maxWin": 210,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 186,
+      "blockSize": 256,
+      "blockMeans": [
+        128.984375,
+        136.484375,
+        148.5546875,
+        129.6875,
+        159.1796875,
+        141.796875,
+        129.4921875,
+        141.25
+      ],
+      "blockSE": 3.7647063395931664,
+      "diagnostic95Percent": [
+        132.0498865118974,
+        146.8075353631026
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 454,
+          "1": 258,
+          "2": 315,
+          "3": 291,
+          "4": 301,
+          "5": 159,
+          "6": 109,
+          "7": 69,
+          "8": 46,
+          "9": 24,
+          "10": 13,
+          "11": 6,
+          "12": 2,
+          "13": 1
+        },
+        "triangle": {
+          "0": 1923,
+          "1": 118,
+          "2": 7
+        },
+        "hexagon": {
+          "0": 1963,
+          "1": 84,
+          "2": 1
+        }
+      },
+      "elapsedMs": 28473,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/bet-10-rate-150.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 10,
+      "games": 2048,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.0235,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 44.345703125,
+      "normalRtp": 38.8427734375,
+      "allClearRtp": 5.5029296875,
+      "winningRate": 0.58984375,
+      "allClearsPerGame": 0.10400390625,
+      "removedPerGame": 106.37841796875,
+      "maxConsecutivePositiveGames": 14,
+      "maximumCommittedBank": 37.14,
+      "maxWin": 130,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 566,
+        "removed": 283,
+        "feed": 433,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 283,
+      "blockSize": 256,
+      "blockMeans": [
+        54.3359375,
+        41.9140625,
+        53.20312499999999,
+        47.1484375,
+        31.4453125,
+        44.1015625,
+        42.4609375,
+        40.15625
+      ],
+      "blockSE": 2.6036047919705556,
+      "diagnostic95Percent": [
+        39.24263773273771,
+        49.44876851726229
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 842,
+          "1": 341,
+          "2": 308,
+          "3": 270,
+          "4": 160,
+          "5": 66,
+          "6": 36,
+          "7": 18,
+          "8": 4,
+          "9": 2,
+          "11": 1
+        },
+        "triangle": {
+          "0": 1982,
+          "1": 64,
+          "2": 2
+        },
+        "hexagon": {
+          "0": 2015,
+          "1": 33
+        }
+      },
+      "elapsedMs": 23913,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/bet-10-rate-50.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 10,
+      "games": 2048,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.13223,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 85.33203125,
+      "normalRtp": 70.693359375,
+      "allClearRtp": 14.638671875,
+      "winningRate": 0.68310546875,
+      "allClearsPerGame": 0.17333984375,
+      "removedPerGame": 125.466796875,
+      "maxConsecutivePositiveGames": 18,
+      "maximumCommittedBank": 53.64,
+      "maxWin": 154,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 209,
+      "blockSize": 256,
+      "blockMeans": [
+        95.8203125,
+        70.0390625,
+        84.4921875,
+        78.3984375,
+        86.3671875,
+        95.4296875,
+        85.8203125,
+        86.2890625
+      ],
+      "blockSE": 2.978636835209329,
+      "diagnostic95Percent": [
+        79.49390305298971,
+        91.17015944701029
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 655,
+          "1": 309,
+          "2": 319,
+          "3": 268,
+          "4": 235,
+          "5": 108,
+          "6": 58,
+          "7": 55,
+          "8": 30,
+          "9": 7,
+          "10": 1,
+          "11": 1,
+          "12": 2
+        },
+        "triangle": {
+          "0": 1944,
+          "1": 98,
+          "2": 6
+        },
+        "hexagon": {
+          "0": 1986,
+          "1": 61,
+          "2": 1
+        }
+      },
+      "elapsedMs": 26954,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/bet-10-rate-90.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 3000,
+      "games": 2048,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.13223,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 86.209765625,
+      "normalRtp": 70.693359375,
+      "allClearRtp": 15.516406250000001,
+      "winningRate": 0.68310546875,
+      "allClearsPerGame": 0.17333984375,
+      "removedPerGame": 125.466796875,
+      "maxConsecutivePositiveGames": 18,
+      "maximumCommittedBank": 16092,
+      "maxWin": 46428,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 209,
+      "blockSize": 256,
+      "blockMeans": [
+        96.92031250000001,
+        70.76796875,
+        85.41875,
+        79.12109375,
+        87.23046875,
+        96.40625,
+        86.675,
+        87.13828125
+      ],
+      "blockSE": 3.0181847445623466,
+      "diagnostic95Percent": [
+        80.29412352565781,
+        92.1254077243422
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 655,
+          "1": 309,
+          "2": 319,
+          "3": 268,
+          "4": 235,
+          "5": 108,
+          "6": 58,
+          "7": 55,
+          "8": 30,
+          "9": 7,
+          "10": 1,
+          "11": 1,
+          "12": 2
+        },
+        "triangle": {
+          "0": 1944,
+          "1": 98,
+          "2": 6
+        },
+        "hexagon": {
+          "0": 1986,
+          "1": 61,
+          "2": 1
+        }
+      },
+      "elapsedMs": 25690,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/bet-3000-rate-90.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 1,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.12,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.12
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "8bbc8b39f7dcba4f323b879b2f1822da28d140fe9c5fe6e75517cfe99666b7ce",
+      "rtp": 58.9599609375,
+      "normalRtp": 58.447265625,
+      "allClearRtp": 0.5126953125,
+      "winningRate": 0.244384765625,
+      "allClearsPerGame": 0.1826171875,
+      "removedPerGame": 125.7666015625,
+      "maxConsecutivePositiveGames": 5,
+      "maximumCommittedBank": 2.1,
+      "maxWin": 18,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 553,
+      "blockSize": 256,
+      "blockMeans": [
+        61.328125,
+        48.046875,
+        54.6875,
+        62.109375,
+        64.453125,
+        50.390625,
+        82.421875,
+        64.0625,
+        55.078125,
+        75.390625,
+        58.203125,
+        53.515625,
+        50,
+        54.6875,
+        60.15625,
+        48.828125
+      ],
+      "blockSE": 2.37245570643581,
+      "diagnostic95Percent": [
+        54.30994775288581,
+        63.60997412211419
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1322,
+          "1": 628,
+          "2": 601,
+          "3": 551,
+          "4": 451,
+          "5": 226,
+          "6": 136,
+          "7": 91,
+          "8": 51,
+          "9": 18,
+          "10": 6,
+          "11": 10,
+          "12": 3,
+          "13": 2
+        },
+        "triangle": {
+          "0": 3900,
+          "1": 190,
+          "2": 6
+        },
+        "hexagon": {
+          "0": 3984,
+          "1": 111,
+          "2": 1
+        }
+      },
+      "elapsedMs": 129631,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-bet1-c012.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 1,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.2,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.2
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "aab49f9cf8f485ac6e5f67522fa41b905960396d990ecf854fea784262ef8287",
+      "executedCoreSha256": "c3d0ab9da4ccf0a90b8e2d19115d908347ec9be1a9346d09ead44617cbe0af2b",
+      "rtp": 90.478515625,
+      "normalRtp": 88.5009765625,
+      "allClearRtp": 1.9775390625,
+      "winningRate": 0.340576171875,
+      "allClearsPerGame": 0.22119140625,
+      "removedPerGame": 143.925048828125,
+      "maxConsecutivePositiveGames": 7,
+      "maximumCommittedBank": 2.76,
+      "maxWin": 25,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 126,
+      "blockSize": 256,
+      "blockMeans": [
+        87.5,
+        100.78125,
+        87.890625,
+        91.796875,
+        118.75,
+        86.71875,
+        85.15625,
+        101.5625,
+        94.53125,
+        72.265625,
+        76.171875,
+        82.8125,
+        91.40625,
+        72.265625,
+        84.375,
+        113.671875
+      ],
+      "blockSE": 3.2960732496078724,
+      "diagnostic95Percent": [
+        84.01821205576857,
+        96.93881919423143
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 990,
+          "1": 530,
+          "2": 592,
+          "3": 602,
+          "4": 552,
+          "5": 320,
+          "6": 207,
+          "7": 154,
+          "8": 80,
+          "9": 32,
+          "10": 24,
+          "11": 6,
+          "12": 2,
+          "13": 2,
+          "14": 2,
+          "15": 1
+        },
+        "triangle": {
+          "0": 3834,
+          "1": 250,
+          "2": 12
+        },
+        "hexagon": {
+          "0": 3956,
+          "1": 138,
+          "2": 2
+        }
+      },
+      "elapsedMs": 103302,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-bet1-c020-c028.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 1,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.28,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.28
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "aab49f9cf8f485ac6e5f67522fa41b905960396d990ecf854fea784262ef8287",
+      "executedCoreSha256": "132fc17c0e70d7edb0fafddefc09b89d1e32b02a7b404c3ddc5c0386e70d6a6a",
+      "rtp": 134.423828125,
+      "normalRtp": 130.37109375,
+      "allClearRtp": 4.052734375,
+      "winningRate": 0.41455078125,
+      "allClearsPerGame": 0.26318359375,
+      "removedPerGame": 161.892333984375,
+      "maxConsecutivePositiveGames": 10,
+      "maximumCommittedBank": 3.91,
+      "maxWin": 33,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 244,
+        "removed": 1220,
+        "feed": 1670,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 1220,
+      "blockSize": 256,
+      "blockMeans": [
+        154.296875,
+        130.46875,
+        135.15625,
+        131.25,
+        129.6875,
+        141.015625,
+        141.015625,
+        140.625,
+        132.8125,
+        135.546875,
+        119.140625,
+        112.109375,
+        126.5625,
+        133.984375,
+        141.40625,
+        145.703125
+      ],
+      "blockSE": 2.53502157409035,
+      "diagnostic95Percent": [
+        129.45518583978293,
+        139.39247041021707
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 734,
+          "1": 464,
+          "2": 586,
+          "3": 633,
+          "4": 524,
+          "5": 401,
+          "6": 283,
+          "7": 187,
+          "8": 124,
+          "9": 71,
+          "10": 53,
+          "11": 16,
+          "12": 11,
+          "13": 5,
+          "14": 2,
+          "15": 1,
+          "17": 1
+        },
+        "triangle": {
+          "0": 3772,
+          "1": 303,
+          "2": 20,
+          "3": 1
+        },
+        "hexagon": {
+          "0": 3897,
+          "1": 195,
+          "2": 4
+        }
+      },
+      "elapsedMs": 61846,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-bet1-c020-c028.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 5,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.06,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.06
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "30218f84313768ac7723a8031344df071faa23278fba1d90c8fc3a1341d1e247",
+      "rtp": 53.916015625,
+      "normalRtp": 48.8671875,
+      "allClearRtp": 5.048828125,
+      "winningRate": 0.458984375,
+      "allClearsPerGame": 0.1455078125,
+      "removedPerGame": 113.6484375,
+      "maxConsecutivePositiveGames": 7,
+      "maximumCommittedBank": 11.56,
+      "maxWin": 77,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 276,
+        "removed": 276,
+        "feed": 425,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 276,
+      "blockSize": 256,
+      "blockMeans": [
+        60,
+        42.65625,
+        51.24999999999999,
+        61.328125,
+        58.75,
+        58.67187499999999,
+        44.453125,
+        54.21875000000001
+      ],
+      "blockSE": 2.5406261282546145,
+      "diagnostic95Percent": [
+        48.93638841362095,
+        58.89564283637905
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 795,
+          "1": 337,
+          "2": 270,
+          "3": 263,
+          "4": 194,
+          "5": 90,
+          "6": 51,
+          "7": 25,
+          "8": 17,
+          "9": 2,
+          "10": 2,
+          "11": 2
+        },
+        "triangle": {
+          "0": 1961,
+          "1": 84,
+          "2": 3
+        },
+        "hexagon": {
+          "0": 1997,
+          "1": 50,
+          "2": 1
+        }
+      },
+      "elapsedMs": 85560,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-bet5-c006-c015.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 5,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.15,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.15
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "aab49f9cf8f485ac6e5f67522fa41b905960396d990ecf854fea784262ef8287",
+      "executedCoreSha256": "078a9c2a85d12d30f45eb3dca52cfacbbcf4c7b220e3e58de1196e2e6eb4a963",
+      "rtp": 84.033203125,
+      "normalRtp": 74.443359375,
+      "allClearRtp": 9.58984375,
+      "winningRate": 0.57373046875,
+      "allClearsPerGame": 0.181640625,
+      "removedPerGame": 130.93115234375,
+      "maxConsecutivePositiveGames": 11,
+      "maximumCommittedBank": 17.55,
+      "maxWin": 144,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 59,
+      "blockSize": 256,
+      "blockMeans": [
+        76.171875,
+        76.25,
+        84.0625,
+        88.28125,
+        84.140625,
+        86.640625,
+        89.765625,
+        86.953125
+      ],
+      "blockSE": 1.8352806516382236,
+      "diagnostic95Percent": [
+        80.43605304778909,
+        87.63035320221091
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 598,
+          "1": 293,
+          "2": 296,
+          "3": 328,
+          "4": 243,
+          "5": 112,
+          "6": 88,
+          "7": 46,
+          "8": 21,
+          "9": 16,
+          "10": 3,
+          "11": 2,
+          "12": 1,
+          "16": 1
+        },
+        "triangle": {
+          "0": 1961,
+          "1": 81,
+          "2": 6
+        },
+        "hexagon": {
+          "0": 1985,
+          "1": 62,
+          "2": 1
+        }
+      },
+      "elapsedMs": 34675,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-bet5-c006-c015.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 5,
+      "games": 4096,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.25,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.25
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "aab49f9cf8f485ac6e5f67522fa41b905960396d990ecf854fea784262ef8287",
+      "executedCoreSha256": "436215396557e356caec00630dc5129a53bb5f3bb505413488db40391eb9497a",
+      "rtp": 155.17578125,
+      "normalRtp": 128.017578125,
+      "allClearRtp": 27.158203125000004,
+      "winningRate": 0.701904296875,
+      "allClearsPerGame": 0.25,
+      "removedPerGame": 154.629638671875,
+      "maxConsecutivePositiveGames": 23,
+      "maximumCommittedBank": 48.07,
+      "maxWin": 185,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 302,
+        "removed": 302,
+        "feed": 451,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 302,
+      "blockSize": 256,
+      "blockMeans": [
+        135.3125,
+        131.171875,
+        184.21875,
+        142.5,
+        161.015625,
+        170.15625,
+        168.59375,
+        176.09375,
+        121.484375,
+        132.1875,
+        145.625,
+        155.703125,
+        150.9375,
+        165,
+        163.359375,
+        179.453125
+      ],
+      "blockSE": 4.733275299432873,
+      "diagnostic95Percent": [
+        145.89856166311156,
+        164.45300083688844
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 798,
+          "1": 474,
+          "2": 602,
+          "3": 615,
+          "4": 583,
+          "5": 383,
+          "6": 252,
+          "7": 158,
+          "8": 106,
+          "9": 72,
+          "10": 26,
+          "11": 10,
+          "12": 8,
+          "13": 1,
+          "14": 6,
+          "15": 1,
+          "16": 1
+        },
+        "triangle": {
+          "0": 3786,
+          "1": 289,
+          "2": 20,
+          "3": 1
+        },
+        "hexagon": {
+          "0": 3904,
+          "1": 187,
+          "2": 5
+        }
+      },
+      "elapsedMs": 104713,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-bet5-c025.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 1,
+      "games": 4096,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.305,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.305
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "f01aa9e3ccad462b8fbc8945fba97e2d99d7e417fe0e179ff923c9cd4e60182f",
+      "rtp": 156.201171875,
+      "normalRtp": 150.537109375,
+      "allClearRtp": 5.6640625,
+      "winningRate": 0.458740234375,
+      "allClearsPerGame": 0.2919921875,
+      "removedPerGame": 166.768310546875,
+      "maxConsecutivePositiveGames": 9,
+      "maximumCommittedBank": 3.89,
+      "maxWin": 32,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 72,
+        "removed": 363,
+        "feed": 513,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 363,
+      "blockSize": 256,
+      "blockMeans": [
+        146.875,
+        122.65625,
+        160.546875,
+        134.765625,
+        136.71875,
+        162.890625,
+        183.59375,
+        133.984375,
+        159.375,
+        169.140625,
+        160.546875,
+        170.703125,
+        158.984375,
+        163.671875,
+        162.890625,
+        171.875
+      ],
+      "blockSE": 4.143031158926745,
+      "diagnostic95Percent": [
+        148.08083080350357,
+        164.32151294649643
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 682,
+          "1": 440,
+          "2": 548,
+          "3": 569,
+          "4": 591,
+          "5": 371,
+          "6": 304,
+          "7": 257,
+          "8": 144,
+          "9": 82,
+          "10": 54,
+          "11": 26,
+          "12": 15,
+          "13": 8,
+          "14": 2,
+          "15": 2,
+          "16": 1
+        },
+        "triangle": {
+          "0": 3741,
+          "1": 334,
+          "2": 20,
+          "3": 1
+        },
+        "hexagon": {
+          "0": 3886,
+          "1": 205,
+          "2": 4,
+          "3": 1
+        }
+      },
+      "elapsedMs": 60496,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-correction-bet1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 3,
+      "games": 4096,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.19,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.19
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "46f3ba33ea1988edf86a9b0349db2df117e2c6636252feb0154d54fb318e4595",
+      "rtp": 100.2685546875,
+      "normalRtp": 91.73990885416666,
+      "allClearRtp": 8.528645833333332,
+      "winningRate": 0.47119140625,
+      "allClearsPerGame": 0.214599609375,
+      "removedPerGame": 139.917236328125,
+      "maxConsecutivePositiveGames": 11,
+      "maximumCommittedBank": 12.3,
+      "maxWin": 57,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 117,
+        "removed": 196,
+        "feed": 271,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 196,
+      "blockSize": 256,
+      "blockMeans": [
+        99.34895833333334,
+        101.953125,
+        97.91666666666666,
+        103.25520833333333,
+        113.54166666666667,
+        101.5625,
+        83.33333333333334,
+        95.05208333333334,
+        114.84375,
+        117.578125,
+        111.84895833333333,
+        84.765625,
+        85.41666666666666,
+        95.96354166666666,
+        118.359375,
+        79.55729166666666
+      ],
+      "blockSE": 3.1569025129658903,
+      "diagnostic95Percent": [
+        94.08102576208685,
+        106.45608361291315
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1043,
+          "1": 540,
+          "2": 621,
+          "3": 620,
+          "4": 480,
+          "5": 295,
+          "6": 196,
+          "7": 142,
+          "8": 89,
+          "9": 35,
+          "10": 25,
+          "11": 3,
+          "12": 3,
+          "13": 4
+        },
+        "triangle": {
+          "0": 3833,
+          "1": 254,
+          "2": 9
+        },
+        "hexagon": {
+          "0": 3959,
+          "1": 134,
+          "2": 3
+        }
+      },
+      "elapsedMs": 53395,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-correction-bet3.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 7,
+      "games": 4096,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.165,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.165
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "9028f387075f06534d0ed80ddf20d2f2dcfe8f9a267c2d9cfeb1b5d9b6e112e8",
+      "rtp": 91.39229910714286,
+      "normalRtp": 79.97000558035714,
+      "allClearRtp": 11.422293526785714,
+      "winningRate": 0.581298828125,
+      "allClearsPerGame": 0.193603515625,
+      "removedPerGame": 132.81396484375,
+      "maxConsecutivePositiveGames": 14,
+      "maximumCommittedBank": 32.46,
+      "maxWin": 113,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 593,
+        "removed": 424,
+        "feed": 574,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 424,
+      "blockSize": 256,
+      "blockMeans": [
+        100.66964285714286,
+        83.03571428571429,
+        95.53571428571429,
+        76.33928571428571,
+        90.90401785714286,
+        83.48214285714286,
+        82.31026785714286,
+        78.96205357142857,
+        84.04017857142857,
+        100.22321428571428,
+        88.56026785714286,
+        90.40178571428571,
+        97.04241071428571,
+        106.25,
+        112.109375,
+        92.41071428571429
+      ],
+      "blockSE": 2.5194375213278515,
+      "diagnostic95Percent": [
+        86.45420156534027,
+        96.33039664894545
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1159,
+          "1": 585,
+          "2": 634,
+          "3": 592,
+          "4": 468,
+          "5": 273,
+          "6": 164,
+          "7": 103,
+          "8": 66,
+          "9": 33,
+          "10": 11,
+          "11": 6,
+          "12": 2
+        },
+        "triangle": {
+          "0": 3872,
+          "1": 216,
+          "2": 8
+        },
+        "hexagon": {
+          "0": 3977,
+          "1": 116,
+          "2": 3
+        }
+      },
+      "elapsedMs": 50371,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-correction-bet7.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 8,
+      "games": 1024,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.17,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.17
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "0d2d7bdb8e879a87e0294ffedd6d74040006566716313f707ffa1e4be576110c",
+      "rtp": 90.31982421875,
+      "normalRtp": 77.8564453125,
+      "allClearRtp": 12.46337890625,
+      "winningRate": 0.58203125,
+      "allClearsPerGame": 0.2060546875,
+      "removedPerGame": 133.4169921875,
+      "maxConsecutivePositiveGames": 10,
+      "maximumCommittedBank": 26.41,
+      "maxWin": 226,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 382,
+        "removed": 239,
+        "feed": 314,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 239,
+      "blockSize": 256,
+      "blockMeans": [
+        90.478515625,
+        89.2578125,
+        93.408203125,
+        88.134765625
+      ],
+      "blockSE": 1.13525390625,
+      "diagnostic95Percent": [
+        88.0947265625,
+        92.544921875
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 288,
+          "1": 152,
+          "2": 162,
+          "3": 144,
+          "4": 119,
+          "5": 67,
+          "6": 49,
+          "7": 21,
+          "8": 10,
+          "9": 8,
+          "10": 3,
+          "15": 1
+        },
+        "triangle": {
+          "0": 976,
+          "1": 44,
+          "2": 4
+        },
+        "hexagon": {
+          "0": 979,
+          "1": 45
+        }
+      },
+      "elapsedMs": 17406,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-correction-bet8.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 9,
+      "games": 1024,
+      "seed": 573977,
+      "drawSeed": 337171,
+      "bias": 0.16,
+      "cohesion": 0.17,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.17
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "0d2d7bdb8e879a87e0294ffedd6d74040006566716313f707ffa1e4be576110c",
+      "rtp": 89.02994791666666,
+      "normalRtp": 76.43229166666666,
+      "allClearRtp": 12.59765625,
+      "winningRate": 0.58203125,
+      "allClearsPerGame": 0.2060546875,
+      "removedPerGame": 133.4169921875,
+      "maxConsecutivePositiveGames": 10,
+      "maximumCommittedBank": 29.71,
+      "maxWin": 254,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 430,
+        "removed": 239,
+        "feed": 314,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 239,
+      "blockSize": 256,
+      "blockMeans": [
+        89.19270833333334,
+        87.93402777777779,
+        92.1875,
+        86.80555555555556
+      ],
+      "blockSE": 1.1599421120321718,
+      "diagnostic95Percent": [
+        86.7564613770836,
+        91.30343445624972
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 288,
+          "1": 152,
+          "2": 162,
+          "3": 144,
+          "4": 119,
+          "5": 67,
+          "6": 49,
+          "7": 21,
+          "8": 10,
+          "9": 8,
+          "10": 3,
+          "15": 1
+        },
+        "triangle": {
+          "0": 976,
+          "1": 44,
+          "2": 4
+        },
+        "hexagon": {
+          "0": 979,
+          "1": 45
+        }
+      },
+      "elapsedMs": 16992,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-correction-bet9.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 3,
+      "games": 4096,
+      "seed": 317777,
+      "drawSeed": 765773,
+      "bias": 0.16,
+      "cohesion": 0.17925,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+      "executedCoreSha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+      "rtp": 89.6728515625,
+      "normalRtp": 82.23470052083334,
+      "allClearRtp": 7.438151041666667,
+      "winningRate": 0.4619140625,
+      "allClearsPerGame": 0.201416015625,
+      "removedPerGame": 137.6240234375,
+      "maxConsecutivePositiveGames": 8,
+      "maximumCommittedBank": 9.57,
+      "maxWin": 49,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 597,
+        "removed": 996,
+        "feed": 1444,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 996,
+      "blockSize": 256,
+      "blockMeans": [
+        80.72916666666666,
+        90.75520833333334,
+        83.59375,
+        107.8125,
+        89.71354166666666,
+        96.74479166666666,
+        89.0625,
+        89.453125,
+        72.65625,
+        87.63020833333334,
+        94.53125,
+        109.89583333333333,
+        75.91145833333334,
+        86.97916666666666,
+        83.33333333333334,
+        95.96354166666666
+      ],
+      "blockSE": 2.5002520045671672,
+      "diagnostic95Percent": [
+        84.77235763354835,
+        94.57334549145165
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 1077,
+          "1": 554,
+          "2": 614,
+          "3": 612,
+          "4": 507,
+          "5": 304,
+          "6": 184,
+          "7": 119,
+          "8": 71,
+          "9": 32,
+          "10": 13,
+          "11": 8,
+          "12": 1
+        },
+        "triangle": {
+          "0": 3843,
+          "1": 248,
+          "2": 5
+        },
+        "hexagon": {
+          "0": 3958,
+          "1": 135,
+          "2": 3
+        }
+      },
+      "elapsedMs": 46790,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-final-bet3.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 1,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.29055,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 131.0546875,
+      "normalRtp": 126.7578125,
+      "allClearRtp": 4.296875,
+      "winningRate": 0.427734375,
+      "allClearsPerGame": 0.2724609375,
+      "removedPerGame": 162.681640625,
+      "maxConsecutivePositiveGames": 10,
+      "maximumCommittedBank": 4.1,
+      "maxWin": 22,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 283,
+      "blockSize": 256,
+      "blockMeans": [
+        142.96875,
+        127.34375,
+        134.375,
+        119.53125
+      ],
+      "blockSE": 4.99608204243481,
+      "diagnostic95Percent": [
+        121.26236669682777,
+        140.84700830317223
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 173,
+          "1": 113,
+          "2": 151,
+          "3": 151,
+          "4": 139,
+          "5": 111,
+          "6": 70,
+          "7": 50,
+          "8": 35,
+          "9": 18,
+          "10": 6,
+          "11": 2,
+          "12": 4,
+          "14": 1
+        },
+        "triangle": {
+          "0": 948,
+          "1": 72,
+          "2": 4
+        },
+        "hexagon": {
+          "0": 979,
+          "1": 43,
+          "2": 2
+        }
+      },
+      "elapsedMs": 16486,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet1-high.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 1,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.09726,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 53.80859375,
+      "normalRtp": 53.515625,
+      "allClearRtp": 0.29296875,
+      "winningRate": 0.2548828125,
+      "allClearsPerGame": 0.1875,
+      "removedPerGame": 124.49609375,
+      "maxConsecutivePositiveGames": 6,
+      "maximumCommittedBank": 1.76,
+      "maxWin": 12,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 109,
+      "blockSize": 256,
+      "blockMeans": [
+        54.296875,
+        44.53125,
+        53.90625,
+        62.5
+      ],
+      "blockSE": 3.6726194668618195,
+      "diagnostic95Percent": [
+        46.61025959495083,
+        61.00692790504917
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 323,
+          "1": 158,
+          "2": 141,
+          "3": 144,
+          "4": 134,
+          "5": 53,
+          "6": 39,
+          "7": 16,
+          "8": 10,
+          "9": 1,
+          "10": 3,
+          "11": 2
+        },
+        "triangle": {
+          "0": 972,
+          "1": 51,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 992,
+          "1": 30,
+          "2": 2
+        }
+      },
+      "elapsedMs": 14374,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 2,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.06666,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 54.150390625,
+      "normalRtp": 52.490234375,
+      "allClearRtp": 1.66015625,
+      "winningRate": 0.3251953125,
+      "allClearsPerGame": 0.1435546875,
+      "removedPerGame": 115.576171875,
+      "maxConsecutivePositiveGames": 4,
+      "maximumCommittedBank": 3.22,
+      "maxWin": 17,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 164,
+      "blockSize": 256,
+      "blockMeans": [
+        51.5625,
+        53.3203125,
+        53.90625,
+        57.8125
+      ],
+      "blockSE": 1.318359375,
+      "diagnostic95Percent": [
+        51.56640625,
+        56.734375
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 387,
+          "1": 160,
+          "2": 150,
+          "3": 110,
+          "4": 105,
+          "5": 47,
+          "6": 35,
+          "7": 16,
+          "8": 9,
+          "9": 5
+        },
+        "triangle": {
+          "0": 992,
+          "1": 31,
+          "2": 1
+        },
+        "hexagon": {
+          "0": 1007,
+          "1": 15,
+          "2": 2
+        }
+      },
+      "elapsedMs": 13943,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet2.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 2,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.17354625,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 93.9453125,
+      "normalRtp": 87.3046875,
+      "allClearRtp": 6.640625,
+      "winningRate": 0.4560546875,
+      "allClearsPerGame": 0.1962890625,
+      "removedPerGame": 136.6259765625,
+      "maxConsecutivePositiveGames": 8,
+      "maximumCommittedBank": 6.27,
+      "maxWin": 45,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 135,
+        "removed": 339,
+        "feed": 489,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 339,
+      "blockSize": 256,
+      "blockMeans": [
+        94.140625,
+        94.921875,
+        93.5546875,
+        93.1640625
+      ],
+      "blockSE": 0.3824003946767816,
+      "diagnostic95Percent": [
+        93.19580772643351,
+        94.69481727356649
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 287,
+          "1": 132,
+          "2": 156,
+          "3": 145,
+          "4": 138,
+          "5": 61,
+          "6": 47,
+          "7": 26,
+          "8": 17,
+          "9": 4,
+          "10": 5,
+          "11": 2,
+          "12": 2,
+          "13": 2
+        },
+        "triangle": {
+          "0": 963,
+          "1": 58,
+          "2": 3
+        },
+        "hexagon": {
+          "0": 976,
+          "1": 47,
+          "2": 1
+        }
+      },
+      "elapsedMs": 13622,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet2.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 2,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.26065625,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 153.857421875,
+      "normalRtp": 139.599609375,
+      "allClearRtp": 14.2578125,
+      "winningRate": 0.5771484375,
+      "allClearsPerGame": 0.2568359375,
+      "removedPerGame": 158.9091796875,
+      "maxConsecutivePositiveGames": 10,
+      "maximumCommittedBank": 8.16,
+      "maxWin": 44,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 157,
+        "removed": 393,
+        "feed": 543,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 393,
+      "blockSize": 256,
+      "blockMeans": [
+        164.6484375,
+        148.6328125,
+        163.0859375,
+        139.0625
+      ],
+      "blockSE": 6.108721738005387,
+      "diagnostic95Percent": [
+        141.88432726850945,
+        165.83051648149055
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 198,
+          "1": 111,
+          "2": 137,
+          "3": 152,
+          "4": 142,
+          "5": 99,
+          "6": 62,
+          "7": 57,
+          "8": 34,
+          "9": 15,
+          "10": 9,
+          "11": 3,
+          "12": 2,
+          "14": 3
+        },
+        "triangle": {
+          "0": 949,
+          "1": 73,
+          "2": 1,
+          "3": 1
+        },
+        "hexagon": {
+          "0": 977,
+          "1": 47
+        }
+      },
+      "elapsedMs": 13830,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet2.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 3,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.056459999999999996,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 42.83854166666667,
+      "normalRtp": 40.72265625,
+      "allClearRtp": 2.115885416666667,
+      "winningRate": 0.3134765625,
+      "allClearsPerGame": 0.125,
+      "removedPerGame": 113.935546875,
+      "maxConsecutivePositiveGames": 5,
+      "maximumCommittedBank": 5.41,
+      "maxWin": 42,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 163,
+      "blockSize": 256,
+      "blockMeans": [
+        45.3125,
+        49.34895833333333,
+        34.765625,
+        41.92708333333333
+      ],
+      "blockSE": 3.0890766528882017,
+      "diagnostic95Percent": [
+        36.783951427005796,
+        48.89313190632755
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 380,
+          "1": 172,
+          "2": 161,
+          "3": 126,
+          "4": 91,
+          "5": 52,
+          "6": 24,
+          "7": 9,
+          "8": 8,
+          "11": 1
+        },
+        "triangle": {
+          "0": 1004,
+          "1": 20
+        },
+        "hexagon": {
+          "0": 1003,
+          "1": 20,
+          "2": 1
+        }
+      },
+      "elapsedMs": 14267,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet3.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 3,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.16513166666666668,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 76.46484375,
+      "normalRtp": 71.64713541666666,
+      "allClearRtp": 4.817708333333334,
+      "winningRate": 0.4501953125,
+      "allClearsPerGame": 0.1748046875,
+      "removedPerGame": 135.28515625,
+      "maxConsecutivePositiveGames": 6,
+      "maximumCommittedBank": 6.4,
+      "maxWin": 61,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 135,
+        "removed": 226,
+        "feed": 301,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 226,
+      "blockSize": 256,
+      "blockMeans": [
+        66.53645833333334,
+        78.77604166666666,
+        79.16666666666666,
+        81.38020833333334
+      ],
+      "blockSE": 3.358758809093972,
+      "diagnostic95Percent": [
+        69.88167648417581,
+        83.04801101582419
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 268,
+          "1": 153,
+          "2": 153,
+          "3": 158,
+          "4": 141,
+          "5": 58,
+          "6": 46,
+          "7": 28,
+          "8": 8,
+          "9": 8,
+          "10": 2,
+          "13": 1
+        },
+        "triangle": {
+          "0": 962,
+          "1": 59,
+          "2": 3
+        },
+        "hexagon": {
+          "0": 994,
+          "1": 29,
+          "2": 1
+        }
+      },
+      "elapsedMs": 13708,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet3.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 3,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.25069166666666665,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 152.1484375,
+      "normalRtp": 136.71875,
+      "allClearRtp": 15.4296875,
+      "winningRate": 0.564453125,
+      "allClearsPerGame": 0.267578125,
+      "removedPerGame": 156.8251953125,
+      "maxConsecutivePositiveGames": 12,
+      "maximumCommittedBank": 16.42,
+      "maxWin": 68,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 174,
+      "blockSize": 256,
+      "blockMeans": [
+        173.046875,
+        134.24479166666669,
+        166.796875,
+        134.50520833333331
+      ],
+      "blockSE": 10.340637797406261,
+      "diagnostic95Percent": [
+        131.88078741708372,
+        172.41608758291628
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 207,
+          "1": 127,
+          "2": 122,
+          "3": 157,
+          "4": 153,
+          "5": 70,
+          "6": 65,
+          "7": 54,
+          "8": 35,
+          "9": 12,
+          "10": 7,
+          "11": 4,
+          "12": 5,
+          "13": 5,
+          "14": 1
+        },
+        "triangle": {
+          "0": 951,
+          "1": 73
+        },
+        "hexagon": {
+          "0": 981,
+          "1": 43
+        }
+      },
+      "elapsedMs": 14090,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet3.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 50,
+      "bet": 7,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.034128571428571425,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 46.77734375,
+      "normalRtp": 41.573660714285715,
+      "allClearRtp": 5.203683035714286,
+      "winningRate": 0.435546875,
+      "allClearsPerGame": 0.1162109375,
+      "removedPerGame": 110.3232421875,
+      "maxConsecutivePositiveGames": 11,
+      "maximumCommittedBank": 25.17,
+      "maxWin": 84,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 254,
+        "removed": 182,
+        "feed": 257,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 182,
+      "blockSize": 256,
+      "blockMeans": [
+        36.495535714285715,
+        44.642857142857146,
+        62.33258928571429,
+        43.638392857142854
+      ],
+      "blockSE": 5.493103903558526,
+      "diagnostic95Percent": [
+        36.01086009902529,
+        57.54382740097471
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 416,
+          "1": 172,
+          "2": 148,
+          "3": 113,
+          "4": 94,
+          "5": 43,
+          "6": 20,
+          "7": 9,
+          "8": 5,
+          "9": 2,
+          "10": 2
+        },
+        "triangle": {
+          "0": 991,
+          "1": 33
+        },
+        "hexagon": {
+          "0": 1011,
+          "1": 13
+        }
+      },
+      "elapsedMs": 13124,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet7.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 7,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.1434457142857143,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 71.44252232142857,
+      "normalRtp": 62.01171875,
+      "allClearRtp": 9.430803571428571,
+      "winningRate": 0.556640625,
+      "allClearsPerGame": 0.162109375,
+      "removedPerGame": 127.3828125,
+      "maxConsecutivePositiveGames": 13,
+      "maximumCommittedBank": 33.34,
+      "maxWin": 78,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 481,
+      "blockSize": 256,
+      "blockMeans": [
+        58.25892857142857,
+        83.09151785714286,
+        73.38169642857143,
+        71.03794642857143
+      ],
+      "blockSE": 5.11069400886534,
+      "diagnostic95Percent": [
+        61.4255620640525,
+        81.45948257880464
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 307,
+          "1": 153,
+          "2": 141,
+          "3": 169,
+          "4": 136,
+          "5": 50,
+          "6": 35,
+          "7": 17,
+          "8": 11,
+          "9": 4,
+          "10": 1
+        },
+        "triangle": {
+          "0": 975,
+          "1": 49
+        },
+        "hexagon": {
+          "0": 998,
+          "1": 26
+        }
+      },
+      "elapsedMs": 13075,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet7.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 150,
+      "bet": 7,
+      "games": 1024,
+      "seed": 2841827,
+      "drawSeed": 1029387,
+      "bias": 0.16,
+      "cohesion": 0.23176,
+      "researchOverride": null,
+      "geometry": "exact cached collision paths",
+      "coreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "executedCoreSha256": "518e0b3202e2c21d3cf0463838b86e63d60d0200e172c8babff349909f60902b",
+      "rtp": 147.265625,
+      "normalRtp": 122.90736607142858,
+      "allClearRtp": 24.358258928571427,
+      "winningRate": 0.6845703125,
+      "allClearsPerGame": 0.255859375,
+      "removedPerGame": 150.2255859375,
+      "maxConsecutivePositiveGames": 17,
+      "maximumCommittedBank": 40.83,
+      "maxWin": 179,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 767,
+        "removed": 548,
+        "feed": 773,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 548,
+      "blockSize": 256,
+      "blockMeans": [
+        149.77678571428572,
+        156.47321428571428,
+        154.24107142857142,
+        128.57142857142858
+      ],
+      "blockSE": 6.384978866940062,
+      "diagnostic95Percent": [
+        134.75106642079749,
+        159.78018357920251
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 197,
+          "1": 135,
+          "2": 128,
+          "3": 169,
+          "4": 146,
+          "5": 81,
+          "6": 71,
+          "7": 49,
+          "8": 28,
+          "9": 8,
+          "10": 5,
+          "11": 3,
+          "12": 2,
+          "14": 1,
+          "15": 1
+        },
+        "triangle": {
+          "0": 948,
+          "1": 71,
+          "2": 5
+        },
+        "hexagon": {
+          "0": 981,
+          "1": 42,
+          "2": 1
+        }
+      },
+      "elapsedMs": 13535,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-production-spot-bet7.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 1,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.2,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.2
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "f34e42b5a5ea4190b9552532b288d3bbb112e652bf78ddff6658dc28b1b88f05",
+      "rtp": 95.01953125,
+      "normalRtp": 92.724609375,
+      "allClearRtp": 2.294921875,
+      "winningRate": 0.35693359375,
+      "allClearsPerGame": 0.232421875,
+      "removedPerGame": 147.00341796875,
+      "maxConsecutivePositiveGames": 7,
+      "maximumCommittedBank": 2.76,
+      "maxWin": 21,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 297,
+      "blockSize": 256,
+      "blockMeans": [
+        87.5,
+        100.78125,
+        87.890625,
+        91.796875,
+        118.75,
+        86.71875,
+        85.15625,
+        101.5625
+      ],
+      "blockSE": 4.059997458514197,
+      "diagnostic95Percent": [
+        87.06193623131217,
+        102.97712626868783
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 464,
+          "1": 256,
+          "2": 286,
+          "3": 317,
+          "4": 279,
+          "5": 172,
+          "6": 109,
+          "7": 84,
+          "8": 50,
+          "9": 13,
+          "10": 13,
+          "11": 4,
+          "14": 1
+        },
+        "triangle": {
+          "0": 1922,
+          "1": 118,
+          "2": 8
+        },
+        "hexagon": {
+          "0": 1973,
+          "1": 74,
+          "2": 1
+        }
+      },
+      "elapsedMs": 50726,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-profiles-bet1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 1,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.3,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.3
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "01a62e5452abf26f23f735e6b43f87ae1b424543c1b77365d4a983ce40fbefe3",
+      "rtp": 163.96484375,
+      "normalRtp": 157.32421875,
+      "allClearRtp": 6.640625,
+      "winningRate": 0.45849609375,
+      "allClearsPerGame": 0.29541015625,
+      "removedPerGame": 169.095703125,
+      "maxConsecutivePositiveGames": 9,
+      "maximumCommittedBank": 4.26,
+      "maxWin": 24,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 80,
+        "removed": 400,
+        "feed": 550,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 400,
+      "blockSize": 256,
+      "blockMeans": [
+        141.796875,
+        170.3125,
+        155.859375,
+        165.234375,
+        163.671875,
+        162.5,
+        198.4375,
+        153.90625
+      ],
+      "blockSE": 5.810693416144324,
+      "diagnostic95Percent": [
+        152.57588465435714,
+        175.35380284564286
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 306,
+          "1": 216,
+          "2": 279,
+          "3": 320,
+          "4": 263,
+          "5": 210,
+          "6": 149,
+          "7": 123,
+          "8": 74,
+          "9": 48,
+          "10": 29,
+          "11": 11,
+          "12": 14,
+          "13": 1,
+          "14": 5
+        },
+        "triangle": {
+          "0": 1856,
+          "1": 180,
+          "2": 11,
+          "3": 1
+        },
+        "hexagon": {
+          "0": 1927,
+          "1": 119,
+          "2": 2
+        }
+      },
+      "elapsedMs": 29448,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-profiles-bet1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 1,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.4,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.4
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "3fdc3838c82404abd41773998039a8a4b92a5c4d86c42dc1b988421588ba4a08",
+      "rtp": 252.392578125,
+      "normalRtp": 236.279296875,
+      "allClearRtp": 16.11328125,
+      "winningRate": 0.59326171875,
+      "allClearsPerGame": 0.3583984375,
+      "removedPerGame": 193.81494140625,
+      "maxConsecutivePositiveGames": 12,
+      "maximumCommittedBank": 6.02,
+      "maxWin": 38,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 167,
+      "blockSize": 256,
+      "blockMeans": [
+        242.1875,
+        192.578125,
+        279.296875,
+        300.78125,
+        229.6875,
+        254.6875,
+        250.78125,
+        269.140625
+      ],
+      "blockSE": 11.612107189937154,
+      "diagnostic95Percent": [
+        229.6328480327232,
+        275.1523082172768
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 180,
+          "1": 180,
+          "2": 217,
+          "3": 271,
+          "4": 294,
+          "5": 260,
+          "6": 196,
+          "7": 157,
+          "8": 106,
+          "9": 74,
+          "10": 43,
+          "11": 29,
+          "12": 18,
+          "13": 10,
+          "14": 8,
+          "15": 1,
+          "16": 1,
+          "17": 2,
+          "18": 1
+        },
+        "triangle": {
+          "0": 1802,
+          "1": 230,
+          "2": 15,
+          "3": 1
+        },
+        "hexagon": {
+          "0": 1912,
+          "1": 128,
+          "2": 8
+        }
+      },
+      "elapsedMs": 79361,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-profiles-bet1.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 5,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.2,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.2
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "f34e42b5a5ea4190b9552532b288d3bbb112e652bf78ddff6658dc28b1b88f05",
+      "rtp": 118.39843750000001,
+      "normalRtp": 101.46484375,
+      "allClearRtp": 16.93359375,
+      "winningRate": 0.65283203125,
+      "allClearsPerGame": 0.20947265625,
+      "removedPerGame": 145.93603515625,
+      "maxConsecutivePositiveGames": 16,
+      "maximumCommittedBank": 29.12,
+      "maxWin": 72,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 297,
+      "blockSize": 256,
+      "blockMeans": [
+        118.4375,
+        115.46875000000001,
+        110.78125000000001,
+        100.390625,
+        152.65625,
+        113.75,
+        110.39062500000001,
+        125.3125
+      ],
+      "blockSE": 5.506526097241182,
+      "diagnostic95Percent": [
+        107.6056463494073,
+        129.19122865059273
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 480,
+          "1": 259,
+          "2": 293,
+          "3": 319,
+          "4": 272,
+          "5": 158,
+          "6": 113,
+          "7": 75,
+          "8": 47,
+          "9": 15,
+          "10": 16,
+          "11": 1
+        },
+        "triangle": {
+          "0": 1926,
+          "1": 118,
+          "2": 4
+        },
+        "hexagon": {
+          "0": 1970,
+          "1": 77,
+          "2": 1
+        }
+      },
+      "elapsedMs": 49953,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-profiles-bet5.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 5,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.3,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.3
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "e0e7b37ca0ea6d362b04086f42f0f361aaca9679a3cd7a1dffaaec68d94fad12",
+      "executedCoreSha256": "01a62e5452abf26f23f735e6b43f87ae1b424543c1b77365d4a983ce40fbefe3",
+      "rtp": 197.01171875,
+      "normalRtp": 165.21484375,
+      "allClearRtp": 31.796875000000004,
+      "winningRate": 0.75146484375,
+      "allClearsPerGame": 0.27001953125,
+      "removedPerGame": 167.50146484375,
+      "maxConsecutivePositiveGames": 23,
+      "maximumCommittedBank": 43.52,
+      "maxWin": 146,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 740,
+      "blockSize": 256,
+      "blockMeans": [
+        193.984375,
+        197.65625,
+        173.90625,
+        177.5,
+        181.796875,
+        227.109375,
+        232.73437499999997,
+        191.40625
+      ],
+      "blockSE": 7.756379766949667,
+      "diagnostic95Percent": [
+        181.80921440677866,
+        212.21422309322134
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 307,
+          "1": 226,
+          "2": 289,
+          "3": 333,
+          "4": 254,
+          "5": 208,
+          "6": 160,
+          "7": 106,
+          "8": 64,
+          "9": 48,
+          "10": 24,
+          "11": 10,
+          "12": 11,
+          "13": 2,
+          "14": 4,
+          "15": 1,
+          "16": 1
+        },
+        "triangle": {
+          "0": 1858,
+          "1": 178,
+          "2": 10,
+          "3": 2
+        },
+        "hexagon": {
+          "0": 1921,
+          "1": 123,
+          "2": 4
+        }
+      },
+      "elapsedMs": 31508,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-profiles-bet5.jsonl"
+    },
+    {
+      "revision": 284,
+      "rate": 90,
+      "bet": 5,
+      "games": 2048,
+      "seed": 876193,
+      "drawSeed": 692317,
+      "bias": 0.16,
+      "cohesion": 0.4,
+      "researchOverride": {
+        "numberPlacementBias": null,
+        "colorCohesion": 0.4
+      },
+      "geometry": "exact cached collision paths",
+      "coreSha256": "7412f184ef05d8015465c7d654e59c151a98a0fbc9534204375ea5dee944bdad",
+      "executedCoreSha256": "3fdc3838c82404abd41773998039a8a4b92a5c4d86c42dc1b988421588ba4a08",
+      "rtp": 325.7421875,
+      "normalRtp": 248.330078125,
+      "allClearRtp": 77.412109375,
+      "winningRate": 0.8330078125,
+      "allClearsPerGame": 0.3349609375,
+      "removedPerGame": 192.744140625,
+      "maxConsecutivePositiveGames": 34,
+      "maximumCommittedBank": 74.15,
+      "maxWin": 273,
+      "terminalCarry": {
+        "version": 247,
+        "bankUnits": 0,
+        "removed": 0,
+        "feed": 0,
+        "roundId": ""
+      },
+      "terminalRemovedTotal": 167,
+      "blockSize": 256,
+      "blockMeans": [
+        291.875,
+        250.546875,
+        341.171875,
+        371.875,
+        266.015625,
+        373.359375,
+        350.625,
+        360.46875
+      ],
+      "blockSE": 17.33461667294961,
+      "diagnostic95Percent": [
+        291.76633882101873,
+        359.71803617898127
+      ],
+      "roleCounts": {
+        "line": {
+          "0": 190,
+          "1": 177,
+          "2": 229,
+          "3": 267,
+          "4": 300,
+          "5": 252,
+          "6": 201,
+          "7": 160,
+          "8": 89,
+          "9": 66,
+          "10": 47,
+          "11": 27,
+          "12": 20,
+          "13": 9,
+          "14": 6,
+          "15": 2,
+          "16": 3,
+          "17": 2,
+          "18": 1
+        },
+        "triangle": {
+          "0": 1817,
+          "1": 214,
+          "2": 15,
+          "3": 2
+        },
+        "hexagon": {
+          "0": 1898,
+          "1": 142,
+          "2": 8
+        }
+      },
+      "elapsedMs": 112584,
+      "scope": "Uniform independent 8-of-25 draw stream, actual revision284 rules, continuous carry across all games; own zero WIN resets. Direct Six Drop payouts only; shared Sugar/JPC and adaptive feedback excluded. Block errors are empirical diagnostics, not exact target guarantees.",
+      "file": "docs/qa-v284/lowbet-profiles-bet5.jsonl"
+    }
+  ]
+}

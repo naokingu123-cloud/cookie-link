@@ -1,4 +1,4 @@
-name: Six Drop single balls, neighbour clears and fixed cabinet v283
+name: Six Drop compact cabinet, 200-drop colours and RTP v284
 on:
   workflow_dispatch:
   pull_request:
@@ -19,6 +19,8 @@ on:
       - 'tests/sixdrop-v278-*'
       - 'tests/sixdrop-v280-*'
       - 'tests/sixdrop-v283-*'
+      - 'tests/sixdrop-v284-*'
+      - 'scripts/sixdrop-v284-*'
       - '.github/workflows/sixdrop-v278.yml'
   push:
     branches: [main]
@@ -39,6 +41,8 @@ on:
       - 'tests/sixdrop-v278-*'
       - 'tests/sixdrop-v280-*'
       - 'tests/sixdrop-v283-*'
+      - 'tests/sixdrop-v284-*'
+      - 'scripts/sixdrop-v284-*'
       - '.github/workflows/sixdrop-v278.yml'
 permissions:
   contents: read
@@ -57,7 +61,7 @@ jobs:
         run: node tests/sixdrop-v278-rules.cjs
       - name: Rounded v280 role tables and preserved legacy saved games
         run: node tests/sixdrop-v280-rules.cjs
-      - name: Current single balls, exact six-neighbour removal and historical trace hashes
+      - name: Saved v283 single balls, exact six-neighbour removal and historical trace hashes
         run: node tests/sixdrop-v283-rules.cjs
       - name: Native Arcade, repeated carry, checkpoint resume and offline settlement
         run: node tests/sixdrop-v278-host.cjs
@@ -65,8 +69,14 @@ jobs:
         run: node tests/sixdrop-v278-settlement.mjs
       - name: Native single-ball Arcade, nine checkpoints and legacy-to-current download carry
         run: node tests/sixdrop-v283-host.cjs
-      - name: Current authoritative settlement, interrupted single balls and once-only credit
+      - name: Saved v283 authoritative settlement, interrupted single balls and once-only credit
         run: node tests/sixdrop-v283-settlement.mjs
+      - name: Current 200-drop colours, integer accrual and exact simulation geometry
+        run: node tests/sixdrop-v284-rules.cjs
+      - name: Current single-ball host, all legacy saves and both settlement workers
+        run: node tests/sixdrop-v284-host.cjs
+      - name: Actual removed counts, small BETs and synchronized progressive display
+        run: node tests/sixdrop-v284-meter.cjs
       - name: Legacy carry and worker compatibility
         run: node tests/sixdrop-server-v248.mjs
       - name: Recorded stream and wallet isolation

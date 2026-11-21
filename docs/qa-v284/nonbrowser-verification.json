@@ -1,0 +1,135 @@
+{
+  "job": "grouped-rules-and-continuation",
+  "manifestGate": "Deferred to root after final offline asset rebuild",
+  "node": "v24.22.3",
+  "elapsedMs": 13803,
+  "sha256": {
+    "assets/sixdrop-progressive-core-v247.js": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+    "assets/sixdrop-progressive-host-v247.js": "9d7b20dff79babf7866e4386e93f9fc5c2e680c3283c7c96ca19ffa9dc564889",
+    "assets/sixdrop-ui-v278.js": "b5e66c6defdd5db378fe93e26e7098924f41a029d8016bb3fd02165e0ec33fa2",
+    "tests/sixdrop-v278-rules.cjs": "e1ec496e5b75015a127a55fbc1d57f688d0ef082b27e27095472d5e3ac68b719",
+    "tests/sixdrop-v280-rules.cjs": "a42d8fa0df31d5ceb6829f614d7af3112b24a7107fee86b9b12a8edfe3d247e1",
+    "tests/sixdrop-v283-rules.cjs": "d2de86520c1c45cb5d14fa6f8ad59f009d61a1ed0bfd202388b504de2396379c",
+    "tests/sixdrop-v278-host.cjs": "16353c3f49ea9565f626a5f71e1950f9b99305746c9de45441a2779b3b12cdd2",
+    "tests/sixdrop-v278-settlement.mjs": "d2ea669de607199860248f8c0962fc01938207f575fb497f436e3132e0671571",
+    "tests/sixdrop-v283-host.cjs": "6c0ac610be2fd9df87f16f15267796dc64ba55954b41df6f76cd57dffcf172cd",
+    "tests/sixdrop-v283-settlement.mjs": "25fc1668df33c0f0a7e387f7ff75880ab211073b455f85d3ac7705022bcc0042",
+    "tests/sixdrop-v284-rules.cjs": "f777eb9c50651e4cfc3b3e8cff86c5b995f3aad0a900d78417360b02d5dba858",
+    "tests/sixdrop-v284-host.cjs": "6c314ff17181b28aa8fa2276aaec2d7655bbc018dcfbed179c5a77ce467a0bc2",
+    "tests/sixdrop-v284-meter.cjs": "924d653f76944070c4c69125ce85180e9a55b7ee0ba381b82c795f681e3316f6",
+    "tests/sixdrop-server-v248.mjs": "20f7497ae4fa06c51a809eaac6eecc8976f04475a5e67ff50dea0939ba86ef86",
+    "tests/recorded-round-v255.mjs": "b2bd332ce15166debe9b04205443b9f60360d6f54e685f872d6afae9687a165b"
+  },
+  "allPassed": true,
+  "results": [
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v278-rules.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 5047,
+      "log": "nonbrowser/sixdrop-v278-rules.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v280-rules.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 4905,
+      "log": "nonbrowser/sixdrop-v280-rules.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v283-rules.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 13793,
+      "log": "nonbrowser/sixdrop-v283-rules.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v278-host.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 2097,
+      "log": "nonbrowser/sixdrop-v278-host.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v278-settlement.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 604,
+      "log": "nonbrowser/sixdrop-v278-settlement.mjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v283-host.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 3314,
+      "log": "nonbrowser/sixdrop-v283-host.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v283-settlement.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 679,
+      "log": "nonbrowser/sixdrop-v283-settlement.mjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v284-rules.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 5553,
+      "log": "nonbrowser/sixdrop-v284-rules.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v284-host.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 2905,
+      "log": "nonbrowser/sixdrop-v284-host.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-v284-meter.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 355,
+      "log": "nonbrowser/sixdrop-v284-meter.cjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/sixdrop-server-v248.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 729,
+      "log": "nonbrowser/sixdrop-server-v248.mjs.log"
+    },
+    {
+      "command": [
+        "node",
+        "tests/recorded-round-v255.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedMs": 95,
+      "log": "nonbrowser/recorded-round-v255.mjs.log"
+    }
+  ],
+  "coreUnchangedDuringRun": true
+}

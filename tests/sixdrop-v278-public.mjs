@@ -1,4 +1,4 @@
-/* Read-only publication gate. Run in CI after the v283 behavioral jobs pass.
+/* Read-only publication gate. Run in CI after the v284 behavioral jobs pass.
  * Only GET static resources on the public Pages origin; no game/API requests. */
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -23,7 +23,7 @@ const runtime=[
 ];
 const report={ok:false,startedAt:new Date(started).toISOString(),completedAt:null,
  commit:process.env.GITHUB_SHA||null,url:base,maxWaitSeconds:300,concurrency,
- scope:'Static GET and SHA-256 only: Six Drop v283 single-ball neighbour clears, legacy carry, fixed logo/WIN cabinet, generated candy images, dynamic payout UI, cache and manifests. No gameplay, API, wallet or BET operations.',
+ scope:'Static GET and SHA-256 only: Six Drop v284 single-ball neighbour clears, 200-drop colours, calibrated payouts, legacy carry, compact payout column and enlarged fixed-anchor cabinet, generated candy images, actual-count payout UI, cache and manifests. No gameplay, API, wallet or BET operations.',
  expectedVersion:null,expectedFiles:0,attempts:[],checks:[],finalVersionCheck:null};
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=new Map(),latest=new Map(),matched=new Set();
@@ -45,7 +45,7 @@ async function check(file,attempt){
  try{
   const remaining=deadline-Date.now();if(remaining<=0)throw Error('Publication wait deadline reached');
   const url=new URL(file,base);
-  url.searchParams.set('verify-v283',(report.commit||report.expectedVersion)+'-'+attempt);
+  url.searchParams.set('verify-v284',(report.commit||report.expectedVersion)+'-'+attempt);
   const response=await fetch(url,{method:'GET',redirect:'error',
    headers:{'Cache-Control':'no-cache',Accept:'*/*'},signal:AbortSignal.timeout(Math.min(12000,remaining))});
   result.status=response.status;
@@ -102,7 +102,7 @@ try{
   console.log(JSON.stringify({publicationAttempt:attempt,versionMatches:version.matches,matched:matched.size,total:files.length,remainingSeconds:Math.max(0,Math.ceil((deadline-Date.now())/1000))}));
   const remaining=deadline-Date.now();if(remaining>0)await delay(Math.min(10000,remaining));
  }
- if(!report.ok)throw Error('Public v283 SHA-256 verification did not finish within 300 seconds; unmatched files: '+files.filter(file=>!matched.has(file)).join(', '));
+ if(!report.ok)throw Error('Public v284 SHA-256 verification did not finish within 300 seconds; unmatched files: '+files.filter(file=>!matched.has(file)).join(', '));
 }catch(error){report.failure={message:String(error?.message||error),stack:error?.stack||null};process.exitCode=1;}
 finally{
  report.completedAt=new Date().toISOString();report.elapsedSeconds=Math.round((Date.now()-started)/1000);

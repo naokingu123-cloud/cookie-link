@@ -1,0 +1,108 @@
+{
+  "file": "docs/sixdrop-v284-calibration.json",
+  "totalGames": 160768,
+  "mainValidation": [
+    {
+      "target": 50,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 49.381103515625,
+      "normalPercent": 42.366943359375,
+      "allClearPercent": 7.01416015625,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 1.0024208167550568,
+      "diagnostic95Percent": [
+        47.41635871478509,
+        51.34584831646491
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true
+    },
+    {
+      "target": 75,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 77.535400390625,
+      "normalPercent": 64.915771484375,
+      "allClearPercent": 12.61962890625,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 1.8678836927640317,
+      "diagnostic95Percent": [
+        73.8743483528075,
+        81.1964524284425
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true
+    },
+    {
+      "target": 90,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 87.1571044921875,
+      "normalPercent": 72.32177734375,
+      "allClearPercent": 14.8353271484375,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.2421691745216275,
+      "diagnostic95Percent": [
+        82.7624529101251,
+        91.5517560742499
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true
+    },
+    {
+      "target": 100,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 102.4608154296875,
+      "normalPercent": 84.808349609375,
+      "allClearPercent": 17.6524658203125,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.1668537991136456,
+      "diagnostic95Percent": [
+        98.21378198342475,
+        106.70784887595025
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true
+    },
+    {
+      "target": 125,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 125.155517578125,
+      "normalPercent": 100.15625,
+      "allClearPercent": 24.999267578125,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.7294417975454057,
+      "diagnostic95Percent": [
+        119.80581165493601,
+        130.505223501314
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true
+    },
+    {
+      "target": 150,
+      "bet": 100,
+      "games": 8192,
+      "observedPercent": 149.9344482421875,
+      "normalPercent": 117.789306640625,
+      "allClearPercent": 32.1451416015625,
+      "blockSize": 256,
+      "blockCount": 32,
+      "empiricalBlockSE": 2.815522240138908,
+      "diagnostic95Percent": [
+        144.41602465151524,
+        155.45287183285976
+      ],
+      "configuredTargetInsideDiagnosticInterval": true,
+      "controlsMatchFinalCore": true
+    }
+  ]
+}

@@ -6,7 +6,7 @@ const id=window.SweetsLineup?.ids?.indexOf('candy');if(!(id>=0))return;
 const slot=slots[id],e=app.engines[id],R=window.SweetsSixDropV247.create({empty:sixEmpty,clone:sixClone,count:sixCount,valid:sixValid,step:sixStep,neighbors:sixNeighbors,patterns:sixPatterns,findShapes:sixFindShapes,drop:sixDrop,point:sixPoint,gapTemplates:SIX_START_GAP_TEMPLATES});
 let committed=R.cleanCarry(null),carryRevision=-1,carryPlayer='',inNewRenderer=false;
 const grouped=state=>R.isGrouped(state);
-const neighborHit=state=>(state?.rulesRevision||(state?R.REVISION:R.CURRENT_REVISION))===R.SINGLE_REVISION;
+const neighborHit=state=>(state?.rulesRevision||(state?R.REVISION:R.CURRENT_REVISION))>=R.SINGLE_REVISION;
 const ruleHint=state=>neighborHit(state)?'1球ずつHIT＋周囲6マスを消去・役で同色を全消去':'同色4個以上で消去・役ができると同色をすべて消去';
 function adoptCarry(value){
  committed=R.cleanCarry(value);
@@ -41,27 +41,41 @@ function paletteSprite(color,sugar=false){
  for(let i=0;i<pixels.length;i+=4){if(!pixels[i+3])continue;const [,sat,light]=sixHsl(pixels[i],pixels[i+1],pixels[i+2]);if(sat<.13)continue;const rgb=sixRgb(hue/360,Math.min(1,saturation*(.65+sat*.35)),Math.min(.98,light*(index===0?1.12:index===8?1.16:1)));pixels[i]=rgb[0];pixels[i+1]=rgb[1];pixels[i+2]=rgb[2];}
  ctx.putImageData(image,0,0);spriteCache.set(key,cv);return cv;
 }
-let bankView={version:-1,value:0,target:0,tween:null};
+let bankView={version:-1,value:0,target:0,removed:0,removedTarget:0,tween:null};
 const visualTime=()=>slot.candyTime||0;
 function bankAt(time=visualTime()){
  const tween=bankView.tween;if(!tween)return bankView.value;
  const p=Math.max(0,Math.min(1,(time-tween.start)/tween.ms)),progress=p*tween.targets.length,index=Math.min(tween.targets.length-1,Math.floor(progress));
  const from=index?tween.targets[index-1]:tween.from,to=tween.targets[index];bankView.value=from+(to-from)*(progress-index);
- if(p>=1){bankView.value=bankView.target;bankView.tween=null;}return bankView.value;
+ const removedFrom=index?tween.removedTargets[index-1]:tween.removedFrom,removedTo=tween.removedTargets[index];
+ bankView.removed=removedFrom+(removedTo-removedFrom)*(progress-index);
+ if(p>=1){bankView.value=bankView.target;bankView.removed=bankView.removedTarget;bankView.tween=null;}return bankView.value;
 }
-function resetBank(value){bankView={version:e.version,value:Number(value)||0,target:Number(value)||0,tween:null};}
+function removedAtBank(units){
+ const state=e.state;if(!state)return committed.removed;
+ const credit=state.bet*(R.creditPerDrop?.(state)||R.CREDIT_PER_DROP);
+ return Math.max(0,Math.min(state.removedTotal,state.removedTotal-(state.bankUnits-units)/credit));
+}
+function resetBank(value,removed=removedAtBank(value)){bankView={version:e.version,value:Number(value)||0,target:Number(value)||0,removed,removedTarget:removed,tween:null};}
 function bankStage(stage,fast=false){
- if(bankView.version!==e.version)resetBank(stage.bankUnitsBefore??stage.bankUnits);
- if(fast||motionReduced){resetBank(stage.bankUnits);return;}
- const credits=stage.progressiveCredits||[];if(!credits.length)return;
- const from=bankAt(),targets=credits.map(item=>item.bankUnits);
- if(stage.bankUnitsBefore>from)targets.unshift(stage.bankUnitsBefore);
- bankView.target=stage.bankUnits;bankView.tween={from,targets,start:visualTime(),ms:Math.min(420,Math.max(180,targets.length*12))};
+ const credits=stage.progressiveCredits||[];
+ const removedBefore=Number.isFinite(credits[0]?.removedTotal)?credits[0].removedTotal-1:removedAtBank(stage.bankUnitsBefore??stage.bankUnits);
+ if(bankView.version!==e.version)resetBank(stage.bankUnitsBefore??stage.bankUnits,removedBefore);
+ const removedTarget=Number.isFinite(stage.removedTotal)?stage.removedTotal:removedAtBank(stage.bankUnits);
+ if(fast||motionReduced){resetBank(stage.bankUnits,removedTarget);return;}
+ if(!credits.length)return;
+ const from=bankAt(),removedFrom=bankView.removed,targets=credits.map(item=>item.bankUnits);
+ // Count actual removed tiles, even when a small BET produces a zero-unit
+ // credit. Share the bank clock; no extra RNG, wallet field or timer is used.
+ const removedTargets=credits.map(item=>Number.isFinite(item.removedTotal)?item.removedTotal:removedAtBank(item.bankUnits));
+ if(stage.bankUnitsBefore>from||removedBefore>removedFrom){targets.unshift(stage.bankUnitsBefore);removedTargets.unshift(removedBefore);}
+ bankView.target=stage.bankUnits;bankView.removedTarget=removedTarget;bankView.tween={from,targets,removedFrom,removedTargets,start:visualTime(),ms:Math.min(420,Math.max(180,targets.length*12))};
 }
 function paintBank(){
  const node=$('sd247-bank');if(!node)return;
  const units=bankAt();fitGoldenNumber(node,money(units/100),29,265);
  node.dataset.displayUnits=String(units);node.dataset.targetUnits=String(bankView.target);
+ node.dataset.displayRemoved=String(bankView.removed);node.dataset.targetRemoved=String(bankView.removedTarget);
  node.parentElement.setAttribute('aria-label','全消し '+money(bankView.target/100)+' WIN');
  node.parentElement.classList.toggle('sd247-adding',!!bankView.tween&&!motionReduced);
 }
@@ -181,7 +195,7 @@ reachContext=function(engine,a=app){
 requestSixSparkles=function(s,engine,a){if(engine?.rulesVersion===247){s.sixSparkleIds=new Set();return;}return nativeSparkles(s,engine,a);};
 sixArtCandySprite=function(color,round,sugar,chance){if(e.rulesVersion===247)return paletteSprite(color,sugar);return nativeSprite(color,round,sugar,chance);};
 sixGlassPose=function(order,r,elapsed,reduced){if(!inNewRenderer)return nativePose(order,r,elapsed,reduced);const i=order.indexOf(r),age=elapsed-i*32;if(i<0)return {visible:true,offset:0,rotation:0};if(age<0)return {visible:false,offset:0,rotation:0};const u=Math.min(1,age/220);return {visible:true,offset:reduced?0:-350*(1-u*u),rotation:reduced?0:Math.sin(Math.PI*u)*.04};};
-drawCarnival=function(s,now){if(s.engine?.rulesVersion!==247)return nativeDraw(s,now);inNewRenderer=true;try{const result=nativeDraw(s,now);paintBank();if(s.candyCanvas)s.candyCanvas.setAttribute('aria-label','シックスドロップ・'+ruleHint(e.state)+'・今ゲームの色 '+(e.state?.palette||R.palette(committed.removed)).map(c=>colorNames[R.RING[c]]).join('・')+'・累計消去'+e.removedTotal+'個');return result;}finally{inNewRenderer=false;}};
+drawCarnival=function(s,now){if(s.engine?.rulesVersion!==247)return nativeDraw(s,now);inNewRenderer=true;try{const result=nativeDraw(s,now);paintBank();if(s.candyCanvas)s.candyCanvas.setAttribute('aria-label','シックスドロップ・'+ruleHint(e.state)+'・補充する色 '+(e.state?.palette||R.palette(committed.removed,R.CURRENT_REVISION)).map(c=>colorNames[R.RING[c]]).join('・')+'・累計消去'+e.removedTotal+'個');return result;}finally{inNewRenderer=false;}};
 function ensureHud(){
  setupCarnivalSlot(slot);const heading=$('carnival-heading');if(heading.dataset.progressive247==='1')return;
  heading.dataset.progressive247='1';heading.innerHTML='<div class="sd247-progressive"><span class="sd247-label">全消し</span><strong id="sd247-bank">0</strong><em>WIN</em></div>';
@@ -213,9 +227,10 @@ const oldTutorial=sixDrawTutorial;
 sixDrawTutorial=function(s,time,bet){
  if(s.engine?.rulesVersion!==247)return oldTutorial(s,time,bet);
  const ctx=s.candyCtx;ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,320,320);ctx.drawImage(sixArtBackdrop(10),0,0,320,320);
- const page=Math.floor(time/3500)%4,first=neighborHit(e.state)?['1球ずつHIT＋周囲を消去','隣接6マス・端や空きは少なくなる']:['同色4個以上で消去','曲がったつながりでもOK'],lines=[first,['役の色を全部消去！','直線 → △ → ⬡ で高配当'],['1個消去でBET×0.05','100個ごとに次ゲームから新色'],['全消しで総取り！','獲得後も継続・0 WINでリセット']][page];
+ const revision=e.state?.rulesRevision||R.CURRENT_REVISION,newColors=revision>=284;
+ const page=Math.floor(time/3500)%4,first=neighborHit(e.state)?['1球ずつHIT＋周囲を消去','隣接6マス・端や空きは少なくなる']:['同色4個以上で消去','曲がったつながりでもOK'],lines=[first,['役の色を全部消去！','直線 → △ → ⬡ で高配当'],newColors?['消すほど全消し配当UP','累計200個ごとに補充色が変化']:['1個消去でBET×0.05','100個ごとに次ゲームから新色'],['全消しで総取り！','獲得後も継続・0 WINでリセット']][page];
  ctx.save();ctx.fillStyle='#12243cdd';ctx.beginPath();ctx.roundRect(18,65,284,190,18);ctx.fill();
- const colors=e.state?.palette||R.palette(committed.removed);for(let i=0;i<4;i++)ctx.drawImage(paletteSprite(colors[i]),40+i*62,90+Math.sin(time/400+i)*8,48,48);
+ const colors=e.state?.palette||R.palette(committed.removed,R.CURRENT_REVISION);for(let i=0;i<4;i++)ctx.drawImage(paletteSprite(colors[i]),40+i*62,90+Math.sin(time/400+i)*8,48,48);
  sixText(ctx,lines[0],160,177,page===3?18:20,'#fff2ad');sixText(ctx,lines[1],160,210,12,'#e6faff');ctx.restore();
 };
 const oldResult=renderRoundResult;

@@ -1,4 +1,4 @@
-/* Six Drop v283 cabinet. Observes the shared rule adapter; never computes a
+/* Six Drop v284 cabinet. Observes the shared rule adapter; never computes a
  * result, advances an engine, changes a carry, or samples game randomness. */
 (()=>{
 'use strict';
@@ -85,7 +85,7 @@ function paintFrame(){
 function bankSpace(){
  // The grid owns a stable amount track, even while this game is hidden.
  // Keep the fit independent of both the digit count and continuation state.
- return nodes.bank.clientWidth||136;
+ return nodes.bank.clientWidth||164;
 }
 function paintBank(d){
  const source=document.getElementById('sd247-bank'),animated=Number(source?.dataset.displayUnits);
@@ -96,22 +96,23 @@ function paintBank(d){
  nodes.bank.dataset.units=String(units);nodes.bank.dataset.targetUnits=String(target);
  nodes.continuation.hidden=!d.continuationActive;
  nodes.continuation.dataset.inherited=String(!!d.inheritedContinuation);nodes.continuation.dataset.earned=String(!!d.earnedContinuation);
- amount(nodes.bank,units/100,27,bankSpace());
+ amount(nodes.bank,units/100,24,bankSpace());
  nodes.bank.parentElement.setAttribute('aria-label','全消し獲得可能 '+money(target/100)+' WIN'+(d.continuationActive?' 継続':''));
- // Every removed drop adds exactly BET*5 bank units. Reuse that same visual
- // tween so the count and progressive increase together, including pauses,
- // restored games and a changed BET in the next game. No second clock/RNG.
+ // The host animates actual removed counts on the progressive's same clock.
+ // This remains exact even when a small BET needs several drops to earn one
+ // internal credit unit. The fallback also supports historical host records.
  const state=engine.state,canonical=state?.removedTotal??window.SixDropV247.carry?.removed??0;
- const perDrop=Number(state?.bet)*rules.CREDIT_PER_DROP;
- const displayed=resetAtEnd?0:state&&perDrop>0?Math.max(0,Math.min(canonical,canonical-(state.bankUnits-units)/perDrop)):canonical;
+ const perDrop=Number(state?.bet)*(rules.creditPerDrop?.(state)||rules.CREDIT_PER_DROP);
+ const animatedRemoved=Number(source?.dataset.displayRemoved);
+ const displayed=resetAtEnd?0:Number.isFinite(animatedRemoved)?Math.max(0,Math.min(canonical,animatedRemoved)):state&&perDrop>0?Math.max(0,Math.min(canonical,canonical-(state.bankUnits-units)/perDrop)):canonical;
  const removedCount=Math.floor(displayed+1e-7),removedTarget=resetAtEnd?0:canonical;
  nodes.removedTotal.dataset.count=String(removedCount);nodes.removedTotal.dataset.targetCount=String(removedTarget);
- amount(nodes.removedTotal,removedCount,18,136);nodes.removed.setAttribute('aria-label','消したドロップ 合計'+money(removedTarget)+'個');
+ amount(nodes.removedTotal,removedCount,16,136);nodes.removed.setAttribute('aria-label','消したドロップ 合計'+money(removedTarget)+'個');
 }
 function paintReceipt(){
  const earned=receipt.count>0;nodes.earned.hidden=!earned;
  nodes.earned.dataset.count=String(receipt.count);nodes.earned.dataset.win=String(receipt.win);nodes.earned.dataset.lastWin=String(receipt.lastWin);
- amount(nodes.earnedWin,receipt.win,12,nodes.earnedWin.clientWidth||78);putText(nodes.earnedCount,'・'+receipt.count+'回');
+ amount(nodes.earnedWin,receipt.win,11,nodes.earnedWin.clientWidth||38);putText(nodes.earnedCount,'・'+receipt.count+'回');
  nodes.earned.setAttribute('aria-label',earned?'全消し獲得済み。今回 '+money(receipt.win)+' WIN、'+receipt.count+'回':'全消し未獲得');
  nodes.hud.classList.toggle('has-clear',earned);
  nodes.miniBadge.hidden=!earned;putText(nodes.miniBadge,'全消し獲得'+(receipt.count>1?' ×'+receipt.count:''));
@@ -156,7 +157,7 @@ function refresh(){
  if(receipt.epoch!==epoch())resetReceipt();
  if(!engine.fx&&!engine.busy)canonicalReceipt(d);
  paintFrame();paintBank(d);paintReceipt();paintTables(d);stats.mainPaints++;
- slot.candyCanvas.dataset.presentation='v283';
+ slot.candyCanvas.dataset.presentation='v284';
  slot.candyCanvas.setAttribute('aria-label','シックスドロップ。'+(d.receivedBalls||0)+'球抽選済み。消したドロップ合計'+nodes.removedTotal.dataset.targetCount+'個。'+(receipt.count?'全消し獲得済み '+money(receipt.win)+' WIN。':''));
 }
 
@@ -192,9 +193,9 @@ paintSixThumbnail=function(s,rows){
  }
  return result;
 };
-const api={version:283,ready:null,
+const api={version:284,ready:null,
  awardArt:()=>({image:image('allclear-award'),logo:image('allclear-logo'),layout:{x:.19,y:.34,w:.62,h:.36,ribbonY:.79,ribbonWidth:.40},onPaint:()=>{stats.allClearBadgePaints++;}}),
- describe:()=>({version:283,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:ART_FILES.map(name=>ART_ROOT+name+'.png'),errors:errors.slice(),
+ describe:()=>({version:284,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:ART_FILES.map(name=>ART_ROOT+name+'.png'),errors:errors.slice(),
   receipt:{...receipt},progressive:{units:Number(nodes.bank?.dataset.units)||0,targetUnits:Number(nodes.bank?.dataset.targetUnits)||0},
   removed:{count:Number(nodes.removedTotal?.dataset.count)||0,targetCount:Number(nodes.removedTotal?.dataset.targetCount)||0},
   continuation:!!lastInfo?.continuationActive,batchSizes:(lastInfo?.batchSizes||batchSizes()).slice(),receivedBalls:lastInfo?.receivedBalls||0,processedBalls:lastInfo?.processedBalls||0,

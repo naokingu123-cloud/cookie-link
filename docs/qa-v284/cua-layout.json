@@ -1,0 +1,77 @@
+{
+  "revision": 284,
+  "scope": "CUA native UI in isolated local edition, virtual CREDIT only",
+  "viewportMethod": "same-origin iframe with native buttons selecting390x844 and844x390; desktop user agent, not physical mobile hardware",
+  "portrait": {
+    "viewport": [
+      390,
+      844
+    ],
+    "bet": 300000,
+    "ball": 1,
+    "before": {
+      "bankMedals": 20400,
+      "removed": 136
+    },
+    "after": {
+      "bankMedals": 22800,
+      "removed": 140
+    },
+    "anchorPositionsUnchanged": true,
+    "anchors": {
+      "logo": {
+        "x": 30.875,
+        "y": 445.5625,
+        "width": 61.75,
+        "height": 21.125
+      },
+      "bank": {
+        "x": 94.25,
+        "y": 445.5625,
+        "width": 133.25,
+        "height": 21.125
+      },
+      "win": {
+        "x": 229.125,
+        "y": 452.0625,
+        "width": 19.5,
+        "height": 8.125
+      },
+      "continuation": {
+        "x": 250.25,
+        "y": 447.59375,
+        "width": 26,
+        "height": 17.0625
+      }
+    },
+    "visualChecks": [
+      "318px logical bottle",
+      "96px payout column",
+      "seven-digit payout rows fit",
+      "counter directly below bottle",
+      "no logo/WIN/continuation movement during real nativeHIT"
+    ]
+  },
+  "landscape": {
+    "viewport": [
+      844,
+      390
+    ],
+    "gameBox": {
+      "x": 329.375,
+      "y": 202.71875,
+      "width": 185.25,
+      "height": 158.4375
+    },
+    "logicalSize": [
+      456,
+      390
+    ],
+    "fitted": true
+  },
+  "limitations": [
+    "CloudWebGL unavailable; 3D roulette not tested throughCUA.",
+    "Final floor-class adjustments changeBET<10only; visualCUA usesBET300000.",
+    "Real-browser automation is delegated to GitHubActionsCI, not run locally."
+  ]
+}

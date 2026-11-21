@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
 const crypto=require('node:crypto');
-const {R,G,clone,NUMBERS,batches,fullRound}=require('./sixdrop-v283-fixture.cjs');
+const {R,G,clone,NUMBERS,batches,fullRound}=require('./sixdrop-v283-history.cjs');
 assert.equal(R.CURRENT_REVISION,283);assert.equal(R.SINGLE_REVISION,283);
 assert.equal(R.GROUPED_REVISION,278);assert.equal(R.ROUNDED_REVISION,280);
 assert.deepEqual(R.BATCH_SIZES,[3,2,1,1,1],'the historic grouped schedule remains available');

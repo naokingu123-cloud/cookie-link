@@ -1,0 +1,1 @@
+SIXDROP_V283_RULES_PASS {"historicalSnapshots":9,"primaryPositions":75,"primaryAreaSizes":{"3":2,"4":10,"5":11,"6":8,"7":44},"overlapAndEmptyNeighbours":true,"games":72,"steps":576,"positive":56,"zero":16,"allClears":18,"witnesses":{"allClear":{"seed":10,"win":72934,"clears":1},"zero":{"seed":6,"win":0}}}

@@ -1,0 +1,1 @@
+SIXDROP_V278_RULES_PASS {"rounds":108,"groups":540,"positive":64,"zero":44,"allClears":16,"witness":{"seed":9,"win":56618,"counts":{"line":7,"triangle":1,"hexagon":0},"clearWins":[11284,21334]}}

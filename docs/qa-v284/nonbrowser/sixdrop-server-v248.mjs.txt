@@ -1,0 +1,2 @@
+[PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded
+SIXDROP_SERVER_V248_PASS: old balance migration, 0.05 BET accrual, fixed palette carry, independent players, retries, cancel rollback, own-zero reset, worker restoration and cold restart

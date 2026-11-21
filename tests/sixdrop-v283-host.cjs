@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const {R,G,clone,NUMBERS,createHost,idle,installWorker,streamingCheckpoint,fullRound}=require('./sixdrop-v283-fixture.cjs');
+const {R,G,clone,NUMBERS,createHost,idle,installWorker,streamingCheckpoint,fullRound}=require('./sixdrop-v283-history.cjs');
 require('../assets/recorded-round-v255.js');
 const Recorder=globalThis.SweetsRecordedRoundV255;
 globalThis.SweetsLineup={ids:['candy']};

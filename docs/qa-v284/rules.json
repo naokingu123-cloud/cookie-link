@@ -1,0 +1,21 @@
+{
+  "revision": 284,
+  "primaryPositions": 75,
+  "primaryAreaSizes": {
+    "3": 2,
+    "4": 10,
+    "5": 11,
+    "6": 8,
+    "7": 44
+  },
+  "colorBoundaries": true,
+  "cyclicBeyond1800": true,
+  "survivorColorsUnchanged": 45440,
+  "integerCreditsAtFractionalBets": true,
+  "zeroCreditSteps": 2042,
+  "unchangedRateIndependentPayouts": true,
+  "rateIndependentNumberSpread": true,
+  "rawAndCachedGeometryEquivalentGames": 96,
+  "comparedBallTimelines": 768,
+  "coreSha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650"
+}
