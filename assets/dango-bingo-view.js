@@ -19,7 +19,7 @@ const PAYOUT_ART='assets/dango-art-v270/payout-table.png';
 const assetFiles={white:'dango-art-v252/dango-white.webp',green:'dango-art-v253/dango-green.webp',pink:'dango-art-v253/dango-pink.webp',yellow:'dango-art-v253/dango-yellow.webp',rainbow:'dango-art-v253/dango-rainbow.webp',skewer:'dango-art-v252/bamboo-skewer.webp',stand:'dango-art-v253/tsukimi-stand.webp'};
 const art={},assetListeners=new Set(),pendingMinis=new Map();
 // Cyan is a separate, once-baked mochi bitmap; do not tint a green mochi during paint.
-const cyanCache={source:null,canvas:null,pixels:0,cyanPixels:0,meanBlueMinusRed:0};
+const cyanCache={source:null,canvas:null,pixels:0,cyanPixels:0,meanBlueMinusRed:0,meanLuminance:0};
 const usage={main:0,mini:0,lesson:0,skewers:0,cells:0,stands:0},last={main:null,mini:null,lesson:null};
 let assetsNotifyQueued=false;
 const allAssetsReady=()=>Object.keys(art).length===Object.keys(assetFiles).length&&Object.values(art).every(asset=>asset.loaded);
@@ -55,7 +55,7 @@ function describeAssets(){
   cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS},
-  cyanDango:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed}};
+  cyanDango:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed,meanLuminance:cyanCache.meanLuminance}};
 }
 function notifyAssets(){
  if(assetsNotifyQueued)return;assetsNotifyQueued=true;
@@ -89,31 +89,26 @@ function cyanBitmap(c,x,y,width,height){
   const context=sprite.getContext('2d',{willReadFrequently:true});
   if(!bitmap(context,'green',0,0,size,size))return false;
   const image=context.getImageData(0,0,size,size),pixels=image.data;
-  let visible=0,converted=0,blueMinusRed=0;
+  let visible=0,converted=0,blueMinusRed=0,luma=0;
   for(let i=0;i<pixels.length;i+=4){
    const alpha=pixels[i+3];if(alpha<8)continue;
    visible++;
-   const red=pixels[i],green=pixels[i+1],blue=pixels[i+2],high=Math.max(red,green,blue),low=Math.min(red,green,blue);
-   // Hue-shift the *texture pixels* before making a reusable cyan sprite.
-   // Keep ivory highlights, the natural shading, transparent edges and gold trim.
-   if(green<red*.93||green<blue*1.05||high-low<8)continue;
-   const value=Math.min(1,high/255*1.035+.012);
-   const saturation=Math.min(.86,Math.max(.46,high?(high-low)/high*.96:0));
-   const chroma=value*saturation,shadow=value-chroma;
-   pixels[i]=Math.round(shadow*255);
-   pixels[i+1]=Math.round((shadow+chroma*5/6)*255);
-   pixels[i+2]=Math.round(value*255);
-   blueMinusRed+=pixels[i+2]-pixels[i];converted++;
+   const red=pixels[i],green=pixels[i+1],blue=pixels[i+2];
+   // The aqua dango should read almost white, not like a cyan HIT.
+   // Preserve the texture's light/dark gradient and alpha at pastel saturation.
+   const shade=Math.min(1,Math.max(0,(255-(red*.26+green*.55+blue*.19))/190));
+   pixels[i]=Math.round(248-23*shade);
+   pixels[i+1]=Math.round(253-15*shade);
+   pixels[i+2]=Math.round(255-8*shade);
+   blueMinusRed+=pixels[i+2]-pixels[i];
+   luma+=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2];
+   converted++;
   }
   context.putImageData(image,0,0);
-  if(converted<100){
-   // Even an unusual older green texture yields a genuinely aqua source image.
-   context.save();context.globalCompositeOperation='source-atop';context.globalAlpha=.8;
-   context.fillStyle='#40d4ef';context.fillRect(0,0,size,size);context.restore();
-   converted=Math.max(converted,visible);blueMinusRed=Math.max(blueMinusRed,visible*70);
-  }
   cyanCache.source=source;cyanCache.canvas=sprite;cyanCache.pixels=visible;
-  cyanCache.cyanPixels=converted;cyanCache.meanBlueMinusRed=Math.round(blueMinusRed/Math.max(1,converted));
+  cyanCache.cyanPixels=converted;
+  cyanCache.meanBlueMinusRed=Math.round(blueMinusRed/Math.max(1,converted));
+  cyanCache.meanLuminance=Math.round(luma/Math.max(1,converted));
  }
  c.drawImage(cyanCache.canvas,x,y,width,height);return true;
 }
