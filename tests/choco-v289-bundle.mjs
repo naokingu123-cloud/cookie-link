@@ -17,7 +17,7 @@ const checks=[
 for(const code of checks)for(const [name,content]of [['optimized runtime',bundled],['standalone source',individual]])
  assert.ok(content.includes(code),name+' missing production rule: '+code);
 assert.match(bundled,/const chocoGanache=new Image\(\)/,'existing optimized painted background retained');
-assert.match(bundled,/assets\/sweet-skins\/canyon-/,'original cake source URLs preserved');
+assert.match(bundled,/\['canyon-milk','canyon-berry','canyon-ivory','canyon-dark'\]/,'optimized original cake sources preserved');
 assert.match(html,/optimized\/app-01\.js\?v=289/,'actual browser cache pin replaced');
 assert.match(html,/sixdrop-progressive-core-v247\.js\?v=285/,'current new Six Drop core loaded');
 new vm.Script(bundled,{filename:'optimized/app-01.js'});
