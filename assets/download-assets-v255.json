@@ -2033,8 +2033,8 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 177723,
-      "sha256": "5c744f7591556ddf097c2996d795b5e5bcc46368fdc2a71fe18c324dfd79a3bd"
+      "bytes": 177902,
+      "sha256": "6e4adc5d8f4c2faa64233a3b8fb4f502b0f45ff32ddc8d8169f87309792dbb54"
     },
     {
       "path": "assets/dango-bingo-view.js",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238698574
+  "totalBytes": 238698753
 }
