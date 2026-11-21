@@ -84,12 +84,17 @@ export async function buildAwardFixtures(){
  const C=await loadRules('assets/party-castella-rules.js','PartyCastellaRules'),castella=C.createDemo();let cake=castella.state;
  for(const n of castella.draws.slice(0,-1))cake=C.draw(cake,n);const finalCake=C.draw(cake,castella.draws.at(-1));assert.equal(finalCake.bakedCount,61);assert.equal(finalCake.phase,'done');
  record('castella',{state:cake,queue:[],processed:7,accepted:7,drawn:new Set(cake.draws)},cake.draws,castella.draws.at(-1),{event:'settled',baked:61,totalHundredths:finalCake.totalHundredths,highest:true});
- const D=await loadRules('assets/dango-bingo-rules.js','DangoBingoRules');let dango=D.create({moldIndex:1,numbers:Array.from({length:25},(_,i)=>i+1)});
- for(const id of [2,7,11,16,22])dango=D.draw(dango,dango.numbers[id]);
- for(const id of [1,8,13,15,17,18])dango=D.placeFree(dango,id);
- dango=D.commitFree(dango,{autoFill:false});dango=D.draw(dango,dango.numbers[19]);
- const finalDango=D.draw(dango,dango.numbers[20]);assert(finalDango.newHighestRoles.includes(6));assert(finalDango.newLines.length);
- record('dango',{state:dango,liveBoard:true,queue:[],processed:6,accepted:6,drawn:new Set(dango.draws),animationLines:[],placementStartLines:[],thinkingClosesAt:0},dango.draws,dango.numbers[20],{event:'settled',newLines:[...finalDango.newLines],newHighestRoles:[...finalDango.newHighestRoles],highest:true});
+ const D=await loadRules('assets/dango-bingo-rules.js','DangoBingoRules');
+ // A legal v285 high-role witness: three numbered cyan hits grant four FREE.
+ // The old six-manual-FREE witness stopped being valid when v285 capped it at four.
+ let dango=D.create({moldIndex:0,numbers:Array.from({length:25},(_,i)=>i+1),triggerCells:[15,16,17]});
+ for(const id of [15,16,17,18,19])dango=D.draw(dango,dango.numbers[id]);
+ assert.equal(dango.freeBudget,4);assert.equal(dango.cells.filter(c=>c.initialFree&&c.hit).length,3);
+ for(const id of [20,2,4,0]){dango=D.placeFree(dango,id);assert(dango);}
+ dango=D.commitFree(dango,{autoFill:false});assert(dango);
+ for(const id of [7,11])dango=D.draw(dango,dango.numbers[id]);
+ const finalDango=D.draw(dango,dango.numbers[22]);assert(finalDango.newHighestRoles.includes(6));assert(finalDango.newLines.length);
+ record('dango',{state:dango,liveBoard:true,queue:[],processed:7,accepted:7,drawn:new Set(dango.draws),animationLines:[],placementStartLines:[],thinkingClosesAt:0},dango.draws,dango.numbers[22],{event:'settled',newLines:[...finalDango.newLines],newHighestRoles:[...finalDango.newHighestRoles],highest:true});
  return fixtures;
 }
 if(process.argv[1]&&new URL(import.meta.url).pathname===process.argv[1]){
