@@ -3,7 +3,7 @@
 'use strict';
 // This constant travels with the cached shell. It must not follow a newer
 // online version while an older, already downloaded game is being resumed.
-const BUILD_VERSION='20261121-v286-dango-cyan-mochi-green-hit';
+const BUILD_VERSION='20261121-v287-dango-probability-payouts';
 const query=new URLSearchParams(location.search);
 const internal=['serverHost','serverSettlementWorker','downloadWorker','admin'].some(key=>query.get(key)==='1');
 let edition=query.get('edition');
