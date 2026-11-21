@@ -5,6 +5,7 @@ const R=window.DangoBingoRules,TAU=Math.PI*2,clamp=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{x=clamp(x);return x*x*(3-2*x);};
 const LINE_COLORS=Object.freeze({2:'#269eff',3:'#4ee3f5',4:'#42e57c',5:'#ffe34b',6:'#ff4667',7:'#bf6bff',9:'#bf6bff'});
 const isCurrent=state=>Number(state?.rulesRevision??R.REVISION)>=268;
+const isPlusFree=state=>Number(state?.rulesRevision??R.REVISION)>=285;
 const isModern=state=>state?Number(state.rulesRevision)>=262||state.cells?.length===28:Number(R.REVISION)>=262;
 const cellsFor=state=>R.geometryFor?.(state)?.cells||state?.cells||R.cells;
 const linesFor=state=>R.linesFor?.(state)||R.geometryFor?.(state)?.lines||R.lines;
@@ -48,7 +49,7 @@ function spriteBounds(image,key){
  return [0,0,width,height];
 }
 function describeAssets(){
- return {revision:253,presentationRevision:269,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
+ return {revision:253,presentationRevision:285,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
   cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS}};
@@ -134,8 +135,52 @@ function basePayoutLayout(width,height,state=null){
  const rects=rectsAt(unit);
  return {scale:unit/g.unit,unit,anchor,width:g.portrait?width-anchor*2:unit*tableWidth,height:totalHeight*unit,clearance:g.unit*.58,rects,minClearance:Math.min(...rects.flatMap(rect=>g.centers.map(point=>distance(rect,point))))};
 }
-function showFreeRail(state){return isCurrent(state)&&Number(state?.draws?.length||0)<5&&state?.phase!=='placing'&&!state?.freeCommitted;}
+function showFreeRail(state){return !isPlusFree(state)&&isCurrent(state)&&Number(state?.draws?.length||0)<5&&state?.phase!=='placing'&&!state?.freeCommitted;}
+const plusFreeLayoutCache=new Map();
+function plusFreeLayout(width,height,state){
+ // The 285 table has no yellow FREE rail. Fit the triangular silhouette beside
+ // the complete table, including the optional Odds row and the tallest FREE
+ // interaction card, so neither thinking time nor a multiplier moves the board.
+ const key=width+'x'+height,cached=plusFreeLayoutCache.get(key);if(cached)return cached;
+ const scale=Math.max(1,Math.min(width/430,height/366)),anchor=3*scale,unit=35*scale;
+ const matrixWidth=210*scale,frameInset=9.45*scale,labelWidth=66*scale,columnWidth=41.7*scale;
+ const rowHeight=24*scale,headerHeight=14*scale,matrixHeight=headerHeight+rowHeight*6+frameInset*2;
+ const oddsHeight=25*scale,oddsGap=2.45*scale,freeUnit=40*scale;
+ const free={unit:freeUnit,x:width-anchor-freeUnit*2.15,y:anchor,width:freeUnit*2.15,height:freeUnit*2.7};
+ const reserved=[{x:anchor,y:anchor,width:matrixWidth,height:matrixHeight},
+  {x:anchor,y:anchor+matrixHeight+oddsGap,width:Math.min(matrixWidth,Math.max(114,unit*3.3)),height:oddsHeight},free];
+ const offsets=cellsFor(state).map(cell=>{
+  const row=cell.row??Math.floor((Math.sqrt(8*cell.id+1)-1)/2),column=cell.col??cell.column??cell.id-row*(row+1)/2;
+  return {id:cell.id,x:column-row/2,y:row*Math.sqrt(3)/2};
+ });
+ const placementAt=u=>{
+  const top=height-anchor-u*6.47,clearance=u*.58,lower=anchor+u*3.64,upper=width-anchor-u*3.64;
+  if(lower>upper||top-u*.5<anchor)return null;
+  // Each circle/rectangle collision excludes an exact interval of possible
+  // horizontal board centers. Their union leaves every legal center position.
+  const blocked=[];
+  for(const point of offsets)for(const rect of reserved){
+   const y=top+point.y*u,dy=Math.max(rect.y-y,0,y-rect.y-rect.height);
+   if(dy<clearance){const pad=Math.sqrt(clearance*clearance-dy*dy)+.01;blocked.push([rect.x-pad-point.x*u,rect.x+rect.width+pad-point.x*u]);}
+  }
+  blocked.sort((a,b)=>a[0]-b[0]);const allowed=[];let cursor=lower;
+  for(const [left,right]of blocked){if(right<cursor||left>upper)continue;if(left>cursor)allowed.push([cursor,Math.min(left,upper)]);cursor=Math.max(cursor,right);if(cursor>upper)break;}
+  if(cursor<=upper)allowed.push([cursor,upper]);if(!allowed.length)return null;
+  const preferred=width*.66,cx=allowed.map(([left,right])=>Math.max(left,Math.min(right,preferred))).sort((a,b)=>Math.abs(a-preferred)-Math.abs(b-preferred))[0];
+  return {cx,top};
+ };
+ let lo=.01,hi=Math.max(.01,Math.min((width-anchor*2)/7.28,(height-anchor*2)/6.97));
+ for(let i=0;i<26;i++){const mid=(lo+hi)/2;if(placementAt(mid))lo=mid;else hi=mid;}
+ const boardUnit=lo,placement=placementAt(boardUnit)||{cx:width/2,top:height-anchor-boardUnit*6.47};
+ const centers=offsets.map(point=>({id:point.id,x:placement.cx+point.x*boardUnit,y:placement.top+point.y*boardUnit}));
+ const geometry={layout:'main',modern:true,portrait:width/height<1.45,unit:boardUnit,radius:boardUnit/2,width,height,cx:placement.cx,top:placement.top,tableReserve:0,free,centers,
+  stand:{x:placement.cx-boardUnit*3.64,y:placement.top+boardUnit*5.39,width:boardUnit*7.28,height:boardUnit*1.08}};
+ const metrics={unit,anchor,referenceWidth:matrixWidth,matrixWidth,matrixHeight,frameInset,labelWidth,columnWidth,rowHeight,headerHeight,oddsHeight,oddsGap,
+  railWidth:0,railGap:0,railColumns:0,iconSize:0,railVisible:false,height:matrixHeight};
+ const result={geometry,metrics};if(plusFreeLayoutCache.size>=24)plusFreeLayoutCache.delete(plusFreeLayoutCache.keys().next().value);plusFreeLayoutCache.set(key,result);return result;
+}
 function compactMetrics(width,height,state){
+ if(isPlusFree(state)){const m=plusFreeLayout(width,height,state).metrics;return {...m,height:m.matrixHeight+((state?.oddsMultiplier||1)>=2?m.oddsGap+m.oddsHeight:0)};}
  // Keep the existing type heights whenever the full framed matrix fits. Reserve
  // the Odds row in landscape before it appears, so activating Odds never clips
  // the panel or moves either the board or its FREE interaction targets.
@@ -164,6 +209,7 @@ function compactMetrics(width,height,state){
  return metrics;
 }
 function geometry(width,height,{layout='main',state=null}={}){
+ if(isPlusFree(state)&&layout==='main')return plusFreeLayout(width,height,state).geometry;
  const base=baseGeometry(width,height,{layout,state});
  if(!isCurrent(state)||layout!=='main'||!base.portrait)return base;
  // Odds uses the empty space left of the apex, so gaining it never moves the board or FREE targets.
@@ -210,7 +256,11 @@ function dangoBody(c,cell,p,r,options){
  // keeps the piled sweets touching throughout their slow, soft compression.
  const sx=1.012+cycle*.025,sy=1.022-cycle*.02;
  const drawn=bitmap(c,kind,p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);if(drawn)usage.cells++;
- return drawn?kind:null;
+ // A temporary cyan skin reuses the same mochi artwork and silhouette. Fade
+ // back to the actual hit/FREE color without changing any rule or cell data.
+ const cyan=cell.trigger&&options.plusFree?clamp(options.plusFreeOpacity):0;
+ if(cyan>0){c.save();c.globalAlpha*=cyan;c.filter='hue-rotate(75deg) saturate(1.4) brightness(1.04)';bitmap(c,'green',p.x-r*sx,p.y-r*sy,r*2*sx,r*2*sy);c.restore();}
+ return drawn?(cyan>.5?'cyan':kind):null;
 }
 function dangoLabels(c,cell,p,r,o){
  const label=cell.initialFree||cell.manualFree;
@@ -218,7 +268,18 @@ function dangoLabels(c,cell,p,r,o){
   c.save();c.font='1000 '+r*.60+'px ElixirNumbers,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=Math.max(.8,r*.065);c.strokeStyle='#fffad8';c.strokeText('FREE',p.x,p.y);c.fillStyle=o.oddsActivated?'#693b93':'#315d16';c.fillText('FREE',p.x,p.y);c.restore();
   return;
  }
- if(cell.hit&&!o.staticDango){
+ if(o.plusFree){
+  const cyan=cell.trigger?clamp(o.plusFreeOpacity):0;
+  if(cyan>0){
+   c.save();c.globalAlpha*=cyan;c.font='1000 '+r*.37+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';c.lineWidth=Math.max(.8,r*.07);c.strokeStyle='#edffff';c.strokeText('+FREE',p.x,p.y-r*.70);c.fillStyle='#08637c';c.fillText('+FREE',p.x,p.y-r*.70);c.restore();
+  }
+  if(cell.hit){
+   // Keep a fixed edge position so the fade never moves HIT across a numeral.
+   // A numbered FREE reserves its lower edge for FREE and uses the upper edge.
+   const y=p.y+r*(cell.trigger&&!label?.76:-.75),size=r*.33;
+   c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';c.lineWidth=Math.max(.7,r*.065);c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#a91650';c.fillText('HIT!',p.x,y);c.restore();
+  }
+ }else if(cell.hit&&!o.staticDango){
   const y=p.y-r*(label?.73:.66),size=r*(label?.34:.40);
   c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
   c.lineWidth=Math.max(.7,r*.08);c.strokeStyle='#fff9df';c.strokeText('HIT!',p.x,y);c.fillStyle='#ad245b';c.fillText('HIT!',p.x,y);c.restore();
@@ -230,9 +291,9 @@ function dangoLabels(c,cell,p,r,o){
   c.lineWidth=Math.max(.6,r*.04);c.strokeStyle=cell.initialFree?'#eaff91':'#fff49f';c.stroke();
   text(c,'FREE',p.x,by+r*.015,r*.40,'#fffde1');c.restore();
  }
- const numberY=cell.hit?(label?-.06:.13):label?-.10:0,numberSize=cell.hit?(label?(cell.number>=10?.88:1):(cell.number>=10?1:1.16)):(cell.number>=10?1.07:1.21);
+ const numberY=o.plusFree?(label?-.10:cell.trigger&&o.plusFreeOpacity>.05?.12:cell.hit?.08:0):cell.hit?(label?-.06:.13):label?-.10:0,numberSize=o.plusFree?(cell.number>=10?.98:1.12):cell.hit?(label?(cell.number>=10?.88:1):(cell.number>=10?1:1.16)):(cell.number>=10?1.07:1.21);
  number(c,cell.number,p.x,p.y+r*numberY,r*numberSize);
- if(cell.hit&&o.staticDango){
+ if(cell.hit&&o.staticDango&&!o.plusFree){
   // Draw HIT after the numeral at the same center, deliberately covering it.
   const y=p.y+r*numberY,size=r*.76;
   c.save();c.font='1000 '+size+'px SweetReachRounded,"Yu Gothic",Meiryo,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
@@ -241,6 +302,14 @@ function dangoLabels(c,cell,p,r,o){
  if(cell.id===o.lastCell&&Number.isFinite(o.age)&&o.age<500){
   const t=clamp(o.age/500);c.save();c.globalAlpha=1-t;c.beginPath();c.arc(p.x,p.y,r*(1.05+.6*t),0,TAU);c.lineWidth=r*.08;c.strokeStyle='#fff5ad';c.stroke();c.restore();
  }
+}
+function hitOutline(c,p,r,id,time,still){
+ c.save();c.shadowColor='#ffe5a0';c.shadowBlur=r*.16;c.lineWidth=Math.max(1.3,r*.10);c.strokeStyle='#b96a19';c.beginPath();c.arc(p.x,p.y,r*1.015,0,TAU);c.stroke();c.shadowBlur=0;c.lineWidth=Math.max(.8,r*.045);c.strokeStyle='#fff5c2';c.beginPath();c.arc(p.x,p.y,r*1.025,0,TAU);c.stroke();
+ for(let k=0;k<3;k++){
+  const phase=(time/1900+id*.17+k/3)%1,angle=(still?k/3:phase)*TAU-Math.PI/2,light=still?.75:.45+.55*Math.sin(phase*Math.PI)**2;
+  c.globalAlpha=light;c.shadowColor='#fffbd5';c.shadowBlur=r*.12;star(c,p.x+Math.cos(angle)*r*.98,p.y+Math.sin(angle)*r*.98,r*(.075+.035*light),'#fff9da');
+ }
+ c.restore();
 }
 function skewerEnds(line,g){
  const first=g.centers[line.cells[0]],last=g.centers[line.cells.at(-1)],dx=last.x-first.x,dy=last.y-first.y,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,ext=g.unit*.62;
@@ -332,7 +401,7 @@ function paint(ctx,state,options={},mini=false){
  const time=ambientTime(options),still=!!(options.reducedMotion||options.paused);
  c.save();c.clearRect(0,0,w,h);c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';usage[mode]++;
  const stand=g.stand,standRendered=bitmap(c,'stand',stand.x,stand.y,stand.width,stand.height);if(standRendered)usage.stands++;
- let imageCells=0;const kinds={white:0,green:0,pink:0,yellow:0,rainbow:0};
+ let imageCells=0;const kinds={white:0,green:0,pink:0,yellow:0,rainbow:0,cyan:0};
  const animation=options.animationLines||state.newLines||[],age=options.lineAge??options.age??Infinity,completed=new Set(state.completedLines||[]),skewers=[];
  for(const lineId of completed){
   const line=linesFor(state)[lineId];if(!line)continue;
@@ -346,7 +415,8 @@ function paint(ctx,state,options={},mini=false){
  }
  const reaches=new Map(visibleReaches(state,options).map(x=>[x.n??x.number,x])),oddsHits=new Set(state.oddsHits||[]);
  const expanded=new Set(state.expansionCells||state.expansionFootprint||(Number.isInteger(state.expansionCenter)?R.expansionCellsFor?.(state,state.expansionCenter):[])||[]);
- const cellOptions=cell=>({...options,staticDango:isCurrent(state),lastCell:state.lastCell,oddsActivated:isModern(state)&&cell.initialFree&&expanded.has(cell.id)||cell.manualFree&&!cell.initialFree&&oddsHits.has(cell.number)});
+ const plusFree=isPlusFree(state),fadeAge=Number(options.plusFreeFadeAge??Infinity),plusFreeOpacity=plusFree?(state.draws.length<5?1:options.reducedMotion?0:1-smooth(fadeAge/1800)):0;
+ const cellOptions=cell=>({...options,plusFree,plusFreeOpacity,staticDango:isCurrent(state),lastCell:state.lastCell,oddsActivated:isModern(state)&&cell.initialFree&&expanded.has(cell.id)||cell.manualFree&&!cell.initialFree&&oddsHits.has(cell.number)});
  for(const cell of state.cells){const kind=dangoBody(c,cell,g.centers[cell.id],r,cellOptions(cell));if(kind){imageCells++;kinds[kind]++;}}
  for(const {line,z}of skewers)luminousSkewer(c,line,g,z,time,still,state);
  const paidCells=new Set();
@@ -355,6 +425,7 @@ function paint(ctx,state,options={},mini=false){
   for(const {line}of skewers)if(payable.has(line.length))for(const id of line.cells)paidCells.add(id);
   for(const id of paidCells)paidSparkle(c,g.centers[id],r,id,time,still);
  }
+ if(plusFree)for(const cell of state.cells)if(cell.hit)hitOutline(c,g.centers[cell.id],r,cell.id,time,still);
  if(!mini&&isModern(state)){
   const preview=new Set(options.previewCells||[]),selected=state.expansionCenter;
   c.save();c.lineWidth=Math.max(1,u*.045);c.strokeStyle='#fffbe8';c.setLineDash([u*.075,u*.055]);
@@ -370,14 +441,14 @@ function paint(ctx,state,options={},mini=false){
  }
  if(!mini&&(state.lastOddsGain||state.lastBonusGain)&&options.age>=0&&options.age<1400&&state.lastCell!=null){
   const p=g.centers[state.lastCell],t=clamp(options.age/1400),x=Math.max(u*1.12,Math.min(w-u*1.12,p.x)),y=Math.max(u*.31,p.y-u*(.69+.34*t));
-  c.save();c.globalAlpha=Math.min(1,(1-t)*3);roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
+  c.save();c.globalAlpha=Math.min(1,(1-t)*3);roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':plusFree?'#126e8d':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:plusFree?'FREE ＋'+state.lastBonusGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
  }
- last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitLabelPosition:isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
+ last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitSparkleCells:plusFree?state.cells.filter(cell=>cell.hit).length:0,plusFree:{active:plusFree&&state.draws.length<5,opacity:plusFreeOpacity,cells:plusFree?(state.triggerCells||[]).slice():[],label:'+FREE'},hitLabelPosition:plusFree?'edge-outside-number':isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
  c.restore();
 }
 function drawMini(context,state,options={}){const ctx=typeof context?.getContext==='function'?context.getContext('2d'):context;if(ctx&&!allAssetsReady())pendingMinis.set(ctx,{state,options});paint(ctx,state,options,true);}
 function drawLessonDango(ctx,x,y,r,kind,value,rainbow=false){
- usage.lesson++;const cell={id:-1,number:value,initialFree:kind==='initial',manualFree:kind==='manual',hit:kind==='hit'||rainbow&&kind==='manual'},o={oddsActivated:rainbow,reducedMotion:true};
+ usage.lesson++;const bonus=kind==='bonus'||kind==='bonus-hit',cell={id:-1,number:value,initialFree:kind==='initial',manualFree:kind==='manual',hit:kind==='hit'||kind==='bonus-hit'||rainbow&&kind==='manual',trigger:bonus},o={oddsActivated:rainbow,reducedMotion:true,plusFree:R.REVISION>=285,plusFreeOpacity:bonus?1:0};
  const drawn=dangoBody(ctx,cell,{x,y},r,o);dangoLabels(ctx,cell,{x,y},r,o);return drawn;
 }
 function formatWin(bet,hundredths){const value=typeof medalWin==='function'?medalWin(bet,hundredths):Math.floor(Math.max(0,bet)*hundredths/100);return String(value);}
@@ -417,18 +488,19 @@ function mount(panel){
  function rebuild(next){
   const modern=isModern(next),baseRows=R.payRowsBaseFor?.(next)||R.payRows,key=[modern,next.rulesRevision,next.cells.length,baseRows.map(row=>row.length+':'+row.count).join(',')].join('/');
   if(key===structureKey)return;
-  structureKey=key;sizeKey='';reachKey='';previewCenter=null;rows=[];buttons=[];controls.replaceChildren();find('tbody').replaceChildren();find('.dgb-free-rail-rows').replaceChildren();root.dataset.modern=String(modern);root.dataset.presentation=String(isCurrent(next)?269:262);
+  structureKey=key;sizeKey='';reachKey='';previewCenter=null;rows=[];buttons=[];controls.replaceChildren();find('tbody').replaceChildren();find('.dgb-free-rail-rows').replaceChildren();root.dataset.modern=String(modern);root.dataset.presentation=String(isPlusFree(next)?285:isCurrent(next)?269:262);
   const lengths=[...new Set(baseRows.map(row=>row.length))],columns=Math.max(...baseRows.map(row=>row.count));
   find('colgroup').innerHTML='<col class="dgb-row-label">'+'<col>'.repeat(columns);
-  find('thead').innerHTML='<tr><th scope="col"><span class="dgb-live">ライン</span></th>'+Array.from({length:columns},(_,i)=>'<th scope="col">'+(i+1)+'本'+(!modern&&i+1===columns?'以上':'')+'</th>').join('')+'</tr>';
+  find('thead').innerHTML='<tr><th scope="col"><span class="dgb-live">ライン</span></th>'+Array.from({length:columns},(_,i)=>'<th scope="col">'+(i+1)+(isPlusFree(next)?'個':'本')+(!modern&&i+1===columns?'以上':'')+'</th>').join('')+'</tr>';
+  find('table').setAttribute('aria-label','ラインの長さと完成'+(isPlusFree(next)?'個数':'本数')+'による配当');
   for(const length of lengths){
    const tr=document.createElement('tr');tr.dataset.length=String(length);tr.style.setProperty('--dgb-line-color',lineColor(length,next));
    const th=document.createElement('th');th.scope='row';th.innerHTML='<span class="dgb-line-heading"><span class="dgb-line-name"><b>'+length+'</b>個ライン</span></span>';tr.append(th);
    for(const row of baseRows.filter(item=>item.length===length)){
-    const td=document.createElement('td');td.dataset.valid='true';td.dataset.column=td.dataset.count=String(row.count);td.dataset.atLeast=String(row.atLeast);td.dataset.highestRole=String(highestRoleCell(row.length,row.count,next));td.innerHTML='<span class="gold-number">0</span>';rows.push({row,tr,td,value:'0'});tr.append(td);
+    const td=document.createElement('td');td.dataset.valid=String(row.possible!==false);td.dataset.column=td.dataset.count=String(row.count);td.dataset.atLeast=String(row.atLeast);td.dataset.highestRole=String(row.possible!==false&&highestRoleCell(row.length,row.count,next));td.innerHTML='<span class="gold-number">0</span>';rows.push({row,tr,td,value:'0'});tr.append(td);
    }
    find('tbody').append(tr);
-   if(isCurrent(next)){
+   if(isCurrent(next)&&!isPlusFree(next)){
     const railRow=document.createElement('div');railRow.className='dgb-free-rail-row';railRow.dataset.length=String(length);railRow.setAttribute('aria-label',length+'個ラインでFREE '+length+'個');
     for(let i=0;i<length;i++){const icon=document.createElement('canvas');icon.className='dgb-free-icon';icon.dataset.kind='yellow';icon.setAttribute('aria-hidden','true');railRow.append(icon);}
     find('.dgb-free-rail-rows').append(railRow);
@@ -471,9 +543,10 @@ function mount(panel){
    if(isCurrent(state)){
     const label=item.td.querySelector('.gold-number'),size=Math.max(14,u*.40);label.textContent=item.value;
     // Keep numeral height consistent even for a large BET: squeeze only X.
-    label.style.fontSize=size+'px';label.style.transform='translate(-50%,-50%)';label.style.marginLeft='0';
+    const anchor=isPlusFree(state)?'translateY(-50%)':'translate(-50%,-50%)';
+    label.style.fontSize=size+'px';label.style.transform=anchor;label.style.marginLeft='0';
     ctx.save();ctx.font='700 '+size+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;ctx.restore();
-    const scale=Math.min(1,available/Math.max(1,measured));label.style.transform='translate(-50%,-50%) scaleX('+scale+')';
+    const scale=Math.min(1,available/Math.max(1,measured));label.style.transform=anchor+' scaleX('+scale+')';
     label.dataset.horizontalScale=String(scale);
    }else{const label=item.td.querySelector('.gold-number');label.textContent=item.value;ctx.save();ctx.font='700 '+u*.28+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;label.style.fontSize=(u*.28*Math.min(1,available/Math.max(1,measured)))+'px';label.style.transform='translate(-50%,-50%)';label.style.marginLeft='0';ctx.restore();}
   }
@@ -489,13 +562,17 @@ function mount(panel){
   if(state===next&&key===domKey){paintLive();return;}
   state=next;options=o;domKey=key;rebuild(state);
   const modern=isModern(state),placing=!o.demo&&state.phase==='placing',editable=placing&&!o.placementLocked,drawCount=state.draws.length,second=state.phase==='draw-final'||state.phase==='done';
-  root.dataset.firstHalf=String(showFreeRail(state));find('.dgb-free-rail').hidden=!showFreeRail(state);root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);
+  root.dataset.firstHalf=String(showFreeRail(state));find('.dgb-free-rail').hidden=!showFreeRail(state);root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);root.dataset.plusFree=String(isPlusFree(state));root.dataset.triggerActive=String(isPlusFree(state)&&drawCount<5);
   find('.dgb-pay-odds').hidden=isCurrent(state)&&(state.oddsMultiplier||1)<2;find('.dgb-odds-title').textContent=isCurrent(state)?'Odds UP!':'ODDS';find('.dgb-odds-value').textContent=isCurrent(state)?(state.oddsMultiplier||1)+'倍':'×'+(state.oddsMultiplier||1);find('.dgb-trigger-numbers').hidden=!modern;
   if(modern){
    const level=Number(state.expansionLevel)||0,chosen=Number.isInteger(state.expansionCenter),graded=Number(state.rulesRevision)>=264,individual=Number(state.rulesRevision)>=265;
    const area=individual?Number(state.freeBudget)||1:graded?(chosen?state.expansionCells.length:[0,1,7,19][level]||0):[0,1,7,17][level]||0,triggerBox=find('.dgb-trigger-numbers');
    triggerBox.classList.toggle('dgb-grade-individual',individual);
-   if(individual){
+   if(isPlusFree(state)){
+    find('.dgb-free-title').textContent='置けるFREE';find('.dgb-free-value').textContent='あと '+state.freeRemaining+'個';
+    find('.dgb-free-detail').textContent=drawCount<5?'基本1＋HIT '+(state.triggerHits?.length||0)+'個':'配置 '+state.manualFreeCells.length+' / '+state.freeBudget+'個';
+    triggerBox.hidden=true;triggerBox.replaceChildren();triggerBox.setAttribute('aria-label','水色+FREEの前半HIT '+(state.triggerHits?.length||0)+'個');
+   }else if(individual){
     find('.dgb-free-title').textContent='前半ライン・FREE配置';
     find('.dgb-free-value').textContent=state.draws.length<5?'最大FREE '+area+'個':'あと'+state.freeRemaining+'個';
     find('.dgb-free-detail').textContent='配置'+state.manualFreeCells.length+'/'+state.freeBudget+'個 ／ '+(state.qualifiedEarlyLengths?.length?level+'個ライン':'ライン未成立');
@@ -523,7 +600,8 @@ function mount(panel){
    for(const cell of state.cells){const button=buttons[cell.id],selected=individual?state.manualFreeCells.includes(cell.id):chosen&&cell.id===state.expansionCenter;
     button.disabled=!editable||(individual?(cell.hit&&!cell.initialFree||!selected&&state.freeRemaining<=0):!eligible.has(cell.id)&&!selected);
     button.setAttribute('aria-pressed',String(selected));button.classList.toggle('placed',selected);
-    button.setAttribute('aria-label',(cell.initialFree?'初期FREE':cell.number+'番')+(selected?' 配置FREE・取り消す':cell.hit&&!cell.initialFree?' HIT済み':individual?' 個別FREE配置候補':eligible.has(cell.id)?' FREE範囲の中心に選ぶ':'この範囲の中心には選べません'));
+    button.dataset.trigger=String(!!cell.trigger);button.dataset.hit=String(!!cell.hit);
+    button.setAttribute('aria-label',(cell.initialFree?'緑の初期FREE':cell.number+'番')+(cell.trigger&&drawCount<5?' 水色+FREE':'')+(selected?' 黄色の配置FREE・取り消す':cell.hit&&!cell.initialFree?' HIT済み':individual?' 個別FREE配置候補':eligible.has(cell.id)?' FREE範囲の中心に選ぶ':'この範囲の中心には選べません'));
    }
    find('[data-action="auto"]').disabled=!editable||(individual?state.freeRemaining<=0:level===0);
    find('.dgb-prompt').textContent=individual?(o.demo?'前半の最長ラインでFREE数が1〜7個に変化。全て個別に配置できます。':placing?(state.freeRemaining?'FREEをあと'+state.freeRemaining+'個、好きなマスに置けます。すでに置いたマスは再タップで取消し。':'FREEを'+state.freeBudget+'個配置済み。必要なら再タップで取消し。'):state.phase==='done'?'成立ラインを集計し、ODDSを反映':second?'配置FREEへ後半HITするとODDS UP！':'2〜7個の前半ラインでFREE配置個数が増えます'):graded?(o.demo?'前半5球で3・4・5個ラインが成立すると、中心のみ・周囲1・周囲2マスをFREEにできます。':placing?(level===0?'前半5球でライン未成立。今回は追加FREEなし':chosen?'同じ中心で取消し、別の中心で置き直しできます。':'成立したラインに応じたFREE範囲の中心を選んでください。'):state.phase==='done'?'長さ別の配当を合計してODDSを反映':second?'配置FREEへの後半HITで ODDS UP！':'前半5球で3・4・5個ラインを完成させてFREEを強化！'):(o.demo?'前半5球の拡張番号にHIT。1個で1マス、2個で中心を含む7マス、3個で中心を含む17マスFREE。':placing?(chosen?'選択した中心を再タップすると取り消せます。別の中心への置き直しもできます。':'お団子を1つ選び、FREEにする範囲の中心を置いてください。'):state.phase==='done'?'長さごとの完成本数の配当を合計し、ODDSを反映':second?'配置FREEへの後半HITで ODDS UP！':'拡張番号への前半HITで、置けるFREEの範囲が広がります');
@@ -533,23 +611,25 @@ function mount(panel){
    find('[data-action="auto"]').disabled=!editable||!state.freeRemaining;
    find('.dgb-prompt').textContent=o.demo?'前半5球 → FREE配置 → 後半3球':placing?state.freeRemaining?'お団子を選んで、あと'+state.freeRemaining+'個配置':'黄色い団子をタップすると取り消せます':state.phase==='done'?'完成した串の配当を合計':second?'配置FREEの番号が出ると ODDS UP！':'初期FREEに前半HITすると、配置FREE＋1';
   }
+  if(isPlusFree(state))find('.dgb-prompt').textContent=o.demo?'基本FREEは1個。水色の+FREEに前半HITで1個ずつ追加。':placing?'黄色FREEをあと'+state.freeRemaining+'個配置。緑FREEに重ねるとODDS＋1。':state.phase==='done'?'成立ラインの配当を合計し、ODDSを反映しました。':second?'黄色FREEへの番号HITでODDS＋1。':'水色の+FREEに前半HITすると、配置できるFREEが1個増えます。';
   controls.hidden=!placing;find('.dgb-placement').hidden=!placing;find('.dgb-actions').hidden=!placing;refreshFocus();
   const seconds=Number(o.remainingMs);find('.dgb-placement').dataset.manualWait=String(placing&&!Number.isFinite(seconds));find('.dgb-countdown').textContent=placing&&Number.isFinite(seconds)?Math.max(0,Math.ceil(seconds/1000))+'秒':placing?'6球目の番号待ち':'';find('.dgb-countdown').classList.toggle('urgent',placing&&Number.isFinite(seconds)&&seconds<=5000);
   const payRows=typeof R.payRowsFor==='function'?R.payRowsFor(state):R.payRows.map(row=>({...row,hundredths:row.hundredths*state.oddsMultiplier}));
   const nextCounts=isCurrent(state)?((state.phase==='done'?R.presentationReaches?.(state):null)||o.reach||R.presentationReaches?.(state)||R.reaches?.(state)||[]).map(hit=>hit.lineCounts||((state.phase==='draw'||state.phase==='draw-final')?R.draw(state,hit.n??hit.number)?.lineCounts:null)).filter(Boolean):[];
   for(const item of rows){
-   const row=payRows.find(row=>row.length===item.row.length&&row.count===item.row.count)||item.row,count=state.lineCounts[row.length]||0,current=(row.atLeast?count>=row.count:count===row.count)&&(!isCurrent(state)||row.hundredths>0||row.length===2&&row.count===1),reach=isCurrent(state)&&!current&&row.hundredths>0&&nextCounts.some(counts=>counts[row.length]>count&&(row.atLeast?counts[row.length]>=row.count:counts[row.length]===row.count));
-   item.tr.dataset.completed=String(count);item.td.classList.toggle('current',current);item.td.classList.toggle('reach',reach);item.td.setAttribute('aria-current',current?'true':'false');item.value=isCurrent(state)&&row.hundredths===0?'-':formatWin(Number(o.bet)||0,row.hundredths);item.td.setAttribute('aria-label',row.length+'個ライン '+row.count+'本'+(row.atLeast?'以上':'')+' '+item.value+' WIN'+(highestRoleCell(row.length,row.count,state)?' 最高役':'')+(current?' GET!':reach?' リーチ!':''));
+   const row=payRows.find(row=>row.length===item.row.length&&row.count===item.row.count)||item.row,count=state.lineCounts[row.length]||0,possible=row.possible!==false,current=possible&&(row.atLeast?count>=row.count:count===row.count)&&(!isCurrent(state)||row.hundredths>0||row.length===2&&row.count===1),reach=possible&&isCurrent(state)&&!current&&row.hundredths>0&&nextCounts.some(counts=>counts[row.length]>count&&(row.atLeast?counts[row.length]>=row.count:counts[row.length]===row.count));
+   item.tr.dataset.completed=String(count);item.td.classList.toggle('current',current);item.td.classList.toggle('reach',reach);item.td.setAttribute('aria-current',current?'true':'false');item.value=!possible?'—':isCurrent(state)&&row.hundredths===0?'-':formatWin(Number(o.bet)||0,row.hundredths);item.td.setAttribute('aria-label',row.length+'個ライン '+row.count+(isPlusFree(state)?'個':'本')+(row.atLeast?'以上':'')+' '+(!possible?'このルールでは成立しません':item.value+' WIN'+(highestRoleCell(row.length,row.count,state)?' 最高役':'')+(current?' GET!':reach?' リーチ!':'')));
   }
   canvas.setAttribute('aria-label',state.cells.length+'個のお団子。'+drawCount+'球、完成した串'+state.completedLines.length+'本、初期FREE'+state.initialFreeCells.length+'個、配置FREE'+state.manualFreeCells.length+'個'+(Number(state.rulesRevision)>=265?'。番号1から25は各1個。前半最長ライン'+(state.qualifiedEarlyLengths?.length?state.expansionLevel+'個':'なし')+'、FREE配置'+state.manualFreeCells.length+'/'+state.freeBudget+'個、ODDS'+(state.oddsMultiplier||1)+'倍。':Number(state.rulesRevision)>=264?'。番号1から25は各1個。前半ラインのFREEグレード'+(state.expansionLevel||0)+'、ODDS'+(state.oddsMultiplier||1)+'倍。':modern?'。番号1から25は各1個。拡張番号のHIT '+(state.expansionLevel||0)+'個、ODDS'+(state.oddsMultiplier||1)+'倍。':'、ODDS'+state.oddsMultiplier+'倍。'));
+  if(isPlusFree(state))canvas.setAttribute('aria-label',state.cells.length+'個のお団子。'+drawCount+'球、完成ライン'+state.completedLines.length+'個、初期FREE'+state.initialFreeCells.length+'個、配置FREE'+state.manualFreeCells.length+'/'+state.freeBudget+'個。'+(drawCount<5?'水色+FREE番号 '+(state.triggerNumbers||[]).join('・')+'。':'水色+FREEは終了。')+'前半+FREE HIT '+(state.triggerHits?.length||0)+'個。ODDS'+(state.oddsMultiplier||1)+'倍。');
   const live=[state.phase,drawCount,state.freeBudget,state.freeRemaining,state.expansionLevel,state.expansionCenter,state.completedLines.length,state.oddsMultiplier].join('/');
-  if(live!==lastLive){lastLive=live;find('.dgb-announcement').textContent=find('.dgb-prompt').textContent+'。完成した串'+state.completedLines.length+'本'+'、ODDS'+(state.oddsMultiplier||1)+'倍。';}
+  if(live!==lastLive){lastLive=live;find('.dgb-announcement').textContent=find('.dgb-prompt').textContent+'。完成ライン'+state.completedLines.length+(isPlusFree(state)?'個':'本')+'、ODDS'+(state.oddsMultiplier||1)+'倍。';}
   fit();
  }
  const refreshArt=()=>{root.dataset.artReady=String(allAssetsReady());root.dataset.artFailed=String(Object.values(art).some(asset=>asset.failed));fit();};
  const offArt=onAssetsChanged(refreshArt),observer=new ResizeObserver(fit);observer.observe(root);observer.observe(pan);document.addEventListener('visibilitychange',syncMotion);motionMedia.addEventListener?.('change',syncMotion);syncMotion();refreshArt();document.fonts?.ready?.then(()=>{if(root.isConnected)fit();});
- return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isCurrent(state)?269:262,modern:isModern(state),payout:payGeometry,payoutArtwork:PAYOUT_ART,reachPresentation:{style:'six-drop',count:reachLayer.children.length,afterFinal:state?.phase==='done'},freeRail:{visible:showFreeRail(state),counts:[...root.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,count:row.children.length}))},highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);root.remove();}};
+ return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isPlusFree(state)?285:isCurrent(state)?269:262,modern:isModern(state),payout:payGeometry,payoutArtwork:PAYOUT_ART,reachPresentation:{style:'six-drop',count:reachLayer.children.length,afterFinal:state?.phase==='done'},plusFree:{enabled:isPlusFree(state),active:isPlusFree(state)&&state.draws.length<5,numbers:isPlusFree(state)?(state.triggerNumbers||[]).slice():[],hits:isPlusFree(state)?(state.triggerHits||[]).length:0},freeRail:{visible:showFreeRail(state),counts:[...root.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,count:row.children.length}))},highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);root.remove();}};
 }
-const hasAmbientMotion=(state,options={})=>!!state?.cells&&!options.reducedMotion&&!options.paused&&(!isCurrent(state)||state.completedLines?.length>0||Number(state.lineCounts?.[2])>=2||options.reach?.length>0);
-window.DangoBingoView={mount,drawMini,paint,geometry,payoutLayout,drawLessonDango,assetsReady,describeAssets,onAssetsChanged,hasAmbientMotion,lineColors:LINE_COLORS,reachStyle:REACH_STYLE,presentationRevision:269};
+const hasAmbientMotion=(state,options={})=>!!state?.cells&&!options.reducedMotion&&!options.paused&&(!isCurrent(state)||isPlusFree(state)&&state.hitCells?.length>0||state.completedLines?.length>0||Number(state.lineCounts?.[2])>=2||options.reach?.length>0);
+window.DangoBingoView={mount,drawMini,paint,geometry,payoutLayout,drawLessonDango,assetsReady,describeAssets,onAssetsChanged,hasAmbientMotion,lineColors:LINE_COLORS,reachStyle:REACH_STYLE,presentationRevision:285};
 })();

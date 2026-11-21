@@ -1,0 +1,3056 @@
+{
+  "revision": 285,
+  "reference": "cyan-three-individual-free-exact-auto-v285",
+  "sources": {
+    "rules": "assets/dango-bingo-rules.js",
+    "rulesSha256": "7f4d251adc694375790cb7ca18182993a7413ac94c43b953e0430accf7d84a59",
+    "evaluator": "scripts/dango-v285-enumerate.cpp",
+    "evaluatorSha256": "ff6e4bc9e3cc95594dcbca5d9641e593ce939bb62c1430c5dd76882a8e0d5e1b",
+    "evaluatorSharedIntegerGeometry": "scripts/dango-v268-enumerate.cpp",
+    "sharedIntegerGeometrySha256": "2a9ba4592dbd59a783c63510562d9c26c24e9e6d9036d187d28e390e1ec26698",
+    "rawFinalProfiles": "docs/qa-v285/dango-final-profiles.json"
+  },
+  "scope": {
+    "policy": "Sequential AUTO: each FREE maximizes exact conditional expected payout; ties choose the lowest cell ID.",
+    "globallyOptimalManualStrategy": false,
+    "uniformNumbers": true,
+    "uniformCyanTriplet": true,
+    "cyanPlacementIndependentOfTarget": true,
+    "futureNumbersConsulted": false,
+    "includesSugar": false,
+    "payoutBasis": "Hundredths of BET, before the existing whole-medal floor.",
+    "exactWholeMedalBetMultiple": 10,
+    "lowBetCaveat": "For BET values not divisible by 10, floor(BET * totalHundredths / 100) can reduce the paid return. No per-BET correction is claimed.",
+    "manualPlayCaveat": "Other legal FREE choices can produce a different expected return.",
+    "finiteSessionCaveat": "These are exact expectations, not a guarantee for an individual session."
+  },
+  "mechanics": {
+    "initialGreenFree": 3,
+    "startingPlacementBudget": 1,
+    "numberedCyanCells": 3,
+    "cyanGrantBalls": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "cyanExpiresAt": "Thinking begins after ball five",
+    "lineCompletionGrantsFree": false,
+    "maxPlacementBudget": 4,
+    "oddsSources": [
+      "Place yellow FREE on an initial green FREE.",
+      "A numbered HIT lands on a placed yellow FREE."
+    ]
+  },
+  "approvedPaytableHundredths": [
+    [
+      0,
+      10,
+      500
+    ],
+    [
+      10,
+      40,
+      1000
+    ],
+    [
+      20,
+      60,
+      2500
+    ],
+    [
+      40,
+      150,
+      5000
+    ],
+    [
+      80,
+      3000,
+      25000
+    ],
+    [
+      100,
+      5000,
+      200000
+    ]
+  ],
+  "impossiblePaytableCells": [
+    {
+      "length": 7,
+      "count": 3,
+      "minimumMarkedCells": 18,
+      "maximumMarkedCells": 15,
+      "presentation": "—"
+    }
+  ],
+  "roleMinimumDistinctCells": {
+    "2": [
+      2,
+      4,
+      6
+    ],
+    "3": [
+      3,
+      6,
+      9
+    ],
+    "4": [
+      4,
+      7,
+      9
+    ],
+    "5": [
+      5,
+      9,
+      13
+    ],
+    "6": [
+      6,
+      11,
+      15
+    ],
+    "7": [
+      7,
+      13,
+      18
+    ]
+  },
+  "triggerDistribution": [
+    {
+      "cyanHits": 0,
+      "placementBudget": 1,
+      "ways": 1140,
+      "denominator": 2300,
+      "probability": 0.4956521739130435
+    },
+    {
+      "cyanHits": 1,
+      "placementBudget": 2,
+      "ways": 950,
+      "denominator": 2300,
+      "probability": 0.41304347826086957
+    },
+    {
+      "cyanHits": 2,
+      "placementBudget": 3,
+      "ways": 200,
+      "denominator": 2300,
+      "probability": 0.08695652173913043
+    },
+    {
+      "cyanHits": 3,
+      "placementBudget": 4,
+      "ways": 10,
+      "denominator": 2300,
+      "probability": 0.004347826086956522
+    }
+  ],
+  "expectedPlacementBudget": 1.6,
+  "method": {
+    "earlySetsPerMold": 53130,
+    "budgetsEvaluatedPerEarlySet": 4,
+    "lateSetsIntegratedPerPlacement": 1140,
+    "triggerTripletsIntegratedPerEarlySet": 2300,
+    "explicitEarlySetsAcrossProductionMolds": 159390,
+    "drawDenominator": 60568200,
+    "triggerDenominator": 2300,
+    "probabilityDenominator": 139306860000,
+    "description": "Enumerate all C(25,5) early sets for each initial layout, evaluate sequential AUTO at budgets 1–4, integrate all C(20,3) late sets using integer inclusion/exclusion, then weight budgets by Hypergeometric(25,3,5).",
+    "noMonteCarloOrConfidenceInterval": "Every component of this AUTO expectation is exact; independent brute-force late-set vectors check the evaluator."
+  },
+  "profiles": [
+    {
+      "initialFreeCells": [
+        0,
+        21,
+        27
+      ],
+      "automaticNumerator": 5442322259500,
+      "budgetNumerators": [
+        674892870,
+        2960543300,
+        8398081240,
+        18081200470
+      ],
+      "vectors": [
+        {
+          "earlyCells": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            0
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 24040
+        },
+        {
+          "earlyCells": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            0,
+            21
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 36060
+        },
+        {
+          "earlyCells": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            0,
+            15,
+            21
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 49190
+        },
+        {
+          "earlyCells": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            0,
+            15,
+            21,
+            22
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 109000
+        },
+        {
+          "earlyCells": [
+            1,
+            13,
+            15,
+            20,
+            26
+          ],
+          "manualCells": [
+            2
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 106050
+        },
+        {
+          "earlyCells": [
+            1,
+            13,
+            15,
+            20,
+            26
+          ],
+          "manualCells": [
+            2,
+            22
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 741430
+        },
+        {
+          "earlyCells": [
+            1,
+            13,
+            15,
+            20,
+            26
+          ],
+          "manualCells": [
+            0,
+            2,
+            22
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 1311860
+        },
+        {
+          "earlyCells": [
+            1,
+            13,
+            15,
+            20,
+            26
+          ],
+          "manualCells": [
+            0,
+            2,
+            21,
+            22
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1882290
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            5
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 13830
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            0,
+            5
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 25930
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            0,
+            5,
+            6
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 38100
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            0,
+            5,
+            6,
+            7
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 88370
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            26
+          ],
+          "manualCells": [
+            23
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 2470
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            26
+          ],
+          "manualCells": [
+            10,
+            23
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 15850
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            26
+          ],
+          "manualCells": [
+            0,
+            10,
+            23
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 28220
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            26
+          ],
+          "manualCells": [
+            0,
+            5,
+            10,
+            23
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 42150
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            25
+          ],
+          "manualCells": [
+            3
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 21310
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            25
+          ],
+          "manualCells": [
+            1,
+            3
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 151010
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            25
+          ],
+          "manualCells": [
+            0,
+            1,
+            3
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 267400
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            25
+          ],
+          "manualCells": [
+            0,
+            1,
+            3,
+            21
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 383790
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            23
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 32670
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            22,
+            23
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 163910
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            0,
+            22,
+            23
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 290120
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            0,
+            21,
+            22,
+            23
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 416330
+        },
+        {
+          "earlyCells": [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            0
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 229220
+        },
+        {
+          "earlyCells": [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            0,
+            21
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 343830
+        },
+        {
+          "earlyCells": [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            0,
+            21,
+            27
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 458440
+        },
+        {
+          "earlyCells": [
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "manualCells": [
+            0,
+            15,
+            21,
+            27
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 484430
+        }
+      ],
+      "id": "triangle-perimeter",
+      "name": "縁の三粒",
+      "automaticReturnPercent": 39.067151894027326,
+      "conditionalBudgetReturnPercent": [
+        11.142693195439191,
+        48.87949947332098,
+        138.6549582123953,
+        298.52629713281885
+      ]
+    },
+    {
+      "initialFreeCells": [
+        1,
+        20,
+        22
+      ],
+      "automaticNumerator": 43496005526800,
+      "budgetNumerators": [
+        6156353490,
+        25416254140,
+        57291941820,
+        87393275120
+      ],
+      "vectors": [
+        {
+          "earlyCells": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            15
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 119170
+        },
+        {
+          "earlyCells": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            15,
+            26
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 756240
+        },
+        {
+          "earlyCells": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            1,
+            15,
+            26
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 1338060
+        },
+        {
+          "earlyCells": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "manualCells": [
+            1,
+            15,
+            20,
+            26
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1919880
+        },
+        {
+          "earlyCells": [
+            0,
+            13,
+            15,
+            21,
+            27
+          ],
+          "manualCells": [
+            26
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 106050
+        },
+        {
+          "earlyCells": [
+            0,
+            13,
+            15,
+            21,
+            27
+          ],
+          "manualCells": [
+            2,
+            26
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 741430
+        },
+        {
+          "earlyCells": [
+            0,
+            13,
+            15,
+            21,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            26
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 1311860
+        },
+        {
+          "earlyCells": [
+            0,
+            13,
+            15,
+            21,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            20,
+            26
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1882290
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            26
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 109550
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            2,
+            26
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 745190
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            1,
+            2,
+            26
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 1318820
+        },
+        {
+          "earlyCells": [
+            3,
+            4,
+            8,
+            9,
+            15
+          ],
+          "manualCells": [
+            1,
+            2,
+            20,
+            26
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1892450
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            27
+          ],
+          "manualCells": [
+            2
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 28530
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            27
+          ],
+          "manualCells": [
+            2,
+            26
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 137700
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            27
+          ],
+          "manualCells": [
+            2,
+            15,
+            26
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 849570
+        },
+        {
+          "earlyCells": [
+            4,
+            8,
+            11,
+            16,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            15,
+            26
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1438020
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            26
+          ],
+          "manualCells": [
+            2
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 656190
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            26
+          ],
+          "manualCells": [
+            1,
+            2
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 1226860
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            26
+          ],
+          "manualCells": [
+            1,
+            2,
+            20
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 1797530
+        },
+        {
+          "earlyCells": [
+            6,
+            10,
+            15,
+            19,
+            26
+          ],
+          "manualCells": [
+            1,
+            2,
+            20,
+            22
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 2368200
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            2
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 108010
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            2,
+            15
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 743560
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            15
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 1315740
+        },
+        {
+          "earlyCells": [
+            10,
+            16,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            15,
+            20
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1887920
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            21
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 144430
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            1,
+            21
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 270900
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            21
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 474500
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            1,
+            2,
+            15,
+            21
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 1676680
+        }
+      ],
+      "id": "triangle-inner-corners",
+      "name": "角寄りの三粒",
+      "automaticReturnPercent": 312.2316124762269,
+      "conditionalBudgetReturnPercent": [
+        101.64332917273421,
+        419.6303363811373,
+        945.9079487255689,
+        1442.8904131210768
+      ]
+    },
+    {
+      "initialFreeCells": [
+        3,
+        4,
+        10
+      ],
+      "automaticNumerator": 9792659775200,
+      "budgetNumerators": [
+        1535395870,
+        4828186300,
+        15377244850,
+        38008252840
+      ],
+      "vectors": [
+        {
+          "earlyCells": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ],
+          "manualCells": [
+            15
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 35210
+        },
+        {
+          "earlyCells": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ],
+          "manualCells": [
+            15,
+            21
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 166440
+        },
+        {
+          "earlyCells": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ],
+          "manualCells": [
+            3,
+            15,
+            21
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 294820
+        },
+        {
+          "earlyCells": [
+            0,
+            1,
+            2,
+            5,
+            6
+          ],
+          "manualCells": [
+            3,
+            4,
+            15,
+            21
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 423200
+        },
+        {
+          "earlyCells": [
+            0,
+            15,
+            17,
+            22,
+            27
+          ],
+          "manualCells": [
+            5
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 14250
+        },
+        {
+          "earlyCells": [
+            0,
+            15,
+            17,
+            22,
+            27
+          ],
+          "manualCells": [
+            3,
+            5
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 26740
+        },
+        {
+          "earlyCells": [
+            0,
+            15,
+            17,
+            22,
+            27
+          ],
+          "manualCells": [
+            3,
+            5,
+            23
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 40140
+        },
+        {
+          "earlyCells": [
+            0,
+            15,
+            17,
+            22,
+            27
+          ],
+          "manualCells": [
+            3,
+            5,
+            16,
+            23
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 116540
+        },
+        {
+          "earlyCells": [
+            2,
+            5,
+            9,
+            11,
+            17
+          ],
+          "manualCells": [
+            3
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 25100
+        },
+        {
+          "earlyCells": [
+            2,
+            5,
+            9,
+            11,
+            17
+          ],
+          "manualCells": [
+            3,
+            16
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 39350
+        },
+        {
+          "earlyCells": [
+            2,
+            5,
+            9,
+            11,
+            17
+          ],
+          "manualCells": [
+            3,
+            16,
+            23
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 112320
+        },
+        {
+          "earlyCells": [
+            2,
+            5,
+            9,
+            11,
+            17
+          ],
+          "manualCells": [
+            3,
+            4,
+            16,
+            23
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 161500
+        },
+        {
+          "earlyCells": [
+            5,
+            9,
+            13,
+            18,
+            27
+          ],
+          "manualCells": [
+            24
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 40090
+        },
+        {
+          "earlyCells": [
+            5,
+            9,
+            13,
+            18,
+            27
+          ],
+          "manualCells": [
+            3,
+            24
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 75020
+        },
+        {
+          "earlyCells": [
+            5,
+            9,
+            13,
+            18,
+            27
+          ],
+          "manualCells": [
+            3,
+            4,
+            24
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 109950
+        },
+        {
+          "earlyCells": [
+            5,
+            9,
+            13,
+            18,
+            27
+          ],
+          "manualCells": [
+            3,
+            4,
+            10,
+            24
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 144880
+        },
+        {
+          "earlyCells": [
+            7,
+            12,
+            17,
+            21,
+            26
+          ],
+          "manualCells": [
+            5
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 15330
+        },
+        {
+          "earlyCells": [
+            7,
+            12,
+            17,
+            21,
+            26
+          ],
+          "manualCells": [
+            5,
+            23
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 30310
+        },
+        {
+          "earlyCells": [
+            7,
+            12,
+            17,
+            21,
+            26
+          ],
+          "manualCells": [
+            5,
+            8,
+            23
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 92390
+        },
+        {
+          "earlyCells": [
+            7,
+            12,
+            17,
+            21,
+            26
+          ],
+          "manualCells": [
+            3,
+            5,
+            8,
+            23
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 157120
+        },
+        {
+          "earlyCells": [
+            12,
+            18,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            7
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 54920
+        },
+        {
+          "earlyCells": [
+            12,
+            18,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            3,
+            7
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 102800
+        },
+        {
+          "earlyCells": [
+            12,
+            18,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            3,
+            4,
+            7
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 150680
+        },
+        {
+          "earlyCells": [
+            12,
+            18,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            3,
+            4,
+            7,
+            10
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 198560
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            22
+          ],
+          "freeBudget": 1,
+          "expectedNumerator": 23580
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            21,
+            22
+          ],
+          "freeBudget": 2,
+          "expectedNumerator": 153280
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            3,
+            21,
+            22
+          ],
+          "freeBudget": 3,
+          "expectedNumerator": 271560
+        },
+        {
+          "earlyCells": [
+            23,
+            24,
+            25,
+            26,
+            27
+          ],
+          "manualCells": [
+            3,
+            4,
+            21,
+            22
+          ],
+          "freeBudget": 4,
+          "expectedNumerator": 389840
+        }
+      ],
+      "id": "triangle-step",
+      "name": "段違いの三粒",
+      "automaticReturnPercent": 70.29560335506808,
+      "conditionalBudgetReturnPercent": [
+        25.349867917488055,
+        79.71487183043247,
+        253.88314082307218,
+        627.5281887194931
+      ]
+    }
+  ],
+  "featuredLayoutWeight": 0.015,
+  "settings": [
+    {
+      "target": 50,
+      "weights": [
+        0.9466918638985683,
+        0.038308136101431654,
+        0.015
+      ],
+      "lowWeightNumerator": "7205022468105200",
+      "highWeightNumerator": "291553135552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 50
+    },
+    {
+      "target": 51,
+      "weights": [
+        0.9430310655726489,
+        0.041968934427351084,
+        0.015
+      ],
+      "lowWeightNumerator": "7177161096105200",
+      "highWeightNumerator": "319414507552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 51.00000000000001
+    },
+    {
+      "target": 52,
+      "weights": [
+        0.9393702672467295,
+        0.045629732753270515,
+        0.015
+      ],
+      "lowWeightNumerator": "7149299724105200",
+      "highWeightNumerator": "347275879552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 52
+    },
+    {
+      "target": 53,
+      "weights": [
+        0.9357094689208101,
+        0.049290531079189945,
+        0.015
+      ],
+      "lowWeightNumerator": "7121438352105200",
+      "highWeightNumerator": "375137251552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 53.00000000000001
+    },
+    {
+      "target": 54,
+      "weights": [
+        0.9320486705948906,
+        0.05295132940510937,
+        0.015
+      ],
+      "lowWeightNumerator": "7093576980105200",
+      "highWeightNumerator": "402998623552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 54
+    },
+    {
+      "target": 55,
+      "weights": [
+        0.9283878722689712,
+        0.0566121277310288,
+        0.015
+      ],
+      "lowWeightNumerator": "7065715608105200",
+      "highWeightNumerator": "430859995552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 55.00000000000001
+    },
+    {
+      "target": 56,
+      "weights": [
+        0.9247270739430518,
+        0.06027292605694823,
+        0.015
+      ],
+      "lowWeightNumerator": "7037854236105200",
+      "highWeightNumerator": "458721367552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 56.00000000000001
+    },
+    {
+      "target": 57,
+      "weights": [
+        0.9210662756171324,
+        0.06393372438286765,
+        0.015
+      ],
+      "lowWeightNumerator": "7009992864105200",
+      "highWeightNumerator": "486582739552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 57
+    },
+    {
+      "target": 58,
+      "weights": [
+        0.9174054772912129,
+        0.06759452270878709,
+        0.015
+      ],
+      "lowWeightNumerator": "6982131492105200",
+      "highWeightNumerator": "514444111552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 58.00000000000001
+    },
+    {
+      "target": 59,
+      "weights": [
+        0.9137446789652934,
+        0.07125532103470651,
+        0.015
+      ],
+      "lowWeightNumerator": "6954270120105200",
+      "highWeightNumerator": "542305483552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 59
+    },
+    {
+      "target": 60,
+      "weights": [
+        0.9100838806393741,
+        0.07491611936062595,
+        0.015
+      ],
+      "lowWeightNumerator": "6926408748105200",
+      "highWeightNumerator": "570166855552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 60
+    },
+    {
+      "target": 61,
+      "weights": [
+        0.9064230823134546,
+        0.07857691768654537,
+        0.015
+      ],
+      "lowWeightNumerator": "6898547376105200",
+      "highWeightNumerator": "598028227552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 61.00000000000001
+    },
+    {
+      "target": 62,
+      "weights": [
+        0.9027622839875352,
+        0.0822377160124648,
+        0.015
+      ],
+      "lowWeightNumerator": "6870686004105200",
+      "highWeightNumerator": "625889599552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 62
+    },
+    {
+      "target": 63,
+      "weights": [
+        0.8991014856616157,
+        0.08589851433838423,
+        0.015
+      ],
+      "lowWeightNumerator": "6842824632105200",
+      "highWeightNumerator": "653750971552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 63
+    },
+    {
+      "target": 64,
+      "weights": [
+        0.8954406873356964,
+        0.08955931266430366,
+        0.015
+      ],
+      "lowWeightNumerator": "6814963260105200",
+      "highWeightNumerator": "681612343552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 64
+    },
+    {
+      "target": 65,
+      "weights": [
+        0.8917798890097769,
+        0.09322011099022309,
+        0.015
+      ],
+      "lowWeightNumerator": "6787101888105200",
+      "highWeightNumerator": "709473715552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 65
+    },
+    {
+      "target": 66,
+      "weights": [
+        0.8881190906838574,
+        0.09688090931614252,
+        0.015
+      ],
+      "lowWeightNumerator": "6759240516105200",
+      "highWeightNumerator": "737335087552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 66
+    },
+    {
+      "target": 67,
+      "weights": [
+        0.884458292357938,
+        0.10054170764206194,
+        0.015
+      ],
+      "lowWeightNumerator": "6731379144105200",
+      "highWeightNumerator": "765196459552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 67
+    },
+    {
+      "target": 68,
+      "weights": [
+        0.8807974940320186,
+        0.10420250596798138,
+        0.015
+      ],
+      "lowWeightNumerator": "6703517772105200",
+      "highWeightNumerator": "793057831552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 68
+    },
+    {
+      "target": 69,
+      "weights": [
+        0.8771366957060992,
+        0.1078633042939008,
+        0.015
+      ],
+      "lowWeightNumerator": "6675656400105200",
+      "highWeightNumerator": "820919203552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 69
+    },
+    {
+      "target": 70,
+      "weights": [
+        0.8734758973801797,
+        0.11152410261982024,
+        0.015
+      ],
+      "lowWeightNumerator": "6647795028105200",
+      "highWeightNumerator": "848780575552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 70
+    },
+    {
+      "target": 71,
+      "weights": [
+        0.8698150990542604,
+        0.11518490094573966,
+        0.015
+      ],
+      "lowWeightNumerator": "6619933656105200",
+      "highWeightNumerator": "876641947552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 71
+    },
+    {
+      "target": 72,
+      "weights": [
+        0.8661543007283409,
+        0.11884569927165908,
+        0.015
+      ],
+      "lowWeightNumerator": "6592072284105200",
+      "highWeightNumerator": "904503319552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 72
+    },
+    {
+      "target": 73,
+      "weights": [
+        0.8624935024024215,
+        0.12250649759757852,
+        0.015
+      ],
+      "lowWeightNumerator": "6564210912105200",
+      "highWeightNumerator": "932364691552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 73
+    },
+    {
+      "target": 74,
+      "weights": [
+        0.858832704076502,
+        0.12616729592349796,
+        0.015
+      ],
+      "lowWeightNumerator": "6536349540105200",
+      "highWeightNumerator": "960226063552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 74.00000000000001
+    },
+    {
+      "target": 75,
+      "weights": [
+        0.8551719057505827,
+        0.12982809424941738,
+        0.015
+      ],
+      "lowWeightNumerator": "6508488168105200",
+      "highWeightNumerator": "988087435552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 75
+    },
+    {
+      "target": 76,
+      "weights": [
+        0.8515111074246632,
+        0.1334888925753368,
+        0.015
+      ],
+      "lowWeightNumerator": "6480626796105200",
+      "highWeightNumerator": "1015948807552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 76
+    },
+    {
+      "target": 77,
+      "weights": [
+        0.8478503090987437,
+        0.13714969090125623,
+        0.015
+      ],
+      "lowWeightNumerator": "6452765424105200",
+      "highWeightNumerator": "1043810179552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 77
+    },
+    {
+      "target": 78,
+      "weights": [
+        0.8441895107728243,
+        0.14081048922717565,
+        0.015
+      ],
+      "lowWeightNumerator": "6424904052105200",
+      "highWeightNumerator": "1071671551552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 78
+    },
+    {
+      "target": 79,
+      "weights": [
+        0.8405287124469049,
+        0.1444712875530951,
+        0.015
+      ],
+      "lowWeightNumerator": "6397042680105200",
+      "highWeightNumerator": "1099532923552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 79
+    },
+    {
+      "target": 80,
+      "weights": [
+        0.8368679141209855,
+        0.14813208587901452,
+        0.015
+      ],
+      "lowWeightNumerator": "6369181308105200",
+      "highWeightNumerator": "1127394295552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 80
+    },
+    {
+      "target": 81,
+      "weights": [
+        0.833207115795066,
+        0.15179288420493395,
+        0.015
+      ],
+      "lowWeightNumerator": "6341319936105200",
+      "highWeightNumerator": "1155255667552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 81
+    },
+    {
+      "target": 82,
+      "weights": [
+        0.8295463174691466,
+        0.15545368253085337,
+        0.015
+      ],
+      "lowWeightNumerator": "6313458564105200",
+      "highWeightNumerator": "1183117039552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 82
+    },
+    {
+      "target": 83,
+      "weights": [
+        0.8258855191432272,
+        0.1591144808567728,
+        0.015
+      ],
+      "lowWeightNumerator": "6285597192105200",
+      "highWeightNumerator": "1210978411552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 83
+    },
+    {
+      "target": 84,
+      "weights": [
+        0.8222247208173077,
+        0.16277527918269225,
+        0.015
+      ],
+      "lowWeightNumerator": "6257735820105200",
+      "highWeightNumerator": "1238839783552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 84
+    },
+    {
+      "target": 85,
+      "weights": [
+        0.8185639224913883,
+        0.16643607750861167,
+        0.015
+      ],
+      "lowWeightNumerator": "6229874448105200",
+      "highWeightNumerator": "1266701155552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 85
+    },
+    {
+      "target": 86,
+      "weights": [
+        0.814903124165469,
+        0.1700968758345311,
+        0.015
+      ],
+      "lowWeightNumerator": "6202013076105200",
+      "highWeightNumerator": "1294562527552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 86.00000000000001
+    },
+    {
+      "target": 87,
+      "weights": [
+        0.8112423258395495,
+        0.17375767416045051,
+        0.015
+      ],
+      "lowWeightNumerator": "6174151704105200",
+      "highWeightNumerator": "1322423899552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 87
+    },
+    {
+      "target": 88,
+      "weights": [
+        0.80758152751363,
+        0.17741847248636994,
+        0.015
+      ],
+      "lowWeightNumerator": "6146290332105200",
+      "highWeightNumerator": "1350285271552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 88
+    },
+    {
+      "target": 89,
+      "weights": [
+        0.8039207291877106,
+        0.1810792708122894,
+        0.015
+      ],
+      "lowWeightNumerator": "6118428960105200",
+      "highWeightNumerator": "1378146643552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 89.00000000000001
+    },
+    {
+      "target": 90,
+      "weights": [
+        0.8002599308617911,
+        0.1847400691382088,
+        0.015
+      ],
+      "lowWeightNumerator": "6090567588105200",
+      "highWeightNumerator": "1406008015552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 90.00000000000001
+    },
+    {
+      "target": 91,
+      "weights": [
+        0.7965991325358718,
+        0.18840086746412824,
+        0.015
+      ],
+      "lowWeightNumerator": "6062706216105200",
+      "highWeightNumerator": "1433869387552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 91
+    },
+    {
+      "target": 92,
+      "weights": [
+        0.7929383342099523,
+        0.19206166579004766,
+        0.015
+      ],
+      "lowWeightNumerator": "6034844844105200",
+      "highWeightNumerator": "1461730759552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 92
+    },
+    {
+      "target": 93,
+      "weights": [
+        0.7892775358840329,
+        0.19572246411596708,
+        0.015
+      ],
+      "lowWeightNumerator": "6006983472105200",
+      "highWeightNumerator": "1489592131552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 93
+    },
+    {
+      "target": 94,
+      "weights": [
+        0.7856167375581135,
+        0.19938326244188653,
+        0.015
+      ],
+      "lowWeightNumerator": "5979122100105200",
+      "highWeightNumerator": "1517453503552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 94
+    },
+    {
+      "target": 95,
+      "weights": [
+        0.781955939232194,
+        0.20304406076780596,
+        0.015
+      ],
+      "lowWeightNumerator": "5951260728105200",
+      "highWeightNumerator": "1545314875552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 95
+    },
+    {
+      "target": 96,
+      "weights": [
+        0.7782951409062746,
+        0.20670485909372538,
+        0.015
+      ],
+      "lowWeightNumerator": "5923399356105200",
+      "highWeightNumerator": "1573176247552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 96.00000000000001
+    },
+    {
+      "target": 97,
+      "weights": [
+        0.7746343425803552,
+        0.2103656574196448,
+        0.015
+      ],
+      "lowWeightNumerator": "5895537984105200",
+      "highWeightNumerator": "1601037619552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 97
+    },
+    {
+      "target": 98,
+      "weights": [
+        0.7709735442544358,
+        0.21402645574556423,
+        0.015
+      ],
+      "lowWeightNumerator": "5867676612105200",
+      "highWeightNumerator": "1628898991552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 98
+    },
+    {
+      "target": 99,
+      "weights": [
+        0.7673127459285163,
+        0.21768725407148368,
+        0.015
+      ],
+      "lowWeightNumerator": "5839815240105200",
+      "highWeightNumerator": "1656760363552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 99
+    },
+    {
+      "target": 100,
+      "weights": [
+        0.7636519476025969,
+        0.2213480523974031,
+        0.015
+      ],
+      "lowWeightNumerator": "5811953868105200",
+      "highWeightNumerator": "1684621735552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 100.00000000000001
+    },
+    {
+      "target": 101,
+      "weights": [
+        0.7599911492766774,
+        0.22500885072332252,
+        0.015
+      ],
+      "lowWeightNumerator": "5784092496105200",
+      "highWeightNumerator": "1712483107552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 101.00000000000001
+    },
+    {
+      "target": 102,
+      "weights": [
+        0.7563303509507581,
+        0.22866964904924195,
+        0.015
+      ],
+      "lowWeightNumerator": "5756231124105200",
+      "highWeightNumerator": "1740344479552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 102
+    },
+    {
+      "target": 103,
+      "weights": [
+        0.7526695526248386,
+        0.23233044737516137,
+        0.015
+      ],
+      "lowWeightNumerator": "5728369752105200",
+      "highWeightNumerator": "1768205851552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 103
+    },
+    {
+      "target": 104,
+      "weights": [
+        0.7490087542989192,
+        0.23599124570108082,
+        0.015
+      ],
+      "lowWeightNumerator": "5700508380105200",
+      "highWeightNumerator": "1796067223552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 104.00000000000001
+    },
+    {
+      "target": 105,
+      "weights": [
+        0.7453479559729997,
+        0.23965204402700024,
+        0.015
+      ],
+      "lowWeightNumerator": "5672647008105200",
+      "highWeightNumerator": "1823928595552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 105.00000000000001
+    },
+    {
+      "target": 106,
+      "weights": [
+        0.7416871576470803,
+        0.24331284235291967,
+        0.015
+      ],
+      "lowWeightNumerator": "5644785636105200",
+      "highWeightNumerator": "1851789967552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 106.00000000000001
+    },
+    {
+      "target": 107,
+      "weights": [
+        0.7380263593211609,
+        0.2469736406788391,
+        0.015
+      ],
+      "lowWeightNumerator": "5616924264105200",
+      "highWeightNumerator": "1879651339552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 107
+    },
+    {
+      "target": 108,
+      "weights": [
+        0.7343655609952415,
+        0.2506344390047585,
+        0.015
+      ],
+      "lowWeightNumerator": "5589062892105200",
+      "highWeightNumerator": "1907512711552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 108
+    },
+    {
+      "target": 109,
+      "weights": [
+        0.730704762669322,
+        0.25429523733067794,
+        0.015
+      ],
+      "lowWeightNumerator": "5561201520105200",
+      "highWeightNumerator": "1935374083552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 109
+    },
+    {
+      "target": 110,
+      "weights": [
+        0.7270439643434026,
+        0.25795603565659736,
+        0.015
+      ],
+      "lowWeightNumerator": "5533340148105200",
+      "highWeightNumerator": "1963235455552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 110
+    },
+    {
+      "target": 111,
+      "weights": [
+        0.7233831660174832,
+        0.2616168339825168,
+        0.015
+      ],
+      "lowWeightNumerator": "5505478776105200",
+      "highWeightNumerator": "1991096827552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 111
+    },
+    {
+      "target": 112,
+      "weights": [
+        0.7197223676915637,
+        0.26527763230843626,
+        0.015
+      ],
+      "lowWeightNumerator": "5477617404105200",
+      "highWeightNumerator": "2018958199552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 112.00000000000001
+    },
+    {
+      "target": 113,
+      "weights": [
+        0.7160615693656442,
+        0.2689384306343557,
+        0.015
+      ],
+      "lowWeightNumerator": "5449756032105200",
+      "highWeightNumerator": "2046819571552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 113.00000000000001
+    },
+    {
+      "target": 114,
+      "weights": [
+        0.7124007710397249,
+        0.2725992289602751,
+        0.015
+      ],
+      "lowWeightNumerator": "5421894660105200",
+      "highWeightNumerator": "2074680943552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 114.00000000000001
+    },
+    {
+      "target": 115,
+      "weights": [
+        0.7087399727138055,
+        0.27626002728619453,
+        0.015
+      ],
+      "lowWeightNumerator": "5394033288105200",
+      "highWeightNumerator": "2102542315552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 115.00000000000001
+    },
+    {
+      "target": 116,
+      "weights": [
+        0.705079174387886,
+        0.27992082561211395,
+        0.015
+      ],
+      "lowWeightNumerator": "5366171916105200",
+      "highWeightNumerator": "2130403687552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 116.00000000000001
+    },
+    {
+      "target": 117,
+      "weights": [
+        0.7014183760619666,
+        0.2835816239380334,
+        0.015
+      ],
+      "lowWeightNumerator": "5338310544105200",
+      "highWeightNumerator": "2158265059552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 117.00000000000001
+    },
+    {
+      "target": 118,
+      "weights": [
+        0.6977575777360472,
+        0.2872424222639528,
+        0.015
+      ],
+      "lowWeightNumerator": "5310449172105200",
+      "highWeightNumerator": "2186126431552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 118
+    },
+    {
+      "target": 119,
+      "weights": [
+        0.6940967794101278,
+        0.2909032205898722,
+        0.015
+      ],
+      "lowWeightNumerator": "5282587800105200",
+      "highWeightNumerator": "2213987803552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 119
+    },
+    {
+      "target": 120,
+      "weights": [
+        0.6904359810842083,
+        0.29456401891579165,
+        0.015
+      ],
+      "lowWeightNumerator": "5254726428105200",
+      "highWeightNumerator": "2241849175552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 120
+    },
+    {
+      "target": 121,
+      "weights": [
+        0.6867751827582889,
+        0.29822481724171107,
+        0.015
+      ],
+      "lowWeightNumerator": "5226865056105200",
+      "highWeightNumerator": "2269710547552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 121
+    },
+    {
+      "target": 122,
+      "weights": [
+        0.6831143844323695,
+        0.30188561556763055,
+        0.015
+      ],
+      "lowWeightNumerator": "5199003684105200",
+      "highWeightNumerator": "2297571919552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 122.00000000000001
+    },
+    {
+      "target": 123,
+      "weights": [
+        0.67945358610645,
+        0.30554641389355,
+        0.015
+      ],
+      "lowWeightNumerator": "5171142312105200",
+      "highWeightNumerator": "2325433291552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 123.00000000000001
+    },
+    {
+      "target": 124,
+      "weights": [
+        0.6757927877805305,
+        0.3092072122194694,
+        0.015
+      ],
+      "lowWeightNumerator": "5143280940105200",
+      "highWeightNumerator": "2353294663552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 124.00000000000001
+    },
+    {
+      "target": 125,
+      "weights": [
+        0.6721319894546112,
+        0.3128680105453888,
+        0.015
+      ],
+      "lowWeightNumerator": "5115419568105200",
+      "highWeightNumerator": "2381156035552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 125
+    },
+    {
+      "target": 126,
+      "weights": [
+        0.6684711911286918,
+        0.31652880887130824,
+        0.015
+      ],
+      "lowWeightNumerator": "5087558196105200",
+      "highWeightNumerator": "2409017407552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 126.00000000000001
+    },
+    {
+      "target": 127,
+      "weights": [
+        0.6648103928027723,
+        0.32018960719722767,
+        0.015
+      ],
+      "lowWeightNumerator": "5059696824105200",
+      "highWeightNumerator": "2436878779552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 127.00000000000001
+    },
+    {
+      "target": 128,
+      "weights": [
+        0.6611495944768528,
+        0.3238504055231471,
+        0.015
+      ],
+      "lowWeightNumerator": "5031835452105200",
+      "highWeightNumerator": "2464740151552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 128
+    },
+    {
+      "target": 129,
+      "weights": [
+        0.6574887961509335,
+        0.3275112038490665,
+        0.015
+      ],
+      "lowWeightNumerator": "5003974080105200",
+      "highWeightNumerator": "2492601523552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 129
+    },
+    {
+      "target": 130,
+      "weights": [
+        0.6538279978250141,
+        0.33117200217498594,
+        0.015
+      ],
+      "lowWeightNumerator": "4976112708105200",
+      "highWeightNumerator": "2520462895552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 130
+    },
+    {
+      "target": 131,
+      "weights": [
+        0.6501671994990946,
+        0.33483280050090536,
+        0.015
+      ],
+      "lowWeightNumerator": "4948251336105200",
+      "highWeightNumerator": "2548324267552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 131
+    },
+    {
+      "target": 132,
+      "weights": [
+        0.6465064011731751,
+        0.33849359882682484,
+        0.015
+      ],
+      "lowWeightNumerator": "4920389964105200",
+      "highWeightNumerator": "2576185639552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 132
+    },
+    {
+      "target": 133,
+      "weights": [
+        0.6428456028472558,
+        0.34215439715274426,
+        0.015
+      ],
+      "lowWeightNumerator": "4892528592105200",
+      "highWeightNumerator": "2604047011552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 133.00000000000003
+    },
+    {
+      "target": 134,
+      "weights": [
+        0.6391848045213363,
+        0.3458151954786637,
+        0.015
+      ],
+      "lowWeightNumerator": "4864667220105200",
+      "highWeightNumerator": "2631908383552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 134.00000000000003
+    },
+    {
+      "target": 135,
+      "weights": [
+        0.6355240061954168,
+        0.3494759938045831,
+        0.015
+      ],
+      "lowWeightNumerator": "4836805848105200",
+      "highWeightNumerator": "2659769755552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 135.00000000000003
+    },
+    {
+      "target": 136,
+      "weights": [
+        0.6318632078694975,
+        0.35313679213050253,
+        0.015
+      ],
+      "lowWeightNumerator": "4808944476105200",
+      "highWeightNumerator": "2687631127552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 136
+    },
+    {
+      "target": 137,
+      "weights": [
+        0.6282024095435781,
+        0.35679759045642195,
+        0.015
+      ],
+      "lowWeightNumerator": "4781083104105200",
+      "highWeightNumerator": "2715492499552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 137.00000000000003
+    },
+    {
+      "target": 138,
+      "weights": [
+        0.6245416112176586,
+        0.3604583887823414,
+        0.015
+      ],
+      "lowWeightNumerator": "4753221732105200",
+      "highWeightNumerator": "2743353871552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 138.00000000000003
+    },
+    {
+      "target": 139,
+      "weights": [
+        0.6208808128917391,
+        0.3641191871082608,
+        0.015
+      ],
+      "lowWeightNumerator": "4725360360105200",
+      "highWeightNumerator": "2771215243552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 139
+    },
+    {
+      "target": 140,
+      "weights": [
+        0.6172200145658198,
+        0.3677799854341802,
+        0.015
+      ],
+      "lowWeightNumerator": "4697498988105200",
+      "highWeightNumerator": "2799076615552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 140
+    },
+    {
+      "target": 141,
+      "weights": [
+        0.6135592162399004,
+        0.37144078376009965,
+        0.015
+      ],
+      "lowWeightNumerator": "4669637616105200",
+      "highWeightNumerator": "2826937987552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 141
+    },
+    {
+      "target": 142,
+      "weights": [
+        0.6098984179139808,
+        0.3751015820860191,
+        0.015
+      ],
+      "lowWeightNumerator": "4641776244105200",
+      "highWeightNumerator": "2854799359552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 142.00000000000003
+    },
+    {
+      "target": 143,
+      "weights": [
+        0.6062376195880614,
+        0.37876238041193855,
+        0.015
+      ],
+      "lowWeightNumerator": "4613914872105200",
+      "highWeightNumerator": "2882660731552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 143
+    },
+    {
+      "target": 144,
+      "weights": [
+        0.6025768212621421,
+        0.38242317873785797,
+        0.015
+      ],
+      "lowWeightNumerator": "4586053500105200",
+      "highWeightNumerator": "2910522103552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 144.00000000000003
+    },
+    {
+      "target": 145,
+      "weights": [
+        0.5989160229362226,
+        0.3860839770637774,
+        0.015
+      ],
+      "lowWeightNumerator": "4558192128105200",
+      "highWeightNumerator": "2938383475552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 145.00000000000003
+    },
+    {
+      "target": 146,
+      "weights": [
+        0.5952552246103031,
+        0.3897447753896968,
+        0.015
+      ],
+      "lowWeightNumerator": "4530330756105200",
+      "highWeightNumerator": "2966244847552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 146
+    },
+    {
+      "target": 147,
+      "weights": [
+        0.5915944262843837,
+        0.39340557371561624,
+        0.015
+      ],
+      "lowWeightNumerator": "4502469384105200",
+      "highWeightNumerator": "2994106219552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 147
+    },
+    {
+      "target": 148,
+      "weights": [
+        0.5879336279584644,
+        0.39706637204153566,
+        0.015
+      ],
+      "lowWeightNumerator": "4474608012105200",
+      "highWeightNumerator": "3021967591552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 148.00000000000003
+    },
+    {
+      "target": 149,
+      "weights": [
+        0.5842728296325449,
+        0.4007271703674551,
+        0.015
+      ],
+      "lowWeightNumerator": "4446746640105200",
+      "highWeightNumerator": "3049828963552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 149
+    },
+    {
+      "target": 150,
+      "weights": [
+        0.5806120313066254,
+        0.4043879686933745,
+        0.015
+      ],
+      "lowWeightNumerator": "4418885268105200",
+      "highWeightNumerator": "3077690335552900",
+      "featuredWeightNumerator": "114161049801900",
+      "weightDenominator": "7610736653460000",
+      "automaticReturnPercent": 150
+    }
+  ],
+  "preliminarySearch": {
+    "status": "Diagnostic only; never used as current calibration.",
+    "paytableRevision": 268,
+    "originalProfiles": [
+      {
+        "initialFreeCells": [
+          0,
+          21,
+          27
+        ],
+        "automaticReturnPercent": 77.86699082012186
+      },
+      {
+        "initialFreeCells": [
+          3,
+          4,
+          10
+        ],
+        "automaticReturnPercent": 140.1390590944337
+      },
+      {
+        "initialFreeCells": [
+          0,
+          2,
+          21
+        ],
+        "automaticReturnPercent": 130.3197746557492
+      }
+    ],
+    "additionalLayouts": [
+      {
+        "initialFreeCells": [
+          1,
+          20,
+          22
+        ],
+        "automaticReturnPercent": 624.8102941147334
+      },
+      {
+        "initialFreeCells": [
+          2,
+          15,
+          26
+        ],
+        "automaticReturnPercent": 624.8102941147334
+      },
+      {
+        "initialFreeCells": [
+          3,
+          14,
+          23
+        ],
+        "automaticReturnPercent": 132.09275898042637
+      },
+      {
+        "initialFreeCells": [
+          4,
+          16,
+          19
+        ],
+        "automaticReturnPercent": 161.40622402945556
+      },
+      {
+        "initialFreeCells": [
+          5,
+          10,
+          25
+        ],
+        "automaticReturnPercent": 132.09276521127532
+      },
+      {
+        "initialFreeCells": [
+          6,
+          9,
+          24
+        ],
+        "automaticReturnPercent": 223.3359160546724
+      },
+      {
+        "initialFreeCells": [
+          7,
+          13,
+          17
+        ],
+        "automaticReturnPercent": 216.9354056002698
+      },
+      {
+        "initialFreeCells": [
+          8,
+          11,
+          18
+        ],
+        "automaticReturnPercent": 216.93544558035404
+      },
+      {
+        "initialFreeCells": [
+          12,
+          21,
+          27
+        ],
+        "automaticReturnPercent": 79.98151491606372
+      },
+      {
+        "initialFreeCells": [
+          12,
+          22,
+          26
+        ],
+        "automaticReturnPercent": 284.9867351586275
+      },
+      {
+        "initialFreeCells": [
+          12,
+          23,
+          25
+        ],
+        "automaticReturnPercent": 111.53455385255256
+      },
+      {
+        "initialFreeCells": [
+          12,
+          15,
+          20
+        ],
+        "automaticReturnPercent": 288.3347971873029
+      },
+      {
+        "initialFreeCells": [
+          12,
+          16,
+          19
+        ],
+        "automaticReturnPercent": 106.14157704868231
+      },
+      {
+        "initialFreeCells": [
+          12,
+          17,
+          18
+        ],
+        "automaticReturnPercent": 137.1008277058287
+      },
+      {
+        "initialFreeCells": [
+          10,
+          12,
+          14
+        ],
+        "automaticReturnPercent": 126.11403024014754
+      },
+      {
+        "initialFreeCells": [
+          6,
+          9,
+          12
+        ],
+        "automaticReturnPercent": 114.6953155300464
+      },
+      {
+        "initialFreeCells": [
+          7,
+          8,
+          12
+        ],
+        "automaticReturnPercent": 131.2709155019358
+      },
+      {
+        "initialFreeCells": [
+          3,
+          5,
+          12
+        ],
+        "automaticReturnPercent": 107.848697286695
+      },
+      {
+        "initialFreeCells": [
+          21,
+          24,
+          27
+        ],
+        "automaticReturnPercent": 95.07803740390099
+      },
+      {
+        "initialFreeCells": [
+          22,
+          24,
+          26
+        ],
+        "automaticReturnPercent": 287.94923082754144
+      }
+    ],
+    "decision": "The old table gave a minimum of 77.866990820% among the bounded 23-layout search, so ordinary payouts were reduced and current profiles were re-enumerated. Special 6×2=30× and 7×2=50× remain."
+  },
+  "reproduction": [
+    "g++ -O3 -std=c++20 scripts/dango-v285-enumerate.cpp -o /tmp/dango-v285-enumerate",
+    "/tmp/dango-v285-enumerate > /tmp/dango-v285-fresh.json",
+    "node tests/dango-v285-calibration.mjs /tmp/dango-v285-fresh.json",
+    "node tests/dango-v285-rules.mjs"
+  ]
+}

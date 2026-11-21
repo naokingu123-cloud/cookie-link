@@ -1,0 +1,3650 @@
+{
+  "version": "20261121-v284-sixdrop-compact-200-rtp",
+  "rulesRevision": 284,
+  "shard": 2,
+  "shards": 4,
+  "totalPlannedCases": 4,
+  "plannedCases": [
+    "mini-allclear"
+  ],
+  "caseResults": [
+    {
+      "id": "mini-allclear",
+      "status": "passed",
+      "durationMs": 102564
+    }
+  ],
+  "failures": [],
+  "screens": [
+    "mini-allclear-start.png",
+    "mini-allclear-ball2.png",
+    "mini-allclear-ball4.png",
+    "mini-allclear-allclear-live.png",
+    "mini-allclear-allclear-overlay.png",
+    "mini-allclear-allclear-earned.png",
+    "mini-allclear-ball7.png",
+    "mini-allclear-completed.png"
+  ],
+  "pageErrors": [],
+  "assetFailures": [],
+  "apiRequests": [],
+  "externalRequests": [],
+  "witnesses": {
+    "winning": {
+      "seed": 8,
+      "win": 4840,
+      "counts": {
+        "line": 4,
+        "triangle": 0,
+        "hexagon": 0
+      },
+      "allClears": 1,
+      "numbers": [
+        6,
+        2,
+        10,
+        14,
+        18,
+        22,
+        25,
+        5
+      ]
+    },
+    "losing": {
+      "seed": 4,
+      "win": 0
+    }
+  },
+  "scope": "Real manual number buttons; production v284 single-ball neighbour removal, 200-drop palette, compact payouts, enlarged 318px bottle, integer-credit count animation, native payout, local continuation and download worker; isolated virtual CREDIT",
+  "mini-allclearFrames": [
+    {
+      "kind": "cookie",
+      "cssWidth": 456,
+      "cssHeight": 390,
+      "left": 9.75,
+      "top": 437.4375,
+      "width": 370.5,
+      "height": 316.875,
+      "viewportWidth": 390,
+      "scrollWidth": 390
+    },
+    {
+      "kind": "gelato",
+      "cssWidth": 456,
+      "cssHeight": 390,
+      "left": 9.75,
+      "top": 437.4375,
+      "width": 370.5,
+      "height": 316.875,
+      "viewportWidth": 390,
+      "scrollWidth": 390
+    },
+    {
+      "kind": "candy",
+      "cssWidth": 456,
+      "cssHeight": 390,
+      "left": 9.75,
+      "top": 437.4375,
+      "width": 370.5,
+      "height": 316.875,
+      "viewportWidth": 390,
+      "scrollWidth": 390
+    }
+  ],
+  "mini-allclearOverlay": {
+    "event": {
+      "game": "candy",
+      "phase": "pyramidAllClear",
+      "key": "1/2/pyramidAllClear/18/4/9/3//61.333333333333336/",
+      "kind": "clear",
+      "tier": 4,
+      "label": "ALL CLEAR!",
+      "detail": "シックスドロップ 全消し",
+      "win": 1840,
+      "total": false,
+      "gain": 61.333333333333336,
+      "age": 200,
+      "duration": 3100,
+      "pathsVisible": true,
+      "paths": []
+    },
+    "box": {
+      "width": 38.1875,
+      "height": 38.1875
+    },
+    "dedicatedPaints": 1,
+    "liveScreen": "mini-allclear-allclear-live.png"
+  },
+  "mini-allclear": {
+    "seed": 8,
+    "bet": 3000,
+    "win": 4840,
+    "clearCount": 1,
+    "bonusMedals": 1840,
+    "counts": {
+      "line": 4,
+      "triangle": 0,
+      "hexagon": 0
+    },
+    "carry": {
+      "version": 247,
+      "bankUnits": 193056,
+      "removed": 215,
+      "feed": 641,
+      "roundId": "local:1:2"
+    },
+    "ui": {
+      "version": 284,
+      "artLoaded": true,
+      "imageFiles": [
+        "assets/sixdrop-art-v278/bottle.png",
+        "assets/sixdrop-art-v278/allclear-logo.png",
+        "assets/sixdrop-art-v278/progressive-frame.png",
+        "assets/sixdrop-art-v278/payout-frame.png",
+        "assets/sixdrop-art-v278/allclear-award.png"
+      ],
+      "errors": [],
+      "receipt": {
+        "epoch": "1/2",
+        "count": 1,
+        "win": 1840,
+        "lastWin": 1840
+      },
+      "progressive": {
+        "units": 193056,
+        "targetUnits": 193056
+      },
+      "removed": {
+        "count": 215,
+        "targetCount": 215
+      },
+      "continuation": true,
+      "batchSizes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "receivedBalls": 8,
+      "processedBalls": 8,
+      "roles": {
+        "line": {
+          "count": 4,
+          "rows": [
+            {
+              "count": 1,
+              "hundredths": 10,
+              "win": 300
+            },
+            {
+              "count": 2,
+              "hundredths": 20,
+              "win": 600
+            },
+            {
+              "count": 3,
+              "hundredths": 50,
+              "win": 1500
+            },
+            {
+              "count": 4,
+              "hundredths": 100,
+              "win": 3000
+            },
+            {
+              "count": 5,
+              "hundredths": 200,
+              "win": 6000
+            }
+          ]
+        },
+        "triangle": {
+          "count": 0,
+          "rows": [
+            {
+              "count": 1,
+              "hundredths": 20,
+              "win": 600
+            },
+            {
+              "count": 2,
+              "hundredths": 100,
+              "win": 3000
+            },
+            {
+              "count": 3,
+              "hundredths": 200,
+              "win": 6000
+            },
+            {
+              "count": 4,
+              "hundredths": 400,
+              "win": 12000
+            },
+            {
+              "count": 5,
+              "hundredths": 750,
+              "win": 22500
+            }
+          ]
+        },
+        "hexagon": {
+          "count": 0,
+          "rows": [
+            {
+              "count": 1,
+              "hundredths": 50,
+              "win": 1500
+            },
+            {
+              "count": 2,
+              "hundredths": 200,
+              "win": 6000
+            },
+            {
+              "count": 3,
+              "hundredths": 400,
+              "win": 12000
+            },
+            {
+              "count": 4,
+              "hundredths": 750,
+              "win": 22500
+            },
+            {
+              "count": 5,
+              "hundredths": 1250,
+              "win": 37500
+            }
+          ]
+        }
+      },
+      "geometry": {
+        "step": 29.5,
+        "top": 43.03512764761578,
+        "radius": 14.75
+      },
+      "mainPaints": 358,
+      "miniPaints": 99,
+      "receiptEvents": 1,
+      "allClearBadgePaints": 29
+    },
+    "hud": {
+      "heading": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "headingStyle": {
+        "display": "none",
+        "content": "normal",
+        "width": "auto",
+        "height": "100%",
+        "backgroundImage": "none",
+        "boxShadow": "none",
+        "borderWidth": "0px"
+      },
+      "logo": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "win": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "bank": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "digits": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "bankText": "1930",
+      "continuation": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "continuationHidden": false,
+      "receipt": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "receiptHidden": false,
+      "receiptAmount": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "receiptDigits": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "receiptText": "1840",
+      "receiptWin": 1840,
+      "receiptCount": 1,
+      "receiptLastWin": 1840,
+      "hasBatchStrip": false,
+      "removed": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "removedAmount": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "removedDigits": {
+        "left": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "width": 0,
+        "height": 0
+      },
+      "removedText": "215"
+    },
+    "rows": [
+      {
+        "role": "line",
+        "earned": 4,
+        "countText": "×4",
+        "box": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "diagram": {
+          "tag": "CANVAS",
+          "drops": 4,
+          "width": 168,
+          "height": 112,
+          "box": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "ink": 4672,
+          "centerAlpha": 244
+        },
+        "rows": [
+          {
+            "count": 1,
+            "countText": "×1",
+            "hundredths": 10,
+            "win": 300,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 2,
+            "countText": "×2",
+            "hundredths": 20,
+            "win": 600,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 3,
+            "countText": "×3",
+            "hundredths": 50,
+            "win": 1500,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 4,
+            "countText": "×4",
+            "hundredths": 100,
+            "win": 3000,
+            "current": true,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 5,
+            "countText": "×5",
+            "hundredths": 200,
+            "win": 6000,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ]
+      },
+      {
+        "role": "triangle",
+        "earned": 0,
+        "countText": "×0",
+        "box": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "diagram": {
+          "tag": "CANVAS",
+          "drops": 6,
+          "width": 168,
+          "height": 112,
+          "box": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "ink": 6181,
+          "centerAlpha": 247
+        },
+        "rows": [
+          {
+            "count": 1,
+            "countText": "×1",
+            "hundredths": 20,
+            "win": 600,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 2,
+            "countText": "×2",
+            "hundredths": 100,
+            "win": 3000,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 3,
+            "countText": "×3",
+            "hundredths": 200,
+            "win": 6000,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 4,
+            "countText": "×4",
+            "hundredths": 400,
+            "win": 12000,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 5,
+            "countText": "×5",
+            "hundredths": 750,
+            "win": 22500,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ]
+      },
+      {
+        "role": "hexagon",
+        "earned": 0,
+        "countText": "×0",
+        "box": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        },
+        "diagram": {
+          "tag": "CANVAS",
+          "drops": 6,
+          "width": 168,
+          "height": 112,
+          "box": {
+            "left": 0,
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "width": 0,
+            "height": 0
+          },
+          "ink": 6143,
+          "centerAlpha": 0
+        },
+        "rows": [
+          {
+            "count": 1,
+            "countText": "×1",
+            "hundredths": 50,
+            "win": 1500,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 2,
+            "countText": "×2",
+            "hundredths": 200,
+            "win": 6000,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 3,
+            "countText": "×3",
+            "hundredths": 400,
+            "win": 12000,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 4,
+            "countText": "×4",
+            "hundredths": 750,
+            "win": 22500,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "count": 5,
+            "countText": "×5",
+            "hundredths": 1250,
+            "win": 37500,
+            "current": false,
+            "box": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "amount": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            },
+            "cell": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ]
+      }
+    ],
+    "anchors": null,
+    "countUp": [
+      {
+        "units": 123456,
+        "removed": 99,
+        "hostUnits": 123456,
+        "hostRemoved": 99,
+        "text": "99",
+        "continuationHidden": false
+      },
+      {
+        "units": 127656,
+        "removed": 106,
+        "hostUnits": 127656,
+        "hostRemoved": 106,
+        "text": "106",
+        "continuationHidden": false
+      },
+      {
+        "units": 131856,
+        "removed": 113,
+        "hostUnits": 131856,
+        "hostRemoved": 113,
+        "text": "113",
+        "continuationHidden": false
+      },
+      {
+        "units": 136056,
+        "removed": 120,
+        "hostUnits": 136056,
+        "hostRemoved": 120,
+        "text": "120",
+        "continuationHidden": false
+      },
+      {
+        "units": 139056,
+        "removed": 125,
+        "hostUnits": 139056,
+        "hostRemoved": 125,
+        "text": "125",
+        "continuationHidden": false
+      },
+      {
+        "units": 143256,
+        "removed": 132,
+        "hostUnits": 143256,
+        "hostRemoved": 132,
+        "text": "132",
+        "continuationHidden": false
+      },
+      {
+        "units": 155856,
+        "removed": 153,
+        "hostUnits": 155856,
+        "hostRemoved": 153,
+        "text": "153",
+        "continuationHidden": false
+      },
+      {
+        "units": 169056,
+        "removed": 175,
+        "hostUnits": 169056,
+        "hostRemoved": 175,
+        "text": "175",
+        "continuationHidden": false
+      },
+      {
+        "units": 184056,
+        "removed": 200,
+        "hostUnits": 184056,
+        "hostRemoved": 200,
+        "text": "200",
+        "continuationHidden": false
+      },
+      {
+        "units": 188256,
+        "removed": 207,
+        "hostUnits": 188256,
+        "hostRemoved": 207,
+        "text": "207",
+        "continuationHidden": false
+      },
+      {
+        "units": 190656,
+        "removed": 211,
+        "hostUnits": 190656,
+        "hostRemoved": 211,
+        "text": "211",
+        "continuationHidden": false
+      },
+      {
+        "units": 193056,
+        "removed": 215,
+        "hostUnits": 193056,
+        "hostRemoved": 215,
+        "text": "215",
+        "continuationHidden": false
+      }
+    ],
+    "creditRounding": {
+      "perDrop": 600,
+      "minError": 0,
+      "maxError": 0,
+      "anchors": 117
+    },
+    "blasts": [
+      {
+        "number": 6,
+        "centres": [
+          [
+            4,
+            5
+          ]
+        ],
+        "affected": [
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            6
+          ]
+        ],
+        "removed": [
+          {
+            "r": 3,
+            "c": 5,
+            "id": 51,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 6,
+            "id": 52,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 4,
+            "id": 43,
+            "number": 21
+          },
+          {
+            "r": 4,
+            "c": 5,
+            "id": 44,
+            "number": 6
+          },
+          {
+            "r": 4,
+            "c": 6,
+            "id": 45,
+            "number": 11
+          },
+          {
+            "r": 5,
+            "c": 5,
+            "id": 36,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 6,
+            "id": 37,
+            "number": 7
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              4,
+              5
+            ],
+            "validNeighbours": 6,
+            "occupiedNeighbours": 6
+          }
+        ]
+      },
+      {
+        "number": 2,
+        "centres": [
+          [
+            2,
+            3
+          ]
+        ],
+        "affected": [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "removed": [
+          {
+            "r": 1,
+            "c": 3,
+            "id": 64,
+            "number": 19
+          },
+          {
+            "r": 1,
+            "c": 4,
+            "id": 72,
+            "number": 13
+          },
+          {
+            "r": 2,
+            "c": 2,
+            "id": 56,
+            "number": null
+          },
+          {
+            "r": 2,
+            "c": 3,
+            "id": 65,
+            "number": 2
+          },
+          {
+            "r": 2,
+            "c": 4,
+            "id": 73,
+            "number": 14
+          },
+          {
+            "r": 3,
+            "c": 3,
+            "id": 49,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 4,
+            "id": 57,
+            "number": null
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              2,
+              3
+            ],
+            "validNeighbours": 6,
+            "occupiedNeighbours": 6
+          }
+        ]
+      },
+      {
+        "number": 10,
+        "centres": [
+          [
+            1,
+            1
+          ]
+        ],
+        "affected": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "removed": [
+          {
+            "r": 0,
+            "c": 0,
+            "id": 69,
+            "number": 12
+          },
+          {
+            "r": 0,
+            "c": 1,
+            "id": 85,
+            "number": 13
+          },
+          {
+            "r": 1,
+            "c": 0,
+            "id": 61,
+            "number": null
+          },
+          {
+            "r": 1,
+            "c": 1,
+            "id": 62,
+            "number": 10
+          },
+          {
+            "r": 1,
+            "c": 2,
+            "id": 70,
+            "number": 22
+          },
+          {
+            "r": 2,
+            "c": 0,
+            "id": 54,
+            "number": 5
+          },
+          {
+            "r": 2,
+            "c": 1,
+            "id": 55,
+            "number": null
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              1,
+              1
+            ],
+            "validNeighbours": 6,
+            "occupiedNeighbours": 6
+          }
+        ]
+      },
+      {
+        "number": 14,
+        "centres": [
+          [
+            0,
+            5
+          ]
+        ],
+        "affected": [
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            6
+          ]
+        ],
+        "removed": [
+          {
+            "r": 0,
+            "c": 4,
+            "id": 88,
+            "number": null
+          },
+          {
+            "r": 0,
+            "c": 5,
+            "id": 89,
+            "number": 14
+          },
+          {
+            "r": 0,
+            "c": 6,
+            "id": 82,
+            "number": 21
+          },
+          {
+            "r": 1,
+            "c": 5,
+            "id": 84,
+            "number": null
+          },
+          {
+            "r": 1,
+            "c": 6,
+            "id": 77,
+            "number": 7
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              0,
+              5
+            ],
+            "validNeighbours": 4,
+            "occupiedNeighbours": 4
+          }
+        ]
+      },
+      {
+        "number": 18,
+        "centres": [
+          [
+            4,
+            3
+          ]
+        ],
+        "affected": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ],
+        "removed": [
+          {
+            "r": 3,
+            "c": 3,
+            "id": 79,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 4,
+            "id": 76,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 2,
+            "id": 41,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 3,
+            "id": 42,
+            "number": 18
+          },
+          {
+            "r": 4,
+            "c": 4,
+            "id": 50,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 3,
+            "id": 34,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 4,
+            "id": 35,
+            "number": 23
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              4,
+              3
+            ],
+            "validNeighbours": 6,
+            "occupiedNeighbours": 6
+          }
+        ]
+      },
+      {
+        "number": 22,
+        "centres": [
+          [
+            1,
+            4
+          ]
+        ],
+        "affected": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ],
+        "removed": [
+          {
+            "r": 0,
+            "c": 3,
+            "id": 173,
+            "number": 8
+          },
+          {
+            "r": 0,
+            "c": 4,
+            "id": 174,
+            "number": 23
+          },
+          {
+            "r": 1,
+            "c": 3,
+            "id": 165,
+            "number": 7
+          },
+          {
+            "r": 1,
+            "c": 4,
+            "id": 166,
+            "number": 22
+          },
+          {
+            "r": 1,
+            "c": 5,
+            "id": 167,
+            "number": 12
+          },
+          {
+            "r": 2,
+            "c": 3,
+            "id": 158,
+            "number": null
+          },
+          {
+            "r": 2,
+            "c": 4,
+            "id": 159,
+            "number": 20
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              1,
+              4
+            ],
+            "validNeighbours": 6,
+            "occupiedNeighbours": 6
+          }
+        ]
+      },
+      {
+        "number": 25,
+        "centres": [
+          [
+            0,
+            6
+          ]
+        ],
+        "affected": [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "removed": [
+          {
+            "r": 0,
+            "c": 5,
+            "id": 183,
+            "number": 20
+          },
+          {
+            "r": 0,
+            "c": 6,
+            "id": 176,
+            "number": 25
+          },
+          {
+            "r": 1,
+            "c": 6,
+            "id": 168,
+            "number": 3
+          },
+          {
+            "r": 1,
+            "c": 7,
+            "id": 169,
+            "number": 9
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              0,
+              6
+            ],
+            "validNeighbours": 3,
+            "occupiedNeighbours": 3
+          }
+        ]
+      },
+      {
+        "number": 5,
+        "centres": [
+          [
+            3,
+            0
+          ]
+        ],
+        "affected": [
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            0
+          ]
+        ],
+        "removed": [
+          {
+            "r": 2,
+            "c": 0,
+            "id": 155,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 0,
+            "id": 147,
+            "number": 5
+          },
+          {
+            "r": 3,
+            "c": 1,
+            "id": 148,
+            "number": 24
+          },
+          {
+            "r": 4,
+            "c": 0,
+            "id": 140,
+            "number": 15
+          }
+        ],
+        "degrees": [
+          {
+            "cell": [
+              3,
+              0
+            ],
+            "validNeighbours": 3,
+            "occupiedNeighbours": 3
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          6
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          6
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            4,
+            5
+          ]
+        ],
+        "affectedCells": [
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            6
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          6
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 3,
+            "c": 5,
+            "id": 51,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 6,
+            "id": 52,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 4,
+            "id": 43,
+            "number": 21
+          },
+          {
+            "r": 4,
+            "c": 5,
+            "id": 44,
+            "number": 6
+          },
+          {
+            "r": 4,
+            "c": 6,
+            "id": 45,
+            "number": 11
+          },
+          {
+            "r": 5,
+            "c": 5,
+            "id": 36,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 6,
+            "id": 37,
+            "number": 7
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          6
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          6
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          6
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          2
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          2
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            2,
+            3
+          ]
+        ],
+        "affectedCells": [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          2
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 1,
+            "c": 3,
+            "id": 64,
+            "number": 19
+          },
+          {
+            "r": 1,
+            "c": 4,
+            "id": 72,
+            "number": 13
+          },
+          {
+            "r": 2,
+            "c": 2,
+            "id": 56,
+            "number": null
+          },
+          {
+            "r": 2,
+            "c": 3,
+            "id": 65,
+            "number": 2
+          },
+          {
+            "r": 2,
+            "c": 4,
+            "id": 73,
+            "number": 14
+          },
+          {
+            "r": 3,
+            "c": 3,
+            "id": 49,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 4,
+            "id": 57,
+            "number": null
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          2
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          2
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          2
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          10
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          10
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            1,
+            1
+          ]
+        ],
+        "affectedCells": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          10
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 0,
+            "c": 0,
+            "id": 69,
+            "number": 12
+          },
+          {
+            "r": 0,
+            "c": 1,
+            "id": 85,
+            "number": 13
+          },
+          {
+            "r": 1,
+            "c": 0,
+            "id": 61,
+            "number": null
+          },
+          {
+            "r": 1,
+            "c": 1,
+            "id": 62,
+            "number": 10
+          },
+          {
+            "r": 1,
+            "c": 2,
+            "id": 70,
+            "number": 22
+          },
+          {
+            "r": 2,
+            "c": 0,
+            "id": 54,
+            "number": 5
+          },
+          {
+            "r": 2,
+            "c": 1,
+            "id": 55,
+            "number": null
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          10
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          10
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          10
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          14
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          14
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            0,
+            5
+          ]
+        ],
+        "affectedCells": [
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            6
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          14
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 0,
+            "c": 4,
+            "id": 88,
+            "number": null
+          },
+          {
+            "r": 0,
+            "c": 5,
+            "id": 89,
+            "number": 14
+          },
+          {
+            "r": 0,
+            "c": 6,
+            "id": 82,
+            "number": 21
+          },
+          {
+            "r": 1,
+            "c": 5,
+            "id": 84,
+            "number": null
+          },
+          {
+            "r": 1,
+            "c": 6,
+            "id": 77,
+            "number": 7
+          }
+        ]
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          14
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          14
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          18
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            4,
+            3
+          ]
+        ],
+        "affectedCells": [
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 3,
+            "c": 3,
+            "id": 79,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 4,
+            "id": 76,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 2,
+            "id": 41,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 3,
+            "id": 42,
+            "number": 18
+          },
+          {
+            "r": 4,
+            "c": 4,
+            "id": 50,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 3,
+            "id": 34,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 4,
+            "id": 35,
+            "number": 23
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidShape",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 0,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            7,
+            5
+          ],
+          [
+            9,
+            1
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            9,
+            6
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidAward",
+        "winMedals": 300,
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 1,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "gain": 10,
+        "removed": [
+          {
+            "r": 0,
+            "c": 1,
+            "id": 95,
+            "number": 13
+          },
+          {
+            "r": 1,
+            "c": 7,
+            "id": 78,
+            "number": null
+          },
+          {
+            "r": 2,
+            "c": 2,
+            "id": 71,
+            "number": 25
+          },
+          {
+            "r": 3,
+            "c": 0,
+            "id": 46,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 2,
+            "id": 86,
+            "number": 19
+          },
+          {
+            "r": 3,
+            "c": 3,
+            "id": 63,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 4,
+            "id": 87,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 5,
+            "id": 83,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 2,
+            "id": 48,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 4,
+            "id": 75,
+            "number": 9
+          },
+          {
+            "r": 5,
+            "c": 1,
+            "id": 32,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 2,
+            "id": 33,
+            "number": 20
+          },
+          {
+            "r": 5,
+            "c": 4,
+            "id": 66,
+            "number": 8
+          },
+          {
+            "r": 6,
+            "c": 3,
+            "id": 27,
+            "number": null
+          },
+          {
+            "r": 6,
+            "c": 6,
+            "id": 30,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 1,
+            "id": 17,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 3,
+            "id": 19,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 5,
+            "id": 21,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 1,
+            "id": 2,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 3,
+            "id": 4,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 6,
+            "id": 7,
+            "number": null
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 1,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidShape",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 1,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            7,
+            0
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            8,
+            1
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            8,
+            6
+          ],
+          [
+            9,
+            0
+          ],
+          [
+            9,
+            5
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidAward",
+        "winMedals": 300,
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 2,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "gain": 10,
+        "removed": [
+          {
+            "r": 2,
+            "c": 5,
+            "id": 101,
+            "number": 21
+          },
+          {
+            "r": 3,
+            "c": 2,
+            "id": 94,
+            "number": 22
+          },
+          {
+            "r": 3,
+            "c": 5,
+            "id": 98,
+            "number": 7
+          },
+          {
+            "r": 3,
+            "c": 6,
+            "id": 74,
+            "number": 4
+          },
+          {
+            "r": 4,
+            "c": 0,
+            "id": 90,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 3,
+            "id": 99,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 4,
+            "id": 97,
+            "number": null
+          },
+          {
+            "r": 4,
+            "c": 5,
+            "id": 58,
+            "number": 16
+          },
+          {
+            "r": 5,
+            "c": 2,
+            "id": 40,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 3,
+            "id": 96,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 4,
+            "id": 81,
+            "number": 11
+          },
+          {
+            "r": 5,
+            "c": 5,
+            "id": 59,
+            "number": null
+          },
+          {
+            "r": 5,
+            "c": 6,
+            "id": 53,
+            "number": 3
+          },
+          {
+            "r": 6,
+            "c": 1,
+            "id": 25,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 0,
+            "id": 16,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 3,
+            "id": 26,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 1,
+            "id": 10,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 3,
+            "id": 12,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 4,
+            "id": 13,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 6,
+            "id": 15,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 0,
+            "id": 1,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 5,
+            "id": 6,
+            "number": null
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 2,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidShape",
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 2,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            6,
+            0
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            5
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            7,
+            0
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            7,
+            2
+          ],
+          [
+            7,
+            3
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            7,
+            5
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            8,
+            0
+          ],
+          [
+            8,
+            1
+          ],
+          [
+            8,
+            2
+          ],
+          [
+            8,
+            3
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            8,
+            5
+          ],
+          [
+            8,
+            6
+          ],
+          [
+            9,
+            0
+          ],
+          [
+            9,
+            2
+          ],
+          [
+            9,
+            3
+          ],
+          [
+            9,
+            4
+          ],
+          [
+            9,
+            5
+          ],
+          [
+            9,
+            7
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidAward",
+        "winMedals": 2400,
+        "allClears": 0,
+        "bonusMedals": 0,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "gain": 80,
+        "removed": [
+          {
+            "r": 6,
+            "c": 0,
+            "id": 91,
+            "number": 12
+          },
+          {
+            "r": 6,
+            "c": 1,
+            "id": 47,
+            "number": 15
+          },
+          {
+            "r": 6,
+            "c": 5,
+            "id": 68,
+            "number": 24
+          },
+          {
+            "r": 6,
+            "c": 6,
+            "id": 60,
+            "number": 1
+          },
+          {
+            "r": 7,
+            "c": 0,
+            "id": 31,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 1,
+            "id": 39,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 2,
+            "id": 93,
+            "number": 5
+          },
+          {
+            "r": 7,
+            "c": 3,
+            "id": 92,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 4,
+            "id": 100,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 5,
+            "id": 29,
+            "number": null
+          },
+          {
+            "r": 7,
+            "c": 6,
+            "id": 67,
+            "number": 17
+          },
+          {
+            "r": 7,
+            "c": 7,
+            "id": 38,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 0,
+            "id": 24,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 1,
+            "id": 18,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 2,
+            "id": 80,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 3,
+            "id": 20,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 4,
+            "id": 28,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 5,
+            "id": 22,
+            "number": null
+          },
+          {
+            "r": 8,
+            "c": 6,
+            "id": 23,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 0,
+            "id": 9,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 2,
+            "id": 3,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 3,
+            "id": 11,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 4,
+            "id": 5,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 5,
+            "id": 14,
+            "number": null
+          },
+          {
+            "r": 9,
+            "c": 7,
+            "id": 8,
+            "number": null
+          }
+        ]
+      },
+      {
+        "phase": "pyramidAllClear",
+        "winMedals": 1840,
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "gain": 61.333333333333336
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          18
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "stepcollect"
+      },
+      {
+        "phase": "sugaraward"
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          18
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          22
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          22
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            1,
+            4
+          ]
+        ],
+        "affectedCells": [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          22
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 0,
+            "c": 3,
+            "id": 173,
+            "number": 8
+          },
+          {
+            "r": 0,
+            "c": 4,
+            "id": 174,
+            "number": 23
+          },
+          {
+            "r": 1,
+            "c": 3,
+            "id": 165,
+            "number": 7
+          },
+          {
+            "r": 1,
+            "c": 4,
+            "id": 166,
+            "number": 22
+          },
+          {
+            "r": 1,
+            "c": 5,
+            "id": 167,
+            "number": 12
+          },
+          {
+            "r": 2,
+            "c": 3,
+            "id": 158,
+            "number": null
+          },
+          {
+            "r": 2,
+            "c": 4,
+            "id": 159,
+            "number": 20
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          22
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          22
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          22
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          25
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          25
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            0,
+            6
+          ]
+        ],
+        "affectedCells": [
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            1,
+            7
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          25
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 0,
+            "c": 5,
+            "id": 183,
+            "number": 20
+          },
+          {
+            "r": 0,
+            "c": 6,
+            "id": 176,
+            "number": 25
+          },
+          {
+            "r": 1,
+            "c": 6,
+            "id": 168,
+            "number": 3
+          },
+          {
+            "r": 1,
+            "c": 7,
+            "id": 169,
+            "number": 9
+          }
+        ]
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          25
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          25
+        ]
+      },
+      {
+        "phase": "waiting"
+      },
+      {
+        "phase": "drawpending"
+      },
+      {
+        "phase": "queued",
+        "numbers": [
+          5
+        ]
+      },
+      {
+        "phase": "pyramidHit",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          5
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "cells": [
+          [
+            3,
+            0
+          ]
+        ],
+        "affectedCells": [
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "phase": "pyramidBreak",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          5
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        },
+        "removed": [
+          {
+            "r": 2,
+            "c": 0,
+            "id": 155,
+            "number": null
+          },
+          {
+            "r": 3,
+            "c": 0,
+            "id": 147,
+            "number": 5
+          },
+          {
+            "r": 3,
+            "c": 1,
+            "id": 148,
+            "number": 24
+          },
+          {
+            "r": 4,
+            "c": 0,
+            "id": 140,
+            "number": 15
+          }
+        ]
+      },
+      {
+        "phase": "pyramidFall",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          5
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "pyramidTopUp",
+        "allClears": 1,
+        "bonusMedals": 1840,
+        "numbers": [
+          5
+        ],
+        "counts": {
+          "line": 4,
+          "triangle": 0,
+          "hexagon": 0
+        }
+      },
+      {
+        "phase": "settled",
+        "numbers": [
+          5
+        ]
+      },
+      {
+        "phase": "settled"
+      },
+      {
+        "phase": "complete"
+      }
+    ]
+  },
+  "ok": true
+}

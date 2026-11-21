@@ -1,0 +1,120 @@
+{
+  "version": "20261121-v284-sixdrop-compact-200-rtp",
+  "rulesRevision": 284,
+  "shard": 3,
+  "shards": 4,
+  "totalPlannedCases": 4,
+  "plannedCases": [
+    "download-worker"
+  ],
+  "caseResults": [
+    {
+      "id": "download-worker",
+      "status": "passed",
+      "durationMs": 74540
+    }
+  ],
+  "failures": [],
+  "screens": [],
+  "pageErrors": [],
+  "assetFailures": [],
+  "apiRequests": [],
+  "externalRequests": [],
+  "witnesses": {
+    "winning": {
+      "seed": 8,
+      "win": 4840,
+      "counts": {
+        "line": 4,
+        "triangle": 0,
+        "hexagon": 0
+      },
+      "allClears": 1,
+      "numbers": [
+        6,
+        2,
+        10,
+        14,
+        18,
+        22,
+        25,
+        5
+      ]
+    },
+    "losing": {
+      "seed": 4,
+      "win": 0
+    }
+  },
+  "scope": "Real manual number buttons; production v284 single-ball neighbour removal, 200-drop palette, compact payouts, enlarged 318px bottle, integer-credit count animation, native payout, local continuation and download worker; isolated virtual CREDIT",
+  "download": {
+    "games": [
+      {
+        "index": 0,
+        "seed": 25519,
+        "win": 300,
+        "carry": {
+          "version": 247,
+          "bankUnits": 186456,
+          "removed": 204,
+          "feed": 630,
+          "roundId": "sixdrop-v284-download-first"
+        }
+      },
+      {
+        "index": 1,
+        "seed": 25520,
+        "win": 301,
+        "carry": {
+          "version": 247,
+          "bankUnits": 196690,
+          "removed": 374,
+          "feed": 875,
+          "roundId": "sixdrop-v284-download-next-25520"
+        }
+      },
+      {
+        "index": 2,
+        "seed": 25520,
+        "win": 1975,
+        "carry": {
+          "version": 247,
+          "bankUnits": 196858,
+          "removed": 494,
+          "feed": 1069,
+          "roundId": "sixdrop-v284-download-positive-carry"
+        }
+      }
+    ],
+    "positiveAttempts": [
+      {
+        "seed": 25520,
+        "win": 301,
+        "durationMs": 23733
+      }
+    ],
+    "completed": 3,
+    "numbers": [
+      7,
+      25,
+      10,
+      19,
+      20,
+      2,
+      3,
+      11
+    ],
+    "processed": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "ok": true
+}

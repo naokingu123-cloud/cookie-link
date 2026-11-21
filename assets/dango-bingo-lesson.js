@@ -1,16 +1,21 @@
 /* Fixed BET examples. The lesson never reads a live board or a future ball. */
 (()=>{
 'use strict';
-const R=window.DangoBingoRules,V=window.DangoBingoView,individual=R.REVISION>=265;
+const R=window.DangoBingoRules,V=window.DangoBingoView,individual=R.REVISION>=265,plusFree=R.REVISION>=285;
 const steps=[
  {title:'7段・28個のお団子をそろえよう',caption:'上から1〜7個の7段。番号1〜25が1個ずつと初期FREEが3個。2〜7個のラインから、どの長さを完成させるか考えよう。'},
  {title:individual?'前半5球でFREEの個数が決まる':'前半5球でFREEの範囲が決まる',caption:individual?'前半5球で完成した最長2～7個ラインと同じ数のFREEを1個ずつ配置。役がなければ1個。各行のFREE×nが配置数です。ラインなしなら1個。':'前半5球で3個ラインなら中心1マス、4個ラインなら周囲1マス、5個ラインなら周囲2マスをFREEにできます。複数成立時は長いラインを優先。'},
  {title:individual?'好きな団子を1個ずつFREEに':'中心を選んで、まとめてFREE！',caption:individual?'FREEは1粒ずつ自由に置く。短い3本と長い1〜2本が互角の局面もあります。初期FREEへの重ね置きでODDS＋1。':'中心を1つタップすると範囲全体をFREEに。中心も含みます。同じ中心を再タップで取り消し、別の中心へ置き直しもできます。初期FREEに重なった分はODDS＋1。'},
  {title:'配置FREEへの後半HITでODDS UP',caption:'後半3球で配置したFREEの番号にHITすると、1個につきODDS＋1。長さごとの完成本数で配当を選び、合計にODDSを反映します。'}
 ];
+if(plusFree){
+ steps[1]={title:'水色の+FREEにHITして増やそう',caption:'置けるFREEは基本1個。前半5球で、番号のある水色+FREEにHITするたび1個追加。水色は3か所で、最大4個を配置できます。'};
+ steps[2]={title:'黄色FREEを好きなマスへ',caption:'5球目の後に水色が元の色へ戻ります。黄色FREEを個別に配置し、緑の初期FREEへ重ねるとODDS＋1。再タップで取り消せます。'};
+ steps[3]={title:'黄色FREEへの番号HITでODDS UP',caption:'後半3球で黄色FREEの番号にHITするとODDS＋1。緑FREEへの重ね置きと合わせて倍率を上げます。HIT済みは光る外枠で確認できます。'};
+}
 let buffer,lastLessonFrame;
-const start=()=>R.create({seed:individual?265:264,moldIndex:individual?0:2,target:90});
-function firstFor(state,count=2){const line=individual?[1,3,6,10,15].map(id=>state.numbers[id]):state.cells.filter(cell=>cell.row===4&&cell.number>0).map(cell=>cell.number);return [...line.slice(0,count),...Array.from({length:25},(_,i)=>i+1).filter(n=>!line.includes(n)).slice(0,Math.max(0,5-count))];}
+const start=()=>R.create({seed:plusFree?285:individual?265:264,moldIndex:individual?0:2,target:90});
+function firstFor(state,count=2){const line=plusFree?state.triggerNumbers:individual?[1,3,6,10,15].map(id=>state.numbers[id]):state.cells.filter(cell=>cell.row===4&&cell.number>0).map(cell=>cell.number);count=Math.min(count,line.length);return [...line.slice(0,count),...Array.from({length:25},(_,i)=>i+1).filter(n=>!line.includes(n)).slice(0,Math.max(0,5-count))];}
 function firstFive(count=2){let state=start();for(const n of firstFor(state,count))state=R.draw(state,n);return state;}
 function centerFor(state){
  const initial=new Set(state.initialFreeCells),centers=R.availableCenters?.(state)||[],footprint=id=>R.expansionCellsFor?.(state,id)||[id];
@@ -38,10 +43,14 @@ function draw(c,scene,t){
   const final=[...new Set([...expansion,...remaining])].slice(0,3);
   for(let i=0;i<3;i++)if(t>.18+i*.25){state=R.draw(state,final[i]);lastNumber=final[i];age=(t-(.18+i*.25))*2200;}
  }
- V.paint(g,state,{time:t*3500,age,lineAge:t*2200,animationLines:scene===3?state.completedLines:state.newLines,bet:100,reach:[],artUsage:'lesson',previewCells:scene===2&&t<=.2&&Number.isInteger(center)?R.expansionCellsFor(state,center):[]},false);
+ V.paint(g,state,{time:t*3500,age,lineAge:t*2200,plusFreeFadeAge:plusFree&&scene===1?Math.max(0,(t-.65)*5200):Infinity,animationLines:scene===3?state.completedLines:state.newLines,bet:100,reach:[],artUsage:'lesson',previewCells:scene===2&&t<=.2&&Number.isInteger(center)?R.expansionCellsFor(state,center):[]},false);
  c.save();c.drawImage(buffer,3,17,324,212);box(c,333,19,176,204,17,'#fff6e3');
  if(scene===0){
   text(c,'番号25 ＋ FREE3',421,45,17);ball(c,392,103,27,'plain',12);ball(c,450,103,27,'initial',0);text(c,'1・2・3・4・5・6・7段',421,163,14);text(c,'3方向に串を通そう',421,190,16,'#a44f55');
+ }else if(scene===1&&plusFree){
+  text(c,'水色HITで FREE＋1',421,45,17,'#08637c');
+  for(const [i,n]of state.triggerNumbers.entries())ball(c,370+i*51,96,20,state.triggerHits.includes(n)?'bonus-hit':'bonus',n);
+  text(c,'基本1個 ＋ HIT '+state.triggerHits.length+'個',421,153,17,'#08637c');text(c,'FREE '+state.freeBudget+'個を配置',421,185,20,'#5c7d37');
  }else if(scene===1){
   text(c,'ライン完成でFREE昇格',421,45,17,'#5c7d37');
   const grade=state.expansionLevel||0,completed=new Set(state.qualifiedEarlyLengths||[]);

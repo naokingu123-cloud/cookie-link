@@ -1,0 +1,8 @@
+[OfflineSettlementWorkerV3] settled dango285-0 fixture 220
+[OfflineSettlementWorkerV3] settled dango285-1 fixture 220
+[OfflineSettlementWorkerV3] settled dango285-4 fixture 220
+[OfflineSettlementWorkerV3] settled dango285-5 fixture 30
+[OfflineSettlementWorkerV3] settled dango285-6 fixture 30
+[OfflineSettlementWorkerV3] settled dango285-7 fixture 30
+[OfflineSettlementWorkerV3] settled dango285-8 fixture 30
+DANGO_V285_INTEGRATION_PASS {"legacyFingerprints":12,"savedCheckpoints":32,"freeBudgets":[1,2,3,4],"workerCases":7,"recordedTriggerReplay":true,"downloadNoFuturePeek":true,"legacy268Rollover":true,"transientFade":true,"nativeWalletOnce":true}

@@ -99,3 +99,9 @@ BET1〜9では整数への切り捨てにより、正のWINとなって持越し
 - クラウドブラウザーではWebGLが使えないため、3D抽選はCUAで未検証。既存のローカル番号指定モードでゲーム画面を確認した。
 - GitHubの実ブラウザーCIと公開ファイル照合は公開後に記録を追記する。Windows稼働サーバーの更新・再起動はこの作業環境から実施していない。
 
+
+## 初回公開と続く表示修正
+
+公開runtimeは `5875ebc246e56f2a3c99bebc943a482dd0ce6f73`。公開24ファイルのHTTP200・bytes・SHA-256が一致した。Six専用CI [44849142631](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44849142631) では非ブラウザー・mini・Downloadの各検査が成功したが、PCと390pxの共通枠境界検査が失敗した。非表示の旧 `.biscuit-frame` の負marginが瓶を5論理px上へずらしていたため、v285でSixに限って `display:none` を追加した。318pxの瓶や336pxのフィールド、検査の許容値は変えずに再検証する。
+
+初回CIのレポート・ログと [公開照合](qa-v284/ci-5875ebc/public-verification.json) は保存済み。画面PNGの原本は当該GitHub Actions artifactに対応する。後続v285の検証結果はそのリリース記録を参照。

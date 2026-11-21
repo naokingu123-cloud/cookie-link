@@ -1,0 +1,98 @@
+{
+  "publishedCommit": "5875ebc246e56f2a3c99bebc943a482dd0ce6f73",
+  "workflow": ".github/workflows/sixdrop-v278.yml",
+  "runId": 44849142631,
+  "runUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44849142631",
+  "status": "completed",
+  "conclusion": "failure",
+  "startedAt": "2026-11-21T01:16:06Z",
+  "completedAt": "2026-11-21T01:18:48Z",
+  "jobs": [
+    {
+      "id": 136676068699,
+      "name": "Single-ball rules, legacy groups and continuation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136676068943,
+      "name": "native-browser-display (0)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 136676069219,
+      "name": "native-browser-display (1)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 136676069438,
+      "name": "native-browser-display (2)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136676069889,
+      "name": "native-browser-display (3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136676958972,
+      "name": "public-assets",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14684856314,
+      "name": "sixdrop-v278-display-0",
+      "sha256": "4a8d65033cd91ca5fa9978c3f2f61de13cc41539292c1b8e075e3ff07e0aaf27",
+      "bytes": 2225616,
+      "path": "shard-0"
+    },
+    {
+      "id": 14684762221,
+      "name": "sixdrop-v278-display-3",
+      "sha256": "9e6d64f4da75927a30015564c4a58381059c377abbe4e29f67d0724d2159f608",
+      "bytes": 1128362,
+      "path": "shard-3"
+    },
+    {
+      "id": 14684556974,
+      "name": "sixdrop-v278-display-2",
+      "sha256": "6ab6b9bc643354363342754641994ddecabc643a958d2c9c0fac7ad14b8d1fe4",
+      "bytes": 3275805,
+      "path": "shard-2"
+    },
+    {
+      "id": 14684343076,
+      "name": "sixdrop-v278-display-1",
+      "sha256": "8c154b855525c516e017dcface88859b48932005182742a92501833f64cf2447",
+      "bytes": 1095761,
+      "path": "shard-1"
+    }
+  ],
+  "failure": {
+    "cases": [
+      "desktop-cycle",
+      "mobile-high-amount"
+    ],
+    "assertion": "bottle, removed counter and odds fit the common field",
+    "test": "tests/sixdrop-v278-browser.mjs:181",
+    "observedBottleTopOffsetLogicalPx": -5,
+    "pageErrors": [],
+    "assetFailures": [],
+    "reportedTo": "sixdrop_layout"
+  },
+  "unrelatedExistingFailure": {
+    "workflow": "Shared machine check",
+    "runId": 44849142825,
+    "jobId": 136676069470,
+    "test": "tests/roulette-hd60-v234.mjs:21",
+    "cause": "HD video adaptive capture guard expects current global release in loader URL; baseline v283 and current v284 loader both still pin shared-roulette-webrtc-host-v224.js?v=262.",
+    "action": "Recorded only at root instruction; no changes."
+  }
+}

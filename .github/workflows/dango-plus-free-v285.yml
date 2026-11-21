@@ -1,0 +1,95 @@
+name: Dango numbered plus FREE, enlarged board and payouts v285
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'assets/dango-*'
+      - 'assets/recorded-round-v255.js'
+      - 'assets/download-worker-v255.js'
+      - 'assets/server-offline-settlement-worker-v3.js'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/dango-*'
+      - 'scripts/dango-v285-*'
+      - 'docs/qa-v285/**'
+      - 'package.json'
+      - '.github/workflows/dango-plus-free-v285.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/dango-*'
+      - 'assets/recorded-round-v255.js'
+      - 'assets/download-worker-v255.js'
+      - 'assets/server-offline-settlement-worker-v3.js'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/dango-*'
+      - 'scripts/dango-v285-*'
+      - 'docs/qa-v285/**'
+      - 'package.json'
+      - '.github/workflows/dango-plus-free-v285.yml'
+permissions:
+  contents: read
+jobs:
+  rules-and-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Syntax, current plus FREE and preserved historical rounds
+        run: |
+          npm run check
+          npm run test:dango
+      - name: Legacy presentation and launch-time commitment
+        run: |
+          node tests/dango-v269-presentation-rules.mjs
+          node tests/dango-v269-lifecycle.mjs
+      - name: Build pins, edition isolation and offline assets
+        run: |
+          node tests/recorded-round-v255.mjs
+          node tests/download-v255-cache.mjs
+          node tests/edition-choice-v255.mjs
+          node tests/local-debug-v258.mjs
+  board-and-payout-display:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          echo "PLAYWRIGHT_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Numbered cyan cells, thinking fade, HIT borders and enlarged stable layout
+        run: node tests/dango-v285-view.mjs
+      - name: Saved v268 board keeps its historical presentation
+        run: node tests/dango-v269-view.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dango-v285-display
+          path: |
+            qa-dango-v285-view/
+            qa-dango-v269-view/
+          if-no-files-found: error
+          retention-days: 7

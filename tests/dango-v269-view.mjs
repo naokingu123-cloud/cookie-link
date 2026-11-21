@@ -1,4 +1,4 @@
-/* Current presentation only: this isolated fixture never touches a wallet. */
+/* Historical v268 rules with current presentation: this isolated fixture never touches a wallet. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';import path from 'node:path';import http from 'node:http';
 import {fileURLToPath} from 'node:url';import {chromium} from 'playwright';
@@ -15,6 +15,7 @@ const nativeReach=nativeSource.slice(cometStart,cometEnd)+'\n'+circularBuilder+'
 const baseHtml='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango current presentation</title><link rel="stylesheet" href="/optimized/style-01.css"><link rel="stylesheet" href="/optimized/style-03.css"><style>html,body,#screen,#panels{width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;transform:none!important}#screen{position:fixed!important;inset:0!important}#panels,#fixture{position:relative!important;width:100%!important;height:100%!important}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><body class="dgb-active"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="reach-rainbow-edge"><stop stop-color="#ff487d"/><stop offset=".5" stop-color="#59efb6"/><stop offset="1" stop-color="#bb78ff"/></linearGradient></defs></svg><script>'+nativeReach+'</script><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></body></html>';
 // Load the production illustrated cells while retaining this isolated game fixture.
 const html=baseHtml
+ .replace('<script src="/assets/dango-bingo-rules.js"></script>','<script src="/assets/dango-bingo-rules.js"></script><script>window.DangoBingoRules=window.DangoBingoRules.legacy268??window.DangoBingoRules;</script>')
  .replace('<link rel="stylesheet" href="/assets/dango-bingo.css">','<link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css">')
  .replace('<script src="/assets/dango-bingo-view.js"></script>','<script src="/assets/illustrated-art-v275.js"></script><script src="/assets/illustrated-boards-c-v275.js"></script><script src="/assets/dango-bingo-view.js"></script>');
 const server=http.createServer(async(req,res)=>{
@@ -62,7 +63,7 @@ async function setup(target){
     freeContentWidth,freeTextOverflow:[...document.querySelectorAll('.dgb-free-stat>small,.dgb-free-stat>b,.dgb-free-detail,.dgb-countdown,.dgb-actions button')].filter(e=>e.getBoundingClientRect().width>freeContentWidth+1||e.scrollWidth>e.clientWidth+1).map(e=>({text:e.textContent,width:e.getBoundingClientRect().width,scroll:e.scrollWidth,client:e.clientWidth}))
    };
   };
-  qa.new();return {rules:R.REVISION,view:DangoBingoView.presentationRevision,assets:DangoBingoView.describeAssets().ready};
+  qa.new();return {rules:R.REVISION,view:DangoBingoView.presentationRevision,stateView:qa.view.describe().revision,assets:DangoBingoView.describeAssets().ready};
  });
 }
 async function fit(width,height,options={}){
@@ -106,7 +107,7 @@ try{
  const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
  browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{}),args:['--no-sandbox']});
  page=await browser.newPage({viewport:{width:1366,height:750}});
- assert.deepEqual(await setup(page),{rules:268,view:269,assets:true});
+ assert.deepEqual(await setup(page),{rules:268,view:285,stateView:269,assets:true});
  report.initial=await page.evaluate(()=>({highest:qa269.view.describe().highestCells,zero:qa269.cell(2,1).textContent,zeroCurrent:qa269.cell(2,1).classList.contains('current'),oddsHidden:document.querySelector('.dgb-pay-odds').hidden,removedGrantText:document.querySelectorAll('.dgb-free-grant').length,idleMotion:DangoBingoView.describeAssets().last.main.idleMotion,colors:DangoBingoView.lineColors,freeTitle:document.querySelector('.dgb-free-title').textContent,value:document.querySelector('.dgb-free-value').textContent}));
  assert.deepEqual(report.initial.highest,[{length:4,count:3},{length:5,count:3},{length:6,count:2},{length:6,count:3},{length:7,count:2},{length:7,count:3}]);
  assert.equal(report.initial.zero,'-');assert.equal(report.initial.zeroCurrent,false);assert.equal(report.initial.oddsHidden,true);assert.equal(report.initial.idleMotion,false);assert.equal(report.initial.removedGrantText,0);assert.equal(report.initial.freeTitle,'置けるFREE');assert.equal(report.initial.colors[2],'#269eff');assert.equal(report.initial.colors[3],'#4ee3f5');

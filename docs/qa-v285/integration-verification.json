@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-11-21T01:44:46.554651+00:00",
+  "scope": "Local nonbrowser integration and historical regression; browser display fixture syntax only, pending remote CI.",
+  "results": [
+    {
+      "command": "node tests/dango-v285-integration.mjs",
+      "status": "passed",
+      "legacyFingerprints": 12,
+      "recordedCheckpoints": 32,
+      "freeBudgets": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "offlineWorkerCases": 7,
+      "nativeArcade": true,
+      "recordedRandomReplay": true,
+      "downloadLaunchBeforeFutureNumber": true,
+      "saved268ThroughFinishThen285": true,
+      "fadeClockAndRestore": true,
+      "nativeWalletAwardOnce": true
+    },
+    {
+      "command": "node tests/dango-v268-rules.mjs",
+      "status": "passed"
+    },
+    {
+      "command": "node tests/dango-v268-calibration.mjs",
+      "status": "passed"
+    },
+    {
+      "command": "node tests/dango-v268-integration.mjs",
+      "status": "passed"
+    },
+    {
+      "command": "node tests/dango-v269-presentation-rules.mjs",
+      "status": "passed"
+    },
+    {
+      "command": "node tests/dango-v269-lifecycle.mjs",
+      "status": "passed"
+    },
+    {
+      "command": "node --check tests/dango-v285-view.mjs",
+      "status": "passed",
+      "execution": "syntax only; browser not run locally"
+    }
+  ],
+  "sha256": {
+    "assets/dango-bingo-rules.js": "7f4d251adc694375790cb7ca18182993a7413ac94c43b953e0430accf7d84a59",
+    "assets/dango-bingo-host.js": "33e68ffd30d0c052fe54725b907b6ed63063873e652aa816dff2ccf9a2b61c6a",
+    "tests/dango-v285-fixture.mjs": "1a5feeefe7ed6fc9919a2bf51f6a9390618068b5e45ce371eac455ccaf8ddd23",
+    "tests/dango-v285-integration.mjs": "fab7c40088e9dd8558080cfbb135cb8cb3a37a75c6dfd2fbb3f30ae0ffb327f9",
+    "tests/dango-v285-legacy-fingerprints.json": "78a666619496d3bdf3a83228af663d5c6738c0577158b61c6e22938601824f2c",
+    "tests/dango-v285-view.mjs": "5e6ddb2d83c3cb039acf7b386fa6c53a90f70ecf1d27af5cb5584679cda30a20"
+  },
+  "frozenCoreIntegrationCheckedAt": "2026-11-21T01:45:57.349516+00:00",
+  "frozenCoreIntegrationLog": "docs/qa-v285/integration.txt"
+}

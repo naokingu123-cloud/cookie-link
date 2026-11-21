@@ -1,0 +1,1 @@
+DANGO_V285_CALIBRATION_PASS {"exactSettings":101,"fractionalSettings":4,"molds":3,"earlySetsPerMold":53130,"budgetsPerEarlySet":4,"triggerTriplets":2300,"vectors":84,"directLateSetVectors":153,"directLateSetOutcomes":174420,"independentCpp":false}

@@ -1,0 +1,115 @@
+{
+  "build": "20261121-v285-dango-plus-free-and-board",
+  "timeUTC": "2026-11-21T01:46:27.218002+00:00",
+  "ok": true,
+  "scope": "Frozen runtime syntax; full Dango historical and current rule/integration/geometry/calibration suite; legacy269 lifecycle and presentation; recorded checkpoints; edition/local isolation; offline manifest. Browser evidence is a separate GitHub Actions gate.",
+  "checks": [
+    {
+      "name": "edition",
+      "log": "docs/qa-v285/nonbrowser/edition.txt",
+      "ok": true
+    },
+    {
+      "name": "calibration",
+      "log": "docs/qa-v285/nonbrowser/calibration.txt",
+      "ok": true
+    },
+    {
+      "name": "local-debug",
+      "log": "docs/qa-v285/nonbrowser/local-debug.txt",
+      "ok": true
+    },
+    {
+      "name": "legacy-presentation",
+      "log": "docs/qa-v285/nonbrowser/legacy-presentation.txt",
+      "ok": true
+    },
+    {
+      "name": "dango",
+      "log": "docs/qa-v285/nonbrowser/dango.txt",
+      "ok": true
+    },
+    {
+      "name": "syntax",
+      "log": "docs/qa-v285/nonbrowser/syntax.txt",
+      "ok": true
+    },
+    {
+      "name": "recorded-round",
+      "log": "docs/qa-v285/nonbrowser/recorded-round.txt",
+      "ok": true
+    },
+    {
+      "name": "legacy-lifecycle",
+      "log": "docs/qa-v285/nonbrowser/legacy-lifecycle.txt",
+      "ok": true
+    },
+    {
+      "name": "offline-cache",
+      "log": "docs/qa-v285/nonbrowser/offline-cache.txt",
+      "ok": true
+    }
+  ],
+  "files": [
+    {
+      "path": "app-version.json",
+      "sha256": "5b0aaff98fae4a03b66d50c8cc751b408ae5f21ba5e09fa6a681e1463b221b85",
+      "bytes": 55
+    },
+    {
+      "path": "index.html",
+      "sha256": "1b71573155ee1c981e21f44a55bc0479009bf65a996d4568e4229af1f83b5f36",
+      "bytes": 85639
+    },
+    {
+      "path": "assets/dango-bingo-rules.js",
+      "sha256": "7f4d251adc694375790cb7ca18182993a7413ac94c43b953e0430accf7d84a59",
+      "bytes": 157043
+    },
+    {
+      "path": "assets/dango-bingo-host.js",
+      "sha256": "33e68ffd30d0c052fe54725b907b6ed63063873e652aa816dff2ccf9a2b61c6a",
+      "bytes": 20096
+    },
+    {
+      "path": "assets/dango-bingo-view.js",
+      "sha256": "6e446669a318e7e6022be17773c33a738fcf1732baecd2f30ae73b549f8a2816",
+      "bytes": 67297
+    },
+    {
+      "path": "assets/dango-bingo.css",
+      "sha256": "c20911d53439379cb4562aba7c9a63ad96c0e783bf872866d41a82bc1ab8a52e",
+      "bytes": 26208
+    },
+    {
+      "path": "assets/dango-bingo-lesson.js",
+      "sha256": "131bfe9abbf7319c800b024f4c221dcd56d9136d94b76e02afe5eac66fe3199c",
+      "bytes": 8485
+    },
+    {
+      "path": "assets/sixdrop-ui-v278.css",
+      "sha256": "00bf354a71126bc4275ebb4ae750315ffce7bfc8e185c1a510a646085a0c66fd",
+      "bytes": 13157
+    },
+    {
+      "path": "assets/download-assets-v255.json",
+      "sha256": "f516eff57684cce4543c3e3fbd5ebcb1bae9e27edf1328289c48115271366fec",
+      "bytes": 145303
+    },
+    {
+      "path": "assets/download-cache-v255.js",
+      "sha256": "c6f64c04b815e691dad6767c3fcc04c650e43df8c86d24a3809c92bb2f47a424",
+      "bytes": 4365
+    },
+    {
+      "path": "assets/edition-choice-v255.js",
+      "sha256": "c78363207021cf744ca0f7b432f368f26159e1dda46b023a112389de71a0d3a2",
+      "bytes": 3776
+    },
+    {
+      "path": "download-sw-v255.js",
+      "sha256": "fd98892e453b245ec23f65f38d00366a68677559e9a0406d21d18e3dbdd91d30",
+      "bytes": 4043
+    }
+  ]
+}

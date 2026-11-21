@@ -1,0 +1,91 @@
+{
+  "sourceCommit": "77912d4b3ece89cd1610e89b7632323506cc81f9",
+  "sourceSha256": "222912fe3a08b105863818af4de6120de19cd27fa1a4fe9260a33ff9f2421234",
+  "algorithm": "SHA256(JSON.stringify(historyRound(api,input))); full states, final reaches, display projections and pay rows",
+  "cases": [
+    {
+      "revision": 264,
+      "seed": 28511,
+      "target": 50,
+      "sha256": "6a5212bf29f88f2a04743bdf8b70ae67609e7d0c7004cccfab23b256b0580e6c",
+      "payout": 0
+    },
+    {
+      "revision": 264,
+      "seed": 28537,
+      "target": 90,
+      "sha256": "be3ced972083a170963631f66120697ee21900fcaf959fb8e8151139b86fddce",
+      "payout": 280
+    },
+    {
+      "revision": 264,
+      "seed": 28643,
+      "target": 150,
+      "sha256": "177fbc9362402f7d2be65b6324606d517e47cbd8ec92742c0ee39eef81d7d4ae",
+      "payout": 0
+    },
+    {
+      "revision": 265,
+      "seed": 28511,
+      "target": 50,
+      "sha256": "43c26a2d34594a97cf709433ff7a93eab1daf4f304bb7e553e9e79a4cd761b64",
+      "payout": 40
+    },
+    {
+      "revision": 265,
+      "seed": 28537,
+      "target": 90,
+      "sha256": "6e21b606202bfa43288686d576d290ae84d82835d076b3a1daa06c3aff3ce7d9",
+      "payout": 0
+    },
+    {
+      "revision": 265,
+      "seed": 28643,
+      "target": 150,
+      "sha256": "b00b3b5feceaadba64d2701358ea6b5593fb20a3edeee6c025814d55ad2f1da4",
+      "payout": 240
+    },
+    {
+      "revision": 266,
+      "seed": 28511,
+      "target": 50,
+      "sha256": "900cdf3f4d505877b29927ad21bb441c5a1c16a61d1b59b8f8b1942d841c02af",
+      "payout": 40
+    },
+    {
+      "revision": 266,
+      "seed": 28537,
+      "target": 90,
+      "sha256": "4fb47d5ee4a54221d9681e0fcbca44802db4c84221e213ff177d52f4b5d06903",
+      "payout": 0
+    },
+    {
+      "revision": 266,
+      "seed": 28643,
+      "target": 150,
+      "sha256": "8e29e8d7a136d883a3a7710cb6549e66004c1c3a4f03461fc2f9ac223ef15eba",
+      "payout": 20
+    },
+    {
+      "revision": 268,
+      "seed": 28511,
+      "target": 50,
+      "sha256": "5804a1a858f056514c0c242aba991be2a011d995e50369fd5b8dd6d7284d7ffb",
+      "payout": 40
+    },
+    {
+      "revision": 268,
+      "seed": 28537,
+      "target": 90,
+      "sha256": "274648a1b269e5abcebd2935743d25ee0f534039f35a60285cb08c0ab28ca94e",
+      "payout": 0
+    },
+    {
+      "revision": 268,
+      "seed": 28643,
+      "target": 150,
+      "sha256": "f9676fd5276f3cf8c53a71c57c720886ed0895f3695e6cc817f06af3f005e44e",
+      "payout": 40
+    }
+  ]
+}

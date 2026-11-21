@@ -1,0 +1,43 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> sweets-link-shared-machine@1.1.0 test:dango
+> node tests/dango-v251-rules.mjs && node tests/dango-v251-thinking.mjs && node tests/dango-v251-records.mjs && node tests/dango-v253-checkpoint.mjs && node tests/dango-v254-rules.mjs && npm run test:dango:current
+
+{"ok":true,"rule":"random-initial-free-v6","molds":5,"legacyCppVectors":60,"currentCppVectors":42,"boundaryBoards":1313,"games":200,"forecasts":11400,"calibrationTargets":101,"highestRoleWitness":true}
+DANGO_V254_RULES_PASS {"revision":254,"exactLayouts":27,"distinctLayouts":41,"selectedBoards":4343,"currentCppVectors":210,"mirroredCppVectors":102,"calibratedTargets":101,"payoutTableUnchanged":true,"threeCellFiveLines":true,"separateHighestRoleReach":true,"legacy253Rounds":5,"uniformSingleOptimalPercent":63.99560038436011}
+DANGO_V253_CHECKPOINT_PASS {"legacyRevisions":[251,253],"newRevision":254,"oldEmptyInitialContinued":true,"legacy253Molds":5,"realSharedSerializer":true,"realWorkerRestore":true,"realHostFinish":true,"legacyWin":40,"currentWin":20,"uncommittedLegacyAutoFill":true,"eighthBallNoReplay":true,"paidGuard":true,"noPresentationWait":true}
+DANGO_V251_THINKING_PASS {"serverDeadline":true,"defaultSeconds":15,"earlySixRejected":true,"fifthIdempotent":true,"physicalLaunchBudget":true,"retryGate":true,"durablePlacement":true,"monotonicSnapshots":true,"delayedOldSnapshotIgnored":true,"payoutCheckpointPreserved":true,"sixthCheckpointBarrier":true,"restartSameDeadline":true,"noSyntheticFallback":true,"noDangoUnchanged":true,"cancelResets":true}
+DANGO_V251_RECORDS_PASS {"games":10,"bet":30000,"recordId":10,"highestRoleSaved":true,"duplicateCapture":false,"monthlyAndAllTimeRestored":true,"demoRankings":10}
+DANGO_V253_CHECKPOINT_PASS {"legacyRevisions":[251,253],"newRevision":254,"oldEmptyInitialContinued":true,"legacy253Molds":5,"realSharedSerializer":true,"realWorkerRestore":true,"realHostFinish":true,"legacyWin":40,"currentWin":20,"uncommittedLegacyAutoFill":true,"eighthBallNoReplay":true,"paidGuard":true,"noPresentationWait":true}
+DANGO_V254_RULES_PASS {"revision":254,"exactLayouts":27,"distinctLayouts":41,"selectedBoards":4343,"currentCppVectors":210,"mirroredCppVectors":102,"calibratedTargets":101,"payoutTableUnchanged":true,"threeCellFiveLines":true,"separateHighestRoleReach":true,"legacy253Rounds":5,"uniformSingleOptimalPercent":63.99560038436011}
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> sweets-link-shared-machine@1.1.0 test:dango:current
+> node tests/dango-v262-rules.mjs && node tests/dango-v262-calibration.mjs && node tests/dango-v263-rules.mjs && node tests/dango-v263-calibration.mjs && node tests/dango-v264-rules.mjs && node tests/dango-v264-calibration.mjs && node tests/dango-v265-rules.mjs && node tests/dango-v265-calibration.mjs && node tests/dango-v266-rules.mjs && node tests/dango-v266-calibration.mjs && node tests/dango-v262-integration.mjs && node tests/dango-v265-integration.mjs && node tests/dango-v268-rules.mjs && node tests/dango-v268-calibration.mjs && node tests/dango-v268-integration.mjs && node tests/dango-v285-rules.mjs && node tests/dango-v285-integration.mjs && node tests/dango-v285-geometry.mjs && node tests/dango-v285-calibration.mjs
+
+DANGO_V262_RULES_PASS {"targets":101,"geometryCells":28,"lines":15,"checkedCandidates":165,"checkedLateOutcomes":188100,"overlapAndHitOdds":true,"noReselectionFarming":true,"noFutureLookahead":true,"legacyDispatch":true}
+DANGO_V262_CALIBRATION_PASS {"exactProfiles":3,"exactSettings":101,"vectors":48,"centerChecks":661,"jackpotAutoReachable":true,"jackpotLayoutWeight":0.015,"independentRecompiled":false}
+DANGO_V263_RULES_PASS {"min":0.2,"jackpot":5000,"oldJackpot":2000,"bruteCenters":6,"settings":101}
+DANGO_V263_CALIBRATION_PASS {"settings":101,"vectors":0,"centers":0,"independent":false}
+DANGO_V264_RULES_PASS {"grades":[0,1,2,3],"areas":[1,7,19],"clip":[3,6],"checked":13,"restoreLegacy":[262,263],"minPayout":0.2}
+DANGO_V264_CALIBRATION_PASS {"profiles":3,"exactSettings":101,"vectors":0,"centers":0,"oldJackpotUnreachable":true,"independent":false}
+DANGO_V265_RULES_PASS {"grades":[1,2,3,4,5,6,7],"sevenJackpot":true,"minimumPayout":0.2,"legacy":[262,263,264],"fullFreeManual":true,"allTargets":101}
+DANGO_V265_CALIBRATION_PASS {"molds":3,"settings":101,"exactCasesPerMold":60568200,"twoCellEarlyAny":0.09881422924901184,"rareJackpot":true,"independentRecompiled":false}
+DANGO_V266_RULES_PASS {"current":266,"legacy":[262,263,264,265],"sixRows":true,"threeLineTiersUnchanged":true,"rareJackpot":true,"allTargets":101}
+DANGO_V266_CALIBRATION_PASS {"settings":101,"molds":3,"casesPerMold":60568200,"independent":false}
+DANGO_V262_INTEGRATION_PASS {"newBoardCells":28,"streamingCenterSelection":true,"recordedCheckpointPreserved":true,"headlessResumeBeforeSixth":true,"duplicatePayout":false,"overlapOddsPreserved":true}
+DANGO_V265_INTEGRATION_PASS {"manualSeven":true,"savedRound":true,"workerTwo":true,"duplicatePayout":false}
+DANGO_V268_RULES_PASS {"highestRoles":[[4,3],[5,3],[6,2],[6,3],[7,2],[7,3]],"legacy":[262,263,264,265,266],"safeInitialLayouts":3,"sixLineUpgrade":true,"perimeterJackpot":true,"allTargets":101}
+DANGO_V268_CALIBRATION_PASS {"settings":101,"molds":3,"casesPerMold":60568200,"vectors":26,"directFinalThreeCases":95,"independent":false}
+DANGO_V268_INTEGRATION_PASS {"manualSeven":true,"savedRound":true,"workerTwo":true,"duplicatePayout":false,"legacy266Restore":true,"current268Rollover":true,"highestRoleUpgrade":true}
+DANGO_V285_RULES_PASS {"budgets":[1,2,3,4],"firstFiveOnly":true,"oddsSources":2,"legalPayoutRoutes":17,"unreachable":[[7,3]],"cyanDeterminismBoards":300,"unknownRevisionPreserved":true,"proofs":[{"length":2,"count":1,"moldIndex":0,"early":[1,2,3,4,5],"manual":[0,21,27,6],"late":[6,7,8]},{"length":2,"count":2,"moldIndex":0,"early":[1,2,20,26,3],"manual":[0,21,27,4],"late":[4,5,6]},{"length":2,"count":3,"moldIndex":0,"early":[1,2,20,26,15],"manual":[0,21,27,22],"late":[22,3,4]},{"length":3,"count":1,"moldIndex":0,"early":[3,4,5,1,2],"manual":[0,21,27,6],"late":[6,7,8]},{"length":3,"count":2,"moldIndex":0,"early":[3,4,5,14,19],"manual":[0,21,27,25],"late":[25,1,2]},{"length":3,"count":3,"moldIndex":0,"early":[3,4,5,14,19],"manual":[25,0,21,27],"late":[10,16,23]},{"length":4,"count":1,"moldIndex":0,"early":[6,7,8,9,1],"manual":[0,21,27,2],"late":[2,3,4]},{"length":4,"count":2,"moldIndex":0,"early":[6,7,8,9,13],"manual":[0,21,27,18],"late":[18,24,1]},{"length":4,"count":3,"moldIndex":0,"early":[6,7,8,9,13],"manual":[18,0,21,27],"late":[24,11,17]},{"length":5,"count":1,"moldIndex":0,"early":[10,11,12,13,14],"manual":[0,21,27,1],"late":[1,2,3]},{"length":5,"count":2,"moldIndex":0,"early":[10,11,12,13,14],"manual":[5,0,21,27],"late":[8,17,23]},{"length":5,"count":3,"moldIndex":2,"early":[11,12,13,14,5],"manual":[8,17,23,3],"late":[7,18,25]},{"length":6,"count":1,"moldIndex":0,"early":[15,16,17,18,19],"manual":[0,21,27,20],"late":[20,1,2]},{"length":6,"count":2,"moldIndex":0,"early":[15,16,17,18,19],"manual":[20,2,4,0],"late":[7,11,22]},{"length":6,"count":3,"moldIndex":1,"early":[15,16,17,18,19],"manual":[2,4,7,11],"late":[8,13,26]},{"length":7,"count":1,"moldIndex":0,"early":[22,23,24,25,26],"manual":[0,21,27,1],"late":[1,2,3]},{"length":7,"count":2,"moldIndex":0,"early":[22,23,24,25,26],"manual":[1,3,0,21],"late":[6,10,15]}]}
+[OfflineSettlementWorkerV3] settled dango285-0 fixture 220
+[OfflineSettlementWorkerV3] settled dango285-1 fixture 220
+[OfflineSettlementWorkerV3] settled dango285-4 fixture 220
+[OfflineSettlementWorkerV3] settled dango285-5 fixture 30
+[OfflineSettlementWorkerV3] settled dango285-6 fixture 30
+[OfflineSettlementWorkerV3] settled dango285-7 fixture 30
+[OfflineSettlementWorkerV3] settled dango285-8 fixture 30
+DANGO_V285_INTEGRATION_PASS {"legacyFingerprints":12,"savedCheckpoints":32,"freeBudgets":[1,2,3,4],"workerCases":7,"recordedTriggerReplay":true,"downloadNoFuturePeek":true,"legacy268Rollover":true,"transientFade":true,"nativeWalletOnce":true}
+DANGO_V285_GEOMETRY_PASS {"viewports":11,"realRoundStages":11,"cabinet":{"width":430,"height":366,"oldUnit":28.645816197998286,"unit":40.99425228671843,"cx":277.7809216763449,"top":97.76718770493176},"saved268Preserved":true}
+DANGO_V285_CALIBRATION_PASS {"exactSettings":101,"fractionalSettings":4,"molds":3,"earlySetsPerMold":53130,"budgetsPerEarlySet":4,"triggerTriplets":2300,"vectors":84,"directLateSetVectors":153,"directLateSetOutcomes":174420,"independentCpp":false}

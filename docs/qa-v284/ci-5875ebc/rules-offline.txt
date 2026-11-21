@@ -1,0 +1,263 @@
+﻿2026-11-21T01:16:09.8590732Z Current runner version: '2.338.2'
+2026-11-21T01:16:09.8617159Z ##[group]Runner Image Provisioner
+2026-11-21T01:16:09.8618009Z Hosted Compute Agent
+2026-11-21T01:16:09.8618801Z Version: 20261111.635
+2026-11-21T01:16:09.8619610Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-21T01:16:09.8620394Z Build Date: 2026-11-11T01:49:01Z
+2026-11-21T01:16:09.8621139Z Worker ID: {cc9b0581-7109-4ecd-a797-765082e6441c}
+2026-11-21T01:16:09.8621848Z Region: westus
+2026-11-21T01:16:09.8622436Z Cloud: Azure
+2026-11-21T01:16:09.8622974Z ##[endgroup]
+2026-11-21T01:16:09.8624586Z ##[group]Operating System
+2026-11-21T01:16:09.8625256Z Ubuntu
+2026-11-21T01:16:09.8625805Z 26.04.1
+2026-11-21T01:16:09.8626367Z LTS
+2026-11-21T01:16:09.8626871Z ##[endgroup]
+2026-11-21T01:16:09.8627767Z ##[group]Runner Image
+2026-11-21T01:16:09.8628484Z Image: ubuntu-26.04
+2026-11-21T01:16:09.8629424Z Version: 20261116.202.1
+2026-11-21T01:16:09.8630821Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-21T01:16:09.8632431Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-21T01:16:09.8633474Z ##[endgroup]
+2026-11-21T01:16:09.8634602Z ##[group]GITHUB_TOKEN Permissions
+2026-11-21T01:16:09.8636774Z Contents: read
+2026-11-21T01:16:09.8637402Z Metadata: read
+2026-11-21T01:16:09.8638114Z ##[endgroup]
+2026-11-21T01:16:09.8640603Z Secret source: Actions
+2026-11-21T01:16:09.8641614Z Cache mode: write
+2026-11-21T01:16:09.8642325Z Prepare workflow directory
+2026-11-21T01:16:09.8978072Z Prepare all required actions
+2026-11-21T01:16:09.9028605Z Getting action download info
+2026-11-21T01:16:10.2345607Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-21T01:16:10.3289314Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-21T01:16:10.5017066Z Complete job name: Single-ball rules, legacy groups and continuation
+2026-11-21T01:16:10.5966504Z ##[group]Run actions/checkout@v4
+2026-11-21T01:16:10.5967500Z with:
+2026-11-21T01:16:10.5967988Z   repository: naokingu123-cloud/cookie-link
+2026-11-21T01:16:10.5972051Z   token: ***
+2026-11-21T01:16:10.5972491Z   ssh-strict: true
+2026-11-21T01:16:10.5972935Z   ssh-user: git
+2026-11-21T01:16:10.5973376Z   persist-credentials: true
+2026-11-21T01:16:10.5973858Z   clean: true
+2026-11-21T01:16:10.5974302Z   sparse-checkout-cone-mode: true
+2026-11-21T01:16:10.5974821Z   fetch-depth: 1
+2026-11-21T01:16:10.5975247Z   fetch-tags: false
+2026-11-21T01:16:10.5975683Z   show-progress: true
+2026-11-21T01:16:10.5976136Z   lfs: false
+2026-11-21T01:16:10.5976551Z   submodules: false
+2026-11-21T01:16:10.5977006Z   set-safe-directory: true
+2026-11-21T01:16:10.5977508Z   allow-unsafe-pr-checkout: false
+2026-11-21T01:16:10.5978285Z ##[endgroup]
+2026-11-21T01:16:10.8825811Z Syncing repository: naokingu123-cloud/cookie-link
+2026-11-21T01:16:10.8828390Z ##[group]Getting Git version info
+2026-11-21T01:16:10.8830016Z Working directory is '/home/runner/work/cookie-link/cookie-link'
+2026-11-21T01:16:10.8831622Z [command]/usr/bin/git version
+2026-11-21T01:16:10.8832323Z git version 2.56.1
+2026-11-21T01:16:10.8849347Z ##[endgroup]
+2026-11-21T01:16:10.8865269Z Temporarily overriding HOME='/home/runner/work/_temp/6325d114-cfe7-4852-b1eb-f112d1e927d1' before making global git config changes
+2026-11-21T01:16:10.8868119Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T01:16:10.8871084Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cookie-link/cookie-link
+2026-11-21T01:16:10.8940558Z Deleting the contents of '/home/runner/work/cookie-link/cookie-link'
+2026-11-21T01:16:10.8950653Z ##[group]Initializing the repository
+2026-11-21T01:16:10.8952105Z [command]/usr/bin/git init /home/runner/work/cookie-link/cookie-link
+2026-11-21T01:16:10.9055163Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-21T01:16:10.9057660Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-21T01:16:10.9061263Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-21T01:16:10.9063176Z hint: call:
+2026-11-21T01:16:10.9064326Z hint:
+2026-11-21T01:16:10.9065808Z hint: 	git config --global init.defaultBranch <name>
+2026-11-21T01:16:10.9067389Z hint:
+2026-11-21T01:16:10.9069290Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-21T01:16:10.9072596Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-21T01:16:10.9074600Z hint:
+2026-11-21T01:16:10.9075949Z hint: 	git branch -m <name>
+2026-11-21T01:16:10.9077080Z hint:
+2026-11-21T01:16:10.9078475Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-21T01:16:10.9082019Z Initialized empty Git repository in /home/runner/work/cookie-link/cookie-link/.git/
+2026-11-21T01:16:10.9098557Z [command]/usr/bin/git remote add origin https://github.com/naokingu123-cloud/cookie-link
+2026-11-21T01:16:10.9155625Z ##[endgroup]
+2026-11-21T01:16:10.9157302Z ##[group]Disabling automatic garbage collection
+2026-11-21T01:16:10.9166067Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-21T01:16:10.9213325Z ##[endgroup]
+2026-11-21T01:16:10.9214776Z ##[group]Setting up auth
+2026-11-21T01:16:10.9230773Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T01:16:10.9271187Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T01:16:10.9785516Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T01:16:10.9828118Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T01:16:11.0152094Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T01:16:11.0187335Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T01:16:11.0457963Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-21T01:16:11.0498657Z ##[endgroup]
+2026-11-21T01:16:11.0499904Z ##[group]Fetching the repository
+2026-11-21T01:16:11.0509645Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +5875ebc246e56f2a3c99bebc943a482dd0ce6f73:refs/remotes/origin/main
+2026-11-21T01:16:25.2688625Z From https://github.com/naokingu123-cloud/cookie-link
+2026-11-21T01:16:25.2690082Z  * [new ref]         5875ebc246e56f2a3c99bebc943a482dd0ce6f73 -> origin/main
+2026-11-21T01:16:25.2700293Z ##[endgroup]
+2026-11-21T01:16:25.2700973Z ##[group]Determining the checkout info
+2026-11-21T01:16:25.2701711Z ##[endgroup]
+2026-11-21T01:16:25.2703426Z [command]/usr/bin/git sparse-checkout disable
+2026-11-21T01:16:25.2764938Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-21T01:16:25.2796284Z ##[group]Checking out the ref
+2026-11-21T01:16:25.2801453Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-21T01:16:26.2900010Z Updating files:  70% (1186/1673)
+2026-11-21T01:16:26.2956020Z Updating files:  71% (1188/1673)
+2026-11-21T01:16:26.3024805Z Updating files:  72% (1205/1673)
+2026-11-21T01:16:26.3091770Z Updating files:  73% (1222/1673)
+2026-11-21T01:16:26.3100169Z Updating files:  74% (1239/1673)
+2026-11-21T01:16:26.3111044Z Updating files:  75% (1255/1673)
+2026-11-21T01:16:26.3121812Z Updating files:  76% (1272/1673)
+2026-11-21T01:16:26.3150988Z Updating files:  77% (1289/1673)
+2026-11-21T01:16:26.3166119Z Updating files:  78% (1305/1673)
+2026-11-21T01:16:26.3187298Z Updating files:  79% (1322/1673)
+2026-11-21T01:16:26.3206008Z Updating files:  80% (1339/1673)
+2026-11-21T01:16:26.3263576Z Updating files:  81% (1356/1673)
+2026-11-21T01:16:26.3272163Z Updating files:  82% (1372/1673)
+2026-11-21T01:16:26.3296963Z Updating files:  83% (1389/1673)
+2026-11-21T01:16:26.3307780Z Updating files:  84% (1406/1673)
+2026-11-21T01:16:26.3317326Z Updating files:  85% (1423/1673)
+2026-11-21T01:16:26.3329495Z Updating files:  86% (1439/1673)
+2026-11-21T01:16:26.3343565Z Updating files:  87% (1456/1673)
+2026-11-21T01:16:26.3357994Z Updating files:  88% (1473/1673)
+2026-11-21T01:16:26.3373944Z Updating files:  89% (1489/1673)
+2026-11-21T01:16:26.3384639Z Updating files:  90% (1506/1673)
+2026-11-21T01:16:26.3397065Z Updating files:  91% (1523/1673)
+2026-11-21T01:16:26.3408488Z Updating files:  92% (1540/1673)
+2026-11-21T01:16:26.3421337Z Updating files:  93% (1556/1673)
+2026-11-21T01:16:26.3434504Z Updating files:  94% (1573/1673)
+2026-11-21T01:16:26.3447976Z Updating files:  95% (1590/1673)
+2026-11-21T01:16:26.3462037Z Updating files:  96% (1607/1673)
+2026-11-21T01:16:26.3476153Z Updating files:  97% (1623/1673)
+2026-11-21T01:16:26.3488688Z Updating files:  98% (1640/1673)
+2026-11-21T01:16:26.3508227Z Updating files:  99% (1657/1673)
+2026-11-21T01:16:26.3508737Z Updating files: 100% (1673/1673)
+2026-11-21T01:16:26.3538240Z Updating files: 100% (1673/1673), done.
+2026-11-21T01:16:26.3538578Z Switched to a new branch 'main'
+2026-11-21T01:16:26.3545009Z branch 'main' set up to track 'origin/main'.
+2026-11-21T01:16:26.3598289Z ##[endgroup]
+2026-11-21T01:16:26.3650383Z [command]/usr/bin/git log -1 --format=%H
+2026-11-21T01:16:26.3674470Z 5875ebc246e56f2a3c99bebc943a482dd0ce6f73
+2026-11-21T01:16:26.4052980Z ##[group]Run actions/setup-node@v4
+2026-11-21T01:16:26.4053299Z with:
+2026-11-21T01:16:26.4053513Z   node-version: 22
+2026-11-21T01:16:26.4053733Z   always-auth: false
+2026-11-21T01:16:26.4053957Z   check-latest: false
+2026-11-21T01:16:26.4056276Z   token: ***
+2026-11-21T01:16:26.4056485Z ##[endgroup]
+2026-11-21T01:16:26.5547852Z Found in cache @ /opt/hostedtoolcache/node/22.23.5/x64
+2026-11-21T01:16:26.5553594Z (node:2401) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T01:16:26.5554477Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T01:16:26.5556537Z ##[group]Environment details
+2026-11-21T01:16:27.0027173Z node: v22.23.5
+2026-11-21T01:16:27.0027575Z npm: 10.9.9
+2026-11-21T01:16:27.0027896Z yarn: 1.22.22
+2026-11-21T01:16:27.0028724Z ##[endgroup]
+2026-11-21T01:16:27.0172795Z ##[group]Run npm install --ignore-scripts --no-audit --no-fund
+2026-11-21T01:16:27.0173308Z [36;1mnpm install --ignore-scripts --no-audit --no-fund[0m
+2026-11-21T01:16:27.0216949Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:27.0217230Z ##[endgroup]
+2026-11-21T01:16:30.0295737Z 
+2026-11-21T01:16:30.0302968Z added 3 packages in 3s
+2026-11-21T01:16:30.0861813Z ##[group]Run node tests/sixdrop-v278-rules.cjs
+2026-11-21T01:16:30.0862208Z [36;1mnode tests/sixdrop-v278-rules.cjs[0m
+2026-11-21T01:16:30.0899874Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:30.0900142Z ##[endgroup]
+2026-11-21T01:16:35.1584727Z SIXDROP_V278_RULES_PASS {"rounds":108,"groups":540,"positive":64,"zero":44,"allClears":16,"witness":{"seed":9,"win":56618,"counts":{"line":7,"triangle":1,"hexagon":0},"clearWins":[11284,21334]}}
+2026-11-21T01:16:35.1796061Z ##[group]Run node tests/sixdrop-v280-rules.cjs
+2026-11-21T01:16:35.1796464Z [36;1mnode tests/sixdrop-v280-rules.cjs[0m
+2026-11-21T01:16:35.1829674Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:35.1829934Z ##[endgroup]
+2026-11-21T01:16:40.3481615Z SIXDROP_V280_RULES_PASS {"historicalSnapshots":6,"games":72,"groups":360,"allClears":20,"roles":{"line":[0,20,50,150,250,400,550,750,950,1200,1450],"triangle":[0,50,200,400,750,1250,1750,2500,3250,4250,5250],"hexagon":[0,100,400,800,1500,2500,3500,5000,6500,8500,10500]}}
+2026-11-21T01:16:40.3690544Z ##[group]Run node tests/sixdrop-v283-rules.cjs
+2026-11-21T01:16:40.3690940Z [36;1mnode tests/sixdrop-v283-rules.cjs[0m
+2026-11-21T01:16:40.3724868Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:40.3725137Z ##[endgroup]
+2026-11-21T01:16:53.9195742Z SIXDROP_V283_RULES_PASS {"historicalSnapshots":9,"primaryPositions":75,"primaryAreaSizes":{"3":2,"4":10,"5":11,"6":8,"7":44},"overlapAndEmptyNeighbours":true,"games":72,"steps":576,"positive":56,"zero":16,"allClears":18,"witnesses":{"allClear":{"seed":10,"win":72934,"clears":1},"zero":{"seed":6,"win":0}}}
+2026-11-21T01:16:53.9432004Z ##[group]Run node tests/sixdrop-v278-host.cjs
+2026-11-21T01:16:53.9432394Z [36;1mnode tests/sixdrop-v278-host.cjs[0m
+2026-11-21T01:16:53.9464673Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:53.9464928Z ##[endgroup]
+2026-11-21T01:16:55.8031797Z [OfflineSettlementWorkerV3] settled worker-0 isolated 56618
+2026-11-21T01:16:55.8444672Z [OfflineSettlementWorkerV3] settled worker-2 isolated 56618
+2026-11-21T01:16:55.8846473Z [OfflineSettlementWorkerV3] settled worker-4 isolated 56618
+2026-11-21T01:16:55.8856361Z SIXDROP_V278_HOST_PASS {"boundaries":[{"received":1,"processed":0,"bank":123456,"allClears":0},{"received":2,"processed":0,"bank":123456,"allClears":0},{"received":3,"processed":3,"bank":168456,"allClears":0},{"received":4,"processed":3,"bank":168456,"allClears":0},{"received":5,"processed":5,"bank":1128456,"allClears":1},{"received":6,"processed":6,"bank":1143456,"allClears":1},{"received":7,"processed":7,"bank":2133456,"allClears":2},{"received":8,"processed":8,"bank":2148456,"allClears":2}],"repeated":[{"bankUnits":4173456,"removed":369,"feed":892},{"bankUnits":4376631,"removed":504,"feed":1113},{"bankUnits":6401631,"removed":639,"feed":1334}],"checkpointCases":[1,2,3,4,5,6,7],"queuedGroups":[3,2],"legacyMissingRng":"verified replay + 4 rejection cases","streamingCases":[{"ball":1},{"ball":2},{"ball":4},{"ball":0,"queued":3},{"ball":3,"queued":2},{"ball":2,"legacy":true}],"offlineWorkerCases":[0,2,4],"payout":56618,"scope":"Native Arcade + live Six adapter + recorder + local persistence + shared resume + offline settlement worker"}
+2026-11-21T01:16:55.9069234Z ##[group]Run node tests/sixdrop-v278-settlement.mjs
+2026-11-21T01:16:55.9069695Z [36;1mnode tests/sixdrop-v278-settlement.mjs[0m
+2026-11-21T01:16:55.9102893Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:55.9103155Z ##[endgroup]
+2026-11-21T01:16:56.0671108Z [PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded
+2026-11-21T01:16:56.4102012Z SIXDROP_V278_SETTLEMENT_PASS {"streaming":["early bridge + HTTP","eight-ball zero even with abandoned flag","unknown interruption denied","other-game WIN with own zero","nonparticipant","positive all-clears","operator cancellation","idempotent retry"],"download":[{"caseName":"positive","bet":3000,"win":56618,"bankUnits":2148456,"removed":234,"feed":671},{"caseName":"positive-bet-change","bet":301,"win":48400,"bankUnits":2351631,"removed":369,"feed":892},{"caseName":"nonparticipant","bet":0,"win":0,"bankUnits":2351631,"removed":369,"feed":892},{"caseName":"zero","bet":3000,"win":0,"bankUnits":0,"removed":0,"feed":0}]}
+2026-11-21T01:16:56.4436481Z ##[group]Run node tests/sixdrop-v283-host.cjs
+2026-11-21T01:16:56.4436874Z [36;1mnode tests/sixdrop-v283-host.cjs[0m
+2026-11-21T01:16:56.4469526Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:56.4469796Z ##[endgroup]
+2026-11-21T01:16:58.8698169Z [OfflineSettlementWorkerV3] settled worker-283-0 isolated 72934
+2026-11-21T01:16:59.0500155Z [OfflineSettlementWorkerV3] settled worker-283-1 isolated 72934
+2026-11-21T01:16:59.2136302Z [OfflineSettlementWorkerV3] settled worker-283-7 isolated 72934
+2026-11-21T01:16:59.3145164Z [OfflineSettlementWorkerV3] settled worker-248-2 isolated 14584
+2026-11-21T01:16:59.3660504Z [OfflineSettlementWorkerV3] settled worker-278-2 isolated 0
+2026-11-21T01:16:59.4168495Z [OfflineSettlementWorkerV3] settled worker-280-4 isolated 0
+2026-11-21T01:16:59.6687385Z SIXDROP_V283_HOST_PASS {"boundaries":[{"received":1,"processed":1,"removed":109,"bank":273456},{"received":2,"processed":2,"removed":113,"bank":333456},{"received":3,"processed":3,"removed":162,"bank":1068456},{"received":4,"processed":4,"removed":227,"bank":2043456},{"received":5,"processed":5,"removed":250,"bank":2388456},{"received":6,"processed":6,"removed":308,"bank":3258456},{"received":7,"processed":7,"removed":318,"bank":3408456},{"received":8,"processed":8,"removed":387,"bank":4443456}],"payout":72934,"allClears":1,"changedBetWin":52392,"checkpointCases":[1,2,3,4,5,6,7],"queueCases":[0,3],"animatedCheckpoint":true,"compatibility":[{"revision":248,"ball":2,"win":14584},{"revision":278,"ball":2,"win":0},{"revision":278,"ball":4,"win":0},{"revision":280,"ball":2,"win":0},{"revision":280,"ball":4,"win":0},{"revision":283,"ball":2,"win":72934}],"workerCases":[{"revision":283,"ball":0,"win":72934},{"revision":283,"ball":1,"win":72934},{"revision":283,"ball":7,"win":72934},{"revision":248,"ball":2,"win":14584},{"revision":278,"ball":2,"win":0},{"revision":280,"ball":4,"win":0}],"downloadCases":[{"previousRevision":null,"revision":283,"checkpoints":9,"win":600},{"previousRevision":280,"revision":283,"checkpoints":9,"win":600}],"scope":"Native Arcade single input + occupied-neighbor break events + carry + recorder + shared resume + offline settlement + actual download worker"}
+2026-11-21T01:16:59.6902626Z ##[group]Run node tests/sixdrop-v283-settlement.mjs
+2026-11-21T01:16:59.6903048Z [36;1mnode tests/sixdrop-v283-settlement.mjs[0m
+2026-11-21T01:16:59.6935549Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:16:59.6935808Z ##[endgroup]
+2026-11-21T01:16:59.8445225Z [PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded
+2026-11-21T01:17:00.3040213Z SIXDROP_V283_SETTLEMENT_PASS {"revision":283,"streaming":["single-eight-ball positive","seven-ball interruption","own zero despite other-game WIN","nonparticipant","receipt retry","operator cancellation"],"download":[{"caseName":"positive","bet":3000,"win":72934,"bankUnits":4443456,"removed":387,"feed":825},{"caseName":"positive-bet-change","bet":333,"win":52392,"bankUnits":4922976,"removed":675,"feed":1200},{"caseName":"nonparticipant","bet":0,"win":0,"bankUnits":4922976,"removed":675,"feed":1200},{"caseName":"zero","bet":3000,"win":0,"bankUnits":0,"removed":0,"feed":0}]}
+2026-11-21T01:17:00.3178010Z ##[group]Run node tests/sixdrop-v284-rules.cjs
+2026-11-21T01:17:00.3178398Z [36;1mnode tests/sixdrop-v284-rules.cjs[0m
+2026-11-21T01:17:00.3211205Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:17:00.3211477Z ##[endgroup]
+2026-11-21T01:17:05.6877642Z SIXDROP_V284_RULES_PASS {"revision":284,"primaryPositions":75,"primaryAreaSizes":{"3":2,"4":10,"5":11,"6":8,"7":44},"colorBoundaries":true,"cyclicBeyond1800":true,"survivorColorsUnchanged":45440,"integerCreditsAtFractionalBets":true,"zeroCreditSteps":2042,"unchangedRateIndependentPayouts":true,"rateIndependentNumberSpread":true,"rawAndCachedGeometryEquivalentGames":96,"comparedBallTimelines":768,"coreSha256":"2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650"}
+2026-11-21T01:17:05.7097434Z ##[group]Run node tests/sixdrop-v284-host.cjs
+2026-11-21T01:17:05.7097895Z [36;1mnode tests/sixdrop-v284-host.cjs[0m
+2026-11-21T01:17:05.7130364Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:17:05.7130639Z ##[endgroup]
+2026-11-21T01:17:08.1120654Z [OfflineSettlementWorkerV3] settled worker-284-0 isolated 300
+2026-11-21T01:17:08.1678503Z [OfflineSettlementWorkerV3] settled worker-284-1 isolated 300
+2026-11-21T01:17:08.2217784Z [OfflineSettlementWorkerV3] settled worker-284-7 isolated 300
+2026-11-21T01:17:08.2862586Z [OfflineSettlementWorkerV3] settled worker-248-2 isolated 900
+2026-11-21T01:17:08.3492659Z [OfflineSettlementWorkerV3] settled worker-278-2 isolated 0
+2026-11-21T01:17:08.4045378Z [OfflineSettlementWorkerV3] settled worker-280-4 isolated 0
+2026-11-21T01:17:08.4892430Z [OfflineSettlementWorkerV3] settled worker-283-2 isolated 4500
+2026-11-21T01:17:08.6885667Z SIXDROP_V284_HOST_PASS {"revision":284,"elapsedMs":2881,"positiveSeed":2,"zeroSeed":1,"legacyWitnesses":[{"revision":248,"seed":10,"win":14584,"sha256":"1bc52f36b69f06792be737d5e788db5f4552dc2efe0e455bfb34a72385980558"},{"revision":248,"seed":6,"win":60,"sha256":"1762f99aaa3d020453f81dcc49bd2d58567faeaa43ad97cd0aabd8122c6aae53"},{"revision":248,"seed":73,"win":0,"sha256":"c44fa3b4d4d0a67870fe5484948ca1e92dea0facebb58c3373a55e5cea349e24"},{"revision":278,"seed":10,"win":0,"sha256":"eaf4ae5cb72c18b84b0f5399002c4b6303ce2dc0e6da9c610c3d7ac45e890199"},{"revision":278,"seed":6,"win":0,"sha256":"40190f8e8e9aa1c4534183782b267f570a6a685f2068bc0539103156c14af10d"},{"revision":278,"seed":73,"win":199,"sha256":"bf3dc603006915ade05a3b1e2c2356919ce58819bf9e1de0514776c0405c01bf"},{"revision":280,"seed":10,"win":0,"sha256":"d2b088e1937e4dfa9618c82741a10aab89ec9bf08e8256d404cb72184d74e080"},{"revision":280,"seed":6,"win":0,"sha256":"654987784d0f8aa8f231d7a1851b364e56ab1eacf3b91495e2ef648e5c2241a6"},{"revision":280,"seed":73,"win":166,"sha256":"4e952ebfe905d010e8872889976905fb98beb31a04093bc9a0b11082d4fa105b"},{"revision":283,"seed":10,"win":72934,"sha256":"f288b3471777db13e99bd3f4f4197dd8310b3c9efee43462fc1c0c53233d0a42"},{"revision":283,"seed":6,"win":0,"sha256":"23fcceb776ecc054fa4be90ad0171f92653a16281a332012d97c37b4bff65bc5"},{"revision":283,"seed":73,"win":832,"sha256":"c60fbf59c8b82afd53056c6582dc5312869063fa7b38ca997cd02ae0f9fa170e"}],"drawBoundaries":[{"ball":1,"removed":203,"bankUnits":125856,"win":0},{"ball":2,"removed":214,"bankUnits":132456,"win":0},{"ball":3,"removed":218,"bankUnits":134856,"win":0},{"ball":4,"removed":233,"bankUnits":143856,"win":0},{"ball":5,"removed":244,"bankUnits":150456,"win":0},{"ball":6,"removed":270,"bankUnits":166056,"win":300},{"ball":7,"removed":276,"bankUnits":169656,"win":300},{"ball":8,"removed":287,"bankUnits":176256,"win":300}],"checkpointCases":[1,2,3,4,5,6,7],"queueCases":[0,3],"compatibility":[{"revision":248,"ball":2,"win":14584},{"revision":278,"ball":2,"win":0},{"revision":278,"ball":4,"win":0},{"revision":280,"ball":2,"win":0},{"revision":280,"ball":4,"win":0},{"revision":283,"ball":2,"win":72934},{"revision":284,"ball":2,"win":300}],"workerCases":[{"revision":284,"ball":0,"win":300},{"revision":284,"ball":1,"win":300},{"revision":284,"ball":7,"win":300},{"revision":248,"ball":2,"win":900},{"revision":278,"ball":2,"win":0},{"revision":280,"ball":4,"win":0},{"revision":283,"ball":2,"win":4500}],"downloadCases":[{"priorRevision":null,"checkpoints":9,"win":0},{"priorRevision":280,"checkpoints":9,"win":1500}],"allClear":{"win":1240,"removed":1}}
+2026-11-21T01:17:08.7100636Z ##[group]Run node tests/sixdrop-v284-meter.cjs
+2026-11-21T01:17:08.7101291Z [36;1mnode tests/sixdrop-v284-meter.cjs[0m
+2026-11-21T01:17:08.7137952Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:17:08.7138221Z ##[endgroup]
+2026-11-21T01:17:09.0636348Z SIXDROP_V284_METER_PASS {"bets":[1,5,100],"changedBet":5,"stageCount":93,"zeroCreditIntervals":94,"overlapCount":16,"legacyRevision":283,"reduced":true,"hidden":true,"restored":true,"scope":"Production host + UI functions; actual eight-ball core timelines; no renderer state mutation"}
+2026-11-21T01:17:09.0821111Z ##[group]Run node tests/sixdrop-server-v248.mjs
+2026-11-21T01:17:09.0821515Z [36;1mnode tests/sixdrop-server-v248.mjs[0m
+2026-11-21T01:17:09.0853719Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:17:09.0853978Z ##[endgroup]
+2026-11-21T01:17:09.1831251Z [PayoutV3] common per-player control, bet-shock repricing and server offline settlement queue loaded
+2026-11-21T01:17:09.4475545Z SIXDROP_SERVER_V248_PASS: old balance migration, 0.05 BET accrual, fixed palette carry, independent players, retries, cancel rollback, own-zero reset, worker restoration and cold restart
+2026-11-21T01:17:09.4715151Z ##[group]Run node tests/recorded-round-v255.mjs
+2026-11-21T01:17:09.4715756Z [36;1mnode tests/recorded-round-v255.mjs[0m
+2026-11-21T01:17:09.4760014Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:17:09.4760489Z ##[endgroup]
+2026-11-21T01:17:09.5130074Z recorded-round-v255: deterministic streams, offset resume, stable batches and wallet isolation PASS
+2026-11-21T01:17:09.5215570Z ##[group]Run node tests/download-v255-cache.mjs
+2026-11-21T01:17:09.5216196Z [36;1mnode tests/download-v255-cache.mjs[0m
+2026-11-21T01:17:09.5263611Z shell: /usr/bin/bash -e {0}
+2026-11-21T01:17:09.5264057Z ##[endgroup]
+2026-11-21T01:17:09.6480339Z Download v255 cache: root/subpath offline navigation, private/API exclusion and bounded/open/suffix audio ranges passed
+2026-11-21T01:17:09.6740486Z Post job cleanup.
+2026-11-21T01:17:09.7987185Z (node:2597) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T01:17:09.7988624Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T01:17:09.8197381Z Post job cleanup.
+2026-11-21T01:17:09.9105926Z [command]/usr/bin/git version
+2026-11-21T01:17:09.9152714Z git version 2.56.1
+2026-11-21T01:17:09.9197348Z Temporarily overriding HOME='/home/runner/work/_temp/e592b26a-c599-4a64-9df2-c66e6304ce3c' before making global git config changes
+2026-11-21T01:17:09.9199627Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T01:17:09.9203364Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cookie-link/cookie-link
+2026-11-21T01:17:09.9245935Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T01:17:09.9284161Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T01:17:09.9593385Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T01:17:09.9630601Z http.https://github.com/.extraheader
+2026-11-21T01:17:09.9650914Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-21T01:17:09.9679768Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T01:17:10.0085030Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T01:17:10.0129646Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T01:17:10.0575964Z Cleaning up orphan processes
+2026-11-21T01:17:10.1055776Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
