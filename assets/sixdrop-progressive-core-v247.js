@@ -29,6 +29,11 @@ const ROLE_PAY_TABLE_V284=Object.freeze({
 });
 const ROLE_TAIL_STEP_V284=Object.freeze({line:50,triangle:100,hexagon:250});
 const NUMBER_BIAS_V284=.16;
+// v285 places numbers mainly through a symmetric perimeter/inside balance.
+// The residual row preference is far smaller than the old 0.16 per row.
+const NUMBER_EDGE_BIAS_V285=.4;
+const NUMBER_ROW_BIAS_V285=Object.freeze([[50,.10],[90,.06],[150,.04]].map(row=>Object.freeze(row)));
+const COLOR_COHESION_V285=Object.freeze([[50,0],[90,.02],[150,.075]].map(row=>Object.freeze(row)));
 const COLOR_COHESION_V284=Object.freeze([[50,.0235],[75,.10555],[90,.13223],[100,.15295],[125,.19317],[150,.22354]].map(row=>Object.freeze(row)));
 // Whole-medal flooring changes which low-BET rounds earn carry. These anchors
 // compensate in board generation, keeping the visible payout table unchanged.
@@ -107,9 +112,26 @@ function creditUnitsForDrop(bet,removedBefore,stateOrRevision=REVISION){
  const cursor=integer(removedBefore)%5;
  return Math.floor(bet*(cursor+1)/5)-Math.floor(bet*cursor/5);
 }
-function numberPlacementBias(rate,stateOrRevision=BALANCED_REVISION){return revisionOf(stateOrRevision)>=FIXED_PALETTE_REVISION?0:NUMBER_BIAS_V284;}
-function colorCohesion(rate,bet=100){
+function numberPlacementBias(rate,stateOrRevision=BALANCED_REVISION){
+ if(revisionOf(stateOrRevision)>=FIXED_PALETTE_REVISION){
+  const target=Math.max(50,Math.min(150,Number(rate)||90));
+  for(let i=1;i<NUMBER_ROW_BIAS_V285.length;i++){
+   const [from,a]=NUMBER_ROW_BIAS_V285[i-1],[to,b]=NUMBER_ROW_BIAS_V285[i];
+   if(target<=to)return a+(b-a)*(target-from)/(to-from);
+  }
+  return NUMBER_ROW_BIAS_V285.at(-1)[1];
+ }
+ return NUMBER_BIAS_V284;
+}
+function colorCohesion(rate,bet=100,stateOrRevision=BALANCED_REVISION){
  const target=Math.max(50,Math.min(150,Number(rate)||90));
+ if(revisionOf(stateOrRevision)>=FIXED_PALETTE_REVISION){
+  for(let i=1;i<COLOR_COHESION_V285.length;i++){
+   const [from,a]=COLOR_COHESION_V285[i-1],[to,b]=COLOR_COHESION_V285[i];
+   if(target<=to)return a+(b-a)*(target-from)/(to-from);
+  }
+  return COLOR_COHESION_V285.at(-1)[1];
+ }
  const interpolate=table=>{
   for(let index=1;index<table.length;index++){
    const [low,from]=table[index-1],[high,to]=table[index];
@@ -194,7 +216,7 @@ function create(geometry){
    furthest=Math.max(furthest,index);
    const [r,c]=positions[index],colors=[...choices[index]];
    const nearby=color=>G.neighbors(r,c,ROWS).filter(([y,x])=>grid[y]?.[x]?.color===color).length;
-   const cluster=nextRandom(state)<(revisionOf(state)>=BALANCED_REVISION?colorCohesion(target,state.bet):.04);
+   const cluster=nextRandom(state)<(revisionOf(state)>=BALANCED_REVISION?colorCohesion(target,state.bet,state):.04);
    colors.sort((a,b)=>(nearby(a)-nearby(b))*(cluster?-1:1));
    let fits=false;
    for(const color of colors){if(formsAt(grid,r,c,color))continue;fits=true;grid[r][c]={id:id+index+1,color,number:null,feedRow:Math.floor((startFeed+index)*ROWS/CAPACITY)};if(place(index+1))return true;}
@@ -232,7 +254,11 @@ function create(geometry){
   if(revisionOf(state)>=BALANCED_REVISION){
    // v285 removes the deterministic numbered-row preference. Colour
    // placement and gaps remain the source of P/O variation.
-   const bias=numberPlacementBias(target,state),scores=new Map(targets.map(cell=>[cell,nextRandom(state)+bias*cell[0]]));
+   const bias=numberPlacementBias(target,state),scores=new Map(targets.map(cell=>{
+    const [row,col]=cell,edge=Math.min(row,ROWS-1-row,col,grid[row].length-1-col);
+    const balanced=revisionOf(state)>=FIXED_PALETTE_REVISION;
+    return [cell,nextRandom(state)+bias*row+(balanced?NUMBER_EDGE_BIAS_V285*edge:0)];
+   }));
    targets.sort((a,b)=>scores.get(a)-scores.get(b));
   }else targets.sort((a,b)=>(mobility(grid,...a)-mobility(grid,...b))*(prefer?-1:1));
   for(const [r,c]of targets)if(numbers.length)grid[r][c].number=numbers.pop();
@@ -313,7 +339,7 @@ function create(geometry){
   if(modernRules(s)&&s.draws.length<8)return cleanCarry(s.carryAtStart);
   return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});
  }
- return {VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,FIXED_PALETTE_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,COLOR_COHESION_V284,COLOR_COHESION_LOW_BET_V284,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,CREDIT_PER_DROP_V285,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,isGrouped,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
+ return {VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,FIXED_PALETTE_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,NUMBER_EDGE_BIAS_V285,NUMBER_ROW_BIAS_V285,COLOR_COHESION_V284,COLOR_COHESION_V285,COLOR_COHESION_LOW_BET_V284,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,CREDIT_PER_DROP_V285,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,isGrouped,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
 }
-root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,FIXED_PALETTE_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,COLOR_COHESION_V284,COLOR_COHESION_LOW_BET_V284,RING,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,CREDIT_PER_DROP_V285,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,isGrouped,batchSize,supportProbability};
+root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,FIXED_PALETTE_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,NUMBER_EDGE_BIAS_V285,NUMBER_ROW_BIAS_V285,COLOR_COHESION_V284,COLOR_COHESION_V285,COLOR_COHESION_LOW_BET_V284,RING,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,CREDIT_PER_DROP_V285,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,isGrouped,batchSize,supportProbability};
 })(typeof window!=='undefined'?window:globalThis);
