@@ -1,0 +1,59 @@
+{
+  "runId": 44849142631,
+  "artifactId": 14684762221,
+  "artifactName": "sixdrop-v278-display-3",
+  "note": "Full native replay snapshots are in the original GitHub Actions artifact; retained here by exact byte count and SHA256 to avoid duplicating six megabytes of board states.",
+  "files": [
+    {
+      "artifactFile": "download-first.json",
+      "bytes": 2020361,
+      "sha256": "433719f07c359329378cab68db690819dca17ca25dba5c20cf92f147fdae9880",
+      "version": 255,
+      "numbers": [
+        7,
+        25,
+        10,
+        19,
+        20,
+        2,
+        3,
+        11
+      ],
+      "totalWin": 300
+    },
+    {
+      "artifactFile": "download-next.json",
+      "bytes": 2014522,
+      "sha256": "dc691b2381276e2cf3b4c0f5159d012eb167f01a9cf857f2fe9781433e612518",
+      "version": 255,
+      "numbers": [
+        18,
+        19,
+        7,
+        10,
+        24,
+        16,
+        14,
+        2
+      ],
+      "totalWin": 301
+    },
+    {
+      "artifactFile": "download-positive-carry.json",
+      "bytes": 2017430,
+      "sha256": "de5644eef2ed9a4d28e2ba8df569619ad4afadd9d6e05434814eb841f76f3e3e",
+      "version": 255,
+      "numbers": [
+        18,
+        19,
+        7,
+        10,
+        24,
+        16,
+        14,
+        2
+      ],
+      "totalWin": 1975
+    }
+  ]
+}

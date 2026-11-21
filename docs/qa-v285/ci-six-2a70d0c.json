@@ -1,0 +1,78 @@
+{
+  "commit": "2a70d0cf20cc72526808cebbad5b9020cfe23489",
+  "workflow": ".github/workflows/sixdrop-v278.yml",
+  "runId": 44852327222,
+  "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44852327222",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 136686341453,
+      "name": "native-browser-display (2)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136686341498,
+      "name": "native-browser-display (3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136686341501,
+      "name": "native-browser-display (1)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136686341586,
+      "name": "native-browser-display (0)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136686341592,
+      "name": "Single-ball rules, legacy groups and continuation",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 136687772814,
+      "name": "public-assets",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14686330998,
+      "name": "sixdrop-v278-display-1",
+      "sha256": "43698cb80ccdef386957c3d31c010ffd956ac363714efb093557fde86240dad5",
+      "bytes": 3752894
+    },
+    {
+      "id": 14686246142,
+      "name": "sixdrop-v278-display-2",
+      "sha256": "8a84f004264db3c9cb4d2c360350d6dad03d7f08ceedb3334aebe846f36a26f8",
+      "bytes": 3278078
+    },
+    {
+      "id": 14686062278,
+      "name": "sixdrop-v278-display-3",
+      "sha256": "f97843f6a01c4b1cab66f610a010219a37ba70a97a8e76975f36eeaf3f7a2e87",
+      "bytes": 1129666
+    },
+    {
+      "id": 14685598938,
+      "name": "sixdrop-v278-display-0",
+      "sha256": "a1fa147e9c289b9fa4031b9fdde437668ca8939ab253fb433e40ef629329c7d5",
+      "bytes": 9860372
+    }
+  ],
+  "scratchArtifactDirectory": "../verification-artifacts/v285-pr/2a70d0c/",
+  "notes": [
+    "All four browser scenarios and rules/offline pass.",
+    "Public verification intentionally skipped for candidate branch.",
+    "The old -5 logical px bottle offset regression is resolved."
+  ]
+}

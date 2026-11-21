@@ -72,6 +72,9 @@ html body.carnival-active.sixdrop-v278 #screen>.game>.field{grid-template-column
 html body.carnival-active.sixdrop-v278 #panels,
 html body.carnival-active.sixdrop-v278 #panels>.carnival-panel,
 html body.carnival-active.sixdrop-v278 #panels .six-ball-surface{top:0!important;margin:0!important;height:336px!important;min-height:336px!important}
+/* The dormant Cookie frame is only visibility:hidden in the legacy host.
+   Remove it from flow so its -5px top margin cannot lift the live bottle. */
+html body.carnival-active.sixdrop-v278 #panels>.carnival-panel>.biscuit-frame{display:none!important}
 html body.carnival-active.sixdrop-v278 #carnival-odds[data-ui278="1"]{height:336px!important;min-height:336px!important}
 /* Reclaim the old 11px side gutters, 16px empty HUD row and wide count
    gutter. The 430px field now holds 328px play + 6px gap + 96px payouts.

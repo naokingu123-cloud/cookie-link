@@ -1,0 +1,1 @@
+DANGO_V269_PRESENTATION_RULES_PASS {"rulesRevision":268,"finalBoards":2,"independentProjections":19,"ordinaryFinalReachEmpty":true,"ninthDrawRejected":true,"payoutUnchanged":true}

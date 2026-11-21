@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 const ctx=vm.createContext({});
 vm.runInContext(await fs.readFile(new URL('../assets/dango-bingo-rules.js',import.meta.url),'utf8'),ctx);
-const R=ctx.DangoBingoRules,P=value=>JSON.parse(JSON.stringify(value));
+const R=ctx.DangoBingoRules.legacy268??ctx.DangoBingoRules,P=value=>JSON.parse(JSON.stringify(value));
 assert.equal(R.REVISION,268,'presentation does not revise the calibrated payout algorithm');
 let seven=R.create({moldIndex:1,numbers:Array.from({length:25},(_,i)=>i+1)});
 for(const id of [2,7,11,16,22])seven=R.draw(seven,seven.numbers[id]);

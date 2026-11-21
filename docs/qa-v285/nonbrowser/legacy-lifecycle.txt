@@ -1,0 +1,1 @@
+DANGO_V269_LIFECYCLE_PASS {"physicalPrelaunch":true,"falseGatePreserved":true,"manualUntimed":true,"replayLaunchBeforeLanding":true,"noFutureNumberLeak":true,"manualPreserved":true,"expiredRestore":true,"sharedDeadlineBeforeAck":true,"finalBoardMainMiniTab":true,"settlementUnchanged":true}

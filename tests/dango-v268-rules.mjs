@@ -4,7 +4,8 @@ import vm from 'node:vm';
 
 const ctx=vm.createContext({console});
 vm.runInContext(await fs.readFile(new URL('../assets/dango-bingo-rules.js',import.meta.url),'utf8'),ctx);
-const R=ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x));
+// Historical v268 guarantees stay pinned when a later engine becomes current.
+const R=ctx.DangoBingoRules.legacy268??ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x));
 const lengths=[2,3,4,5,6,7],numbers=Array.from({length:25},(_,i)=>i+1);
 const pay=[[0,20,1000],[20,80,2000],[40,120,5000],[80,300,10000],[150,3000,50000],[200,5000,200000]];
 assert.equal(R.REVISION,268);
