@@ -9,7 +9,7 @@ const {R,G,clone,NUMBERS,createHost,idle,installWorker,streamingCheckpoint,fullR
 require('../assets/recorded-round-v255.js');
 const Recorder=globalThis.SweetsRecordedRoundV255;
 globalThis.SweetsLineup={ids:['candy']};
-const REVISION=284;
+const REVISION=285;
 const prior={version:247,bankUnits:123456,removed:199,feed:450,roundId:'previous'};
 const carryKey='sweets-local-debug-v258:sixdrop-carry-v278';
 const carryValue=c=>{const value=R.cleanCarry(c);delete value.roundId;return value;};

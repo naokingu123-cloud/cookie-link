@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import vm from 'node:vm';
 import {R,read,plain,numbers,flush,host,installWorker,historyRound,downloadSource} from './dango-v285-fixture.mjs';
 
-assert.equal(R.REVISION,287);
+assert.equal(R.REVISION,288);
 assert.equal(R.legacy268.REVISION,268);
 const baseline=JSON.parse(await read('tests/dango-v285-legacy-fingerprints.json'));
 for(const input of baseline.cases){
@@ -11,7 +11,7 @@ for(const input of baseline.cases){
  assert.equal(actual,input.sha256,'unchanged full legacy trace '+JSON.stringify(input));
 }
 
-const fixed=api=>api.create({moldIndex:0,numbers,triggerCells:api.cells.filter(cell=>!api.molds[0].initialFreeCells.includes(cell.id)).slice(0,3).map(cell=>cell.id)});
+const fixed=api=>api.create({moldIndex:0,placementPolicy:'max',numbers,triggerCells:api.cells.filter(cell=>!api.molds[0].initialFreeCells.includes(cell.id)).slice(0,3).map(cell=>cell.id)});
 const listFor=(s,hits)=>{
  const others=numbers.filter(n=>!s.triggerNumbers.includes(n));
  const early=[...s.triggerNumbers.slice(0,hits),...others.slice(0,5-hits)];
@@ -49,7 +49,7 @@ for(let hits=0;hits<=3;hits++){
   if(i>=5)assert.equal(h.engine.state.freeBudget,1+hits,'late cyan hits never grant another FREE');
   const saved=h.capture();savedCheckpoints++;
   assert.deepEqual(saved.engines[0].state.triggerCells,plain(expected.triggerCells));
-  assert.equal(saved.engines[0].state.rulesRevision,287);
+  assert.equal(saved.engines[0].state.rulesRevision,288);
   const resumed=host({seed:29100+hits});resumed.start();await resumed.restore(saved);
   assert.deepEqual(plain(resumed.engine.state),plain(h.engine.state),'restore after ball '+(i+1));
   assert.deepEqual(plain(resumed.app.roundWins),plain(h.app.roundWins));
@@ -150,7 +150,7 @@ assert.deepEqual(plain(upgraded.engine.state.triggerNumbers),[]);
 for(const n of [2,4,5]){await historical.number(n);await upgraded.number(n);}
 assert.deepEqual(plain(upgraded.engine.state),plain(historical.engine.state));
 assert.equal(upgraded.app.totalWin,historical.app.totalWin);
-upgraded.app.prepare();upgraded.start();assert.equal(upgraded.engine.state.rulesRevision,287);
+upgraded.app.prepare();upgraded.start();assert.equal(upgraded.engine.state.rulesRevision,288);
 assert.equal(upgraded.engine.state.triggerCells.length,3);assert.equal(upgraded.engine.state.freeBudget,1);
 
 const excluded=host({bet:0});assert.equal(excluded.app.start(),false);assert.equal(excluded.engine.liveBoard,false);

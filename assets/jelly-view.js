@@ -311,12 +311,13 @@ function partitions(c,state,turn,elapsed,mini){
   }
  }
 }
-// Extend each bingo axis past both edges of the mould and finish it on the gilt rim.
+// The full opaque rail reaches the OUTER edge of the 42px glass bezel, not
+// only the first and last numbered jellies. All 12 axes have identical ends.
 const railGeometry=K.LINES.map(cells=>{
  const [a,b]=center(cells[0]),[endX,endY]=center(cells[4]);
- const sx=Math.sign(endX-a),sy=Math.sign(endY-b);
- const dx=endX-a+136*sx,dy=endY-b+136*sy;
- return {x:a-68*sx,y:b-68*sy,length:Math.hypot(dx,dy),angle:Math.atan2(dy,dx)};
+ const sx=Math.sign(endX-a),sy=Math.sign(endY-b),extra=50+moldRim-1;
+ const dx=endX-a+extra*2*sx,dy=endY-b+extra*2*sy;
+ return {x:a-extra*sx,y:b-extra*sy,length:Math.hypot(dx,dy),angle:Math.atan2(dy,dx)};
 });
 const spectrum=['#ff779b','#ffbc70','#ffeb7c','#8df7ab','#6be7fa','#b99aff'];
 // A pair of engraved pointers lines up with each of the twelve win paths.
@@ -380,15 +381,18 @@ function allLineShowers(c,age){
  c.restore();
 }
 function comet(c,length,end,phase,power,mini){
- const trail=length*(.18+power*.06),head=phase*(length+trail),tail=head-trail;
+ const trail=length*(.24+power*.05),head=phase*(length+trail),tail=head-trail;
  const from=Math.max(0,tail),to=Math.min(end,head);
  if(to<=from)return;
- const glow=gradient(c,tail,0,head,0,[[0,'#fff7cb00'],[.48,'#ffeb9942'],[.82,'#fff7c8e0'],[1,'#ffffff']]);
- line(c,from,0,to,0,glow,mini?6:7+power*2.5);
- if(head<=end){
-  const r=mini?4:5+power*3;
-  star(c,head,0,r+3,'#ffedac');oval(c,head,0,r*.51,r*.51,'white');
+ // Long, soft-white flowing reflection with a brighter head across the rail.
+ const shimmer=gradient(c,tail,0,head,0,[[0,'#ffffff00'],[.26,'#ffffff0c'],[.63,'#faffff74'],[.87,'#ffffffd8'],[1,'#fffffffa']]);
+ c.globalAlpha=mini?.53:.77;line(c,from,0,to,0,shimmer,mini?9:15+power*4);
+ c.globalAlpha=.94;line(c,Math.max(0,head-trail*.42),0,to,0,shimmer,mini?4:7);
+ if(head>=0&&head<=end){
+  const r=mini?3.5:5.5+power*2;
+  c.globalAlpha=.74;star(c,head,0,r+1,'#ffffff');oval(c,head,0,r*.50,r*.50,'#ffffff');
  }
+ c.globalAlpha=1;
 }
 function bingoRails(c,state,turn,elapsed,time,mini){
  if(!state.lines.length)return;
@@ -403,15 +407,13 @@ function bingoRails(c,state,turn,elapsed,time,mini){
   const {x,y,length,angle}=railGeometry[id],end=length*travel;
   const color=count===12?spectrum[id%6]:count>=3?laneColors[id%laneColors.length]:'#ffe4a0';
   c.save();c.translate(x,y);c.rotate(angle);
-  // Dark edging separates overlapping beams from the bright syrup. The cores stay narrow.
-  c.globalAlpha=.3;line(c,0,0,end,0,'#322740',mini?13:10+power*4);
-  c.globalAlpha=mini?.3:.19+power*.06;line(c,0,0,end,0,color,16+power*12);
-  c.globalAlpha=.96;line(c,0,0,end,0,color,mini?6:5.5+power*1.8);
-  line(c,0,0,end,0,'#fffae8',mini?2:1.7);
-  if(!mini&&count>=6){
-   c.globalAlpha=.76;c.setLineDash([4,13]);c.lineDashOffset=-time*(.018+power*.015)-id*8;
-   line(c,0,-5.6,end,-5.6,color,1.8);c.setLineDash([]);c.globalAlpha=1;
-  }
+  // The whole thick beam is translucent white, reaching BOTH bezel edges.
+  // Pastel colour belongs only to the low-opacity bloom, never to the core.
+  c.globalAlpha=.14;line(c,0,0,end,0,color,mini?21:36+power*4);
+  c.globalAlpha=.18;line(c,0,0,end,0,'#f7ffff',mini?19:30+power*4);
+  c.globalAlpha=.52;line(c,0,0,end,0,'#ffffff',mini?12:20+power*2);
+  c.globalAlpha=.82;line(c,0,0,end,0,'#fcffff',mini?5:7.5);
+  c.globalAlpha=1;
   // A luminous head crosses the full rail, followed by a long tapering reflection.
   const phase=(time/(2150-680*power)+id*.173)%1;
   comet(c,length,end,phase,power,mini);
@@ -468,7 +470,7 @@ const reachSpectrum=[[0,'#ff7499'],[.21,'#ffce71'],[.44,'#c0ff9a'],[.64,'#66f0ff
 const reducedReachMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 // Trace the exposed sides clockwise with the section on the right. Each loop
 // is drawn a little inside the glass so neighboring sections stay distinct.
-const sectionRails=new WeakMap(),reachOddsInk='#73ff98';
+const sectionRails=new WeakMap();
 function reachLoops(groups,id){
  let cache=sectionRails.get(groups);if(!cache){cache=new Map();sectionRails.set(groups,cache);}
  if(cache.has(id))return cache.get(id);
@@ -529,13 +531,13 @@ function reachComet(c,loop,phase,ink,tier,mini){
  c.globalAlpha=1;c.drawImage(reachLamp(ink),x-diameter/2,y-diameter/2,diameter,diameter);
 }
 function reachFrame(c,loops,id,item,t,mini){
- const {tier,oddsUp}=item,all=tier===3&&!oddsUp;
+ const {tier}=item,all=tier===3;
  const phase=(t/(tier?1:1.4))%1;
  const dip=clamp(1-Math.abs(phase-.66)/.18),pulse=1-.7*dip*dip*(3-2*dip);
  c.save();c.lineCap='round';c.lineJoin='round';
  const heads=mini?1:tier===3?3:tier===2?2:1;
  for(const loop of loops){
-  const ink=oddsUp?reachOddsInk:all?gradient(c,...loop.bounds,reachSpectrum):reachPaint[tier];
+  const ink=all?gradient(c,...loop.bounds,reachSpectrum):reachPaint[tier];
   c.setLineDash([]);
   c.globalAlpha=.82;c.lineWidth=mini?9:8;c.strokeStyle='#173146';c.stroke(loop.path);
   c.globalAlpha=.35+.65*pulse;c.lineWidth=mini?5:4.3;c.strokeStyle=ink;c.stroke(loop.path);
@@ -571,14 +573,14 @@ function board(c,state,o,x,y,side){
   const id=groups[i],prev=frames.get(id);
   // A section can have several candidate numbers. Prefer a line-producing
   // reach for its shared frame and show the exact outcome beside each number.
-  if(!prev||(prev.oddsUp&&!item.oddsUp)||(!!prev.oddsUp===!!item.oddsUp&&item.tier>prev.tier))frames.set(id,item);
+  if(!prev||item.tier>prev.tier)frames.set(id,item);
  }
  for(const [id,item] of frames)reachFrame(c,reachLoops(groups,id),id,item,reachT,mini);
  for(let i=0;i<25;i++){
   const [x,y]=center(i),n=state.numbers[i],item=markers.get(n);
   if(item&&!mini){
-   const label=item.oddsUp?'オッズアップ':item.tier&&(reducedReachMotion||Math.floor(reachT/2)%2)?reachLabels[item.tier]:reachLabels[0];
-   const ink=item.oddsUp?reachOddsInk:item.tier===3?gradient(c,x-42,y,x+42,y,reachSpectrum):reachPaint[item.tier];
+   const label=item.tier&&(reducedReachMotion||Math.floor(reachT/2)%2)?reachLabels[item.tier]:reachLabels[0];
+   const ink=item.tier===3?gradient(c,x-42,y,x+42,y,reachSpectrum):reachPaint[item.tier];
    lettering(c,label,x,y+26,24,ink,{weight:950,face:'SweetReachRounded,'+font,max:83,outline:'#14263d',width:5.2});
   }
   const digitY=item&&!mini?y-8:y;

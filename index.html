@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f2a8bd"><meta name="apple-mobile-web-app-capable" content="yes"><title>SWEETS LINK｜ジェリービンゴ・ワッフルリバーシ・パーティカステラ</title><link rel="stylesheet" href="optimized/style-01.css?v=253"><link rel="stylesheet" href="optimized/style-02.css?v=title5"><link rel="stylesheet" href="optimized/style-03.css?v=title5"><link rel="stylesheet" href="optimized/style-04.css?v=91"><link rel="stylesheet" href="assets/player-lounge.css?v=1"><link rel="stylesheet" href="optimized/achievements-v3.css?v=title12">
 <link rel="stylesheet" href="assets/download-mode-v255.css?v=255">
-<script src="assets/edition-choice-v255.js?v=287"></script>
+<script src="assets/edition-choice-v255.js?v=289"></script>
 <script src="assets/local-debug-v258.js?v=258"></script>
 <link rel="stylesheet" href="assets/local-debug-v258.css?v=258">
 <script>
@@ -58,7 +58,7 @@
  if(chosen.some(id=>['cookie','choco','candy'].includes(id)))styles.push('classic-game-polish-v89.css?v=91');
  if(has('gelato'))styles.push('gelato-prism-v28.css?v=276b','gelato-prism-rail-v76.css?v=76');
  if(has('castella'))styles.push('party-castella.css?v=255');
- if(has('dango'))styles.push('dango-bingo.css?v=285');
+ if(has('dango'))styles.push('dango-bingo.css?v=288');
  if(has('stick'))styles.push('bingo-stick.css?v=138');
  if(has('jelly'))styles.push('jelly.css?v=108');
  if(has('popcorn'))styles.push('popcorn.css?v=91');
@@ -448,7 +448,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   switcher.href=other.href;
   switcher.textContent=classic?'標準の3面を開く ↗':'クラシック3面を開く ↗';
   switcher.title=(classic?'ジェリービンゴ・ワッフルリバーシ・パーティカステラ':'クッキー・キャニオン・シックスドロップ')+'を別タブで開く';
-  const common=['optimized/app-01.js?v=276b','optimized/achievements-v3.js?v=91'];
+  const common=['optimized/app-01.js?v=289','optimized/achievements-v3.js?v=91'];
   const extras=[];
   if(has('candy'))extras.push('assets/six-drop-simple-glass.js?v=154','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=91','assets/sixdrop-hud-v14.js?v=154');
   extras.push('assets/highest-role-reach-v18.js?v=138');
@@ -457,13 +457,13 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(has('popcorn'))extras.push('assets/popcorn-engine.js?v=232','assets/popcorn-view.js?v=276b','assets/popcorn-host.js?v=154');
   if(has('stick'))extras.push('assets/bingo-stick-rules.js?v=138','assets/bingo-stick-view.js?v=275','assets/bingo-stick-host.js?v=154','assets/waffle-lesson.js?v=275','assets/waffle-pow-v159.js?v=232');
   if(has('castella'))extras.push('assets/party-castella-rules.js?v=255','assets/party-castella.js?v=275','assets/party-castella-host.js?v=255','assets/castella-lesson.js?v=275');
-  if(has('dango'))extras.push('assets/dango-bingo-rules.js?v=287','assets/dango-bingo-view.js?v=286','assets/dango-bingo-host.js?v=285','assets/dango-bingo-lesson.js?v=285');
-  if(has('jelly'))extras.push('assets/jelly-rules.js?v=232','assets/jelly-view.js?v=276b','assets/jelly-host.js?v=232','assets/jelly-lesson.js?v=273');
+  if(has('dango'))extras.push('assets/dango-bingo-rules.js?v=288','assets/dango-bingo-view.js?v=288','assets/dango-bingo-host.js?v=285','assets/dango-bingo-lesson.js?v=285');
+  if(has('jelly'))extras.push('assets/jelly-rules.js?v=232','assets/jelly-view.js?v=288','assets/jelly-host.js?v=288','assets/jelly-lesson.js?v=273');
   if(chosen.some(id=>['cookie','choco','candy'].includes(id)))extras.push('assets/classic-game-polish-v89.js?v=91');
   extras.push('assets/game-menu-v91.js?v=277','assets/demo-suite-v91.js?v=284','assets/arcade-show-v91.js?v=255','assets/game-titles-v91.js?v=204');
   // Shared-machine code must execute inside the game's private scope so it can
   // intercept rouletteDrawSource/Arcade without exposing game internals globally.
-  if(has('candy'))extras.push('assets/sixdrop-progressive-core-v247.js?v=284','assets/sixdrop-progressive-host-v247.js?v=284');
+  if(has('candy'))extras.push('assets/sixdrop-progressive-core-v247.js?v=285','assets/sixdrop-progressive-host-v247.js?v=285');
   extras.push('assets/arcade-brand-v249.js?v=255','assets/arcade-surfaces-v249.js?v=255','assets/arcade-tabs-v249.js?v=269');
   extras.push('assets/sweets-results-v253.js?v=253r2');
   extras.push('assets/sugar-challenge-rules-v254.js?v=279','assets/sugar-challenge-v254.js?v=279');
@@ -473,7 +473,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   extras.push('assets/celebration-audio-v277.js?v=282','assets/award-presentation-v277.js?v=278');
   if(has('candy')&&!downloadWorker)extras.push('assets/sixdrop-ui-v278.js?v=284');
   if(downloadWorker)extras.push('assets/recorded-round-v255.js?v=278','assets/download-worker-v255.js?v=255');
-  else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=278','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=287','assets/download-mode-v255.js?v=279');
+  else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=278','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=289','assets/download-mode-v255.js?v=279');
   else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=278','assets/local-sugar-v267.js?v=279');
   else extras.push('assets/player-profile-v255.js?v=255','assets/shared-machine-v176.js?v=278');
   if(!downloadWorker&&['local','download'].includes(edition))extras.push('assets/sugar-roulette-v254.js?v=268');

@@ -1,10 +1,10 @@
 {
-  "version": "20261121-v287-dango-probability-payouts",
+  "version": "20261121-v289-canyon-fruit-sixdrop-fixed-palette",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 54,
-      "sha256": "57e483916c0a0db28f42185a3c69f799d312f10cd206043c044291132f4ee810"
+      "bytes": 63,
+      "sha256": "d653a6c691446954db4210bb6608b6a5feef4bfdfbd7393a538803ecc904aa99"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1913,8 +1913,8 @@
     },
     {
       "path": "assets/choco-dig.js",
-      "bytes": 731364,
-      "sha256": "4500879307fa0338cc12b5c58307f28894dcc2e3ca22cb86d0c827664c20d1df"
+      "bytes": 736457,
+      "sha256": "0276857447a6590b9b159be71fa650e1f19bd7333097a9bd4e0196c3cef017e8"
     },
     {
       "path": "assets/choco-multi-12.css",
@@ -1923,8 +1923,8 @@
     },
     {
       "path": "assets/choco-multi-12.js",
-      "bytes": 11718,
-      "sha256": "1e2a8670d912777df16f26f32ec6a9c67567b0039fa106bd9e14bec23c6ef2f0"
+      "bytes": 11860,
+      "sha256": "fa2883c73c04515a2da0dd8dc0d31a57ea5152ffa25aa24ea26ba2726146f828"
     },
     {
       "path": "assets/classic-game-polish-v89.css",
@@ -2033,18 +2033,18 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 177902,
-      "sha256": "6e4adc5d8f4c2faa64233a3b8fb4f502b0f45ff32ddc8d8169f87309792dbb54"
+      "bytes": 199661,
+      "sha256": "e61d3421e71022ef271c1f9ef0c885c80e59c0587278cf6db2cd0174dde8b86b"
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 71578,
-      "sha256": "40e1eeb74b534e1e8f35c0afa3da30a0b7f4a43c3de5a4fc8630abd27aa66c75"
+      "bytes": 72352,
+      "sha256": "d3d67257494047f9f78ba33e5bbcf80edaf9f89c27025a253762c66c404a50ae"
     },
     {
       "path": "assets/dango-bingo.css",
-      "bytes": 26208,
-      "sha256": "c20911d53439379cb4562aba7c9a63ad96c0e783bf872866d41a82bc1ab8a52e"
+      "bytes": 27225,
+      "sha256": "366e9725c6bc4c37e8f2fefee40658062293c189315410f603fc583eaf0986c3"
     },
     {
       "path": "assets/dango-thinking-v251.js",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4365,
-      "sha256": "d3dc8f709fab88b17b141a13d175567fdb85faec543c65b39da24726116131de"
+      "bytes": 4374,
+      "sha256": "88f247b32050191ead38ca6d15158e924b9a76b1c87956ea3334f226a43e0a36"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2093,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3776,
-      "sha256": "0d4e0386c73a70d35cfa0af6588acf3031a2ad4fdf76e56b41675223801c315a"
+      "bytes": 3785,
+      "sha256": "7035e605305d32dee8227cf265e72dc1ec761575373aced703163b78867df3d1"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2328,8 +2328,8 @@
     },
     {
       "path": "assets/jelly-host.js",
-      "bytes": 9890,
-      "sha256": "0dbeede510249676a94ac8691be6d940ed3c98a3e4c8660f4192f7b9ddb30852"
+      "bytes": 10003,
+      "sha256": "d236f5a648ab0fecfa6eeff6e8c4534ad2501096608fc026dfdb728fd216b052"
     },
     {
       "path": "assets/jelly-lesson.js",
@@ -2343,8 +2343,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 38557,
-      "sha256": "017077bc9550b58522f777df6bfce4e3d351a0fa76e9ddc22f9986e5c0bc90f7"
+      "bytes": 38640,
+      "sha256": "639663b822f81ccf965d532eb33828c25f1df6477ee07a23ad888f9d9413adae"
     },
     {
       "path": "assets/jelly.css",
@@ -3283,8 +3283,8 @@
     },
     {
       "path": "assets/sixdrop-progressive-core-v247.js",
-      "bytes": 23575,
-      "sha256": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650"
+      "bytes": 24496,
+      "sha256": "641ed9524286867ebe6c50fea063f1be5e0842206a61baf420a50ca0d6f3c9e8"
     },
     {
       "path": "assets/sixdrop-progressive-host-v247.js",
@@ -4028,8 +4028,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85639,
-      "sha256": "c8aa93f680543c357e633421eef22203f2b2234b28e9fc69ce81b1b23c8e48b0"
+      "bytes": 85637,
+      "sha256": "03cf22d2d282f94c3b2784cdc55a037aa2d26cf7c7a8fb51737d44ea2494123c"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4043,8 +4043,8 @@
     },
     {
       "path": "optimized/app-01.js",
-      "bytes": 1174641,
-      "sha256": "aa8aaf6b3e0ee2cc5ba4a99caada91de848ba2ecf64f410d3b925e158df30257"
+      "bytes": 1179734,
+      "sha256": "c548b4ec7f4124889d5ed12af28110a1f925120ed1040c4826a1c02874585093"
     },
     {
       "path": "optimized/cookie-20261031.css",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238698753
+  "totalBytes": 238733773
 }

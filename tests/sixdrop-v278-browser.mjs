@@ -9,7 +9,7 @@ import {createRequire} from 'node:module';
 import {chromium} from 'playwright';
 import {createDownloadComputerV255} from '../server-download-compute-v255.mjs';
 const {R,G,clone,NUMBERS,fullRound:revisionedRound}=createRequire(import.meta.url)('./sixdrop-v283-fixture.cjs');
-const REVISION=284,fullRound=(seed,options={})=>revisionedRound(seed,{...options,rulesRevision:REVISION});
+const REVISION=285,fullRound=(seed,options={})=>revisionedRound(seed,{...options,rulesRevision:REVISION});
 const root=process.cwd(),output='qa-sixdrop-v278',ids=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const scenarios=[{id:'desktop-cycle',width:1366,height:900,cycle:true},{id:'mobile-high-amount',width:390,height:844,bet:300000},{id:'mini-allclear',width:390,height:844,mini:true},{id:'download-worker',worker:true}];
 const shard=Number(process.env.SIXDROP_QA_SHARD??0),shards=Number(process.env.SIXDROP_QA_SHARDS??1);
