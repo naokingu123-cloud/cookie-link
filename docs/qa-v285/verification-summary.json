@@ -1,0 +1,90 @@
+{
+  "build": "20261121-v285-dango-plus-free-and-board",
+  "recordedAt": "2026-11-21T02:25:40.521763+00:00",
+  "runtimeCommit": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+  "testedCandidateCommit": "a962f7c46d467d0d5f815190c3b1c35742e30290",
+  "runtimeTree": "354b5e1af5903bdc899c20d714ae4982fe6fd21f",
+  "identicalCandidateAndMergeTree": true,
+  "pullRequest": "https://github.com/naokingu123-cloud/cookie-link/pull/6",
+  "publicUrl": "https://naokingu123-cloud.github.io/cookie-link/",
+  "targetedVerification": {
+    "dangoMain": 44855090131,
+    "dangoMainJobs": "2/2 success",
+    "sixMain": 44855090208,
+    "sixMainJobs": "6/6 success",
+    "pages": 44855089349,
+    "pagesConclusion": "success",
+    "publicMatched": 29,
+    "publicExpected": 29,
+    "publicCompletedAt": "2026-11-21T02:21:19.681Z"
+  },
+  "browserEvidence": "public-browser-verification.json",
+  "candidateEvidence": "ci-dango-a962f7c.json",
+  "mainEvidence": "ci-main-1cf0edc.json",
+  "otherDownloadWorkflow": "sugar-download-diagnosis.json",
+  "allRepositoryWorkflowsClaimedSuccessful": false,
+  "downloadManifest": {
+    "files": 853,
+    "totalBytes": 238674900,
+    "version": "20261121-v285-dango-plus-free-and-board"
+  },
+  "finalRuntimeSha256": {
+    "app-version.json": "5b0aaff98fae4a03b66d50c8cc751b408ae5f21ba5e09fa6a681e1463b221b85",
+    "assets/award-presentation-v277.js": "6cde4c746a39ab70b82e999ef36c8cee062cc22ccb050347e9abfe4c4580fa4a",
+    "assets/dango-bingo-host.js": "33e68ffd30d0c052fe54725b907b6ed63063873e652aa816dff2ccf9a2b61c6a",
+    "assets/dango-bingo-lesson.js": "131bfe9abbf7319c800b024f4c221dcd56d9136d94b76e02afe5eac66fe3199c",
+    "assets/dango-bingo-rules.js": "7f4d251adc694375790cb7ca18182993a7413ac94c43b953e0430accf7d84a59",
+    "assets/dango-bingo-view.js": "7c01cf5f103c677f6e7db139b635f4417eb20f3c40e3e4f7a8a2a32a1d243491",
+    "assets/dango-bingo.css": "c20911d53439379cb4562aba7c9a63ad96c0e783bf872866d41a82bc1ab8a52e",
+    "assets/demo-suite-v91.js": "00553ae83f3905413548ecc5837b7a8470fde36c5b2c4bf49e8d841a24dc8a77",
+    "assets/download-assets-v255.json": "ec4b2843bc15b009ce9157d887619d2631679a9af14fcefab79d5d18a4b88d02",
+    "assets/download-cache-v255.js": "c6f64c04b815e691dad6767c3fcc04c650e43df8c86d24a3809c92bb2f47a424",
+    "assets/edition-choice-v255.js": "c78363207021cf744ca0f7b432f368f26159e1dda46b023a112389de71a0d3a2",
+    "assets/local-debug-game-v258.js": "d313d60f9108abccd5fa63924de49c1bade1d74b336e0073e48ef4877c8d76db",
+    "assets/recorded-round-v255.js": "c58a89f60349ee8f2b3b5c71da1d9e9735ca355e0216eb0ee54f7c6f25c9736c",
+    "assets/server-offline-settlement-worker-v3.js": "4af56aeb08b2e0364a26b68697be64f7b6896bf600ceb6d8bc61be8ed6e8021e",
+    "assets/server-payout-control-v3.js": "9dcd84be9d1e7c5e2ce9aa12618d7de1d4b7f8fbb7ff01135d6845d5901e0809",
+    "assets/shared-machine-core-v196.js": "97e7d0fe9a4fa6c51465633c2b759cf7b54c170217f353978ae88b9065fa27c0",
+    "assets/shared-machine-v176.js": "6f07c2c1aa706596700eedcbfbb40dff618e956c3a0d35c9d8f4020b3325abd9",
+    "assets/sixdrop-art-v278/allclear-award.png": "8fec8d6850187e188ee1a39789541a084b1c10416a6d2a2469e436b85199d404",
+    "assets/sixdrop-art-v278/allclear-logo.png": "877cf82b09195c54b7f0505498dea8f5b8d4f78f7f8dab6b3510dcd253a8f07b",
+    "assets/sixdrop-art-v278/bottle.png": "33da97ed7196c31cd26b887e4bab7546c64650cb3f4907735480daaa6503ecee",
+    "assets/sixdrop-art-v278/payout-frame.png": "f588139c3c104c274c441aff3cf4c000937d6327f4748df9494c39a566a3a48c",
+    "assets/sixdrop-art-v278/progressive-frame.png": "9d064ac7489d74ff65c01bd6cd9704f01387c4ce944a4911f40a28f310197ae3",
+    "assets/sixdrop-art-v278/provenance.json": "e4fb41b4c6fb25c7781c56444b1fdaac228207d79c166fc11a2874c111a751e8",
+    "assets/sixdrop-progressive-core-v247.js": "2e3d809c6c0e94e89e2efaa95bcd962036a8efccabd85d7c749059f9f612b650",
+    "assets/sixdrop-progressive-host-v247.js": "9d7b20dff79babf7866e4386e93f9fc5c2e680c3283c7c96ca19ffa9dc564889",
+    "assets/sixdrop-ui-v278.css": "00bf354a71126bc4275ebb4ae750315ffce7bfc8e185c1a510a646085a0c66fd",
+    "assets/sixdrop-ui-v278.js": "b5e66c6defdd5db378fe93e26e7098924f41a029d8016bb3fd02165e0ec33fa2",
+    "download-sw-v255.js": "fd98892e453b245ec23f65f38d00366a68677559e9a0406d21d18e3dbdd91d30",
+    "index.html": "1b71573155ee1c981e21f44a55bc0479009bf65a996d4568e4229af1f83b5f36"
+  },
+  "screenshots": [
+    {
+      "path": "screens/initial-430x366.png",
+      "bytes": 233517,
+      "sha256": "e95e7042c125e1c76aab8f07602ee6882f8b1b42afc5cca4fe3a5e29faf189c7",
+      "gitBlobSha": "9097caed99c1e39c160e18f5910c32aa894ed594"
+    },
+    {
+      "path": "screens/odds-390x300.png",
+      "bytes": 180562,
+      "sha256": "064e96f95f4d7a70c3dfcd10ae86c8aa05b8f91624c7e66fbe98cd04b9317f7a",
+      "gitBlobSha": "a0f33e709683fdf5f46c28e3dc4ee7a29750fcf7"
+    }
+  ],
+  "scope": {
+    "githubPagesAndDistributionSource": "updated",
+    "windowsRunningServer": "not updated or restarted",
+    "existingRuntimeToolsData": "preserved"
+  },
+  "payoutScope": {
+    "six": "50-150 target control calibrated by sampling; integer-BET bands; not an exact per-session payout guarantee",
+    "dango": "50-150 direct payout expectation for uniform eight distinct numbers, uniform three cyan cells and implemented sequential AUTO before rounding; no rounding difference at BET multiples of ten",
+    "excluded": [
+      "Sugar/JPC",
+      "physical draw bias",
+      "different manual FREE strategies"
+    ]
+  }
+}

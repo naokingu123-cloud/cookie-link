@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "updatedAt": "2026-11-21T02:24:59Z",
+  "scope": "Read-only diagnosis of the initial PR Download failure and observation of the final candidate. This report does not claim that all CI is green.",
+  "firstFailure": {
+    "headSha": "2a70d0cf20cc72526808cebbad5b9020cfe23489",
+    "runId": 44852327219,
+    "jobId": 136686341508,
+    "artifactId": 14686487462,
+    "artifactSha256": "ae4aa70dd416940269dbe986fea39102a0ab5e7819776ad6f4b57558d5f3eeca",
+    "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44852327219/job/136686341508",
+    "error": "download_native_settlement_timeout",
+    "testLocation": "tests/download-v255-browser.mjs:78, called from line300",
+    "waitMs": 90146.4,
+    "limitMs": 90000,
+    "onlyBusy": [
+      {
+        "id": "cookie",
+        "phase": "hammergift",
+        "processed": 5,
+        "accepted": 6
+      }
+    ],
+    "dango": {
+      "processed": 6,
+      "accepted": 6,
+      "phase": "settled",
+      "busy": false
+    },
+    "uncaughtPageErrors": 0,
+    "observedFps": 4.382291582106259,
+    "maxFrameMs": 3599.8999999999996
+  },
+  "exactCookieReplay": {
+    "recording": "First failing job artifact, exact checkpoint5 plus its recorded Cookie RNG stream",
+    "browserUsed": false,
+    "number": 10,
+    "finalProcessed": 6,
+    "finalBusy": false,
+    "boardMatchesAuthoritativeCheckpoint6": true,
+    "payoutHundredths": 20,
+    "authoritativePayoutHundredths": 20,
+    "finalRandomOffset": 2478,
+    "authoritativeRandomOffset": 2478,
+    "nominalSleepMs": 14200.142857142857,
+    "timerCallbacks": 381,
+    "cascadeDepth": 9,
+    "hammerGiftNominalStartMs": 11730.142857142857,
+    "settledNominalMs": 13200.142857142857
+  },
+  "interpretation": {
+    "observed": "The failing Cookie cascade is finite and reaches the exact authoritative next state. Dango and all other engines had settled before the runtime timeout.",
+    "likelyMechanism": "Existing Cookie Engine.wait subtracts requested timer slices, while Download settlement limits actual elapsed time. Delayed callbacks can stretch a finite animation beyond90seconds.",
+    "unchangedSourceEvidence": [
+      {
+        "file": "assets/download-mode-v255.js",
+        "identical": true
+      },
+      {
+        "file": "tests/download-v255-browser.mjs",
+        "identical": true
+      },
+      {
+        "file": "assets/recorded-round-v255.js",
+        "identical": true
+      },
+      {
+        "file": "optimized/app-01.js",
+        "identical": true
+      },
+      {
+        "file": ".github/workflows/sugar-v279.yml",
+        "identical": true
+      }
+    ],
+    "sourceEqualityIsNotSufficientAlone": true,
+    "randomness": "Download recording uses separate seeded cookie and dango streams, so extra Dango RNG consumption does not shift the recorded Cookie tape. Different run seeds can still produce different Cookie cascades.",
+    "limits": "A pure-engine replay establishes finite deterministic behavior, not full-browser timing. Renderer load or a different cascade may affect later runs; the browser result remains necessary."
+  },
+  "latestCandidate": {
+    "headSha": "a962f7c46d467d0d5f815190c3b1c35742e30290",
+    "runId": 44854382267,
+    "jobId": 136693006116,
+    "status": "in_progress",
+    "conclusion": null,
+    "retryCount": 0,
+    "maxAuthorizedRetries": 1,
+    "observedAt": "2026-11-21 02:24:59 UTC",
+    "activeStep": "Real recording, offline resume, eight-ball completion and exactly-once credit",
+    "otherJobs": [
+      {
+        "id": 136693006000,
+        "name": "native-browser-display (sugar-panel, tests/sugar-challenge-v254-browser.mjs, qa-sugar-v254)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136693006097,
+        "name": "native-browser-display (transparent-art, tests/sugar-v279-browser.mjs, qa-sugar-v279)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 136693006155,
+        "name": "rules-and-migration",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifacts": [],
+    "observationStopped": true,
+    "stopReason": "Owner requested one final observation and report freeze. No optional retry was started.",
+    "jobUrl": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382267/job/136693006116",
+    "retryAuthorizationClosed": true
+  },
+  "main": {
+    "mergeSha": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+    "sugarRunId": 44855090196,
+    "statusAtHandoff": "queued",
+    "statusCaveat": "The queued status above records the earlier handoff only; this diagnostic did not recheck the main Sugar run."
+  },
+  "changes": {
+    "runtime": false,
+    "tests": false,
+    "localBrowser": false
+  }
+}

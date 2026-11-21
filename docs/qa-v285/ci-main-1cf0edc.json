@@ -1,0 +1,141 @@
+{
+  "revision": 285,
+  "mainCommit": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+  "mainTree": "354b5e1af5903bdc899c20d714ae4982fe6fd21f",
+  "verifiedAt": "2026-11-21T02:24:33.057Z",
+  "scope": "Main-branch GitHub Actions verification after merging PR #6. No runtime/test changes, additional local browser run, or optional gates were performed for this verification.",
+  "dango": {
+    "id": 44855090131,
+    "name": "Dango numbered plus FREE, enlarged board and payouts v285",
+    "headSha": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+    "path": ".github/workflows/dango-plus-free-v285.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-11-21T02:17:46Z",
+    "updatedAt": "2026-11-21T02:19:04Z",
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090131",
+    "jobs": [
+      {
+        "id": 136695298589,
+        "name": "board-and-payout-display",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:18:10Z",
+        "completedAt": "2026-11-21T02:19:03Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090131/job/136695298589"
+      },
+      {
+        "id": 136695298782,
+        "name": "rules-and-integration",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:18:26Z",
+        "completedAt": "2026-11-21T02:19:00Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090131/job/136695298782"
+      }
+    ]
+  },
+  "six": {
+    "id": 44855090208,
+    "name": "Six Drop compact cabinet, 200-drop colours and RTP v284",
+    "headSha": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+    "path": ".github/workflows/sixdrop-v278.yml",
+    "status": "completed",
+    "conclusion": "success",
+    "createdAt": "2026-11-21T02:17:46Z",
+    "updatedAt": "2026-11-21T02:22:52Z",
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208",
+    "jobs": [
+      {
+        "id": 136695298523,
+        "name": "native-browser-display (1)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:17:48Z",
+        "completedAt": "2026-11-21T02:20:59Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208/job/136695298523"
+      },
+      {
+        "id": 136695298777,
+        "name": "native-browser-display (2)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:17:48Z",
+        "completedAt": "2026-11-21T02:19:51Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208/job/136695298777"
+      },
+      {
+        "id": 136695298830,
+        "name": "native-browser-display (0)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:17:48Z",
+        "completedAt": "2026-11-21T02:22:41Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208/job/136695298830"
+      },
+      {
+        "id": 136695298867,
+        "name": "native-browser-display (3)",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:18:26Z",
+        "completedAt": "2026-11-21T02:21:03Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208/job/136695298867"
+      },
+      {
+        "id": 136695299032,
+        "name": "Single-ball rules, legacy groups and continuation",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:18:57Z",
+        "completedAt": "2026-11-21T02:19:49Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208/job/136695299032"
+      },
+      {
+        "id": 136696783388,
+        "name": "public-assets",
+        "status": "completed",
+        "conclusion": "success",
+        "startedAt": "2026-11-21T02:22:43Z",
+        "completedAt": "2026-11-21T02:22:52Z",
+        "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208/job/136696783388"
+      }
+    ]
+  },
+  "publicAssets": {
+    "jobId": 136696783388,
+    "ok": true,
+    "version": "20261121-v285-dango-plus-free-and-board",
+    "matched": 29,
+    "total": 29,
+    "report": "qa-sixdrop-v278-public/report.json",
+    "failure": null,
+    "artifact": {
+      "id": 14686774321,
+      "name": "sixdrop-v278-public",
+      "bytes": 2743,
+      "sha256": "ee5de2e9854c07cab88a5acd7748271c9c0aa271b687eef6582689cd76fecb6f"
+    },
+    "localReport": "public-verification.json"
+  },
+  "pages": {
+    "runId": 44855089349,
+    "headSha": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855089349",
+    "updatedAt": "2026-11-21T02:20:40Z"
+  },
+  "reviewedVisualEvidence": {
+    "candidateCommit": "a962f7c46d467d0d5f815190c3b1c35742e30290",
+    "candidateTree": "354b5e1af5903bdc899c20d714ae4982fe6fd21f",
+    "identicalToMainTree": true,
+    "summary": "ci-dango-a962f7c.json",
+    "workflowRunId": 44854382279,
+    "artifactId": 14687265316,
+    "artifactName": "dango-v285-display",
+    "artifactSha256": "255c23ec86460881b82bd01939e8fa787668bfe9391a1f85cc5d52b1a789eff5",
+    "note": "31 current screenshots, pinned legacy269 presentation, and complete measurements were reviewed on this identical source tree. The 33 MB artifact was not downloaded again for main."
+  },
+  "observedFailures": []
+}

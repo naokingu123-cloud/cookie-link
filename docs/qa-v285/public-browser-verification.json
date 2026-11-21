@@ -1,0 +1,46 @@
+{
+  "verifiedAt": "2026-11-21T02:24:04.782Z",
+  "build": "20261121-v285-dango-plus-free-and-board",
+  "runtimeCommit": "1cf0edcbdd8346407a25314032e6f5531800e59f",
+  "url": "https://naokingu123-cloud.github.io/cookie-link/?edition=local&appv=20261121-v285-dango-plus-free-and-board",
+  "mode": "LOCAL DEBUG — 仮CREDIT・精算なし",
+  "observations": {
+    "startingCyanNumbers": [
+      22,
+      18,
+      19
+    ],
+    "initialPlaceableFree": 1,
+    "manualNumberHit": 22,
+    "placeableFreeAfterHit": 2,
+    "earlyCyanHits": 1,
+    "oddsAfterCyanHit": 1,
+    "dangoPayoutHeaders": [
+      "1個",
+      "2個",
+      "3個"
+    ],
+    "unreachableSevenByThree": "—",
+    "dangoPanel": {
+      "width": 419.25,
+      "height": 362.6999816894531
+    },
+    "sixAfterFirstBall": {
+      "drawn": 1,
+      "removed": 10,
+      "allClearBank": 60,
+      "bet": 3000
+    },
+    "visualReview": [
+      "Three cyan numbered +FREE cells visible",
+      "HIT outline visible and small HIT caption outside central numeral",
+      "Compact right-aligned payout table, no old yellow FREE rail",
+      "Larger Dango board fits inside its panel",
+      "Six bottle and compact payout column fit together"
+    ]
+  },
+  "limits": [
+    "Only the first draw was exercised in the public LOCAL DEBUG session; full phase, restore and payout coverage is provided by the dedicated CI.",
+    "The external 3D roulette did not load in the cloud browser. The existing manual-number mode was used; no server wallet or settlement action was performed."
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "revision": 285,
+  "candidateCommit": "a962f7c46d467d0d5f815190c3b1c35742e30290",
+  "candidateTree": "354b5e1af5903bdc899c20d714ae4982fe6fd21f",
+  "runtimeIdenticalToCommit": "652721ed1e60421ba8859b4dfb978ed4c416915e",
+  "verifiedAt": "2026-11-21T02:16:29.124758+00:00",
+  "scope": "Candidate PR #6. Remote GitHub Actions Chromium only; no local browser run. Full screenshots and reports remain in the GitHub artifact and scratch extraction.",
+  "dango": {
+    "runId": 44854382279,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382279",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 136693004901,
+        "name": "rules-and-integration",
+        "conclusion": "success"
+      },
+      {
+        "id": 136693005097,
+        "name": "board-and-payout-display",
+        "conclusion": "success"
+      }
+    ],
+    "artifact": {
+      "id": 14687265316,
+      "name": "dango-v285-display",
+      "bytes": 33533830,
+      "sha256": "255c23ec86460881b82bd01939e8fa787668bfe9391a1f85cc5d52b1a789eff5"
+    },
+    "current": {
+      "ok": true,
+      "viewports": [
+        {
+          "width": 1366,
+          "height": 750,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 844,
+          "height": 340,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 844,
+          "height": 250,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 1366,
+          "height": 250,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 390,
+          "height": 540,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 320,
+          "height": 480,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 390,
+          "height": 300,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 320,
+          "height": 270,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        },
+        {
+          "width": 430,
+          "height": 366,
+          "stages": [
+            "initial",
+            "thinking",
+            "odds",
+            "final"
+          ]
+        }
+      ],
+      "screens": 31,
+      "largeBetCases": 4,
+      "retina": true,
+      "errors": [],
+      "assetFailures": [],
+      "firstCyanHitFreeBudget": 2,
+      "fade": [
+        {
+          "ageMs": 0,
+          "opacity": 1,
+          "labels": 3
+        },
+        {
+          "ageMs": 900,
+          "opacity": 0.5,
+          "labels": 3
+        },
+        {
+          "ageMs": 1800,
+          "opacity": 0,
+          "labels": 0
+        }
+      ],
+      "native430BoardUnit": 40.99425228671843,
+      "native430LegacyUnit": 28.645816197998286,
+      "minimumHitGlyphGap": {
+        "width": 320,
+        "height": 270,
+        "stage": "thinking",
+        "cell": 5,
+        "gapPx": 1.755317819518325
+      },
+      "minimumPayoutBadgeGapPx": 0.9937499999999986,
+      "minimumPlusFreeBoundingBoxGap": {
+        "width": 320,
+        "height": 270,
+        "stage": "initial",
+        "cell": 1,
+        "gapPx": -0.41094777771769486
+      },
+      "sourceReportSha256": "56ef52b875e79c0e0921867b0d9a513dacd0851f29a738b26246c57be197ec7c"
+    },
+    "legacy": {
+      "success": true,
+      "presentationRevision": 269,
+      "rulesRevision": 268,
+      "errors": [],
+      "screens": 7
+    },
+    "visualReview": {
+      "result": "pass",
+      "reviewed": [
+        "initial-430x366.png",
+        "odds-430x366.png",
+        "initial-320x270.png",
+        "odds-390x300.png",
+        "large-bet-320x270.png",
+        "retina-320x270.png",
+        "cyan-hit-free-two.png",
+        "thinking-fade-900.png",
+        "thinking-fade-1800.png",
+        "large-bet-1366x750.png",
+        "reach-caption-tiers.png"
+      ],
+      "findings": [
+        "Three cyan numbered cells and +FREE labels are distinct; first cyan HIT changes the FREE budget from 1 to 2.",
+        "Cyan and +FREE labels fade after the first five draws while hit rings and numerals remain.",
+        "Late manual-FREE HIT caption is above its numeral; hit glyph bounds and payout badge bounds retain measured separation.",
+        "Payout digits are right aligned and contained. At BET 1000000000 they use strong horizontal compression while preserving font height.",
+        "At the smallest 320x270 viewport the conservative +FREE and numeral boxes overlap by 0.411 px; inspected native and 2x retina images show separate visible glyph ink. No assertion was relaxed for that observation."
+      ],
+      "durableImageCandidates": [
+        "qa-dango-v285-view/initial-430x366.png",
+        "qa-dango-v285-view/odds-390x300.png"
+      ]
+    }
+  },
+  "sixRegression": {
+    "runId": 44854382299,
+    "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382299",
+    "rulesAndOffline": "success",
+    "browserShards": {
+      "0": "success",
+      "1": "success",
+      "2": "success",
+      "3": "success"
+    },
+    "publicAssets": "skipped on PR; parent owns post-publication verification"
+  }
+}

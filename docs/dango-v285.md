@@ -2,6 +2,8 @@
 
 Build: `20261121-v285-dango-plus-free-and-board`。ダンゴの新規ルールは285、シックスドロップは較正済み284を継続する。
 
+公開runtimeのmainコミットは`1cf0edcbdd8346407a25314032e6f5531800e59f`（[PR #6](https://github.com/naokingu123-cloud/cookie-link/pull/6)）。tree `354b5e1af5903bdc899c20d714ae4982fe6fd21f`は、全対象検査が成功した候補`a962f7c46d467d0d5f815190c3b1c35742e30290`と完全に一致する。
+
 ## FREEとODDS
 
 7段28マス、番号1〜25が各1個、番号を持たない緑の初期FREE3個は維持する。番号付き25マスから独立に3マスを選び、水色の`+FREE`を表示する。基本の配置FREEは1個。前半5球で水色の番号へHITするたび1個を追加し、1〜4個をシンキング中に配置できる。重複番号で二重に増えず、6〜8球目の水色番号にも追加効果はない。前半の完成ラインによる旧FREE増加は新285では使わない。
@@ -45,6 +47,14 @@ ODDSは、黄色の配置FREEを緑の初期FREEに重ねると1増加し、黄�
 新規ゲームだけ285を使う。旧264・265・266・268などは元のルールに分岐し、既存の状態・乱数・配当を保持する。全8球の旧状態fingerprint、各球の復元、FREE配置の保存、期限確定、Download／offline workerでの自動配置、二重精算防止を検証する。
 
 新285の専用CIは `.github/workflows/dango-plus-free-v285.yml`。ルール・統合検査と現在／旧保存の実ブラウザー表示を分ける。シックスドロップは既存の4表示shardと全ルール検査を維持し、公開照合をDango5ファイルを含む29ファイルへ拡大する。
+
+最終候補の[Dango CI 44854382279](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382279)は全2job成功。10サイズ×4状態、追加の高額BET4ケース、2倍密度画面、旧保存ゲーム表示を通過した。実描画のHIT文字と数字の最小間隔は1.755px、配当数字とGET／リーチ表示の最小間隔は0.994px。320×270の最小画面では`+FREE`と数字の保守的な矩形が0.411px重なるが、通常および2倍密度の画像で文字の実際の輪郭が分かれて読めることを確認した。検査条件は緩めていない。JavaScript例外・素材失敗は0件。
+
+同じ候補の[Six CI 44854382299](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382299)もルール／offlineと全4表示shardが成功した。詳細は[候補CI記録](qa-v285/ci-dango-a962f7c.json)。表示確認画像は[430×366の開始時](qa-v285/screens/initial-430x366.png)と[390×300のODDS上昇時](qa-v285/screens/odds-390x300.png)。
+
+[Pages 44855089349](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855089349)は2026-11-21 02:20:40 UTCに公開成功。02:21:19 UTCの[公開ファイル照合](qa-v285/public-verification.json)は29/29でHTTP200・サイズ・SHA-256が一致した。Download manifestは853ファイル、238,674,900 bytes。公開されたLOCAL DEBUGの既存番号指定で、水色22へのHIT前後に配置FREEが1→2、ODDSは1倍のままであることを確認した。ダンゴの大きな盤面・右揃えの配当・小さなHITと外枠、およびSixの瓶と配当列の収まりも視認済み。[公開画面確認](qa-v285/public-browser-verification.json)。外部3D抽選機はクラウド環境で読み込めず、仮CREDIT・精算なしの番号指定で確認した。
+
+マージ後の同一treeでも、[Dango 44855090131](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090131)の全2jobと、[Six 44855090208](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208)の全6jobが成功した。Sixの公開照合jobも29/29一致。[main CI記録](qa-v285/ci-main-1cf0edc.json)。初回の別の全ゲームDownload検査では、Cookieの6球目の演出が90秒上限を超えた。Dangoはその時点で精算済みで、失敗記録と同じCookie状態・乱数を再演すると次の正解状態へ完全一致した。これは既存タイマーと遅い描画環境の影響を示すが、全ブラウザー経路の成功を意味しない。各時点の結果と未完了項目を[Download調査記録](qa-v285/sugar-download-diagnosis.json)に保持し、全workflow成功とは扱わない。
 
 ## 同梱するSixの修正
 

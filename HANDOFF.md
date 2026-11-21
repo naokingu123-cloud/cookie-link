@@ -1,12 +1,14 @@
 # v285 — 水色＋FREEとダンゴ盤面拡大（2026-11-21）
 
 - Build: `20261121-v285-dango-plus-free-and-board`。新規Dangoは285、Sixのルールは較正済み284を継続。詳細は [v285仕様](docs/dango-v285.md)。
+- Runtime main: `1cf0edcbdd8346407a25314032e6f5531800e59f`。[PR #6](https://github.com/naokingu123-cloud/cookie-link/pull/6)をマージし、tree `354b5e1af5903bdc899c20d714ae4982fe6fd21f`が最終候補`a962f7c`と同一であることを確認。候補のDango [44854382279](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382279)は現在285／旧保存269表示を含む全2job、Six [44854382299](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44854382299)はルール／offlineと全4表示shardが成功。[検証詳細](docs/qa-v285/ci-dango-a962f7c.json)。
 - 28マス・緑の初期FREE3個・番号1〜25を維持。番号付き3マスを水色の`+FREE`とし、前半HITごとに配置FREEを1追加。基本1〜最大4。旧ライン成立によるFREE増加と表右の黄色FREE列は撤去。5球目で機能終了し、1.8秒で本来の色へ戻す。
 - 黄色FREEを緑FREEへ重ねる、または黄色FREEの番号へ後半HITする場合にODDS＋1。取り消し・期限確定・録画/worker再開を維持。旧保存ゲームは旧ルールで完走する。
 - 通常パネル430×366で団子間隔28.65→40.99。右へ寄せた盤面を固定し、表・ODDS・シンキング操作を避ける。数値右揃え、行上部の小さなGET/リーチ、HIT済み二重枠と星、数字を覆わないHIT、個表記へ変更。
 - 新FREE数のため通常配当を調整し、6個ライン×2個=30BET・7個ライン×2個=50BETを維持。7個ライン×3個のみ最大15マスでは成立不能なので`—`表示。50〜150%は均等番号・均等水色・実装AUTOで厳密に較正。少額BET整数丸め・手動戦略・共通Sugar/JPC・実機偏りを含む実測率とは区別する。
 - Six初回v284で検出した5pxの上ずれも同梱修正。旧非表示フレームをSix限定でレイアウトから除外し、318px瓶を336pxフィールド内へ収める。境界検査は緩めない。
-- 新ルール/統合/幾何検査、保存互換、GitHub実ブラウザーCIで検証する。公開照合はDango5ファイルを含む29ファイル。ローカルCUAプレビューは途中でブラウザーのURLポリシー制限により操作不可となったため、表示は専用CIと公開ページで確認する。
+- 新ルール/統合/幾何検査、保存互換、GitHub実ブラウザーCIが成功。10サイズ×4状態、高額BET4ケース、2倍密度画面と旧保存表示を確認。公開[Pages 44855089349](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855089349)成功、Dango5ファイルを含む[29/29 SHA照合](docs/qa-v285/public-verification.json)も成功（2026-11-21 02:21:19 UTC）。manifest853ファイル／238,674,900 bytes。公開LOCAL DEBUGで水色22へのHITにより配置FREE1→2・ODDS1のまま、ダンゴとSixの表示を視認した。[公開画面記録](docs/qa-v285/public-browser-verification.json)。ローカルCUAプレビューはURLポリシー制限で途中から操作不可となり、公開ページの仮CREDIT・番号指定を利用した。クラウドで外部3D抽選機の読込は不可。
+- マージ後も[Dango 44855090131](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090131)全2jobと[Six 44855090208](https://github.com/naokingu123-cloud/cookie-link/actions/runs/44855090208)全6jobが成功。Sixの公開照合も29/29。[main CI記録](docs/qa-v285/ci-main-1cf0edc.json)。別の全ゲームDownload検査の初回Cookie6球目90秒超過は、同じ状態・乱数の再演で次状態・配当・乱数位置の完全一致を確認。既存タイマーと遅い描画環境の影響を示すが、全CI成功とは扱わず、各時点の結果・未完了項目を[調査記録](docs/qa-v285/sugar-download-diagnosis.json)に保持する。
 - Windows稼働サーバーの更新・再起動は未実施。適用時も `.runtime`・`.tools`・`data` を保持する。
 
 ---
