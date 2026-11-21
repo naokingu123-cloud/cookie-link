@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require(
 const {R,G}=require('./sixdrop-v247-fixture.cjs');
 const {G:fastGeometry}=require('../scripts/sixdrop-v284-geometry.cjs');
 const fastRules=globalThis.SweetsSixDropV247.create(fastGeometry),clone=value=>JSON.parse(JSON.stringify(value));
-assert.equal(R.CURRENT_REVISION,284);assert.equal(R.BALANCED_REVISION,284);assert.equal(R.SINGLE_REVISION,283);
+assert.equal(R.CURRENT_REVISION,285);assert.equal(R.BALANCED_REVISION,284);assert.equal(R.SINGLE_REVISION,283);
 const progress=[0,1,2,3,4,5,6,8,7];
 for(const removed of [0,1,99,100,199,200,201,399,400,999,1000,1599,1600,1799,1800,1999,2000,1000000000]){
  const band=Math.floor(removed/200)%9,expected=Array.from({length:4},(_,i)=>progress[(band+i)%9]).reverse();

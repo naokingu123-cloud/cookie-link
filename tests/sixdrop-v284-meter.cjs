@@ -83,7 +83,7 @@ function checkRound(round,{legacy=false,overlap=false}={}){
  assert.deepEqual(h.e.state,round.state,'meter rendering cannot mutate rule state');
  return h;
 }
-assert.equal(R.CURRENT_REVISION,284);
+assert.equal(R.CURRENT_REVISION,285);
 const inherited={bankUnits:123456,removed:199,feed:450};
 const rounds=[1,5,100].map(bet=>fullRound(10,{bet,carry:inherited,rulesRevision:284}));
 for(const round of rounds)checkRound(round);
