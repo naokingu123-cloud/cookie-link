@@ -2112,6 +2112,7 @@
   return derive({...s,draws:[...s.draws,number],lastNumber:number,lastCell:s.numbers.indexOf(number)},s);
  }
  function availableCenters(s){
+  if(!modern(s))return previous.availableCenters(s);
   if(!stateOk(s)||s.phase!=='placing'||s.draws.length!==5)return [];
   const early=maskOf(s.draws.slice(0,5).map(n=>s.numbers.indexOf(n))),manual=maskOf(s.manualFreeCells);
   if(s.freeRemaining<=0)return [];
@@ -2131,6 +2132,7 @@
  }
  const eventCounts=[1140,171,18,1],extraOddsCounts=[171,18,1,0];
  function expectedNumeratorForPlacement(s,manual){
+  if(!modern(s))return previous.expectedNumeratorForPlacement(s,manual);
   if(!stateOk(s)||s.draws.length!==5)return null;
   const first=maskOf(s.draws.map(n=>s.numbers.indexOf(n))),initial=maskOf(s.initialFreeCells),mask=maskOf(manual);
   const covered=initial|first|mask,odds=1+popcount(mask&initial),q=popcount(mask&~(initial|first));
@@ -2142,7 +2144,7 @@
   }
   return value;
  }
- function expectedNumeratorForCenter(s,id){return availableCenters(s).includes(id)?expectedNumeratorForPlacement(s,[...s.manualFreeCells,id]):null;}
+ function expectedNumeratorForCenter(s,id){return !modern(s)?previous.expectedNumeratorForCenter(s,id):availableCenters(s).includes(id)?expectedNumeratorForPlacement(s,[...s.manualFreeCells,id]):null;}
  function autoPlace(s){
   if(!modern(s))return previous.autoPlace(s);
   if(!stateOk(s)||s.phase!=='placing'||s.freeCommitted)return null;
