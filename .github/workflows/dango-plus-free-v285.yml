@@ -12,6 +12,9 @@ on:
       - 'tests/dango-*'
       - 'scripts/dango-v285-*'
       - 'scripts/dango-v287-*'
+      - 'scripts/dango-v288-*'
+      - 'assets/jelly-*'
+      - 'tests/jelly-v288-*'
       - 'docs/qa-v285/**'
       - 'package.json'
       - '.github/workflows/dango-plus-free-v285.yml'
@@ -27,6 +30,9 @@ on:
       - 'tests/dango-*'
       - 'scripts/dango-v285-*'
       - 'scripts/dango-v287-*'
+      - 'scripts/dango-v288-*'
+      - 'assets/jelly-*'
+      - 'tests/jelly-v288-*'
       - 'docs/qa-v285/**'
       - 'package.json'
       - '.github/workflows/dango-plus-free-v285.yml'
@@ -51,6 +57,12 @@ jobs:
           g++ -O3 -std=c++20 scripts/dango-v287-enumerate.cpp -o /tmp/dango-v287-enumerate
           /tmp/dango-v287-enumerate > /tmp/dango-v287-fresh.json
           node tests/dango-v287-calibration.mjs /tmp/dango-v287-fresh.json
+      - name: New v288 policy mixture and Jelly rail checks
+        run: |
+          g++ -O3 -std=c++20 scripts/dango-v288-policy.cpp -o /tmp/dango-v288-policy
+          /tmp/dango-v288-policy > /tmp/dango-v288-policy.json
+          node tests/dango-v288-calibration.mjs /tmp/dango-v288-policy.json
+          node tests/jelly-v288-lines.mjs
       - name: Legacy presentation and launch-time commitment
         run: |
           node tests/dango-v269-presentation-rules.mjs
