@@ -5,7 +5,7 @@
 (function(root){
 'use strict';
 // Keep the v247 serialization and color IDs readable by existing checkpoints.
-const VERSION=247,REVISION=248,GROUPED_REVISION=278,ROUNDED_REVISION=280,SINGLE_REVISION=283,BALANCED_REVISION=284,CURRENT_REVISION=BALANCED_REVISION,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5,CREDIT_PER_DROP_V284=.2,COLOR_STEP_V284=200;
+const VERSION=247,REVISION=248,GROUPED_REVISION=278,ROUNDED_REVISION=280,SINGLE_REVISION=283,BALANCED_REVISION=284,FIXED_PALETTE_REVISION=285,CURRENT_REVISION=FIXED_PALETTE_REVISION,ROWS=10,CAPACITY=75,UNIT=100,CREDIT_PER_DROP=5,CREDIT_PER_DROP_V284=.2,CREDIT_PER_DROP_V285=.4,COLOR_STEP_V284=200;
 const BATCH_SIZES=Object.freeze([3,2,1,1,1]);
 const RING=['blue','aqua','green','lime','yellow','orange','red','violet','pink'];
 const COLOR_PROGRESS=[0,1,2,3,4,5,6,8,7];
@@ -51,6 +51,12 @@ function palette(removed,stateOrRevision=REVISION){
  const band=Math.min(5,Math.floor(total/100));return COLOR_PROGRESS.slice(band,band+4).reverse();
 }
 function gamePalette(state){
+ // New game locks its four colours at start: later 200-drop boundaries
+ // affect the NEXT round only. Historic revision284 keeps its old rule.
+ if(revisionOf(state)>=FIXED_PALETTE_REVISION){
+  if(!Array.isArray(state.palette)||state.palette.length!==4)state.palette=palette(Math.max(0,state.removedTotal-state.roundRemoved),state);
+  return state.palette;
+ }
  if(revisionOf(state)>=BALANCED_REVISION){state.palette=palette(state.removedTotal,state);return state.palette;}
  if(!Array.isArray(state.palette)||state.palette.length!==4||new Set(state.palette).size!==4||state.palette.some(c=>!Number.isInteger(c)||c<0||c>=RING.length)){
   // A restored v247 checkpoint has no palette field. Freeze the window from
@@ -69,7 +75,7 @@ function totalMedals(s){
 const revisionOf=value=>Number(typeof value==='object'?value?.rulesRevision:value)||REVISION;
 const modernRules=value=>revisionOf(value)>=GROUPED_REVISION;
 const isGrouped=value=>revisionOf(value)>=GROUPED_REVISION&&revisionOf(value)<SINGLE_REVISION;
-const normalizedRevision=value=>revisionOf(value)>=BALANCED_REVISION?BALANCED_REVISION:revisionOf(value)>=SINGLE_REVISION?SINGLE_REVISION:revisionOf(value)>=ROUNDED_REVISION?ROUNDED_REVISION:modernRules(value)?GROUPED_REVISION:REVISION;
+const normalizedRevision=value=>revisionOf(value)>=FIXED_PALETTE_REVISION?FIXED_PALETTE_REVISION:revisionOf(value)>=BALANCED_REVISION?BALANCED_REVISION:revisionOf(value)>=SINGLE_REVISION?SINGLE_REVISION:revisionOf(value)>=ROUNDED_REVISION?ROUNDED_REVISION:modernRules(value)?GROUPED_REVISION:REVISION;
 function roleTotal(type,count,stateOrRevision=CURRENT_REVISION){
  const n=integer(count);
  if(revisionOf(stateOrRevision)>=ROUNDED_REVISION){
@@ -88,15 +94,20 @@ function batchSize(processed,stateOrRevision=GROUPED_REVISION){
  if(!isGrouped(stateOrRevision))return Number.isInteger(processed)&&processed>=0&&processed<8?1:0;
  let end=0;for(const size of BATCH_SIZES){if(processed===end)return size;end+=size;}return 0;
 }
-function creditPerDrop(stateOrRevision=REVISION){return revisionOf(stateOrRevision)>=BALANCED_REVISION?CREDIT_PER_DROP_V284:CREDIT_PER_DROP;}
+function creditPerDrop(stateOrRevision=REVISION){return revisionOf(stateOrRevision)>=FIXED_PALETTE_REVISION?CREDIT_PER_DROP_V285:revisionOf(stateOrRevision)>=BALANCED_REVISION?CREDIT_PER_DROP_V284:CREDIT_PER_DROP;}
 function creditUnitsForDrop(bet,removedBefore,stateOrRevision=REVISION){
  if(revisionOf(stateOrRevision)<BALANCED_REVISION)return bet*CREDIT_PER_DROP;
+ if(revisionOf(stateOrRevision)>=FIXED_PALETTE_REVISION){
+  // 0.004 BET per removed candy in exact integer 1/100-medal ledger units.
+  const cursor=integer(removedBefore)%5;
+  return Math.floor(bet*(cursor+1)*2/5)-Math.floor(bet*cursor*2/5);
+ }
  // Credit exactly 1/5 of a hundredth BET per drop, using existing cumulative
  // removals as the remainder cursor. Integer units survive every legacy ledger.
  const cursor=integer(removedBefore)%5;
  return Math.floor(bet*(cursor+1)/5)-Math.floor(bet*cursor/5);
 }
-function numberPlacementBias(){return NUMBER_BIAS_V284;}
+function numberPlacementBias(rate,stateOrRevision=BALANCED_REVISION){return revisionOf(stateOrRevision)>=FIXED_PALETTE_REVISION?0:NUMBER_BIAS_V284;}
 function colorCohesion(rate,bet=100){
  const target=Math.max(50,Math.min(150,Number(rate)||90));
  const interpolate=table=>{
@@ -165,8 +176,8 @@ function create(geometry){
   if(!fillable.length)return {grid,added:[],holes:[],mobility:0};
   const target=Math.max(50,Math.min(150,state.target));
   // Historical revisions use the calibrated share of support pockets.
-  // Revision284 instead varies color cohesion while retaining one fixed
-  // numbered-cell distribution at every setting.
+  // Fixed-colour rounds tune board cohesion instead of creating a visible
+  // row bias in numbered cells. Historical rounds retain prior placement.
   const prepared=supportProbability(target,state),templates=G.gapTemplates||[];
   const holes=templates.length&&nextRandom(state)<prepared?templates[Math.floor(nextRandom(state)*templates.length)]:[];
   const missing=new Set(fillable.map(([r,c])=>r*16+c)),chosen=new Set(holes.filter(([r,c])=>missing.has(r*16+c)).map(([r,c])=>r*16+c));
@@ -219,10 +230,9 @@ function create(geometry){
   // surviving labels are never changed or duplicated during refills.
   const prefer=nextRandom(state)<.95;
   if(revisionOf(state)>=BALANCED_REVISION){
-   // This spread is IDENTICAL at every P/O setting. Only the prospective
-   // color-cohesion probability above changes with P/O; all 25 draw values
-   // and the numbering distribution remain independent of that setting.
-   const bias=numberPlacementBias(target),scores=new Map(targets.map(cell=>[cell,nextRandom(state)+bias*cell[0]]));
+   // v285 removes the deterministic numbered-row preference. Colour
+   // placement and gaps remain the source of P/O variation.
+   const bias=numberPlacementBias(target,state),scores=new Map(targets.map(cell=>[cell,nextRandom(state)+bias*cell[0]]));
    targets.sort((a,b)=>scores.get(a)-scores.get(b));
   }else targets.sort((a,b)=>(mobility(grid,...a)-mobility(grid,...b))*(prefer?-1:1));
   for(const [r,c]of targets)if(numbers.length)grid[r][c].number=numbers.pop();
@@ -303,7 +313,7 @@ function create(geometry){
   if(modernRules(s)&&s.draws.length<8)return cleanCarry(s.carryAtStart);
   return totalMedals(s)>0?cleanCarry({bankUnits:s.bankUnits,removed:s.removedTotal,feed:s.feed,roundId}):cleanCarry({roundId});
  }
- return {VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,COLOR_COHESION_V284,COLOR_COHESION_LOW_BET_V284,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,isGrouped,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
+ return {VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,FIXED_PALETTE_REVISION,CURRENT_REVISION,BATCH_SIZES,ROWS,CAPACITY,RING,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,COLOR_COHESION_V284,COLOR_COHESION_LOW_BET_V284,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,CREDIT_PER_DROP_V285,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,nextRandom,asHundredths,totalMedals,roleTotal,roleAward,isGrouped,batchSize,supportProbability,newGame,hit,hitBatch,refill,carryOut,mobility,connectedGroups};
 }
-root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,COLOR_COHESION_V284,COLOR_COHESION_LOW_BET_V284,RING,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,isGrouped,batchSize,supportProbability};
+root.SweetsSixDropV247={VERSION,REVISION,GROUPED_REVISION,ROUNDED_REVISION,SINGLE_REVISION,BALANCED_REVISION,FIXED_PALETTE_REVISION,CURRENT_REVISION,BATCH_SIZES,create,BASE_PAY,BASE_PAY_V278,ROLE_PAY_TABLE_V280,ROLE_TAIL_STEP_V280,SUPPORT_TABLE_V278,ROLE_PAY_TABLE_V284,ROLE_TAIL_STEP_V284,NUMBER_BIAS_V284,COLOR_COHESION_V284,COLOR_COHESION_LOW_BET_V284,RING,CREDIT_PER_DROP,CREDIT_PER_DROP_V284,CREDIT_PER_DROP_V285,COLOR_STEP_V284,creditPerDrop,creditUnitsForDrop,numberPlacementBias,colorCohesion,cleanCarry,palette,gamePalette,asHundredths,roleTotal,roleAward,isGrouped,batchSize,supportProbability};
 })(typeof window!=='undefined'?window:globalThis);
