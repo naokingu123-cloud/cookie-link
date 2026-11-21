@@ -14,6 +14,16 @@ assert.deepEqual(P(lengths.map(l=>R.tiers[l].slice(1))),[
 ]);
 assert.equal(R.TRIGGER_COUNT,3);assert.equal(R.BASE_FREE_BUDGET,1);assert.equal(R.MAX_FREE_BUDGET,4);
 assert.equal(base().freeBudget,1);
+// Green initial FREE is counted as HIT for the 28-cell line mask and presentation,
+// without inventing physical ball draws or bonus +FREE awards.
+const initial=base();
+assert.equal(initial.hitCells.length,0);
+assert.deepEqual(P(initial.initialFreeCells),P(initial.cells.filter(c=>c.initialFree&&c.hit).map(c=>c.id)));
+assert.equal(initial.cells.filter(c=>c.hit).length,3);
+assert.equal(initial.markedCells.length,3);
+assert.equal(initial.lineCounts[2],0);
+assert.equal(initial.freeBudget,1);
+
 assert.deepEqual(P(base().triggerNumbers),[1,2,3]);
 
 // Every early cyan count has its own budget; the fifth ball ends the cyan phase.
