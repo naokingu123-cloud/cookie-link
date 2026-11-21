@@ -1,4 +1,4 @@
-// Exact revision 285 AUTO expectation; the cyan triplet is uniform among 25 numbers.
+// Exact revision 287 AUTO expectation; the cyan triplet is uniform among 25 numbers.
 // First-five cyan hits K have weights 1140,950,200,10 over C(25,3)=2300.
 // AUTO chooses 1+K individual FREE after the first five; no future ball is consulted.
 // g++ -O3 -march=native -std=c++20 scripts/dango-v287-enumerate.cpp -o /tmp/dango-v287-enumerate
