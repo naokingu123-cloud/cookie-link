@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import vm from 'node:vm';
 import {R,read,plain,numbers,flush,host,installWorker,historyRound,downloadSource} from './dango-v285-fixture.mjs';
 
-assert.equal(R.REVISION,285);
+assert.equal(R.REVISION,287);
 assert.equal(R.legacy268.REVISION,268);
 const baseline=JSON.parse(await read('tests/dango-v285-legacy-fingerprints.json'));
 for(const input of baseline.cases){
@@ -49,7 +49,7 @@ for(let hits=0;hits<=3;hits++){
   if(i>=5)assert.equal(h.engine.state.freeBudget,1+hits,'late cyan hits never grant another FREE');
   const saved=h.capture();savedCheckpoints++;
   assert.deepEqual(saved.engines[0].state.triggerCells,plain(expected.triggerCells));
-  assert.equal(saved.engines[0].state.rulesRevision,285);
+  assert.equal(saved.engines[0].state.rulesRevision,287);
   const resumed=host({seed:29100+hits});resumed.start();await resumed.restore(saved);
   assert.deepEqual(plain(resumed.engine.state),plain(h.engine.state),'restore after ball '+(i+1));
   assert.deepEqual(plain(resumed.app.roundWins),plain(h.app.roundWins));
@@ -150,7 +150,7 @@ assert.deepEqual(plain(upgraded.engine.state.triggerNumbers),[]);
 for(const n of [2,4,5]){await historical.number(n);await upgraded.number(n);}
 assert.deepEqual(plain(upgraded.engine.state),plain(historical.engine.state));
 assert.equal(upgraded.app.totalWin,historical.app.totalWin);
-upgraded.app.prepare();upgraded.start();assert.equal(upgraded.engine.state.rulesRevision,285);
+upgraded.app.prepare();upgraded.start();assert.equal(upgraded.engine.state.rulesRevision,287);
 assert.equal(upgraded.engine.state.triggerCells.length,3);assert.equal(upgraded.engine.state.freeBudget,1);
 
 const excluded=host({bet:0});assert.equal(excluded.app.start(),false);assert.equal(excluded.engine.liveBoard,false);

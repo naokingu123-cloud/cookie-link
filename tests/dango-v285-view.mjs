@@ -119,7 +119,7 @@ try{
  const executable=process.env.PLAYWRIGHT_EXECUTABLE_PATH;
  browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{}),args:['--no-sandbox']});
  page=await browser.newPage({viewport:{width:1366,height:750}});
- assert.deepEqual(await setup(page),{rules:285,view:285,revision:285,assets:true});
+ assert.deepEqual(await setup(page),{rules:287,view:285,revision:285,assets:true});
  report.initial=await page.evaluate(()=>qa285.measure());checkLayout(report.initial);
  assert.equal(report.initial.draw.plusFree.cells.length,3);assert.equal(report.initial.draw.plusFree.opacity,1);assert.equal(report.initial.draw.plusFree.label,'+FREE');
  assert.equal(report.initial.draw.kinds.cyan,3,'all numbered +FREE are actual aqua mochi');assert.equal(report.initial.draw.kinds.green,3,'initial FREE remains a green HIT');

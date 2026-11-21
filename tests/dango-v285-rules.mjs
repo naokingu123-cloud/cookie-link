@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const ctx=vm.createContext({console});
 vm.runInContext(await fs.readFile(new URL('../assets/dango-bingo-rules.js',import.meta.url),'utf8'),ctx);
-const R=ctx.DangoBingoRules,P=x=>JSON.parse(JSON.stringify(x));
+const R=ctx.DangoBingoRules.legacy285,P=x=>JSON.parse(JSON.stringify(x));
 const numbers=Array.from({length:25},(_,i)=>i+1),lengths=[2,3,4,5,6,7];
 const base=options=>R.create({moldIndex:0,numbers,triggerCells:[1,2,3],...options});
 const drawCells=(s,ids)=>ids.reduce((state,id)=>R.draw(state,state.numbers[id]),s);

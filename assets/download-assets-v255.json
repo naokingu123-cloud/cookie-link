@@ -1,10 +1,10 @@
 {
-  "version": "20261121-v286-dango-cyan-mochi-green-hit",
+  "version": "20261121-v287-dango-probability-payouts",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 55,
-      "sha256": "72f101010377328ff1e6a53bfa6fddaddc7d9551976f42791504e42e73cf78c1"
+      "bytes": 54,
+      "sha256": "57e483916c0a0db28f42185a3c69f799d312f10cd206043c044291132f4ee810"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -2033,8 +2033,8 @@
     },
     {
       "path": "assets/dango-bingo-rules.js",
-      "bytes": 157083,
-      "sha256": "c9a15b01a08e0cec820c7908686aa126925ada996c81fcc265710f9899b46c8c"
+      "bytes": 177902,
+      "sha256": "6e4adc5d8f4c2faa64233a3b8fb4f502b0f45ff32ddc8d8169f87309792dbb54"
     },
     {
       "path": "assets/dango-bingo-view.js",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4366,
-      "sha256": "b5d738a2373388db4168fb13d32e14fae1d3fc5fe4bb8194594f7c63065d83b8"
+      "bytes": 4365,
+      "sha256": "d3dc8f709fab88b17b141a13d175567fdb85faec543c65b39da24726116131de"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2093,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3777,
-      "sha256": "917eaec6ed2f735fc6d08dc39a1c8fcc4fe6728430596b625d2807fa1a9bd88c"
+      "bytes": 3776,
+      "sha256": "0d4e0386c73a70d35cfa0af6588acf3031a2ad4fdf76e56b41675223801c315a"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -4029,7 +4029,7 @@
     {
       "path": "index.html",
       "bytes": 85639,
-      "sha256": "9859eb476086acecd01bd39fabc011c51f0f680a5bff796278cc4bf2e82910a5"
+      "sha256": "c8aa93f680543c357e633421eef22203f2b2234b28e9fc69ce81b1b23c8e48b0"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4267,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238677937
+  "totalBytes": 238698753
 }
