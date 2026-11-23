@@ -18,7 +18,20 @@ const PROPS=Object.freeze({
  castella:{left:'castella-baked',right:'castella-raw',crest:'sugar-star',lower:'castella-baked',scatter:'cookie-honey',glow:'#ffe0a4',dark:'#5a2b36'},
  dango:{left:'dango-pink',right:'dango-green',crest:'dango-rainbow',lower:'dango-white',scatter:'dango-yellow',glow:'#ffb9df',dark:'#53234d',frameless:true}
 });
-const counters={painted:0,missing:0,used:new Set()};
+const ATLAS_FILE='assets/award-art-v291/themed-cutin-atlas.webp?v=291';
+const ATLAS_CELLS=Object.freeze({
+ cookie:[0,0],choco:[1,0],candy:[0,1],jelly:[1,1],
+ gelato:[0,2],winery:[1,2],popcorn:[0,3],stick:[1,3],
+ castella:[0,4],dango:[1,4]
+});
+let atlasImage=null;
+const ready=typeof Image==='function'?new Promise(resolve=>{
+ const image=new Image();image.decoding='async';
+ image.onload=()=>{atlasImage=image;resolve(true);};
+ image.onerror=()=>{console.warn('v291: generated cut-in atlas unavailable; using existing PNG motifs');resolve(false);};
+ image.src=ATLAS_FILE;
+}):Promise.resolve(false);
+const counters={painted:0,atlasPainted:0,missing:0,used:new Set()};
 function bitmap(id){return window.SweetsBoardArtV275?.sprite?.(id)||null;}
 function baseArt(tier){return window.SweetsAwardArtV277?.sprite?.(
  tier>=4?'award-highest':tier>=3?'award-super':tier>=2?'award-high':'award-normal'
@@ -37,7 +50,22 @@ function draw(ctx,id,x,y,limitW,limitH,angle,alpha){
 function paint(ctx,o){
  const {game,tier=1,width:w,height:h,mini=false,age=0,still=false}=o||{};
  const model=PROPS[game],ready=window.SweetsBoardArtV275?.loaded;
- if(!model||!ready||!ctx||!(w>0&&h>0)){counters.missing++;return false;}
+ if(!model||!ctx||!(w>0&&h>0)){counters.missing++;return false;}
+ // The v291 production path uses the actual generated transparent artwork:
+ // one detailed illustrated plaque per game, with no baked-in text.
+ // The title, LINE count, FREE and WIN are painted separately by v277.
+ const cell=ATLAS_CELLS[game],img=atlasImage;
+ if(img&&cell&&img.naturalWidth>0&&img.naturalHeight>0){
+  const aw=img.naturalWidth,ah=img.naturalHeight;
+  const sx=Math.round(cell[0]*aw/2),ex=Math.round((cell[0]+1)*aw/2);
+  const sy=Math.round(cell[1]*ah/5),ey=Math.round((cell[1]+1)*ah/5);
+  const cw=ex-sx,ch=ey-sy;
+  const iw=Math.min(w*1.08,h*(cw/ch)*1.55),ih=iw*ch/cw;
+  ctx.drawImage(img,sx,sy,cw,ch,-iw/2,-ih/2,iw,ih);
+  counters.painted++;counters.atlasPainted++;counters.used.add(game);
+  return true;
+ }
+ if(!ready){counters.missing++;return false;}
  const img=baseArt(tier);
  if(!model.frameless&&!img){counters.missing++;return false;}
  // Painted 2.5D decorations replace the synthetic geometry from v290.
@@ -76,7 +104,8 @@ function paint(ctx,o){
  return drawn.some(Boolean);
 }
 window.SweetsIllustratedAwardV291=Object.freeze({
- version:291,paint,describe:()=>({version:291,painted:counters.painted,
- missing:counters.missing,games:[...counters.used],rasterSource:'assets/illustrated-art-v275/*.png'})
+ version:291,ready,paint,describe:()=>({version:291,painted:counters.painted,
+ atlasPainted:counters.atlasPainted,atlasReady:!!atlasImage,
+ missing:counters.missing,games:[...counters.used],rasterSource:atlasImage?ATLAS_FILE:'assets/illustrated-art-v275/*.png'})
 });
 })();
