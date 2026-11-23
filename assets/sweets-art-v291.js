@@ -42,9 +42,15 @@ function url(id){
  const img=crop(id);if(!img)return '';
  const value=img.toDataURL('image/png');urls.set(id,value);return value;
 }
+function applyFrames(){
+ const selectors=['#odds-panel','#sd278-payouts .sd278-payout-card','.gp-collector-panel','.wp-sidebar','.bs-pay','.pct-pay','.dgb-pay'];
+ for(const selector of selectors)for(const el of document.querySelectorAll(selector))el.classList.add('v291-pay-frame');
+}
 const api={version:291,loaded:false,ready:null,sprite:crop,draw,url,
  describe:()=>({version:291,loaded:api.loaded,failed:stats.failed,sprites:Object.keys(rects),cached:cache.size,draws:stats.draws})};
 window.SweetsArtV291=api;
+applyFrames();
+if(typeof MutationObserver==='function'){const observer=new MutationObserver(applyFrames);observer.observe(document.documentElement,{childList:true,subtree:true});}
 api.ready=new Promise(resolve=>{
  sheet.onload=()=>{
   api.loaded=true;
@@ -53,7 +59,7 @@ api.ready=new Promise(resolve=>{
    if(pay)document.documentElement.style.setProperty('--v291-pay-'+game,'url("'+pay+'")');
    if(tile)document.documentElement.style.setProperty('--v291-tile-'+game,'url("'+tile+'")');
   }
-  document.documentElement.classList.add('sweets-art-v291');
+  document.documentElement.classList.add('sweets-art-v291');applyFrames();
   resolve(true);
  };
  sheet.onerror=()=>{stats.failed++;resolve(false);console.warn('[SweetsArtV291] supplied PNG sheet unavailable');};
