@@ -1,10 +1,10 @@
 {
-  "version": "20261123-v290-themed-awards-ambient-lines",
+  "version": "20261123-v291-illustrated-png-awards",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 56,
-      "sha256": "3a670548e49840bf0ccf4d28c32cb3151a3df04540bef7dec5a2adca66ef51be"
+      "bytes": 51,
+      "sha256": "b97ada36601e08e03277b853b48c2445d3575b960fa41016e49c66035ab1d86d"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1607,14 +1607,24 @@
       "sha256": "7cef796cf47e377062ac8572c9fc1b840538c6955b2f6ec48415928ed4b3d2dc"
     },
     {
+      "path": "assets/award-art-v291/themed-cutin-atlas.webp",
+      "bytes": 520912,
+      "sha256": "2b9a730ac3fbb9d2033494c84048dc36efbd4bd9973ec4dfcf4a0f9ebae457c3"
+    },
+    {
+      "path": "assets/award-illustrated-v291.js",
+      "bytes": 6624,
+      "sha256": "ade686ddd55f376b1142c5e7afbbafb6b7d2feff94efcf933c25e6787232e3de"
+    },
+    {
       "path": "assets/award-presentation-v277.css",
       "bytes": 4937,
       "sha256": "665b918ecdd26436a3496be9269cb8cf4ffaeb5ffb0d426d021e09c09b0e40e8"
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 40537,
-      "sha256": "17fafaecd8488c236f6302ae1c1c67e52497e58b63537e49f3d31d67316dbcef"
+      "bytes": 40789,
+      "sha256": "7f71432f1aa68d758366ec6a83e990d1b6d9bdc8ea4754302f4928025a435a25"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2068,8 +2078,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4367,
-      "sha256": "8e6d7941e6e92f18f2161da90aa8927f329736a1059a836a61dbfc3bf951887f"
+      "bytes": 4362,
+      "sha256": "93e74e3863ad3c699853148ce39cf17266c7cc04927fba67451e70532e3f0ef2"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2103,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3778,
-      "sha256": "78b46d115eb17d95bbe1e35893890baf8dcb66777cd13005cd74bb71f5271dc3"
+      "bytes": 3773,
+      "sha256": "bd451dcf40b98cdc4ab43e9ff99c6490f565802501d70a30660497055336b7d2"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -4028,8 +4038,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85636,
-      "sha256": "cc823e8fd237e4ffebec09796c859ae8921037fa7c94c4606125727cfe4baa5c"
+      "bytes": 85740,
+      "sha256": "4f383a1cf10f5d58567fd9f52d7a523ffe0a8c1fb71104595c6a69c2342d86df"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4277,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238733773
+  "totalBytes": 239276263
 }
