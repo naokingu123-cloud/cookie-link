@@ -353,7 +353,10 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
  const width=Math.min(w*(mini?.93:.84),h*(mini?1.16:1.28)),height=Math.min(h*(mini?.72:.54),width*.67);
  const cx=ox+w/2,cy=oy+h*(mini?.53:.53),zoom=quiet()?1:.80+.20*(1-(1-enter)**3);
  ctx.save();ctx.globalAlpha=fade;ctx.translate(cx,cy+(1-enter)*h*.05);ctx.scale(zoom,zoom);
- ornament(ctx,theme,width,height,mini,age);
+ // v291: compose original painted PNG game pieces over tier artwork.
+ // The native payout event continues to own all text and amounts.
+ if(!window.SweetsIllustratedAwardV291?.paint(ctx,{game:c.game,tier:c.tier,width,height,mini,age,still:quiet()}))
+  ornament(ctx,theme,width,height,mini,age);
  if(c.tier>=3&&!quiet()){
   // Sparkling slow halo only around the award, not a full-board flash.
   ctx.save();ctx.strokeStyle=theme.glow;ctx.globalAlpha=.32+.18*Math.sin(age/420);
