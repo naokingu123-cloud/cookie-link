@@ -45,7 +45,7 @@ async function prepare({onProgress}={}){
       await cache.put(url,new Response(bytes,{status:200,headers}));
      }
      progress.done++;progress.bytes+=file.bytes;progress.path=file.path;notify(onProgress);
-    }catch(error){failed=error;}
+    }catch(error){failed=error;progress.error=String(error?.message||error);progress.failedPath=file.path;notify(onProgress);console.warn('[DownloadCacheV255] asset verification failed',file.path,error);}
    }
   }
   await Promise.all(Array.from({length:6},download));
