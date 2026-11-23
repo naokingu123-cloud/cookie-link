@@ -235,6 +235,20 @@ function paintPaths(ctx,r,c,w,h,mini,ox,oy,staticOnly=false){
   const points=projectedPath(r.slot,path,w,h,mini,c.state).map(p=>({...p,x:p.x+ox,y:p.y+oy}));
   const traced=ray(ctx,points,path.closed,progress,lineWidth*(path.cell?.60:1),fade,mini,!staticOnly,c.tier,c.game);
   if(!traced||staticOnly||quiet())continue;
+  // One bright moving glint runs along each awarded line, not only the endpoints.
+  // It is scoped to the event lifetime and the same 12/4 path caps as the
+  // native payout observer; no perpetual repaint or new DOM canvas is used.
+  if(!mini&&traced.total>3){
+   const fraction=(c.age/(c.tier>=3?870:1120)+index*.19)%1;
+   if(fraction<=progress){
+    const p=onPath(traced.segments,traced.total,Math.max(0,fraction-.13));
+    const q=onPath(traced.segments,traced.total,fraction);
+    if(p&&q){ctx.save();ctx.globalAlpha=fade*.88;ctx.lineCap='round';
+     ctx.shadowColor=BADGE_THEMES[c.game]?.glow||'#ffefbb';ctx.shadowBlur=Math.min(14,lineWidth*1.9);
+     ctx.strokeStyle='#ffffff';ctx.lineWidth=Math.max(2,lineWidth*.61);
+     ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();ctx.restore();}
+   }
+  }
   const count=mini?1:Math.min(3,c.tier),speed=mini?1900:1300;
   for(let j=0;j<count;j++){
    const f=(c.age/speed+index*.163+j/count)%1;if(f>progress)continue;const p=onPath(traced.segments,traced.total,f);if(!p)continue;
