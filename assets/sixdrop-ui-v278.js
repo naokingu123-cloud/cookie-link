@@ -112,7 +112,8 @@ function paintBank(d){
 function paintReceipt(){
  const earned=receipt.count>0;nodes.earned.hidden=!earned;
  nodes.earned.dataset.count=String(receipt.count);nodes.earned.dataset.win=String(receipt.win);nodes.earned.dataset.lastWin=String(receipt.lastWin);
- amount(nodes.earnedWin,receipt.win,11,nodes.earnedWin.clientWidth||38);putText(nodes.earnedCount,'・'+receipt.count+'回');
+ /* Small extra fitting room prevents a high-value receipt from being over-compressed. */
+ amount(nodes.earnedWin,receipt.win,11,(nodes.earnedWin.clientWidth||38)+2);putText(nodes.earnedCount,'・'+receipt.count+'回');
  nodes.earned.setAttribute('aria-label',earned?'全消し獲得済み。今回 '+money(receipt.win)+' WIN、'+receipt.count+'回':'全消し未獲得');
  nodes.hud.classList.toggle('has-clear',earned);
  nodes.miniBadge.hidden=!earned;putText(nodes.miniBadge,'全消し獲得'+(receipt.count>1?' ×'+receipt.count:''));
