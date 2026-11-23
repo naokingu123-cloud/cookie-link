@@ -4032,11 +4032,6 @@
       "sha256": "575ef995f1b17cc6cefaa0914f2474c3853632369fae1c7a9b7175414ef89bf9"
     },
     {
-      "path": "download-sw-v255.js",
-      "bytes": 4300,
-      "sha256": "a3dfb4d18920a9374a757c721188fd7e27d28b1ea6782510cc720fc2016a19c5"
-    },
-    {
       "path": "index.html",
       "bytes": 85699,
       "sha256": "f50a34a78735adfc33a2e295a41cb19095b6aaf9f7027834c766ad2ca3dfef64"
@@ -4277,5 +4272,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238758124
+  "totalBytes": 238753824
 }
