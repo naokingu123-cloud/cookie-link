@@ -49,8 +49,9 @@ api.ready=new Promise(resolve=>{
  sheet.onload=()=>{
   api.loaded=true;
   for(const game of ['cookie','choco','candy','jelly','gelato','winery','popcorn','stick','castella','dango']){
-   const value=url('pay-'+game);
-   if(value)document.documentElement.style.setProperty('--v291-pay-'+game,'url("'+value+'")');
+   const pay=url('pay-'+game),tile=url('tile-'+game);
+   if(pay)document.documentElement.style.setProperty('--v291-pay-'+game,'url("'+pay+'")');
+   if(tile)document.documentElement.style.setProperty('--v291-tile-'+game,'url("'+tile+'")');
   }
   document.documentElement.classList.add('sweets-art-v291');
   resolve(true);
