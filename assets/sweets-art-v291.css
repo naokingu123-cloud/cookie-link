@@ -1,0 +1,55 @@
+/* v291: use the supplied painted paytable plaques as the real frame artwork.
+   Native rows and values stay live above the opaque inset, so line counts and
+   payouts always come from the active game rules rather than baked sample text. */
+.v291-pay-frame{
+ position:relative!important;isolation:isolate!important;
+ background:transparent!important;border:0!important;border-image:none!important;
+ box-shadow:none!important;
+}
+.v291-pay-frame::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background-image:var(--v291-pay-art);background-position:center;background-size:100% 100%;background-repeat:no-repeat;
+}
+.v291-pay-frame::after{
+ content:"";position:absolute;left:14%;right:14%;top:30%;bottom:10%;z-index:1;pointer-events:none;
+ border-radius:11% / 9%;background:var(--v291-pay-inner,linear-gradient(#fff0ce,#f5d9a2));
+ box-shadow:inset 0 1px 2px #fff9d5b8,inset 0 -2px 4px #70402b4a,0 0 0 1px #fff0bd;
+}
+.v291-pay-frame>*{position:relative;z-index:2}
+html.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel{
+ --v291-pay-art:var(--v291-pay-cookie);--v291-pay-inner:linear-gradient(#fff2d2,#f4d49b);
+}
+html.arcade-v249 body[data-v249-game="choco"] #screen #odds-panel{
+ --v291-pay-art:var(--v291-pay-choco);--v291-pay-inner:linear-gradient(#5b2b20,#31151a);
+}
+html.arcade-v249 body[data-v249-game="candy"] #screen #sd278-payouts .sd278-payout-card{
+ --v291-pay-art:var(--v291-pay-candy);--v291-pay-inner:linear-gradient(#d6caff,#8e79d9);
+}
+html.arcade-v249 #screen #panels .gp-collector-panel{
+ --v291-pay-art:var(--v291-pay-gelato);--v291-pay-inner:linear-gradient(#e8fbff,#b4d9ff);
+}
+html.arcade-v249 #screen #panels .wp-sidebar{
+ --v291-pay-art:var(--v291-pay-winery);--v291-pay-inner:linear-gradient(#512048,#30142e);
+}
+#screen #panels .bs-pay{
+ --v291-pay-art:var(--v291-pay-stick);--v291-pay-inner:linear-gradient(#ffe7a7,#d99a42);
+}
+#screen #panels .pct-pay{
+ --v291-pay-art:var(--v291-pay-castella);--v291-pay-inner:linear-gradient(#ffe8ac,#df9b4c);
+}
+#screen #panels .dgb-pay{
+ --v291-pay-art:var(--v291-pay-dango);--v291-pay-inner:linear-gradient(#fff2f5,#ffc5db);
+}
+/* The frame is an illustration layer; live rows keep their own current/highest
+   highlighting and their exact dynamic values. */
+html.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel,
+html.arcade-v249 body[data-v249-game="choco"] #screen #odds-panel,
+html.arcade-v249 body[data-v249-game="candy"] #screen #sd278-payouts .sd278-payout-card,
+html.arcade-v249 #screen #panels .gp-collector-panel,
+html.arcade-v249 #screen #panels .wp-sidebar,
+#screen #panels .bs-pay,#screen #panels .pct-pay,#screen #panels .dgb-pay{
+ background-color:transparent!important;
+}
+@media(prefers-reduced-motion:reduce){
+ .v291-pay-frame::before,.v291-pay-frame::after{transition:none!important;animation:none!important}
+}
