@@ -3,6 +3,25 @@
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+
+// Audit EVERY public offline file, not only version/pin metadata. An old
+// manifest silently left one Six Drop module with mismatched bytes; the
+// browser then refused to finish a 228 MiB download.
+const inventory=JSON.parse(await fs.readFile(new URL('../assets/download-assets-v255.json',import.meta.url),'utf8'));
+const inventoryErrors=[];
+for(const file of inventory.files){
+ try{
+  const data=await fs.readFile(new URL('../'+file.path,import.meta.url));
+  const sha256=createHash('sha256').update(data).digest('hex');
+  if(file.bytes!==data.length||file.sha256!==sha256)inventoryErrors.push({path:file.path,expectedBytes:file.bytes,actualBytes:data.length,expectedSHA:file.sha256,actualSHA:sha256});
+ }catch(error){inventoryErrors.push({path:file.path,error:String(error)});}
+}
+if(inventoryErrors.length){
+ console.error('DOWNLOAD_MANIFEST_MISMATCH',JSON.stringify(inventoryErrors));
+ assert.fail('Offline asset inventory has '+inventoryErrors.length+' invalid entries');
+}
+console.log('Offline inventory audit:',inventory.files.length,'files match SHA-256 and byte length');
 
 const source=await fs.readFile(new URL('../download-sw-v255.js',import.meta.url),'utf8');
 const build=JSON.parse(await fs.readFile(new URL('../app-version.json',import.meta.url),'utf8')).version;

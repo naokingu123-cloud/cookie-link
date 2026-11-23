@@ -1,7 +1,7 @@
 /* Versioned offline shell. Private API replies and tickets never enter this cache. */
 (()=>{
 'use strict';
-const VERSION='20261123-v291-illustrated-png-awards',CACHE='sweets-download-assets-'+VERSION;
+const VERSION='20261123-v292-illustrated-receipt-offline',CACHE='sweets-download-assets-'+VERSION;
 const base=new URL('./',location.href),manifestUrl=new URL('assets/download-assets-v255.json',base),marker=new URL('__download_ready_v255__',base).href;
 let task=null,progress={ready:false,done:0,total:0,bytes:0,totalBytes:0,version:VERSION};
 const hex=buffer=>[...new Uint8Array(buffer)].map(value=>value.toString(16).padStart(2,'0')).join('');
@@ -45,10 +45,10 @@ async function prepare({onProgress}={}){
       await cache.put(url,new Response(bytes,{status:200,headers}));
      }
      progress.done++;progress.bytes+=file.bytes;progress.path=file.path;notify(onProgress);
-    }catch(error){failed=error;}
+    }catch(error){failed=error;progress.error=String(error?.message||error);progress.failedPath=file.path;notify(onProgress);console.warn('[DownloadCacheV255] asset verification failed',file.path,error);}
    }
   }
-  await Promise.all(Array.from({length:4},download));
+  await Promise.all(Array.from({length:6},download));
   if(failed)throw failed;
   const saved={ready:true,version:VERSION,files:manifest.files.length,bytes:progress.totalBytes,savedAt:Date.now()};
   await cache.put(marker,new Response(JSON.stringify(saved),{headers:{'content-type':'application/json'}}));
