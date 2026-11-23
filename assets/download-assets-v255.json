@@ -1614,7 +1614,7 @@
     {
       "path": "assets/award-presentation-v277.js",
       "bytes": 40537,
-      "sha256": "b1184bb1cad5f129951838416f3993ca774e6524abd5f1c52edb419c41fc4d53"
+      "sha256": "17fafaecd8488c236f6302ae1c1c67e52497e58b63537e49f3d31d67316dbcef"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2039,7 +2039,7 @@
     {
       "path": "assets/dango-bingo-view.js",
       "bytes": 72426,
-      "sha256": "c0b0e78711b57cfd128e18259541714be92d09c7aefd45e68611af751320d41c"
+      "sha256": "3394d32a6e6c77d7e65501e03d80c33ea70b549c773de33f529143938e2b9e09"
     },
     {
       "path": "assets/dango-bingo.css",
