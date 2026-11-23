@@ -54,14 +54,14 @@ function paint(ctx,o){
  // The v291 production path uses the actual generated transparent artwork:
  // one detailed illustrated plaque per game, with no baked-in text.
  // The title, LINE count, FREE and WIN are painted separately by v277.
- const cell=ATLAS_CELLS[game],img=atlasImage;
- if(img&&cell&&img.naturalWidth>0&&img.naturalHeight>0){
-  const aw=img.naturalWidth,ah=img.naturalHeight;
+ const cell=ATLAS_CELLS[game],sheet=atlasImage;
+ if(sheet&&cell&&sheet.naturalWidth>0&&sheet.naturalHeight>0){
+  const aw=sheet.naturalWidth,ah=sheet.naturalHeight;
   const sx=Math.round(cell[0]*aw/2),ex=Math.round((cell[0]+1)*aw/2);
   const sy=Math.round(cell[1]*ah/5),ey=Math.round((cell[1]+1)*ah/5);
   const cw=ex-sx,ch=ey-sy;
   const iw=Math.min(w*1.08,h*(cw/ch)*1.55),ih=iw*ch/cw;
-  ctx.drawImage(img,sx,sy,cw,ch,-iw/2,-ih/2,iw,ih);
+  ctx.drawImage(sheet,sx,sy,cw,ch,-iw/2,-ih/2,iw,ih);
   counters.painted++;counters.atlasPainted++;counters.used.add(game);
   return true;
  }
