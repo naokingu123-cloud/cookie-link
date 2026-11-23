@@ -38,7 +38,8 @@ function harness({search='',reduced=false}={}){
   JellyView:{hitGeometryV276:projection,lineRevealAt:()=>300},JellyRules:{LINES:[[0,1,2,3,4]],payout:count=>count*16},PartyCastellaView:{geometry:()=>({panW:5,panH:4})},DangoBingoView:{geometry:(w,h)=>({centers:Array.from({length:61},(_,id)=>projection(w,h,false,{id})),radius:20})},DangoBingoRules:{geometryFor:()=>({lines:[{id:0,length:6,cells:[0,1,2]}]}),highestRolesFor:s=>s.highestRoles||[]}
  };
  const safeMath=Object.create(Math);safeMath.random=()=>{throw Error('presentation RNG must be deterministic');};
- let context;context=vm.createContext({window,app,slots,active:0,inView:true,motionReduced:false,location:{search},URLSearchParams,console,Math:safeMath,
+ class MockImage{constructor(){this.width=this.naturalWidth=1122;this.height=this.naturalHeight=1402;this.onload=null;this.onerror=null;}set src(value){this._src=value;this.onload?.();}}
+ let context;context=vm.createContext({window,app,slots,active:0,inView:true,motionReduced:false,location:{search},URLSearchParams,console,Image:MockImage,Math:safeMath,
   document:{hidden:false,createElement:tag=>new Element(tag),addEventListener:(n,f)=>listeners.set(n,f)},performance:{now:()=>time},matchMedia:()=>media,
   requestAnimationFrame:fn=>{const id=++next;frames.set(id,fn);return id;},cancelAnimationFrame:id=>frames.delete(id),setTimeout:(fn,ms)=>{const id=++next;timers.set(id,{fn,at:time+ms});return id;},clearTimeout:id=>timers.delete(id),
   select:i=>{context.active=i;slots.forEach((s,n)=>s.panel.hidden=n!==i);return 811;},chocoBoardLayout:()=>({left:90,top:57,w:25,h:25}),sixLayout:()=>({step:35,radius:17.5}),sixXY:(r,c)=>({x:25+c*35,y:22+r*29}),sixRowWidth:()=>8
@@ -67,7 +68,7 @@ for(const i of [8,9]){h.engines[i].emit('settled');h.engines[i].enqueueBatch([8]
 assert.equal(h.api.describe().received,received,'repaint, duplicate draw and checkpoint restore do not replay award');
 h.engines[9].enqueueBatch([9]);assert.equal(h.api.describe().received,received+1,'a new native draw re-arms after restore');
 assert.throws(()=>h.engines[0].emit('nativeError'),/native-only/);assert.equal(h.api.describe().errors,0,'native exception behavior retained');
-h.advance(1200);assert(h.images()>0);let status=h.api.describe();assert(status.artReady&&status.mainImages>0&&status.miniImages>0);assert.equal(h.audioCalls.length,1,'only selected game owns its fanfare');
+h.advance(1200);assert(h.images()>0);let status=h.api.describe();assert(status.artReady&&status.imageArtReady&&status.mainImages>0&&status.miniImages>0);assert.equal(h.audioCalls.length,1,'only selected game owns its fanfare');
 assert.equal(h.audioCalls[0].game,'cookie');assert(h.api.owns('cookie'));assert(!h.api.owns('jelly'));
 for(let i=0;i<8;i++){assert.equal(h.context.select(i),811);assert(h.api.describe().mainImages>0);}
 assert.equal(h.audioCalls.length,1,'changing selection cannot replay a fanfare');
