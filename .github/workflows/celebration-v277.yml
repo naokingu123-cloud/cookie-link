@@ -17,6 +17,10 @@ on:
       - 'index.html'
       - 'app-version.json'
       - 'tests/*v277*'
+      - 'tests/v290-themed-effects.mjs'
+      - 'assets/hit-presentation-v276.js'
+      - 'assets/dango-bingo-view.js'
+      - 'assets/award-presentation-v277.css'
       - 'tests/casino-audio-v281.py'
       - '.github/workflows/celebration-v277.yml'
   push:
@@ -36,6 +40,10 @@ on:
       - 'index.html'
       - 'app-version.json'
       - 'tests/*v277*'
+      - 'tests/v290-themed-effects.mjs'
+      - 'assets/hit-presentation-v276.js'
+      - 'assets/dango-bingo-view.js'
+      - 'assets/award-presentation-v277.css'
       - 'tests/casino-audio-v281.py'
       - '.github/workflows/celebration-v277.yml'
 permissions:
@@ -52,6 +60,10 @@ jobs:
       - run: npm install --ignore-scripts --no-audit --no-fund
       - name: Native event forwarding, state invariance, restore and render bounds
         run: node tests/award-presentation-v277.mjs
+      - name: Ten themed award shapes, pale FREE and bounded idle effects
+        run: node tests/v290-themed-effects.mjs
+      - name: Shared ten-game HIT observer invariants
+        run: node tests/hit-presentation-v276.mjs
       - name: All ten production-rule witnesses
         run: node tests/award-fixtures-v277.mjs
       - name: Semantic audio routing, single award ownership, mute and pause
