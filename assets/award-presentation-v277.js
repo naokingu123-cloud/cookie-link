@@ -7,6 +7,19 @@ const query=new URLSearchParams(location.search);
 if(query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1')return;
 const GAMES=['cookie','choco','candy','gelato','winery','popcorn','jelly','stick','castella','dango'];
 const TIER_ART=['','award-normal','award-high','award-super','award-highest'];
+const BADGE_THEMES=Object.freeze({
+ cookie:{edge:'#b77839',core:'#fff1b9',mid:'#e2aa5d',glow:'#ffe088',shape:'scallop',frame:true},
+ choco:{edge:'#7d3f39',core:'#f7bf97',mid:'#ad6454',glow:'#ffd39b',shape:'melt',frame:true},
+ candy:{edge:'#5187bc',core:'#ecffff',mid:'#6fe2d8',glow:'#a9fbff',shape:'hex',frame:true},
+ gelato:{edge:'#6488ca',core:'#f5ffff',mid:'#9bd7f5',glow:'#b7e6ff',shape:'diamond',frame:true},
+ winery:{edge:'#a671c5',core:'#fff4ff',mid:'#d8a8ee',glow:'#eecbff',shape:'wine',frame:false},
+ popcorn:{edge:'#b76534',core:'#fff7c4',mid:'#f7cb58',glow:'#ffe08a',shape:'burst',frame:true},
+ jelly:{edge:'#4ba6a2',core:'#f1fff3',mid:'#81e8d5',glow:'#affff2',shape:'bubble',frame:true},
+ stick:{edge:'#aa6334',core:'#fff2b6',mid:'#d99d61',glow:'#ffe1a6',shape:'waffle',frame:true},
+ castella:{edge:'#aa6136',core:'#fff3be',mid:'#df9b50',glow:'#ffd598',shape:'loaf',frame:true},
+ dango:{edge:'#c47fa4',core:'#fffaf2',mid:'#f1accd',glow:'#ffe0f2',shape:'mochi',frame:false}
+});
+
 const DURATIONS=[0,1800,2200,2600,3100],MAX_PENDING=4,MAX_MAIN_PATHS=12,MAX_MINI_PATHS=4;
 const records=new Map(),attached=new WeakSet(),history=[],eventCounts={};
 const stats={received:0,suppressed:0,errors:0,renderFrames:0,mainImages:0,miniImages:0,maxPending:0,maxMainPaths:0,maxMiniPaths:0,maxMainParticles:0,maxMiniParticles:0};
@@ -194,7 +207,7 @@ function layer(r,mini){
 }
 function art(id){const sprite=window.SweetsAwardArtV277?.sprite?.(id);return sprite&&(sprite.naturalWidth||sprite.width)>0?sprite:null;}
 function star(ctx,x,y,size,angle=0,alpha=1){const sprite=art('spark-star')||art('line-tip');if(!sprite)return;ctx.save();ctx.globalAlpha*=alpha;ctx.translate(x,y);ctx.rotate(angle);ctx.drawImage(sprite,-size/2,-size/2,size,size);ctx.restore();}
-function ray(ctx,points,closed,progress,width,alpha,mini,active,tier){
+function ray(ctx,points,closed,progress,width,alpha,mini,active,tier,game){
  if(points.length<2)return;
  const segments=points.slice(1).map((p,i)=>({a:points[i],b:p}));if(closed)segments.push({a:points.at(-1),b:points[0]});
  for(const s of segments)s.len=Math.hypot(s.b.x-s.a.x,s.b.y-s.a.y);
@@ -206,7 +219,7 @@ function ray(ctx,points,closed,progress,width,alpha,mini,active,tier){
   const angle=Math.atan2(s.b.y-s.a.y,s.b.x-s.a.x);ctx.save();ctx.translate(s.a.x,s.a.y);ctx.rotate(angle);
   ctx.strokeStyle='#68324a';ctx.lineWidth=width*1.5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(length,0);ctx.stroke();
   ctx.shadowColor=tone;ctx.shadowBlur=mini?2:active&&!quiet()?width*1.5:width*.6;
-  ctx.strokeStyle='#ffc95a';ctx.lineWidth=width;ctx.stroke();ctx.shadowBlur=0;
+  ctx.strokeStyle=BADGE_THEMES[game]?.glow||'#ffc95a';ctx.lineWidth=width*1.18;ctx.stroke();ctx.shadowBlur=0;
   if(ribbon)ctx.drawImage(ribbon,0,0,ribbon.naturalWidth||ribbon.width,(ribbon.naturalHeight||ribbon.height),0,-width*.65,length,width*1.3);
   ctx.strokeStyle='#fffbe8';ctx.lineWidth=Math.max(.65,width*.14);ctx.beginPath();ctx.moveTo(0,-width*.15);ctx.lineTo(length,-width*.15);ctx.stroke();ctx.restore();
  }
@@ -220,7 +233,7 @@ function paintPaths(ctx,r,c,w,h,mini,ox,oy,staticOnly=false){
  let particles=0;
  for(const [index,path] of paths.entries()){
   const points=projectedPath(r.slot,path,w,h,mini,c.state).map(p=>({...p,x:p.x+ox,y:p.y+oy}));
-  const traced=ray(ctx,points,path.closed,progress,lineWidth*(path.cell?.60:1),fade,mini,!staticOnly,c.tier);
+  const traced=ray(ctx,points,path.closed,progress,lineWidth*(path.cell?.60:1),fade,mini,!staticOnly,c.tier,c.game);
   if(!traced||staticOnly||quiet())continue;
   const count=mini?1:Math.min(3,c.tier),speed=mini?1900:1300;
   for(let j=0;j<count;j++){
@@ -237,7 +250,127 @@ function goldText(ctx,text,x,y,size,maxWidth,ink='#fff2a0'){
  ctx.strokeStyle='#48204f';ctx.lineWidth=Math.max(2.5,size*.22);ctx.strokeText(text,0,0);ctx.strokeStyle='#fff9dc';ctx.lineWidth=Math.max(1,size*.10);ctx.strokeText(text,0,0);
  const gold=ctx.createLinearGradient(0,-size/2,0,size/2);gold.addColorStop(0,'#ffffff');gold.addColorStop(.35,ink);gold.addColorStop(.72,'#ffcb47');gold.addColorStop(1,'#ffebad');ctx.fillStyle=gold;ctx.fillText(text,0,0);ctx.restore();
 }
+
+// Themed award badges are independent of gameplay. They use ten different
+// silhouettes rather than a shared rectangular award image and remain bounded
+// to the original display slot; real credits still come from the native event.
+function badgeOutline(ctx,shape,w,h){
+ const x=w*.5,y=h*.5;
+ ctx.beginPath();
+ if(shape==='scallop'){
+  const n=18;for(let j=0;j<=n*2;j++){const a=j*Math.PI/n-Math.PI/2,rr=j%2?.93:1;
+   const px=Math.cos(a)*x*rr,py=Math.sin(a)*y*rr;j?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+ }else if(shape==='melt'){
+  ctx.moveTo(-x*.84,-y*.82);ctx.quadraticCurveTo(-x,-y*.68,-x,-y*.30);
+  ctx.lineTo(-x*.97,y*.33);ctx.quadraticCurveTo(-x*.96,y*.66,-x*.73,y*.52);
+  ctx.lineTo(-x*.65,y*.76);ctx.quadraticCurveTo(-x*.48,y*1.1,-x*.35,y*.67);
+  ctx.lineTo(-x*.16,y*.65);ctx.quadraticCurveTo(0,y*1.26,x*.10,y*.64);
+  ctx.lineTo(x*.43,y*.64);ctx.quadraticCurveTo(x*.55,y*.95,x*.71,y*.59);
+  ctx.lineTo(x*.85,y*.36);ctx.quadraticCurveTo(x*1.06,0,x*.87,-y*.70);
+  ctx.quadraticCurveTo(0,-y*1.15,-x*.84,-y*.82);
+ }else if(shape==='hex'){
+  for(let j=0;j<=6;j++){const a=j*Math.PI/3-Math.PI/6,px=Math.cos(a)*x,py=Math.sin(a)*y;j?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+ }else if(shape==='diamond'){
+  ctx.moveTo(0,-y);ctx.lineTo(x*.62,-y*.72);ctx.lineTo(x,y*.1);
+  ctx.lineTo(0,y);ctx.lineTo(-x,y*.1);ctx.lineTo(-x*.62,-y*.72);
+ }else if(shape==='burst'){
+  for(let j=0;j<=32;j++){const a=j*Math.PI/16-Math.PI/2,rx=j%2?x*.75:x,ry=j%2?y*.78:y;j?ctx.lineTo(Math.cos(a)*rx,Math.sin(a)*ry):ctx.moveTo(Math.cos(a)*rx,Math.sin(a)*ry);}
+ }else if(shape==='bubble'){
+  ctx.ellipse(0,0,x,y*.95,0,0,Math.PI*2);
+ }else if(shape==='waffle'){
+  const t=x*.16;ctx.moveTo(-x+t,-y);ctx.lineTo(x-t,-y);ctx.quadraticCurveTo(x,-y,x,-y+t);
+  ctx.lineTo(x,y-t);ctx.quadraticCurveTo(x,y,x-t,y);ctx.lineTo(-x+t,y);
+  ctx.quadraticCurveTo(-x,y,-x,y-t);ctx.lineTo(-x,-y+t);ctx.quadraticCurveTo(-x,-y,-x+t,-y);
+ }else if(shape==='loaf'){
+  ctx.moveTo(-x*.98,y*.46);ctx.lineTo(-x*.81,-y*.66);
+  ctx.quadraticCurveTo(-x*.56,-y*1.05,-x*.27,-y*.83);
+  ctx.quadraticCurveTo(0,-y*1.24,x*.26,-y*.84);
+  ctx.quadraticCurveTo(x*.61,-y*1.10,x*.86,-y*.57);
+  ctx.lineTo(x,y*.47);ctx.lineTo(x*.84,y*.88);ctx.lineTo(-x*.83,y*.88);
+ }else{
+  ctx.ellipse(0,0,x,y,0,0,Math.PI*2);
+ }
+ ctx.closePath();
+}
+function ornament(ctx,theme,w,h,mini,age){
+ const x=w*.5,y=h*.5,shape=theme.shape;
+ ctx.save();ctx.lineCap=ctx.lineJoin='round';ctx.shadowColor=theme.glow;ctx.shadowBlur=mini?3:Math.min(18,h*.12);
+ if(theme.frame){
+  badgeOutline(ctx,shape,w,h);const g=ctx.createLinearGradient(0,-y,0,y);
+  g.addColorStop(0,theme.core);g.addColorStop(.45,theme.mid);g.addColorStop(.78,theme.edge);g.addColorStop(1,'#4a2849');
+  ctx.fillStyle=g;ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=Math.max(2,h*.055);ctx.strokeStyle='#fff9d9';ctx.stroke();
+  ctx.save();ctx.scale(.94,.88);badgeOutline(ctx,shape,w,h);ctx.globalAlpha=.85;ctx.strokeStyle=theme.glow;ctx.lineWidth=Math.max(1,h*.024);ctx.stroke();ctx.restore();
+ }else{
+  // Grape-glow and mochi awards float free of a rectangle.
+  const aura=ctx.createRadialGradient(0,0,h*.06,0,0,x*.93);
+  aura.addColorStop(0,'#fff6e1d9');aura.addColorStop(.58,theme.mid+'7c');aura.addColorStop(1,theme.glow+'00');
+  ctx.fillStyle=aura;ctx.fillRect(-x,-y,w,h);ctx.shadowBlur=0;
+ }
+ if(shape==='waffle'){
+  ctx.globalAlpha=.24;ctx.strokeStyle='#75452a';ctx.lineWidth=Math.max(1,h*.018);
+  for(let j=-2;j<=2;j++){const at=j*w*.125;ctx.beginPath();ctx.moveTo(at-y*.35,-y*.7);ctx.lineTo(at+y*.35,y*.7);ctx.moveTo(at+y*.35,-y*.7);ctx.lineTo(at-y*.35,y*.7);ctx.stroke();}
+ }else if(shape==='diamond'||shape==='hex'){
+  ctx.globalAlpha=.24;ctx.fillStyle='#ffffff';
+  ctx.beginPath();ctx.moveTo(0,-y*.93);ctx.lineTo(x*.64,-y*.62);ctx.lineTo(x*.13,y*.04);ctx.closePath();ctx.fill();
+ }else if(shape==='wine'){
+  for(let j=-1;j<=1;j++){
+   const dx=j*w*.23+Math.sin(age/900+j)*w*.018;
+   const rr=h*(j===0?.30:.24);
+   ctx.globalAlpha=j===0?.52:.31;ctx.beginPath();ctx.ellipse(dx,-h*.08,rr*.65,rr,0,0,Math.PI*2);ctx.fillStyle=theme.mid;ctx.fill();
+   ctx.globalAlpha=.8;ctx.strokeStyle='#fff9fd';ctx.lineWidth=Math.max(1,h*.017);ctx.stroke();
+  }
+ }else if(shape==='mochi'){
+  ctx.globalAlpha=.74;ctx.strokeStyle='#a77550';ctx.lineWidth=Math.max(2,h*.05);
+  ctx.beginPath();ctx.moveTo(-w*.41,h*.15);ctx.lineTo(w*.44,-h*.05);ctx.stroke();
+  for(let j=-1;j<=1;j++){
+   const xx=j*w*.24,yy=-j*h*.065;
+   ctx.beginPath();ctx.ellipse(xx,yy,h*.34,h*.31,0,0,Math.PI*2);
+   ctx.fillStyle=j===0?'#fffdf4':j<0?'#b6e4b0':'#ffd8ec';ctx.fill();
+   ctx.strokeStyle='#fffaf8';ctx.lineWidth=Math.max(1,h*.02);ctx.stroke();
+  }
+ }
+ ctx.restore();
+}
+function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
+ const start=quiet()?0:125,age=c.age-start;if(age<0)return 0;
+ const enter=quiet()?1:clamp(age/270),leave=clamp((c.duration-c.age)/360);
+ const fade=Math.min(1,enter*2)*leave;
+ const theme=BADGE_THEMES[c.game];if(!theme)return 0;
+ const width=Math.min(w*(mini?.93:.84),h*(mini?1.16:1.28)),height=Math.min(h*(mini?.72:.54),width*.67);
+ const cx=ox+w/2,cy=oy+h*(mini?.53:.53),zoom=quiet()?1:.80+.20*(1-(1-enter)**3);
+ ctx.save();ctx.globalAlpha=fade;ctx.translate(cx,cy+(1-enter)*h*.05);ctx.scale(zoom,zoom);
+ ornament(ctx,theme,width,height,mini,age);
+ if(c.tier>=3&&!quiet()){
+  // Sparkling slow halo only around the award, not a full-board flash.
+  ctx.save();ctx.strokeStyle=theme.glow;ctx.globalAlpha=.32+.18*Math.sin(age/420);
+  ctx.lineWidth=Math.max(1,height*.022);ctx.shadowColor=theme.glow;ctx.shadowBlur=mini?2:12;
+  badgeOutline(ctx,theme.shape,width*1.04,height*1.05);ctx.stroke();ctx.restore();
+ }
+ // Short, readable title + native WIN, both fitted to the themed silhouette.
+ const titleY=c.win>0?-height*.14:0,awardY=height*.23;
+ goldText(ctx,c.label,0,titleY,Math.max(mini?10:16,Math.min(width*.10,height*.24)),width*.77,theme.core);
+ if(c.win>0)goldText(ctx,(c.total?'':'＋')+pretty(c.win)+' WIN',0,awardY,
+  Math.max(mini?12:19,Math.min(width*.145,height*.29)),width*.80,'#fff9c9');
+ else if(!mini&&c.detail)goldText(ctx,c.detail,0,height*.27,Math.max(9,width*.035),width*.66);
+ if(!mini&&c.detail&&c.win>0)goldText(ctx,c.detail,0,height*.41,
+  Math.max(9,Math.min(width*.039,12)),width*.74,theme.core);
+ if(!quiet()){
+  const n=mini?2:Math.min(12,5+c.tier*2),radius=width*.48;
+  for(let j=0;j<n;j++){
+   const a=j*Math.PI*2/n+c.serial*.33,phase=(age/1550+j*.23)%1;
+   const spark=3+(j%3)*(mini?1:2);
+   star(ctx,Math.cos(a)*radius,Math.sin(a)*height*.48,spark,age/1700+j,
+    leave*(.35+.65*Math.sin(Math.PI*phase)));
+  }
+ }else{
+  star(ctx,width*.41,-height*.28,mini?4:7,0,.74);
+ }
+ ctx.restore();if(mini)stats.miniImages++;else stats.mainImages++;
+ return quiet()?0:mini?2:Math.min(12,5+c.tier*2);
+}
+
 function paintBadge(ctx,r,c,w,h,mini,ox,oy){
+ if(!(c.game==='candy'&&c.kind==='clear'))return paintGameBadge(ctx,r,c,w,h,mini,ox,oy);
  const custom=c.game==='candy'&&c.kind==='clear'?window.SixDropUiV278?.awardArt?.():null;
  const badge=custom?.image||art(TIER_ART[c.tier]);if(!badge)return 0;
  const start=quiet()?0:170,age=c.age-start;if(age<0)return 0;
@@ -341,7 +474,7 @@ window.SweetsAwardsV277=Object.freeze({
  version:277,attach,
  owns(game){for(const r of records.values())if(r.slot.i===active&&kindOf(r.slot)===game&&app.phase==='playing'&&!r.restoring)return !!(r.current?.sounded||r.pending.length);return false;},
  describe(){return {version:277,attached:[...records.values()].map(r=>kindOf(r.slot)),reducedMotion:quiet(),...stats,eventCounts:{...eventCounts},artReady:[...TIER_ART.slice(1),'line-ribbon','line-tip','spark-star'].every(id=>!!art(id)),
-  limits:{pendingPerGame:MAX_PENDING,mainPaths:MAX_MAIN_PATHS,miniPaths:MAX_MINI_PATHS,mainParticles:48,miniParticles:6},
+  badgeThemes:Object.fromEntries(Object.entries(BADGE_THEMES).map(([game,theme])=>[game,{shape:theme.shape,frame:theme.frame}])),limits:{pendingPerGame:MAX_PENDING,mainPaths:MAX_MAIN_PATHS,miniPaths:MAX_MINI_PATHS,mainParticles:48,miniParticles:6},
   active:[...records.values()].flatMap(r=>r.current?[describeCue(r,r.current)]:[]),pending:[...records.values()].flatMap(r=>r.pending.map(c=>({...describeCue(r,c),delayRemaining:c.wait}))),history:history.map(item=>({...item,paths:item.paths.map(p=>({...p,mainPoints:p.mainPoints.map(v=>({...v})),miniPoints:p.miniPoints.map(v=>({...v}))}))}))};}
 });
 })();
