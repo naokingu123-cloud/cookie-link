@@ -1,10 +1,10 @@
 {
-  "version": "20261123-v290-themed-awards-ambient-lines",
+  "version": "20261123-v291-illustrated-png-awards",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 56,
-      "sha256": "3a670548e49840bf0ccf4d28c32cb3151a3df04540bef7dec5a2adca66ef51be"
+      "bytes": 51,
+      "sha256": "b97ada36601e08e03277b853b48c2445d3575b960fa41016e49c66035ab1d86d"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -652,14 +652,14 @@
       "sha256": "373b1c880ee6c7a83c1ccf209f251cf45fc9ea9b1f0330844fa7be64a401adc4"
     },
     {
-      "path": "assets/audio/casino-v281/sources/SOUNDBIBLE_COIN_LICENSE.txt",
-      "bytes": 397,
-      "sha256": "d58834b8011ef032e1ad9746a243dfc559292189a4f18a85d0590f5eeaca7734"
-    },
-    {
       "path": "assets/audio/casino-v281/sources/provenance.json",
       "bytes": 5335,
       "sha256": "5cc4455af98e194d1b85ce0fe2a1cc411c7f96bb4a86b431ac036c17507dff39"
+    },
+    {
+      "path": "assets/audio/casino-v281/sources/SOUNDBIBLE_COIN_LICENSE.txt",
+      "bytes": 397,
+      "sha256": "d58834b8011ef032e1ad9746a243dfc559292189a4f18a85d0590f5eeaca7734"
     },
     {
       "path": "assets/audio/casino-v281/sources/soundbible-coin-drop-willem-hunt.wav",
@@ -1607,14 +1607,19 @@
       "sha256": "7cef796cf47e377062ac8572c9fc1b840538c6955b2f6ec48415928ed4b3d2dc"
     },
     {
+      "path": "assets/award-illustrated-v291.js",
+      "bytes": 5138,
+      "sha256": "115e3a9257c5cfb4bdff00aadd70e5b68b25874b7e01028915812104e6fa905d"
+    },
+    {
       "path": "assets/award-presentation-v277.css",
       "bytes": 4937,
       "sha256": "665b918ecdd26436a3496be9269cb8cf4ffaeb5ffb0d426d021e09c09b0e40e8"
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 40537,
-      "sha256": "17fafaecd8488c236f6302ae1c1c67e52497e58b63537e49f3d31d67316dbcef"
+      "bytes": 40789,
+      "sha256": "7f71432f1aa68d758366ec6a83e990d1b6d9bdc8ea4754302f4928025a435a25"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2068,8 +2073,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4367,
-      "sha256": "8e6d7941e6e92f18f2161da90aa8927f329736a1059a836a61dbfc3bf951887f"
+      "bytes": 4362,
+      "sha256": "93e74e3863ad3c699853148ce39cf17266c7cc04927fba67451e70532e3f0ef2"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2093,8 +2098,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3778,
-      "sha256": "78b46d115eb17d95bbe1e35893890baf8dcb66777cd13005cd74bb71f5271dc3"
+      "bytes": 3773,
+      "sha256": "bd451dcf40b98cdc4ab43e9ff99c6490f565802501d70a30660497055336b7d2"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -3152,6 +3157,21 @@
       "sha256": "4d52250c393bbb2b8824f1014e93a33ced1cd97184f2e9d414869716df23568c"
     },
     {
+      "path": "assets/sixdrop_candy_lid.png",
+      "bytes": 480881,
+      "sha256": "9dd16a4fec99f6fd650e27662ba88ce24332a38a015f1c5ea5fbebaedfa5ccd3"
+    },
+    {
+      "path": "assets/sixdrop_glass_sideframe_slim.png",
+      "bytes": 381500,
+      "sha256": "57ee51172f635556625e00cd3589895ec29e21c731bf79f75e832bb08e150b56"
+    },
+    {
+      "path": "assets/sixdrop_glass_sideframe.png",
+      "bytes": 954925,
+      "sha256": "f694e355fec4bba7c373d04554a25e16a30ddee527a442c4bed8671bf8f6d72f"
+    },
+    {
       "path": "assets/sixdrop-allclear-candy-v14.svg",
       "bytes": 2912,
       "sha256": "99bc0a4ada05365152496512d70a8d18360d610b6580fa07f54d196cf07905db"
@@ -3310,21 +3330,6 @@
       "path": "assets/sixdrop-ui-v278.js",
       "bytes": 17300,
       "sha256": "b5e66c6defdd5db378fe93e26e7098924f41a029d8016bb3fd02165e0ec33fa2"
-    },
-    {
-      "path": "assets/sixdrop_candy_lid.png",
-      "bytes": 480881,
-      "sha256": "9dd16a4fec99f6fd650e27662ba88ce24332a38a015f1c5ea5fbebaedfa5ccd3"
-    },
-    {
-      "path": "assets/sixdrop_glass_sideframe.png",
-      "bytes": 954925,
-      "sha256": "f694e355fec4bba7c373d04554a25e16a30ddee527a442c4bed8671bf8f6d72f"
-    },
-    {
-      "path": "assets/sixdrop_glass_sideframe_slim.png",
-      "bytes": 381500,
-      "sha256": "57ee51172f635556625e00cd3589895ec29e21c731bf79f75e832bb08e150b56"
     },
     {
       "path": "assets/stations-number-preview-v241.js",
@@ -4027,9 +4032,14 @@
       "sha256": "575ef995f1b17cc6cefaa0914f2474c3853632369fae1c7a9b7175414ef89bf9"
     },
     {
+      "path": "download-sw-v255.js",
+      "bytes": 4300,
+      "sha256": "a3dfb4d18920a9374a757c721188fd7e27d28b1ea6782510cc720fc2016a19c5"
+    },
+    {
       "path": "index.html",
-      "bytes": 85636,
-      "sha256": "cc823e8fd237e4ffebec09796c859ae8921037fa7c94c4606125727cfe4baa5c"
+      "bytes": 85699,
+      "sha256": "f50a34a78735adfc33a2e295a41cb19095b6aaf9f7027834c766ad2ca3dfef64"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4267,5 +4277,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238733773
+  "totalBytes": 238758124
 }
