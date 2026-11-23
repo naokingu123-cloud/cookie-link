@@ -143,7 +143,7 @@ function assertPrimaryRemoval(before,number,events){
 }
 function assertHud(view,{mini=false}={}){
  const endedLoss=view.engine.processed===8&&!view.engine.running&&!view.info.earnedContinuation,bank=endedLoss?0:view.state.bankUnits,removed=endedLoss?0:view.state.removedTotal;
- assert.equal(view.ui.version,REVISION);assert.equal(view.state.rulesRevision,REVISION);assert(view.ui.artLoaded);assert.deepEqual(view.ui.errors,[]);assert.equal(view.ui.progressive.targetUnits,bank);
+ assert.equal(view.ui.version,284,'cabinet presentation API revision is separate from rules');assert.equal(view.state.rulesRevision,REVISION);assert(view.ui.artLoaded);assert.deepEqual(view.ui.errors,[]);assert.equal(view.ui.progressive.targetUnits,bank);
  assert.equal(view.ui.progressive.units,bank,'count-up finishes at the canonical balance, or zero after a completed loss');assert.equal(view.hud.bankText,String(Math.floor(bank/100)),'visible digits show the actual progressive');
  assert.equal(view.ui.removed.targetCount,removed);assert.equal(view.ui.removed.count,removed,'removed total settles to the actual lifetime count, or zero after an own loss');assert.equal(view.hud.removedText,String(removed));
  assert.equal(view.hud.continuationHidden,!view.info.continuationActive);assert.equal(view.hud.hasBatchStrip,false,'group schedule is not presented');assert.deepEqual(view.ui.batchSizes,Array(8).fill(1),'each of the eight balls resolves immediately');
