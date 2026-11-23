@@ -51,7 +51,7 @@ function spriteBounds(image,key){
  return [0,0,width,height];
 }
 function describeAssets(){
- return {revision:253,presentationRevision:290,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
+ return {revision:253,presentationRevision:285,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
   cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS},
