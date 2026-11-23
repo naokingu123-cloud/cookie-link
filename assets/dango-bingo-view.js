@@ -51,7 +51,7 @@ function spriteBounds(image,key){
  return [0,0,width,height];
 }
 function describeAssets(){
- return {revision:253,presentationRevision:285,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
+ return {revision:253,presentationRevision:290,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
   cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS},
@@ -94,12 +94,12 @@ function cyanBitmap(c,x,y,width,height){
    const alpha=pixels[i+3];if(alpha<8)continue;
    visible++;
    const red=pixels[i],green=pixels[i+1],blue=pixels[i+2];
-   // The aqua dango should read almost white, not like a cyan HIT.
+   // Nearly-white icy blue +FREE mochi: lower saturation than the prior aqua,\n    // with color baked once into a cached transparent bitmap.
    // Preserve the texture's light/dark gradient and alpha at pastel saturation.
    const shade=Math.min(1,Math.max(0,(255-(red*.26+green*.55+blue*.19))/190));
-   pixels[i]=Math.round(248-23*shade);
-   pixels[i+1]=Math.round(253-15*shade);
-   pixels[i+2]=Math.round(255-8*shade);
+   pixels[i]=Math.round(252-12*shade);
+   pixels[i+1]=Math.round(255-7*shade);
+   pixels[i+2]=Math.round(255-1*shade);
    blueMinusRed+=pixels[i+2]-pixels[i];
    luma+=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2];
    converted++;
