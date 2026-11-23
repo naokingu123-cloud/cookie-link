@@ -203,7 +203,8 @@ try{
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('sweets-player-v1')||'{}').name),profile.name,'the server profile replaces a stale browser cache');
  assert.equal(await page.locator('#player-display-name').textContent(),profile.name,'the native profile UI reflects the authoritative name');
  assert.equal((await state()).playerId,identity.playerId,'reloading preserves the authenticated player');
- await page.waitForFunction(()=>window.SweetsDownloadV255?.describe().assetsReady,null,{timeout:480000});
+ await page.waitForFunction(()=>{const d=window.SweetsDownloadV255?.describe();return !!(d?.assetsReady||d?.assetsProgress?.error);},null,{timeout:480000});
+ const assetCheck=await state();assert.equal(assetCheck.assetsReady,true,'Offline asset verification failed at '+(assetCheck.assetsProgress?.failedPath||'unknown')+': '+(assetCheck.assetsProgress?.error||assetCheck.error||'unknown'));
  await page.waitForFunction(()=>!!navigator.serviceWorker.controller,null,{timeout:15000});
  milestone('assets-ready');
  const before=await call('profile');report.creditBefore=before.wallet.credit;
