@@ -46,4 +46,27 @@ assert.equal(renderer.paint(hidden,{game:'cookie',width:360,height:155}),false,'
 assert.equal(hidden.paints(),0,'no corrupt partial artwork while still loading');
 assert(requested.includes('dango-rainbow')&&requested.includes('wine-glass')&&requested.includes('waffle-black'));
 assert(requested.includes('award-highest'),'highest prize uses richer raster tier');
+// Production path: the original generated 2x5 translucent sheet, without any
+// statically baked LINE, FREE or WIN string, drives exactly one bitmap draw.
+class FakeImage{
+ constructor(){this.naturalWidth=this.width=1024;this.naturalHeight=this.height=1536;}
+ set src(v){this.path=v;this.onload?.();}
+}
+const production={window:{},Image:FakeImage,console:{warn(){}}};
+vm.runInNewContext(source,production);
+const live=production.window.SweetsIllustratedAwardV291;
+assert.equal(await live.ready,true);
+const positions=new Set();
+for(const game of names){
+ let drawArgs=null,drawCalls=0;
+ const ctx={drawImage(...args){drawCalls++;drawArgs=args;}};
+ assert.equal(live.paint(ctx,{game,width:330,height:130,mini:false,age:0}),true,game);
+ assert.equal(drawCalls,1,game+' draws original bitmap instead of vector silhouettes');
+ const [image,sx,sy,sw,sh]=drawArgs;
+ assert(image.path.includes('themed-cutin-atlas.webp'));
+ assert(sw>0&&sh>0&&sx>=0&&sy>=0);
+ positions.add(sx+','+sy);
+}
+assert.equal(positions.size,10,'each game uses a unique cropped image region');
+assert.equal(live.describe().atlasPainted,10);
 console.log('v291: ten themed PNG overlays, text isolation, artwork fallback OK');
