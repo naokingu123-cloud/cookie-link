@@ -249,7 +249,7 @@ function paintPaths(ctx,r,c,w,h,mini,ox,oy,staticOnly=false){
      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();ctx.restore();}
    }
   }
-  const count=mini?1:Math.min(3,c.tier),speed=mini?1900:1300;
+  const count=mini?1:Math.min(2,c.tier),speed=mini?1900:1300;
   for(let j=0;j<count;j++){
    const f=(c.age/speed+index*.163+j/count)%1;if(f>progress)continue;const p=onPath(traced.segments,traced.total,f);if(!p)continue;
    star(ctx,p.x,p.y,lineWidth*(mini?2.5:3.2),c.age/1900,fade*.95);particles++;
