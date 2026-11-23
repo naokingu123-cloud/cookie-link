@@ -1613,8 +1613,8 @@
     },
     {
       "path": "assets/award-illustrated-v291.js",
-      "bytes": 6610,
-      "sha256": "5cdda26d5885e002d8dbe066aeea78d32fe79c0c0b84c4f0d38a11260f87f6c7"
+      "bytes": 6624,
+      "sha256": "ade686ddd55f376b1142c5e7afbbafb6b7d2feff94efcf933c25e6787232e3de"
     },
     {
       "path": "assets/award-presentation-v277.css",
@@ -4277,5 +4277,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 239276249
+  "totalBytes": 239276263
 }
