@@ -19,7 +19,7 @@ const PAYOUT_ART='assets/dango-art-v270/payout-table.png';
 const assetFiles={white:'dango-art-v252/dango-white.webp',green:'dango-art-v253/dango-green.webp',pink:'dango-art-v253/dango-pink.webp',yellow:'dango-art-v253/dango-yellow.webp',rainbow:'dango-art-v253/dango-rainbow.webp',skewer:'dango-art-v252/bamboo-skewer.webp',stand:'dango-art-v253/tsukimi-stand.webp'};
 const art={},assetListeners=new Set(),pendingMinis=new Map();
 // Cyan is a separate, once-baked mochi bitmap; do not tint a green mochi during paint.
-const cyanCache={source:null,canvas:null,pixels:0,cyanPixels:0,meanBlueMinusRed:0};
+const cyanCache={source:null,canvas:null,pixels:0,cyanPixels:0,meanBlueMinusRed:0,meanLuminance:0};
 const usage={main:0,mini:0,lesson:0,skewers:0,cells:0,stands:0},last={main:null,mini:null,lesson:null};
 let assetsNotifyQueued=false;
 const allAssetsReady=()=>Object.keys(art).length===Object.keys(assetFiles).length&&Object.values(art).every(asset=>asset.loaded);
@@ -55,7 +55,7 @@ function describeAssets(){
   cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS},
-  cyanDango:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed}};
+  cyanDango:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed,meanLuminance:cyanCache.meanLuminance}};
 }
 function notifyAssets(){
  if(assetsNotifyQueued)return;assetsNotifyQueued=true;
@@ -89,31 +89,26 @@ function cyanBitmap(c,x,y,width,height){
   const context=sprite.getContext('2d',{willReadFrequently:true});
   if(!bitmap(context,'green',0,0,size,size))return false;
   const image=context.getImageData(0,0,size,size),pixels=image.data;
-  let visible=0,converted=0,blueMinusRed=0;
+  let visible=0,converted=0,blueMinusRed=0,luma=0;
   for(let i=0;i<pixels.length;i+=4){
    const alpha=pixels[i+3];if(alpha<8)continue;
    visible++;
-   const red=pixels[i],green=pixels[i+1],blue=pixels[i+2],high=Math.max(red,green,blue),low=Math.min(red,green,blue);
-   // Hue-shift the *texture pixels* before making a reusable cyan sprite.
-   // Keep ivory highlights, the natural shading, transparent edges and gold trim.
-   if(green<red*.93||green<blue*1.05||high-low<8)continue;
-   const value=Math.min(1,high/255*1.035+.012);
-   const saturation=Math.min(.86,Math.max(.46,high?(high-low)/high*.96:0));
-   const chroma=value*saturation,shadow=value-chroma;
-   pixels[i]=Math.round(shadow*255);
-   pixels[i+1]=Math.round((shadow+chroma*5/6)*255);
-   pixels[i+2]=Math.round(value*255);
-   blueMinusRed+=pixels[i+2]-pixels[i];converted++;
+   const red=pixels[i],green=pixels[i+1],blue=pixels[i+2];
+   // The aqua dango should read almost white, not like a cyan HIT.
+   // Preserve the texture's light/dark gradient and alpha at pastel saturation.
+   const shade=Math.min(1,Math.max(0,(255-(red*.26+green*.55+blue*.19))/190));
+   pixels[i]=Math.round(248-23*shade);
+   pixels[i+1]=Math.round(253-15*shade);
+   pixels[i+2]=Math.round(255-8*shade);
+   blueMinusRed+=pixels[i+2]-pixels[i];
+   luma+=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2];
+   converted++;
   }
   context.putImageData(image,0,0);
-  if(converted<100){
-   // Even an unusual older green texture yields a genuinely aqua source image.
-   context.save();context.globalCompositeOperation='source-atop';context.globalAlpha=.8;
-   context.fillStyle='#40d4ef';context.fillRect(0,0,size,size);context.restore();
-   converted=Math.max(converted,visible);blueMinusRed=Math.max(blueMinusRed,visible*70);
-  }
   cyanCache.source=source;cyanCache.canvas=sprite;cyanCache.pixels=visible;
-  cyanCache.cyanPixels=converted;cyanCache.meanBlueMinusRed=Math.round(blueMinusRed/Math.max(1,converted));
+  cyanCache.cyanPixels=converted;
+  cyanCache.meanBlueMinusRed=Math.round(blueMinusRed/Math.max(1,converted));
+  cyanCache.meanLuminance=Math.round(luma/Math.max(1,converted));
  }
  c.drawImage(cyanCache.canvas,x,y,width,height);return true;
 }
@@ -361,10 +356,25 @@ function dangoLabels(c,cell,p,r,o){
  }
 }
 function hitOutline(c,p,r,id,time,still){
- c.save();c.shadowColor='#ffe5a0';c.shadowBlur=r*.16;c.lineWidth=Math.max(1.3,r*.10);c.strokeStyle='#b96a19';c.beginPath();c.arc(p.x,p.y,r*1.015,0,TAU);c.stroke();c.shadowBlur=0;c.lineWidth=Math.max(.8,r*.045);c.strokeStyle='#fff5c2';c.beginPath();c.arc(p.x,p.y,r*1.025,0,TAU);c.stroke();
- for(let k=0;k<3;k++){
-  const phase=(time/1900+id*.17+k/3)%1,angle=(still?k/3:phase)*TAU-Math.PI/2,light=still?.75:.45+.55*Math.sin(phase*Math.PI)**2;
-  c.globalAlpha=light;c.shadowColor='#fffbd5';c.shadowBlur=r*.12;star(c,p.x+Math.cos(angle)*r*.98,p.y+Math.sin(angle)*r*.98,r*(.075+.035*light),'#fff9da');
+ // The HIT rim flashes in two luminous rings, independently of the pink fill.
+ // Eleven tiny stars cover the WHOLE mochi instead of just following its edge.
+ const beat=still?.77:(.5+.5*Math.sin(time*.0061+id*.57));
+ c.save();c.lineCap='round';
+ c.globalAlpha=.44+beat*.54;c.shadowColor='#ffefaa';c.shadowBlur=r*(.21+beat*.24);
+ c.lineWidth=Math.max(1.5,r*(.09+beat*.04));c.strokeStyle='#ffdb77';
+ c.beginPath();c.arc(p.x,p.y,r*1.013,0,TAU);c.stroke();
+ c.globalAlpha=.53+.43*beat;c.shadowColor='#ffffff';c.shadowBlur=r*(.10+beat*.12);
+ c.lineWidth=Math.max(1,r*.052);c.strokeStyle='#fffdf1';
+ c.beginPath();c.arc(p.x,p.y,r*1.030,0,TAU);c.stroke();
+ c.shadowBlur=0;
+ for(let k=0;k<11;k++){
+  const phase=(time/(1450+(k%4)*220)+id*.137+k*.17)%1;
+  const distance=r*(.12+.75*Math.sqrt((k+.4)/11));
+  const angle=k*2.39996+id*.59+(still?0:phase*.55);
+  const power=still?.66:Math.sin(Math.PI*phase)**2;
+  c.globalAlpha=(.25+.55*power)*(k%3===0?.9:.66);
+  c.shadowColor='#ffffff';c.shadowBlur=r*.12;
+  star(c,p.x+Math.cos(angle)*distance,p.y+Math.sin(angle)*distance,r*(.030+.041*power),'#ffffff');
  }
  c.restore();
 }
@@ -500,7 +510,7 @@ function paint(ctx,state,options={},mini=false){
   const p=g.centers[state.lastCell],t=clamp(options.age/1400),x=Math.max(u*1.12,Math.min(w-u*1.12,p.x)),y=Math.max(u*.31,p.y-u*(.69+.34*t));
   c.save();c.globalAlpha=Math.min(1,(1-t)*3);roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':plusFree?'#126e8d':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:plusFree?'FREE ＋'+state.lastBonusGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
  }
- last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitSparkleCells:plusFree?state.cells.filter(cell=>cell.hit).length:0,greenHitCells:plusFree?state.cells.filter(cell=>cell.initialFree&&cell.hit).length:0,plusFree:{active:plusFree&&state.draws.length<5,opacity:plusFreeOpacity,cells:plusFree?(state.triggerCells||[]).slice():[],label:'+FREE'},hitLabelPosition:plusFree?'edge-outside-number':isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
+ last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitSparkleCells:plusFree?state.cells.filter(cell=>cell.hit).length:0,hitSparklesPerCell:plusFree?11:0,hitRimPulse:plusFree&&!still,greenHitCells:plusFree?state.cells.filter(cell=>cell.initialFree&&cell.hit).length:0,plusFree:{active:plusFree&&state.draws.length<5,opacity:plusFreeOpacity,cells:plusFree?(state.triggerCells||[]).slice():[],label:'+FREE'},hitLabelPosition:plusFree?'edge-outside-number':isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
  c.restore();
 }
 function drawMini(context,state,options={}){const ctx=typeof context?.getContext==='function'?context.getContext('2d'):context;if(ctx&&!allAssetsReady())pendingMinis.set(ctx,{state,options});paint(ctx,state,options,true);}
@@ -511,7 +521,7 @@ function drawLessonDango(ctx,x,y,r,kind,value,rainbow=false){
 function formatWin(bet,hundredths){const value=typeof medalWin==='function'?medalWin(bet,hundredths):Math.floor(Math.max(0,bet)*hundredths/100);return String(value);}
 function mount(panel){
  const root=document.createElement('section');root.className='dgb-scene';root.setAttribute('aria-label','ダンゴデビンゴ');root.dataset.payoutArt=PAYOUT_ART;
- root.innerHTML='<div class="dgb-stage"><div class="dgb-pan"><canvas role="img"></canvas><div class="dgb-reach-layer six-reach-layer" aria-hidden="true"></div><div class="dgb-cell-controls" role="group" aria-label="FREEの中心を選ぶお団子"></div></div></div><aside class="dgb-pay"><div class="dgb-pay-matrix"><table aria-label="ラインの長さと完成本数による配当"><colgroup></colgroup><thead></thead><tbody></tbody></table></div><div class="dgb-pay-odds"><small class="dgb-odds-title">ODDS</small><b class="dgb-odds-value">×1</b></div></aside><aside class="dgb-free-rail" aria-label="前半ラインで獲得するFREE" hidden><div class="dgb-free-rail-heading">FREE</div><div class="dgb-free-rail-rows"></div></aside><div class="dgb-free-stat"><small class="dgb-free-title">置けるFREE</small><div class="dgb-trigger-numbers" role="group" aria-label="前半5球の拡張番号" hidden></div><b class="dgb-free-value">あと1個</b><span class="dgb-free-detail">配置0 / 1個</span><div class="dgb-placement"><span class="dgb-countdown"></span><div class="dgb-actions"><button type="button" data-action="auto">おまかせ</button></div></div></div><div class="dgb-prompt dgb-live"></div><div class="dgb-live dgb-announcement" role="status" aria-live="polite" aria-atomic="true"></div>';
+ root.innerHTML='<div class="dgb-stage"><div class="dgb-pan"><canvas role="img"></canvas><div class="dgb-reach-layer six-reach-layer" aria-hidden="true"></div><div class="dgb-cell-controls" role="group" aria-label="FREEの中心を選ぶお団子"></div></div></div><aside class="dgb-pay"><div class="dgb-pay-matrix"><table aria-label="ラインの長さと完成本数による配当"><colgroup></colgroup><thead></thead><tbody></tbody></table></div><div class="dgb-pay-odds"><small class="dgb-odds-title">ODDS</small><b class="dgb-odds-value">×1</b></div></aside><aside class="dgb-free-rail" aria-label="前半ラインで獲得するFREE" hidden><div class="dgb-free-rail-heading">FREE</div><div class="dgb-free-rail-rows"></div></aside><div class="dgb-free-stat"><small class="dgb-free-title">置けるFREE</small><div class="dgb-trigger-numbers" role="group" aria-label="前半5球の拡張番号" hidden></div><div class="dgb-free-counter"><img class="dgb-free-mochi" src="assets/dango-art-v253/dango-yellow.webp" alt=""><b class="dgb-free-value">あと1個</b></div><span class="dgb-free-detail">配置0 / 1個</span><div class="dgb-placement"><span class="dgb-countdown"></span><div class="dgb-actions"><button type="button" data-action="auto">おまかせ</button></div></div></div><div class="dgb-prompt dgb-live"></div><div class="dgb-live dgb-announcement" role="status" aria-live="polite" aria-atomic="true"></div>';
  panel.append(root);
  const find=selector=>root.querySelector(selector),pan=find('.dgb-pan'),canvas=pan.querySelector('canvas'),ctx=canvas.getContext('2d'),controls=find('.dgb-cell-controls'),reachLayer=find('.dgb-reach-layer');
  let rows=[],buttons=[],state=null,options={},callbacks={},focusId=0,lastLive='',domKey='',sizeKey='',structureKey='',payGeometry=null,previewCenter=null,reachKey='';
@@ -622,15 +632,17 @@ function mount(panel){
   if(state===next&&key===domKey){paintLive();return;}
   state=next;options=o;domKey=key;rebuild(state);
   const modern=isModern(state),placing=!o.demo&&state.phase==='placing',editable=placing&&!o.placementLocked,drawCount=state.draws.length,second=state.phase==='draw-final'||state.phase==='done';
-  root.dataset.firstHalf=String(showFreeRail(state));find('.dgb-free-rail').hidden=!showFreeRail(state);root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);root.dataset.plusFree=String(isPlusFree(state));root.dataset.triggerActive=String(isPlusFree(state)&&drawCount<5);
+  root.dataset.firstHalf=String(showFreeRail(state));root.dataset.ruleRelease=String(Number(state.rulesRevision)>=288?288:0);find('.dgb-free-rail').hidden=!showFreeRail(state);root.dataset.phase=state.phase;root.dataset.demo=o.demo?'true':'false';root.dataset.cells=String(state.cells.length);root.dataset.skewers=String(state.completedLines.length);root.dataset.multiplier=String(state.oddsMultiplier||1);root.dataset.plusFree=String(isPlusFree(state));root.dataset.triggerActive=String(isPlusFree(state)&&drawCount<5);
   find('.dgb-pay-odds').hidden=isCurrent(state)&&(state.oddsMultiplier||1)<2;find('.dgb-odds-title').textContent=isCurrent(state)?'Odds UP!':'ODDS';find('.dgb-odds-value').textContent=isCurrent(state)?(state.oddsMultiplier||1)+'倍':'×'+(state.oddsMultiplier||1);find('.dgb-trigger-numbers').hidden=!modern;
   if(modern){
    const level=Number(state.expansionLevel)||0,chosen=Number.isInteger(state.expansionCenter),graded=Number(state.rulesRevision)>=264,individual=Number(state.rulesRevision)>=265;
    const area=individual?Number(state.freeBudget)||1:graded?(chosen?state.expansionCells.length:[0,1,7,19][level]||0):[0,1,7,17][level]||0,triggerBox=find('.dgb-trigger-numbers');
    triggerBox.classList.toggle('dgb-grade-individual',individual);
    if(isPlusFree(state)){
-    find('.dgb-free-title').textContent='置けるFREE';find('.dgb-free-value').textContent='あと '+state.freeRemaining+'個';
-    find('.dgb-free-detail').textContent=drawCount<5?'基本1＋HIT '+(state.triggerHits?.length||0)+'個':'配置 '+state.manualFreeCells.length+' / '+state.freeBudget+'個';
+    find('.dgb-free-title').textContent=Number(state.rulesRevision)>=288?'配置FREE':'置けるFREE';
+    find('.dgb-free-value').textContent=Number(state.rulesRevision)>=288?'×'+state.freeRemaining:'あと '+state.freeRemaining+'個';
+    find('.dgb-free-detail').textContent=Number(state.rulesRevision)>=288?(drawCount<5?'+FREE '+(state.triggerHits?.length||0)+'/3':state.manualFreeCells.length+'/'+state.freeBudget+' 配置'):(drawCount<5?'基本1＋HIT '+(state.triggerHits?.length||0)+'個':'配置 '+state.manualFreeCells.length+' / '+state.freeBudget+'個');
+    find('.dgb-free-stat').setAttribute('aria-label','配置できるFREEは残り'+state.freeRemaining+'個、配置済み'+state.manualFreeCells.length+'個');
     triggerBox.hidden=true;triggerBox.replaceChildren();triggerBox.setAttribute('aria-label','水色+FREEの前半HIT '+(state.triggerHits?.length||0)+'個');
    }else if(individual){
     find('.dgb-free-title').textContent='前半ライン・FREE配置';

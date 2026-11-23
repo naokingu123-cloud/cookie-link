@@ -170,3 +170,13 @@ body.dgb-active .board-area,body.dgb-active #panels{width:100%!important;max-wid
 .dgb-scene[data-motion-reduced="true"] .dgb-reach-layer .tile-reach.alternating .reach-first{display:none}
 .dgb-scene[data-motion-reduced="true"] .dgb-reach-layer .tile-reach.alternating .reach-second{visibility:visible;opacity:1}
 @media(forced-colors:active){.dgb-pay-matrix{border-image:none;border-color:CanvasText;background:Canvas}.dgb-pay-matrix thead th,.dgb-pay-matrix tbody th,.dgb-pay-matrix tbody td{background:Canvas}}
+
+/* v288: actual golden dango indicates remaining placeable FREE slots. */
+.dgb-free-counter{display:contents}
+.dgb-free-mochi{display:none}
+.dgb-scene[data-rule-release="288"] .dgb-free-stat{gap:calc(var(--dgb-unit)*.012)}
+.dgb-scene[data-rule-release="288"] .dgb-free-counter{display:flex;align-items:center;justify-content:center;gap:calc(var(--dgb-unit)*.035);min-height:calc(var(--dgb-unit)*.45);width:100%}
+.dgb-scene[data-rule-release="288"] .dgb-free-mochi{display:block;width:calc(var(--dgb-unit)*.55);height:calc(var(--dgb-unit)*.55);max-height:36px;object-fit:contain;filter:drop-shadow(0 0 3px #fff1b8b0);flex:none}
+.dgb-scene[data-rule-release="288"] .dgb-free-counter .dgb-free-value{font:1000 max(15px,calc(var(--dgb-unit)*.43))/1 ElixirNumbers,system-ui,sans-serif;white-space:nowrap;color:#fff7c6;text-shadow:0 0 3px #ffdb67}
+.dgb-scene[data-rule-release="288"] .dgb-free-title{letter-spacing:.03em}
+.dgb-scene[data-rule-release="288"] .dgb-free-detail{font-size:max(9px,calc(var(--dgb-unit)*.145))}
