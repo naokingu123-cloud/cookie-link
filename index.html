@@ -440,7 +440,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(!window.SweetsEditionV255?.value)return;
   // Decode the decorative frames and detailed pieces before native raster caches.
   // Failed image delivery retains the native visual fallback, never game state.
-  await Promise.all([window.SweetsOrnateArtV274?.ready,window.SweetsBoardArtV275?.ready,window.SweetsAwardArtV277?.ready]);
+  await Promise.all([window.SweetsOrnateArtV274?.ready,window.SweetsBoardArtV275?.ready,window.SweetsAwardArtV277?.ready,window.SweetsIllustratedAwardV291?.ready]);
   const edition=window.SweetsEditionV255.value,downloadWorker=new URLSearchParams(location.search).get('downloadWorker')==='1';
   const {mode,chosen}=window.SweetsLineup,classic=mode==='classic',has=id=>chosen.includes(id);
   const switcher=document.getElementById('lineup-link'),other=new URL(location.href);
