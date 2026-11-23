@@ -1607,9 +1607,14 @@
       "sha256": "7cef796cf47e377062ac8572c9fc1b840538c6955b2f6ec48415928ed4b3d2dc"
     },
     {
+      "path": "assets/award-art-v291/themed-cutin-atlas.webp",
+      "bytes": 520912,
+      "sha256": "2b9a730ac3fbb9d2033494c84048dc36efbd4bd9973ec4dfcf4a0f9ebae457c3"
+    },
+    {
       "path": "assets/award-illustrated-v291.js",
-      "bytes": 5138,
-      "sha256": "115e3a9257c5cfb4bdff00aadd70e5b68b25874b7e01028915812104e6fa905d"
+      "bytes": 6610,
+      "sha256": "5cdda26d5885e002d8dbe066aeea78d32fe79c0c0b84c4f0d38a11260f87f6c7"
     },
     {
       "path": "assets/award-presentation-v277.css",
@@ -4033,8 +4038,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85699,
-      "sha256": "f50a34a78735adfc33a2e295a41cb19095b6aaf9f7027834c766ad2ca3dfef64"
+      "bytes": 85740,
+      "sha256": "4f383a1cf10f5d58567fd9f52d7a523ffe0a8c1fb71104595c6a69c2342d86df"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4272,5 +4277,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 238753824
+  "totalBytes": 239276249
 }
