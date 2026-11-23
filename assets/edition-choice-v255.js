@@ -3,7 +3,7 @@
 'use strict';
 // This constant travels with the cached shell. It must not follow a newer
 // online version while an older, already downloaded game is being resumed.
-const BUILD_VERSION='20261121-v289-canyon-fruit-sixdrop-fixed-palette';
+const BUILD_VERSION='20261123-v290-themed-awards-ambient-lines';
 const query=new URLSearchParams(location.search);
 const internal=['serverHost','serverSettlementWorker','downloadWorker','admin'].some(key=>query.get(key)==='1');
 let edition=query.get('edition');
