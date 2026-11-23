@@ -26,3 +26,71 @@
 @media (prefers-reduced-motion:reduce){
  .award-presentation-v277{animation:none!important;transition:none!important}
 }
+
+/* v290: distinctive payout furniture. The native layouts, digits and drawing
+ * areas are unchanged: only existing frame/row paint receives cut corners,
+ * curved silhouettes and themed highlights. No extra layout boxes are added. */
+html.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-row{
+ border-radius:34% 11% 23% 10% / 20% 26% 17% 26%;
+ box-shadow:inset 0 1px 0 #fffbe1bd,inset 0 -2px 0 #99502055,0 1px 2px #71442a4d;
+}
+html.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-row.chosen{
+ border-radius:23% 15% 31% 13% / 22% 33% 20% 28%;
+}
+html.arcade-v249 #screen #panels .choco-panel>.canyon-fleet .canyon-fleet-card{
+ clip-path:polygon(6% 0,93% 0,100% 8%,100% 90%,94% 100%,5% 100%,0 91%,0 10%);
+ border-radius:0!important;box-shadow:inset 0 0 0 1px #ffe1a877,inset 0 2px 3px #fff8d333;
+}
+body.carnival-active.sixdrop-v278 #screen #sd278-payouts .sd278-payout-card{
+ clip-path:polygon(5% 0,95% 0,100% 9%,100% 92%,95% 100%,5% 100%,0 92%,0 9%);
+}
+body.carnival-active.sixdrop-v278 #screen #sd278-payouts .sd278-payout-card tr.is-current{
+ border-radius:20% 8% 18% 6% / 36% 28% 32% 24%;
+}
+html.arcade-v249 #screen #panels .gp-collector-panel{
+ clip-path:polygon(8% 0,92% 0,100% 5%,100% 95%,92% 100%,8% 100%,0 95%,0 5%);
+}
+html.arcade-v249 #screen #panels .gp-collector-panel .gp-collector-row{
+ border-radius:12px 5px 13px 4px;
+}
+html.arcade-v249 #screen #panels .wp-sidebar{
+ clip-path:polygon(5% 0,95% 0,100% 4%,100% 93%,94% 100%,6% 100%,0 93%,0 4%);
+}
+html.arcade-v249 #screen #panels .wp-power-left{
+ border-radius:21% 8% 17% 9% / 9% 18% 10% 20%;
+}
+#screen #panels .bs-pay tbody tr .bs-block{
+ border-radius:17% 12% 16% 9% / 13% 21% 11% 23%;
+}
+#screen #panels .bs-pay tbody tr.current .bs-block{
+ filter:drop-shadow(0 0 2px #ffe28b);
+}
+#screen #panels .pct-pay tbody tr{
+ border-radius:12% 3% 12% 4% / 23% 11% 20% 12%;
+}
+#screen #panels .pct-pay tbody tr.current{
+ box-shadow:inset 0 1px #fff4ac,inset 0 -2px #d47b3c,0 0 3px #ffc667;
+}
+#screen #panels .dgb-scene .dgb-pay tbody td{
+ border-radius:5% 16% 7% 13% / 22% 8% 26% 10%;
+}
+#screen #panels .dgb-scene .dgb-pay tbody td.current{
+ border-radius:15% 5% 13% 8% / 26% 14% 27% 13%;
+}
+@keyframes v290-win-twinkle{
+ 0%,100%{filter:brightness(1) drop-shadow(0 0 1px #ffe49b)}
+ 50%{filter:brightness(1.16) drop-shadow(0 0 4px #fff7a8)}
+}
+/* Only earned rows animate, and never more than the selected cabinet's rows. */
+body:not(.paused) #screen #panels .dgb-scene .dgb-pay td.current .gold-number{
+ animation:v290-win-twinkle 1.9s ease-in-out infinite;
+}
+@media(prefers-reduced-motion:reduce){
+ body #screen #panels .dgb-scene .dgb-pay td.current .gold-number{animation:none!important}
+}
+@media(forced-colors:active){
+ html.arcade-v249 #screen #panels .wp-sidebar,
+ html.arcade-v249 #screen #panels .gp-collector-panel,
+ html.arcade-v249 #screen #panels .choco-panel>.canyon-fleet .canyon-fleet-card,
+ body.carnival-active.sixdrop-v278 #screen #sd278-payouts .sd278-payout-card{clip-path:none!important}
+}

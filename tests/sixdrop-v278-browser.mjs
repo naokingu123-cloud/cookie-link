@@ -149,7 +149,7 @@ function assertHud(view,{mini=false}={}){
  assert.equal(view.hud.continuationHidden,!view.info.continuationActive);assert.equal(view.hud.hasBatchStrip,false,'group schedule is not presented');assert.deepEqual(view.ui.batchSizes,Array(8).fill(1),'each of the eight balls resolves immediately');
  assert.equal(view.hud.receiptCount,view.state.allClears);assert.equal(view.hud.receiptWin,view.state.bonusMedals);assert.equal(view.hud.receiptLastWin,view.state.lastAllClearWin);
  assert.equal(view.hud.receiptHidden,view.state.allClears===0);
- assert.deepEqual(view.state.palette,R.palette(view.state.removedTotal,view.state),'refill palette follows the actual 200-drop band');
+ assert.deepEqual(view.state.palette,R.palette(Math.max(0,view.state.removedTotal-view.state.roundRemoved),view.state),'v285 freezes the 200-drop band at round start');
  for(const role of view.rows){
   assert.equal(role.earned,view.state.counts[role.role]);assert.equal(role.countText,'×'+role.earned);assert.equal(role.rows.length,5);
   for(const row of role.rows){assert.equal(row.countText,'×'+row.count);assert.equal(row.hundredths,R.roleTotal(role.role,row.count,view.state.rulesRevision));assert.equal(row.win,Math.floor(view.state.bet*row.hundredths/100));assert.equal(row.current,row.count===role.earned);}

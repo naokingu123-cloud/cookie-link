@@ -5,7 +5,7 @@
 if(window.SweetsHitPresentationV276)return;
 const query=new URLSearchParams(location.search);
 if(query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1')return;
-const TAU=Math.PI*2,MAX_BURSTS=24,MAX_MAIN=8,MAX_MINI=4;
+const TAU=Math.PI*2,MAX_BURSTS=24,MAX_MAIN=8,MAX_MINI=4,IDLE_FRAME_MS=108;
 const themes={
  cookie:{ink:'#ffd568',edge:'#ff89c2',style:'crumb',sprite:'cookie-honey'},
  choco:{ink:'#ffc45b',edge:'#ff9460',style:'crumb',sprite:'choco-milk'},
@@ -18,7 +18,7 @@ const themes={
  castella:{ink:'#ffdc7b',edge:'#ff9853',style:'crumb',sprite:'castella-baked'},
  dango:{ink:'#ffd8f4',edge:'#ff8fc5',style:'petal',sprite:'dango-pink'}
 };
-const records=new Map(),attached=new WeakSet(),history=[],eventCounts={},stats={received:0,suppressed:0,renderFrames:0,drawnBursts:0,maxQueued:0,maxMainParticles:0,maxMiniParticles:0,errors:0};
+const records=new Map(),attached=new WeakSet(),history=[],eventCounts={},stats={received:0,suppressed:0,renderFrames:0,drawnBursts:0,maxQueued:0,maxMainParticles:0,maxMiniParticles:0,ambientFrames:0,errors:0};
 const reducedMedia=matchMedia('(prefers-reduced-motion: reduce)');
 let frame=0,timer=0,lastStamp=0,miniStamp=-Infinity,serial=0;
 const clamp=(n,a=0,b=1)=>Math.max(a,Math.min(b,n));
@@ -216,14 +216,59 @@ function paintBurst(ctx,b,p,from,theme,mini){
   ctx.globalAlpha=fade*.6;ctx.strokeStyle=theme.ink;ctx.lineWidth=r*.055;
   for(let i=0;i<4;i++){const a=i*TAU/4+seed%7;ctx.beginPath();ctx.moveTo(p.x+Math.cos(a)*r*(1.12+ease*.4),p.y+Math.sin(a)*r*(1.12+ease*.4));ctx.lineTo(p.x+Math.cos(a)*r*(1.48+ease*.9),p.y+Math.sin(a)*r*(1.48+ease*.9));ctx.stroke();}
  }
+ if(!mini&&level>=2&&!still){
+   ctx.globalAlpha=fade*.83;ctx.shadowColor=theme.ink;ctx.shadowBlur=Math.min(9,r*.5);
+   for(let k=0;k<2;k++){
+    const a=t*TAU*(k?-.78:1.12)+seed*.00009+k*Math.PI;
+    star(ctx,p.x+Math.cos(a)*ring,p.y+Math.sin(a)*ring,Math.max(2,r*.13),a,'#fffefa');
+   }
+ }
  ctx.restore();return count;
+}
+// Only the selected full-size board receives two small ~9fps idle reflections.
+// No game RNG, state writes, mini-board timers or added DOM tiles.
+function idleAllowed(record){
+ return !reduced()&&!document.hidden&&inView&&!app.paused&&!record.slot.engine.paused&&
+  (app.phase==='ready'||app.phase==='playing'||app.phase==='result')&&
+  record.slot.i===active&&!record.slot.panel.hidden;
+}
+function idleAnchor(slot,index){
+ const kind=kindOf(slot),state=slot.engine.state;
+ const total=({cookie:64,choco:84,candy:70,gelato:19,winery:37,popcorn:61,jelly:25,stick:64,castella:state?.cells?.length||37,dango:state?.cells?.length||28})[kind]||0;
+ if(total<=0)return null;const id=index%total;
+ if(kind==='cookie')return {r:id>>3,c:id%8};
+ if(kind==='choco')return {r:Math.floor(id/7),c:id%7};
+ if(kind==='candy'){
+  const rows=slot.engine.rows||10,r=Math.floor(id/7)%rows;
+  return {r,c:id%Math.max(1,typeof sixRowWidth==='function'?sixRowWidth(r,rows):7)};
+ }
+ return {id,...(kind==='winery'?{type:'bowl'}:{})};
+}
+function paintIdle(ctx,record,ox,oy,tw,th,now){
+ const kind=kindOf(record.slot),theme=themes[kind],period=2800,step=Math.floor(now/period);
+ for(let i=0;i<2;i++){
+  const anchor=idleAnchor(record.slot,(step*23+i*17+kind.length*7)>>>0);if(!anchor)continue;
+  const p=projected(record.slot,anchor,tw,th,false,record.slot.engine.state);
+  if(!p||!Number.isFinite(p.x+p.y+p.r)||p.r<2)continue;
+  const phase=(now/period+i*.47)%1,alpha=Math.sin(Math.PI*phase)**2;
+  if(alpha<.04)continue;
+  const angle=step*.7+i*2.39+phase*.6,r=Math.min(14,Math.max(2.5,p.r*.23));
+  const x=ox+p.x+Math.cos(angle)*p.r*.57,y=oy+p.y+Math.sin(angle)*p.r*.57;
+  ctx.save();ctx.globalAlpha=.15+.50*alpha;ctx.shadowColor=theme.ink;ctx.shadowBlur=Math.min(7,p.r*.33);
+  star(ctx,x,y,r,angle,'#fffefa');ctx.shadowBlur=0;
+  ctx.globalAlpha=.21*alpha;ctx.lineWidth=Math.max(.8,p.r*.055);ctx.strokeStyle=theme.edge;
+  ctx.beginPath();ctx.arc(ox+p.x,oy+p.y,p.r*.92,angle-.32,angle+.55);ctx.stroke();
+  ctx.restore();
+ }
+ stats.ambientFrames++;
 }
 function paint(record,mini){
  const slot=record.slot,canvasTarget=target(slot,mini),visible=mini?slot.i!==active:slot.i===active&&!slot.panel.hidden;
  let out=record[mini?'mini':'main'];
  if(!visible||!canvasTarget||canvasTarget.hidden){if(out)out.canvas.hidden=true;return;}
  const bursts=record.bursts.filter(b=>b.age>=0&&b.age<b.duration).slice(-(mini?MAX_MINI:MAX_MAIN));
- if(!bursts.length){if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}return;}
+ const ambient=!mini&&!bursts.length&&idleAllowed(record);
+ if(!bursts.length&&!ambient){if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}return;}
  out=layer(record,mini);if(!out)return;
  const parent=out.parent,pr=parent.getBoundingClientRect(),tr=canvasTarget.getBoundingClientRect(),w=parent.clientWidth,h=parent.clientHeight;
  if(!(w>0&&h>0&&pr.width>0&&pr.height>0&&tr.width>0&&tr.height>0)){out.canvas.hidden=true;return;}
@@ -237,29 +282,38 @@ function paint(record,mini){
   const from=b.anchor.from?projected(slot,b.anchor.from,tw,th,mini,b.state):null;
   particles+=paintBurst(ctx,b,{x:ox+p.x,y:oy+p.y,r:p.r},from?{x:ox+from.x,y:oy+from.y}:null,theme,mini);stats.drawnBursts++;
  }
- if(mini)stats.maxMiniParticles=Math.max(stats.maxMiniParticles,particles);else stats.maxMainParticles=Math.max(stats.maxMainParticles,particles);
+ if(mini)stats.maxMiniParticles=Math.max(stats.maxMiniParticles,particles);
+ else{
+  stats.maxMainParticles=Math.max(stats.maxMainParticles,particles);
+  if(ambient)paintIdle(ctx,record,ox,oy,tw,th,performance.now());
+ }
 }
 function tick(now){
- frame=0;const paused=app.paused||document.hidden||!inView,dt=lastStamp?Math.min(100,Math.max(0,now-lastStamp)):0;lastStamp=now;
- let pending=false;const miniDue=now-miniStamp>=33;
+ frame=0;const paused=app.paused||document.hidden||!inView,dt=lastStamp?Math.min(100,Math.max(0,now-lastStamp)):0;
+ lastStamp=now;let pending=false,idleAny=false;const miniDue=now-miniStamp>=33;
  for(const r of records.values()){
-  if(r.version!==r.slot.engine.version||r.round!==app.token||app.phase!=='playing'||document.hidden){clear(r);continue;}
+  if(r.version!==r.slot.engine.version||r.round!==app.token||!['playing','ready','result'].includes(app.phase)||document.hidden){clear(r);continue;}
+  if(app.phase!=='playing'&&r.bursts.length)clear(r);
   if(!paused&&!r.slot.engine.paused)for(const b of r.bursts)b.age+=dt*Math.max(.25,Number(r.slot.engine.presentationRate)||1);
   r.bursts=r.bursts.filter(b=>b.age<b.duration);pending||=r.bursts.length>0;
+  idleAny||=idleAllowed(r);
   if(!paused){paint(r,false);if(miniDue)paint(r,true);}
  }
  if(miniDue)miniStamp=now;stats.renderFrames++;
- if(pending){if(paused)timer=setTimeout(()=>{timer=0;wake();},120);else frame=requestAnimationFrame(tick);}else lastStamp=0;
+ if(pending){if(paused)timer=setTimeout(()=>{timer=0;wake();},120);else frame=requestAnimationFrame(tick);}
+ else if(idleAny&&!paused){timer=setTimeout(()=>{timer=0;wake();},IDLE_FRAME_MS);}
+ else lastStamp=0;
 }
 function wake(){if(!frame&&!timer){lastStamp=lastStamp||performance.now();frame=requestAnimationFrame(tick);}}
 function cancel(){if(frame)cancelAnimationFrame(frame);if(timer)clearTimeout(timer);frame=timer=lastStamp=0;for(const r of records.values())clear(r);}
 for(const slot of slots)attach(slot,app.engines[slot.i]);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)cancel();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cancel();else wake();});
 reducedMedia.addEventListener?.('change',cancel);
 window.SweetsHitPresentationV276=Object.freeze({
  version:276,attach,
  geometry(kind,anchor,mini=false){const s=slots.find(s=>kindOf(s)===kind);return s?geometry(s,anchor,mini):null;},
- describe(){return {version:276,attached:[...records.keys()].map(s=>kindOf(s)),reducedMotion:reduced(),...stats,eventCounts:{...eventCounts},limits:{queuedPerGame:MAX_BURSTS,mainBursts:MAX_MAIN,miniBursts:MAX_MINI,mainParticles:96,miniParticles:16},
+ describe(){return {version:276,attached:[...records.keys()].map(s=>kindOf(s)),reducedMotion:reduced(),...stats,eventCounts:{...eventCounts},effectRevision:290,limits:{queuedPerGame:MAX_BURSTS,mainBursts:MAX_MAIN,miniBursts:MAX_MINI,mainParticles:96,miniParticles:16,idleFPS:Math.ceil(1000/IDLE_FRAME_MS),idleCells:2},
   active:JSON.parse(JSON.stringify([...records.values()].filter(r=>r.bursts.length).map(r=>({game:kindOf(r.slot),bursts:r.bursts.map(b=>({phase:b.phase,number:b.number,age:b.age,duration:b.duration,anchor:b.anchor}))})))),history:JSON.parse(JSON.stringify(history))};}
 });
+wake();
 })();
