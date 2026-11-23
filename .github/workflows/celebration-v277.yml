@@ -18,6 +18,8 @@ on:
       - 'app-version.json'
       - 'tests/*v277*'
       - 'tests/v290-themed-effects.mjs'
+      - 'tests/v291-illustrated-awards.mjs'
+      - 'assets/award-illustrated-v291.js'
       - 'assets/hit-presentation-v276.js'
       - 'assets/dango-bingo-view.js'
       - 'assets/award-presentation-v277.css'
@@ -41,6 +43,8 @@ on:
       - 'app-version.json'
       - 'tests/*v277*'
       - 'tests/v290-themed-effects.mjs'
+      - 'tests/v291-illustrated-awards.mjs'
+      - 'assets/award-illustrated-v291.js'
       - 'assets/hit-presentation-v276.js'
       - 'assets/dango-bingo-view.js'
       - 'assets/award-presentation-v277.css'
@@ -62,6 +66,8 @@ jobs:
         run: node tests/award-presentation-v277.mjs
       - name: Ten themed award shapes, pale FREE and bounded idle effects
         run: node tests/v290-themed-effects.mjs
+      - name: Ten layered raster PNG award motifs and dynamic-label isolation
+        run: node tests/v291-illustrated-awards.mjs
       - name: Shared ten-game HIT observer invariants
         run: node tests/hit-presentation-v276.mjs
       - name: All ten production-rule witnesses
