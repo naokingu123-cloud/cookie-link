@@ -1,6 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
-const {R,G,clone}=require('./sixdrop-v247-fixture.cjs');
+const {R,G}=require('./sixdrop-v247-fixture.cjs');
+const clone=value=>JSON.parse(JSON.stringify(value));
 assert.equal(R.CURRENT_REVISION,285);
 assert.equal(R.FIXED_PALETTE_REVISION,285);
 assert.equal(R.BALANCED_REVISION,284);
