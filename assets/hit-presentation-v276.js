@@ -202,7 +202,7 @@ function paintBurst(ctx,b,p,from,theme,mini){
   ctx.globalAlpha=fade*.72;ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.quadraticCurveTo(cx,cy,p.x,p.y);ctx.lineWidth=Math.max(1,r*.07);ctx.strokeStyle=theme.edge;ctx.stroke();
   const xx=(1-q)**2*from.x+2*(1-q)*q*cx+q*q*p.x,yy=(1-q)**2*from.y+2*(1-q)*q*cy+q*q*p.y;star(ctx,xx,yy,r*.24,0,theme.ink);
  }
- const count=mini?4:Math.min(12,6+level*2),painted=!mini&&theme.sprite&&window.SweetsBoardArtV275?.sprite(theme.sprite),seed=b.seed;
+ const count=mini?4:Math.min(12,6+level*2),painted=!mini&&(window.SweetsArtV291?.sprite('tile-'+kindOf(record.slot))||(theme.sprite&&window.SweetsBoardArtV275?.sprite(theme.sprite))),seed=b.seed;
  for(let i=0;i<count;i++){
   const a=TAU*i/count+(noise(seed,0)-.5)*.8,dist=r*(1.05+ease*(.6+noise(seed,i+1)*.8)),lift=theme.style==='ripple'?-r*t*.85:theme.style==='crumb'?r*t*t*.42:0;
   const x=p.x+Math.cos(a)*dist,y=p.y+Math.sin(a)*dist*(theme.style==='ripple'?.68:1)+lift,size=r*(mini?.17:.15+noise(seed,i+31)*.12)*(1-t*.5);
