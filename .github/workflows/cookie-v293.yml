@@ -1,0 +1,73 @@
+name: Cookie Link patisserie v293
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/cookie-*-v293.*'
+      - 'assets/cookie-art-v293/**'
+      - 'assets/award-presentation-v277.js'
+      - 'assets/illustrated-boards-a-v275.js'
+      - 'assets/download-assets-v255.json'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/cookie-v293-browser.mjs'
+      - 'tests/release-v293-integrity.mjs'
+      - '.github/workflows/cookie-v293.yml'
+  pull_request:
+    paths:
+      - 'assets/cookie-*-v293.*'
+      - 'assets/cookie-art-v293/**'
+      - 'assets/award-presentation-v277.js'
+      - 'assets/illustrated-boards-a-v275.js'
+      - 'assets/download-assets-v255.json'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/cookie-v293-browser.mjs'
+      - 'tests/release-v293-integrity.mjs'
+      - '.github/workflows/cookie-v293.yml'
+permissions:
+  contents: read
+jobs:
+  cookie-native-presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Native observer invariants and coherent offline bytes
+        run: |
+          node tests/award-presentation-v277.mjs
+          node tests/v290-themed-effects.mjs
+          node tests/v291-illustrated-awards.mjs
+          node tests/download-v255-cache.mjs
+          node tests/release-v293-integrity.mjs
+          node tests/cookie-v293-browser.mjs --fixtures-only
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real Cookie LINK and ALL CLEAR at desktop, narrow, miniature and reduced motion sizes
+        run: node tests/cookie-v293-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cookie-v293-presentation
+          path: qa-cookie-v293/
+          if-no-files-found: error
+          retention-days: 7

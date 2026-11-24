@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f2a8bd"><meta name="apple-mobile-web-app-capable" content="yes"><title>SWEETS LINK｜ジェリービンゴ・ワッフルリバーシ・パーティカステラ</title><link rel="stylesheet" href="optimized/style-01.css?v=253"><link rel="stylesheet" href="optimized/style-02.css?v=title5"><link rel="stylesheet" href="optimized/style-03.css?v=title5"><link rel="stylesheet" href="optimized/style-04.css?v=91"><link rel="stylesheet" href="assets/player-lounge.css?v=1"><link rel="stylesheet" href="optimized/achievements-v3.css?v=title12">
 <link rel="stylesheet" href="assets/download-mode-v255.css?v=255">
-<script src="assets/edition-choice-v255.js?v=291"></script>
+<script src="assets/edition-choice-v255.js?v=293"></script>
 <script src="assets/local-debug-v258.js?v=258"></script>
 <link rel="stylesheet" href="assets/local-debug-v258.css?v=258">
 <script>
@@ -425,10 +425,13 @@ Copyright 2016 The Rounded M+ Project Authors.
 <link rel="stylesheet" href="assets/hit-presentation-v276.css?v=276b">
 <link rel="stylesheet" href="assets/award-presentation-v277.css?v=290">
 <link rel="stylesheet" href="assets/sixdrop-ui-v278.css?v=285">
+<link rel="stylesheet" href="assets/cookie-board-v293.css?v=293">
+<link rel="stylesheet" href="assets/cookie-payout-v293.css?v=293">
 <script src="assets/ornate-art-v274.js?v=274"></script>
 <script src="assets/illustrated-art-v275.js?v=275"></script>
 <script src="assets/celebration-art-v277.js?v=277"></script>
 <script src="assets/award-illustrated-v291.js?v=291"></script>
+<script src="assets/cookie-award-v293.js?v=293"></script>
 <script src="assets/illustrated-boards-b-v275.js?v=275"></script>
 <script src="assets/illustrated-boards-c-v275.js?v=275"></script>
 <script src="assets/cookie-upgrade-patches.js?v=232"></script>
@@ -440,7 +443,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(!window.SweetsEditionV255?.value)return;
   // Decode the decorative frames and detailed pieces before native raster caches.
   // Failed image delivery retains the native visual fallback, never game state.
-  await Promise.all([window.SweetsOrnateArtV274?.ready,window.SweetsBoardArtV275?.ready,window.SweetsAwardArtV277?.ready,window.SweetsIllustratedAwardV291?.ready]);
+  await Promise.all([window.SweetsOrnateArtV274?.ready,window.SweetsBoardArtV275?.ready,window.SweetsAwardArtV277?.ready,window.SweetsIllustratedAwardV291?.ready,window.CookieAwardV293?.ready]);
   const edition=window.SweetsEditionV255.value,downloadWorker=new URLSearchParams(location.search).get('downloadWorker')==='1';
   const {mode,chosen}=window.SweetsLineup,classic=mode==='classic',has=id=>chosen.includes(id);
   const switcher=document.getElementById('lineup-link'),other=new URL(location.href);
@@ -469,12 +472,13 @@ Copyright 2016 The Rounded M+ Project Authors.
   extras.push('assets/sweets-results-v253.js?v=253r2');
   extras.push('assets/sugar-challenge-rules-v254.js?v=279','assets/sugar-challenge-v254.js?v=279');
   // Share painted pieces through native caches before creating role diagrams.
-  extras.push('assets/illustrated-boards-a-v275.js?v=276b','assets/ornate-boards-a-v274.js?v=275');
+  extras.push('assets/illustrated-boards-a-v275.js?v=293','assets/ornate-boards-a-v274.js?v=275');
+  if(has('cookie'))extras.push('assets/cookie-board-v293.js?v=293','assets/cookie-payout-v293.js?v=293');
   extras.push('assets/hit-presentation-v276.js?v=290');
-  extras.push('assets/celebration-audio-v277.js?v=282','assets/award-presentation-v277.js?v=292');
+  extras.push('assets/celebration-audio-v277.js?v=282','assets/award-presentation-v277.js?v=293');
   if(has('candy')&&!downloadWorker)extras.push('assets/sixdrop-ui-v278.js?v=284');
   if(downloadWorker)extras.push('assets/recorded-round-v255.js?v=278','assets/download-worker-v255.js?v=255');
-  else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=278','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=291','assets/download-mode-v255.js?v=279');
+  else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=278','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=293','assets/download-mode-v255.js?v=279');
   else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=278','assets/local-sugar-v267.js?v=279');
   else extras.push('assets/player-profile-v255.js?v=255','assets/shared-machine-v176.js?v=278');
   if(!downloadWorker&&['local','download'].includes(edition))extras.push('assets/sugar-roulette-v254.js?v=268');

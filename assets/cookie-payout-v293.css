@@ -1,0 +1,143 @@
+/* Only Cookie Link uses these pastry plaques. The generated art carries the
+   texture and ornament; native text and native reel offsets remain live. */
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel{
+ background:linear-gradient(100deg,#6b311d,#ac6636 13%,#f7d69d 49%,#b77640 87%,#61271c)!important;
+ border-color:#c9994d!important;
+ box-shadow:inset 0 0 0 1px #ffe5a0,inset 0 0 0 3px #7d3e23,0 2px 5px #431b2a75!important;
+}
+
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .hammer-prize{
+ background:linear-gradient(90deg,#c99155,#ffedc6 13%,#fff7df 50%,#ffe2ad 87%,#c78a48)!important;
+ border:1px solid #9c561f!important;
+ border-image:none!important;
+ border-radius:7px!important;
+ box-shadow:inset 0 0 0 1px #fff1bb,inset 0 0 0 3px #d29b5470,0 2px 2px #582c293d!important;
+}
+
+/* Native headings are flex boxes. Move the caption into the chocolate inset
+   with padding, preserving the original 20 / 19 px border-box heights. */
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .hammer-prize h2,
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-title{
+ background:var(--cp293-heading) center/100% 100% no-repeat!important;
+ color:#fff0b7!important;
+ -webkit-text-fill-color:#fff0b7!important;
+ -webkit-text-stroke:.18px #74340d;
+ text-shadow:0 .7px #3f180f,0 0 1px #2d1609!important;
+ font-family:"M PLUS Rounded 1c","Noto Sans JP",system-ui,sans-serif!important;
+ font-weight:900!important;
+ font-size:7.4px!important;
+ letter-spacing:-.15px!important;
+ line-height:1!important;
+ padding:3px 0 0!important;
+ text-align:center;
+ overflow:visible;
+}
+
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel #hammer-pay tr,
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-row,
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-row:nth-child(even){
+ background:var(--cp293-row) center/100% 100% no-repeat!important;
+ border-color:transparent!important;
+ border-image:none!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel #hammer-pay tr.chosen,
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-row.chosen{
+ background:var(--cp293-selected) center/100% 100% no-repeat!important;
+ border-width:1px!important;
+ outline:0!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel #hammer-pay th{
+ color:#fff0c0!important;
+ font-weight:900!important;
+ text-align:center;
+ text-shadow:0 .6px #67241d;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-name{
+ color:#fff3c5!important;
+ -webkit-text-fill-color:#fff3c5!important;
+ font-family:ArcadePayout,"M PLUS Rounded 1c",system-ui,sans-serif;
+ font-weight:900;
+ font-size:8px;
+ text-align:center;
+ letter-spacing:-.15px;
+ text-shadow:0 .6px #6c201b,0 0 .6px #481b1c;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-award{
+ padding-right:3px;
+ gap:1px;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-award .gold-number{
+ color:#9a440d!important;
+ background:none!important;
+ -webkit-text-fill-color:#9a440d!important;
+ -webkit-text-stroke:.15px #fff0b9;
+ text-shadow:0 .45px #fff8df!important;
+ filter:none!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-row.chosen .gold-number{
+ color:#a52c1f!important;
+ -webkit-text-fill-color:#a52c1f!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-award .win-word{
+ color:#813c16!important;
+ -webkit-text-fill-color:#813c16!important;
+ -webkit-text-stroke:0!important;
+ background:none!important;
+ text-shadow:0 .4px #fff4cb!important;
+ font-size:5.5px;
+}
+
+/* The moving marks retain the native transforms and dimensions. An edge
+   glint reinforces the active artwork without laying colour over its text. */
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-selection,
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .hammer-selection{
+ background:transparent!important;
+ border:1px solid #fff4aa!important;
+ border-radius:5px;
+ outline:1px solid #a72c26!important;
+ outline-offset:-2px!important;
+ box-shadow:inset 0 0 0 1px #edb532,0 0 2px #fff0ba!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-window{
+ background:#a96535!important;
+ box-shadow:inset 0 0 0 1px #6e351e!important;
+ border-radius:4px;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-pay-window::after{
+ border-image:none!important;
+ border:1px solid #9e5d24;
+ border-radius:4px;
+ box-shadow:inset 0 0 0 1px #ffefb17a;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .sugar-help{
+ background:var(--cp293-footer) center/100% 100% no-repeat;
+ color:#714022!important;
+ text-shadow:0 .5px #fff5d8;
+ gap:0;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .sugar-help-line{
+ height:10px;
+ line-height:10px;
+ font-size:7.2px;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .sugar-help-line b{
+ color:#b43b32;
+ font-size:9px;
+ letter-spacing:.4px;
+}
+
+@media(forced-colors:active){
+ html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel,
+ html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel :is(.hammer-prize,.hammer-prize h2,.link-pay-title,.link-pay-row,.link-pay-row.chosen,.link-pay-row:nth-child(even),.link-pay-window,.sugar-help),
+ html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel #hammer-pay tr{
+  background:Canvas!important;border-image:none!important;box-shadow:none!important;
+ }
+ html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel :is(h2,.link-name,.gold-number,.win-word,#hammer-pay th,.sugar-help-line b){
+  color:CanvasText!important;-webkit-text-fill-color:CanvasText!important;-webkit-text-stroke:0!important;filter:none!important;text-shadow:none!important;
+ }
+ html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel :is(.link-selection,.hammer-selection){
+  border-color:Highlight!important;outline-color:Highlight!important;box-shadow:none!important;
+ }
+}

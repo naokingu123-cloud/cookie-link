@@ -1,0 +1,39 @@
+/* Only Cookie Link adopts the v293 pastry art. The original board size,
+   cell lattice, tray/background, hit geometry and motion classes stay intact. */
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .tile .cookie-face{
+ image-rendering:auto;object-fit:contain;
+}
+/* Ivory number faces sit over an uncluttered jam centre. Keep the native
+   Elixir glyphs and live reach colours rather than baking numbers into art. */
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .tile:not(.has-reach) .sweet b{
+ color:#fffbea;-webkit-text-fill-color:#fffbea;
+}
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .tile:not(.has-reach) .sweet b .elixir-digits{
+ --digit-stroke:#4e251d;--digit-stroke-width:1.5px;
+ filter:drop-shadow(0 1px 0 #4e251d)!important;
+}
+/* The promised mallet remains tied to its existing column and native state.
+   A small bitmap replaces only the old Unicode hammer illustration. */
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .cookie-hammer-forecast,
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .cookie-hammer-preview-mark{
+ color:transparent;font-size:0;
+ background:linear-gradient(135deg,#fff9d8,#f8c269 65%,#a74c37);
+ border-color:#fff0c5;
+}
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .cookie-hammer-forecast::before,
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .cookie-hammer-preview-mark::before{
+ content:"";position:absolute;inset:-2px;
+ background:var(--cookie293-hammer) center/contain no-repeat;pointer-events:none;
+}
+html.cookie-art-v293 #screen #panels .cookie-board-v293 .cookie-wild-label{
+ border:1px solid #fff0bc;color:#fffbea;-webkit-text-stroke:1px #702e49;
+ box-shadow:0 1px 0 #87432e,0 0 5px #ffe4a8;
+}
+@media(forced-colors:active){
+ html.cookie-art-v293 #screen #panels .cookie-board-v293 .tile:not(.has-reach) .sweet b{
+  color:CanvasText;-webkit-text-fill-color:CanvasText;
+ }
+ html.cookie-art-v293 #screen #panels .cookie-board-v293 .tile:not(.has-reach) .sweet b .elixir-digits{
+  --digit-stroke:Canvas;filter:none!important;
+ }
+}

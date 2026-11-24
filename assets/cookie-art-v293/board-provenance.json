@@ -1,0 +1,62 @@
+{
+  "version": 293,
+  "game": "cookie",
+  "generator": "built-in image_gen",
+  "source": "board-pieces.webp",
+  "sourceDimensions": [
+    1536,
+    1024
+  ],
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "names": [
+      "berry",
+      "honey",
+      "pistachio",
+      "soda",
+      "grape",
+      "hammer"
+    ]
+  },
+  "sourceRects": [
+    [
+      36,
+      23,
+      490,
+      476
+    ],
+    [
+      532,
+      14,
+      1001,
+      484
+    ],
+    [
+      1066,
+      38,
+      1496,
+      455
+    ],
+    [
+      25,
+      530,
+      478,
+      982
+    ],
+    [
+      526,
+      526,
+      995,
+      982
+    ],
+    [
+      1064,
+      520,
+      1510,
+      1000
+    ]
+  ],
+  "conversion": "Original generated alpha retained, WebP quality 88; source pixels are cropped at runtime without redrawing.",
+  "prompt": "Use case: stylized-concept. Asset type: production sprite atlas for Cookie Link, an ornate Japanese sweets arcade game. Create one polished 1536 by 1024 PNG sprite sheet on a genuinely transparent background, arranged in an exact 3-column by 2-row grid of six 512-square cells, ample empty gutters. No borders, no labels, no numbers, no lettering, no shadows between cells. Each object fully inside its own cell with 12 percent transparent padding. Straight-on overhead view, consistent scale, physical thickness visible along lower edge. Very detailed hand-painted 3D pastry illustration, premium arcade art, soft warm directional light, caramel-brown baked biscuit edges, fine crumbs, luminous sugar crystals, glossy translucent jam, piped cream detail. Never flat vector shapes. Upper left: round scalloped golden butter biscuit, vivid strawberry-rose pink jam filling, small embossed heart contour in the rim, broad uncluttered pink center for dynamic game number. Upper middle: flower edged golden honey shortbread, amber-yellow custard glaze, piped vanilla beads on outer edge, broad uncluttered golden center. Upper right: square pillow-shaped pistachio biscuit with softly scalloped corners, vibrant light-green pistachio cream, toasted biscuit edge with tiny pistachio flecks, broad uncluttered green center. Lower left: round sky-blue soda glazed butter biscuit, fluted baked edge with tiny white sugar pearls, broad uncluttered saturated cyan-blue center. Lower middle: round grape-purple jam biscuit with scalloped petal edge, luminous purple glaze and tiny cream curls only at rim, broad uncluttered purple center. Lower right: a confectioner's magical cookie hammer: chunky golden-biscuit mallet head, ivory cream seam, red strawberry-jam heart jewel and a caramel handle diagonal from lower-left to upper-right, crisp readable silhouette. The five colored biscuits should fill roughly 80 percent of cell width, their shapes clearly distinguishable at 32 pixels. Centers take 58 percent of each biscuit and remain simple so a bright number can be overlaid. Match a sumptuous honey, berry, cream and gold sweets cabinet; keep colors cleanly distinct red-pink / gold-yellow / green / cyan-blue / purple. No platter, no background, no scenery, no checkerboard, no text, no watermark."
+}

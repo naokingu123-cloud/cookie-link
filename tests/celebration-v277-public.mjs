@@ -18,11 +18,14 @@ const runtime=[
  'assets/download-assets-v255.json','assets/download-cache-v255.js','assets/edition-choice-v255.js',
  'assets/game-menu-v91.js','assets/gelato-prism-v28.js','assets/sugar-challenge-v254.js',
  'assets/award-presentation-v277.js','assets/award-presentation-v277.css',
- 'assets/celebration-art-v277.js','assets/celebration-audio-v277.js'
+ 'assets/celebration-art-v277.js','assets/celebration-audio-v277.js',
+ 'assets/cookie-board-v293.js','assets/cookie-board-v293.css',
+ 'assets/cookie-payout-v293.js','assets/cookie-payout-v293.css',
+ 'assets/cookie-award-v293.js','assets/illustrated-boards-a-v275.js'
 ];
 const report={ok:false,startedAt:new Date(started).toISOString(),completedAt:null,
  commit:process.env.GITHUB_SHA||null,url:base,maxWaitSeconds:300,concurrency,
- scope:'Static GET and SHA-256 only: changed runtime, all v277 art, all 97 casino cues, their original sources, licenses and provenance, and all 41 fallback cues and manifests. No gameplay, API, wallet or BET operations.',
+ scope:'Static GET and SHA-256 only: changed runtime, all Cookie Link v293 art, all v277 art, all 97 casino cues, their original sources, licenses and provenance, and all 41 fallback cues and manifests. No gameplay, API, wallet or BET operations.',
  expectedVersion:null,expectedFiles:0,currentCues:0,legacyCues:0,licensedSources:0,attempts:[],checks:[],finalVersionCheck:null};
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const expected=new Map(),latest=new Map(),matched=new Set();
@@ -68,7 +71,7 @@ async function batch(files,attempt){
 }
 
 try{
- const [art,sound,casino]=await Promise.all([filesUnder('assets/celebration-art-v277'),filesUnder('assets/audio/celebration-v277'),filesUnder(casinoRoot)]);
+ const [art,sound,casino,cookieArt]=await Promise.all([filesUnder('assets/celebration-art-v277'),filesUnder('assets/audio/celebration-v277'),filesUnder(casinoRoot),filesUnder('assets/cookie-art-v293')]);
  const manifest=JSON.parse(await fs.readFile(path.join(root,casinoRoot,'manifest.json'),'utf8'));
  assert.equal(manifest.version,281,'the current casino manifest must be checked');
  const currentCues=Object.values(manifest.cues).map(cue=>{
@@ -89,7 +92,7 @@ try{
  for(const file of [...sourceFiles,...provenanceFiles])assert(casino.includes(file),'publication gate includes source and license: '+file);
  assert.equal(sound.filter(file=>file.endsWith('.wav')).length,41,'all 41 fallback sound cues must stay in the publication gate');
  assert.equal(art.filter(file=>file.endsWith('.png')).length,5,'all four award images and the line ornament must be checked');
- const files=[...new Set([...runtime,...art,...sound,...casino])].sort();
+ const files=[...new Set([...runtime,...art,...sound,...casino,...cookieArt])].sort();
  for(const file of files){const bytes=await fs.readFile(path.join(root,file));expected.set(file,{bytes:bytes.length,sha256:hash(bytes)});}
  report.expectedVersion=JSON.parse(await fs.readFile(path.join(root,'app-version.json'),'utf8')).version;
  // The assets remain available to pinned offline editions after later releases.

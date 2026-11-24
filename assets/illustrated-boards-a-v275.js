@@ -40,6 +40,8 @@ function cookieSprite(color,special=false){
  sprites.set(key,imageLike(out));return out;
 }
 function cookieURL(color,special=false){
+ const deluxe=window.CookieBoardV293?.cookieURL?.(color,special);
+ if(deluxe)return deluxe;
  const key=String(color)+'/'+Number(!!special);
  if(urls.has(key))return urls.get(key);
  const bitmap=cookieSprite(color,special);if(!bitmap)return '';
@@ -63,8 +65,8 @@ function resolveSources(bitmap){
 }
 const api={
  version:275,cookieURL,
- sourcesOf:bitmap=>{resolveSources(bitmap);return sources.get(bitmap)||[];},
- sourceImagesOf:bitmap=>{resolveSources(bitmap);return sourceImages.get(bitmap)||[];},
+ sourcesOf:bitmap=>{const current=window.CookieBoardV293?.sourcesOf?.(bitmap);if(current?.length)return current;resolveSources(bitmap);return sources.get(bitmap)||[];},
+ sourceImagesOf:bitmap=>{const current=window.CookieBoardV293?.sourceImagesOf?.(bitmap);if(current?.length)return current;resolveSources(bitmap);return sourceImages.get(bitmap)||[];},
  describe:()=>({games:[...selected].filter(id=>['cookie','choco','candy'].includes(id)),
   cachedSprites:sprites.size,generatedURLs:urls.size,
   cookiePieces:selected.has('cookie')?'painted-v275':'unused',
@@ -88,7 +90,7 @@ if(selected.has('cookie')){
   const image=el?.querySelector('.cookie-face'),url=cookieURL(t.color,!!t.special);
   if(image&&url){
    if(image.getAttribute('src')!==url)image.setAttribute('src',url);
-   image.dataset.boardArt='v275';
+   image.dataset.boardArt=window.CookieBoardV293?.loaded?'v293':'v275';
   }
   return result;
  };

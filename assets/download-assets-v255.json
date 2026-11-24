@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v292-sixdrop-clear-illustration",
+  "version": "20261124-v293-cookie-patisserie",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 55,
-      "sha256": "edd2df56852f7e05500c11987a2034c0c06434375a5102e57a706c09dafd3412"
+      "bytes": 46,
+      "sha256": "f62f4ccfcae47335676507cf52843b84aeb8a1afd899d2e49db4dcac9b38821f"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 40849,
-      "sha256": "bf7b04e73d85d5ba13520cc2f3849d75ccb92952c59e2111b3f85994e6253849"
+      "bytes": 41450,
+      "sha256": "d19dc9875a1a4d9d143016ec84c39b65231c7f190692cc7489ee1d019fc3fccb"
     },
     {
       "path": "assets/bgm-player.js",
@@ -1952,6 +1952,71 @@
       "sha256": "67eef340e613af8ef3d3ba98ec925c2f6955c7043d86c2db80028255dbb22185"
     },
     {
+      "path": "assets/cookie-art-v293/award-clear.webp",
+      "bytes": 588242,
+      "sha256": "0e32cd0eb193a3ce03881efc793a3e72a308bcea36a9cac91bc737f7dfd27eae"
+    },
+    {
+      "path": "assets/cookie-art-v293/award-digits.webp",
+      "bytes": 573956,
+      "sha256": "109e7f15a31197dd3a7d28dc3332168e8e45ddfa5733237615444289eceb0015"
+    },
+    {
+      "path": "assets/cookie-art-v293/award-link.webp",
+      "bytes": 551534,
+      "sha256": "d8d89a689c422e861a00b7742ae4dbdc01a5d84615ed94b379eb254a79d567ed"
+    },
+    {
+      "path": "assets/cookie-art-v293/award-provenance.json",
+      "bytes": 6198,
+      "sha256": "e0459aec443750802b6639c61549c59364057d7ca48cc791d041fccc78632019"
+    },
+    {
+      "path": "assets/cookie-art-v293/board-pieces.webp",
+      "bytes": 376920,
+      "sha256": "31a6fcf1a5cc495dd136e16078057ed63d394519ed6193d5ed92b7aacdc8f70d"
+    },
+    {
+      "path": "assets/cookie-art-v293/board-provenance.json",
+      "bytes": 3122,
+      "sha256": "21fb717391a2373a22cd56dab191486eb24b506f3de26b516e456ac480d5ee1c"
+    },
+    {
+      "path": "assets/cookie-art-v293/payout-furniture.webp",
+      "bytes": 450456,
+      "sha256": "97f2c761e1714206098bf87c62f2db0824fa25dfeb74d22c8b5637a98397fdce"
+    },
+    {
+      "path": "assets/cookie-art-v293/payout-provenance.json",
+      "bytes": 2721,
+      "sha256": "dde5fc2e90ef9bdd98b8ab96dfe39bdfab5563f7b01d9f4fa1c5e9e91fa3e5d7"
+    },
+    {
+      "path": "assets/cookie-award-v293.js",
+      "bytes": 6623,
+      "sha256": "3a5aeeaa10d516e23217867326f53e0412a501a4d04fb079ed5533a91be689d2"
+    },
+    {
+      "path": "assets/cookie-board-v293.css",
+      "bytes": 2046,
+      "sha256": "619b9c228d4e075e84bb3f83acbbf5fb9d4626ac24f28a136cb7a006e2945fa6"
+    },
+    {
+      "path": "assets/cookie-board-v293.js",
+      "bytes": 5686,
+      "sha256": "692024d2a49316c535db4d31e1d0b89faf7f1a1b6a6da9d91a00c54f0cf92018"
+    },
+    {
+      "path": "assets/cookie-payout-v293.css",
+      "bytes": 6734,
+      "sha256": "1fc47b5d4a049d9df492e49fe907b3c39597ec0181cf2f1925b3fada1c043e78"
+    },
+    {
+      "path": "assets/cookie-payout-v293.js",
+      "bytes": 2349,
+      "sha256": "6660cb8e73c6a64677591a37b9b20be293ac9f536ef2dab10c935de3e4d02e4f"
+    },
+    {
       "path": "assets/cookie-platter-sweets.svg",
       "bytes": 13876,
       "sha256": "fe686c21eb2961dcbec31c637d38bed21a112bc3d2b1c2dd51a13a0eb39955eb"
@@ -2078,8 +2143,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4362,
-      "sha256": "93e74e3863ad3c699853148ce39cf17266c7cc04927fba67451e70532e3f0ef2"
+      "bytes": 4357,
+      "sha256": "62380410ca6aa47b76f04bbd8a433f70872249343935a703aba36ab267c4e7d8"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2103,8 +2168,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3773,
-      "sha256": "bd451dcf40b98cdc4ab43e9ff99c6490f565802501d70a30660497055336b7d2"
+      "bytes": 3768,
+      "sha256": "c6488b06101211734fbaf5f1559623bf6bbea741a8722e3e41baafdd909dfa7a"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2308,8 +2373,8 @@
     },
     {
       "path": "assets/illustrated-boards-a-v275.js",
-      "bytes": 6866,
-      "sha256": "f5bdfd14009cb552cc6f71aa466ca94d8c493729d5c469d661a5a893f090ff67"
+      "bytes": 7185,
+      "sha256": "68646070e187677c2ea7e942e0727f22d12885cefc88a40a4c33a25a5456a279"
     },
     {
       "path": "assets/illustrated-boards-b-v275.js",
@@ -3293,8 +3358,8 @@
     },
     {
       "path": "assets/sixdrop-progressive-core-v247.js",
-      "bytes": 24496,
-      "sha256": "641ed9524286867ebe6c50fea063f1be5e0842206a61baf420a50ca0d6f3c9e8"
+      "bytes": 25828,
+      "sha256": "75546cf0723efff7a11487c92f9bbc6f5e6e409a33a496a2216c573c19ef36fe"
     },
     {
       "path": "assets/sixdrop-progressive-host-v247.js",
@@ -4038,8 +4103,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 85740,
-      "sha256": "9d0377f1b8980a4463a42444cf62d13ac17a9443980d83fb67e6ac196f7e324b"
+      "bytes": 86066,
+      "sha256": "d3867f39e44f18ba5890ea68c51c7d54a631e1a725247c3460258f72c8b3692c"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4277,5 +4342,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 239276263
+  "totalBytes": 241855473
 }

@@ -220,7 +220,8 @@ function assertPainted(surface,label){
  const family=surface.kind==='choco'&&surface.primary.mode!=='board'
   ?/^assets\/canyon-geology\/(?:cake-(?:white|strawberry|milk|bitter)|ore-diamond)\.webp$/
   :nativeSource[surface.kind];
- const generated=name=>/^assets\/illustrated-art-v275\//.test(name);
+ const generated=name=>/^assets\/illustrated-art-v275\//.test(name)||name==='assets/cookie-art-v293/board-pieces.webp';
+ const cookiePiece=name=>name==='assets/cookie-art-v293/board-pieces.webp';
  const match=names=>names.some(name=>family.test(name)||generated(name));
  if(surface.primary.mode!=='board'){
   assert.equal(surface.phase,'ready',label+': a lesson only covers a ready board');
@@ -238,6 +239,7 @@ function assertPainted(surface,label){
  const painted=surface.main.filter(c=>c.visible&&c.opaque>60&&c.colors>8);
  const domPainted=surface.cookieImages.length>0&&surface.cookieImages.every(img=>img.loaded&&match(img.assets));
  assert.ok(painted.length>0||domPainted,label+': visible pixels in the actual primary surface');
+ if(surface.kind==='cookie')assert.ok(painted.some(c=>c.assets.some(cookiePiece))||surface.cookieImages.some(img=>img.assets.some(cookiePiece)),label+': Cookie Link uses its dedicated v293 pastry art');
  // Jelly's third native lesson is an intentional vector-only color-mixing
  // demonstration; it never contained a bitmap. Every other primary surface
  // must show its actual native image source, not merely a frame/background.
@@ -264,6 +266,7 @@ function assertPainted(surface,label){
   // Every live miniature must contain its newly painted cells, including
   // Choco's native autotiles whose source lineage is resolved by identity.
   assert.ok(visible.some(c=>c.assets.some(generated)),label+': detailed new bitmap material in miniature '+mini.game);
+  if(mini.game==='cookie')assert.ok(visible.some(c=>c.assets.some(cookiePiece)),label+': Cookie miniature uses the dedicated v293 pastry art');
   assert.ok(mini.frame.present&&mini.frame.matches,label+': themed miniature frame for '+mini.game);
   assert.equal(mini.frame.pointerEvents,'none',label+': miniature trim leaves tab input intact');
  }
@@ -362,6 +365,7 @@ try{
  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
  await page.waitForFunction(()=>window.__qa250&&window.SweetsSharedMachine?.client?.online&&window.SweetsOrnateArtV274?.loaded&&window.SweetsOrnateBoardsAV274&&window.SweetsBoardArtV275?.loaded&&window.SweetsIllustratedBoardsCV275,null,{timeout:60000});
  assert.equal(await page.evaluate(()=>window.SweetsOrnateArtV274.ready),true,'all ornate image sheets load before the artwork check');
+ assert.equal(await page.evaluate(()=>window.CookieBoardV293.ready),true,'Cookie Link dedicated sprite sheet is installed before the artwork check');
  await page.evaluate(()=>document.fonts.ready);
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.waitForFunction(()=>document.querySelector('.v250-shared-bet-switch')&&!document.querySelector('.v250-shared-bet-switch').disabled,null,{timeout:15000});

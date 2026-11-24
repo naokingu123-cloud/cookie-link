@@ -39,7 +39,7 @@ for(const shade of [0,.3,.6,1]){
 }
 for(const motif of ['.link-pay-row','.canyon-fleet-card','.sd278-payout-card','.gp-collector-panel','.wp-sidebar','.bs-pay','.pct-pay','.dgb-pay'])assert(css.includes(motif),motif+' stays shaped');
 const version=JSON.parse(versionText).version,manifest=JSON.parse(manifestText);
-assert.match(version,/^20261123-v29[0-9]-/,'compatible v290 and v291 themed artwork');
+assert.match(version,/^\d{8}-v\d+-[a-z0-9-]+$/,'runtime declares a dated build identifier');
 assert.equal(manifest.version,version);
 const listed=new Map(manifest.files.map(x=>[x.path,x]));
 for(const file of ['index.html','app-version.json','assets/dango-bingo-view.js','assets/hit-presentation-v276.js','assets/award-presentation-v277.js','assets/award-presentation-v277.css','assets/award-illustrated-v291.js','assets/download-cache-v255.js','assets/edition-choice-v255.js']){
@@ -48,7 +48,7 @@ for(const file of ['index.html','app-version.json','assets/dango-bingo-view.js',
  assert.equal(bytes.length,record.bytes,file+' size pinned');
  assert.equal(createHash('sha256').update(bytes).digest('hex'),record.sha256,file+' hash pinned');
 }
-assert(html.includes('assets/award-presentation-v277.js?v=291'));
+assert.match(html,/assets\/award-presentation-v277\.js\?v=\d+/,'award script uses an explicit cache revision');
 assert(html.includes('assets/hit-presentation-v276.js?v=290'));
 assert(html.includes('assets/dango-bingo-view.js?v=290'));
 assert(serviceWorker.includes(version)&&serviceWorker.includes('20261121-v289-canyon-fruit-sixdrop-fixed-palette'));

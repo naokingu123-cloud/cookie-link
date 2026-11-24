@@ -144,7 +144,8 @@ function semantic(slot,ev,r){
  }
  if(!label)return null;
  const nativeWin=game==='candy'?ev.winMedals:undefined;
- return {game,phase,number,kind,label,detail,gain:Math.max(0,Number(gain)||0),win:Number.isSafeInteger(nativeWin)&&nativeWin>=0?nativeWin:amount(slot,gain),total,tier:tierFor(gain,highest),highest,paths,delay:Math.min(15000,Math.max(0,delay)),retained,state:game==='candy'?{awardRows:e.rows}:s};
+ return {game,phase,number,kind,label,detail,gain:Math.max(0,Number(gain)||0),win:Number.isSafeInteger(nativeWin)&&nativeWin>=0?nativeWin:amount(slot,gain),total,tier:tierFor(gain,highest),highest,paths,delay:Math.min(15000,Math.max(0,delay)),retained,state:game==='candy'?{awardRows:e.rows}:s,
+  ...(game==='cookie'?{cookie:Object.freeze({link:e.maxLink,depth:ev.depth||0,clears:e.allClears})}:{})};
 }
 function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null};records.set(slot,r);return r;}
 function ownsClass(r,on){r.slot.panel.classList.toggle('award-v277-owned',on);r.slot.tab.classList.toggle('award-v277-owned',on);r.slot.panel.dataset.awardKind=on?(r.current?.kind||r.pending[0]?.kind||'bonus'):'';}
@@ -350,6 +351,14 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
  const enter=quiet()?1:clamp(age/270),leave=clamp((c.duration-c.age)/360);
  const fade=Math.min(1,enter*2)*leave;
  const theme=BADGE_THEMES[c.game];if(!theme)return 0;
+ if(c.game==='cookie'&&window.CookieAwardV293?.loaded){
+  const width=Math.min(w*.98,h*(mini?1.48:1.28)),height=width/1.5;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.CookieAwardV293.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:c.tier>=3?5:3;}
+ }
  const width=Math.min(w*(mini?.93:.84),h*(mini?1.16:1.28)),height=Math.min(h*(mini?.72:.54),width*.67);
  const cx=ox+w/2,cy=oy+h*(mini?.53:.53),zoom=quiet()?1:.80+.20*(1-(1-enter)**3);
  ctx.save();ctx.globalAlpha=fade;ctx.translate(cx,cy+(1-enter)*h*.05);ctx.scale(zoom,zoom);
