@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v298-winery-crystal",
+  "version": "20261125-v299-popcorn-cinema",
   "files": [
     {
       "path": "app-version.json",
       "bytes": 43,
-      "sha256": "d19fd0c0412cf52569fba643f630fce4ef99b0a1de64ece635cba4b9fbc61010"
+      "sha256": "9641afc2ed8bb9564358d87421844aca45acb47e7074b620514e80d5ac6bfb20"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 47852,
-      "sha256": "390f8810518a147b1b220e2498ffd9d45f4d85ee33e893a07ba85d74fc962d40"
+      "bytes": 49818,
+      "sha256": "0e43448dd1280e89603e8ebe75a49a9ea313924bbe2bf3bf2be7171c9f745a45"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2189,7 +2189,7 @@
     {
       "path": "assets/download-cache-v255.js",
       "bytes": 4354,
-      "sha256": "877642540fa0117661e025030bd5cb22dfcee481a6797cf1e0b34577af2c0b02"
+      "sha256": "98b81f6991b9bd32c1f72990ad1f41e763fa6bdab75b71de50a40c9015042d28"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2214,7 +2214,7 @@
     {
       "path": "assets/edition-choice-v255.js",
       "bytes": 3765,
-      "sha256": "cfc7f26d4afb54a07f0c605728662e158446329fdc200cb338fa5fa6f058d172"
+      "sha256": "e0723b11c3693c35a6a6cc4eb9b28e9c948de8b0e26d0f3566567a77b29a3298"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2717,6 +2717,56 @@
       "sha256": "f3db66cea6d7c0c0acd94845ebc5c79c7bfc053b1fe510f35f085ffea62b2023"
     },
     {
+      "path": "assets/popcorn-art-v299.js",
+      "bytes": 7184,
+      "sha256": "d700b7410273f2a4c53349685fba396d2be6c7c07794213e9c5285970b548957"
+    },
+    {
+      "path": "assets/popcorn-art-v299/award-boost.webp",
+      "bytes": 529848,
+      "sha256": "a911a3dc87c774867d8c284a5017b0b9548496c8c0b1ea944f0027c91ecd8651"
+    },
+    {
+      "path": "assets/popcorn-art-v299/award-clear.webp",
+      "bytes": 516304,
+      "sha256": "a70456d1357ddcd6a2ce902d83baad4ac4037fa45e3d97a5b26852334efacd0b"
+    },
+    {
+      "path": "assets/popcorn-art-v299/award-digits.webp",
+      "bytes": 243792,
+      "sha256": "f094296646bfc060ec7b7ab3cd626b1374f6414a6836345f599f71ad6d8170f6"
+    },
+    {
+      "path": "assets/popcorn-art-v299/award-grand.webp",
+      "bytes": 513106,
+      "sha256": "dec12d8c39e3b586c0b53c17ca690905584a333ab11ae854662765bf1acfbd97"
+    },
+    {
+      "path": "assets/popcorn-art-v299/award-pop.webp",
+      "bytes": 471150,
+      "sha256": "b70de21657c6d0d0c2fe28de393670ec1112a03213549f0158d8d57cbc2f429f"
+    },
+    {
+      "path": "assets/popcorn-art-v299/generation-provenance.json",
+      "bytes": 22277,
+      "sha256": "d0f44f77398e6fa745be31eeef7025b91262621f535013e9ec829f564279c527"
+    },
+    {
+      "path": "assets/popcorn-art-v299/kernel-pieces.webp",
+      "bytes": 423434,
+      "sha256": "12abed276200e517de623edeb4a6361838755086bbf432261ad01278df6b8fc6"
+    },
+    {
+      "path": "assets/popcorn-art-v299/payout-cabinet.webp",
+      "bytes": 130310,
+      "sha256": "b95371be1a36c25a3edbea086990684d06a16bd993d28c73776ed1767efda0c9"
+    },
+    {
+      "path": "assets/popcorn-art-v299/port-furniture.webp",
+      "bytes": 330856,
+      "sha256": "0ffa1afbfd8d600e74041d9b79ea1e60fe5248f990af4ef86499c9a5a0402f0b"
+    },
+    {
       "path": "assets/popcorn-art/popcorn-all-sign-v88.webp",
       "bytes": 23552,
       "sha256": "b3e122062e7fef9f0398d2eb3b5c098886759aad93ab3e670432b57b9b3af80e"
@@ -2797,6 +2847,11 @@
       "sha256": "a444cbf4530ad02c54fe3b302a611f336b8e48e2a864e0016bfec17b557a7ee9"
     },
     {
+      "path": "assets/popcorn-award-v299.js",
+      "bytes": 10896,
+      "sha256": "db9e51d66f111141669f83c29872c2a47488aa0a3da39e199bb7e21de8961d14"
+    },
+    {
       "path": "assets/popcorn-engine.js",
       "bytes": 19711,
       "sha256": "d2f0f602e9fb10ad4bbed81f4cb6cce556a4ae23a70a53e5423de98d4e05af42"
@@ -2808,8 +2863,8 @@
     },
     {
       "path": "assets/popcorn-view.js",
-      "bytes": 66589,
-      "sha256": "ded2b6bc49934f14939ef2d7ab085cb219c29cd1ad6d7471cc68913ddf0230c3"
+      "bytes": 69546,
+      "sha256": "a5246195b9a34d491f2325300eef269735d3c5ca9477e857a16ef6dec4b5d875"
     },
     {
       "path": "assets/popcorn.css",
@@ -4323,8 +4378,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 87058,
-      "sha256": "85692897426dad2cfbe33f0ad9937ffe5c9a07a5dae559ac5b11c7b965de8327"
+      "bytes": 87233,
+      "sha256": "b8c848db84b0de3e530831dd1d1625f34d65084f49defa11d8c635d3fcd8c714"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4562,5 +4617,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 257260266
+  "totalBytes": 260464521
 }

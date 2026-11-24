@@ -1,0 +1,114 @@
+{
+  "version": "20261125-v299-popcorn-cinema",
+  "scope": "Native rules, shared award semantics, actual Canvas pixels and offline integrity; browser CI recorded in the pull request before publication.",
+  "nativeCoreSha256": "d2f0f602e9fb10ad4bbed81f4cb6cce556a4ae23a70a53e5423de98d4e05af42",
+  "rules": {
+    "reachableHistories": 3,
+    "draws": 24,
+    "payoutBoundaries": 8667,
+    "gradeCount": 6,
+    "geometry": [
+      61,
+      15,
+      6
+    ],
+    "legacyFirstPop": [
+      80,
+      220
+    ],
+    "rngAndState": "independent oracle",
+    "boostMaxLevel": 9
+  },
+  "awards": {
+    "actualCues": 17,
+    "lowBet5": {
+      "popActual": 5,
+      "popPrevious": 4,
+      "thirdClearActual": 105,
+      "thirdClearPrevious": 104
+    },
+    "nativeDeltaMaxTested": 61350000,
+    "resultMaxTested": 84600000,
+    "oldInvalidTraceFallbacks": 12,
+    "frozen": true,
+    "nativeGainTierTiming": true
+  },
+  "nativeCanvas": {
+    "ok": true,
+    "moneyCases": 12,
+    "boards": 4,
+    "boostChecks": 12,
+    "errors": [],
+    "files": {
+      "assets/popcorn-art-v299.js": {
+        "bytes": 7184,
+        "sha256": "d700b7410273f2a4c53349685fba396d2be6c7c07794213e9c5285970b548957"
+      },
+      "assets/popcorn-award-v299.js": {
+        "bytes": 10896,
+        "sha256": "db9e51d66f111141669f83c29872c2a47488aa0a3da39e199bb7e21de8961d14"
+      },
+      "assets/popcorn-view.js": {
+        "bytes": 69546,
+        "sha256": "a5246195b9a34d491f2325300eef269735d3c5ca9477e857a16ef6dec4b5d875"
+      },
+      "assets/award-presentation-v277.js": {
+        "bytes": 49818,
+        "sha256": "0e43448dd1280e89603e8ebe75a49a9ea313924bbe2bf3bf2be7171c9f745a45"
+      },
+      "assets/popcorn-engine.js": {
+        "bytes": 19711,
+        "sha256": "d2f0f602e9fb10ad4bbed81f4cb6cce556a4ae23a70a53e5423de98d4e05af42"
+      },
+      "assets/popcorn-art-v299/generation-provenance.json": {
+        "bytes": 22277,
+        "sha256": "d0f44f77398e6fa745be31eeef7025b91262621f535013e9ec829f564279c527"
+      },
+      "assets/popcorn-art-v299/award-pop.webp": {
+        "bytes": 471150,
+        "sha256": "b70de21657c6d0d0c2fe28de393670ec1112a03213549f0158d8d57cbc2f429f"
+      },
+      "assets/popcorn-art-v299/award-clear.webp": {
+        "bytes": 516304,
+        "sha256": "a70456d1357ddcd6a2ce902d83baad4ac4037fa45e3d97a5b26852334efacd0b"
+      },
+      "assets/popcorn-art-v299/award-grand.webp": {
+        "bytes": 513106,
+        "sha256": "dec12d8c39e3b586c0b53c17ca690905584a333ab11ae854662765bf1acfbd97"
+      },
+      "assets/popcorn-art-v299/award-boost.webp": {
+        "bytes": 529848,
+        "sha256": "a911a3dc87c774867d8c284a5017b0b9548496c8c0b1ea944f0027c91ecd8651"
+      },
+      "assets/popcorn-art-v299/award-digits.webp": {
+        "bytes": 243792,
+        "sha256": "f094296646bfc060ec7b7ab3cd626b1374f6414a6836345f599f71ad6d8170f6"
+      },
+      "assets/popcorn-art-v299/kernel-pieces.webp": {
+        "bytes": 423434,
+        "sha256": "12abed276200e517de623edeb4a6361838755086bbf432261ad01278df6b8fc6"
+      },
+      "assets/popcorn-art-v299/payout-cabinet.webp": {
+        "bytes": 130310,
+        "sha256": "b95371be1a36c25a3edbea086990684d06a16bd993d28c73776ed1767efda0c9"
+      },
+      "assets/popcorn-art-v299/port-furniture.webp": {
+        "bytes": 330856,
+        "sha256": "0ffa1afbfd8d600e74041d9b79ea1e60fe5248f990af4ef86499c9a5a0402f0b"
+      }
+    }
+  },
+  "offline": {
+    "files": 923,
+    "bytes": 260464521,
+    "hashesMatch": true
+  },
+  "browserScenarios": [
+    "clear-desktop",
+    "rainbow-desktop",
+    "pops-lowbet-390",
+    "grand-320",
+    "rainbow-mini-390",
+    "grand-reduced-430"
+  ]
+}
