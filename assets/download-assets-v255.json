@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v293-cookie-patisserie",
+  "version": "20261124-v294-wide-main-playfields",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 46,
-      "sha256": "f62f4ccfcae47335676507cf52843b84aeb8a1afd899d2e49db4dcac9b38821f"
+      "bytes": 49,
+      "sha256": "4b22d39509ea532637a06ad16ef8118b557bbfea9fa0fbc0acd863be5cd69088"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -2143,8 +2143,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4357,
-      "sha256": "62380410ca6aa47b76f04bbd8a433f70872249343935a703aba36ab267c4e7d8"
+      "bytes": 4360,
+      "sha256": "62da843e65cd182d66cb8180b3bd3d9391129b75c99a380db6f6c37e10366c8d"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2168,8 +2168,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3768,
-      "sha256": "c6488b06101211734fbaf5f1559623bf6bbea741a8722e3e41baafdd909dfa7a"
+      "bytes": 3771,
+      "sha256": "4574d1c7c7a726fa236e49b81e37b2f145fb62976deda6a470e4884240690be4"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2450,6 +2450,11 @@
       "path": "assets/local-sugar-v267.js",
       "bytes": 8857,
       "sha256": "9bcfed03f5c0cb83e80ee9114ad6d3a79939bfef8f2c12ee0fc3b7008e01d1b6"
+    },
+    {
+      "path": "assets/main-playfield-v294.css",
+      "bytes": 2009,
+      "sha256": "588168ce4f681d6f316771e1d67b4a857920de6a1b78753879cd1124321b6613"
     },
     {
       "path": "assets/manual-numbers.css",
@@ -4103,8 +4108,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86066,
-      "sha256": "d3867f39e44f18ba5890ea68c51c7d54a631e1a725247c3460258f72c8b3692c"
+      "bytes": 86134,
+      "sha256": "602a3150a1de30fe25c302510aa4210ac593b4ae41ef03b4cb3a0a1063c23e28"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4342,5 +4347,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 241855473
+  "totalBytes": 241857559
 }

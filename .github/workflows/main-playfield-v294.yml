@@ -1,0 +1,69 @@
+name: Main playfield width v294
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/main-playfield-v294.css'
+      - 'index.html'
+      - 'app-version.json'
+      - 'assets/download-assets-v255.json'
+      - 'tests/main-playfield-v294-browser.mjs'
+      - '.github/workflows/main-playfield-v294.yml'
+  pull_request:
+    paths:
+      - 'assets/main-playfield-v294.css'
+      - 'index.html'
+      - 'app-version.json'
+      - 'assets/download-assets-v255.json'
+      - 'tests/main-playfield-v294-browser.mjs'
+      - '.github/workflows/main-playfield-v294.yml'
+permissions:
+  contents: read
+jobs:
+  native-main-playfield:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        width: [320, 390, 430]
+    env:
+      MAIN294_VIEWPORT: ${{ matrix.width }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Coherent release and cached layout
+        run: |
+          node --check tests/main-playfield-v294-browser.mjs
+          node tests/download-v255-cache.mjs
+          node tests/release-v293-integrity.mjs
+          node tests/main-playfield-v294-browser.mjs --list-cases
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Ten native boards and paytables, rotation, safe areas and CSS comparison
+        run: node tests/main-playfield-v294-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: main-playfield-v294-${{ matrix.width }}
+          path: qa-main-playfield-v294/
+          if-no-files-found: error
+          retention-days: 7

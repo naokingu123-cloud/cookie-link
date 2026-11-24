@@ -1,0 +1,46 @@
+/* Phone portrait: give the selected game's board AND payouts the cabinet width.
+ * The inner design stays at its native 430 px (Winery: 432 px). Only the empty
+ * outer side padding/border is reclaimed; then the complete game is enlarged
+ * uniformly. Fixed cell positions, paytable row steps and input targets keep
+ * their original logical coordinates. The responsive screen still owns the
+ * viewport fit and hardware safe areas.
+ */
+html body.mobile-view:not(.mobile-landscape) #screen > .game {
+  --main294-shell-width: 438px;
+  --main294-scale: 1.091324200913242;
+  width: var(--main294-shell-width) !important;
+  min-width: var(--main294-shell-width) !important;
+  max-width: var(--main294-shell-width) !important;
+  align-self: center;
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  border-left-width: 0 !important;
+  border-right-width: 0 !important;
+  transform-origin: 50% 0;
+  transform: scale(var(--main294-scale));
+  /* Transforms do not reserve layout space. Keep the enlarged bottom above
+   * BET/WIN/CREDIT while the flexible roulette area supplies the extra room. */
+  margin-bottom: calc(390px * (var(--main294-scale) - 1));
+  box-shadow: none !important;
+}
+
+/* Winery's existing 2 px border gives it a 432 px inner scene. Preserve that
+ * different native width instead of squeezing its registered liquid layers. */
+html body.mobile-view.winery-active:not(.mobile-landscape) #screen > .game {
+  --main294-shell-width: 440px;
+  --main294-scale: 1.086363636363636;
+}
+
+/* Keep the illustrated motif inside the new 478 px boundary. The slim side
+ * rails leave the recovered space for the board and live payout digits. */
+html.ornate-art-v274.arcade-v249 body.mobile-view:not(.mobile-landscape)[data-v249-game] #screen > .game::before {
+  inset: 0 !important;
+  border-image-width: 14px 6px !important;
+}
+
+@media (forced-colors: active) {
+  html body.mobile-view:not(.mobile-landscape) #screen > .game {
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
+  }
+}
