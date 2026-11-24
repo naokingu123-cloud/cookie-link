@@ -8,7 +8,8 @@ if(query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1')
 const id=window.SweetsLineup?.ids?.indexOf('candy');if(!(id>=0)||!window.SixDropV247)return;
 const slot=slots[id],engine=app.engines[id],rules=window.SixDropV247.rules;
 const ART_ROOT='assets/sixdrop-art-v278/';
-const ART_FILES=['bottle','allclear-logo','progressive-frame','payout-frame','allclear-award'];
+const ART_FILES=['bottle','allclear-logo','progressive-frame','payout-line','payout-triangle','payout-hexagon','allclear-award'];
+const artFile=name=>window.SixDropArtV296?.asset(name)||ART_ROOT+(name.startsWith('payout-')?'payout-frame':name)+'.png?v=278';
 const roles=['line','triangle','hexagon'],labels={line:'直線',triangle:'三角',hexagon:'ヘキサゴン'};
 const images=new Map(),errors=[],stats={mainPaints:0,miniPaints:0,receiptEvents:0,allClearBadgePaints:0};
 const nodes={roles:new Map()};
@@ -26,7 +27,7 @@ function info(){
   inheritedContinuation:false,earnedContinuation:false,continuationActive:false,
   allClearCount:s?.allClears||0,allClearWin:s?.bonusMedals||0,lastAllClearWin:s?.lastAllClearWin||0,counts:s?.counts||{}};
 }
-function resetReceipt(){receipt={epoch:epoch(),count:0,win:0,lastWin:0};}
+function resetReceipt(){receipt={epoch:epoch(),count:0,win:0,lastWin:0};for(const record of nodes.roles.values())record.section.classList.remove('sd296-role-flash');}
 function canonicalReceipt(d){
  if(receipt.epoch!==epoch())resetReceipt();
  receipt.count=Math.max(0,Number(d.allClearCount)||0);receipt.win=Math.max(0,Number(d.allClearWin)||0);
@@ -35,6 +36,9 @@ function canonicalReceipt(d){
 function observe(event){
  if(receipt.epoch!==epoch())resetReceipt();
  if(event.phase==='ready'){resetReceipt();return;}
+ if(event.phase==='pyramidAward'&&active===id&&!document.hidden&&!motionReduced&&window.SixDropArtV296?.loaded){
+  for(const role of new Set((event.forms||[]).map(form=>form.type))){const record=nodes.roles.get(role);if(record)record.section.classList.add('sd296-role-flash');}
+ }
  if(event.phase==='pyramidAllClear'){
   receipt.count=Math.max(receipt.count,Number(event.allClears)||receipt.count+1);
   receipt.win=Number.isFinite(event.bonusMedals)?event.bonusMedals:receipt.win+Math.max(0,Number(event.winMedals)||0);
@@ -42,7 +46,7 @@ function observe(event){
  }else if(['waiting','settled','complete'].includes(event.phase)&&!engine.fx)canonicalReceipt(info());
 }
 function makeImage(name,className,alt=''){
- const im=document.createElement('img');im.className=className;im.src=ART_ROOT+name+'.png?v=278';im.alt=alt;im.decoding='async';return im;
+ const im=document.createElement('img');im.className=className;im.src=artFile(name);im.alt=alt;im.decoding='async';return im;
 }
 function ensure(){
  if(nodes.heading)return;
@@ -58,14 +62,19 @@ function ensure(){
  const odds=document.createElement('div');odds.id='sd278-payouts';odds.className='sd278-payouts';odds.setAttribute('aria-label','シックスドロップの成立個数別累計配当');
  for(const role of roles){
   const section=document.createElement('section');section.className='sd278-payout-card';section.dataset.role=role;
-  section.append(makeImage('payout-frame','sd278-payout-frame'));
+  section.append(makeImage('payout-'+role,'sd278-payout-frame'));
+  const clearFlash=event=>{if(event.target===section&&event.animationName==='sd296-role-glint')section.classList.remove('sd296-role-flash');};
+  section.addEventListener('animationend',clearFlash);section.addEventListener('animationcancel',clearFlash);
   const content=document.createElement('div');content.className='sd278-payout-content';
   content.innerHTML='<header><canvas class="sd278-role-icon" width="168" height="112" role="img" aria-label="'+({line:'同色4個の直線',triangle:'同色6個を1・2・3個に並べた三角',hexagon:'同色6個を輪に並べたヘキサゴン'}[role])+'"></canvas><b>'+labels[role]+'</b><span class="sd278-role-count">×0</span></header><table><thead><tr><th scope="col">個数</th><th scope="col">累計配当</th></tr></thead><tbody></tbody></table>';
-  section.append(content);odds.append(section);nodes.roles.set(role,{section,body:content.querySelector('tbody'),count:content.querySelector('.sd278-role-count'),icon:content.querySelector('canvas'),iconSource:null,key:''});
+  const tableCount=content.querySelector('thead th');
+  if(window.SixDropArtV296?.loaded){tableCount.setAttribute('aria-label','現在の成立個数');tableCount.title='現在の成立個数';tableCount.textContent='×0';section.setAttribute('aria-label',labels[role]+'の成立個数と累計配当');}
+  section.append(content);odds.append(section);nodes.roles.set(role,{section,body:content.querySelector('tbody'),count:content.querySelector('.sd278-role-count'),tableCount,icon:content.querySelector('canvas'),iconSource:null,key:''});
  }
  slot.sixOdds.append(odds);slot.sixOdds.dataset.ui278='1';nodes.odds=odds;
  const viewport=slot.candyCanvas.parentElement;viewport.classList.add('sd278-bottle');
  const bottle=makeImage('bottle','sd278-bottle-art');viewport.append(bottle);nodes.bottle=bottle;
+ if(window.SixDropArtV296?.loaded){const glints=document.createElement('span');glints.className='sd296-rim-glints';glints.setAttribute('aria-hidden','true');viewport.append(glints);}
  const removed=document.createElement('div');removed.className='sd280-removed';removed.setAttribute('aria-label','消したドロップ 合計0個');
  removed.innerHTML='<span>消したドロップ</span><span class="sd280-removed-value">合計 <strong id="sd280-removed-total">0</strong><em>個</em></span>';
  viewport.after(removed);nodes.removed=removed;nodes.removedTotal=removed.querySelector('strong');
@@ -140,7 +149,7 @@ function paintTables(d){
   const first=count<5?1:count-3,list=Array.from({length:5},(_,i)=>first+i);
   const rows=list.map(n=>{const hundredths=typeof rules.roleTotal==='function'?rules.roleTotal(role,n,engine.state||rules.CURRENT_REVISION):rules.roleAward(role,0,n);return {count:n,hundredths,win:Math.floor(bet*hundredths/100)};});
   const key=[bet,count,engine.state?.rulesRevision||rules.CURRENT_REVISION,record.section.clientWidth,...rows.map(row=>row.hundredths)].join('/');
-  if(record.key===key)continue;record.key=key;record.section.dataset.earnedCount=String(count);putText(record.count,'×'+count);record.body.replaceChildren();
+  if(record.key===key)continue;record.key=key;record.section.dataset.earnedCount=String(count);putText(record.count,'×'+count);if(window.SixDropArtV296?.loaded)putText(record.tableCount,'×'+count);record.body.replaceChildren();
   for(const row of rows){
    const tr=document.createElement('tr');tr.dataset.count=String(row.count);tr.dataset.payoutHundredths=String(row.hundredths);tr.dataset.win=String(row.win);
    tr.classList.toggle('is-earned',row.count<=count);tr.classList.toggle('is-current',row.count===count);tr.classList.toggle('is-next',row.count===count+1);
@@ -195,7 +204,7 @@ paintSixThumbnail=function(s,rows){
 };
 const api={version:284,ready:null,
  awardArt:()=>({image:image('allclear-award'),logo:image('allclear-logo'),layout:{x:.19,y:.34,w:.62,h:.36,ribbonY:.79,ribbonWidth:.40},onPaint:()=>{stats.allClearBadgePaints++;}}),
- describe:()=>({version:284,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:ART_FILES.map(name=>ART_ROOT+name+'.png'),errors:errors.slice(),
+ describe:()=>({version:284,artVersion:window.SixDropArtV296?.loaded?296:278,artLoaded:ART_FILES.every(name=>!!image(name)),imageFiles:[...new Set(ART_FILES.map(name=>window.SixDropArtV296?.loaded&&window.SixDropArtV296.source(name)||ART_ROOT+(name.startsWith('payout-')?'payout-frame':name)+'.png'))],errors:errors.slice(),
   receipt:{...receipt},progressive:{units:Number(nodes.bank?.dataset.units)||0,targetUnits:Number(nodes.bank?.dataset.targetUnits)||0},
   removed:{count:Number(nodes.removedTotal?.dataset.count)||0,targetCount:Number(nodes.removedTotal?.dataset.targetCount)||0},
   continuation:!!lastInfo?.continuationActive,batchSizes:(lastInfo?.batchSizes||batchSizes()).slice(),receivedBalls:lastInfo?.receivedBalls||0,processedBalls:lastInfo?.processedBalls||0,
@@ -203,7 +212,7 @@ const api={version:284,ready:null,
 window.SixDropUiV278=api;
 api.ready=Promise.all(ART_FILES.map(name=>new Promise(resolve=>{
  const im=new Image();im.decoding='async';images.set(name,im);
- im.onload=()=>resolve(true);im.onerror=()=>{errors.push('Missing '+ART_ROOT+name+'.png');resolve(false);};im.src=ART_ROOT+name+'.png?v=278';
+ im.onload=()=>resolve(true);im.onerror=()=>{errors.push('Missing artwork '+name);resolve(false);};im.src=artFile(name);
 }))).then(()=>{refresh();slot.candyKey='';slot.sixReachKey='';slot.dirtyMain=slot.dirtyMini=true;carnivalQueueFrame(slot);return ART_FILES.every(name=>!!image(name));});
 Object.freeze(api);
 window.addEventListener('resize',()=>{for(const item of nodes.roles.values())item.key='';refresh();});

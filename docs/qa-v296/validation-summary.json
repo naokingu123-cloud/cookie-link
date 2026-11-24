@@ -1,0 +1,29 @@
+{
+  "version": "20261124-v296-sixdrop-candy-atelier",
+  "scope": "Implemented Six Drop artwork upgrade; isolated production Canvas verification completed. Browser and full-game interaction checks remain pending.",
+  "validated": {
+    "nativeRules": "tests/sixdrop-v285-rules.cjs passed",
+    "nativeAwards": "tests/award-presentation-v277.mjs passed for all 10 games",
+    "reachableWitnesses": "6 native cases constructed by tests/sixdrop-v296-browser.mjs --fixtures-only",
+    "actualRenderer": "8 cases passed using actual production native semantic extraction, badge sizing, raster artwork and live numeral composition",
+    "artworkReview": "Four role artworks, live count ribbons, 12 glyph crops, nine candy sprites, 1,089,990 WIN, 116px and 47px miniatures visually reviewed",
+    "offlineIntegrity": "All 881 manifest files and SHA-256 values verified; total 246214428 bytes"
+  },
+  "pending": {
+    "browser": "Local Chromium could not start because socket creation was denied by the environment; no full-browser success claimed",
+    "ci": "Dedicated browser workflow included for shapes and all-clear groups",
+    "publicRelease": "No update published from this branch yet"
+  },
+  "unchangedRules": {
+    "revision": 285,
+    "coreFile": "assets/sixdrop-progressive-core-v247.js",
+    "rng": "No new RNG calls in art modules",
+    "nativeAmounts": "Exact event.winMedals; no independent payout calculation"
+  },
+  "reports": [
+    "native-render-report.json",
+    "native-render-contact.png",
+    "native-candy-pieces.png",
+    "native-digit-glyphs.png"
+  ]
+}

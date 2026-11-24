@@ -1,0 +1,243 @@
+/* Six Drop v296: live type and restrained light over the generated artwork.
+ * v278 owns all cabinet, bottle, bank-track and amount-fitting geometry.
+ * No candy sprites, game backgrounds or rule state are replaced here.
+ */
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card {
+  --sd296-accent: #ffd49b;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card[data-role="line"] {
+  --sd296-accent: #ffc7df;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card[data-role="triangle"] {
+  --sd296-accent: #bff6ed;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card[data-role="hexagon"] {
+  --sd296-accent: #eed0ff;
+}
+
+/* The final artwork includes its exact Japanese title and complete role
+ * diagram. Hide the old live header to avoid doubling either one; its DOM
+ * remains available to the compatibility adapter. The first table heading
+ * now owns the live current count. All five rows stay inside the painting's
+ * clear lower window at the native 96 px card width. */
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-content {
+  inset: 35px 11px 15px;
+  display: block;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-content header {
+  display: none !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts table {
+  grid-template-rows: 8px minmax(0, 1fr) !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts thead {
+  height: 8px !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr {
+  position: relative;
+  grid-template-columns: 20px minmax(0, 1fr) !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts th,
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts td {
+  position: relative;
+  z-index: 1;
+  padding: 0 2px !important;
+  border-bottom-color: #f3d3b421 !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts thead th {
+  font-size: 7px !important;
+  color: #e8ccdc !important;
+  border-bottom-color: #f3d5ae66 !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts thead th:first-child {
+  color: var(--sd296-accent) !important;
+  font-weight: 900 !important;
+  font-variant-numeric: tabular-nums;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tbody th {
+  color: #efdbdf;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-earned {
+  background: #ffd68e12;
+  box-shadow: inset 1px 0 #f6cb895c;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current {
+  overflow: hidden;
+  background: #f6ce8a26;
+  background-image: var(--sd296-role-row, none);
+  background-size: 100% 100%;
+  box-shadow: inset 2px 0 var(--sd296-accent), inset 0 1px #ffeac426, inset 0 -1px #ffeac426;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current th,
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current td {
+  color: #fff0bd !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current .gold-number {
+  background: none !important;
+  color: #fff0bd !important;
+  -webkit-text-fill-color: #fff0bd !important;
+  text-shadow: 0 1px 1px #3b132c !important;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0 auto 0 -25px;
+  width: 18px;
+  background: #fff5d6;
+  opacity: 0;
+  transform: translateX(0) skewX(-24deg);
+  pointer-events: none;
+}
+
+/* A short role response decorates the existing artwork without moving the
+ * table or its fitted digits. JS toggles sd296-role-flash on the role card. */
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card::after {
+  content: "";
+  position: absolute;
+  top: 24px;
+  right: 5px;
+  z-index: 2;
+  width: 4px;
+  height: 4px;
+  border: 1px solid #fff7d7;
+  background: var(--sd296-accent);
+  opacity: 0;
+  transform: rotate(45deg) scale(.65);
+  pointer-events: none;
+}
+
+/* Two narrow highlights stay on the outer glass rim, outside number space.
+ * This inert span is separate from the retired v278 bottle pseudo-elements. */
+html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  overflow: hidden;
+  pointer-events: none;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::before,
+html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 19px;
+  border-radius: 50%;
+  background: #fff9e7;
+  box-shadow: 0 0 2px #fff5d4;
+  opacity: 0;
+  transform: translateY(-4px) scaleY(.85);
+  pointer-events: none;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::before {
+  left: 2.4%;
+  top: 25%;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::after {
+  right: 2.4%;
+  top: 65%;
+}
+
+/* Counter cosmetics retain all existing grid tracks, heights and widths. */
+html.sixdrop-art-v296 body.sixdrop-v278 .sd280-removed {
+  border-color: #f0cf9b59;
+  background: #341a31b8;
+  color: #f8e8db;
+  box-shadow: inset 0 1px #fff3bf1f;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-continuation {
+  border-color: #fff4cf;
+  background: #fff0b9;
+  color: #682344;
+  text-shadow: 0 1px #fff9e6;
+  box-shadow: inset 0 1px #fffaf0;
+}
+html.sixdrop-art-v296 body.sixdrop-v278 #sd278-clear-earned {
+  border-color: #edc98a;
+  background: #4a203de8;
+  box-shadow: inset 0 1px #fff0c633;
+}
+
+/* Ambient motion is only attached while Six Drop is the selected game.
+ * No animated filter, layout, shadow or background-position is used. */
+html.sixdrop-art-v296 body.sixdrop-v278[data-v249-game="candy"] #sd278-payouts tr.is-current::after {
+  animation: sd296-earned-shimmer 5.8s ease-in-out infinite;
+}
+html.sixdrop-art-v296 body.sixdrop-v278[data-v249-game="candy"] .sd278-payout-card.sd296-role-flash::after {
+  animation: sd296-role-glint .95s ease-out both;
+}
+html.sixdrop-art-v296 body.sixdrop-v278[data-v249-game="candy"] .sd296-rim-glints::before {
+  animation: sd296-glass-glint 9s ease-in-out infinite;
+}
+html.sixdrop-art-v296 body.sixdrop-v278[data-v249-game="candy"] .sd296-rim-glints::after {
+  animation: sd296-glass-glint 9s -4.5s ease-in-out infinite;
+}
+html.sixdrop-art-v296 body.sixdrop-v278[data-v249-game="candy"] #sd278-continuation:not([hidden]) {
+  animation: sd296-continuation-arrival 1.1s ease-out both;
+}
+html.sixdrop-art-v296 body.sixdrop-v278:is(.paused, .player-menu-open) #sd278-payouts tr::after,
+html.sixdrop-art-v296 body.sixdrop-v278:is(.paused, .player-menu-open) .sd278-payout-card::after,
+html.sixdrop-art-v296 body.sixdrop-v278:is(.paused, .player-menu-open) .sd278-role-count,
+html.sixdrop-art-v296 body.sixdrop-v278:is(.paused, .player-menu-open) .sd296-rim-glints::before,
+html.sixdrop-art-v296 body.sixdrop-v278:is(.paused, .player-menu-open) .sd296-rim-glints::after,
+html.sixdrop-art-v296 body.sixdrop-v278:is(.paused, .player-menu-open) #sd278-continuation {
+  animation-play-state: paused !important;
+}
+@keyframes sd296-earned-shimmer {
+  0%, 68% { opacity: 0; transform: translateX(0) skewX(-24deg); }
+  73% { opacity: .12; }
+  90%, 100% { opacity: 0; transform: translateX(112px) skewX(-24deg); }
+}
+@keyframes sd296-role-glint {
+  0%, 100% { opacity: 0; transform: rotate(45deg) scale(.65); }
+  24% { opacity: .9; transform: rotate(45deg) scale(1.3); }
+  56% { opacity: .55; transform: rotate(45deg) scale(.9); }
+}
+@keyframes sd296-glass-glint {
+  0%, 40%, 100% { opacity: 0; transform: translateY(-4px) scaleY(.85); }
+  52% { opacity: .42; transform: translateY(4px) scaleY(1.08); }
+  66% { opacity: 0; transform: translateY(13px) scaleY(.9); }
+}
+@keyframes sd296-continuation-arrival {
+  0%, 45%, 100% { opacity: 1; }
+  24%, 68% { opacity: .78; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr::after,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card::after,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd278-role-count,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::before,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::after,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-continuation {
+    animation: none !important;
+  }
+}
+@media (forced-colors: active) {
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-content {
+    color: CanvasText !important;
+  }
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-content header > b,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd278-role-count,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts thead th:first-child,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts th,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts td,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts .gold-number {
+    color: CanvasText !important;
+    -webkit-text-fill-color: CanvasText !important;
+    background: Canvas !important;
+    text-shadow: none !important;
+  }
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current th,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current td,
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr.is-current .gold-number {
+    color: HighlightText !important;
+    -webkit-text-fill-color: HighlightText !important;
+    background: Highlight !important;
+  }
+  html.sixdrop-art-v296 body.sixdrop-v278 #sd278-payouts tr::after,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd278-payout-card::after,
+  html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints {
+    display: none !important;
+  }
+}

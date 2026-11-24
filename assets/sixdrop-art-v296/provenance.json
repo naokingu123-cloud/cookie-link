@@ -1,0 +1,166 @@
+{
+  "version": 296,
+  "game": "candy",
+  "createdAt": "2026-11-24",
+  "generator": "built-in image_gen",
+  "method": "Cookie Link-style complete illustrated celebration artwork with sculpted raster titles, composited live WIN numeral sprites, complete role paytable headers, and nine new sugar-glass board pieces.",
+  "promptRecord": "docs/sixdrop-art-v296-prompts.json",
+  "layout": {
+    "payouts": {
+      "columns": 3,
+      "rows": 1,
+      "order": [
+        "line",
+        "triangle",
+        "hexagon"
+      ],
+      "titles": [
+        "直線",
+        "三角",
+        "ヘキサゴン"
+      ],
+      "liveRowsSafeRectNormalized": [
+        0.12,
+        0.35,
+        0.88,
+        0.86
+      ]
+    },
+    "candies": {
+      "columns": 3,
+      "rows": 3,
+      "order": [
+        "blue",
+        "aqua",
+        "green",
+        "lime",
+        "yellow",
+        "orange",
+        "red",
+        "pink",
+        "violet"
+      ],
+      "hostMapping": "by native R.RING color name; numbers stay live"
+    },
+    "digits": {
+      "columns": 4,
+      "rows": 3,
+      "order": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ",",
+        "WIN"
+      ]
+    },
+    "awards": {
+      "individualImages": true,
+      "roles": [
+        "line",
+        "triangle",
+        "hexagon",
+        "allclear"
+      ],
+      "liveCounts": "immutable native event snapshot",
+      "liveWin": "exact native event winMedals"
+    }
+  },
+  "conversion": "Original generated RGBA artwork encoded as WebP, alphaQuality100, original dimensions. Existing bottle quality90; payout/award hero quality91; candy quality92; numeral atlas quality94. Sprite rectangles are extracted once at runtime; no art is redrawn by procedural graphics.",
+  "assets": [
+    {
+      "name": "bottle",
+      "file": "assets/sixdrop-art-v296/bottle.webp",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 265660,
+      "hasAlpha": true,
+      "sha256": "186e9619c27f31b50b3b1f3cc2236fb32e270f8760a0579924b8675854b3834a",
+      "generatedSource": "exec-f1b2dd56-ae0b-43ed-82c1-50ca64539305.png",
+      "originalSha256": "a208ca2e68a5d34d9f9a22c51bbd0fb3033def6d51b9f90da44aada6936fbd5d"
+    },
+    {
+      "name": "payouts",
+      "file": "assets/sixdrop-art-v296/payouts.webp",
+      "width": 1944,
+      "height": 809,
+      "bytes": 326394,
+      "hasAlpha": true,
+      "sha256": "4d6da984c380f758ac5e2d74ea3c0c9911f75c0433a6ac6b69d145ef805eb51d",
+      "generatedSource": "exec-fa403e19-0992-48c6-b1de-6c87184b7a65.png",
+      "originalSha256": "b54e50ef6ecef2754af7c814575cc3c3696658bdd3686e0f248f5ab3bcf2cfc1"
+    },
+    {
+      "name": "candy-pieces",
+      "file": "assets/sixdrop-art-v296/candy-pieces.webp",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 293984,
+      "hasAlpha": true,
+      "sha256": "5544ed8bc76f8a6cbfee3edd8ed026e07af4e8bc560e017ee8b3c5599ef2b8b6",
+      "generatedSource": "exec-e8f219c7-1630-45fd-b93b-bedb9790116c.png",
+      "originalSha256": "47ea08a0ff347f666c22fb185b25f270a4e2e0aa557b10019c01b1fe088519b5"
+    },
+    {
+      "name": "award-line",
+      "file": "assets/sixdrop-art-v296/award-line.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 729530,
+      "hasAlpha": true,
+      "sha256": "b4246dbd0e3f887adfa111897b384f76ffbfade34a0a5d04de561abf60cfb0cc",
+      "generatedSource": "exec-b01d4864-35a0-4250-9040-6429b1726c70.png",
+      "originalSha256": "eb9c6c9a7e0a46ae3418972bdccecce2e8a94e125c12148366e43bcac918d55d"
+    },
+    {
+      "name": "award-triangle",
+      "file": "assets/sixdrop-art-v296/award-triangle.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 576632,
+      "hasAlpha": true,
+      "sha256": "404478ca4b405809f9d4c7ba316c2262a7c53a48252016b58231e627ac8fe332",
+      "generatedSource": "exec-461d7e80-f5f4-4ce0-81c8-15ce0888d4d0.png",
+      "originalSha256": "0627df982765f090aa4f9bbb49c81ed07acc945874e6fb76d15f19c0f6951119"
+    },
+    {
+      "name": "award-hexagon",
+      "file": "assets/sixdrop-art-v296/award-hexagon.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 805126,
+      "hasAlpha": true,
+      "sha256": "b544e1f6e6204babbc795bba82227694be87bc54b0768cb693a948e8e7a833ff",
+      "generatedSource": "exec-7bcb6ac6-433e-4d1e-bf05-ad361dd4a72c.png",
+      "originalSha256": "3db1989877ee05ea7ad6444bdadd6bd89d04535920873e4f8b8d12ef4ebc9aa0"
+    },
+    {
+      "name": "award-allclear",
+      "file": "assets/sixdrop-art-v296/award-allclear.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 795762,
+      "hasAlpha": true,
+      "sha256": "5bc5a3dfec045a6193a7eafb3fc39f5de1bb7450e6acb5c538802d3d9d33c96e",
+      "generatedSource": "exec-4c034b64-95ff-4019-a813-bc188ee85715.png",
+      "originalSha256": "0b3bcef698b4c08dbe88ce2bb0a064763fff5530cf675305cdf6297fc6a80443"
+    },
+    {
+      "name": "award-digits",
+      "file": "assets/sixdrop-art-v296/award-digits.webp",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 532002,
+      "hasAlpha": true,
+      "sha256": "5d15db049112b352158879f715f175c79423b96b52498cad38a4aec38ee981fe",
+      "generatedSource": "exec-5b8755c2-c978-4781-8c0b-a11f0a20a203.png",
+      "originalSha256": "ab8ea48ff30a526c689885043a945f35c79d8d75622739f71426145fad4f82e8"
+    }
+  ]
+}

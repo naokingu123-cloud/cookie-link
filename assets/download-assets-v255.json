@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v294-wide-main-playfields",
+  "version": "20261124-v296-sixdrop-candy-atelier",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 49,
-      "sha256": "4b22d39509ea532637a06ad16ef8118b557bbfea9fa0fbc0acd863be5cd69088"
+      "bytes": 50,
+      "sha256": "ea94fe16b035bd017bbbe3ea9a361c8e2e3eefffb08a510e599fd20e535cc56f"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 41450,
-      "sha256": "d19dc9875a1a4d9d143016ec84c39b65231c7f190692cc7489ee1d019fc3fccb"
+      "bytes": 42320,
+      "sha256": "8544359343ae78c9eb3e213d51ffb67441f026e56191fe4652e53c5ca5c6f705"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2143,8 +2143,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4360,
-      "sha256": "62da843e65cd182d66cb8180b3bd3d9391129b75c99a380db6f6c37e10366c8d"
+      "bytes": 4361,
+      "sha256": "58578aac7b01f5d4c4eaa81be2266f1ea42df1ac450294f39bcd390a05fe8611"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2168,8 +2168,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3771,
-      "sha256": "4574d1c7c7a726fa236e49b81e37b2f145fb62976deda6a470e4884240690be4"
+      "bytes": 3772,
+      "sha256": "0542d40877b7a129edb1091e0cee2310fbee7d69d6545c2f606e9ffb361bc9ff"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -3267,6 +3267,61 @@
       "sha256": "e4fb41b4c6fb25c7781c56444b1fdaac228207d79c166fc11a2874c111a751e8"
     },
     {
+      "path": "assets/sixdrop-art-v296.js",
+      "bytes": 4599,
+      "sha256": "60cf6fdc8c309fd3b95da5ee02edb4e7a01b4a23b2e7d604808f3c6195af38a0"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/award-allclear.webp",
+      "bytes": 795762,
+      "sha256": "5bc5a3dfec045a6193a7eafb3fc39f5de1bb7450e6acb5c538802d3d9d33c96e"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/award-digits.webp",
+      "bytes": 532002,
+      "sha256": "5d15db049112b352158879f715f175c79423b96b52498cad38a4aec38ee981fe"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/award-hexagon.webp",
+      "bytes": 805126,
+      "sha256": "b544e1f6e6204babbc795bba82227694be87bc54b0768cb693a948e8e7a833ff"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/award-line.webp",
+      "bytes": 729530,
+      "sha256": "b4246dbd0e3f887adfa111897b384f76ffbfade34a0a5d04de561abf60cfb0cc"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/award-triangle.webp",
+      "bytes": 576632,
+      "sha256": "404478ca4b405809f9d4c7ba316c2262a7c53a48252016b58231e627ac8fe332"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/bottle.webp",
+      "bytes": 265660,
+      "sha256": "186e9619c27f31b50b3b1f3cc2236fb32e270f8760a0579924b8675854b3834a"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/candy-pieces.webp",
+      "bytes": 293984,
+      "sha256": "5544ed8bc76f8a6cbfee3edd8ed026e07af4e8bc560e017ee8b3c5599ef2b8b6"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/payouts.webp",
+      "bytes": 326394,
+      "sha256": "4d6da984c380f758ac5e2d74ea3c0c9911f75c0433a6ac6b69d145ef805eb51d"
+    },
+    {
+      "path": "assets/sixdrop-art-v296/provenance.json",
+      "bytes": 5352,
+      "sha256": "634504692bada20546dea7b16e6e37479ab384443281ff6200c5c8d79d82f693"
+    },
+    {
+      "path": "assets/sixdrop-award-v296.js",
+      "bytes": 9729,
+      "sha256": "673f59b883c8fb47fc0e2bf90996666477155267deae85d0f6f9d294c6622956"
+    },
+    {
       "path": "assets/sixdrop-bottle-layout-v6.css",
       "bytes": 8729,
       "sha256": "6dbea60a13cd75df9e581e50b369664306e97f636c3ad516930b92e6777dc9a8"
@@ -3368,13 +3423,18 @@
     },
     {
       "path": "assets/sixdrop-progressive-host-v247.js",
-      "bytes": 24956,
-      "sha256": "9d7b20dff79babf7866e4386e93f9fc5c2e680c3283c7c96ca19ffa9dc564889"
+      "bytes": 25058,
+      "sha256": "dd1dac4f7f86d357e2f0d7f7deae609f3126a112a3ae8c6e9b3162eee1ce2c4b"
     },
     {
       "path": "assets/sixdrop-progressive-v247.css",
       "bytes": 6053,
       "sha256": "06a6a62bf4e5dc1cf094a781ba4aff307766ca5b949c8137bf2845824138f0e1"
+    },
+    {
+      "path": "assets/sixdrop-skin-v296.css",
+      "bytes": 9383,
+      "sha256": "feaac64c39dde6c8a5e7ed8e41e5ee45dd6869619d3ba686f0aee784bb4f0da6"
     },
     {
       "path": "assets/sixdrop-thinframe-v11.css",
@@ -3388,8 +3448,8 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 17300,
-      "sha256": "b5e66c6defdd5db378fe93e26e7098924f41a029d8016bb3fd02165e0ec33fa2"
+      "bytes": 18799,
+      "sha256": "325dbeb278fad2c6d586af118e935346e3bc459c715c0bac4ca574b4d68e1224"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -4108,8 +4168,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86134,
-      "sha256": "602a3150a1de30fe25c302510aa4210ac593b4ae41ef03b4cb3a0a1063c23e28"
+      "bytes": 86376,
+      "sha256": "6ae5f5036fb27ec75544a528d2005548f90871e4adabab5230d2853b47e126df"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4347,5 +4407,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 241857559
+  "totalBytes": 246214428
 }
