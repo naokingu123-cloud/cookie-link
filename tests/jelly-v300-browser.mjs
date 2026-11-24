@@ -32,7 +32,7 @@ const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
 const report={version,group,coreSha256:BASELINE_CORE_SHA256,hostSha256:BASELINE_HOST_SHA256,planned:scenarios,fixtures:Object.fromEntries(Object.entries(witnesses).map(([id,w])=>[id,fixtureSummary(w)])),starts:[],cases:[],failures:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[],
  scope:'Actual native input after independently replayed reachable checkpoints. Exact Set/state/trace/RNG and cumulative credits, actual generated source/glyph crops, 25 numbers/12 rails/11 payout rows, native all-ten thumbnail cadence, and natural eighth-ball RESULT. No live services or altered production clocks.'};
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml','.avif':'image/avif','.wav':'audio/wav','.mp3':'audio/mpeg'};
-const bridge='\n;window.__qa300={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;},get allNineMode(){return allNineMode;}};window.__qa300.inspect='+inspect.toString()+';\n';
+const bridge='\n;window.__qa300={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;},get allNineMode(){return allNineMode;}};window.__qa300.inspect='+inspect.toString()+';window.__qa300.installOtherObservers='+installOtherObservers.toString()+';\n';
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://127.0.0.1');
  if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/ws')){report.apiRequests.push(url.pathname);res.writeHead(451).end();return;}
@@ -123,7 +123,7 @@ async function open(spec,witness){
  page=await context.newPage();page.on('pageerror',error=>report.pageErrors.push({case:current,error:String(error.stack||error)}));page.on('response',response=>{if(response.status()>=400&&/jelly.*v300/.test(response.url()))report.assetFailures.push({case:current,url:response.url(),status:response.status()});});
  await page.goto(base+'/?edition=local&appv='+encodeURIComponent(version),{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__qa300&&window.SweetsLocalDebugV258?.ready&&window.JellyBingo&&window.JellyView&&window.JellyArtV300&&window.JellyAwardV300&&window.SweetsAttractLessons?.jelly,null,{timeout:90000});
- assert.deepEqual(await page.evaluate(()=>Promise.all([JellyArtV300.ready,JellyAwardV300.ready,JellyView.assetsReady])),[true,true,true]);await page.evaluate(()=>document.fonts.ready);await page.evaluate(installOtherObservers);
+ assert.deepEqual(await page.evaluate(()=>Promise.all([JellyArtV300.ready,JellyAwardV300.ready,JellyView.assetsReady])),[true,true,true]);await page.evaluate(()=>document.fonts.ready);await page.evaluate(()=>__qa300.installOtherObservers());
  await page.locator('#manual-number-toggle').click();await page.waitForFunction(()=>SweetsLocalDebugV258.describe().manualNumbers&&__qa300.app.phase==='ready');
  await page.evaluate(bet=>{const q=__qa300;q.index=q.slots.findIndex(s=>s.engine.kind==='jelly');if(q.index<0)throw Error('Missing Jelly slot');if(!SweetsLocalDebugV258.setBets(q.app.bets.map((_,i)=>i===q.index?bet:0)))throw Error('native local BET setup failed');q.select(q.index);},spec.bet);
  if(spec.lesson){
