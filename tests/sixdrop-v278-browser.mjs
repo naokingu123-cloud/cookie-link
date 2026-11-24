@@ -84,6 +84,26 @@ function observeArtwork(){
  HTMLCanvasElement.prototype.toDataURL=function(...args){const result=Reflect.apply(toURL,this,args),source=trace(this);if(source.length)dataURLs.set(result,source);return result;};
  window.__sixArt278={inspect:image=>trace(image).map(item=>({source:item.source,rect:item.rect?.slice()||null}))};
 }
+async function startManualRound(label,timeout=45000){
+ // A native start may finish while cabinet measurements are running. Check
+ // and use the ordinary UI button in one task, without a read/click race.
+ const start=await page.evaluate(()=>{
+  const q=__qa278,e=SixDropV247.engine;
+  if(!SweetsLocalDebugV258.describe().manualNumbers)throw Error('round start requires native manual-number mode');
+  if(q.app.phase==='playing'){
+   if(q.app.draws.length!==0||e.accepted!==0||e.processed!==0||e.busy||e.fx||!(e.idle||e.phase==='waiting'))throw Error('already-started round is not the untouched native waiting state');
+   return {path:'already-playing',phase:q.app.phase,draws:q.app.draws.length,accepted:e.accepted,processed:e.processed,enginePhase:e.phase};
+  }
+  if(q.app.phase!=='ready')throw Error('unexpected native phase before Start: '+q.app.phase);
+  const button=document.getElementById('manual-start'),box=button?.getBoundingClientRect();
+  if(!button||!button.isConnected||button.disabled||button.matches(':disabled')||!(box.width>0&&box.height>0))throw Error('native Start button is not visible and enabled');
+  for(let node=button;node;node=node.parentElement){const css=getComputedStyle(node);if(node.hidden||node.inert||css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)throw Error('native Start button is hidden or inert');}
+  button.click();
+  return {path:'button-click',phase:q.app.phase,draws:q.app.draws.length,accepted:e.accepted,processed:e.processed,enginePhase:e.phase};
+ });
+ (report.starts??=[]).push({label,...start});console.log('SIXDROP_V284_NATIVE_START',label,start.path);
+ await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout});
+}
 async function open(s){
  await context?.close();context=await browser.newContext({viewport:{width:s.width,height:s.height},serviceWorkers:'block'});
  await context.addInitScript(observeArtwork);
@@ -103,8 +123,7 @@ async function open(s){
    const emit=candy.emit;candy.emit=function(phase,detail={}){q.events.push({phase,winMedals:detail.winMedals,allClears:detail.allClears,bonusMedals:detail.bonusMedals,numbers:detail.numbers,counts:detail.counts,gain:detail.gain,cells:detail.cells,affectedCells:detail.affectedCells,removed:detail.removed?.map(({r,c,tile})=>({r,c,id:tile.id,number:tile.number}))});return Reflect.apply(emit,this,arguments);};q.events=[];
  },{prior,seed:winning.seed,bet:s.bet||3000});
  await compareCabinets(s);
- await page.locator('#manual-start').click();
- await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout:45000});
+ await startManualRound(s.id+'-initial');
  if(s.mini)await page.evaluate(()=>__qa278.select(3));
 }
 async function compareCabinets(s){
@@ -352,7 +371,7 @@ async function nextRound(seed,bet){
  // countdown. Its legacy result-next button stays hidden in this edition.
  await page.waitForFunction(()=>__qa278.app.phase==='ready'&&__qa278.app.draws.length===0,null,{timeout:30000});
  await page.evaluate(({seed,bet})=>{const q=__qa278;q.app.engines[2].random=()=>seed/4294967296;if(!SweetsLocalDebugV258.setBets(q.app.bets.map((_n,i)=>i===2?bet:0)))throw Error('next BET failed');q.select(2);q.syncManualNumbers();q.events=[];},{seed,bet});
- await page.locator('#manual-start').click();await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle);
+ await startManualRound('next-round-seed-'+seed,30000);
 }
 async function workerCase(){
  computer=createDownloadComputerV255({baseUrl:base});
