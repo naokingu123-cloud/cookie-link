@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v296-sixdrop-candy-atelier",
+  "version": "20261124-v297-gelato-prism",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 50,
-      "sha256": "ea94fe16b035bd017bbbe3ea9a361c8e2e3eefffb08a510e599fd20e535cc56f"
+      "bytes": 41,
+      "sha256": "5260c7e48a80c69e7fe97e9a7b50c95db9e25300d01e76308b01bcbd10c27edf"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1618,13 +1618,13 @@
     },
     {
       "path": "assets/award-presentation-v277.css",
-      "bytes": 5995,
-      "sha256": "b97139ee0d3f856b96932123b1a0db5a4c94057050462761fc90f6733c0bc86d"
+      "bytes": 6237,
+      "sha256": "7a866c310d89611c5c1d4874725f973f74cbaa4aa1b38f134782f8bf062d44f8"
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 44316,
-      "sha256": "d873a2e181e1fcabf6e83fd939a8f1d2b8fd2e621d68b6fe31a9dc3890f5c3cd"
+      "bytes": 47077,
+      "sha256": "864c979ca0465dbfb38069a740427ca217a472490e716007037248a3993d94e1"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2188,8 +2188,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4361,
-      "sha256": "58578aac7b01f5d4c4eaa81be2266f1ea42df1ac450294f39bcd390a05fe8611"
+      "bytes": 4352,
+      "sha256": "77bce59ed185fe439ae9126541e7262284654025d78ae70adda19c9def36cb0b"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2213,8 +2213,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3772,
-      "sha256": "0542d40877b7a129edb1091e0cee2310fbee7d69d6545c2f606e9ffb361bc9ff"
+      "bytes": 3763,
+      "sha256": "8baf5eb97973da7902673172c78b072128af60b337df431105f3ab8c504fa6ec"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2230,6 +2230,51 @@
       "path": "assets/game-titles-v91.js",
       "bytes": 8343,
       "sha256": "3646558eacb3d3a918bb8f5125593051e0ead8fd235d3a874635a25c9edc5480"
+    },
+    {
+      "path": "assets/gelato-art-v297.js",
+      "bytes": 13104,
+      "sha256": "82b0e8dfe60f0ca0a402108b6df08881002d124b3cdea55155ae92cfb5b42a36"
+    },
+    {
+      "path": "assets/gelato-art-v297/award-collector.webp",
+      "bytes": 578598,
+      "sha256": "d7c5e24b13efd767f63d6c00724ca8c6476b04af77cd8969e9ee5575bc4a7831"
+    },
+    {
+      "path": "assets/gelato-art-v297/award-full.webp",
+      "bytes": 530316,
+      "sha256": "171519693c0c527c50814c0c93db9ca72b1b6cc266b3f52ebabffd76e3994098"
+    },
+    {
+      "path": "assets/gelato-art-v297/award-panel.webp",
+      "bytes": 533808,
+      "sha256": "707c257e4cefa0cab296b04266c9bb45aa749be85c6b5b8f81bd09669787a239"
+    },
+    {
+      "path": "assets/gelato-art-v297/digits.webp",
+      "bytes": 745182,
+      "sha256": "7c90dc4f2fe542e9513dee6553dce139b7b991df2537ad6d359390d0c0328fa0"
+    },
+    {
+      "path": "assets/gelato-art-v297/furniture.webp",
+      "bytes": 270888,
+      "sha256": "8a2a7ef1771de1600b7aa552650a77b5d03316ca7d53a336c63426812a91db0c"
+    },
+    {
+      "path": "assets/gelato-art-v297/materials.webp",
+      "bytes": 585886,
+      "sha256": "946bf4b9bd23bba87c0e8e46901a5a56f8b7f56d53cdbefadf05be4d0ab87013"
+    },
+    {
+      "path": "assets/gelato-art-v297/paytable.webp",
+      "bytes": 349464,
+      "sha256": "c7d22b21546531cd3b00d7483c49ae2cb01c0ca5eb4129397c626d6f6219a4f2"
+    },
+    {
+      "path": "assets/gelato-award-v297.js",
+      "bytes": 13294,
+      "sha256": "7140e2debfcaee6b2f9a281425f18004ad8fccdd068c05ed52ae8e0ad2142bc1"
     },
     {
       "path": "assets/gelato-cabinet-v89.webp",
@@ -2260,6 +2305,11 @@
       "path": "assets/gelato-kingdom-generated-v31.webp",
       "bytes": 10008,
       "sha256": "48701c980c33898de5ce64560c9f0cc468bca8bfe9cb7316094d0536d9cddf41"
+    },
+    {
+      "path": "assets/gelato-presentation-v297.css",
+      "bytes": 4462,
+      "sha256": "241962ece899ec4760003c52ab0af9361cda5723ad040fdcf471d280f1afbfa7"
     },
     {
       "path": "assets/gelato-prism-cookie-v36.png",
@@ -2353,8 +2403,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 71560,
-      "sha256": "495724ca004294c1abc30efaf6831e0ebb78bbcf550badca911479185465ba61"
+      "bytes": 73926,
+      "sha256": "e266f206e72b780067f84b2680455beba17d1325bc0fc9f21d65f24f4de494f0"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -4213,8 +4263,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86577,
-      "sha256": "0011652efb8cde779d51142011c81744a3a4064818f213575faf0a8064ceaaa9"
+      "bytes": 86822,
+      "sha256": "29f3370f72002a9eac2319c0822eac192a6b92024d4a5d9870f6336c66d73c1a"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4452,5 +4502,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 250330788
+  "totalBytes": 253961377
 }
