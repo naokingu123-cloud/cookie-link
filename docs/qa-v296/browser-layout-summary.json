@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "c1c99d9881ba2dcbcd584d090258fbd27514427e",
+  "workflow": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/45405266246",
+  "result": "success",
+  "cases": 100,
+  "viewportGroups": [
+    320,
+    390,
+    430
+  ],
+  "sixDropCases": 10,
+  "visualReview": "Portrait, landscape with safe areas, and desktop screenshots inspected; new pieces and illustrated payout headings are visible; all five rows and current count fit; no clipped bottle or duplicate title overlays."
+}

@@ -1,0 +1,190 @@
+{
+  "runId": 45405266249,
+  "url": "https://github.com/naokingu123-cloud/cookie-link/actions/runs/45405266249",
+  "name": "Six Drop candy atelier v296",
+  "event": "pull_request",
+  "headBranch": "codex/sixdrop-candy-upgrade",
+  "headSha": "c1c99d9881ba2dcbcd584d090258fbd27514427e",
+  "status": "completed",
+  "conclusion": "success",
+  "runAttempt": 1,
+  "artifacts": [
+    {
+      "id": 14926555729,
+      "name": "sixdrop-v296-presentation-shapes",
+      "bytes": 9631468,
+      "sha256": "sha256:e86b7a502b167d2316d6637310d9a648d14ddc3a63324c6bf7bed4a925d0acd6",
+      "expiresAt": "2026-12-01T13:41:29Z"
+    },
+    {
+      "id": 14923504841,
+      "name": "sixdrop-v296-presentation-clear",
+      "bytes": 4669044,
+      "sha256": "sha256:2b4cb24d428513f0624a5e9681cac43c8d2da1efb6fc9195cf568de6b664dc77",
+      "expiresAt": "2026-12-01T13:41:05Z"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 138484127666,
+      "name": "native-sixdrop-presentation (clear)",
+      "conclusion": "success"
+    },
+    {
+      "id": 138484129088,
+      "name": "native-sixdrop-presentation (shapes)",
+      "conclusion": "success"
+    }
+  ],
+  "visualReview": {
+    "status": "accepted",
+    "reviewed": [
+      "shapes/line-desktop-live.png",
+      "shapes/triangle-phone-live.png",
+      "shapes/hexagon-desktop-live.png",
+      "clear/allclear-phone-live.png",
+      "clear/allclear-mini-live.png",
+      "clear/allclear-mini-overlay.png",
+      "clear/allclear-reduced-live.png",
+      "shapes/line-desktop-after.png",
+      "shapes/candy-bet-lesson.png"
+    ],
+    "findings": "Full role titles, real WIN amounts and count labels fit their surfaces. No overlap or clipping observed. Mini celebration is complete at its small native size. New candy sprites are visible in real board and BET lesson."
+  },
+  "sourceChangesForThisVerification": false,
+  "groups": [
+    {
+      "group": "shapes",
+      "ok": true,
+      "failures": 0,
+      "pageErrors": 0,
+      "assetFailures": 0,
+      "apiRequests": 0,
+      "externalRequests": 0,
+      "cases": [
+        {
+          "id": "line-desktop",
+          "status": "passed",
+          "win": 300,
+          "liveLabel": "直線 ×1",
+          "mini": false,
+          "width": 1366,
+          "documentWidth": 1366,
+          "overlayWidth": 298.125,
+          "overlayHeight": 298.125,
+          "maxAnchorDelta": 0,
+          "progressiveDigitLengths": [
+            6,
+            7
+          ],
+          "nativeStateAndRngOracle": "passed",
+          "newImageLineage": "passed",
+          "payoutRows": "passed"
+        },
+        {
+          "id": "triangle-phone",
+          "status": "passed",
+          "win": 60000,
+          "liveLabel": "トライアングル ×1",
+          "mini": false,
+          "width": 390,
+          "documentWidth": 390,
+          "overlayWidth": 258.375,
+          "overlayHeight": 258.375,
+          "maxAnchorDelta": 0,
+          "progressiveDigitLengths": [
+            6,
+            7
+          ],
+          "nativeStateAndRngOracle": "passed",
+          "newImageLineage": "passed",
+          "payoutRows": "passed"
+        },
+        {
+          "id": "hexagon-desktop",
+          "status": "passed",
+          "win": 1500,
+          "liveLabel": "ヘキサゴン ×1",
+          "mini": false,
+          "width": 1366,
+          "documentWidth": 1366,
+          "overlayWidth": 298.125,
+          "overlayHeight": 298.125,
+          "maxAnchorDelta": 0,
+          "progressiveDigitLengths": [
+            6,
+            7
+          ],
+          "nativeStateAndRngOracle": "passed",
+          "newImageLineage": "passed",
+          "payoutRows": "passed"
+        }
+      ]
+    },
+    {
+      "group": "clear",
+      "ok": true,
+      "failures": 0,
+      "pageErrors": 0,
+      "assetFailures": 0,
+      "apiRequests": 0,
+      "externalRequests": 0,
+      "cases": [
+        {
+          "id": "allclear-phone",
+          "status": "passed",
+          "win": 1089990,
+          "liveLabel": "全消し 1回目！",
+          "mini": false,
+          "width": 390,
+          "documentWidth": 390,
+          "overlayWidth": 258.375,
+          "overlayHeight": 258.375,
+          "maxAnchorDelta": 0,
+          "progressiveDigitLengths": [
+            6,
+            7
+          ],
+          "nativeStateAndRngOracle": "passed",
+          "newImageLineage": "passed",
+          "payoutRows": "passed"
+        },
+        {
+          "id": "allclear-mini",
+          "status": "passed",
+          "win": 1000890,
+          "liveLabel": "全消し 1回目！",
+          "mini": true,
+          "width": 390,
+          "documentWidth": 390,
+          "overlayWidth": 38.1875,
+          "overlayHeight": 38.1875,
+          "maxAnchorDelta": null,
+          "progressiveDigitLengths": [],
+          "nativeStateAndRngOracle": "passed",
+          "newImageLineage": "passed",
+          "payoutRows": "passed"
+        },
+        {
+          "id": "allclear-reduced",
+          "status": "passed",
+          "win": 1089990,
+          "liveLabel": "全消し 1回目！",
+          "mini": false,
+          "width": 390,
+          "documentWidth": 390,
+          "overlayWidth": 258.375,
+          "overlayHeight": 258.375,
+          "maxAnchorDelta": 0,
+          "progressiveDigitLengths": [
+            6,
+            7
+          ],
+          "nativeStateAndRngOracle": "passed",
+          "newImageLineage": "passed",
+          "payoutRows": "passed"
+        }
+      ]
+    }
+  ]
+}
