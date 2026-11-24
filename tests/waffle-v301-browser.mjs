@@ -128,6 +128,10 @@ function captureAward({number,role,win,mini}){
  const layout=q.inspect(),frame=(mini?layout.miniArt:layout.mainArt).frame;if(frame?.state.draws.at(-1)!==number)return null;
  // The original complete rack may still be active after the fall lands.
  if(!mini&&layout.dom.rankStep!==3)return null;
+ // A main award can outlive the board motion. Wait for the independent
+ // native POW marker refresh when observing that settled board frame.
+ if(!mini&&layout.mainArt.lastCall?.motion.active===false){const s=layout.state,activeIndex=layout.engine.phase==='flipping'?Math.max(0,s.draws.length-1):s.draws.length;
+  if(!layout.dom.turns.every((turn,i)=>{const scheduled=!!s.powTurns[i],active=scheduled&&layout.engine.running&&i===activeIndex&&s.phase==='playing',used=scheduled&&i<s.draws.length&&!active;return turn.pow.scheduled===scheduled&&turn.pow.active===active&&turn.pow.used===used&&turn.pow.hidden===!scheduled&&turn.pow.text===(i<s.draws.length&&!active?'POW':'POW UP');}))return null;}
  const pixels=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,cv.width,cv.height).data;let nontransparent=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>10)nontransparent++;
  return {event,api,last,trace,layout,nontransparent,frozenSnapshot:Object.isFrozen(event.waffle)&&['flippedIds','flipSteps','lastKnockRows','rackBefore','rackAfter'].every(k=>Object.isFrozen(event.waffle[k]))&&event.waffle.flipSteps.every(Object.isFrozen),pointerEvents:getComputedStyle(cv).pointerEvents,status:q.slots[q.index].panel.querySelector('.award-v277-status')?.textContent,image:cv.toDataURL('image/png')};
 }
@@ -138,6 +142,11 @@ function captureGrade({ball}){
 }
 function captureBoard({ball}){
  const q=__qa301,e=BingoStick.engine,layout=q.inspect(),frame=layout.mainArt.lastCall;if(q.app.phase!=='playing'||e.accepted!==ball||e.busy||!layout.board.mainVisible||frame?.state.draws.length!==ball||frame.motion.active)return null;
+ // A zero-flip move may settle before the unchanged 100 ms POW DOM refresh.
+ // Capture the native repaint and its naturally refreshed markers together;
+ // do not force a refresh or relax the later exact marker assertions.
+ const s=layout.state,activeIndex=layout.engine.phase==='flipping'?Math.max(0,s.draws.length-1):s.draws.length;
+ if(!layout.dom.turns.every((turn,i)=>{const scheduled=!!s.powTurns[i],active=scheduled&&layout.engine.running&&i===activeIndex&&s.phase==='playing',used=scheduled&&i<s.draws.length&&!active;return turn.pow.scheduled===scheduled&&turn.pow.active===active&&turn.pow.used===used&&turn.pow.hidden===!scheduled&&turn.pow.text===(i<s.draws.length&&!active?'POW':'POW UP');}))return null;
  return {layout,image:q.slots[q.index].panel.querySelector('.bs-grid>canvas').toDataURL('image/png')};
 }
 function captureResult(){
