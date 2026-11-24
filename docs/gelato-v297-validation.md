@@ -38,7 +38,7 @@ The browser harness runs only in remote GitHub Actions. A local invocation witho
 
 Each browser restores the genuine pre-draw checkpoint with its versioned native state and clicks the normal manual-number control. No browser clock, engine wait, settlement or award function is replaced. The lexical test bridge exists only in the isolated HTTP server; it is not shipped in production assets.
 
-Canvas instrumentation traces decoded source pixels through `drawImage`, cached canvases and data URLs. The checks require the generated material and furniture sheets to reach both the actual main and mini Gelato canvases, and the new paytable furniture to reach the live DOM. All 19 current native numerals must be painted at their actual socket positions in both views. The original ice-cream kingdom background remains in the computed scene styles.
+Canvas instrumentation traces decoded source pixels through `drawImage`, cached canvases and data URLs. The checks require the generated material and furniture sheets to reach both the actual main and mini Gelato canvases, and the new paytable furniture to reach the live DOM. All 19 current native numerals must be painted at their actual socket positions in both views. The original `assets/gelato-ice-candy-kingdom-v41.webp` background, selected by the existing v249 surface theme, remains in the computed scene styles.
 
 The harness samples acquired and unacquired faces of the same native grade to check visible contrast. It checks all four collector labels, filled pieces, actual bitmap grade, completion state, and exact amount. Every count-payout row is compared with the native versioned table, and long amounts must fit the live payout bay.
 

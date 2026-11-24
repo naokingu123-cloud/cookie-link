@@ -165,7 +165,7 @@ function inspectBoard(){
   furnitureSources:observer.styleSources(getComputedStyle(payout).backgroundImage),
   collectors:[...payout.querySelectorAll('[data-grade]')].map(row=>({grade:Number(row.dataset.grade),label:row.querySelector('.gp-collected-n').textContent,colorName:row.querySelector('.gp-collector-meta b').textContent,complete:row.classList.contains('gp-complete'),win:row.querySelector('.gp-win-number').textContent,
    pieces:[...row.querySelectorAll('.gp-diamond-piece')].map(piece=>{const background=getComputedStyle(piece).backgroundImage;return {filled:piece.classList.contains('is-filled'),sources:observer.styleSources(background),grade:[0,1,2,3,4].find(grade=>background.includes(GelatoArtV297.collectorURL(grade))),filter:getComputedStyle(piece).filter};})})),
-  payouts:[...payout.querySelectorAll('.gp-pay-row')].map(row=>({panels:Number(row.dataset.panels),text:row.querySelector('.gp-pay-win').textContent,expected:q.medalWin(q.app.locked[slot.i],Math.round(e.countPaytable[Number(row.dataset.panels)]*100)).toLocaleString('ja-JP')+'WIN'})),
+  payouts:[...payout.querySelectorAll('.gp-pay-row')].map(row=>({panels:Number(row.dataset.panels),text:row.querySelector('.gp-pay-win').textContent,expected:q.medalWin(q.app.locked[slot.i],Math.round(e.countPaytable[Number(row.dataset.panels)]*100)).toLocaleString('ja-JP',{maximumFractionDigits:2,useGrouping:false})+'WIN'})),
   fittedAmounts:[...payout.querySelectorAll('.gp-fit-amount')].map(label=>({text:label.textContent,box:rect(label),parent:rect(label.parentElement)})),
   native:{filled:e.filled.size,totalHundredths:e.totalHundredths,counts:e.collectorCounts.slice(),processed:e.processed,pouring:!!e.pouring},art:GelatoArtV297.describe()};
 }
@@ -203,7 +203,7 @@ function assertBoard(board,scenario,fixture,{after=false}={}){
   assert(board.miniSources.includes('assets/gelato-art-v297/'+name+'.webp'),'actual mini canvas transfers '+name);
  }
  assert(board.furnitureSources.includes('assets/gelato-art-v297/paytable.webp'),'generated payout furniture is actually applied');
- assert(board.backdropSources.includes('assets/sweet-skins/gelato-kingdom.webp'),'the original ice-cream kingdom background remains visible');
+ assert(board.backdropSources.includes('assets/gelato-ice-candy-kingdom-v41.webp'),'the original v249 ice-candy kingdom background remains visible: '+board.backdropSources.join(', '));
  assert(!board.sources.some(source=>/^assets\/(cookie-art-v293|choco-art-v295)\//.test(source)));
  for(const [name,numbers]of [['main',board.numbers],['mini',board.miniNumbers]]){
   assert.equal(numbers.length,19);assert(numbers.every(node=>node.draws.some(draw=>draw.fontPx>(name==='main'?20:3)&&draw.alpha>.5)),name+' actually paints every current native number at its correct socket');
@@ -213,7 +213,7 @@ function assertBoard(board,scenario,fixture,{after=false}={}){
  for(const row of board.collectors){
   const count=state.counts[row.grade],mult=[0,1,3,5,10][row.grade];
   assert.equal(row.label,count+'/4');assert.equal(row.complete,count===4);assert.equal(row.pieces.filter(piece=>piece.filled).length,count);
-  assert.equal(row.win,(scenario.bet*mult).toLocaleString('ja-JP'));
+  assert.equal(row.win,(scenario.bet*mult).toLocaleString('ja-JP',{maximumFractionDigits:2,useGrouping:false}));
   assert.equal(row.colorName,['水色','緑','黄色','赤','紫'][row.grade]);
   for(const piece of row.pieces){assert(piece.sources.includes('assets/gelato-art-v297/materials.webp'));if(piece.filled)assert.equal(piece.grade,row.grade,'collected diamond depicts the actual native grade');}
  }
@@ -237,10 +237,10 @@ const startedRun=Date.now();
 try{
  browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}:{}),args:['--no-sandbox','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
  for(const scenario of scenarios){
-  current=scenario.id;const started=Date.now();
+  current=scenario.id;const started=Date.now();let boardEvidence=null;
   try{
    assert(Date.now()-startedRun<10*60*1000,'browser shard stays within a ten-minute budget');
-   await open(scenario);const fixture=witnesses[scenario.witness||scenario.kind],restored=await restoreCheckpoint(fixture),board=await page.evaluate(inspectBoard);
+   await open(scenario);const fixture=witnesses[scenario.witness||scenario.kind],restored=await restoreCheckpoint(fixture),board=await page.evaluate(inspectBoard);boardEvidence=board;
    assertBoard(board,scenario,fixture);await page.screenshot({path:path.join(output,scenario.id+'-board.png')});
    if(scenario.mini){await page.evaluate(()=>{const q=__qa297;q.select(q.slots.findIndex(slot=>slot.engine.kind==='choco'));q.scheduleUI(q.app);});await page.waitForFunction(()=>__qa297.slots[__qa297.active].engine.kind==='choco');}
    await page.waitForFunction(number=>{const button=document.querySelector('#manual-number-grid button[data-number="'+number+'"]');return button&&!button.disabled;},fixture.next,{timeout:30000});
@@ -260,8 +260,11 @@ try{
    assert.equal(evidence.glyphs.join(''),native.expectedWin.toLocaleString('ja-JP')+'WIN','actual raster glyphs spell the exact native incremental amount');assert(evidence.sources.includes('assets/gelato-art-v297/digits.webp'));
    assert(!evidence.sources.some(source=>/^assets\/(cookie-art-v293|choco-art-v295)\//.test(source)||source==='assets/award-art-v291/themed-cutin-atlas.webp'));
    const imageDraw=evidence.draws.find(draw=>draw.source===evidence.art.last.source&&draw.bounds);assert(imageDraw);contained(imageDraw.bounds,{left:0,top:0,right:evidence.canvas.width,bottom:evidence.canvas.height},'entire illustrated award is within its canvas',2);
+   const earnsSugar=!fixture.state.sugarAwarded&&fixture.proof.stateAfter.sugarAwarded;
+   if(earnsSugar)assert(evidence.nativeEvents.some(item=>item.phase==='sugaraward'),'the collector witness produces its real native Sugar acquisition');
    if(!scenario.mini){
     assert(evidence.flash.hidden,'duplicate native center flash stays behind the loaded illustrated cue');const sugar=evidence.sugar;
+    if(earnsSugar)assert(sugar.active&&!sugar.hidden&&sugar.visible&&sugar.classes.includes('compact'),'earned native Sugar has a visible compact receipt beside the illustrated collector award');
     if(sugar.active){assert(!sugar.hidden&&sugar.classes.includes('compact'));assert(sugar.label.includes('シュガーGET')&&sugar.icon);}
     if(sugar.visible){
      const sx=evidence.box.width/evidence.canvas.width,sy=evidence.box.height/evidence.canvas.height,plaque={left:evidence.box.left+imageDraw.bounds.left*sx,right:evidence.box.left+imageDraw.bounds.right*sx,top:evidence.box.top+imageDraw.bounds.top*sy,bottom:evidence.box.top+imageDraw.bounds.bottom*sy};
@@ -275,11 +278,11 @@ try{
    if(scenario.mini)await page.evaluate(()=>{const q=__qa297;q.select(q.slots.findIndex(slot=>slot.engine.kind==='gelato'));q.scheduleUI(q.app);});
    await page.waitForFunction(expected=>{const e=GelatoPrism.engine,current=document.querySelector('.gp-collector-panel .gp-current');return e.idle&&!e.pouring&&e.processed===expected&&Number(current?.dataset.panels)===e.filled.size;},fixture.draws.length+1,{timeout:15000});
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-   const after=await page.evaluate(inspectBoard);assertBoard(after,scenario,fixture,{after:true});assert(after.art.faceBuilds<=board.art.faceBuilds+1,'live draws reuse cached native masks');
+   const after=await page.evaluate(inspectBoard);boardEvidence=after;assertBoard(after,scenario,fixture,{after:true});assert(after.art.faceBuilds<=board.art.faceBuilds+1,'live draws reuse cached native masks');
    await page.screenshot({path:path.join(output,scenario.id+'-settled.png')});
    report.cases.push({id:scenario.id,status:'passed',durationMs:Date.now()-started,scenario,restored,board,evidence,after});console.log('GELATO_V297_BROWSER_CASE_PASS',scenario.id);
   }catch(error){
-   const failure={id:scenario.id,message:String(error),stack:error.stack};
+   const failure={id:scenario.id,message:String(error),stack:error.stack,board:boardEvidence};
    if(page)try{failure.state=await page.evaluate(()=>({art:window.GelatoArtV297?.describe(),award:window.GelatoAwardV297?.describe(),awards:window.SweetsAwardsV277?.describe(),nativeEvents:window.__qa297?.nativeEvents,presentation:window.GelatoPrism?.presentationV297}));await page.screenshot({path:path.join(output,scenario.id+'-failure.png')});}catch{}
    report.failures.push(failure);console.error('GELATO_V297_BROWSER_CASE_FAIL',scenario.id,String(error));await closeContext();
   }finally{await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');}
