@@ -12,6 +12,8 @@ const numbers=[2,7,12,18,24],font='"Hiragino Maru Gothic ProN","Yu Gothic",Meiry
 const plate=new Image();if(!window.SweetsCartoonArt?.loaded)plate.src='assets/jelly-crystal-mold.webp';
 const skinCache=new Map();
 function cartoonSkin(tone){
+ const generated=window.JellyArtV300?.loaded&&window.JellyArtV300.surface(tone==='purple'?'blue+red':tone);
+ if(generated)return generated;
  const art=window.SweetsCartoonArt;if(!art?.loaded)return null;
  const key=art.epoch+'/'+tone;if(skinCache.has(key))return skinCache.get(key);
  const names={blue:'jelly-blue',red:'jelly-pink',yellow:'jelly-orange',green:'jelly-green',purple:'jelly-purple'};
@@ -36,10 +38,15 @@ function label(c,s,x,y,size,ink='#fff9e9',outline='',max=490){
 }
 function badge(c,s,x,y,w,accent='#aaf9f1'){
  box(c,x-w/2,y-16,w,32,16,'#123c4b',accent);
- window.SweetsCartoonArt?.loaded&&window.SweetsCartoonArt.frame(c,'jelly',x-w/2,y-16,w,32,4);
+ if(!(window.JellyArtV300?.loaded&&window.JellyArtV300.furniture(c,'phase',x-w/2,y-16,w,32)))
+  window.SweetsCartoonArt?.loaded&&window.SweetsCartoonArt.frame(c,'jelly',x-w/2,y-16,w,32,4);
  label(c,s,x,y,18,'#fffbe8','',w-10);
 }
 function rim(c,x,y,w,h){
+ if(window.JellyArtV300?.loaded){
+  c.drawImage(window.JellyArtV300.floor(),x+10,y+10,w-20,h-20);
+  if(window.JellyArtV300.rim(c,x,y,w,h,10))return;
+ }
  box(c,x,y,w,h,15,'#315f69','#afebdd');
  if(window.SweetsCartoonArt?.loaded&&window.SweetsCartoonArt.frame(c,'jelly',x,y,w,h,10))return;
  if(!plate.complete||!plate.naturalWidth)return;
@@ -83,8 +90,12 @@ function strip(c,scene,t){
   if(wall>.01){
    const len=h/2*wall;
    for(const [yy,hh] of [[y,len],[y+h-len,len]]){
-    c.fillStyle='#d1f4ed';c.fillRect(seam-3,yy,6,hh);c.fillStyle='#629aaf';c.fillRect(seam+2,yy,2,hh);
-    window.SweetsCartoonArt?.loaded&&window.SweetsCartoonArt.frame(c,'jelly',seam-3,yy,7,hh,2);
+    const rib=window.JellyArtV300?.loaded&&window.JellyArtV300.rib();
+    if(rib){c.save();c.translate(seam+.5,yy);c.rotate(Math.PI/2);c.drawImage(rib,0,-3.5,hh,7);c.restore();}
+    else{
+     c.fillStyle='#d1f4ed';c.fillRect(seam-3,yy,6,hh);c.fillStyle='#629aaf';c.fillRect(seam+2,yy,2,hh);
+     window.SweetsCartoonArt?.loaded&&window.SweetsCartoonArt.frame(c,'jelly',seam-3,yy,7,hh,2);
+    }
    }
   }
  }
