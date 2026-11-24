@@ -82,7 +82,7 @@ const report={version,group,rulesVersion:W.version,coreSha256:createHash('sha256
  scope:'Reachable native checkpoints followed by real numbered-button input; independent pour/prize oracle, all liquid layers, true WIN and settlement, generated-image provenance, live cup/MIX/power counts, desktop/320/390/430/mini/reduced motion. No live services or modified production timing.',
  approvedPresentationChange:'The generated cabinets contain decorative headings. Live full/MIX/power/number values remain native; payout b retains its exact amount plus WIN text and accessible label, while the repeated row WIN unit may be visually hidden.'};
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml','.avif':'image/avif','.wav':'audio/wav','.mp3':'audio/mpeg'};
-const bridge='\n;window.__qa298={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;}};\n';
+const bridge='\n;window.__qa298={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;}};window.__qa298.inspect='+inspect.toString()+';\n';
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://127.0.0.1');
  if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/ws')){report.apiRequests.push(url.pathname);res.writeHead(451).end();return;}
@@ -228,7 +228,7 @@ function inspect(){
  const text=node=>({text:node?.textContent,box:box(node),ink:textBox(node),visible:visible(node),clientWidth:node?.clientWidth,scrollWidth:node?.scrollWidth});
  return {state:q.getState(),engine:{phase:e.phase,processed:e.processed,accepted:e.accepted,running:e.running,busy:e.busy,fx:e.fx?{type:e.fx.type,duration:e.fx.duration,elapsed:e.fx.elapsed}:null,randomDraws:q.randomDraws,
    timingUnchanged:e.wait===q.nativeTiming.wait&&e.sleep===q.nativeTiming.sleep&&e.speed===q.nativeTiming.speed&&e.presentationRate===q.nativeTiming.presentationRate},
-  app:{phase:q.app.phase,draws:q.app.draws.slice(),paid:q.app.paid[q.index],win:q.app.roundWins[q.index],locked:q.app.locked[q.index]},
+  app:{phase:q.app.phase,draws:q.app.draws.slice(),paid:q.app.paid[q.index],win:q.app.roundWins[q.index],totalWin:q.app.totalWin,locked:q.app.locked[q.index]},
   anchors,board:{scene:origin,canvas:box(canvas),mainVisible:visible(canvas),mini:box(slot.miniCanvas),miniVisible:visible(slot.miniCanvas),fieldWidth:document.querySelector('#screen>.game>.field').clientWidth,fieldHeight:document.querySelector('#screen>.game>.field').clientHeight,
    cupPoints:Array.from({length:21},(_,id)=>WineryPyramid.hitGeometryV276(canvas.width,canvas.height,false,{id,type:'bowl'})),
    miniPoints:Array.from({length:21},(_,id)=>WineryPyramid.hitGeometryV276(slot.miniCanvas.width,slot.miniCanvas.height,true,{id,type:'bowl'}))},
@@ -251,14 +251,33 @@ function captureStatus({expected,received}){
 }
 function captureAward({expected,mini,reduced}){
  const q=__qa298,d=SweetsAwardsV277.describe(),event=d.active.find(cue=>cue.game==='winery'),api=WineryAwardV298.describe(),last=api.last;
- if(!event||event.phase!=='wineryAward'||event.win!==expected.win||last?.role!==expected.role||last.win!==expected.win||last.mini!==mini||event.age<(reduced?16:300))return null;
+ if(q.app.phase!=='playing'||!event||event.phase!=='wineryAward'||event.win!==expected.win||last?.role!==expected.role||last.win!==expected.win||last.mini!==mini||event.age<(reduced?16:300))return null;
  const cv=document.querySelector('.award-presentation-'+(mini?'mini':'main')+'[data-game="winery"]');if(!__wineryArt298.visible(cv))return null;
  const trace=__wineryArt298.inspect(cv),source='assets/winery-art-v298/award-'+expected.role+'.webp';
  if(!trace.sources.includes(source)||!trace.sources.includes('assets/winery-art-v298/award-digits.webp')||!last.rasterNumbers||!trace.texts.includes(last.liveLabel))return null;
  const box=__wineryArt298.box(cv),pixels=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,cv.width,cv.height).data;let nontransparent=0;
  for(let i=3;i<pixels.length;i+=4)if(pixels[i]>10)nontransparent++;
  return {event,frozenSnapshot:Object.isFrozen(event.winery),api,last,trace,box,nontransparent,pointerEvents:getComputedStyle(cv).pointerEvents,
-  status:q.slots[q.index].panel.querySelector('.award-v277-status')?.textContent,nativeEvents:q.nativeEvents.slice(),image:cv.toDataURL('image/png')};
+  status:q.slots[q.index].panel.querySelector('.award-v277-status')?.textContent,nativeEvents:q.nativeEvents.slice(),layout:q.inspect(),image:cv.toDataURL('image/png')};
+}
+function captureFinalBoard({ball,number,startEvents}){
+ // The already-full eighth ball has no award. Observe its real AllFull event
+ // during the native 850 ms hold, before completion makes the play area inert.
+ const q=__qa298,e=WineryPyramid.engine,events=q.nativeEvents.slice(startEvents),cv=q.slots[q.index].panel.querySelector('.wp-canvas');
+ if(q.app.phase!=='playing'||e.accepted!==ball||e.processed!==ball-1||e.lastNumber!==number||e.fx||!events.some(entry=>entry.event.phase==='wineryAllFull')||!__wineryArt298.visible(cv))return null;
+ return {layout:q.inspect(),nativeEvents:events,image:cv.toDataURL('image/png')};
+}
+function captureResult(){
+ const q=__qa298,results=window.SweetsResultsV253?.describe(),layer=document.getElementById('round-result-layer');
+ const row=layer?.querySelector('.result-game[data-game-index="'+q.index+'"]'),value=row?.querySelector('.result-value'),total=document.getElementById('result-total-win');
+ const {box,visible,textBox}=__wineryArt298;
+ if(!['result','paying','complete'].includes(q.app.phase)||!results?.active||results.phase!=='hold'||!visible(layer)||!visible(row)||!visible(value)||!visible(total))return null;
+ const amount=(node,cell)=>({text:node.textContent,visible:visible(node),ink:textBox(node),cell:box(cell)});
+ return {layout:q.inspect(),results,layer:box(layer),card:box(layer.querySelector('.round-result')),
+  row:{...amount(value,row.querySelector('.result-game-award')),value:Number(value.dataset.value),label:value.getAttribute('aria-label'),unit:row.querySelector('.win-word')?.textContent},
+  total:{...amount(total,total.parentElement),unit:total.parentElement.querySelector('.win-word')?.textContent},
+  visibleRows:[...layer.querySelectorAll('.result-game')].filter(visible).map(node=>Number(node.dataset.gameIndex)),index:q.index,
+  background:[...document.querySelectorAll('#screen>.game,#screen>.games-deck')].map(node=>({inert:node.inert,visible:visible(node)}))};
 }
 function checkLayout(view,spec){
  const state=view.state;assert(view.documentWidth<=view.viewport,'no horizontal page overflow');
@@ -288,6 +307,27 @@ function checkLayout(view,spec){
  if(spec.reduced){assert(view.motion.reduced);assert.equal(view.motion.mixEdge,'none');assert.equal(view.motion.stream,'none');}
 }
 function fixed(before,after){for(const key of Object.keys(before))for(const axis of Object.keys(before[key]))assert(Math.abs(before[key][axis]-after[key][axis])<.3,key+' '+axis+' remains fixed while live quantities change');}
+function checkLiveLayout(view,step,spec,before){
+ assert.equal(view.app.phase,'playing','live artwork and paytable are verified before the native result transition');
+ assert.equal(view.app.paid,false);assert.equal(view.engine.accepted,step.ball);
+ for(const key of ['glasses','fullCount','mixCount','power','totalPoured','totalHundredths','presentedMixCount','justFilled','roundBet','wasted'])assert.deepEqual(view.state[key],step.after[key],'the visible settled board has the true native '+key);
+ checkLayout(view,spec);
+ if(!spec.mini){fixed(before.anchors,view.anchors);assert(!view.mainArt.sources.some(source=>/award-(?:odds|boost)\.webp$/.test(source)),'information card is absent from the settled live board');}
+ assert.deepEqual(view.board.cupPoints,before.board.cupPoints);assert.deepEqual(view.board.miniPoints,before.board.miniPoints);
+}
+function checkResult(captured,step){
+ const view=captured.layout;assert(['result','paying','complete'].includes(view.app.phase));
+ assert.equal(view.engine.phase,'complete');assert.equal(view.engine.processed,8);assert.equal(view.engine.accepted,8);assert.equal(view.engine.running,false);assert.equal(view.engine.busy,false);assert.equal(view.engine.fx,null);
+ assert.equal(view.app.paid,true);assert.equal(view.app.win,step.settlement,'eighth-ball settlement is the original cumulative native payout');assert.equal(view.app.totalWin,step.settlement);
+ assert.deepEqual(view.state,step.after,'result presentation preserves the exact native completed state');assert.equal(view.engine.randomDraws,0);assert.equal(view.engine.timingUnchanged,true);
+ assert.equal(captured.results.phase,'hold');assert.equal(captured.results.rowCount,1);assert.equal(captured.results.total,step.settlement);assert.deepEqual(captured.visibleRows,[captured.index]);
+ assert.equal(captured.row.value,step.settlement);assert.equal(captured.row.label,step.settlement+' WIN');
+ for(const [name,amount]of [['Winery result',captured.row],['TOTAL',captured.total]]){
+  assert.equal(amount.text,String(step.settlement),name+' visibly shows every exact settled digit');assert.equal(amount.unit,'WIN');assert(amount.visible);
+  assert(amount.ink.left>=amount.cell.left-1&&amount.ink.right<=amount.cell.right+1&&amount.ink.top>=amount.cell.top-1&&amount.ink.bottom<=amount.cell.bottom+1,name+' digits fit within their live result cell');
+ }
+ assert(captured.background.length>=2);assert(captured.background.every(node=>node.inert&&!node.visible),'the real result dialog owns interaction after native completion');
+}
 function checkStatus(captured,step,received,spec){
  const expected=step.oracle.status,label=expected.role==='odds'?'MIX '+expected.toMix+'杯  ×'+(1+expected.toMix/10).toFixed(1):'次の注入量 '+expected.power+'杯';
  assert.equal(captured.last.role,expected.role);assert.equal(captured.last.label,label);assert.equal(captured.last.source,ART+'award-'+expected.role+'.webp');assert.equal(captured.last.win,null,'information card does not invent a WIN');
@@ -332,6 +372,8 @@ try{
     const captures=[];
     if(step.oracle.status&&!spec.mini)captures.push(page.waitForFunction(captureStatus,{expected:step.oracle.status,received:start.received},{polling:'raf',timeout:45000}).then(async handle=>{const value=await handle.jsonValue();await handle.dispose();return {kind:'status',value};}));
     if(step.oracle.award)captures.push(page.waitForFunction(captureAward,{expected:step.oracle.award,mini:!!spec.mini,reduced:!!spec.reduced},{polling:'raf',timeout:45000}).then(async handle=>{const value=await handle.jsonValue();await handle.dispose();return {kind:'award',value};}));
+    if(step.ball===8&&!step.oracle.award)captures.push(page.waitForFunction(captureFinalBoard,{ball:step.ball,number:step.number,startEvents:start.events},{polling:'raf',timeout:45000}).then(async handle=>{const value=await handle.jsonValue();await handle.dispose();return {kind:'board',value};}));
+    const resultPromise=step.ball===8?Promise.allSettled([page.waitForFunction(captureResult,null,{polling:'raf',timeout:90000}).then(async handle=>{const value=await handle.jsonValue();await handle.dispose();return value;})]):null;
     // Attach rejection handlers before input; short native FX are observed from
     // a RAF armed before the real button can start the draw.
     const paint=Promise.allSettled(captures);
@@ -339,7 +381,17 @@ try{
     await button.waitFor({state:'visible'});await page.waitForFunction(number=>{const b=document.querySelector('#manual-number-grid button[data-number="'+number+'"]');return b&&!b.disabled;},step.number,{timeout:30000});
     await button.click();
     const captured=await paint;
-    for(const result of captured){if(result.status==='rejected')throw result.reason;if(result.value.kind==='status')checkStatus(result.value.value,step,start.received,spec);else checkAward(result.value.value,step,spec);await saveCapture(result.value.value,spec.id+'-ball'+step.ball+'-'+result.value.kind);}
+    for(const result of captured){
+     if(result.status==='rejected')throw result.reason;
+     const {kind,value}=result.value;
+     if(kind==='status')checkStatus(value,step,start.received,spec);
+     else{
+      if(kind==='award')checkAward(value,step,spec);
+      else{const native=value.nativeEvents.find(entry=>entry.event.phase==='wineryAward')?.event;assert(native);assert.equal(native.gain,0);assert.deepEqual(native.justFilled,[]);assert.equal(value.layout.awards.received,start.received,'already-full eighth ball does not repeat the monetary award');}
+      checkLiveLayout(value.layout,step,spec,before);
+     }
+     await saveCapture(value,spec.id+'-ball'+step.ball+'-'+kind);
+    }
     await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-live.png')});
     await page.waitForFunction(ball=>{const e=WineryPyramid.engine;return e.processed===ball&&!e.busy&&!e.fx;},step.ball,{timeout:90000});
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -352,10 +404,17 @@ try{
     if(spec.mini)assert.equal(after.award.statusPaints,start.statusPaints,'the unselected main board does not render status cards');
     else{fixed(before.anchors,after.anchors);assert(!after.mainArt.sources.some(source=>/award-(?:odds|boost)\.webp$/.test(source)),'status image disappears with its native FX');}
     assert.deepEqual(after.board.cupPoints,before.board.cupPoints,'21 main cup anchors remain fixed');assert.deepEqual(after.board.miniPoints,before.board.miniPoints,'21 mini cup anchors remain fixed');
-    checkLayout(after,spec);
-    if(step.ball===8){assert.equal(after.app.paid,true);assert.equal(after.app.win,step.settlement,'eighth-ball settlement is the original cumulative native payout');assert.equal(after.engine.running,false);}
+    let resultView;
+    if(step.ball===8){
+     // Result/payout deliberately makes the game and miniatures inert. Their
+     // full visibility and fitting checks already ran on the captured live RAF;
+     // now require the real result dialog, both exact WIN values and settlement.
+     assert.equal(after.app.paid,true);assert.equal(after.app.win,step.settlement);assert.equal(after.engine.running,false);
+     const [result]=await resultPromise;if(result.status==='rejected')throw result.reason;resultView=result.value;checkResult(resultView,step);
+     await page.screenshot({path:path.join(output,spec.id+'-result.png')});
+    }else checkLayout(after,spec);
     await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-after.png')});
-    completedSteps.push({number:step.number,ball:step.ball,before:previous,after,captures:captured.map(result=>result.value),receivedDelta:after.awards.received-start.received});previous=after;
+    completedSteps.push({number:step.number,ball:step.ball,before:previous,after,captures:captured.map(result=>result.value),result:resultView,receivedDelta:after.awards.received-start.received});previous=after;
    }
    report.cases.push({id:spec.id,status:'passed',durationMs:Date.now()-started,steps:completedSteps});console.log('WINERY_V298_CASE_PASS',spec.id);
   }catch(error){let diagnostics;try{diagnostics=await page?.evaluate(inspect);await page?.screenshot({path:path.join(output,spec.id+'-failure.png')});}catch{}
