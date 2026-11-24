@@ -39,6 +39,7 @@ assert.ok(world.strata.flat().filter(t=>t?.color>=0).every(t=>typeof t.sectionId
 assert.equal(world.strata.flat().filter(t=>t?.item==='ore').length,0,'new underground prizes must be fruit, not ores');
 assert.ok(world.strata.flat().some(t=>t?.item==='fruit-prize'));
 assert.match(source,/function chocoClassicCakeSprite/);
-assert.match(source,/const chainSections=e.rulesRevision>=CHOCO_WORLD_REVISION\?new Set\(\):chocoChainSections/);
+assert.equal(run('CHOCO_FRUIT_REVISION'),8,'legacy fruit presentation threshold remains v8 when new worlds advance');
+assert.match(source,/const chainSections=e.rulesRevision>=CHOCO_FRUIT_REVISION\?new Set\(\):chocoChainSections/);
 assert.match(source,/const chocoFruitArtCache=new Map\(\)/);
 console.log('CHOCO_V288_GRAVITY_FRUIT_PASS',JSON.stringify({worldRows:world.strata.length,fruitPrizes:world.strata.flat().filter(t=>t?.item==='fruit-prize').length,fallenSingle:true,fallenTriple:true,separateRegions:true,classicCakes:true}));
