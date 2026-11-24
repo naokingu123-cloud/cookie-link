@@ -1,0 +1,77 @@
+name: Six Drop candy atelier v296
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/sixdrop-*-v296.*'
+      - 'assets/sixdrop-art-v296/**'
+      - 'assets/sixdrop-ui-v278.*'
+      - 'assets/sixdrop-progressive-host-v247.js'
+      - 'assets/sixdrop-progressive-core-v247.js'
+      - 'assets/award-presentation-v277.js'
+      - 'index.html'
+      - 'tests/sixdrop-v296-browser.mjs'
+      - 'tests/sixdrop-v296-render.mjs'
+      - '.github/workflows/sixdrop-v296.yml'
+  pull_request:
+    paths:
+      - 'assets/sixdrop-*-v296.*'
+      - 'assets/sixdrop-art-v296/**'
+      - 'assets/sixdrop-ui-v278.*'
+      - 'assets/sixdrop-progressive-host-v247.js'
+      - 'assets/sixdrop-progressive-core-v247.js'
+      - 'assets/award-presentation-v277.js'
+      - 'index.html'
+      - 'tests/sixdrop-v296-browser.mjs'
+      - 'tests/sixdrop-v296-render.mjs'
+      - '.github/workflows/sixdrop-v296.yml'
+permissions:
+  contents: read
+jobs:
+  native-sixdrop-presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [shapes, clear]
+    env:
+      SIXDROP296_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Unchanged native rules and reachable visual witnesses
+        run: |
+          node --check tests/sixdrop-v296-browser.mjs
+          node tests/sixdrop-v285-rules.cjs
+          node tests/award-presentation-v277.mjs
+          node tests/sixdrop-v296-browser.mjs --fixtures-only
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real role awards, exact live amounts and fixed cabinet geometry
+        run: node tests/sixdrop-v296-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sixdrop-v296-presentation-${{ matrix.group }}
+          path: qa-sixdrop-v296/
+          if-no-files-found: error
+          retention-days: 7

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import http from 'node:http';
+import {createHash} from 'node:crypto';
 import {once} from 'node:events';
 import {createRequire} from 'node:module';
 import {chromium} from 'playwright';
@@ -18,6 +19,12 @@ const planned=scenarios.filter((_s,i)=>i%shards===shard);
 if(process.argv.includes('--list-cases')){console.log(JSON.stringify({shard,shards,totalPlannedCases:scenarios.length,plannedCases:planned.map(s=>s.id)}));process.exit(0);}
 await fs.mkdir(output,{recursive:true});
 const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
+// This reviewed atlas contains the complete 4 / 6 / 6 candy diagrams and
+// Japanese role titles, left to right. Pin its pixels: the hidden legacy
+// CANVAS cannot establish what the new illustrated header actually shows.
+const payoutV296={source:'assets/sixdrop-art-v296/payouts.webp',sha256:'4d6da984c380f758ac5e2d74ea3c0c9911f75c0433a6ac6b69d145ef805eb51d',width:1944,height:809,roles:['line','triangle','hexagon']};
+let payoutV296Hash=null;
+try{payoutV296Hash=createHash('sha256').update(await fs.readFile(payoutV296.source)).digest('hex');}catch(error){if(error.code!=='ENOENT')throw error;}
 assert.equal(R.CURRENT_REVISION,REVISION,'browser QA targets the production 284 rules');
 const prior={version:247,bankUnits:123456,removed:99,feed:450,roundId:'qa-previous-completed'};
 // Find a real generated witness in the current revision. The settled state is
@@ -45,14 +52,68 @@ const server=http.createServer(async(req,res)=>{
 server.listen(0,'127.0.0.1');await once(server,'listening');const base='http://127.0.0.1:'+server.address().port;
 let browser,context,page,computer,current;
 const expectedProcessed=Array.from({length:9},(_,index)=>index);
+// Observe the real image-to-canvas-to-dataURL path. This changes no pixels,
+// game state or clock, and lets both cached headers and live award canvases
+// prove which source artwork and crop were actually drawn.
+function observeArtwork(){
+ const inherited=new WeakMap(),dataURLs=new Map();
+ const trace=image=>{
+  if(!image)return [];
+  const prior=inherited.get(image);if(prior)return prior;
+  const src=image.currentSrc||image.src;if(dataURLs.has(src))return dataURLs.get(src);
+  if(typeof src==='string')try{const u=new URL(src,location.href);if(u.origin===location.origin&&/^\/assets\/sixdrop-art-v296\/(?:payouts|award-allclear|award-digits)\.webp$/.test(u.pathname))return [{source:u.pathname.slice(1),rect:null}];}catch{}
+  return [];
+ };
+ const draw=CanvasRenderingContext2D.prototype.drawImage;
+ CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
+  const out=Reflect.apply(draw,this,[image,...args]),source=trace(image);
+  if(source.length){
+   const rect=args.length===8?args.slice(0,4):[0,0,image.naturalWidth||image.width,image.naturalHeight||image.height];
+   const entries=source.map(item=>({source:item.source,rect:item.rect||rect}));
+   inherited.set(this.canvas,[...new Map([...(inherited.get(this.canvas)||[]),...entries].map(item=>[JSON.stringify(item),item])).values()]);
+  }
+  return out;
+ };
+ const clear=CanvasRenderingContext2D.prototype.clearRect;
+ CanvasRenderingContext2D.prototype.clearRect=function(x,y,w,h){
+  const m=this.getTransform(),out=Reflect.apply(clear,this,[x,y,w,h]);
+  if(!m.b&&!m.c&&x*m.a+m.e<=0&&y*m.d+m.f<=0&&(x+w)*m.a+m.e>=this.canvas.width&&(y+h)*m.d+m.f>=this.canvas.height)inherited.delete(this.canvas);
+  return out;
+ };
+ const toURL=HTMLCanvasElement.prototype.toDataURL;
+ HTMLCanvasElement.prototype.toDataURL=function(...args){const result=Reflect.apply(toURL,this,args),source=trace(this);if(source.length)dataURLs.set(result,source);return result;};
+ window.__sixArt278={inspect:image=>trace(image).map(item=>({source:item.source,rect:item.rect?.slice()||null}))};
+}
+async function startManualRound(label,timeout=45000){
+ // A native start may finish while cabinet measurements are running. Check
+ // and use the ordinary UI button in one task, without a read/click race.
+ const start=await page.evaluate(()=>{
+  const q=__qa278,e=SixDropV247.engine;
+  if(!SweetsLocalDebugV258.describe().manualNumbers)throw Error('round start requires native manual-number mode');
+  if(q.app.phase==='playing'){
+   if(q.app.draws.length!==0||e.accepted!==0||e.processed!==0||e.busy||e.fx||!(e.idle||e.phase==='waiting'))throw Error('already-started round is not the untouched native waiting state');
+   return {path:'already-playing',phase:q.app.phase,draws:q.app.draws.length,accepted:e.accepted,processed:e.processed,enginePhase:e.phase};
+  }
+  if(q.app.phase!=='ready')throw Error('unexpected native phase before Start: '+q.app.phase);
+  const button=document.getElementById('manual-start'),box=button?.getBoundingClientRect();
+  if(!button||!button.isConnected||button.disabled||button.matches(':disabled')||!(box.width>0&&box.height>0))throw Error('native Start button is not visible and enabled');
+  for(let node=button;node;node=node.parentElement){const css=getComputedStyle(node);if(node.hidden||node.inert||css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)throw Error('native Start button is hidden or inert');}
+  button.click();
+  return {path:'button-click',phase:q.app.phase,draws:q.app.draws.length,accepted:e.accepted,processed:e.processed,enginePhase:e.phase};
+ });
+ (report.starts??=[]).push({label,...start});console.log('SIXDROP_V284_NATIVE_START',label,start.path);
+ await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout});
+}
 async function open(s){
  await context?.close();context=await browser.newContext({viewport:{width:s.width,height:s.height},serviceWorkers:'block'});
+ await context.addInitScript(observeArtwork);
  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==base){report.externalRequests.push(u.href);return route.abort();}if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/ws')){report.apiRequests.push(u.pathname);return route.abort();}return route.continue();});
  page=await context.newPage();page.on('pageerror',e=>report.pageErrors.push({case:current,error:String(e.stack||e)}));
  page.on('response',res=>{if(res.status()>=400&&/sixdrop|v278/.test(res.url()))report.assetFailures.push({case:current,url:res.url(),status:res.status()});});
  await page.goto(base+'/?edition=local&appv='+encodeURIComponent(version),{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>window.__qa278&&SweetsLocalDebugV258?.ready&&window.SixDropUiV278&&window.SweetsAwardsV277,null,{timeout:90000});
  assert.equal(await page.evaluate(()=>SixDropUiV278.ready),true);await page.evaluate(()=>document.fonts.ready);
+ await page.waitForFunction(()=>[...document.querySelectorAll('.sd278-payout-frame')].length===3&&[...document.querySelectorAll('.sd278-payout-frame')].every(image=>image.complete&&image.naturalWidth>0));
  await page.locator('#manual-number-toggle').click();
  await page.waitForFunction(()=>SweetsLocalDebugV258.describe().manualNumbers&&__qa278.app.phase==='ready');
  await page.evaluate(({prior,seed,bet})=>{
@@ -62,8 +123,7 @@ async function open(s){
    const emit=candy.emit;candy.emit=function(phase,detail={}){q.events.push({phase,winMedals:detail.winMedals,allClears:detail.allClears,bonusMedals:detail.bonusMedals,numbers:detail.numbers,counts:detail.counts,gain:detail.gain,cells:detail.cells,affectedCells:detail.affectedCells,removed:detail.removed?.map(({r,c,tile})=>({r,c,id:tile.id,number:tile.number}))});return Reflect.apply(emit,this,arguments);};q.events=[];
  },{prior,seed:winning.seed,bet:s.bet||3000});
  await compareCabinets(s);
- await page.locator('#manual-start').click();
- await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout:45000});
+ await startManualRound(s.id+'-initial');
  if(s.mini)await page.evaluate(()=>__qa278.select(3));
 }
 async function compareCabinets(s){
@@ -98,8 +158,20 @@ function snapshot(){
   const alpha=(x,y)=>data[(Math.round(y)*width+Math.round(x))*4+3];
   return {tag:canvas.tagName,drops:Number(canvas.dataset.drops),width,height,box:box(canvas),ink,centerAlpha:alpha(width/2,height/2)};
  };
+ const generatedHeader=section=>{
+  const image=section.querySelector('.sd278-payout-frame'),frame=box(image),header=section.querySelector('header'),count=section.querySelector('thead th');
+  // These bounds enclose the reviewed image's title and candy diagram above
+  // the live rows. Measure the rendered image region, not the retired DOM.
+  const area={left:frame.left+frame.width*.12,right:frame.left+frame.width*.88,top:frame.top+frame.height*.02,bottom:frame.top+frame.height*.31,width:frame.width*.76,height:frame.height*.29};
+  const probe=document.createElement('canvas');probe.width=image.naturalWidth;probe.height=image.naturalHeight;
+  const ctx=probe.getContext('2d');ctx.drawImage(image,0,0);
+  const x=Math.floor(probe.width*.12),y=Math.floor(probe.height*.02),width=Math.floor(probe.width*.76),height=Math.floor(probe.height*.29),pixels=ctx.getImageData(x,y,width,height).data;
+  let ink=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>32)ink++;
+  let visible=true;for(let node=image;node;node=node.parentElement){const css=getComputedStyle(node);if(css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)visible=false;}
+  return {tag:image.tagName,source:SixDropArtV296.source('payout-'+section.dataset.role)?.split('?')[0],mapped:image.getAttribute('src')===SixDropArtV296.asset('payout-'+section.dataset.role),trace:__sixArt278.inspect(image),width:probe.width,height:probe.height,box:area,visible,ink,pixels:width*height,legacyHeaderDisplay:getComputedStyle(header).display,countBox:box(count),countLabel:count.getAttribute('aria-label')};
+ };
  const rows=[...document.querySelectorAll('#sd278-payouts section')].map(section=>({
-  role:section.dataset.role,earned:Number(section.dataset.earnedCount),countText:section.querySelector('.sd278-role-count').textContent,box:box(section),diagram:diagram(section.querySelector('canvas.sd278-role-icon')),
+  role:section.dataset.role,earned:Number(section.dataset.earnedCount),countText:section.querySelector(d.artVersion===296?'thead th':'.sd278-role-count').textContent,box:box(section),diagram:d.artVersion===296?null:diagram(section.querySelector('canvas.sd278-role-icon')),art:d.artVersion===296?generatedHeader(section):null,
   rows:[...section.querySelectorAll('tbody tr')].map(tr=>({count:Number(tr.dataset.count),countText:tr.querySelector('th').textContent,hundredths:Number(tr.dataset.payoutHundredths),win:Number(tr.dataset.win),current:tr.getAttribute('aria-current')==='true',box:box(tr),amount:box(tr.querySelector('.gold-number')),cell:box(tr.querySelector('td'))}))
  }));
  const bank=document.getElementById('sd278-bank'),receipt=document.getElementById('sd278-clear-earned'),continuation=document.getElementById('sd278-continuation'),canvas=q.slots[2].candyCanvas;
@@ -154,9 +226,19 @@ function assertHud(view,{mini=false}={}){
   assert.equal(role.earned,view.state.counts[role.role]);assert.equal(role.countText,'×'+role.earned);assert.equal(role.rows.length,5);
   for(const row of role.rows){assert.equal(row.countText,'×'+row.count);assert.equal(row.hundredths,R.roleTotal(role.role,row.count,view.state.rulesRevision));assert.equal(row.win,Math.floor(view.state.bet*row.hundredths/100));assert.equal(row.current,row.count===role.earned);}
   if(role.earned>0)assert(role.rows.some(row=>row.current),'current attained count remains in the visible five-row table');
-  assert.equal(role.diagram?.tag,'CANVAS','the role shows actual painted drops');assert.equal(role.diagram.drops,{line:4,triangle:6,hexagon:6}[role.role]);
-  assert(role.diagram.ink>500,'the role diagram contains rendered candy pixels');
-  if(role.role==='hexagon')assert(role.diagram.centerAlpha<32,'hexagon shows a six-drop ring with an empty centre');
+  if(view.ui.artVersion===296){
+   assert.equal(payoutV296Hash,payoutV296.sha256,'the final reviewed 4/6/6 role artwork is unchanged');
+   const index=payoutV296.roles.indexOf(role.role),art=role.art;assert(index>=0,'each generated header maps to a known native role');
+   assert.equal(art?.tag,'IMG');assert.equal(art.source,payoutV296.source);assert(art.mapped,'the live image is the cached crop assigned to this native role');
+   assert.deepEqual(art.trace,[{source:payoutV296.source,rect:[index*payoutV296.width/3,0,payoutV296.width/3,payoutV296.height]}],'the visible role image comes from the correct reviewed atlas column');
+   assert.equal(art.width,384);assert.equal(art.height,Math.round(384*payoutV296.height/(payoutV296.width/3)));
+   assert(art.ink>500&&art.ink>art.pixels*.5,'the generated header contains actual opaque artwork pixels');
+   assert.equal(art.legacyHeaderDisplay,'none','the obsolete title/diagram does not duplicate the illustrated header');assert.equal(art.countLabel,'現在の成立個数');
+  }else{
+   assert.equal(role.diagram?.tag,'CANVAS','the role shows actual painted drops');assert.equal(role.diagram.drops,{line:4,triangle:6,hexagon:6}[role.role]);
+   assert(role.diagram.ink>500,'the role diagram contains rendered candy pixels');
+   if(role.role==='hexagon')assert(role.diagram.centerAlpha<32,'hexagon shows a six-drop ring with an empty centre');
+  }
  }
  const radius=view.ui.geometry.radius;assert.equal(radius,14.75,'candies use the larger native geometry');
  for(const point of view.board.points){assert(point.x-radius>=0&&point.x+radius<=320&&point.y-radius>=0&&point.y+radius<=320,'every actual candy/number center remains inside the native board');}
@@ -189,16 +271,25 @@ function assertHud(view,{mini=false}={}){
    assert(view.hud.receipt.bottom<=view.board.odds.top+1&&view.hud.receipt.left>view.board.bottle.right,'earned receipt covers neither the role table nor bottle neck');
   }
   for(const role of view.rows){
-   assert(role.diagram.box.width>=30&&role.diagram.box.height>=20,'actual role geometry is large enough to see');
+   const header=role.art||role.diagram;
+   assert(header.box.width>=30&&header.box.height>=20,'actual role header is large enough to see');
+   if(role.art){assert(role.art.visible,'the generated role header is visible');assert(role.art.countBox.width>0&&role.art.countBox.height>0,'the actual attained count has visible space');assert(role.art.box.bottom<=role.art.countBox.top+1,'live count and rows do not cover the illustrated role header');}
    for(const row of role.rows){assert(row.amount.left>=row.cell.left-2&&row.amount.right<=row.cell.right+2,'payout '+role.role+' count '+row.count+' amount fits its cell');assert(row.box.top>=role.box.top-2&&row.box.bottom<=role.box.bottom+2,'all five '+role.role+' payout rows stay visible inside their frame');}
   }
  }
 }
 function clearPaint({mini}){
  const current=SweetsAwardsV277.describe().active.find(c=>c.game==='candy'&&c.kind==='clear'),node=document.querySelector('.award-presentation-'+(mini?'mini':'main')+'[data-game="candy"]');
- if(!current||!node||node.hidden||current.age<180||!SixDropUiV278.describe().allClearBadgePaints)return null;
+ if(!current||!node||node.hidden||current.age<180)return null;
  const b=node.getBoundingClientRect();if(b.width<8||b.height<8)return null;
- return {event:current,box:{width:b.width,height:b.height},dedicatedPaints:SixDropUiV278.describe().allClearBadgePaints,data:node.toDataURL('image/png')};
+ if(window.SixDropAwardV296?.loaded){
+  const api=SixDropAwardV296.describe(),rendered=api.last,trace=__sixArt278.inspect(node),source='assets/sixdrop-art-v296/award-allclear.webp';
+  if(current.phase!=='pyramidAllClear'||rendered?.phase!==current.phase||rendered.role!=='allclear'||rendered.mini!==!!mini||rendered.win!==current.win||rendered.source!==source||!api.roles.allclear||!api[mini?'mini':'main'])return null;
+  if(!trace.some(item=>item.source===source)||!trace.some(item=>item.source==='assets/sixdrop-art-v296/award-digits.webp')||!rendered.rasterNumbers)return null;
+  return {event:current,renderer:296,rendered,trace,box:{width:b.width,height:b.height},dedicatedPaints:api.roles.allclear,surfacePaints:api[mini?'mini':'main'],data:node.toDataURL('image/png')};
+ }
+ const dedicatedPaints=SixDropUiV278.describe().allClearBadgePaints;if(!dedicatedPaints)return null;
+ return {event:current,renderer:278,box:{width:b.width,height:b.height},dedicatedPaints,data:node.toDataURL('image/png')};
 }
 async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,capture=true}={}){
  const oracle=fullRound(seed,{bet,carry}),blasts=[];let expected=oracle.initial,seenClear=false;
@@ -234,7 +325,12 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
   assert.equal(view.engine.drawMode,'single');assert.equal(view.info.receivedBalls,i+1);assert.equal(view.info.processedBalls,i+1);assert.equal(view.state.processed,i+1);assertHud(view,s);
   blasts.push(assertPrimaryRemoval(before,next,view.events.slice(eventCursor)));eventCursor=view.events.length;
   if(anchors)assertFixedAnchors(fixedAnchors(view.hud),anchors,'after ball '+(i+1));
-  if(paint){const overlay=await paint;assert(overlay);const file=label+'-allclear-overlay.png';await fs.writeFile(path.join(output,file),Buffer.from(overlay.data.slice('data:image/png;base64,'.length),'base64'));delete overlay.data;report.screens.push(file);report[label+'Overlay']=overlay;await shot(label+'-allclear-earned');seenClear=true;}
+  if(paint){
+   const overlay=await paint;assert(overlay);
+   const native=plan.timeline.find(event=>event.phase==='pyramidAllClear'&&event.winMedals===overlay.event.win);assert(native,'the captured all-clear has the actual native event WIN');
+   if(overlay.renderer===296){assert.equal(overlay.rendered.win,native.winMedals);assert.equal(overlay.rendered.label,overlay.event.label);assert.equal(overlay.rendered.detail,overlay.event.detail);assert.equal(overlay.rendered.liveLabel,'全消し '+native.allClears+'回目！');assert.equal(overlay.rendered.winText,Number(native.winMedals).toLocaleString('ja-JP')+' WIN');}
+   const file=label+'-allclear-overlay.png';await fs.writeFile(path.join(output,file),Buffer.from(overlay.data.slice('data:image/png;base64,'.length),'base64'));delete overlay.data;report.screens.push(file);report[label+'Overlay']=overlay;await shot(label+'-allclear-earned');seenClear=true;
+  }
   if(capture&&[2,4,7].includes(i+1))await shot(label+'-ball'+(i+1));
  }
  // The native completion hook holds payout until its last award finishes.
@@ -275,7 +371,7 @@ async function nextRound(seed,bet){
  // countdown. Its legacy result-next button stays hidden in this edition.
  await page.waitForFunction(()=>__qa278.app.phase==='ready'&&__qa278.app.draws.length===0,null,{timeout:30000});
  await page.evaluate(({seed,bet})=>{const q=__qa278;q.app.engines[2].random=()=>seed/4294967296;if(!SweetsLocalDebugV258.setBets(q.app.bets.map((_n,i)=>i===2?bet:0)))throw Error('next BET failed');q.select(2);q.syncManualNumbers();q.events=[];},{seed,bet});
- await page.locator('#manual-start').click();await page.waitForFunction(()=>__qa278.app.phase==='playing'&&SixDropV247.engine.idle);
+ await startManualRound('next-round-seed-'+seed,30000);
 }
 async function workerCase(){
  computer=createDownloadComputerV255({baseUrl:base});

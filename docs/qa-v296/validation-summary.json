@@ -1,0 +1,34 @@
+{
+  "version": "20261124-v296-sixdrop-candy-atelier",
+  "scope": "Implemented Six Drop artwork upgrade; isolated production Canvas and real Chromium browser verification completed.",
+  "validated": {
+    "nativeRules": "tests/sixdrop-v285-rules.cjs passed",
+    "nativeAwards": "tests/award-presentation-v277.mjs passed for all 10 games",
+    "reachableWitnesses": "6 native cases constructed by tests/sixdrop-v296-browser.mjs --fixtures-only",
+    "actualRenderer": "8 cases passed using actual production native semantic extraction, badge sizing, raster artwork and live numeral composition",
+    "artworkReview": "Four role artworks, live count ribbons, 12 glyph crops, nine candy sprites, 1,089,990 WIN, 116px and 47px miniatures visually reviewed",
+    "offlineIntegrity": "All 881 manifest files and SHA-256 values verified; total 246214428 bytes",
+    "browser": "Dedicated Six Drop workflow 45405266249 passed all 6 native-interaction cases; actual screenshots reviewed",
+    "phoneLayout": "Main playfield width workflow 45405266246 passed 100 cases across 320/390/430 widths, including 10 Six Drop cases"
+  },
+  "unchangedRules": {
+    "revision": 285,
+    "coreFile": "assets/sixdrop-progressive-core-v247.js",
+    "rng": "No new RNG calls in art modules",
+    "nativeAmounts": "Exact event.winMedals; no independent payout calculation"
+  },
+  "reports": [
+    "native-render-report.json",
+    "native-render-contact.png",
+    "native-candy-pieces.png",
+    "native-digit-glyphs.png",
+    "browser-verification.json",
+    "browser-layout-summary.json",
+    "browser-allclear-phone.png",
+    "browser-triangle-phone.png",
+    "browser-board-phone.png"
+  ],
+  "capturedSourceCommit": "c1c99d9881ba2dcbcd584d090258fbd27514427e",
+  "pullRequest": "https://github.com/naokingu123-cloud/cookie-link/pull/14",
+  "captureNotes": "This records verification of the artwork/runtime commit above. The historical v284 browser harness targeted retired artwork nodes and counters; its renderer-aware adaptation and subsequent release status are tracked in PR14."
+}
