@@ -387,7 +387,7 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
 }
 
 function paintBadge(ctx,r,c,w,h,mini,ox,oy){
- if(!(c.game==='candy'&&c.kind==='clear'))return paintGameBadge(ctx,r,c,w,h,mini,ox,oy);
+ if(!(c.game==='candy'&&c.kind==='clear')||window.SweetsIllustratedAwardV291?.describe?.().atlasReady)return paintGameBadge(ctx,r,c,w,h,mini,ox,oy);
  const custom=c.game==='candy'&&c.kind==='clear'?window.SixDropUiV278?.awardArt?.():null;
  const badge=custom?.image||art(TIER_ART[c.tier]);if(!badge)return 0;
  const start=quiet()?0:170,age=c.age-start;if(age<0)return 0;
