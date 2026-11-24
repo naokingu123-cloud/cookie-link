@@ -117,7 +117,13 @@ function installFrameObserver(){
   observer.frames.set(ctx.canvas,frame);
   if(!opt.mini&&opt.turn?.clear&&q.captureTurn===state.turn){
    const last=PopcornView.hitSequenceV276(opt.turn).at(-1)?.at||0,rest=last+455;
-   if(opt.elapsed>=rest+16&&opt.elapsed<rest+480){const trace=observer.inspect(ctx.canvas);q.ownerOverlap={turn:state.turn,elapsed:opt.elapsed,owned:ctx.canvas.closest('.panel')?.classList.contains('popcorn-v299-award-owned'),oldBandPainted:trace.textCalls.some(call=>['全消し！','虹ボム 全消し！'].includes(call.text))};}
+   if(opt.elapsed>=rest+16&&opt.elapsed<rest+480){
+    const trace=observer.inspect(ctx.canvas),matchingTextCalls=trace.textCalls.filter(call=>['全消し！','虹ボム 全消し！','ALL CLEAR','RAINBOW ALL CLEAR'].includes(call.text));
+    // The unchanged footer also says 全消し！. Only the central band's unique
+    // English companion identifies duplicate artwork; retain the footer.
+    q.ownerOverlap={turn:state.turn,elapsed:opt.elapsed,owned:ctx.canvas.closest('.panel')?.classList.contains('popcorn-v299-award-owned'),canvasHeight:ctx.canvas.height,matchingTextCalls,
+     oldBandPainted:matchingTextCalls.some(call=>['ALL CLEAR','RAINBOW ALL CLEAR'].includes(call.text)),footerRetained:matchingTextCalls.some(call=>call.text==='全消し！'&&call.rect.top>ctx.canvas.height*.9)};
+   }
   }
   return result;
  };
@@ -301,7 +307,7 @@ function checkAward(captured,step,spec){
  for(const call of captured.trace.digitDraws){const [x,y,w,h]=call.sourceRect,[iw,ih]=call.sourceSize;assert(x>=0&&y>=0&&w>0&&h>0&&x+w<=iw&&y+h<=ih);assert(call.alpha>0);assert(call.rect.left>=-.5&&call.rect.top>=-.5&&call.rect.right<=captured.trace.width+.5&&call.rect.bottom<=captured.trace.height+.5,'the complete native WIN fits the visible overlay');}
  assert(captured.nontransparent>30);assert.equal(captured.pointerEvents,'none');assert(captured.status?.includes(o.nativeWinDelta.toLocaleString('ja-JP')));assert(!captured.trace.sources.includes('assets/award-art-v291/themed-cutin-atlas.webp'));
  if(o.all&&!o.clear){assert.equal(last.role,'pop','ALL ignition alone never receives all-clear artwork');assert(!captured.trace.sources.some(source=>/award-(?:clear|grand)\.webp$/.test(source)));}
- if(!spec.mini)assert(!captured.layout.mainArt.textCalls.some(call=>['全消し！','虹ボム 全消し！'].includes(call.text)),'the dedicated award owns the center without a second old clear banner');
+ if(!spec.mini)assert(!captured.layout.mainArt.textCalls.some(call=>['ALL CLEAR','RAINBOW ALL CLEAR'].includes(call.text)),'the dedicated award owns the center without a second old clear banner');
  if(spec.mini)captured.miniStage=checkMiniStage(captured.layout,step);
  checkNative(captured.layout,step);checkLayout(captured.layout,spec,undefined,spec.mini?step.before:captured.layout.state);
 }
@@ -362,7 +368,7 @@ try{
     const after=await page.evaluate(inspect);checkNative(after,step,{settled:true});
     const native=after.nativeEvents.slice(start.events).filter(event=>event.phase==='popcornDraw');assert.equal(native.length,1,'one real accepted numbered draw emits one native trace');assert.equal(native[0].number,step.number);const coordinateComparison=compareNativeTrace(native[0].trace,step.trace);
     assert.equal(after.awards.received-start.received,step.oracle.award?1:0,'only a real payable POP or clear creates an award');assert.equal(after.awards.errors,0);
-    if(step.oracle.clear&&!spec.mini){assert(after.ownerOverlap,'a real frame inside the original central clear-band interval was observed');assert.equal(after.ownerOverlap.owned,true);assert.equal(after.ownerOverlap.oldBandPainted,false,'the active image award suppresses only the duplicate central clear band');}
+    if(step.oracle.clear&&!spec.mini){assert(after.ownerOverlap,'a real frame inside the original central clear-band interval was observed');assert.equal(after.ownerOverlap.owned,true);assert.equal(after.ownerOverlap.oldBandPainted,false,'the active image award suppresses only the duplicate central clear band');assert.equal(after.ownerOverlap.footerRetained,true,'the original lower-footer all-clear status remains painted');}
     if(spec.mini)assert.equal(after.award.statusPaints,start.statusPaints,'an unselected board never paints a main-only boost card');
     if(!step.oracle.boost)assert(!after.mainArt.sources.includes(ART+'award-boost.webp'),'a prior boost card is absent from the current frame');
     checkGrades(after,spec);const miniStage=spec.mini?checkMiniStage(after,step,{settled:true}):undefined;
