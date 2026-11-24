@@ -1,0 +1,114 @@
+name: Chocolate Canyon fruit v295
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/choco-*'
+      - 'assets/cookie-upgrade-patches.js'
+      - 'assets/choco-art-v295/**'
+      - 'assets/award-presentation-v277.js'
+      - 'assets/demo-suite-v91.js'
+      - 'assets/illustrated-boards-a-v275.js'
+      - 'assets/ornate-boards-a-v274.js'
+      - 'assets/twelve-*.js'
+      - 'assets/download-assets-v255.json'
+      - 'optimized/app-01.js'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/choco-v295-*.mjs'
+      - 'tests/choco-v28*.mjs'
+      - 'scripts/sync-choco-bundle.mjs'
+      - '.github/workflows/choco-v295.yml'
+  pull_request:
+    paths:
+      - 'assets/choco-*'
+      - 'assets/cookie-upgrade-patches.js'
+      - 'assets/choco-art-v295/**'
+      - 'assets/award-presentation-v277.js'
+      - 'assets/demo-suite-v91.js'
+      - 'assets/illustrated-boards-a-v275.js'
+      - 'assets/ornate-boards-a-v274.js'
+      - 'assets/twelve-*.js'
+      - 'assets/download-assets-v255.json'
+      - 'optimized/app-01.js'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/choco-v295-*.mjs'
+      - 'tests/choco-v28*.mjs'
+      - 'scripts/sync-choco-bundle.mjs'
+      - '.github/workflows/choco-v295.yml'
+permissions:
+  contents: read
+jobs:
+  native-rules-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Fruit identity, rigid contact, landing and historical replay
+        run: |
+          node --check assets/choco-dig.js
+          node --check assets/choco-art-v295.js
+          node --check assets/choco-award-v295.js
+          node --check assets/demo-suite-v91.js
+          node --check optimized/app-01.js
+          node scripts/sync-choco-bundle.mjs --check
+          node tests/choco-v295-rules.mjs
+          node tests/choco-v295-runtime-patch.mjs
+          node tests/choco-v295-recording.mjs
+          node tests/choco-v288-gravity-fruit.mjs
+          node tests/choco-v289-bundle.mjs
+      - name: Exact awards and one coherent download release
+        run: |
+          node tests/award-presentation-v277.mjs
+          node tests/v290-themed-effects.mjs
+          node tests/v291-illustrated-awards.mjs
+          node tests/download-v255-cache.mjs
+          node tests/release-v293-integrity.mjs
+          node tests/choco-v295-browser.mjs --fixtures-only
+  native-presentation:
+    needs: native-rules-and-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [fruit, chain, depth]
+    env:
+      CHOCO_V295_KIND: ${{ matrix.kind }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Reachable fruit, landing chain and actual depth awards
+        run: node tests/choco-v295-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: choco-v295-${{ matrix.kind }}
+          path: qa-choco-v295/
+          if-no-files-found: error
+          retention-days: 7

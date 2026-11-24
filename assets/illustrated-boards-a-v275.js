@@ -65,8 +65,8 @@ function resolveSources(bitmap){
 }
 const api={
  version:275,cookieURL,
- sourcesOf:bitmap=>{const current=window.CookieBoardV293?.sourcesOf?.(bitmap);if(current?.length)return current;resolveSources(bitmap);return sources.get(bitmap)||[];},
- sourceImagesOf:bitmap=>{const current=window.CookieBoardV293?.sourceImagesOf?.(bitmap);if(current?.length)return current;resolveSources(bitmap);return sourceImages.get(bitmap)||[];},
+ sourcesOf:bitmap=>{const current=window.CookieBoardV293?.sourcesOf?.(bitmap);if(current?.length)return current;const choco=window.ChocoArtV295?.sourcesOf?.(bitmap);if(choco?.length)return choco;resolveSources(bitmap);return sources.get(bitmap)||[];},
+ sourceImagesOf:bitmap=>{const current=window.CookieBoardV293?.sourceImagesOf?.(bitmap);if(current?.length)return current;const choco=window.ChocoArtV295?.sourceImagesOf?.(bitmap);if(choco?.length)return choco;resolveSources(bitmap);return sourceImages.get(bitmap)||[];},
  describe:()=>({games:[...selected].filter(id=>['cookie','choco','candy'].includes(id)),
   cachedSprites:sprites.size,generatedURLs:urls.size,
   cookiePieces:selected.has('cookie')?'painted-v275':'unused',

@@ -13,7 +13,7 @@ const games={
  cookie:{name:'クッキーリンク',accent:'#ffc87a',ink:'#603444',steps:[
   ['番号にHIT','当たったクッキーが割れる'],['落下と連鎖','同じ色が2枚以上つながると消える'],['ハンマー','消えると離れた同色も割れる'],['最大LINK','つながった枚数で配当アップ']]},
  choco:{name:'チョコレートキャニオン',accent:'#ffcc88',ink:'#603844',steps:[
-  ['ドリルHIT','ドリルの向きに地層を掘る'],['ドリルLv','レベルが上がると深く掘れる'],['同色の連鎖','落下後、同色4マス以上で消去'],['鉱石GET','地表に出た鉱石を獲得'],['ボーナス層','100mごとにボーナス層へ']]},
+  ['ドリルHIT','ドリルの向きにケーキを掘る'],['ドリルLv','レベルが上がると深く掘れる'],['くっついて連鎖','落下中に同色が合体。4個以上は着地後に消去'],['フルーツGET','ケーキの中の6種の果実を見つける'],['ボーナス層','100mごとにボーナス層へ']]},
  candy:{name:'シックスドロップ',accent:'#ffb7dc',ink:'#64344b',steps:[
   ['1球ずつHIT！','HIT＋周囲6マスを消去（端は減少）'],['同色4個以上で消去','累計200個ごとに補充の色が進む'],['役が育つ配当','直線・三角・ヘキサゴンで同色をすべて消去'],['全消しで総取り','消すほど配当を蓄積・獲得後も継続']]},
  gelato:{name:'ジェラートプリズム',accent:'#91edff',ink:'#343856',steps:[
@@ -33,14 +33,13 @@ function kindOf(s){
 const clamp=v=>Math.max(0,Math.min(1,v)),ease=v=>{const t=clamp(v);return t*t*(3-2*t);};
 const art={},images={
  cakes:['cake-white','cake-strawberry','cake-milk','cake-bitter'].map(k=>'assets/canyon-geology/'+k+'.webp'),
- ore:['assets/canyon-geology/ore-diamond.webp'],
  prism:['assets/gelato-prism-gelato-v37.png'],glass:['assets/winery-crystal-coupe-v60.png'],
  popcorn:['assets/popcorn-art/popcorn-normal.webp'],jelly:[SweetsLineup.catalog.jelly.logo],stick:['assets/waffle-reversi-logo.webp'],castella:[SweetsLineup.catalog.castella.logo]
 };
 for(const [key,urls] of Object.entries(images))art[key]=urls.map(src=>{const im=new Image();im.decoding='async';im.src=src;return im;});
 // Lessons are a separate foreground canvas. Resolve their own illustration
 // sources as well as the live board caches; keep every example and coordinate.
-const illustrated={cakes:['choco-ivory','choco-berry','choco-milk','choco-dark'],ore:['ore-diamond'],prism:['gelato-blue'],glass:['wine-glass'],popcorn:['popcorn-cream'],jelly:['jelly-surface'],stick:['waffle-cell'],castella:['castella-baked']};
+const illustrated={cakes:['choco-ivory','choco-berry','choco-milk','choco-dark'],prism:['gelato-blue'],glass:['wine-glass'],popcorn:['popcorn-cream'],jelly:['jelly-surface'],stick:['waffle-cell'],castella:['castella-baked']};
 function lessonArt(key,index=0){const A=window.SweetsBoardArtV275||window.SweetsCartoonArt,name=illustrated[key]?.[index];return A?.loaded&&name?A.sprite(name)||art[key]?.[index]:art[key]?.[index];}
 const loaded=im=>im&&(im.naturalWidth||im.width)>0&&im.complete!==false;
 function rect(c,x,y,w,h,r,fill,stroke,lw=1){c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.lineWidth=lw;c.strokeStyle=stroke;c.stroke();}}
@@ -56,14 +55,15 @@ function cookie(c,color,x,y,size,hammer=false){
  const sprite=typeof cookieSprites!=='undefined'&&cookieSprites[color*2+Number(hammer)];
  if(!picture(c,sprite,x,y,size)&&typeof betCookie==='function')betCookie(c,color,x,y,size,hammer);
 }
-function cake(c,k,x,y,size){if(!picture(c,lessonArt('cakes',k),x,y,size))rect(c,x-size/2,y-size/2,size,size,3,shades[k],'#c99e80');}
+function cake(c,k,x,y,size,mask=0){if(!picture(c,window.ChocoArtV295?.cakeSprite(k,mask)||lessonArt('cakes',k),x,y,size))rect(c,x-size/2,y-size/2,size,size,3,shades[k],'#c99e80');}
+function fruit(c,key,x,y,size){return picture(c,window.ChocoArtV295?.fruit(key),x,y,size);}
 function candy(c,k,x,y,size){
  const im=typeof sixCandySprite==='function'?sixCandySprite(k,1,false):null;
  if(!picture(c,im,x,y,size))dot(c,x,y,size*.42,['#fc8cb8','#72d9ee','#eac554','#b19af2'][k%4],'#fee9f2',2);
 }
 function emblem(c,kind,x,y,size){
  if(kind==='cookie')cookie(c,1,x,y,size);
- else if(kind==='choco')picture(c,lessonArt('ore'),x,y,size);
+ else if(kind==='choco')fruit(c,'melon',x,y,size);
  else if(kind==='candy')candy(c,0,x,y,size);
  else if(kind==='gelato')picture(c,lessonArt('prism'),x,y,size*1.18);
  else if(kind==='winery')picture(c,lessonArt('glass'),x,y,size);
@@ -93,20 +93,28 @@ function cookieDiagram(c,stage,t){
 function drill(c,x,y){rect(c,x-11,y-28,22,17,4,'#ffce77','#813e35',2);c.beginPath();c.moveTo(x-9,y-11);c.lineTo(x+9,y-11);c.lineTo(x,y+9);c.closePath();c.fillStyle='#d9e8e9';c.fill();line(c,[[x-6,y-8],[x+5,y-5],[x-2,y-1]],'#797784',2);}
 function canyonDiagram(c,stage,t){
  const colors=[2,0,3,1,0,3,1,0,3,1,1,0,3,2,3,2],q=ease((t-.27)/.42),x0=42,y0=63,cell=44;
- const cluster=[6,9,10,14];
+ const cluster=[6,9,10,14],fruitKeys=['apple','mandarin','lemon','blueberry','grape','melon'];
+ const poses=colors.map((color,i)=>({i,color:stage===2?(cluster.includes(i)?1:i===3?3:color):color,x:x0+i%4*cell,y:y0+Math.floor(i/4)*cell-(stage===2&&i===6?cell*(1-ease(t/.42)):0)}));
  for(let i=0;i<16;i++){
-  const r=Math.floor(i/4),j=i%4,x=x0+j*cell,y=y0+r*cell;
+  if(stage===2&&i===2)continue;
+  const r=Math.floor(i/4),j=i%4,{x,y,color}=poses[i];
   const killed=stage===2?cluster.includes(i)&&t>.58:stage===3?i===1&&t>.34:stage===4?false:j===1&&r<(stage===1?2:1)&&q>(r+.35)/(stage===1?2:1);
   if(killed){burst(c,x,y,ease((t-(stage===2?.58:.36))/.25));continue;}
-  if(stage===3&&i===5){picture(c,lessonArt('ore'),x,y-(t>.56?31*ease((t-.56)/.3):0),39);continue;}
   const group=stage===2&&cluster.includes(i);
-  cake(c,group?1:colors[i],x,y-(group&&i===6?22*(1-ease(t/.42)):0),42);
+  let mask=0;
+  if(stage===2)for(const [dx,dy,bit]of [[0,-1,1],[1,0,2],[0,1,4],[-1,0,8],[-1,-1,16],[1,-1,32],[1,1,64],[-1,1,128]])if(poses.some(p=>p.i!==2&&p.i!==i&&p.color===color&&Math.abs(p.x-x-dx*cell)<.01&&Math.abs(p.y-y-dy*cell)<.01))mask|=bit;
+  if(stage===3&&i===5&&t>.44){fruit(c,'melon',x,y-31*ease((t-.56)/.3),39);continue;}
+  cake(c,color,x,y,stage===2?cell:42,mask);
+  if(stage===3&&[0,3,8,11,14,5].includes(i)){
+   const key=fruitKeys[[0,3,8,11,14,5].indexOf(i)];
+   if(!window.ChocoArtV295?.paintEmbedded(c,key,x-21,y-21,42,42,{color,mask}))fruit(c,key,x,y,35);
+  }
   if(group&&t>.43&&t<.58)rect(c,x-19,y-19,38,38,6,null,'#fff3af',3);
  }
  if(stage<2)drill(c,x0+cell,40+q*(stage===1?72:34));
- if(stage===3&&t>.55)tag(c,'鉱石 GET',163,47,100);
+ if(stage===3&&t>.55)tag(c,'フルーツ GET',163,47,130);
  if(stage===4)tag(c,'100m',114,86,95);
- tag(c,['ドリルHIT','Lv2・2層','4マスで消去','鉱石を露出','ボーナス層'][stage],110,224,140);
+ tag(c,['ドリルHIT','Lv2・2層',t<.43?'同色が合体':'4個以上・着地後消去','6種のフルーツ','ボーナス層'][stage],110,224,200);
 }
 function sixDiagram(c,stage,t){
  const pos=[],colors=[0,1,2,3];for(let r=0;r<3;r++)for(let j=0;j<(r===1?4:5);j++)pos.push([19+(r===1?.5:0)*43+j*43,66+r*38]);
