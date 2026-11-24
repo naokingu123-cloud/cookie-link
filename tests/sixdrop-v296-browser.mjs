@@ -58,6 +58,26 @@ function observeArt(){
  window.__sixArt296={inspect:image=>({sources:sources(image),texts:texts.get(image)||[],digitRects:digitRects.get(image)||[]})};
 }
 let browser,context,page,current;
+async function startManualRound(label,timeout=45000){
+ // The native BET countdown can finish while artwork is being inspected.
+ // Validate the existing round or use its ordinary Start button atomically.
+ const start=await page.evaluate(()=>{
+  const q=__qa296,e=SixDropV247.engine;
+  if(!SweetsLocalDebugV258.describe().manualNumbers)throw Error('round start requires native manual-number mode');
+  if(q.app.phase==='playing'){
+   if(q.app.draws.length!==0||e.accepted!==0||e.processed!==0||e.busy||e.fx||!(e.idle||e.phase==='waiting'))throw Error('already-started round is not the untouched native waiting state');
+   return {path:'already-playing',phase:q.app.phase,draws:q.app.draws.length,accepted:e.accepted,processed:e.processed,enginePhase:e.phase};
+  }
+  if(q.app.phase!=='ready')throw Error('unexpected native phase before Start: '+q.app.phase);
+  const button=document.getElementById('manual-start'),box=button?.getBoundingClientRect();
+  if(!button||!button.isConnected||button.disabled||button.matches(':disabled')||!(box.width>0&&box.height>0))throw Error('native Start button is not visible and enabled');
+  for(let node=button;node;node=node.parentElement){const css=getComputedStyle(node);if(node.hidden||node.inert||css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)throw Error('native Start button is hidden or inert');}
+  button.click();
+  return {path:'button-click',phase:q.app.phase,draws:q.app.draws.length,accepted:e.accepted,processed:e.processed,enginePhase:e.phase};
+ });
+ (report.starts??=[]).push({label,...start});console.log('SIXDROP_V296_NATIVE_START',label,start.path);
+ await page.waitForFunction(()=>__qa296.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout});
+}
 async function open(s,w){
  context=await browser.newContext({viewport:{width:s.width,height:s.height},serviceWorkers:'block',reducedMotion:s.reduced?'reduce':'no-preference'});await context.addInitScript(observeArt);
  await context.route('**/*',route=>{const u=new URL(route.request().url());if(u.origin!==base){report.externalRequests.push(u.href);return route.abort();}if(u.pathname.startsWith('/api/')||u.pathname.startsWith('/ws')){report.apiRequests.push(u.pathname);return route.abort();}return route.continue();});
@@ -79,7 +99,7 @@ async function open(s,w){
   report[s.id+'Lesson']=await lesson.jsonValue();await lesson.dispose();
   if(s.id==='line-desktop')await page.screenshot({path:path.join(output,'candy-bet-lesson.png')});
  }
- await page.locator('#manual-start').click();await page.waitForFunction(()=>__qa296.app.phase==='playing'&&SixDropV247.engine.idle,null,{timeout:45000});
+ await startManualRound(s.id+'-initial');
  const restored=await page.evaluate(w=>{
   const q=__qa296,e=SixDropV247.engine,phase=q.app.phase;q.app.phase='ready';q.app.draws=w.before.draws.slice();q.app.paid[2]=false;e.state=JSON.parse(JSON.stringify(w.before));e.seed247=w.seed;e.queue=[];e.pendingDraws=new Set();e.fx=null;e.running=true;e.afterCheckpointRestoreV247();q.app.phase=phase;
   q.nativeEvents=[];const original=e.emit;e.emit=function(phase,detail={}){q.nativeEvents.push({phase,winMedals:detail.winMedals,gain:detail.gain,forms:detail.forms?.map(f=>({type:f.type,cells:f.cells}))||[],allClears:detail.allClears});return Reflect.apply(original,this,arguments);};

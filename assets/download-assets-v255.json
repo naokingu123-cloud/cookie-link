@@ -3478,8 +3478,8 @@
     },
     {
       "path": "assets/sixdrop-skin-v296.css",
-      "bytes": 9383,
-      "sha256": "feaac64c39dde6c8a5e7ed8e41e5ee45dd6869619d3ba686f0aee784bb4f0da6"
+      "bytes": 9476,
+      "sha256": "a43949e3498b2a6bc641d93f2294d0f9ec52656fee954c12625bbb683df13f28"
     },
     {
       "path": "assets/sixdrop-thinframe-v11.css",
@@ -4452,5 +4452,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 250330695
+  "totalBytes": 250330788
 }

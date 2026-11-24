@@ -139,6 +139,9 @@ html.sixdrop-art-v296 body.sixdrop-v278 .sd296-rim-glints::after {
 }
 
 /* Counter cosmetics retain all existing grid tracks, heights and widths. */
+html.sixdrop-art-v296 body.sixdrop-v278 .sd278-earned-win .gold-number {
+  line-height: 1;
+}
 html.sixdrop-art-v296 body.sixdrop-v278 .sd280-removed {
   border-color: #f0cf9b59;
   background: #341a31b8;
