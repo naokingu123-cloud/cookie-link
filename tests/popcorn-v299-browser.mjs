@@ -24,6 +24,25 @@ const scenarios=allScenarios.filter(s=>group==='all'||s.group===group);
 const witnesses=Object.fromEntries(scenarios.map(spec=>[spec.id,replayPopcornFixture(spec.fixture,{bet:spec.bet})]));
 if(process.argv.includes('--fixtures-only')){console.log(JSON.stringify({coreSha256:BASELINE_CORE_SHA256,scenarios,fixtures:Object.fromEntries(Object.entries(witnesses).map(([id,w])=>[id,fixtureSummary(w)]))},null,2));process.exit(0);}
 if(process.argv.includes('--list-cases')){console.log(JSON.stringify({group,scenarios}));process.exit(0);}
+function compareNativeTrace(actual,expected){
+ // Node and Chromium differ in the last bits of Math.sin/cos. CI run
+ // 45435203965 enumerated only these cached arc samples: 1..48 ULP, with
+ // absolute error <= 8.89e-16. Integers, endpoints, physics frames, timings,
+ // prizes and every other trace field still require exact deep equality.
+ const copy=structuredClone(actual),differences=[],buffer=new ArrayBuffer(8),view=new DataView(buffer),sign=1n<<63n,mask=(1n<<64n)-1n;
+ const ordered=value=>{view.setFloat64(0,value);const bits=view.getBigUint64(0);return bits&sign?mask^bits:bits|sign;};
+ for(const collection of ['fallSteps','refillSteps'])for(const [i,step]of (actual[collection]||[]).entries())for(const [j,move]of (step.moves||[]).entries())for(const [k,point]of (move.path?.samples||[]).entries())for(const axis of ['x','y']){
+  const reference=expected[collection]?.[i]?.moves?.[j]?.path?.samples?.[k]?.[axis],value=point[axis];if(Object.is(value,reference))continue;
+  const key=`trace.${collection}.${i}.moves.${j}.path.samples.${k}.${axis}`;
+  if(k===0||k===move.path.samples.length-1||!(move.path.pivot>=0||(move.path.gap&&move.path.gapPivot>=0)))continue;
+  if(!Number.isFinite(value)||!Number.isFinite(reference)||Number.isInteger(value)||Number.isInteger(reference))continue;
+  const a=ordered(value),b=ordered(reference),ulp=Number(a>=b?a-b:b-a),absolute=Math.abs(value-reference),limit=4*Number.EPSILON*Math.max(1,Math.abs(value),Math.abs(reference));
+  assert(ulp<=64&&absolute<=limit,key+' exceeds the explicit 64-ULP and scaled 4-epsilon trigonometric bound');
+  differences.push({path:key,actual:value,expected:reference,ulp,absolute});copy[collection][i].moves[j].path.samples[k][axis]=reference;
+ }
+ assert.deepEqual(copy,expected,'every native trace field is exact outside the explicitly bounded trigonometric sample coordinates');
+ return {count:differences.length,maxULP:Math.max(0,...differences.map(d=>d.ulp)),maxAbsolute:Math.max(0,...differences.map(d=>d.absolute)),differences};
+}
 const {chromium}=await import('playwright');
 await fs.mkdir(output,{recursive:true});
 const version=JSON.parse(await fs.readFile('app-version.json','utf8')).version;
@@ -31,7 +50,7 @@ const report={version,group,coreSha256:BASELINE_CORE_SHA256,planned:scenarios,fi
  scope:'Reachable native checkpoints, real numbered-button input, independent BFS/payout/refill-RNG oracle, actual image/crop lineage, live quantities and payout fitting, natural eighth-ball result. No live services or altered production clocks.',
  approvedPresentationChange:'Generated BONUS/ODDS headings have one live WIN unit each; the three BONUS and eight POP rows use the freed width for exact native credit digits. All native row amounts, windows and scrolling remain authoritative.'};
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml','.avif':'image/avif','.wav':'audio/wav','.mp3':'audio/mpeg'};
-const bridge='\n;window.__qa299={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;}};window.__qa299.inspect='+inspect.toString()+';\n';
+const bridge='\n;window.__qa299={app,slots,select,syncManualNumbers,scheduleUI,get active(){return active;},get allNineMode(){return allNineMode;}};window.__qa299.inspect='+inspect.toString()+';\n';
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://127.0.0.1');
  if(url.pathname.startsWith('/api/')||url.pathname.startsWith('/ws')){report.apiRequests.push(url.pathname);res.writeHead(451).end();return;}
@@ -169,6 +188,7 @@ function inspect(){
  return {state:structuredClone(e.state),rng:q.rng(),engine:{phase:e.phase,accepted:e.accepted,processed:e.processed,running:e.running,busy:e.busy,elapsed:e.elapsed,trace:e.trace?{count:e.trace.count,clear:e.trace.clear,all:e.trace.all,boost:e.trace.boost,duration:PopcornView.duration(e.trace)}:null,totalHundredths:e.totalHundredths,drawn:[...e.drawn],presentationRate:e.presentationRate,
   timingUnchanged:PopcornView.duration===timings.duration&&PopcornView.waveAt===timings.waveAt&&PopcornView.hitSequenceV276===timings.hitSequence&&PopcornEngine.draw===timings.draw&&PopcornEngine.payout===timings.payout&&e.pumpHiddenV246===timings.pump&&q.app.acceptNumber===timings.accept&&q.app.boostAfterDraws===timings.boost&&e.presentationRate===(q.app.fastForward?3:1)},
   app:{phase:q.app.phase,draws:q.app.draws.slice(),paid:q.app.paid[q.index],win:q.app.roundWins[q.index],totalWin:q.app.totalWin,locked:q.app.locked[q.index],fastForward:q.app.fastForward},
+  mode:{allNine:!!q.allNineMode,selected:q.active===q.index},
   board:{main:a.box(cv),mini:a.box(slot.miniCanvas),mainVisible:a.visible(cv),miniVisible:a.visible(slot.miniCanvas),fieldWidth:field.clientWidth,fieldHeight:field.clientHeight,canvasWidth:cv.clientWidth,canvasHeight:cv.clientHeight,
    kernels:points(cv,false,'cell',61),ports:points(cv,false,'port',17),miniKernels:points(slot.miniCanvas,true,'cell',61),miniPorts:points(slot.miniCanvas,true,'port',17)},
   mainArt:a.inspect(cv),miniArt:a.inspect(slot.miniCanvas),art:PopcornArtV299.describe(),award:PopcornAwardV299.describe(),awards:SweetsAwardsV277.describe(),nativeEvents:q.nativeEvents.slice(),gradeEvidence:{...q.gradeEvidence},ownerOverlap:q.ownerOverlap||null,
@@ -177,13 +197,15 @@ function inspect(){
 
 function captureAward({expected,mini}){
  const q=__qa299,d=SweetsAwardsV277.describe(),event=d.active.find(cue=>cue.game==='popcorn'&&cue.number===expected.number),api=PopcornAwardV299.describe(),last=api.last;
- // The native clear hold legitimately has no kernels. Capture the award's
- // middle after the first natural refill has begun, retaining true live art.
+ // Main-board capture is after natural refill begins. In all-ten mode an
+ // unselected thumbnail intentionally repaints only at native events; its
+ // pre-wave board is checked separately from the live monetary overlay.
  if(q.app.phase!=='playing'||!event||event.phase!=='popcornDraw'||event.age<1250||last?.role!==expected.role||last.win!==expected.win||last.mini!==mini)return null;
  const cv=document.querySelector('.award-presentation-'+(mini?'mini':'main')+'[data-game="popcorn"]');if(!__pc299Art.visible(cv))return null;
  const trace=__pc299Art.inspect(cv),source='assets/popcorn-art-v299/award-'+expected.role+'.webp';
  if(!trace.sources.includes(source)||!trace.sources.includes('assets/popcorn-art-v299/award-digits.webp')||!last.rasterNumbers||!trace.textCalls.some(call=>call.text===last.liveLabel))return null;
- const layout=q.inspect(),boardTrace=mini?layout.miniArt:layout.mainArt;if(boardTrace.frame?.shownPopped!==expected.popped)return null;
+ const layout=q.inspect(),boardTrace=mini?layout.miniArt:layout.mainArt,staticMini=mini&&layout.mode.allNine&&!layout.mode.selected;
+ if(!staticMini&&boardTrace.frame?.shownPopped!==expected.popped)return null;
  const pixels=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,cv.width,cv.height).data;let nontransparent=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>10)nontransparent++;
  return {event,frozenSnapshot:Object.isFrozen(event.popcorn)&&Object.isFrozen(event.popcorn?.grades)&&Object.isFrozen(event.popcorn?.waveCounts),api,last,trace,box:__pc299Art.box(cv),nontransparent,
   layout,pointerEvents:getComputedStyle(cv).pointerEvents,status:q.slots[q.index].panel.querySelector('.award-v277-status')?.textContent,image:cv.toDataURL('image/png')};
@@ -235,15 +257,15 @@ function checkPaytable(view){
  }
  assert(calls.some(call=>call.text===view.state.popped+'個'),'the actual total POP count remains live');
 }
-function checkLayout(view,spec,before){
+function checkLayout(view,spec,before,displayState=view.state){
  assert.equal(view.app.phase,'playing','live visibility is captured before the natural result dialog');assert(view.documentWidth<=view.viewport,'no horizontal page overflow');
  assert.equal(view.art.loaded,true);assert.equal(view.award.loaded,true);assert.equal(view.award.digitsReady,true);assert.deepEqual(view.art.errors,[]);assert.deepEqual(view.award.errors,[]);
  const trace=spec.mini?view.miniArt:view.mainArt;assert(spec.mini?view.board.miniVisible:view.board.mainVisible,'the observed native main or miniature is actually visible');
  assert(trace.sources.includes(ART+'kernel-pieces.webp'),'live kernels use the new generated source');assert(trace.sources.includes(ART+'port-furniture.webp'),'native numbered fuse plaques use the new generated source');
  for(const name of ['port','all','up',...(!spec.mini?['bonus','odds','row','cabinet']:[])])assert(trace.imageCalls.some(call=>JSON.stringify(call.sourceRect)===JSON.stringify(view.art.sourceRects[name])&&call.source===ART+(name==='cabinet'?'payout-cabinet.webp':'port-furniture.webp')),'the actual '+name+' furniture crop is painted on this surface');
  if(spec.mini)assert(!trace.sources.includes(ART+'award-boost.webp'),'main-only boost artwork never enters the miniature');
- const text=trace.textCalls.map(call=>call.text);for(const number of view.state.numbers)assert(text.includes(String(number)),'actual current fuse number is painted: '+number);
- assert(text.includes((spec.mini?'Lv':'補充Lv')+view.state.level),'the actual refill level stays live on the UP port');
+ const text=trace.textCalls.map(call=>call.text);for(const number of displayState.numbers)assert(text.includes(String(number)),'the actual fuse number for this native painted phase is visible: '+number);
+ assert(text.includes((spec.mini?'Lv':'補充Lv')+displayState.level),'the actual refill level stays live on the UP port');
  if(!spec.mini){assert.equal(view.board.fieldWidth,430,'the original Popcorn field width is preserved');assert.equal(view.board.fieldHeight,372);assert.equal(view.board.canvasWidth,430);assert.equal(view.board.canvasHeight,372);assert(trace.sources.includes(ART+'payout-cabinet.webp'),'the actual payout cabinet uses its new generated artwork');checkPaytable(view);}
  for(const [key,cv]of [['kernels',view.mainArt],['ports',view.mainArt],['miniKernels',view.miniArt],['miniPorts',view.miniArt]])for(const p of view.board[key])assert(p&&p.x-p.r>=-.5&&p.y-p.r>=-.5&&p.x+p.r<=cv.width+.5&&p.y+p.r<=cv.height+.5,'native cell/fuse anchors fit '+key);
  if(before){for(const key of ['kernels','ports','miniKernels','miniPorts'])assert.deepEqual(view.board[key],before.board[key],key+' remain fixed');if(!spec.mini){assert.equal(view.board.fieldWidth,before.board.fieldWidth);assert.equal(view.board.fieldHeight,before.board.fieldHeight);assert.equal(view.board.canvasWidth,before.board.canvasWidth);assert.equal(view.board.canvasHeight,before.board.canvasHeight);}}
@@ -254,6 +276,19 @@ function checkNative(view,step,{settled=false}={}){
  assert.equal(view.engine.accepted,step.ball);if(settled)assert.equal(view.engine.processed,step.ball);
  assert.equal(view.engine.totalHundredths,independentHundredths(step.after.popped,step.after.clears,step.after.firstPopAward));
  assert.equal(view.engine.timingUnchanged,true,'native clocks/functions and automatic eighth-ball fast-forward remain authoritative');assert.deepEqual(view.app.draws,step.after.drawn);assert.deepEqual(view.engine.drawn,step.after.drawn);
+}
+function checkMiniStage(view,step,{settled=false}={}){
+ assert.equal(view.mode.allNine,true);assert.equal(view.mode.selected,false,'this case exercises the real unselected all-ten thumbnail policy');
+ const trace=view.miniArt,frame=trace.frame;assert.equal(frame?.turn,step.ball);assert.equal(frame.mini,true);
+ if(settled){assert.equal(frame.trace,null);assert.equal(frame.shownPopped,step.after.popped);}
+ else{
+  assert.deepEqual(frame.trace,{count:step.trace.count,clear:step.trace.clear,boost:step.trace.boost,waves:step.trace.waves.length});
+  assert(frame.elapsed>=0&&frame.elapsed<625,'the unchanged all-ten host retains its native pre-wave thumbnail while the award animates');assert.equal(frame.shownPopped,step.before.popped);
+ }
+ const board=settled?step.after.board:step.before.board,expected=Array.from({length:6},(_,grade)=>board.filter(piece=>piece?.power===grade).length),painted=Array(6).fill(0);
+ for(const call of trace.imageCalls)if(call.source===ART+'kernel-pieces.webp'&&call.kind==='normal'&&call.alpha>0)painted[call.grade]++;
+ assert.deepEqual(painted,expected,'the thumbnail paints exactly the true occupancy and grade counts for its native frame');
+ return {policy:'all-ten-unselected-event-only',frame,painted,expected};
 }
 function checkAward(captured,step,spec){
  const o=step.oracle,event=captured.event,last=captured.last;
@@ -267,7 +302,8 @@ function checkAward(captured,step,spec){
  assert(captured.nontransparent>30);assert.equal(captured.pointerEvents,'none');assert(captured.status?.includes(o.nativeWinDelta.toLocaleString('ja-JP')));assert(!captured.trace.sources.includes('assets/award-art-v291/themed-cutin-atlas.webp'));
  if(o.all&&!o.clear){assert.equal(last.role,'pop','ALL ignition alone never receives all-clear artwork');assert(!captured.trace.sources.some(source=>/award-(?:clear|grand)\.webp$/.test(source)));}
  if(!spec.mini)assert(!captured.layout.mainArt.textCalls.some(call=>['全消し！','虹ボム 全消し！'].includes(call.text)),'the dedicated award owns the center without a second old clear banner');
- checkNative(captured.layout,step);checkLayout(captured.layout,spec);
+ if(spec.mini)captured.miniStage=checkMiniStage(captured.layout,step);
+ checkNative(captured.layout,step);checkLayout(captured.layout,spec,undefined,spec.mini?step.before:captured.layout.state);
 }
 function checkBoost(captured,step,received){
  const last=captured.last,o=step.oracle;assert(o.boost);assert.equal(last.role,'boost');assert.equal(last.oldLevel,o.oldLevel);assert.equal(last.newLevel,o.newLevel);assert.equal(last.label,'補充Lv '+o.oldLevel+' → '+o.newLevel+' ・ 次の補充から');assert.equal(last.source,ART+'award-boost.webp');assert.equal(last.win,null);assert.equal(last.duration,1010,'the original 500+510 ms boost interval owns the card');
@@ -275,7 +311,11 @@ function checkBoost(captured,step,received){
 }
 function checkGrades(view,spec){
  if(!spec.grades)return;
- for(const kind of ['normal','burst'])for(let grade=0;grade<6;grade++){
+ // The unchanged all-ten host does not animate an unselected thumbnail's
+ // waves. Assert that policy rather than inventing mini burst paints. The
+ // selected main case observes all six real normal and fragment sources.
+ if(spec.mini){assert(view.mode.allNine&&!view.mode.selected);assert(!Object.keys(view.gradeEvidence).some(key=>key.startsWith('mini/burst/')),'native unselected all-ten thumbnails do not render intermediate bursts');}
+ for(const kind of spec.mini?['normal']:['normal','burst'])for(let grade=0;grade<6;grade++){
   const key=[spec.mini?'mini':'main',kind,grade].join('/'),proof=view.gradeEvidence[key];assert(proof,'actual visible '+key+' is drawn from the generated kernel atlas');assert.equal(proof.source,ART+'kernel-pieces.webp');assert.equal(proof.grade,grade);assert.equal(proof.kind,kind);
   assert.deepEqual(proof.sourceRect,view.art.sourceRects[['cream','yellow','red','purple','blue','rainbow'][grade]],'each grade uses its own actual generated source crop');
   const [sw,sh]=proof.via.size,[sx,sy,w,h]=proof.via.crop;assert(sx>=0&&sy>=0&&w>0&&h>0&&sx+w<=sw&&sy+h<=sh,'grade source crop remains inside its actual parent image');
@@ -310,23 +350,27 @@ try{
     const captured=await paint;
     for(const item of captured){if(item.status==='rejected')throw item.reason;const {kind,value}=item.value;
      if(kind==='award')checkAward(value,step,spec);else if(kind==='boost')checkBoost(value,step,start.received);else{checkNative(value.layout,step);checkLayout(value.layout,spec);}
-     if(kind!=='boost')checkLayout(value.layout,spec,before);await saveCapture(value,spec.id+'-ball'+step.ball+'-'+kind);
+     if(kind!=='boost')checkLayout(value.layout,spec,before,spec.mini&&kind==='award'?step.before:value.layout.state);await saveCapture(value,spec.id+'-ball'+step.ball+'-'+kind);
     }
     await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-live.png')});
     await page.waitForFunction(ball=>{const e=PopcornSplash.engine;return e.processed===ball&&!e.busy&&!e.trace;},step.ball,{timeout:120000});
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    if(spec.mini)await page.waitForFunction(({ball,popped})=>{
+     const q=__qa299,frame=__pc299Art.inspect(q.slots[q.index].miniCanvas).frame;
+     return frame?.turn===ball&&frame.trace===null&&frame.shownPopped===popped;
+    },{ball:step.ball,popped:step.after.popped},{polling:'raf',timeout:10000});
     const after=await page.evaluate(inspect);checkNative(after,step,{settled:true});
-    const native=after.nativeEvents.slice(start.events).filter(event=>event.phase==='popcornDraw');assert.equal(native.length,1,'one real accepted numbered draw emits one native trace');assert.equal(native[0].number,step.number);assert.deepEqual(native[0].trace,step.trace,'the real browser trace equals every independently checked native wave, motion frame and refill');
+    const native=after.nativeEvents.slice(start.events).filter(event=>event.phase==='popcornDraw');assert.equal(native.length,1,'one real accepted numbered draw emits one native trace');assert.equal(native[0].number,step.number);const coordinateComparison=compareNativeTrace(native[0].trace,step.trace);
     assert.equal(after.awards.received-start.received,step.oracle.award?1:0,'only a real payable POP or clear creates an award');assert.equal(after.awards.errors,0);
     if(step.oracle.clear&&!spec.mini){assert(after.ownerOverlap,'a real frame inside the original central clear-band interval was observed');assert.equal(after.ownerOverlap.owned,true);assert.equal(after.ownerOverlap.oldBandPainted,false,'the active image award suppresses only the duplicate central clear band');}
     if(spec.mini)assert.equal(after.award.statusPaints,start.statusPaints,'an unselected board never paints a main-only boost card');
     if(!step.oracle.boost)assert(!after.mainArt.sources.includes(ART+'award-boost.webp'),'a prior boost card is absent from the current frame');
-    checkGrades(after,spec);
+    checkGrades(after,spec);const miniStage=spec.mini?checkMiniStage(after,step,{settled:true}):undefined;
     let result;
     if(step.ball===8){const [capturedResult]=await resultPromise;if(capturedResult.status==='rejected')throw capturedResult.reason;result=capturedResult.value.value;checkResult(result,step);await page.screenshot({path:path.join(output,spec.id+'-result.png')});}
     else checkLayout(after,spec,before);
     await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-after.png')});
-    steps.push({number:step.number,ball:step.ball,oracle:step.oracle,after,captures:captured.map(item=>item.value),result,receivedDelta:after.awards.received-start.received});
+    steps.push({number:step.number,ball:step.ball,oracle:step.oracle,after,captures:captured.map(item=>item.value),result,receivedDelta:after.awards.received-start.received,coordinateComparison,miniStage});
    }
    report.cases.push({id:spec.id,status:'passed',durationMs:Date.now()-started,steps});console.log('POPCORN_V299_CASE_PASS',spec.id);
   }catch(error){let diagnostics;try{diagnostics=await page?.evaluate(()=>window.__qa299?.nativeTiming?__qa299.inspect():{phase:window.__qa299?.app.phase,art:window.PopcornArtV299?.describe(),award:window.PopcornAwardV299?.describe()});}catch{}
