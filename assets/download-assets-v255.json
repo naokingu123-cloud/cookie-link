@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v297-gelato-prism",
+  "version": "20261124-v298-winery-crystal",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 41,
-      "sha256": "5260c7e48a80c69e7fe97e9a7b50c95db9e25300d01e76308b01bcbd10c27edf"
+      "bytes": 43,
+      "sha256": "d19fd0c0412cf52569fba643f630fce4ef99b0a1de64ece635cba4b9fbc61010"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 47077,
-      "sha256": "864c979ca0465dbfb38069a740427ca217a472490e716007037248a3993d94e1"
+      "bytes": 47852,
+      "sha256": "390f8810518a147b1b220e2498ffd9d45f4d85ee33e893a07ba85d74fc962d40"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2183,13 +2183,13 @@
     },
     {
       "path": "assets/demo-suite-v91.js",
-      "bytes": 21217,
-      "sha256": "2b246e3c8a3dadcfa11fdaba72fc2027fe9abf35951a70f7fb78650194e5ea5f"
+      "bytes": 21304,
+      "sha256": "669ba5caacd6230f660390fba11314e8dbc45e625c5ac0061ec9a537b00255a3"
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4352,
-      "sha256": "77bce59ed185fe439ae9126541e7262284654025d78ae70adda19c9def36cb0b"
+      "bytes": 4354,
+      "sha256": "877642540fa0117661e025030bd5cb22dfcee481a6797cf1e0b34577af2c0b02"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2213,8 +2213,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3763,
-      "sha256": "8baf5eb97973da7902673172c78b072128af60b337df431105f3ab8c504fa6ec"
+      "bytes": 3765,
+      "sha256": "cfc7f26d4afb54a07f0c605728662e158446329fdc200cb338fa5fa6f058d172"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -4072,6 +4072,61 @@
       "sha256": "0c29c72f050819f86543c9f211575502605d6adcfc0715541b951caa23a5a8da"
     },
     {
+      "path": "assets/winery-art-v298.js",
+      "bytes": 5111,
+      "sha256": "f298490d344d16bc0e0ef9521c57019041aa364c800fc72f6f047b8dcb764d6c"
+    },
+    {
+      "path": "assets/winery-art-v298/award-allfull.webp",
+      "bytes": 576596,
+      "sha256": "a7326849fafae718a14ffbf56527c32da263160717ed106910e7a0493c9103cd"
+    },
+    {
+      "path": "assets/winery-art-v298/award-boost.webp",
+      "bytes": 580822,
+      "sha256": "b57e744b62abc7df78ff0fa52dbcc69eb14a01e6561ca74443a32d462b95e037"
+    },
+    {
+      "path": "assets/winery-art-v298/award-digits.webp",
+      "bytes": 174254,
+      "sha256": "1c4929cf4f50d20ac9a673fc453eed494063a3b9f0d59b1ed6e02a76321bd94a"
+    },
+    {
+      "path": "assets/winery-art-v298/award-full.webp",
+      "bytes": 464562,
+      "sha256": "bdb3b5b754e100fe89ea4037ef5ede1b00aa59dc9c4800bf4c9247915b00e7bc"
+    },
+    {
+      "path": "assets/winery-art-v298/award-odds.webp",
+      "bytes": 634868,
+      "sha256": "400e23f443515f1b2fd03f04d314f92fad480b640fdfa49d9aeffaf966b6ebd8"
+    },
+    {
+      "path": "assets/winery-art-v298/boost-cabinet.webp",
+      "bytes": 398354,
+      "sha256": "19f976853e617d5c907599f411ba443d370e99c277489385d67748e80fc5d5c4"
+    },
+    {
+      "path": "assets/winery-art-v298/glass-and-tags.webp",
+      "bytes": 168030,
+      "sha256": "713e9e2dd51b1e7cb632c7e68fbabe6ddd6d69406537bf9935ae5e9a7386ac24"
+    },
+    {
+      "path": "assets/winery-art-v298/payout-cabinet.webp",
+      "bytes": 262492,
+      "sha256": "36bc8cd6c7cd1c57333044f6c218df0f7e197756ab332e39be1be72dec2b1d81"
+    },
+    {
+      "path": "assets/winery-art-v298/provenance.json",
+      "bytes": 3099,
+      "sha256": "95e16eac78f7a292e54a3ab74bc7e0b8a2b3ee793987ced9555a002b01e6a3ad"
+    },
+    {
+      "path": "assets/winery-award-v298.js",
+      "bytes": 10682,
+      "sha256": "d2030621810fa7806f5b6a3b5cbd96a01ca9492c1173e6a36ce80756696dff60"
+    },
+    {
       "path": "assets/winery-cabinet-v89.webp",
       "bytes": 42708,
       "sha256": "32e5344d23d30847ce8b43ddffdf764e763be01832bf1c562ad60720c2595c6d"
@@ -4223,8 +4278,8 @@
     },
     {
       "path": "assets/winery-pyramid-v1.js",
-      "bytes": 51003,
-      "sha256": "7ad63802276ada7ee4209809727e47fed055fac2d87c842ac950144a17d20a1d"
+      "bytes": 52624,
+      "sha256": "0c6325f6cdf72a9694ae986d914d5ffd9df8d99173874fe8a9d8bf9136fb2a65"
     },
     {
       "path": "assets/winery-pyramid-validation-v1.json",
@@ -4235,6 +4290,11 @@
       "path": "assets/winery-royal-crystal-goblet-v2.svg",
       "bytes": 5276,
       "sha256": "b6e3c6408f4e66f0e9c091a65af6e4cc753a0abaa8e479341cadd195017bfded"
+    },
+    {
+      "path": "assets/winery-skin-v298.css",
+      "bytes": 17294,
+      "sha256": "fc225dc6c502aea40bf226d7d6c1ec85157e5be01202c889dd64a97fc818fd87"
     },
     {
       "path": "assets/winery-stand-contrast-v71.css",
@@ -4263,8 +4323,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86822,
-      "sha256": "29f3370f72002a9eac2319c0822eac192a6b92024d4a5d9870f6336c66d73c1a"
+      "bytes": 87058,
+      "sha256": "85692897426dad2cfbe33f0ad9937ffe5c9a07a5dae559ac5b11c7b965de8327"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4502,5 +4562,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 253961377
+  "totalBytes": 257260266
 }

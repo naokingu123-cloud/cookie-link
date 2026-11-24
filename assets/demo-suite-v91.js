@@ -152,7 +152,8 @@ function glass(c,x,y,red,orange){
  c.fillStyle='rgba(246,246,255,.11)';c.fill();c.save();c.clip();
  const base=17;const a=39*red,b=39*orange;c.fillStyle='#ee6692';c.fillRect(-25,base-a,50,a);c.fillStyle='#ffaf42';c.fillRect(-25,base-a-b,50,b);c.restore();
  c.strokeStyle='#ffe6aa';c.lineWidth=2.6;c.stroke();line(c,[[0,17],[0,28],[-11,28],[11,28]],'#ffe6aa',2.4);
- const A=window.SweetsCartoonArt,sprite=A?.loaded&&A.sprite(red+orange>=.99?'wine-glass-lit':'wine-glass');
+ const dedicated=window.WineryArtV298?.lessonGlass(c,0,0,red+orange>=.99);
+ const A=window.SweetsCartoonArt,sprite=!dedicated&&A?.loaded&&A.sprite(red+orange>=.99?'wine-glass-lit':'wine-glass');
  if(sprite){
   // Retain the example's exact liquid bowl. Only its rim and stem receive the
   // generated glass, so changing fill levels still has the same visible area.

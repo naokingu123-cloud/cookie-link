@@ -117,6 +117,34 @@ for(const witness of [{seed:5,number:11,type:'triangle',win:100},{seed:77,number
  const award=observeSixTimeline(sample,plan,witness.number).find(a=>a.types.includes(witness.type));
  assert(award,'the seeded production rules actually form '+witness.type);assert.equal(award.win,witness.win);
 }
+// Winery's queued art keeps the actual event counts and original gain rounding.
+// Later pours/boosts must not replace those values before a badge is painted.
+const winery=harness(),winePaints=[];winery.context.select(4);winery.app.locked[4]=333;winery.engines[4].power=8;
+winery.window.WineryAwardV298={loaded:true,aspectFor:()=>2,paint:(_ctx,options)=>{winePaints.push(options);return true;}};
+for(const [phase,detail]of [['wineryOddsUp',{fromMix:0,toMix:1}],['wineryBoost',{power:8}],['wineryAllFull',{}],['wineryAward',{gain:0,full:9,mix:1,justFilled:[3]}]])winery.engines[4].emit(phase,detail);
+assert.equal(winery.api.describe().received,0,'MIX, boost, all-full notification and unpaid fills cannot create monetary awards');
+const wineEvent={gain:33,full:10,mix:1,justFilled:[3,4]},wineExpected={full:10,mix:1,justFilledCount:2,power:8,mixMultiplier:1.1};
+assert.equal(winery.engines[4].emit('wineryAward',wineEvent),317);
+const wineCue=winery.api.describe().history.at(-1);
+assert.equal(wineCue.win,109,'the 333 BET retains floor(BET × native gain / 100)');assert.equal(wineCue.total,false);
+assert.deepEqual(plain(wineCue.winery),wineExpected);assert(Object.isFrozen(wineCue.winery));
+wineEvent.full=21;wineEvent.mix=7;wineEvent.justFilled.push(5);winery.engines[4].power=16;
+assert.deepEqual(plain(winery.api.describe().pending[0].winery),wineExpected,'pending data cannot follow later event/engine mutations');
+winery.advance(450);assert(winePaints.some(p=>!p.mini),'the dedicated art paints on the selected main board');
+winery.context.select(0);winery.advance(64);assert(winePaints.some(p=>p.mini),'the same genuine cue paints on the inactive miniature');
+for(const p of winePaints){assert.equal(p.width/p.height,2);assert.equal(p.cue.win,109);assert.deepEqual(plain(p.cue.winery),wineExpected);assert(Object.isFrozen(p.cue.winery));assert.equal(p.still,false);}
+winery.engines[4].emit('wineryAward',{gain:16967,full:21,mix:7,justFilled:Array.from({length:11},(_,i)=>10+i)});
+const fullWineCue=winery.api.describe().history.at(-1);assert.equal(fullWineCue.kind,'clear');assert.equal(fullWineCue.tier,4);assert.equal(fullWineCue.label,'ALL FULL!');assert.equal(fullWineCue.winery.full,21);assert.equal(fullWineCue.winery.justFilledCount,11);
+const wineCount=winery.api.describe().received;winery.engines[4].emit('wineryAllFull');assert.equal(winery.api.describe().received,wineCount,'native all-full notification does not duplicate its preceding committed award');
+for(const loaded of [false,true]){
+ const fallback=harness();fallback.context.select(4);let attempts=0;
+ fallback.window.WineryAwardV298={loaded,aspectFor:()=>1.5,paint:()=>{attempts++;return false;}};
+ fallback.engines[4].emit('wineryAward',{gain:33,full:10,mix:1,justFilled:[3]});fallback.advance(450);
+ assert(fallback.images()>0,'missing or rejected Winery art retains the previous visible award');assert.equal(attempts>0,loaded);assert.equal(fallback.api.describe().errors,0);
+}
+const quietWine=harness({reduced:true});let quietWinePaint=null;quietWine.context.select(4);
+quietWine.window.WineryAwardV298={loaded:true,aspectFor:()=>1.5,paint:(_ctx,options)=>{quietWinePaint=options;return true;}};
+quietWine.engines[4].emit('wineryAward',{gain:33,full:10,mix:1,justFilled:[3]});quietWine.advance(250);assert.equal(quietWinePaint?.still,true);assert.equal(quietWine.api.describe().maxMainParticles,0);
 // A bounded queue prioritizes a real top role over a stream of ordinary awards.
 const priority=harness();priority.engines[0].emit('link',events[0][2]);priority.advance(400);priority.engines[0].emit('allclear',{number:8});priority.advance(32);assert.equal(priority.api.describe().active[0].tier,4);
 for(let n=0;n<80;n++)priority.engines[0].emit('link',{...events[0][2],number:n+10,groups:Array.from({length:18},()=>({cells:[[0,0],[0,1],[1,1],[1,0]]}))});
@@ -127,4 +155,4 @@ h.context.document.hidden=true;h.listeners.get('visibilitychange')();assert.equa
 h.engines[0].emit('allclear',{number:24});assert.equal(h.frames.size,0,'hidden document does not create render work');
 const low=harness({reduced:true});low.engines[0].emit('link',events[0][2]);low.advance(500);assert(low.api.describe().mainImages>0,'reduced motion preserves the substantial award image');assert.equal(low.api.describe().maxMainParticles,0);assert.equal(low.api.describe().maxMiniParticles,0);
 for(const search of ['?downloadWorker=1','?serverSettlementWorker=1']){const worker=harness({search});assert.equal(worker.api,undefined);assert.equal(worker.frames.size,0);assert.equal(worker.nativeCalls.length,0);}
-console.log(JSON.stringify({ok:true,games:kinds,nativeForwarding:true,stateAndPayoutPreserved:true,gameRngCalls:0,duplicateAndRestoreSuppressed:true,freeCommit:true,sixProgressiveAwards:true,sixActualMedalRounding:true,priorityAndBounds:true,reducedImages:true,workerDisabled:true}));
+console.log(JSON.stringify({ok:true,games:kinds,nativeForwarding:true,stateAndPayoutPreserved:true,gameRngCalls:0,duplicateAndRestoreSuppressed:true,freeCommit:true,sixProgressiveAwards:true,sixActualMedalRounding:true,wineryImmutableCounts:true,wineryOriginalGainRounding:true,wineryMainMiniArtAndFallback:true,priorityAndBounds:true,reducedImages:true,workerDisabled:true}));
