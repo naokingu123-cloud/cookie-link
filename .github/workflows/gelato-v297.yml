@@ -1,0 +1,94 @@
+name: Gelato Prism artwork v297
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'assets/gelato-*'
+      - 'assets/gelato-art-v297/**'
+      - 'assets/award-presentation-v277.*'
+      - 'assets/download-assets-v255.json'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/gelato-v297-*.mjs'
+      - '.github/workflows/gelato-v297.yml'
+  pull_request:
+    paths:
+      - 'assets/gelato-*'
+      - 'assets/gelato-art-v297/**'
+      - 'assets/award-presentation-v277.*'
+      - 'assets/download-assets-v255.json'
+      - 'index.html'
+      - 'app-version.json'
+      - 'tests/gelato-v297-*.mjs'
+      - '.github/workflows/gelato-v297.yml'
+permissions:
+  contents: read
+jobs:
+  native-rules-and-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Unchanged native geometry, payout and checkpoint rules
+        run: |
+          node --check assets/gelato-prism-v28.js
+          node --check assets/gelato-art-v297.js
+          node --check assets/gelato-award-v297.js
+          node --check assets/award-presentation-v277.js
+          node tests/gelato-v297-rules.mjs
+          node tests/gelato-v297-awards.mjs
+          node tests/gelato-v297-browser.mjs --fixtures-only
+      - name: Shared awards and coherent download release
+        run: |
+          node tests/award-presentation-v277.mjs
+          node tests/hit-presentation-v276.mjs
+          node tests/v290-themed-effects.mjs
+          node tests/v291-illustrated-awards.mjs
+          node tests/download-v255-cache.mjs
+          node tests/release-v293-integrity.mjs
+  native-presentation:
+    needs: native-rules-and-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [panel, collector, full]
+    env:
+      GELATO_V297_KIND: ${{ matrix.kind }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Genuine panel, collector and full-prism awards
+        run: node tests/gelato-v297-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gelato-v297-${{ matrix.kind }}
+          path: qa-gelato-v297/
+          if-no-files-found: error
+          retention-days: 7

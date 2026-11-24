@@ -1,4 +1,4 @@
-/* GELATO PRISM v76 - animated white live rails, cyan inner rails, dark idle rails and four-tier reach. */
+/* GELATO PRISM - native v232 rules with cached v297 generated ice artwork. */
 (()=>{
 'use strict';
 try{
@@ -677,6 +677,8 @@ try{
  function createRasterCache(){
    rasterImages.base=scaledAsset(rasterImages.board);
    rasterImages.trimCache=scaledAsset(rasterImages.trim);
+   const painted297=window.GelatoArtV297?.prepareFaces(rasterImages,FACES,rasterCoords,MAIN_PX);
+   if(!painted297){
    // Cache all five tinted liquid textures once per face.  The source PNG
    // supplies highlights/gelato texture; CSS/SVG are not used to fake it.
    rasterImages.faceTiles=FACES.map(f=>{
@@ -732,14 +734,21 @@ try{
      }
      return {images,dimImages,x:left,y:top,width,height};
    });
+   rasterImages.artVersion=window.SweetsIllustratedBoardsBV275?.gelatoCache(rasterImages,FACES,rasterCoords,MAIN_PX)?275:40;
+   }
    // Cache node and WIN labels independent of hit animations and filled state.
    rasterImages.labels=offscreen(MAIN_PX);
    rasterImages.numbers=offscreen(MAIN_PX);
    // The v37 -> v40 asset swap creates blank caches; invalidate text keys.
    rasterImages.labelsBet=null;
    rasterImages.numbersKey=null;
-    window.SweetsIllustratedBoardsBV275?.gelatoCache(rasterImages,FACES,rasterCoords,MAIN_PX);
  }
+ // A late atlas decode upgrades the already-mounted board exactly once. The
+ // helper reuses its native triangle masks across v37/v40 base-image loads.
+ Promise.resolve(window.GelatoArtV297?.ready).then(()=>{
+   if(!window.GelatoArtV297?.loaded||!rasterImages.ready)return;
+   createRasterCache();rasterKey='';drawGelato();
+ }).catch(error=>console.warn('[GelatoPrism] v297 artwork fallback',error.message));
  // Crystal sprite atlas: loading is optional so the game remains functional
  // on a slow connection; once ready all 24 cached triangle tiles are rebuilt.
  loadRasterAsset(rasterImages.crystalTiles,'sweet-skins/gelato.webp')
@@ -809,7 +818,7 @@ try{
      for(let idx=0;idx<rasterCoords.length;idx++){
        const p=rasterCoords[idx],n=String(e.nodeNumbers[idx]);
        const hit=e.hits.has(idx);
-        if(window.SweetsIllustratedBoardsBV275?.gelatoSocket(ctx,hit,p.x,p.y,38)){
+        if(window.GelatoArtV297?.socket(ctx,hit,p.x,p.y,38)||window.SweetsIllustratedBoardsBV275?.gelatoSocket(ctx,hit,p.x,p.y,38)){
           // The live numeral below remains independent from the illustrated socket.
         }else if(socketArt.naturalWidth){
          ctx.drawImage(socketArt,hit?144:0,0,144,144,p.x-19,p.y-19,38,38);
@@ -823,15 +832,16 @@ try{
      }
    }
  }
- // Small stylized enamel bucket is drawn only during payout filling.
- // The cached image layers remain fully raster; this is an animated overlay.
- function drawIceBucket(ctx,pour){
+ // The generated crystal jug follows the native fill path. The original
+ // enamel bucket remains a fallback if the new furniture cannot load.
+ function drawIceBucket(ctx,pour,grades){
    const faces=pour.faces;if(!faces.length)return;
    const step=Math.min(faces.length-1,Math.floor(pour.progress*faces.length));
    const f=FACES[faces[step]];if(!f)return;
    const x=f.nodes.reduce((n,i)=>n+rasterCoords[i].x,0)/3*MAIN_SCALE;
    const y=f.nodes.reduce((n,i)=>n+rasterCoords[i].y,0)/3*MAIN_SCALE;
    const bx=Math.min(590,Math.max(70,x+40)),by=Math.max(52,y-116);
+   if(window.GelatoArtV297?.pour(ctx,{grade:grades?.[f.id]??0,x:bx,y:by,targetX:x,targetY:y,progress:pour.progress}))return;
    ctx.save();
    const liquid=ctx.createLinearGradient(bx-6,by+26,x,y);
    liquid.addColorStop(0,'#fffbf0');liquid.addColorStop(.45,'#fc80c8');liquid.addColorStop(1,'#ffecf1');
@@ -911,7 +921,7 @@ try{
    }
    ctx.restore();
 
-   if(!small&&e.pouring&&e.pouring.progress<1)drawIceBucket(ctx,e.pouring);
+   if(!small&&e.pouring&&e.pouring.progress<1)drawIceBucket(ctx,e.pouring,e.faceGrades);
    if(!small){
      ctx.drawImage(rasterImages.labels,0,0);
      // Sugar icon is dynamic and can move without repainting label cache.
@@ -949,13 +959,19 @@ try{
    // Strong dark strokes suppress the bright lines baked into artwork.
    for(let id=0;id<EDGES.length;id++){
      if(e.links.has(id)||innerSegments.has(id))continue;
-     rail(id,'#303454',small?6.5:8,0,.94);
-     rail(id,'#647099',small?2:2.7,0,.48);
+     const edge=EDGES[id],a=rasterCoords[edge.a],b=rasterCoords[edge.b];
+     if(!window.GelatoArtV297?.rail(ctx,'idle',a,b,small?6.5:8)){
+       rail(id,'#303454',small?6.5:8,0,.94);
+       rail(id,'#647099',small?2:2.7,0,.48);
+     }
    }
    for(const id of innerSegments){
      const pulse=.84+.16*Math.sin(motion*.006+id*.49);
-     rail(id,'#38dbff',small?6:8.2,small?4:11,pulse);
-     rail(id,'#8decff',small?3.2:4.1,small?0:4,pulse);
+     const edge=EDGES[id],a=rasterCoords[edge.a],b=rasterCoords[edge.b];
+     if(!window.GelatoArtV297?.rail(ctx,'inner',a,b,small?6:8.2)){
+       rail(id,'#38dbff',small?6:8.2,small?4:11,pulse);
+       rail(id,'#8decff',small?3.2:4.1,small?0:4,pulse);
+     }
      if(flowing){
        const ed=EDGES[id],a=rasterCoords[ed.a],b=rasterCoords[ed.b];
        ctx.save();ctx.setLineDash([7,15]);ctx.lineDashOffset=-(phase*.45+id*3);
@@ -967,9 +983,11 @@ try{
      const ed=EDGES[id],a=rasterCoords[ed.a],b=rasterCoords[ed.b];
      const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
      const pulse=.75+.25*Math.sin(motion*.008+id*.63);
-     rail(id,'#83e9ff',small?10.2:13.8,small?6:17,.76+.21*pulse);
-     rail(id,'#d7faff',small?6.5:8.3,small?2:9);
-     rail(id,'#fffefa',small?3.5:4.8,small?0:4);
+     if(!window.GelatoArtV297?.rail(ctx,'linked',a,b,small?10.2:13.8)){
+       rail(id,'#83e9ff',small?10.2:13.8,small?6:17,.76+.21*pulse);
+       rail(id,'#d7faff',small?6.5:8.3,small?2:9);
+       rail(id,'#fffefa',small?3.5:4.8,small?0:4);
+     }
      if(flowing&&length>1){
        ctx.save();ctx.setLineDash([9,12]);ctx.lineDashOffset=-(phase+id*5.2);
        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
@@ -997,6 +1015,7 @@ try{
    }
    ctx.restore();
    if(!small)ctx.drawImage(rasterImages.numbers,0,0);
+   else if(rasterImages.artVersion===297)ctx.drawImage(rasterImages.numbers,0,0,size,size);
    // HIT! is attached to the numbered socket, not to every filled triangle.
    // The underlying numeral stays readable inside its enlarged ice circle.
    if(e.hits.size){
@@ -1033,6 +1052,7 @@ try{
    updateStaticLabels(e,bet);
    paintRaster(rasterMain.getContext('2d'),e,bet,false);
    paintRaster(rasterMini.getContext('2d'),e,bet,true);
+   for(const canvas of [rasterMain,rasterMini])canvas.dataset.artVersion=String(rasterImages.artVersion||40);
  }
  function updateDraw(root,e){
    const svg=root.querySelector('.gp-board-svg');if(!svg)return;
@@ -1128,7 +1148,10 @@ try{
      // Reserve the short announcement only for the rare 24/24 full-clear.
      if(ev.full)flash('全埋め！');
    }
-   if(ev.phase==='sugaraward')flash('✦ WONDER SUGAR GET!');
+   if(ev.phase==='sugaraward'){
+     if(typeof showSugarAward==='function')showSugarAward(slot,ev.steps);
+     flash('✦ WONDER SUGAR GET!');
+   }
    if(['waiting','settled','complete'].includes(ev.phase))requestReach(slot,e,app);
    drawGelato();scheduleUI(app);
  }
@@ -1247,7 +1270,16 @@ try{
  document.body.classList.add('gelato-enabled');
  syncGelatoOdds();drawGelato();select(1);scheduleUI(app);
  window.GelatoPrism={
-   get imageVersion(){return rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
+   get imageVersion(){return rasterImages.artVersion===297?'v297-generated-ice':rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
+   get presentationV297(){
+     return {version:297,artVersion:rasterImages.artVersion||null,background:'assets/sweet-skins/gelato-kingdom.webp',
+       nodes:rasterCoords.map((point,id)=>({id,x:point.x,y:point.y,number:e.nodeNumbers[id],hit:e.hits.has(id),pending:e.pendingDraws.has(e.nodeNumbers[id])})),
+       faces:FACES.map(face=>({id:face.id,nodes:face.nodes.slice(),grade:e.faceGrades[face.id],color:GRADE_NAMES[e.faceGrades[face.id]],filled:e.filled.has(face.id)})),
+       collectors:[1,2,3,4].map(grade=>({grade,count:e.collectorCounts[grade],multiplier:COLLECTOR_MULT[grade],win:medalWin(app.bet(mount),COLLECTOR_MULT[grade]*100)})),
+       payoutVersion:e.pattern?.payoutVersion||null,countPaytable:e.countPaytable.slice(),
+       main:{width:rasterMain.width,height:rasterMain.height},mini:{width:rasterMini.width,height:rasterMini.height},
+       art:window.GelatoArtV297?.describe()||null};
+   },
    geometry:{nodes:P.length,edges:EDGES.length,faces:FACES.length},
    // The award layer follows the same real triangle vertices as this board.
    // Return a copy so a presentation can never change rule geometry.

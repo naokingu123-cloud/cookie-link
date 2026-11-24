@@ -1,0 +1,91 @@
+{
+  "generator": "Built-in image_gen",
+  "assets": {
+    "materials": {
+      "source": "exec-bb3fade2-dec0-43b0-85a2-408684c8134b.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: production raster material atlas for the Gelato Prism arcade game. Create an opaque landscape 3:2 image, ideally 1536x1024, divided precisely into 3 equal columns and 2 equal rows of full-bleed square textures with no gaps, no grid lines and no borders. Reading left to right, top to bottom: cell 0 vivid CYAN soda gelato; cell 1 vivid GREEN mint-pistachio gelato; cell 2 vivid YELLOW lemon gelato; cell 3 saturated RED strawberry gelato (clearly red, not pale pink); cell 4 vivid VIOLET grape gelato; cell 5 neutral pale blue-white frosted ice. The first five cells show richly detailed premium glossy frozen gelato with broad creamy spoon-cut ridges, subtle prismatic crystalline facets, small ice crystals and pearly specular highlights, soft 3D confectionery illustration quality. Texture stays clear and beautiful when clipped into small triangles by the game. Lighting from upper left, restrained shading, bright readable color across each entire square. The last cell is elegant cloudy frosted ice with delicate faceted crystalline depth and a pale blue tint. Entire canvas filled by six textures, each distinct. NO text, letters, numerals, logos, objects, scoops, cones, icons, frames, triangles, game board, watermark, transparency.",
+      "output": "assets/gelato-art-v297/materials.webp",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGB",
+      "sourceSha256": "91a14a37adeb4850f583ddd76d475e8590d4ea18242b98c2f24fcbaf316e96ac",
+      "outputSha256": "946bf4b9bd23bba87c0e8e46901a5a56f8b7f56d53cdbefadf05be4d0ab87013",
+      "bytes": 585886
+    },
+    "furniture": {
+      "prompt": "Use case: stylized-concept. Production transparent PNG sprite atlas for a premium Gelato Prism arcade game. Landscape 3:2, ideally1536x1024; EXACTLY3 equal columns by2 equal rows. Six isolated objects each centered wholly inside its own512x512 cell with generous transparent margins; no overlap, no grid. Upper-left: round inactive number socket, clear faceted ice and delicate waffle-gold outer rim, quiet dark midnight navy circular center completely BLANK. Upper-middle: same-size acquired round socket, luminous white ice with mint-aqua highlights and delicate gold rim, blank quiet center. Upper-right: a straight thin horizontal unlit dark-blue ice rail, 430 pixels wide and42pixels high, elegant faceted rounded ends. Lower-left: straight thin horizontal linked WHITE luminous ice rail, same430x42, subtle aquamarine shadow and glints. Lower-middle: straight thin horizontal CYAN luminous ice rail, same430x42, brighter turquoise glow. Lower-right: a small ornate faceted ice-crystal pouring jug tilted to pour, waffle-gold handle, pale mint gelato curling down from its spout, fully contained within its cell. Painterly polished3D confectionery game illustration, beautiful real ice reflections, cohesive golden trims, crisp alpha edges. Each object alone and complete. Actual transparent background and transparent spaces between sprites. NO text, numbers, letters, logos, extra objects, board, checkerboard, fake transparency pattern, background rectangle, watermark.",
+      "transparent": true,
+      "source": "exec-ed796993-efff-450d-a9f8-f3632d4ac815.png",
+      "output": "assets/gelato-art-v297/furniture.webp",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "sourceSha256": "1bdce0fbc33aa6dc18a702adda443f82600a1a53df07895d219e7c2d503682fe",
+      "outputSha256": "8a2a7ef1771de1600b7aa552650a77b5d03316ca7d53a336c63426812a91db0c",
+      "bytes": 270888
+    },
+    "paytable": {
+      "prompt": "Use case: stylized-concept. Transparent production UI atlas for a luxurious Gelato Prism arcade game. Portrait2:3, ideally1024x1536, EXACTLY2 equal columns by2 equal rows; each sprite is centered inside its own512x768 cell and separated by generous transparent margins, no grid. Upper-left cell: tall narrow ornate paytable cabinet frame, complete silhouette, clear faceted ice columns, delicate golden waffle rim, small colorful gelato scoops and whipped cream crest on top, ice crystal feet, very large quiet dark midnight-turquoise interior BLANK for runtime numbers. Upper-right cell: a symmetric diamond-shaped collector socket with four equal triangular quadrants, rim of clear ice and four small gold corner jewels, thin central cross dividers, quiet bluegray interior quadrants for runtime colors. Lower-left cell: one wide low horizontal blank pay-row plaque, scalloped icy waffle-gold edges and large quiet navy center, width440height140. Lower-right cell: one wide highest-award header plaque, six-point ice-crystal and gelato-cone crest, golden wafer wings, blank creamy ribbon and quiet dark navy amount field, width440height280. Polished richly detailed painterly3D game art, glassy ice, cream, mint, gold, small rainbow gelato accents. Full objects uncut, correct transparent alpha, no rectangles behind them. All central fields stay undecorated and legible for live text. NO writing, letters, numbers, symbols, fake glyphs, logos, game board, checkerboard, watermark.",
+      "transparent": true,
+      "source": "exec-3f1a5c8b-d9ff-4888-b565-be3294143d2b.png",
+      "output": "assets/gelato-art-v297/paytable.webp",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "sourceSha256": "63e42b62df314e80938ed2ca5e14a523707ec9f31618748bb2d109b0c35e89b6",
+      "outputSha256": "c7d22b21546531cd3b00d7483c49ae2cb01c0ca5eb4129397c626d6f6219a4f2",
+      "bytes": 349464
+    },
+    "award-panel": {
+      "prompt": "Use case: stylized-concept. Premium illustrated arcade award overlay for Gelato Prism. Transparent landscape3:2 PNG, ideally1536x1024. Complete centered ornate confectionery silhouette, no rectangular outer card, generous transparent margins. Top quarter has exactly the English title \"GELATO GET!\" in large beautifully legible 3D cream-and-gold icing letters with icy blue bevel highlights. Surround with lush detailed mint, lemon, strawberry and grape gelato swirls, clear ice-crystal triangular accents, delicate golden waffle scrollwork, sugar stars. Sophisticated cheerful pastel3D game illustration, not vector, with rich surface detail. CRITICAL functional composition: center at35–50percent height is open and quiet dark aqua, reserved for live color icons and count; a broad completely BLANK creamy ribbon spans center at57–66percent height; a broad quiet dark navy/aqua payout plaque inside the lower ornaments spans74–88percent height for runtime golden amounts. Reserve clear legible space, ornament concentrated on sides/top. No other writing, no numerals, no WIN word, no Japanese, no fixed payout. Fully transparent surrounding background, sharp clean alpha, no checkerboard, no ground, no watermark, all decorative edges uncut.",
+      "transparent": true,
+      "source": "exec-223d60cb-b2e4-4853-ba34-1773b939e765.png",
+      "output": "assets/gelato-art-v297/award-panel.webp",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "sourceSha256": "710c8b5449ffb8789e1a6346b2ba8e6afbb384fd12371c00bc0d7f77617dee8c",
+      "outputSha256": "707c257e4cefa0cab296b04266c9bb45aa749be85c6b5b8f81bd09669787a239",
+      "bytes": 533808
+    },
+    "award-collector": {
+      "prompt": "Use case: stylized-concept. Premium illustrated arcade reward overlay for Gelato Prism: a color collector has completed. Transparent landscape3:2 PNG, ideally1536x1024. Richly detailed centered confectionery crest, full silhouette uncut with transparent margins, no outer rectangular card. Exactly the title \"FLAVOR COMPLETE!\" across the top quarter in large highly legible cream/gold3D icing letters with icy aquamarine bevels. Ornament with elegant ice-crystal wings, golden wafer scrolls, whipped cream, four decorative flavor scoops placed to sides in green mint, yellow lemon, red strawberry, violet grape. These scoops are decorative only; reserve the central area for the specific real completed color icons. Cheerful luxurious painterly3D game illustration, intricate frozen highlights and appetizing textures. CRITICAL layout: center35–50percent height quiet dark aqua for live color icons/counts; broad COMPLETELY BLANK cream ribbon spanning57–66percent height; large quiet dark midnight-navy payout plaque at74–88percent height, for golden runtime numbers. Ornaments mainly edges, preserve clean text zones. No numerals, no WIN word, no Japanese, no extra writing, no invented payouts. Actual transparent surrounding background, no checkerboard, no background rectangle, no watermark.",
+      "transparent": true,
+      "source": "exec-dcedc141-1821-4722-8bd4-16673e355435.png",
+      "output": "assets/gelato-art-v297/award-collector.webp",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "sourceSha256": "d4b64f7dd9e9ebf78fe34144bd17b14096aceaa728bc2e8bbf2ed4db80b85014",
+      "outputSha256": "d7c5e24b13efd767f63d6c00724ca8c6476b04af77cd8969e9ee5575bc4a7831",
+      "bytes": 578598
+    },
+    "award-full": {
+      "prompt": "Use case: stylized-concept. Highest-award illustrated overlay for Gelato Prism, celebrating a fully completed six-point ice prism. Transparent landscape3:2 PNG, ideally1536x1024, complete balanced silhouette with generous transparent margins, no rectangular outer card. Exactly the title \"PRISM COMPLETE!\" large across the upper quarter in magnificent cream-and-gold3D icing letters with icy blue bevels. Above it a symmetric SIX-POINT ice crystal crown with a tiny gelato palace, rainbow frozen crystal wings, golden wafer scrolls, pearls of frozen sugar, vivid mint/lemon/strawberry/grape gelato. Richer and grander than ordinary collector reward, tasteful luminous highest-award beauty, polished painterly3D illustration. Critical runtime-safe composition: center35–50percent height quiet dark aqua for real color icons and the live24-panel count; broad entirely BLANK cream ribbon at57–66percent height; large quiet dark navy payout plaque at74–88percent height for live golden numbers. Ornaments concentrated at outeredges/top. NO baked numerals at all, no24, no fixed payout, no WIN word, no Japanese, no extra English, no actual gameboard, no checkerboard, no watermark. Genuine transparent background, crisp alpha edges, nothing clipped.",
+      "transparent": true,
+      "source": "exec-71da3e79-5db6-4a18-a988-04eb72307e3c.png",
+      "output": "assets/gelato-art-v297/award-full.webp",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "sourceSha256": "8533ba06e9b205fb92b3488626db437cf9ea39af8e33618daa1ccc12b16b1739",
+      "outputSha256": "171519693c0c527c50814c0c93db9ca72b1b6cc266b3f52ebabffd76e3994098",
+      "bytes": 530316
+    },
+    "digits": {
+      "prompt": "Use case: stylized-concept. Production transparent sprite atlas of golden confectionery numerals for a Gelato Prism arcade game. Landscape4:3 canvas, ideally1536x1152. EXACT regular4 columns by3 rows, every cell384x384, all glyphs centered with generous clean transparent margins, no overlap or ornaments outside cells. Reading order precisely: first row \"0\", \"1\", \"2\", \"3\". Second row \"4\", \"5\", \"6\", \"7\". Third row \"8\", \"9\", \",\", \"WIN\". Each cell contains ONLY the specified single glyph or the single word WIN. Font style: bold chunky clear premium arcade lettering, golden icing faces, icy pearl highlights, beveled cream/gold edges, shaded golden3D sides, very small sugar sparkles; elegant rich readable digits, uniform cap height and baseline, consistent front-facing view and lighting. The comma is a real legible comma with tail. WIN must fit completely inside its one cell with same visual family. No extra writing, no frame, no ribbon, no background tiles, no objects, no grid, no checkerboard, no watermark. Actual transparent alpha background. All12 cells present exactly once, correct unambiguous shapes, 0 distinct from8 and6 distinct from9.",
+      "transparent": true,
+      "source": "exec-0e396f72-c6f2-407b-b07c-2cfc2a17ca01.png",
+      "output": "assets/gelato-art-v297/digits.webp",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGBA",
+      "sourceSha256": "1a3790f69357a1227dabee876af7338845cc7f1ff35629ef684d9cf81a4f3cf7",
+      "outputSha256": "7c90dc4f2fe542e9513dee6553dce139b7b991df2537ad6d359390d0c0328fa0",
+      "bytes": 745182
+    }
+  },
+  "version": 297,
+  "purpose": "Generated raster assets for native Gelato Prism presentation; geometry and live amounts are rendered by the unchanged game rules."
+}

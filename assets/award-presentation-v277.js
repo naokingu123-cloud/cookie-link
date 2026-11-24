@@ -78,7 +78,7 @@ function projectedPath(slot,path,w,h,mini,state){
 function geometry(slot,path,mini,state){const t=target(slot,mini);return t?projectedPath(slot,path,t.clientWidth||t.width||320,t.clientHeight||t.height||320,mini,state):[];}
 function semantic(slot,ev,r){
  const e=slot.engine,s=e.state,game=kindOf(slot),phase=ev.phase;
- let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null;
+ let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null;
  const number=ev.number??ev.numbers?.at(-1)??s?.draws?.at(-1)??e.lastNumber??null;
  if(game==='cookie'){
   if(phase==='link'&&(ev.gain>0||ev.newRecord)){
@@ -123,7 +123,14 @@ function semantic(slot,ev,r){
   else return null;
  }else if(game==='gelato'){
   if(phase!=='gelatoFill'||!ev.newFaces?.length)return null;
-  kind=ev.full?'clear':'shape';label=ev.full?'ALL COMPLETE!':'TRIANGLE GET!';detail=ev.full?'24パネル 全埋め':e.filled.size+' / 24パネル 完成';gain=ev.gain;highest=!!ev.full;retained=true;
+  if(window.GelatoAwardV297)gelato=window.GelatoAwardV297.snapshot(ev,{previousCounts:r.gelatoPrevious,
+   counts:r.gelatoCounts,faceGrades:e.faceGrades,filledCount:e.filled.size,totalFaces:window.GelatoPrism.geometry?.faces||e.faceGrades?.length||24});
+  highest=gelato?gelato.full:!!ev.full;kind=highest?'clear':'shape';
+  label=highest?'PRISM COMPLETE!':gelato?.mode==='collector'?'FLAVOR COMPLETE!':'GELATO GET!';
+  const count=gelato?.filledCount??e.filled.size,totalFaces=gelato?.totalFaces??24;
+  detail=gelato?.mode==='collector'?gelato.newlyCompleted.map(grade=>gelato.colors[grade].name).join('・')+' 完成 · '+count+' / '+totalFaces+' パネル':
+   highest?count+' / '+totalFaces+' パネル 全完成':count+' / '+totalFaces+' パネル 完成';
+  gain=ev.gain;retained=true;
   paths=ev.newFaces.map(id=>groupPath(ids(window.GelatoPrism.awardFaceNodesV277(id)),true));
  }else if(game==='winery'){
   if(phase!=='wineryAward'||!ev.justFilled?.length||!(ev.gain>0||ev.full===21))return null;
@@ -165,32 +172,46 @@ function semantic(slot,ev,r){
  return {game,phase,number,kind,label,detail,gain:Math.max(0,Number(gain)||0),win:Number.isSafeInteger(nativeWin)&&nativeWin>=0?nativeWin:amount(slot,gain),total,tier:tierFor(gain,highest),highest,paths,delay:Math.min(15000,Math.max(0,delay)),retained,state:game==='candy'?{awardRows:e.rows}:s,
   ...(game==='cookie'?{cookie:Object.freeze({link:e.maxLink,depth:ev.depth||0,clears:e.allClears})}:{}),
   ...(choco?{choco}:{}),
+  ...(gelato?{gelato}:{}),
   ...(game==='candy'?{candy:Object.freeze({
    forms:Object.freeze(Object.fromEntries(['line','triangle','hexagon'].map(role=>[role,(ev.forms||[]).filter(form=>form.type===role).length]))),
    allClears:Number(ev.allClears??s?.allClears)||0
   })}:{})};
 }
-function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null};records.set(slot,r);return r;}
+function gelatoCounts(e,counts=e.collectorCounts){
+ if(Array.isArray(counts)&&counts.length===5&&counts.every(n=>Number.isSafeInteger(n)&&n>=0))return counts.slice();
+ const result=[0,0,0,0,0];for(const id of e.filled||[]){const grade=e.faceGrades?.[id];if(Number.isInteger(grade)&&grade>=0&&grade<5)result[grade]++;}return result;
+}
+function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null,gelatoCounts:kindOf(slot)==='gelato'?gelatoCounts(slot.engine):null};records.set(slot,r);return r;}
 function ownsClass(r,on){
  r.slot.panel.classList.toggle('award-v277-owned',on);r.slot.tab.classList.toggle('award-v277-owned',on);r.slot.panel.dataset.awardKind=on?(r.current?.kind||r.pending[0]?.kind||'bonus'):'';
- // A real Sugar receipt can accompany the same collection as a Canyon award.
+ // A real Sugar receipt can accompany the same collection as an award.
  // Keep its native visibility, timing and tier icon; give it a small separate
- // place while the v295 illustration owns the center of the cabinet.
+ // place while the loaded illustration owns the center of the cabinet.
  r.slot.sugarAwardScreen?.classList.toggle('choco-v295-compact',!!(on&&r.current?.choco&&window.ChocoAwardV295?.loaded));
+ const gelatoOwned=!!(on&&r.current?.gelato&&window.GelatoAwardV297?.loaded);
+ r.slot.panel.classList.toggle('gelato-v297-award-owned',gelatoOwned);
+ r.slot.panel.classList.toggle('gelato-v297-sugar-owned',!!(gelatoOwned&&r.slot.sugarAwardActive&&r.slot.sugarAwardScreen));
+ r.slot.sugarAwardScreen?.classList.toggle('gelato-v297-compact',gelatoOwned);
 }
-function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
+function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;if(kindOf(r.slot)==='gelato'){r.gelatoCounts=gelatoCounts(r.slot.engine);r.gelatoPrevious=null;}ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
 function signature(c){return c.paths.map(p=>p.anchors.map(a=>[a.id,a.r,a.c].join(':')).join(',')).join(';');}
-function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
+function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
 function receive(slot,ev){
  const r=recordFor(slot),e=slot.engine;
  if(ev.phase==='ready'||r.version!==e.version||r.round!==app.token){clear(r);r.version=e.version;r.round=app.token;if(ev.phase==='ready')r.restoring=false;}
+ // Advance the native collector baseline even while no award is shown. A
+ // hidden/paused event must not become a newly completed color on the next ball.
+ if(kindOf(slot)==='gelato'){r.gelatoPrevious=r.gelatoCounts;r.gelatoCounts=gelatoCounts(e,ev.phase==='gelatoFill'?ev.collectors:undefined);}
  if(app.phase!=='playing'||app.enabled?.[slot.i]===false||app.paused||e.paused||document.hidden||!inView||r.restoring){stats.suppressed++;return;}
  // A match path belongs to the board that formed it. The reward picture can
  // finish reading while the native board falls or advances to its next round.
  const moving={cookie:['fall','refill'],choco:['canyonFall','canyonScroll'],candy:['pyramidFall','pyramidSweep','pyramidRound']}[kindOf(slot)];
  if(moving?.includes(ev.phase))for(const c of [r.current,...r.pending])if(c)c.pathsVisible=false;
  const c=semantic(slot,ev,r);if(!c)return;
- c.key=[app.token,e.version,c.phase,c.number,e.processed,e.roundIndex,ev.chain,ev.depth,c.gain,signature(c)].join('/');
+ // Gelato emits once per number before incrementing processed. Its same fill
+ // remains the same award if a later repaint observes the settled counter.
+ c.key=[app.token,e.version,c.phase,c.number,c.game==='gelato'?'':e.processed,e.roundIndex,ev.chain,ev.depth,c.gain,signature(c)].join('/');
  if(r.seen.has(c.key)){stats.suppressed++;return;}r.seen.add(c.key);if(r.seen.size>256)r.seen.delete(r.seen.values().next().value);
  c.serial=++serial;c.wait=c.delay;c.age=0;c.duration=quiet()?Math.max(1800,DURATIONS[c.tier]-250):DURATIONS[c.tier];c.sounded=false;
  stats.received++;eventCounts[c.game]=(eventCounts[c.game]||0)+1;
@@ -205,7 +226,7 @@ function attach(slot,e){
  e.emit=function(phase,detail={}){const result=Reflect.apply(emit,this,arguments);try{receive(slot,{phase,...detail});}catch(error){stats.errors++;if(stats.errors===1)console.warn('[Awards v277]',error);}return result;};
  if(typeof e.enqueueBatch==='function'){
   const enqueue=e.enqueueBatch;
-  e.enqueueBatch=function(){r.restoring=false;r.liveDepth++;r.beforeDraws=this.state?.draws?.length||0;try{return Reflect.apply(enqueue,this,arguments);}finally{r.liveDepth--;}};
+  e.enqueueBatch=function(){if(kindOf(slot,this)==='gelato')r.gelatoCounts=gelatoCounts(this);r.restoring=false;r.liveDepth++;r.beforeDraws=this.state?.draws?.length||0;try{return Reflect.apply(enqueue,this,arguments);}finally{r.liveDepth--;}};
  }
  if(typeof e.finishThinkingV251==='function'){
   const finish=e.finishThinkingV251;
@@ -222,9 +243,13 @@ function attach(slot,e){
    try{return Reflect.apply(finish,this,arguments);}finally{if(safe)r.commitDepth--;}
   };
  }
- if(typeof e.afterCheckpointRestoreV247==='function'){
+ if(typeof e.afterCheckpointRestoreV247==='function'||kindOf(slot,e)==='gelato'){
   const restore=e.afterCheckpointRestoreV247;
-  e.afterCheckpointRestoreV247=function(){clear(r);r.restoring=true;return Reflect.apply(restore,this,arguments);};
+  e.afterCheckpointRestoreV247=function(){
+   clear(r);r.restoring=true;
+   try{return typeof restore==='function'?Reflect.apply(restore,this,arguments):undefined;}
+   finally{if(kindOf(slot,this)==='gelato'){r.gelatoCounts=gelatoCounts(this);r.version=this.version;r.round=app.token;}}
+  };
  }
 }
 function layer(r,mini){
@@ -404,6 +429,14 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
   const painted=window.SixDropAwardV296.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
   ctx.restore();
   if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
+ if(c.game==='gelato'&&c.gelato&&window.GelatoAwardV297?.loaded){
+  const width=Math.min(w*.98,h*(mini?1.48:1.38)),height=width/1.5;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.GelatoAwardV297.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:c.tier>=3?5:3;}
  }
  const width=Math.min(w*(mini?.93:.84),h*(mini?1.16:1.28)),height=Math.min(h*(mini?.72:.54),width*.67);
  const cx=ox+w/2,cy=oy+h*(mini?.53:.53),zoom=quiet()?1:.80+.20*(1-(1-enter)**3);
