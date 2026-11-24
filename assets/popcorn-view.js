@@ -8,6 +8,7 @@
   const TAU = Math.PI * 2;
   const font = '"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif';
   const payoutFace='ArcadePayout, Georgia, serif';
+  const reducedMotion=window.matchMedia?.('(prefers-reduced-motion: reduce)');
   const kernelColors=['#fff5dc','#ffcd35','#f74b38','#b761ec','#3a9dfb','#ffe4a2'];
   const blastPaint=[null,
     {rim:'#9e5919',light:'#ffe878',spark:'#fff7b0',wash:'rgba(255,191,36,.19)'},
@@ -154,6 +155,8 @@
     ctx.beginPath();for(let j=0;j<8;j++){const a=j*Math.PI/4;const d=r*(j%2?.24:1);const xx=x+Math.cos(a)*d,yy=y+Math.sin(a)*d;if(j)ctx.lineTo(xx,yy);else ctx.moveTo(xx,yy);}ctx.closePath();ctx.fillStyle=fill;ctx.fill();
   }
   function spriteAtlas(mini) {
+    const upgraded=window.PopcornArtV299?.loaded&&window.PopcornArtV299.atlas?.(mini);
+    if(upgraded)return upgraded;
     const illustrated=window.SweetsIllustratedBoardsBV275?.popcornAtlas(mini);if(illustrated)return illustrated;
     if(!art.pieces) return null;
     const tile=mini?18:54;
@@ -205,9 +208,14 @@
     {center:[.75,.75],fly:[.70,.46],spin:1.47,shape:[[.51,.53],[.67,.55],[.80,.46],[1,.54],[1,1],[.47,1],[.54,.81],[.47,.67]]}
   ];
   const popSheets=new Map();
+  let popSheetSource=null;
   function popSheet(power,mini){
-    const pieces=window.SweetsIllustratedBoardsBV275?.popcornSource()||art.pieces;
+    const upgraded=window.PopcornArtV299?.loaded&&window.PopcornArtV299.source?.();
+    const pieces=upgraded||window.SweetsIllustratedBoardsBV275?.popcornSource()||art.pieces;
     if(!pieces)return null;
+    // A late asset load switches both the intact kernel and its real lobes.
+    // Source identity invalidates only the cached fragment sheets, not motion.
+    if(pieces!==popSheetSource){popSheets.clear();popSheetSource=pieces;}
     const key=2*power+Number(mini);if(popSheets.has(key))return popSheets.get(key);
     const px=mini?54:146,n=mini?6:14,cols=n/2;
     const sheet=document.createElement('canvas');sheet.width=cols*px;sheet.height=px*2;
@@ -623,7 +631,15 @@
       if(flipped){const f=clamp((elapsed-change)/260),k=1+.16*Math.sin(Math.PI*f);ctx.scale(k,k);}
       const half=special?.685:.376,high=special?.415:.292;
       const sign=all?art.allSign:boost?art.upSign:null;
-      if(window.SweetsCartoonBoardsB?.popcornPlaque(ctx,half,high,special,sign,lit||inspected||flipped)){
+      const painted=!!(window.PopcornArtV299?.loaded&&window.PopcornArtV299.port?.(ctx,{all,boost,half,high,lit:lit||inspected||flipped}));
+      const printedSign=!!sign||(painted&&special);
+      if(painted){
+        // The generated ALL/UP title surrounds the original live number/Lv.
+        if(lit||inspected||flipped){
+          if(special)rounded(ctx,-.652,-.48,1.304,.867,.135,null,edge,.060);
+          else rounded(ctx,-half,-high,half*2,high*2,.185,null,edge,.046);
+        }
+      }else if(window.SweetsCartoonBoardsB?.popcornPlaque(ctx,half,high,special,sign,lit||inspected||flipped)){
         // Keep the original live labels and reach geometry above the artwork.
       }else if(sign){
         ctx.drawImage(sign,-.94,-.84,1.88,1.62);
@@ -635,18 +651,20 @@
           rounded(ctx,-half-extra,-high-extra,2*(half+extra),2*(high+extra),.205,null,edge,.037);
         }
       }
-      if(re)reachTrim(ctx,tier,sign?.79:half+.020,sign?.45:high+.020,time,i,mini);
-      if(all){
+      if(re)reachTrim(ctx,tier,printedSign?.79:half+.020,printedSign?.45:high+.020,time,i,mini);
+      if(all&&!painted){
         if(!sign)rounded(ctx,-.50,-.59,1,.365,.14,'#ffda7d','#853e22',.033);
         label(ctx,'ALL',0,sign?-.32:-.398,.285,sign?'#ffe8a5':'#662c21',{max:1.05,outline:sign?'#702f36':null,stroke:.025});
       }
       if(boost){
         const changing=tr?.boost&&elapsed<sequence(tr).fall;
         const lv=changing&&elapsed<change?tr.oldLevel:s.level;
-        if(!sign)rounded(ctx,-.66,-.61,1.32,.39,.14,'#dcf2a0','#3f6b3e',.036);
-        label(ctx,mini?'UP':'ボム率UP',0,sign?-.38:-.407,mini?.31:.262,sign?'#f3ffd6':'#244b2c',{max:1.22});
-        if(!sign)rounded(ctx,-.76,.365,1.52,.365,.13,'#315f48','#cae797',.035);
-        label(ctx,(mini?'Lv':'補充Lv')+lv,0,sign?.36:.548,mini?.268:.245,'#f5ffd9',{max:1.29});
+        if(!painted){
+          if(!sign)rounded(ctx,-.66,-.61,1.32,.39,.14,'#dcf2a0','#3f6b3e',.036);
+          label(ctx,mini?'UP':'ボム率UP',0,sign?-.38:-.407,mini?.31:.262,sign?'#f3ffd6':'#244b2c',{max:1.22});
+          if(!sign)rounded(ctx,-.76,.365,1.52,.365,.13,'#315f48','#cae797',.035);
+        }
+        label(ctx,(mini?'Lv':'補充Lv')+lv,0,painted?.60:printedSign?.36:.548,mini?.268:.245,'#f5ffd9',{max:1.29});
         if(changing){
           const q=(elapsed%350)/350,light=1-.50*q;
           ctx.save();ctx.globalAlpha*=light;ctx.strokeStyle='#ecffa6';ctx.lineWidth=.072;ctx.lineCap='round';ctx.lineJoin='round';
@@ -655,7 +673,7 @@
           }ctx.restore();
         }
       }
-      label(ctx,num,0,boost&&sign?-.025:special?.063:.012,boost&&sign?.48:special?.60:.454,lit&&!special?'#572839':'#fff7d7',{max:2*half-.04,outline:lit&&!special?'#ffe9aa':'#332d38',stroke:mini&&tier===3?.055:.042,rainbow:mini&&tier===3?time+i*97:undefined});
+      label(ctx,num,0,boost&&printedSign?-.025:special?.063:painted?.04:.012,boost&&printedSign?.48:special?.60:painted?.38:.454,lit&&!special&&!painted?'#572839':'#fff7d7',{max:2*half-.04,outline:lit&&!special&&!painted?'#ffe9aa':'#332d38',stroke:mini&&tier===3?.055:.042,rainbow:mini&&tier===3?time+i*97:undefined});
       if(re)reachTag(ctx,tier,special?.742:.451,time+i*97,mini);
       ctx.restore();
     });
@@ -698,7 +716,7 @@
       const pt=K.motionPoint(m,a);drawPiece(ctx,m.piece,pt.x,pt.y,time,mini);
     }
   }
-  function liveBoard(ctx,s,tr,elapsed,time,mini,reach,guide) {
+  function liveBoard(ctx,s,tr,elapsed,time,mini,reach,guide,clearOwned=false) {
     drawCachedPlate(ctx);
     const seq=tr&&sequence(tr),active=!!tr&&elapsed<seq.end;
     const moving=active&&(tr.port>=0||seq.served),service=active?serviceAt(seq,elapsed):null;
@@ -786,13 +804,17 @@
     portArt(ctx,s,tr,elapsed,time,mini,reach,guide);
     if(!mini && moving && tr.clear && elapsed>=seq.rest && elapsed<seq.fall){
       const a=clamp((elapsed-seq.rest)/120),pulse=Math.sin(a*Math.PI/2);
-      ctx.save();ctx.globalAlpha*=pulse;rounded(ctx,-2.7,-.59,5.4,1.18,.46,'#7c263ce8','#ffc85d',.072);
+      ctx.save();ctx.globalAlpha*=pulse;
+      if(!clearOwned)rounded(ctx,-2.7,-.59,5.4,1.18,.46,'#7c263ce8','#ffc85d',.072);
       if(seq.rainbow){
         ctx.save();ctx.setLineDash([.44,.15]);polygon(ctx,K.outline,.982);ctx.lineWidth=.095;
         for(let k=0;k<spectrum.length;k++){ctx.setLineDash([.24,1.44]);ctx.lineDashOffset=-k*.24;ctx.strokeStyle=spectrum[k];ctx.stroke();}ctx.restore();
       }
-      label(ctx,seq.rainbow?'虹ボム 全消し！':'全消し！',0,-.12,seq.rainbow?.45:.52,'#fff0ab',{outline:'#7e362a'});
-      label(ctx,seq.rainbow?'RAINBOW ALL CLEAR':'ALL CLEAR',0,.29,.224,'#ffdd82');ctx.restore();
+      if(!clearOwned){
+        label(ctx,seq.rainbow?'虹ボム 全消し！':'全消し！',0,-.12,seq.rainbow?.45:.52,'#fff0ab',{outline:'#7e362a'});
+        label(ctx,seq.rainbow?'RAINBOW ALL CLEAR':'ALL CLEAR',0,.29,.224,'#ffdd82');
+      }
+      ctx.restore();
     }
   }
   function background(ctx,w,h,mini) {
@@ -831,6 +853,7 @@
     label(ctx,opt.demo?'デモ':(s.turn+'/8 球'),bx+bw/2,y+12.5,16,cream,{max:bw-8});
   }
   function payoutFrame(ctx,x,y,w,h){
+    if(window.PopcornArtV299?.loaded&&window.PopcornArtV299.frame?.(ctx,x,y,w,h))return true;
     if(window.SweetsCartoonBoardsB?.panelFrame(ctx,'popcorn',x,y,w,h,w*.10))return;
     const img=art.payout;
     if(!img){rounded(ctx,x,y,w,h,12,'#fff1d2','#b95b46',2);return;}
@@ -841,8 +864,8 @@
     ctx.drawImage(img,0,img.height-b,img.width,b,x,y+h-b*k,w,b*k);
   }
   function side(ctx,s,state,x,y,w,h,tr,elapsed,sugarIcon){
-    payoutFrame(ctx,x,y,w,h);
-    drawSweetFrame(ctx,'popcorn',x,y,w,h,w*.10);
+    const upgraded=!!payoutFrame(ctx,x,y,w,h),furniture=upgraded?window.PopcornArtV299:null;
+    if(!upgraded)drawSweetFrame(ctx,'popcorn',x,y,w,h,w*.10);
     const pad=w*.105,top=w*.165,bottom=w*.137,iw=w-2*pad;
     const sx=iw/150,sy=(h-top-bottom)/490,uniform=Math.sqrt(sx*sy);
     ctx.save();ctx.translate(x+pad,y+top);ctx.scale(sx,sy);
@@ -850,7 +873,13 @@
       ctx.save();ctx.translate(xx,yy);ctx.scale(uniform/sx,uniform/sy);
       label(ctx,text,0,0,size,color,{...opts,max:opts.max===undefined?undefined:opts.max*sx/uniform});ctx.restore();
     }
-    function heading(text,y,accent){
+    function heading(text,y,accent,role){
+      if(furniture?.header?.(ctx,role,0,y,150,25)){
+        // One live unit per generated section keeps all eleven amount rows
+        // wide enough for their actual credits. The art owns its title.
+        type('WIN',130,y+17.4,11,'#ffdf8a',{align:'right',max:22.5,face:payoutFace,weight:700});
+        return;
+      }
       rounded(ctx,0,y,150,25,3.5,'#a12131','#ffca64',1.3);
       if(art.praline){
         ctx.save();ctx.beginPath();ctx.roundRect(1,y+1,148,23,3);ctx.clip();
@@ -861,7 +890,8 @@
       star(ctx,7,y+13,3.3,gold);star(ctx,143,y+13,3.3,gold);
       type(text,75,y+12.8,18.8,accent,{max:131,outline:'#642434',stroke:2});
     }
-    // Counts and credit amounts occupy separate tags. Every credit tag has its own unit.
+    // Counts and credit amounts occupy separate tags. Generated furniture
+    // shares the header unit; the legacy furniture keeps each row's WIN.
     function sweet(xx,yy,size){
       const w=size*uniform/sx,h=size*uniform/sy;
       if(sugarIcon)ctx.drawImage(sugarIcon,xx-w/2,yy-h/2,w,h);
@@ -870,23 +900,32 @@
     function row(tag,amount,y,height,active,bonus){
       const mid=y+height/2,inner=height-3;
       const strength=Number(active)||0;
-      rounded(ctx,1,y,148,height,4,'#37222c','#8d5134',.75);
-      rounded(ctx,3,y+1.5,48,inner,3,bonus?'#8a303a':'#f0c4bc');
-      rounded(ctx,53,y+1.5,94,inner,3,'#683145');
+      const painted=!!furniture?.row?.(ctx,1,y,148,height);
+      if(!painted){
+        rounded(ctx,1,y,148,height,4,'#37222c','#8d5134',.75);
+        rounded(ctx,3,y+1.5,48,inner,3,bonus?'#8a303a':'#f0c4bc');
+        rounded(ctx,53,y+1.5,94,inner,3,'#683145');
+      }
       if(strength>0){
         ctx.save();ctx.globalAlpha*=strength;
         rounded(ctx,1,y,148,height,4,null,'#fff5a8',1.6);
-        rounded(ctx,3,y+1.5,48,inner,3,bonus?'#ffe285':'#f49ea8');
-        rounded(ctx,53,y+1.5,94,inner,3,'#854654');ctx.restore();
+        if(!painted){
+          rounded(ctx,3,y+1.5,48,inner,3,bonus?'#ffe285':'#f49ea8');
+          rounded(ctx,53,y+1.5,94,inner,3,'#854654');
+        }
+        ctx.restore();
       }
-      ctx.fillStyle='#fff0b540';ctx.fillRect(57,y+2.5,84,1.0);
-      type(tag,27,mid,18.2,bonus&&strength<.55?'#fff2bd':'#4b293b',{max:45});
-      // Gelato and Winery show the credit digits ungrouped. Keep WIN attached
-      // in the same gold payout face while reserving a smaller suffix width.
-      type(String(amount),120,mid,20.8,'#ffedb0',{align:'right',max:64.5,face:payoutFace,weight:750});
-      type('WIN',145.4,mid+1.4,13.2,'#ffdf8a',{align:'right',max:23.5,face:payoutFace,weight:750});
+      if(!painted){ctx.fillStyle='#fff0b540';ctx.fillRect(57,y+2.5,84,1.0);}
+      type(tag,27,mid,18.2,!painted&&bonus&&strength<.55?'#fff2bd':'#4b293b',{max:painted?40:45});
+      if(painted){
+        type(String(amount),143.5,mid,20.8,'#ffedb0',{align:'right',max:87.5,face:payoutFace,weight:700});
+      }else{
+        // Preserve the legacy number and suffix positions until art is ready.
+        type(String(amount),120,mid,20.8,'#ffedb0',{align:'right',max:64.5,face:payoutFace,weight:750});
+        type('WIN',145.4,mid+1.4,13.2,'#ffdf8a',{align:'right',max:23.5,face:payoutFace,weight:750});
+      }
     }
-    heading('全消し BONUS',0,'#fff1a5');
+    heading('全消し BONUS',0,'#fff1a5','bonus');
     const bonusH=27,bonusY=29,maxBonus=K.clearPay.length;
     const topFor=n=>Math.min(maxBonus,Math.max(3,n+1));
     const after=s.clears,before=tr?.clear?after-1:after;
@@ -904,7 +943,7 @@
     }
     ctx.restore();
     const oddsY=34+3*bonusH;
-    heading('ODDS',oddsY,'#a0f9fb');
+    heading('ODDS',oddsY,'#a0f9fb','odds');
     const start=oddsY+29,windowBottom=397,rows=8;
     const popPay=K.popPayFor(s.firstPopAward);
     const highest=popPay.findLastIndex(([n])=>n<480),popH=(windowBottom-start)/rows;
@@ -1142,6 +1181,7 @@
     // Fixed logical height preserves type sizes and line weights at either host pixel ratio.
     const {H,W,b,left,field,sidebar}=layout(width,height,mini);
     const guide=guideFor(s,tr,elapsed,opt.focusPort);
+    const clearOwned=!!(!mini&&tr?.clear&&window.PopcornAwardV299?.loaded&&ctx.canvas?.closest?.('.panel')?.classList.contains('popcorn-v299-award-owned'));
     if(mini)ctx.clearRect(0,0,width,height);
     ctx.scale(height/H,height/H);
     if(!mini)background(ctx,W,H,mini);
@@ -1155,8 +1195,15 @@
       }
       footer(ctx,s,tr,elapsed,t,opt.demo,left,sidebar?H-26:H-28,field,guide);
     }
-    ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.k,b.k);liveBoard(ctx,s,tr,elapsed,t,mini,opt.reach,guide);ctx.restore();
+    ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.k,b.k);liveBoard(ctx,s,tr,elapsed,t,mini,opt.reach,guide,clearOwned);ctx.restore();
     if(sidebar)side(ctx,s,sv,...sidebar,tr,elapsed,opt.sugarIcon);
+    // Native boost timing and the existing host clock own this status. It has
+    // no WIN and remains within the board, clear of its paytable and footer.
+    if(!mini&&tr?.boost&&elapsed<sequence(tr).fall&&window.PopcornAwardV299?.loaded){
+      window.PopcornAwardV299.paintBoost?.(ctx,{trace:tr,elapsed,duration:sequence(tr).fall,
+        width:field*.92,height:H*.46,centerX:left+field/2,centerY:H*.49,
+        still:!!(opt.still||reducedMotion?.matches)});
+    }
     ctx.restore();
   }
   // Project the live kernel grid and fuse plaques through the native layout.
@@ -1166,5 +1213,9 @@
     return {x:(b.x+p.x*b.k)*scale,y:(b.y+p.y*b.k)*scale,r:b.k*scale*(anchor.type==='port'?.46:.43)};
   }
   const hitSequenceV276=trace=>(trace?.waves||[]).map((ids,index)=>({ids:ids.slice(),index,at:LIGHT+index*WAVE}));
+  if(window.PopcornArtV299?.ready)loading.push(Promise.resolve(window.PopcornArtV299.ready).then(()=>{
+    if(!window.PopcornArtV299?.loaded)return false;
+    artVersion++;sprites.length=0;popSheets.clear();return true;
+  },()=>false));
   window.PopcornView={draw,duration,waveAt,refilling,pickPort,lessonGuideHit,shownPopped,hitGeometryV276,hitSequenceV276,assetsReady:Promise.all(loading),get artVersion(){return artVersion;}};
 })();

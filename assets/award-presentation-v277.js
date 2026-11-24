@@ -78,7 +78,7 @@ function projectedPath(slot,path,w,h,mini,state){
 function geometry(slot,path,mini,state){const t=target(slot,mini);return t?projectedPath(slot,path,t.clientWidth||t.width||320,t.clientHeight||t.height||320,mini,state):[];}
 function semantic(slot,ev,r){
  const e=slot.engine,s=e.state,game=kindOf(slot),phase=ev.phase;
- let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null;
+ let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null;
  const number=ev.number??ev.numbers?.at(-1)??s?.draws?.at(-1)??e.lastNumber??null;
  if(game==='cookie'){
   if(phase==='link'&&(ev.gain>0||ev.newRecord)){
@@ -140,6 +140,7 @@ function semantic(slot,ev,r){
   const tr=e.trace,K=window.PopcornEngine;
   gain=K.payout(s.popped,s.clears,100,s.firstPopAward)-K.payout(s.popped-tr.count,s.clears-Number(tr.clear),100,s.firstPopAward);
   if(!(gain>0||tr.clear))return null;
+  popcorn=popcornSnapshot(s,tr,number);
   highest=!!tr.clear;kind=highest?'clear':'bonus';label=highest?'ALL POP!':tr.count+' POP!';detail=tr.waves.length+'連鎖 ・ 合計 '+s.popped+'個';
   const waves=window.PopcornView.hitSequenceV276(tr);delay=waves.at(-1)?.at||0;paths=cellPaths(ids(sparse([...new Set(tr.waves.flat())],12)));
  }else if(game==='jelly'){
@@ -168,7 +169,10 @@ function semantic(slot,ev,r){
   paths=lineIds.map(id=>groupPath(ids(g.lines.find(line=>line.id===id)?.cells||g.lines[id]?.cells)));
  }
  if(!label)return null;
- const nativeWin=game==='candy'?ev.winMedals:undefined;
+ // Popcorn's native trace already rounds both cumulative values at the actual
+ // locked BET. Their difference is the true received increment; rounding the
+ // hundredths difference again loses one medal at some low-BET boundaries.
+ const nativeWin=game==='candy'?ev.winMedals:popcorn?.nativeWinDelta;
  return {game,phase,number,kind,label,detail,gain:Math.max(0,Number(gain)||0),win:Number.isSafeInteger(nativeWin)&&nativeWin>=0?nativeWin:amount(slot,gain),total,tier:tierFor(gain,highest),highest,paths,delay:Math.min(15000,Math.max(0,delay)),retained,state:game==='candy'?{awardRows:e.rows}:s,
   ...(game==='cookie'?{cookie:Object.freeze({link:e.maxLink,depth:ev.depth||0,clears:e.allClears})}:{}),
   ...(choco?{choco}:{}),
@@ -177,6 +181,7 @@ function semantic(slot,ev,r){
    power:Number(e.power)||1,mixMultiplier:(10+ev.mix)/10
   })}:{}),
   ...(gelato?{gelato}:{}),
+  ...(popcorn?{popcorn}:{}),
   ...(game==='candy'?{candy:Object.freeze({
    forms:Object.freeze(Object.fromEntries(['line','triangle','hexagon'].map(role=>[role,(ev.forms||[]).filter(form=>form.type===role).length]))),
    allClears:Number(ev.allClears??s?.allClears)||0
@@ -186,12 +191,24 @@ function gelatoCounts(e,counts=e.collectorCounts){
  if(Array.isArray(counts)&&counts.length===5&&counts.every(n=>Number.isSafeInteger(n)&&n>=0))return counts.slice();
  const result=[0,0,0,0,0];for(const id of e.filled||[]){const grade=e.faceGrades?.[id];if(Number.isInteger(grade)&&grade>=0&&grade<5)result[grade]++;}return result;
 }
+function popcornSnapshot(s,tr,number){
+ const waveCounts=(tr.waves||[]).map(wave=>wave.length),grades=[0,0,0,0,0,0];
+ for(const id of new Set((tr.waves||[]).flat())){const power=tr.before?.[id]?.power;if(Number.isInteger(power)&&power>=0&&power<6)grades[power]++;}
+ const nativeOldWin=Number.isSafeInteger(tr.oldWin)&&tr.oldWin>=0?tr.oldWin:null;
+ const nativeTotalWin=Number.isSafeInteger(tr.win)&&tr.win>=0?tr.win:null;
+ const nativeWinDelta=nativeOldWin!==null&&nativeTotalWin!==null&&nativeTotalWin>=nativeOldWin?nativeTotalWin-nativeOldWin:null;
+ return Object.freeze({number,count:tr.count,chains:waveCounts.length,popped:s.popped,clears:s.clears,
+  clear:!!tr.clear,all:!!tr.all,boost:!!tr.boost,oldLevel:tr.oldLevel??s.level,newLevel:tr.newLevel??s.level,
+  firstPopAward:s.firstPopAward,nativeOldWin,nativeTotalWin,nativeWinDelta,
+  waveCounts:Object.freeze(waveCounts),grades:Object.freeze(grades)});
+}
 function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null,gelatoCounts:kindOf(slot)==='gelato'?gelatoCounts(slot.engine):null};records.set(slot,r);return r;}
 function ownsClass(r,on){
  r.slot.panel.classList.toggle('award-v277-owned',on);r.slot.tab.classList.toggle('award-v277-owned',on);r.slot.panel.dataset.awardKind=on?(r.current?.kind||r.pending[0]?.kind||'bonus'):'';
  // A real Sugar receipt can accompany the same collection as an award.
  // Keep its native visibility, timing and tier icon; give it a small separate
  // place while the loaded illustration owns the center of the cabinet.
+ r.slot.panel.classList.toggle('popcorn-v299-award-owned',!!(on&&r.current?.popcorn&&window.PopcornAwardV299?.loaded));
  r.slot.sugarAwardScreen?.classList.toggle('choco-v295-compact',!!(on&&r.current?.choco&&window.ChocoAwardV295?.loaded));
  const gelatoOwned=!!(on&&r.current?.gelato&&window.GelatoAwardV297?.loaded);
  r.slot.panel.classList.toggle('gelato-v297-award-owned',gelatoOwned);
@@ -200,7 +217,7 @@ function ownsClass(r,on){
 }
 function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;if(kindOf(r.slot)==='gelato'){r.gelatoCounts=gelatoCounts(r.slot.engine);r.gelatoPrevious=null;}ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
 function signature(c){return c.paths.map(p=>p.anchors.map(a=>[a.id,a.r,a.c].join(':')).join(',')).join(';');}
-function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
+function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
 function receive(slot,ev){
  const r=recordFor(slot),e=slot.engine;
  if(ev.phase==='ready'||r.version!==e.version||r.round!==app.token){clear(r);r.version=e.version;r.round=app.token;if(ev.phase==='ready')r.restoring=false;}
@@ -431,6 +448,15 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
   const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
   ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
   const painted=window.SixDropAwardV296.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
+ if(c.game==='popcorn'&&c.popcorn&&window.PopcornAwardV299?.loaded){
+  const aspect=window.PopcornAwardV299.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.PopcornAwardV299.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
   ctx.restore();
   if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
  }
