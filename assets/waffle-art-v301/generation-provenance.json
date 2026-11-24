@@ -1,0 +1,279 @@
+{
+  "version": 301,
+  "build": "20261125-v301-waffle-atelier",
+  "generator": "image_gen.imagegen",
+  "transparentBackground": true,
+  "preparation": "Standard alpha bounds crop for cabinet/grade, proportional resize and WebP encode. No creative image redrawing.",
+  "nativeInvariants": {
+    "boardCells": 64,
+    "openingPieces": 44,
+    "numberedCells": 20,
+    "offBoardNumbers": 5,
+    "draws": 8,
+    "payoutRows": 13,
+    "pow": "Exchanges adjacent payout rows; current award uses only the native selected row.",
+    "reversal": "Opposing color reaches zero; not a filled-board or all-clear event.",
+    "money": "Difference of native cumulative whole-medal amounts at the locked BET."
+  },
+  "entries": [
+    {
+      "key": "flip",
+      "file": "award-flip.webp",
+      "source": "exec-dfc4ae0c-ea67-41a0-9075-6a98eaa715e7.png",
+      "sourceSha256": "a6cd6855324b032163b25355ebdf4e4b7b099e2e82d8f4ea06412339c06db6c7",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "crop": null,
+      "outputSize": [
+        1152,
+        768
+      ],
+      "bytes": 334668,
+      "sha256": "15cfb868de68cb470d2f54aa53a80652580c2645f8d0338431f0534be4eb1c95",
+      "encoding": {
+        "format": "webp",
+        "quality": 89,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "Create a production-ready premium Japanese sweets arcade game reward illustration, a complete unified sculpture/illustration, not a generic border. Warm patisserie oven atelier: crisp golden baked waffle lattice, honey amber, glossy dark ogura azuki bean paste and ivory butter, restrained polished gold, carved sugar filigree. Beautiful highly detailed 3D illustration with a bold instantly readable silhouette at 250px width, broad clean planes, sophisticated rich material light, bright appetizing appearance. Isolated on a genuinely transparent RGBA background, no scene rectangle, no checkerboard, no drop shadow outside the artwork. Landscape composition 3:2, generous 5% clear transparent outer margins. No extra words or numbers except the specified title. No money symbols, no casino chips, no static WIN. Leave the two specified data surfaces entirely blank for runtime text, perfectly clean and high contrast. Main title exactly 'FLIP!' in enormous perfectly spelled sculpted golden toasted wafer lettering, slightly arched, occupying x18%-82%, y20%-47%, with ivory highlights and dark cocoa outline. At either side and behind the title, show several thick square waffle discs flipping through the air, one dark glossy ogura waffle face and one pale buttery waffle face; show the delicious waffle grids clearly. Honey ribbons and a few small carved sugar stars connect the composition; an elegant sense of reversal through depth, no arrow symbols. A smooth ivory satin count ribbon runs horizontally x14%-86%, y51%-61%, completely blank. Below it is one large smooth very dark chocolate enamel amount plaque with thin honey-gold bevel, x11%-89%, y66%-84%, completely blank, no decorative intrusions in the central 80%. Finish with a grounded toasted waffle and tiny butter curl base below. The complete title, waffle art, ribbon and amount plaque should feel like one bespoke baked-gold trophy."
+    },
+    {
+      "key": "reversal",
+      "file": "award-reversal.webp",
+      "source": "exec-36066b77-37fa-4760-bdc4-db1fe2e45d0f.png",
+      "sourceSha256": "071f5a4faa894fedd8ce179c1b950ac52b5b17e55149da07861fb8a3422d47c7",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "crop": null,
+      "outputSize": [
+        1152,
+        768
+      ],
+      "bytes": 314130,
+      "sha256": "68136035089fb27e74272b0b5a5067e853a5dda397848600a65bc06befe2dbc8",
+      "encoding": {
+        "format": "webp",
+        "quality": 89,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "Create a production-ready premium Japanese sweets arcade game reward illustration, a complete unified sculpture/illustration, not a generic border. Warm patisserie oven atelier: crisp golden baked waffle lattice, honey amber, glossy dark ogura azuki bean paste and ivory butter, restrained polished gold, carved sugar filigree. Beautiful highly detailed 3D illustration with a bold instantly readable silhouette at 250px width, broad clean planes, sophisticated rich material light, bright appetizing appearance. Isolated on a genuinely transparent RGBA background, no scene rectangle, no checkerboard, no drop shadow outside the artwork. Landscape composition 3:2, generous 5% clear transparent outer margins. No extra words or numbers except the specified title. No money symbols, no casino chips, no static WIN. Leave the two specified data surfaces entirely blank for runtime text, perfectly clean and high contrast. Main title exactly 'REVERSAL' on the first line and 'BONUS!' on the second, in monumental polished honey-gold and ivory sugar lettering, correctly spelled, bold short forms with dark chocolate bevels. Title occupies x12%-88%, y16%-47%. This is the rare highest-role trophy: a crown of toasted waffle facets, a radiant fan of dark ogura and pale butter waffles turning face over face, a few butter petals and azuki beans, symmetrical warm gold wings made of wafer and sugar. No flame or exploding board, this celebrates flipping the opponent's remaining waffles. A smooth ivory silk count ribbon spans x13%-87%, y52%-62%, entirely blank. A large very dark chocolate enamel amount plaque with thin golden bevel spans x10%-90%, y67%-85%, entirely blank, allowing a very long 900,000,000 amount plus WIN to be composited later. No letters or digits on the data ribbon or amount plaque. Complete coherent magnificent waffle reversal trophy with a small stable amber pedestal."
+    },
+    {
+      "key": "digits",
+      "file": "award-digits.webp",
+      "source": "exec-546c6e49-687a-4c85-b6e5-77873bca3cdd.png",
+      "sourceSha256": "bfd5f1407f673e1e988344363cf175d49459ccbc4a9b6dfcc67ae2d83b88e17e",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "crop": null,
+      "outputSize": [
+        1536,
+        1024
+      ],
+      "bytes": 337418,
+      "sha256": "26d8b1af349966966035a37e906f1837cfa204d64c94c7fb39c89e153edf1e39",
+      "encoding": {
+        "format": "webp",
+        "quality": 94,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "Production sprite atlas for a premium warm Japanese waffle patisserie arcade game, genuinely transparent RGBA background. Landscape 1536x1024, EXACT uniform four-column by three-row grid. Twelve separate cells, very large completely transparent gutters of at least 28px on EVERY cell edge; no glyph crosses its cell. Row 1 exactly 0, 1, 2, 3. Row 2 exactly 4, 5, 6, 7. Row 3 exactly 8, 9, comma punctuation, the single word WIN. Each numeral one isolated full sculpted glyph, not in a box or coin. Perfectly legible bold rounded slab numerals, identical design and height, luminous ivory butter-sugar face, polished honey-gold bevel and thin dark chocolate outer contour. Subtle crisp toasted wafer detail in edges only, not a busy lattice across the readable ivory face. Three-dimensional tactile baked-gold arcade typography, small bright specular highlights, no cast background shadows, no scattered props. Keep 0 and 8 counters large and clear. 1 has a broad foot. 4 has open counter. The comma is distinct with long gently curved tail. WIN is a single compact bold word fitting wholly into bottom-right cell, with same style. No other symbols, no labels, no extra letters or repeated digits. All twelve glyphs centered and fully visible within their own cells."
+    },
+    {
+      "key": "pieces",
+      "file": "pieces.webp",
+      "source": "exec-1ce47642-e8f1-4ae6-8fda-e556463500ad.png",
+      "sourceSha256": "6115786bbae4006078103b196f34f5dfb51cb366fcb6569679ccca47052ed2b9",
+      "sourceSize": [
+        1774,
+        887
+      ],
+      "crop": null,
+      "outputSize": [
+        1536,
+        768
+      ],
+      "bytes": 425160,
+      "sha256": "b523d82a1b079a082383a2529d59a0a48fe835000c6bc08d7dfeec341be56dd9",
+      "encoding": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "A professional game sprite atlas, transparent RGBA, landscape 2:1, exactly two equal square cells side by side, wide fully transparent gutter at middle and transparent 7% margins on all edges. TWO MATCHING WAFFLE PLAYING PIECES, not a scene or a reward frame. Orthographic straight overhead view, identical softly rounded square silhouettes, same scale, aligned top and bottom, each piece centered in its cell. Premium detailed 3D food-game illustration, strong readable bold waffle lattice at 29px display size, clear appetizing materials. LEFT: a thick golden waffle square with a DARK CHOCOLATE-BROWN OGURA red-bean paste surface, subtle few glossy azuki bean details confined between a clearly visible large 3x3 waffle lattice; the overall playing piece reads distinctly dark brown. RIGHT: the exact same waffle shape and lattice with luminous PALE IVORY BUTTER surface and gentle golden toasted recesses, a tiny butter curl integrated into one corner, overall playing piece reads distinctly pale ivory. Both edges are delicious toasted gold, visible narrow thickness below, restrained specular highlights, no fluffy flower cream, no plates, no separate beans around the edges, no text or numerals, no arrows, no background, no ambient haze. Each is a single coherent square waffle disc, entire silhouette intact and isolated. The two color states must remain unmistakable when shrunk to 29 pixels."
+    },
+    {
+      "key": "board",
+      "file": "board-kit.webp",
+      "source": "exec-0d4e38ce-4df6-4e84-a41e-7dac5493ffc9.png",
+      "sourceSha256": "b63e0b8f9216a815676c55efc112e76434f44de141fe261721e20bd09e6ba762",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "crop": null,
+      "outputSize": [
+        1254,
+        1254
+      ],
+      "bytes": 665578,
+      "sha256": "75787577bc41dac56b7bd53fa44af3ab8ca9ce6feefa63acde994daec0006b89",
+      "encoding": {
+        "format": "webp",
+        "quality": 89,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "Production 2x2 uniform square-cell atlas for an ornate waffle arcade game board, square canvas, genuinely transparent RGBA surrounding isolated sprites. Equal cells with at least 6% transparent gutters and clear outer margins. Warm toasted honey gold, ivory butter light, carved sugar and restrained dark cocoa. Highly polished sculptural 3D illustration, straight overhead orthographic, no text, NO NUMBERS, no letters. TOP LEFT: one empty rounded-square waffle pocket, recessed toasted dough with a quiet warm pale center that can hold a dark overlaid live number, simple broad lattice edge, a single pocket not a whole grid. TOP RIGHT: a square amber-honey carved tray rim with very thin ornate gold and toasted waffle border and a COMPLETELY TRANSPARENT large square central opening occupying 80% width/height; symmetric four corners, no interior floor, full rim intact with outer margin. BOTTOM LEFT: one square continuous baked honey-waffle material tile, subtly porous toasted dough with soft directional light and subtle buttery highlights, no grid, no cell dividers, no outer decorative border, not busy, opaque center. BOTTOM RIGHT: a small simple rounded-square dark-cocoa and gold inset button plate, totally blank. Keep each of these four independent game components strictly inside its own quadrant, no connection or shadow spilling between cells. Professional coherent premium patisserie game material kit."
+    },
+    {
+      "key": "cabinet",
+      "file": "payout-cabinet.webp",
+      "source": "exec-d8b6218d-20a9-4935-bc96-5ecdde1adb68.png",
+      "sourceSha256": "69d15071567024d7dfcfd7099cba832a486e82063d6d605934459ff7adf7c355",
+      "sourceSize": [
+        724,
+        2172
+      ],
+      "crop": {
+        "left": 49,
+        "top": 0,
+        "width": 627,
+        "height": 2160
+      },
+      "outputSize": [
+        627,
+        2160
+      ],
+      "bytes": 119788,
+      "sha256": "e3ebbc9a56c122bcc9ced48bc8156f87c20bfa024849460a9582181a07df683c",
+      "encoding": {
+        "format": "webp",
+        "quality": 89,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "Create a single premium game UI payout cabinet sprite for a Japanese waffle patisserie arcade game. Portrait panel with exact visual proportion approximately 1 wide to 3.4 tall, genuinely transparent RGBA outside its silhouette, full cabinet intact with generous margins. Warm toasted waffle woodwork, polished honey gold and dark cocoa enamel, tactile refined 3D patisserie illustration. Extremely thin vertical rails, just 5% of width each, subtle wafer facets and delicate gold corners. At the very top 7% only, a small elegantly sculpted crown header with the perfectly readable Japanese text '配当' in ivory butter-sugar lettering and dark brown edges, no other text. The entire inner face from y10% through y96% must be a broad flat very dark cocoa enamel field, completely blank, enough uninterrupted space for thirteen live rows to be placed later, no pre-drawn row separators, no baked numbers, no WIN, no fixed symbols. No large ornaments inside this central face. A low butter-and-wafer base footer within bottom 4%. Light glances on outer rim only, quiet central field. No backdrop, no shadow rectangle, no perspective tilt. Orthographic front elevation, clean readable silhouette at 100x340 pixels."
+    },
+    {
+      "key": "furniture",
+      "file": "furniture-atlas.webp",
+      "source": "exec-ab579f93-0e7c-4314-8275-0a2262e82604.png",
+      "sourceSha256": "c90c45ea3dcb0bfd688b5cd7876d4317cbf9d1f42ae1f3b82c8e71982d340fb2",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "crop": null,
+      "outputSize": [
+        1536,
+        1024
+      ],
+      "bytes": 228450,
+      "sha256": "6b592047420cd34a8d34dcf941bc3bd303c7b8fc25d88d01e50772eda2eb3064",
+      "encoding": {
+        "format": "webp",
+        "quality": 94,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "Professional production atlas of six independent UI sprites for a warm honey-gold waffle arcade game. Landscape 1536x1024, exact 3-column by 2-row equal-cell atlas, each individual sprite centered wholly within its cell with broad fully transparent gutters on every side. True transparent RGBA background. Sculpted appetizing polished 3D materials, overhead/front orthographic. TOP ROW: three slim horizontal payout row tiles, each 3.3:1 shape, identical outline and dimensions, respectively toasted golden wafer, polished pale silver with wafer edge, polished rich gold with wafer edge. Each has an exceptionally thin ornamental edge and a completely blank DARK COCOA center taking 85% of width and 65% height, empty for a long dynamic numeric payout; no left count box, no numbers, no WIN, no letters. BOTTOM LEFT: a shallow long eight-turn status rail, 4.5:1 shape, thin honey-gold rim, pale ivory quiet interior, completely blank, NO fixed dividers or eight slots, no characters. BOTTOM MIDDLE: a compact horizontal ornate sign 3:1, top half says exactly 'REVERSAL BONUS' in small bold ivory and gold sculpted letters, bottom half is a completely blank dark cocoa horizontal data well for real money; limited wafer flourish at the two ends. BOTTOM RIGHT: a compact horizontal badge 2.6:1 reading exactly 'POW' in thick sculpted gold-sugar lettering on a dark cocoa plate, a tiny candy-smith hammer at the left edge, full readable title and margins. No background scene, no scattered props between sprites, no clipping, no cell borders. All six components must feel part of the same premium baked-waffle cabinet."
+    },
+    {
+      "key": "grade",
+      "file": "award-grade-up.webp",
+      "source": "exec-14b89faa-f3f5-44e7-b947-e88ceca4d7df.png",
+      "sourceSha256": "f22a00b4910dae5175760d93c9a1073b065a229e80ba15a0c1f53969600c78ea",
+      "sourceSize": [
+        2172,
+        724
+      ],
+      "crop": {
+        "left": 5,
+        "top": 0,
+        "width": 2162,
+        "height": 723
+      },
+      "outputSize": [
+        1536,
+        514
+      ],
+      "bytes": 155694,
+      "sha256": "2ee3d24234df5bab3d6f702cd27751f4efa776ee8e0c8d4330599f26d9c89169",
+      "encoding": {
+        "format": "webp",
+        "quality": 89,
+        "alphaQuality": 100,
+        "effort": 6
+      },
+      "prompt": "One premium transparent game UI information banner for a waffle arcade game, wide horizontal aspect 3.2:1, whole isolated silhouette with generous transparent margin. Exact title 'GRADE UP!' in bold perfectly readable sculpted honey-gold and ivory wafer letters concentrated in the LEFT 46% of the banner, high quality 3D lettering with dark cocoa edge. A small elegant candy-smith mallet and two replacement toasted-wafer payout plates lift behind this title to convey payout-rack replacement, warm polished gold, crisp toasted waffle grids, no flames, no generic casino chips. The RIGHT 50% is one broad perfectly quiet DARK CHOCOLATE ENAMEL data panel with a thin gold rim, fully blank to receive the real G-before to G-after and number of replaced rows. No static digits, NO WIN or money symbols anywhere, no '+3', no multiplier, no POW word. This is informational grade progression, not a monetary win. Shallow controlled silhouette, readable at only 104 pixels width. Refined contiguous completed patisserie illustration. Genuinely transparent RGBA background, no solid backdrop or shadow rectangle, no detached particles outside the margin."
+    }
+  ],
+  "atlasLayouts": {
+    "digits": {
+      "columns": 4,
+      "rows": 3,
+      "order": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ",",
+        "WIN"
+      ],
+      "rowCuts": [
+        0,
+        0.341796875,
+        0.681640625,
+        1
+      ],
+      "bottomCommaWinCut": 0.7
+    },
+    "pieces": {
+      "columns": 2,
+      "rows": 1,
+      "order": [
+        "black",
+        "white"
+      ]
+    },
+    "board": {
+      "columns": 2,
+      "rows": 2,
+      "order": [
+        "pocket",
+        "rim",
+        "surface",
+        "button"
+      ]
+    },
+    "furniture": {
+      "columns": 3,
+      "rows": 2,
+      "order": [
+        "wafer",
+        "silver",
+        "gold",
+        "turns",
+        "bonus",
+        "pow"
+      ]
+    }
+  }
+}

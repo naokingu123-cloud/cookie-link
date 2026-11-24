@@ -1,0 +1,70 @@
+name: Waffle pastry atelier v301
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'assets/waffle-*-v301.*'
+      - 'assets/waffle-art-v301/**'
+      - 'assets/bingo-stick-rules.js'
+      - 'assets/bingo-stick-host.js'
+      - 'assets/bingo-stick-view.js'
+      - 'assets/waffle-pow-v159.js'
+      - 'assets/waffle-pow-v159.css'
+      - 'assets/bingo-stick.css'
+      - 'assets/waffle-lesson.js'
+      - 'assets/award-presentation-v277.js'
+      - 'assets/demo-suite-v91.js'
+      - 'index.html'
+      - 'tests/waffle-v301-*.mjs'
+      - '.github/workflows/waffle-v301.yml'
+permissions:
+  contents: read
+jobs:
+  native-waffle-presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [ordinary, pow, reversal]
+    env:
+      WAFFLE301_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Unchanged native Reversi, POW rack, rounded receipts and reachable witnesses
+        run: |
+          node --check tests/waffle-v301-browser.mjs
+          node tests/waffle-v301-rules.mjs
+          node tests/waffle-v301-awards.mjs
+          node tests/award-presentation-v277.mjs
+          node tests/waffle-v301-browser.mjs --fixtures-only
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real flips, POW, both reversals, zero/carry WIN and eighth-ball RESULT
+        run: node tests/waffle-v301-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: waffle-v301-presentation-${{ matrix.group }}
+          path: qa-waffle-v301/
+          if-no-files-found: error
+          retention-days: 7
