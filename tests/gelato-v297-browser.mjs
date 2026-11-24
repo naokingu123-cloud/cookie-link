@@ -153,9 +153,19 @@ function inspectBoard(){
  const game=document.querySelector('#screen>.game'),field=game.querySelector(':scope>.field'),canvas=slot.panel.querySelector('.gp-raster-board'),mini=slot.tab.querySelector('.gp-raster-board'),payout=slot.panel.querySelector('.gp-collector-panel');
  const pixelSummary=target=>{const sample=document.createElement('canvas');sample.width=sample.height=72;const ctx=sample.getContext('2d',{willReadFrequently:true});ctx.drawImage(target,0,0,72,72);const pixels=ctx.getImageData(0,0,72,72).data,colors=new Set();let opaque=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]>24){opaque++;colors.add((pixels[i]>>4)+','+(pixels[i+1]>>4)+','+(pixels[i+2]>>4));}return {opaque,colors:colors.size};};
  const numeralEvidence=target=>{const trace=observer.inspect(target);return snapshot.nodes.map(node=>{const p=GelatoPrism.hitGeometryV276(target.width,target.height,target===mini,{type:'node',id:node.id});return {id:node.id,number:node.number,x:p.x,y:p.y,draws:trace.labels.filter(label=>label.text===String(node.number)&&Math.abs(label.x-p.x)<2&&Math.abs(label.y-p.y)<2)};});};
- const ctx=canvas.getContext('2d',{willReadFrequently:true}),samples=snapshot.faces.map(face=>{
-  const p=GelatoPrism.hitGeometryV276(canvas.width,canvas.height,false,{type:'face',id:face.id}),data=ctx.getImageData(Math.round(p.x)-2,Math.round(p.y)-2,5,5).data;let luma=0;
-  for(let i=0;i<data.length;i+=4)luma+=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];return {id:face.id,grade:face.grade,filled:face.filled,luma:luma/25};
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});
+ // Opposite triangle orientations put one centroid on different spoon ridges
+ // of the same authored material. Seven bounded interior patches assess the
+ // face, while every barycentric weight >= .25 avoids socket/rail decoration.
+ const interiorWeights=[[1/3,1/3,1/3],[.5,.25,.25],[.25,.5,.25],[.25,.25,.5],[.25,.375,.375],[.375,.25,.375],[.375,.375,.25]];
+ const samples=snapshot.faces.map(face=>{
+  const vertices=face.nodes.map(id=>GelatoPrism.hitGeometryV276(canvas.width,canvas.height,false,{type:'node',id}));
+  const patches=interiorWeights.map(weights=>{
+   const x=Math.round(vertices.reduce((sum,p,i)=>sum+p.x*weights[i],0)),y=Math.round(vertices.reduce((sum,p,i)=>sum+p.y*weights[i],0));
+   const data=ctx.getImageData(x-2,y-2,5,5).data;let luma=0;
+   for(let i=0;i<data.length;i+=4)luma+=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];return {x,y,luma:luma/25};
+  });
+  return {id:face.id,grade:face.grade,filled:face.filled,luma:patches.reduce((sum,p)=>sum+p.luma,0)/patches.length,centroidLuma:patches[0].luma,patches};
  });
  const backgroundNodes=[slot.panel,slot.panel.querySelector('.gp-scene'),slot.panel.querySelector('.gp-mold')].filter(Boolean);
  return {selected:q.slots[q.active].engine.kind||'cookie',mobile:document.body.classList.contains('mobile-view'),landscape:document.body.classList.contains('mobile-landscape'),touch:navigator.maxTouchPoints,coarse:matchMedia('(pointer:coarse)').matches,

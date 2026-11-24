@@ -2403,8 +2403,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 73924,
-      "sha256": "0cd3ec8eb4a620938fdb1fcffc099e92d80c2047eef53c59c08e501826969e04"
+      "bytes": 73926,
+      "sha256": "e266f206e72b780067f84b2680455beba17d1325bc0fc9f21d65f24f4de494f0"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -4502,5 +4502,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 253961375
+  "totalBytes": 253961377
 }

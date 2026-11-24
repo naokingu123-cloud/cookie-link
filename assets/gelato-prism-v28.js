@@ -1272,7 +1272,7 @@ try{
  window.GelatoPrism={
    get imageVersion(){return rasterImages.artVersion===297?'v297-generated-ice':rasterImages.candyAtlasReady?'v43-popsicles':rasterImages.exactV40?'v40-exact-24-cells':rasterImages.ready?'v37-fallback':'loading';},
    get presentationV297(){
-     return {version:297,artVersion:rasterImages.artVersion||null,background:'assets/sweet-skins/gelato-kingdom.webp',
+     return {version:297,artVersion:rasterImages.artVersion||null,background:'assets/gelato-ice-candy-kingdom-v41.webp',
        nodes:rasterCoords.map((point,id)=>({id,x:point.x,y:point.y,number:e.nodeNumbers[id],hit:e.hits.has(id),pending:e.pendingDraws.has(e.nodeNumbers[id])})),
        faces:FACES.map(face=>({id:face.id,nodes:face.nodes.slice(),grade:e.faceGrades[face.id],color:GRADE_NAMES[e.faceGrades[face.id]],filled:e.filled.has(face.id)})),
        collectors:[1,2,3,4].map(grade=>({grade,count:e.collectorCounts[grade],multiplier:COLLECTOR_MULT[grade],win:medalWin(app.bet(mount),COLLECTOR_MULT[grade]*100)})),
