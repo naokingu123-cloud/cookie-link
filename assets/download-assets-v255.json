@@ -1618,13 +1618,13 @@
     },
     {
       "path": "assets/award-presentation-v277.css",
-      "bytes": 5995,
-      "sha256": "b97139ee0d3f856b96932123b1a0db5a4c94057050462761fc90f6733c0bc86d"
+      "bytes": 6237,
+      "sha256": "7a866c310d89611c5c1d4874725f973f74cbaa4aa1b38f134782f8bf062d44f8"
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 45091,
-      "sha256": "898dcccd5d11f368d327cf4d4bd4fa9c72d316cd0b5b7a8e8fe9ddc46c793466"
+      "bytes": 47852,
+      "sha256": "390f8810518a147b1b220e2498ffd9d45f4d85ee33e893a07ba85d74fc962d40"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2232,6 +2232,51 @@
       "sha256": "3646558eacb3d3a918bb8f5125593051e0ead8fd235d3a874635a25c9edc5480"
     },
     {
+      "path": "assets/gelato-art-v297.js",
+      "bytes": 13104,
+      "sha256": "82b0e8dfe60f0ca0a402108b6df08881002d124b3cdea55155ae92cfb5b42a36"
+    },
+    {
+      "path": "assets/gelato-art-v297/award-collector.webp",
+      "bytes": 578598,
+      "sha256": "d7c5e24b13efd767f63d6c00724ca8c6476b04af77cd8969e9ee5575bc4a7831"
+    },
+    {
+      "path": "assets/gelato-art-v297/award-full.webp",
+      "bytes": 530316,
+      "sha256": "171519693c0c527c50814c0c93db9ca72b1b6cc266b3f52ebabffd76e3994098"
+    },
+    {
+      "path": "assets/gelato-art-v297/award-panel.webp",
+      "bytes": 533808,
+      "sha256": "707c257e4cefa0cab296b04266c9bb45aa749be85c6b5b8f81bd09669787a239"
+    },
+    {
+      "path": "assets/gelato-art-v297/digits.webp",
+      "bytes": 745182,
+      "sha256": "7c90dc4f2fe542e9513dee6553dce139b7b991df2537ad6d359390d0c0328fa0"
+    },
+    {
+      "path": "assets/gelato-art-v297/furniture.webp",
+      "bytes": 270888,
+      "sha256": "8a2a7ef1771de1600b7aa552650a77b5d03316ca7d53a336c63426812a91db0c"
+    },
+    {
+      "path": "assets/gelato-art-v297/materials.webp",
+      "bytes": 585886,
+      "sha256": "946bf4b9bd23bba87c0e8e46901a5a56f8b7f56d53cdbefadf05be4d0ab87013"
+    },
+    {
+      "path": "assets/gelato-art-v297/paytable.webp",
+      "bytes": 349464,
+      "sha256": "c7d22b21546531cd3b00d7483c49ae2cb01c0ca5eb4129397c626d6f6219a4f2"
+    },
+    {
+      "path": "assets/gelato-award-v297.js",
+      "bytes": 13294,
+      "sha256": "7140e2debfcaee6b2f9a281425f18004ad8fccdd068c05ed52ae8e0ad2142bc1"
+    },
+    {
       "path": "assets/gelato-cabinet-v89.webp",
       "bytes": 54792,
       "sha256": "8a9bbd3b418074ea57dc2b8948c808290b4b7382347f0919e5c3d211b7b0e16a"
@@ -2260,6 +2305,11 @@
       "path": "assets/gelato-kingdom-generated-v31.webp",
       "bytes": 10008,
       "sha256": "48701c980c33898de5ce64560c9f0cc468bca8bfe9cb7316094d0536d9cddf41"
+    },
+    {
+      "path": "assets/gelato-presentation-v297.css",
+      "bytes": 4462,
+      "sha256": "241962ece899ec4760003c52ab0af9361cda5723ad040fdcf471d280f1afbfa7"
     },
     {
       "path": "assets/gelato-prism-cookie-v36.png",
@@ -2353,8 +2403,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 71560,
-      "sha256": "495724ca004294c1abc30efaf6831e0ebb78bbcf550badca911479185465ba61"
+      "bytes": 73926,
+      "sha256": "e266f206e72b780067f84b2680455beba17d1325bc0fc9f21d65f24f4de494f0"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -4273,8 +4323,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86813,
-      "sha256": "7136c4897eab83d4fd92e53e4f5b6c3767a0d40eec510d8338f3f06551367624"
+      "bytes": 87058,
+      "sha256": "85692897426dad2cfbe33f0ad9937ffe5c9a07a5dae559ac5b11c7b965de8327"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4512,5 +4562,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 253629650
+  "totalBytes": 257260266
 }
