@@ -1,10 +1,10 @@
 {
-  "version": "20261123-v291-illustrated-png-awards",
+  "version": "20261124-v292-sixdrop-clear-illustration",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 51,
-      "sha256": "b97ada36601e08e03277b853b48c2445d3575b960fa41016e49c66035ab1d86d"
+      "bytes": 55,
+      "sha256": "edd2df56852f7e05500c11987a2034c0c06434375a5102e57a706c09dafd3412"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 40789,
-      "sha256": "7f71432f1aa68d758366ec6a83e990d1b6d9bdc8ea4754302f4928025a435a25"
+      "bytes": 40849,
+      "sha256": "bf7b04e73d85d5ba13520cc2f3849d75ccb92952c59e2111b3f85994e6253849"
     },
     {
       "path": "assets/bgm-player.js",
@@ -4039,7 +4039,7 @@
     {
       "path": "index.html",
       "bytes": 85740,
-      "sha256": "4f383a1cf10f5d58567fd9f52d7a523ffe0a8c1fb71104595c6a69c2342d86df"
+      "sha256": "9d0377f1b8980a4463a42444cf62d13ac17a9443980d83fb67e6ac196f7e324b"
     },
     {
       "path": "optimized/achievements-v3.css",
