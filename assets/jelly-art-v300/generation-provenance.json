@@ -1,0 +1,291 @@
+{
+  "version": 300,
+  "game": "jelly",
+  "generator": "built-in image_gen",
+  "scope": "Complete generated role sculptures, native live totals, continuous gel material and native fitted furniture.",
+  "assets": [
+    {
+      "key": "bingo",
+      "file": "award-bingo.webp",
+      "source": "exec-08cfdc65-1b09-4513-9901-9f19b28bf99e.png",
+      "sourceSha256": "393f7c6b2ec58292e858bd32d58fa47e1121b8b1db7000318d56348bc7a150d8",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1152,
+        768
+      ],
+      "bytes": 379380,
+      "sha256": "69f0ce946c6b6941eaeffaa1518c1227d8619b869ac6112d1e4dbd366c2b0f1d",
+      "transparent": true,
+      "processing": {
+        "crop": null,
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster artwork for JELLY BINGO, a lavish Japanese sweets medal-game. A jewel-like confectionery made of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold edges. Aquamarine blue, raspberry red, golden citrus yellow and fresh mint green form a coherent luminous palette. Rich illustrated 3D depth, clear readable silhouettes, beautifully sculpted surfaces, no people, no screen or UI mockup, no watermark. This must look like finished bespoke game artwork. TRUE transparent RGBA outside the complete illustration, comfortable alpha margins, no checkerboard or rectangular background. Landscape 1536x1024. Centered cutout fills about92% of width and90% of height. Compose a finished elaborate reward with the exact role title physically sculpted into the jelly. Main title ends above normalized y=.55. Integrate three live-data spaces below it: an unprinted pale pearl ribbon x=.12..88 centered at y=.615 with height.065; a small quiet dark-teal text strip centered at y=.685, height.035; a generously wide deep-aquamarine glass inset x=.10..90 spanning y=.725..92 for large real WIN numerals. Keep these spaces entirely free of any words, digits, coins or objects. Their ornaments stay around the edges. Do not print any number or WIN anywhere. Exactly one title and no incidental text. Exact title: \"LINE BINGO!\" in two tightly connected tiers, LINE smaller above the giant BINGO!. The sculpted letters are aqua-and-lime translucent jelly with warm golden bevels and brilliant pearl reflections. A graceful crystal dessert dish supports the title; four fruit-jelly ribbons blue/red/yellow/green flow together into the letters. Delicate tiny sugar pearls and prismatic droplets surround the silhouette. No crown. This ordinary bingo reward should feel complete and exciting, without looking like a generic empty frame."
+    },
+    {
+      "key": "all",
+      "file": "award-all-line.webp",
+      "source": "exec-3ce27a9f-9268-4621-b67e-028196fed7b9.png",
+      "sourceSha256": "6a3609867ce4f979690c5f5e6f30d71164908683dfe2e390f68dfafbbee96de0",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1152,
+        768
+      ],
+      "bytes": 415436,
+      "sha256": "8167d1cefc7d8126ae3365638512846ce52530799e9de8ae146530d565bcc64f",
+      "transparent": true,
+      "processing": {
+        "crop": null,
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster artwork for JELLY BINGO, a lavish Japanese sweets medal-game. A jewel-like confectionery made of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold edges. Aquamarine blue, raspberry red, golden citrus yellow and fresh mint green form a coherent luminous palette. Rich illustrated 3D depth, clear readable silhouettes, beautifully sculpted surfaces, no people, no screen or UI mockup, no watermark. This must look like finished bespoke game artwork. TRUE transparent RGBA outside the complete illustration, comfortable alpha margins, no checkerboard or rectangular background. Landscape 1536x1024. Centered cutout fills about92% of width and90% of height. Compose a finished elaborate reward with the exact role title physically sculpted into the jelly. Main title ends above normalized y=.55. Integrate three live-data spaces below it: an unprinted pale pearl ribbon x=.12..88 centered at y=.615 with height.065; a small quiet dark-teal text strip centered at y=.685, height.035; a generously wide deep-aquamarine glass inset x=.10..90 spanning y=.725..92 for large real WIN numerals. Keep these spaces entirely free of any words, digits, coins or objects. Their ornaments stay around the edges. Do not print any number or WIN anywhere. Exactly one title and no incidental text. Exact title: \"ALL LINE!\" in enormous sparkling crystalline jelly lettering, ALL smaller above LINE!. A radiant crown-shaped cluster of faceted sugar crystals rises behind the title, with four brilliant fruit-jelly streams flowing into a celebratory crystal dessert centerpiece. Elegant deep-turquoise pedestal, pearly glass wings and restrained edible-gold accents. Clearly more spectacular than the ordinary BINGO reward. No baked numbers, no printed 12, no fixed WIN. All lower live spaces remain clean."
+    },
+    {
+      "key": "digits",
+      "file": "award-digits.webp",
+      "source": "exec-fc8f6060-e06f-40b9-9580-c8598a4fb096.png",
+      "sourceSha256": "2929c2726056e6b6dd1d60f6c9eb41bfaaacc790f6f88fa90b44a50bbc45b049",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 535638,
+      "sha256": "266acaa2794aca26592b93c177a4c3f31102332c48005f30a8fd7660645cb4ca",
+      "transparent": true,
+      "processing": {
+        "crop": null,
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster artwork for JELLY BINGO, a lavish Japanese sweets medal-game. A jewel-like confectionery made of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold edges. Aquamarine blue, raspberry red, golden citrus yellow and fresh mint green form a coherent luminous palette. Rich illustrated 3D depth, clear readable silhouettes, beautifully sculpted surfaces, no people, no screen or UI mockup, no watermark. This must look like finished bespoke game artwork. TRUE transparent RGBA. A clean production glyph atlas,1536x1024, exactly4 equal columns and3 equal rows. In the12 cells, left-to-right then top-to-bottom, place exactly: \"0\", \"1\", \"2\", \"3\"; \"4\", \"5\", \"6\", \"7\"; \"8\", \"9\", \",\", \"WIN\". Each is a separately isolated finished3D numeral or word. Gold candy faces with thick teal-crystal bevels, bright ivory highlights and deep aquamarine shadow; one consistent typeface and baseline aesthetic. No slabs, plaques, bubbles, decorative flourishes or frames. Every glyph completely within its assigned equal cell with at least8% internal alpha margin on all sides. WIN is the whole correctly spelled three-letter word, scaled smaller so it fits comfortably within the final cell; no part touches another cell. Comma has a clear curved tail and remains separate. Do not add any other words, numerals, labels, guide lines or grid. Transparent gutters and transparent outer background."
+    },
+    {
+      "key": "glass",
+      "file": "glass-kit.webp",
+      "source": "exec-46220df9-96bf-474f-ac52-5eafbceb5d69.png",
+      "sourceSha256": "6e0cf0969de03df112812f70014e11d55c76d1a98a76403f15d86f52ee6bb809",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "bytes": 377820,
+      "sha256": "5f40ae3110b17ffe969a8659c5d039eac33cc82b9f0d2658f4cf4181db1c6770",
+      "transparent": true,
+      "processing": {
+        "crop": null,
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster game assets for JELLY BINGO, a Japanese sweets medal-game. Match a jewel confectionery of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold. Luminous aquamarine, raspberry, citrus yellow and mint green accents; polished illustrated 3D surfaces, beautifully readable silhouettes. No human figures, no mockup, no watermark. TRUE transparent RGBA atlas,1536x1536, divided into4 equal 768x768 cells, invisible grid. Top-left: a perfectly front-facing square pressed-glass mold rim. Thick cut-crystal flutes and restrained delicate gold edging with tiny fruit-color accents. Completely transparent square hole in the middle, about68% of the rim square width; outer frame fits fully within its cell with5%clear margins. Absolutely no lattice or cells inside the hole. Top-right: a separate square dark-teal empty glass mold floor, a flat unbroken surface with subtle large soft reflected facets, no border, no grid, no numbers, comfortable clear margins. Bottom-left: a single straight horizontal translucent pale-aqua crystal partition rib, a very wide slender bar about8:1 with clean bevels, no gold heavyframe, at the center of its otherwise transparent cell, full endpoints present. Bottom-right completely empty transparent. These are independent parts, not one assembled board. No text anywhere. Strong opaque edges on the rim and rib, transparent outside their silhouettes. Keep each part wholly in its own cell."
+    },
+    {
+      "key": "surface",
+      "file": "syrup-surface.webp",
+      "source": "exec-549aadbc-0a91-48e7-ac1c-677df2752bd3.png",
+      "sourceSha256": "f8c47ea12069b4f11943bd26879a135bd6473124d9ac9c21547c9c05f1d0da0c",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "bytes": 57996,
+      "sha256": "6389531662bed54831fe32717aead78e8adbb0ffdde28480424875cb0819d862",
+      "transparent": false,
+      "processing": {
+        "crop": null,
+        "resize": {
+          "maxEdge": 1024
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster game assets for JELLY BINGO, a Japanese sweets medal-game. Match a jewel confectionery of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold. Luminous aquamarine, raspberry, citrus yellow and mint green accents; polished illustrated 3D surfaces, beautifully readable silhouettes. No human figures, no mockup, no watermark. One square1024x1024 production material texture. A continuous sheet of thick translucent fruit jelly viewed straight down, filling every pixel, luminous pale aquamarine/pearl neutral material suitable for native color tinting. Large curved soft showroom reflections, convincing depth and refraction, small bubbles sparingly distributed, gentle caustic patterns, rich gelatinous body. This is an unbroken500x500 game well surface, not a jelly object. No outer rim, no visible edges, no rounded tile silhouette, no partitions, no squares or grid, no frame, no fruit objects, no lettering, no numbers. Reflection detail remains sparse and low-contrast so overlaid large native numbers remain readable. Even coverage to every image edge, not a central spotlight with dark corners. Opaque material square, not transparent."
+    },
+    {
+      "key": "payout",
+      "file": "payout-cabinet.webp",
+      "source": "exec-cc3b16fd-7fd5-4c08-b086-b01a81368f87.png",
+      "sourceSha256": "148c818c1627341606f417b00f7bd4899e859ca5e3bdec31456e419f71383b72",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "dimensions": [
+        611,
+        1523
+      ],
+      "bytes": 116030,
+      "sha256": "8e5c1412777cd983f083eaf6f66d43cb1d73dc98932d68b07e18becde7288c48",
+      "transparent": true,
+      "processing": {
+        "crop": {
+          "left": 207,
+          "top": 0,
+          "width": 611,
+          "height": 1523
+        },
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster game assets for JELLY BINGO, a Japanese sweets medal-game. Match a jewel confectionery of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold. Luminous aquamarine, raspberry, citrus yellow and mint green accents; polished illustrated 3D surfaces, beautifully readable silhouettes. No human figures, no mockup, no watermark. TRUE transparent RGBA, portrait1024x1536. A slender front-facing crystal-and-fruit-jelly payout cabinet, complete physical furniture, designed for nine-slice fitting into a narrow135x359 game panel. Delicate bright crystal trim and fine golden edges only near the outside; spacious solid deep-aquamarine inner face. A small elegant sculpted exact Japanese title \"配当\" centered within only the top9% of the entire cabinet height, crystal/gold raised lettering; title and ornaments must not extend into the body below11%. All the rest of the inside is completely blank and quiet for real changing controls and eleven payout rows. No other text, numbers, WIN, slots, grid, fake rows or coins. Thin vertical sides and very shallow foot, no enormous decorative corners that invade content. The whole cabinet fits inside the canvas with5%truealpha margins."
+    },
+    {
+      "key": "furniture",
+      "file": "furniture-atlas.webp",
+      "source": "exec-4af397ce-dd42-4e7c-bafc-6a41373d12ab.png",
+      "sourceSha256": "c537ceb1a6e49249654fabd50095be23e6c21ef7749cfcec7b4bf65dfd2ac2a4",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 246314,
+      "sha256": "037368d49304b7a952614ac5b55a2f401c264f1cea6acc22250bc4466695eeb1",
+      "transparent": true,
+      "processing": {
+        "crop": null,
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster game assets for JELLY BINGO, a Japanese sweets medal-game. Match a jewel confectionery of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold. Luminous aquamarine, raspberry, citrus yellow and mint green accents; polished illustrated 3D surfaces, beautifully readable silhouettes. No human figures, no mockup, no watermark. TRUE transparent RGBA,1536x1024 production atlas, exactly3 equal columns and2 equal rows, invisible grid, generous transparent gutters. Five independent horizontal pieces, each fully within its own equal cell and centered; last cell empty. Top-left: a blank crystal-edged deep-teal progress plaque, about2.3:1, a quiet flat face for changing text. Top-middle: a horizontal odds plaque about3.4:1 with exact small sculpted word \"ODDS\" only on the left40% of its upper half; right60% remains blank for the changing multiplier and bottom remains blank for the live explanation. Top-right: a very slim payout-row tile about6:1, fine gold/crystal outline, left30% pale pearl/ivory, right70% deep teal; entirely unprinted. Bottom-left: the special all-line payout-row tile about4:1, exact Japanese \"オールライン\" sculpted very small within only the upper30%; lower70% blank with pale pearl left30% and dark teal right70% for the live12-line count and money. Bottom-middle: blank horizontal sugar-reward tray about6:1, restrained pink-crystal and gold edging, quiet dark teal face for the real sugar icon and changing Japanese condition. Bottom-right empty transparent. No other words, letters or numbers, no WIN, no printed grid, no background panels joining the pieces. All five complete objects have true alpha margin, no cut off edges."
+    },
+    {
+      "key": "odds",
+      "file": "award-odds-up.webp",
+      "source": "exec-56878866-b844-43dd-b55c-0a29bedd988f.png",
+      "sourceSha256": "ba04a228ee740cf662142e620fe6ee80d093059a98be6208b432294dbe066423",
+      "sourceDimensions": [
+        2153,
+        730
+      ],
+      "dimensions": [
+        1536,
+        238
+      ],
+      "bytes": 138032,
+      "sha256": "68eb5c19a81d5cae8acfb3038892aa7c45b59c022473004cf184a38752b01a9c",
+      "transparent": true,
+      "processing": {
+        "crop": {
+          "left": 73,
+          "top": 219,
+          "width": 2001,
+          "height": 310
+        },
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      },
+      "prompt": "Use case: stylized-concept. Production raster game assets for JELLY BINGO, a Japanese sweets medal-game. Match a jewel confectionery of thick translucent fruit jelly, cut crystal, pearly highlights and fine edible gold. Luminous aquamarine, raspberry, citrus yellow and mint green accents; polished illustrated 3D surfaces, beautifully readable silhouettes. No human figures, no mockup, no watermark. TRUE transparent RGBA. A finished extremely shallow horizontal status illustration for a native262x45.5 game band, about5.8:1 artwork aspect. Use a1536x1024 canvas but place the entire cutout within a centered rectangle x=.045..955,y=.39..625, leaving everything above and below transparent. Every part, including the bottle, is contained in this shallow silhouette. Left40%: exact sculpted crystal-jelly title \"ODDS UP!\" with bright ivory-gold bevels, small fruit-juice bottle and red/yellow/green droplets, all carefully readable at small size. Right60%: one long completely blank dark-teal glass face with a thin gold edge, no decorations intruding, reserved for actual old→new multiplier and small color swatches in code. No digits, fractions, arrows, \"+0.5\", WIN or other text anywhere. Keep the lettering correctly spelled and fully inside the left40%; no generic empty frame as the title area, no tall crown or pedestal, no background glow rectangle. Precise transparent margins around the complete shallow sculpture."
+    }
+  ],
+  "atlasLayout": {
+    "digits": {
+      "columns": 4,
+      "rows": 3,
+      "order": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ",",
+        "WIN"
+      ],
+      "rowCuts": [
+        0,
+        0.34375,
+        0.66796875,
+        1
+      ],
+      "bottomCommaWinCut": 0.725,
+      "registration": "Observed clear alpha gutters; includes entire first-row numeral descenders and full WIN."
+    },
+    "glass": {
+      "columns": 2,
+      "rows": 2,
+      "order": [
+        "rim",
+        "floor",
+        "rib",
+        null
+      ]
+    },
+    "furniture": {
+      "columns": 3,
+      "rows": 2,
+      "order": [
+        "phase",
+        "odds",
+        "row",
+        "all",
+        "sugar",
+        null
+      ]
+    }
+  },
+  "nativeInvariants": [
+    "25 numbered cells in a 500x500 well with 42px rim",
+    "12 native line paths and 11 payout rows",
+    "All15 live recipes keep their native palette and connected surface",
+    "BINGO means current total payout, including valid zero",
+    "ODDS-only popup has no monetary cue"
+  ]
+}

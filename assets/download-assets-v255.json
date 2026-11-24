@@ -1,10 +1,10 @@
 {
-  "version": "20261125-v299-popcorn-cinema",
+  "version": "20261125-v300-jelly-crystal",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 43,
-      "sha256": "9641afc2ed8bb9564358d87421844aca45acb47e7074b620514e80d5ac6bfb20"
+      "bytes": 42,
+      "sha256": "861997215fbae22914d7fa2f6d00a79c1a5438fbbeebc3c226085d83920675c2"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 49818,
-      "sha256": "0e43448dd1280e89603e8ebe75a49a9ea313924bbe2bf3bf2be7171c9f745a45"
+      "bytes": 51449,
+      "sha256": "65e383ecbc66474770c92960e9c19d2d6f49f8873e815a72dd2b4c3cf4cc8149"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2188,8 +2188,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4354,
-      "sha256": "98b81f6991b9bd32c1f72990ad1f41e763fa6bdab75b71de50a40c9015042d28"
+      "bytes": 4353,
+      "sha256": "50cb3cedda6779679bc644392ba99b33b98940ac17f42e1b3bd3463f3987ed0e"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2213,8 +2213,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3765,
-      "sha256": "e0723b11c3693c35a6a6cc4eb9b28e9c948de8b0e26d0f3566567a77b29a3298"
+      "bytes": 3764,
+      "sha256": "326f86efbe8d4bed4b4fb25c5e784a401cdd44af729cc0072dc148e7c499b469"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2482,6 +2482,61 @@
       "sha256": "8180c30b9fe6f1eef0c5afa85f97fc1dd971f8c8d41d472a064ffa63435dcd7f"
     },
     {
+      "path": "assets/jelly-art-v300.js",
+      "bytes": 10318,
+      "sha256": "3a471f39de4a3774134f9335065a47f2b63ea4b8d6756609adf9504a3ae464fa"
+    },
+    {
+      "path": "assets/jelly-art-v300/award-all-line.webp",
+      "bytes": 415436,
+      "sha256": "8167d1cefc7d8126ae3365638512846ce52530799e9de8ae146530d565bcc64f"
+    },
+    {
+      "path": "assets/jelly-art-v300/award-bingo.webp",
+      "bytes": 379380,
+      "sha256": "69f0ce946c6b6941eaeffaa1518c1227d8619b869ac6112d1e4dbd366c2b0f1d"
+    },
+    {
+      "path": "assets/jelly-art-v300/award-digits.webp",
+      "bytes": 535638,
+      "sha256": "266acaa2794aca26592b93c177a4c3f31102332c48005f30a8fd7660645cb4ca"
+    },
+    {
+      "path": "assets/jelly-art-v300/award-odds-up.webp",
+      "bytes": 138032,
+      "sha256": "68eb5c19a81d5cae8acfb3038892aa7c45b59c022473004cf184a38752b01a9c"
+    },
+    {
+      "path": "assets/jelly-art-v300/furniture-atlas.webp",
+      "bytes": 246314,
+      "sha256": "037368d49304b7a952614ac5b55a2f401c264f1cea6acc22250bc4466695eeb1"
+    },
+    {
+      "path": "assets/jelly-art-v300/generation-provenance.json",
+      "bytes": 19421,
+      "sha256": "d9d67a1bf98b927a1e5e20cb57853a01102096b2676f7408244cbdce78f64d4b"
+    },
+    {
+      "path": "assets/jelly-art-v300/glass-kit.webp",
+      "bytes": 377820,
+      "sha256": "5f40ae3110b17ffe969a8659c5d039eac33cc82b9f0d2658f4cf4181db1c6770"
+    },
+    {
+      "path": "assets/jelly-art-v300/payout-cabinet.webp",
+      "bytes": 116030,
+      "sha256": "8e5c1412777cd983f083eaf6f66d43cb1d73dc98932d68b07e18becde7288c48"
+    },
+    {
+      "path": "assets/jelly-art-v300/syrup-surface.webp",
+      "bytes": 57996,
+      "sha256": "6389531662bed54831fe32717aead78e8adbb0ffdde28480424875cb0819d862"
+    },
+    {
+      "path": "assets/jelly-award-v300.js",
+      "bytes": 8676,
+      "sha256": "3e3527f39fd9f9c6809fd66f9741b616f231fd3ac2202bbcab942e0e7b15373e"
+    },
+    {
       "path": "assets/jelly-backdrop.webp",
       "bytes": 196748,
       "sha256": "039cca6696390810a67e24f245f5587e582f56e6a29b049a1a4dfdaacaefc03a"
@@ -2503,8 +2558,8 @@
     },
     {
       "path": "assets/jelly-lesson.js",
-      "bytes": 8300,
-      "sha256": "987e6ec59fbb3bcde3c57b01ab547bdad40d9e6ed1998e3a8ae5a88c7983d9c8"
+      "bytes": 8883,
+      "sha256": "42cd20b3c6c1630ce9e8ad4349ed9302596c12b874f6b43ce868d513ea6e2f74"
     },
     {
       "path": "assets/jelly-rules.js",
@@ -2513,8 +2568,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 38640,
-      "sha256": "639663b822f81ccf965d532eb33828c25f1df6477ee07a23ad888f9d9413adae"
+      "bytes": 41094,
+      "sha256": "b32c957c1b48c5741e74e2c868de4d09cbee3c017e30dafc53d24f916c064ef7"
     },
     {
       "path": "assets/jelly.css",
@@ -4378,8 +4433,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 87233,
-      "sha256": "b8c848db84b0de3e530831dd1d1625f34d65084f49defa11d8c635d3fcd8c714"
+      "bytes": 87401,
+      "sha256": "e219f6b4ea62dfc08d881102ed270ec8c424f2cf620db5533e7ee207aaf93056"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4617,5 +4672,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 260464521
+  "totalBytes": 262774415
 }

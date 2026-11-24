@@ -112,6 +112,7 @@ function refractionArt(){
 }
 function cell(c,i,color,time,mini,paints){
  const [cx,cy]=center(i),x=cx-50,y=cy-50,p=syrup[color];
+ if(window.JellyArtV300?.loaded&&window.JellyArtV300.cell(c,i,color,mini))return;
   if(window.SweetsCartoonBoardsB?.jellyCell(c,i,color,mini,p))return;
  // Use one continuous hue across adjoining compartments. The open seams have no tile edges.
  const g=paints[color]??=gradient(c,0,0,160,510,[[0,p[0]],[.2,p[1]],[.62,p[2]],[1,p[3]]]);
@@ -168,6 +169,7 @@ function sectionIds(state){
 let floorSprite;
 jellySkin.addEventListener('load',()=>{floorSprite=null;});
 function cleanMoldFloor(){
+ const generated=window.JellyArtV300?.loaded&&window.JellyArtV300.floor();if(generated)return generated;
   const illustrated=window.SweetsCartoonBoardsB?.jellyFloor();if(illustrated)return illustrated;
  if(floorSprite)return floorSprite;
  const canvas=document.createElement('canvas');canvas.width=canvas.height=500;
@@ -241,6 +243,7 @@ function glazeCells(c,state,turn,elapsed){
 // follow the same three seams in both the crack and the separated fragments.
 let ribSprite;
 function ribArt(){
+ const generated=window.JellyArtV300?.loaded&&window.JellyArtV300.rib();if(generated)return generated;
   const painted=window.SweetsIllustratedBoardsBV275?.jellyRib();if(painted)return painted;
   const illustrated=window.SweetsCartoonBoardsB?.jellyRib();if(illustrated)return illustrated;
  if(ribSprite)return ribSprite;
@@ -552,13 +555,15 @@ function reachFrame(c,loops,id,item,t,mini){
 function board(c,state,o,x,y,side){
  const {time=0,elapsed=0,turn,mini}=o,scale=side/moldSize;
  c.save();c.translate(x+moldRim*scale,y+moldRim*scale);c.scale(scale,scale);
-  if(window.SweetsIllustratedBoardsBV275?.jellyRim(c)){
+  if(window.JellyArtV300?.loaded&&window.JellyArtV300.rim(c)){
+   // The live well, rails and numbers keep their original 500 + 42 geometry.
+  }else if(window.SweetsIllustratedBoardsBV275?.jellyRim(c)){
    // The generated bezel stays outside the same 500 x 500 live compartments.
   }else if(mold.complete&&mold.naturalWidth)c.drawImage(mold,-moldRim,-moldRim,moldSize,moldSize);
  else rect(c,0,0,500,500,9,'#244b54','#9ae3da',5);
  c.save();c.beginPath();c.roundRect(0,0,500,500,9);c.clip();
  c.drawImage(cleanMoldFloor(),0,0);
-  fillCells(c,state,turn,elapsed,time,mini);if(!mini&&!window.SweetsCartoonBoardsB?.active)glazeCells(c,state,turn,elapsed);partitions(c,state,turn,elapsed,mini);
+  fillCells(c,state,turn,elapsed,time,mini);if(!mini&&!window.JellyArtV300?.loaded&&!window.SweetsCartoonBoardsB?.active)glazeCells(c,state,turn,elapsed);partitions(c,state,turn,elapsed,mini);
  c.restore();
  rect(c,-1.4,-1.4,502.8,502.8,10,'','#f4e8b9',3.8);
  // Only syrup and partitions are confined to the cells. Light crosses the lip and the gold bezel.
@@ -594,6 +599,7 @@ function visibleCount(state,turn,elapsed){
    turn.newLines.filter((_,j)=>elapsed>=waveEnd(turn)+Math.min(210,j*36)+215).length;
 }
 function ticket(c,w,h){
+ if(window.JellyArtV300?.loaded&&window.JellyArtV300.frame(c,0,0,w,h))return true;
   if(window.SweetsCartoonBoardsB?.panelFrame(c,'jelly',0,0,w,h,10))return;
  const shell=gradient(c,0,0,w,h,[[0,'#fff2c9'],[.18,'#e1a875'],[.48,'#fff4ce'],[.82,'#b77664'],[1,'#f9d397']]);
  rect(c,0,2,w,h-2,14,'#341b37ab');
@@ -635,12 +641,13 @@ function phaseGuide(c,x,y,w,h,draws,o){
  const progress=finished?'全8球終了':(o.turn?'第':'次は第')+ball+'球';
  const action=finished?'ライン判定完了':first?'仕切りを割る':['赤','黄','緑'][ball-6]+'ゼリーを注ぐ';
  const detail=finished?'成立したラインが点灯':first?'青ゼリーが広がる':'つながった区画を満たす';
- rect(c,x,y,w,h,8,first?'#184b5a':'#5b2c4a',accent,1.5);
+ const generated=window.JellyArtV300?.loaded&&window.JellyArtV300.furniture(c,'phase',x,y,w,h);
+ if(!generated)rect(c,x,y,w,h,8,first?'#184b5a':'#5b2c4a',accent,1.5);
  const tagH=Math.min(h*.28,21),tagW=w*.34;
  rect(c,x+5,y+4,tagW,tagH,5,accent);
- lettering(c,phase,x+5+tagW/2,y+4+tagH*.53,tagH*.84,'#263346',{weight:950});
+ lettering(c,phase,x+5+tagW/2,y+4+tagH*.53,tagH*.84,'#263346',{weight:generated?900:950});
  lettering(c,(o.demo?'デモ・':'')+progress,x+w-6,y+4+tagH*.53,tagH*.66,'#fff0e2',{align:'right',max:w-tagW-17});
- lettering(c,action,x+w/2,y+h*.47,h*.245,'#fff5d9',{weight:950,max:w-12});
+ lettering(c,action,x+w/2,y+h*.47,h*.245,'#fff5d9',{weight:generated?900:950,max:w-12});
  lettering(c,detail,x+w/2,y+h*.70,h*.172,'#e1eff0',{max:w-12});
  const dx=(w-21)/8,cy=y+h*.89;
  for(let i=1;i<=8;i++){
@@ -659,8 +666,14 @@ function oddsLabel(n){return '×'+n.toFixed(1);}
 function mixSwatches(c,x,y,r,before,after){
  for(const [cx,recipe] of [[x-r*2,before],[x+r*2,after]]){
   const colors=syrup[recipe];
-  const gel=gradient(c,cx-r,y-r,cx+r,y+r,[[0,colors[0]],[.42,colors[1]],[1,colors[3]]]);
-  oval(c,cx,y,r,r,gel,'#fff1ce',r*.18);oval(c,cx-r*.22,y-r*.38,r*.45,r*.19,'#ffffffcc');
+  const surface=window.JellyArtV300?.loaded&&window.JellyArtV300.surface(recipe);
+  if(surface){
+   c.save();c.beginPath();c.ellipse(cx,y,r,r,0,0,tau);c.clip();c.drawImage(surface,cx-r,y-r,2*r,2*r);c.restore();
+   oval(c,cx,y,r,r,'','#fff1ce',r*.18);
+  }else{
+   const gel=gradient(c,cx-r,y-r,cx+r,y+r,[[0,colors[0]],[.42,colors[1]],[1,colors[3]]]);
+   oval(c,cx,y,r,r,gel,'#fff1ce',r*.18);oval(c,cx-r*.22,y-r*.38,r*.45,r*.19,'#ffffffcc');
+  }
  }
  lettering(c,'→',x,y,r*1.9,'#fff2c9');
 }
@@ -671,12 +684,24 @@ function oddsPopup(c,state,turn,age,x,y,w,h){
   const enter=clamp(age/130),leave=clamp((oddsPopupMs-age)/160);
   c.translate(0,(1-enter)*h*.13);c.globalAlpha=.25+.75*Math.min(enter,leave);
  }
- const glaze=gradient(c,0,0,w*.25,h,[[0,'#235747'],[.34,'#15573c'],[1,'#123a36']]);
- rect(c,1,1,w-2,h-2,Math.min(h*.22,10),glaze,'#95f5ab',2);
- rect(c,4,4,w-8,h-8,Math.min(h*.18,8),'','#47b885',.9);
+ const generated=window.JellyArtV300?.loaded&&window.JellyArtV300.oddsPopup(c,{state,turn,age,x:0,y:0,w,h,wide,still:!!reducedReachMotion});
+ if(!generated){
+  const glaze=gradient(c,0,0,w*.25,h,[[0,'#235747'],[.34,'#15573c'],[1,'#123a36']]);
+  rect(c,1,1,w-2,h-2,Math.min(h*.22,10),glaze,'#95f5ab',2);
+  rect(c,4,4,w-8,h-8,Math.min(h*.18,8),'','#47b885',.9);
+ }
  const before=turn.before.colors[turn.index],after=state.colors[turn.index];
  const change=oddsLabel(turn.before.oddsMultiplier)+' → '+oddsLabel(state.oddsMultiplier);
- if(wide){
+ if(generated&&wide){
+  mixSwatches(c,w*.54,h*.43,Math.min(h*.095,w*.025),before,after);
+  lettering(c,'＋0.5倍',w*.82,h*.43,h*.23,'#ffe58f',{max:w*.30,weight:900});
+  lettering(c,change,w*.735,h*.73,h*.30,'#fff5b0',{max:w*.46,face:'Georgia,serif',weight:700});
+ }else if(generated){
+  lettering(c,(turn.ball<=5?'前半':'後半')+'・第'+turn.ball+'球',w*.5,h*.34,h*.12,'#fff1dc',{max:w*.86,weight:900});
+  mixSwatches(c,w*.26,h*.56,Math.min(h*.085,w*.045),before,after);
+  lettering(c,'＋0.5倍',w*.73,h*.56,h*.19,'#ffe58f',{max:w*.45,weight:900});
+  lettering(c,change,w*.5,h*.84,h*.20,'#fff5b0',{max:w*.85,face:'Georgia,serif',weight:700});
+ }else if(wide){
   lettering(c,'オッズアップ',w*.28,h*.32,h*.31,oddsText,{max:w*.50,weight:950});
   lettering(c,'＋0.5倍',w*.77,h*.32,h*.30,'#ffe58f',{max:w*.38,weight:950});
   mixSwatches(c,w*.28,h*.70,Math.min(h*.15,w*.038),before,after);
@@ -696,18 +721,21 @@ function panel(c,state,o,x,y,w,h,popupAge,shownOdds){
  const unit=w/160;c.scale(unit,unit);w/=unit;h/=unit;
  const turns=state.draws.length,count=visibleCount(state,o.turn,o.elapsed||0),bet=Math.max(0,o.bet||0);
  const target=o.sugarLines??state.sugarLines,got=o.sugarCollected??(!o.demo&&bet>0&&count>=target);
- ticket(c,w,h);
- drawSweetFrame(c,'jelly',0,0,w,h,10);
+ const generated=!!ticket(c,w,h),art=generated?window.JellyArtV300:null;
+ if(!generated)drawSweetFrame(c,'jelly',0,0,w,h,10);
  const head=Math.min(39,h*.095);
- logo(c,11,5,w-22,head);
+ if(!generated)logo(c,11,5,w-22,head);
  let y0=6+head;
  const phaseH=Math.min(75,h*.195);
  phaseGuide(c,11,y0,w-22,phaseH,turns,o);y0+=phaseH+2;
  if(popupAge!==null)oddsPopup(c,state,o.turn,popupAge,8,4,w-16,y0-5);
  const oddsH=Math.min(39,h*.104);
- rect(c,11,y0+1,w-22,oddsH-3,5,'#62334c','#edc37b',1.2);
- lettering(c,'配当オッズ',16,y0+oddsH*.34,oddsH*.33,'#fff4d2',{align:'left',max:72});
- lettering(c,oddsLabel(shownOdds),w-17,y0+oddsH*.32,oddsH*.49,'#ffde83',{align:'right',max:58,face:'Georgia,serif',weight:950});
+ const oddsArt=art?.furniture(c,'odds',11,y0+1,w-22,oddsH-3);
+ if(!oddsArt){
+  rect(c,11,y0+1,w-22,oddsH-3,5,'#62334c','#edc37b',1.2);
+  lettering(c,'配当オッズ',16,y0+oddsH*.34,oddsH*.33,'#fff4d2',{align:'left',max:72});
+ }
+ lettering(c,oddsLabel(shownOdds),w-17,y0+oddsH*.32,oddsH*.49,'#ffde83',{align:'right',max:58,face:'Georgia,serif',weight:oddsArt?900:950});
  lettering(c,'色変化1回で＋0.5倍',w/2,y0+oddsH*.75,oddsH*.27,'#ffe4be',{max:w-30});
  y0+=oddsH;
  const headH=Math.min(17,h*.048),footH=Math.min(20,h*.052);
@@ -718,19 +746,22 @@ function panel(c,state,o,x,y,w,h,popupAge,shownOdds){
  const rowH=(h-10-y0-footH)/(tiers.length+.70),topExtra=rowH*.70;
  for(let j=tiers.length-1;j>=0;j--){
   const n=tiers[j],active=n===count,top=n===12,sugar=n===target,ht=top?rowH+topExtra:rowH;
-  rect(c,11,y0+.55,w-22,ht-1.1,3,active?(top?'#934d38':'#a04f70'):top?'#773650':j%2?'#602f4b':'#522842',active?'#ffe795':sugar?'#f9bedf':top?'#d3a57d':'',active?1.5:.75);
+  const rowArt=art?.furniture(c,top?'all':'row',11,y0+.55,w-22,ht-1.1);
+  if(!rowArt)rect(c,11,y0+.55,w-22,ht-1.1,3,active?(top?'#934d38':'#a04f70'):top?'#773650':j%2?'#602f4b':'#522842',active?'#ffe795':sugar?'#f9bedf':top?'#d3a57d':'',active?1.5:.75);
+  else if(active||sugar)rect(c,11,y0+.55,w-22,ht-1.1,3,'',active?'#ffe795':'#f9bedf',active?1.5:.75);
   const size=Math.min(rowH*.82,17),cy=y0+ht-rowH*.47;
-  if(top){
+  if(top&&!rowArt){
    lettering(c,'オールライン',17,y0+topExtra*.63,Math.min(topExtra*.95,14),'#ffe498',{align:'left',max:95});
    star(c,right-3,y0+topExtra*.65,3.3,'#ffe8a8');
   }
   if(sugar)sugarMarker(c,20,cy,Math.min(16,rowH*.97),o.sugarIcon);
-  lettering(c,n+'本',sugar?29:16,cy,size,active||top?'#ffe3a1':'#fff3e7',{align:'left',max:38});
+  lettering(c,n+'本',sugar?29:16,cy,size,rowArt?'#224246':active||top?'#ffe3a1':'#fff3e7',{align:'left',max:38});
   const win=Math.floor(bet*K.payout(n,shownOdds,state.payoutVersion??(o.demo?K.PAYOUT_VERSION:0))/100);
   lettering(c,win.toLocaleString('en-US'),right,cy,size,'#ffe38e',{align:'right',max:right-67,face:'ArcadePayout,Georgia,serif'});
   y0+=ht;
  }
  if(target!=null){
+  art?.furniture(c,'sugar',11,y0,w-22,footH);
   sugarMarker(c,23,y0+footH*.51,Math.min(19,footH*.96),o.sugarIcon);
   lettering(c,target+(got?'本 シュガーGET!':'本でシュガー'),35,y0+footH*.54,footH*.73,got?'#ffde72':'#ffe8c5',{align:'left',max:w-48});
  }
@@ -771,5 +802,9 @@ function hitGeometryV276(width,height,mini,anchor){
  const [cx,cy]=center(anchor.id),scale=side/moldSize;
  return {x:x+(moldRim+cx)*scale,y:y+(moldRim+cy)*scale,r:44*scale};
 }
-window.JellyView=Object.freeze({draw,duration,hitGeometryV276,oddsPopupMs,oddsRevealAt:waveStart,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
+const assetsReady=Promise.resolve(window.JellyArtV300?.ready).then(()=>{
+ if(!window.JellyArtV300?.loaded)return false;
+ floorSprite=undefined;ribSprite=undefined;glaze=undefined;lastGlazedState=undefined;return true;
+},()=>false);
+window.JellyView=Object.freeze({draw,duration,hitGeometryV276,assetsReady,oddsPopupMs,oddsRevealAt:waveStart,lineRevealAt:waveEnd,partitionBreakAt:wallSplit});
 })();

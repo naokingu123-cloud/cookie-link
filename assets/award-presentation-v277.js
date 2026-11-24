@@ -78,7 +78,7 @@ function projectedPath(slot,path,w,h,mini,state){
 function geometry(slot,path,mini,state){const t=target(slot,mini);return t?projectedPath(slot,path,t.clientWidth||t.width||320,t.clientHeight||t.height||320,mini,state):[];}
 function semantic(slot,ev,r){
  const e=slot.engine,s=e.state,game=kindOf(slot),phase=ev.phase;
- let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null;
+ let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null,jelly=null;
  const number=ev.number??ev.numbers?.at(-1)??s?.draws?.at(-1)??e.lastNumber??null;
  if(game==='cookie'){
   if(phase==='link'&&(ev.gain>0||ev.newRecord)){
@@ -146,6 +146,7 @@ function semantic(slot,ev,r){
  }else if(game==='jelly'){
   if(phase!=='jellyPour'||!e.trace?.newLines?.length)return null;
   const tr=e.trace,count=s.lines.length;kind='bingo';highest=count===12;label=count+' LINE BINGO!';detail=highest?'12ライン 全完成':'今回 '+tr.newLines.length+'ライン完成';gain=window.JellyRules.payout(count,s.oddsMultiplier,s.payoutVersion??0);total=true;retained=true;delay=window.JellyView.lineRevealAt(tr);
+  jelly=jellySnapshot(s,tr,number,gain);
   paths=tr.newLines.map(id=>groupPath(ids(window.JellyRules.LINES[id])));
  }else if(game==='stick'){
   if(phase!=='flipping'||!s.flipped?.length)return null;
@@ -182,6 +183,7 @@ function semantic(slot,ev,r){
   })}:{}),
   ...(gelato?{gelato}:{}),
   ...(popcorn?{popcorn}:{}),
+  ...(jelly?{jelly}:{}),
   ...(game==='candy'?{candy:Object.freeze({
    forms:Object.freeze(Object.fromEntries(['line','triangle','hexagon'].map(role=>[role,(ev.forms||[]).filter(form=>form.type===role).length]))),
    allClears:Number(ev.allClears??s?.allClears)||0
@@ -202,6 +204,14 @@ function popcornSnapshot(s,tr,number){
   firstPopAward:s.firstPopAward,nativeOldWin,nativeTotalWin,nativeWinDelta,
   waveCounts:Object.freeze(waveCounts),grades:Object.freeze(grades)});
 }
+function jellySnapshot(s,tr,number,totalHundredths){
+ const before=tr.before||{},lineIds=Array.from(s.lines||[]),newLineIds=Array.from(tr.newLines||[]),index=Number.isInteger(tr.index)?tr.index:null;
+ return Object.freeze({number:tr.number??number,ball:tr.ball??s.draws?.length??0,index,color:tr.color??null,
+  totalLines:lineIds.length,newLineCount:newLineIds.length,previousLines:before.lines?.length??Math.max(0,lineIds.length-newLineIds.length),
+  lineIds:Object.freeze(lineIds),newLineIds:Object.freeze(newLineIds),oddsMultiplier:s.oddsMultiplier,previousOdds:before.oddsMultiplier??s.oddsMultiplier,oddsReason:tr.oddsReason??null,
+  wetCells:(s.colors||[]).filter(Boolean).length,beforeRecipe:before.colors?.[index]??null,afterRecipe:s.colors?.[index]??null,payoutVersion:s.payoutVersion??0,
+  waveCounts:Object.freeze((tr.wave||[]).map(layer=>layer.length)),totalHundredths,sugarLines:s.sugarLines??null});
+}
 function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null,gelatoCounts:kindOf(slot)==='gelato'?gelatoCounts(slot.engine):null};records.set(slot,r);return r;}
 function ownsClass(r,on){
  r.slot.panel.classList.toggle('award-v277-owned',on);r.slot.tab.classList.toggle('award-v277-owned',on);r.slot.panel.dataset.awardKind=on?(r.current?.kind||r.pending[0]?.kind||'bonus'):'';
@@ -217,7 +227,7 @@ function ownsClass(r,on){
 }
 function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;if(kindOf(r.slot)==='gelato'){r.gelatoCounts=gelatoCounts(r.slot.engine);r.gelatoPrevious=null;}ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
 function signature(c){return c.paths.map(p=>p.anchors.map(a=>[a.id,a.r,a.c].join(':')).join(',')).join(';');}
-function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
+function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),...(c.jelly?{jelly:c.jelly}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
 function receive(slot,ev){
  const r=recordFor(slot),e=slot.engine;
  if(ev.phase==='ready'||r.version!==e.version||r.round!==app.token){clear(r);r.version=e.version;r.round=app.token;if(ev.phase==='ready')r.restoring=false;}
@@ -451,6 +461,15 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
   ctx.restore();
   if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
  }
+ if(c.game==='jelly'&&c.jelly&&window.JellyAwardV300?.loaded){
+  const aspect=window.JellyAwardV300.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.JellyAwardV300.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
  if(c.game==='popcorn'&&c.popcorn&&window.PopcornAwardV299?.loaded){
   const aspect=window.PopcornAwardV299.aspectFor?.(c)||1.5;
   const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
@@ -578,7 +597,7 @@ function paint(r,mini){
 function activate(r,c){
  r.current=c;c.age=0;
  if(r.slot.i===active){window.SweetsAudioV277?.award({game:c.game,tier:c.tier,key:c.key,kind:c.kind,win:c.win});c.sounded=true;}
- layer(r,r.slot.i!==active);if(r.status)r.status.textContent=c.label+'。'+c.detail+(c.win>0?'。'+(c.total?'現在の配当 ':'獲得配当 ')+pretty(c.win)+' WIN':'');
+ layer(r,r.slot.i!==active);if(r.status)r.status.textContent=c.label+'。'+c.detail+((c.win>0||c.jelly&&Number.isSafeInteger(c.win)&&c.win>=0)?'。'+(c.total?'現在の配当 ':'獲得配当 ')+pretty(c.win)+' WIN':'');
  ownsClass(r,true);
 }
 function finishCurrent(r){
