@@ -237,9 +237,15 @@ function inspectAward({kind,mini,reduced,next}){
  if(!glyphs.length)return null;
  const sample=document.createElement('canvas');sample.width=sample.height=96;const ctx=sample.getContext('2d',{willReadFrequently:true});ctx.drawImage(canvas,0,0,96,96);
  const pixels=ctx.getImageData(0,0,96,96).data;let alpha=0;for(let i=3;i<pixels.length;i+=4)if(pixels[i]>24)alpha++;if(alpha<60)return null;
+ const sugarNode=slot.sugarAwardScreen,sugarContent=sugarNode?.querySelector('.sugar-award-content'),sugarBounds=sugarContent?.getBoundingClientRect();
+ let sugarVisible=!!sugarNode;
+ for(let node=sugarNode;node instanceof Element;node=node.parentElement){const css=getComputedStyle(node);if(node.hidden||css.display==='none'||css.visibility==='hidden'||Number(css.opacity)===0)sugarVisible=false;}
+ const sugar={active:!!slot.sugarAwardActive,present:!!sugarNode,hidden:!!sugarNode?.hidden,visible:sugarVisible,compact:sugarNode?.classList.contains('choco-v295-compact')||false,
+  label:sugarNode?.getAttribute('aria-label')||'',icon:sugarNode?.querySelector('.sugar-award-icon use')?.getAttribute('href')||'',
+  box:sugarBounds?{left:sugarBounds.left,top:sugarBounds.top,right:sugarBounds.right,bottom:sugarBounds.bottom,width:sugarBounds.width,height:sugarBounds.height}:null};
  return {event,diagnostics,art,alpha,...traced,glyphs,pointerEvents:style.pointerEvents,
   canvas:{width:canvas.width,height:canvas.height},box:{left:bounds.left,top:bounds.top,right:bounds.right,bottom:bounds.bottom,width:bounds.width,height:bounds.height},
-  nativeEvents:q.nativeEvents.slice(),status:slot.panel.querySelector('.award-v277-status')?.textContent,selected:q.slots[q.active].engine.kind||'cookie',
+  nativeEvents:q.nativeEvents.slice(),sugar,status:slot.panel.querySelector('.award-v277-status')?.textContent,selected:q.slots[q.active].engine.kind||'cookie',
   activeSources:__chocoArt295.inspect(q.slots[q.active].panel.querySelector('canvas')).sources,overlay:canvas.toDataURL('image/png')};
 }
 function near(actual,expected,label,tolerance=.8){assert(Math.abs(actual-expected)<=tolerance,label+': '+actual+' vs '+expected);}
@@ -270,9 +276,14 @@ try{
     await page.waitForFunction(()=>__qa295.slots[__qa295.active].engine.kind==='gelato');
    }
    await page.waitForFunction(number=>{const button=document.querySelector('#manual-number-grid button[data-number="'+number+'"]');return button&&!button.disabled;},fixture.next,{timeout:30000});
-   const pending=page.waitForFunction(inspectAward,{kind:scenario.kind,mini:!!scenario.mini,reduced:!!scenario.reduced,next:fixture.next},{polling:'raf',timeout:scenario.kind==='chain'?150000:100000});
-   await page.locator('#manual-number-grid button[data-number="'+fixture.next+'"]').click();
-   const handle=await pending,evidence=await handle.jsonValue();await handle.dispose();
+   const manualButton=page.locator('#manual-number-grid button[data-number="'+fixture.next+'"]'),manualBox=await manualButton.boundingBox();
+   assert(manualBox?.height>12,'manual draw rows retain usable height instead of collapsing under the history label');
+   // Observe rejection immediately: a real click failure can close the page
+   // before the award waiter is awaited, and must retain its own diagnostics.
+   const pending=page.waitForFunction(inspectAward,{kind:scenario.kind,mini:!!scenario.mini,reduced:!!scenario.reduced,next:fixture.next},{polling:'raf',timeout:scenario.kind==='chain'?150000:100000}).then(handle=>({handle}),error=>({error}));
+   await manualButton.click();
+   const outcome=await pending;if(outcome.error)throw outcome.error;
+   const handle=outcome.handle,evidence=await handle.jsonValue();await handle.dispose();
    assert.equal(evidence.pointerEvents,'none');assert.equal(evidence.diagnostics.errors,0);assert.equal(evidence.selected,scenario.mini?'gelato':'choco');
    const event=evidence.event,native=evidence.nativeEvents.find(item=>item.phase===event.phase&&item.number===fixture.next&&item.gain===event.gain&&item.expectedWin===event.win&&item.totalHundredths===fixture.proof.totalHundredths&&
     (scenario.kind!=='depth'||item.bonusDepth===event.choco.depth));
@@ -284,6 +295,15 @@ try{
    assert(evidence.sources.includes('assets/choco-art-v295/award-digits.webp'));
    assert(!evidence.sources.some(source=>source.startsWith('assets/cookie-art-v293/')||source==='assets/award-art-v291/themed-cutin-atlas.webp'),'no previous/shared award interior leaks into Choco');
    const imageDraw=evidence.draws.find(draw=>draw.source===evidence.art.last.source&&draw.bounds);assert(imageDraw);contained(imageDraw.bounds,{left:0,top:0,right:evidence.canvas.width,bottom:evidence.canvas.height},'entire illustrated popup is inside its canvas',2);
+   if(!scenario.mini){
+    const sugar=evidence.sugar;
+    if(sugar.active){assert(!sugar.hidden&&sugar.compact,'earned Sugar keeps its native display in a separate compact badge');assert(sugar.label.includes('シュガーGET')&&sugar.icon,'earned Sugar retains its real accessible label and tier icon');}
+    if(sugar.visible){
+     const sx=evidence.box.width/evidence.canvas.width,sy=evidence.box.height/evidence.canvas.height,plaque={left:evidence.box.left+imageDraw.bounds.left*sx,right:evidence.box.left+imageDraw.bounds.right*sx,top:evidence.box.top+imageDraw.bounds.top*sy,bottom:evidence.box.top+imageDraw.bounds.bottom*sy};
+     assert(sugar.box&&sugar.box.width>0&&sugar.box.height>0,'Sugar acknowledgment remains visible');
+     assert(sugar.box.right<=plaque.left+1||sugar.box.left>=plaque.right-1||sugar.box.bottom<=plaque.top+1||sugar.box.top>=plaque.bottom-1,'the generic Sugar receipt does not cover the v295 award plaque: '+JSON.stringify({sugar:sugar.box,plaque}));
+    }
+   }
    assert(evidence.status?.includes(native.expectedWin.toLocaleString('ja-JP')),'accessible status retains exact native WIN');
    if(scenario.kind==='depth'){
     assert.equal(native.bonusDepth,fixture.proof.bonusDepth);assert.equal(event.choco.depth,native.bonusDepth);assert.equal(native.bonusIndex,native.bonusDepth/100);assert(native.bonusDepths.includes(native.bonusDepth));

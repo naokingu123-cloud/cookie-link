@@ -1618,13 +1618,13 @@
     },
     {
       "path": "assets/award-presentation-v277.css",
-      "bytes": 4937,
-      "sha256": "665b918ecdd26436a3496be9269cb8cf4ffaeb5ffb0d426d021e09c09b0e40e8"
+      "bytes": 5995,
+      "sha256": "b97139ee0d3f856b96932123b1a0db5a4c94057050462761fc90f6733c0bc86d"
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 43091,
-      "sha256": "c9e2fc57dcb6233e7fda811579001dc83f5428c062c3fd29ad3f40ae85eefeb3"
+      "bytes": 43443,
+      "sha256": "400ed5b3ad3163c4ab1eac200c9145a87418c721e034f3e151174dc05ca91792"
     },
     {
       "path": "assets/bgm-player.js",
@@ -2503,8 +2503,8 @@
     },
     {
       "path": "assets/manual-numbers.css",
-      "bytes": 1657,
-      "sha256": "2c23524d56cd93f4bfe319ee6ca3b442f1e745a3fb31de95dc04777ae7620a8f"
+      "bytes": 1813,
+      "sha256": "37735a5ae00f827be4d609ddd7338dba0cb48d063c4292a0d8bcae96b291d66c"
     },
     {
       "path": "assets/manual-numbers.js",
@@ -4153,8 +4153,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86338,
-      "sha256": "0a4788245c7371543e26e9bfaae3e3deb44a7c5da3582fa0593a2fd65e4e6352"
+      "bytes": 86335,
+      "sha256": "3fce3ce6379cc675eb5daf798fa21d27e17eabb46e2d3959fb997a6d95f07d6b"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4383,8 +4383,8 @@
     },
     {
       "path": "optimized/style-03.css",
-      "bytes": 7279,
-      "sha256": "c9d84ecb26a5dbb4e85826f468183700df9a8be85d516b2b4d1ca6f0c6cd22f5"
+      "bytes": 7435,
+      "sha256": "ae457a8521270f3af8c8c0e92bd0363f61e7693be4ff694340e4f77f68cfb490"
     },
     {
       "path": "optimized/style-04.css",
@@ -4392,5 +4392,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 245972080
+  "totalBytes": 245973799
 }
