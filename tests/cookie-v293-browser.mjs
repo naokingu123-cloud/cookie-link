@@ -26,17 +26,21 @@ async function fixtures(){
  }
  assert(result.link,'a native LINK witness exists');
  // This fixed, reachable seed clears on ball 7 after three honest batches.
- const events=[],e=new Engine({random:random(150461),colorCount:5,onEvent:(event,engine)=>events.push(nativeEvent(event,engine))});
+ // It needs 9,785 ms of native waits after the draw (headless rendering may
+ // advance the animation clock more slowly than wall time).
+ const events=[],e=new Engine({random:random(5717518),colorCount:5,onEvent:(event,engine)=>events.push(nativeEvent(event,engine))});
  e.wait=async()=>true;e.running=true;e.accepted=6;e.seen=new Set([1,2,3,4,5,6]);e.queue=[[1,2,3],[4,5],[6]];await e.drain();
  assert.equal(e.processed,6);assert.equal(e.allClears,0);assert(!events.some(v=>v.phase==='error'));
  const before=fields(e);events.length=0;e.accepted=7;e.seen.add(7);e.queue=[[7]];await e.drain();
- const proof=events.find(v=>v.phase==='allclear');assert(proof,'seed 150461 legitimately clears on ball 7');
- result.clear={fields:before,draws:[1,2,3,4,5,6],next:7,proof:{...proof,seed:150461}};
+ const proof=events.find(v=>v.phase==='allclear');assert(proof,'seed 5717518 legitimately clears on ball 7');
+ result.clear={fields:before,draws:[1,2,3,4,5,6],next:7,proof:{...proof,seed:5717518}};
  return result;
 }
 
 const witnesses=await fixtures();
 if(process.argv.includes('--fixtures-only')){console.log(JSON.stringify(Object.fromEntries(Object.entries(witnesses).map(([kind,f])=>[kind,{draws:f.draws,next:f.next,proof:f.proof}]))));process.exit(0);}
+const kindFilter=process.env.COOKIE_V293_KIND||'all';
+assert(['all','link','clear'].includes(kindFilter),'COOKIE_V293_KIND must be all, link or clear');
 const scenarios=[
  {id:'link-desktop',kind:'link',width:1366,height:900,bet:3000},
  {id:'clear-desktop',kind:'clear',width:1366,height:900,bet:3000},
@@ -44,8 +48,11 @@ const scenarios=[
  {id:'clear-narrow',kind:'clear',width:390,height:844,bet:300000},
  {id:'link-mini',kind:'link',width:390,height:844,bet:3000,mini:true},
  {id:'clear-reduced',kind:'clear',width:390,height:844,bet:300000,reduced:true}
-];
-const report={version,scope:'Cookie-only native LINK and ALL CLEAR witnesses; no probability sampling',witnesses:Object.fromEntries(Object.entries(witnesses).map(([key,f])=>[key,{draws:f.draws,next:f.next,proof:f.proof}])),cases:[],failures:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[]};
+].filter(scenario=>kindFilter==='all'||scenario.kind===kindFilter);
+assert.equal(scenarios.length,kindFilter==='all'?6:3,'every selected Cookie scenario must execute');
+assert.equal(new Set(scenarios.map(scenario=>scenario.id)).size,scenarios.length,'scenario identities are unique');
+if(process.argv.includes('--list-cases')){console.log(JSON.stringify({kindFilter,plannedCaseCount:scenarios.length,plannedCases:scenarios.map(scenario=>scenario.id)}));process.exit(0);}
+const report={version,kindFilter,plannedCaseCount:scenarios.length,plannedCases:scenarios.map(scenario=>scenario.id),scope:'Cookie-only native LINK and ALL CLEAR witnesses; no probability sampling',witnesses:Object.fromEntries(Object.entries(witnesses).map(([key,f])=>[key,{draws:f.draws,next:f.next,proof:f.proof}])),cases:[],failures:[],pageErrors:[],assetFailures:[],apiRequests:[],externalRequests:[]};
 await fs.mkdir(output,{recursive:true});
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.json':'application/json','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.svg':'image/svg+xml','.mp3':'audio/mpeg','.wav':'audio/wav','.avif':'image/avif'};
 const server=http.createServer(async(req,res)=>{
@@ -158,7 +165,7 @@ try{
    }
    const next=witnesses[scenario.kind].next;
    await page.waitForFunction(number=>{const button=document.querySelector('#manual-number-grid button[data-number="'+number+'"]');return button&&!button.disabled;},next,{timeout:30000});
-   const pending=page.waitForFunction(inspectAward,{kind:scenario.kind,mini:!!scenario.mini,reduced:!!scenario.reduced},{polling:'raf',timeout:30000});
+   const pending=page.waitForFunction(inspectAward,{kind:scenario.kind,mini:!!scenario.mini,reduced:!!scenario.reduced},{polling:'raf',timeout:scenario.kind==='clear'?100000:30000});
    await page.locator('#manual-number-grid button[data-number="'+next+'"]').click();
    const handle=await pending,evidence=await handle.jsonValue();await handle.dispose();
    assert.equal(evidence.pointerEvents,'none');assert.equal(evidence.diagnostics.errors,0);
@@ -190,6 +197,6 @@ try{
  assert.deepEqual(report.pageErrors,[]);assert.deepEqual(report.assetFailures,[]);assert.deepEqual(report.apiRequests,[]);assert.deepEqual(report.externalRequests,[]);
  assert.equal(report.failures.length,0,'failed Cookie scenarios: '+report.failures.map(v=>v.id).join(', '));
  assert.equal(report.cases.length,scenarios.length);
- console.log('COOKIE_V293_BROWSER_PASS',JSON.stringify({version,cases:report.cases.length,artwork:'board, payout, LINK, ALL CLEAR, dynamic digits',nativePayouts:true}));
+ console.log('COOKIE_V293_BROWSER_PASS',JSON.stringify({version,kindFilter,plannedCases:report.plannedCases,cases:report.cases.length,artwork:'board, payout, LINK, ALL CLEAR, dynamic digits',nativePayouts:true}));
 }catch(error){report.failure={id:current,message:String(error),stack:error.stack};throw error;}
 finally{await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n');await context?.close().catch(()=>{});await browser?.close().catch(()=>{});await new Promise(resolve=>server.close(resolve));}

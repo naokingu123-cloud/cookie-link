@@ -30,7 +30,13 @@ permissions:
 jobs:
   cookie-native-presentation:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [link, clear]
+    env:
+      COOKIE_V293_KIND: ${{ matrix.kind }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,7 +73,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cookie-v293-presentation
+          name: cookie-v293-presentation-${{ matrix.kind }}
           path: qa-cookie-v293/
           if-no-files-found: error
           retention-days: 7
