@@ -1,10 +1,10 @@
 {
-  "version": "20261124-v294-wide-main-playfields",
+  "version": "20261124-v295-fruit-canyon",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 49,
-      "sha256": "4b22d39509ea532637a06ad16ef8118b557bbfea9fa0fbc0acd863be5cd69088"
+      "bytes": 41,
+      "sha256": "f51a45631a487712028502858d22ec12b92109f41e796e1f0ab38a97415bf262"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1618,13 +1618,13 @@
     },
     {
       "path": "assets/award-presentation-v277.css",
-      "bytes": 4937,
-      "sha256": "665b918ecdd26436a3496be9269cb8cf4ffaeb5ffb0d426d021e09c09b0e40e8"
+      "bytes": 5995,
+      "sha256": "b97139ee0d3f856b96932123b1a0db5a4c94057050462761fc90f6733c0bc86d"
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 41450,
-      "sha256": "d19dc9875a1a4d9d143016ec84c39b65231c7f190692cc7489ee1d019fc3fccb"
+      "bytes": 43443,
+      "sha256": "400ed5b3ad3163c4ab1eac200c9145a87418c721e034f3e151174dc05ca91792"
     },
     {
       "path": "assets/bgm-player.js",
@@ -1917,14 +1917,59 @@
       "sha256": "b0af65f909aef2b6be38d371d543f25aaaeb27efa5a13ad7d400bd3e434f90ed"
     },
     {
+      "path": "assets/choco-art-v295.js",
+      "bytes": 13854,
+      "sha256": "03bef2472c65ade86a5828425ebd576e7908a15c981f65e8ef56aeb2a234ee58"
+    },
+    {
+      "path": "assets/choco-art-v295/award-chain.webp",
+      "bytes": 668660,
+      "sha256": "b686b6790ad35295603cc2aec345218b3c16ec2638c5cc124e8c43928c1a9481"
+    },
+    {
+      "path": "assets/choco-art-v295/award-depth.webp",
+      "bytes": 811656,
+      "sha256": "e9003a3f8a3ccbae255a3c8d1e63b781e281de802819a4131959046939f82f9c"
+    },
+    {
+      "path": "assets/choco-art-v295/award-digits.webp",
+      "bytes": 518238,
+      "sha256": "841e7138d6cde3c55f8aa5448a3574ce9e00d05c786ccd256f04e31d9cd3475e"
+    },
+    {
+      "path": "assets/choco-art-v295/award-fruit.webp",
+      "bytes": 515740,
+      "sha256": "6eaf67564237817671a3b1f89d3dc56fbbb0fa7d8e8df622d071e96bc4c22247"
+    },
+    {
+      "path": "assets/choco-art-v295/cake-materials.webp",
+      "bytes": 653244,
+      "sha256": "921dd5eae246f40e1893e183e77da21697e401a3851f9830f703950576d12b6d"
+    },
+    {
+      "path": "assets/choco-art-v295/fruit-rewards.webp",
+      "bytes": 459490,
+      "sha256": "a56c339ac6f08e5bfa96ec6d76d38d95095ca8a0c86ad57832116eb6b733b52d"
+    },
+    {
+      "path": "assets/choco-art-v295/hud-furniture.webp",
+      "bytes": 429146,
+      "sha256": "ee012335fd7dbed7e1b027f118f6de94265c9717abe9076ccef0cf5aae6da58e"
+    },
+    {
+      "path": "assets/choco-award-v295.js",
+      "bytes": 15210,
+      "sha256": "c794ddf4ce96cfe1cc7fb219cab2af34686e4a0d067d1e3c2e15e01418af98d2"
+    },
+    {
       "path": "assets/choco-dig.css",
       "bytes": 2123,
       "sha256": "71b8bbc51468bb7f3bda570b87e6a7d21b589fd0f7fd4cd15c008941c98906c7"
     },
     {
       "path": "assets/choco-dig.js",
-      "bytes": 736457,
-      "sha256": "0276857447a6590b9b159be71fa650e1f19bd7333097a9bd4e0196c3cef017e8"
+      "bytes": 749491,
+      "sha256": "cb1a9a4018c5751bee973170fab318fb566bf14391dfd9debb931c194dde8ebc"
     },
     {
       "path": "assets/choco-multi-12.css",
@@ -2023,8 +2068,8 @@
     },
     {
       "path": "assets/cookie-upgrade-patches.js",
-      "bytes": 20635,
-      "sha256": "0667b142b2e71154912a15ff3647f401bda0a1f5fd38bdd1871198bfa0eab555"
+      "bytes": 21276,
+      "sha256": "3f86d3653d686e2dd6cadf1eb2082b6b65fb90c009339ac76736b9983d64bf5a"
     },
     {
       "path": "assets/dango-art-v252/bamboo-skewer.webp",
@@ -2138,13 +2183,13 @@
     },
     {
       "path": "assets/demo-suite-v91.js",
-      "bytes": 20368,
-      "sha256": "00553ae83f3905413548ecc5837b7a8470fde36c5b2c4bf49e8d841a24dc8a77"
+      "bytes": 21217,
+      "sha256": "2b246e3c8a3dadcfa11fdaba72fc2027fe9abf35951a70f7fb78650194e5ea5f"
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4360,
-      "sha256": "62da843e65cd182d66cb8180b3bd3d9391129b75c99a380db6f6c37e10366c8d"
+      "bytes": 4352,
+      "sha256": "bf52fa4dbd562a136c118b6709e9ddeb2aa04ec6fcb60303fede78f83c294d57"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2168,8 +2213,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3771,
-      "sha256": "4574d1c7c7a726fa236e49b81e37b2f145fb62976deda6a470e4884240690be4"
+      "bytes": 3763,
+      "sha256": "dc7d1ab4384c0bedebe252c3078e7dd6abc97807029e26d89661a6019cdeb9c7"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2373,8 +2418,8 @@
     },
     {
       "path": "assets/illustrated-boards-a-v275.js",
-      "bytes": 7185,
-      "sha256": "68646070e187677c2ea7e942e0727f22d12885cefc88a40a4c33a25a5456a279"
+      "bytes": 7356,
+      "sha256": "331f6c90542a09ccf2b9598a85c1c3b2906370afbe4ca2dffc276df39c903fb0"
     },
     {
       "path": "assets/illustrated-boards-b-v275.js",
@@ -2458,8 +2503,8 @@
     },
     {
       "path": "assets/manual-numbers.css",
-      "bytes": 1657,
-      "sha256": "2c23524d56cd93f4bfe319ee6ca3b442f1e745a3fb31de95dc04777ae7620a8f"
+      "bytes": 1813,
+      "sha256": "37735a5ae00f827be4d609ddd7338dba0cb48d063c4292a0d8bcae96b291d66c"
     },
     {
       "path": "assets/manual-numbers.js",
@@ -2508,8 +2553,8 @@
     },
     {
       "path": "assets/ornate-boards-a-v274.js",
-      "bytes": 3474,
-      "sha256": "5867ad01d20a1116c03e0e88ba1f7de6e9a28802c366b187319eda603c614895"
+      "bytes": 3597,
+      "sha256": "25a5bb1b36470d25ba8a7c8584ab43c4618b633f70f582fb2f82eccb18f0f221"
     },
     {
       "path": "assets/ornate-boards-b-v274.css",
@@ -3763,13 +3808,13 @@
     },
     {
       "path": "assets/twelve-main-mini-render-v22.js",
-      "bytes": 14437,
-      "sha256": "01f57ebffd90a23465aebe18a058cfe22d57adf893637c3e1ff96afb0cb1fc69"
+      "bytes": 15210,
+      "sha256": "51c094071c4560414879ac413bf4bbf5c31368c4f3f183d21a56f050d0c0c8c8"
     },
     {
       "path": "assets/twelve-mini-performance-v24.js",
-      "bytes": 13006,
-      "sha256": "ff319b602758d818870a133d1a93f27f7008321697800a63da8d2a8106889453"
+      "bytes": 13495,
+      "sha256": "3ba11f0216b60d4a7c8b7b4f6c2c9b59e099f7a9743ef27eda1a3c3a4981ce42"
     },
     {
       "path": "assets/twelve-mini-tabs-v16.css",
@@ -4108,8 +4153,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 86134,
-      "sha256": "602a3150a1de30fe25c302510aa4210ac593b4ae41ef03b4cb3a0a1063c23e28"
+      "bytes": 86335,
+      "sha256": "3fce3ce6379cc675eb5daf798fa21d27e17eabb46e2d3959fb997a6d95f07d6b"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4123,8 +4168,8 @@
     },
     {
       "path": "optimized/app-01.js",
-      "bytes": 1179734,
-      "sha256": "c548b4ec7f4124889d5ed12af28110a1f925120ed1040c4826a1c02874585093"
+      "bytes": 1191116,
+      "sha256": "07d265f37af9589bc83fa093dd73f753f9a029ecbfeb177e957052271feb825c"
     },
     {
       "path": "optimized/cookie-20261031.css",
@@ -4338,8 +4383,8 @@
     },
     {
       "path": "optimized/style-03.css",
-      "bytes": 7279,
-      "sha256": "c9d84ecb26a5dbb4e85826f468183700df9a8be85d516b2b4d1ca6f0c6cd22f5"
+      "bytes": 7435,
+      "sha256": "ae457a8521270f3af8c8c0e92bd0363f61e7693be4ff694340e4f77f68cfb490"
     },
     {
       "path": "optimized/style-04.css",
@@ -4347,5 +4392,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 241857559
+  "totalBytes": 245973799
 }

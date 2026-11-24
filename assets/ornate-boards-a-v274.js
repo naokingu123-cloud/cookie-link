@@ -17,8 +17,9 @@ document.documentElement.classList.add('ornate-boards-a-v274');
  * of the 6.5 px icon inset and the 5 px amount inset. */
 if(selected.has('choco')&&typeof chocoOreTable==='function'){
  const nativeOreTable=chocoOreTable;
- chocoOreTable=function(ctx,layout,width,bet,time){
+ chocoOreTable=function(ctx,layout,width,bet,time,revision=7){
   const result=nativeOreTable.apply(this,arguments);
+  if(revision>=9&&window.ChocoArtV295?.loaded&&window.ChocoArtV295.furniture('fruit-table-body'))return result;
   const x=layout.left+7*layout.w+5,w=width-x-4;
   if(w>0){
    ctx.save();

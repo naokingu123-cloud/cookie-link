@@ -126,14 +126,19 @@ try{
  // BET-time Canyon and rare renderer-failure fallback: still use the
  // exact main-game cake auto-tiles and connected-surface masks.
  function paintCanyonCenterOnly(g,e,now,bet){
-   const fx=e.fx,grid=fx?.phase==='canyonFall'&&fx.before?fx.before:
-      fx?.phase==='canyonMelt'&&fx.before?fx.before:e.strata;
+   const fx=e.fx,modern=e.rulesRevision>=9,stage=fx?.phase;
+   const camera=stage==='canyonScroll'?fx:modern&&stage==='canyonFall'?fx?.scroll:null;
+   const grid=modern&&camera?camera.before:stage==='canyonFall'&&fx.before?fx.before:
+      stage==='canyonMelt'&&fx.before?fx.before:e.strata;
    if(!Array.isArray(grid))return false;
    const cw=5.9,ch=3.8,left=3.35,top=1.05;
    const elapsed=Number(fx?.elapsed)||0;
    const p=fx?.ms?Math.max(0,Math.min(1,elapsed/fx.ms)):1;
+   const q=modern&&motionReduced?1:p,travel=(fx?.fallDistance||1)*q*q;
    const moving=new Map((fx?.phase==='canyonFall'?(fx.moves||[]):[]).map(v=>[v.id,v]));
-   const shifted=fx?.phase==='canyonScroll'?(fx.advanced||0)*p:0;
+   const cameraProgress=stage==='canyonFall'?q*q:q;
+   const shifted=camera?(camera.advanced||0)*cameraProgress:0;
+   const masks=modern&&stage==='canyonFall'?chocoCurrentMasksV295(grid,moving,travel):null;
    g.save();
    const scale=g.canvas.width/48;
    g.setTransform(scale,0,0,scale,0,0);
@@ -144,14 +149,21 @@ try{
      for(let c=0;c<7;c++){
        const t=grid[r]?.[c];if(!t)continue;
        const m=moving.get(t.id);
-       const row=m?m.from[0]+(m.to[0]-m.from[0])*p:r;
+       const row=m?m.from[0]+(modern?Math.min(m.to[0]-m.from[0],travel):(m.to[0]-m.from[0])*p):r;
        const x=left+c*cw,y=top+(row-shifted)*ch;
        if(y+ch<0||y>48)continue;
        if(fx?.phase==='canyonMelt'&&fx.targets?.some(v=>v.tile?.id===t.id))
          g.globalAlpha=Math.max(.05,1-p);
-       chocoPaintTile(g,t,r,c,grid,x,y,cw,ch,now,bet);
+       chocoPaintTile(g,t,r,c,grid,x,y,cw,ch,now,bet,null,0,masks?.get(t.id)??null);
        g.globalAlpha=1;
      }
+   if(modern&&camera&&shifted>0){
+     const start=Math.max(0,12-Math.ceil(camera.advanced||0));
+     for(let r=start;r<12;r++)for(let c=0;c<7;c++){
+       const t=e.strata[r]?.[c];if(!t)continue;
+       chocoPaintTile(g,t,r,c,e.strata,left+c*cw,top+(r+(camera.advanced||0)*(1-cameraProgress))*ch,cw,ch,now,bet);
+     }
+   }
    g.restore();
    return true;
  }

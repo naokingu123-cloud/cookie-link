@@ -121,12 +121,14 @@ try{
   const g=item.ctx,physical=g.canvas.width||48;
   const factor=physical/48;
   const cw=5.9,ch=3.8,left=3.35,top=1.05;
-  const old=fx?.before;
   const stage=fx?.phase||'';
+  const modern=e.rulesRevision>=9;
+  const old=modern&&stage==='canyonFall'&&fx?.scroll?fx.scroll.before:fx?.before;
   const grid=old&&['canyonFall','canyonMelt','canyonSoften','canyonScroll'].includes(stage)
     ?old:e.strata;
   if(!Array.isArray(grid))return false;
   const progress=fx?.ms?clamp(fx.elapsed/fx.ms):1;
+  const q=modern&&motionReduced?1:progress,travel=(fx?.fallDistance||1)*q*q;
   const moves=view.canyonMoves||(view.canyonMoves=new Map());
   const gone=view.canyonGone||(view.canyonGone=new Set());
   const softened=view.canyonSoft||(view.canyonSoft=new Set());
@@ -136,7 +138,10 @@ try{
     if(v.tile?.id!=null)gone.add(v.tile.id);
   if(stage==='canyonSoften')for(const v of fx.targets||[])
     if(v.tile?.id!=null)softened.add(v.tile.id);
-  const scroll=stage==='canyonScroll'?(fx.advanced||0)*progress:0;
+  const camera=stage==='canyonScroll'?fx:modern&&stage==='canyonFall'?fx?.scroll:null;
+  const cameraProgress=stage==='canyonFall'?q*q:q;
+  const scroll=camera?(camera.advanced||0)*cameraProgress:0;
+  const masks=modern&&stage==='canyonFall'?chocoCurrentMasksV295(grid,moves,travel):null;
   g.save();
   g.setTransform(factor,0,0,factor,0,0);
   g.clearRect(0,0,48,48);
@@ -149,11 +154,11 @@ try{
    if(y>48||y+ch<0)return;
    if(alpha<1)g.globalAlpha=alpha;
    if(t.color<0||t.encased||softened.has(t.id)){
-     chocoPaintTile(g,t,r,c,grid,x,y,cw,ch,now,view.bet);
+     chocoPaintTile(g,t,r,c,grid,x,y,cw,ch,now,view.bet,null,0,masks?.get(t.id)??null);
    }else{
      // Same original cake/auto-tile asset as chocoPaintTile, but skip
      // all offscreen depth shading, payouts, walls and glints.
-     const image=chocoAutoSprite(t.color,chocoTileMask(grid,r,c),
+     const image=chocoAutoSprite(t.color,masks?.get(t.id)??chocoTileMask(grid,r,c),
        (t.id||0)%6,t.bonusKind||'fruit');
      if(image)g.drawImage(image,x,y,cw,ch);
    }
@@ -162,13 +167,13 @@ try{
   for(let r=0;r<12;r++)for(let c=0;c<7;c++){
    const t=grid[r]?.[c];if(!t)continue;
    const move=moves.get(t.id);
-   const row=(move?move.from[0]+(move.to[0]-move.from[0])*progress:r)-scroll;
+   const row=(move?move.from[0]+(modern?Math.min(move.to[0]-move.from[0],travel):(move.to[0]-move.from[0])*progress):r)-scroll;
    paint(t,r,c,grid,row,gone.has(t.id)?Math.max(.07,1-progress):1);
   }
-  if(stage==='canyonScroll'&&scroll>0){
-   const start=Math.max(0,12-Math.ceil(fx.advanced||0));
+  if(camera&&scroll>0){
+   const start=Math.max(0,12-Math.ceil(camera.advanced||0));
    for(let r=start;r<12;r++)for(let c=0;c<7;c++){
-    paint(e.strata[r]?.[c],r,c,e.strata,r+(fx.advanced||0)*(1-progress));
+    paint(e.strata[r]?.[c],r,c,e.strata,r+(camera.advanced||0)*(1-cameraProgress));
    }
   }
   g.restore();
