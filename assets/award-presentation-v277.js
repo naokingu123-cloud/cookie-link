@@ -165,6 +165,10 @@ function semantic(slot,ev,r){
  return {game,phase,number,kind,label,detail,gain:Math.max(0,Number(gain)||0),win:Number.isSafeInteger(nativeWin)&&nativeWin>=0?nativeWin:amount(slot,gain),total,tier:tierFor(gain,highest),highest,paths,delay:Math.min(15000,Math.max(0,delay)),retained,state:game==='candy'?{awardRows:e.rows}:s,
   ...(game==='cookie'?{cookie:Object.freeze({link:e.maxLink,depth:ev.depth||0,clears:e.allClears})}:{}),
   ...(choco?{choco}:{}),
+  ...(game==='winery'?{winery:Object.freeze({
+   full:ev.full,mix:ev.mix,justFilledCount:ev.justFilled.length,
+   power:Number(e.power)||1,mixMultiplier:(10+ev.mix)/10
+  })}:{}),
   ...(game==='candy'?{candy:Object.freeze({
    forms:Object.freeze(Object.fromEntries(['line','triangle','hexagon'].map(role=>[role,(ev.forms||[]).filter(form=>form.type===role).length]))),
    allClears:Number(ev.allClears??s?.allClears)||0
@@ -180,7 +184,7 @@ function ownsClass(r,on){
 }
 function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
 function signature(c){return c.paths.map(p=>p.anchors.map(a=>[a.id,a.r,a.c].join(':')).join(',')).join(';');}
-function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
+function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.winery?{winery:c.winery}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
 function receive(slot,ev){
  const r=recordFor(slot),e=slot.engine;
  if(ev.phase==='ready'||r.version!==e.version||r.round!==app.token){clear(r);r.version=e.version;r.round=app.token;if(ev.phase==='ready')r.restoring=false;}
@@ -402,6 +406,15 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
   const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
   ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
   const painted=window.SixDropAwardV296.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
+ if(c.game==='winery'&&c.winery&&window.WineryAwardV298?.loaded){
+  const aspect=window.WineryAwardV298.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.WineryAwardV298.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
   ctx.restore();
   if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
  }

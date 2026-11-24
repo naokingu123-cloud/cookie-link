@@ -1,0 +1,429 @@
+/* Winery v298: generated cabinet interiors with live, exact quantities.
+ * Enable only after all v298 art is ready. The 432px field, 21-cup positions,
+ * 1.07 cup scale, 1.05 spread, local stand contrast and transparent miniature
+ * remain owned by their existing renderers. No scene/background overrides.
+ */
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sidebar {
+  background: url('winery-art-v298/payout-cabinet.webp') center / 100% 100% no-repeat !important;
+  border-image: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  /* Source 724x2172: the title and grapes end around y=315 (14.5%).
+   * The 362px inner cabinet needs 53px of title clearance; 56px also keeps
+   * the first live baseline below the jewel. Side rails end near x=65.
+   * Twelve rows retain about 16px each, with the complete MIX below. */
+  padding: 56px 10px 20px !important;
+  grid-template-rows: 16px 17px minmax(0, 1fr) 56px !important;
+  gap: 2px !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sidebar::before,
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sidebar::after {
+  content: none !important;
+  display: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 :is(.wp-score, .wp-pay-fixed) {
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 1px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: #fff3d5 !important;
+  text-shadow: 0 1px #321223 !important;
+  white-space: nowrap !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-score {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 2px !important;
+  height: 16px !important;
+  font: 800 8px/1 system-ui, sans-serif !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-score strong {
+  min-width: 0 !important;
+  font: 900 11px/1 system-ui, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  color: #fff3ca !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sugar-summary {
+  flex: 0 0 auto !important;
+  font: 800 7px/1 system-ui, sans-serif !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 2px !important;
+  height: 17px !important;
+  font: 800 8px/1 system-ui, sans-serif !important;
+}
+
+/* The sculptural artwork already says 配当. Keep the complete DOM heading
+ * for assistive technology and show the shared unit once beside live 注杯数. */
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed > span {
+  font-size: 0 !important;
+  line-height: 1 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed > span::after {
+  content: 'WIN';
+  font: 800 8px/1 system-ui, sans-serif;
+  letter-spacing: .04em;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed .wp-score-mini {
+  display: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-total-poured {
+  min-width: 0 !important;
+  font: 800 8px/1 system-ui, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-window {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-track {
+  display: grid !important;
+  grid-template-rows: repeat(12, minmax(0, 1fr)) !important;
+  height: 100% !important;
+  gap: 0 !important;
+  transform: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row {
+  display: grid !important;
+  grid-template-columns: 18px 12px minmax(0, 1fr) !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 1px !important;
+  gap: 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgb(231 191 128 / 25%) !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: #fff1d1 !important;
+  font: 800 8px/1 system-ui, sans-serif !important;
+  text-shadow: 0 1px #361326 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row:last-child {
+  border-bottom: 0 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row.is-reached {
+  background: rgb(255 215 132 / 9%) !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row.current {
+  background: rgb(255 221 151 / 19%) !important;
+  box-shadow: inset 2px 0 #ffe2a2 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row b {
+  display: block !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  color: #ffe4a4 !important;
+  -webkit-text-fill-color: #ffe4a4 !important;
+  background: none !important;
+  filter: none !important;
+  font: 800 11px/1.05 ArcadePayout, Georgia, serif !important;
+  font-variant-numeric: tabular-nums !important;
+  text-align: right !important;
+  text-shadow: 0 1px #321223 !important;
+  white-space: nowrap !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp298-row-amount {
+  display: block !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  line-height: inherit !important;
+  white-space: nowrap !important;
+  letter-spacing: -.02em !important;
+}
+
+/* fitGoldenNumber owns the inline font size, scaleX and margin adjustment.
+ * Override the historical generic span clipping without changing that fit. */
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp298-row-amount > .gold-number {
+  display: inline-block !important;
+  font-family: ArcadePayout, Georgia, serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  overflow: visible !important;
+  transform-origin: right center !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp298-row-unit {
+  display: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sugar-mark {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  color: #fff0b7 !important;
+  font: 800 7px/1 system-ui, sans-serif !important;
+  text-align: center !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sugar-mark.is-get {
+  font-size: 5px !important;
+  letter-spacing: -.04em !important;
+  text-shadow: none !important;
+}
+
+/* Keep the existing three-second earned-tier reservoir. Narrow the stream
+ * against the left edge so it cannot pass over the payout numerals. */
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-juice-reservoir {
+  background: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-juice-level {
+  opacity: .32 !important;
+  border-top-width: 1px !important;
+  box-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-pour-stream {
+  left: 1px !important;
+  width: 2px !important;
+  box-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 56px !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 3px 1px !important;
+  gap: 2px !important;
+  border: 0 !important;
+  border-top: 1px solid rgb(231 191 128 / 50%) !important;
+  border-image: none !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix > span {
+  color: #fff0d3 !important;
+  font: 800 10px/1 system-ui, sans-serif !important;
+  white-space: nowrap !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix .wp-odds-up-label {
+  color: #f9d89a !important;
+  font: 900 9px/1 system-ui, sans-serif !important;
+  letter-spacing: .04em !important;
+  white-space: nowrap !important;
+  text-shadow: 0 1px #321223 !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix b {
+  color: #ffe5ac !important;
+  -webkit-text-fill-color: #ffe5ac !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+  white-space: nowrap !important;
+  text-shadow: 0 1px #321223 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78.wp-odds-animating .wp-pay-row b {
+  animation: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border: 1px solid #ffe6b3;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+html.winery-art-v298 body.winery-enabled[data-v249-game="winery"] #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78.wp-odds-animating .wp-mix::after {
+  animation: wp298-odds-edge .95s ease-out both;
+}
+
+@keyframes wp298-odds-edge {
+  0%, 100% { opacity: 0; }
+  22% { opacity: .78; }
+  68% { opacity: .25; }
+}
+
+/* A compact JUICE UP cabinet replaces the live heading visually. The four
+ * original boost numbers, HIT labels, amount tube and five stages remain. */
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left {
+  background: url('winery-art-v298/boost-cabinet.webp') center / 100% 100% no-repeat !important;
+  border-image: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  /* Source 1086x1448: JUICE UP ends near 22% height; the side ornaments
+   * occupy 10-12% width and the lower grapes need 15% height. This keeps
+   * the four real boost numbers above those grapes, within the live gap. */
+  padding: 3px 13px 23px !important;
+  gap: 2px !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-heading {
+  height: 29px !important;
+  min-height: 29px !important;
+  margin: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  text-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-amount-gauge {
+  margin: 0 !important;
+  padding: 2px !important;
+  gap: 2px !important;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-amount-gauge-header {
+  gap: 2px !important;
+  font: 800 8px/1 system-ui, sans-serif !important;
+  color: #fff0d1 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-amount-gauge-header strong {
+  color: #ffe4a8 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  text-shadow: 0 1px #321223 !important;
+  white-space: nowrap !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-amount-tube {
+  height: 8px !important;
+  min-height: 8px !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-amount-markers {
+  font: 800 7px/1 system-ui, sans-serif !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-ladder {
+  gap: 1px !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-stage {
+  min-height: 12px !important;
+  font-size: 7px !important;
+  line-height: 1 !important;
+  animation: none !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-caption {
+  color: #fff0d1 !important;
+  font: 800 7.5px/1.1 system-ui, sans-serif !important;
+  white-space: nowrap !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-numbers {
+  gap: 2px !important;
+  padding: 1px 0 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-number {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 26px !important;
+  border-width: 1px !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-number .wp-boost-numeral {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-number.hit .wp-boost-numeral {
+  font-size: 11px !important;
+}
+
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-number .wp-boost-hit-word {
+  font: 900 6.5px/1 system-ui, sans-serif !important;
+}
+
+html.winery-art-v298 body.winery-enabled:is(.paused, .player-menu-open) #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix::after,
+html.winery-art-v298 body.winery-enabled:is(.paused, .player-menu-open) #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-pour-stream {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix::after,
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-pour-stream {
+    animation: none !important;
+  }
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 :is(.wp-pay-juice-level, .wp-amount-fill) {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 :is(.wp-sidebar, .wp-power-left) {
+    background: Canvas !important;
+    border-color: CanvasText !important;
+  }
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 :is(.wp-score, .wp-pay-fixed, .wp-pay-row, .wp-pay-row b, .wp-mix, .wp-mix b, .wp-mix span, .wp-odds-up-label) {
+    color: CanvasText !important;
+    -webkit-text-fill-color: CanvasText !important;
+    text-shadow: none !important;
+  }
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed > span {
+    font: 800 8px/1 system-ui, sans-serif !important;
+  }
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-fixed > span::after,
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-mix::after {
+    content: none !important;
+  }
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-power-left .wp-boost-heading {
+    color: CanvasText !important;
+    font: 900 10px/29px system-ui, sans-serif !important;
+  }
+  html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row.current {
+    outline: 1px solid Highlight !important;
+    outline-offset: -1px !important;
+  }
+}

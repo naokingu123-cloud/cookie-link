@@ -1,0 +1,114 @@
+{
+  "tool": "built-in image_gen",
+  "version": 298,
+  "files": [
+    {
+      "key": "full",
+      "path": "assets/winery-art-v298/award-full.webp",
+      "source": "exec-5e0b1065-477e-455e-bc1c-972d05be7486.png",
+      "bytes": 464562,
+      "sha256": "bdb3b5b754e100fe89ea4037ef5ede1b00aa59dc9c4800bf4c9247915b00e7bc",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "key": "allfull",
+      "path": "assets/winery-art-v298/award-allfull.webp",
+      "source": "exec-3c7d14e5-5a07-4e51-84c5-8720cd5d7ad5.png",
+      "bytes": 576596,
+      "sha256": "a7326849fafae718a14ffbf56527c32da263160717ed106910e7a0493c9103cd",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "key": "digitsRevision",
+      "path": "assets/winery-art-v298/award-digits.webp",
+      "source": "exec-a3fb05ee-ff8b-49dc-b1df-89e8c7f418b2.png",
+      "bytes": 174254,
+      "sha256": "1c4929cf4f50d20ac9a673fc453eed494063a3b9f0d59b1ed6e02a76321bd94a",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "key": "odds",
+      "path": "assets/winery-art-v298/award-odds.webp",
+      "source": "exec-6822b5ac-be3c-45ff-afdf-3598b63ab18c.png",
+      "bytes": 634868,
+      "sha256": "400e23f443515f1b2fd03f04d314f92fad480b640fdfa49d9aeffaf966b6ebd8",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "key": "boost",
+      "path": "assets/winery-art-v298/award-boost.webp",
+      "source": "exec-d7da7060-7bed-4fc3-a7c2-d242c5a7c251.png",
+      "bytes": 580822,
+      "sha256": "b57e744b62abc7df78ff0fa52dbcc69eb14a01e6561ca74443a32d462b95e037",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "key": "glassTags",
+      "path": "assets/winery-art-v298/glass-and-tags.webp",
+      "source": "exec-6909172a-0e87-4abf-b7ce-5c8acfa62327.png",
+      "bytes": 168030,
+      "sha256": "713e9e2dd51b1e7cb632c7e68fbabe6ddd6d69406537bf9935ae5e9a7386ac24",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true
+    },
+    {
+      "key": "payout",
+      "path": "assets/winery-art-v298/payout-cabinet.webp",
+      "source": "exec-3575c699-479a-4c07-89a2-29ad6a13dd00.png",
+      "bytes": 262492,
+      "sha256": "36bc8cd6c7cd1c57333044f6c218df0f7e197756ab332e39be1be72dec2b1d81",
+      "width": 724,
+      "height": 2172,
+      "alpha": true
+    },
+    {
+      "key": "boostCabinet",
+      "path": "assets/winery-art-v298/boost-cabinet.webp",
+      "source": "exec-46fb4b04-1927-45ef-8686-654a60b3936c.png",
+      "bytes": 398354,
+      "sha256": "19f976853e617d5c907599f411ba443d370e99c277489385d67748e80fc5d5c4",
+      "width": 1086,
+      "height": 1448,
+      "alpha": true
+    }
+  ],
+  "atlas": {
+    "digits": {
+      "columns": 4,
+      "rows": 3,
+      "order": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ",",
+        "WIN"
+      ]
+    },
+    "pieces": {
+      "columns": 3,
+      "order": [
+        "glass",
+        "plaque",
+        "plaque-full"
+      ]
+    }
+  }
+}
