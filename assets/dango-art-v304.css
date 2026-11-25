@@ -1,0 +1,22 @@
+/* Physical bamboo furniture stays inside the native v285 reserved geometry. */
+html.dango-art-v304 body.dgb-active #screen>.game{background:#183b31 url('dango-art-v304/moon-garden.webp') center/cover no-repeat!important}
+html.dango-art-v304 #screen #panels :is(.v249-game-surface[data-v249-kind],.dgb-panel) .dgb-scene{background:#183b31!important}
+html.dango-art-v304 #screen #panels .dgb-scene::before{background:url('dango-art-v304/moon-garden.webp') center/cover no-repeat!important}
+html.dango-art-v304 #screen #panels .dgb-pay-matrix{border-image-source:url('dango-art-v304/payout-cabinet.webp')!important;border-image-slice:100 110 fill!important;background:#031b12!important}
+html.dango-art-v304 #screen #panels .dgb-pay-matrix thead th{background:#071c17f0;color:#fff9d4}
+html.dango-art-v304 #screen #panels .dgb-pay-matrix tbody th,
+html.dango-art-v304 #screen #panels .dgb-pay-matrix tbody td{background-color:#02170fdc}
+html.dango-art-v304 #screen #panels .dgb-scene .dgb-free-stat{border-color:transparent!important;background:var(--dango-v304-free) center/100% 100% no-repeat!important;box-shadow:none!important;border-radius:0;color:#fff9d9!important}
+html.dango-art-v304 #screen #panels .dgb-free-stat :is(small,b,.dgb-free-detail,.dgb-countdown){color:#fff9d9!important;text-shadow:0 1px 2px #06291d!important}
+html.dango-art-v304 #screen #panels .dgb-free-stat .dgb-countdown.urgent{color:#ffe19d!important}
+html.dango-art-v304 #screen #panels .dgb-scene .dgb-pay-odds{border-color:transparent!important;background:var(--dango-v304-odds) center/100% 100% no-repeat!important;box-shadow:none!important;border-radius:0}
+html.dango-art-v304 #screen #panels .dgb-scene .dgb-pay-odds small{color:#fff2d1}
+html.dango-art-v304 #screen #panels .dgb-scene .dgb-pay-odds b{color:#fff7b1}
+html.dango-art-v304 #screen #tabs .tab-slot.dgb-slot .mini-wrap{background:#183b31 url('dango-art-v304/moon-garden.webp') center/cover no-repeat!important}
+@media(forced-colors:active){
+ html.dango-art-v304 #screen #panels .dgb-scene::before{display:none}
+ html.dango-art-v304 #screen #panels .dgb-pay-matrix{border-image:none!important;border-color:CanvasText!important;background:Canvas!important}
+ html.dango-art-v304 #screen #panels .dgb-pay-matrix :is(th,td){background:Canvas;color:CanvasText}
+ html.dango-art-v304 #screen #panels .dgb-scene :is(.dgb-free-stat,.dgb-pay-odds){background:Canvas!important;border-color:CanvasText!important;color:CanvasText!important}
+ html.dango-art-v304 #screen #panels .dgb-free-stat :is(small,b,.dgb-free-detail,.dgb-countdown){color:CanvasText!important;text-shadow:none!important}
+}

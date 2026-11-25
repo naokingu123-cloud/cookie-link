@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f2a8bd"><meta name="apple-mobile-web-app-capable" content="yes"><title>SWEETS LINK｜ジェリービンゴ・ワッフルリバーシ・パーティカステラ</title><link rel="stylesheet" href="optimized/style-01.css?v=253"><link rel="stylesheet" href="optimized/style-02.css?v=title5"><link rel="stylesheet" href="optimized/style-03.css?v=295"><link rel="stylesheet" href="optimized/style-04.css?v=91"><link rel="stylesheet" href="assets/player-lounge.css?v=1"><link rel="stylesheet" href="optimized/achievements-v3.css?v=title12">
 <link rel="stylesheet" href="assets/download-mode-v255.css?v=255">
-<script src="assets/edition-choice-v255.js?v=301"></script>
+<script src="assets/edition-choice-v255.js?v=305"></script>
 <script src="assets/local-debug-v258.js?v=258"></script>
 <link rel="stylesheet" href="assets/local-debug-v258.css?v=258">
 <script>
@@ -458,6 +458,9 @@ Copyright 2016 The Rounded M+ Project Authors.
 <script src="assets/castella-award-v303.js?v=303"></script>
 <script src="assets/sugar-art-v305.js?v=305"></script>
 <script src="assets/sugar-award-v305.js?v=305"></script>
+<link rel="stylesheet" href="assets/dango-art-v304.css?v=304">
+<script src="assets/dango-art-v304.js?v=304"></script>
+<script src="assets/dango-award-v304.js?v=304"></script>
 <script src="assets/illustrated-boards-b-v275.js?v=275"></script>
 <script src="assets/illustrated-boards-c-v275.js?v=275"></script>
 <script src="assets/cookie-upgrade-patches.js?v=295"></script>
@@ -469,7 +472,7 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(!window.SweetsEditionV255?.value)return;
   // Decode the decorative frames and detailed pieces before native raster caches.
   // Failed image delivery retains the native visual fallback, never game state.
-  await Promise.all([window.SweetsOrnateArtV274?.ready,window.SweetsBoardArtV275?.ready,window.SweetsAwardArtV277?.ready,window.SweetsIllustratedAwardV291?.ready,window.CookieAwardV293?.ready,window.ChocoArtV295?.ready,window.ChocoArtV295?.furnitureReady,window.ChocoAwardV295?.ready,window.SixDropArtV296?.ready,window.SixDropAwardV296?.ready,window.GelatoArtV297?.ready,window.GelatoAwardV297?.ready,window.WineryArtV298?.ready,window.WineryAwardV298?.ready,window.PopcornArtV299?.ready,window.PopcornAwardV299?.ready,window.JellyArtV300?.ready,window.JellyAwardV300?.ready,window.WaffleArtV301?.ready,window.WaffleAwardV301?.ready,window.CastellaArtV303?.ready,window.CastellaAwardV303?.ready,window.SugarArtV305?.ready,window.SugarAwardV305?.ready]);
+  await Promise.all([window.SweetsOrnateArtV274?.ready,window.SweetsBoardArtV275?.ready,window.SweetsAwardArtV277?.ready,window.SweetsIllustratedAwardV291?.ready,window.CookieAwardV293?.ready,window.ChocoArtV295?.ready,window.ChocoArtV295?.furnitureReady,window.ChocoAwardV295?.ready,window.SixDropArtV296?.ready,window.SixDropAwardV296?.ready,window.GelatoArtV297?.ready,window.GelatoAwardV297?.ready,window.WineryArtV298?.ready,window.WineryAwardV298?.ready,window.PopcornArtV299?.ready,window.PopcornAwardV299?.ready,window.JellyArtV300?.ready,window.JellyAwardV300?.ready,window.WaffleArtV301?.ready,window.WaffleAwardV301?.ready,window.CastellaArtV303?.ready,window.CastellaAwardV303?.ready,window.SugarArtV305?.ready,window.SugarAwardV305?.ready,window.DangoArtV304?.ready,window.DangoAwardV304?.ready]);
   const edition=window.SweetsEditionV255.value,downloadWorker=new URLSearchParams(location.search).get('downloadWorker')==='1';
   const {mode,chosen}=window.SweetsLineup,classic=mode==='classic',has=id=>chosen.includes(id);
   const switcher=document.getElementById('lineup-link'),other=new URL(location.href);
@@ -483,11 +486,11 @@ Copyright 2016 The Rounded M+ Project Authors.
   if(has('candy'))extras.push('assets/six-drop-simple-glass.js?v=154','assets/sixdrop-bottle-layout-v6.js?v=2','assets/sixdrop-bottle-v8.js?v=91','assets/sixdrop-hud-v14.js?v=154');
   extras.push('assets/highest-role-reach-v18.js?v=138');
   if(has('gelato'))extras.push('assets/gelato-prism-v28.js?v=301');
-  if(has('winery'))extras.push('assets/winery-pyramid-core-v1.js?v=272','assets/winery-pyramid-v1.js?v=301');
+  if(has('winery'))extras.push('assets/winery-pyramid-core-v1.js?v=272','assets/winery-pyramid-v1.js?v=305');
   if(has('popcorn'))extras.push('assets/popcorn-engine.js?v=232','assets/popcorn-view.js?v=301','assets/popcorn-host.js?v=154');
-  if(has('stick'))extras.push('assets/bingo-stick-rules.js?v=138','assets/bingo-stick-view.js?v=302','assets/bingo-stick-host.js?v=154','assets/waffle-lesson.js?v=301','assets/waffle-pow-v159.js?v=301');
+  if(has('stick'))extras.push('assets/bingo-stick-rules.js?v=138','assets/bingo-stick-view.js?v=305','assets/bingo-stick-host.js?v=154','assets/waffle-lesson.js?v=301','assets/waffle-pow-v159.js?v=301');
   if(has('castella'))extras.push('assets/party-castella-rules.js?v=255','assets/party-castella.js?v=303','assets/party-castella-host.js?v=255','assets/castella-lesson.js?v=303');
-  if(has('dango'))extras.push('assets/dango-bingo-rules.js?v=288','assets/dango-bingo-view.js?v=301','assets/dango-bingo-host.js?v=285','assets/dango-bingo-lesson.js?v=285');
+  if(has('dango'))extras.push('assets/dango-bingo-rules.js?v=288','assets/dango-bingo-view.js?v=305','assets/dango-bingo-host.js?v=285','assets/dango-bingo-lesson.js?v=285');
   if(has('jelly'))extras.push('assets/jelly-rules.js?v=232','assets/jelly-view.js?v=301','assets/jelly-host.js?v=288','assets/jelly-lesson.js?v=300');
   if(chosen.some(id=>['cookie','choco','candy'].includes(id)))extras.push('assets/classic-game-polish-v89.js?v=91');
   extras.push('assets/game-menu-v91.js?v=277','assets/demo-suite-v91.js?v=298','assets/arcade-show-v91.js?v=255','assets/game-titles-v91.js?v=204');
@@ -501,10 +504,10 @@ Copyright 2016 The Rounded M+ Project Authors.
   extras.push('assets/illustrated-boards-a-v275.js?v=295','assets/ornate-boards-a-v274.js?v=295');
   if(has('cookie'))extras.push('assets/cookie-board-v293.js?v=293','assets/cookie-payout-v293.js?v=293');
   extras.push('assets/hit-presentation-v276.js?v=290');
-  extras.push('assets/celebration-audio-v277.js?v=282','assets/award-presentation-v277.js?v=303');
-  if(has('candy')&&!downloadWorker)extras.push('assets/sixdrop-ui-v278.js?v=301');
+  extras.push('assets/celebration-audio-v277.js?v=282','assets/award-presentation-v277.js?v=305');
+  if(has('candy')&&!downloadWorker)extras.push('assets/sixdrop-ui-v278.js?v=305');
   if(downloadWorker)extras.push('assets/recorded-round-v255.js?v=278','assets/download-worker-v255.js?v=255');
-  else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=278','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=301','assets/download-mode-v255.js?v=279');
+  else if(edition==='download')extras.push('assets/guest-entry-v237.js?v=255','assets/recorded-round-v255.js?v=278','assets/player-profile-v255.js?v=255','assets/download-roulette-v255.js?v=255','assets/download-cache-v255.js?v=305','assets/download-mode-v255.js?v=279');
   else if(edition==='local')extras.push('assets/local-debug-game-v258.js?v=278','assets/local-sugar-v267.js?v=279');
   else extras.push('assets/player-profile-v255.js?v=255','assets/shared-machine-v176.js?v=278');
   if(!downloadWorker&&['local','download'].includes(edition))extras.push('assets/sugar-roulette-v254.js?v=268');

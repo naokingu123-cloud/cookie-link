@@ -1,0 +1,286 @@
+{
+  "version": 304,
+  "game": "dango",
+  "generator": "built-in image_gen",
+  "scope": "Dedicated powdered mochi, bamboo tsukimi furniture, moon-viewing atelier, live payout cabinet and actual BINGO/highest/FREE event sculptures.",
+  "assets": [
+    {
+      "key": "mochi",
+      "file": "mochi-pieces.webp",
+      "source": "exec-68f85572-3882-465b-bbb9-14fab85dbe46.png",
+      "prompts": [
+        "Use case: stylized-concept. Production raster sprite atlas for DANGO DE BINGO, a Japanese confectionery medal game. A beautiful artisan wagashi / moon-viewing sweets aesthetic, rich fine handmade material detail with very clear silhouettes, polished illustrated 3D rendering. TRUE transparent RGBA background, 1536x1024, exactly 3 equal columns and 2 equal rows with invisible grid and generous transparent gutters. Six isolated single round mochi dumplings, identical shape and size, front view with a little visible top, each occupies about 72 percent of its cell width and 75 percent height, full soft spherical silhouette. Top row: ivory-white fresh rice mochi; soft matcha-green mochi; blush sakura-pink mochi. Bottom row: golden custard-yellow mochi; softly marbled rainbow mochi with pearl pink mint lemon lilac swirls; an extremely pale almost-white icy-blue mochi with only a subtle pale cyan shadow, much paler than aqua. Smooth gently powder-dusted rice surface, very fine edible shimmer, delicate dimple and dimensional warm highlight, slightly translucent edges. Every center broad and quiet for live dark numbers. No numbers, letters, labels, eyes, faces, sticks, plates, frames, decorations around objects, shadows touching other cells, checkerboard or background. Six separate mochi objects only, all complete and within their own exact grid cell. Match the visual weight of high-detail arcade sweets assets, not flat clipart.",
+        "Precise game sprite edit. Preserve the supplied 3-column 2-row atlas exactly: all six silhouettes, coordinates, detailed powder texture, transparency, and the first five mochi colors unchanged. Change ONLY the bottom-right icy-blue mochi: make it much paler and brighter, almost pure white with the slightest clean cyan tint. Surface should be high-key snowy pearl white, including shadows: most visible pixels near RGB 245,252,255, darkest soft creases no lower than about RGB 237,245,252. No gray, no aqua saturation, no dark blue edge. Keep the powdered texture legible as delicate white glints rather than dark mottling. True transparent background remains completely transparent outside every dumpling; no opaque backplate or checkerboard. Do not change any other object."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "986d94f5d082bf7f1255bf63162984d71a4bfa20d09bbf802ec1f11fb8ed43f9",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 255674,
+      "sha256": "50775a843a94fd2f267e064bc48968e6fd9f2d5eb9c8ee8e084c00220b29c7db",
+      "transparent": true
+    },
+    {
+      "key": "furniture",
+      "file": "furniture-atlas.webp",
+      "source": "exec-34c808df-a388-4a4e-bc22-ea566b4e5040.png",
+      "prompts": [
+        "Use case: stylized-concept. Production raster furniture atlas for DANGO DE BINGO, refined Japanese tsukimi mochi medal game. Beautiful intricate polished illustrated 3D material, warm carved hinoki wood, fresh green bamboo, fine gold inlay with restrained sakura petals and tiny pearls. TRUE transparent RGBA, 1536x1024, exactly 2 equal columns and 2 equal rows, invisible grid. Four separate physical pieces centered in their own cell with generous clear alpha gutters. Top left: a very wide and low empty tsukimi offering platform, front view, full object has width-to-height ratio 6.7:1, slender honey wood lacquered shelf with fine golden rim, tiny sculpted sakura corner details and short two feet; no mochi on shelf, no tall backboard. Top right: one single thin perfectly straight horizontal natural bamboo skewer, width-to-height ratio 25:1, one pointed end and one flat end, no ribbon, no food. Bottom left: a compact upright rounded square free-status plaque, ratio about 1:1.1, delicate green bamboo frame with gold bindings, calm dark-jade lacquer face entirely blank, thin edge occupies at most 7 percent on each side, no artwork in inner face. Bottom right: a slender horizontal odds-status plaque ratio about 4:1, pearl-ivory and gold bamboo rim, deep plum lacquer inner face completely blank, tiny sakura carvings confined to corners. Every object complete, wholly inside its own cell. No lettering, no numbers, no grid lines, no shared background, no huge outer glows. This is finished richly detailed game furniture, not a mockup."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "674ae6b5cf9d21c17beb7cce81eeddadccb9e42dd7b3504586c34d558c9f79e0",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 369014,
+      "sha256": "4760b1967488ea3ec43cd68f204920e6d1fce942880caa8e13c292de84211487",
+      "transparent": true
+    },
+    {
+      "key": "payout",
+      "file": "payout-cabinet.webp",
+      "source": "exec-d01d21b0-b146-4062-9fd0-a4519d9584a2.png",
+      "prompts": [
+        "Use case: stylized-concept. Finished production payout cabinet for DANGO DE BINGO, Japanese artisan mochi moon-viewing medal game. True transparent RGBA. One nearly square front-facing lacquer plaque, width-to-height about 1.19:1, fully inside the canvas with clear margins. Refined green bamboo outer rails with fine gold binding, tiny ivory and pale pink rice-mochi ornaments at the extreme corners, beautiful hand-polished wood and subtle sakura mother-of-pearl inlay. Detailed sculpted material, premium illustrated 3D finish. Very thin ornamented border occupies only the outer 5 percent on all four edges. The entire inner 90 percent is a completely blank flat very dark midnight-jade lacquer face, quiet and uniform for a real dynamic 4-column 6-row payout table. No printed title, numbers, words, grid, fake lines, coins or ribbons in that inner face. All decoration must remain in the thin outer border, with shallow corners that will work in a nine-slice UI frame. Completely front-on and symmetrical, no tilted perspective, no cast shadow outside the silhouette, no huge glow. Entire object complete and unclipped."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": {
+          "left": 22,
+          "top": 22,
+          "right": 1346,
+          "bottom": 1118
+        }
+      },
+      "sourceSha256": "0b3c93bd5f703cc05ebf5b9bf82ff0dc33624aa224e096ad4da93721e0fe34b9",
+      "sourceDimensions": [
+        1368,
+        1149
+      ],
+      "dimensions": [
+        1324,
+        1096
+      ],
+      "bytes": 183866,
+      "sha256": "41220afb6d3d642e2af3c1d44ada8d527045218ab187b7d226c5006c635bcb92",
+      "transparent": true
+    },
+    {
+      "key": "scene",
+      "file": "moon-garden.webp",
+      "source": "exec-ccc95e4e-30f3-4318-941b-bc7d6f086d05.png",
+      "prompts": [
+        "Use case: stylized-concept. Production background illustration for DANGO DE BINGO Japanese wagashi arcade game. Wide landscape 1536x1024, opaque full-bleed. Elegant moon-viewing confectionery atelier at blue hour, warm polished cypress counter, bamboo and delicate sakura branch silhouettes framing the extreme edges, fine gold dust like tiny fireflies, soft creamy moon glow near upper right edge, distant shoji and garden blurred behind. Rich painterly illustrated 3D material consistent with finely powdered rice mochi and gold/bamboo game furniture. Main requirement: about 85 percent of the image, especially all center and left-center areas, is low-contrast, spacious, calm muted deep jade and sage bokeh so overlaid game pieces and a payout table remain fully legible. No dominant foreground subject, no stand or mochi, no central moon, no decorative grids, no fake UI, no letters, text, symbols or numbers. Restrain highlights to the outer margins; warm wood thin lower edge and airy, sophisticated depth. Usable when center-cropped to portrait phone as well as wide desktop."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "d5ed183695fded18335e28b3cc85183e6be63a8d584f270618355225a7a5377d",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 97756,
+      "sha256": "4ad655388b3c35aa4722c9ee1d62ddea3a1d856a6fe51dbfc09efacd64f11a48",
+      "transparent": false
+    },
+    {
+      "key": "bingo",
+      "file": "award-bingo.webp",
+      "source": "exec-cfdb45b7-3eba-48da-b82c-e74bfa53620c.png",
+      "prompts": [
+        "Use case: stylized-concept. A FINISHED premium role-award cutout illustration for DANGO DE BINGO, Japanese mochi sweets medal game. True transparent RGBA, landscape 1536x1024. It is a rich physical edible sculpture, not a blank generic picture frame. A lively elegant arrangement of three large soft pearl-white, matcha-green and sakura-pink mochi on crossing polished bamboo skewers, restrained falling sakura petals, fine gold filigree and tiny warm star glints, atop a shallow polished hinoki tsukimi offering platform. Sculpted exact title \"BINGO!\" in large glossy ivory/gold mochi-like lettering across upper central 20–40% of canvas height, strong readable silhouette. The entire title and sculpture comfortably inside the canvas. Below the title, leave a clean wide quiet jade/ivory band around y=51–59% for live line count; another small quiet band around y=61–67% for live caption. Lower center y=70–88%, x=15–85% is a broad completely blank dark jade lacquer face integrated naturally into the offering platform, reserved for real large changing WIN numbers. There must be no digits, LINE counts, prizes, fake numbers, WIN word, subtitle or Japanese text baked in. Rich shallow-depth powder textures and delicate gold edges; pastel subjects glow warmly against alpha, no opaque rectangle or background halo. Full composition remains compact and complete with alpha margins. No characters, human faces, watermark."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "844573b3d6ace2d4ab7787d6589f3e52fb1b852500b87678f4b646db09c0840f",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 514332,
+      "sha256": "e50e9ca584bf3858056034e3f193bb4e9064221347809d57dff53fff7479454f",
+      "transparent": true
+    },
+    {
+      "key": "highest",
+      "file": "award-highest.webp",
+      "source": "exec-b51218fc-3702-45d3-9363-4e19a6a83eb8.png",
+      "prompts": [
+        "Use case: stylized-concept. Finished highest-role award sculpture for DANGO DE BINGO, Japanese artisan mochi medal game. TRUE transparent RGBA, landscape 1536x1024. Rich detailed illustrated 3D finish: a pyramid of pearl-white, pale pink, matcha and softly rainbow-marbled mochi, radiant fine gold bamboo fans and subtle sakura confetti, a small golden moon disk near the top. The complete silhouette fits inside 4 percent margins and remains crisp. A large exact Japanese title \"最高役\" beautifully sculpted in cream-gold and rose-gold raised confectionery lettering at center-upper, y=28–46%. It must read exactly 最高役, with no other words. Small extra elegant jade ribbon below y=52–61%, completely blank, reserved for real changing completed-role details. At y=63–68% leave a shallow blank ivory lacquer caption band. Lower center y=71–89%, x=14–86%, a generously wide completely blank dark plum lacquer award face naturally built into a luxurious low hinoki offering platform, for large live WIN numbers. Composition looks celebratory and intricate, fully rendered edible sculpture with detailed powder textures, gold bevels and warm glints; no plain empty frame dominating it. No baked digits, amounts, WIN, counts, extra Japanese text, watermark, characters, background rectangle, checkerboard. There are different highest roles in the real game, so do not bake a fixed number of completed lines."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "5a7955d25bb3190a6f11041f90736650fa1114ea8d16ef3218aa3f08d1d06b61",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 634350,
+      "sha256": "80551ced5526c0c98c5b0d0f989886b5dc0fe80f69499d403173f9f4dd4216f3",
+      "transparent": true
+    },
+    {
+      "key": "free",
+      "file": "award-free.webp",
+      "source": "exec-9f7d0c36-00b6-4d27-be93-93a4994ab76b.png",
+      "prompts": [
+        "Use case: stylized-concept. Finished special FREE-growth award illustration for DANGO DE BINGO, Japanese artisan mochi medal game. TRUE transparent RGBA, landscape 1536x1024. A high-detail joyful physical sweets sculpture: one extremely pale almost-white ice-blue mochi and several custard-yellow pearl mochi rise gracefully from a low honey-wood tsukimi tray, clean pale cyan and golden sparkles, a few delicate sakura petals and bamboo leaves, fine restrained gold filigree. Exact sculpted title \"FREE UP!\" in beautifully readable ivory/cyan and gold 3D lettering in the upper middle y=22–47%. Lower middle y=55–67%: a wide quiet blank dark jade lacquer band integrated into the sculpture for live large text such as FREE +1. Bottom middle y=72–84%: a smaller blank warm ivory panel for the actual total FREE count. Rich powdery rice textures and gentle moonlit pearl highlight. No baked numbers, digits, arrows, amounts, WIN word, subtitle, extra letters or Japanese text. This event grants placement FREE, not medals, so do not include coins or currency imagery. No generic empty frame, no opaque scene background, no checkerboard, no people. Whole complete compact sculpture with alpha margins, not cropped."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "076660a168f3afa55b3ee601e6ff40901b5bd8914bfa6d3a6871a17dd70fcc13",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 471136,
+      "sha256": "ad67c3f037eabe6d814e550be48660a61a9d4e42ea278e4fdf323fb7fda87421",
+      "transparent": true
+    },
+    {
+      "key": "digits",
+      "file": "award-digits.webp",
+      "source": "exec-1d33b2b0-8525-46b1-8175-caffab320b38.png",
+      "prompts": [
+        "Use case: stylized-concept. Production NUMBER GLYPH SPRITE ATLAS for DANGO DE BINGO awards. TRUE transparent RGBA, landscape 1536x1024. EXACT invisible 4-column by 3-row grid, twelve equal 384x341 cells, generous transparent gutters. Each glyph is centered in its own cell and fits fully within the central 70 percent of that cell; nothing overlaps neighboring cells. In reading order row 1: \"0\", \"1\", \"2\", \"3\". Row 2: \"4\", \"5\", \"6\", \"7\". Row 3: \"8\", \"9\", \",\", \"WIN\". These twelve are the only symbols anywhere. Match beautiful Japanese wagashi award typography: bold very readable rounded numerals formed from glossy ivory rice-mochi confection, bright warm golden beveled edges, fine micro-textured edible pearl glints, restrained rose-gold shadow for dimensional depth. Each number has clear classic numeral shape, consistent cap height and weight; zero distinct and closed, one unambiguous, six and nine accurate. Comma smaller but fully isolated. WIN is one centered word in last cell, not split across cells. No background glow, no frames, no decorative objects, no extra letters, no duplicate glyphs, no checkerboard or watermark. Straight-on professional game sprite typography."
+      ],
+      "processing": {
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100,
+        "crop": null
+      },
+      "sourceSha256": "a2eb06c3e4fbc5296ec84c7c245f367ccc4efd811e184a3df7d7beaecefba708",
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 350654,
+      "sha256": "20368c53a04ac214dbe3bfd1b9fa25472f590dd61f6fb9b8584de9849180fd37",
+      "transparent": true
+    }
+  ],
+  "nativeInvariants": [
+    "All existing game rules, seeds, payouts, native host timing and eight-ball settlement remain unchanged.",
+    "28-cell triangle and exact plusFreeLayout reserves retained.",
+    "Pale nearly-white +FREE, initial green FREE, manual yellow FREE, HIT labels and marks retained.",
+    "Payout counts use 個; dynamic money is never baked into images.",
+    "BINGO/highest-role amounts show current native total including legitimate zero; FREE-only award has no money."
+  ],
+  "atlasLayout": {
+    "mochi": {
+      "columns": 3,
+      "rows": 2,
+      "order": [
+        "white",
+        "green",
+        "pink",
+        "yellow",
+        "rainbow",
+        "cyan"
+      ],
+      "alphaCropThreshold": 64
+    },
+    "furniture": {
+      "columns": 2,
+      "rows": 2,
+      "order": [
+        "stand",
+        "skewer",
+        "free",
+        "odds"
+      ],
+      "alphaCropThreshold": 24
+    },
+    "digits": {
+      "columns": 4,
+      "rows": 3,
+      "order": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ",",
+        "WIN"
+      ],
+      "rowCuts": [
+        0,
+        0.361328125,
+        0.68359375,
+        1
+      ],
+      "bottomCommaWinCut": 0.72,
+      "registration": "Observed alpha gutters preserve complete first-row descenders and full WIN word."
+    }
+  },
+  "cyanVerification": {
+    "meanLuminance": 245,
+    "meanBlueMinusRed": 10,
+    "description": "Generated near-white pale blue source; no live tint/filter."
+  }
+}

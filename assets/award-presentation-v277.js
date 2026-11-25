@@ -78,7 +78,7 @@ function projectedPath(slot,path,w,h,mini,state){
 function geometry(slot,path,mini,state){const t=target(slot,mini);return t?projectedPath(slot,path,t.clientWidth||t.width||320,t.clientHeight||t.height||320,mini,state):[];}
 function semantic(slot,ev,r){
  const e=slot.engine,s=e.state,game=kindOf(slot),phase=ev.phase;
- let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null,jelly=null,waffle=null;
+ let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null,jelly=null,waffle=null,dango=null;
  const number=ev.number??ev.numbers?.at(-1)??s?.draws?.at(-1)??e.lastNumber??null;
  if(game==='cookie'){
   if(phase==='link'&&(ev.gain>0||ev.newRecord)){
@@ -166,8 +166,9 @@ function semantic(slot,ev,r){
   if(!lineIds.length&&!roles.length&&!(realDraw&&s.lastBonusGain))return null;
   const g=window.DangoBingoRules.geometryFor?.(s)||window.DangoBingoRules.geometry;
   highest=roles.length>0;kind=lineIds.length?'bingo':'bonus';label=highest?'最高役 成立！':lineIds.length?s.completedLines.length+' LINE BINGO!':'FREE EVOLUTION!';
-  detail=highest?roles.map(n=>n+'個ライン '+s.lineCounts[n]+'本').join(' ・ '):lineIds.length?'今回 '+lineIds.length+'ライン完成':'配置FREE '+s.freeBudget+'個に進化';
+  detail=highest?roles.map(n=>n+'個ライン '+s.lineCounts[n]+(Number(s.rulesRevision)>=285?'個':'本')).join(' ・ '):lineIds.length?'今回 '+lineIds.length+'ライン完成':'配置FREE '+s.freeBudget+'個に進化';
   gain=lineIds.length||highest?s.totalHundredths:0;total=true;delay=lineIds.length?180:0;retained=true;
+  dango=dangoSnapshot(s,lineIds,roles,number,committed);
   paths=lineIds.map(id=>groupPath(ids(g.lines.find(line=>line.id===id)?.cells||g.lines[id]?.cells)));
  }
  if(!label)return null;
@@ -187,6 +188,7 @@ function semantic(slot,ev,r){
   ...(jelly?{jelly}:{}),
   ...(waffle?{waffle}:{}),
   ...(game==='castella'?{castella:Object.freeze({bakedCount:s.bakedCount,holes:s.cells.length,allBaked:!!s.highestRole,draws:s.draws.length,totalHundredths:s.totalHundredths})}:{}),
+  ...(dango?{dango}:{}),
   ...(game==='candy'?{candy:Object.freeze({
    forms:Object.freeze(Object.fromEntries(['line','triangle','hexagon'].map(role=>[role,(ev.forms||[]).filter(form=>form.type===role).length]))),
    allClears:Number(ev.allClears??s?.allClears)||0
@@ -230,6 +232,12 @@ function waffleSnapshot(slot,s,number){
   rackBefore:Object.freeze(Array.from(s.lastRack||[])),rackAfter:Object.freeze(Array.from(s.rack||[])),
   opponentBefore:opponentAfter===null?null:opponentAfter+flippedIds.length,opponentAfter});
 }
+function dangoSnapshot(s,lineIds,roles,number,committed){
+ return Object.freeze({number,ball:s.draws?.length||0,rulesRevision:s.rulesRevision||0,totalLines:s.completedLines.length,newLineCount:lineIds.length,
+  lineIds:Object.freeze(s.completedLines.slice()),newLineIds:Object.freeze(lineIds.slice()),highestRoles:Object.freeze(roles.slice()),lineCounts:Object.freeze({...s.lineCounts}),
+  oddsMultiplier:s.oddsMultiplier||1,freeGain:Number(s.lastBonusGain)||0,freeBudget:s.freeBudget,freeRemaining:s.freeRemaining,
+  totalHundredths:s.totalHundredths,committed:!!committed});
+}
 function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null,gelatoCounts:kindOf(slot)==='gelato'?gelatoCounts(slot.engine):null};records.set(slot,r);return r;}
 function ownsClass(r,on){
  r.slot.panel.classList.toggle('award-v277-owned',on);r.slot.tab.classList.toggle('award-v277-owned',on);r.slot.panel.dataset.awardKind=on?(r.current?.kind||r.pending[0]?.kind||'bonus'):'';
@@ -246,7 +254,7 @@ function ownsClass(r,on){
 }
 function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;if(kindOf(r.slot)==='gelato'){r.gelatoCounts=gelatoCounts(r.slot.engine);r.gelatoPrevious=null;}ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
 function signature(c){return c.paths.map(p=>p.anchors.map(a=>[a.id,a.r,a.c].join(':')).join(',')).join(';');}
-function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),...(c.jelly?{jelly:c.jelly}:{}),...(c.waffle?{waffle:c.waffle}:{}),...(c.castella?{castella:c.castella}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
+function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),...(c.jelly?{jelly:c.jelly}:{}),...(c.waffle?{waffle:c.waffle}:{}),...(c.castella?{castella:c.castella}:{}),...(c.dango?{dango:c.dango}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
 function receive(slot,ev){
  const r=recordFor(slot),e=slot.engine;
  if(ev.phase==='ready'||r.version!==e.version||r.round!==app.token){clear(r);r.version=e.version;r.round=app.token;if(ev.phase==='ready')r.restoring=false;}
@@ -498,6 +506,15 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
   ctx.restore();
   if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
  }
+ if(c.game==='dango'&&c.dango&&window.DangoAwardV304?.loaded){
+  const aspect=window.DangoAwardV304.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.DangoAwardV304.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
  if(c.game==='jelly'&&c.jelly&&window.JellyAwardV300?.loaded){
   const aspect=window.JellyAwardV300.aspectFor?.(c)||1.5;
   const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
@@ -634,7 +651,7 @@ function paint(r,mini){
 function activate(r,c){
  r.current=c;c.age=0;
  if(r.slot.i===active){window.SweetsAudioV277?.award({game:c.game,tier:c.tier,key:c.key,kind:c.kind,win:c.win});c.sounded=true;}
- layer(r,r.slot.i!==active);if(r.status)r.status.textContent=c.label+'。'+c.detail+((c.win>0||(c.jelly||c.waffle)&&Number.isSafeInteger(c.win)&&c.win>=0)?'。'+(c.total?'現在の配当 ':'獲得配当 ')+pretty(c.win)+' WIN':'');
+ layer(r,r.slot.i!==active);if(r.status)r.status.textContent=c.label+'。'+c.detail+((c.win>0||(c.jelly||c.waffle||c.dango&&(c.dango.newLineCount||c.dango.highestRoles.length))&&Number.isSafeInteger(c.win)&&c.win>=0)?'。'+(c.total?'現在の配当 ':'獲得配当 ')+pretty(c.win)+' WIN':'');
  ownsClass(r,true);
 }
 function finishCurrent(r){
