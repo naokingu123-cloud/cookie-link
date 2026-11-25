@@ -20,10 +20,14 @@ assert.ok(patched.includes('One owner only: SharedClientControllerV224 starts a 
 assert.ok(patched.includes('never replays or resumes an interrupted round'));
 assert.ok(patched.includes("if(message.type==='visual_frame'){hideRouletteMirror();return;}"));
 assert.ok(!patched.includes("showRouletteMirror(message.image)"),'legacy JPEG first-HIT still image must be disabled');
-assert.ok(loader.includes('shared-core-patch-v224.js?v='+release));
-assert.ok(loader.includes('shared-client-controller-v224.js?v='+release));
-assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release));
-assert.ok(loader.includes('shared-roulette-client-v224.js?v='+release));
+// Module cache pins stay stable when an artwork-only app build changes.
+for(const file of ['assets/shared-core-patch-v224.js','assets/shared-client-controller-v224.js','assets/shared-roulette-webrtc-host-v224.js','assets/shared-roulette-client-v224.js']){
+ const imports=[...loader.matchAll(/load\('([^']+)'\)/g)].filter(match=>match[1].split('?')[0]===file);
+ assert.equal(imports.length,1,file+' is loaded exactly once');
+ const pin=new URL(imports[0][1],'https://fixture.invalid/').searchParams.get('v');
+ assert.match(pin||'',/^\d+$/);
+ assert.ok(Number(pin)>=224&&Number(pin)<=Number(release),file+' pins an implemented lifecycle revision');
+}
 assert.ok(!loader.includes('shared-core-patch-v222.js'));
 assert.ok(!loader.includes('shared-client-controller-v222.js'));
 assert.ok(!loader.includes('shared-roulette-client-hold-v222.js'));

@@ -3978,8 +3978,8 @@
     },
     {
       "path": "assets/sugar-presentation-v305.css",
-      "bytes": 5229,
-      "sha256": "fb66eac1dd0098dc4387eb2bcf43525a9936d3af4adff301b6d2854527a68c37"
+      "bytes": 5220,
+      "sha256": "75b85efb00276962af9c5618be6d1d411a1eb3ee93cc885bec4b3b58757d8281"
     },
     {
       "path": "assets/sugar-roulette-v254.js",
@@ -4917,5 +4917,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 273928830
+  "totalBytes": 273928821
 }

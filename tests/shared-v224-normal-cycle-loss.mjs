@@ -6,8 +6,14 @@ const controllerSource=await readFile(new URL('../assets/shared-client-controlle
 const loader=await readFile(new URL('../assets/shared-machine-v176.js',import.meta.url),'utf8');
 const release=JSON.parse(await readFile(new URL('../app-version.json',import.meta.url),'utf8')).version.match(/-v(\d+)-/)[1];
 const patch=await readFile(new URL('../assets/shared-core-patch-v224.js',import.meta.url),'utf8');
-assert.ok(loader.includes('shared-client-controller-v224.js?v='+release));
-assert.ok(loader.includes('shared-roulette-client-v224.js?v='+release));
+// Module cache pins stay stable when an artwork-only app build changes.
+for(const file of ['assets/shared-client-controller-v224.js','assets/shared-roulette-client-v224.js']){
+ const imports=[...loader.matchAll(/load\('([^']+)'\)/g)].filter(match=>match[1].split('?')[0]===file);
+ assert.equal(imports.length,1,file+' is loaded exactly once');
+ const pin=new URL(imports[0][1],'https://fixture.invalid/').searchParams.get('v');
+ assert.match(pin||'',/^\d+$/);
+ assert.ok(Number(pin)>=224&&Number(pin)<=Number(release),file+' pins an implemented lifecycle revision');
+}
 assert.ok(!loader.includes('shared-client-controller-v222.js'));
 assert.ok(!loader.includes('shared-core-patch-v222.js'));
 assert.ok(!loader.includes('shared-roulette-client-hold-v222.js'));

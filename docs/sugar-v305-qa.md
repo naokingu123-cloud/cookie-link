@@ -53,6 +53,12 @@ The new browser test uses the real isolated `createUiFixture` and rule-derived s
 
 **Completion requires the combined-tree browser runs and visual inspection of their screenshots.** In particular, inspect compact cabinet header alignment, clear outer furniture alpha, amount legibility, the full JPC multiplier, and the absence of overlap with history/controls. This patch intentionally does not claim browser CSS success before those artifacts exist.
 
+### First combined-tree Chrome result and correction
+
+At PR head `54f23fdd48df14adcbfd29a6ea1ba2d95120251e`, workflow run `45532806936` passed the new 320/390/430 browser step, including nine-digit payouts, JPC/cash amounts, original multipliers, dock, pause and unchanged native state. Run `45532806722` passed the retained transparent multiplier suite, rules/migration and recorded download/offline-resume settlement.
+
+The original panel browser suite retained its stricter horizontal-overflow check and found the generated JP decoration extended a 420px header to 426px, while the cabinet extended its 147px table to 150px. The exact excess matched their new `:before` negative horizontal insets: 6px and 3px. The correction gives both decorative backgrounds zero horizontal inset inside their existing owners, including the mobile override. Vertical positioning, original table geometry, amounts and rules stay unchanged. The same strict overflow assertion is now included in the new width suite. This CSS correction requires a fresh combined-tree Chrome run; the first head's success does not verify the correction.
+
 ## Integration requirements
 
 The parent integration owns build/cache revisions and the offline asset manifest. Rebuild the manifest after this commit, because the furniture WebP and its provenance changed. Preserve all eight `sugar-art-v305` assets, the existing six v270 cards and six v279 transparent emblems, both new helper scripts, the new presentation CSS, and the current view script. Await both helper `ready` promises before mounting the view, as the v305 loader already does.

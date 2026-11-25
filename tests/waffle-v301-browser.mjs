@@ -251,7 +251,19 @@ try{
    for(const step of witness.steps.slice(spec.from-1,spec.to)){
     await page.waitForFunction(()=>{const a=SweetsAwardsV277.describe();return !a.active.some(c=>c.game==='stick')&&!a.pending.some(c=>c.game==='stick');},null,{timeout:30000});
     const start=await page.evaluate(ball=>{const q=__qa301;q.captureTurn=ball;q.ownerOverlap=null;return {events:q.nativeEvents.length,received:SweetsAwardsV277.describe().received,rng:q.rng()};},step.ball);assert.deepEqual(start.rng,step.rngBefore);
-    const capture=(fn,args,kind)=>page.waitForFunction(fn,args,{polling:'raf',timeout:90000}).then(async handle=>{const value=await handle.jsonValue();await handle.dispose();if(kind==='grade'){await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-grade-live.png')});value.screenshotState=await page.evaluate(()=>({phase:__qa301.app.phase,grade:__qa301.inspect().dom.gradeStatus.active,rankStep:__qa301.inspect().dom.rankStep}));}return {kind,value};});
+    const capture=(fn,args,kind)=>page.waitForFunction(fn,args,{polling:'raf',timeout:90000}).then(async handle=>{
+     // The native grade face lasts only through rank steps 1 and 2. Capture
+     // it before transferring the large source/geometry inspection to Node;
+     // serializing that evidence first can outlive the actual grade beat.
+     let screenshotState;
+     if(kind==='grade'){
+      await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-grade-live.png')});
+      screenshotState=await page.evaluate(()=>{const q=__qa301,root=q.slots[q.index].panel,pay=root.querySelector('.bs-pay');return {phase:q.app.phase,grade:root.querySelector('.bs-pay-title').dataset.wf301Grade==='true',rankStep:Number(pay.dataset.rankStep)};});
+      assert(screenshotState.phase==='playing'&&screenshotState.grade&&[1,2].includes(screenshotState.rankStep),'the real screenshot finishes during the native grade stage');
+     }
+     const value=await handle.jsonValue();await handle.dispose();if(screenshotState)value.screenshotState=screenshotState;
+     return {kind,value};
+    });
     const tasks=[];if(step.oracle.award)tasks.push(capture(captureAward,{number:step.number,role:step.oracle.reversalThisMove?'reversal':'flip',win:step.oracle.deltaWin,mini:!!spec.mini},'award'));
     if(!spec.mini&&step.oracle.rows.length>1)tasks.push(capture(captureGrade,{ball:step.ball},'grade'));
     if(!step.oracle.award&&step.ball<8)tasks.push(capture(captureBoard,{ball:step.ball},'board'));

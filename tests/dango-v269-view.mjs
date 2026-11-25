@@ -53,7 +53,11 @@ async function setup(target){
     tableClearance:Math.min(...[frame,odds].filter(Boolean).flatMap(rect=>g.centers.map(p=>distance(rect,p)))),freeClearance:Math.min(...g.centers.map(p=>distance(free,p))),railClearance:railElement.hidden?null:Math.min(...g.centers.map(p=>distance(rail,p))),
     numeralFont:parseFloat(getComputedStyle(document.querySelector('.gold-number')).fontSize),
     payoutSvgCount:document.querySelectorAll('.dgb-pay svg').length,payoutArtwork:payoutSource,nativeArtworkReady:DangoBingoView.describeAssets().ready,cartoonAdapter:DangoBingoView.describeAssets().cartoon,illustratedAdapter:DangoBingoView.describeAssets().illustrated,frameBackground:getComputedStyle(document.querySelector('.dgb-pay-matrix')).backgroundColor,frameInsets:Object.fromEntries(['Top','Right','Bottom','Left'].map(side=>[side.toLowerCase(),parseFloat(getComputedStyle(document.querySelector('.dgb-pay-matrix'))['border'+side+'Width'])])),
-    numerals:[...document.querySelectorAll('.dgb-pay td .gold-number')].map(el=>({text:el.textContent,value:box(el),cell:box(el.parentElement)})),
+    numerals:[...document.querySelectorAll('.dgb-pay td .gold-number')].map(el=>{
+     const td=el.parentElement,row=R.payRowsFor(qa.state).find(row=>row.length===Number(td.parentElement.dataset.length)&&row.count===Number(td.dataset.count));
+     const range=document.createRange();range.selectNodeContents(el);
+     return {text:el.textContent,expected:row.possible===false?'—':row.hundredths===0?'-':String(Math.floor(qa.bet*row.hundredths/100)),value:box(el),ink:box(range),cell:box(td),cellHeight:td.clientHeight,font:parseFloat(getComputedStyle(el).fontSize)};
+    }),
     overflow:cells.filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>({length:e.parentElement.dataset.length,count:e.dataset.count,width:e.clientWidth,scroll:e.scrollWidth})),
     inside:g.centers.every(p=>p.x-g.radius>=0&&p.x+g.radius<=scene.clientWidth&&p.y-g.radius>=0&&p.y+g.radius<=scene.clientHeight),
     canvasMatches:Math.abs(draw.geometry.unit/dpr-g.unit)<.01&&draw.geometry.centers.every((p,i)=>Math.abs(p.x/dpr-g.centers[i].x)<.01&&Math.abs(p.y/dpr-g.centers[i].y)<.01),
@@ -75,7 +79,16 @@ async function fit(width,height,options={}){
 function checkLayout(m,{rail=false}={}){
  const detail=JSON.stringify(m);
  assert.equal(m.inside,true,'board containment '+detail);assert.equal(m.canvasMatches,true,'canvas logical/backing coordinate alignment '+detail);assert.equal(m.controlMatches,true,'FREE targets follow the drawn board '+detail);
- assert.equal(m.overflow.length,0,'payout text fits '+detail);assert.ok(m.numeralFont>=14&&m.numeralFont>=m.payout.unit*.4-.02,'preserve numeral height '+detail);
+ assert.equal(m.overflow.length,0,'payout text fits '+detail);
+ // v301 reserves vertical room for GET!/reach. Keep the full-sized face where
+ // it fits, with the established ~9px floor only in shallow portrait fixtures.
+ const shallowPortrait=m.width/m.height<1.45&&m.height<420,minimumFont=shallowPortrait?8.9:14;
+ for(const n of m.numerals){
+  assert.equal(n.text,n.expected,'complete native payout, including every large-BET digit');
+  const fittedHeight=Math.min(m.payout.unit*.4,n.cellHeight*.57);
+  assert.ok(n.font>=minimumFont&&Math.abs(n.font-fittedHeight)<.02,'readable row-bounded numeral height '+JSON.stringify(n));
+  assert.ok(n.ink.x>=n.cell.x-1&&n.ink.right<=n.cell.right+1&&n.ink.y>=n.cell.y-1&&n.ink.bottom<=n.cell.bottom+1,'complete numeral ink stays within its own row '+JSON.stringify(n));
+ }
  assert.ok(m.table.right<=m.width+1&&m.table.bottom<=m.height+1,'table containment '+detail);assert.ok(m.free.right<=m.width+1&&m.free.bottom<=m.height+1,'FREE card containment '+detail);
  assert.ok(m.tableClearance>=m.unit*.5-.5,'payout/mochi overlap '+detail);assert.ok(m.freeClearance>=m.unit*.5-.5,'FREE card/mochi overlap '+detail);
  assert.ok(m.table.width<=m.oldTableWidth*.83+1,'compact matrix removes unused width '+detail);
@@ -202,9 +215,11 @@ try{
  report.get=await page.evaluate(()=>({two:qa269.cell(6,2).className,three:qa269.cell(6,3).className,label:getComputedStyle(qa269.cell(6,2),'::after').content,value:qa269.cell(6,2).textContent}));
  assert.match(report.get.two,/current/);assert.ok(!report.get.two.includes('reach'));assert.match(report.get.three,/reach/);assert.match(report.get.label,/GET!/);assert.equal(report.get.value,'3000');
  for(const [width,height]of viewports){const m=await fit(width,height);report.screens.push(m);checkLayout(m);await page.screenshot({path:output+'/v269-get-and-reach-'+width+'x'+height+'.png'});}
+ const beforeLargeBet=await page.evaluate(()=>qa269.measure());
  await page.evaluate(()=>{qa269.bet=1000000000;qa269.render();});
+ report.largeBetLayout=await page.evaluate(()=>qa269.measure());checkLayout(report.largeBetLayout);
  report.longNumbers=await page.evaluate(()=>[...document.querySelectorAll('.dgb-pay td .gold-number')].map(e=>{const r=e.getBoundingClientRect(),c=e.parentElement.getBoundingClientRect();return {text:e.textContent,scale:+e.dataset.horizontalScale,font:parseFloat(getComputedStyle(e).fontSize),width:r.width,cell:c.width,dx:(r.left+r.right-c.left-c.right)/2,dy:(r.top+r.bottom-c.top-c.bottom)/2};}));
- assert.ok(report.longNumbers.some(n=>n.scale<.9));assert.ok(report.longNumbers.every(n=>n.font>=14&&n.width<=n.cell+1&&Math.abs(n.dx)<.75&&Math.abs(n.dy)<.75));await page.screenshot({path:output+'/v269-long-numbers-320x270.png'});
+ assert.ok(report.longNumbers.some(n=>n.scale<.9));assert.ok(report.longNumbers.every((n,i)=>Math.abs(n.font-beforeLargeBet.numerals[i].font)<.02&&n.width<=n.cell+1&&Math.abs(n.dx)<.75&&Math.abs(n.dy)<.75),'large BET compresses only horizontally; numeral height and centering stay unchanged');await page.screenshot({path:output+'/v269-long-numbers-320x270.png'});
  report.final=await page.evaluate(()=>{
   qa269.bet=100;qa269.state=qa269.R.draw(qa269.state,qa269.state.numbers[26]);const before=JSON.stringify(qa269.state),payout=qa269.R.payout(qa269.state);
   qa269.render({reach:[]});const visual=qa269.R.presentationReaches(qa269.state),draw=DangoBingoView.describeAssets().last.main;

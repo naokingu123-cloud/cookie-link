@@ -11,7 +11,12 @@ const [hostSource,clientSource,loader,version] = await Promise.all([
 ]);
 const release=JSON.parse(version).version.match(/-v(\d+)-/)?.[1];
 assert.ok(release&&Number(release)>=239);
-assert.ok(loader.includes('stations-reach-host-v239.js?v='+release));
+// The host cache revision is independent of later game-artwork build numbers.
+const hostImports=[...loader.matchAll(/load\('([^']+)'\)/g)].filter(match=>match[1].split('?')[0]==='assets/stations-reach-host-v239.js');
+assert.equal(hostImports.length,1,'one pinned station reach host import');
+const hostRevision=new URL(hostImports[0][1],'https://fixture.invalid/').searchParams.get('v');
+assert.match(hostRevision||'',/^\d+$/);
+assert.ok(Number(hostRevision)>=239&&Number(hostRevision)<=Number(release),'cache pin includes the native reach-colour implementation');
 assert.equal(STATION_COLORS.length,6);
 assert.equal(new Set(STATION_COLORS).size,6,'each ST uses a unique tint');
 assert.match(clientSource,/highestReachNumbers/);
