@@ -61,7 +61,7 @@ function stampBank(){
 }
 function payload(){return {version:254,tokens:clone(stampBank())};}
 function paused(){return document.hidden||!!app.paused||typeof menuOpen!=='undefined'&&menuOpen||typeof userPaused!=='undefined'&&userPaused||typeof inView!=='undefined'&&!inView;}
-function num(node,value,size=30,width=180){if(!node)return;const text=String(Math.max(0,Math.floor(Number(value)||0))),available=Math.max(1,Math.min(width,node.clientWidth||width)),key=text+'/'+size+'/'+available;if(node.dataset.amountFit===key)return;node.dataset.amount=text;node.dataset.amountFit=key;if(typeof fitGoldenNumber==='function')fitGoldenNumber(node,text,size,available);else node.textContent=text;}
+function num(node,value,size=30,width=180){if(!node)return;const text=String(Math.max(0,Math.floor(Number(value)||0))),available=Math.max(1,Math.min(width,node.clientWidth||width)-2),safeSize=node.matches('[data-sc-win]')?Math.min(size,Math.max(1,(node.clientHeight||size+2)-2)):size,key=text+'/'+safeSize+'/'+available;if(node.dataset.amountFit===key)return;node.dataset.amount=text;node.dataset.amountFit=key;if(typeof fitGoldenNumber==='function')fitGoldenNumber(node,text,safeSize,available);else node.textContent=text;}
 function setExpanded(value){expanded=!!value;paintKey='';render();if(!expanded)dock?.focus({preventScroll:true});wake();}
 function restore(raw){const next=raw?.version===254?raw:null;if(!next)return false;
  if(server&&Number(next.revision)<Number(server.revision))return false;

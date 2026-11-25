@@ -156,7 +156,7 @@ function paintTables(d){
    if(row.count===count)tr.setAttribute('aria-current','true');
    const number=document.createElement('th');number.scope='row';number.textContent='×'+row.count;
    const value=document.createElement('td'),span=document.createElement('span');span.className='sd278-table-amount';value.append(span);tr.append(number,value);record.body.append(tr);
-   amount(span,row.win,11,span.clientWidth||62);
+   amount(span,row.win,Math.min(11,Math.max(1,(value.clientHeight||13)-2)),Math.max(6,(span.clientWidth||value.clientWidth||62)-3));
   }
   lastRows[role]={count,rows};
  }

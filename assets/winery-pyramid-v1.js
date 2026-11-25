@@ -771,7 +771,7 @@ function updateHUD(){
  const payoutRows=scene.querySelectorAll('[data-full]'),fitPayouts=!!window.WineryArtV298?.loaded;
  // Read the common amount column once per HUD update, not once per row.
  // A hidden cabinet has no layout width until its next selection redraw.
- const payoutWidth=fitPayouts?(payoutRows[0]?.querySelector('.wp298-row-amount')?.clientWidth||50):0;
+ const payoutWidth=fitPayouts?Math.max(6,(payoutRows[0]?.querySelector('.wp298-row-amount')?.clientWidth||50)-3):0;
  // The left cabinet owns boost numbers; the right gauge mirrors actual pour amount.
  scene.querySelector('.wp-volume-number').textContent=engine.power+'杯';
  const fraction=Math.log2(Math.max(1,Math.min(16,engine.power)))/4;
@@ -800,7 +800,7 @@ function updateHUD(){
   const oldCredits=rowWin(bet,n,fromMix),newCredits=rowWin(bet,n,toMix);
   const credits=num(Math.round(oldCredits+(newCredits-oldCredits)*oddsEase));
   const amount=row.querySelector('.wp298-row-amount');
-  if(fitPayouts)fitGoldenNumber(amount,credits,11,payoutWidth);else amount.textContent=credits;
+  if(fitPayouts)fitGoldenNumber(amount,credits,Math.min(11,Math.max(1,(row.clientHeight||14)-3)),payoutWidth);else amount.textContent=credits;
   row.querySelector('b').setAttribute('aria-label',credits+' WIN');
   row.classList.toggle('current',n===engine.fullCount);
   row.classList.toggle('is-reached',n<=engine.fullCount);

@@ -524,7 +524,9 @@ try{
      prismPayoutFrame=0;
      if(collectorPanel.hidden||!collectorPanel.clientWidth)return;
      for(const face of collectorPanel.querySelectorAll('.gp-fit-amount')){
-       const width=Math.max(1,face.parentElement.clientWidth-3);
+       const bay=face.parentElement,width=Math.max(1,bay.clientWidth-4);
+       face.style.fontSize='';const h=bay.clientHeight,base=parseFloat(getComputedStyle(face).fontSize)||12;
+       if(h>0&&base>h*.86)face.style.fontSize=Math.max(1,h*.86)+'px';
        const natural=face.offsetWidth;
        if(natural)face.style.transform='scaleX('+Math.min(1,width/natural).toFixed(4)+')';
      }

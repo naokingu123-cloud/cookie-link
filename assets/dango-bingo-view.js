@@ -608,15 +608,15 @@ function mount(panel){
   for(const item of rows){
    const u=payGeometry?.unit||g.unit,available=Math.max(8,(item.td.clientWidth||u*PAY_LAYOUT.column)-u*(isCurrent(state)?.10:.12));
    if(isCurrent(state)){
-    const label=item.td.querySelector('.gold-number'),size=Math.max(14,u*.40);label.textContent=item.value;
+    const label=item.td.querySelector('.gold-number'),rowH=item.td.clientHeight||payGeometry.rowHeight||u*.60,size=Math.max(1,Math.min(u*.40,rowH*(isPlusFree(state)?.53:.57)));label.textContent=item.value;
     // Keep numeral height consistent even for a large BET: squeeze only X.
-    const anchor=isPlusFree(state)?'translateY(-50%)':'translate(-50%,-50%)';
+    const anchor='translate(-50%,-50%)';
     label.style.fontSize=size+'px';label.style.transform=anchor;label.style.marginLeft='0';
     ctx.save();ctx.font='700 '+size+'px ArcadePayout,Georgia,serif';const estimated=ctx.measureText(item.value).width;ctx.restore();
     // Intrinsic DOM width includes the actual font and inherited spacing. It
     // also stays in logical pixels when the entire arcade cabinet is scaled.
     const measured=isPlusFree(state)?Math.max(label.scrollWidth,label.offsetWidth)||estimated:estimated;
-    const scale=Math.min(1,available/Math.max(1,measured));label.style.transform=anchor+' scaleX('+scale+')';
+    const scale=Math.min(1,Math.max(1,available-2)/Math.max(1,measured));label.style.transform=anchor+' scaleX('+scale+')';
     label.dataset.horizontalScale=String(scale);
    }else{const label=item.td.querySelector('.gold-number');label.textContent=item.value;ctx.save();ctx.font='700 '+u*.28+'px ArcadePayout,Georgia,serif';const measured=ctx.measureText(item.value).width;label.style.fontSize=(u*.28*Math.min(1,available/Math.max(1,measured)))+'px';label.style.transform='translate(-50%,-50%)';label.style.marginLeft='0';ctx.restore();}
   }

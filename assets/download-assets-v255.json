@@ -1,10 +1,10 @@
 {
-  "version": "20261125-v300-jelly-crystal",
+  "version": "20261125-v301-paytable-fit",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 42,
-      "sha256": "861997215fbae22914d7fa2f6d00a79c1a5438fbbeebc3c226085d83920675c2"
+      "bytes": 41,
+      "sha256": "c3407603d43edfd2ba0bf3d362bff541a25cc8bcf105fdfc05029b70649982d7"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1643,8 +1643,8 @@
     },
     {
       "path": "assets/bingo-stick-view.js",
-      "bytes": 16703,
-      "sha256": "a855799ab9e4db747a8660e58359ac6af1442147ae883c1e5249d683e82f81c4"
+      "bytes": 17290,
+      "sha256": "0639514deb010e8b59bf72e38f21554129865e191b1e431ec8a395480b1c86a4"
     },
     {
       "path": "assets/bingo-stick.css",
@@ -2158,8 +2158,8 @@
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 72426,
-      "sha256": "3394d32a6e6c77d7e65501e03d80c33ea70b549c773de33f529143938e2b9e09"
+      "bytes": 72501,
+      "sha256": "c3c3f0660358efa2e6247db759aade15d25830d493424bab452388513876e96e"
     },
     {
       "path": "assets/dango-bingo.css",
@@ -2188,8 +2188,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4353,
-      "sha256": "50cb3cedda6779679bc644392ba99b33b98940ac17f42e1b3bd3463f3987ed0e"
+      "bytes": 4352,
+      "sha256": "9a16dd4d3d9a24887bcef6e25d4f08cc0817bde18504cf928e80f19885b1fc28"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2213,8 +2213,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3764,
-      "sha256": "326f86efbe8d4bed4b4fb25c5e784a401cdd44af729cc0072dc148e7c499b469"
+      "bytes": 3763,
+      "sha256": "cd9233413d70a206cf9b33c7eb9ef9d2a3d7e15ac622c1fef37af672c3629b43"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2403,8 +2403,8 @@
     },
     {
       "path": "assets/gelato-prism-v28.js",
-      "bytes": 73926,
-      "sha256": "e266f206e72b780067f84b2680455beba17d1325bc0fc9f21d65f24f4de494f0"
+      "bytes": 74113,
+      "sha256": "80b2ab8720d63bb31882738c925da50bde6f3a6fb19dc3d225c882bcc28a3336"
     },
     {
       "path": "assets/gelato-sockets-v89.webp",
@@ -2568,8 +2568,8 @@
     },
     {
       "path": "assets/jelly-view.js",
-      "bytes": 41094,
-      "sha256": "b32c957c1b48c5741e74e2c868de4d09cbee3c017e30dafc53d24f916c064ef7"
+      "bytes": 41105,
+      "sha256": "6d46efc75515602c27260933b17589843be45990a1fe896ae7c3cdc15a323ed7"
     },
     {
       "path": "assets/jelly.css",
@@ -2743,13 +2743,23 @@
     },
     {
       "path": "assets/party-castella.js",
-      "bytes": 32008,
-      "sha256": "5939138b79ea4fa289d1dd20ea657a8d69c7e808041d12147509a699ad58448d"
+      "bytes": 32234,
+      "sha256": "bbcc287ad1991300980338ec88754627cd097b1da52374a97a91cca14c360e67"
     },
     {
       "path": "assets/payout-trend-v242.js",
       "bytes": 5741,
       "sha256": "c24edc26f369dbd7cf43f11aa7a4c2f8ff17c97d4db89e515fe92af602929da7"
+    },
+    {
+      "path": "assets/paytable-fit-v301.css",
+      "bytes": 2318,
+      "sha256": "cd1c0e467ed9ecfbf60673f040761de7490365b8df1d41ccf1dc69131907fa0f"
+    },
+    {
+      "path": "assets/paytable-fit-v301.js",
+      "bytes": 1532,
+      "sha256": "243f7458fb562f146a27b5ccf1300409029e1b055c280b50b0c40c892df94698"
     },
     {
       "path": "assets/pets/strawberry-mochi.png",
@@ -2918,8 +2928,8 @@
     },
     {
       "path": "assets/popcorn-view.js",
-      "bytes": 69546,
-      "sha256": "a5246195b9a34d491f2325300eef269735d3c5ca9477e857a16ef6dec4b5d875"
+      "bytes": 69686,
+      "sha256": "ca9f48a364566030f74b9534e8b387a68b2f301ebfccca29cca6a2fa3573937c"
     },
     {
       "path": "assets/popcorn.css",
@@ -3653,8 +3663,8 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 18799,
-      "sha256": "325dbeb278fad2c6d586af118e935346e3bc459c715c0bac4ca574b4d68e1224"
+      "bytes": 18883,
+      "sha256": "2d353d37916065e521e35023f514d5fe78966bafe39061a3afceee3b3976b6ff"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -3788,8 +3798,8 @@
     },
     {
       "path": "assets/sugar-challenge-v254.js",
-      "bytes": 28171,
-      "sha256": "13d109d4e2dda101dfc6ca71fa21b64f414000f92f508c57f08d04529a88a622"
+      "bytes": 28282,
+      "sha256": "d05f07ee4678c5893f0e504c8e2fcd1ce2ce1acdc758e2e332f8a624e4409c32"
     },
     {
       "path": "assets/sugar-five-candy-frame.svg",
@@ -4388,8 +4398,8 @@
     },
     {
       "path": "assets/winery-pyramid-v1.js",
-      "bytes": 52624,
-      "sha256": "0c6325f6cdf72a9694ae986d914d5ffd9df8d99173874fe8a9d8bf9136fb2a65"
+      "bytes": 52685,
+      "sha256": "7d6de6f8c12fd2e5f9ab9bff2cf8a2e444042bfaedcf514f1f0061b075d071eb"
     },
     {
       "path": "assets/winery-pyramid-validation-v1.json",
@@ -4433,8 +4443,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 87401,
-      "sha256": "e219f6b4ea62dfc08d881102ed270ec8c424f2cf620db5533e7ee207aaf93056"
+      "bytes": 89033,
+      "sha256": "c46f55cf6c25dc6df6ac73588fc5b661c75a0e5184d8faf703ebf9b58cefb71c"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4672,5 +4682,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 262774415
+  "totalBytes": 262781376
 }

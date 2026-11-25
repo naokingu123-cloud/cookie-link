@@ -898,7 +898,7 @@
       else{ctx.save();ctx.translate(xx,yy);ctx.scale(uniform/sx,uniform/sy);star(ctx,0,0,size*.48,'#f6c9ff');star(ctx,0,0,size*.29,'#e777e6');ctx.restore();}
     }
     function row(tag,amount,y,height,active,bonus){
-      const mid=y+height/2,inner=height-3;
+      const mid=y+height/2,inner=height-3,faceSize=Math.min(20.8,(height-5)*sy/uniform),tagSize=Math.min(18.2,(height-5)*sy/uniform),unitSize=Math.min(13.2,(height-5)*sy/uniform);
       const strength=Number(active)||0;
       const painted=!!furniture?.row?.(ctx,1,y,148,height);
       if(!painted){
@@ -916,13 +916,13 @@
         ctx.restore();
       }
       if(!painted){ctx.fillStyle='#fff0b540';ctx.fillRect(57,y+2.5,84,1.0);}
-      type(tag,27,mid,18.2,!painted&&bonus&&strength<.55?'#fff2bd':'#4b293b',{max:painted?40:45});
+      type(tag,27,mid,tagSize,!painted&&bonus&&strength<.55?'#fff2bd':'#4b293b',{max:painted?40:45});
       if(painted){
-        type(String(amount),143.5,mid,20.8,'#ffedb0',{align:'right',max:87.5,face:payoutFace,weight:700});
+        type(String(amount),141,mid,faceSize,'#ffedb0',{align:'right',max:82,face:payoutFace,weight:700});
       }else{
         // Preserve the legacy number and suffix positions until art is ready.
-        type(String(amount),120,mid,20.8,'#ffedb0',{align:'right',max:64.5,face:payoutFace,weight:750});
-        type('WIN',145.4,mid+1.4,13.2,'#ffdf8a',{align:'right',max:23.5,face:payoutFace,weight:750});
+        type(String(amount),119,mid,faceSize,'#ffedb0',{align:'right',max:64.5,face:payoutFace,weight:750});
+        type('WIN',143,mid,unitSize,'#ffdf8a',{align:'right',max:22,face:payoutFace,weight:750});
       }
     }
     heading('全消し BONUS',0,'#fff1a5','bonus');

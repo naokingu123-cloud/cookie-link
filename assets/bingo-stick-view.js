@@ -164,11 +164,12 @@ function mount(panel){
   root.style.setProperty('--bs-board',Math.max(1,Math.min(tray.clientWidth,tray.clientHeight-q('.bs-tools').offsetHeight-3))+'px');
   const resolution=Math.max(1,Math.round(grid.clientWidth*Math.min(devicePixelRatio||1,2)));if(canvas.width!==resolution||canvas.height!==resolution)canvas.width=canvas.height=resolution;
  }
- const observer=new ResizeObserver(fit);observer.observe(root);observer.observe(grid);observer.observe(q('.bs-tools'));fit();
+ function fitPayValues(){for(const item of tiers){for(const block of [item.block,item.incoming])if(block)window.SweetsPayoutFitV301?.plain(block.value,block.tile,block.tile.querySelector('small'),{inset:4,heightFraction:.72});}const bonus=prize.querySelector('strong');window.SweetsPayoutFitV301?.plain(bonus,prize,null,{inset:5});}
+ const observer=new ResizeObserver(()=>{fit();fitPayValues();});observer.observe(root);observer.observe(grid);observer.observe(q('.bs-tools'));fit();document.fonts?.ready.then(fitPayValues);
  function quote({tile,value},odds,bet,baseline){
   const amount=won(bet,baseline+odds)-won(bet,baseline);
   const label=amount>=1000000&&amount%10000===0?amount/10000+'万':String(amount);
-  value.textContent=label;value.style.fontSize=label.length>8?(8/label.length)+'em':'';
+  value.textContent=label;value.style.fontSize=label.length>8?(8/label.length)+'em':'';window.SweetsPayoutFitV301?.plain(value,tile,tile.querySelector('small'),{inset:4,heightFraction:.72});
   value.setAttribute('aria-label',amount+' WIN');
   tile.dataset.material=materialFor(odds);
  }
@@ -222,7 +223,7 @@ function mount(panel){
    ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';ladder.dataset.rankStep=m.rankStep;
    q('.bs-ladder-name').textContent=m.active&&m.rankStep===1?(knock===13?'13+':knock)+'枚枠 HIT!':m.active&&m.rankStep===2?'GRADE UP!':'反転配当';
    const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent=bonusLabel+'！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
-   prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
+   prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';window.SweetsPayoutFitV301?.plain(prize.querySelector('strong'),prize,null,{inset:5});
    grid.setAttribute('aria-label','8行8列のワッフル盤。'+(done?'8球終了':'第'+current+'球 '+names[color])+'。獲得'+totalWin+' WIN');
   }
   const pulse=live&&hand>0?Math.max(0,1-((o.age??0)-(180+(hand-1)*110+55))/110):0;

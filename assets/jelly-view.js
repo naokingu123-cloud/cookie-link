@@ -749,15 +749,15 @@ function panel(c,state,o,x,y,w,h,popupAge,shownOdds){
   const rowArt=art?.furniture(c,top?'all':'row',11,y0+.55,w-22,ht-1.1);
   if(!rowArt)rect(c,11,y0+.55,w-22,ht-1.1,3,active?(top?'#934d38':'#a04f70'):top?'#773650':j%2?'#602f4b':'#522842',active?'#ffe795':sugar?'#f9bedf':top?'#d3a57d':'',active?1.5:.75);
   else if(active||sugar)rect(c,11,y0+.55,w-22,ht-1.1,3,'',active?'#ffe795':'#f9bedf',active?1.5:.75);
-  const size=Math.min(rowH*.82,17),cy=y0+ht-rowH*.47;
+  const size=Math.min(rowH*.68,15),cy=y0+ht-rowH*.50;
   if(top&&!rowArt){
    lettering(c,'オールライン',17,y0+topExtra*.63,Math.min(topExtra*.95,14),'#ffe498',{align:'left',max:95});
    star(c,right-3,y0+topExtra*.65,3.3,'#ffe8a8');
   }
-  if(sugar)sugarMarker(c,20,cy,Math.min(16,rowH*.97),o.sugarIcon);
-  lettering(c,n+'本',sugar?29:16,cy,size,rowArt?'#224246':active||top?'#ffe3a1':'#fff3e7',{align:'left',max:38});
+  if(sugar)sugarMarker(c,20,cy,Math.min(14,rowH*.78),o.sugarIcon);
+  lettering(c,n+'本',sugar?29:18,cy,size,rowArt?'#224246':active||top?'#ffe3a1':'#fff3e7',{align:'left',max:sugar?30:36});
   const win=Math.floor(bet*K.payout(n,shownOdds,state.payoutVersion??(o.demo?K.PAYOUT_VERSION:0))/100);
-  lettering(c,win.toLocaleString('en-US'),right,cy,size,'#ffe38e',{align:'right',max:right-67,face:'ArcadePayout,Georgia,serif'});
+  lettering(c,win.toLocaleString('en-US'),right-3,cy,size,'#ffe38e',{align:'right',max:right-70,face:'ArcadePayout,Georgia,serif'});
   y0+=ht;
  }
  if(target!=null){

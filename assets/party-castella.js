@@ -473,6 +473,7 @@ function mount(panel){
   });
   root.dataset.payRows=String(rows.length);
  }
+ function fitPayoutRows(){for(const {cell,value} of rows||[])window.SweetsPayoutFitV301?.plain(value,cell,cell.querySelector('small'),{inset:4});}
  function updateWins(bet,s){
   buildRows(s);
   const oddsHits=s.rulesRevision>=250?0:s.oddsHits||0;
@@ -491,6 +492,7 @@ function mount(panel){
    row.title=count+(upper>count?'〜'+upper:'')+'個　'+(rate/100).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')+'倍　'+bet.toLocaleString('ja-JP')+' BET → '+win.toLocaleString('ja-JP')+' WIN';
    cell.setAttribute('aria-label',win.toLocaleString('ja-JP')+' WIN');
   }
+  fitPayoutRows();
  }
  function repaint(){if(shown)paint(ctx,shown,previewZone?{...lastOpts,previewZone}:lastOpts);}
  function placeButtons(){
@@ -507,8 +509,9 @@ function mount(panel){
   root.style.setProperty('--pct-unit',Math.min(w/350,h/300)+'px');
   const ratio=Math.min(devicePixelRatio||1,2),cw=Math.round(pan.clientWidth*ratio),ch=Math.round(pan.clientHeight*ratio);
   if(cw&&ch&&(canvas.width!==cw||canvas.height!==ch)){canvas.width=cw;canvas.height=ch;repaint();}
-  placeButtons();
+  placeButtons();fitPayoutRows();
  }
+ document.fonts?.ready.then(fitPayoutRows);
  for(const img of [tiles,panArt,bottle,honeyCrumb])img.addEventListener('load',repaint,{once:true});
  const resize=new ResizeObserver(fit);resize.observe(root);resize.observe(pan);
  function makeButtons(s){

@@ -1,0 +1,43 @@
+/* Preserve artwork and row height; each live face gets its own safe bay. */
+#screen #panels .bs-pay .bs-block>span{
+ display:inline-block!important;flex:0 0 auto!important;line-height:1!important;white-space:nowrap!important;
+}
+#screen #panels .bs-pay .bs-block>small{flex:0 0 auto!important;white-space:nowrap}
+#screen #panels .pct-pay tbody td>.pct-win-value{
+ display:inline-block!important;line-height:1!important;white-space:nowrap!important;
+}
+#screen #panels .pct-pay tbody td>small{white-space:nowrap}
+#screen #panels .dgb-scene[data-presentation="285"] .dgb-pay tbody td .gold-number{
+ left:50%!important;right:auto!important;top:68%!important;transform-origin:center center!important;
+}
+#screen #panels .dgb-scene[data-presentation="285"] .dgb-pay td:is(.current,.reach)::after{
+ top:4%!important;left:50%!important;transform:translateX(-50%);
+ font-size:min(calc(var(--dgb-pay-unit)*.20),calc(var(--dgb-row-height)*.27),calc(var(--dgb-column-width)*.14))!important;
+ line-height:1!important;
+}
+body.gelato-active #screen #panel0 .gp-pay-row .gp-pay-panel-n{
+ flex:0 0 auto!important;gap:2px!important;
+}
+body.gelato-active #screen #panel0 .gp-pay-row .gp-sugar-status{
+ position:static!important;transform:none!important;
+ width:19px!important;max-width:19px!important;flex:0 0 19px!important;
+ font-size:5.5px!important;margin:0!important;line-height:1!important;text-align:center!important;
+}
+body.gelato-active #screen #panel0 .gp-pay-row .gp-pay-win{
+ flex:1 1 0!important;min-width:0!important;max-width:none!important;
+}
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-pay-row{
+ grid-template-columns:18px 20px minmax(0,1fr)!important;
+}
+html.winery-art-v298 body.winery-enabled #screen #panels .wp-scene.wp-afternoon-v63.wp-odds-v78 .wp-sugar-mark{
+ white-space:nowrap!important;overflow:hidden!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-award{
+ min-width:0!important;gap:1px!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-award .payout-number{
+ min-width:0!important;
+}
+html.cookie-payout-v293.arcade-v249 body[data-v249-game="cookie"] #screen #odds-panel .link-award .win-word{
+ flex:0 0 auto!important;white-space:nowrap;
+}
