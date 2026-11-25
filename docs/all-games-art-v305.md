@@ -40,6 +40,13 @@ Material crops are prepared once. Generated award numerals use real current
 amounts. Sugar's animated sum and weighing counters retain the existing
 lightweight native text rendering.
 
+The combined real-browser audio check also exposed an existing Six Drop
+ownership race: a legacy line cue could already be playing when the native
+`pyramidAward` arrived, suppressing the authoritative fanfare at the same tier.
+An explicit native award now replaces an active legacy award voice. Priority
+between two explicit native awards, duplicate suppression, mute/pause behavior
+and the single award-voice limit remain enforced.
+
 ## Release validation
 
 The final offline manifest covers all dedicated artwork, scripts and fonts,

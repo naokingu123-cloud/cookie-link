@@ -1968,8 +1968,8 @@
     },
     {
       "path": "assets/celebration-audio-v277.js",
-      "bytes": 21272,
-      "sha256": "b0af65f909aef2b6be38d371d543f25aaaeb27efa5a13ad7d400bd3e434f90ed"
+      "bytes": 21518,
+      "sha256": "a3ad7dff24520ad0aabd735010a20af080a8b35a499f75fbc299c5106babecc6"
     },
     {
       "path": "assets/choco-art-v295.js",
@@ -4679,7 +4679,7 @@
     {
       "path": "index.html",
       "bytes": 89951,
-      "sha256": "a54e8fc8ead1f43643af957fbd653a7e7236daf38e448b70c76896e9df5ed486"
+      "sha256": "6735e470e07628059ec0a880e38daa959f4b45c05f57afef4f8c27f61ac128bf"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4917,5 +4917,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 273928821
+  "totalBytes": 273929067
 }
