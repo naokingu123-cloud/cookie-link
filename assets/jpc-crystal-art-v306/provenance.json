@@ -1,0 +1,18 @@
+{
+  "version": 306,
+  "method": "Built-in image_gen; opaque cabinet and transparent pocket; WebP format conversion only",
+  "assets": [
+    {
+      "file": "cabinet.webp",
+      "source": "exec-ab4c2006-f9ea-4546-9122-e85395bd3b2c.png"
+    },
+    {
+      "file": "pocket.webp",
+      "source": "exec-69e67a08-339f-4d1a-9e26-635dc642233d.png"
+    }
+  ],
+  "prompts": {
+    "cabinet": "Front-facing ornate champagne-gold sweets crystal palace cabinet, dark calm center for the live 25-pocket board. No text or numbers; decorative border only.",
+    "pocket": "One top-down sapphire sugar gemstone in an engraved gold circular bezel, genuine transparent background, calm dark center for live payout numbers. No baked text."
+  }
+}
