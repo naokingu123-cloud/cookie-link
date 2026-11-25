@@ -72,6 +72,8 @@ const physicsStart=appSource.indexOf('const PHYSICS=(()=>{');
 const drawStart=appSource.indexOf('\nconst DRAW=',physicsStart)+1;
 const drawEnd=appSource.indexOf('\nconst PIXELS=',drawStart);
 assert.ok(cannonStart>=0&&cannonEnd>cannonStart&&physicsStart>cannonEnd&&drawStart>physicsStart&&drawEnd>drawStart);
+const ballLifetime=Number(appSource.slice(physicsStart,drawStart).match(/\bb\.age>(\d+(?:\.\d+)?)/)?.[1]);
+assert.ok(Number.isFinite(ballLifetime)&&ballLifetime>0,'bound native flight observation by the production physical fault lifetime');
 const drawGroups=appSource.match(/^const NORMAL_DRAW_GROUPS=.*;$/m)?.[0];
 assert.ok(drawGroups,'retain the native first-three-ball group schedule');
 const simulation={console:quiet,performance};vm.createContext(simulation);
@@ -204,8 +206,20 @@ assert.equal(flight.calls.start,1,'a moving first group must survive the former 
 assert.equal(flight.calls.reset,1);
 assert.equal(physics.serial,3);assert.equal(physics.active,3);assert.equal(physics.hits.length,0);
 assert.equal(flight.calls.resume,1,'healthy watchdog ticks must not repeatedly clear the renderer clock');
-await flight.advance(5000,stepPhysics);
+// A first-group ball can remain healthy beyond 20 physical seconds. Observe
+// the native group settling instead of assuming the old fixed arrival time.
+// The unchanged physical lifetime bounds this observation; a fault, restart
+// or replacement still fails, and the 15-second no-reset witness stays above.
+const firstGroupDeadline=Math.max(...flight.launches.map(ball=>ball.time))+ballLifetime+1/120;
+for(let ticks=Math.ceil((firstGroupDeadline-physics.time)*1000/250);physics.active&&ticks>0;ticks--){
+ await flight.advance(250,stepPhysics);
+ assert.equal(flight.calls.start,1,'original first-group flight cannot restart while awaiting its real final HIT');
+ assert.equal(flight.calls.reset,1);assert.equal(flight.calls.resume,1);
+ assert.equal(physics.serial,3,'completion must not use a replacement physical ball');
+ assert.equal(physics.faults,0,'all original first-group balls must resolve as physical HITs');
+}
 assert.equal(flight.hits.length,3,'all three original balls must land without being replaced');
+assert.equal(physics.active,0,'the first native group is physically settled');
 assert.ok(flight.hits[0].time>15,'the unmodified native first HIT really can occur after 15 seconds');
 assert.deepEqual(flight.launches.map(ball=>ball.id),[1,2,3]);
 assert.ok(flight.launches[1].time>=2&&flight.launches[1].time<2.02);

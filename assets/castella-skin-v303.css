@@ -1,0 +1,38 @@
+/* Dedicated generated furniture around the native layout and live payout text. */
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-scene{border-color:#b97842;background-color:#f3d9a7}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-phase{padding:.2em .12em;background:transparent!important;box-shadow:none!important;gap:.15em}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-phase>div{border:0;border-radius:0;background:var(--pct-v303-phase) center/100% 100% no-repeat!important;color:#55311e!important;box-shadow:none!important;min-height:1.88em;gap:.18em;padding:.2em .36em}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-phase:not(.pct-after) .pct-phase-first,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-phase.pct-after .pct-phase-second{background-image:var(--pct-v303-ruby)!important;color:#5d241b!important;box-shadow:none!important;filter:drop-shadow(0 0 2px #ffeab6)}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay{background:var(--pct-v303-payout) center/100% 100% no-repeat!important;padding:0 10.3% .9em;border:0;box-shadow:none!important;border-radius:0}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay-label{flex-basis:15.8%;padding-bottom:.05em}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay-label span{font-size:.98em;padding:0;background:none!important;border:0!important;box-shadow:none!important;color:#603216;text-shadow:0 1px #fff3cf;min-width:0}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay-label span::before,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay-label span::after{display:none}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay table{font-size:calc(var(--pct-unit)*9.8)}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay thead th:first-child{width:32%}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody th{border-inline-start-width:1px;font-size:.94em;color:#4e2a16}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody td,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody td small{color:#613115!important;-webkit-text-stroke:0;text-shadow:0 1px #fff4d5!important;letter-spacing:-.025em!important;padding-right:.1em!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr.current td,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr.current th,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr[data-prize=feast] td,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr[data-prize=feast] th{color:#fff3c6!important;text-shadow:0 1px #602819!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status>div{border:0;border-radius:0;box-shadow:none!important;padding:3.5% 12%;background-color:transparent!important;background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;gap:4%;overflow:visible}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status>.pct-status-pour{background-image:var(--pct-v303-pour)!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status>.pct-status-fire{background-image:var(--pct-v303-fire)!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status>div::before{display:none}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status .pct-stat-line{gap:1px;text-shadow:none;color:#522d1b}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status small,
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status span{color:#58301b;text-shadow:0 1px #fff5d5;font-size:calc(var(--pct-unit)*8)}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-status .pct-power-icon{width:25%;flex-basis:25%;filter:none}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-gauge{height:calc(var(--pct-unit)*6.5);min-height:3px}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-gauge i{box-shadow:inset 0 1px 2px #6a3b2180,0 0 0 1px #b38b5c;background:#b5a182}
+@media(forced-colors:active){html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay{background:Canvas!important;border:1px solid CanvasText}html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay :is(th,td){color:CanvasText!important}}
+
+/* Retire the older opaque purple row fills so the commissioned ivory face is visible. */
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay thead th{color:#69421f!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr{background:#f5dc9d25!important;color:#553119!important;box-shadow:inset 0 -1px #b7894d55!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr:nth-child(even){background:#d4a15d18!important}
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr[data-prize=feast],
+html.castella-art-v303 #screen #panels>:is(.pct-panel.v249-game-surface[data-v249-kind="castella"],.pct-panel) .pct-pay tbody tr.current{background:#963f28ed!important;color:#fff3c6!important;box-shadow:inset 0 1px #fff0ae,inset 0 -1px #dfaf69!important}

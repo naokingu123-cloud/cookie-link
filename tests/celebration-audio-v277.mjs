@@ -95,6 +95,32 @@ assert.equal(h.api.award({game:'cookie',tier:1,key:'lower-role'}),false,'ordinar
 assert.equal(h.bgmGain.gain.calls.length,0,'duck stage does not change native music fade parameters');
 h.context.stopSounds();assert.equal(h.api.describe().activeVoices,0);assert.equal(h.api.describe().pendingAwards,0);
 
+// Candy's shape sound can already be playing before the later native award
+// is booked. The authoritative cue must replace that legacy voice, including
+// when the old scene cue guessed a higher tier than the actual award.
+for(const [legacy,tier] of [['line',1],['hexagon',2]]){
+ const claimed=harness();await claimed.context.prepareSceneSounds();claimed.context.active=2;
+ assert(claimed.context.sound('scene-'+legacy));claimed.advance(80);claimed.advance(1000);
+ const oldVoice=[...claimed.context.sfxVoices].find(v=>v.award);
+ assert(oldVoice&&!oldVoice.explicit&&oldVoice.tier===tier,'legacy scene cue is already audible before the native claim');
+ assert(oldVoice.until>claimed.audio.currentTime+.08,'the legacy voice remains inside its protected playing interval');
+ claimed.owned.add('candy');const key='native:candy:'+legacy;
+ assert(claimed.api.award({game:'candy',tier:1,key}),'native authority replaces an already-playing legacy cue');
+ assert(oldVoice.source.stopped,'the old source stops before native playback');
+ assert.equal(oldVoice.source.outputs.length,0,'the old source is disconnected');
+ assert(!claimed.context.sfxVoices.has(oldVoice),'the old voice leaves the shared bus');
+ const voices=[...claimed.context.sfxVoices].filter(v=>v.award);
+ assert.equal(voices.length,1,'legacy and native award voices never overlap');
+ assert(voices[0].explicit&&voices[0].game==='candy');
+ assert.equal(voices[0].name,'award-candy-1','the actual native tier selects the fanfare');
+ assert.equal(claimed.api.award({game:'candy',tier:1,key}),false,'the claimed native cue cannot replay');
+ assert.equal(claimed.context.sound('scene-line'),false,'later legacy cues remain suppressed by the native owner');
+ const starts=claimed.api.describe().lastEvents.filter(e=>e.event==='start'&&e.award&&e.explicit&&e.key===key);
+ assert.equal(starts.length,1,'exactly one explicit start belongs to the native key');
+ assert.equal(claimed.api.describe().activeVoices,1);assert.equal(claimed.api.describe().pendingAwards,0);
+ assert.equal(claimed.api.describe().errors,0);claimed.context.stopSounds();
+}
+
 // Voice bound is measured against a real sequence of distinct source starts.
 for(const key of ['crack','confirm','magic','sugar','hammer','sugar-spawn','scene-drill','scene-melt','scene-ore','scene-pop','scene-refill']){h.advance(80);h.context.sound(key);assert(h.api.describe().activeVoices<=8);}
 assert(h.api.describe().maxActiveVoices<=8);h.context.stopSounds();

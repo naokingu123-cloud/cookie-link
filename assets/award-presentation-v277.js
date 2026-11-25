@@ -78,7 +78,7 @@ function projectedPath(slot,path,w,h,mini,state){
 function geometry(slot,path,mini,state){const t=target(slot,mini);return t?projectedPath(slot,path,t.clientWidth||t.width||320,t.clientHeight||t.height||320,mini,state):[];}
 function semantic(slot,ev,r){
  const e=slot.engine,s=e.state,game=kindOf(slot),phase=ev.phase;
- let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null,jelly=null;
+ let kind='bonus',label='',detail='',gain=0,total=false,highest=false,paths=[],delay=0,retained=false,choco=null,gelato=null,popcorn=null,jelly=null,waffle=null,dango=null;
  const number=ev.number??ev.numbers?.at(-1)??s?.draws?.at(-1)??e.lastNumber??null;
  if(game==='cookie'){
   if(phase==='link'&&(ev.gain>0||ev.newRecord)){
@@ -151,6 +151,7 @@ function semantic(slot,ev,r){
  }else if(game==='stick'){
   if(phase!=='flipping'||!s.flipped?.length)return null;
   gain=Math.max(0,(s.turnTotals?.at(-1)||0)-(s.turnTotals?.at(-2)||0));if(!(gain>0||s.reversalThisMove))return null;
+  waffle=waffleSnapshot(slot,s,number);
   highest=!!s.reversalThisMove;kind=highest?'clear':'shape';label=highest?'REVERSAL BONUS!':s.flipped.length+' FLIP!';detail=highest?'相手のワッフルを全反転':s.flipped.length+'枚のワッフルを反転';delay=180+s.flipped.length*110;
   const rays=new Map();for(const step of s.flipSteps||[]){const key=step.dx+','+step.dy;if(!rays.has(key))rays.set(key,[]);rays.get(key).push(step);}
   paths=[...rays.values()].map(ray=>groupPath(ids([s.placed[0],...ray.sort((a,b)=>a.distance-b.distance).map(p=>p.id)])));
@@ -165,15 +166,16 @@ function semantic(slot,ev,r){
   if(!lineIds.length&&!roles.length&&!(realDraw&&s.lastBonusGain))return null;
   const g=window.DangoBingoRules.geometryFor?.(s)||window.DangoBingoRules.geometry;
   highest=roles.length>0;kind=lineIds.length?'bingo':'bonus';label=highest?'最高役 成立！':lineIds.length?s.completedLines.length+' LINE BINGO!':'FREE EVOLUTION!';
-  detail=highest?roles.map(n=>n+'個ライン '+s.lineCounts[n]+'本').join(' ・ '):lineIds.length?'今回 '+lineIds.length+'ライン完成':'配置FREE '+s.freeBudget+'個に進化';
+  detail=highest?roles.map(n=>n+'個ライン '+s.lineCounts[n]+(Number(s.rulesRevision)>=285?'個':'本')).join(' ・ '):lineIds.length?'今回 '+lineIds.length+'ライン完成':'配置FREE '+s.freeBudget+'個に進化';
   gain=lineIds.length||highest?s.totalHundredths:0;total=true;delay=lineIds.length?180:0;retained=true;
+  dango=dangoSnapshot(s,lineIds,roles,number,committed);
   paths=lineIds.map(id=>groupPath(ids(g.lines.find(line=>line.id===id)?.cells||g.lines[id]?.cells)));
  }
  if(!label)return null;
- // Popcorn's native trace already rounds both cumulative values at the actual
- // locked BET. Their difference is the true received increment; rounding the
- // hundredths difference again loses one medal at some low-BET boundaries.
- const nativeWin=game==='candy'?ev.winMedals:popcorn?.nativeWinDelta;
+ // Popcorn and Waffle round cumulative amounts at the actual locked BET.
+ // Their difference is the received increment; independently rounding the
+ // hundredths difference would lose a medal at low-BET carry boundaries.
+ const nativeWin=game==='candy'?ev.winMedals:waffle?.nativeWinDelta??popcorn?.nativeWinDelta;
  return {game,phase,number,kind,label,detail,gain:Math.max(0,Number(gain)||0),win:Number.isSafeInteger(nativeWin)&&nativeWin>=0?nativeWin:amount(slot,gain),total,tier:tierFor(gain,highest),highest,paths,delay:Math.min(15000,Math.max(0,delay)),retained,state:game==='candy'?{awardRows:e.rows}:s,
   ...(game==='cookie'?{cookie:Object.freeze({link:e.maxLink,depth:ev.depth||0,clears:e.allClears})}:{}),
   ...(choco?{choco}:{}),
@@ -184,6 +186,9 @@ function semantic(slot,ev,r){
   ...(gelato?{gelato}:{}),
   ...(popcorn?{popcorn}:{}),
   ...(jelly?{jelly}:{}),
+  ...(waffle?{waffle}:{}),
+  ...(game==='castella'?{castella:Object.freeze({bakedCount:s.bakedCount,holes:s.cells.length,allBaked:!!s.highestRole,draws:s.draws.length,totalHundredths:s.totalHundredths})}:{}),
+  ...(dango?{dango}:{}),
   ...(game==='candy'?{candy:Object.freeze({
    forms:Object.freeze(Object.fromEntries(['line','triangle','hexagon'].map(role=>[role,(ev.forms||[]).filter(form=>form.type===role).length]))),
    allClears:Number(ev.allClears??s?.allClears)||0
@@ -212,12 +217,34 @@ function jellySnapshot(s,tr,number,totalHundredths){
   wetCells:(s.colors||[]).filter(Boolean).length,beforeRecipe:before.colors?.[index]??null,afterRecipe:s.colors?.[index]??null,payoutVersion:s.payoutVersion??0,
   waveCounts:Object.freeze((tr.wave||[]).map(layer=>layer.length)),totalHundredths,sugarLines:s.sugarLines??null});
 }
+function waffleSnapshot(slot,s,number){
+ const totals=s.turnTotals||[],previousHundredths=Number(totals.at(-2)||0),totalHundredths=Number(totals.at(-1)??s.totalHundredths??0);
+ const nativeOldWin=amount(slot,previousHundredths),nativeTotalWin=amount(slot,totalHundredths);
+ const flippedIds=Array.from(s.flipped||[]),lastKnockRows=Array.from(s.lastKnockRows||(s.lastKnockRow==null?[]:[s.lastKnockRow]));
+ const flipSteps=(s.flipSteps||[]).map(step=>Object.freeze({id:step.id,distance:step.distance,dx:step.dx,dy:step.dy}));
+ const reversalThisMove=!!s.reversalThisMove,bonusHundredths=reversalThisMove?Number(s.reversalBonusHundredths??window.BingoStickRules?.sweepBonusHundredths??0):0;
+ const color=s.lastColor??null,opponent=color==='black'?'white':'black',opponentAfter=s.counts?.[opponent]??null;
+ return Object.freeze({number,ball:s.draws?.length??0,color,placedCell:s.placed?.[0]??null,flippedCount:flippedIds.length,
+  flippedIds:Object.freeze(flippedIds),flipSteps:Object.freeze(flipSteps),lastKnockRows:Object.freeze(lastKnockRows),
+  gradeBefore:s.lastGrade??0,gradeAfter:s.grade??0,powActive:!!s.lastPowActive,reversalThisMove,reversalCount:s.reversalCount??0,
+  baseHundredths:Number(s.lastBaseHundredths??Math.max(0,totalHundredths-previousHundredths-bonusHundredths)),bonusHundredths,
+  previousHundredths,totalHundredths,incrementHundredths:Math.max(0,totalHundredths-previousHundredths),nativeOldWin,nativeTotalWin,nativeWinDelta:Math.max(0,nativeTotalWin-nativeOldWin),
+  rackBefore:Object.freeze(Array.from(s.lastRack||[])),rackAfter:Object.freeze(Array.from(s.rack||[])),
+  opponentBefore:opponentAfter===null?null:opponentAfter+flippedIds.length,opponentAfter});
+}
+function dangoSnapshot(s,lineIds,roles,number,committed){
+ return Object.freeze({number,ball:s.draws?.length||0,rulesRevision:s.rulesRevision||0,totalLines:s.completedLines.length,newLineCount:lineIds.length,
+  lineIds:Object.freeze(s.completedLines.slice()),newLineIds:Object.freeze(lineIds.slice()),highestRoles:Object.freeze(roles.slice()),lineCounts:Object.freeze({...s.lineCounts}),
+  oddsMultiplier:s.oddsMultiplier||1,freeGain:Number(s.lastBonusGain)||0,freeBudget:s.freeBudget,freeRemaining:s.freeRemaining,
+  totalHundredths:s.totalHundredths,committed:!!committed});
+}
 function recordFor(slot){let r=records.get(slot);if(r)return r;r={slot,version:slot.engine.version,round:app.token,liveDepth:0,beforeDraws:0,commitDepth:0,beforeRoles:[],restoring:false,pending:[],current:null,retained:[],seen:new Set(),main:null,mini:null,gelatoCounts:kindOf(slot)==='gelato'?gelatoCounts(slot.engine):null};records.set(slot,r);return r;}
 function ownsClass(r,on){
  r.slot.panel.classList.toggle('award-v277-owned',on);r.slot.tab.classList.toggle('award-v277-owned',on);r.slot.panel.dataset.awardKind=on?(r.current?.kind||r.pending[0]?.kind||'bonus'):'';
  // A real Sugar receipt can accompany the same collection as an award.
  // Keep its native visibility, timing and tier icon; give it a small separate
  // place while the loaded illustration owns the center of the cabinet.
+ r.slot.panel.classList.toggle('waffle-v301-award-owned',!!(on&&r.current?.waffle&&window.WaffleAwardV301?.loaded));
  r.slot.panel.classList.toggle('popcorn-v299-award-owned',!!(on&&r.current?.popcorn&&window.PopcornAwardV299?.loaded));
  r.slot.sugarAwardScreen?.classList.toggle('choco-v295-compact',!!(on&&r.current?.choco&&window.ChocoAwardV295?.loaded));
  const gelatoOwned=!!(on&&r.current?.gelato&&window.GelatoAwardV297?.loaded);
@@ -227,7 +254,7 @@ function ownsClass(r,on){
 }
 function clear(r){r.pending=[];r.current=null;r.retained=[];r.seen.clear();r.bonusCells=[];r.chocoNumber=null;r.chocoChain=0;if(kindOf(r.slot)==='gelato'){r.gelatoCounts=gelatoCounts(r.slot.engine);r.gelatoPrevious=null;}ownsClass(r,false);for(const out of [r.main,r.mini])if(out){out.ctx.clearRect(0,0,out.canvas.width,out.canvas.height);out.canvas.hidden=true;}if(r.status)r.status.textContent='';}
 function signature(c){return c.paths.map(p=>p.anchors.map(a=>[a.id,a.r,a.c].join(':')).join(',')).join(';');}
-function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),...(c.jelly?{jelly:c.jelly}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
+function describeCue(r,c){return {game:c.game,phase:c.phase,number:c.number,key:c.key,kind:c.kind,tier:c.tier,label:c.label,detail:c.detail,win:c.win,total:c.total,gain:c.gain,age:c.age??-c.delay,duration:c.duration,pathsVisible:c.pathsVisible!==false,...(c.choco?{choco:c.choco}:{}),...(c.gelato?{gelato:c.gelato}:{}),...(c.winery?{winery:c.winery}:{}),...(c.popcorn?{popcorn:c.popcorn}:{}),...(c.jelly?{jelly:c.jelly}:{}),...(c.waffle?{waffle:c.waffle}:{}),...(c.castella?{castella:c.castella}:{}),...(c.dango?{dango:c.dango}:{}),paths:c.paths.map(path=>({closed:!!path.closed,mainPoints:geometry(r.slot,path,false,c.state),miniPoints:geometry(r.slot,path,true,c.state)}))};}
 function receive(slot,ev){
  const r=recordFor(slot),e=slot.engine;
  if(ev.phase==='ready'||r.version!==e.version||r.round!==app.token){clear(r);r.version=e.version;r.round=app.token;if(ev.phase==='ready')r.restoring=false;}
@@ -461,6 +488,33 @@ function paintGameBadge(ctx,r,c,w,h,mini,ox,oy){
   ctx.restore();
   if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
  }
+ if(c.game==='stick'&&c.waffle&&window.WaffleAwardV301?.loaded){
+  const aspect=window.WaffleAwardV301.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.WaffleAwardV301.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
+ if(c.game==='castella'&&c.castella&&window.CastellaAwardV303?.loaded){
+  const aspect=window.CastellaAwardV303.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.CastellaAwardV303.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
+ if(c.game==='dango'&&c.dango&&window.DangoAwardV304?.loaded){
+  const aspect=window.DangoAwardV304.aspectFor?.(c)||1.5;
+  const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
+  const zoom=quiet()?1:.82+.18*(1-(1-enter)**3);
+  ctx.save();ctx.globalAlpha=fade;ctx.translate(ox+w/2,oy+h*.51+(1-enter)*h*.035);ctx.scale(zoom,zoom);
+  const painted=window.DangoAwardV304.paint(ctx,{cue:c,width,height,mini,age,still:quiet()});
+  ctx.restore();
+  if(painted){if(mini)stats.miniImages++;else stats.mainImages++;return quiet()?0:mini?2:6;}
+ }
  if(c.game==='jelly'&&c.jelly&&window.JellyAwardV300?.loaded){
   const aspect=window.JellyAwardV300.aspectFor?.(c)||1.5;
   const width=Math.min(w*.99,h*(mini?.98:.86)*aspect),height=width/aspect;
@@ -597,7 +651,7 @@ function paint(r,mini){
 function activate(r,c){
  r.current=c;c.age=0;
  if(r.slot.i===active){window.SweetsAudioV277?.award({game:c.game,tier:c.tier,key:c.key,kind:c.kind,win:c.win});c.sounded=true;}
- layer(r,r.slot.i!==active);if(r.status)r.status.textContent=c.label+'。'+c.detail+((c.win>0||c.jelly&&Number.isSafeInteger(c.win)&&c.win>=0)?'。'+(c.total?'現在の配当 ':'獲得配当 ')+pretty(c.win)+' WIN':'');
+ layer(r,r.slot.i!==active);if(r.status)r.status.textContent=c.label+'。'+c.detail+((c.win>0||(c.jelly||c.waffle||c.dango&&(c.dango.newLineCount||c.dango.highestRoles.length))&&Number.isSafeInteger(c.win)&&c.win>=0)?'。'+(c.total?'現在の配当 ':'獲得配当 ')+pretty(c.win)+' WIN':'');
  ownsClass(r,true);
 }
 function finishCurrent(r){

@@ -16,6 +16,7 @@ const CURRENT_PAY_LAYOUT=Object.freeze({label:1.77,column:.82,header:.32,row:.60
 const highestRoleCell=(length,count,state)=>typeof R.isHighestRole==='function'?R.isHighestRole(length,count,state):count>=(isModern(state)?3:({3:4,4:3,5:2,7:1,9:1}[length]??Infinity));
 const tierInk=['#21ddd5','#ff3c66','#bc58ff','#ffe383'];
 const PAYOUT_ART='assets/dango-art-v270/payout-table.png';
+const payoutArtwork=()=>window.DangoArtV304?.loaded?'assets/dango-art-v304/payout-cabinet.webp':PAYOUT_ART;
 const assetFiles={white:'dango-art-v252/dango-white.webp',green:'dango-art-v253/dango-green.webp',pink:'dango-art-v253/dango-pink.webp',yellow:'dango-art-v253/dango-yellow.webp',rainbow:'dango-art-v253/dango-rainbow.webp',skewer:'dango-art-v252/bamboo-skewer.webp',stand:'dango-art-v253/tsukimi-stand.webp'};
 const art={},assetListeners=new Set(),pendingMinis=new Map();
 // Cyan is a separate, once-baked mochi bitmap; do not tint a green mochi during paint.
@@ -52,10 +53,10 @@ function spriteBounds(image,key){
 }
 function describeAssets(){
  return {revision:253,presentationRevision:285,ready:allAssetsReady(),failed:Object.values(art).filter(asset=>asset.failed).map(asset=>asset.key),
-  cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
+  dedicated:window.DangoArtV304?.describe()||null,cartoon:window.SweetsCartoonBoardsC?.describe()||null,illustrated:window.SweetsIllustratedBoardsCV275?.describe()||null,
   images:Object.values(art).map(({key,url,loaded,failed,image,crop})=>({key,url,loaded,failed,width:image.naturalWidth||0,height:image.naturalHeight||0,crop:crop.slice()})),
   usage:{...usage},last:{...last},lineColors:{...LINE_COLORS},
-  cyanDango:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed,meanLuminance:cyanCache.meanLuminance}};
+  cyanDango:window.DangoArtV304?.loaded?{ready:true,...window.DangoArtV304.cyan}:{ready:!!cyanCache.canvas,source:cyanCache.source,baked:!!cyanCache.canvas,pixels:cyanCache.pixels,cyanPixels:cyanCache.cyanPixels,meanBlueMinusRed:cyanCache.meanBlueMinusRed,meanLuminance:cyanCache.meanLuminance}};
 }
 function notifyAssets(){
  if(assetsNotifyQueued)return;assetsNotifyQueued=true;
@@ -71,9 +72,10 @@ const assetsReady=Promise.all(Object.entries(assetFiles).map(([key,file])=>new P
  image.decoding='async';image.onload=()=>{asset.crop=spriteBounds(image,key);asset.loaded=true;resolve(true);notifyAssets();};
  image.onerror=()=>{asset.failed=true;resolve(false);notifyAssets();console.warn('[Dango art] Could not load '+key);};
  image.src=asset.url;
-}))).then(results=>results.every(Boolean));
+}))).then(async results=>{await window.DangoArtV304?.ready;notifyAssets();return results.every(Boolean);});
 function onAssetsChanged(listener){assetListeners.add(listener);return ()=>assetListeners.delete(listener);}
 function bitmap(c,key,x,y,width,height){
+ if(window.DangoArtV304?.bitmap(c,key,x,y,width,height))return true;
  if(key==='cyan')return cyanBitmap(c,x,y,width,height);
  if(window.SweetsIllustratedBoardsCV275?.dangoBitmap(c,key,x,y,width,height))return true;
  if(window.SweetsCartoonBoardsC?.dangoBitmap(c,key,x,y,width,height))return true;
@@ -508,7 +510,7 @@ function paint(ctx,state,options={},mini=false){
  }
  if(!mini&&(state.lastOddsGain||state.lastBonusGain)&&options.age>=0&&options.age<1400&&state.lastCell!=null){
   const p=g.centers[state.lastCell],t=clamp(options.age/1400),x=Math.max(u*1.12,Math.min(w-u*1.12,p.x)),y=Math.max(u*.31,p.y-u*(.69+.34*t));
-  c.save();c.globalAlpha=Math.min(1,(1-t)*3);roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':plusFree?'#126e8d':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:plusFree?'FREE ＋'+state.lastBonusGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
+  c.save();c.globalAlpha=Math.min(1,(1-t)*3);if(!window.DangoArtV304?.popup(c,{x:x-u*1.02,y:y-u*.22,width:u*2.04,height:u*.44}))roundBox(c,x-u*1.02,y-u*.22,u*2.04,u*.44,u*.16,state.lastOddsGain?'#713daa':plusFree?'#126e8d':'#446c20');text(c,state.lastOddsGain?'ODDS ＋'+state.lastOddsGain:plusFree?'FREE ＋'+state.lastBonusGain:isModern(state)?'FREE範囲 UP':'FREE ＋1',x,y,u*.265,'#fff9d4');c.restore();
  }
  last[mode]={width:w,height:h,cells:state.cells.length,imageCells,skewers:completed.size,imageSkewers:skewers.filter(t=>t.z.drawn).length,kinds,transparentBackground:true,standRendered,geometry:g,lineColors:[...new Set(skewers.map(t=>t.line.length))].map(length=>({length,color:lineColor(length,state)})),reachCount:reaches.size,afterFinalReach:state.phase==='done'&&reaches.size>0,reachStyle:isCurrent(state)?{...REACH_STYLE}:null,ambientTime:time,idleMotion:!isCurrent(state)&&!still,sparkleCells:paidCells.size,hitSparkleCells:plusFree?state.cells.filter(cell=>cell.hit).length:0,hitSparklesPerCell:plusFree?11:0,hitRimPulse:plusFree&&!still,greenHitCells:plusFree?state.cells.filter(cell=>cell.initialFree&&cell.hit).length:0,plusFree:{active:plusFree&&state.draws.length<5,opacity:plusFreeOpacity,cells:plusFree?(state.triggerCells||[]).slice():[],label:'+FREE'},hitLabelPosition:plusFree?'edge-outside-number':isCurrent(state)?'number-overlay':'above-number',hitLabels:state.cells.filter(cell=>cell.hit).length,hitLabel:'HIT!',previewCount:(options.previewCells||[]).length,expansionCenter:state.expansionCenter??null};
  c.restore();
@@ -520,11 +522,11 @@ function drawLessonDango(ctx,x,y,r,kind,value,rainbow=false){
 }
 function formatWin(bet,hundredths){const value=typeof medalWin==='function'?medalWin(bet,hundredths):Math.floor(Math.max(0,bet)*hundredths/100);return String(value);}
 function mount(panel){
- const root=document.createElement('section');root.className='dgb-scene';root.setAttribute('aria-label','ダンゴデビンゴ');root.dataset.payoutArt=PAYOUT_ART;
- root.innerHTML='<div class="dgb-stage"><div class="dgb-pan"><canvas role="img"></canvas><div class="dgb-reach-layer six-reach-layer" aria-hidden="true"></div><div class="dgb-cell-controls" role="group" aria-label="FREEの中心を選ぶお団子"></div></div></div><aside class="dgb-pay"><div class="dgb-pay-matrix"><table aria-label="ラインの長さと完成本数による配当"><colgroup></colgroup><thead></thead><tbody></tbody></table></div><div class="dgb-pay-odds"><small class="dgb-odds-title">ODDS</small><b class="dgb-odds-value">×1</b></div></aside><aside class="dgb-free-rail" aria-label="前半ラインで獲得するFREE" hidden><div class="dgb-free-rail-heading">FREE</div><div class="dgb-free-rail-rows"></div></aside><div class="dgb-free-stat"><small class="dgb-free-title">置けるFREE</small><div class="dgb-trigger-numbers" role="group" aria-label="前半5球の拡張番号" hidden></div><div class="dgb-free-counter"><img class="dgb-free-mochi" src="assets/dango-art-v253/dango-yellow.webp" alt=""><b class="dgb-free-value">あと1個</b></div><span class="dgb-free-detail">配置0 / 1個</span><div class="dgb-placement"><span class="dgb-countdown"></span><div class="dgb-actions"><button type="button" data-action="auto">おまかせ</button></div></div></div><div class="dgb-prompt dgb-live"></div><div class="dgb-live dgb-announcement" role="status" aria-live="polite" aria-atomic="true"></div>';
+ const root=document.createElement('section');root.className='dgb-scene';root.setAttribute('aria-label','ダンゴデビンゴ');root.dataset.payoutArt=payoutArtwork();
+ root.innerHTML='<div class="dgb-stage"><div class="dgb-pan"><canvas role="img"></canvas><div class="dgb-reach-layer six-reach-layer" aria-hidden="true"></div><div class="dgb-cell-controls" role="group" aria-label="FREEの中心を選ぶお団子"></div></div></div><aside class="dgb-pay"><div class="dgb-pay-matrix"><table aria-label="ラインの長さと完成本数による配当"><colgroup></colgroup><thead></thead><tbody></tbody></table></div><div class="dgb-pay-odds"><small class="dgb-odds-title">ODDS</small><b class="dgb-odds-value">×1</b></div></aside><aside class="dgb-free-rail" aria-label="前半ラインで獲得するFREE" hidden><div class="dgb-free-rail-heading">FREE</div><div class="dgb-free-rail-rows"></div></aside><div class="dgb-free-stat"><small class="dgb-free-title">置けるFREE</small><div class="dgb-trigger-numbers" role="group" aria-label="前半5球の拡張番号" hidden></div><div class="dgb-free-counter"><canvas class="dgb-free-mochi" width="96" height="96" aria-hidden="true"></canvas><b class="dgb-free-value">あと1個</b></div><span class="dgb-free-detail">配置0 / 1個</span><div class="dgb-placement"><span class="dgb-countdown"></span><div class="dgb-actions"><button type="button" data-action="auto">おまかせ</button></div></div></div><div class="dgb-prompt dgb-live"></div><div class="dgb-live dgb-announcement" role="status" aria-live="polite" aria-atomic="true"></div>';
  panel.append(root);
  const find=selector=>root.querySelector(selector),pan=find('.dgb-pan'),canvas=pan.querySelector('canvas'),ctx=canvas.getContext('2d'),controls=find('.dgb-cell-controls'),reachLayer=find('.dgb-reach-layer');
- let rows=[],buttons=[],state=null,options={},callbacks={},focusId=0,lastLive='',domKey='',sizeKey='',structureKey='',payGeometry=null,previewCenter=null,reachKey='';
+ let rows=[],buttons=[],state=null,options={},callbacks={},focusId=0,lastLive='',domKey='',sizeKey='',structureKey='',payGeometry=null,previewCenter=null,reachKey='',freeBitmapSource='';
  const motionMedia=matchMedia('(prefers-reduced-motion: reduce)');
  function syncMotion(){
   const reduced=!!(options.reducedMotion||motionMedia.matches),paused=!!(options.paused||reduced||document.hidden);
@@ -625,6 +627,8 @@ function mount(panel){
    const c=icon.getContext('2d');c.clearRect(0,0,pixels,pixels);bitmap(c,'yellow',0,0,pixels,pixels);
    c.font='1000 '+pixels*.29+'px ElixirNumbers,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=pixels*.065;c.strokeStyle='#fff7c1';c.strokeText('FREE',pixels/2,pixels/2);c.fillStyle='#68430a';c.fillText('FREE',pixels/2,pixels/2);icon.dataset.bitmap=String(art.yellow.loaded);
   }
+  const freeSource=window.DangoArtV304?.loaded?'304':allAssetsReady()?'253':'';
+  if(freeSource&&freeBitmapSource!==freeSource){const icon=find('.dgb-free-mochi'),c=icon.getContext('2d');c.clearRect(0,0,96,96);if(bitmap(c,'yellow',0,0,96,96)){freeBitmapSource=freeSource;icon.dataset.artRevision=freeSource;}}
   paintLive();
  }
  function draw(next,o={}){
@@ -698,10 +702,10 @@ function mount(panel){
   if(live!==lastLive){lastLive=live;find('.dgb-announcement').textContent=find('.dgb-prompt').textContent+'。完成ライン'+state.completedLines.length+(isPlusFree(state)?'個':'本')+'、ODDS'+(state.oddsMultiplier||1)+'倍。';}
   fit();
  }
- const refreshArt=()=>{root.dataset.artReady=String(allAssetsReady());root.dataset.artFailed=String(Object.values(art).some(asset=>asset.failed));fit();};
+ const refreshArt=()=>{root.dataset.payoutArt=payoutArtwork();root.dataset.artRevision=window.DangoArtV304?.loaded?'304':'275';root.dataset.artReady=String(allAssetsReady());root.dataset.artFailed=String(Object.values(art).some(asset=>asset.failed));fit();};
  const refreshFonts=()=>{if(root.isConnected)fit();};
  const offArt=onAssetsChanged(refreshArt),observer=new ResizeObserver(fit);observer.observe(root);observer.observe(pan);document.addEventListener('visibilitychange',syncMotion);motionMedia.addEventListener?.('change',syncMotion);syncMotion();refreshArt();document.fonts?.addEventListener?.('loadingdone',refreshFonts);document.fonts?.ready?.then(refreshFonts);
- return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isPlusFree(state)?285:isCurrent(state)?269:262,modern:isModern(state),payout:payGeometry,payoutArtwork:PAYOUT_ART,reachPresentation:{style:'six-drop',count:reachLayer.children.length,afterFinal:state?.phase==='done'},plusFree:{enabled:isPlusFree(state),active:isPlusFree(state)&&state.draws.length<5,numbers:isPlusFree(state)?(state.triggerNumbers||[]).slice():[],hits:isPlusFree(state)?(state.triggerHits||[]).length:0},freeRail:{visible:showFreeRail(state),counts:[...root.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,count:row.children.length}))},highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);document.fonts?.removeEventListener?.('loadingdone',refreshFonts);root.remove();}};
+ return {root,canvas,draw,drawMini,setCallbacks(next){callbacks={...callbacks,...next};},describe(){return {revision:isPlusFree(state)?285:isCurrent(state)?269:262,modern:isModern(state),payout:payGeometry,payoutArtwork:payoutArtwork(),artRevision:window.DangoArtV304?.loaded?304:275,reachPresentation:{style:'six-drop',count:reachLayer.children.length,afterFinal:state?.phase==='done'},plusFree:{enabled:isPlusFree(state),active:isPlusFree(state)&&state.draws.length<5,numbers:isPlusFree(state)?(state.triggerNumbers||[]).slice():[],hits:isPlusFree(state)?(state.triggerHits||[]).length:0},freeRail:{visible:showFreeRail(state),counts:[...root.querySelectorAll('.dgb-free-rail-row')].map(row=>({length:+row.dataset.length,count:row.children.length}))},highestCells:rows.filter(item=>item.td.dataset.highestRole==='true').map(item=>({length:item.row.length,count:item.row.count})),earnedCells:rows.filter(item=>item.td.classList.contains('current')).map(item=>({length:item.row.length,count:item.row.count,win:item.value})),reachCells:rows.filter(item=>item.td.classList.contains('reach')).map(item=>({length:item.row.length,count:item.row.count})),paused:root.dataset.motionPaused==='true'||document.body.classList.contains('paused')||document.body.classList.contains('player-menu-open')};},destroy(){offArt();observer.disconnect();document.removeEventListener('visibilitychange',syncMotion);motionMedia.removeEventListener?.('change',syncMotion);document.fonts?.removeEventListener?.('loadingdone',refreshFonts);root.remove();}};
 }
 const hasAmbientMotion=(state,options={})=>!!state?.cells&&!options.reducedMotion&&!options.paused&&(!isCurrent(state)||isPlusFree(state)&&state.hitCells?.length>0||state.completedLines?.length>0||Number(state.lineCounts?.[2])>=2||options.reach?.length>0);
 window.DangoBingoView={mount,drawMini,paint,geometry,payoutLayout,drawLessonDango,assetsReady,describeAssets,onAssetsChanged,hasAmbientMotion,lineColors:LINE_COLORS,reachStyle:REACH_STYLE,presentationRevision:285};

@@ -49,7 +49,9 @@ for(const file of ['index.html','app-version.json','assets/dango-bingo-view.js',
  assert.equal(createHash('sha256').update(bytes).digest('hex'),record.sha256,file+' hash pinned');
 }
 assert.match(html,/assets\/award-presentation-v277\.js\?v=\d+/,'award script uses an explicit cache revision');
-assert(html.includes('assets/hit-presentation-v276.js?v=290'));
-assert(html.includes('assets/dango-bingo-view.js?v=290'));
+for(const script of ['hit-presentation-v276','dango-bingo-view']){
+ const urls=[...html.matchAll(new RegExp("['\"](assets/"+script+"\\.js\\?v=\\d+)['\"]",'g'))];
+ assert.equal(urls.length,1,script+' loads exactly once with an explicit cache revision');
+}
 assert(serviceWorker.includes(version)&&serviceWorker.includes('20261121-v289-canyon-fruit-sixdrop-fixed-palette'));
 console.log('V290_THEMED_EFFECTS_PASS',JSON.stringify({games:10,silhouettes:10,frameless:['winery','dango'],idleFPS:10,idleCells:2,cacheFiles:listed.size,paytableOrnaments:true,nearWhitePlusFree:true}));

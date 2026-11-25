@@ -20,6 +20,7 @@ const art={black:texture('waffle-reversi-ogura-v128.png'),white:texture('waffle-
 function usable(im){return im.complete&&im.naturalWidth;}
 const frames=new WeakMap(),waffles=new WeakMap();
 function waffle(ctx,size,rim,u){
+ const generated=window.WaffleArtV301?.board(ctx,size,rim,u);if(generated)return generated;
  if(window.SweetsCartoonBoardsC)return window.SweetsCartoonBoardsC.waffleBoard(ctx,size,rim,u);
  const cached=waffles.get(ctx),key=[size,rim,art.board.naturalWidth,art.wafer.naturalWidth,window.SweetsIllustratedBoardsCV275?.epoch].join('/');
  if(cached?.key===key)return cached.image;
@@ -80,7 +81,7 @@ function drawBoard(ctx,s,o,main){
   if(id!=null&&!s.colors[id]&&s.numbers[id]===hit.number&&!s.draws.includes(hit.number))reach.set(id,hit);
  }
  const reachTime=reduce.matches?0:(o.reachTime??o.time??0);
- const key=[w,h,m.active?Math.floor(t/16):-1,art.black.naturalWidth,art.white.naturalWidth,art.board.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch,main,
+ const key=[w,h,m.active?Math.floor(t/16):-1,art.black.naturalWidth,art.white.naturalWidth,art.board.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch,window.WaffleArtV301?.epoch,main,
   reach.size?Math.floor(reachTime/75):-1,[...reach].map(([id,hit])=>id+'-'+hit.tier+'-'+Number(!!hit.oddsUp)).join('|')].join('/');
  const frame=frames.get(ctx);if(frame?.state===s&&frame.key===key)return;
  frames.set(ctx,{state:s,key});ctx.save();ctx.clearRect(0,0,w,h);ctx.translate((w-size)/2,(h-size)/2);
@@ -101,7 +102,8 @@ function drawBoard(ctx,s,o,main){
     ctx.translate(0,-u*.08*stretch);ctx.rotate(rot);ctx.scale(Math.max(.055,Math.abs(Math.cos(Math.PI*m.progress))),1+.045*stretch);ctx.rotate(-rot);
    }else if(placed&&m.active&&t<180&&!reduce.matches){const p=clamp((t-90)/90);ctx.scale(.45+.55*p,.45+.55*p);}
    const im=art[color];
-   if(window.SweetsIllustratedBoardsCV275?.wafflePiece(ctx,color,-dim/2,-dim/2,dim,dim)){}
+   if(window.WaffleArtV301?.piece(ctx,color,-dim/2,-dim/2,dim,dim)){}
+   else if(window.SweetsIllustratedBoardsCV275?.wafflePiece(ctx,color,-dim/2,-dim/2,dim,dim)){}
    else if(window.SweetsCartoonBoardsC)window.SweetsCartoonBoardsC.wafflePiece(ctx,color,-dim/2,-dim/2,dim,dim);
    else if(usable(im))ctx.drawImage(im,-dim/2,-dim/2,dim,dim);
    else{ctx.fillStyle=color==='black'?'#512a38':'#fff2ae';ctx.beginPath();ctx.ellipse(0,0,dim*.46,dim*.44,0,0,Math.PI*2);ctx.fill();}
@@ -122,6 +124,9 @@ function drawBoard(ctx,s,o,main){
 }
 function drawMini(ctx,s,o={}){drawBoard(ctx,s,o,false);}
 const won=(bet,odds)=>typeof medalWin==='function'?medalWin(bet,odds):Math.floor(bet*odds/100);
+// Native payout helpers live in the application's lexical scope. Resolve the
+// current fitter at each call so its later arcade wrapper remains effective.
+window.WaffleArtV301?.bindNative({fitNumber:typeof fitGoldenNumber==='function'?(...args)=>fitGoldenNumber(...args):null,medal:won});
 const materialFor=odds=>odds>=5000?'gold':odds>=1000?'silver':'waffle';
 function mount(panel){
  const root=document.createElement('section');root.className='bs-scene';root.setAttribute('aria-label','ワッフルリバーシ');
@@ -140,7 +145,7 @@ function mount(panel){
   const row=document.createElement('li'),piece=document.createElement('span'),icon=document.createElement('img'),win=document.createElement('b');
   const color=i%2?'white':'black';
   row.className='bs-turn';row.dataset.turn=i+1;row.dataset.color=color;
-  piece.className='bs-medallion';icon.className='bs-turn-piece';icon.src=window.SweetsIllustratedBoardsCV275?.url('waffle-'+color)||window.SweetsCartoonBoardsC?.url('waffle-'+color)||art[color].src;icon.alt='';
+  piece.className='bs-medallion';icon.className='bs-turn-piece';icon.src=window.WaffleArtV301?.url(color)||window.SweetsIllustratedBoardsCV275?.url('waffle-'+color)||window.SweetsCartoonBoardsC?.url('waffle-'+color)||art[color].src;icon.alt='';
   win.className='bs-turn-win';piece.append(icon);row.append(piece,win);sequence.append(row);
   return {row,win,color};
  });
@@ -152,6 +157,7 @@ function mount(panel){
  function block(cell,extra=false){
   const tile=document.createElement('div'),value=document.createElement('span'),unit=document.createElement('small');
   tile.className='bs-block'+(extra?' bs-incoming':'');if(extra)tile.setAttribute('aria-hidden','true');
+  value.className='wf301-amount';
   unit.textContent='WIN';tile.append(value,unit);cell.append(tile);return {tile,value};
  }
  const tiers=rows.map(({count},i)=>{
@@ -159,19 +165,23 @@ function mount(panel){
   head.textContent=i===rows.length-1?count+'+':String(count);row.append(head);const cell=row.insertCell();
   return {row,block:block(cell),count,incoming:i===rows.length-1?block(cell,true):null};
  });
+ window.WaffleArtV301?.install(root);
+ let numberWidth=64,fitVersion=0,lastFitVersion=-1;
  function fit(){const w=root.clientWidth,h=root.clientHeight;if(!w||!h)return;
   root.style.setProperty('--bs-w',w+'px');root.style.setProperty('--bs-h',h+'px');
   root.style.setProperty('--bs-board',Math.max(1,Math.min(tray.clientWidth,tray.clientHeight-q('.bs-tools').offsetHeight-3))+'px');
   const resolution=Math.max(1,Math.round(grid.clientWidth*Math.min(devicePixelRatio||1,2)));if(canvas.width!==resolution||canvas.height!==resolution)canvas.width=canvas.height=resolution;
+  numberWidth=Math.max(1,(tiers[0]?.block.value.clientWidth||66)-2);fitVersion++;
  }
- function fitPayValues(){for(const item of tiers){for(const block of [item.block,item.incoming])if(block)window.SweetsPayoutFitV301?.plain(block.value,block.tile,block.tile.querySelector('small'),{inset:4,heightFraction:.72});}const bonus=prize.querySelector('strong');window.SweetsPayoutFitV301?.plain(bonus,prize,null,{inset:5});}
+ function fitPayValues(){if(window.WaffleArtV301?.loaded)return;for(const item of tiers){for(const block of [item.block,item.incoming])if(block)window.SweetsPayoutFitV301?.plain(block.value,block.tile,block.tile.querySelector('small'),{inset:4,heightFraction:.72});}const bonus=prize.querySelector('strong');window.SweetsPayoutFitV301?.plain(bonus,prize,null,{inset:5});}
  const observer=new ResizeObserver(()=>{fit();fitPayValues();});observer.observe(root);observer.observe(grid);observer.observe(q('.bs-tools'));fit();document.fonts?.ready.then(fitPayValues);
  function quote({tile,value},odds,bet,baseline){
   const amount=won(bet,baseline+odds)-won(bet,baseline);
+  tile.dataset.material=materialFor(odds);
+  if(window.WaffleArtV301?.fitAmount(value,amount,11,numberWidth))return;
   const label=amount>=1000000&&amount%10000===0?amount/10000+'万':String(amount);
   value.textContent=label;value.style.fontSize=label.length>8?(8/label.length)+'em':'';window.SweetsPayoutFitV301?.plain(value,tile,tile.querySelector('small'),{inset:4,heightFraction:.72});
   value.setAttribute('aria-label',amount+' WIN');
-  tile.dataset.material=materialFor(odds);
  }
  let lastBet,lastBaseline,lastRack,lastState,lastKey;
  function draw(s,o={}){
@@ -188,7 +198,7 @@ function mount(panel){
    for(const {row,count} of tiers)row.dataset.motion=knock===null||count<knock?'stay':count===knock?'kick':'fall';
   }
   // Each tile previews whole medals after including the fraction carried from earlier balls.
-  if(lastBet!==bet||lastBaseline!==baseline||lastRack!==rack||lastState!==s){
+  if(lastBet!==bet||lastBaseline!==baseline||lastRack!==rack||lastState!==s||lastFitVersion!==fitVersion){
    for(const {row,block,count,incoming} of tiers){
     const odds=R.award(count,rack);
     quote(block,odds,bet,baseline);
@@ -197,7 +207,7 @@ function mount(panel){
     row.dataset.zero=String(!odds);
    }
    gradeTag.textContent='G'+grade;gradeTag.title='グレード '+grade;ladder.dataset.grade=grade;
-   lastBet=bet;lastBaseline=baseline;lastRack=rack;lastState=s;
+   lastBet=bet;lastBaseline=baseline;lastRack=rack;lastState=s;lastFitVersion=fitVersion;
   }
   const earnedBonuses=s.reversalCount-Number(!!bonus&&!revealed);
   const burstAt=180+Math.max(0,s.lastFlips-1)*110+55,burst=!!bonus&&m.active&&(o.age??Infinity)>=burstAt&&m.rankStep===0;
@@ -211,8 +221,10 @@ function mount(panel){
     if(active&&!done)target.row.setAttribute('aria-current','step');else target.row.removeAttribute('aria-current');
     const accrued=n===turn?shown:s.turnTotals[i],previous=i?s.turnTotals[i-1]:0;
     const gain=n<=turn?won(bet,accrued)-won(bet,previous):0;
-    target.win.textContent=gain>0?(gain>=100000&&gain%10000===0?gain/10000+'万':String(gain)):'';
-    target.win.style.fontSize=target.win.textContent.length>4?Math.min(.75,4/target.win.textContent.length)+'em':'';
+    if(!window.WaffleArtV301?.fitTurn(target.win,gain)){
+     target.win.textContent=gain>0?(gain>=100000&&gain%10000===0?gain/10000+'万':String(gain)):'';
+     target.win.style.fontSize=target.win.textContent.length>4?Math.min(.75,4/target.win.textContent.length)+'em':'';
+    }
     const description='第'+n+'球　'+names[target.color]+(s.draws[i]?'　'+s.draws[i]+'番':'')+(gain?'　'+gain+' WIN':'');
     target.row.title=description;target.row.setAttribute('aria-label',description);
    }
@@ -223,7 +235,11 @@ function mount(panel){
    ladder.classList.toggle('live',live);ladder.dataset.beat=live?String(hand%2):'';ladder.dataset.rankStep=m.rankStep;
    q('.bs-ladder-name').textContent=m.active&&m.rankStep===1?(knock===13?'13+':knock)+'枚枠 HIT!':m.active&&m.rankStep===2?'GRADE UP!':'反転配当';
    const flag=q('.bs-burst');flag.hidden=!burst;if(burst)flag.querySelector('span').textContent=bonusLabel+'！ ＋'+won(bet,R.sweepBonusHundredths)+' WIN';
-   prize.classList.toggle('earned',earnedBonuses>0);prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';window.SweetsPayoutFitV301?.plain(prize.querySelector('strong'),prize,null,{inset:5});
+   prize.classList.toggle('earned',earnedBonuses>0);
+   if(!window.WaffleArtV301?.bonus(prize,{amount:won(bet,R.sweepBonusHundredths),count:earnedBonuses})){
+    prize.querySelector('strong').textContent=(earnedBonuses?'獲得 '+earnedBonuses+'回 · ':'')+won(bet,R.sweepBonusHundredths)+' WIN';
+    window.SweetsPayoutFitV301?.plain(prize.querySelector('strong'),prize,null,{inset:5});
+   }
    grid.setAttribute('aria-label','8行8列のワッフル盤。'+(done?'8球終了':'第'+current+'球 '+names[color])+'。獲得'+totalWin+' WIN');
   }
   const pulse=live&&hand>0?Math.max(0,1-((o.age??0)-(180+(hand-1)*110+55))/110):0;
@@ -231,6 +247,7 @@ function mount(panel){
   if(m.rankStep===1||m.rankStep===2){
    ladder.style.setProperty('--bs-kick',m.kick.toFixed(3));ladder.style.setProperty('--bs-drop',m.drop.toFixed(3));
   }
+  window.WaffleArtV301?.decorate(root,s,{bet,motion:m,baseline,grade,still:reduce.matches});
   drawBoard(ctx,s,o,true);
  }
  return {draw,drawMini};

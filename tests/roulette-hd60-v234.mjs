@@ -18,8 +18,15 @@ assert.match(hostSource,/FPS=60,BITRATE=3000000,SAFE_FPS=30,SAFE_BITRATE=1600000
 assert.match(hostSource,/STREAM_MAX_WIDTH=1280,STREAM_MAX_HEIGHT=720/);
 assert.match(hostSource,/capturePumpActive\|\|!peers.size/,'single worker pump');
 assert.match(hostSource,/clearInterval\(qualityTimer\)/,'timer cleanup');
-assert.ok(loader.includes('shared-roulette-webrtc-host-v224.js?v='+release));
-assert.ok(loader.includes('shared-host-keepalive-v206.js?v='+release));
+// Artwork-only app releases do not invalidate byte-identical host modules.
+// Require a single pinned loader URL carrying the implemented feature revision.
+for(const file of ['assets/shared-roulette-webrtc-host-v224.js','assets/shared-host-keepalive-v206.js']){
+ const imports=[...loader.matchAll(/load\('([^']+)'\)/g)].filter(match=>match[1].split('?')[0]===file);
+ assert.equal(imports.length,1,file+' is loaded exactly once');
+ const pin=new URL(imports[0][1],'https://fixture.invalid/').searchParams.get('v');
+ assert.match(pin||'',/^\d+$/);
+ assert.ok(Number(pin)>=234&&Number(pin)<=Number(release),file+' pins an implemented HD revision');
+}
 assert.match(index,/assets\/shared-machine-v176\.js\?v=\d+/);
 assert.ok(Number(release)>=234);
 const workerSource=keepSource.match(/const workerSource="([^"]+)";/)?.[1];

@@ -220,7 +220,10 @@ function queueAward({game=selected(),tier=1,key='',kind='role',win=0,delayMs=0,e
   if(!allowed({jpc:job.jpc}))return denied('inactive-award',key);
   if(!job.explicit&&(owns(game)||(awardVoice?.explicit&&awardVoice.game===game&&time()<awardVoice.until))){stats.legacyAwardsSuppressed++;return denied('award-owner',key);}
   if(awardVoice){
-   if(time()<awardVoice.until-.08&&job.tier<=awardVoice.tier)return denied('higher-active-tier',key);
+   // A scene preview may sound before its later native award is booked.
+   // Native authority replaces that legacy voice; confirmed awards retain
+   // their tier protection against other confirmed awards.
+   if(time()<awardVoice.until-.08&&job.tier<=awardVoice.tier&&(!job.explicit||awardVoice.explicit))return denied('higher-active-tier',key);
    endVoice(awardVoice);
   }
   return playSample(job.sample,{award:true,explicit:job.explicit,tier:job.tier,game:job.game,key:job.key,volume:job.volume,jpc:job.jpc,gap:.1});

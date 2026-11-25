@@ -85,7 +85,7 @@ async function openGame(kind,{width=1366,height=900,bet=3000,reduced=false,muted
   e.running=true;e.emit('waiting');q.app.phase=originalPhase;
   if((e.drawMode||'grouped')!=='single')e.pendingDraws=new Set(fixture.draws);
   const events=[];const nativeEmit=e.emit;
-  e.emit=function(phase,detail={}){const result=nativeEmit.apply(this,arguments);events.push({phase,number:detail.number,gain:detail.gain,draws:this.state?.draws?.slice()||[...this.drawn||[]],processed:this.processed});return result;};
+  e.emit=function(phase,detail={}){const result=nativeEmit.apply(this,arguments);events.push({at:performance.now(),phase,number:detail.number,gain:detail.gain,draws:this.state?.draws?.slice()||[...this.drawn||[]],processed:this.processed,paused:this.paused,fx:this.fx?{type:this.fx.type,elapsed:this.fx.elapsed,duration:this.fx.duration}:null});return result;};
   q.fixtureEvents=events;q.fixture=fixture;
   if(mini)q.select(q.slots.findIndex(s=>s.engine.kind==='gelato'));
   slot.dirtyMain=slot.dirtyMini=true;q.syncManualNumbers();q.scheduleUI(q.app);
@@ -173,7 +173,7 @@ async function capture(kind,options={}){
 async function recordFailure(id,error){
  const failure={current:id,message:String(error),stack:error.stack};
  if(page)try{
-  failure.diagnostics=await page.evaluate(()=>({awards:window.SweetsAwardsV277?.describe(),audio:window.SweetsAudioV277?.describe(),fixtureEvents:window.__qa277?.fixtureEvents,phase:window.__qa277?.app.phase,enginePhase:window.__qa277?.slots[window.__qa277?.active]?.engine?.phase}));
+  failure.diagnostics=await page.evaluate(()=>{const q=window.__qa277,e=q?.slots[q?.active]?.engine;return {at:performance.now(),awards:window.SweetsAwardsV277?.describe(),audio:window.SweetsAudioV277?.describe(),fixtureEvents:q?.fixtureEvents,phase:q?.app.phase,appPaused:q?.app.paused,documentHidden:document.hidden,enginePhase:e?.phase,engine:e?{kind:e.kind,busy:e.busy,processed:e.processed,accepted:e.accepted,paused:e.paused,speed:e.speed,presentationRate:e.presentationRate,fx:e.fx?{type:e.fx.type,elapsed:e.fx.elapsed,duration:e.fx.duration}:null}:null};});
   failure.screenshot='failure-'+id+'.png';await page.screenshot({path:path.join(output,failure.screenshot)});
  }catch(diagnosticError){failure.diagnosticError=String(diagnosticError);}
  return failure;

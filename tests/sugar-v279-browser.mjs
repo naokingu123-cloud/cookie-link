@@ -58,7 +58,7 @@ async function read(){
 function preserved(record){assert.equal(record.accepted,true);assert.deepEqual(record.after,record.before,'artwork presentation never changes the native wallet, BET or drawn balls');}
 function verify(state,value){
  const source='assets/sugar-art-v279/multiplier-'+value+'-transparent.png';
- assert.equal(state.api.presentationRevision,279);assert.ok(state.api.artLoaded);assert.equal(state.result.src,source);assert.equal(state.result.visible,true);assert.equal(state.result.fit,'contain');assert.ok(state.result.loaded);noPlate(state.result.plate,'settled emblem');inside(state.result.imageRect,state.overlay,'settled artwork');
+ assert.ok([279,305].includes(state.api.presentationRevision),'recognized multiplier presentation revision');assert.ok(state.api.artLoaded);assert.equal(state.result.src,source);assert.equal(state.result.visible,true);assert.equal(state.result.fit,'contain');assert.ok(state.result.loaded);noPlate(state.result.plate,'settled emblem');inside(state.result.imageRect,state.overlay,'settled artwork');
  assert.equal(state.jp.value,150000,'JP base remains separate from its multiplier');assert.equal(state.api.displayAmounts.cashBase,150000,'miss awards remain based on the unmultiplied amount');assert.deepEqual(state.payouts,[30000,15000,7500,4500,3000,1500]);
  assert.equal(state.jp.multiplier.src,source);assert.equal(state.jp.multiplier.text,'×'+value);assert.equal(state.jp.multiplier.visible,value>1);noPlate(state.jp.multiplier.plate,'JP multiplier');inside(state.jp.face,state.jp.rect,'JP number');
  if(value>1)inside(state.jp.multiplier.imageRect,state.overlay,'JP multiplier artwork');
@@ -66,7 +66,7 @@ function verify(state,value){
  assert.deepEqual(state.reel.images.slice().sort(),multipliers.map(n=>'assets/sugar-art-v270/multiplier-'+n+'.png').sort(),'every reel card retains the original PNG');assert.equal(state.reel.popupImageCount,0,'the roulette text popup is unchanged');
 }
 try{
- await page.waitForFunction(()=>window.SweetsSugarChallengeV254?.presentationRevision===279&&document.querySelector('[data-sc-multiplier-art]'),null,{timeout:20000});
+ await page.waitForFunction(()=>[279,305].includes(window.SweetsSugarChallengeV254?.presentationRevision)&&document.querySelector('[data-sc-multiplier-art]'),null,{timeout:20000});
  await page.evaluate(async()=>{await document.fonts.ready;window.__qaSugar279Revision=100000;await Promise.all([...document.querySelectorAll('.sc254-overlay img,.sc254-celebration img')].map(image=>image.decode()));});
  report.artwork=await page.evaluate(async values=>{
   const result=[];

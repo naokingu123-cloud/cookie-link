@@ -144,20 +144,26 @@ function paintRoleDiagram(role,record){
 }
 function paintTables(d){
  const counts=engine.fx?.counts||d.counts||{},bet=app.bet(id)||0;
+ const widths=new Map(roles.map(role=>[role,nodes.roles.get(role).section.clientWidth]));
  for(const role of roles){
   const record=nodes.roles.get(role),count=Math.max(0,Math.floor(Number(counts[role])||0));paintRoleDiagram(role,record);
   const first=count<5?1:count-3,list=Array.from({length:5},(_,i)=>first+i);
   const rows=list.map(n=>{const hundredths=typeof rules.roleTotal==='function'?rules.roleTotal(role,n,engine.state||rules.CURRENT_REVISION):rules.roleAward(role,0,n);return {count:n,hundredths,win:Math.floor(bet*hundredths/100)};});
-  const key=[bet,count,engine.state?.rulesRevision||rules.CURRENT_REVISION,record.section.clientWidth,...rows.map(row=>row.hundredths)].join('/');
-  if(record.key===key)continue;record.key=key;record.section.dataset.earnedCount=String(count);putText(record.count,'×'+count);if(window.SixDropArtV296?.loaded)putText(record.tableCount,'×'+count);record.body.replaceChildren();
+  const key=[bet,count,engine.state?.rulesRevision||rules.CURRENT_REVISION,widths.get(role),...rows.map(row=>row.hundredths)].join('/');
+  if(record.key===key)continue;record.key=key;record.section.dataset.earnedCount=String(count);putText(record.count,'×'+count);if(window.SixDropArtV296?.loaded)putText(record.tableCount,'×'+count);
+  const rendered=[];
   for(const row of rows){
    const tr=document.createElement('tr');tr.dataset.count=String(row.count);tr.dataset.payoutHundredths=String(row.hundredths);tr.dataset.win=String(row.win);
    tr.classList.toggle('is-earned',row.count<=count);tr.classList.toggle('is-current',row.count===count);tr.classList.toggle('is-next',row.count===count+1);
    if(row.count===count)tr.setAttribute('aria-current','true');
    const number=document.createElement('th');number.scope='row';number.textContent='×'+row.count;
-   const value=document.createElement('td'),span=document.createElement('span');span.className='sd278-table-amount';value.append(span);tr.append(number,value);record.body.append(tr);
-   amount(span,row.win,Math.min(11,Math.max(1,(value.clientHeight||13)-2)),Math.max(6,(span.clientWidth||value.clientWidth||62)-3));
+   const value=document.createElement('td'),span=document.createElement('span');span.className='sd278-table-amount';value.append(span);tr.append(number,value);rendered.push({tr,value,span,win:row.win});
   }
+  record.body.replaceChildren(...rendered.map(item=>item.tr));
+  // Read all five bays together, then fit their labels. Interleaving each
+  // row append/fit with its measurement forces five separate layouts.
+  const fitted=rendered.map(({value,span,win})=>({span,win,size:Math.min(11,Math.max(1,(value.clientHeight||13)-2)),width:Math.max(6,(span.clientWidth||value.clientWidth||62)-3)}));
+  for(const {span,win,size,width} of fitted)amount(span,win,size,width);
   lastRows[role]={count,rows};
  }
 }

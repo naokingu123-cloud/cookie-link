@@ -10,7 +10,12 @@ assert.match(index,/hostPhysicsGuard/,'host-only background physics guard is ins
 assert.equal(game.split('if(drawing&&!paused&&!document.hidden)').length-1,2,'renderer patch expects two matching guards');
 const release=JSON.parse(await read('app-version.json')).version.match(/-v(\d+)-/)?.[1];
 assert.ok(release&&Number(release)>=240);
-assert.ok(loader.includes('shared-client-background-v240.js?v='+release),'extra background handler loaded with current release cache key');
+// An artwork-only release does not invalidate the unchanged background module.
+const imports=[...loader.matchAll(/load\('([^']+)'\)/g)].filter(match=>match[1].split('?')[0]==='assets/shared-client-background-v240.js');
+assert.equal(imports.length,1,'one pinned background handler import');
+const pin=new URL(imports[0][1],'https://fixture.invalid/').searchParams.get('v');
+assert.match(pin||'',/^\d+$/);
+assert.ok(Number(pin)>=240&&Number(pin)<=Number(release),'cache pin includes the implemented continuity revision');
 assert.match(corePatch,/const finishedAttempt=\(!document.hidden\|\|window.SweetsHostKeepAliveV206\?\.capturePumpActive\)/,'completed hidden draw is recognized');
 assert.match(html,/id="server-bet-now"/,'only the operator monitor has a BET button');
 assert.doesNotMatch(index,/id="server-bet-now"/,'player page cannot start server BET');

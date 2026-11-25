@@ -47,6 +47,7 @@ function outline(ctx,x,y,r,color,width){
 let materials;
 honeyCrumb.addEventListener('load',()=>{materials=null;browning=null;});
 function makeMaterials(){
+ const dedicated=window.CastellaArtV303?.materials();if(dedicated)return dedicated;
  const illustrated=window.SweetsIllustratedBoardsCV275?.castellaMaterials();if(illustrated)return illustrated;
  if(window.SweetsCartoonBoardsC)return window.SweetsCartoonBoardsC.castellaMaterials();
  if(materials||!tiles.naturalWidth)return materials;
@@ -77,6 +78,7 @@ const specialColors={pour:['#b9f7ff','#26b7df','#125e89'],fire:['#fff0a3','#ff8c
 // Small code-native marks stay crisp at both live-board and miniature sizes.
 // The drop + rising arrow means injection; a flame above a switch means heat.
 function powerGlyph(ctx,x,y,r,kind){
+ if(window.CastellaArtV303?.power(ctx,x,y,r,kind))return;
  ctx.save();ctx.translate(x,y);ctx.scale(r,r);ctx.lineJoin=ctx.lineCap='round';
  const colors=specialColors[kind]||specialColors.sugar;
  ctx.lineWidth=.11;ctx.strokeStyle=colors[2];ctx.fillStyle=colors[1];
@@ -238,8 +240,9 @@ function griddleHeat(ctx,x,y,r,t,id,mini){
  ctx.restore();
 }
 function dispenser(ctx,x,y,unit,age){
+ const dedicated=window.CastellaArtV303?.loaded?window.CastellaArtV303:null;
  const cartoon=window.SweetsCartoonBoardsC;
- if((!cartoon&&!bottle.naturalWidth)||age>=1110)return;
+ if((!dedicated&&!cartoon&&!bottle.naturalWidth)||age>=1110)return;
  const side=x<ctx.canvas.width/2?-1:1,fromTop=y>unit*3.12;
  const tilt=fromTop?0:-1.08,approach=clamp(age/130),leave=clamp((age-825)/285);
  const visibility=clamp(age/85)*(1-leave);
@@ -267,9 +270,10 @@ function dispenser(ctx,x,y,unit,age){
   }
  }
  ctx.translate(tipX,tipY);ctx.scale(side,1);ctx.rotate(tilt-.12*(1-approach)+leave*.17);
- const bw=unit*2.02,bh=bw*(cartoon?cartoon.dispenserRatio():bottle.naturalHeight/bottle.naturalWidth);
+ const bw=unit*2.02,bh=bw*(dedicated?dedicated.dispenserRatio():cartoon?cartoon.dispenserRatio():bottle.naturalHeight/bottle.naturalWidth);
  ctx.shadowColor='#27180ea3';ctx.shadowBlur=unit*.07;ctx.shadowOffsetY=unit*.10;
- if(cartoon)cartoon.castellaDispenser(ctx,0,0,bw,bh);
+ if(dedicated)dedicated.dispenser(ctx,0,0,bw,bh);
+ else if(cartoon)cartoon.castellaDispenser(ctx,0,0,bw,bh);
  else ctx.drawImage(bottle,-bw*bottleTip[0],-bh*bottleTip[1],bw,bh);
  ctx.restore();
 }
@@ -279,7 +283,7 @@ function paint(ctx,s,opts={},mini=false){
  const age=reduced.matches?Infinity:Math.max(0,opts.age??Infinity),oven=showOven(s,age);
  const bake=s.draws.length>=6,play=s.draws.length>0&&age<1500,zoneId=opts.previewZone||s.lastZone;
  const reachShown=Array.isArray(opts.reach)&&opts.reach.length>0&&(s.phase==='pour'||oven);
- const key=[w,h,oven,play?Math.floor(age/30):-1,tiles.naturalWidth,panArt.naturalWidth,bottle.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch,opts.previewZone,zoneId,
+ const key=[w,h,oven,play?Math.floor(age/30):-1,tiles.naturalWidth,panArt.naturalWidth,bottle.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch,window.CastellaArtV303?.epoch,opts.previewZone,zoneId,
    reachShown&&!reduced.matches?Math.floor((opts.time||0)/80):-1].join('/');
  const last=history.get(ctx);
  if(last?.s===s&&last.key===key&&last.reach===opts.reach)return;
@@ -299,7 +303,7 @@ function paint(ctx,s,opts={},mini=false){
  const px=X(-panW/2),py=Y(-panH/2);
  const firing=bake?s.zones[s.lastZone-1]:null,zone=zoneId?s.zones[zoneId-1]:null;
  const bakeOverlay=bake&&play;
- const baseKey=[w,h,oven,play,opts.previewZone,zoneId,tiles.naturalWidth,panArt.naturalWidth,honeyCrumb.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch].join('/');
+ const baseKey=[w,h,oven,play,opts.previewZone,zoneId,tiles.naturalWidth,panArt.naturalWidth,honeyCrumb.naturalWidth,window.SweetsCartoonBoardsC?.epoch,window.SweetsIllustratedBoardsCV275?.epoch,window.CastellaArtV303?.epoch].join('/');
  if(frame.baseKey!==baseKey){
   const movingCell=c=>play&&(bake?firing.cells.includes(c.id):frame.arrival[c.id]!==undefined);
   frame.moving=s.cells.filter(movingCell);
@@ -344,7 +348,8 @@ function paint(ctx,s,opts={},mini=false){
   const g=image.getContext('2d');g.clearRect(0,0,w,h);g.lineJoin=g.lineCap='round';return g;
  }
  function drawGriddle(ctx){
-  if(window.SweetsCartoonBoardsC)window.SweetsCartoonBoardsC.castellaGriddle(ctx,px,py,panW*unit,panH*unit,unit);
+  if(window.CastellaArtV303?.griddle(ctx,px,py,panW*unit,panH*unit)){}
+  else if(window.SweetsCartoonBoardsC)window.SweetsCartoonBoardsC.castellaGriddle(ctx,px,py,panW*unit,panH*unit,unit);
   else if(!mini){
    if(panArt.naturalWidth)ctx.drawImage(panArt,px,py,panW*unit,panH*unit);
    else{ctx.fillStyle='#39322e';ctx.fillRect(px,py,panW*unit,panH*unit);}
@@ -451,7 +456,8 @@ function mount(panel){
  <img class="pct-sweep-art" src="assets/party-castella-feast.webp" alt="" aria-hidden="true"></div>
  <div class="pct-caption" role="status" aria-live="polite"></div>`;
  panel.append(root);
- if(window.SweetsCartoonBoardsC)root.querySelector('.pct-sweep-art').src=window.SweetsCartoonBoardsC.url('castella-baked');
+ if(window.CastellaArtV303?.mount(root)){}
+ else if(window.SweetsCartoonBoardsC)root.querySelector('.pct-sweep-art').src=window.SweetsCartoonBoardsC.url('castella-baked');
  const q=k=>root.querySelector(k),phase=q('.pct-phase'),pan=q('.pct-pan'),canvas=q('.pct-pan>canvas'),ctx=canvas.getContext('2d');
  for(const icon of root.querySelectorAll('.pct-power-icon'))powerGlyph(icon.getContext('2d'),36,34,30,icon.dataset.power);
  const legend=q('.pct-anchors'),caption=q('.pct-caption'),table=q('tbody');

@@ -39,4 +39,21 @@ const bitmaps=art.filter(file=>file.isFile()&&/\.(?:png|webp|avif)$/.test(file.n
 assert(bitmaps.length>=3,'Cookie Link ships dedicated board, payout and award artwork');
 for(const file of bitmaps)assert(entries.has('assets/cookie-art-v293/'+file.name),file.name+' is available offline');
 
-console.log('V293_RELEASE_INTEGRITY_PASS',JSON.stringify({version,files:entries.size,totalBytes:total,cookieBitmaps:bitmaps.length}));
+// A whole-lineup release must install every game's actual dedicated materials,
+// including the four upgrades which previously remained outside main.
+const artworkFolders={
+ cookie:'cookie-art-v293',choco:'choco-art-v295',candy:'sixdrop-art-v296',
+ gelato:'gelato-art-v297',winery:'winery-art-v298',popcorn:'popcorn-art-v299',
+ jelly:'jelly-art-v300',stick:'waffle-art-v301',castella:'castella-art-v303',
+ dango:'dango-art-v304',sugar:'sugar-art-v305'
+};
+const artworkCounts={};
+for(const [game,folder]of Object.entries(artworkFolders)){
+ const files=await fs.readdir('assets/'+folder);
+ const images=files.filter(name=>/\.(?:png|webp|avif)$/.test(name));
+ assert(images.length>=3,game+' has dedicated board/furniture/award material');
+ for(const name of images)assert(entries.has('assets/'+folder+'/'+name),game+' artwork is available in the verified offline shell: '+name);
+ artworkCounts[game]=images.length;
+}
+
+console.log('V293_RELEASE_INTEGRITY_PASS',JSON.stringify({version,files:entries.size,totalBytes:total,cookieBitmaps:bitmaps.length,artworkCounts}));

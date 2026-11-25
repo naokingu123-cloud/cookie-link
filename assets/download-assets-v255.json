@@ -1,10 +1,10 @@
 {
-  "version": "20261125-v301-paytable-fit",
+  "version": "20261125-v305-all-games-art",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 41,
-      "sha256": "c3407603d43edfd2ba0bf3d362bff541a25cc8bcf105fdfc05029b70649982d7"
+      "bytes": 42,
+      "sha256": "b4d730000281963d650c1cae85b9979dca07122ed3dde154dfad7664b194a807"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1623,8 +1623,8 @@
     },
     {
       "path": "assets/award-presentation-v277.js",
-      "bytes": 51449,
-      "sha256": "65e383ecbc66474770c92960e9c19d2d6f49f8873e815a72dd2b4c3cf4cc8149"
+      "bytes": 56105,
+      "sha256": "4c186e1d8be11b8fc767785bf8d75b1cee5d38a919bb1abcfece0949278b9b20"
     },
     {
       "path": "assets/bgm-player.js",
@@ -1643,8 +1643,8 @@
     },
     {
       "path": "assets/bingo-stick-view.js",
-      "bytes": 17290,
-      "sha256": "0639514deb010e8b59bf72e38f21554129865e191b1e431ec8a395480b1c86a4"
+      "bytes": 18461,
+      "sha256": "abb29709d92cd1a9bb03406576800a11209611314269dc575571d6e877d6e308"
     },
     {
       "path": "assets/bingo-stick.css",
@@ -1872,9 +1872,64 @@
       "sha256": "902d9e84fe1544438404cdda26b639b16d6357d452b366c13d841b012b811bc6"
     },
     {
+      "path": "assets/castella-art-v303.js",
+      "bytes": 5576,
+      "sha256": "e122adf94f8bbebbfcea664b6795c90f2aeba7a479418638b17b754b4d21da2f"
+    },
+    {
+      "path": "assets/castella-art-v303/award-all-baked.webp",
+      "bytes": 588812,
+      "sha256": "013d334273b34851e0e7703f670918e55f2a04afbf3f2f04783003811f27f08c"
+    },
+    {
+      "path": "assets/castella-art-v303/award-bake.webp",
+      "bytes": 539274,
+      "sha256": "3788fe6c6ceb8b7b75cfed2d08055a2dfe1236ecaa8cb389433b01eb24e08f00"
+    },
+    {
+      "path": "assets/castella-art-v303/award-digits.webp",
+      "bytes": 319518,
+      "sha256": "3559154150c4522fa5338cea94e66b2010ce7297e0e1d878f3e55361bd6910bb"
+    },
+    {
+      "path": "assets/castella-art-v303/bakery-furniture.webp",
+      "bytes": 423212,
+      "sha256": "6460748d78c9a9a404596a8b1776ab501baf0cc6ad94a1f327a4ee6c5e3cdbe4"
+    },
+    {
+      "path": "assets/castella-art-v303/castella-materials.webp",
+      "bytes": 490852,
+      "sha256": "eeec4ea2db7d73c846b7aa937981f29a632fa61bd9b38a280f19d3629f301c77"
+    },
+    {
+      "path": "assets/castella-art-v303/copper-griddle.webp",
+      "bytes": 306498,
+      "sha256": "233d3bb62f3a1d0eff88c6793a316344b6d4c5933f38974830032a7ab9c61480"
+    },
+    {
+      "path": "assets/castella-art-v303/generation-provenance.json",
+      "bytes": 13335,
+      "sha256": "cad18299425354da9cfc378f2a8b0f231778f9d485d99d66721a343abff87ab0"
+    },
+    {
+      "path": "assets/castella-art-v303/payout-cabinet.webp",
+      "bytes": 185154,
+      "sha256": "a442d0c5f49623a271f56e8f31450336c5f1bc5f5e36aeaadc17b4e1c5bcdff9"
+    },
+    {
+      "path": "assets/castella-award-v303.js",
+      "bytes": 9115,
+      "sha256": "20787e2d066e8707086f7b69dd96d3f9946c80ff9631f40ec0d32415414416cd"
+    },
+    {
       "path": "assets/castella-lesson.js",
-      "bytes": 8598,
-      "sha256": "c1d2c358706cd7e5504c0331c749dfb44ab44ee29badd36098315c1daaf82793"
+      "bytes": 8868,
+      "sha256": "eaad6a7a541862500dca32eb587db571b019eadb9f884300e4c77948e5c408c4"
+    },
+    {
+      "path": "assets/castella-skin-v303.css",
+      "bytes": 7158,
+      "sha256": "735193bc600d37feaa07b4575de4ad791473dfc77ee4d4ea41e4a95ad754af67"
     },
     {
       "path": "assets/celebration-art-v277.js",
@@ -1913,8 +1968,8 @@
     },
     {
       "path": "assets/celebration-audio-v277.js",
-      "bytes": 21272,
-      "sha256": "b0af65f909aef2b6be38d371d543f25aaaeb27efa5a13ad7d400bd3e434f90ed"
+      "bytes": 21518,
+      "sha256": "a3ad7dff24520ad0aabd735010a20af080a8b35a499f75fbc299c5106babecc6"
     },
     {
       "path": "assets/choco-art-v295.js",
@@ -2137,9 +2192,69 @@
       "sha256": "1082671113760ec7c0866968ac17655941f6fa214c2212b68bc9f6cd39148ecc"
     },
     {
+      "path": "assets/dango-art-v304.css",
+      "bytes": 2623,
+      "sha256": "6fa2c3c79df59430ba0437d90b71ac9fe2a05e4490f5616363f2daa5445eae44"
+    },
+    {
+      "path": "assets/dango-art-v304.js",
+      "bytes": 4468,
+      "sha256": "8c4f650a6fcaa798f73bac36994d5ae028923dc5ec2d834dca906a918a107329"
+    },
+    {
+      "path": "assets/dango-art-v304/award-bingo.webp",
+      "bytes": 514332,
+      "sha256": "e50e9ca584bf3858056034e3f193bb4e9064221347809d57dff53fff7479454f"
+    },
+    {
+      "path": "assets/dango-art-v304/award-digits.webp",
+      "bytes": 350654,
+      "sha256": "20368c53a04ac214dbe3bfd1b9fa25472f590dd61f6fb9b8584de9849180fd37"
+    },
+    {
+      "path": "assets/dango-art-v304/award-free.webp",
+      "bytes": 471136,
+      "sha256": "ad67c3f037eabe6d814e550be48660a61a9d4e42ea278e4fdf323fb7fda87421"
+    },
+    {
+      "path": "assets/dango-art-v304/award-highest.webp",
+      "bytes": 634350,
+      "sha256": "80551ced5526c0c98c5b0d0f989886b5dc0fe80f69499d403173f9f4dd4216f3"
+    },
+    {
+      "path": "assets/dango-art-v304/furniture-atlas.webp",
+      "bytes": 369014,
+      "sha256": "4760b1967488ea3ec43cd68f204920e6d1fce942880caa8e13c292de84211487"
+    },
+    {
+      "path": "assets/dango-art-v304/generation-provenance.json",
+      "bytes": 18386,
+      "sha256": "32ca0acfbbc25c8d27e0d37b4bcd9254d448023ad20cd9fcabba0c77b58e06e7"
+    },
+    {
+      "path": "assets/dango-art-v304/mochi-pieces.webp",
+      "bytes": 255674,
+      "sha256": "50775a843a94fd2f267e064bc48968e6fd9f2d5eb9c8ee8e084c00220b29c7db"
+    },
+    {
+      "path": "assets/dango-art-v304/moon-garden.webp",
+      "bytes": 97756,
+      "sha256": "4ad655388b3c35aa4722c9ee1d62ddea3a1d856a6fe51dbfc09efacd64f11a48"
+    },
+    {
+      "path": "assets/dango-art-v304/payout-cabinet.webp",
+      "bytes": 183866,
+      "sha256": "41220afb6d3d642e2af3c1d44ada8d527045218ab187b7d226c5006c635bcb92"
+    },
+    {
       "path": "assets/dango-art/background.webp",
       "bytes": 115012,
       "sha256": "9f3733650f8bf62f15cca40dec8a676951ec655084c59602f1697c9379501c9f"
+    },
+    {
+      "path": "assets/dango-award-v304.js",
+      "bytes": 9345,
+      "sha256": "f6ff642d1b317677b4dbf22a76a644118e7bce01b7b6ee72cacdc55ffe873caa"
     },
     {
       "path": "assets/dango-bingo-host.js",
@@ -2158,8 +2273,8 @@
     },
     {
       "path": "assets/dango-bingo-view.js",
-      "bytes": 72501,
-      "sha256": "c3c3f0660358efa2e6247db759aade15d25830d493424bab452388513876e96e"
+      "bytes": 73435,
+      "sha256": "21ef48ca61b689932236dace9259f829ed796ecd1fa827c8b833023cd6fb8557"
     },
     {
       "path": "assets/dango-bingo.css",
@@ -2188,8 +2303,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4352,
-      "sha256": "9a16dd4d3d9a24887bcef6e25d4f08cc0817bde18504cf928e80f19885b1fc28"
+      "bytes": 4353,
+      "sha256": "07e1baa2323b8b9de31371152dae6deaab61b3701d548cf67d59b431b4041965"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2213,8 +2328,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3763,
-      "sha256": "cd9233413d70a206cf9b33c7eb9ef9d2a3d7e15ac622c1fef37af672c3629b43"
+      "bytes": 3764,
+      "sha256": "db03771f528cdc19ee77d81b9908a266fc3d9f2888bf2c602305105af32c0d14"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2743,8 +2858,8 @@
     },
     {
       "path": "assets/party-castella.js",
-      "bytes": 32234,
-      "sha256": "bbcc287ad1991300980338ec88754627cd097b1da52374a97a91cca14c360e67"
+      "bytes": 32741,
+      "sha256": "2414db563070da373b4a3cfda782d92098d94facf9ca24e483aa18dc808ffe60"
     },
     {
       "path": "assets/payout-trend-v242.js",
@@ -3663,8 +3778,8 @@
     },
     {
       "path": "assets/sixdrop-ui-v278.js",
-      "bytes": 18883,
-      "sha256": "2d353d37916065e521e35023f514d5fe78966bafe39061a3afceee3b3976b6ff"
+      "bytes": 19305,
+      "sha256": "3d32d4330967648d3f1bc3dc56e74ff76d8f9494faa729024b34b98ba6f74428"
     },
     {
       "path": "assets/sixdrop_candy_lid.png",
@@ -3787,6 +3902,61 @@
       "sha256": "f6c0133f1084064421568a5f7c0646700a5678e39e4970ae17a04bd0e6e10bf1"
     },
     {
+      "path": "assets/sugar-art-v305.js",
+      "bytes": 2986,
+      "sha256": "3482e81731de456670bfcdae5177f41e4ab4cc86600235cd1bf879ce0343d3fa"
+    },
+    {
+      "path": "assets/sugar-art-v305/award-cash.webp",
+      "bytes": 403078,
+      "sha256": "380d6e812dfc0668cbb259c96a1928b278f6a14f99b6ebbe46c367c7428c0392"
+    },
+    {
+      "path": "assets/sugar-art-v305/award-digits.webp",
+      "bytes": 545240,
+      "sha256": "e014849df6abc7871d2da88e5c9709b7bc37ee1cae28dfdfda9bae5affc0b275"
+    },
+    {
+      "path": "assets/sugar-art-v305/award-jpc.webp",
+      "bytes": 436322,
+      "sha256": "07fe0904d17d293d3e8800579d09b20829ee98b3d7e1bc4f1cf50f23c9fba4d1"
+    },
+    {
+      "path": "assets/sugar-art-v305/bottle.webp",
+      "bytes": 273708,
+      "sha256": "662304e3686402a48c0fb703ce292097f60f9ace8940a96831339caf7eaf11c2"
+    },
+    {
+      "path": "assets/sugar-art-v305/furniture-atlas.webp",
+      "bytes": 226318,
+      "sha256": "2bb9a9d861cdd9e788f0e7ffbab2c521fa68c791f8c5e91f9c09d7efad284cde"
+    },
+    {
+      "path": "assets/sugar-art-v305/generation-provenance.json",
+      "bytes": 17298,
+      "sha256": "7773b2a6bc3636bf1735a49cc8031edb82ca7f9cce7a63a52c46a7ae1207c539"
+    },
+    {
+      "path": "assets/sugar-art-v305/payout-cabinet.webp",
+      "bytes": 208248,
+      "sha256": "1019ece07c89e97d13b3d860768c85bd8a747597bc43e2b851e72cae532ec998"
+    },
+    {
+      "path": "assets/sugar-art-v305/scale.webp",
+      "bytes": 421286,
+      "sha256": "0136f0fa9b1def8cc370ec5bc48e577953a2e2f4ca219865f4771e209a0a2f7c"
+    },
+    {
+      "path": "assets/sugar-art-v305/workshop-background.webp",
+      "bytes": 160012,
+      "sha256": "d1a8156615a9039a09db86275d0a92aeda7e905da6ee22d5499de6c803427e3c"
+    },
+    {
+      "path": "assets/sugar-award-v305.js",
+      "bytes": 4885,
+      "sha256": "82d2b6e9d853c500651e0b33147bada33829d3272d8ad22d3857fae15b568ded"
+    },
+    {
       "path": "assets/sugar-challenge-rules-v254.js",
       "bytes": 16445,
       "sha256": "1e4025d82dd8c96559aaf1b2b07cf1601122f784bd52353c5dd6689387eb4f22"
@@ -3798,13 +3968,18 @@
     },
     {
       "path": "assets/sugar-challenge-v254.js",
-      "bytes": 28282,
-      "sha256": "d05f07ee4678c5893f0e504c8e2fcd1ce2ce1acdc758e2e332f8a624e4409c32"
+      "bytes": 30153,
+      "sha256": "17625c92bd37e6154d93fec9813cf8b3a31b5713a0a3f9314661cfadc8e0fbf0"
     },
     {
       "path": "assets/sugar-five-candy-frame.svg",
       "bytes": 15743,
       "sha256": "dd48e30c6eee34ece5f502ac9b286de8801e62f036016d5b383d7357ef1979c9"
+    },
+    {
+      "path": "assets/sugar-presentation-v305.css",
+      "bytes": 5220,
+      "sha256": "75b85efb00276962af9c5618be6d1d411a1eb3ee93cc885bec4b3b58757d8281"
     },
     {
       "path": "assets/sugar-roulette-v254.js",
@@ -4077,6 +4252,66 @@
       "sha256": "b3ac5d80721bc44366950abe1e746943b8bc5634e30d1e5e57236f13ea457d1f"
     },
     {
+      "path": "assets/waffle-art-v301.css",
+      "bytes": 7721,
+      "sha256": "148b5625be1c4a00696de75dec0cce7882fe0107aa3764a95056a632372b3297"
+    },
+    {
+      "path": "assets/waffle-art-v301.js",
+      "bytes": 14874,
+      "sha256": "25bf80e5c7fcdc3bae55aeb0285e97bf7c012051ecc399f8aa7db9253c951ee5"
+    },
+    {
+      "path": "assets/waffle-art-v301/award-digits.webp",
+      "bytes": 337418,
+      "sha256": "26d8b1af349966966035a37e906f1837cfa204d64c94c7fb39c89e153edf1e39"
+    },
+    {
+      "path": "assets/waffle-art-v301/award-flip.webp",
+      "bytes": 334668,
+      "sha256": "15cfb868de68cb470d2f54aa53a80652580c2645f8d0338431f0534be4eb1c95"
+    },
+    {
+      "path": "assets/waffle-art-v301/award-grade-up.webp",
+      "bytes": 155694,
+      "sha256": "2ee3d24234df5bab3d6f702cd27751f4efa776ee8e0c8d4330599f26d9c89169"
+    },
+    {
+      "path": "assets/waffle-art-v301/award-reversal.webp",
+      "bytes": 314130,
+      "sha256": "68136035089fb27e74272b0b5a5067e853a5dda397848600a65bc06befe2dbc8"
+    },
+    {
+      "path": "assets/waffle-art-v301/board-kit.webp",
+      "bytes": 665578,
+      "sha256": "75787577bc41dac56b7bd53fa44af3ab8ca9ce6feefa63acde994daec0006b89"
+    },
+    {
+      "path": "assets/waffle-art-v301/furniture-atlas.webp",
+      "bytes": 228450,
+      "sha256": "6b592047420cd34a8d34dcf941bc3bd303c7b8fc25d88d01e50772eda2eb3064"
+    },
+    {
+      "path": "assets/waffle-art-v301/generation-provenance.json",
+      "bytes": 18511,
+      "sha256": "d8a2f0a6f931c035912ebb873784f86fbf3bbd66bf1d1ebca0c04c46ba1d3817"
+    },
+    {
+      "path": "assets/waffle-art-v301/payout-cabinet.webp",
+      "bytes": 119788,
+      "sha256": "e3ebbc9a56c122bcc9ced48bc8156f87c20bfa024849460a9582181a07df683c"
+    },
+    {
+      "path": "assets/waffle-art-v301/pieces.webp",
+      "bytes": 425160,
+      "sha256": "b523d82a1b079a082383a2529d59a0a48fe835000c6bc08d7dfeec341be56dd9"
+    },
+    {
+      "path": "assets/waffle-award-v301.js",
+      "bytes": 8870,
+      "sha256": "d8fec099269793a7ef69e63e641e7624376e69c4545eb94535ca7f07309de90f"
+    },
+    {
       "path": "assets/waffle-backdrop.webp",
       "bytes": 198402,
       "sha256": "f5cbc928b2a58cf1e45408f630460f3e5372dd8cee49bcf2e8eb55a7ad7d2736"
@@ -4098,8 +4333,8 @@
     },
     {
       "path": "assets/waffle-lesson.js",
-      "bytes": 7195,
-      "sha256": "c00078e381462f9829761f6285909112ce1f8547bd912ec31700468d0083b26e"
+      "bytes": 7902,
+      "sha256": "72696e11d29b6663508ee60abbb847c34894f7d20082a9f2f16939fd269afac0"
     },
     {
       "path": "assets/waffle-ogura.webp",
@@ -4128,8 +4363,8 @@
     },
     {
       "path": "assets/waffle-pow-v159.js",
-      "bytes": 19863,
-      "sha256": "d15deb91a54f298695d5d334fd2c0eaaccd523e8580bbb5888270256dc664621"
+      "bytes": 20047,
+      "sha256": "acc89dd12121184678e6959d097696eed908485a9d8b2e5af818dee182ad3fa5"
     },
     {
       "path": "assets/waffle-reversal-logo.webp",
@@ -4398,8 +4633,8 @@
     },
     {
       "path": "assets/winery-pyramid-v1.js",
-      "bytes": 52685,
-      "sha256": "7d6de6f8c12fd2e5f9ab9bff2cf8a2e444042bfaedcf514f1f0061b075d071eb"
+      "bytes": 52916,
+      "sha256": "4fbd835f5399d9667bb009533f86c92a01b589915157a15c497275480b981c34"
     },
     {
       "path": "assets/winery-pyramid-validation-v1.json",
@@ -4443,8 +4678,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 89033,
-      "sha256": "c46f55cf6c25dc6df6ac73588fc5b661c75a0e5184d8faf703ebf9b58cefb71c"
+      "bytes": 89951,
+      "sha256": "6735e470e07628059ec0a880e38daa959f4b45c05f57afef4f8c27f61ac128bf"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4682,5 +4917,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 262781376
+  "totalBytes": 273929067
 }

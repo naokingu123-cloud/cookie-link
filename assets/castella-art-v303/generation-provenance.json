@@ -1,0 +1,163 @@
+{
+  "version": 303,
+  "generator": "built-in image_gen",
+  "created": "2026-11-25",
+  "purpose": "Dedicated Party Castella materials, griddle, instruments, payout cabinet and native awards; live rule values are never baked into artwork",
+  "processing": "Lossy WebP conversion at quality 92 preserving alpha; no generative or painted postprocessing. Source crop registration is in the production loader.",
+  "assets": [
+    {
+      "key": "materials",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-f000f735-f226-475a-bde5-9a6a2ced14da.png",
+      "prompt": "Use case: stylized-concept. Asset type: production raster sprite atlas for a premium Japanese baby-castella baking medal arcade game. A precisely aligned 3 columns by 2 rows sheet, six isolated objects, equal cells, generous empty transparent gutters, nothing touching cell boundaries. Top row left: perfectly round recessed dark iron baking well, polished copper-gold double rim, subtle engraved honeycomb and little brass rivets, directly overhead, empty dark readable center. Top middle: same overhead circular well filled with glossy pale golden raw castella batter, fine bubbles and buttery highlights, unobstructed center for live numbers. Top right: same circular outline containing a beautifully baked round baby castella, caramel brown crisp perimeter, warm yellow porous sponge center, delicate toasted sheen, center uncluttered for live numbers. Bottom left: sculpted cyan enamel batter-drop power token with a gold upward arrow, ornate copper rim. Bottom middle: sculpted orange-amber flame power token on a little brass oven switch, ornate copper rim. Bottom right: faceted pink sugar crystal power token with tiny gold star, ornate copper rim. All six objects have exquisite hand-painted 3D patisserie-game detail, dimensional bevels, warm studio light, precise readable silhouettes at small sizes. Orthographic front/top view. No text, no numbers, no labels, no white background, no grid lines, no watermark. Truly transparent RGBA background. Composition around 1536 by 1024, objects centered in their exact 3x2 cells.",
+      "file": "castella-materials.webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": [
+        0,
+        254
+      ],
+      "source_sha256": "a5b40af91a86b44bfcd08bfa88a16166940522e031fd2dca7e9468c493b08082",
+      "sha256": "eeec4ea2db7d73c846b7aa937981f29a632fa61bd9b38a280f19d3629f301c77",
+      "bytes": 490852
+    },
+    {
+      "key": "pan",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-ce03db70-64b8-409d-9265-13fdb8823a3a.png",
+      "prompt": "Use case: stylized-concept. Asset type: detailed production game board base, fully transparent background. Exquisitely rendered copper-and-cast-iron Japanese baby-castella griddle viewed perfectly overhead, wide regular hexagonal silhouette with gently rounded six corners, width to height about 1.15. Outer perimeter ornate polished warm copper with fine engraved honeycomb filigree, tiny brass rivets, small pairs of golden sponge cakes with whipped cream and star sugar at four corners only. The entire large flat center, 85 percent of the width, is a uniform subtly mottled dark charcoal seasoned iron plate, empty, unmarked, no holes, no divisions, no pipes. The engine will lay 61 circular wells over this blank center: it must remain spacious and low contrast. Outer perimeter rim about 5 percent thickness. No handles sticking out. Rich dimensional hand-painted premium arcade-patisserie style, soft highlights from upper left. Isolated entire board with generous transparent margins all around, all outside pixels alpha zero. No lettering, symbols, numbers, food on the center, watermark. Approximately square high resolution.",
+      "file": "copper-griddle.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "source_sha256": "6991d566a01afc79f3e87f773dfa06fad1116d31828c87405cbf728600e93ec6",
+      "sha256": "233d3bb62f3a1d0eff88c6793a316344b6d4c5933f38974830032a7ab9c61480",
+      "bytes": 306498
+    },
+    {
+      "key": "furniture",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-4952661d-6b54-443f-8a54-7ccc08baf087.png",
+      "prompt": "Use case: stylized-concept. Asset type: transparent production raster atlas for copper-and-honey baby castella arcade game. Exactly six isolated ornaments laid out in 2 columns by 3 rows, equal cells and broad transparent gutters. Top-left: a premium copper batter dispenser, tall round cylindrical body with ivory enamel band, brass pressure lever, and a long nozzle extending diagonally down-right; the nozzle tip must be the lower-rightmost point, fully visible. Top-right: an ornate empty ruby and copper horizontal cartouche, front-facing, generous blank center, tiny honeycomb trim. Middle-left: ornate cyan-enamel and copper horizontal plaque, blank center 70 percent, suited for a live injection power gauge. Middle-right: matching amber-enamel and copper horizontal plaque, blank center 70 percent, suited for a live heat gauge. Bottom-left: small abundant arrangement of golden baby-castella balls, caramel crust, one cut sponge, honey drops and sugar stars, no plate. Bottom-right: a matching ornate warm ivory and brass horizontal plaque with a wide quiet blank center for live phase text. Beautiful fine metallic engraving, pastry illustration quality, dimensional but front facing UI, warm studio light. No words, numbers, baked-in ticks, symbols on blank plaques, no watermark. Whole objects fit within exact 2x3 grid cells without crossing gutters. Transparent RGBA background.",
+      "file": "bakery-furniture.webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": [
+        0,
+        254
+      ],
+      "source_sha256": "5e3f493d270cfb483645df01418ee639b1fa419819fe9287aa3c49f8e151f289",
+      "sha256": "6460748d78c9a9a404596a8b1776ab501baf0cc6ad94a1f327a4ee6c5e3cdbe4",
+      "bytes": 423212
+    },
+    {
+      "key": "payout",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-5522b966-2f02-4422-b79a-c8000abf45cd.png",
+      "prompt": "Use case: stylized-concept. Asset type: production payout cabinet image, isolated on fully transparent background, tall portrait proportion width:height 1:2.4. Premium copper and honey patisserie arcade cabinet for Japanese baby castella, hand-painted dimensional detailed materials. Narrow polished copper outer frame with braided honeycomb engraving, fine ivory enamel trim, tiny rivets and sugar-crystal glints. A small ornate crown of two baby castella balls and gold star sits at the very top, within top 12 percent. The central 78 percent is a perfectly blank flat warm pale-ivory enamel face, low contrast, unobstructed, no rows, no separators, no inner ornaments. Thin amber foot at the bottom within last 6 percent. Straight-on orthographic front view, symmetrical slim silhouette, broad useful content area taking at least 78 percent of width. This cabinet will hold dynamic 15-row prize table and text that must stay legible. No lettering, no numbers, no currency, no logos, no icons on the blank central face, no watermark. Generous transparent margin outside cabinet.",
+      "file": "payout-cabinet.webp",
+      "width": 809,
+      "height": 1942,
+      "alpha": [
+        0,
+        255
+      ],
+      "source_sha256": "8e42f30c18bf12c0aa82d8596e2d6a082bc0080fa68a08e9b707780fdf9b9ebd",
+      "sha256": "a442d0c5f49623a271f56e8f31450336c5f1bc5f5e36aeaadc17b4e1c5bcdff9",
+      "bytes": 185154
+    },
+    {
+      "key": "award-bake",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-e6fd53c0-65d6-4312-bddc-1a124b0816b5.png",
+      "prompt": "Use case: stylized-concept. Production raster reward illustration for a premium Japanese baby castella arcade game, wide 3:2 aspect, genuinely transparent background with no outer rectangular frame. An exuberant yet readable composition: top half has a fresh golden baby-castella feast in a tiny copper pan, glistening honey, a cut piece showing fine sponge crumb, curling cream-colored steam and sugar star confetti. Integrated ornate dimensional copper-and-caramel lettering across upper middle reads exactly \"BAKE COMPLETE!\" in one readable line. Below it, a delicate warm ivory pastry-paper ribbon and brass piping expands across center, but its lower 42 percent must stay generously BLANK: small line at 62 percent image height will hold live baked-count text and large row at 79 percent will hold live WIN numerals. Leave central 76 percent of width free for these text lines. Do not draw any digits, currency amounts, WIN, Japanese writing, or additional text. The border is airy irregular small honey droplets and star sugar, not a big rectangular panel. Detailed hand-painted 3D confectionery illustration, crisp small-size silhouettes, warm golden lighting, rich copper engravings and amber highlights. All elements fully inside image with transparent margins; no watermark.",
+      "file": "award-bake.webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": [
+        0,
+        254
+      ],
+      "source_sha256": "05003045461f3eed7bd3e45fae625ac85b4b471f449d070d307c4ec7d5bebcb1",
+      "sha256": "3788fe6c6ceb8b7b75cfed2d08055a2dfe1236ecaa8cb389433b01eb24e08f00",
+      "bytes": 539274
+    },
+    {
+      "key": "award-all",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-9c00a7cb-9158-416b-a2ba-c305d9ea74f9.png",
+      "prompt": "Use case: stylized-concept. Production highest-award raster illustration for a premium Japanese baby castella arcade game, wide 3:2 aspect, truly transparent background with no outer rectangle. Majestic celebration: a gold crown on a large pyramid of perfectly baked golden baby-castella, two small gleaming copper bakery trophies, rising honey ribbons, tiny pink and gold sugar crystals and stars, ornate but airy feast silhouette. Dimensional luxurious white-gold and caramel lettering across upper middle reads exactly \"ALL BAKED!\" and is very readable. A broad light ivory parchment-like pastry scroll in the lower half, supported by fine copper-gold filigree, is generously BLANK from 56 to 91 percent image height. It will later hold a live baked-count detail at 63 percent and large live WIN numerals centered at 79 percent; preserve central 76 percent of width as quiet blank safe area. No numeric digits anywhere, no fixed count, no currency amount, no WIN, no other words. Superb glossy baked sponge texture, soft steam, intricate high quality premium medal arcade reward artwork. Warm gold highlights with subtle rose accents, isolated silhouette, transparent outer margin, no watermark.",
+      "file": "award-all-baked.webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": [
+        0,
+        254
+      ],
+      "source_sha256": "9d6ca7b3664043c29d160156d35735e3fbcf10e42943e33acc33380300919b21",
+      "sha256": "013d334273b34851e0e7703f670918e55f2a04afbf3f2f04783003811f27f08c",
+      "bytes": 588812
+    },
+    {
+      "key": "award-digits",
+      "source": "/workspace/scratch/098164b1b909/generated_images/exec-183b4ff2-2893-4510-b64c-9e893228ecb6.png",
+      "prompt": "Use case: stylized-concept. Production typography sprite atlas on genuinely transparent RGBA background for a luxury baby-castella bakery arcade game. Exactly 12 separate glyphs in a precise 4 columns by 3 rows grid. First row: 0, 1, 2, 3. Second row: 4, 5, 6, 7. Third row: 8, 9, comma, WIN. The string WIN is one single compact glyph entirely inside final bottom-right cell. Every glyph centered in its own equal cell, same visual cap height for numbers, broad empty transparent gutters, nothing touches cell edges. Thick bold extremely readable round arcade serif-free numerals made from ivory cream and warm baked golden castella, fine bronze outlines, amber bevel, tiny polished highlights, subtle honey sheen. The comma is clearly a comma, lower aligned, same matching material. The word WIN is readable uppercase W I N, smaller so it fits its one grid cell without crossing gutter. No labels, no extra digits, no stars surrounding glyphs, no shadows beyond cells, no background texture, no watermark. Approximately 1536 by 1024, carefully registered 4x3 production atlas.",
+      "file": "award-digits.webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": [
+        0,
+        254
+      ],
+      "source_sha256": "2369feb5353f9c61a1f8d7848d7a49287bd1592988c4d7cec9d7f082029a66eb",
+      "sha256": "3559154150c4522fa5338cea94e66b2010ce7297e0e1d878f3e55361bd6910bb",
+      "bytes": 319518
+    }
+  ],
+  "atlasLayout": {
+    "materials": {
+      "columns": 3,
+      "rows": 2,
+      "order": [
+        "empty",
+        "raw",
+        "baked",
+        "pour",
+        "fire",
+        "sugar"
+      ]
+    },
+    "furniture": {
+      "columns": 2,
+      "rowCuts": [
+        0,
+        0.382,
+        0.668,
+        1
+      ],
+      "order": [
+        "dispenser",
+        "ruby",
+        "pour-plaque",
+        "fire-plaque",
+        "feast",
+        "phase"
+      ]
+    },
+    "digits": {
+      "columns": 4,
+      "rows": 3,
+      "order": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        ",",
+        "WIN"
+      ]
+    }
+  }
+}

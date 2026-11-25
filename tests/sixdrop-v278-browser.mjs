@@ -317,7 +317,9 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
  for(let i=0;i<8;i++){
   const next=NUMBERS[i],plan=oracle.plans[i],before=expected;
   let paint;
-  if(capture&&plan?.allClear&&!seenClear)paint=page.waitForFunction(clearPaint,{mini:!!s.mini},{polling:'raf',timeout:45000}).then(async handle=>{try{const evidence=await handle.jsonValue();evidence.liveScreen=await shot(label+'-allclear-live');return evidence;}finally{await handle.dispose();}});
+  // Own an early capture rejection immediately so a timeout is reported with
+  // the native engine diagnostics instead of terminating before report.json.
+  if(capture&&plan?.allClear&&!seenClear)paint=page.waitForFunction(clearPaint,{mini:!!s.mini},{polling:'raf',timeout:45000}).then(async handle=>{try{const evidence=await handle.jsonValue();evidence.liveScreen=await shot(label+'-allclear-live');return evidence;}finally{await handle.dispose();}}).then(evidence=>({evidence}),error=>({error}));
   await page.locator('#manual-number-grid button[data-number="'+next+'"]').click();
   await page.waitForFunction(({received,processed})=>__qa278.app.draws.length===received&&SixDropV247.engine.processed===processed&&!SixDropV247.engine.busy&&!SixDropV247.engine.fx,{received:i+1,processed:expectedProcessed[i+1]},{timeout:90000});
   expected=plan.state;
@@ -326,7 +328,7 @@ async function play(s,{seed=winning.seed,bet=s.bet||3000,carry=prior,label=s.id,
   blasts.push(assertPrimaryRemoval(before,next,view.events.slice(eventCursor)));eventCursor=view.events.length;
   if(anchors)assertFixedAnchors(fixedAnchors(view.hud),anchors,'after ball '+(i+1));
   if(paint){
-   const overlay=await paint;assert(overlay);
+   const captured=await paint;if(captured.error)throw captured.error;const overlay=captured.evidence;assert(overlay);
    const native=plan.timeline.find(event=>event.phase==='pyramidAllClear'&&event.winMedals===overlay.event.win);assert(native,'the captured all-clear has the actual native event WIN');
    if(overlay.renderer===296){assert.equal(overlay.rendered.win,native.winMedals);assert.equal(overlay.rendered.label,overlay.event.label);assert.equal(overlay.rendered.detail,overlay.event.detail);assert.equal(overlay.rendered.liveLabel,'全消し '+native.allClears+'回目！');assert.equal(overlay.rendered.winText,Number(native.winMedals).toLocaleString('ja-JP')+' WIN');}
    const file=label+'-allclear-overlay.png';await fs.writeFile(path.join(output,file),Buffer.from(overlay.data.slice('data:image/png;base64,'.length),'base64'));delete overlay.data;report.screens.push(file);report[label+'Overlay']=overlay;await shot(label+'-allclear-earned');seenClear=true;

@@ -1,0 +1,83 @@
+name: Sugar crystal furniture and accepted native awards v305
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'assets/sugar-*'
+      - 'assets/sugar-art-v305/**'
+      - 'assets/sugar-art-v270/**'
+      - 'assets/sugar-art-v279/**'
+      - 'tests/sugar-*'
+      - 'tests/ui-v250-fixture.mjs'
+      - 'index.html'
+      - 'app-version.json'
+      - '.github/workflows/sugar-v305.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'assets/sugar-*'
+      - 'assets/sugar-art-v305/**'
+      - 'assets/sugar-art-v270/**'
+      - 'assets/sugar-art-v279/**'
+      - 'tests/sugar-*'
+      - 'tests/ui-v250-fixture.mjs'
+      - 'index.html'
+      - 'app-version.json'
+      - '.github/workflows/sugar-v305.yml'
+permissions:
+  contents: read
+jobs:
+  crystal-presentation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SWEETS_QA_OUTPUT_DIR: qa-sugar-v305
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing runtime and ephemeral native Canvas verifier
+        run: npm install --ignore-scripts --no-audit --no-fund --no-save @napi-rs/canvas@0.1.100
+      - name: Source syntax
+        run: |
+          node --check assets/sugar-art-v305.js
+          node --check assets/sugar-award-v305.js
+          node --check assets/sugar-challenge-v254.js
+          node --check tests/sugar-v305-render.mjs
+          node --check tests/sugar-v305-browser.mjs
+      - name: Dark alpha, exact glyph crops, native amounts and bounded cache
+        run: node tests/sugar-v305-render.mjs
+      - name: Existing pure rules and authority guards
+        run: |
+          node tests/sugar-v271-rules.mjs
+          node tests/sugar-v270-presentation.mjs
+          node tests/sugar-challenge-v254-ledger.mjs
+          node tests/sugar-challenge-v254-server.mjs
+      - name: Installed Chrome and Japanese fonts
+        run: |
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          test -n "$browser_path"
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 360s sudo env DEBIAN_FRONTEND=noninteractive bash -e -c '
+              apt-get -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2 update -qq
+              apt-get -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2 install -y --no-install-recommends fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real 320/390/430 client, original multipliers and native award amounts
+        run: node tests/sugar-v305-browser.mjs
+      - name: Retained transparent multiplier, reel, saved-rules and wallet guards
+        env:
+          SWEETS_QA_OUTPUT_DIR: qa-sugar-v305/original-multipliers
+        run: node tests/sugar-v279-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-sugar-v305
+          path: qa-sugar-v305/
+          if-no-files-found: error
+          retention-days: 7

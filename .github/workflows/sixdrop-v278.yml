@@ -21,6 +21,7 @@ on:
       - 'tests/sixdrop-v283-*'
       - 'tests/sixdrop-v284-*'
       - 'tests/sixdrop-v285-*'
+      - 'tests/payout-fit-v302-layout.mjs'
       - 'scripts/sixdrop-v284-*'
       - 'scripts/sixdrop-v285-*'
       - '.github/workflows/sixdrop-v278.yml'
@@ -45,6 +46,7 @@ on:
       - 'tests/sixdrop-v283-*'
       - 'tests/sixdrop-v284-*'
       - 'tests/sixdrop-v285-*'
+      - 'tests/payout-fit-v302-layout.mjs'
       - 'scripts/sixdrop-v284-*'
       - 'scripts/sixdrop-v285-*'
       - '.github/workflows/sixdrop-v278.yml'
@@ -76,7 +78,9 @@ jobs:
       - name: Saved v283 authoritative settlement, interrupted single balls and once-only credit
         run: node tests/sixdrop-v283-settlement.mjs
       - name: Current 200-drop colours, integer accrual and exact simulation geometry
-        run: node tests/sixdrop-v284-rules.cjs
+        run: |
+          node tests/payout-fit-v302-layout.mjs
+          node tests/sixdrop-v284-rules.cjs
       - name: Locked 200-drop palette, doubled all-clear meter and unbiased numbered layout
         run: node tests/sixdrop-v285-rules.cjs
       - name: Diagnostic 285 direct RTP across 50 90 150 settings

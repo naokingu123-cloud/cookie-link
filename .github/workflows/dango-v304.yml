@@ -1,0 +1,66 @@
+name: Dango mochi atelier v304
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'assets/dango-art-v304/**'
+      - 'assets/dango-art-v304.*'
+      - 'assets/dango-award-v304.js'
+      - 'assets/dango-bingo-view.js'
+      - 'assets/dango-bingo.css'
+      - 'assets/award-presentation-v277.js'
+      - 'index.html'
+      - 'tests/dango-v304-*.mjs'
+      - '.github/workflows/dango-v304.yml'
+permissions:
+  contents: read
+jobs:
+  native-dango-presentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [ordinary-390, highest-320, highest-reduced-430, legacy-zero-390]
+    env:
+      DANGO304_GROUP: ${{ matrix.group }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Native immutable counts and exact payout contracts
+        run: |
+          node --check assets/dango-art-v304.js
+          node --check assets/dango-award-v304.js
+          node --check tests/dango-v304-browser.mjs
+          node tests/dango-v304-awards.mjs
+          node tests/dango-v288-rules.mjs
+          node tests/dango-v285-integration.mjs
+          node tests/award-presentation-v277.mjs
+      - name: Japanese fonts and Chromium
+        run: |
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 150s sudo bash -e -c '
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 update -qq
+              apt-get -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=1 install -y fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$browser_path" ]; then
+            timeout 150s npx playwright install --with-deps chromium
+            browser_path="$(node -p "require('playwright').chromium.executablePath()")"
+          fi
+          test -x "$browser_path"
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real Start, FREE choices, eight balls, dedicated awards and RESULT
+        run: node tests/dango-v304-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dango-v304-${{ matrix.group }}
+          path: qa-dango-v304/
+          if-no-files-found: error
+          retention-days: 7
