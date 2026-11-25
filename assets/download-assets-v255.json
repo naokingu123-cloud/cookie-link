@@ -2718,8 +2718,8 @@
     },
     {
       "path": "assets/jpc-crystal-v306.css",
-      "bytes": 22208,
-      "sha256": "53019ef2667fd50b7286f2a365177071e4d80b07a1fd8ce710886820fcc441a9"
+      "bytes": 22505,
+      "sha256": "2d9efa97773de0021a5a27e53ac4f57951da81e844c650f23e8d84c4443d94e5"
     },
     {
       "path": "assets/lineups-v91.js",
@@ -4947,5 +4947,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 274560202
+  "totalBytes": 274560499
 }

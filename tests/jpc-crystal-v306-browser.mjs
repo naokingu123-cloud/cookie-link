@@ -84,6 +84,7 @@ async function inspect(){
    crystal:d.draw.crystalState?JSON.parse(JSON.stringify(d.draw.crystalState)):null,
    ui:window.SweetsCrystalJpcUIV306?.describe?.()||null,
    panel:{visible:visible(panel),rect:rect(panel),text:panel.textContent},
+   classicHeader:{visible:visible(panel.querySelector(':scope>header')),text:panel.querySelector(':scope>header>p')?.textContent},
    crystalPanel:{visible:visible(document.getElementById('cj306-panel')),rect:rect(document.getElementById('cj306-panel')),text:document.getElementById('cj306-panel')?.textContent},
    screen:rect(document.getElementById('screen')),viewport:{left:0,top:0,right:innerWidth,bottom:innerHeight,width:innerWidth,height:innerHeight},
    primaryButton:{disabled:document.getElementById('debug-start').disabled,text:document.getElementById('debug-start').textContent},
@@ -119,6 +120,10 @@ async function fixture(sequence,{complete=false,classic=false}={}){
   d.draw.sent=p.serial;d.draw.state=complete?'complete':'running';
   const before=q.app.credit;q.paint();q.fit();
   q.pause(false);d.setPaused(true);q.startTicker();
+  // setPaused cancels the scheduled WebGL frame. Notify the native controller
+  // of the unchanged fixture state to run its existing wake/render path while
+  // the physics remains paused; otherwise a resized canvas is left cleared.
+  d.draw.setState(d.draw.state);
   return {before,after:q.app.credit,payout:classic?q.session.win*500:d.draw.crystalState.payout,complete,classic};
  },{sequence,complete,classic});
 }
@@ -126,7 +131,7 @@ async function fixtureHit(pocket){
  return page.evaluate(pocket=>{
   const q=window.__jpc306QA,d=q.driver,p=d.physics,id=++p.serial;
   if(!window.SweetsCrystalJpcV306.launch(d.draw.crystalState,id))throw Error('fixture has no unlaunched ball');
-  const hit={ball:id,pocket,time:p.time,held:false,collisions:0,collisionImpulse:0};p.hits.push(hit);p.onHit(hit);q.paint();
+  const hit={ball:id,pocket,time:p.time,held:false,collisions:0,collisionImpulse:0};p.hits.push(hit);p.onHit(hit);q.paint();d.draw.setState(d.draw.state);
   return {payout:d.draw.crystalState.payout,base:d.draw.crystalState.base,jpHits:d.draw.crystalState.jpHits,multiplier:d.draw.crystalState.multiplier};
  },pocket);
 }
@@ -177,6 +182,13 @@ try{
  assert.deepEqual(blocked.results,{choose:false,restart:false,toggle:false,open:false});assert(blocked.same&&blocked.creditSame);assert.equal(blocked.variant,'crystal');
  step('live-mode-switch-and-restart-blocked',blocked);
  await screenshot('physical-paused-390');
+ // Resize the real paused draw before using any controlled fixtures. This
+ // deliberately relies only on the shipped resize/ResizeObserver path, so a
+ // fixture-only render wake cannot conceal a paused viewport regression.
+ await page.setViewportSize({width:430,height:844});await page.waitForTimeout(250);
+ assert.equal(await page.evaluate(()=>window.__jpc306QA.driver.physics.time),live.time,'native resize renders without advancing paused physics');
+ await screenshot('physical-paused-resized-430');
+ step('actual-paused-native-resize',{width:430,time:live.time});
 
  // Controlled records now replace the already observed live round only in
  // this isolated fixture, allowing every color and exact JP boundary to appear.
@@ -205,7 +217,7 @@ try{
  await page.evaluate(()=>window.__jpc306QA.pause(true));
  const classicPaid=await fixture(Array(70).fill(2),{complete:true,classic:true});
  assert.equal(classicPaid.payout,234500,'retained classic cumulative 70-hit payout');assert.equal(classicPaid.after-classicPaid.before,234500);
- let classic=await inspect();assert.equal(classic.variant,'classic');assert.equal(classic.crystalPanel.visible,false);assert.match(classic.panel.text,/500ベース/);assert.match(classic.panel.text,/全25ポケット/);
+ let classic=await inspect();assert.equal(classic.variant,'classic');assert.equal(classic.crystalPanel.visible,false);assert.equal(classic.classicHeader.visible,true);assert.match(classic.panel.text,/500ベース/);assert.equal(classic.classicHeader.text,'25ポケットすべてに入賞で JACKPOT!');
  await screenshot('classic-retained');report.classic={paid:classicPaid,state:classic};
  await page.locator('#jpc-mode').click();await page.waitForFunction(()=>!window.__jpc306QA.session.active);
  assert.equal(await page.locator('#jpc-dashboard').isVisible(),false);assert.equal(await page.evaluate(()=>document.querySelector('#screen>.game').inert),false);
