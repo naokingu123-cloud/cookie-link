@@ -12,6 +12,7 @@ on:
       - 'index.html'
       - 'tests/winery-v298-browser.mjs'
       - 'tests/winery-v298-render.mjs'
+      - 'tests/payout-fit-v302-layout.mjs'
       - '.github/workflows/winery-v298.yml'
 permissions:
   contents: read
@@ -34,6 +35,7 @@ jobs:
       - name: Unchanged native Winery rules and reachable visual witnesses
         run: |
           node --check tests/winery-v298-browser.mjs
+          node tests/payout-fit-v302-layout.mjs
           node .github/tests/winery_payout_v72.cjs
           node tests/award-presentation-v277.mjs
           node tests/winery-v298-browser.mjs --fixtures-only

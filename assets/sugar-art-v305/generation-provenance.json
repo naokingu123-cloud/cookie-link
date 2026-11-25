@@ -1,0 +1,218 @@
+{
+  "version": 305,
+  "game": "sugar",
+  "generator": "built-in image_gen",
+  "scope": "Dedicated crystal confectionery vessel, scale, furniture, payout cabinet and native-outcome awards. All amount glyphs are composed from live state. Original v270 multiplier cards and v279 emblems retained byte-for-byte.",
+  "entries": [
+    {
+      "key": "bottle",
+      "file": "bottle.webp",
+      "source": "exec-f3df804d-714c-4cee-aad6-0af090256b20.png",
+      "prompt": "Use case: stylized-concept. Asset type: finished production sprite for the Japanese sweets medal game SUGAR CHALLENGE. Edit target: the provided existing magic bottle sprite; maintain its exact upright 3:4 outer framing, almost full-size centered bottle, top open mouth, neck height and large oval transparent lower window. Upgrade into an exceptionally ornate sugar-crystal confectionery vessel: carved warm gold filigree, sculpted ivory royal icing, translucent pale lilac and rose sugar crystals, delicate moon and star sugar medallion at the shoulder, pearly glass glints, exquisite tiny frosting curls. Rich high-end hand-crafted 3D illustration with convincing textured materials, refined depth, clean silhouette, high readability on small screens. The lower belly interior (x=.15..85,y=.43..80) MUST remain clear alpha so an actual live sugar-fill level and real numeric sum can render behind/over it. Body and trim cannot cover the central live window. No filling, no numbers, no text, no baked digits, no scene or rectangular background. True transparent RGBA outside and through the inner glass window, fine clean alpha edges with comfortable margin; keep all artwork fully in frame. Canvas 1024x1368 portrait, shape positions matching the reference.",
+      "transparent": true,
+      "sourceDimensions": [
+        1086,
+        1448
+      ],
+      "sourceSha256": "0e7b153b56839f8852fbd74e61ba65fc98bf773a6173d223a6f4b7d74f35dc54",
+      "dimensions": [
+        864,
+        1152
+      ],
+      "bytes": 273708,
+      "sha256": "662304e3686402a48c0fb703ce292097f60f9ace8940a96831339caf7eaf11c2",
+      "processing": {
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "scale",
+      "file": "scale.webp",
+      "source": "exec-f6ac91f9-e22e-4466-9d81-84780fc1e347.png",
+      "prompt": "Use case: stylized-concept. Asset type: finished production sprite for SUGAR CHALLENGE, lavish sweets medal game. Edit target: existing square confectionery weighing scale. Preserve exact silhouette and square framing: wide shallow bowl at top y=.05..35, narrow central stem, ornate base filling lower half, large empty oval readout centered x=.25..75,y=.57..76 for actual live numeric values. Upgrade into an exquisitely sculpted sugar-crystal confectionery scale matching a magic glass bottle: warm gold filigree, ivory royal icing, pale pink frosting, translucent rose and lilac sugar crystal gems, tiny pearl chains and delicately chased feet, exquisite tactile dessert materials, elegant hand-crafted 3D game illustration. Bowl remains empty and broad to receive five live sugar tokens. Readout remains smooth dark-plum empty glass with no writing or ornamental interference at its center. Perfectly legible silhouette at small size. No text, no numbers, no icons printed in the readout, no extra props or background. Real transparent RGBA outside, ample alpha margin, entire object visible. High resolution square 1024x1024.",
+      "transparent": true,
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "sourceSha256": "3aa0186c2151e0d11d1f8ca8198bbe32d49eefa523b34c6ccddca08265900082",
+      "dimensions": [
+        1152,
+        1152
+      ],
+      "bytes": 421286,
+      "sha256": "0136f0fa9b1def8cc370ec5bc48e577953a2e2f4ca219865f4771e209a0a2f7c",
+      "processing": {
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "cabinet",
+      "file": "payout-cabinet.webp",
+      "source": "exec-5646c839-99f1-49f3-be7f-7cf090621190.png",
+      "prompt": "Use case: stylized-concept. Finished production game interface artwork for SUGAR CHALLENGE. Portrait ornate confectionery payout cabinet, 1024x1536, true transparent RGBA background. One upright rectangular cabinet built from lavish ivory icing, warm fine gold filigree, pearl beading and lilac/rose translucent sugar-crystal clusters at the top corners; tiny moon-and-star sugar crest centered atop. Inner face is a completely unprinted smooth deep plum glass rectangle, x=.095..905, y=.14..92, generous perfectly clean space for a real six-row payout table; no internal shelves or dividers. Keep inner face calm and unobstructed. A small smooth pale ivory oval cartouche sits above at y=.085 for a live title; cartouche contains no writing. Raised thin golden sides, feet and restrained royal-icing flourishes. Sophisticated handcrafted 3D illustration, tactile detailed dessert materials, bright highlights, convincing thickness, readable at 100px width. Entire silhouette with at least3% alpha margin. No text, digits, logos, labels, watermark, scene or mockup.",
+      "transparent": true,
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "sourceSha256": "897c3545e057667ed5a13a6ee28dfb5487db91c09509347eb7166c06ed7be649",
+      "dimensions": [
+        768,
+        1152
+      ],
+      "bytes": 208248,
+      "sha256": "1019ece07c89e97d13b3d860768c85bd8a747597bc43e2b851e72cae532ec998",
+      "processing": {
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "furnitureclean",
+      "file": "furniture-atlas.webp",
+      "source": "exec-77656403-4335-4b71-b8b5-f974715eed9a.png",
+      "prompt": "Use case: background-extraction. Edit target: the provided 2x2 SUGAR CHALLENGE furniture sprite atlas. Change ONLY the background transparency. Remove every gray/cream backdrop pixel, gradient, haze and shadow plane outside the four isolated plaques. Output real clean RGBA alpha0 in the entire empty gutters and all outer margins, and alpha0 inside the open center of the bottom-right narrow bezel. Keep each existing plaque's exact shape, artwork, color, position, size, 2x2 layout and transparent internal cutouts. Preserve opaque ivory ribbon in top-right and dark-plum glass inset in top-left and bottom-left. Do not redraw the decorations, add objects or text, crop, resize or rearrange. Clean sprite cutouts ready to composite on a dark game background without visible rectangles.",
+      "originalSource": "/workspace/scratch/098164b1b909/generated_images/exec-28034db2-9577-4c74-9689-d5d3886b2d12.png",
+      "originalPrompt": "Use case: stylized-concept. Production raster UI sprite atlas for SUGAR CHALLENGE, lavish confectionery medal game. Canvas1536x1024, true transparent RGBA. Exactly2 equal columns and2 equal rows, four separately isolated horizontal plaques filling their cells with transparent gutters, at least6% internal padding. Coherent warm gold filigree, carved ivory icing, tiny pearls, rose and lilac cut sugar crystals, exquisitely detailed premium3D game art. Top left: regal horizontal dark-plum glass plaque with fine gold rim and tiny moon-star crystal crest at its top center, completely empty central80% width for real JP amount. Top right: wide pale ivory sugar ribbon with a delicate blush crystal flower at each end, blank central80% for target and lucky-number text. Bottom left: extravagant horizontal announcement plaque, dark violet crystal inset surrounded by swirling icing and five small sugar crystals above it, blank center70% width and55% height for live heading and details. Bottom right: slim long gold-edged crystal window horizontally oriented, a thin pale lilac rim with ivory sugar curls at both ends, entirely clear transparent middle; can be rotated to form a vertical total-gauge bezel. No numbers or text anywhere, no gridlines, no scenery, no extraneous icons, no watermarks. Clear alpha outside every object, each completely within its assigned equal cell.",
+      "transparent": true,
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "4b5584c3c7159c755520841a8c9e1f206345da01a3eb8eee0de60dc739ac45b5",
+      "dimensions": [
+        1152,
+        768
+      ],
+      "bytes": 420098,
+      "sha256": "54ed5d4c33d758583404b190927dc6b0f67cb39b2028b0c8c11cb05a3144dbe9",
+      "processing": {
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "background",
+      "file": "workshop-background.webp",
+      "source": "exec-c4b3b12a-b573-4f83-ab09-7da5ec750c9d.png",
+      "prompt": "Use case: stylized-concept. Finished background plate for SUGAR CHALLENGE, ornate Japanese sweets medal game. Landscape1536x1024. A lavish nocturnal confectionery alchemist's workshop with distant tiny sugar-crystal towers, warm hanging pearl lights, carved gilded patisserie cabinets, subtle rose sugar flowers and lavender glass, beautifully painted3D illustrative texture. The central80% of the scene must be dark calm deep-plum and very low contrast with a gentle lavender atmospheric glow, empty of foreground objects, preserving maximum legibility for real glass bottle and live game UI. Detail is concentrated along the outer left and right6%, thin top and bottom edges; no border frame drawn over the center. Elegant warm gold and rose highlights, no generic stars sprinkled over text areas. No text, letters, numbers, people, UI, screen, buttons or watermark. Complete opaque background.",
+      "transparent": false,
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "256a87f0df67250a5957602919b1ce9ef0ee382993fabc1f7912fe66d8e41785",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 160012,
+      "sha256": "d1a8156615a9039a09db86275d0a92aeda7e905da6ee22d5499de6c803427e3c",
+      "processing": {
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "jpc",
+      "file": "award-jpc.webp",
+      "source": "exec-b2a757db-1696-4969-9052-ca03f5acf907.png",
+      "prompt": "Use case: stylized-concept. Finished extravagant cutout reward illustration for SUGAR CHALLENGE, premium Japanese sweets medal game. True transparent RGBA, landscape1536x1024, comfortable alpha margins. Giant exact title 'JACKPOT CHANCE!' in two centered tiers, JACKPOT above CHANCE!, physically sculpted in clear rose and lilac sugar crystal with luminous gold bevels and ivory icing highlights. The title and lavish royal moon-and-star crest occupy upper58% of the image. A crown of faceted sugar crystals, tiny pearls, ribbons of spun sugar, elegant frosting curls, bright edible gold sparkles form one coherent spectacular celebratory sculpture. Integrate a broad completely BLANK dark plum-glass oval inset centered x=.12..88,y=.66..90 for actual JP numeric value and a separate multiplier emblem; its interior must have no objects or lettering. Tiny blank ivory ribbon centered y=.61 for live Japanese caption. Luxury handcrafted3D material detail, clear small-screen silhouette, abundant depth. No baked numbers, no WIN text, no extra words, no people, no backdrop, no rectangular screen, no watermark; alpha0 outside every ornament, no gray haze or shadow plane.",
+      "transparent": true,
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "fe016795139de858113325f23e5eed7c18ad82a726273792cb7b992f91d93db4",
+      "dimensions": [
+        1152,
+        768
+      ],
+      "bytes": 436322,
+      "sha256": "07fe0904d17d293d3e8800579d09b20829ee98b3d7e1bc4f1cf50f23c9fba4d1",
+      "processing": {
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "cash",
+      "file": "award-cash.webp",
+      "source": "exec-4a142eff-d563-4f05-9fc9-1ca34dff0a6e.png",
+      "prompt": "Use case: stylized-concept. Finished cutout reward illustration for SUGAR CHALLENGE, premium Japanese sweets medal game. True transparent RGBA, landscape1536x1024, comfortable alpha margins. Exact title 'SUGAR WIN!' in two centered tiers: SUGAR above the giant WIN!, physically sculpted from ivory-frosted sugar crystals with rose/lilac edges and warm gold bevels. Title occupies upper55%. An overflowing small confectionery sugar bowl with radiant sugar-crystal jewels, fine gold leaves, pearls and rose-colored spun-sugar curls forms a complete dynamic celebratory sculpture around the title. A broad completely empty deep-plum inset x=.12..88,y=.70..91 reserved for live variable monetary numerals. A small empty pale icing ribbon centered y=.625 for live sum caption. Intricate premium3D illustrated material detail, beautifully finished game artwork with sharp readable silhouette. This regular cash award is lovely and celebratory but has no crown or big royal crest. No baked payout number, no other words or letters or digits, no screen UI, no scene, no people or watermark. Real alpha0 background, no shadow plane or translucent gray haze.",
+      "transparent": true,
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "eb45d6d06810c3af0018e40f82d152a1a7659e14b6c552f9ad3ae05d3971470b",
+      "dimensions": [
+        1152,
+        768
+      ],
+      "bytes": 403078,
+      "sha256": "380d6e812dfc0668cbb259c96a1928b278f6a14f99b6ebbe46c367c7428c0392",
+      "processing": {
+        "resize": {
+          "maxEdge": 1152
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    },
+    {
+      "key": "digits",
+      "file": "award-digits.webp",
+      "source": "exec-8b133a38-ead9-477d-a970-6d6b973797cb.png",
+      "prompt": "Use case: stylized-concept. Production bitmap numeral atlas for SUGAR CHALLENGE. Landscape1536x1024. Exactly4 equal columns and3 equal rows. In the12 equal cells left-to-right then top-to-bottom, place exactly these isolated complete glyphs: top row '0','1','2','3'; middle row '4','5','6','7'; bottom row '8','9',',','WIN'. Every numeral has the same bold condensed display typeface, warm gold candy face, pearly ivory rim, thick translucent rose/lilac sugar-crystal bevel, beautiful precise3D studio highlights. WIN is a single whole word scaled to fit entirely within last cell. Comma has a clear tail and is separate. All glyphs complete, each fully contained within its assigned equal cell with at least10% alpha padding, large clear gutters, no overlapping. True transparent RGBA alpha0 outside glyphs; no gradient background, no gray haze, no guide/grid lines, no plaques, frames, flourishes, icons, other words or numerals. Finished high detail asset, accurately legible at small sizes.",
+      "transparent": true,
+      "sourceDimensions": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "27e6a2f3c290bdc128905a265431abcbee6264a6bd2ee62a6b4690ad127171e0",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "bytes": 545240,
+      "sha256": "e014849df6abc7871d2da88e5c9709b7bc37ee1cae28dfdfda9bae5affc0b275",
+      "processing": {
+        "resize": {
+          "maxEdge": 1536
+        },
+        "format": "webp",
+        "quality": 92,
+        "alphaQuality": 100
+      }
+    }
+  ]
+}

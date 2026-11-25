@@ -14,7 +14,7 @@ const from=native.indexOf('function reachCometMarkup(tier){'),to=native.indexOf(
 assert.ok(from>=0&&to>from);
 const circular=native.match(/function sixDropReachCometMarkup\(tier\)\{[^\n]+\}/)?.[0];assert.ok(circular);
 const builders=native.slice(from,to)+'\n'+circular+'\n'+native.match(/const REACH_WORDS=\[[^;]+;/)[0]+'\n'+native.match(/const reachTier=[^\n]+;/)[0];
-const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango v285 isolated presentation</title><link rel="stylesheet" href="/optimized/style-01.css"><link rel="stylesheet" href="/optimized/style-03.css"><style>html,body,#screen,#panels{width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;transform:none!important}#screen{position:fixed!important;inset:0!important}#panels,#fixture{position:relative!important;width:100%!important;height:100%!important}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css"><body class="dgb-active"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="reach-rainbow-edge"><stop stop-color="#ff487d"/><stop offset=".5" stop-color="#59efb6"/><stop offset="1" stop-color="#bb78ff"/></linearGradient></defs></svg><script>'+builders+'</script><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/illustrated-art-v275.js"></script><script src="/assets/illustrated-boards-c-v275.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></body></html>';
+const html='<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Dango v285 isolated presentation</title><link rel="stylesheet" href="/optimized/style-01.css"><link rel="stylesheet" href="/optimized/style-03.css"><style>html,body,#screen,#panels{width:100%!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;transform:none!important}#screen{position:fixed!important;inset:0!important}#panels,#fixture{position:relative!important;width:100%!important;height:100%!important}@font-face{font-family:ElixirNumbers;src:url(/optimized/media/3af2886469024d10.woff2)}@font-face{font-family:ArcadePayout;src:url(/optimized/media/a73bbbdd98d48aac.woff2);font-weight:700}</style><link rel="stylesheet" href="/assets/dango-bingo.css"><link rel="stylesheet" href="/assets/ornate-boards-c-v274.css"><link rel="stylesheet" href="/assets/paytable-fit-v301.css"><body class="dgb-active"><div id="screen"><div id="panels"><div class="dgb-panel" id="fixture"></div></div></div><svg width="0" height="0" aria-hidden="true"><defs><linearGradient id="reach-rainbow-edge"><stop stop-color="#ff487d"/><stop offset=".5" stop-color="#59efb6"/><stop offset="1" stop-color="#bb78ff"/></linearGradient></defs></svg><script>'+builders+'</script><script src="/assets/dango-bingo-rules.js"></script><script src="/assets/illustrated-art-v275.js"></script><script src="/assets/illustrated-boards-c-v275.js"></script><script src="/assets/dango-bingo-view.js"></script><script src="/assets/dango-bingo-lesson.js"></script></body></html>';
 const mime={'.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2','.json':'application/json'};
 const server=http.createServer(async(req,res)=>{
  const url=new URL(req.url,'http://localhost');if(url.pathname==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');res.end(html);return;}
@@ -60,11 +60,15 @@ async function setup(p){
    const frame=rect(document.querySelector('.dgb-pay-matrix')),table=rect(document.querySelector('.dgb-pay')),free=rect(document.querySelector('.dgb-free-stat')),oddsEl=document.querySelector('.dgb-pay-odds'),odds=oddsEl.hidden?null:rect(oddsEl);
    const distance=(r,p)=>Math.hypot(p.x-Math.max(r.x,Math.min(r.right,p.x)),p.y-Math.max(r.y,Math.min(r.bottom,p.y)));
    const draw=DangoBingoView.describeAssets().last.main;
+   const payoutRows=R.payRowsFor(q.state);
    const numerals=[...document.querySelectorAll('.dgb-pay td')].map(td=>{
     const value=td.querySelector('.gold-number'),cell=rect(td),box=rect(value),style=getComputedStyle(value),badges=[];
     for(const pseudo of ['::before','::after']){const s=getComputedStyle(td,pseudo);if(s.content&&s.content!=='none'&&s.content!=='normal'&&s.content!=='""'&&s.display!=='none'){
      const top=parseFloat(s.top),font=parseFloat(s.fontSize),line=parseFloat(s.lineHeight);badges.push({pseudo,content:s.content,font,top:cell.y+top,bottom:cell.y+top+(Number.isFinite(line)?line:font)});}}
-    return {length:+td.parentElement.dataset.length,count:+td.dataset.count,text:value.textContent,cell,value:box,font:parseFloat(style.fontSize),rightGap:cell.right-box.right,scale:+value.dataset.horizontalScale,badges};
+    const length=+td.parentElement.dataset.length,count=+td.dataset.count,row=payoutRows.find(row=>row.length===length&&row.count===count);
+    if(!row)throw Error('Missing native payout row');
+    const expected=row.possible===false?'—':row.hundredths===0?'-':String(Math.floor(q.bet*row.hundredths/100));
+    return {length,count,text:value.textContent,expected,cell,value:box,font:parseFloat(style.fontSize),rightGap:cell.right-box.right,scale:+value.dataset.horizontalScale,badges};
    });
    const calls=[...new Map(q.paintCalls.map(c=>[c.text+':'+c.x.toFixed(3)+':'+c.y.toFixed(3),c])).values()];
    // HIT may sit just outside the mochi edge to leave a real glyph gap on a
@@ -98,8 +102,10 @@ function checkLayout(m){
  assert.equal(m.draw.imageCells,28);assert.equal(m.draw.standRendered,true);assert.equal(m.draw.greenHitCells,3,'green FREE must glow as a HIT');assert.equal(m.draw.hitSparkleCells,m.state.draws.length+3);assert.equal(m.draw.hitLabelPosition,'edge-outside-number');
  assert.equal(m.cyanDango.baked,true,'cyan needs an independent raster sprite');assert.ok(m.cyanDango.cyanPixels>=100,'aqua pigments have been baked into the bitmap');assert.ok(m.cyanDango.meanBlueMinusRed>=3&&m.cyanDango.meanBlueMinusRed<=27,'light blue not HIT-cyan');assert.ok(m.cyanDango.meanLuminance>=230,'pale nearly-white cyan surface');assert.equal(m.draw.hitSparklesPerCell,11);
  for(const n of m.numerals){
-  assert.ok(n.font>=14,'numeral height '+JSON.stringify(n));assert.ok(n.value.x>=n.cell.x-.75&&n.value.right<=n.cell.right+.75,'numeral fits '+JSON.stringify(n));
-  assert.ok(n.rightGap>=0&&n.rightGap<=6,'numerals share the right edge '+JSON.stringify(n));
+  assert.equal(n.text,n.expected,'every native payout digit remains visible '+JSON.stringify(n));
+  assert.ok(n.font>=Math.min(14,n.cell.height*.53)-.1,'numeral retains its available row height '+JSON.stringify(n));
+  assert.ok(n.value.x>=n.cell.x-.75&&n.value.right<=n.cell.right+.75&&n.value.y>=n.cell.y-.75&&n.value.bottom<=n.cell.bottom+.75,'numeral fits both axes '+JSON.stringify(n));
+  assert.ok(Math.abs(n.value.cx-n.cell.cx)<=.75,'numerals share the centered payout bay '+JSON.stringify(n));
   for(const b of n.badges)assert.ok(Number.isFinite(b.bottom)&&b.bottom<=n.value.y+.75,'payout badge stays above numeral '+JSON.stringify(n));
  }
  for(const label of m.labels){

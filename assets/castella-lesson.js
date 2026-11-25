@@ -59,13 +59,15 @@ function gauge(c,kind,level,x,y){
 function well(c,x,y,r,state){
  const cartoon=window.SweetsCartoonArt;
  disc(c,x,y+2,r+1,cartoon?.loaded?'#87452c':'#331d19');
- const illustrated=window.SweetsIllustratedBoardsCV275?.castellaMaterials();
+ const dedicated=window.CastellaArtV303?.materials();
+ const illustrated=dedicated||window.SweetsIllustratedBoardsCV275?.castellaMaterials();
  if(illustrated)c.drawImage(illustrated[state],x-r,y-r,r*2,r*2);
  else if(cartoon?.loaded)cartoon.draw(c,['castella-hole','castella-raw','castella-baked'][state],x-r,y-r,r*2,r*2);
  else if(faces)c.drawImage(faces[state],x-r,y-r,r*2,r*2);
  else disc(c,x,y,r,['#192426','#ffcf69','#bf6b2a'][state]);
 }
 function plate(c,x,y,w,h){
+ if(window.CastellaArtV303?.griddle(c,x,y,w,h))return;
  const cartoon=window.SweetsCartoonArt;
  if(cartoon?.loaded){
   box(c,x-2,y-2,w+4,h+5,24,'#87452c');box(c,x,y,w,h,23,'#e49b3b');
@@ -97,7 +99,9 @@ function pour(c,t){
  if(t<.84){
   c.save();c.globalAlpha=approach*(1-leave);
   const cartoon=window.SweetsCartoonArt;
-  if(cartoon?.loaded){
+  if(window.CastellaArtV303?.loaded){
+   const w=112,h=w*window.CastellaArtV303.dispenserRatio();window.CastellaArtV303.dispenser(c,bx,by,w,h);
+  }else if(cartoon?.loaded){
    // Match the live board's generated bottle: the upper-center nozzle stays
    // anchored to the existing jet origin throughout the unchanged approach.
    const image=cartoon.sprite('castella-dispenser'),w=91*.66,h=w*image.height/image.width;

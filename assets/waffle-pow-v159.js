@@ -180,6 +180,7 @@ function install(){
   return Math.max(0,medal(bet,accrued)-medal(bet,previous));
  }
  function ensureTopRule(root){
+  if(window.WaffleArtV301?.decorate(root,engine.state))return;
   const pay=root.querySelector('.bs-pay');if(!pay)return;
   let rule=pay.querySelector('.bs-top-rule');
   if(!rule){rule=document.createElement('small');rule.className='bs-top-rule';pay.querySelector('.bs-pay-title')?.after(rule);}
@@ -320,7 +321,7 @@ function install(){
   if(prize){
    prize.title='リバーサルボーナス　固定'+bonusLabel;
    const strong=prize.querySelector('strong');
-   if(strong)strong.textContent=(state.reversalCount?'獲得 '+state.reversalCount+'回 · ':'')+String(medal(bet,bonus))+' WIN';
+   if(strong&&!window.WaffleArtV301?.loaded)strong.textContent=(state.reversalCount?'獲得 '+state.reversalCount+'回 · ':'')+String(medal(bet,bonus))+' WIN';
   }
   const burst=root.querySelector('.bs-burst:not([hidden]) span');
   if(burst)burst.textContent=bonusLabel+'！ ＋'+String(medal(bet,bonus))+' WIN';
@@ -336,8 +337,9 @@ function install(){
   // Base view may rewrite the turn result after this extension; restore raw digits and POW markers.
   root.querySelectorAll('.bs-turn').forEach((row,i)=>{
    const win=row.querySelector('.bs-turn-win');if(!win||i>=state.draws.length)return;
-   const gain=gainForTurn(state,i,bet);win.textContent=gain>0?String(gain):'';
+   const gain=gainForTurn(state,i,bet);if(!window.WaffleArtV301?.fitTurn(win,gain))win.textContent=gain>0?String(gain):'';
   });
+  window.WaffleArtV301?.decorate(root,state);
  }
  const lesson=window.SweetsAttractLessons?.stick;
  if(lesson?.steps?.[2])lesson.steps[2].caption='3枚枠の40 WINを獲得。上の40 WINが3枚枠に落ちる。';

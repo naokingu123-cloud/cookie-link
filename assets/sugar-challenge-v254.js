@@ -6,8 +6,8 @@ if(window.SweetsSugarChallengeV254)return;
 const R=window.SugarChallengeRulesV254,query=new URLSearchParams(location.search);
 if(!R||query.get('serverHost')==='1')return;
 const worker=query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1',clone=x=>JSON.parse(JSON.stringify(x)),clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
-let client=null,server=null,challenge=null,expanded=false,frame=0,lastStamp=null,intro=0,fillSum=0,fromSum=0,fillAge=900,seenBank='',announceAge=5000,celebrateAge=5000,paintKey='',syncing=false;
-const announced=new Set(),celebrated=new Set(),media=matchMedia('(prefers-reduced-motion: reduce)');
+let client=null,server=null,challenge=null,expanded=false,frame=0,lastStamp=null,intro=0,fillSum=0,fromSum=0,fillAge=900,seenBank='',announceAge=5000,celebrateAge=5000,cashAge=5000,paintKey='',syncing=false;
+const announced=new Set(),celebrated=new Set(),cashCelebrated=new Set(),media=matchMedia('(prefers-reduced-motion: reduce)');
 const BASE_END=3250,REEL_START=3450,REEL_STOP=9700,INTRO_END=10500;
 // This is the visual reel only. The authoritative multiplier comes from the server.
 const REEL_SEQUENCE=Object.freeze([1,2,1,3,4,1,2,5,1,3,2,4,1,10]);
@@ -43,7 +43,7 @@ function paintMultiplier(node,s,revealed,age=1000){
  node.setAttribute('aria-label','JP '+s.multiplier+'倍');
 }
 const AWARD_COLORS=Object.freeze({20:'#ffce72',10:'#ff9db7',5:'#d6a0ff',3:'#94a9ff',2:'#74d4ee',1:'#73e4c3'});
-let overlay,dock,announcement,celebration,main,bottle,scale,amount,scaleAmount,multiplier,dockAmount,sumNode,history,targets,table,reachText,phaseText,cardName,fill,gauge,gaugeAxis,gaugeColumn,stage,reel,reelTrack,reelBase,resultFace,jpMultiplier,reelMultiplier,celebrationMultiplier;
+let overlay,dock,announcement,celebration,cashCelebration,cashAmount,cashCaption,main,bottle,scale,amount,scaleAmount,multiplier,dockAmount,sumNode,history,targets,table,reachText,phaseText,cardName,fill,gauge,gaugeAxis,gaugeColumn,stage,reel,reelTrack,reelBase,resultFace,jpMultiplier,reelMultiplier,celebrationMultiplier;
 const currentRound=()=>String(app.__sugarWorkRoundId||app.__sharedRound?.roundId||window.SweetsSharedMachine?.active?.roundId||client?.round?.id||'');
 function stampBank(){
  if(syncing||!Array.isArray(app.wonderBank))return app.wonderBank||[];
@@ -61,7 +61,7 @@ function stampBank(){
 }
 function payload(){return {version:254,tokens:clone(stampBank())};}
 function paused(){return document.hidden||!!app.paused||typeof menuOpen!=='undefined'&&menuOpen||typeof userPaused!=='undefined'&&userPaused||typeof inView!=='undefined'&&!inView;}
-function num(node,value,size=30,width=180){if(!node)return;const text=String(Math.max(0,Math.floor(Number(value)||0))),available=Math.max(1,Math.min(width,node.clientWidth||width)-2),safeSize=node.matches('[data-sc-win]')?Math.min(size,Math.max(1,(node.clientHeight||size+2)-2)):size,key=text+'/'+safeSize+'/'+available;if(node.dataset.amountFit===key)return;node.dataset.amount=text;node.dataset.amountFit=key;if(typeof fitGoldenNumber==='function')fitGoldenNumber(node,text,safeSize,available);else node.textContent=text;}
+function num(node,value,size=30,width=180){if(!node)return;const text=String(Math.max(0,Math.floor(Number(value)||0))),available=Math.max(1,Math.min(width,node.clientWidth||width)-2),safeSize=node.matches('[data-sc-win]')?Math.min(size,Math.max(1,(node.clientHeight||size+2)-2)):size,key=text+'/'+safeSize+'/'+available;if(node.dataset.amountFit===key)return;node.dataset.amount=text;node.dataset.amountFit=key;if(typeof fitGoldenNumber==='function')fitGoldenNumber(node,text,safeSize,available);else node.textContent=text;if(node.matches('[data-sc-win],.sc254-celebration b,.sc305-cash-celebration b'))window.SugarAwardV305?.number(node,Number(text),available,safeSize);}
 function setExpanded(value){expanded=!!value;paintKey='';render();if(!expanded)dock?.focus({preventScroll:true});wake();}
 function restore(raw){const next=raw?.version===254?raw:null;if(!next)return false;
  if(server&&Number(next.revision)<Number(server.revision))return false;
@@ -76,6 +76,7 @@ function restore(raw){const next=raw?.version===254?raw:null;if(!next)return fal
  }
  if(challenge&&(challenge.sum!==(old?.sum||0)||challenge.id!==old?.id&&challenge.draws.length>0)){fromSum=fillSum;fillAge=0;}
  if(challenge?.jpcQualified&&!celebrated.has(challenge.id)){celebrated.add(challenge.id);celebrateAge=0;}
+ if(challenge?.phase==='complete'&&!challenge.jpcQualified&&Number.isSafeInteger(challenge.cashWin)&&challenge.cashWin>0&&!cashCelebrated.has(challenge.id)){cashCelebrated.add(challenge.id);cashAge=0;}
  if(!worker)window.SweetsAudioV277?.sugarTransition?.(old,challenge);
  if(!challenge&&old){expanded=false;paintKey='';}
  if(next.queued&&next.bank?.length>=5)stampBank();
@@ -108,6 +109,12 @@ function mount(){
  dock=document.createElement('button');dock.type='button';dock.className='sc254-dock';dock.hidden=true;dock.setAttribute('aria-label','シュガーチャレンジを大きく表示');dock.innerHTML='<img src="assets/sugar-art-v254/bottle.webp" alt=""><span><small>シュガーチャレンジ</small><b class="sc254-dock-sum"></b><em></em></span>';roulette.append(dock);dockAmount=dock.querySelector('b');
  announcement=document.createElement('div');announcement.className='sc254-announcement';announcement.hidden=true;announcement.setAttribute('role','status');announcement.innerHTML='<div class="sc254-announcement-rays"></div><div class="sc254-announcement-badge"><small>5 SUGAR GET!</small><strong>シュガーチャレンジ</strong><span>次のBETタイムでJP・倍率を決定！</span></div>';screen.append(announcement);
  celebration=document.createElement('div');celebration.className='sc254-celebration';celebration.hidden=true;celebration.setAttribute('role','status');celebration.innerHTML='<div class="sc254-celebration-rays"></div><img src="assets/sugar-art-v254/jpc-title.webp" alt="JACKPOT CHANCE獲得"><div><span>JACKPOT</span><b></b><strong class="sc271-multiplier-popup sc279-multiplier-artwork" data-sc-celebration-multiplier hidden>'+multiplierArtworkMarkup()+'</strong><small>JPC挑戦権を獲得！</small></div>';screen.append(celebration);celebrationMultiplier=celebration.querySelector('[data-sc-celebration-multiplier]');
+ const art=window.SugarArtV305,award=window.SugarAwardV305;
+ if(art?.loaded){scale.querySelector('img').src=art.asset('scale');bottle.querySelector('img').src=art.asset('bottle');dock.querySelector('img').src=art.asset('bottle');overlay.dataset.artRevision='305';}
+ if(award?.loaded)celebration.querySelector('img').src=award.asset('jpc');
+ cashCelebration=document.createElement('div');cashCelebration.className='sc305-cash-celebration';cashCelebration.hidden=true;cashCelebration.setAttribute('role','status');
+ cashCelebration.innerHTML='<img src="'+(award?.asset('cash')||'assets/sugar-art-v254/jpc-title.webp')+'" alt="SUGAR WIN!"><div><b></b><small></small></div>';
+ screen.append(cashCelebration);cashAmount=cashCelebration.querySelector('b');cashCaption=cashCelebration.querySelector('small');
  overlay.addEventListener('click',()=>setExpanded(false));overlay.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '||event.key==='Escape'){event.preventDefault();setExpanded(false);}});dock.addEventListener('click',event=>{event.stopPropagation();setExpanded(true);overlay.focus({preventScroll:true});});
  const resize=()=>{if(!overlay)return;overlay.style.setProperty('--sc254-unit',Math.max(1,Math.min(game.clientWidth/700,game.clientHeight/440)).toFixed(4));paintKey='';render();wake();};
  new ResizeObserver(resize).observe(game);addEventListener('resize',resize);
@@ -162,6 +169,7 @@ function render(){
  const blocked=paused(),reduced=media.matches;overlay.dataset.paused=String(blocked);overlay.dataset.reduced=String(reduced);dock.dataset.paused=String(blocked);announcement.dataset.paused=String(blocked);celebration.dataset.paused=String(blocked);
  announcement.hidden=announceAge>=3700||!!challenge&&intro<INTRO_END;announcement.style.setProperty('--sc254-announce-time',Math.max(0,announceAge)+'ms');
  celebration.hidden=celebrateAge>=4400||!challenge?.jpcQualified;celebration.style.setProperty('--sc254-celebrate-time',Math.max(0,celebrateAge)+'ms');
+ cashCelebration.hidden=cashAge>=3700||!challenge||challenge.phase!=='complete'||challenge.jpcQualified||!(challenge.cashWin>0)||!window.SugarAwardV305?.loaded;cashCelebration.dataset.paused=String(blocked);
  if(!challenge){overlay.hidden=true;dock.hidden=true;return;}
  const s=challenge,card=R.cardFor(s),money=displayAmounts(s),introDone=reduced||intro>=INTRO_END||s.draws.length>0||app.phase==='playing',multiplierKnown=introDone||intro>=REEL_STOP;
  overlay.style.setProperty('--sc270-progress',(clamp((reduced?s.sum:fillSum)/R.MAX_SUM)*100).toFixed(6)+'%');
@@ -178,6 +186,7 @@ function render(){
  fitVessels();paintReel(s,introDone);
  paintMultiplier(jpMultiplier,s,introDone||intro>=REEL_STOP,introDone?1000:intro-REEL_STOP);paintMultiplier(celebrationMultiplier,s,true,reduced?1000:celebrateAge);
  num(amount,shownJP,26,112);num(sumNode,reduced?s.sum:fillSum,overlay.dataset.compact==='true'?40:48,160);num(dockAmount,s.sum,23,110);num(celebration.querySelector('b'),money.jpBase,48,260);
+ if(!cashCelebration.hidden){num(cashAmount,s.cashWin,Math.max(20,Math.min(72,cashAmount.clientHeight||48)),600);cashCaption.textContent='合計 '+s.sum+' ・ '+s.draws.length+'球';cashCelebration.setAttribute('aria-label','シュガーチャレンジ 合計'+s.sum+'、獲得'+s.cashWin+' WIN');}
  fill.style.height=(clamp((reduced?s.sum:fillSum)/172)*100).toFixed(3)+'%';bottle.dataset.pouring=String(fillAge<800&&s.draws.length>0&&!reduced);bottle.querySelector('[data-sc-ball-count]').textContent=s.draws.length+' / 8球';bottle.querySelector('.sc254-last-hit').textContent=s.draws.length?'＋'+s.draws.at(-1):'';
  dock.querySelector('em').textContent=s.jpcQualified?'JPC獲得！':s.phase==='complete'?String(s.cashWin)+' WIN':s.draws.length+' / 8球 · JP '+String(shownJP)+(s.multiplier>1&&multiplierKnown?' ×'+s.multiplier:'');dock.setAttribute('aria-label','シュガーチャレンジ 合計'+s.sum+'、'+s.draws.length+'球、JP '+shownJP+(s.multiplier>1&&multiplierKnown?' ×'+s.multiplier:'')+'。タップして大きく表示');
  phaseText.textContent=!introDone?intro<BASE_END?'BET TIME · 5個のシュガーを秤へ…':intro<REEL_STOP?'BET TIME · JP倍率ルーレット':'JACKPOT '+money.jpBase+(s.multiplier>1?' ×'+s.multiplier:'')+' に決定！':s.jpcQualified?'JACKPOT CHANCE 確定！':s.phase==='complete'?String(s.cashWin)+' WIN GET!':s.draws.length?'HITした数字の量だけシュガーを投入！':'BET TIME · '+multiplierLabel(s.multiplier)+'に決定';
@@ -191,14 +200,14 @@ function render(){
  const reaches=R.reaches(s);reachText.textContent=s.jpcQualified?'合計 '+(s.qualifyingSum??s.sum)+' でJPC確定！'+(s.qualifyingDrawCount?'（'+s.qualifyingDrawCount+'球目）':''):reaches.length?'JPCリーチ　'+reaches.map(r=>r.number).join('・'):s.phase==='complete'?'合計 '+s.sum+' → '+s.cashWin+' WIN':'';
 }
 function wake(){if(!worker&&!frame)frame=requestAnimationFrame(tick);}
-function tick(now){frame=0;const blocked=paused();if(!blocked){const dt=lastStamp===null?0:Math.min(100,Math.max(0,now-lastStamp));intro=Math.min(INTRO_END,intro+dt);fillAge=Math.min(900,fillAge+dt);announceAge+=dt;celebrateAge+=dt;if(challenge){const p=clamp(fillAge/700);fillSum=fromSum+(challenge.sum-fromSum)*(1-(1-p)**3);}}lastStamp=blocked?null:now;render();if(!blocked&&(challenge&&intro<INTRO_END||fillAge<900||announceAge<3700||celebrateAge<4400))wake();}
+function tick(now){frame=0;const blocked=paused();if(!blocked){const dt=lastStamp===null?0:Math.min(100,Math.max(0,now-lastStamp));intro=Math.min(INTRO_END,intro+dt);fillAge=Math.min(900,fillAge+dt);announceAge+=dt;celebrateAge+=dt;cashAge+=dt;if(challenge){const p=clamp(fillAge/700);fillSum=fromSum+(challenge.sum-fromSum)*(1-(1-p)**3);}}lastStamp=blocked?null:now;render();if(!blocked&&(challenge&&intro<INTRO_END||fillAge<900||announceAge<3700||celebrateAge<4400||cashAge<3700))wake();}
 function bind(){
  if(worker||query.get('edition')==='download'||query.get('edition')==='local')return;
  const c=window.SweetsSharedMachine?.client;if(!c){setTimeout(bind,80);return;}client=c;
  c.on(message=>{if(message?.sugarV254)restore(message.sugarV254);else if(message?.payoutControlV3?.sugarV254)restore(message.payoutControlV3.sugarV254);});
  c.getState?.().then(msg=>{const data=msg?.sugarV254||msg?.payoutControlV3?.sugarV254;if(data)restore(data);}).catch(()=>{});
 }
-window.SweetsSugarChallengeV254={version:254,presentationRevision:279,accept:restore,payload,stampBank,setExpanded,multiplierArtwork,snapshot:()=>server?clone(server):null,describe:()=>({version:254,presentationRevision:279,expanded,challenge:challenge?clone(challenge):null,bankCount:app.wonderBank?.length||0,revision:server?.revision??null,intro,multiplierTier:challenge?{multiplier:challenge.multiplier,name:MULTIPLIER_TIERS[challenge.multiplier],label:multiplierLabel(challenge.multiplier)}:null,multiplierArtwork:challenge?multiplierArtwork(challenge.multiplier):null,reelSequence:REEL_SEQUENCE.slice(),reelTiming:{baseEnd:BASE_END,start:REEL_START,stop:REEL_STOP,end:INTRO_END},displayAmounts:challenge?displayAmounts(challenge):null,reelTarget:reelTrack?Number(reelTrack.dataset.target):null,reelPosition:reelTrack?Number(reelTrack.dataset.position):null,paused:paused(),announceAge,celebrateAge,artLoaded:overlay?[...overlay.querySelectorAll('img'),...celebration.querySelectorAll('img')].every(i=>i.complete&&i.naturalWidth>0):false})};
+window.SweetsSugarChallengeV254={version:254,presentationRevision:305,accept:restore,payload,stampBank,setExpanded,multiplierArtwork,snapshot:()=>server?clone(server):null,describe:()=>({version:254,presentationRevision:305,expanded,challenge:challenge?clone(challenge):null,bankCount:app.wonderBank?.length||0,revision:server?.revision??null,intro,multiplierTier:challenge?{multiplier:challenge.multiplier,name:MULTIPLIER_TIERS[challenge.multiplier],label:multiplierLabel(challenge.multiplier)}:null,multiplierArtwork:challenge?multiplierArtwork(challenge.multiplier):null,reelSequence:REEL_SEQUENCE.slice(),reelTiming:{baseEnd:BASE_END,start:REEL_START,stop:REEL_STOP,end:INTRO_END},displayAmounts:challenge?displayAmounts(challenge):null,reelTarget:reelTrack?Number(reelTrack.dataset.target):null,reelPosition:reelTrack?Number(reelTrack.dataset.position):null,paused:paused(),announceAge,celebrateAge,cashAge,artRevision:window.SugarArtV305?.loaded?305:254,awardRevision:window.SugarAwardV305?.loaded?305:null,artLoaded:overlay?[...overlay.querySelectorAll('img'),...celebration.querySelectorAll('img')].every(i=>i.complete&&i.naturalWidth>0):false})};
 const nativeWonder=updateWonderHud;updateWonderHud=function(...args){stampBank();return nativeWonder.apply(this,args);};
 mount();stampBank();if(!worker){bind();document.addEventListener('visibilitychange',()=>{lastStamp=null;render();wake();});media.addEventListener?.('change',()=>{render();wake();});const nativePause=syncPause;syncPause=function(...args){const result=nativePause.apply(this,args);lastStamp=null;render();wake();return result;};}
 })();

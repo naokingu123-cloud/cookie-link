@@ -769,9 +769,12 @@ function updateHUD(){
             engine.sugarAwarded,bet].join('/');
  if(key===uiKey)return;uiKey=key;
  const payoutRows=scene.querySelectorAll('[data-full]'),fitPayouts=!!window.WineryArtV298?.loaded;
- // Read the common amount column once per HUD update, not once per row.
+ // Measure payout geometry together before changing any labels. Reading a
+ // row height after each fitted amount would force twelve layouts per ODDS
+ // animation update and delay the native timer on a busy browser.
  // A hidden cabinet has no layout width until its next selection redraw.
  const payoutWidth=fitPayouts?Math.max(6,(payoutRows[0]?.querySelector('.wp298-row-amount')?.clientWidth||50)-3):0;
+ const payoutFaces=Array.from(payoutRows,row=>({row,amount:row.querySelector('.wp298-row-amount'),size:fitPayouts?Math.min(11,Math.max(1,(row.clientHeight||14)-3)):11}));
  // The left cabinet owns boost numbers; the right gauge mirrors actual pour amount.
  scene.querySelector('.wp-volume-number').textContent=engine.power+'杯';
  const fraction=Math.log2(Math.max(1,Math.min(16,engine.power)))/4;
@@ -795,12 +798,11 @@ function updateHUD(){
   node.setAttribute('aria-label',n+'番：'+(hit?'HIT! 注入量UP獲得':'注入量UP待機'));
  });
  // MIX-adjusted prize credits animate before the liquid level rises.
- for(const row of payoutRows){
+ for(const {row,amount,size} of payoutFaces){
   const n=Number(row.dataset.full);
   const oldCredits=rowWin(bet,n,fromMix),newCredits=rowWin(bet,n,toMix);
   const credits=num(Math.round(oldCredits+(newCredits-oldCredits)*oddsEase));
-  const amount=row.querySelector('.wp298-row-amount');
-  if(fitPayouts)fitGoldenNumber(amount,credits,Math.min(11,Math.max(1,(row.clientHeight||14)-3)),payoutWidth);else amount.textContent=credits;
+  if(fitPayouts)fitGoldenNumber(amount,credits,size,payoutWidth);else amount.textContent=credits;
   row.querySelector('b').setAttribute('aria-label',credits+' WIN');
   row.classList.toggle('current',n===engine.fullCount);
   row.classList.toggle('is-reached',n<=engine.fullCount);

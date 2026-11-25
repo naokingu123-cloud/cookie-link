@@ -5,6 +5,9 @@ const font='"Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif'
 const files={black:'waffle-reversi-ogura-v128.png',white:'waffle-reversi-butter-v128.png',wafer:'waffle-tier.webp',rail:'waffle-turn-rail.webp'};
 const images={};
 function sprite(c,key,x,y,w,h){
+ const generated=window.WaffleArtV301;
+ if((key==='black'||key==='white')&&generated?.piece(c,key,x,y,w,h))return true;
+ if((key==='wafer'||key==='rail')&&generated?.furniture(c,key==='wafer'?'waffle':'rail',x,y,w,h))return true;
  if((key==='black'||key==='white')&&window.SweetsIllustratedBoardsCV275?.wafflePiece(c,key,x,y,w,h))return true;
  const cartoon=window.SweetsCartoonArt;
  if(cartoon?.loaded){
@@ -28,7 +31,7 @@ function label(c,value,x,y,size,ink,max,weight=850){
  c.fillStyle=ink;c.font=weight+' '+size+'px '+font;c.textAlign='center';c.textBaseline='middle';c.fillText(String(value),x,y,max);
 }
 function badge(c,text,x,y,w,fill='#552c2d',ink='#ffe6ad'){
- box(c,x-w/2,y-15,w,30,12,fill,'#dcad70');label(c,text,x,y,18,ink,w-8);
+ if(!window.WaffleArtV301?.furniture(c,'button',x-w/2,y-15,w,30))box(c,x-w/2,y-15,w,30,12,fill,'#dcad70');label(c,text,x,y,18,ink,w-8);
 }
 function stone(c,color,x,y,size){
  if(sprite(c,color,x-size/2,y-size/2,size,size))return;
@@ -37,7 +40,8 @@ function stone(c,color,x,y,size){
 }
 function pocket(c,x,y,size,num){
  const r=size/2,cartoon=window.SweetsCartoonArt;
- if(window.SweetsIllustratedBoardsCV275?.waffleCell(c,x-r,y-r,size,size)){}
+ if(window.WaffleArtV301?.pocket(c,x-r,y-r,size,size)){}
+ else if(window.SweetsIllustratedBoardsCV275?.waffleCell(c,x-r,y-r,size,size)){}
  else if(cartoon?.loaded)cartoon.draw(c,'waffle-cell',x-r,y-r,size,size);
  else{
   box(c,x-r,y-r,size,size,8,'#c97f37','#f4bc6e',2);
@@ -95,12 +99,15 @@ function bracketScene(c,t){
 }
 function tile(c,x,y,win,lit){
  if(!sprite(c,'wafer',x,y-15,156,31))box(c,x,y-15,156,31,7,'#c68439','#edb961');
- box(c,x+57,y-12,95,24,5,lit?'#8a3f20':'#532b24');
+ if(!window.WaffleArtV301?.loaded)box(c,x+57,y-12,95,24,5,lit?'#8a3f20':'#532b24');
  label(c,win+' WIN',x+103,y,20,lit?'#fff49f':'#fff2cb',88);
  if(lit)box(c,x,y-15,156,31,7,null,'#ffe99d',2.5);
 }
 function payoutScene(c,t){
  const eject=ramp(t,.24,.55),falling=ramp(t,.48,.77),claim=ramp(t,.12,.26);
+ // At the lesson's native 100 BET, the live base-rack hundredths are the
+ // exact displayed medals. The current POW rules use 40 for both 3 and 4.
+ const amount=count=>window.BingoStickRules?.payRows.find(row=>row.count===count)?.hundredths??count*10;
  box(c,43,12,240,217,16,'#4b2729','#cf9a59');
  label(c,'配当表の一部',163,31,17,'#ffe3a4',195);
  const y=i=>202-(i-1)*40;
@@ -108,17 +115,17 @@ function payoutScene(c,t){
   box(c,52,y(i)-15,53,30,6,'#322027');label(c,i+'枚',78,y(i),19,'#ffe9bb',48);
  }
  c.save();c.beginPath();c.rect(110,y(4)-15,166,158);c.clip();
- for(let i=1;i<=5;i++)if(i!==3)tile(c,116,y(i)+(i>=4?40*falling:0),i*10,false);
+ for(let i=1;i<=5;i++)if(i!==3)tile(c,116,y(i)+(i>=4?40*falling:0),amount(i),false);
  c.restore();
  if(eject<1){
-  c.save();c.globalAlpha=1-eject;c.translate(116+172*eject,y(3)-21*Math.sin(eject*Math.PI));c.rotate(eject*-.12);tile(c,0,0,30,true);c.restore();
+  c.save();c.globalAlpha=1-eject;c.translate(116+172*eject,y(3)-21*Math.sin(eject*Math.PI));c.rotate(eject*-.12);tile(c,0,0,amount(3),true);c.restore();
  }
  box(c,310,52,171,135,18,'#602e2d','#dfa454',2);
  label(c,'100 BETの例',396,78,17,'#ffe4b1',145);
  if(claim>0){
-  c.save();c.globalAlpha=claim;label(c,'30 WIN',396,123,38,'#fff298',145,950);c.restore();
+  c.save();c.globalAlpha=claim;label(c,amount(3)+' WIN',396,123,38,'#fff298',145,window.WaffleArtV301?.loaded?900:950);c.restore();
  }else label(c,'3枚反転',396,123,24,'#ffdfa3',140);
- if(falling>.95)label(c,'3枚枠は40 WIN',396,163,17,'#ffdaa0',159);
+ if(falling>.95)label(c,'3枚枠は'+amount(4)+' WIN',396,163,17,'#ffdaa0',159);
 }
 function quietScene(c,t){
  const p=ramp(t,.14,.47),q=ramp(t,.44,.68);

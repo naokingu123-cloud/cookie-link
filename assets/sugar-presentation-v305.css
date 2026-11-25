@@ -1,0 +1,39 @@
+/* Generated crystal patisserie furniture, on the original stage geometry. */
+.sugar-art-v305 .sc254-overlay{background:linear-gradient(#16081e77,#16081e77),url('sugar-art-v305/workshop-background.webp?v=305') center/cover no-repeat;border-color:#edc994}
+.sugar-art-v305 .sc254-jp{background:none;border:0;box-shadow:none;isolation:isolate}
+.sugar-art-v305 .sc254-jp:before{content:'';position:absolute;inset:-7px -6px -5px;z-index:-1;background:var(--sugar305-jp) center/100% 100% no-repeat;pointer-events:none}
+.sugar-art-v305 .sc254-jp>span{top:2px;left:10px;color:#ffeac1}
+.sugar-art-v305 .sc254-targets{border-color:#e5bf91;background:#281332a8;box-shadow:inset 0 0 12px #f9c6d215}
+.sugar-art-v305 .sc254-lucky>b{background:var(--sugar305-targets) center/100% 100% no-repeat;color:#642a55;border:0;border-radius:0;text-shadow:0 1px #fff9e3;min-width:25px}
+.sugar-art-v305 .sc254-card{isolation:isolate}
+.sugar-art-v305 .sc254-payouts{isolation:isolate;padding-left:6px;padding-right:6px}
+.sugar-art-v305 .sc254-payouts:before{content:'';position:absolute;inset:-18px -3px -10px;z-index:-1;background:url('sugar-art-v305/payout-cabinet.webp?v=305') center/100% 100% no-repeat;pointer-events:none}
+.sugar-art-v305 .sc254-payouts th{color:#582144;text-shadow:0 1px #fff8e4}
+.sugar-art-v305 .sc254-payouts td{background:#3b123b70;border-color:#e2a8b43d}
+.sugar-art-v305 .sc254-payouts tr[data-current=true] td{background:#a9586b6b}
+.sugar-art-v305 .sc270-gauge{border-color:#eed2a5;box-shadow:inset 0 0 9px #090511,0 0 0 2px #edb2e448}
+.sugar-art-v305 .sc254-bottle{filter:drop-shadow(0 0 14px #e4b7ef44)}
+.sugar-art-v305 .sc254-fill{background-image:radial-gradient(circle at 20% 15%,#fff 0 1px,transparent 2px),radial-gradient(circle at 70% 40%,#fff6bc 0 1.5px,transparent 3px),radial-gradient(circle at 33% 72%,#fff9dd 0 1px,transparent 2px),linear-gradient(160deg,#fff9ed,#f7d995 35%,#efa3cf 75%,#b88be4)}
+.sugar-art-v305 .sc254-announcement-badge{background-image:var(--sugar305-announcement);height:min(43vw,260px);width:min(96vw,670px)}
+.sugar-art-v305 .sc254-announcement-badge>small{color:#ffe9be}
+.sugar-art-v305 .sc254-history>span{border-color:#f4d69b;box-shadow:inset 0 1px 3px #fff6df5e,0 1px 4px #0d0419;background:linear-gradient(#50294f,#220f2e)}
+.sugar-art-v305 .sc254-history>span[data-hit=true]{background:linear-gradient(#fff7e6,#eaa9d0);color:#502039}
+.sc305-raster-number{background:var(--sugar305-number) center/contain no-repeat!important}
+.sc305-raster-number>.gold-number{visibility:hidden}
+.sugar-art-v305 .sc254-celebration,.sugar-art-v305 .sc305-cash-celebration{position:absolute;left:50%;top:50%;right:auto;bottom:auto;inset:auto auto auto auto;transform:translate(-50%,-50%);width:min(97%,850px);aspect-ratio:3/2;height:auto;display:block;overflow:visible;pointer-events:none;isolation:isolate;z-index:9000}
+.sugar-art-v305 .sc254-celebration{left:50%;top:50%}
+.sugar-art-v305 .sc305-cash-celebration{left:50%;top:50%}
+.sugar-art-v305 .sc254-celebration[hidden],.sugar-art-v305 .sc305-cash-celebration[hidden]{display:none!important}
+.sugar-art-v305 .sc254-celebration>img,.sugar-art-v305 .sc305-cash-celebration>img{position:absolute;inset:0;width:100%;height:100%;max-height:none;margin:0;object-fit:contain;filter:drop-shadow(0 5px 16px #18091bcc);animation:sc305-award-in .65s cubic-bezier(.16,1.25,.25,1) both}
+.sugar-art-v305 .sc254-celebration>div:not(.sc254-celebration-rays){position:absolute;left:14%;top:69%;width:57%;height:18%;display:block;margin:0;background:none;border:0;box-shadow:none;transform:none;padding:0;white-space:nowrap}
+.sugar-art-v305 .sc254-celebration>div>span{position:absolute;top:-17%;left:0;right:0;font-size:clamp(8px,1.4vw,16px);color:#ffe4b4;line-height:1}
+.sugar-art-v305 .sc254-celebration>div>b{position:absolute;inset:0;width:100%;height:100%;line-height:1;display:block}
+.sugar-art-v305 .sc254-celebration>div>small{position:absolute;left:17%;top:-76%;width:66%;font-size:clamp(8px,1.7vw,20px);line-height:1.1;color:#6f2b53;text-shadow:0 1px #fff9e9;text-align:center}
+.sugar-art-v305 .sc254-celebration .sc279-multiplier-artwork{position:absolute;left:110%;top:-22%;width:30%;height:150%;transform:scale(var(--sc271-pop-scale,1));filter:drop-shadow(0 1px 5px #1a071b)}
+.sugar-art-v305 .sc305-cash-celebration>div{position:absolute;left:16%;top:75%;width:68%;height:16%;text-align:center}
+.sugar-art-v305 .sc305-cash-celebration b{display:block;position:absolute;inset:0;width:100%;height:100%}
+.sugar-art-v305 .sc305-cash-celebration small{position:absolute;left:23%;top:-82%;width:54%;line-height:1.1;color:#672a53;text-shadow:0 1px #fff7de;font-size:clamp(8px,1.7vw,18px);white-space:nowrap}
+.sugar-art-v305 .sc305-cash-celebration[data-paused=true] img{animation-play-state:paused}
+@keyframes sc305-award-in{from{opacity:0;scale:.62}to{opacity:1;scale:1}}
+@media(max-width:620px){.sugar-art-v305 .sc254-payouts{padding-left:5px;padding-right:5px}.sugar-art-v305 .sc254-payouts:before{inset:-13px -2px -7px}.sugar-art-v305 .sc254-lucky>b{min-width:21px}}
+@media(prefers-reduced-motion:reduce){.sugar-art-v305 .sc254-celebration>img,.sugar-art-v305 .sc305-cash-celebration>img{animation:none}}
