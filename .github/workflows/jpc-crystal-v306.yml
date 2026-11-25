@@ -1,0 +1,74 @@
+name: Crystal JPC v306 rules and physical draw lifecycle
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'optimized/app-01.js'
+      - 'assets/jpc-crystal*'
+      - 'assets/jpc-crystal*/**'
+      - 'tests/jpc-crystal-v306-*'
+      - 'scripts/jpc-crystal-v306-*'
+      - 'docs/jpc-crystal-v306*'
+      - 'index.html'
+      - 'app-version.json'
+      - '.github/workflows/jpc-crystal-v306.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'optimized/app-01.js'
+      - 'assets/jpc-crystal*'
+      - 'assets/jpc-crystal*/**'
+      - 'tests/jpc-crystal-v306-*'
+      - 'scripts/jpc-crystal-v306-*'
+      - 'docs/jpc-crystal-v306*'
+      - 'index.html'
+      - 'app-version.json'
+      - '.github/workflows/jpc-crystal-v306.yml'
+permissions:
+  contents: read
+jobs:
+  crystal-jpc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SWEETS_QA_OUTPUT_DIR: qa-jpc-crystal-v306
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing runtime
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Native state, last-ball extensions, faults and classic regression
+        run: |
+          node --check optimized/app-01.js
+          node --check assets/jpc-crystal-rules-v306.js
+          node --check assets/jpc-crystal-ui-v306.js
+          node --check tests/jpc-crystal-v306-rules.mjs
+          node --check tests/jpc-crystal-v306-browser.mjs
+          python3 scripts/jpc-crystal-v306-expectation.py --check
+          node tests/jpc-crystal-v306-rules.mjs
+          node tests/client-no-local-eight.mjs
+      - name: Installed Chrome and Japanese fonts
+        run: |
+          browser_path="$(command -v google-chrome || command -v chromium || true)"
+          test -n "$browser_path"
+          test -x "$browser_path"
+          timeout 20s "$browser_path" --version
+          if [ -z "$(fc-list :lang=ja family)" ]; then
+            timeout 360s sudo env DEBIAN_FRONTEND=noninteractive bash -e -c '
+              apt-get -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2 update -qq
+              apt-get -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::Retries=2 install -y --no-install-recommends fonts-noto-cjk
+            '
+          fi
+          test -n "$(fc-list :lang=ja family)"
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+      - name: Real local browser, four viewports and single settlement
+        run: node tests/jpc-crystal-v306-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-jpc-crystal-v306
+          path: qa-jpc-crystal-v306/
+          if-no-files-found: error
+          retention-days: 7

@@ -329,7 +329,7 @@ if(typeof paintJpcDashboard==='function'){
   const before=jpcSession.active?jpcSession.previousCounts?.filter(n=>n>0).length:0;
   const result=nativePaint.apply(this,args);
   const after=jpcSession.active?jpcSession.previousCounts?.filter(n=>n>0).length:0;
-  if(before<24&&after===24)playSample('jpc-reach',{volume:.68,priority:2,jpc:true,gap:2});
+  if(jpcSession.variant!=='crystal'&&before<24&&after===24)playSample('jpc-reach',{volume:.68,priority:2,jpc:true,gap:2});
   return result;
  };
 }

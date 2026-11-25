@@ -1,10 +1,10 @@
 {
-  "version": "20261125-v305-all-games-art",
+  "version": "20261125-v306-crystal-jpc",
   "files": [
     {
       "path": "app-version.json",
-      "bytes": 42,
-      "sha256": "b4d730000281963d650c1cae85b9979dca07122ed3dde154dfad7664b194a807"
+      "bytes": 40,
+      "sha256": "d7a2a17a492b09ebfd0c1db1ddbbbc15a2c21e357b86d59deb3690a5b4898d67"
     },
     {
       "path": "assets/all-tabs-v150.css",
@@ -1968,8 +1968,8 @@
     },
     {
       "path": "assets/celebration-audio-v277.js",
-      "bytes": 21518,
-      "sha256": "a3ad7dff24520ad0aabd735010a20af080a8b35a499f75fbc299c5106babecc6"
+      "bytes": 21550,
+      "sha256": "8697c33eb70c84d4a9818579e52a8d43f040a9e58077b877acc1a5cd98061a90"
     },
     {
       "path": "assets/choco-art-v295.js",
@@ -2303,8 +2303,8 @@
     },
     {
       "path": "assets/download-cache-v255.js",
-      "bytes": 4353,
-      "sha256": "07e1baa2323b8b9de31371152dae6deaab61b3701d548cf67d59b431b4041965"
+      "bytes": 4351,
+      "sha256": "6aeeff0cf7c1b03cd8ded7dc62af64fea066ddab2dcf451fe1f85780ef48ec80"
     },
     {
       "path": "assets/download-mode-v255.css",
@@ -2328,8 +2328,8 @@
     },
     {
       "path": "assets/edition-choice-v255.js",
-      "bytes": 3764,
-      "sha256": "db03771f528cdc19ee77d81b9908a266fc3d9f2888bf2c602305105af32c0d14"
+      "bytes": 3762,
+      "sha256": "1a8205589d3f1c20ebc0139c45517fd2519586bce4e8772a93f1dd32fd53f672"
     },
     {
       "path": "assets/game-menu-v91.css",
@@ -2690,6 +2690,36 @@
       "path": "assets/jelly.css",
       "bytes": 3343,
       "sha256": "977abe257647ec28a71cdb21389faa82e91f2c9086a64cbae97ef22302cbfbb4"
+    },
+    {
+      "path": "assets/jpc-crystal-art-v306/cabinet.webp",
+      "bytes": 231246,
+      "sha256": "ca5360bc98429a1bcba5d70c62a2b533ee859022899e9db6dfc3976a0ac7093d"
+    },
+    {
+      "path": "assets/jpc-crystal-art-v306/pocket.webp",
+      "bytes": 344634,
+      "sha256": "9be1e1c9b5c11666cade0241e70ef7b872337ecd019dbefa04d2a12fadb2e966"
+    },
+    {
+      "path": "assets/jpc-crystal-art-v306/provenance.json",
+      "bytes": 727,
+      "sha256": "82460474268b6043ddc88108eafda4eb154fd416e520ed95c962d5ef465e4622"
+    },
+    {
+      "path": "assets/jpc-crystal-rules-v306.js",
+      "bytes": 3172,
+      "sha256": "b992d9e83234f2197f4b628e305c47428336dd758b0d9f5ec2ca7a2bb394e650"
+    },
+    {
+      "path": "assets/jpc-crystal-ui-v306.js",
+      "bytes": 18310,
+      "sha256": "6c0d3af60686b13a43d566604acbd8c62ed2862d3e7158d8368486bc7cd6e7ef"
+    },
+    {
+      "path": "assets/jpc-crystal-v306.css",
+      "bytes": 22208,
+      "sha256": "53019ef2667fd50b7286f2a365177071e4d80b07a1fd8ce710886820fcc441a9"
     },
     {
       "path": "assets/lineups-v91.js",
@@ -4678,8 +4708,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 89951,
-      "sha256": "6735e470e07628059ec0a880e38daa959f4b45c05f57afef4f8c27f61ac128bf"
+      "bytes": 90152,
+      "sha256": "fd28a8e12f97bd920e2e59e18d4f8a7c9c04e255e57e253d6fad112b94123659"
     },
     {
       "path": "optimized/achievements-v3.css",
@@ -4693,8 +4723,8 @@
     },
     {
       "path": "optimized/app-01.js",
-      "bytes": 1191116,
-      "sha256": "07d265f37af9589bc83fa093dd73f753f9a029ecbfeb177e957052271feb825c"
+      "bytes": 1201727,
+      "sha256": "f31545b054edc76a7c73a7c7e29e70f05c204965e674c0eb51165749f1b8b9d2"
     },
     {
       "path": "optimized/cookie-20261031.css",
@@ -4917,5 +4947,5 @@
       "sha256": "a8aa48b96203033b4f4e372576d0a7bbbdb3d21b50edb1964b33d017138c4126"
     }
   ],
-  "totalBytes": 273929067
+  "totalBytes": 274560202
 }

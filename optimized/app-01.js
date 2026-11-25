@@ -4234,7 +4234,17 @@ function syncPresentationRate(){
 }
 const RESULT_DISPLAY_MS=8000;
 let resultInert=[],resultAutoTimer=null,resultAutoToken=-1,resultAutoElapsed=0,resultAutoStamp=null;
-const jpcSession={active:false,direct:false,timer:null,key:'',previousCounts:Array(25).fill(0),previousHits:0,inert:[],win:0,awarded:false,jackpotShown:false};
+const jpcSession={active:false,variant:'classic',serial:0,direct:false,timer:null,key:'',previousCounts:Array(25).fill(0),previousHits:0,inert:[],win:0,awarded:false,jackpotShown:false};
+let jpcChooserStateV306=null;
+function crystalJpcRunningV306(){return jpcSession.active&&jpcSession.variant==='crystal'&&(['running','draining'].includes(rouletteDriver?.draw.state)||(rouletteDriver?.physics.active||0)>0);}
+function canChooseJpcVariantV306(){return !!rouletteReady&&!!rouletteDriver&&!manualNumbers&&!menuOpen&&!crystalJpcRunningV306()&&(!jpcSession.active?['ready','complete'].includes(app.phase):['ready','complete'].includes(rouletteDriver.draw.state));}
+function openJpcChooserV306(){if(jpcChooserStateV306)return; jpcChooserStateV306={userPaused};stopAutoRound();stopResultAuto();userPaused=true;syncPause();}
+function closeJpcChooserV306({starting=false}={}){if(!jpcChooserStateV306)return;userPaused=jpcChooserStateV306.userPaused;jpcChooserStateV306=null;syncPause();if(!starting)scheduleAutoRound();}
+function startJpcVariantV306(variant){
+ if(!['classic','crystal'].includes(variant)||!canChooseJpcVariantV306())return false;
+ if(jpcSession.active){paintJpcDashboard();jpcSession.variant=variant;rouletteDriver.draw.jpcVariant=variant;return restartJpcRound();}
+ return toggleJpcMode(variant);
+}
 function jpcMilestone(n){return n===2?1:n===3?2:n===4?4:n>=5?7:0;}
 function jpcIncrement(previous,next){let value=0;for(let hit=previous+1;hit<=next;hit++)value+=jpcMilestone(hit);return value;}
 function showSugarCutin(title,subtitle,rainbow=false){const el=document.getElementById('sugar-special-cutin');if(!el)return;el.classList.toggle('rainbow',rainbow);el.querySelector('strong').textContent=title;el.querySelector('span').textContent=subtitle;el.hidden=false;el.classList.remove('playing');void el.offsetWidth;el.classList.add('playing');clearTimeout(showSugarCutin.timer);showSugarCutin.timer=setTimeout(()=>{el.hidden=true;},3200);}
@@ -4692,10 +4702,10 @@ return {RoulettePhysics,DIM,TAU,polar,lathe,bowlHeight,deckHeight,hubHeight,STOP
 
 const DRAW=(()=>{
 class DrawController{
- constructor(physics){this.physics=physics;this.mode='eight';this.state='ready';this.group=0;this.sent=0;this.next=0;this.waiting=false;physics.settings.retain=true;}
+ constructor(physics){this.physics=physics;this.mode='eight';this.jpcVariant='classic';this.crystalState=null;this.state='ready';this.group=0;this.sent=0;this.next=0;this.waiting=false;physics.settings.retain=true;}
  setState(state){this.state=state;this.onState?.(state);}
  select(mode){if(!['eight','continuous','jpc'].includes(mode))throw new Error('Invalid draw mode');this.mode=mode;this.reset();}
- reset(){this.physics.reset();this.physics.settings.retain=this.mode==='eight';this.group=0;this.sent=0;this.next=this.physics.time;this.waiting=false;this.displayGroup=0;this.retryDue=0;this.pendingLaunch=null;this.onReset?.();this.setState('ready');}
+ reset(){this.physics.reset();this.physics.settings.retain=this.mode==='eight';this.group=0;this.sent=0;this.next=this.physics.time;this.waiting=false;this.displayGroup=0;this.retryDue=0;this.pendingLaunch=null;this.crystalState=this.mode==='jpc'&&this.jpcVariant==='crystal'?window.SweetsCrystalJpcV306.createSession():null;this.onReset?.();this.setState('ready');}
  start(){
   this.reset();
   if(this.mode==='eight'&&!localEightAllowed){this.setState('external');return false;}
@@ -4705,11 +4715,14 @@ class DrawController{
  stop(){if(this.mode==='continuous'&&this.state==='running')this.setState(this.physics.active?'draining':'complete');}
  launch(spec=null){
   if(this.mode==='eight'&&!localEightAllowed)return null;
+  if(this.mode==='jpc'&&this.jpcVariant==='crystal'&&(!this.crystalState||this.crystalState.remaining<=0))return null;
   // The shared server holds normal launches after the fifth accepted ball.
   // Keep physics moving while already launched balls settle, including retries.
   if(this.mode==='eight'&&typeof this.canLaunchNormal==='function'&&this.canLaunchNormal()===false)return null;
-  const ball=this.physics.launch(spec);if(ball)this.onLaunch?.(ball);return ball;
+  const ball=this.physics.launch(spec);if(ball){if(this.mode==='jpc'&&this.jpcVariant==='crystal')window.SweetsCrystalJpcV306.launch(this.crystalState,ball.id);this.onLaunch?.(ball);}return ball;
  }
+ acceptJpcHit(hit){return this.mode==='jpc'&&this.jpcVariant==='crystal'?window.SweetsCrystalJpcV306.acceptHit(this.crystalState,hit):false;}
+ acceptJpcFault(id){return this.mode==='jpc'&&this.jpcVariant==='crystal'?window.SweetsCrystalJpcV306.acceptFault(this.crystalState,id):false;}
  update(){
   const p=this.physics;
   if(this.mode==='eight'&&!localEightAllowed){if(this.state!=='ready'&&this.state!=='external')this.setState('external');return;}
@@ -4717,6 +4730,16 @@ class DrawController{
   if(this.state!=='running')return;
   if(this.mode==='continuous'){if(p.time>=this.next){if(this.launch())this.next=p.time+p.settings.interval;}return;}
   if(this.mode==='jpc'){
+   if(this.jpcVariant==='crystal'){
+    // Bonus balls are already committed synchronously by physics.onHit.
+    // An empty bank must wait for every live ball, including the final bonus.
+    if(this.crystalState.remaining===0){if(!p.active&&window.SweetsCrystalJpcV306.isComplete(this.crystalState))this.setState('complete');return;}
+    if(p.time>=this.next&&p.active<10){
+     if(!this.pendingLaunch)this.pendingLaunch=p.createLaunchSpec(true);
+     if(this.launch(this.pendingLaunch)){this.pendingLaunch=null;this.sent++;this.next=p.time+p.settings.interval*(.88+.24*p.random());}
+    }
+    return;
+   }
    if(this.sent>=70){if(!p.active)this.setState('complete');return;}
    if(p.time>=this.next&&p.active<10){
     // Draw one launch sample per ball and keep it fixed throughout timing selection.
@@ -5081,10 +5104,14 @@ function startAnima8(){
  const launchPlanner=new JpcLaunchPlanner(physics,()=>jpcCounts);
  const JPC_COLORS=['#ffffff','#358bff','#52ff7a','#ffe438','#9b18ff','#ff4141'];
  const jpcTints=JPC_COLORS.map(x=>new THREE.Color(x));
+ const crystalJpc=()=>draw.mode==='jpc'&&draw.jpcVariant==='crystal';
+ const crystalRules=()=>window.SweetsCrystalJpcV306;
+ const crystalTints=['#b9c7e8','#4097ff','#36d6ce','#43dc79','#b1e54c','#ffe34e','#ff9c39','#ff5468','#c178ff'].map(x=>new THREE.Color(x));
+ const crystalGold=new THREE.Color('#ffe48b'),crystalBonus=new THREE.Color('#69f2d8');
  // Reach: 24 distinct occupied pockets; jackpot: all 25 occupied.
  function jpcFilledCount(){return jpcCounts.reduce((n,count)=>n+(count>0?1:0),0);}
- function jpcReachPocket(){return jpcFilledCount()===24?jpcCounts.findIndex(count=>count===0):-1;}
- function recordJpcHit(i){jpcCounts[i]++;if(jpcFilledCount()===25)registerJackpot(i);}
+ function jpcReachPocket(){return crystalJpc()?(jpcCounts[0]===4?0:-1):jpcFilledCount()===24?jpcCounts.findIndex(count=>count===0):-1;}
+ function recordJpcHit(i){jpcCounts[i]++;if(crystalJpc()){if(jpcCounts[0]>=5)registerJackpot(0);drawPanel(i);}else if(jpcFilledCount()===25)registerJackpot(i);}
  let jackpotPocket=-1;
  const jackpotLetters=new Map(),jpcRainbow=new THREE.Color();
  const jpcRound=()=>Math.min(3,Math.floor(Math.max(0,physics.serial-1)/20));
@@ -5092,6 +5119,7 @@ function startAnima8(){
  function registerJackpot(i){
   if(jackpotPocket>=0)return;
   jackpotPocket=i;
+  if(crystalJpc()){drawPanel(i);updatePocketBadge(i);return;}
   [...'JACKPOT'].forEach((letter,k)=>jackpotLetters.set((i+k-3+25)%25,letter));
   for(let k=0;k<25;k++){drawPanel(k);updatePocketBadge(k);}
  }
@@ -5170,7 +5198,12 @@ function startAnima8(){
  'S':['01111','10000','10000','01110','00001','00001','11110'],'T':['11111','00100','00100','00100','00100','00100','00100'],
  'U':['10001','10001','10001','10001','10001','10001','01110'],'W':['10001','10001','10001','10101','10101','11011','10001'],
  '1':['010','110','010','010','010','010','111'],'2':['01110','10001','00001','00010','00100','01000','11111'],
- '3':['11110','00001','00001','01110','00001','00001','11110'],'4':['10010','10010','10010','11111','00010','00010','00010']};
+ '3':['11110','00001','00001','01110','00001','00001','11110'],'4':['10010','10010','10010','11111','00010','00010','00010'],
+ '0':['01110','10001','10011','10101','11001','10001','01110'],'5':['11111','10000','10000','11110','00001','00001','11110'],
+ '6':['01110','10000','10000','11110','10001','10001','01110'],'7':['11111','00001','00010','00100','01000','01000','01000'],
+ '8':['01110','10001','10001','01110','10001','10001','01110'],'9':['01110','10001','10001','01111','00001','00001','01110'],
+ 'J':['00111','00010','00010','00010','10010','10010','01100'],'P':['11110','10001','10001','11110','10000','10000','10000'],
+ '+':['00000','00100','00100','11111','00100','00100','00000']};
  function ledText(ctx,text,cx,y,scale=1){
   const glyphs=[...text].map(ch=>LED_GLYPHS[ch]||['000']);const width=glyphs.reduce((n,g)=>n+(g[0].length+1)*scale,0)-scale;let x=Math.round(cx-width/2);
   for(const g of glyphs){g.forEach((row,j)=>[...row].forEach((v,i)=>{if(v==='1')ctx.fillRect(x+i*scale,y+j*scale,scale,scale);}));x+=(g[0].length+1)*scale;}
@@ -5403,6 +5436,13 @@ function startAnima8(){
   p.texture.needsUpdate=true;
  }
  function drawPanel(i){
+  if(crystalJpc()){
+   const p=panels[i],ctx=p.ctx,kind=crystalRules().pocketKind(i+1),value=kind==='jp'?'JP':kind==='bonus'?'+'+crystalRules().bonusFor(i+1):String(i+1);
+   ctx.imageSmoothingEnabled=false;ctx.fillStyle='#101523';ctx.fillRect(0,0,PANEL_SIZE,PANEL_SIZE);
+   ctx.fillStyle='#ffffff';ledText(ctx,value,10,kind==='normal'?2:1,1);
+   ledText(ctx,kind==='normal'?String(crystalRules().pocketValue(jpcCounts[i])):String(jpcCounts[i]),10,11,1);
+   p.texture.needsUpdate=true;return;
+  }
   if(draw.mode==='jpc'&&i===jpcReachPocket()){drawReachPanel(i);return;}
   if(draw.mode==='jpc'&&jackpotPocket>=0&&!jpcLetter(i)){drawCelebrationPanel(i);return;}
   const p=panels[i],ctx=p.ctx,letter=draw.mode==='jpc'?jpcLetter(i):'',cells=draw.mode==='jpc'?starPixels():numberPixels(i+1);
@@ -5502,13 +5542,17 @@ function startAnima8(){
   p.texture.needsUpdate=true;
  }
  function updateCenterCounter(){
-  const active=draw.mode==='jpc',count=Math.max(0,Math.min(70,physics.serial)),phase=normalStage(),selected=hooks.getSelectedBoard?.()||{index:0,name:'クッキーリンク'},text=active?`${count}/70`:selected.name;
+  const active=draw.mode==='jpc',crystal=crystalJpc(),count=crystal?(draw.crystalState?.remaining||0):Math.max(0,Math.min(70,physics.serial)),phase=normalStage(),selected=hooks.getSelectedBoard?.()||{index:0,name:'クッキーリンク'},text=crystal?`残り${count}球 JP ${draw.crystalState?.jpHits||0} HIT`:active?`${count}/70`:selected.name;
   const changed=text!==centerCounterText;
   if(!changed&&ledTransitionProgress(centerTransitionStart)>=1)return;
   if(changed){centerPreviousContext.clearRect(0,0,COUNTER_SIZE,COUNTER_SIZE);centerPreviousContext.drawImage(centerCanvas,0,0);centerTransitionStart=centerCounterText===null?-Infinity:physics.time;}
-  centerCounterText=text;centerDisplay.userData.counter=text;centerDisplay.userData.progress=active?count/70:0;
+  centerCounterText=text;centerDisplay.userData.counter=text;centerDisplay.userData.progress=crystal?Math.min(1,(draw.crystalState?.jpHits||0)/5):active?count/70:0;
   centerContext.imageSmoothingEnabled=false;centerContext.fillStyle='#101a24';centerContext.fillRect(0,0,COUNTER_SIZE,COUNTER_SIZE);
-  if(active){
+  if(crystal){
+   centerContext.fillStyle='#8ee9ff';ledText(centerContext,'LEFT',24,4,1);
+   centerContext.fillStyle='#ffffff';ledText(centerContext,String(count),24,16,String(count).length<=3?2:1);
+   centerContext.fillStyle='#ffe28a';ledText(centerContext,'JP '+(draw.crystalState?.jpHits||0),24,35,1);
+  }else if(active){
    // A clockwise pie starts at twelve o'clock, behind the white counter digits.
    centerContext.fillStyle='#16727c';
    for(let y=0;y<COUNTER_SIZE;y++)for(let x=0;x<COUNTER_SIZE;x++){
@@ -5528,7 +5572,7 @@ function startAnima8(){
   const blend=ledTransitionProgress(centerTransitionStart);
   if(blend<1){centerContext.save();centerContext.globalAlpha=1-blend;centerContext.drawImage(centerPrevious,0,0);centerContext.restore();}
   centerTexture.needsUpdate=true;
-  renderer.domElement.setAttribute('role','img');renderer.domElement.setAttribute('aria-label',active?`抽選機・中央液晶 ${text} 球発射`:'抽選機・'+text);
+  renderer.domElement.setAttribute('role','img');renderer.domElement.setAttribute('aria-label',crystal?'クリスタルJPC抽選機・'+text:active?`抽選機・中央液晶 ${text} 球発射`:'抽選機・'+text);
  }
  function updateCenterLight(){
   const active=draw.mode==='jpc',pulse=active&&physics.serial===0?.10+.90*(.5+.5*Math.cos(physics.time*TAU/3)):1;
@@ -5580,13 +5624,25 @@ function startAnima8(){
  const grid=el('.a8-pocket-grid');for(let i=1;i<=25;i++){const span=document.createElement('span');span.textContent=i;span.setAttribute('aria-label',`${i}番 未入賞`);grid.append(span);}
  function updateCount(){
   updateCenterCounter();
+  if(crystalJpc()){
+   const s=draw.crystalState;el('[data-count]').textContent=`残り ${s.remaining} 球 · 飛行中 ${Object.keys(s.pending).length} 球`;
+   const meter=el('.a8-jpc-meter');meter.setAttribute('aria-valuemax','5');meter.setAttribute('aria-valuenow',String(Math.min(5,s.jpHits)));meter.setAttribute('aria-label',`JP穴 ${s.jpHits} HIT・5 HITでJP`);
+   el('[data-jpc-progress]').textContent=`${s.landed} 球入賞 · JP ${s.jpHits} HIT · 基礎配当 ${s.base} × ${s.multiplier}`;
+   el('[data-jpc-fill]').style.width=`${Math.min(100,s.jpHits/5*100)}%`;return;
+  }
   el('[data-count]').textContent=`${physics.hits.length} / ${draw.mode==='jpc'?70:8}`; 
-  const meter=el('.a8-jpc-meter');meter.setAttribute('aria-valuenow',String(physics.serial));
+  const meter=el('.a8-jpc-meter');meter.setAttribute('aria-valuemax','70');meter.setAttribute('aria-valuenow',String(physics.serial));meter.setAttribute('aria-label','70球JPC発射進捗');
   el('[data-jpc-progress]').textContent=`ROUND ${jpcRound()+1} / 4 · ${physics.serial} / 70 球 発射 · ${jpcFilledCount()} / 25 ポケット`;
   el('[data-jpc-fill]').style.width=`${Math.min(100,physics.serial/70*100)}%`;
  }
  function updatePocketBadge(i){
   const span=grid.children[i],n=jpcCounts[i];
+  if(crystalJpc()){
+   const r=crystalRules(),kind=r.pocketKind(i+1);span.classList.add('jpc');span.classList.toggle('hit',n>0);
+   span.style.setProperty('--jpc-color',kind==='jp'?'#ffe48b':kind==='bonus'?'#69f2d8':r.pocketColor(n));
+   const no=document.createElement('b'),count=document.createElement('small');no.textContent=kind==='jp'?'JP':kind==='bonus'?'+'+r.bonusFor(i+1):i+1;count.textContent=kind==='normal'?`${r.pocketValue(n)} WIN`:`${n} HIT`;span.replaceChildren(no,count);
+   span.setAttribute('aria-label',`${i+1}番 ${kind==='jp'?'JP':kind==='bonus'?'追加'+r.bonusFor(i+1)+'球':r.pocketValue(n)+' WIN'}・${n} HIT`);return;
+  }
   if(draw.mode==='jpc'){
    span.classList.add('jpc');span.classList.toggle('hit',n>0);
    span.style.setProperty('--jpc-color',JPC_COLORS[Math.min(5,n)]);
@@ -5620,6 +5676,14 @@ function startAnima8(){
  }
  function updateDrawControls(){
   const running=draw.state==='running',eight=draw.mode==='eight',jpc=draw.mode==='jpc',start=el('[data-action=start]');
+  if(crystalJpc()){
+   start.disabled=running||draw.state==='draining';start.textContent=running?'クリスタルJPC 抽選中':'クリスタルJPCを開始';
+   el('[data-mode-detail]').textContent='初期30球・追加 +1 / +1 / +4 / +8球。JP穴5 HITで基礎配当×5、以後×10・×15…。全ての球の入賞まで続きます';
+   el('.a8-jpc-legend').hidden=true;el('.a8-jpc-meter').hidden=false;el('.a8-jpc-aim').hidden=true;el('#a8-jpc-aim').disabled=true;
+   if(draw.state==='ready')status.textContent='クリスタルJPC待機中';
+   if(draw.state==='complete')status.textContent=`クリスタルJPC終了 · ${draw.crystalState.payout} WIN`;
+   updateCount();return;
+  }
   start.disabled=((eight||jpc)&&running)||draw.state==='draining';
   start.textContent=running?(jpc?'JPC抽選中 · 70球':eight?'8球抽選中':'投入を止める'):(jpc?'70球JPCを開始':eight?'8球抽選を開始':'連続抽選を開始');
   el('[data-mode-detail]').textContent=jpc?(launchPlanner.enabled?'70球。球同士の接近と入賞結果を参考に、通常の発射間隔から最大2秒待って空きを狙います':'70球を0.88〜1.12秒間隔で発射。勢いと向きにも小さなばらつきがあります'):eight?'8球の入賞後もボールを穴に残します':'入賞したボールを即回収して投入を続けます';
@@ -5633,11 +5697,18 @@ function startAnima8(){
  // Missing-ball recovery is handled inside the current physical group.
  draw.canLaunchJpc=spec=>launchPlanner.ready(draw.next,spec);
  physics.onBallCollision=hit=>{launchPlanner.recordCollision(hit.a);launchPlanner.recordCollision(hit.b);};
- draw.onLaunch=ball=>{hooks.onLaunch?.();if(draw.mode==='jpc')launchPlanner.recordLaunch(ball);addBallView(ball);if(draw.mode==='jpc')jpcAudio.launch(physics.serial);};
- draw.onReset=()=>{retryAt=0;accumulator=0;last=performance.now();wake();candyGame.reset(draw.mode);launchPlanner.enabled=el('#a8-jpc-aim').checked;launchPlanner.reset();jpcAudio.reset();clearViews();slopeStarted=physics.time;slopeStopped=0;if(draw.mode!=='eight')restoreContinuousLights();};
- draw.onState=state=>{wake();if(state==='running'){candyGame.start();slopeStarted=physics.time;if(draw.mode==='jpc')jpcAudio.start();}if(state==='complete'&&draw.mode==='jpc')jpcAudio.complete(jpcFilledCount());if(state==='complete'){candyGame.end();}if(state==='complete')slopeStopped=physics.time-slopeStarted;updateDrawControls();};
- physics.onHit=hit=>{if(draw.mode==='eight')candyGame.hit(hit.pocket);hitTimes[hit.pocket-1]=physics.time;if(draw.mode==='jpc'){recordJpcHit(hit.pocket-1);launchPlanner.recordHit(hit);updateAimStatus();jpcAudio.hit(jpcFilledCount(),jpcReachPocket());}const span=document.createElement('span');span.className='a8-result';span.textContent=hit.pocket;span.setAttribute('aria-label',`${physics.hits.length}番目の入賞: ${hit.pocket}番`);el('.a8-empty')?.remove();results.append(span);while(results.children.length>60)results.firstElementChild.remove();updatePocketBadge(hit.pocket-1);status.textContent=draw.mode==='jpc'&&jackpotPocket>=0?'JACKPOT！':draw.mode==='jpc'&&jpcReachPocket()>=0?`${jpcReachPocket()+1}番 リーチ！ 残り1ポケット`:`${hit.pocket}番に入賞`;updateCount();};
- physics.onFault=id=>{launchPlanner.recordFault(id);retryAt=physics.time+1.5;status.textContent=draw.mode==='jpc'?'未入賞の球があります':'未入賞の球を再発射します';};
+ draw.onLaunch=ball=>{hooks.onLaunch?.();if(draw.mode==='jpc'&&!crystalJpc())launchPlanner.recordLaunch(ball);addBallView(ball);if(draw.mode==='jpc')jpcAudio.launch(physics.serial);};
+ draw.onReset=()=>{retryAt=0;accumulator=0;last=performance.now();wake();candyGame.reset(draw.mode);launchPlanner.enabled=!crystalJpc()&&el('#a8-jpc-aim').checked;launchPlanner.reset();jpcAudio.reset();clearViews();slopeStarted=physics.time;slopeStopped=0;if(draw.mode!=='eight')restoreContinuousLights();};
+ draw.onState=state=>{wake();if(state==='running'){candyGame.start();slopeStarted=physics.time;if(draw.mode==='jpc')jpcAudio.start();}if(state==='complete'&&draw.mode==='jpc')jpcAudio.complete(jpcFilledCount());if(state==='complete'){candyGame.end();}if(state==='complete')slopeStopped=physics.time-slopeStarted;updateDrawControls();if(state==='complete'&&crystalJpc()&&jpcSession.active)paintJpcDashboard();};
+ physics.onHit=hit=>{
+  // Commit the bonus before DrawController can see an empty bank on its next tick.
+  if(crystalJpc()&&!draw.acceptJpcHit(hit))return;
+  if(draw.mode==='eight')candyGame.hit(hit.pocket);hitTimes[hit.pocket-1]=physics.time;
+  if(draw.mode==='jpc'){recordJpcHit(hit.pocket-1);if(!crystalJpc())launchPlanner.recordHit(hit);updateAimStatus();jpcAudio.hit(jpcFilledCount(),jpcReachPocket());}
+  const span=document.createElement('span');span.className='a8-result';span.textContent=hit.pocket;span.setAttribute('aria-label',`${physics.hits.length}番目の入賞: ${hit.pocket}番`);el('.a8-empty')?.remove();results.append(span);while(results.children.length>60)results.firstElementChild.remove();updatePocketBadge(hit.pocket-1);
+  status.textContent=crystalJpc()?`${hit.pocket}番 ${crystalRules().bonusFor(hit.pocket)?'追加 +'+crystalRules().bonusFor(hit.pocket)+'球':hit.pocket===1?'JP '+draw.crystalState.jpHits+' HIT':'累計 '+crystalRules().pocketValue(jpcCounts[hit.pocket-1])+' WIN'}`:draw.mode==='jpc'&&jackpotPocket>=0?'JACKPOT！':draw.mode==='jpc'&&jpcReachPocket()>=0?`${jpcReachPocket()+1}番 リーチ！ 残り1ポケット`:`${hit.pocket}番に入賞`;updateCount();
+ };
+ physics.onFault=id=>{if(crystalJpc()){draw.acceptJpcFault(id);draw.next=Math.max(draw.next,physics.time+1.5);status.textContent='未入賞の1球を返却して再発射します';updateCount();return;}launchPlanner.recordFault(id);retryAt=physics.time+1.5;status.textContent=draw.mode==='jpc'?'未入賞の球があります':'未入賞の球を再発射します';};
  function setPaused(value){paused=value;last=performance.now();accumulator=0;if(frame){cancelAnimationFrame(frame);frame=0;}if(!value)wake();candyGame.pause(value);jpcAudio.pause(value);const b=el('[data-action=pause]');b.textContent=paused?'再開':'一時停止';b.setAttribute('aria-pressed',String(paused));}
  function startOrStop(){if(draw.state==='running'){draw.stop();}else if(draw.state!=='draining'){setPaused(false);draw.start();}}
  all('[data-action]').forEach(button=>button.addEventListener('click',()=>{
@@ -5651,7 +5722,7 @@ function startAnima8(){
  let rouletteTimeScale=1;
  let originalJpcRpm=null,jpcRpmFactor=1;
  function syncJpcRpm(dt){
-  if(draw.mode!=='jpc'){
+  if(draw.mode!=='jpc'||crystalJpc()){
    if(originalJpcRpm!==null)physics.settings.rpm=originalJpcRpm;
    originalJpcRpm=null;jpcRpmFactor=1;return;
   }
@@ -5682,7 +5753,15 @@ function startAnima8(){
   physics.balls=physics.balls.filter(b=>!b.dead);
   const normalReach=draw.mode==='eight'?(hooks.getReachTiers?.()||new Map()):new Map(),phase=normalStage();
   panels.forEach((p,i)=>{
-   if(draw.mode==='jpc'){
+   if(crystalJpc()){
+    const n=jpcCounts[i],kind=crystalRules().pocketKind(i+1),reach=kind==='jp'&&n===4,jp=kind==='jp'&&n>=5;
+    const tint=jp?jpcRainbow.setHSL((physics.time*.18)%1,1,.70):kind==='jp'?crystalGold:kind==='bonus'?crystalBonus:crystalTints[Math.min(n,8)];
+    const recent=physics.time-hitTimes[i]<.7,pulse=reach?.62+.38*(.5+.5*Math.sin(physics.time*5)):n>0||kind!=='normal'?1:.4;
+    p.material.uniforms.lightTint.value.copy(tint);p.scatter.uniforms.lightTint.value.copy(tint);
+    p.material.uniforms.brightness.value=brightness*1.9*pulse;p.scatter.uniforms.brightness.value=brightness*1.75*pulse;
+    p.material.uniforms.flash.value=recent?.5:0;p.scatter.uniforms.flash.value=recent?.5:0;
+    innerLights[i].color.copy(tint).multiplyScalar(brightness);innerLights[i].opacity=.32+.63*pulse;
+   }else if(draw.mode==='jpc'){
     // Occupied pockets stay continuously lit; only empty pockets pulse.
     const n=jpcCounts[i],reach=i===jpcReachPocket(),rainbow=reach||jackpotLetters.has(i),tint=reach||jackpotPocket>=0&&!jackpotLetters.has(i)?jpcRainbow.setRGB(1,1,1):rainbow?jpcRainbow.setHSL((physics.time*.30+i*.065)%1,1,.62):jpcTints[Math.min(n,5)];
     const wave=.5+.5*Math.cos(physics.time*TAU/3);
@@ -6105,7 +6184,7 @@ function syncDebugButtons(){
  const ready=manualNumbers||(rouletteReady&&!!rouletteDriver),state=rouletteDriver?.draw.state;
  start.disabled=!ready||menuOpen||(jpcSession.active?!['ready','complete'].includes(state):app.phase!=='ready'||!app.bets.some(n=>n>0));
  start.textContent=jpcSession.active?(state==='complete'?'もう一度':state==='ready'?'JPC開始':'抽選中'):'すぐ開始';
- mode.disabled=manualNumbers||!ready||menuOpen||(!jpcSession.active&&!['ready','complete'].includes(app.phase));
+ mode.disabled=manualNumbers||!ready||menuOpen||crystalJpcRunningV306()||(!jpcSession.active&&!['ready','complete'].includes(app.phase));
  mode.textContent=jpcSession.active?'通常モード':'JPCモード';mode.setAttribute('aria-pressed',String(jpcSession.active));
  mode.title=!jpcSession.active&&app.phase!=='ready'&&app.phase!=='complete'?'通常ゲーム終了後に切り替えられます':'暫定JPC。通常ゲームの配当と成績には加算しません';
 }
@@ -6127,6 +6206,10 @@ let jpcAudioTask=null;
 function jpcBgmFile(){
  if(!jpcSession.active||!rouletteDriver)return '';
  const d=rouletteDriver,filled=d.jpcCounts.filter(n=>n>0).length;
+ if(jpcSession.variant==='crystal'){
+  if(['ready','complete'].includes(d.draw.state))return '';
+  const hits=d.draw.crystalState?.jpHits||0;return hits===4?JPC_REACH_BGM_FILE:JPC_BGM_FILES[Math.min(3,hits)];
+ }
  if(d.draw.state==='ready'||d.draw.state==='complete'||filled===25)return '';
  if(filled===24)return JPC_REACH_BGM_FILE;
  return JPC_BGM_FILES[Math.min(3,Math.floor((Math.max(1,d.physics.serial)-1)/20))];
@@ -6158,6 +6241,7 @@ function syncJpcBgm({gesture=false}={}){
 function stopJpcTicker(){if(jpcSession.timer!==null)clearTimeout(jpcSession.timer);jpcSession.timer=null;}
 function paintJpcDashboard(){
  if(!jpcSession.active||!rouletteDriver)return;
+ if(jpcSession.variant==='crystal'){paintCrystalJpcV306();return;}
  syncJpcBgm();ensureJpcCells();const driver=rouletteDriver,counts=driver.jpcCounts,launched=driver.physics.serial,hits=driver.physics.hits,filled=counts.filter(n=>n>0).length,state=driver.draw.state;
  const key=[launched,state,...counts].join(',');if(key===jpcSession.key){syncDebugButtons();return;}jpcSession.key=key;
  const reach=filled===24?counts.findIndex(n=>n===0):-1;
@@ -6175,28 +6259,49 @@ function paintJpcDashboard(){
  if(hits.length>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!userPaused&&inView)for(const hit of hits.slice(jpcSession.previousHits))playArrivalSound();
  jpcSession.previousCounts=[...counts];jpcSession.previousHits=hits.length;syncDebugButtons();
 }
+function paintCrystalJpcV306(){
+ const driver=rouletteDriver,s=driver.draw.crystalState;if(!s)return;
+ syncJpcBgm();const state=driver.draw.state,key='crystal:'+jpcSession.serial+':'+s.revision+':'+state+':'+userPaused+':'+menuOpen;
+ if(jpcSession.key===key){syncDebugButtons();return;}jpcSession.key=key;jpcSession.win=s.payout;
+ const sound=window.SweetsAudioV277,previousJP=jpcSession.previousCounts[0];
+ if(s.jpHits>=5&&!jpcSession.jackpotShown){jpcSession.jackpotShown=true;sound?.award({game:'jpc',tier:4,key:'crystal:'+jpcSession.serial+':jackpot',kind:'clear',sample:'jackpot',jpc:true,volume:.9});}
+ else if(s.jpHits>previousJP&&s.jpHits>5)sound?.play('multiplier',{jpc:true,volume:.65});
+ else if(previousJP<4&&s.jpHits===4)sound?.play('jpc-reach',{jpc:true,volume:.65});
+ if(s.landed>jpcSession.previousHits&&!document.hidden&&!menuOpen&&!userPaused&&inView)playArrivalSound();
+ if(state==='complete'&&window.SweetsCrystalJpcV306.isComplete(s)&&!jpcSession.awarded){
+  jpcSession.awarded=true;
+  // This menu is a debug JPC. Only its existing LOCAL virtual wallet is writable;
+  // server wallets continue to be settled solely by their authoritative ledger.
+  if(window.SweetsEditionV255?.value==='local'){app.credit+=s.payout;app.displayCredit=app.credit;app.onChange(app);}
+ }
+ $('jpc-dashboard').dataset.variant='crystal';$('jpc-dashboard').classList.remove('is-jackpot');
+ window.SweetsCrystalJpcUIV306?.render(s,{drawState:state,awarded:jpcSession.awarded,paused:!!(menuOpen||userPaused||document.hidden||!inView),activeBalls:Object.keys(s.pending).length,history:s.history,roundId:jpcSession.serial});
+ jpcSession.previousCounts=[...s.counts];jpcSession.previousHits=s.landed;syncDebugButtons();
+}
 function runJpcTicker(){
  stopJpcTicker();if(!jpcSession.active)return;
  paintJpcDashboard();jpcSession.timer=setTimeout(runJpcTicker,150);
 }
 function restartJpcRound(){
- if(!jpcSession.active||!rouletteReady||!rouletteDriver)return false;
+ if(!jpcSession.active||!rouletteReady||!rouletteDriver||crystalJpcRunningV306())return false;
  stopAutoRound();stopResultAuto();stopSounds();stopBgm();stopBetPreview();rouletteDrawSource.callbacks=null;
- jpcSession.key='';jpcSession.previousCounts=Array(25).fill(0);jpcSession.previousHits=0;jpcSession.win=0;jpcSession.awarded=false;jpcSession.jackpotShown=false;document.getElementById('jpc-celebration').hidden=true;
- $('a8-mode').value='jpc';rouletteDriver.draw.select('jpc');rouletteDriver.start();
+ jpcSession.serial++;jpcSession.key='';jpcSession.previousCounts=Array(25).fill(0);jpcSession.previousHits=0;jpcSession.win=0;jpcSession.awarded=false;jpcSession.jackpotShown=false;document.getElementById('jpc-celebration').hidden=true;
+ $('jpc-dashboard').dataset.variant=jpcSession.variant;$('jpc-dashboard').classList.remove('is-jackpot');window.SweetsCrystalJpcUIV306?.sync();
+ $('a8-mode').value='jpc';rouletteDriver.draw.jpcVariant=jpcSession.variant;rouletteDriver.draw.select('jpc');rouletteDriver.start();
  app.paused=true;for(const e of app.engines)e.paused=true;
  rouletteDriver.setPaused(document.hidden||menuOpen||userPaused||!inView);countdownText('JPC','デバッグ抽選');runJpcTicker();return true;
 }
-function toggleJpcMode(){
- if(!rouletteReady||!rouletteDriver||menuOpen)return false;
+function toggleJpcMode(variant='classic'){
+ if(!rouletteReady||!rouletteDriver||menuOpen||crystalJpcRunningV306())return false;
  if(jpcSession.active){
+  paintJpcDashboard();
   jpcSession.direct=false;put('jpc-heading','JACKPOT CHANCE');
   stopJpcTicker();stopBgm();stopSounds();jpcSession.active=false;document.getElementById('jpc-celebration').hidden=true;showSugarCutin('NEXT GAME','次のゲームへ',false);$('screen').classList.remove('jpc-active');$('jpc-dashboard').hidden=true;
   for(const [el,was] of jpcSession.inert)el.inert=was;jpcSession.inert=[];
-  $('a8-mode').value='eight';rouletteDriver.draw.select('eight');userPaused=false;app.prepare();syncPause();scheduleAutoRound();scheduleUI(app);requestFit();return true;
+  $('a8-mode').value='eight';rouletteDriver.draw.select('eight');jpcSession.variant='classic';$('jpc-dashboard').dataset.variant='classic';window.SweetsCrystalJpcUIV306?.sync();userPaused=false;app.prepare();syncPause();scheduleAutoRound();scheduleUI(app);requestFit();return true;
  }
  if(!['ready','complete'].includes(app.phase))return false;
- debugResetRound();jpcSession.active=true;stopAutoRound();stopResultAuto();stopBetPreview();stopBgm();stopSounds();
+ debugResetRound();jpcSession.variant=variant==='crystal'?'crystal':'classic';jpcSession.active=true;stopAutoRound();stopResultAuto();stopBetPreview();stopBgm();stopSounds();
  $('screen').classList.add('jpc-active');$('jpc-dashboard').hidden=false;jpcSession.inert=[];
  for(const el of [$('screen').querySelector('.games-deck'),$('screen').querySelector('.game')]){jpcSession.inert.push([el,el.inert]);el.inert=true;}
  positionJpcDashboard();requestFit();restartJpcRound();syncDebugButtons();return true;
