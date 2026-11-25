@@ -1,0 +1,92 @@
+/* Real shipped client. Rule-derived records enter only the presentation API;
+ * they never enter a native engine, request a draw or credit a wallet. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {createUiFixture} from './ui-v250-fixture.mjs';
+
+const output=process.env.SWEETS_QA_OUTPUT_DIR||'qa-sugar-v305',multipliers=[1,2,3,4,5,10];
+await fs.mkdir(output,{recursive:true});
+const report={ok:false,scope:'Real isolated browser, current production scripts/styles and native pure rules. Presentation-only snapshot injection; no native game draw or settlement is simulated.',widths:[],multipliers:[],screens:[],assetFailures:[]};
+const fixture=await createUiFixture({startRound:false,output}),{page}=fixture;let serial=0;
+page.on('response',r=>{if(r.status()>=400&&/\/assets\/sugar-/.test(r.url()))report.assetFailures.push({url:r.url(),status:r.status()});});
+const screenshot=async name=>{await page.screenshot({path:path.join(output,name)});report.screens.push(name);};
+function inside(inner,outer,label){assert(inner&&outer&&inner.width>0&&inner.height>0,label+' has visible dimensions');assert(inner.left>=outer.left-1&&inner.top>=outer.top-1&&inner.right<=outer.right+1&&inner.bottom<=outer.bottom+1,label+' fits '+JSON.stringify({inner,outer}));}
+function preserved(record){assert.equal(record.accepted,true);assert.deepEqual(record.after,record.before,'Sugar presentation preserves native wallet, bets, lock, drawn balls, token and payout');}
+async function inject({id='sugar305-'+(++serial),multiplier=3,jpBase=150000,draws=[1,2,3,10],startedAgo=12000,tamper=null}={}){
+ return page.evaluate(({id,multiplier,jpBase,draws,startedAgo,tamper})=>{
+  const a=window.__qa250.app,R=window.SugarChallengeRulesV254,ui=window.SweetsSugarChallengeV254;
+  const native=()=>({credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),locked:a.locked.slice(),draws:a.draws.slice(),token:a.token,totalWin:a.totalWin,phase:a.phase});
+  const before=native();let state=R.create({id,roundId:'sugar305-ui',station:1,sugarValues:Array(5).fill(jpBase/5),cardId:'standard',multiplier,seed:305});
+  for(const number of draws)state=R.advance(state,number,{roundId:state.roundId,ballIndex:state.draws.length+1});
+  const raw={version:254,revision:++window.__sugar305.revision,bank:[],acceptedIds:(a.wonderBank||[]).map(t=>t.sugarId).filter(Boolean),challenge:{...state,...tamper},startedAt:Date.now()+(Number(window.SweetsSharedMachine?.client?.clockOffset)||0)-startedAgo};
+  const accepted=ui.accept(raw);window.__sugar305.last=raw;return {accepted,before,after:native(),challenge:state,shown:ui.describe().challenge};
+ },{id,multiplier,jpBase,draws,startedAgo,tamper});
+}
+async function read(){
+ return page.evaluate(async()=>{
+  const ui=window.SweetsSugarChallengeV254,overlay=document.querySelector('.sc254-overlay'),jpc=document.querySelector('.sc254-celebration'),cash=document.querySelector('.sc305-cash-celebration'),dock=document.querySelector('.sc254-dock');
+  const rect=node=>{const r=node.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
+  const visible=node=>{for(let p=node;p?.nodeType===1;p=p.parentElement){const s=getComputedStyle(p);if(p.hidden||s.display==='none'||s.visibility==='hidden'||Number(s.opacity)===0)return false;}const r=rect(node);return r.width>0&&r.height>0;};
+  const source=node=>({src:node.getAttribute('src'),loaded:node.complete&&node.naturalWidth>0,rect:rect(node),fit:getComputedStyle(node).objectFit});
+  const number=async node=>{
+   const css=getComputedStyle(node),r=rect(node),key=node.dataset.sugarNumber||null,result={value:Number(node.dataset.amount??node.textContent),text:node.textContent,rect:r,key,raster:node.classList.contains('sc305-raster-number'),color:css.color,textShadow:css.textShadow,background:css.backgroundImage==='none'?'none':'raster',fallbackHidden:!node.querySelector('.gold-number')||getComputedStyle(node.querySelector('.gold-number')).visibility==='hidden'};
+   if(key&&visible(node)){
+    const image=new Image();image.src=css.backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');await image.decode();const cv=document.createElement('canvas');cv.width=image.width;cv.height=image.height;const ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0);const data=ctx.getImageData(0,0,cv.width,cv.height).data;
+    let l=cv.width,t=cv.height,right=-1,bottom=-1,count=0;for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++)if(data[(y*cv.width+x)*4+3]>=32){l=Math.min(l,x);t=Math.min(t,y);right=Math.max(right,x);bottom=Math.max(bottom,y);count++;}
+    const scale=Math.min(r.width/cv.width,r.height/cv.height),left=r.left+(r.width-cv.width*scale)/2,top=r.top+(r.height-cv.height*scale)/2;
+    result.ink={left:left+l*scale,top:top+t*scale,right:left+(right+1)*scale,bottom:top+(bottom+1)*scale,width:(right-l+1)*scale,height:(bottom-t+1)*scale,count};result.intrinsic={width:cv.width,height:cv.height};
+   }return result;
+  };
+  const mult=node=>({visible:visible(node),text:node.textContent,rect:rect(node),image:source(node.querySelector('img')),background:getComputedStyle(node).backgroundImage,fill:getComputedStyle(node).backgroundColor,shadow:getComputedStyle(node).boxShadow});
+  const award=async node=>({visible:visible(node),rect:rect(node),image:source(node.querySelector(':scope>img')),amount:await number(node.querySelector('b')),caption:node.querySelector('small').textContent,pointerEvents:getComputedStyle(node).pointerEvents,paused:node.dataset.paused,animations:node.querySelector('img').getAnimations().map(a=>({name:a.animationName,state:a.playState})),aria:node.getAttribute('aria-label')});
+  const table=overlay.querySelector('.sc254-payouts');
+  return {api:ui.describe(),art:window.SugarArtV305.describe(),award:window.SugarAwardV305.describe(),game:rect(document.querySelector('#screen>.game')),screen:rect(document.getElementById('screen')),viewport:{left:0,top:0,right:innerWidth,bottom:innerHeight,width:innerWidth,height:innerHeight},
+   overlay:{visible:visible(overlay),rect:rect(overlay),background:getComputedStyle(overlay).backgroundImage,compact:overlay.dataset.compact,narrow:overlay.dataset.narrow},
+   scale:{visible:visible(overlay.querySelector('.sc254-scale')),image:source(overlay.querySelector('.sc254-scale>img')),gems:overlay.querySelectorAll('.sc254-five .sugar-gem').length},
+   bottle:{visible:visible(overlay.querySelector('.sc254-bottle')),image:source(overlay.querySelector('.sc254-bottle>img')),sum:Number(overlay.querySelector('[data-sc-sum]').textContent),fill:Number.parseFloat(overlay.querySelector('.sc254-fill').style.height)},
+   header:{base:Number(overlay.querySelector('[data-sc-amount]').textContent),multiplier:mult(overlay.querySelector('[data-sc-jp-multiplier]'))},
+   reel:{visible:visible(overlay.querySelector('.sc270-reel')),sequence:[...overlay.querySelectorAll('.sc270-reel-card[data-lap="0"]')].map(n=>Number(n.dataset.multiplier)),sources:[...new Set([...overlay.querySelectorAll('.sc270-reel-card>img')].map(n=>n.getAttribute('src')))]},
+   result:source(overlay.querySelector('[data-sc-result-face]')),table:rect(table),cabinet:getComputedStyle(table,':before').backgroundImage,
+   payouts:await Promise.all([...table.querySelectorAll('[data-sc-win]')].map(async node=>({hundredths:Number(node.closest('tr').dataset.hundredths),expected:Number(node.dataset.scWin),current:node.closest('tr').dataset.current==='true',...await number(node)}))),
+   jpc:{...await award(jpc),multiplier:mult(jpc.querySelector('[data-sc-celebration-multiplier]'))},cash:await award(cash),
+   dock:{visible:visible(dock),rect:rect(dock),parent:rect(dock.parentElement),image:source(dock.querySelector('img')),text:dock.textContent},
+   animatedRasterCount:overlay.querySelectorAll('[data-sc-sum].sc305-raster-number,[data-sc-scale-amount].sc305-raster-number,[data-sc-amount].sc305-raster-number').length};
+ });
+}
+function raster(number,label){assert.equal(number.raster,true,label+' uses generated live glyphs');assert.equal(number.background,'raster');assert.equal(number.fallbackHidden,true);assert.equal(number.color,'rgba(0, 0, 0, 0)','plain-text fallback is also hidden only after successful glyph paint');assert.equal(number.textShadow,'none');assert(number.ink?.count>0);inside(number.ink,number.rect,label+' actual raster ink');}
+function panel(state,jpBase=150000,multiplier=3){
+ assert.equal(state.api.presentationRevision,305);assert.equal(state.api.artRevision,305);assert.equal(state.api.awardRevision,305);assert(state.api.artLoaded&&state.art.loaded&&state.award.loaded);assert.deepEqual(state.art.errors,[]);assert.deepEqual(state.award.errors,[]);
+ assert.equal(state.overlay.visible,true);inside(state.overlay.rect,state.game,'main Sugar overlay');inside(state.table,state.overlay.rect,'six-row payout table');assert.match(state.overlay.background,/sugar-art-v305\/workshop-background\.webp/);assert.match(state.cabinet,/sugar-art-v305\/payout-cabinet\.webp/);
+ assert.equal(state.bottle.image.src,'assets/sugar-art-v305/bottle.webp?v=305');assert.equal(state.scale.image.src,'assets/sugar-art-v305/scale.webp?v=305');assert.equal(state.header.base,jpBase);assert.equal(state.api.displayAmounts.jpBase,jpBase);assert.equal(state.api.displayAmounts.cashBase,jpBase);
+ assert.equal(state.header.multiplier.visible,multiplier>1);assert.equal(state.header.multiplier.image.src,'assets/sugar-art-v279/multiplier-'+multiplier+'-transparent.png');assert.equal(state.result.src,'assets/sugar-art-v279/multiplier-'+multiplier+'-transparent.png');
+ assert.deepEqual(state.payouts.map(n=>n.hundredths),[20,10,5,3,2,1]);for(const n of state.payouts){assert.equal(n.value,Math.floor(jpBase*n.hundredths/100));assert.equal(n.value,n.expected);raster(n,'payout '+n.value);inside(n.rect,state.table,'payout cell');}
+ assert.equal(state.animatedRasterCount,0,'counting sum, scale and header stay on their native lightweight number path');
+ assert.deepEqual(state.reel.sources.slice().sort(),multipliers.map(n=>'assets/sugar-art-v270/multiplier-'+n+'.png').sort());assert.deepEqual(state.reel.sequence,[1,2,1,3,4,1,2,5,1,3,2,4,1,10]);assert.deepEqual(state.api.reelTiming,{baseEnd:3250,start:3450,stop:9700,end:10500});
+}
+try{
+ await page.waitForFunction(()=>window.SweetsSugarChallengeV254?.presentationRevision===305&&window.SugarArtV305?.loaded&&window.SugarAwardV305?.loaded&&document.querySelector('.sc305-cash-celebration'),null,{timeout:30000});
+ await page.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.querySelectorAll('.sc254-overlay img,.sc254-celebration img,.sc305-cash-celebration img,.sc254-dock img')].map(i=>i.decode()));window.__sugar305={revision:100000};});
+ report.nativeBefore=await page.evaluate(()=>{const a=window.__qa250.app;return {credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),locked:a.locked.slice(),draws:a.draws.slice(),token:a.token,totalWin:a.totalWin,phase:a.phase};});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const width of [320,390,430]){
+  await page.setViewportSize({width,height:844});const spec={width};preserved(await inject());let current=await read();panel(current);assert.equal(current.bottle.visible,true);assert.equal(current.cash.visible,false);assert.equal(current.jpc.visible,false);spec.main=current;await screenshot('main-'+width+'.png');
+  const docking=await page.evaluate(()=>{const ui=window.SweetsSugarChallengeV254;return {snapshot:ui.snapshot(),challenge:ui.describe().challenge};});await page.locator('.sc254-overlay').click();const docked=await read();assert.equal(docked.overlay.visible,false);assert.equal(docked.dock.visible,true);inside(docked.dock.rect,docked.dock.parent,'minimized Sugar dock');assert.equal(docked.dock.image.src,'assets/sugar-art-v305/bottle.webp?v=305');assert.deepEqual(docked.api.challenge,docking.challenge);await screenshot('dock-'+width+'.png');
+  await page.locator('.sc254-dock').click();current=await read();panel(current);assert.deepEqual(current.api.challenge,docking.challenge);assert.deepEqual(await page.evaluate(()=>window.SweetsSugarChallengeV254.snapshot()),docking.snapshot,'minimize/reopen retains the exact accepted native snapshot');
+  await page.emulateMedia({reducedMotion:'no-preference'});preserved(await inject({draws:[],startedAgo:1200}));await page.waitForFunction(()=>{const s=window.SweetsSugarChallengeV254.describe();return s.intro>300&&s.intro<3250&&!document.querySelector('.sc254-scale').hidden;},null,{timeout:5000});const intro=await read();assert.equal(intro.scale.visible,true);assert.equal(intro.scale.gems,5);assert.equal(intro.bottle.visible,false);assert.equal(intro.header.multiplier.visible,false);assert.equal(intro.cash.visible,false);assert.equal(intro.jpc.visible,false);spec.intro=intro;await screenshot('intro-'+width+'.png');await page.emulateMedia({reducedMotion:'reduce'});
+  const jp=await inject({multiplier:10,jpBase:4999999500,draws:[25,24,20,8]});preserved(jp);const jpc=await read();panel(jpc,4999999500,10);assert.equal(jp.challenge.jpcQualified,true);assert.equal(jp.challenge.draws.length,4);assert.equal(jpc.jpc.visible,true);assert.equal(jpc.cash.visible,false);assert.equal(jpc.jpc.image.src,'assets/sugar-art-v305/award-jpc.webp?v=305');assert.equal(jpc.jpc.amount.value,4999999500);assert.notEqual(jpc.jpc.amount.value,jp.challenge.jpAmount);raster(jpc.jpc.amount,'unmultiplied JPC amount');inside(jpc.jpc.image.rect,jpc.jpc.rect,'JPC image');inside(jpc.jpc.rect,jpc.screen,'JPC whole overlay');assert.equal(jpc.jpc.multiplier.image.src,'assets/sugar-art-v279/multiplier-10-transparent.png');inside(jpc.jpc.multiplier.image.rect,jpc.jpc.rect,'separate unchanged JPC multiplier');assert.equal(jpc.jpc.pointerEvents,'none');spec.jpc=jpc;await screenshot('jpc-'+width+'.png');
+  const forged=await inject({draws:[1,2,3,4,5,6,7],tamper:{phase:'complete',cashWin:999999900}});preserved(forged);assert.equal(forged.shown.phase,'drawing');assert.equal(forged.shown.cashWin,0);assert.equal((await read()).cash.visible,false,'unaccepted cached cash field cannot show an award');
+  const win=await inject({multiplier:10,jpBase:4999999500,draws:[1,2,3,4,5,6,7,8]});preserved(win);const cash=await read();panel(cash,4999999500,10);assert.equal(win.challenge.phase,'complete');assert.equal(win.challenge.jpcQualified,false);assert.equal(win.challenge.cashWin,999999900);assert.equal(cash.cash.visible,true);assert.equal(cash.jpc.visible,false);assert.equal(cash.cash.image.src,'assets/sugar-art-v305/award-cash.webp?v=305');assert.equal(cash.cash.amount.value,win.challenge.cashWin);raster(cash.cash.amount,'nine-digit cash award');inside(cash.cash.image.rect,cash.cash.rect,'cash artwork');inside(cash.cash.rect,cash.screen,'cash whole overlay');assert.equal(cash.cash.pointerEvents,'none');assert.match(cash.cash.aria,/999999900 WIN/);assert.equal(cash.payouts.find(n=>n.current).value,999999900);spec.cash=cash;await screenshot('cash-nine-digit-'+width+'.png');
+  const repeated=await page.evaluate(()=>{const ui=window.SweetsSugarChallengeV254,before=ui.describe().cashAge,snapshot=ui.snapshot(),builds=window.SugarAwardV305.describe().numberBuilds;ui.accept({...window.__sugar305.last,revision:++window.__sugar305.revision});const after=ui.describe().cashAge;for(let i=0;i<50;i++)ui.setExpanded(true);return {before,after,builds,afterBuilds:window.SugarAwardV305.describe().numberBuilds,sameChallenge:JSON.stringify(snapshot.challenge)===JSON.stringify(ui.snapshot().challenge)};});assert.equal(repeated.after,repeated.before,'duplicate snapshot never restarts cash');assert.equal(repeated.afterBuilds,repeated.builds,'stable redraws reuse the raster number cache');assert(repeated.sameChallenge);spec.repeated=repeated;
+  if(width===320){
+   await page.locator('#open-record-menu').click();await page.waitForFunction(()=>window.SweetsSugarChallengeV254.describe().paused);const paused=await read();await page.waitForTimeout(220);const still=await read();assert.equal(still.api.cashAge,paused.api.cashAge,'native pause also freezes the new cash lifetime');assert.equal(still.cash.paused,'true');await page.locator('#record-close-top').click();
+   await page.waitForFunction(()=>window.SweetsSugarChallengeV254.describe().cashAge>=3700&&document.querySelector('.sc305-cash-celebration').hidden,null,{timeout:12000});const expired=await page.evaluate(()=>{const ui=window.SweetsSugarChallengeV254,before=ui.describe().cashAge;ui.accept({...window.__sugar305.last,revision:++window.__sugar305.revision});return {before,after:ui.describe().cashAge,hidden:document.querySelector('.sc305-cash-celebration').hidden};});assert.equal(expired.after,expired.before);assert(expired.hidden,'expired duplicate does not replay');spec.expired=expired;
+  }
+  report.widths.push(spec);
+ }
+ await page.setViewportSize({width:390,height:844});
+ for(const multiplier of multipliers){preserved(await inject({multiplier}));const state=await read();panel(state,150000,multiplier);assert(state.result.loaded);assert.equal(state.result.fit,'contain');const m=state.header.multiplier;assert.equal(m.background,'none');assert.equal(m.fill,'rgba(0, 0, 0, 0)');assert.equal(m.shadow,'none');report.multipliers.push({multiplier,result:state.result,header:m});await screenshot('multiplier-'+multiplier+'-390.png');}
+ report.nativeAfter=await page.evaluate(()=>{const a=window.__qa250.app;return {credit:a.credit,displayCredit:a.displayCredit,bets:a.bets.slice(),locked:a.locked.slice(),draws:a.draws.slice(),token:a.token,totalWin:a.totalWin,phase:a.phase};});assert.deepEqual(report.nativeAfter,report.nativeBefore,'all artwork, overlay and dock actions leave native gameplay unchanged');assert.deepEqual(fixture.errors,[]);assert.deepEqual(report.assetFailures,[]);report.ok=true;
+ console.log('SUGAR_V305_BROWSER_PASS: 320/390/430 main, intro, native JPC/cash, 9-digit payout pixels, six original multipliers, minimize/dock, paused lifetime, duplicate suppression and native wallet/state preservation.');
+}catch(error){report.failure={message:String(error),stack:error.stack};try{report.failure.state=await read();await screenshot('failure.png');}catch(capture){report.failure.capture=String(capture);}throw error;}
+finally{report.errors=fixture.errors;report.warnings=fixture.warnings;await fs.writeFile(path.join(output,'browser-report.json'),JSON.stringify(report,null,2)+'\n');await fixture.close();}

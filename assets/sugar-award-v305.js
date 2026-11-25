@@ -8,6 +8,9 @@ if(query.get('serverSettlementWorker')==='1'||query.get('downloadWorker')==='1')
 const ROOT='assets/sugar-art-v305/';
 const FILES=Object.freeze({jpc:'award-jpc.webp',cash:'award-cash.webp',digits:'award-digits.webp'});
 const GLYPHS=Object.freeze(['0','1','2','3','4','5','6','7','8','9',',','WIN']);
+// Measured clear gutters in the generated 1536×1024 atlas. The 0 extends
+// through y=342; equal mathematical thirds cut its tip and contaminate 4.
+const GLYPH_ROWS=Object.freeze([0,350/1024,690/1024,1]);
 const images=new Map(),glyphs=new Map(),numbers=new Map(),errors=[];
 const stats={numberBuilds:0,numberHits:0,numberPaints:0,last:null};
 function prepare(source){
@@ -15,7 +18,7 @@ function prepare(source){
  const ctx=cv.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0);
  const data=ctx.getImageData(0,0,cv.width,cv.height).data;
  for(let i=0;i<GLYPHS.length;i++){
-  const x0=Math.round(i%4*cv.width/4),x1=Math.round((i%4+1)*cv.width/4),y0=Math.round(Math.floor(i/4)*cv.height/3),y1=Math.round((Math.floor(i/4)+1)*cv.height/3);
+  const row=Math.floor(i/4),x0=Math.round(i%4*cv.width/4),x1=Math.round((i%4+1)*cv.width/4),y0=Math.round(GLYPH_ROWS[row]*cv.height),y1=Math.round(GLYPH_ROWS[row+1]*cv.height);
   let l=x1,t=y1,r=-1,b=-1;
   for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)if(data[(y*cv.width+x)*4+3]>=32){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}
   if(r<l||b<t)throw Error('Missing Sugar glyph '+GLYPHS[i]);
@@ -57,5 +60,5 @@ window.SugarAwardV305=Object.freeze({version:305,ready,number,amount,layouts,
  get loaded(){return images.size===3&&glyphs.size===12;},
  asset:kind=>FILES[kind]?ROOT+FILES[kind]+'?v=305':null,
  image:kind=>images.get(kind)||null,
- describe:()=>({version:305,loaded:images.size===3&&glyphs.size===12,files:Object.values(FILES).map(f=>ROOT+f),glyphRects:Object.fromEntries(glyphs),errors:errors.slice(),numberCacheSize:numbers.size,numberCacheLimit:128,...stats,last:stats.last?{...stats.last,glyphs:stats.last.glyphs.slice()}:null})});
+ describe:()=>({version:305,loaded:images.size===3&&glyphs.size===12,files:Object.values(FILES).map(f=>ROOT+f),glyphRects:Object.fromEntries(glyphs),glyphRowFractions:GLYPH_ROWS.slice(),errors:errors.slice(),numberCacheSize:numbers.size,numberCacheLimit:128,...stats,last:stats.last?{...stats.last,glyphs:stats.last.glyphs.slice()}:null})});
 })();

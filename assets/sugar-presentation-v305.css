@@ -18,7 +18,7 @@
 .sugar-art-v305 .sc254-announcement-badge>small{color:#ffe9be}
 .sugar-art-v305 .sc254-history>span{border-color:#f4d69b;box-shadow:inset 0 1px 3px #fff6df5e,0 1px 4px #0d0419;background:linear-gradient(#50294f,#220f2e)}
 .sugar-art-v305 .sc254-history>span[data-hit=true]{background:linear-gradient(#fff7e6,#eaa9d0);color:#502039}
-.sc305-raster-number{background:var(--sugar305-number) center/contain no-repeat!important}
+.sc305-raster-number{background:var(--sugar305-number) center/contain no-repeat!important;color:transparent!important;text-shadow:none!important}
 .sc305-raster-number>.gold-number{visibility:hidden}
 .sugar-art-v305 .sc254-celebration,.sugar-art-v305 .sc305-cash-celebration{position:absolute;left:50%;top:50%;right:auto;bottom:auto;inset:auto auto auto auto;transform:translate(-50%,-50%);width:min(97%,850px);aspect-ratio:3/2;height:auto;display:block;overflow:visible;pointer-events:none;isolation:isolate;z-index:9000}
 .sugar-art-v305 .sc254-celebration{left:50%;top:50%}

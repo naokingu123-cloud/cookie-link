@@ -83,24 +83,24 @@
       }
     },
     {
-      "key": "furnitureclean",
+      "key": "furnitureclean2",
       "file": "furniture-atlas.webp",
-      "source": "exec-77656403-4335-4b71-b8b5-f974715eed9a.png",
-      "prompt": "Use case: background-extraction. Edit target: the provided 2x2 SUGAR CHALLENGE furniture sprite atlas. Change ONLY the background transparency. Remove every gray/cream backdrop pixel, gradient, haze and shadow plane outside the four isolated plaques. Output real clean RGBA alpha0 in the entire empty gutters and all outer margins, and alpha0 inside the open center of the bottom-right narrow bezel. Keep each existing plaque's exact shape, artwork, color, position, size, 2x2 layout and transparent internal cutouts. Preserve opaque ivory ribbon in top-right and dark-plum glass inset in top-left and bottom-left. Do not redraw the decorations, add objects or text, crop, resize or rearrange. Clean sprite cutouts ready to composite on a dark game background without visible rectangles.",
-      "originalSource": "/workspace/scratch/098164b1b909/generated_images/exec-28034db2-9577-4c74-9689-d5d3886b2d12.png",
+      "source": "exec-2fa6afdc-d128-4fff-949f-29d2b9b739bd.png",
+      "prompt": "Use case: background-extraction. Asset type: production Sugar Challenge sprite atlas. Edit target is the supplied four-plaque 2 by 2 atlas. Remove ALL of the cloudy translucent gray/pink background around the objects. Output strict transparent RGBA alpha 0 for every empty outer margin, every gutter between plaques and the whole open inner window of the bottom-right bezel. Current image has visible pale rectangular haze on a dark surface; eliminate that haze completely. Keep the four ornate plaque silhouettes, their gold/ivory/rose crystal materials, colors, arrangement and 2 by 2 equal-cell layout. Keep top-left plum inset and moon crest, top-right ivory ribbon and flowers, bottom-left plum inset and crystal crest, bottom-right thin open purple-gold bezel. Preserve opaque decorative material and empty unprinted live text areas; no writing. Comfortably fit each entire plaque inside its own equal quadrant with at least 5 percent fully transparent margins; no neighboring overlap. No background gradient, glow plane, vignette, gray wash, cast shadow, checkerboard pixels, surface, scene, text, numbers or added objects. True alpha cutouts ready to composite on very dark plum. Landscape 1536x1024.",
+      "originalSource": "exec-28034db2-9577-4c74-9689-d5d3886b2d12.png",
       "originalPrompt": "Use case: stylized-concept. Production raster UI sprite atlas for SUGAR CHALLENGE, lavish confectionery medal game. Canvas1536x1024, true transparent RGBA. Exactly2 equal columns and2 equal rows, four separately isolated horizontal plaques filling their cells with transparent gutters, at least6% internal padding. Coherent warm gold filigree, carved ivory icing, tiny pearls, rose and lilac cut sugar crystals, exquisitely detailed premium3D game art. Top left: regal horizontal dark-plum glass plaque with fine gold rim and tiny moon-star crystal crest at its top center, completely empty central80% width for real JP amount. Top right: wide pale ivory sugar ribbon with a delicate blush crystal flower at each end, blank central80% for target and lucky-number text. Bottom left: extravagant horizontal announcement plaque, dark violet crystal inset surrounded by swirling icing and five small sugar crystals above it, blank center70% width and55% height for live heading and details. Bottom right: slim long gold-edged crystal window horizontally oriented, a thin pale lilac rim with ivory sugar curls at both ends, entirely clear transparent middle; can be rotated to form a vertical total-gauge bezel. No numbers or text anywhere, no gridlines, no scenery, no extraneous icons, no watermarks. Clear alpha outside every object, each completely within its assigned equal cell.",
       "transparent": true,
       "sourceDimensions": [
         1536,
         1024
       ],
-      "sourceSha256": "4b5584c3c7159c755520841a8c9e1f206345da01a3eb8eee0de60dc739ac45b5",
+      "sourceSha256": "ffeb20bfef6490e6c4c73d1bd7d57bdc078af95b757b6d66f72ea3e0f2e3f7f5",
       "dimensions": [
         1152,
         768
       ],
-      "bytes": 420098,
-      "sha256": "54ed5d4c33d758583404b190927dc6b0f67cb39b2028b0c8c11cb05a3144dbe9",
+      "bytes": 226318,
+      "sha256": "2bb9a9d861cdd9e788f0e7ffbab2c521fa68c791f8c5e91f9c09d7efad284cde",
       "processing": {
         "resize": {
           "maxEdge": 1152
@@ -108,7 +108,16 @@
         "format": "webp",
         "quality": 92,
         "alphaQuality": 100
-      }
+      },
+      "previousExtractions": [
+        {
+          "source": "exec-77656403-4335-4b71-b8b5-f974715eed9a.png",
+          "sourceSha256": "4b5584c3c7159c755520841a8c9e1f206345da01a3eb8eee0de60dc739ac45b5",
+          "prompt": "Use case: background-extraction. Edit target: the provided 2x2 SUGAR CHALLENGE furniture sprite atlas. Change ONLY the background transparency. Remove every gray/cream backdrop pixel, gradient, haze and shadow plane outside the four isolated plaques. Output real clean RGBA alpha0 in the entire empty gutters and all outer margins, and alpha0 inside the open center of the bottom-right narrow bezel. Keep each existing plaque's exact shape, artwork, color, position, size, 2x2 layout and transparent internal cutouts. Preserve opaque ivory ribbon in top-right and dark-plum glass inset in top-left and bottom-left. Do not redraw the decorations, add objects or text, crop, resize or rearrange. Clean sprite cutouts ready to composite on a dark game background without visible rectangles.",
+          "assetSha256": "54ed5d4c33d758583404b190927dc6b0f67cb39b2028b0c8c11cb05a3144dbe9",
+          "assessment": "Rejected in dark native Canvas review: every source pixel had nonzero alpha, leaving visible rectangular haze even after production crop."
+        }
+      ]
     },
     {
       "key": "background",
