@@ -255,13 +255,16 @@ try{
      // The native grade face lasts only through rank steps 1 and 2. Capture
      // it before transferring the large source/geometry inspection to Node;
      // serializing that evidence first can outlive the actual grade beat.
-     let screenshotState;
+     let screenshotReturnState;
      if(kind==='grade'){
       await page.screenshot({path:path.join(output,spec.id+'-ball'+step.ball+'-grade-live.png')});
-      screenshotState=await page.evaluate(()=>{const q=__qa301,root=q.slots[q.index].panel,pay=root.querySelector('.bs-pay');return {phase:q.app.phase,grade:root.querySelector('.bs-pay-title').dataset.wf301Grade==='true',rankStep:Number(pay.dataset.rankStep)};});
-      assert(screenshotState.phase==='playing'&&screenshotState.grade&&[1,2].includes(screenshotState.rankStep),'the real screenshot finishes during the native grade stage');
+      // Chromium captures the pixels before encoding/transferring the PNG.
+      // The native beat may end before this promise returns: the inspected
+      // CI PNGs show GRADE UP even when this later diagnostic is rank step 3.
+      // captureGrade/checkGrade keep the actual stage/source/geometry checks.
+      screenshotReturnState=await page.evaluate(()=>{const q=__qa301,root=q.slots[q.index].panel,pay=root.querySelector('.bs-pay');return {phase:q.app.phase,grade:root.querySelector('.bs-pay-title').dataset.wf301Grade==='true',rankStep:Number(pay.dataset.rankStep)};});
      }
-     const value=await handle.jsonValue();await handle.dispose();if(screenshotState)value.screenshotState=screenshotState;
+     const value=await handle.jsonValue();await handle.dispose();if(screenshotReturnState)value.screenshotReturnState=screenshotReturnState;
      return {kind,value};
     });
     const tasks=[];if(step.oracle.award)tasks.push(capture(captureAward,{number:step.number,role:step.oracle.reversalThisMove?'reversal':'flip',win:step.oracle.deltaWin,mini:!!spec.mini},'award'));
